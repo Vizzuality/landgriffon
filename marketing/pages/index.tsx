@@ -3,8 +3,12 @@ import Head from 'next/head';
 import Link from 'next/link';
 
 import Logo from 'components/logo';
+import Banner from 'components/banner';
+import Welcome from 'components/welcome';
+import Newsletter from 'components/newsletter';
+import EULogo from 'components/eu-logo';
 
-const Welcome: React.FC = () => {
+const Home: React.FC = () => {
   return (
     <div>
       <Head>
@@ -19,21 +23,20 @@ const Welcome: React.FC = () => {
         </Link>
       </header>
 
-      <main />
+      <section>
+        <Banner />
+      </section>
+
+      <section>
+        <Welcome />
+        <Newsletter />
+      </section>
 
       <footer>
-        <div>
-          <img src="/EU-logo.png" alt="European Union Logo" />
-          <p>
-            This project has received funding from the
-            European Union&apos;s Horizon 2020 research and
-            innovation programme under grant agreement
-            No 101004174
-          </p>
-        </div>
+        <EULogo />
       </footer>
     </div>
   );
 };
 
-export default Welcome;
+export default Home;

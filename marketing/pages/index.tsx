@@ -10,12 +10,12 @@ import EULogo from 'components/eu-logo';
 
 const Home: React.FC = () => {
   return (
-    <div>
+    <div className="lg:flex lg:items-stretch lg:h-screen bg-white">
       <Head>
         <title>Landgriffon - Welcome to the marketing site</title>
       </Head>
 
-      <header>
+      <header className="p-6 flex justify-center xl:justify-start lg:w-1/5">
         <Link href="/">
           <a>
             <Logo />
@@ -23,16 +23,16 @@ const Home: React.FC = () => {
         </Link>
       </header>
 
-      <section>
+      <section className="lg:w-2/5 bg-yellow-500">
         <Banner />
       </section>
 
-      <section>
+      <section className="lg:flex-grow p-6 md:p-20 bg-primary text-white flex flex-col justify-center">
         <Welcome />
         <Newsletter />
       </section>
 
-      <footer>
+      <footer className="lg:absolute lg:bottom-0 lg:left-0 lg:w-1/5 p-6 flex justify-center lg:justify-start">
         <EULogo />
       </footer>
     </div>

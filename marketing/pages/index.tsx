@@ -15,7 +15,7 @@ const Home: React.FC = () => {
         <title>Landgriffon - Welcome to the marketing site</title>
       </Head>
 
-      <header className="p-6 flex justify-center xl:justify-start lg:w-1/5">
+      <header className="p-6 flex justify-center items-start xl:justify-start lg:w-1/5">
         <Link href="/">
           <a>
             <Logo />

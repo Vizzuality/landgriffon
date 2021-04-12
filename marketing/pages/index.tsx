@@ -3,15 +3,19 @@ import Head from 'next/head';
 import Link from 'next/link';
 
 import Logo from 'components/logo';
+import Banner from 'components/banner';
+import Welcome from 'components/welcome';
+import Newsletter from 'components/newsletter';
+import EULogo from 'components/eu-logo';
 
-const Welcome: React.FC = () => {
+const Home: React.FC = () => {
   return (
-    <div>
+    <div className="lg:flex lg:items-stretch lg:h-screen bg-white">
       <Head>
         <title>Landgriffon - Welcome to the marketing site</title>
       </Head>
 
-      <header>
+      <header className="p-6 flex justify-center items-start xl:justify-start lg:w-1/5">
         <Link href="/">
           <a>
             <Logo />
@@ -19,21 +23,20 @@ const Welcome: React.FC = () => {
         </Link>
       </header>
 
-      <main />
+      <section className="lg:w-2/5 bg-yellow-500">
+        <Banner />
+      </section>
 
-      <footer>
-        <div>
-          <img src="/EU-logo.png" alt="European Union Logo" />
-          <p>
-            This project has received funding from the
-            European Union&apos;s Horizon 2020 research and
-            innovation programme under grant agreement
-            No 101004174
-          </p>
-        </div>
+      <section className="lg:flex-grow p-6 md:p-20 bg-primary text-white flex flex-col justify-center">
+        <Welcome />
+        <Newsletter />
+      </section>
+
+      <footer className="lg:absolute lg:bottom-0 lg:left-0 lg:w-1/5 p-6 flex justify-center lg:justify-start">
+        <EULogo />
       </footer>
     </div>
   );
 };
 
-export default Welcome;
+export default Home;

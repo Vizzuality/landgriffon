@@ -5,11 +5,13 @@ on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
+defaults:
+  run:
+    working-directory: marketing
+
 jobs:
   marketing:
     runs-on: ubuntu-latest
-    run:
-      working-directory: ./marketing
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1

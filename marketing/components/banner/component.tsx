@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import Slider from 'react-slick';
+import Image from 'next/image';
 import AnimationPlayer from 'components/animation-player';
 
 import barChartAnimation from './animations/bar-chart.json';
@@ -18,24 +19,27 @@ const sliderSettings = {
   speed: 700,
 };
 
-const slideClassnames = 'h-96 lg:h-screen bg-cover bg-center flex items-center justify-center';
+const slideClassnames = 'h-96 lg:h-screen flex items-center justify-center';
 
 const initialSlidesData = [
   {
     slug: 'land-view-1',
-    backgroundImage: 'url(/slides/land-view-1.jpg)',
+    name: 'Land view green',
+    backgroundImage: '/slides/land-view-1.jpg',
     animationData: barChartAnimation,
     isAnimating: false,
   },
   {
     slug: 'land-view-2',
-    backgroundImage: 'url(/slides/land-view-2.jpg)',
+    name: 'Land view yellow',
+    backgroundImage: '/slides/land-view-2.jpg',
     animationData: linearChartAnimation,
     isAnimating: false,
   },
   {
     slug: 'land-view-3',
-    backgroundImage: 'url(/slides/land-view-3.jpg)',
+    name: 'Land view brown',
+    backgroundImage: '/slides/land-view-3.jpg',
     animationData: donutCharAnimation,
     isAnimating: false,
   },
@@ -66,13 +70,13 @@ const Banner: React.FC = () => {
         onInit={handleOnInit}
       >
         {slidesData.map(({
-          animationData, backgroundImage, isAnimating, slug,
+          animationData, backgroundImage, isAnimating, name, slug,
         }) => (
           <div key={slug}>
             <div
               className={slideClassnames}
-              style={{ backgroundImage }}
             >
+              <Image src={backgroundImage} layout="fill" objectFit="cover" alt={name} />
               {isAnimating && (
                 <AnimationPlayer animationData={animationData} />
               )}

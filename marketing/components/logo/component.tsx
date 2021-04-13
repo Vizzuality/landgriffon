@@ -2,7 +2,13 @@ import React from 'react';
 import Image from 'next/image';
 
 const Logo: React.FC = () => (
-  <Image src="/landgriffon-logo.svg" alt="Landgriffon Logo" className="w-40 md:w-auto" width="273" height="23" />
+  <Image
+    alt="Landgriffon Logo"
+    className="w-40 md:w-auto"
+    height="23"
+    src="/landgriffon-logo.svg"
+    width="273"
+  />
 );
 
 export default Logo;

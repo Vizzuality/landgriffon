@@ -6,8 +6,10 @@ on:
     branches: [ main ]
   workflow_dispatch:
 jobs:
-  build:
+  marketing:
     runs-on: ubuntu-latest
+    env:
+      - working-directory: ./marketing
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
@@ -26,7 +28,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - run: cd marketing
       - run: yarn install
       - run: yarn build
 

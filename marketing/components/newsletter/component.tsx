@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import Image from 'next/image';
 
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXTGcggnHX5xGVwTmENijyIUEMyYcQdDrMeBAZ_S9OsjIrxqYBuPFEKrRifkra3jER1g/exec';
 
@@ -51,7 +52,7 @@ const Newsletter: React.FC = () => {
         </div>
         {status.error && (
           <div className="flex space-x-2">
-            <img src="/error-icon.svg" alt="Error icon" />
+            <Image src="/error-icon.svg" alt="Error icon" width="20" height="20" />
             <span>{status.error}</span>
           </div>
         )}

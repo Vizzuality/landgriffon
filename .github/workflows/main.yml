@@ -8,7 +8,7 @@ on:
 jobs:
   marketing:
     runs-on: ubuntu-latest
-    env:
+    run:
       working-directory: ./marketing
     steps:
       - uses: actions/checkout@v1

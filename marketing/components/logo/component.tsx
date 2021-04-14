@@ -1,14 +1,17 @@
 import React from 'react';
-import Image from 'next/image';
+import { useRouter } from 'next/router';
 
-const Logo: React.FC = () => (
-  <Image
-    alt="Landgriffon Logo"
-    className="w-40 md:w-auto"
-    height="23"
-    src="/landgriffon-logo.svg"
-    width="273"
-  />
-);
+const Logo: React.FC = () => {
+  const { basePath } = useRouter();
+  return (
+    <img
+      alt="Landgriffon Logo"
+      className="w-40 h-auto md:w-auto md:h-auto"
+      height="23px"
+      src={`${basePath}/landgriffon-logo.svg`}
+      width="273px"
+    />
+  );
+};
 
 export default Logo;

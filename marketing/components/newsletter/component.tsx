@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXTGcggnHX5xGVwTmENijyIUEMyYcQdDrMeBAZ_S9OsjIrxqYBuPFEKrRifkra3jER1g/exec';
 
@@ -12,6 +12,7 @@ const DEFAULT_STATUS = {
 
 const Newsletter: React.FC = () => {
   const [status, setStatus] = useState(DEFAULT_STATUS);
+  const { basePath } = useRouter();
 
   const handleSubmit = (event) => {
     setStatus({ ...DEFAULT_STATUS, fetching: true });
@@ -52,7 +53,7 @@ const Newsletter: React.FC = () => {
         </div>
         {status.error && (
           <div className="flex space-x-2">
-            <Image src="/error-icon.svg" alt="Error icon" width="20" height="20" />
+            <img src={`${basePath}/error-icon.svg`} alt="Error icon" width="20" height="20" />
             <span>{status.error}</span>
           </div>
         )}

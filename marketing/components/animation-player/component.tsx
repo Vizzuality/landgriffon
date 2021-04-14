@@ -9,7 +9,10 @@ type AnimationPlayerProps = Partial<AnimationConfigWithData> & {
 
 const animationSettings: Partial<AnimationConfigWithData> = {
   loop: true,
-  renderer: 'svg',
+  renderer: 'canvas',
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice',
+  },
 };
 
 const AnimationPlayer: React.FC<AnimationPlayerProps> = (props: Partial<AnimationPlayerProps>) => {

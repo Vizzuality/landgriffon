@@ -29,13 +29,13 @@ const Newsletter: React.FC = () => {
 
   return (
     <div className="mt-14 lg:mt-48">
-      <h2 className="lg:text-2xl">
+      <h2 className="text-base lg:text-lg font-light mb-4 lg:mb-12">
         Be the first to hear about new releases and updates.
       </h2>
-      <form className="flex flex-col space-y-4" onSubmit={handleSubmit}>
+      <form className="flex flex-col space-y-4 lg:space-y-5" onSubmit={handleSubmit}>
         <div>
           <input
-            className="bg-transparent placeholder-white px-0 py-2 text-2xl w-full
+            className="bg-transparent placeholder-white px-0 py-2 text-base lg:text-lg w-full font-light
               border-0 border-b border-white border-opacity-50
               focus:border-0 focus:border-opacity-100 focus:outline-none focus:border-white focus:border-b focus:shadow-none"
             name="subscriber"
@@ -46,7 +46,7 @@ const Newsletter: React.FC = () => {
           />
         </div>
         <div>
-          <button type="submit" className="bg-black text-white rounded-xl px-5 py-1 hover:bg-gray-900">
+          <button type="submit" className="bg-black font-bold text-white text-base rounded-full px-6 py-3 hover:bg-gray-900">
             {buttonText}
           </button>
         </div>

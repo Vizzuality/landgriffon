@@ -11,7 +11,7 @@ const sliderSettings = {
   arrows: false,
   autoplay: true,
   autoplaySpeed: 6000,
-  className: 'h-96 lg:h-screen',
+  className: 'h-96 lg:h-screen overflow-hidden',
   dots: false,
   draggable: false,
   fade: true,
@@ -78,7 +78,7 @@ const Banner: React.FC = () => {
             >
               <Image src={backgroundImage} layout="fill" objectFit="cover" alt={name} />
               {isAnimating && (
-                <AnimationPlayer animationData={animationData} />
+                <AnimationPlayer animationData={animationData} className="h-full w-full object-center object-cover" loop={false} />
               )}
             </div>
           </div>

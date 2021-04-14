@@ -8,6 +8,6 @@ module.exports = {
   // resize and optimization props won't be supported
   images: {
     loader: 'imgix',
-    path: 'https://vizzuality.github.io/landgriffon/',
+    path: debug ? '' : 'https://vizzuality.github.io/landgriffon/',
   },
 };

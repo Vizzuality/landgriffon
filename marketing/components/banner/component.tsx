@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react';
 import Slider from 'react-slick';
-import Image from 'next/image';
 import AnimationPlayer from 'components/animation-player';
 
 import barChartAnimation from './animations/bar-chart.json';
@@ -11,7 +10,7 @@ const sliderSettings = {
   arrows: false,
   autoplay: true,
   autoplaySpeed: 6000,
-  className: 'h-96 lg:h-screen',
+  className: 'h-96 lg:h-screen overflow-hidden',
   dots: false,
   draggable: false,
   fade: true,
@@ -72,15 +71,14 @@ const Banner: React.FC = () => {
         {slidesData.map(({
           animationData, backgroundImage, isAnimating, name, slug,
         }) => (
-          <div key={slug}>
-            <div
-              className={slideClassnames}
-            >
-              <Image src={backgroundImage} layout="fill" objectFit="cover" alt={name} />
-              {isAnimating && (
-                <AnimationPlayer animationData={animationData} />
-              )}
-            </div>
+          <div
+            className={slideClassnames}
+            key={slug}
+          >
+            <img src={backgroundImage} className="h-full object-center object-cover" alt={name} width="1082px" height="1800px" />
+            {isAnimating && (
+              <AnimationPlayer animationData={animationData} className="absolute top-0 left-0 w-full h-full" loop={false} />
+            )}
           </div>
         ))}
       </Slider>

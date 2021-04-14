@@ -3,16 +3,21 @@ import lottie, { AnimationConfigWithData } from 'lottie-web';
 
 type AnimationPlayerProps = Partial<AnimationConfigWithData> & {
   children?: JSX.Element | JSX.Element[];
+  className?: string;
   isAnimating?: boolean;
 };
 
 const animationSettings: Partial<AnimationConfigWithData> = {
   loop: true,
-  renderer: 'svg',
+  renderer: 'canvas',
+  rendererSettings: {
+    preserveAspectRatio: 'xMidYMid slice',
+  },
 };
 
 const AnimationPlayer: React.FC<AnimationPlayerProps> = (props: Partial<AnimationPlayerProps>) => {
   const elementRef = useRef(null);
+  const { className, ...restProps } = props;
 
   useEffect(() => {
     let playerInstance;
@@ -20,7 +25,7 @@ const AnimationPlayer: React.FC<AnimationPlayerProps> = (props: Partial<Animatio
     if (elementRef) {
       playerInstance = lottie.loadAnimation({
         ...animationSettings,
-        ...props,
+        ...restProps,
         autoplay: true, // force autoplay
         container: elementRef.current,
       });
@@ -36,7 +41,7 @@ const AnimationPlayer: React.FC<AnimationPlayerProps> = (props: Partial<Animatio
   }, [elementRef]);
 
   return (
-    <div ref={elementRef} />
+    <div ref={elementRef} className={className} />
   );
 };
 

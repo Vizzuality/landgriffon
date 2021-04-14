@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+import { useRouter } from 'next/router';
 import Slider from 'react-slick';
 import AnimationPlayer from 'components/animation-player';
 
@@ -45,6 +46,7 @@ const initialSlidesData = [
 ];
 
 const Banner: React.FC = () => {
+  const { basePath } = useRouter();
   const [slidesData, setSlidesData] = useState(initialSlidesData);
 
   const handleAfterChange = useCallback((newIndex) => {
@@ -75,7 +77,7 @@ const Banner: React.FC = () => {
             className={slideClassnames}
             key={slug}
           >
-            <img src={backgroundImage} className="h-full object-center object-cover" alt={name} width="1082px" height="1800px" />
+            <img src={`${basePath}${backgroundImage}`} className="h-full object-center object-cover" alt={name} width="1082px" height="1800px" />
             {isAnimating && (
               <AnimationPlayer animationData={animationData} className="absolute top-0 left-0 w-full h-full" loop={false} />
             )}

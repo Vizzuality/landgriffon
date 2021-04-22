@@ -9,6 +9,11 @@ variable "environment" {
   description = "An environment namespace for the infrastructure."
 }
 
+variable "domain" {
+  type        = string
+  description = "The base domain name"
+}
+
 variable "aws_region" {
   default     = "eu-west-3"
   type        = string

@@ -1,10 +1,10 @@
 # Require TF version to be same as or greater than 0.12.13
 terraform {
   backend "s3" {
-    region         = "eu-west-3"
-    key            = "core.tfstate"
-    dynamodb_table = "aws-locks"
-    encrypt        = true
+    region              = "eu-west-3"
+    key                 = "core.tfstate"
+    dynamodb_table      = "aws-locks"
+    encrypt             = true
     allowed_account_ids = [var.allowed_account_id]
   }
 }
@@ -33,4 +33,15 @@ module "bastion" {
   subnet_id   = module.vpc.public_subnet_ids[0]
   vpc         = module.vpc
   user_data   = data.template_file.bastion_setup.rendered
+}
+
+module "dns" {
+  source = "./modules/dns"
+  domain = var.domain
+  site_server_ip_list = [
+    "185.199.108.153",
+    "185.199.109.153",
+    "185.199.110.153",
+    "185.199.111.153"
+  ]
 }

@@ -16,6 +16,7 @@ const sliderSettings = {
   draggable: false,
   fade: true,
   infinite: true,
+  pauseOnHover: false,
   speed: 700,
 };
 

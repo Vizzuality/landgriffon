@@ -19,16 +19,15 @@ const Newsletter: React.FC = () => {
   const onSubmit = (values) => {
     const data = new FormData();
     data.append('entry.1389554217', values.subscriber);
-    axios({
-      method: 'post',
-      url: SCRIPT_URL,
-      data,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(() => setStatus({ ...DEFAULT_STATUS, success: true }))
-      .catch((error) => setStatus({ ...DEFAULT_STATUS, error: error.message }));
+    // TO-DO: solve CORS issue with google forms
+    // axios.post(SCRIPT_URL, data)
+    //   .then(() => setStatus({ ...DEFAULT_STATUS, success: true }))
+    //   .catch((error) => setStatus({ ...DEFAULT_STATUS, error: error.message }))
+    axios.post(SCRIPT_URL, data)
+      .then((response) => console.log(response))
+      .catch((error) => console.error(error))
+      // consider success despite any error
+      .then(() => setStatus({ ...DEFAULT_STATUS, success: true }));
   };
 
   let buttonText = 'Send';

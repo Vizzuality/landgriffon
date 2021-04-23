@@ -51,14 +51,14 @@ const Newsletter: React.FC = () => {
                   focus:border-0 focus:border-opacity-100 focus:outline-none focus:border-white focus:border-b focus:shadow-none"
                 component="input"
                 name="subscriber"
-                placeholder="email address"
+                placeholder="Email address"
                 required
                 style={{ boxShadow: 'none' }} // override
                 type="email"
               />
             </div>
             <div>
-              <label htmlFor="termsAcceptance" className="flex items-center font-light text-base lg:text-lg">
+              <label htmlFor="termsAcceptance" className="flex items-center font-light text-sm">
                 <input
                   className="appearance-none checked:bg-blue-600 checked:border-transparent mr-2"
                   id="termsAcceptance"
@@ -66,10 +66,10 @@ const Newsletter: React.FC = () => {
                   type="checkbox"
                 />
                 <span>
-                  Check here to indicate that you read and agree to the
+                  I have read and accepted the
                   &nbsp;
                   <Link href="/privacy-policy">
-                    <a className="font-bold underline">terms</a>
+                    <a className="font-bold underline">Terms and conditions</a>
                   </Link>
                 </span>
               </label>

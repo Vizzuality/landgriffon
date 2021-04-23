@@ -12,7 +12,7 @@ const StaticPage: React.FC = ({ children }) => (
       </Link>
     </header>
     <div className="flex justify-center">
-      <div className="max-w-screen-lg prose lg:prose-x my-8">
+      <div className="max-w-screen-lg prose lg:prose-x my-8 mx-4">
         {children}
       </div>
     </div>

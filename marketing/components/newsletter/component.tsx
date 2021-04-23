@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXTGcggnHX5xGVwTmENijyIUEMyYcQdDrMeBAZ_S9OsjIrxqYBuPFEKrRifkra3jER1g/exec';
@@ -45,6 +46,23 @@ const Newsletter: React.FC = () => {
             style={{ boxShadow: 'none' }} // override
             type="email"
           />
+        </div>
+        <div>
+          <label htmlFor="termsAcceptance" className="flex items-center font-light text-base lg:text-lg">
+            <input
+              className="appearance-none checked:bg-blue-600 checked:border-transparent mr-2"
+              id="termsAcceptance"
+              required
+              type="checkbox"
+            />
+            <span>
+              Check here to indicate that you read and agree to the
+              &nbsp;
+              <Link href="/privacy-policy">
+                <a className="font-bold underline">terms</a>
+              </Link>
+            </span>
+          </label>
         </div>
         <div>
           <button type="submit" className="bg-black font-bold text-white text-base rounded-full px-6 py-3 hover:bg-gray-900">

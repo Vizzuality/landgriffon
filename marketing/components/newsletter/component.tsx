@@ -69,7 +69,7 @@ const Newsletter: React.FC = () => {
                   I have read and accepted the
                   &nbsp;
                   <Link href="/privacy-policy">
-                    <a className="font-bold underline">Terms and conditions</a>
+                    <a className="font-bold underline">Privacy policy</a>
                   </Link>
                 </span>
               </label>

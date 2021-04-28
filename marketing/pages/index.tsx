@@ -12,7 +12,7 @@ const Home: React.FC = () => {
   return (
     <div className="lg:flex lg:items-stretch lg:h-screen bg-white">
       <Head>
-        <title>Landgriffon - Welcome to the marketing site</title>
+        <title>Landgriffon - Meet your supply chain sustainability targets</title>
       </Head>
 
       <header className="px-10 py-7 lg:p-10 flex justify-center items-start xl:justify-start lg:w-1/5">

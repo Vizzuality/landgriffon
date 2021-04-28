@@ -1,5 +1,10 @@
 import StaticPageLayout from 'layout/static-page';
-import Head from 'next/head';
+
+export default ({ children }) => (
+  <StaticPageLayout title="Privacy Policy">
+    {children}
+  </StaticPageLayout>
+);
 
 On this page you will find the **Privacy Policy**, **Cookie Policy**, and **Legal Notice** that applies to the LandGriffon Consortium.
 
@@ -249,15 +254,3 @@ LandGriffon can modify at any time the conditions determined here, being duly pu
 ## Jurisdiction.
 
 Users and Simbiotica S.L., as LandGriffon Consortium coordinator and Site administrator, submit to the Courts and Tribunals of Madrid (Spain) for the resolution of conflicts and waiver of any other jurisdiction that may be applicable.
-
-
-export default ({ children }) => (
-  <div>
-    <Head>
-      <title>Landgriffon - Privacy Policy</title>
-    </Head>
-    <StaticPageLayout>
-      {children}
-    </StaticPageLayout>
-  </div>
-);

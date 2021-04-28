@@ -23,8 +23,9 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "**/*.mdx"
-  ],
+    "**/*.mdx",
+    "**/*.md"
+, "components/privacy-policy-content/index.js"  ],
   "exclude": [
     "node_modules"
   ]

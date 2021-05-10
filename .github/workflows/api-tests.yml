@@ -19,7 +19,6 @@ env:
   DB_DATABASE: landgriffon
   POSTGRES_USER: landgriffon
   POSTGRES_PASSWORD: landgriffon
-  POSTGRES_DB: landgriffon
 
 defaults:
   run:
@@ -36,10 +35,6 @@ jobs:
         ports:
           - 5432:5432
 
-    strategy:
-      matrix:
-        node: [ '14.16' ]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -47,7 +42,7 @@ jobs:
       - name: Use Node.js ${{ matrix.node }}
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node }}
+          node-version: '14.16'
 
       - name: Install dependencies
         run: yarn install

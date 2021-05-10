@@ -1,0 +1,23 @@
+{
+  "server": {
+    "port": 3000
+  },
+  "auth": {
+    "requireUserAccountActivation": true,
+    "jwt": {
+      "expiresIn": "2h",
+      "secret": null
+    }
+  },
+  "db": {
+    "type": "postgres",
+    "host": "localhost",
+    "port": 5432,
+    "username": "landgriffon",
+    "password": "",
+    "database": "landgriffon",
+    "synchronize": false,
+    "migrationsRun": true,
+    "dropSchema": false
+  }
+}

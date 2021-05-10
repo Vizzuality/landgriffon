@@ -1,0 +1,21 @@
+{
+  "server": {
+    "port": "SERVER_PORT"
+  },
+  "auth": {
+    "requireUserAccountActivation": "REQUIRE_USER_ACCOUNT_ACTIVATION",
+    "jwt": {
+      "expiresIn": "JWT_EXPIRES_IN",
+      "secret": "JWT_SECRET"
+    }
+  },
+  "db": {
+    "host": "DB_HOST",
+    "port": "DB_PORT",
+    "username": "DB_USERNAME",
+    "password": "DB_PASSWORD",
+    "database": "DB_DATABASE",
+    "synchronize": "DB_SYNCHRONIZE",
+    "migrationsRun": "DB_MIGRATIONS_RUN"
+  }
+}

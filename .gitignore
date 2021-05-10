@@ -1,4 +1,4 @@
 /infrastructure/.terraform/
 node_modules
 /api/dist
-/api/test/coverage
+/api/coverage

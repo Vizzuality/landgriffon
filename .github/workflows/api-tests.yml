@@ -54,4 +54,5 @@ jobs:
         with:
           workingDirectory: api
           coverageCommand: yarn test:cov
+          coverageLocations: ${{github.workspace}}/api/test/coverage/lcov.info:lcov
 

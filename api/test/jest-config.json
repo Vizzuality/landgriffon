@@ -1,10 +1,13 @@
 {
   "moduleFileExtensions": ["js", "json", "ts"],
   "moduleDirectories": ["node_modules", "src"],
-  "rootDir": ".",
+  "rootDir": "../",
+  "roots": ["<rootDir>/src/", "<rootDir>/test/"],
   "testEnvironment": "node",
   "testRegex": ".spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
-  }
+  },
+  "coverageReporters": ["lcov"],
+  "coveragePathIgnorePatterns": ["<rootDir>/node_modules/", "<rootDir>/test/"]
 }

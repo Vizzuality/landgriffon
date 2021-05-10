@@ -3,9 +3,11 @@ name: API e2e tests
 on:
   pull_request:
     paths:
+      - '.github/**'
       - 'api/**'
   push:
     paths:
+      - '.github/**'
       - 'api/**'
   workflow_dispatch:
 

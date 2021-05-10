@@ -11,7 +11,7 @@ on:
 
 env:
   NODE_ENV: test
-  DB_HOST: postgres
+  DB_HOST: localhost
   DB_USERNAME: landgriffon
   DB_PASSWORD: landgriffon
   POSTGRES_PASSWORD: landgriffon

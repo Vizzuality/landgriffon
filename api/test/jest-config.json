@@ -8,6 +8,6 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "coverageReporters": ["lcov"],
+  "coverageReporters": [["lcov", { "projectRoot": ".." }]],
   "coveragePathIgnorePatterns": ["<rootDir>/node_modules/", "<rootDir>/test/"]
 }

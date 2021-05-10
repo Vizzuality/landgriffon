@@ -16,8 +16,9 @@ env:
   DB_HOST: localhost
   DB_USERNAME: landgriffon
   DB_PASSWORD: landgriffon
-  POSTGRES_PASSWORD: landgriffon
+  DB_DATABASE: localhost
   POSTGRES_USER: landgriffon
+  POSTGRES_PASSWORD: landgriffon
   POSTGRES_DB: landgriffon
 
 defaults:

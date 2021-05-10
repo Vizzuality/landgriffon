@@ -53,4 +53,4 @@ jobs:
           coverageCommand: yarn test:cov
           coverageLocations: ${{github.workspace}}/api/coverage/lcov.info:lcov
           prefix: ${{github.workspace}}
-
+          debug: true

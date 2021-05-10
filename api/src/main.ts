@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { Logger } from '@nestjs/common';
-import { AppModule } from './app.module';
+import { AppModule } from 'app.module';
 import * as config from 'config';
 
 async function bootstrap(): Promise<void> {

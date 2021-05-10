@@ -1,0 +1,58 @@
+name: API e2e tests
+
+on:
+  pull_request:
+    paths:
+      - 'api/**'
+  push:
+    paths:
+      - 'api/**'
+  workflow_dispatch:
+
+env:
+  NODE_ENV: test
+  DB_HOST: postgres
+  DB_USERNAME: landgriffon
+  DB_PASSWORD: landgriffon
+  POSTGRES_PASSWORD: landgriffon
+  POSTGRES_USER: landgriffon
+  POSTGRES_DB: landgriffon
+
+defaults:
+  run:
+    working-directory: api
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgis/postgis:13-3.1
+        ports:
+          - 5432:5432
+
+    strategy:
+      matrix:
+        node: [ '14.16' ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Run tests
+        run: yarn test
+
+#      - name: Run tests with coverage
+#        uses: paambaati/codeclimate-action@v2.7.5
+#        with:
+#          coverageCommand: yarn cover

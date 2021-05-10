@@ -1,8 +1,8 @@
 name: CI
 on:
   push:
-    branches: [ main ]
-  pull_request:
+    paths:
+      - 'marketing/**'
     branches: [ main ]
   workflow_dispatch:
 defaults:

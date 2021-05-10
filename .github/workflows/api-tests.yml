@@ -13,6 +13,7 @@ env:
   DB_USERNAME: landgriffon
   DB_PASSWORD: landgriffon
   DB_DATABASE: landgriffon
+  CC_TEST_REPORTER_ID: 29691479b26fbb03a9d926e1d6b0bba99c7eae3bb235e26a8b269219fe3c62fc
 
 defaults:
   run:

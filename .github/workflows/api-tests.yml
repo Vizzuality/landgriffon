@@ -46,10 +46,7 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      - name: Run tests
-        run: yarn test
-
-      - name: Run coverage
+      - name: Run tests + coverage
         uses: paambaati/codeclimate-action@v2.7.5
         with:
           workingDirectory: api

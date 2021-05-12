@@ -17,8 +17,8 @@ pytest-flakes>=4.0.3
 pytest-cov>=2.10.1
 pytest-xdist>=2.1.0
 python-dotenv>=0.5.1
-pre-commit
+pre-commit>=2.12.1
 
 # external tools requirements
-pandas
-datatest
+pandas>=1.2.4
+datatest>=1.5.0

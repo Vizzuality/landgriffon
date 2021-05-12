@@ -26,3 +26,11 @@ resource "aws_route53_record" "homepage-www" {
   ttl     = "300"
   records = ["vizzuality.github.io"]
 }
+
+resource "aws_route53_record" "bastion" {
+  zone_id = aws_route53_zone.landgriffon-com.zone_id
+  name    = "bastion.${var.domain}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = [var.bastion_hostname]
+}

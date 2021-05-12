@@ -1,0 +1,44 @@
+version:  '3.7'
+services:
+
+## this is for working with dask; uncomment if needed
+#  scheduler:
+#    context: ./notebooks
+#    dockerfile: Dockerfile
+#    #image: daskdev/dask
+#    hostname: dask-scheduler
+#    ports:
+#      - "8786:8786"
+#      - "8787:8787"
+#    command: ["dask-scheduler"]
+#
+#  worker:
+#    context: ./notebooks
+#    dockerfile: Dockerfile
+#    #image: daskdev/dask
+#    volumes:
+#        - ./data:/home/jovyan/work/datasets
+#        - ./notebooks:/home/jovyan/work/notebooks
+#        - ${LOCAL_MODULES}:/home/jovyan/work/modules
+#    hostname: dask-worker
+#    command: ["dask-worker", "tcp://scheduler:8786"]
+  lgd-notebooks:
+      build:
+        context: ./notebooks
+        dockerfile: Dockerfile
+      volumes:
+        - ./data:/home/jovyan/work/datasets
+        - ./notebooks:/home/jovyan/work/notebooks
+        - /opt/ssl-certs/jupyter:/etc/ssl/notebook
+      ports:
+        - 8888:8888
+      container_name: lgd_jupyter_notebook
+      command: "start-notebook.sh \
+        --NotebookApp.token=''"
+    #   environment:
+    #         - DASK_SCHEDULER_ADDRESS="tcp://scheduler:8786"
+      #extra_hosts:
+      #  - "mymachine:<your_ip>"
+
+
+

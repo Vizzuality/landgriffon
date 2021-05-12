@@ -1,0 +1,24 @@
+
+
+# configuration requirements
+click>=7.1.2
+Sphinx>=3.3.1
+tox>=3.20.0
+watchdog>=0.8.3
+sphinx-rtd-theme>=0.4.3
+sphinx-autobuild>=2020.9.1
+recommonmark>=0.6.0
+flake8>=3.8.4
+yapf>=0.30.0
+coverage>=5.3
+report>=0.0.1
+pytest>=6.1.2
+pytest-flakes>=4.0.3
+pytest-cov>=2.10.1
+pytest-xdist>=2.1.0
+python-dotenv>=0.5.1
+pre-commit
+
+# external tools requirements
+pandas
+datatest

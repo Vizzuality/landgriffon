@@ -33,7 +33,7 @@ variable "tf_state_bucket" {
 
 variable "allowed_account_id" {
   type        = string
-  description = "The name of the S3 bucket where the state is stored"
+  description = "Allowed AWS Account ID"
 }
 
 variable "rds_log_retention_period" {

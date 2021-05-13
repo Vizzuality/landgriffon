@@ -49,6 +49,7 @@ module "dns" {
 
 module "postgresql" {
   source                      = "./modules/postgresql"
+
   availability_zone_names     = [module.vpc.private_subnets[0].availability_zone, module.vpc.private_subnets[1].availability_zone, module.vpc.private_subnets[2].availability_zone]
   log_retention_period        = var.rds_log_retention_period
   private_subnet_ids          = [module.vpc.private_subnets[0].id, module.vpc.private_subnets[1].id, module.vpc.private_subnets[2].id]
@@ -63,4 +64,9 @@ module "postgresql" {
   vpc_id                      = module.vpc.id
   rds_port                    = 5432
   vpc_cidr_block              = module.vpc.cidr_block
+}
+
+module "s3_bucket" {
+  source = "./modules/s3_bucket"
+  bucket = "landgriffon-raw-data"
 }

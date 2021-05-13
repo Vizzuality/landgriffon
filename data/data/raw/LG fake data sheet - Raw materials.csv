@@ -1,0 +1,76 @@
+Material,Material detail,Volume,Country,Address,Latitude,Longitude,Location type
+Rubber,,2400,China,,,,Unknown
+Rubber,,1300,Malaysia,,,,Unknown
+Rubber,,1000,United States,,,,Unknown
+Rubber,,730,Japan,,,,Unknown
+Rubber,,490,India,,,,Unknown
+Rubber,,3100,Thailand,,,,Origin country
+Rubber,,2600,Indonesia,,,,Origin country
+Rubber,,1100,Cote d'Ivoire,,,,Origin country
+Rubber,,810,Vietnam,,,,Origin country
+Rubber,,740,Malaysia,,,,Origin country
+Rubber,,2300,Liberia,Margibi,,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Rubber,,1200,India,Kerala,,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Rubber,,1000,Thailand,Nakhon Si Thammarat,,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Rubber,,740,Thailand,Ang Thong,,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Rubber,,710,India,Nakhon Nayok,,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Rubber,,690,Thailand,"Bua Yai, Nakhon Ratchasima",,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Rubber,,670,Malaysia,"Keluang, Johor",,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Rubber,,660,Thailand,"Roi Et, Roi Et",,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Rubber,,650,India,"Nagercoil, Tamil Nadu",,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Rubber,,650,Thailand,"Phichit, Phichit",,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Rubber,,147,Indonesia,,-3.10,120.24,"Point of production (farm, ranch, plantation, etc.)"
+Rubber,,289,Laos,,20.28,100.41,"Point of production (farm, ranch, plantation, etc.)"
+Rubber,,362,Thailand,,8.45,98.53,"Point of production (farm, ranch, plantation, etc.)"
+Rubber,,502,Thailand,,17.01,99.75,"Point of production (farm, ranch, plantation, etc.)"
+Rubber,,356,Liberia,,5.01,-9.04,"Point of production (farm, ranch, plantation, etc.)"
+Cotton,,4000,China,,,,Unknown
+Cotton,,1500,Vietnam,,,,Unknown
+Cotton,,1400,Bangladesh,,,,Unknown
+Cotton,,1200,Turkey,,,,Unknown
+Cotton,,745,India,,,,Unknown
+Cotton,,4000,United states,,,,Origin country
+Cotton,,1800,India,,,,Origin country
+Cotton,,1600,Brazil,,,,Origin country
+Cotton,,1100,Vietnam,,,,Origin country
+Cotton,,600,Uzbekistan,,,,Origin country
+Cotton,,4800,China,Henan,,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Cotton,,4100,China,Xinjiang,,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Cotton,,3900,China,Jiangxi,,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Cotton,,3700,Uzbekistan,Kashkadarya,,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Cotton,,3300,Greece,Stereá Elláda,,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Cotton,,3200,Australia,"Moree, NSW",,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Cotton,,3100,China,"Tianmen, Hubei",,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Cotton,,3000,United states,"Casa Grande, AZ",,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Cotton,,2700,China,"Dengzhou, Henan",,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Cotton,,2700,Australia,"Invernell, NSW",,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Cotton,,124,Peru,,-6.51,-76.48,"Point of production (farm, ranch, plantation, etc.)"
+Cotton,,398,USA,,32.95,-112.72,"Point of production (farm, ranch, plantation, etc.)"
+Cotton,,189,Swaziland,,-27.00,31.42,"Point of production (farm, ranch, plantation, etc.)"
+Cotton,,135,Argentina,,-26.52,-61.17,"Point of production (farm, ranch, plantation, etc.)"
+Cotton,,166,Cameroon,,7.85,13.60,"Point of production (farm, ranch, plantation, etc.)"
+Leather,,1800,China,,,,Unknown
+Leather,,790,Italy,,,,Unknown
+Leather,,260,Vietnam,,,,Unknown
+Leather,,180,Thailand,,,,Unknown
+Leather,,160,Korea,,,,Unknown
+Leather,,800,United States,,,,Origin country
+Leather,,480,Brazil,,,,Origin country
+Leather,,350,Australia,,,,Origin country
+Leather,,140,Argentina,,,,Origin country
+Leather,,125,Canada,,,,Origin country
+Leather,,1600,Australia,New South Wales,,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Leather,,790,Australia,New South Wales,,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Leather,,680,Burundi,Bujumbura Mairie,,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Leather,,510,China,Beijing,,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Leather,,500,New Zealand,Auckland,,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Leather,,480,Ethiopia,"Bahir Dar, Amhara",,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Leather,,410,Venezuela,"San Felipe, Yaracuy",,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Leather,,370,Cambodia,"Svay Rieng, Svay Rieng",,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Leather,,370,Bangladesh,"Comilla, Chittagong",,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Leather,,310,Australia,"Roma, Queensland",,,"Origin supplier facility (warehouse, silo, mill, etc.)"
+Leather,,143,Paraguay,,-23.05,-59.85,"Point of production (farm, ranch, plantation, etc.)"
+Leather,,244,Brazil,,-3.83,-54.03,"Point of production (farm, ranch, plantation, etc.)"
+Leather,,267,Angola,,-14.83,14.55,"Point of production (farm, ranch, plantation, etc.)"
+Leather,,169,Ecuador,,-2.85,-77.94,"Point of production (farm, ranch, plantation, etc.)"
+Leather,,120,Philippines,,8.83,125.13,"Point of production (farm, ranch, plantation, etc.)"

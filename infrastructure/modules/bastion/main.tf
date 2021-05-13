@@ -1,3 +1,7 @@
+#
+# Bastion default Security Groups
+# - Ingress + Egress on port 22 from www
+#
 resource "aws_security_group" "bastion_security_group" {
   vpc_id = var.vpc.id
 
@@ -25,28 +29,6 @@ resource "aws_security_group_rule" "default_ssh_egress" {
   to_port     = 22
   protocol    = "tcp"
   cidr_blocks = [var.vpc.cidr_block]
-
-  security_group_id = aws_security_group.bastion_security_group.id
-}
-
-resource "aws_security_group_rule" "default_http_egress" {
-  type             = "egress"
-  from_port        = "80"
-  to_port          = "80"
-  protocol         = "tcp"
-  cidr_blocks      = ["0.0.0.0/0"]
-  ipv6_cidr_blocks = ["::/0"]
-
-  security_group_id = aws_security_group.bastion_security_group.id
-}
-
-resource "aws_security_group_rule" "default_https_egress" {
-  type             = "egress"
-  from_port        = "443"
-  to_port          = "443"
-  protocol         = "tcp"
-  cidr_blocks      = ["0.0.0.0/0"]
-  ipv6_cidr_blocks = ["::/0"]
 
   security_group_id = aws_security_group.bastion_security_group.id
 }
@@ -91,7 +73,7 @@ resource "aws_instance" "bastion" {
   instance_type               = var.bastion_instance_type
   monitoring                  = true
   subnet_id                   = var.subnet_id
-  vpc_security_group_ids      = [aws_security_group.bastion_security_group.id]
+  vpc_security_group_ids      = concat([aws_security_group.bastion_security_group.id], var.security_group_ids)
   associate_public_ip_address = true
   user_data                   = var.user_data
   iam_instance_profile        = aws_iam_instance_profile.bastion_profile.name

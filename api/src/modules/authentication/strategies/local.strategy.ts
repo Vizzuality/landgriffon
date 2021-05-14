@@ -5,6 +5,8 @@ import { AuthenticationService } from 'modules/authentication/authentication.ser
 import { User } from 'modules/users/user.entity';
 
 import { Strategy } from 'passport-local';
+import { SignUpDto } from 'modules/authentication/dto/sign-up.dto';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {

@@ -22,19 +22,22 @@ import { v4 } from 'uuid';
 import * as ApiEventsUserData from 'modules/api-events/dto/apiEvents.user.data.dto';
 import { UserRepository } from 'modules/users/user.repository';
 import * as config from 'config';
+import { ApiProperty } from '@nestjs/swagger';
 
 /**
  * Access token for the app: key user data and access token
  */
-export interface AccessToken {
+export class AccessToken {
   /**
    * Whitelisted user metadata
    */
+  @ApiProperty()
   user: Partial<User>;
 
   /**
    * Signed JWT
    */
+  @ApiProperty()
   accessToken: string;
 }
 
@@ -230,9 +233,6 @@ export class AuthenticationService {
     const issuedTokenModel = new IssuedAuthnToken();
     issuedTokenModel.exp = new Date(tokenExpiresAt);
     issuedTokenModel.userId = user.id as string;
-    // const issuedToken = await this.issuedAuthnTokensRepository.save(
-    //   issuedTokenModel,
-    // );
 
     /**
      * And finally we use the db-generated unique id of the token issuance log
@@ -245,8 +245,6 @@ export class AuthenticationService {
       tokenId: v4(),
     };
 
-    // await this.purgeExpiredIssuedTokens();
-
     return {
       user: UsersService.getSanitizedUserMetadata(user),
       accessToken: this.jwtService.sign(
@@ -257,33 +255,4 @@ export class AuthenticationService {
       ),
     };
   }
-
-  // /**
-  //  * Find token by id in the log of issued tokens.
-  //  *
-  //  * See documentation of the IssuedAuthnToken entity for details on these ids.
-  //  */
-  // async findTokenById(tokenId: string): Promise<IssuedAuthnToken | undefined> {
-  //   return this.issuedAuthnTokensRepository.findOne({ id: tokenId });
-  // }
-
-  // /**
-  //  * Invalidate all JWT tokens for a given user.
-  //  *
-  //  * We basically delete all the tokens for the given user, which means the
-  //  * authentication workflow will reject any otherwise valid JWT tokens
-  //  * presented by an API client, even if their `exp` time is in the future.
-  //  */
-  // async invalidateAllTokensOfUser(userId: string): Promise<void> {
-  //   await this.issuedAuthnTokensRepository.delete({ userId });
-  // }
-
-  /**
-  //  * Purge all expired JWT tokens
-  //  */
-  // async purgeExpiredIssuedTokens(): Promise<void> {
-  //   await this.issuedAuthnTokensRepository.delete({
-  //     exp: LessThan(new Date()),
-  //   });
-  // }
 }

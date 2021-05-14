@@ -41,23 +41,24 @@ export class AuthenticationController {
   })
   @Post('sign-in')
   @ApiCreatedResponse({
-    type: 'AccessToken',
+    type: AccessToken,
+    description: 'Login successful',
   })
   async login(
     @Request() req: RequestWithAuthenticatedUser,
-    @Body(new ValidationPipe()) _dto: LoginDto,
+    @Body(ValidationPipe) _dto: LoginDto,
   ): Promise<AccessToken> {
     return this.authenticationService.login(req.user);
   }
 
   @Post('sign-up')
   @ApiOperation({ description: 'Sign up for an user account.' })
-  @ApiCreatedResponse()
+  @ApiCreatedResponse({ description: 'User registered successfully' })
   @ApiBadRequestResponse()
   @ApiForbiddenResponse()
   async signUp(
     @Request() _req: Request,
-    @Body(new ValidationPipe()) signupDto: SignUpDto,
+    @Body(ValidationPipe) signupDto: SignUpDto,
   ): Promise<void> {
     await this.authenticationService.createUser(signupDto);
   }

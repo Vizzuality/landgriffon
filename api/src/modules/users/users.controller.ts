@@ -40,7 +40,7 @@ export class UsersController {
   @ApiOperation({
     description: 'Find all users',
   })
-  @ApiResponse({
+  @ApiOkResponse({
     type: User,
   })
   @ApiUnauthorizedResponse({

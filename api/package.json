@@ -13,6 +13,7 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "prestart:prod": "rm -rf dist && tsc",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest --config test/jest-config.json",
     "test:watch": "jest --config test/jest-config.json --watch",

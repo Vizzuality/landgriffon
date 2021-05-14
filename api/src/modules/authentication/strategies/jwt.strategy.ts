@@ -24,16 +24,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   /**
    * Validate that the email in the JWT payload's `sub` property matches that of
-   * an existing user, and that the token was not revoked (removed from the list
-   * of issued tokens).
+   * an existing user.
    */
-  public async validate({
-    sub: email,
-    tokenId,
-  }: JwtDataPayload): Promise<User> {
+  public async validate({ sub: email }: JwtDataPayload): Promise<User> {
     const user = await this.userRepository.findByEmail(email);
-
-    //TODO: Ensure token is valid according to current data on the user
 
     if (!user) {
       throw new UnauthorizedException();

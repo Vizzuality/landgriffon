@@ -24,7 +24,7 @@ COPY --chown=$USER:$USER src ./src
 # @debt we should do this only for images used for tests
 COPY --chown=$USER:$USER test ./test
 
-RUN yarn prestart:prod
+RUN yarn build
 
 EXPOSE 3000
 ENTRYPOINT ["./entrypoint.sh"]

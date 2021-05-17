@@ -41,4 +41,12 @@ module.exports = {
       },
     ],
   },
+  overrides: [
+    {
+      files: ['test/**/*.ts'],
+      rules: {
+        'no-restricted-imports': 'off',
+      },
+    },
+  ],
 };

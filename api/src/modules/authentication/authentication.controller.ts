@@ -87,7 +87,8 @@ export class AuthenticationController {
     operationId: 'refresh-token',
   })
   @ApiCreatedResponse({
-    type: 'AccessToken',
+    type: AccessToken,
+    description: 'Token refreshed successfully',
   })
   @ApiUnauthorizedResponse()
   async refreshToken(

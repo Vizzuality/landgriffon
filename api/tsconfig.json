@@ -9,6 +9,7 @@
     "noImplicitReturns": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
+    "strictPropertyInitialization": false,
     "target": "es2017",
     "sourceMap": true,
     "outDir": "./dist",

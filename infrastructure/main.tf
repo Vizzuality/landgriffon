@@ -47,6 +47,17 @@ module "dns" {
   bastion_hostname = module.bastion.bastion_hostname
 }
 
+module "eks" {
+  source         = "./modules/eks"
+  project        = var.project_name
+  vpc_id         = module.vpc.id
+  subnet_ids = [
+    module.vpc.private_subnets[0].id,
+    module.vpc.private_subnets[1].id,
+    module.vpc.private_subnets[2].id
+  ]
+}
+
 module "postgresql" {
   source                      = "./modules/postgresql"
 

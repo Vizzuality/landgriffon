@@ -59,11 +59,11 @@ resource "random_password" "postgresql_superuser" {
 resource "aws_security_group" "postgresql" {
   vpc_id                 = var.vpc_id
   description            = "Security Group for PostgreSQL DB"
-  name                   = "${var.project}-sgPostgreSQL"
+  name                   = "PostgreSQL-ingress"
   revoke_rules_on_delete = true
   tags = merge(
     {
-      Name = "${var.project}-sgPostgreSQL"
+      Name = "PostgreSQL-ingress"
     },
     var.tags
   )

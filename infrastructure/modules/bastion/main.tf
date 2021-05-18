@@ -4,6 +4,7 @@
 #
 resource "aws_security_group" "bastion_security_group" {
   vpc_id = var.vpc.id
+  description = "Default security group for the bastion host"
 
   tags = merge(
     {
@@ -14,7 +15,7 @@ resource "aws_security_group" "bastion_security_group" {
 }
 
 
-resource "aws_security_group_rule" "default_ssh_ingress" {
+resource "aws_security_group_rule" "ssh_ingress" {
   type              = "ingress"
   from_port         = 22
   to_port           = 22
@@ -23,10 +24,20 @@ resource "aws_security_group_rule" "default_ssh_ingress" {
   security_group_id = aws_security_group.bastion_security_group.id
 }
 
-resource "aws_security_group_rule" "default_ssh_egress" {
+resource "aws_security_group_rule" "ssh_egress" {
   type        = "egress"
   from_port   = 22
   to_port     = 22
+  protocol    = "tcp"
+  cidr_blocks = [var.vpc.cidr_block]
+
+  security_group_id = aws_security_group.bastion_security_group.id
+}
+
+resource "aws_security_group_rule" "https_egress" {
+  type        = "egress"
+  from_port   = 443
+  to_port     = 443
   protocol    = "tcp"
   cidr_blocks = [var.vpc.cidr_block]
 

@@ -1,10 +1,10 @@
 # Require TF version to be same as or greater than 0.15.0
 terraform {
   backend "s3" {
-    region              = "eu-west-3"
-    key                 = "core.tfstate"
-    dynamodb_table      = "aws-locks"
-    encrypt             = true
+    region         = "eu-west-3"
+    key            = "core.tfstate"
+    dynamodb_table = "aws-locks"
+    encrypt        = true
   }
 }
 

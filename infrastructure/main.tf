@@ -5,7 +5,6 @@ terraform {
     key                 = "core.tfstate"
     dynamodb_table      = "aws-locks"
     encrypt             = true
-    allowed_account_ids = [var.allowed_account_id]
   }
 }
 

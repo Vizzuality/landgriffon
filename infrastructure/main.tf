@@ -58,6 +58,26 @@ module "eks" {
   ]
 }
 
+module "default-node-group" {
+  source          = "./modules/node_group"
+  cluster         = module.eks.cluster
+  cluster_name    = module.eks.cluster_name
+  node_group_name = "default-node-group"
+  instance_types  = var.default_node_group_instance_types
+  min_size        = var.default_node_group_min_size
+  max_size        = var.default_node_group_max_size
+  desired_size    = var.default_node_group_desired_size
+  node_role_arn   = module.eks.node_role_arn
+  subnet_ids = [
+    module.vpc.private_subnets[0].id,
+    module.vpc.private_subnets[1].id,
+    module.vpc.private_subnets[2].id,
+  ]
+  labels = {
+    type : "default"
+  }
+}
+
 module "postgresql" {
   source                      = "./modules/postgresql"
 

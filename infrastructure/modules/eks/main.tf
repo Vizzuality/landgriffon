@@ -133,11 +133,6 @@ resource "aws_iam_role_policy_attachment" "eks-admin-ClusterAutoscaleAccessPolic
   role       = aws_iam_role.eks-node-group-iam-role.name
 }
 
-resource "aws_iam_role_policy_attachment" "eks-admin-DatabaseBackupToS3Policy" {
-  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/DatabaseBackupToS3Policy"
-  role       = aws_iam_role.eks-node-group-iam-role.name
-}
-
 resource "aws_iam_role_policy_attachment" "eks-node-group-admin-AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.eks-node-group-iam-role.name

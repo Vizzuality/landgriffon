@@ -32,7 +32,7 @@ variable "bastion_ami" {
 }
 
 variable "bastion_instance_type" {
-  default     = "t3.nano"
+  default     = "t3.micro"
   type        = string
   description = "An instance type for the bastion."
 }

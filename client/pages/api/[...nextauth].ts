@@ -7,7 +7,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 type CustomCredentials = Credential & {
   password: string
   username: string
-}
+};
 
 const MAX_AGE = 2 * 60 * 60; // 2 hours
 const SESSION_BUFFER_TIME = 10 * 60; // 10 minutes
@@ -60,7 +60,7 @@ const options = {
   providers: [
     Providers.Credentials({
       // The name to display on the sign in form (e.g. 'Sign in with...')
-      name: 'Sign in',
+      name: 'Sign in with Marxan',
       // The credentials is used to generate a suitable form on the sign in page.
       // You can specify whatever fields you are expecting to be submitted.
       // e.g. domain, username, password, 2FA token, etc.
@@ -107,7 +107,7 @@ const options = {
 
       // Return previous token if the access token has not expired yet
       const remainingTime = expDate.getTime() - Date.now();
-      const shouldRefresh = (remainingTime < SESSION_BUFFER_TIME * 1000) && remainingTime > 0;
+      const shouldRefresh = remainingTime < SESSION_BUFFER_TIME * 1000 && remainingTime > 0;
 
       // Refresh token
       if (shouldRefresh) return refreshAccessToken(newToken);
@@ -148,7 +148,4 @@ const options = {
   },
 };
 
-export default (
-  req: NextApiRequest,
-  res: NextApiResponse,
-): unknown => NextAuth(req, res, options);
+export default (req: NextApiRequest, res: NextApiResponse): unknown => NextAuth(req, res, options);

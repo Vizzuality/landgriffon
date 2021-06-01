@@ -12,7 +12,7 @@ type AuthProps = {
     permanent: boolean
   }
   props?: Record<string, unknown>
-}
+};
 
 type AuthHOC = (context: NextPageContext, session?: unknown) => Promise<AuthProps>;
 
@@ -55,7 +55,7 @@ export function withUser(getServerSidePropsFunc?: AuthHOC) {
 
     if (!session) {
       if (getServerSidePropsFunc) {
-        const SSPF = await getServerSidePropsFunc(context) || {};
+        const SSPF = (await getServerSidePropsFunc(context)) || {};
 
         return {
           props: {
@@ -80,7 +80,7 @@ export function withUser(getServerSidePropsFunc?: AuthHOC) {
     }).then((response) => response.data));
 
     if (getServerSidePropsFunc) {
-      const SSPF = await getServerSidePropsFunc(context) || {};
+      const SSPF = (await getServerSidePropsFunc(context)) || {};
 
       return {
         props: {
@@ -124,9 +124,7 @@ export function withoutProtection(getServerSidePropsFunc?: AuthHOC) {
     }
 
     return {
-      props: {
-
-      },
+      props: {},
     };
   };
 }

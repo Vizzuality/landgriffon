@@ -5,10 +5,7 @@ module.exports = {
     node: true,
   },
   extends: [
-    'airbnb',
-    'airbnb/hooks',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:react/recommended',
+    'airbnb-typescript',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -17,13 +14,11 @@ module.exports = {
     },
     ecmaVersion: 12,
     sourceType: 'module',
+    project: './tsconfig.eslint.json',
   },
-  plugins: [
-    'react',
-    '@typescript-eslint',
-  ],
+  plugins: ['@typescript-eslint'],
   rules: {
-    // NextJs specific fix: suppress errors for missing 'import React' in files for nextjs
+    // https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html#eslint
     'react/react-in-jsx-scope': 'off',
     // NextJs specific fix: allow jsx syntax in js and ts files
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
@@ -32,12 +27,26 @@ module.exports = {
       custom: 'ignore',
       exceptions: [''],
     }],
+    'import/no-named-as-default': 0,
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        js: 'never',
+        jsx: 'never',
+        ts: 'never',
+        tsx: 'never',
+      },
+    ],
   },
   settings: {
     react: {
       version: 'detect',
     },
     'import/resolver': {
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      },
       typescript: {},
     },
   },

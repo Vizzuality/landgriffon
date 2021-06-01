@@ -12,6 +12,10 @@ const Home: React.FC = () => (
       <li>pages/app.js</li>
       <li>now.json (Vercel)</li>
     </ul>
+    <p>
+      Also, we strongly recommend to read and follow our [Standardization
+      guidelines](https://vizzuality.github.io/frontismos/docs/guidelines/standardization/).
+    </p>
   </div>
 );
 

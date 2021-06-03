@@ -1,5 +1,5 @@
 import { HttpException, ArgumentsHost, HttpStatus } from '@nestjs/common';
-import { AllExceptionsFilter } from '../../src/filters/all-exceptions.exception.filter';
+import { AllExceptionsFilter } from 'filters/all-exceptions.exception.filter';
 
 describe('AllExceptionFilter class spec (unit)', () => {
   const allExceptionsFilter = new AllExceptionsFilter();
@@ -23,6 +23,7 @@ describe('AllExceptionFilter class spec (unit)', () => {
       };
     },
   } as ArgumentsHost;
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -32,11 +33,11 @@ describe('AllExceptionFilter class spec (unit)', () => {
   });
 
   it('should get HTTP status through exception Object', () => {
-    const exceptionObjectMock = ({
+    const exceptionObjectMock = {
       getStatus: jest.fn(() => 404),
       message: 'Mock Message',
       stack: 'Fake Error Stack',
-    } as unknown) as HttpException;
+    } as unknown as HttpException;
 
     /**
      * Prototype pollution to mock 'instanceof'
@@ -51,10 +52,10 @@ describe('AllExceptionFilter class spec (unit)', () => {
   });
 
   it('should get HTTP status through HttpStatus', () => {
-    const exceptionMock = ({
+    const exceptionMock = {
       message: 'Mock Message',
       stack: 'Fake Error Stack',
-    } as unknown) as Error;
+    } as unknown as Error;
     allExceptionsFilter.catch(exceptionMock, hostMock);
 
     expect(responseMock.status).toHaveBeenCalledWith(

@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "strict": true,
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -13,7 +14,9 @@
     "target": "es2017",
     "sourceMap": true,
     "outDir": "./dist",
+    "rootDir": "./",
     "baseUrl": "./src",
     "incremental": true
-  }
+  },
+  "exclude": ["node_modules", "dist"]
 }

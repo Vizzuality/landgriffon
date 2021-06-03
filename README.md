@@ -10,7 +10,7 @@ Making Food Supply Chains more Sustainable
 
 ## Project description
 
-Deforestation and water stress have a negative impact on agricultural supply chains, preventing agribusiness and food companies from becoming more sustainable. Advanced technology such as the Copernicus programme provides precise, timely and easily accessible data that improve environmental management and mitigate climate change effects. The EU-funded LAND GRIFFON project will develop digital decision-making instruments based on Copernicus data to observe, prognose, analyse and follow environmental impacts on the entire agricultural supply chain. These innovative instruments will support agribusiness and food enterprises in becoming more sustainable and transparent.
+Deforestation and water stress have a negative impact on agricultural supply chains, preventing agribusiness and food companies from becoming more sustainable. Advanced technology such as the Copernicus programme provides precise, timely and easily accessible data that improve environmental management and mitigate climate change effects. The EU-funded LAND GRIFFON project will develop digital decision-making instruments based on Copernicus data to observe, prognoses, analyse and follow environmental impacts on the entire agricultural supply chain. These innovative instruments will support agribusiness and food enterprises in becoming more sustainable and transparent.
 
 ## Dependencies
 

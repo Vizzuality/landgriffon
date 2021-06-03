@@ -3,12 +3,12 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { E2E_CONFIG } from '../e2e.config';
-import { User } from '../../src/modules/users/user.entity';
+import { User } from 'modules/users/user.entity';
 import * as bcrypt from 'bcrypt';
-import { UserRepository } from '../../src/modules/users/user.repository';
+import { UserRepository } from 'modules/users/user.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeOrmConfig } from '../../src/typeorm.config';
-import { UsersModule } from '../../src/modules/users/users.module';
+import { typeOrmConfig } from 'typeorm.config';
+import { UsersModule } from 'modules/users/users.module';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -36,22 +36,20 @@ describe('AppController (e2e)', () => {
   });
 
   describe('Authentication', () => {
-    beforeAll(
-      async (): Promise<User> => {
-        const user: User = new User();
-        user.email = E2E_CONFIG.users.basic.aa.username;
-        user.fname = 'a';
-        user.lname = 'a';
-        user.displayName = 'User A A';
-        user.salt = await bcrypt.genSalt();
-        user.password = await bcrypt.hash(
-          E2E_CONFIG.users.basic.aa.password,
-          user.salt,
-        );
-        user.isActive = true;
-        return user.save();
-      },
-    );
+    beforeAll(async (): Promise<User> => {
+      const user: User = new User();
+      user.email = E2E_CONFIG.users.basic.aa.username;
+      user.fname = 'a';
+      user.lname = 'a';
+      user.displayName = 'User A A';
+      user.salt = await bcrypt.genSalt();
+      user.password = await bcrypt.hash(
+        E2E_CONFIG.users.basic.aa.password,
+        user.salt,
+      );
+      user.isActive = true;
+      return user.save();
+    });
 
     it('Retrieves a JWT token when authenticating with valid credentials', async () => {
       await request(app.getHttpServer())

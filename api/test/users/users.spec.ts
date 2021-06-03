@@ -21,7 +21,7 @@ import { UsersService } from 'modules/users/users.service';
 import { LoginDto } from 'modules/authentication/dto/login.dto';
 import { ApiEventByTopicAndKind } from 'modules/api-events/api-event.topic+kind.entity';
 import { Response } from 'supertest';
-import { UserRepository } from '../../src/modules/users/user.repository';
+import { UserRepository } from 'modules/users/user.repository';
 
 /**
  * Tests for the UsersModule.

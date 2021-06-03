@@ -20,6 +20,8 @@
     "@dnd-kit/modifiers": "^2.0.0",
     "@dnd-kit/sortable": "^3.0.1",
     "@dnd-kit/utilities": "^2.0.0",
+    "@headlessui/react": "^1.2.0",
+    "@heroicons/react": "^1.0.1",
     "@math.gl/web-mercator": "^3.4.2",
     "@popperjs/core": "^2.9.2",
     "@react-aria/button": "^3.3.2",

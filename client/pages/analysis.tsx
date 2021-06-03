@@ -4,7 +4,7 @@ import ApplicationLayout from 'layouts/application';
 const Home: React.FC = () => (
   <>
     <Head>
-      <title>Welcome to Landgriffon</title>
+      <title>Analysis</title>
     </Head>
     <ApplicationLayout />
   </>

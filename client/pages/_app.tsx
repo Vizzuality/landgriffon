@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { OverlayProvider } from '@react-aria/overlays';
 import { Hydrate } from 'react-query/hydration';
 import { Provider as AuthenticationProvider } from 'next-auth/client';
-
 import store from 'lib/store';
 
 import 'styles/globals.css';

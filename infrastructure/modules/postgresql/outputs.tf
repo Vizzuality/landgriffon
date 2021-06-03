@@ -4,11 +4,11 @@ output "security_group_id" {
 }
 
 output "secrets_postgresql-writer_arn" {
-  value = aws_secretsmanager_secret.postgresql-writer.arn
+  value = aws_secretsmanager_secret.postgresql-admin.arn
 }
 
 output "secrets_postgresql-writer_name" {
-  value = aws_secretsmanager_secret.postgresql-writer.name
+  value = aws_secretsmanager_secret.postgresql-admin.name
 }
 
 output "secrets_postgresql-writer_policy_arn" {

@@ -6,7 +6,7 @@ import Logo from 'components/logo';
 type LayoutProps = {
   children: React.ReactChildren;
   title: string;
-}
+};
 
 const StaticPage: React.FC = ({ children, title }: LayoutProps) => (
   <>

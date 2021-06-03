@@ -37,7 +37,6 @@ const AnimationPlayer: React.FC<AnimationPlayerProps> = (props: Partial<Animatio
         playerInstance.destroy();
       }
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [elementRef]);
 
   return (

@@ -1,13 +1,11 @@
 {
   "env": {
     "browser": true,
-    "es2021": true
+    "es2021": true,
+    "node": true
   },
   "extends": [
-    "airbnb",
-    "airbnb/hooks",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended"
+    "airbnb-typescript"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -19,7 +17,6 @@
     "sourceType": "module"
   },
   "plugins": [
-    "react",
     "@typescript-eslint"
   ],
   "rules": {
@@ -34,32 +31,21 @@
       }
     ],
     "import/no-named-as-default": 0,
-    "import/prefer-default-export": 0,
     "jsx-a11y/anchor-is-valid": "off",
     "react/react-in-jsx-scope": "off",
     "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx", ".ts", ".tsx"] }],
-    "react/jsx-props-no-spreading": [0, {}],
-    "react/prop-types": "off",
-    "no-use-before-define": ["off"],
-    "no-console": [1, { "allow": ["info", "warn", "error"] }],
-    "arrow-body-style": 0,
-    "no-param-reassign": ["error", { "props": false }],
-    "@typescript-eslint/no-unused-vars": ["error"],
-    "@typescript-eslint/explicit-function-return-type": [
-      "warn",
-      {
-        "allowExpressions": true,
-        "allowConciseArrowFunctionExpressionsStartingWithVoid": true
-      }
-    ]
+    "react/jsx-props-no-spreading": [0, {}]
   },
   "settings": {
+    "react": {
+      "version": "detect"
+    },
     "import/resolver": {
       "node": {
         "paths": ["./"],
-        "extensions": [".mjs", ".js", ".jsx", ".json", ".ts", ".d.ts", ".tsx"]
+        "extensions": [".mjs", ".mdx", ".js", ".jsx", ".json", ".ts", ".d.ts", ".tsx"]
       }
     },
-    "import/extensions": [".js", ".mjs", ".jsx", ".ts", ".tsx", ".d.ts"]
+    "import/extensions": [".js", ".mjs", ".mdx", ".jsx", ".ts", ".tsx", ".d.ts"]
   }
 }

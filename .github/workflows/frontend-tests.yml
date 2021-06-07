@@ -46,4 +46,4 @@ jobs:
         with:
           workingDirectory: client
           coverageLocations: ${{github.workspace}}/client/coverage/lcov.info:lcov
-          prefix: ${{github.workspace}}/client
+

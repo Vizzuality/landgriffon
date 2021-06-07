@@ -1,1 +1,3 @@
-export { default } from './component';
+export {
+  default, Anchor, Button, LinkAnchor,
+} from './component';

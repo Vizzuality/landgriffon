@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const forms = require('@tailwindcss/forms');
+const typography = require('@tailwindcss/typography');
 const lineClamp = require('./lib/tailwind/line-clamp');
 
 module.exports = {
@@ -18,5 +19,5 @@ module.exports = {
   variants: {
     extend: {},
   },
-  plugins: [forms, lineClamp],
+  plugins: [forms, typography, lineClamp],
 };

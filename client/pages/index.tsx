@@ -6,7 +6,9 @@ const Home: React.FC = () => (
     <Head>
       <title>Welcome to Landgriffon</title>
     </Head>
-    <ApplicationLayout />
+    <ApplicationLayout>
+      <p>Welcome</p>
+    </ApplicationLayout>
   </>
 );
 

@@ -3,6 +3,7 @@ import Providers from 'next-auth/providers';
 import JWT from 'jsonwebtoken';
 import AUTHENTICATION from 'services/authentication';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { TokenSet, User } from 'next-auth';
 
 type CustomCredentials = Credential & {
   password: string
@@ -15,7 +16,7 @@ const SESSION_BUFFER_TIME = 10 * 60; // 10 minutes
 /**
  * Takes a token, and returns a new token
  */
-async function refreshAccessToken(token) {
+async function refreshAccessToken(token: TokenSet) {
   try {
     const refreshTokenResponse = await AUTHENTICATION.request({
       url: '/refresh-token',
@@ -49,10 +50,10 @@ const options = {
    * Defining custom pages
    * By default Next-Auth provides /api/auth/signin
    */
-  // pages: {
-  //   signIn: '/auth/sign-in',
-  //   error: '/auth/sign-in',
-  // },
+  pages: {
+    signIn: '/auth/sign-in',
+    // error: '/auth/sign-in',
+  },
 
   session: {
     jwt: true,
@@ -95,7 +96,7 @@ const options = {
 
   callbacks: {
     // Assigning encoded token from API to token created in the session
-    async jwt(token, user) {
+    async jwt(token: TokenSet, user: User) {
       const newToken = token;
 
       if (user) {

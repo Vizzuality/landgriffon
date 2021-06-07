@@ -1,13 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { RootState } from 'lib/store';
+import type { RootState } from 'store';
 
 // Define a type for the slice state
-interface ApplicationState {
+interface UIState {
   isMenuMobileOpen: boolean
 }
 
 // Define the initial state using that type
-const initialState: ApplicationState = {
+const initialState: UIState = {
   isMenuMobileOpen: false,
 };
 
@@ -24,6 +24,6 @@ export const applicationSlice = createSlice({
 
 export const { setMenuMobileOpen } = applicationSlice.actions;
 
-export const isMenuMobileOpen = (state: RootState) => state.application.isMenuMobileOpen;
+export const isMenuMobileOpen = (state: RootState) => state.ui.isMenuMobileOpen;
 
 export default applicationSlice.reducer;

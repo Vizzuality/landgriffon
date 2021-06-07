@@ -1,6 +1,6 @@
 import { MenuIcon } from '@heroicons/react/outline';
-import { useAppDispatch } from 'lib/hooks';
-import { setMenuMobileOpen } from 'containers/application/slice';
+import { useAppDispatch } from 'store/hooks';
+import { setMenuMobileOpen } from 'store/features/ui/slice';
 
 const HeaderMobile = () => {
   const dispatch = useAppDispatch();

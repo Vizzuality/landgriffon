@@ -2,8 +2,9 @@ import { useCallback, useState } from 'react';
 import { Story } from '@storybook/react/types-6-0';
 
 // Layer manager
-import { LayerManager, Layer } from 'layer-manager/dist/components';
-import { PluginMapboxGl } from 'layer-manager';
+import { LayerManager, Layer } from '@vizzuality/layer-manager-react';
+import PluginMapboxGl from '@vizzuality/layer-manager-plugin-mapboxgl';
+import CartoProvider from '@vizzuality/layer-manager-provider-carto';
 
 // Controls
 import Controls from 'components/map/controls';
@@ -13,6 +14,8 @@ import FitBoundsControl from 'components/map/controls/fit-bounds';
 // Map
 import Map, { MapProps } from './component';
 import LAYERS from './layers';
+
+const cartoProvider = new CartoProvider();
 
 export default {
   title: 'Components/Map',
@@ -79,17 +82,22 @@ const Template: Story<MapProps> = (args: MapProps) => {
   return (
     <div className="relative w-full h-96">
       <Map
-        {...args}
         bounds={bounds}
         minZoom={minZoom}
         maxZoom={maxZoom}
         viewport={viewport}
         mapboxApiAccessToken={process.env.STORYBOOK_MAPBOX_API_TOKEN}
-        mapStyle="mapbox://styles/marxan/ckn4fr7d71qg817kgd9vuom4s"
+        // mapStyle="mapbox://styles/marxan/ckn4fr7d71qg817kgd9vuom4s"
         onMapViewportChange={handleViewportChange}
       >
         {(map) => (
-          <LayerManager map={map} plugin={PluginMapboxGl}>
+          <LayerManager
+            map={map}
+            plugin={PluginMapboxGl}
+            providers={{
+              [cartoProvider.name]: cartoProvider.handleData,
+            }}
+          >
             {LAYERS.map((l) => (
               <Layer key={l.id} {...l} />
             ))}

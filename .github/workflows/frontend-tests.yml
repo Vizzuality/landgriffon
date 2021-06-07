@@ -9,6 +9,7 @@ on:
 
 env:
   NODE_ENV: test
+  CC_TEST_REPORTER_ID: 29691479b26fbb03a9d926e1d6b0bba99c7eae3bb235e26a8b269219fe3c62fc
 
 defaults:
   run:
@@ -40,3 +41,9 @@ jobs:
           command: yarn cypress:ci
           working-directory: client
 
+      - name: Publish coverage
+        uses: paambaati/codeclimate-action@v2.7.5
+        with:
+          workingDirectory: client
+          coverageLocations: ${{github.workspace}}/client/coverage/lcov.info:lcov
+          prefix: ${{github.workspace}}/client

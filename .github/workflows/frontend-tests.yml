@@ -17,7 +17,7 @@ defaults:
 jobs:
   frontend-tests:
     name: Frontend Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     container: cypress/browsers:node12.18.3-chrome87-ff82
     timeout-minutes: 15
 

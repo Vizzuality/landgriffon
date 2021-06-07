@@ -4,11 +4,11 @@ import { Dialog, Transition } from '@headlessui/react';
 import {
   ChartBarIcon, CollectionIcon, HomeIcon, XIcon,
 } from '@heroicons/react/outline';
-import { useAppSelector, useAppDispatch } from 'lib/hooks';
+import { useAppSelector, useAppDispatch } from 'store/hooks';
+import { setMenuMobileOpen } from 'store/features/ui/slice';
 import MobileNavigation from 'containers/navigation/mobile';
 import DesktopNavigation from 'containers/navigation/desktop';
 import type { NavigationList } from 'containers/navigation/types';
-import { setMenuMobileOpen } from 'containers/application/slice';
 
 const user = {
   name: 'Emily Selman',
@@ -23,7 +23,7 @@ const navigationItems: NavigationList = [
 ];
 
 const Sidebar = () => {
-  const isMobileMenuOpen = useAppSelector((state) => state.application.isMenuMobileOpen);
+  const isMobileMenuOpen = useAppSelector((state) => state.ui.isMenuMobileOpen);
   const dispatch = useAppDispatch();
   const handleOnClose = useCallback(() => {
     dispatch(setMenuMobileOpen(false));

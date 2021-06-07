@@ -1,12 +1,12 @@
 import Head from 'next/head';
-import ApplicationLayout from 'layouts/application';
+import AuthenticationLayout from 'layouts/authentication';
 
 const Home: React.FC = () => (
   <>
     <Head>
-      <title>Analysis</title>
+      <title>Sign in</title>
     </Head>
-    <ApplicationLayout />
+    <AuthenticationLayout />
   </>
 );
 

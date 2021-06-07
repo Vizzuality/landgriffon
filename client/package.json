@@ -13,7 +13,8 @@
     "storybook:dev": "yarn storybook:styles:dev && start-storybook -p 6006 -s ./public -c .storybook",
     "storybook:build": "yarn storybook:styles:prod && build-storybook -s ./public -c .storybook",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+    "cypress:run": "cypress run",
+    "cypress:ci": "start-server-and-test 'yarn dev' 3000 'yarn cypress run --headless --browser chrome'"
   },
   "dependencies": {
     "@dnd-kit/core": "^3.0.3",

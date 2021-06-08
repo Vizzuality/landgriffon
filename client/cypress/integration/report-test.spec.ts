@@ -15,11 +15,12 @@
  * Feel free to delete this suite as soon as you generate an actual unit/integration/e2e test
  */
 
+import test from '../../lib/test'
+
 // @ts-ignore
 describe('Dumb test to generate report', ()=> {
   it('Should pass to generate a minimum report to pass CI stage', ()=>{
-    cy.visit('localhost:3000')
-    cy.get('h1').contains('Welcome to Vizzuality')
+    expect(test(1)).equal(2)
   })
   }
 )

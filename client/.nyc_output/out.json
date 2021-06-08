@@ -1,5 +1,5 @@
 {
-  "/Users/alex/Desktop/VIZZUALITY/landgriffon/landgriffon/client/lib/store/index.ts": {
+  "/landgriffon/landgriffon/client/lib/store/index.ts": {
     "path": "/Users/alex/Desktop/VIZZUALITY/landgriffon/landgriffon/client/lib/store/index.ts",
     "statementMap": {
       "0": {
@@ -26,15 +26,15 @@
     "fnMap": {},
     "branchMap": {},
     "s": {
-      "0": 4,
-      "1": 4
+      "0": 6,
+      "1": 6
     },
     "f": {},
     "b": {},
     "_coverageSchema": "1a1c01bbd47fc00a2c39e90264f33305004495a9",
     "hash": "50d77b976002f3989378191c1b14935aa952cd12"
   },
-  "/Users/alex/Desktop/VIZZUALITY/landgriffon/landgriffon/client/pages/_app.tsx": {
+  "/landgriffon/landgriffon/client/pages/_app.tsx": {
     "path": "/Users/alex/Desktop/VIZZUALITY/landgriffon/landgriffon/client/pages/_app.tsx",
     "statementMap": {
       "0": {
@@ -153,25 +153,25 @@
       }
     },
     "s": {
-      "0": 4,
-      "1": 4,
-      "2": 4,
-      "3": 4,
-      "4": 4
+      "0": 6,
+      "1": 5,
+      "2": 5,
+      "3": 5,
+      "4": 5
     },
     "f": {
-      "0": 4
+      "0": 5
     },
     "b": {
       "0": [
-        4,
+        5,
         0
       ]
     },
     "_coverageSchema": "1a1c01bbd47fc00a2c39e90264f33305004495a9",
     "hash": "32a208887987dd937cdb5876e2bf8ebc4c7b05e7"
   },
-  "/Users/alex/Desktop/VIZZUALITY/landgriffon/landgriffon/client/pages/index.tsx": {
+  "/landgriffon/landgriffon/client/pages/index.tsx": {
     "path": "/Users/alex/Desktop/VIZZUALITY/landgriffon/landgriffon/client/pages/index.tsx",
     "statementMap": {
       "0": {
@@ -223,14 +223,76 @@
     },
     "branchMap": {},
     "s": {
-      "0": 4,
-      "1": 4
+      "0": 6,
+      "1": 5
     },
     "f": {
-      "0": 4
+      "0": 5
     },
     "b": {},
     "_coverageSchema": "1a1c01bbd47fc00a2c39e90264f33305004495a9",
     "hash": "b7b68af20f6776870213295fa49ee3e91ba0d034"
+  },
+  "/landgriffon/landgriffon/client/lib/test.js": {
+    "path": "/Users/alex/Desktop/VIZZUALITY/landgriffon/landgriffon/client/lib/test.js",
+    "statementMap": {
+      "0": {
+        "start": {
+          "line": 1,
+          "column": 13
+        },
+        "end": {
+          "line": 1,
+          "column": 25
+        }
+      },
+      "1": {
+        "start": {
+          "line": 1,
+          "column": 20
+        },
+        "end": {
+          "line": 1,
+          "column": 25
+        }
+      }
+    },
+    "fnMap": {
+      "0": {
+        "name": "(anonymous_0)",
+        "decl": {
+          "start": {
+            "line": 1,
+            "column": 13
+          },
+          "end": {
+            "line": 1,
+            "column": 14
+          }
+        },
+        "loc": {
+          "start": {
+            "line": 1,
+            "column": 20
+          },
+          "end": {
+            "line": 1,
+            "column": 25
+          }
+        },
+        "line": 1
+      }
+    },
+    "branchMap": {},
+    "s": {
+      "0": 3,
+      "1": 3
+    },
+    "f": {
+      "0": 3
+    },
+    "b": {},
+    "_coverageSchema": "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    "hash": "86c55098d8bd413faa5be633b76d70c3e2584357"
   }
 }

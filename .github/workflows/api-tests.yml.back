@@ -43,25 +43,20 @@ jobs:
         with:
           node-version: '14.16'
 
-      - name: Install dependencies
-        run: yarn install && yarn test:cov && ls ${{github.workspace}}/api/coverage/
-      - name: Run tests & Generate report
-        run: yarn test:cov
-      - name: Rename report
-        run: mv ${{github.workspace}}/api/coverage/lcov.info ${{github.workspace}}/api/coverage/backend-report.lcov
+      - name: Install dependencie
+        run: yarn install
 
-      - uses: actions/upload-artifact@v2
+      - name: Run tests + coverage
+        uses: paambaati/codeclimate-action@v2.7.5
         with:
-          name: backend-report
-          path: ${{github.workspace}}/api/coverage/backend-report.lcov
+          workingDirectory: api
+          coverageCommand: yarn test:cov
+          coverageLocations: |
+            ${{github.workspace}}/api/coverage/lcov.info:lcov
+            ${{github.workspace}}/client/coverage/lcov.info:lcov
+          prefix: ${{github.workspace}}/api
 
-      - name: Download frontend report artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: frontend-report.lcov
-          path: ${{github.workspace}}
-      - name: list stuff
-        run: ls ${{github.workspace}}
+
 
 
 

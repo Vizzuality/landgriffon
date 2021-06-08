@@ -38,12 +38,8 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           browser: chrome
-          command: yarn cypress:ci
+          command: yarn cypress:ci && mv ${{github.workspace}}/client/coverage/lcov.info /github/home/frontend-lcov.info
           working-directory: client
 
-      - name: Publish coverage
-        uses: paambaati/codeclimate-action@v2.7.5
-        with:
-          workingDirectory: client
-          coverageLocations: ${{github.workspace}}/client/coverage/lcov.info:lcov
+
 

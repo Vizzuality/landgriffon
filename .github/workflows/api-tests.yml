@@ -44,12 +44,13 @@ jobs:
           node-version: '14.16'
 
       - name: Install dependencies
-        run: yarn install
+        run: yarn install && yarn test:cov && mv ${{github.workspace}}/client/coverage/lcov.info /github/home/backend-lcov.info
 
-      - name: Run tests + coverage
-        uses: paambaati/codeclimate-action@v2.7.5
-        with:
-          workingDirectory: api
-          coverageCommand: yarn test:cov
-          coverageLocations: ${{github.workspace}}/api/coverage/lcov.info:lcov
-          prefix: ${{github.workspace}}/api
+
+#      - name: Run tests + coverage
+#        uses: paambaati/codeclimate-action@v2.7.5
+#        with:
+#          workingDirectory: api
+#          coverageCommand: yarn test:cov
+#          coverageLocations: ${{github.workspace}}/api/coverage/lcov.info:lcov
+#          prefix: ${{github.workspace}}/api

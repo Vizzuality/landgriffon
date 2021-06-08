@@ -1,0 +1,32 @@
+name: Upload Code Coverage
+
+on:
+  repository_dispatch:
+    types: [trigger-coverage-upload]
+
+env:
+  NODE_ENV: test
+  CC_TEST_REPORTER_ID: 29691479b26fbb03a9d926e1d6b0bba99c7eae3bb235e26a8b269219fe3c62fc
+
+jobs:
+  upload-code-coverage:
+    name: Upload Code Coverage
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Download backend artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: backend-report.lcov
+          path: ${{github.workspace}}
+      - name: Download frontend artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: frontend-report.lcov
+          path: ${{github.workspace}}
+      - name: Test Artifacts
+        run: touch ${{github.workspace}}/api/test.txt
+      - uses: actions/upload-artifact@v2
+        with:
+          name: test
+          path: ${{github.workspace}}/api/test.txt

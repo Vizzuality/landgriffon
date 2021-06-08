@@ -9,7 +9,6 @@ on:
 
 env:
   NODE_ENV: test
-  CC_TEST_REPORTER_ID: 29691479b26fbb03a9d926e1d6b0bba99c7eae3bb235e26a8b269219fe3c62fc
 
 defaults:
   run:
@@ -34,12 +33,32 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      - name: Run tests
+      - name: Run Cypress Tests & Generate report
         uses: cypress-io/github-action@v2
         with:
           browser: chrome
-          command: yarn cypress:ci && mv ${{github.workspace}}/client/coverage/lcov.info /github/home/frontend-lcov.info
+          command: yarn cypress:ci
           working-directory: client
+
+      - name: Upload Cypress Test Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: frontend-report.lcov
+          path: |-
+            ${{github.workspace}}/client/coverage/lcov.info
+
+
+      - name: Trigger Code Upload
+        if: success()
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.REPO_GHA_PATH }}
+          repository: ${{ github.repository }}
+          event-type: trigger-coverage-upload
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
+
+
+
 
 
 

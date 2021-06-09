@@ -1,0 +1,40 @@
+name: Frontend Tests
+
+on:
+  push:
+    paths:
+      - '.github/**'
+      - 'client/**'
+
+env:
+  NODE_ENV: test
+
+defaults:
+  run:
+    working-directory: client
+
+jobs:
+  frontend-tests:
+    name: Frontend Tests
+    runs-on: ubuntu-20.04
+    container: cypress/browsers:node12.18.3-chrome87-ff82
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js 14.16
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.16'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        with:
+          browser: chrome
+          working-directory: ${{github.workspace}}/client
+          start: yarn cypress:ci

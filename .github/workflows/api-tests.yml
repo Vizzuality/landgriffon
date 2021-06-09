@@ -49,7 +49,8 @@ jobs:
       - name: Run tests + coverage
         uses: paambaati/codeclimate-action@v2.7.5
         with:
-          workingDirectory: api
+          workingDirectory: ${{github.workspace}}/api
           coverageCommand: yarn test:cov
-          coverageLocations: ${{github.workspace}}/api/coverage/lcov.info:lcov
+          coverageLocations: |
+            ${{github.workspace}}/api/coverage/lcov.info:lcov
           prefix: ${{github.workspace}}/api

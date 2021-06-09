@@ -1,7 +1,6 @@
-name: Coverage
+name: coverage
 on:
-  repository_dispatch:
-    types: [trigger-coverage-workflow]
+  push:
 env:
   CC_TEST_REPORTER_URL: https://codeclimate.com/downloads/test-reporter/test-reporter-0.7.0-linux-amd64
   CC_TEST_REPORTER_ID: 29691479b26fbb03a9d926e1d6b0bba99c7eae3bb235e26a8b269219fe3c62fc
@@ -10,23 +9,67 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
+      - name: Wait for Test workflow to succeed
+        uses: fountainhead/action-wait-for-check@v1.0.0
+        id: coverage
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          checkName: testing
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Fetch Code Coverage reporter
-        run: curl -L $CC_TEST_REPORTER_URL > cc-test-reporter
+        run: curl -L $CC_TEST_REPORTER_URL > ${{github.workspace}}/cc-test-reporter
       - name: Grant exec permissions
         run: chmod +x cc-test-reporter
 
-      - name: Fetch Api coverage artifact
-        uses: actions/download-artifact@v2
+      - name: Download Api coverage report
+        uses: dawidd6/action-download-artifact@v2
         with:
+          github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          workflow: testing.yml
           name: api-report
-          path: ${{github.workspace}}
+          path: ${{github.workspace}}/api/coverage
+          repo: ${{github.repository}}
 
-      - name: Fetch Client coverage artifact
-        uses: actions/download-artifact@v2
+      - name: Download Client coverage report
+        uses: dawidd6/action-download-artifact@v2
         with:
+          github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          workflow: testing.yml
           name: client-report
-          path: ${{github.workspace}}
+          path: ${{github.workspace}}/client/coverage
+          repo: ${{github.repository}}
 
-      - name: Check files present
-        run : ls ${{github.workspace}}
+      - name: Download Test-generated dependencies
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          workflow: testing.yml
+          name: next-dependency
+          path: ${{github.workspace}}/client/.next
+          repo: ${{github.repository}}
+
+      - name: Format Api Report
+        run: ./cc-test-reporter format-coverage -p landgriffon -t lcov -o api-coverage.json api/coverage/lcov.info
+
+      - name: Format Client Report
+        run: ./cc-test-reporter format-coverage -t lcov -o client-coverage.json client/coverage/lcov.info
+
+      - name: Merge files
+        run: ./cc-test-reporter sum-coverage *-coverage.json -p 2 -o total-coverage.json
+
+      - name: Upload to CC
+        run: ./cc-test-reporter upload-coverage -i total-coverage.json
+
+
+
+
+
+
+
+
+
+

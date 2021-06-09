@@ -14,7 +14,8 @@
     "storybook:dev": "yarn storybook:styles:dev && start-storybook -p 6006 -s ./public -c .storybook",
     "storybook:build": "yarn storybook:styles:prod && build-storybook -s ./public -c .storybook",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+    "cypress:run": "cypress run",
+    "cypress:ci": "nyc --reporter nyc-report-lcov-absolute start-server-and-test 'yarn dev' 3000 'yarn cypress:run --headless --browser chrome'"
   },
   "dependencies": {
     "@deck.gl/geo-layers": "^8.4.16",
@@ -84,6 +85,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.14.2",
+    "@cypress/code-coverage": "^3.9.6",
     "@storybook/addon-actions": "^6.2.9",
     "@storybook/addon-essentials": "^6.2.9",
     "@storybook/addon-links": "^6.2.9",
@@ -96,6 +98,7 @@
     "@typescript-eslint/eslint-plugin": "^4.23.0",
     "@typescript-eslint/parser": "^4.0.0",
     "babel-loader": "^8.2.2",
+    "babel-plugin-istanbul": "^6.0.0",
     "cypress": "^7.3.0",
     "eslint": "^7.2.0",
     "eslint-config-airbnb-typescript": "^12.3.1",
@@ -106,6 +109,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4",
+    "nyc-report-lcov-absolute": "1.0.0",
     "prettier": "^2.3.1",
     "start-server-and-test": "^1.12.1",
     "svg-sprite-loader": "^6.0.6",

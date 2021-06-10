@@ -1,5 +1,19 @@
 version: "3.8"
 services:
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "${CLIENT_SERVICE_PORT}:3000"
+    container_name: landgriffon-client
+    command: develop
+    user: "5000:5000"
+    volumes:
+      - ./client:/opt/landgriffon-client/
+    env_file: .env
+
   api:
     build:
       context: ./api

@@ -31,9 +31,13 @@ test-commands:
 start-api:
 	docker-compose --project-name ${COMPOSE_PROJECT_NAME} up --build api
 
+# Starts the CLIENT application
+start-client:
+	docker-compose --project-name ${COMPOSE_PROJECT_NAME} up --build client
+
 # Start all the services.
 start:
-	docker-compose --project-name ${COMPOSE_PROJECT_NAME} up --build api
+	docker-compose --project-name ${COMPOSE_PROJECT_NAME} up --build
 
 stop:
 	docker-compose $(DOCKER_COMPOSE_FILE) stop

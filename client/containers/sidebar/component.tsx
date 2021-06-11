@@ -60,7 +60,7 @@ const Sidebar = () => {
             leaveFrom="translate-x-0"
             leaveTo="-translate-x-full"
           >
-            <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white focus:outline-none">
+            <div className="relative max-w-xs w-full bg-white pt-5 pb-4 flex-1 flex flex-col">
               <Transition.Child
                 as={Fragment}
                 enter="ease-in-out duration-300"
@@ -70,14 +70,14 @@ const Sidebar = () => {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
-                <div className="absolute top-0 right-0 -mr-12 pt-4">
+                <div className="absolute top-1 right-0 -mr-14 p-1">
                   <button
                     type="button"
                     className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
                     onClick={() => dispatch(setMenuMobileOpen(false))}
                   >
-                    <span className="sr-only">Close sidebar</span>
                     <XIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                    <span className="sr-only">Close sidebar</span>
                   </button>
                 </div>
               </Transition.Child>
@@ -114,10 +114,10 @@ const Sidebar = () => {
 
       {/* Static sidebar for desktop */}
       <div className="hidden lg:flex lg:flex-shrink-0">
-        <div className="flex flex-col w-20">
-          <div className="flex flex-col h-0 flex-1 overflow-y-auto bg-indigo-600">
+        <div className="flex flex-col w-28 bg-indigo-700">
+          <div className="flex flex-col h-0 flex-1 overflow-y-auto">
             <div className="flex-1 flex flex-col">
-              <div className="flex-shrink-0 bg-indigo-700 py-4 flex items-center justify-center">
+              <div className="flex-shrink-0 py-4 flex items-center justify-center">
                 <img
                   className="h-8 w-auto"
                   src="https://tailwindui.com/img/logos/workflow-mark.svg?color=white"

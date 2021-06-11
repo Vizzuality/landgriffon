@@ -46,13 +46,8 @@ const AnalysisPage: React.FC = () => {
     ];
     CurrentPage = () => (
       <>
-        <h1>Create new scenario</h1>
         <ScenarioForm />
-        <Link href="/analysis" shallow>
-          <a>
-            Cancel
-          </a>
-        </Link>
+        {/* Interventions list here */}
       </>
     );
   }

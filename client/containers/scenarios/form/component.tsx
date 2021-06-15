@@ -7,7 +7,7 @@ const ScenarioForm = () => (
         name="scenario_name"
         id="scenario_name"
         autoComplete="given-name"
-        value="Scenario name 1"
+        value="Untitled"
         className="block w-full mt-1 border border-white rounded-md py-2 px-0 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-lg leading-6 font-medium"
       />
     </div>

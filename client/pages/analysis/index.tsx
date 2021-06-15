@@ -1,29 +1,36 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { PlusIcon } from '@heroicons/react/solid';
+import { useAppSelector, useAppDispatch } from 'store/hooks';
 import ApplicationLayout from 'layouts/application';
 import Breadcrumb from 'components/breadcrumb';
 import Map from 'components/map';
 import Scenarios from 'containers/scenarios';
 import ScenarioForm from 'containers/scenarios/form';
-import { PlusIcon } from '@heroicons/react/solid';
+import Interventions from 'containers/interventions';
+import InterventionForm from 'containers/interventions/form';
+import { setSubContentCollapsed } from 'store/features/analysis/slice';
 
 import type { Page } from 'components/breadcrumb/types';
+import { useEffect } from 'react';
 
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
 
 let pages: Page[] = [];
 
 const AnalysisPage: React.FC = () => {
+  const isSubContentCollapsed = useAppSelector((state) => state.analysis.isSubContentCollapsed);
+  const dispatch = useAppDispatch();
   const { query } = useRouter();
   const { scenarios } = query;
 
-  let CurrentPage;
+  let Content;
 
   /**
    * List scenarios
    */
   pages = [];
-  CurrentPage = () => (
+  Content = () => (
     <>
       <h1 className="text-lg font-medium">Scenarios</h1>
       <p>Select an scenario to analyse</p>
@@ -44,10 +51,14 @@ const AnalysisPage: React.FC = () => {
     pages = [
       { name: 'New scenario', href: '/analysis?scenarios=new', current: true },
     ];
-    CurrentPage = () => (
+    Content = () => (
       <>
-        <ScenarioForm />
-        {/* Interventions list here */}
+        <div>
+          <ScenarioForm />
+        </div>
+        <div className="mt-10">
+          <Interventions />
+        </div>
       </>
     );
   }
@@ -59,7 +70,7 @@ const AnalysisPage: React.FC = () => {
     pages = [
       { name: 'Edit scenario', href: '/analysis?scenarios=edit', current: true },
     ];
-    CurrentPage = () => (
+    Content = () => (
       <>
         <h1>Edit scenario</h1>
         <Link href="/analysis" shallow>
@@ -70,6 +81,12 @@ const AnalysisPage: React.FC = () => {
       </>
     );
   }
+
+  useEffect(() => {
+    // Close and cancel interventions creation
+    // when user goes to scenarios list
+    if (!scenarios) dispatch(setSubContentCollapsed(true));
+  }, [scenarios]);
 
   return (
     <ApplicationLayout>
@@ -89,9 +106,19 @@ const AnalysisPage: React.FC = () => {
               <div className="pb-10">
                 <Breadcrumb pages={pages} />
               </div>
-              <CurrentPage />
+              <Content />
             </div>
           </section>
+
+          {/* Analysis aside */}
+          {!isSubContentCollapsed && (
+            <aside className="absolute ml-96 h-full hidden lg:block lg:flex-shrink-0 w-1/2">
+              <div className="h-full relative flex flex-col w-auto border-r border-gray-200 bg-white p-6 overflow-auto">
+                {/* For now, I'm going to assume we will only have the intervention form here */}
+                <InterventionForm />
+              </div>
+            </aside>
+          )}
         </div>
       </main>
     </ApplicationLayout>

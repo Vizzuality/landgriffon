@@ -45,6 +45,7 @@
     "@tailwindcss/forms": "^0.3.2",
     "@tailwindcss/typography": "^0.4.1",
     "@tippyjs/react": "^4.2.5",
+    "@vizzuality/layer-manager-layers-deckgl": "^1.0.0-alpha.3",
     "@vizzuality/layer-manager-plugin-mapboxgl": "^1.0.0-alpha.3",
     "@vizzuality/layer-manager-provider-carto": "^1.0.0-alpha.3",
     "@vizzuality/layer-manager-react": "^1.0.0-alpha.3",

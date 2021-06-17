@@ -1,7 +1,7 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import type { ReducersMapObject } from '@reduxjs/toolkit';
-import ui from 'store/features/ui/slice';
-import analysis from 'store/features/analysis/slice';
+import ui from 'store/features/ui';
+import analysis from 'store/features/analysis';
 
 const staticReducers = {
   ui,

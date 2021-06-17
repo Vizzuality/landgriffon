@@ -2,7 +2,7 @@
 import { useCallback } from 'react';
 import { useAppDispatch } from 'store/hooks';
 import Steps from 'components/steps';
-import { setSubContentCollapsed } from 'store/features/analysis/slice';
+import { setSubContentCollapsed } from 'store/features/analysis';
 
 import type { Step } from 'components/steps/types';
 

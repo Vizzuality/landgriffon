@@ -37,3 +37,6 @@ yarn-error.log*
 # Test with Cypress
 /cypress/screenshots
 /cypress/videos
+
+# Storybook
+public/styles/*.storybook.css

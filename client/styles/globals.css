@@ -4,8 +4,8 @@
 
 @-webkit-keyframes autofill {
   0%,100% {
-      color: #666;
-      background: transparent;
+    color: #666;
+    background: transparent;
   }
 }
 
@@ -15,6 +15,22 @@
   input[type='search']::-webkit-search-results-button,
   input[type='search']::-webkit-search-results-decoration {
     -webkit-appearance: none;
+  }
+
+  body {
+    @apply text-gray-900;
+  }
+
+  h1 {
+    @apply text-2xl font-medium;
+  }
+
+  h2 {
+    @apply text-xl font-medium;
+  }
+
+  h2 {
+    @apply text-lg font-medium;
   }
 }
 

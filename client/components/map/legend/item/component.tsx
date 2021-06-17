@@ -5,7 +5,7 @@ export interface LegendItemProps {
   id: string;
   name: string;
   description?: string;
-  icon?: ReactNode,
+  icon?: ReactNode;
   children?: ReactNode;
 }
 
@@ -16,10 +16,7 @@ export const LegendItem: FC<LegendItemProps> = ({
   icon,
   children,
 }: LegendItemProps) => (
-  <div
-    key={id}
-    className="py-2.5 px-5"
-  >
+  <div key={id} className="py-2.5 px-5">
     <div className="flex">
       <div
         className={cx({
@@ -27,24 +24,14 @@ export const LegendItem: FC<LegendItemProps> = ({
           'pl-5': icon,
         })}
       >
-        {icon && (
-        <div className="absolute top-0 left-0">
-          {icon}
-        </div>
-        )}
+        {icon && <div className="absolute top-0 left-0">{icon}</div>}
         <div className="text-sm text-white font-heading">{name}</div>
       </div>
     </div>
 
-    <div className="text-sm text-gray-300">
-      {description}
-    </div>
+    <div className="text-sm text-gray-300">{description}</div>
 
-    {children && (
-      <div className="mt-2.5">
-        {children}
-      </div>
-    )}
+    {children && <div className="mt-2.5">{children}</div>}
   </div>
 );
 

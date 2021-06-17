@@ -1,17 +1,11 @@
-import {
-  useEffect, useState, useRef, useCallback, FC,
-} from 'react';
+import { useEffect, useState, useRef, useCallback, FC } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
 import cx from 'classnames';
 
 import isEmpty from 'lodash/isEmpty';
 
-import ReactMapGL, {
-  FlyToInterpolator,
-  TRANSITION_EVENTS,
-  ViewportProps,
-} from 'react-map-gl';
+import ReactMapGL, { FlyToInterpolator, TRANSITION_EVENTS, ViewportProps } from 'react-map-gl';
 import { InteractiveMapProps } from 'react-map-gl/src/components/interactive-map';
 
 import { fitBounds } from '@math.gl/web-mercator';
@@ -109,7 +103,7 @@ export const Map: FC<MapProps> = ({
       setViewport(v);
       debouncedOnMapViewportChange(v);
     },
-    [debouncedOnMapViewportChange],
+    [debouncedOnMapViewportChange]
   );
 
   const handleResize = useCallback(
@@ -122,7 +116,7 @@ export const Map: FC<MapProps> = ({
       setViewport(newViewport);
       debouncedOnMapViewportChange(newViewport);
     },
-    [mapViewport, debouncedOnMapViewportChange],
+    [mapViewport, debouncedOnMapViewportChange]
   );
 
   const handleFitBounds = useCallback(() => {
@@ -130,10 +124,7 @@ export const Map: FC<MapProps> = ({
     const { bbox, options = {}, viewportOptions = {} } = bounds;
     const { transitionDuration = 0 } = viewportOptions;
 
-    if (
-      mapContainerRef.current.offsetWidth <= 0
-      || mapContainerRef.current.offsetHeight <= 0
-    ) {
+    if (mapContainerRef.current.offsetWidth <= 0 || mapContainerRef.current.offsetHeight <= 0) {
       // eslint-disable-next-line no-console
       console.error("mapContainerRef doesn't have dimensions");
       return null;
@@ -233,11 +224,11 @@ export const Map: FC<MapProps> = ({
         transitionInterpolator={new FlyToInterpolator()}
         transitionEasing={easeCubic}
       >
-        {ready
-          && loaded
-          && !!mapRef.current
-          && typeof children === 'function'
-          && children(mapRef.current)}
+        {ready &&
+          loaded &&
+          !!mapRef.current &&
+          typeof children === 'function' &&
+          children(mapRef.current)}
       </ReactMapGL>
     </div>
   );

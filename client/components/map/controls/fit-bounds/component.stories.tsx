@@ -19,12 +19,7 @@ export const Default = Template.bind({});
 Default.args = {
   className: '',
   bounds: {
-    bbox: [
-      10.5194091796875,
-      43.6499881760459,
-      10.9588623046875,
-      44.01257086123085,
-    ],
+    bbox: [10.5194091796875, 43.6499881760459, 10.9588623046875, 44.01257086123085],
     options: {},
     viewportOptions: {
       transitionDuration: 0,

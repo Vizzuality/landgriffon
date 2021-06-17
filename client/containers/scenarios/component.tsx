@@ -5,16 +5,28 @@ import { DotsVerticalIcon } from '@heroicons/react/solid';
 
 const projects = [
   {
-    name: 'Scenario name 1', id: 1, updatedAt: Date.now(), user: { name: 'Francis' },
+    name: 'Scenario name 1',
+    id: 1,
+    updatedAt: Date.now(),
+    user: { name: 'Francis' },
   },
   {
-    name: 'Scenario name 2', id: 2, updatedAt: Date.now(), user: { name: 'Francis' },
+    name: 'Scenario name 2',
+    id: 2,
+    updatedAt: Date.now(),
+    user: { name: 'Francis' },
   },
   {
-    name: 'Scenario name 3', id: 3, updatedAt: Date.now(), user: { name: 'Francis' },
+    name: 'Scenario name 3',
+    id: 3,
+    updatedAt: Date.now(),
+    user: { name: 'Francis' },
   },
   {
-    name: 'Scenario name 4', id: 3, updatedAt: Date.now(), user: { name: 'Francis' },
+    name: 'Scenario name 4',
+    id: 3,
+    updatedAt: Date.now(),
+    user: { name: 'Francis' },
   },
 ];
 
@@ -43,7 +55,7 @@ export default function Scenarios() {
                       <span
                         className={classNames(
                           checked ? 'bg-indigo-600 border-transparent' : 'bg-white border-gray-300',
-                          'h-4 w-4 mt-0.5 cursor-pointer rounded-full border flex items-center justify-center',
+                          'h-4 w-4 mt-0.5 cursor-pointer rounded-full border flex items-center justify-center'
                         )}
                         aria-hidden="true"
                       >
@@ -51,24 +63,19 @@ export default function Scenarios() {
                       </span>
                     </div>
                     <div className="flex-1 pr-4 py-2 text-sm truncate">
-                      <h2 className="text-gray-900 font-medium">
-                        {project.name}
-                      </h2>
+                      <h2 className="text-gray-900 font-medium">{project.name}</h2>
                       <p className="text-gray-500">
-                        Last edited
-                        {' '}
-                        {format(project.updatedAt, 'yyyy/MM/dd')}
-                        {' '}
-                        by
-                        {' '}
-                        {project.user.name}
+                        Last edited {format(project.updatedAt, 'yyyy/MM/dd')} by {project.user.name}
                       </p>
                     </div>
                   </>
                 )}
               </RadioGroup.Option>
               <div className="flex-shrink-0 pr-2">
-                <button type="button" className="w-8 h-8 bg-white inline-flex items-center justify-center text-gray-400 rounded-full bg-transparent hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <button
+                  type="button"
+                  className="w-8 h-8 bg-white inline-flex items-center justify-center text-gray-400 rounded-full bg-transparent hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
                   <span className="sr-only">Open options</span>
                   <DotsVerticalIcon className="w-5 h-5" aria-hidden="true" />
                 </button>

@@ -10,9 +10,7 @@ export default [
     type: 'raster',
     source: {
       type: 'raster',
-      tiles: [
-        'http://earthengine.google.org/static/hansen_2013/gain_alpha/{z}/{x}/{y}.png',
-      ],
+      tiles: ['http://earthengine.google.org/static/hansen_2013/gain_alpha/{z}/{x}/{y}.png'],
       minzoom: 3,
       maxzoom: 12,
     },
@@ -62,9 +60,7 @@ export default [
 
           const {
             z,
-            bbox: {
-              west, south, east, north,
-            },
+            bbox: { west, south, east, north },
           } = tile;
 
           if (data) {
@@ -196,8 +192,7 @@ export default [
         layers: [
           {
             options: {
-              cartocss:
-                '#wdpa_protected_areas {  polygon-opacity: 1.0; polygon-fill: #704489 }',
+              cartocss: '#wdpa_protected_areas {  polygon-opacity: 1.0; polygon-fill: #704489 }',
               cartocss_version: '2.3.0',
               sql: 'SELECT * FROM wdpa_protected_areas',
             },

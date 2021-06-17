@@ -3,7 +3,7 @@ import Link from 'next/link';
 import type { Page } from './types';
 
 type BreadcrumbProps = {
-  pages: Page[]
+  pages: Page[];
 };
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ pages }: BreadcrumbProps) => (

@@ -26,7 +26,7 @@ export const SelectToggle: FC<SelectToggleProps> = ({
     return opts;
   }, [options]);
 
-  const labelDefaultFormatter:() => string = useCallback(() => {
+  const labelDefaultFormatter: () => string = useCallback(() => {
     if (!selectedItems.length) return placeholder;
     if (selectedItems.length === 1) return selectedItems[0].label;
     if (selectedItems.length === getEnabledOptions.length) return 'All items selected';
@@ -42,8 +42,8 @@ export const SelectToggle: FC<SelectToggleProps> = ({
         'relative w-full flex items-center tracking-wide': true,
         [THEME.sizes[size]]: true,
       })}
-      {...!multiple && getToggleButtonProps()}
-      {...multiple && getToggleButtonProps(getDropdownProps({ preventKeyAction: opened }))}
+      {...(!multiple && getToggleButtonProps())}
+      {...(multiple && getToggleButtonProps(getDropdownProps({ preventKeyAction: opened })))}
     >
       {prefix && (
         <span
@@ -56,10 +56,11 @@ export const SelectToggle: FC<SelectToggleProps> = ({
         </span>
       )}
 
-      <span className={cx({
-        'text-sm leading-none': true,
-        [THEME[theme].prefix.base]: selectedItems.length,
-      })}
+      <span
+        className={cx({
+          'text-sm leading-none': true,
+          [THEME[theme].prefix.base]: selectedItems.length,
+        })}
       >
         {labelDefaultFormatter()}
       </span>

@@ -72,7 +72,7 @@ const Template: Story<MapProps> = (args: MapProps) => {
         transitionDuration: 500,
       });
     },
-    [viewport],
+    [viewport]
   );
 
   const handleFitBoundsChange = useCallback((b) => {
@@ -134,12 +134,7 @@ Default.args = {
   className: '',
   viewport: {},
   bounds: {
-    bbox: [
-      10.5194091796875,
-      43.6499881760459,
-      10.9588623046875,
-      44.01257086123085,
-    ],
+    bbox: [10.5194091796875, 43.6499881760459, 10.9588623046875, 44.01257086123085],
     options: {
       padding: 50,
     },

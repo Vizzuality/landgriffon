@@ -3,11 +3,11 @@ import Providers from 'next-auth/providers';
 import JWT from 'jsonwebtoken';
 import AUTHENTICATION from 'services/authentication';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { TokenSet, User } from 'next-auth';
+import type { NextAuthOptions } from 'next-auth';
 
 type CustomCredentials = Credential & {
-  password: string
-  username: string
+  password: string;
+  username: string;
 };
 
 const MAX_AGE = 2 * 60 * 60; // 2 hours
@@ -16,7 +16,7 @@ const SESSION_BUFFER_TIME = 10 * 60; // 10 minutes
 /**
  * Takes a token, and returns a new token
  */
-async function refreshAccessToken(token: TokenSet) {
+async function refreshAccessToken(token) {
   try {
     const refreshTokenResponse = await AUTHENTICATION.request({
       url: '/refresh-token',
@@ -45,7 +45,7 @@ async function refreshAccessToken(token: TokenSet) {
   }
 }
 
-const options = {
+const options: NextAuthOptions = {
   /**
    * Defining custom pages
    * By default Next-Auth provides /api/auth/signin
@@ -64,7 +64,7 @@ const options = {
   providers: [
     Providers.Credentials({
       // The name to display on the sign in form (e.g. 'Sign in with...')
-      name: 'Marxan',
+      name: 'Landgriffon',
       // The credentials is used to generate a suitable form on the sign in page.
       // You can specify whatever fields you are expecting to be submitted.
       // e.g. domain, username, password, 2FA token, etc.
@@ -96,16 +96,16 @@ const options = {
 
   callbacks: {
     // Assigning encoded token from API to token created in the session
-    async jwt(token: TokenSet, user: User) {
-      const newToken = token;
+    async jwt(token, user) {
+      const newToken = { ...token };
 
       if (user) {
         const { accessToken } = user;
-        newToken.accessToken = accessToken;
+        newToken.accessToken = accessToken as string;
       }
 
       // Use custom JWT decode, otherwise "exp date" will be increasing beyond the infinite
-      const { exp } = JWT.decode(newToken.accessToken);
+      const { exp } = JWT.decode(newToken.accessToken as string) as { exp: number };
 
       const expDate = new Date(exp * 1000);
 

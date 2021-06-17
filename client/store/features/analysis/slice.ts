@@ -3,8 +3,8 @@ import type { RootState } from 'store';
 
 // Define a type for the slice state
 interface AnalysisState {
-  isSidebarCollapsed: boolean
-  isSubContentCollapsed: boolean
+  isSidebarCollapsed: boolean;
+  isSubContentCollapsed: boolean;
 }
 
 // Define the initial state using that type

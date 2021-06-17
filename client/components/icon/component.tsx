@@ -10,11 +10,7 @@ export interface IconProps {
   style?: unknown;
 }
 
-export const Icon: FC<IconProps> = ({
-  icon,
-  className = 'w-5 h-5',
-  style,
-}: IconProps) => (
+export const Icon: FC<IconProps> = ({ icon, className = 'w-5 h-5', style }: IconProps) => (
   <svg
     className={cx({
       'fill-current': true,

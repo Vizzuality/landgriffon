@@ -2,7 +2,7 @@ import { FC } from 'react';
 import cx from 'classnames';
 
 export interface ArrowProps {
-  'data-placement'?: string
+  'data-placement'?: string;
 }
 
 export const Arrow: FC<ArrowProps> = (props: ArrowProps) => {

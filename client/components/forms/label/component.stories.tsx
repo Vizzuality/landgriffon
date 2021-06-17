@@ -15,11 +15,7 @@ export default {
   },
 };
 
-const Template: Story<LabelProps> = ({ ...args }) => (
-  <Label {...args}>
-    This is a test
-  </Label>
-);
+const Template: Story<LabelProps> = ({ ...args }) => <Label {...args}>This is a test</Label>;
 
 export const Default = Template.bind({});
 Default.args = {

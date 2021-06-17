@@ -45,12 +45,10 @@ const AnalysisPage: React.FC = () => {
   );
 
   /**
-  * Create scenario
-  */
+   * Create scenario
+   */
   if (scenarios && scenarios === 'new') {
-    pages = [
-      { name: 'New scenario', href: '/analysis?scenarios=new', current: true },
-    ];
+    pages = [{ name: 'New scenario', href: '/analysis?scenarios=new', current: true }];
     Content = () => (
       <>
         <div>
@@ -64,19 +62,15 @@ const AnalysisPage: React.FC = () => {
   }
 
   /**
-  * Edit scenario
-  */
+   * Edit scenario
+   */
   if (scenarios && scenarios === 'edit') {
-    pages = [
-      { name: 'Edit scenario', href: '/analysis?scenarios=edit', current: true },
-    ];
+    pages = [{ name: 'Edit scenario', href: '/analysis?scenarios=edit', current: true }];
     Content = () => (
       <>
         <h1>Edit scenario</h1>
         <Link href="/analysis" shallow>
-          <a>
-            Cancel
-          </a>
+          <a>Cancel</a>
         </Link>
       </>
     );

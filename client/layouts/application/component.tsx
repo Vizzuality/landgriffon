@@ -2,7 +2,7 @@ import Sidebar from 'containers/sidebar';
 import HeaderMobile from 'containers/header/mobile';
 
 type ApplicationLayoutProps = {
-  children: React.ReactNode
+  children: React.ReactNode;
 };
 
 const ApplicationLayout: React.FC<ApplicationLayoutProps> = (props: ApplicationLayoutProps) => {

@@ -1,10 +1,6 @@
 import { ReactNode } from 'react';
 
-export type Level =
-  | 'info'
-  | 'success'
-  | 'warning'
-  | 'error';
+export type Level = 'info' | 'success' | 'warning' | 'error';
 
 export interface ToastThemeOption {
   icon: {

@@ -42,15 +42,18 @@ export const Select: FC<SelectProps> = (props: SelectProps) => {
     return selected;
   }, [multiple, selected]);
 
-  const handleChange = useCallback((s) => {
-    if (Array.isArray(s)) {
-      const vs = s.map(({ value }) => value);
-      onChange(vs);
-    } else {
-      const { value } = s;
-      onChange(value);
-    }
-  }, [onChange]);
+  const handleChange = useCallback(
+    (s) => {
+      if (Array.isArray(s)) {
+        const vs = s.map(({ value }) => value);
+        onChange(vs);
+      } else {
+        const { value } = s;
+        onChange(value);
+      }
+    },
+    [onChange]
+  );
 
   if (multiple) {
     return (

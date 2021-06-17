@@ -4,8 +4,7 @@ import useStatus from '../utils';
 
 const THEME = {
   dark: {
-    base:
-      'leading-tight text-white bg-transparent border rounded',
+    base: 'leading-tight text-white bg-transparent border rounded',
     status: {
       none: 'border-gray-500',
       valid: 'border-green-500',
@@ -14,8 +13,7 @@ const THEME = {
     },
   },
   light: {
-    base:
-      'leading-tight text-gray-800 bg-white border rounded',
+    base: 'leading-tight text-gray-800 bg-white border rounded',
     status: {
       none: 'border-gray-500',
       valid: 'border-green-500',
@@ -25,8 +23,7 @@ const THEME = {
   },
 };
 
-export interface TextareaProps
-  extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   theme?: 'dark' | 'light';
   input?: Record<string, unknown>;
   meta?: Record<string, unknown>;

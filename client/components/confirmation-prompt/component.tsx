@@ -16,13 +16,7 @@ export const ConfirmationPrompt: FC<ConfirmationPromptProps> = ({
   onAccept,
   onRefuse,
 }: ConfirmationPromptProps) => (
-  <Modal
-    open={open}
-    title={title}
-    size="narrow"
-    dismissable={dismissible}
-    onDismiss={onDismiss}
-  >
+  <Modal open={open} title={title} size="narrow" dismissable={dismissible} onDismiss={onDismiss}>
     <div className="px-8 py-4">
       <div className="mt-8 text-xl font-medium text-gray-800 leading-1 sm:mt-0 sm:pr-32 font-heading">
         {title}
@@ -37,20 +31,10 @@ export const ConfirmationPrompt: FC<ConfirmationPromptProps> = ({
           'mt-8 sm:-mt-2': !!icon && !!description,
         })}
       >
-        <Button
-          theme="secondary"
-          size="base"
-          className="flex-shrink-0 mr-5"
-          onClick={onRefuse}
-        >
+        <Button theme="secondary" size="base" className="flex-shrink-0 mr-5" onClick={onRefuse}>
           No
         </Button>
-        <Button
-          theme="primary"
-          size="base"
-          className="flex-shrink-0 sm:mr-5"
-          onClick={onAccept}
-        >
+        <Button theme="primary" size="base" className="flex-shrink-0 sm:mr-5" onClick={onAccept}>
           Yes
         </Button>
 

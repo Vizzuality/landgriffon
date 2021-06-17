@@ -1,9 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { Fragment, useCallback } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import {
-  ChartBarIcon, CollectionIcon, HomeIcon, XIcon,
-} from '@heroicons/react/outline';
+import { ChartBarIcon, CollectionIcon, HomeIcon, XIcon } from '@heroicons/react/outline';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { setMenuMobileOpen } from 'store/features/ui/slice';
 import MobileNavigation from 'containers/navigation/mobile';
@@ -95,11 +93,19 @@ const Sidebar = () => {
                 <a href="#" className="flex-shrink-0 group block">
                   <div className="flex items-center">
                     <div>
-                      <img className="inline-block h-10 w-10 rounded-full" src={user.imageUrl} alt="" />
+                      <img
+                        className="inline-block h-10 w-10 rounded-full"
+                        src={user.imageUrl}
+                        alt=""
+                      />
                     </div>
                     <div className="ml-3">
-                      <p className="text-base font-medium text-gray-700 group-hover:text-gray-900">{user.name}</p>
-                      <p className="text-sm font-medium text-gray-500 group-hover:text-gray-700">Account Settings</p>
+                      <p className="text-base font-medium text-gray-700 group-hover:text-gray-900">
+                        {user.name}
+                      </p>
+                      <p className="text-sm font-medium text-gray-500 group-hover:text-gray-700">
+                        Account Settings
+                      </p>
                     </div>
                   </div>
                 </a>

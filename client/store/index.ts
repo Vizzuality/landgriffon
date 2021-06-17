@@ -10,10 +10,11 @@ const staticReducers = {
 
 const asyncReducers = {};
 
-const createReducer = (reducers: ReducersMapObject) => combineReducers({
-  ...staticReducers,
-  ...reducers,
-});
+const createReducer = (reducers: ReducersMapObject) =>
+  combineReducers({
+    ...staticReducers,
+    ...reducers,
+  });
 
 const store = configureStore({
   reducer: createReducer(asyncReducers),

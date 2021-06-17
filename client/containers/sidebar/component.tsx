@@ -3,7 +3,7 @@ import { Fragment, useCallback } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { ChartBarIcon, CollectionIcon, HomeIcon, XIcon } from '@heroicons/react/outline';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
-import { setMenuMobileOpen } from 'store/features/ui/slice';
+import { isMenuMobileOpen, setMenuMobileOpen } from 'store/features/ui';
 import MobileNavigation from 'containers/navigation/mobile';
 import DesktopNavigation from 'containers/navigation/desktop';
 import type { NavigationList } from 'containers/navigation/types';
@@ -21,7 +21,7 @@ const navigationItems: NavigationList = [
 ];
 
 const Sidebar = () => {
-  const isMobileMenuOpen = useAppSelector((state) => state.ui.isMenuMobileOpen);
+  const isMobileMenuOpen = useAppSelector(isMenuMobileOpen);
   const dispatch = useAppDispatch();
   const handleOnClose = useCallback(() => {
     dispatch(setMenuMobileOpen(false));

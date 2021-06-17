@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { PlusIcon } from '@heroicons/react/solid';
 import { useAppDispatch } from 'store/hooks';
-import { setSubContentCollapsed } from 'store/features/analysis/slice';
+import { setSubContentCollapsed } from 'store/features/analysis';
 
 const items = [
   {

@@ -30,7 +30,7 @@ const AnalysisPage: React.FC = () => {
   pages = [];
   Content = () => (
     <>
-      <h1 className="text-lg font-medium">Scenarios</h1>
+      <h1>Scenarios</h1>
       <p>Select an scenario to analyse</p>
       <Scenarios />
       <Link href="/analysis?scenarios=new" shallow>
@@ -46,7 +46,7 @@ const AnalysisPage: React.FC = () => {
    * Create scenario
    */
   if (scenarios && scenarios === 'new') {
-    pages = [{ name: 'New scenario', href: '/analysis?scenarios=new', current: true }];
+    pages = [{ name: 'New scenario', href: '/analysis?scenarios=new' }];
     Content = () => (
       <>
         <div>
@@ -63,7 +63,7 @@ const AnalysisPage: React.FC = () => {
    * Edit scenario
    */
   if (scenarios && scenarios === 'edit') {
-    pages = [{ name: 'Edit scenario', href: '/analysis?scenarios=edit', current: true }];
+    pages = [{ name: 'Edit scenario', href: '/analysis?scenarios=edit' }];
     Content = () => (
       <>
         <h1>Edit scenario</h1>

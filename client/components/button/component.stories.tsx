@@ -8,13 +8,13 @@ export default {
     size: {
       control: {
         type: 'select',
-        options: ['xs', 's', 'base', 'l', 'xl'],
+        options: ['xs', 'base', 'xl'],
       },
     },
     theme: {
       control: {
         type: 'select',
-        options: ['primary', 'primary-alt', 'secondary', 'secondary-alt', 'white', 'danger'],
+        options: ['primary', 'secondary'],
       },
     },
   },

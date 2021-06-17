@@ -2,36 +2,24 @@ import { ButtonHTMLAttributes, AnchorHTMLAttributes, FC } from 'react';
 import Link from 'next/link';
 import cx from 'classnames';
 
+const COMMON_CLASSNAMES =
+  'inline-flex items-center font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500';
+
 const THEME = {
-  primary:
-    'inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500',
-  'primary-alt':
-    'text-blue-500 bg-transparent hover:bg-transparent active:bg-transparent border border-blue-500 hover:border-blue-400 active:border-blue-300',
-
-  secondary:
-    'inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500',
-  'secondary-alt':
-    'text-gray-300 bg-transparent hover:bg-transparent active:bg-transparent border border-gray-400 hover:border-gray-300 active:border-gray-200',
-
-  white:
-    'text-gray-700 bg-white hover:text-white hover:bg-transparent active:bg-transparent border border-gray-400 hover:border-gray-300 active:border-gray-200',
-
-  danger:
-    'text-red-700 bg-transparent hover:text-white hover:bg-red-700 active:bg-red-600 border border-red-700 hover:border-red-600 active:border-red-500',
+  primary: 'border-transparent shadow-sm text-white bg-indigo-600 hover:bg-indigo-700',
+  secondary: 'border-gray-300 shadow-sm text-gray-700 bg-white hover:bg-gray-50',
 };
 
 const SIZE = {
-  xs: 'text-sm px-2 py-0.5',
-  s: 'text-sm px-3 py-0.5',
-  base: 'text-sm px-8 py-2',
-  l: 'text-base px-8 py-3',
-  xl: 'text-base px-14 py-3',
+  xs: 'text-xs px-2.5 py-1.5',
+  base: 'text-sm px-4 py-2',
+  xl: 'text-base px-6 py-3',
 };
 
 export interface AnchorButtonProps {
   children: React.ReactNode;
-  theme?: 'primary' | 'primary-alt' | 'white' | 'secondary' | 'secondary-alt' | 'danger';
-  size?: 'xs' | 's' | 'base' | 'l' | 'xl';
+  theme?: 'primary' | 'secondary';
+  size?: 'xs' | 'base' | 'xl';
   className?: string | any;
 }
 
@@ -59,10 +47,7 @@ type Overload = {
 const hasHref = (props: ButtonProps | AnchorProps): props is AnchorProps => 'href' in props;
 
 function buildClassName({ className, disabled, size = 'base', theme = 'primary' }: AnchorProps) {
-  return cx({
-    // 'flex items-center justify-center rounded-3xl': true,
-    [THEME[theme]]: true,
-    [SIZE[size]]: true,
+  return cx(COMMON_CLASSNAMES, THEME[theme], SIZE[size], {
     [className]: !!className,
     'opacity-50 pointer-events-none': disabled,
   });

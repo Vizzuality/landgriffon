@@ -36,12 +36,7 @@ const Template: Story<SearchProps> = ({ ...args }: SearchProps) => {
 
   return (
     <>
-      <Search
-        id="search-component"
-        value={value}
-        onChange={onChange}
-        {...args}
-      />
+      <Search id="search-component" value={value} onChange={onChange} {...args} />
     </>
   );
 };

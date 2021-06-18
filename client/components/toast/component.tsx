@@ -1,7 +1,4 @@
-import {
-  FC,
-  useCallback, useEffect, useRef,
-} from 'react';
+import { FC, useCallback, useEffect, useRef } from 'react';
 import cx from 'classnames';
 
 import SUCCESS_SVG from 'svgs/notifications/success.svg?sprite';
@@ -62,10 +59,13 @@ export const Toast: FC<ToastProps> = ({
     }
   }, [controls, autoDismiss]);
 
-  const handleProgressUpdate = useCallback(({ y }) => {
-    const y2 = parseInt(y, 10);
-    progress.current = y2 / 100;
-  }, [progress]);
+  const handleProgressUpdate = useCallback(
+    ({ y }) => {
+      const y2 = parseInt(y, 10);
+      progress.current = y2 / 100;
+    },
+    [progress]
+  );
 
   const handleDismiss = useCallback(() => {
     onDismiss(id);
@@ -96,14 +96,16 @@ export const Toast: FC<ToastProps> = ({
           onMouseLeave={() => {
             controls.start({
               y: '100%',
-              transition: { duration: DURATION - (DURATION * progress.current) },
+              transition: { duration: DURATION - DURATION * progress.current },
             });
           }}
         >
           <div className="flex flex-grow">
-            <div className={cx({
-              'relative w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center shadow-md overflow-hidden z-20': true,
-            })}
+            <div
+              className={cx({
+                'relative w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center shadow-md overflow-hidden z-20':
+                  true,
+              })}
             >
               <div
                 className={cx({
@@ -122,15 +124,10 @@ export const Toast: FC<ToastProps> = ({
                 onAnimationComplete={handleDismiss}
               />
 
-              <Icon
-                icon={ICON}
-                className="relative z-20 self-center w-5 h-5"
-              />
+              <Icon icon={ICON} className="relative z-20 self-center w-5 h-5" />
             </div>
 
-            <div className="flex-grow ml-2.5">
-              {content}
-            </div>
+            <div className="flex-grow ml-2.5">{content}</div>
           </div>
 
           <button

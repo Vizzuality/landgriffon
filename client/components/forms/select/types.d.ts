@@ -35,10 +35,7 @@ interface SelectDataProps {
   batchSelectionLabel?: string;
 }
 
-export interface SelectProps extends
-  SelectStatusProps,
-  SelectDataProps,
-  SelectThemeProps {
+export interface SelectProps extends SelectStatusProps, SelectDataProps, SelectThemeProps {
   id: string | number;
   onChange?: (selection: string | string[]) => void;
   onSelect?: (option: SelectOptionProps | SelectOptionProps[]) => void;
@@ -46,18 +43,13 @@ export interface SelectProps extends
   onBlur?: FocusEventHandler;
 }
 
-export interface SelectMenuProps extends
-  SelectStatusProps,
-  SelectThemeProps {
+export interface SelectMenuProps extends SelectStatusProps, SelectThemeProps {
   children: ReactNode;
   opened: boolean;
-  attributes: Record<string, unknown>,
+  attributes: Record<string, unknown>;
 }
 
-export interface SelectToggleProps extends
-  SelectStatusProps,
-  SelectDataProps,
-  SelectThemeProps {
+export interface SelectToggleProps extends SelectStatusProps, SelectDataProps, SelectThemeProps {
   opened: boolean;
   selectedItems: SelectOptionProps[];
   getToggleButtonProps: (e?: unknown) => void;

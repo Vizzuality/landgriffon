@@ -1,6 +1,4 @@
-import {
-  useEffect, useRef, useMemo, FC,
-} from 'react';
+import { useEffect, useRef, useMemo, FC } from 'react';
 import { createPortal } from 'react-dom';
 import cx from 'classnames';
 
@@ -12,7 +10,10 @@ import Menu from 'components/forms/select/menu';
 // Popper
 import { usePopper } from 'react-popper';
 import {
-  flipModifier, hideModifier, sameWidthModifier, offsetModifier,
+  flipModifier,
+  hideModifier,
+  sameWidthModifier,
+  offsetModifier,
 } from 'components/forms/select/constants/popper-modifiers';
 import THEME from 'components/forms/select/constants/theme';
 
@@ -38,19 +39,20 @@ export const SingleSelect: FC<SelectProps> = ({
   const triggerRef = useRef();
   const menuRef = useRef();
 
-  const getOptions = useMemo(() => [
-    ...clearSelectionActive ? [
-      {
-        value: null,
-        label: clearSelectionLabel,
-      },
-    ] : [],
-    ...options,
-  ], [
-    options,
-    clearSelectionActive,
-    clearSelectionLabel,
-  ]);
+  const getOptions = useMemo(
+    () => [
+      ...(clearSelectionActive
+        ? [
+            {
+              value: null,
+              label: clearSelectionLabel,
+            },
+          ]
+        : []),
+      ...options,
+    ],
+    [options, clearSelectionActive, clearSelectionLabel]
+  );
 
   const getInitialSelected = useMemo(() => {
     const opts = getOptions.find((o) => o.value === initialValues && o.value !== null);
@@ -73,9 +75,8 @@ export const SingleSelect: FC<SelectProps> = ({
     }
   };
 
-  const isSelected = (selected: SelectOptionProps, selectedItms: SelectOptionProps[]) => (
-    selectedItms.some((i) => i.value === selected.value)
-  );
+  const isSelected = (selected: SelectOptionProps, selectedItms: SelectOptionProps[]) =>
+    selectedItms.some((i) => i.value === selected.value);
 
   // 'useSelect'
   const {
@@ -89,20 +90,20 @@ export const SingleSelect: FC<SelectProps> = ({
     reset,
   } = useSelect<SelectOptionProps>({
     items: getOptions,
-    ...typeof values !== 'undefined' && {
+    ...(typeof values !== 'undefined' && {
       selectedItem: getSelected,
-    },
-    ...typeof initialValues !== 'undefined' && {
+    }),
+    ...(typeof initialValues !== 'undefined' && {
       initialSelectedItem: getInitialSelected,
-    },
+    }),
     itemToString: (item) => item.label, // How the selected options is announced to screen readers
     stateReducer: (st, actionAndChanges) => {
       const { changes, type } = actionAndChanges;
 
       if (
-        type === useSelect.stateChangeTypes.MenuKeyDownEnter
-        || type === useSelect.stateChangeTypes.MenuKeyDownSpaceButton
-        || type === useSelect.stateChangeTypes.ItemClick
+        type === useSelect.stateChangeTypes.MenuKeyDownEnter ||
+        type === useSelect.stateChangeTypes.MenuKeyDownSpaceButton ||
+        type === useSelect.stateChangeTypes.ItemClick
       ) {
         onSelect(changes.selectedItem);
       }
@@ -127,16 +128,13 @@ export const SingleSelect: FC<SelectProps> = ({
   const { styles, attributes, update } = usePopper(triggerRef.current, menuRef.current, {
     placement: 'bottom',
     // strategy: 'fixed',
-    modifiers: [
-      offsetModifier,
-      flipModifier,
-      hideModifier,
-      sameWidthModifier,
-    ],
+    modifiers: [offsetModifier, flipModifier, hideModifier, sameWidthModifier],
   });
 
   // Hide menu if reference is outside the boundaries
-  const referenceHidden = attributes?.popper?.['data-popper-reference-hidden'] || attributes?.popper?.['data-popper-reference-scaped'];
+  const referenceHidden =
+    attributes?.popper?.['data-popper-reference-hidden'] ||
+    attributes?.popper?.['data-popper-reference-scaped'];
   useEffect(() => {
     if (referenceHidden) {
       closeMenu();
@@ -158,10 +156,7 @@ export const SingleSelect: FC<SelectProps> = ({
         [THEME.states[status]]: true,
       })}
     >
-      <div
-        className="relative w-full"
-        ref={triggerRef}
-      >
+      <div className="relative w-full" ref={triggerRef}>
         <Toggle
           options={getOptions}
           theme={theme}
@@ -225,10 +220,9 @@ export const SingleSelect: FC<SelectProps> = ({
                     'px-4 py-1 mt-0.5 cursor-pointer': true,
                     [THEME[theme].item.base]: highlightedIndex !== index,
                     [THEME[theme].item.disabled]: option.disabled,
-                    [THEME[theme].item.highlighted]: (
-                      (highlightedIndex === index && !option.disabled)
-                        || isSelected(option, selectedItems)
-                    ),
+                    [THEME[theme].item.highlighted]:
+                      (highlightedIndex === index && !option.disabled) ||
+                      isSelected(option, selectedItems),
                   })}
                   key={`${option.value}`}
                   {...getItemProps({ item: option, index, disabled: option.disabled })}
@@ -245,7 +239,7 @@ export const SingleSelect: FC<SelectProps> = ({
             </ul>
           </Menu>
         </div>,
-        document.body,
+        document.body
       )}
     </div>
   );

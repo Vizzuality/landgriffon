@@ -1,13 +1,15 @@
 import { useMemo } from 'react';
 
 interface UseStatusProps {
-  active?: boolean,
-  meta: Record<string, unknown>,
+  active?: boolean;
+  meta: Record<string, unknown>;
   disabled: boolean;
 }
 
 const useStatus = ({
-  active = true, meta, disabled,
+  active = true,
+  meta,
+  disabled,
 }: UseStatusProps): 'none' | 'error' | 'valid' | 'disabled' => {
   const status = useMemo(() => {
     if (disabled) return 'disabled';

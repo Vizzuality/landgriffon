@@ -8,10 +8,10 @@ import USERS from 'services/users';
 type AuthProps = {
   // TO-DO: change to a better type definition using Next types
   redirect?: {
-    destination: string
-    permanent: boolean
-  }
-  props?: Record<string, unknown>
+    destination: string;
+    permanent: boolean;
+  };
+  props?: Record<string, unknown>;
 };
 
 type AuthHOC = (context: NextPageContext, session?: unknown) => Promise<AuthProps>;
@@ -71,13 +71,15 @@ export function withUser(getServerSidePropsFunc?: AuthHOC) {
 
     const queryClient = new QueryClient();
 
-    await queryClient.prefetchQuery('me', () => USERS.request({
-      method: 'GET',
-      url: '/me',
-      headers: {
-        Authorization: `Bearer ${session.accessToken}`,
-      },
-    }).then((response) => response.data));
+    await queryClient.prefetchQuery('me', () =>
+      USERS.request({
+        method: 'GET',
+        url: '/me',
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      }).then((response) => response.data)
+    );
 
     if (getServerSidePropsFunc) {
       const SSPF = (await getServerSidePropsFunc(context)) || {};

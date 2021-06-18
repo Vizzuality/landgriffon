@@ -49,7 +49,8 @@ export const Legend: FC<LegendProps> = ({
         <Icon
           icon={ARROW_DOWN_SVG}
           className={cx({
-            'absolute w-3 h-3 transition-transform transform -translate-y-1/2 text-blue-500 top-1/2 right-5': true,
+            'absolute w-3 h-3 transition-transform transform -translate-y-1/2 text-blue-500 top-1/2 right-5':
+              true,
             'rotate-180': active,
           })}
         />
@@ -63,14 +64,8 @@ export const Legend: FC<LegendProps> = ({
           }}
         >
           <div className="absolute top-0 left-0 z-10 w-full h-4 pointer-events-none bg-gradient-to-b from-black via-black" />
-          <div
-            className="overflow-x-hidden overflow-y-auto"
-          >
-            <SortableList
-              onChangeOrder={onChangeOrder}
-            >
-              {children}
-            </SortableList>
+          <div className="overflow-x-hidden overflow-y-auto">
+            <SortableList onChangeOrder={onChangeOrder}>{children}</SortableList>
           </div>
           <div className="absolute bottom-0 left-0 z-10 w-full h-3 pointer-events-none bg-gradient-to-t from-black via-black" />
         </div>

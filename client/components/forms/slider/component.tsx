@@ -99,8 +99,7 @@ export const Slider: FC<SliderProps> = ({
   const propsOverride = {
     // `useSliderState` is expecting `value` and `defaultValue` to be arrays
     value: rest.value !== undefined ? [+rest.value] : undefined,
-    defaultValue:
-      rest.defaultValue !== undefined ? [+rest.defaultValue] : undefined,
+    defaultValue: rest.defaultValue !== undefined ? [+rest.defaultValue] : undefined,
     onChange: onChangeOverride,
     isDisabled: disabled,
     // `useSliderState` expects a `label` attribute for accessibility, but this is worked around in
@@ -128,7 +127,7 @@ export const Slider: FC<SliderProps> = ({
       id: undefined,
     },
     sliderState,
-    trackRef,
+    trackRef
   );
 
   // When the user clicks the external `<label />`, the hidden range input is focused but the
@@ -159,11 +158,7 @@ export const Slider: FC<SliderProps> = ({
         'opacity-30': st === 'disabled',
       })}
     >
-      <div
-        {...trackProps}
-        ref={trackRef}
-        className="relative flex items-center w-full h-full"
-      >
+      <div {...trackProps} ref={trackRef} className="relative flex items-center w-full h-full">
         <output
           {...outputProps}
           className={THEME[theme].output}

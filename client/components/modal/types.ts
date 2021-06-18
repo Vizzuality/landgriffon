@@ -8,7 +8,7 @@ export interface ModalProps {
   /**
    * Whether the modal is opened
    */
-  open: boolean,
+  open: boolean;
   /**
    * Whether the user can close the modal by clicking on the overlay, the close button or pressing
    * the escape key

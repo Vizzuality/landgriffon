@@ -11,12 +11,7 @@ export default {
 const Template: Story<ToastProps> = (args: ToastProps) => {
   const { level } = args;
 
-  return (
-    <Toast
-      key={level}
-      {...args}
-    />
-  );
+  return <Toast key={level} {...args} />;
 };
 
 export const Default = Template.bind({});

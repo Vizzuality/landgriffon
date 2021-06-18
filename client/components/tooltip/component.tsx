@@ -7,7 +7,11 @@ import Arrow from './arrow';
 import { TooltipProps } from './types';
 
 export const Tooltip: FC<TooltipProps> = ({
-  children, content, arrow, maxWidth, ...props
+  children,
+  content,
+  arrow,
+  maxWidth,
+  ...props
 }: TooltipProps) => {
   const springConfig: SpringOptions = { damping: 15, stiffness: 300 };
   const opacity = useSpring(0, springConfig);

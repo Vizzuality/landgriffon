@@ -6,21 +6,13 @@ import { CSS } from '@dnd-kit/utilities';
 
 export interface SortableItemProps {
   id: string;
-  children: ReactNode
+  children: ReactNode;
 }
 
-export const SortableItem: FC<SortableItemProps> = ({
-  id,
-  children,
-}: SortableItemProps) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
+export const SortableItem: FC<SortableItemProps> = ({ id, children }: SortableItemProps) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),

@@ -6,8 +6,7 @@ import useStatus from '../utils';
 
 const THEME = {
   dark: {
-    base:
-      'w-full leading-tight text-white bg-gray-800 bg-opacity-0',
+    base: 'w-full leading-tight text-white bg-gray-800 bg-opacity-0',
     status: {
       none: 'border-gray-500',
       valid: 'border-green-500',
@@ -21,8 +20,7 @@ const THEME = {
     },
   },
   light: {
-    base:
-      'w-full leading-tight text-gray-800 bg-white border rounded',
+    base: 'w-full leading-tight text-gray-800 bg-white border rounded',
     status: {
       none: 'border-gray-800',
       valid: 'border-green-500',

@@ -4,8 +4,7 @@ import useStatus from '../utils';
 
 const THEME = {
   dark: {
-    base:
-      'bg-gray-800 border rounded-full text-blue-500',
+    base: 'bg-gray-800 border rounded-full text-blue-500',
     status: {
       none: 'border-gray-800',
       valid: 'border-green-800',
@@ -14,8 +13,7 @@ const THEME = {
     },
   },
   light: {
-    base:
-      'bg-white border rounded-full text-blue-500',
+    base: 'bg-white border rounded-full text-blue-500',
     status: {
       none: 'border-gray-800',
       valid: 'border-green-800',

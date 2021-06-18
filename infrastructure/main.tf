@@ -47,12 +47,35 @@ module "dns" {
   bastion_hostname = module.bastion.bastion_hostname
 }
 
+module "eks" {
+  source         = "./modules/eks"
+  project        = var.project_name
+  vpc_id         = module.vpc.id
+  subnet_ids =     module.vpc.private_subnets.*.id
+}
+
+module "default-node-group" {
+  source          = "./modules/node_group"
+  cluster         = module.eks.cluster
+  cluster_name    = module.eks.cluster_name
+  node_group_name = "default-node-group"
+  instance_types  = var.default_node_group_instance_types
+  min_size        = var.default_node_group_min_size
+  max_size        = var.default_node_group_max_size
+  desired_size    = var.default_node_group_desired_size
+  node_role_arn   = module.eks.node_role_arn
+  subnet_ids =     module.vpc.private_subnets.*.id
+  labels = {
+    type : "default"
+  }
+}
+
 module "postgresql" {
   source                      = "./modules/postgresql"
 
-  availability_zone_names     = [module.vpc.private_subnets[0].availability_zone, module.vpc.private_subnets[1].availability_zone, module.vpc.private_subnets[2].availability_zone]
+  availability_zone_names     = module.vpc.private_subnets.*.availability_zone
   log_retention_period        = var.rds_log_retention_period
-  private_subnet_ids          = [module.vpc.private_subnets[0].id, module.vpc.private_subnets[1].id, module.vpc.private_subnets[2].id]
+  private_subnet_ids          = module.vpc.private_subnets.*.id
   project                     = var.project_name
   rds_backup_retention_period = var.rds_backup_retention_period
   rds_db_name                 = "landgriffon"

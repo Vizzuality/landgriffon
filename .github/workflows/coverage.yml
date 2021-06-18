@@ -1,0 +1,32 @@
+name: Coverage
+on:
+  repository_dispatch:
+    types: [trigger-coverage-workflow]
+env:
+  CC_TEST_REPORTER_URL: https://codeclimate.com/downloads/test-reporter/test-reporter-0.7.0-linux-amd64
+  CC_TEST_REPORTER_ID: 29691479b26fbb03a9d926e1d6b0bba99c7eae3bb235e26a8b269219fe3c62fc
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Fetch Code Coverage reporter
+        run: curl -L $CC_TEST_REPORTER_URL > cc-test-reporter
+      - name: Grant exec permissions
+        run: chmod +x cc-test-reporter
+
+      - name: Fetch Api coverage artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: api-report
+          path: ${{github.workspace}}
+
+      - name: Fetch Client coverage artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: client-report
+          path: ${{github.workspace}}
+
+      - name: Check files present
+        run : ls ${{github.workspace}}

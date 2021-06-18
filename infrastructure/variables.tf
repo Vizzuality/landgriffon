@@ -36,6 +36,9 @@ variable "allowed_account_id" {
   description = "Allowed AWS Account ID"
 }
 
+#
+# RDS configuration
+#
 variable "rds_log_retention_period" {
   type        = number
   default     = 1
@@ -63,4 +66,28 @@ variable "rds_backup_retention_period" {
   type        = number
   default     = 7
   description = "Time in days to keep db backups"
+}
+
+#
+# EKS default node group
+#
+
+variable "default_node_group_instance_types" {
+  type    = string
+  default = "m5a.large"
+}
+
+variable "default_node_group_min_size" {
+  type    = number
+  default = 1
+}
+
+variable "default_node_group_max_size" {
+  type    = number
+  default = 1
+}
+
+variable "default_node_group_desired_size" {
+  type    = number
+  default = 1
 }

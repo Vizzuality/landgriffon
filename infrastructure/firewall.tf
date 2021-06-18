@@ -3,6 +3,7 @@
 
 resource "aws_security_group" "postgresql" {
   vpc_id = module.vpc.id
+  description = "Bastion SG allowing access to the Postgres SG"
 
   tags = merge(
     {

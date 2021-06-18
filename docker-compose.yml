@@ -1,0 +1,40 @@
+version: "3.8"
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "${API_SERVICE_PORT}:3000"
+    container_name: landgriffon-api
+    command: develop
+    user: "5000:5000"
+    volumes:
+      - ./api/src:/opt/landgriffon-api/src
+      - ./api/test:/opt/landgriffon-api/test
+    env_file: .env
+    environment:
+      - NODE_PATH=src
+      - DB_HOST=${API_POSTGRES_HOST}
+      - DB_USERNAME=${API_POSTGRES_USERNAME}
+      - DB_PASSWORD=${API_POSTGRES_PASSWORD}
+      - DB_DATABASE=${API_POSTGRES_DATABASE}
+      - JWT_SECRET=${API_AUTH_JWT_SECRET}
+    depends_on:
+      - postgresql
+
+  postgresql:
+    image: postgis/postgis:13-3.1-alpine
+    container_name: landgriffon-postgresql
+    ports:
+      - 5432
+    volumes:
+      - landgriffon-postgresql:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${API_POSTGRES_PASSWORD}
+      - POSTGRES_USER=${API_POSTGRES_USERNAME}
+      - POSTGRES_DB=${API_POSTGRES_DATABASE}
+    restart: on-failure
+
+volumes:
+  landgriffon-postgresql:

@@ -2,3 +2,7 @@
 node_modules
 /api/dist
 /api/coverage
+.env
+
+## Data
+/data/datasets/**

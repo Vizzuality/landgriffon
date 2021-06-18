@@ -34,3 +34,35 @@ output "private_subnet_ids" {
 output "postgres_host" {
   value = module.postgresql.host
 }
+
+
+output "kubectl_config" {
+  value       = module.eks.kubeconfig
+  description = "Configuration snippet for the kubectl CLI tool that allows access to this EKS cluster"
+}
+
+locals {
+  kube_configmap = <<KUBECONFIGMAP
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-auth
+  namespace: kube-system
+data:
+  mapRoles: |
+    - rolearn: ${module.bastion.eks_manager_role.arn}
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
+        - system:masters
+    - rolearn: ${module.eks.node_role_arn}
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
+        - system:bootstrappers
+        - system:nodes
+
+KUBECONFIGMAP
+}
+
+output "kube_configmap" {
+  value = local.kube_configmap
+}

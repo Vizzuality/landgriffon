@@ -37,21 +37,15 @@ export const Search: FC<SearchProps> = ({
   const state = useSearchFieldState(rest);
 
   const ref = useRef();
-  const {
-    inputProps,
-    clearButtonProps,
-  } = useSearchField(rest, state, ref);
+  const { inputProps, clearButtonProps } = useSearchField(rest, state, ref);
   const { buttonProps } = useButton(clearButtonProps, null);
 
   return (
     <div
-      className={cx(
-        'flex w-full relative border-b border-gray-400',
-        {
-          [THEME[theme]]: true,
-          [SIZES[size]]: true,
-        },
-      )}
+      className={cx('flex w-full relative border-b border-gray-400', {
+        [THEME[theme]]: true,
+        [SIZES[size]]: true,
+      })}
     >
       <Icon
         icon={SEARCH_SVG}
@@ -71,7 +65,7 @@ export const Search: FC<SearchProps> = ({
           {
             [THEME[theme]]: true,
             [SIZES[size]]: true,
-          },
+          }
         )}
       />
 
@@ -82,10 +76,7 @@ export const Search: FC<SearchProps> = ({
           className="absolute z-10 flex items-center self-center justify-center w-5 h-5 right-3 r-2"
           type="button"
         >
-          <Icon
-            icon={CLOSE_SVG}
-            className="inline-block w-2 h-2"
-          />
+          <Icon icon={CLOSE_SVG} className="inline-block w-2 h-2" />
         </button>
       )}
     </div>

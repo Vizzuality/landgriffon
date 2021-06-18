@@ -2,9 +2,7 @@
 const plugin = require('tailwindcss/plugin');
 
 module.exports = plugin(
-  ({
-    addUtilities, theme, e, variants,
-  }) => {
+  ({ addUtilities, theme, e, variants }) => {
     const t = theme('lineClamp');
     const utilities = Object.keys(t).map((key) => ({
       [`.${e(`clamp-${key}`)}`]: {
@@ -25,5 +23,5 @@ module.exports = plugin(
         3: 3,
       },
     },
-  },
+  }
 );

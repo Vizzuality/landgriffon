@@ -59,11 +59,11 @@ resource "random_password" "postgresql_superuser" {
 resource "aws_security_group" "postgresql" {
   vpc_id                 = var.vpc_id
   description            = "Security Group for PostgreSQL DB"
-  name                   = "${var.project}-sgPostgreSQL"
+  name                   = "PostgreSQL-ingress"
   revoke_rules_on_delete = true
   tags = merge(
     {
-      Name = "${var.project}-sgPostgreSQL"
+      Name = "PostgreSQL-ingress"
     },
     var.tags
   )
@@ -83,15 +83,15 @@ resource "aws_security_group_rule" "postgresql_ingress" {
 # Secret Manager
 ####################
 
-resource "aws_secretsmanager_secret" "postgresql-writer" {
+resource "aws_secretsmanager_secret" "postgresql-admin" {
   description = "Connection string for PostgreSQL cluster"
   name        = "${var.project}-postgresql-admin-password"
   tags        = var.tags
 }
 
-resource "aws_secretsmanager_secret_version" "postgresql-writer" {
+resource "aws_secretsmanager_secret_version" "postgresql-admin" {
 
-  secret_id = aws_secretsmanager_secret.postgresql-writer.id
+  secret_id = aws_secretsmanager_secret.postgresql-admin.id
   secret_string = jsonencode({
     "username" = var.rds_user_name,
     "engine"   = "postgresql",
@@ -105,11 +105,11 @@ resource "aws_secretsmanager_secret_version" "postgresql-writer" {
 data "template_file" "secrets_postgresql-writer" {
   template = file("${path.module}/iam_policy_secrets_read.json.tpl")
   vars = {
-    secret_arn = aws_secretsmanager_secret.postgresql-writer.arn
+    secret_arn = aws_secretsmanager_secret.postgresql-admin.arn
   }
 }
 
 resource "aws_iam_policy" "secrets_postgresql-writer" {
-  name   = "${var.project}-secrets_postgresql-writer"
+  name   = "${var.project}-secrets-postgresql-writer"
   policy = data.template_file.secrets_postgresql-writer.rendered
 }

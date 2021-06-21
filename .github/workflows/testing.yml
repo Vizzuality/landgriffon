@@ -11,7 +11,41 @@ env:
   DB_DATABASE: landgriffon
 
 jobs:
-  testing:
+  test-frontend:
+    name: testing
+    runs-on: ubuntu-20.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js 14.17
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.17'
+
+      - name: Install Client dependencies
+        working-directory: client
+        run: yarn install
+
+      - name: Run Client tests + coverage
+        working-directory: client
+        run: yarn cypress:ci
+
+      - name: Generate test-result dependency artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: next-dependency
+          path: ${{github.workspace}}/client/.next
+
+      - name: Generate Client coverage artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: client-report
+          path: ${{github.workspace}}/client/coverage/lcov.info
+
+  test-backend:
     name: testing
     runs-on: ubuntu-20.04
     timeout-minutes: 15
@@ -34,36 +68,16 @@ jobs:
         with:
           node-version: '14.16'
 
-      - name: Install Api dependencies
+      - name: Install API dependencies
         working-directory: api
         run: yarn install
 
-      - name: Run Api Tests + coverage
+      - name: Run API tests + coverage
         working-directory: api
         run: yarn test:cov
 
-      - name: Install Client dependencies
-        working-directory: client
-        run: yarn install
-
-      - name: Run Frontend Tests + coverage
-        working-directory: client
-        run: yarn cypress:ci
-
-      - name: Generate Api coverage artifact
+      - name: Generate API coverage artifact
         uses: actions/upload-artifact@v2
         with:
           name: api-report
           path: ${{github.workspace}}/api/coverage/lcov.info
-
-      - name: Generate test-result dependency artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: next-dependency
-          path: ${{github.workspace}}/client/.next
-
-      - name: Generate Client coverage artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: client-report
-          path: ${{github.workspace}}/client/coverage/lcov.info

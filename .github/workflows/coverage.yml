@@ -19,7 +19,6 @@ jobs:
 
       - name: Wait for Client tests to run
         uses: fountainhead/action-wait-for-check@v1.0.0
-        id: coverage
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: testing-client
@@ -27,7 +26,6 @@ jobs:
 
       - name: Wait for API tests to run
         uses: fountainhead/action-wait-for-check@v1.0.0
-        id: coverage
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: testing-api

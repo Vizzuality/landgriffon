@@ -101,16 +101,6 @@ resource "aws_iam_role" "eks-node-group-iam-role" {
   })
 }
 
-data "aws_iam_policy_document" "eks-admin-ALBIngressControllerIAMPolicy-document" {
-  source_json = file("${path.module}/alb-ingress-controller-iam-policy.json")
-}
-
-resource "aws_iam_policy" "eks-admin-ALBIngressControllerIAMPolicy" {
-  name   = "ALBIngressControllerIAMPolicy"
-  path   = "/"
-  policy = data.aws_iam_policy_document.eks-admin-ALBIngressControllerIAMPolicy-document.json
-}
-
 data "aws_iam_policy_document" "eks-admin-ClusterAutoscaleAccessPolicy-document" {
   source_json = file("${path.module}/cluster-autoscale-access-policy.json")
 }
@@ -122,11 +112,6 @@ resource "aws_iam_policy" "eks-admin-ClusterAutoscaleAccessPolicy" {
 }
 
 data "aws_caller_identity" "current" {}
-
-resource "aws_iam_role_policy_attachment" "eks-admin-ALBIngressControllerIAMPolicy" {
-  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/ALBIngressControllerIAMPolicy"
-  role       = aws_iam_role.eks-node-group-iam-role.name
-}
 
 resource "aws_iam_role_policy_attachment" "eks-admin-ClusterAutoscaleAccessPolicy" {
   policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/ClusterAutoscaleAccessPolicy"

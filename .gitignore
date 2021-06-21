@@ -1,4 +1,5 @@
 /infrastructure/.terraform/
+/kubernetes/.terraform/
 node_modules
 /api/dist
 /api/coverage

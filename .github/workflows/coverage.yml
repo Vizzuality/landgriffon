@@ -9,14 +9,6 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
-      - name: Wait for Test workflow to succeed
-        uses: fountainhead/action-wait-for-check@v1.0.0
-        id: coverage
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          checkName: testing
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -25,11 +17,27 @@ jobs:
       - name: Grant exec permissions
         run: chmod +x cc-test-reporter
 
+      - name: Wait for Client tests to run
+        uses: fountainhead/action-wait-for-check@v1.0.0
+        id: coverage
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          checkName: testing-client
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Wait for API tests to run
+        uses: fountainhead/action-wait-for-check@v1.0.0
+        id: coverage
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          checkName: testing-api
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
       - name: Download API coverage report
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          workflow: testing.yml
+          workflow: testing-api.yml
           name: api-report
           path: ${{github.workspace}}/api/coverage
           repo: ${{github.repository}}
@@ -38,16 +46,16 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          workflow: testing.yml
+          workflow: testing-client.yml
           name: client-report
           path: ${{github.workspace}}/client/coverage
           repo: ${{github.repository}}
 
-      - name: Download Test-generated dependencies
+      - name: Download test generated dependencies
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          workflow: testing.yml
+          workflow: testing-client.yml
           name: next-dependency
           path: ${{github.workspace}}/client/.next
           repo: ${{github.repository}}

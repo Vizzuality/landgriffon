@@ -2,7 +2,7 @@ name: coverage
 on:
   push:
 env:
-  CC_TEST_REPORTER_URL: https://codeclimate.com/downloads/test-reporter/test-reporter-0.7.0-linux-amd64
+  CC_TEST_REPORTER_URL: https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
   CC_TEST_REPORTER_ID: 29691479b26fbb03a9d926e1d6b0bba99c7eae3bb235e26a8b269219fe3c62fc
 
 jobs:
@@ -20,12 +20,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Fetch Code Coverage reporter
+      - name: Fetch Code Climate reporter CLI
         run: curl -L $CC_TEST_REPORTER_URL > ${{github.workspace}}/cc-test-reporter
       - name: Grant exec permissions
         run: chmod +x cc-test-reporter
 
-      - name: Download Api coverage report
+      - name: Download API coverage report
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
@@ -52,24 +52,14 @@ jobs:
           path: ${{github.workspace}}/client/.next
           repo: ${{github.repository}}
 
-      - name: Format Api Report
+      - name: Format API Report
         run: ./cc-test-reporter format-coverage -p landgriffon -t lcov -o api-coverage.json api/coverage/lcov.info
 
       - name: Format Client Report
         run: ./cc-test-reporter format-coverage -t lcov -o client-coverage.json client/coverage/lcov.info
 
-      - name: Merge files
+      - name: Merge API and Client coverage reports
         run: ./cc-test-reporter sum-coverage *-coverage.json -p 2 -o total-coverage.json
 
-      - name: Upload to CC
+      - name: Upload merged coverage report to Code Climate
         run: ./cc-test-reporter upload-coverage -i total-coverage.json
-
-
-
-
-
-
-
-
-
-

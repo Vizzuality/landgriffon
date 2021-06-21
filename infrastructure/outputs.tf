@@ -35,10 +35,14 @@ output "postgres_host" {
   value = module.postgresql.host
 }
 
-
 output "kubectl_config" {
   value       = module.eks.kubeconfig
   description = "Configuration snippet for the kubectl CLI tool that allows access to this EKS cluster"
+}
+
+output "eks_cluster" {
+  value       = module.eks.cluster
+  description = "EKS cluster object"
 }
 
 locals {

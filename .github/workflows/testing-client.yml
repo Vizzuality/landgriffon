@@ -12,7 +12,7 @@ env:
 
 jobs:
   testing-client:
-    name: Client tests
+    name: Client Tests
     runs-on: ubuntu-20.04
     timeout-minutes: 15
 
@@ -33,7 +33,7 @@ jobs:
         working-directory: client
         run: yarn cypress:ci
 
-      - name: Generate test result dependency artifact
+      - name: Generate Client test result dependency artifact
         uses: actions/upload-artifact@v2
         with:
           name: next-dependency

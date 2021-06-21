@@ -1,0 +1,46 @@
+name: testing
+
+on:
+  push:
+
+env:
+  NODE_ENV: test
+  DB_HOST: localhost
+  DB_USERNAME: landgriffon
+  DB_PASSWORD: landgriffon
+  DB_DATABASE: landgriffon
+
+jobs:
+  testing-client:
+    name: Client tests
+    runs-on: ubuntu-20.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js 14.17
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.17'
+
+      - name: Install Client dependencies
+        working-directory: client
+        run: yarn install
+
+      - name: Run Client tests + coverage
+        working-directory: client
+        run: yarn cypress:ci
+
+      - name: Generate test result dependency artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: next-dependency
+          path: ${{github.workspace}}/client/.next
+
+      - name: Generate Client coverage artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: client-report
+          path: ${{github.workspace}}/client/coverage/lcov.info

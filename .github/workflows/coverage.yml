@@ -7,6 +7,7 @@ env:
 
 jobs:
   coverage:
+    name: Uploading code coverage report
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -17,18 +18,11 @@ jobs:
       - name: Grant exec permissions
         run: chmod +x cc-test-reporter
 
-      - name: Wait for Client tests to run
-        uses: fountainhead/action-wait-for-check@v1.0.0
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          checkName: testing-client
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-
       - name: Wait for API tests to run
         uses: fountainhead/action-wait-for-check@v1.0.0
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          checkName: testing-api
+          checkName: API Tests
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Download API coverage report
@@ -40,6 +34,13 @@ jobs:
           path: ${{github.workspace}}/api/coverage
           repo: ${{github.repository}}
 
+      - name: Wait for Client tests to run
+        uses: fountainhead/action-wait-for-check@v1.0.0
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          checkName: Client Tests
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
       - name: Download Client coverage report
         uses: dawidd6/action-download-artifact@v2
         with:
@@ -49,7 +50,7 @@ jobs:
           path: ${{github.workspace}}/client/coverage
           repo: ${{github.repository}}
 
-      - name: Download test generated dependencies
+      - name: Download Client test generated dependencies
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{ secrets.REPO_ACCESS_TOKEN }}

@@ -7,6 +7,8 @@ import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from 'filters/all-exceptions.exception.filter';
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
+import { MaterialsModule } from 'modules/materials/materials.module';
+import { LayersModule } from 'modules/layers/layers.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { BusinessUnitsModule } from 'modules/business-units/business-units.modul
     UsersModule,
     SuppliersModule,
     BusinessUnitsModule,
+    MaterialsModule,
+    LayersModule,
   ],
   providers: [
     {

@@ -6,18 +6,18 @@ export class Suppliers extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'ltree', nullable: false, unique: true })
+  @Column({ type: 'ltree', nullable: true, unique: true })
   path: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   description: string;
 
   @Column({ type: 'enum', enum: entityStatus, enumName: 'entity_status' })
   status: entityStatus;
 
-  @Column({ type: 'jsonb' })
+  @Column({ type: 'jsonb', nullable: true })
   metadata: JSON;
 }

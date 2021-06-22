@@ -5,12 +5,14 @@ import { AuthenticationModule } from 'modules/authentication/authentication.modu
 import { UsersModule } from 'modules/users/users.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from 'filters/all-exceptions.exception.filter';
+import { BusinessUnitsModule } from './modules/business-units/business-units.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeOrmConfig),
     AuthenticationModule,
     UsersModule,
+    BusinessUnitsModule,
   ],
   providers: [
     {

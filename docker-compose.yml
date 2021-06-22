@@ -33,6 +33,7 @@ services:
       - DB_USERNAME=${API_POSTGRES_USERNAME}
       - DB_PASSWORD=${API_POSTGRES_PASSWORD}
       - DB_DATABASE=${API_POSTGRES_DATABASE}
+      - DB_SYNCHRONIZE=${API_DB_SYNCHRONIZE}
       - JWT_SECRET=${API_AUTH_JWT_SECRET}
     depends_on:
       - postgresql
@@ -41,7 +42,7 @@ services:
     image: postgis/postgis:13-3.1-alpine
     container_name: landgriffon-postgresql
     ports:
-      - 5432
+      - ${API_POSTGRES_PORT}:5432
     volumes:
       - landgriffon-postgresql:/var/lib/postgresql/data
     environment:

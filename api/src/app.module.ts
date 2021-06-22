@@ -9,6 +9,8 @@ import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
 import { MaterialsModule } from 'modules/materials/materials.module';
 import { LayersModule } from 'modules/layers/layers.module';
+import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
+import { GeoRegionsModule } from 'modules/geo-regions/geo-regions.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { LayersModule } from 'modules/layers/layers.module';
     BusinessUnitsModule,
     MaterialsModule,
     LayersModule,
+    AdminRegionsModule,
+    GeoRegionsModule,
   ],
   providers: [
     {

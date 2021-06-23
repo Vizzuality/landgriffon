@@ -6,7 +6,7 @@ import { UsersModule } from 'modules/users/users.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from 'filters/all-exceptions.exception.filter';
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
-import { BusinessUnitsModule } from './modules/business-units/business-units.module';
+import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
 
 @Module({
   imports: [

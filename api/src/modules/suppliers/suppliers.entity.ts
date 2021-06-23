@@ -1,5 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from 'typeorm';
-import { entityStatus } from 'utils/entity-status.enum';
+
+export enum SUPPLIER_STATUS {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  DELETED = 'deleted',
+}
 
 @Entity()
 export class Suppliers extends BaseEntity {
@@ -15,8 +20,8 @@ export class Suppliers extends BaseEntity {
   @Column({ nullable: true })
   description: string;
 
-  @Column({ type: 'enum', enum: entityStatus, enumName: 'entity_status' })
-  status: entityStatus;
+  @Column({ type: 'enum', enum: SUPPLIER_STATUS, enumName: 'entity_status' })
+  status: SUPPLIER_STATUS;
 
   @Column({ type: 'jsonb', nullable: true })
   metadata: JSON;

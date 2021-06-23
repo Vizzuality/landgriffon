@@ -29,7 +29,7 @@ services:
     env_file: .env
     environment:
       - NODE_PATH=src
-      - DB_HOST=${API_POSTGRES_HOST}
+      - DB_HOST=postgresql
       - DB_USERNAME=${API_POSTGRES_USERNAME}
       - DB_PASSWORD=${API_POSTGRES_PASSWORD}
       - DB_DATABASE=${API_POSTGRES_DATABASE}

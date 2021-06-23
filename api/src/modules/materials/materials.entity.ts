@@ -5,17 +5,29 @@ import {
   BaseEntity,
   ManyToOne,
   JoinColumn,
+  Tree,
+  TreeChildren,
+  TreeParent,
 } from 'typeorm';
-import { entityStatus } from 'utils/entity-status.enum';
 import { Layers } from '../layers/layers.entity';
 
+export enum MATERIALS_STATUS {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  DELETED = 'deleted',
+}
+
 @Entity()
+@Tree('materialized-path')
 export class Materials extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'ltree', nullable: false, unique: true })
-  path: string;
+  @TreeChildren()
+  children: Materials[];
+
+  @TreeParent()
+  parent: Materials;
 
   @Column({ nullable: false })
   name: string;
@@ -23,8 +35,13 @@ export class Materials extends BaseEntity {
   @Column({ nullable: true })
   description: string;
 
-  @Column({ type: 'enum', enum: entityStatus, enumName: 'entity_status' })
-  status: entityStatus;
+  @Column({
+    type: 'enum',
+    enum: MATERIALS_STATUS,
+    enumName: 'entity_status',
+    default: MATERIALS_STATUS.INACTIVE,
+  })
+  status: MATERIALS_STATUS;
 
   @Column({ type: 'jsonb', nullable: true })
   metadata: JSON;

@@ -20,7 +20,12 @@ export class Suppliers extends BaseEntity {
   @Column({ nullable: true })
   description: string;
 
-  @Column({ type: 'enum', enum: SUPPLIER_STATUS, enumName: 'entity_status' })
+  @Column({
+    type: 'enum',
+    enum: SUPPLIER_STATUS,
+    enumName: 'entity_status',
+    default: SUPPLIER_STATUS.INACTIVE,
+  })
   status: SUPPLIER_STATUS;
 
   @Column({ type: 'jsonb', nullable: true })

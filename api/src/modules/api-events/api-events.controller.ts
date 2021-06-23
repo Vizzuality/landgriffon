@@ -28,8 +28,8 @@ import { DeleteResult } from 'typeorm';
 
 import {
   API_EVENT_KINDS,
-  ApiEventResult,
   ApiEvent,
+  ApiEventResult,
   QualifiedEventTopic,
 } from './api-event.entity';
 import { ApiEventsService } from './api-events.service';

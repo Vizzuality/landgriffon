@@ -41,6 +41,7 @@ export class ApiEventsService extends AppBaseService<
   ) {
     super(repo, apiEventResource.name.singular, apiEventResource.name.plural);
   }
+
   get serializerConfig(): JSONAPISerializerConfig<ApiEvent> {
     return {
       attributes: ['timestamp', 'topic', 'kind', 'data'],

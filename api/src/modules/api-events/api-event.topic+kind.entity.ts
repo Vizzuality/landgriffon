@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 import { IsEnum } from 'class-validator';
-import { Column, Entity, PrimaryColumn, ViewEntity } from 'typeorm';
+import { Column, PrimaryColumn, ViewEntity } from 'typeorm';
 
 import { API_EVENT_KINDS } from './api-event.entity';
 

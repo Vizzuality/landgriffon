@@ -1,9 +1,12 @@
-import { BaseService, FetchSpecification } from 'nestjs-base-service';
+import {
+  BaseService,
+  DEFAULT_PAGINATION,
+  FetchSpecification,
+} from 'nestjs-base-service';
 
 import * as JSONAPISerializer from 'jsonapi-serializer';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { DEFAULT_PAGINATION } from 'nestjs-base-service';
 import { castArray } from 'lodash';
 
 export class PaginationMeta {

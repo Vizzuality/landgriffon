@@ -7,20 +7,20 @@ import {
 } from '@nestjs/common';
 import * as faker from 'faker';
 import * as request from 'supertest';
+import { Response } from 'supertest';
 import { AppModule } from 'app.module';
 import { E2E_CONFIG } from '../e2e.config';
 import { v4 } from 'uuid';
 import { SignUpDto } from 'modules/authentication/dto/sign-up.dto';
 import { User } from 'modules/users/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ApiEvent, API_EVENT_KINDS } from 'modules/api-events/api-event.entity';
+import { API_EVENT_KINDS, ApiEvent } from 'modules/api-events/api-event.entity';
 import { ApiEventsModule } from 'modules/api-events/api-events.module';
 import { ApiEventsService } from 'modules/api-events/api-events.service';
 import { UsersModule } from 'modules/users/users.module';
 import { UsersService } from 'modules/users/users.service';
 import { LoginDto } from 'modules/authentication/dto/login.dto';
 import { ApiEventByTopicAndKind } from 'modules/api-events/api-event.topic+kind.entity';
-import { Response } from 'supertest';
 import { UserRepository } from 'modules/users/user.repository';
 
 /**

@@ -1,16 +1,34 @@
 {
-  "moduleFileExtensions": ["js", "json", "ts"],
-  "moduleDirectories": ["node_modules", "src"],
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
+  "moduleDirectories": [
+    "node_modules",
+    "src"
+  ],
   "rootDir": "../",
-  "roots": ["<rootDir>/src/", "<rootDir>/test/"],
+  "roots": [
+    "<rootDir>/src/",
+    "<rootDir>/test/"
+  ],
   "testEnvironment": "node",
   "testRegex": ".spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "coverageReporters": [
-    ["lcov", {"projectRoot": "../"}],
+    [
+      "lcov",
+      {
+        "projectRoot": "../"
+      }
+    ],
     "text-summary"
   ],
-  "coveragePathIgnorePatterns": ["<rootDir>/node_modules/", "<rootDir>/test/"]
+  "coveragePathIgnorePatterns": [
+    "<rootDir>/node_modules/",
+    "<rootDir>/test/"
+  ]
 }

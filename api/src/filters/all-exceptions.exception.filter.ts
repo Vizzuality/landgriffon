@@ -1,13 +1,12 @@
 import {
-  ExceptionFilter,
-  Catch,
   ArgumentsHost,
+  Catch,
+  ExceptionFilter,
   HttpException,
   HttpStatus,
   Logger,
 } from '@nestjs/common';
 import * as config from 'config';
-import { omit } from 'lodash';
 
 import * as JSONAPISerializer from 'jsonapi-serializer';
 import { JSONAPIErrorOptions } from 'jsonapi-serializer';

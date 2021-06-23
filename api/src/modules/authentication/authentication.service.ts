@@ -10,11 +10,10 @@ import { JwtService } from '@nestjs/jwt';
 
 import { User } from 'modules/users/user.entity';
 import { UsersService } from 'modules/users/users.service';
-import { hash, compare, genSalt } from 'bcrypt';
+import { compare, genSalt, hash } from 'bcrypt';
 
 import { InjectRepository } from '@nestjs/typeorm';
 import { IssuedAuthnToken } from 'modules/authentication/issued-authn-token';
-import ms = require('ms');
 import { SignUpDto } from 'modules/authentication//dto/sign-up.dto';
 import { ApiEventsService } from 'modules/api-events/api-events.service';
 import { API_EVENT_KINDS, ApiEvent } from 'modules/api-events/api-event.entity';
@@ -23,6 +22,7 @@ import * as ApiEventsUserData from 'modules/api-events/dto/apiEvents.user.data.d
 import { UserRepository } from 'modules/users/user.repository';
 import * as config from 'config';
 import { ApiProperty } from '@nestjs/swagger';
+import ms = require('ms');
 
 /**
  * Access token for the app: key user data and access token

@@ -1,4 +1,4 @@
-name: coverage
+name: Merge and upload code coverage reports
 on:
   push:
 env:

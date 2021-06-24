@@ -6,9 +6,9 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { BusinessUnits } from '../business-units/business-units.entity';
-import { Suppliers } from '../suppliers/suppliers.entity';
-import { User } from '../users/user.entity';
+import { BusinessUnit } from 'modules/business-units/business-unit.entity';
+import { Suppliers } from 'modules/suppliers/suppliers.entity';
+import { User } from 'modules/users/user.entity';
 
 export enum LOCATION_TYPES {
   PRODUCTION_UNIT = 'Production unit',
@@ -44,7 +44,7 @@ export class SourcingLocation extends BaseEntity {
   @Column()
   adminRegionId: string;
 
-  @ManyToOne(() => BusinessUnits, (bu: BusinessUnits) => bu.id)
+  @ManyToOne(() => BusinessUnit, (bu: BusinessUnit) => bu.id)
   @JoinColumn({ name: 'business_unit_id' })
   businessUnitId: string;
 

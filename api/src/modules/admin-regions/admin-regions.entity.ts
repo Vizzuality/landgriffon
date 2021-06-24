@@ -9,8 +9,7 @@ import {
   TreeChildren,
   TreeParent,
 } from 'typeorm';
-import { entityStatus } from 'utils/entity-status.enum';
-import { GeoRegions } from '../geo-regions/geo-regions.entity';
+import { GeoRegions } from 'modules/geo-regions/geo-regions.entity';
 
 export enum ADMIN_REGIONS_STATUS {
   ACTIVE = 'active',
@@ -42,7 +41,7 @@ export class AdminRegions extends BaseEntity {
     enumName: 'entity_status',
     default: ADMIN_REGIONS_STATUS.INACTIVE,
   })
-  status: entityStatus;
+  status: ADMIN_REGIONS_STATUS;
 
   @Column({ name: 'iso_a3', nullable: true })
   isoA3: string;

@@ -5,8 +5,7 @@ import {
   BaseEntity,
   OneToMany,
 } from 'typeorm';
-import { Geometry } from 'geojson';
-import { AdminRegions } from '../admin-regions/admin-regions.entity';
+import { AdminRegions } from 'modules/admin-regions/admin-regions.entity';
 
 @Entity()
 export class GeoRegions extends BaseEntity {
@@ -24,5 +23,5 @@ export class GeoRegions extends BaseEntity {
   name: string;
 
   @Column({ name: 'the_geom', type: 'geometry', nullable: true })
-  theGeom: Geometry;
+  theGeom: JSON;
 }

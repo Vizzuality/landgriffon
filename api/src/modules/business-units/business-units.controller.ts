@@ -82,10 +82,7 @@ export class BusinessUnitsController {
   @ApiOperation({ description: 'Deletes a business unit' })
   @ApiOkResponse()
   @Delete(':id')
-  async delete(
-    @Body(new ValidationPipe()) dto: UpdateBusinessUnitsDto,
-    @Param('id') id: string,
-  ): Promise<void> {
+  async delete(@Param('id') id: string): Promise<void> {
     return await this.service.remove(id);
   }
 }

@@ -9,7 +9,7 @@ import {
   TreeChildren,
   TreeParent,
 } from 'typeorm';
-import { Layers } from '../layers/layers.entity';
+import { Layer } from 'modules/layers/layer.entity';
 
 export enum MATERIALS_STATUS {
   ACTIVE = 'active',
@@ -19,15 +19,15 @@ export enum MATERIALS_STATUS {
 
 @Entity()
 @Tree('materialized-path')
-export class Materials extends BaseEntity {
+export class Material extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @TreeChildren()
-  children: Materials[];
+  children: Material[];
 
   @TreeParent()
-  parent: Materials;
+  parent: Material;
 
   @Column({ nullable: false })
   name: string;
@@ -46,7 +46,7 @@ export class Materials extends BaseEntity {
   @Column({ type: 'jsonb', nullable: true })
   metadata: JSON;
 
-  @ManyToOne(() => Layers, (layers: Layers) => layers.id)
+  @ManyToOne(() => Layer, (layers: Layer) => layers.id)
   @JoinColumn({ name: 'layers_id' })
   layersId: string;
 }

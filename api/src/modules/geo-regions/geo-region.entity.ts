@@ -5,15 +5,12 @@ import {
   BaseEntity,
   OneToMany,
 } from 'typeorm';
-import { AdminRegions } from 'modules/admin-regions/admin-regions.entity';
+import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 
 @Entity()
-export class GeoRegions extends BaseEntity {
+export class GeoRegion extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  @OneToMany(
-    () => AdminRegions,
-    (adminReg: AdminRegions) => adminReg.geoRegionId,
-  )
+  @OneToMany(() => AdminRegion, (adminReg: AdminRegion) => adminReg.geoRegionId)
   id: string;
 
   @Column({ name: 'h3_compact', type: 'text', array: true, nullable: true })
@@ -22,6 +19,6 @@ export class GeoRegions extends BaseEntity {
   @Column({ nullable: true })
   name: string;
 
-  @Column({ name: 'the_geom', type: 'geometry', nullable: true })
+  @Column({ name: 'the_geom', type: 'jsonb', nullable: true })
   theGeom: JSON;
 }

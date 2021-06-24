@@ -6,8 +6,8 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from '../users/user.entity';
-import { SourcingLocation } from '../sourcing-locations/sourcing-location.entity';
+import { User } from 'modules/users/user.entity';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 
 @Entity('sourcing_records')
 export class SourcingRecord extends BaseEntity {

@@ -1,5 +1,5 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { AdminRegions } from './admin-regions.entity';
+import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 
-@EntityRepository(AdminRegions)
-export class AdminRegionsRepository extends Repository<AdminRegions> {}
+@EntityRepository(AdminRegion)
+export class AdminRegionsRepository extends Repository<AdminRegion> {}

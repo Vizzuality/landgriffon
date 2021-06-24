@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
-import { Suppliers } from 'modules/suppliers/suppliers.entity';
+import { Supplier } from 'modules/suppliers/supplier.entity';
 import { User } from 'modules/users/user.entity';
 
 export enum LOCATION_TYPES {
@@ -48,11 +48,11 @@ export class SourcingLocation extends BaseEntity {
   @JoinColumn({ name: 'business_unit_id' })
   businessUnitId: string;
 
-  @ManyToOne(() => Suppliers, (supplier: Suppliers) => supplier.id)
+  @ManyToOne(() => Supplier, (supplier: Supplier) => supplier.id)
   @JoinColumn({ name: 't1_supplier_id' })
   t1SupplierId: string;
 
-  @ManyToOne(() => Suppliers, (supplier: Suppliers) => supplier.id)
+  @ManyToOne(() => Supplier, (supplier: Supplier) => supplier.id)
   @JoinColumn({ name: 'producer_id' })
   producerId: string;
 

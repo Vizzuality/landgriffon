@@ -1,5 +1,5 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { GeoRegions } from './geo-regions.entity';
+import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 
-@EntityRepository(GeoRegions)
-export class GeoRegionsRepository extends Repository<GeoRegions> {}
+@EntityRepository(GeoRegion)
+export class GeoRegionsRepository extends Repository<GeoRegion> {}

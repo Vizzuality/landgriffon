@@ -7,7 +7,7 @@ export enum SUPPLIER_STATUS {
 }
 
 @Entity()
-export class Suppliers extends BaseEntity {
+export class Supplier extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

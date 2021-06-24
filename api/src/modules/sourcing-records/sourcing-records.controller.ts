@@ -9,7 +9,7 @@ import {
   ValidationPipe,
   ParseIntPipe,
 } from '@nestjs/common';
-import { BusinessUnitsService } from 'modules/business-units/business-units.service';
+import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import {
   ApiForbiddenResponse,
   ApiOkResponse,
@@ -26,22 +26,22 @@ import {
   ProcessFetchSpecification,
 } from 'nestjs-base-service';
 import {
-  BusinessUnit,
-  businessUnitResource,
-} from 'modules/business-units/business-unit.entity';
-import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
-import { UpdateBusinessUnitDto } from 'modules/business-units/dto/update.business-unit.dto';
+  SourcingRecord,
+  sourcingRecordResource,
+} from 'modules/sourcing-records/sourcing-record.entity';
+import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
+import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sourcing-record.dto';
 
-@Controller(`/api/v1/business-units`)
-@ApiTags(businessUnitResource.className)
-export class BusinessUnitsController {
-  constructor(public readonly service: BusinessUnitsService) {}
+@Controller(`/api/v1/sourcing-records`)
+@ApiTags(sourcingRecordResource.className)
+export class SourcingRecordsController {
+  constructor(public readonly service: SourcingRecordsService) {}
 
   @ApiOperation({
     description: 'Find all business units',
   })
   @ApiOkResponse({
-    type: BusinessUnit,
+    type: SourcingRecord,
   })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
@@ -49,33 +49,33 @@ export class BusinessUnitsController {
   @Get()
   async findAll(
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
-  ): Promise<BusinessUnit> {
+  ): Promise<SourcingRecord> {
     const results = await this.service.findAllPaginated(fetchSpecification);
     return this.service.serialize(results.data, results.metadata);
   }
 
   @ApiOperation({ description: 'Find business unit by id' })
-  @ApiOkResponse({ type: BusinessUnit })
+  @ApiOkResponse({ type: SourcingRecord })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<BusinessUnit> {
+  async findOne(@Param('id') id: string): Promise<SourcingRecord> {
     return await this.service.serialize(await this.service.getById(id));
   }
 
   @ApiOperation({ description: 'Create a business unit' })
-  @ApiOkResponse({ type: BusinessUnit })
+  @ApiOkResponse({ type: SourcingRecord })
   @Post()
-  async create(@Body() dto: CreateBusinessUnitDto): Promise<BusinessUnit> {
+  async create(@Body() dto: CreateSourcingRecordDto): Promise<SourcingRecord> {
     return await this.service.serialize(await this.service.create(dto));
   }
 
   @ApiOperation({ description: 'Updates a business unit' })
-  @ApiOkResponse({ type: BusinessUnit })
+  @ApiOkResponse({ type: SourcingRecord })
   @Patch(':id')
   async update(
-    @Body(new ValidationPipe()) dto: UpdateBusinessUnitDto,
+    @Body(new ValidationPipe()) dto: UpdateSourcingRecordDto,
     @Param('id') id: string,
-  ): Promise<BusinessUnit> {
+  ): Promise<SourcingRecord> {
     return await this.service.serialize(await this.service.update(id, dto));
   }
 

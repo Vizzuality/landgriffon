@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { BUSINESS_UNIT_STATUS } from 'modules/business-units/business-unit.entity';
 
-export class CreateBusinessUnitsDto {
+export class CreateBusinessUnitDto {
   @IsString()
   @MinLength(2)
   @MaxLength(40)

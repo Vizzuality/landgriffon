@@ -9,7 +9,7 @@ import {
   ValidationPipe,
   ParseIntPipe,
 } from '@nestjs/common';
-import { BusinessUnitsService } from 'modules/business-units/business-units.service';
+import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import {
   ApiForbiddenResponse,
   ApiOkResponse,
@@ -25,23 +25,20 @@ import {
   FetchSpecification,
   ProcessFetchSpecification,
 } from 'nestjs-base-service';
-import {
-  BusinessUnit,
-  businessUnitResource,
-} from 'modules/business-units/business-unit.entity';
-import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
-import { UpdateBusinessUnitDto } from 'modules/business-units/dto/update.business-unit.dto';
+import { Supplier, supplierResource } from 'modules/suppliers/supplier.entity';
+import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
+import { UpdateSupplierDto } from 'modules/suppliers/dto/update.supplier.dto';
 
-@Controller(`/api/v1/business-units`)
-@ApiTags(businessUnitResource.className)
-export class BusinessUnitsController {
-  constructor(public readonly service: BusinessUnitsService) {}
+@Controller(`/api/v1/suppliers`)
+@ApiTags(supplierResource.className)
+export class SuppliersController {
+  constructor(public readonly service: SuppliersService) {}
 
   @ApiOperation({
     description: 'Find all business units',
   })
   @ApiOkResponse({
-    type: BusinessUnit,
+    type: Supplier,
   })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
@@ -49,33 +46,33 @@ export class BusinessUnitsController {
   @Get()
   async findAll(
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
-  ): Promise<BusinessUnit> {
+  ): Promise<Supplier> {
     const results = await this.service.findAllPaginated(fetchSpecification);
     return this.service.serialize(results.data, results.metadata);
   }
 
   @ApiOperation({ description: 'Find business unit by id' })
-  @ApiOkResponse({ type: BusinessUnit })
+  @ApiOkResponse({ type: Supplier })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<BusinessUnit> {
+  async findOne(@Param('id') id: string): Promise<Supplier> {
     return await this.service.serialize(await this.service.getById(id));
   }
 
   @ApiOperation({ description: 'Create a business unit' })
-  @ApiOkResponse({ type: BusinessUnit })
+  @ApiOkResponse({ type: Supplier })
   @Post()
-  async create(@Body() dto: CreateBusinessUnitDto): Promise<BusinessUnit> {
+  async create(@Body() dto: CreateSupplierDto): Promise<Supplier> {
     return await this.service.serialize(await this.service.create(dto));
   }
 
   @ApiOperation({ description: 'Updates a business unit' })
-  @ApiOkResponse({ type: BusinessUnit })
+  @ApiOkResponse({ type: Supplier })
   @Patch(':id')
   async update(
-    @Body(new ValidationPipe()) dto: UpdateBusinessUnitDto,
+    @Body(new ValidationPipe()) dto: UpdateSupplierDto,
     @Param('id') id: string,
-  ): Promise<BusinessUnit> {
+  ): Promise<Supplier> {
     return await this.service.serialize(await this.service.update(id, dto));
   }
 

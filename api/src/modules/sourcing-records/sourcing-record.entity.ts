@@ -8,6 +8,16 @@ import {
 } from 'typeorm';
 import { User } from 'modules/users/user.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { BaseServiceResource } from 'types/resource.interface';
+
+export const sourcingRecordResource: BaseServiceResource = {
+  className: 'SourcingRecord',
+  name: {
+    singular: 'sourcingRecord',
+    plural: 'sourcingRecords',
+  },
+  entitiesAllowedAsIncludes: [],
+};
 
 @Entity('sourcing_records')
 export class SourcingRecord extends BaseEntity {

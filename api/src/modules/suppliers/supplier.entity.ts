@@ -1,10 +1,20 @@
 import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from 'typeorm';
+import { BaseServiceResource } from '../../types/resource.interface';
 
 export enum SUPPLIER_STATUS {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
   DELETED = 'deleted',
 }
+
+export const supplierResource: BaseServiceResource = {
+  className: 'Supplier',
+  name: {
+    singular: 'supplier',
+    plural: 'suppliers',
+  },
+  entitiesAllowedAsIncludes: [],
+};
 
 @Entity()
 export class Supplier extends BaseEntity {

@@ -1,9 +1,9 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { CreateBusinessUnitsDto } from 'modules/business-units/dto/create.business-units.dto';
+import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
-export class UpdateBusinessUnitsDto extends PartialType(
-  CreateBusinessUnitsDto,
+export class UpdateSourcingRecordDto extends PartialType(
+  CreateSourcingRecordDto,
 ) {
   @IsString()
   @IsOptional()

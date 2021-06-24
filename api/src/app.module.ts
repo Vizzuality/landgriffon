@@ -11,6 +11,8 @@ import { MaterialsModule } from 'modules/materials/materials.module';
 import { LayersModule } from 'modules/layers/layers.module';
 import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { GeoRegionsModule } from 'modules/geo-regions/geo-regions.module';
+import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
+import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { GeoRegionsModule } from 'modules/geo-regions/geo-regions.module';
     LayersModule,
     AdminRegionsModule,
     GeoRegionsModule,
+    SourcingRecordsModule,
+    SourcingLocationsModule,
   ],
   providers: [
     {

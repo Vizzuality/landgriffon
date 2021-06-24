@@ -39,7 +39,7 @@ services:
       - postgresql
 
   postgresql:
-    image: postgis/postgis:13-3.1-alpine
+    image: postgres:13.3
     container_name: landgriffon-postgresql
     ports:
       - ${API_POSTGRES_PORT}:5432

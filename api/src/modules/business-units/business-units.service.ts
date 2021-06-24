@@ -10,8 +10,8 @@ import {
 } from 'modules/business-units/business-unit.entity';
 import { AppInfoDTO } from 'dto/info.dto';
 import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
-import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-units.dto';
-import { UpdateBusinessUnitDto } from 'modules/business-units/dto/update.business-units.dto';
+import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
+import { UpdateBusinessUnitDto } from 'modules/business-units/dto/update.business-unit.dto';
 
 @Injectable()
 export class BusinessUnitsService extends AppBaseService<

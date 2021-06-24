@@ -13,6 +13,8 @@ import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { GeoRegionsModule } from 'modules/geo-regions/geo-regions.module';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
+import { IndicatorsModule } from 'modules/indicators/indicators.module';
+import { IndicatorCoefficientsModule } from 'modules/indicator-coefficients/indicator-coefficients.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records
     GeoRegionsModule,
     SourcingRecordsModule,
     SourcingLocationsModule,
+    IndicatorsModule,
+    IndicatorCoefficientsModule,
   ],
   providers: [
     {

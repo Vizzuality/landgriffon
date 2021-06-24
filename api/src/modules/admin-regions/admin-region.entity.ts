@@ -9,7 +9,7 @@ import {
   TreeChildren,
   TreeParent,
 } from 'typeorm';
-import { GeoRegions } from 'modules/geo-regions/geo-regions.entity';
+import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 
 export enum ADMIN_REGIONS_STATUS {
   ACTIVE = 'active',
@@ -19,15 +19,15 @@ export enum ADMIN_REGIONS_STATUS {
 
 @Entity()
 @Tree('materialized-path')
-export class AdminRegions extends BaseEntity {
+export class AdminRegion extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @TreeChildren()
-  children: AdminRegions[];
+  children: AdminRegion[];
 
   @TreeParent()
-  parent: AdminRegions;
+  parent: AdminRegion;
 
   @Column({ nullable: true })
   name: string;
@@ -46,7 +46,7 @@ export class AdminRegions extends BaseEntity {
   @Column({ name: 'iso_a3', nullable: true })
   isoA3: string;
 
-  @ManyToOne(() => GeoRegions, (geo: GeoRegions) => geo.id)
+  @ManyToOne(() => GeoRegion, (geo: GeoRegion) => geo.id)
   @JoinColumn({ name: 'geo_region_id' })
   geoRegionId: string;
 }

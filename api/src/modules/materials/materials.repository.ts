@@ -1,5 +1,5 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { Materials } from './materials.entity';
+import { Material } from 'modules/materials/material.entity';
 
-@EntityRepository(Materials)
-export class MaterialsRepository extends Repository<Materials> {}
+@EntityRepository(Material)
+export class MaterialsRepository extends Repository<Material> {}

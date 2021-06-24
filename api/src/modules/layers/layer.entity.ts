@@ -5,7 +5,7 @@ import {
   BaseEntity,
   OneToMany,
 } from 'typeorm';
-import { Materials } from '../materials/materials.entity';
+import { Material } from 'modules/materials/material.entity';
 
 export enum LAYERS_STATUS {
   ACTIVE = 'active',
@@ -14,9 +14,9 @@ export enum LAYERS_STATUS {
 }
 
 @Entity()
-export class Layers extends BaseEntity {
+export class Layer extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  @OneToMany(() => Materials, (materials: Materials) => materials.layersId)
+  @OneToMany(() => Material, (materials: Material) => materials.layersId)
   id: string;
 
   @Column({ nullable: true })

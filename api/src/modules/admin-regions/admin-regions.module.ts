@@ -1,8 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AdminRegionsRepository } from './admin-regions.repository';
+import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
+import { AdminRegionsController } from 'modules/admin-regions/admin-regions.controller';
+import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AdminRegionsRepository])],
+  imports: [TypeOrmModule.forFeature([AdminRegionRepository])],
+  controllers: [AdminRegionsController],
+  providers: [AdminRegionsService],
+  exports: [AdminRegionsService],
 })
 export class AdminRegionsModule {}

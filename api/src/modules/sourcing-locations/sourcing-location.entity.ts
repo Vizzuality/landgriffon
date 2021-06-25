@@ -2,13 +2,14 @@ import {
   BaseEntity,
   Column,
   Entity,
-  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { User } from 'modules/users/user.entity';
+import { BaseServiceResource } from 'types/resource.interface';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export enum LOCATION_TYPES {
   PRODUCTION_UNIT = 'Production unit',
@@ -18,90 +19,113 @@ export enum LOCATION_TYPES {
   ORIGIN_COUNTRY = 'Origin Country',
   UNKNOWN = 'Unknown',
 }
+
 export enum LOCATION_ACCURACY {
   LOW = 'LOW',
   MID = 'MID',
   HIGH = 'HIGH',
 }
 
-@Entity('sourcing_locations')
+export const sourcingLocationResource: BaseServiceResource = {
+  className: 'SourcingLocation',
+  name: {
+    singular: 'sourcingLocation',
+    plural: 'sourcingLocations',
+  },
+  entitiesAllowedAsIncludes: [],
+};
+
+@Entity()
 export class SourcingLocation extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
+  @ApiProperty()
   id: string;
 
-  @Column({ type: 'text', nullable: true })
-  title: string;
+  @Column({ type: 'text', nullable: false })
+  @ApiProperty()
+  title!: string;
 
   /**
    * @debt Only reference: Add relationship to material entity
    */
-  @Column()
-  materialId: string;
+  @Column({ nullable: true })
+  @ApiPropertyOptional()
+  materialId?: string;
 
   /**
    * @debt Only reference: Add relationship to admin-region
    */
-  @Column()
-  adminRegionId: string;
+  @Column({ nullable: true })
+  @ApiPropertyOptional()
+  adminRegionId?: string;
 
   @ManyToOne(() => BusinessUnit, (bu: BusinessUnit) => bu.id)
-  @JoinColumn({ name: 'business_unit_id' })
+  @ApiPropertyOptional()
   businessUnitId: string;
 
   @ManyToOne(() => Supplier, (supplier: Supplier) => supplier.id)
-  @JoinColumn({ name: 't1_supplier_id' })
+  @ApiPropertyOptional()
   t1SupplierId: string;
 
   @ManyToOne(() => Supplier, (supplier: Supplier) => supplier.id)
-  @JoinColumn({ name: 'producer_id' })
+  @ApiPropertyOptional()
   producerId: string;
 
   /**
    * @debt Only reference: Add relationship to admin-region
    */
-  @Column()
-  sourcingRecordGroupId: string;
+  @Column({ nullable: true })
+  @ApiPropertyOptional()
+  sourcingRecordGroupId?: string;
 
   @Column({
     type: 'enum',
-    name: 'location_types',
     enum: LOCATION_TYPES,
-    enumName: 'location_types',
+    enumName: 'locationTypes',
+    nullable: false,
     default: LOCATION_TYPES.UNKNOWN,
   })
-  locationTypes: LOCATION_TYPES;
+  @ApiProperty()
+  locationType: LOCATION_TYPES;
 
-  @Column({ type: 'text', name: 'location_address_input', nullable: true })
+  @Column({ type: 'text', name: 'locationAddressInput', nullable: true })
+  @ApiPropertyOptional()
   locationAddressInput: string;
 
-  @Column({ type: 'text', name: 'location_country_input', nullable: true })
+  @Column({ type: 'text', name: 'locationCountryInput', nullable: true })
+  @ApiPropertyOptional()
   locationCountryInput: string;
 
   @Column({
     type: 'enum',
-    name: 'location_address_accuracy',
+    name: 'locationAddressAccuracy',
     enum: LOCATION_ACCURACY,
-    enumName: 'location_accuracy',
+    nullable: false,
     default: LOCATION_ACCURACY.LOW,
   })
+  @ApiProperty()
   locationAccuracy: LOCATION_ACCURACY;
 
   /**
    * @debt Only reference: Add relationship to geo-region
    */
-  @Column()
-  geoRegionId: string;
+  @Column({ nullable: true })
+  @ApiPropertyOptional()
+  geoRegionId?: string;
 
   @Column({ type: 'jsonb', nullable: true })
   metadata: JSON;
   @Column({
-    type: 'timestamp',
-    name: 'last_edited',
+    type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
+  @ApiPropertyOptional()
   lastEdited: string;
 
+  /**
+   * @debt This should become required once we enforce user auth to create resources
+   */
   @ManyToOne(() => User, (user: User) => user.id)
-  @JoinColumn({ name: 'last_edited_user_id' })
-  lastEditedUserId: string;
+  @ApiPropertyOptional()
+  lastEditedUserId?: string;
 }

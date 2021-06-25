@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from 'typeorm';
-import { BaseServiceResource } from '../../types/resource.interface';
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseServiceResource } from 'types/resource.interface';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export enum SUPPLIER_STATUS {
   ACTIVE = 'active',
@@ -19,25 +20,31 @@ export const supplierResource: BaseServiceResource = {
 @Entity()
 export class Supplier extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
+  @ApiProperty()
   id: string;
 
   @Column({ type: 'ltree', nullable: true, unique: true })
-  path: string;
+  path?: string;
 
+  @ApiProperty()
   @Column({ nullable: false })
-  name: string;
+  name!: string;
 
+  @ApiPropertyOptional()
   @Column({ nullable: true })
-  description: string;
+  description?: string;
 
+  @ApiProperty()
   @Column({
+    nullable: false,
     type: 'enum',
     enum: SUPPLIER_STATUS,
-    enumName: 'entity_status',
+    enumName: 'entityStatus',
     default: SUPPLIER_STATUS.INACTIVE,
   })
-  status: SUPPLIER_STATUS;
+  status!: SUPPLIER_STATUS;
 
+  @ApiPropertyOptional()
   @Column({ type: 'jsonb', nullable: true })
-  metadata: JSON;
+  metadata?: JSON;
 }

@@ -16,8 +16,8 @@ describe('AllExceptionFilter class spec (unit)', () => {
   const hostMock = {
     switchToHttp: () => {
       return {
-        getResponse: () => responseMock,
-        getRequest: () => {
+        getResponse: (): any => responseMock,
+        getRequest: (): any => {
           return { url: 1 };
         },
       };

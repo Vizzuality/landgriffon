@@ -16,7 +16,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { IssuedAuthnToken } from 'modules/authentication/issued-authn-token';
 import { SignUpDto } from 'modules/authentication//dto/sign-up.dto';
 import { ApiEventsService } from 'modules/api-events/api-events.service';
-import { API_EVENT_KINDS, ApiEvent } from 'modules/api-events/api-event.entity';
+import { API_EVENT_KINDS } from 'modules/api-events/api-event.entity';
 import { v4 } from 'uuid';
 import * as ApiEventsUserData from 'modules/api-events/dto/apiEvents.user.data.dto';
 import { UserRepository } from 'modules/users/user.repository';
@@ -135,7 +135,7 @@ export class AuthenticationService {
       kind: API_EVENT_KINDS.user__signedUp__v1alpha1,
     });
     const validationToken = v4();
-    const apiEvent: ApiEvent = await this.apiEventsService.create({
+    await this.apiEventsService.create({
       topic: newUser.id,
       kind: API_EVENT_KINDS.user__accountActivationTokenGenerated__v1alpha1,
       data: {

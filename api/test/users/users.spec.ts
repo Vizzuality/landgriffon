@@ -18,7 +18,6 @@ import { API_EVENT_KINDS, ApiEvent } from 'modules/api-events/api-event.entity';
 import { ApiEventsModule } from 'modules/api-events/api-events.module';
 import { ApiEventsService } from 'modules/api-events/api-events.service';
 import { UsersModule } from 'modules/users/users.module';
-import { UsersService } from 'modules/users/users.service';
 import { LoginDto } from 'modules/authentication/dto/login.dto';
 import { ApiEventByTopicAndKind } from 'modules/api-events/api-event.topic+kind.entity';
 import { UserRepository } from 'modules/users/user.repository';
@@ -39,7 +38,6 @@ import { UserRepository } from 'modules/users/user.repository';
 describe('UsersModule (e2e)', () => {
   let app: INestApplication;
   let apiEventsService: ApiEventsService;
-  let usersService: UsersService;
   let userRepository: UserRepository;
 
   const aNewPassword = faker.datatype.uuid();
@@ -60,17 +58,12 @@ describe('UsersModule (e2e)', () => {
       imports: [
         AppModule,
         ApiEventsModule,
-        // TypeOrmModule.forRoot({
-        //   ...apiConnections.default,
-        //   keepConnectionAlive: true,
-        // }),
         TypeOrmModule.forFeature([ApiEvent]),
         UsersModule,
       ],
     }).compile();
 
     apiEventsService = moduleFixture.get<ApiEventsService>(ApiEventsService);
-    usersService = moduleFixture.get<UsersService>(UsersService);
     userRepository = moduleFixture.get<UserRepository>(UserRepository);
 
     app = moduleFixture.createNestApplication();
@@ -157,7 +150,7 @@ describe('UsersModule (e2e)', () => {
         throw new Error('Cannot retrieve data for newly created user.');
       }
 
-      const response = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get(
           `/auth/validate-account/${newUser.id}/${validationTokenEvent?.data?.validationToken}`,
         )

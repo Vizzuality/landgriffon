@@ -94,7 +94,7 @@ export class ApiEvent {
 
 export class JSONAPIApiEventData {
   @ApiProperty()
-  type = 'countries';
+  type: string = 'countries';
 
   @ApiProperty()
   id!: string;

@@ -1,15 +1,16 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
   BaseEntity,
-  JoinColumn,
+  Column,
+  Entity,
   ManyToOne,
+  PrimaryGeneratedColumn,
   Tree,
   TreeChildren,
   TreeParent,
 } from 'typeorm';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { BaseServiceResource } from 'types/resource.interface';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export enum ADMIN_REGIONS_STATUS {
   ACTIVE = 'active',
@@ -17,10 +18,20 @@ export enum ADMIN_REGIONS_STATUS {
   DELETED = 'deleted',
 }
 
+export const adminRegionResource: BaseServiceResource = {
+  className: 'AdminRegion',
+  name: {
+    singular: 'adminRegion',
+    plural: 'adminRegions',
+  },
+  entitiesAllowedAsIncludes: [],
+};
+
 @Entity()
 @Tree('materialized-path')
 export class AdminRegion extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
+  @ApiProperty()
   id: string;
 
   @TreeChildren()
@@ -30,23 +41,33 @@ export class AdminRegion extends BaseEntity {
   parent: AdminRegion;
 
   @Column({ nullable: true })
-  name: string;
+  @ApiPropertyOptional()
+  name?: string;
 
   @Column({ nullable: true })
-  description: string;
+  @ApiPropertyOptional()
+  description?: string;
 
   @Column({
     type: 'enum',
     enum: ADMIN_REGIONS_STATUS,
-    enumName: 'entity_status',
+    enumName: 'entityStatus',
     default: ADMIN_REGIONS_STATUS.INACTIVE,
   })
-  status: ADMIN_REGIONS_STATUS;
+  @ApiProperty()
+  status!: ADMIN_REGIONS_STATUS;
 
-  @Column({ name: 'iso_a3', nullable: true })
-  isoA3: string;
+  @Column({ nullable: true })
+  @ApiPropertyOptional()
+  isoA3?: string;
 
-  @ManyToOne(() => GeoRegion, (geo: GeoRegion) => geo.id)
-  @JoinColumn({ name: 'geo_region_id' })
-  geoRegionId: string;
+  @ManyToOne(() => GeoRegion, (geo: GeoRegion) => geo.id, { eager: false })
+  @ApiProperty()
+  geoRegion: GeoRegion;
+
+  /**
+   * @debt: check if this needs to be required
+   */
+  @Column({ nullable: true })
+  geoRegionId?: number;
 }

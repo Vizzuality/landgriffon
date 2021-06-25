@@ -4,7 +4,7 @@ import { applyDecorators } from '@nestjs/common';
 
 const includeQueryParam = (fetchConfiguration?: {
   entitiesAllowedAsIncludes?: string[];
-}) =>
+}): MethodDecorator =>
   ApiQuery({
     name: 'include',
     description: fetchConfiguration?.entitiesAllowedAsIncludes?.length
@@ -22,7 +22,7 @@ const filterQueryParam = (fetchConfiguration?: {
     description?: string;
     examples?: string[];
   }[];
-}) =>
+}): MethodDecorator =>
   ApiQuery({
     name: 'filter',
     description: fetchConfiguration?.availableFilters?.length
@@ -99,7 +99,7 @@ export const JSONAPIQueryParams = (fetchConfiguration?: {
     description?: string;
     examples?: string[];
   }[];
-}) =>
+}): MethodDecorator =>
   applyDecorators(
     includeQueryParam(fetchConfiguration),
     filterQueryParam(fetchConfiguration),
@@ -127,7 +127,7 @@ export const JSONAPISingleEntityQueryParams = (fetchConfiguration?: {
     description?: string;
     examples?: string[];
   }[];
-}) =>
+}): MethodDecorator =>
   applyDecorators(
     includeQueryParam(fetchConfiguration),
     fieldsQueryParam,

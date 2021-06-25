@@ -71,9 +71,7 @@ export class UsersController {
     @Body(new ValidationPipe()) dto: UpdateUserPasswordDTO,
     @Request() req: RequestWithAuthenticatedUser,
   ): Promise<void> {
-    return await this.service.updateOwnPassword(req.user.id, dto, {
-      authenticatedUser: req.user,
-    });
+    return await this.service.updateOwnPassword(req.user.id, dto);
   }
 
   @ApiOperation({ description: 'Update a user.' })

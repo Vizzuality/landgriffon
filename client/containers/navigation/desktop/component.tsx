@@ -6,9 +6,9 @@ const DesktopNavigation = ({ items }: NavigationProps) => (
       <a
         key={item.name}
         href={item.href}
-        className="text-indigo-100 hover:bg-indigo-800 hover:text-white group w-full p-3 rounded-md flex flex-col items-center text-xs font-medium"
+        className="text-white hover:bg-green-800 group w-full p-3 rounded-md flex flex-col items-center text-xs font-medium"
       >
-        <item.icon className="text-indigo-300 group-hover:text-white h-6 w-6" aria-hidden="true" />
+        <item.icon className="h-6 w-6" aria-hidden="true" />
         <span className="mt-2">{item.name}</span>
       </a>
     ))}

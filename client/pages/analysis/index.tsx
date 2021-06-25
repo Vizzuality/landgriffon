@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { PlusIcon } from '@heroicons/react/solid';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
@@ -10,9 +11,9 @@ import ScenarioForm from 'containers/scenarios/form';
 import Interventions from 'containers/interventions';
 import InterventionForm from 'containers/interventions/form';
 import { isSubContentCollapsed, setSubContentCollapsed } from 'store/features/analysis';
+import { Anchor } from 'components/button';
 
 import type { Page } from 'components/breadcrumb/types';
-import { useEffect } from 'react';
 
 let pages: Page[] = [];
 
@@ -27,17 +28,17 @@ const AnalysisPage: React.FC = () => {
   /**
    * List scenarios
    */
-  pages = [];
+  pages = [{ name: 'Analysis', href: '/analysis' }];
   Content = () => (
     <>
       <h1>Scenarios</h1>
       <p>Select an scenario to analyse</p>
       <Scenarios />
       <Link href="/analysis?scenarios=new" shallow>
-        <a className="inline-flex items-center px-6 py-3 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-          <PlusIcon className="-ml-1 mr-3 h-5 w-5" aria-hidden="true" />
+        <Anchor size="xl">
+          <PlusIcon className="-ml-5 mr-3 h-5 w-5" aria-hidden="true" />
           Create scenario
-        </a>
+        </Anchor>
       </Link>
     </>
   );
@@ -46,7 +47,10 @@ const AnalysisPage: React.FC = () => {
    * Create scenario
    */
   if (scenarios && scenarios === 'new') {
-    pages = [{ name: 'New scenario', href: '/analysis?scenarios=new' }];
+    pages = [
+      { name: 'Analysis', href: '/analysis' },
+      { name: 'New scenario', href: '/analysis?scenarios=new' },
+    ];
     Content = () => (
       <>
         <div>
@@ -63,7 +67,10 @@ const AnalysisPage: React.FC = () => {
    * Edit scenario
    */
   if (scenarios && scenarios === 'edit') {
-    pages = [{ name: 'Edit scenario', href: '/analysis?scenarios=edit' }];
+    pages = [
+      { name: 'Analysis', href: '/analysis' },
+      { name: 'Edit scenario', href: '/analysis?scenarios=edit' },
+    ];
     Content = () => (
       <>
         <h1>Edit scenario</h1>

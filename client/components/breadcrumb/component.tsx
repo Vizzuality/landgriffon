@@ -7,22 +7,30 @@ export type BreadcrumbProps = {
   pages: Page[];
 };
 
-const BREADCRUMB_ITEM_CLASSNAME = 'text-sm font-medium text-gray-400 hover:text-gray-500';
+const BREADCRUMB_ITEM_CLASSNAME = 'text-sm font-medium text-gray-600 hover:text-gray-900';
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ pages }: BreadcrumbProps) => {
+  if (pages.length === 0) return null;
+
   const middlePages = [...pages].slice(1, pages.length);
 
   return (
     <nav className="flex" aria-label="Breadcrumb">
-      <ol className="flex items-center space-x-4">
+      <ol className="flex items-center space-x-2">
         <li>
           <div>
             <Link href={pages[0].href} shallow>
-              <a className={BREADCRUMB_ITEM_CLASSNAME}>{pages[0].name}</a>
+              <a
+                className={classNames(BREADCRUMB_ITEM_CLASSNAME, {
+                  'text-gray-900': pages.length === 1,
+                })}
+              >
+                {pages[0].name}
+              </a>
             </Link>
           </div>
         </li>
-        {middlePages.map((page) => (
+        {middlePages.map((page, index) => (
           <li key={page.name}>
             <div className="flex items-center">
               <svg
@@ -35,7 +43,13 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ pages }: BreadcrumbProps) => {
                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
               </svg>
               <Link href={page.href} shallow>
-                <a className={classNames(BREADCRUMB_ITEM_CLASSNAME, 'ml-4')}>{page.name}</a>
+                <a
+                  className={classNames(BREADCRUMB_ITEM_CLASSNAME, 'ml-2', {
+                    'text-gray-900': index === middlePages.length - 1,
+                  })}
+                >
+                  {page.name}
+                </a>
               </Link>
             </div>
           </li>

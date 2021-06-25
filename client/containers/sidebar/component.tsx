@@ -6,6 +6,8 @@ import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { isMenuMobileOpen, setMenuMobileOpen } from 'store/features/ui';
 import MobileNavigation from 'containers/navigation/mobile';
 import DesktopNavigation from 'containers/navigation/desktop';
+import Avatar from 'components/avatar';
+
 import type { NavigationList } from 'containers/navigation/types';
 
 const user = {
@@ -58,7 +60,7 @@ const Sidebar = () => {
             leaveFrom="translate-x-0"
             leaveTo="-translate-x-full"
           >
-            <div className="relative max-w-xs w-full bg-white pt-5 pb-4 flex-1 flex flex-col">
+            <div className="relative max-w-xs w-full bg-green-700 pt-5 pb-4 flex-1 flex flex-col">
               <Transition.Child
                 as={Fragment}
                 enter="ease-in-out duration-300"
@@ -83,29 +85,19 @@ const Sidebar = () => {
                 <div className="flex-shrink-0 flex items-center px-4">
                   <img
                     className="h-8 w-auto"
-                    src="https://tailwindui.com/img/logos/workflow-mark.svg?color=indigo&shade=600"
-                    alt="Workflow"
+                    src="https://tailwindui.com/img/logos/workflow-mark.svg?color=white"
+                    alt="Landgriffon"
                   />
                 </div>
                 <MobileNavigation items={navigationItems} />
               </div>
-              <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
+              <div className="flex-shrink-0 flex p-4">
                 <a href="#" className="flex-shrink-0 group block">
                   <div className="flex items-center">
-                    <div>
-                      <img
-                        className="inline-block h-10 w-10 rounded-full"
-                        src={user.imageUrl}
-                        alt=""
-                      />
-                    </div>
+                    <Avatar src={user.imageUrl} />
                     <div className="ml-3">
-                      <p className="text-base font-medium text-gray-700 group-hover:text-gray-900">
-                        {user.name}
-                      </p>
-                      <p className="text-sm font-medium text-gray-500 group-hover:text-gray-700">
-                        Account Settings
-                      </p>
+                      <p className="text-base font-medium text-white">{user.name}</p>
+                      <p className="text-sm font-medium text-gray-400">Account Settings</p>
                     </div>
                   </div>
                 </a>
@@ -120,21 +112,21 @@ const Sidebar = () => {
 
       {/* Static sidebar for desktop */}
       <div className="hidden lg:flex lg:flex-shrink-0">
-        <div className="flex flex-col w-28 bg-indigo-700">
+        <div className="flex flex-col w-28 bg-green-700">
           <div className="flex flex-col h-0 flex-1 overflow-y-auto">
             <div className="flex-1 flex flex-col">
               <div className="flex-shrink-0 py-4 flex items-center justify-center">
                 <img
                   className="h-8 w-auto"
                   src="https://tailwindui.com/img/logos/workflow-mark.svg?color=white"
-                  alt="Workflow"
+                  alt="Landgriffon"
                 />
               </div>
               <DesktopNavigation items={navigationItems} />
             </div>
             <div className="flex-shrink-0 flex pb-5">
-              <a href="#" className="flex-shrink-0 w-full">
-                <img className="block mx-auto h-10 w-10 rounded-full" src={user.imageUrl} alt="" />
+              <a href="#" className="flex flex-shrink-0 w-full justify-center">
+                <Avatar src={user.imageUrl} />
                 <div className="sr-only">
                   <p>{user.name}</p>
                   <p>Account settings</p>

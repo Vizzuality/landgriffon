@@ -1,12 +1,11 @@
 import { ButtonHTMLAttributes, AnchorHTMLAttributes, FC } from 'react';
-import Link from 'next/link';
 import cx from 'classnames';
 
 const COMMON_CLASSNAMES =
-  'inline-flex items-center font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500';
+  'inline-flex items-center justify-center font-medium rounded-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500';
 
 const THEME = {
-  primary: 'border-transparent shadow-sm text-white bg-indigo-600 hover:bg-indigo-700',
+  primary: 'border-transparent shadow-sm text-white bg-green-700 hover:bg-green-800',
   secondary: 'border-gray-300 shadow-sm text-gray-700 bg-white hover:bg-gray-50',
 };
 
@@ -16,12 +15,10 @@ const SIZE = {
   xl: 'text-base px-6 py-3',
 };
 
-export interface AnchorButtonProps {
-  children: React.ReactNode;
+export type AnchorButtonProps = {
   theme?: 'primary' | 'secondary';
   size?: 'xs' | 'base' | 'xl';
-  className?: string | any;
-}
+};
 
 // Button props
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
@@ -52,31 +49,6 @@ function buildClassName({ className, disabled, size = 'base', theme = 'primary' 
     'opacity-50 pointer-events-none': disabled,
   });
 }
-
-export const LinkAnchor: FC<AnchorProps> = ({
-  children,
-  theme = 'primary',
-  size = 'base',
-  className,
-  disabled,
-  href,
-  shallow,
-  ...restProps
-}: AnchorProps) => (
-  <Link href={href as string} shallow={shallow}>
-    <a
-      className={buildClassName({
-        className,
-        disabled,
-        size,
-        theme,
-      } as AnchorProps)}
-      {...restProps}
-    >
-      {children}
-    </a>
-  </Link>
-);
 
 export const Anchor: FC<AnchorProps> = ({
   children,
@@ -131,13 +103,10 @@ export const Button: FC<ButtonProps> = ({
   </button>
 );
 
-export const LinkButton: Overload = (props: ButtonProps | AnchorProps) => {
+export const LinkButton: Overload = (props: AnchorProps | ButtonProps) => {
   // We consider a link button when href attribute exits
   if (hasHref(props)) {
-    if (props.href?.startsWith('http')) {
-      return <Anchor {...props} />;
-    }
-    return <LinkAnchor {...props} />;
+    return <Anchor {...props} />;
   }
   return <Button {...props} />;
 };

@@ -7,19 +7,19 @@ import {
   ApiEvent,
   apiEventResource,
   QualifiedEventTopic,
-} from './api-event.entity';
+} from 'modules/api-events/api-event.entity';
 import {
   ApiEventByTopicAndKind,
   LatestApiEventByTopicAndKind,
-} from './api-event.topic+kind.entity';
+} from 'modules/api-events/api-event.topic+kind.entity';
 
 import { isNil } from 'lodash';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
 } from 'utils/app-base.service';
-import { CreateApiEventDTO } from './dto/create.api-event.dto';
-import { UpdateApiEventDTO } from './dto/update.api-event.dto';
+import { CreateApiEventDTO } from 'modules/api-events/dto/create.api-event.dto';
+import { UpdateApiEventDTO } from 'modules/api-events/dto/update.api-event.dto';
 import { AppInfoDTO } from 'dto/info.dto';
 
 @Injectable()

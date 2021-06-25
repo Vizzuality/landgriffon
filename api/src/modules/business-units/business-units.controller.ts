@@ -1,13 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
   Post,
-  Delete,
   ValidationPipe,
-  ParseIntPipe,
 } from '@nestjs/common';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import {

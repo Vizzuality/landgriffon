@@ -1,11 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsEnum,
+  IsJSON,
   IsOptional,
+  IsString,
   MaxLength,
   MinLength,
-  IsString,
-  IsJSON,
-  IsEnum,
 } from 'class-validator';
 import { BUSINESS_UNIT_STATUS } from 'modules/business-units/business-unit.entity';
 

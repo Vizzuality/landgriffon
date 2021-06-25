@@ -31,9 +31,9 @@ import {
   ApiEvent,
   ApiEventResult,
   QualifiedEventTopic,
-} from './api-event.entity';
-import { ApiEventsService } from './api-events.service';
-import { CreateApiEventDTO } from './dto/create.api-event.dto';
+} from 'modules/api-events/api-event.entity';
+import { ApiEventsService } from 'modules/api-events/api-events.service';
+import { CreateApiEventDTO } from 'modules/api-events/dto/create.api-event.dto';
 
 @Controller(`/api/v1/api-events`)
 @UseGuards(AuthGuard('jwt'))

@@ -1,11 +1,13 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
   BaseEntity,
+  Column,
+  Entity,
   OneToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Material } from 'modules/materials/material.entity';
+import { BaseServiceResource } from 'types/resource.interface';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export enum LAYERS_STATUS {
   ACTIVE = 'active',
@@ -13,26 +15,42 @@ export enum LAYERS_STATUS {
   DELETED = 'deleted',
 }
 
+export const LayerResource: BaseServiceResource = {
+  className: 'Layer',
+  name: {
+    singular: 'Layer',
+    plural: 'Layers',
+  },
+  entitiesAllowedAsIncludes: [],
+};
+
 @Entity()
 export class Layer extends BaseEntity {
+  @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
-  @OneToMany(() => Material, (materials: Material) => materials.layersId)
-  id: string;
+  id!: string;
 
+  @ApiPropertyOptional()
   @Column({ nullable: true })
-  text: string;
+  text?: string;
 
-  @Column({ name: 'layer_manager_config', type: 'jsonb', nullable: true })
-  layerManagerConfig: string;
+  @ApiPropertyOptional()
+  @Column({ type: 'jsonb', nullable: true })
+  layerManagerConfig?: string;
 
+  @ApiProperty()
   @Column({
     type: 'enum',
     enum: LAYERS_STATUS,
-    enumName: 'entity_status',
+    enumName: 'entityStatus',
     default: LAYERS_STATUS.INACTIVE,
   })
-  status: LAYERS_STATUS;
+  status!: LAYERS_STATUS;
 
+  @ApiPropertyOptional()
   @Column({ type: 'jsonb', nullable: true })
-  metadata: JSON;
+  metadata?: JSON;
+
+  @OneToMany(() => Material, (materials: Material) => materials.layerId)
+  materials: Material[];
 }

@@ -2,13 +2,13 @@ import {
   BaseEntity,
   Column,
   Entity,
-  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from 'modules/users/user.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { BaseServiceResource } from 'types/resource.interface';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export const sourcingRecordResource: BaseServiceResource = {
   className: 'SourcingRecord',
@@ -22,29 +22,37 @@ export const sourcingRecordResource: BaseServiceResource = {
 @Entity('sourcing_records')
 export class SourcingRecord extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @ApiProperty()
+  id!: string;
 
   @Column({ type: 'numeric', nullable: true })
-  tonnage: number;
+  @ApiPropertyOptional()
+  tonnage?: number;
 
   @Column({ type: 'int', nullable: true })
-  year: number;
+  @ApiPropertyOptional()
+  year?: number;
 
   @ManyToOne(() => SourcingLocation, (srcLoc: SourcingLocation) => srcLoc.id)
-  @JoinColumn({ name: 'sourcing_location_id' })
-  sourcingLocationsId: string;
+  @ApiProperty()
+  sourcingLocationsId!: string;
 
   @Column({ type: 'jsonb', nullable: true })
-  metadata: JSON;
+  @ApiPropertyOptional()
+  metadata?: JSON;
 
   @Column({
     type: 'timestamp',
     name: 'last_edited',
     default: () => 'CURRENT_TIMESTAMP',
   })
-  lastEdited: string;
+  @ApiProperty()
+  lastEdited!: string;
 
+  /**
+   * @Debt: make this required and auto-set
+   */
   @ManyToOne(() => User, (user: User) => user.id)
-  @JoinColumn({ name: 'last_edited_user_id' })
-  lastEditedUserId: string;
+  @ApiProperty()
+  lastEditedUserId?: string;
 }

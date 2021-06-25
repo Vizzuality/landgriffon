@@ -46,7 +46,7 @@ export class AuthenticationController {
   })
   async login(
     @Request() req: RequestWithAuthenticatedUser,
-    @Body(ValidationPipe) _dto: LoginDto,
+    @Body(ValidationPipe) loginDto: LoginDto,
   ): Promise<AccessToken> {
     return this.authenticationService.login(req.user);
   }

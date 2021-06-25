@@ -1,13 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
   Post,
-  Delete,
   ValidationPipe,
-  ParseIntPipe,
 } from '@nestjs/common';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import {

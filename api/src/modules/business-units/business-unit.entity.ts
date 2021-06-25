@@ -3,9 +3,9 @@ import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
+  Tree,
   TreeChildren,
   TreeParent,
-  Tree,
 } from 'typeorm';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -29,6 +29,7 @@ export const businessUnitResource: BaseServiceResource = {
 @Tree('materialized-path')
 export class BusinessUnit extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
+  @ApiProperty()
   id!: string;
 
   @TreeChildren()

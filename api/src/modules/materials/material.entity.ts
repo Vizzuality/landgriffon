@@ -1,15 +1,16 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
   BaseEntity,
+  Column,
+  Entity,
   ManyToOne,
-  JoinColumn,
+  PrimaryGeneratedColumn,
   Tree,
   TreeChildren,
   TreeParent,
 } from 'typeorm';
 import { Layer } from 'modules/layers/layer.entity';
+import { BaseServiceResource } from 'types/resource.interface';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export enum MATERIALS_STATUS {
   ACTIVE = 'active',
@@ -17,11 +18,21 @@ export enum MATERIALS_STATUS {
   DELETED = 'deleted',
 }
 
+export const materialResource: BaseServiceResource = {
+  className: 'Material',
+  name: {
+    singular: 'material',
+    plural: 'materials',
+  },
+  entitiesAllowedAsIncludes: [],
+};
+
 @Entity()
 @Tree('materialized-path')
 export class Material extends BaseEntity {
+  @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @TreeChildren()
   children: Material[];
@@ -30,23 +41,30 @@ export class Material extends BaseEntity {
   parent: Material;
 
   @Column({ nullable: false })
-  name: string;
+  @ApiProperty()
+  name!: string;
 
   @Column({ nullable: true })
-  description: string;
+  @ApiPropertyOptional()
+  description?: string;
 
+  @ApiProperty()
   @Column({
     type: 'enum',
     enum: MATERIALS_STATUS,
     enumName: 'entity_status',
     default: MATERIALS_STATUS.INACTIVE,
   })
-  status: MATERIALS_STATUS;
+  status!: MATERIALS_STATUS;
 
+  @ApiPropertyOptional()
   @Column({ type: 'jsonb', nullable: true })
-  metadata: JSON;
+  metadata?: JSON;
 
-  @ManyToOne(() => Layer, (layers: Layer) => layers.id)
-  @JoinColumn({ name: 'layers_id' })
-  layersId: string;
+  @ManyToOne(() => Layer, (layer: Layer) => layer.materials, { eager: false })
+  layer: Layer;
+
+  @ApiProperty()
+  @Column()
+  layerId!: string;
 }

@@ -7,12 +7,9 @@ const MobileNavigation = ({ items }: NavigationProps) => (
         <a
           key={item.name}
           href={item.href}
-          className="group p-2 rounded-md flex items-center text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+          className="group p-2 rounded-md flex items-center text-base font-medium text-white hover:bg-gray-50"
         >
-          <item.icon
-            className="mr-4 h-6 w-6 text-gray-400 group-hover:text-gray-500"
-            aria-hidden="true"
-          />
+          <item.icon className="mr-4 h-6 w-6 text-white" aria-hidden="true" />
           {item.name}
         </a>
       ))}

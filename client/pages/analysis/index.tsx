@@ -32,7 +32,7 @@ const AnalysisPage: React.FC = () => {
   Content = () => (
     <>
       <h1>Analyse impact</h1>
-      <p>Select the scenario you want to analyse</p>
+      <p className="text-sm mt-2 mb-2">Select the scenario you want to analyse</p>
       <Scenarios />
       <Link href="/analysis?scenarios=new" shallow>
         <Anchor size="xl">
@@ -41,7 +41,7 @@ const AnalysisPage: React.FC = () => {
         </Anchor>
       </Link>
       <div className="mt-4 p-6 text-center">
-        <p>
+        <p className="text-sm">
           Scenarios let you simulate changes in sourcing to evaluate how they would affect impacts
           and risks. Create a scenario to get started.
         </p>
@@ -81,7 +81,7 @@ const AnalysisPage: React.FC = () => {
       <>
         <h1>Edit scenario</h1>
         <Link href="/analysis" shallow>
-          <a>Cancel</a>
+          <Anchor>Cancel</Anchor>
         </Link>
       </>
     );

@@ -13,10 +13,9 @@ export enum INDICATOR_STATUS {
   DELETED = 'deleted',
 }
 
-@Entity('indicators')
+@Entity()
 export class Indicator extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  @OneToMany(() => IndicatorCoefficient, (ic: IndicatorCoefficient) => ic.id)
   id: string;
 
   @Column({ type: 'text', nullable: false, unique: true })
@@ -41,4 +40,10 @@ export class Indicator extends BaseEntity {
 
   @Column({ type: 'jsonb', nullable: true })
   metadata: JSON;
+
+  @OneToMany(
+    () => IndicatorCoefficient,
+    (ic: IndicatorCoefficient) => ic.indicator,
+  )
+  indicatorCoefficients: IndicatorCoefficient[];
 }

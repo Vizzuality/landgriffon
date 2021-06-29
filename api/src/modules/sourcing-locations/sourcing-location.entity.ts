@@ -2,12 +2,15 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { User } from 'modules/users/user.entity';
+import { Material } from 'modules/materials/material.entity';
+import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -38,69 +41,55 @@ export const sourcingLocationResource: BaseServiceResource = {
 @Entity()
 export class SourcingLocation extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  @ApiProperty()
   id: string;
 
-  @Column({ type: 'text', nullable: false })
-  @ApiProperty()
-  title!: string;
+  @Column({ type: 'text', nullable: true })
+  title: string;
 
   /**
    * @debt Only reference: Add relationship to material entity
    */
-  @Column({ nullable: true })
-  @ApiPropertyOptional()
-  materialId?: string;
+  @ManyToOne(() => Material, (mat: Material) => mat.sourcingLocations)
+  material: Material;
+
+  @ManyToOne(() => AdminRegion, (aR: AdminRegion) => aR.sourcingLocations)
+  adminRegion: AdminRegion;
+
+  @ManyToOne(() => BusinessUnit, (bu: BusinessUnit) => bu.sourcingLocations)
+  businessUnit: BusinessUnit;
+
+  @ManyToOne(() => Supplier, (supplier: Supplier) => supplier.sourcingLocations)
+  t1Supplier: Supplier;
+
+  @ManyToOne(() => Supplier, (supplier: Supplier) => supplier.sourcingLocations)
+  producer: Supplier;
 
   /**
    * @debt Only reference: Add relationship to admin-region
    */
-  @Column({ nullable: true })
-  @ApiPropertyOptional()
-  adminRegionId?: string;
-
-  @ManyToOne(() => BusinessUnit, (bu: BusinessUnit) => bu.id)
-  @ApiPropertyOptional()
-  businessUnitId: string;
-
-  @ManyToOne(() => Supplier, (supplier: Supplier) => supplier.id)
-  @ApiPropertyOptional()
-  t1SupplierId: string;
-
-  @ManyToOne(() => Supplier, (supplier: Supplier) => supplier.id)
-  @ApiPropertyOptional()
-  producerId: string;
-
-  /**
-   * @debt Only reference: Add relationship to admin-region
-   */
-  @Column({ nullable: true })
-  @ApiPropertyOptional()
-  sourcingRecordGroupId?: string;
+  @Column()
+  sourcingRecordGroupId: string;
 
   @Column({
     type: 'enum',
+    name: 'location_types',
     enum: LOCATION_TYPES,
-    enumName: 'locationTypes',
-    nullable: false,
+    enumName: 'location_types',
     default: LOCATION_TYPES.UNKNOWN,
   })
-  @ApiProperty()
-  locationType: LOCATION_TYPES;
+  locationTypes: LOCATION_TYPES;
 
-  @Column({ type: 'text', name: 'locationAddressInput', nullable: true })
-  @ApiPropertyOptional()
+  @Column({ type: 'text', name: 'location_address_input', nullable: true })
   locationAddressInput: string;
 
-  @Column({ type: 'text', name: 'locationCountryInput', nullable: true })
-  @ApiPropertyOptional()
+  @Column({ type: 'text', name: 'location_country_input', nullable: true })
   locationCountryInput: string;
 
   @Column({
     type: 'enum',
     name: 'locationAddressAccuracy',
     enum: LOCATION_ACCURACY,
-    nullable: false,
+    enumName: 'location_accuracy',
     default: LOCATION_ACCURACY.LOW,
   })
   @ApiProperty()
@@ -116,16 +105,14 @@ export class SourcingLocation extends BaseEntity {
   @Column({ type: 'jsonb', nullable: true })
   metadata: JSON;
   @Column({
-    type: 'timestamptz',
+    type: 'timestamp',
+    name: 'last_edited',
     default: () => 'CURRENT_TIMESTAMP',
   })
   @ApiPropertyOptional()
   lastEdited: string;
 
-  /**
-   * @debt This should become required once we enforce user auth to create resources
-   */
-  @ManyToOne(() => User, (user: User) => user.id)
   @ApiPropertyOptional()
-  lastEditedUserId?: string;
+  @ManyToOne(() => User, (user: User) => user.sourcingLocations)
+  lastEditedUser: User;
 }

@@ -51,6 +51,6 @@ export class Layer extends BaseEntity {
   @Column({ type: 'jsonb', nullable: true })
   metadata?: JSON;
 
-  @OneToMany(() => Material, (materials: Material) => materials.layerId)
+  @OneToMany(() => Material, (materials: Material) => materials.layer)
   materials: Material[];
 }

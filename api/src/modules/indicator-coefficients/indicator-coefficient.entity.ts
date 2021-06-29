@@ -2,7 +2,6 @@ import {
   BaseEntity,
   Column,
   Entity,
-  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -11,28 +10,19 @@ import { Material } from 'modules/materials/material.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { User } from 'modules/users/user.entity';
 
-@Entity('indicator_coefficients')
+@Entity()
 export class IndicatorCoefficient extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ type: 'int', nullable: true })
-  value: number;
-
-  @ManyToOne(() => Indicator, (indicator: Indicator) => indicator.id)
-  @JoinColumn({ name: 'indicator_id' })
-  indicatorId: string;
-
-  @ManyToOne(() => Material, (mat: Material) => mat.id)
-  @JoinColumn({ name: 'material_id' })
-  materialId: string;
+  value?: number;
 
   @Column({ type: 'int' })
-  year: number;
+  year?: number;
 
-  @ManyToOne(() => AdminRegion, (ar: AdminRegion) => ar.id)
-  @JoinColumn({ name: 'admin_region_id' })
-  adminRegionId: string;
+  @ManyToOne(() => AdminRegion, (ar: AdminRegion) => ar.indicatorCoefficients)
+  adminRegion: AdminRegion;
 
   /**
    * @debt: Reference only: add relation to indicator-source
@@ -42,13 +32,20 @@ export class IndicatorCoefficient extends BaseEntity {
   indicatorSourceId: string;
 
   @Column({
-    type: 'timestamp',
-    name: 'last_edited',
+    type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
   lastEdited: string;
 
-  @ManyToOne(() => User, (user: User) => user.id)
-  @JoinColumn({ name: 'last_edited_user_id' })
-  lastEditedUserId: string;
+  @ManyToOne(() => User, (user: User) => user.indicatorCoefficients)
+  user: User;
+
+  @ManyToOne(
+    () => Indicator,
+    (indicator: Indicator) => indicator.indicatorCoefficients,
+  )
+  indicator: Indicator;
+
+  @ManyToOne(() => Material, (mat: Material) => mat.indicatorCoefficients)
+  material: Material;
 }

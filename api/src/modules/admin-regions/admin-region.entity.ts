@@ -7,10 +7,13 @@ import {
   Tree,
   TreeChildren,
   TreeParent,
+  OneToMany,
 } from 'typeorm';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 
 export enum ADMIN_REGIONS_STATUS {
   ACTIVE = 'active',
@@ -68,6 +71,12 @@ export class AdminRegion extends BaseEntity {
   /**
    * @debt: check if this needs to be required
    */
-  @Column({ nullable: true })
-  geoRegionId?: number;
+  @OneToMany(
+    () => SourcingLocation,
+    (srcLoc: SourcingLocation) => srcLoc.material,
+  )
+  sourcingLocations: SourcingLocation[];
+
+  @ManyToOne(() => GeoRegion, (geo: GeoRegion) => geo.adminRegions)
+  geoRegion: GeoRegion;
 }

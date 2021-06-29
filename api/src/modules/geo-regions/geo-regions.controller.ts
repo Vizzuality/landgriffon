@@ -34,7 +34,7 @@ import { UpdateGeoRegionDto } from 'modules/geo-regions/dto/update.geo-region.dt
 @Controller(`/api/v1/geo-regions`)
 @ApiTags(geoRegionResource.className)
 export class GeoRegionsController {
-  constructor(public readonly service: GeoRegionsService) {}
+  constructor(public readonly geoRegionsService: GeoRegionsService) {}
 
   @ApiOperation({
     description: 'Find all geo regions',
@@ -49,8 +49,10 @@ export class GeoRegionsController {
   async findAll(
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
   ): Promise<GeoRegion> {
-    const results = await this.service.findAllPaginated(fetchSpecification);
-    return this.service.serialize(results.data, results.metadata);
+    const results = await this.geoRegionsService.findAllPaginated(
+      fetchSpecification,
+    );
+    return this.geoRegionsService.serialize(results.data, results.metadata);
   }
 
   @ApiOperation({ description: 'Find geo region by id' })
@@ -58,14 +60,18 @@ export class GeoRegionsController {
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<GeoRegion> {
-    return await this.service.serialize(await this.service.getById(id));
+    return await this.geoRegionsService.serialize(
+      await this.geoRegionsService.getById(id),
+    );
   }
 
   @ApiOperation({ description: 'Create a geo region' })
   @ApiOkResponse({ type: GeoRegion })
   @Post()
   async create(@Body() dto: CreateGeoRegionDto): Promise<GeoRegion> {
-    return await this.service.serialize(await this.service.create(dto));
+    return await this.geoRegionsService.serialize(
+      await this.geoRegionsService.create(dto),
+    );
   }
 
   @ApiOperation({ description: 'Updates a geo region' })
@@ -75,13 +81,15 @@ export class GeoRegionsController {
     @Body(new ValidationPipe()) dto: UpdateGeoRegionDto,
     @Param('id') id: string,
   ): Promise<GeoRegion> {
-    return await this.service.serialize(await this.service.update(id, dto));
+    return await this.geoRegionsService.serialize(
+      await this.geoRegionsService.update(id, dto),
+    );
   }
 
   @ApiOperation({ description: 'Deletes a geo region' })
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
-    return await this.service.remove(id);
+    return await this.geoRegionsService.remove(id);
   }
 }

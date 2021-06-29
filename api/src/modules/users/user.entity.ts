@@ -1,6 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { BaseServiceResource } from 'types/resource.interface';
+import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 
 export const userResource: BaseServiceResource = {
   className: 'User',
@@ -67,6 +75,15 @@ export class User extends BaseEntity {
   @ApiProperty()
   @Column('boolean', { name: 'is_deleted', default: false })
   isDeleted!: boolean;
+
+  @OneToMany(() => IndicatorCoefficient, (ic: IndicatorCoefficient) => ic.user)
+  indicatorCoefficients: IndicatorCoefficient[];
+
+  @OneToMany(
+    () => SourcingLocation,
+    (sc: SourcingLocation) => sc.lastEditedUser,
+  )
+  sourcingLocations: SourcingLocation[];
 }
 
 export class JSONAPIUserData {

@@ -3,12 +3,14 @@ import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
-  Tree,
   TreeChildren,
   TreeParent,
+  Tree,
+  OneToMany,
 } from 'typeorm';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 
 export enum BUSINESS_UNIT_STATUS {
   ACTIVE = 'active',
@@ -58,4 +60,10 @@ export class BusinessUnit extends BaseEntity {
   @Column({ type: 'jsonb', nullable: true })
   @ApiPropertyOptional()
   metadata?: JSON;
+
+  @OneToMany(
+    () => SourcingLocation,
+    (srcLoc: SourcingLocation) => srcLoc.material,
+  )
+  sourcingLocations: SourcingLocation[];
 }

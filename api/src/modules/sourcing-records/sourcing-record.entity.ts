@@ -2,6 +2,7 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -34,8 +35,9 @@ export class SourcingRecord extends BaseEntity {
   year?: number;
 
   @ManyToOne(() => SourcingLocation, (srcLoc: SourcingLocation) => srcLoc.id)
+  @JoinColumn()
   @ApiProperty()
-  sourcingLocationsId!: string;
+  sourcingLocationsId: string;
 
   @Column({ type: 'jsonb', nullable: true })
   @ApiPropertyOptional()
@@ -46,8 +48,7 @@ export class SourcingRecord extends BaseEntity {
     name: 'last_edited',
     default: () => 'CURRENT_TIMESTAMP',
   })
-  @ApiProperty()
-  lastEdited!: string;
+  lastEdited: string;
 
   /**
    * @Debt: make this required and auto-set
@@ -55,4 +56,5 @@ export class SourcingRecord extends BaseEntity {
   @ManyToOne(() => User, (user: User) => user.id)
   @ApiProperty()
   lastEditedUserId?: string;
+
 }

@@ -1,3 +1,12 @@
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  BaseEntity,
+  OneToMany,
+} from 'typeorm';
+import { BaseServiceResource } from 'types/resource.interface';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -36,7 +45,6 @@ export class Supplier extends BaseEntity {
 
   @ApiProperty()
   @Column({
-    nullable: false,
     type: 'enum',
     enum: SUPPLIER_STATUS,
     enumName: 'entityStatus',
@@ -47,4 +55,10 @@ export class Supplier extends BaseEntity {
   @ApiPropertyOptional()
   @Column({ type: 'jsonb', nullable: true })
   metadata?: JSON;
+
+  @OneToMany(
+    () => SourcingLocation,
+    (srcLoc: SourcingLocation) => srcLoc.material,
+  )
+  sourcingLocations: SourcingLocation[];
 }

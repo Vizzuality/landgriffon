@@ -1,16 +1,20 @@
 import {
-  BaseEntity,
-  Column,
   Entity,
-  ManyToOne,
   PrimaryGeneratedColumn,
+  Column,
+  BaseEntity,
+  ManyToOne,
+  JoinColumn,
   Tree,
   TreeChildren,
   TreeParent,
+  OneToMany,
 } from 'typeorm';
 import { Layer } from 'modules/layers/layer.entity';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 
 export enum MATERIALS_STATUS {
   ACTIVE = 'active',
@@ -61,6 +65,17 @@ export class Material extends BaseEntity {
   @Column({ type: 'jsonb', nullable: true })
   metadata?: JSON;
 
+  @OneToMany(
+    () => IndicatorCoefficient,
+    (ic: IndicatorCoefficient) => ic.material,
+  )
+  indicatorCoefficients: IndicatorCoefficient[];
+
+  @OneToMany(
+    () => SourcingLocation,
+    (srcLoc: SourcingLocation) => srcLoc.material,
+  )
+  sourcingLocations: SourcingLocation[];
   @ManyToOne(() => Layer, (layer: Layer) => layer.materials, { eager: false })
   layer: Layer;
 

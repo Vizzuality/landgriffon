@@ -22,10 +22,10 @@ export class AdminRegionsService extends AppBaseService<
 > {
   constructor(
     @InjectRepository(AdminRegionRepository)
-    protected readonly repository: AdminRegionRepository,
+    protected readonly adminRegionRepository: AdminRegionRepository,
   ) {
     super(
-      repository,
+      adminRegionRepository,
       adminRegionResource.name.singular,
       adminRegionResource.name.plural,
     );
@@ -39,7 +39,7 @@ export class AdminRegionsService extends AppBaseService<
   }
 
   async getAdminRegionById(id: number): Promise<AdminRegion> {
-    const found = await this.repository.findOne(id);
+    const found = await this.adminRegionRepository.findOne(id);
 
     if (!found) {
       throw new NotFoundException(`Admin region with ID "${id}" not found`);

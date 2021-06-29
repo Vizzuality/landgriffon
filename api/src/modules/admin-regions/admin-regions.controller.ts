@@ -34,7 +34,7 @@ import { UpdateAdminRegionDto } from 'modules/admin-regions/dto/update.admin-reg
 @Controller(`/api/v1/admin-regions`)
 @ApiTags(adminRegionResource.className)
 export class AdminRegionsController {
-  constructor(public readonly service: AdminRegionsService) {}
+  constructor(public readonly adminRegionsService: AdminRegionsService) {}
 
   @ApiOperation({
     description: 'Find all admin regions',
@@ -49,8 +49,10 @@ export class AdminRegionsController {
   async findAll(
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
   ): Promise<AdminRegion> {
-    const results = await this.service.findAllPaginated(fetchSpecification);
-    return this.service.serialize(results.data, results.metadata);
+    const results = await this.adminRegionsService.findAllPaginated(
+      fetchSpecification,
+    );
+    return this.adminRegionsService.serialize(results.data, results.metadata);
   }
 
   @ApiOperation({ description: 'Find admin region by id' })
@@ -58,14 +60,18 @@ export class AdminRegionsController {
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<AdminRegion> {
-    return await this.service.serialize(await this.service.getById(id));
+    return await this.adminRegionsService.serialize(
+      await this.adminRegionsService.getById(id),
+    );
   }
 
   @ApiOperation({ description: 'Create a admin region' })
   @ApiOkResponse({ type: AdminRegion })
   @Post()
   async create(@Body() dto: CreateAdminRegionDto): Promise<AdminRegion> {
-    return await this.service.serialize(await this.service.create(dto));
+    return await this.adminRegionsService.serialize(
+      await this.adminRegionsService.create(dto),
+    );
   }
 
   @ApiOperation({ description: 'Updates a admin region' })
@@ -75,13 +81,15 @@ export class AdminRegionsController {
     @Body(new ValidationPipe()) dto: UpdateAdminRegionDto,
     @Param('id') id: string,
   ): Promise<AdminRegion> {
-    return await this.service.serialize(await this.service.update(id, dto));
+    return await this.adminRegionsService.serialize(
+      await this.adminRegionsService.update(id, dto),
+    );
   }
 
   @ApiOperation({ description: 'Deletes a admin region' })
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
-    return await this.service.remove(id);
+    return await this.adminRegionsService.remove(id);
   }
 }

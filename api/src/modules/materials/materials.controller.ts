@@ -31,7 +31,7 @@ import { UpdateMaterialDto } from 'modules/materials/dto/update.material.dto';
 @Controller(`/api/v1/materials`)
 @ApiTags(materialResource.className)
 export class MaterialsController {
-  constructor(public readonly service: MaterialsService) {}
+  constructor(public readonly materialsService: MaterialsService) {}
 
   @ApiOperation({
     description: 'Find all materials',
@@ -46,8 +46,10 @@ export class MaterialsController {
   async findAll(
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
   ): Promise<Material> {
-    const results = await this.service.findAllPaginated(fetchSpecification);
-    return this.service.serialize(results.data, results.metadata);
+    const results = await this.materialsService.findAllPaginated(
+      fetchSpecification,
+    );
+    return this.materialsService.serialize(results.data, results.metadata);
   }
 
   @ApiOperation({ description: 'Find material by id' })
@@ -55,14 +57,18 @@ export class MaterialsController {
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Material> {
-    return await this.service.serialize(await this.service.getById(id));
+    return await this.materialsService.serialize(
+      await this.materialsService.getById(id),
+    );
   }
 
   @ApiOperation({ description: 'Create a material' })
   @ApiOkResponse({ type: Material })
   @Post()
   async create(@Body() dto: CreateMaterialDto): Promise<Material> {
-    return await this.service.serialize(await this.service.create(dto));
+    return await this.materialsService.serialize(
+      await this.materialsService.create(dto),
+    );
   }
 
   @ApiOperation({ description: 'Updates a material' })
@@ -72,13 +78,15 @@ export class MaterialsController {
     @Body(new ValidationPipe()) dto: UpdateMaterialDto,
     @Param('id') id: string,
   ): Promise<Material> {
-    return await this.service.serialize(await this.service.update(id, dto));
+    return await this.materialsService.serialize(
+      await this.materialsService.update(id, dto),
+    );
   }
 
   @ApiOperation({ description: 'Deletes a material' })
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
-    return await this.service.remove(id);
+    return await this.materialsService.remove(id);
   }
 }

@@ -22,10 +22,10 @@ export class SourcingLocationsService extends AppBaseService<
 > {
   constructor(
     @InjectRepository(SourcingLocationRepository)
-    protected readonly repository: SourcingLocationRepository,
+    protected readonly sourcingLocationRepository: SourcingLocationRepository,
   ) {
     super(
-      repository,
+      sourcingLocationRepository,
       sourcingLocationResource.name.singular,
       sourcingLocationResource.name.plural,
     );
@@ -45,7 +45,7 @@ export class SourcingLocationsService extends AppBaseService<
   }
 
   async getSourcingLocationById(id: number): Promise<SourcingLocation> {
-    const found = await this.repository.findOne(id);
+    const found = await this.sourcingLocationRepository.findOne(id);
 
     if (!found) {
       throw new NotFoundException(

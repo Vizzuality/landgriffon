@@ -34,7 +34,7 @@ import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sou
 @Controller(`/api/v1/sourcing-records`)
 @ApiTags(sourcingRecordResource.className)
 export class SourcingRecordsController {
-  constructor(public readonly service: SourcingRecordsService) {}
+  constructor(public readonly sourcingRecordsService: SourcingRecordsService) {}
 
   @ApiOperation({
     description: 'Find all business units',
@@ -49,8 +49,13 @@ export class SourcingRecordsController {
   async findAll(
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
   ): Promise<SourcingRecord> {
-    const results = await this.service.findAllPaginated(fetchSpecification);
-    return this.service.serialize(results.data, results.metadata);
+    const results = await this.sourcingRecordsService.findAllPaginated(
+      fetchSpecification,
+    );
+    return this.sourcingRecordsService.serialize(
+      results.data,
+      results.metadata,
+    );
   }
 
   @ApiOperation({ description: 'Find business unit by id' })
@@ -58,14 +63,18 @@ export class SourcingRecordsController {
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<SourcingRecord> {
-    return await this.service.serialize(await this.service.getById(id));
+    return await this.sourcingRecordsService.serialize(
+      await this.sourcingRecordsService.getById(id),
+    );
   }
 
   @ApiOperation({ description: 'Create a business unit' })
   @ApiOkResponse({ type: SourcingRecord })
   @Post()
   async create(@Body() dto: CreateSourcingRecordDto): Promise<SourcingRecord> {
-    return await this.service.serialize(await this.service.create(dto));
+    return await this.sourcingRecordsService.serialize(
+      await this.sourcingRecordsService.create(dto),
+    );
   }
 
   @ApiOperation({ description: 'Updates a business unit' })
@@ -75,13 +84,15 @@ export class SourcingRecordsController {
     @Body(new ValidationPipe()) dto: UpdateSourcingRecordDto,
     @Param('id') id: string,
   ): Promise<SourcingRecord> {
-    return await this.service.serialize(await this.service.update(id, dto));
+    return await this.sourcingRecordsService.serialize(
+      await this.sourcingRecordsService.update(id, dto),
+    );
   }
 
   @ApiOperation({ description: 'Deletes a business unit' })
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
-    return await this.service.remove(id);
+    return await this.sourcingRecordsService.remove(id);
   }
 }

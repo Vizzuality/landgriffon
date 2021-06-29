@@ -19,10 +19,10 @@ export class MaterialsService extends AppBaseService<
 > {
   constructor(
     @InjectRepository(MaterialRepository)
-    protected readonly repository: MaterialRepository,
+    protected readonly materialRepository: MaterialRepository,
   ) {
     super(
-      repository,
+      materialRepository,
       materialResource.name.singular,
       materialResource.name.plural,
     );
@@ -36,7 +36,7 @@ export class MaterialsService extends AppBaseService<
   }
 
   async getMaterialById(id: number): Promise<Material> {
-    const found = await this.repository.findOne(id);
+    const found = await this.materialRepository.findOne(id);
 
     if (!found) {
       throw new NotFoundException(`Material with ID "${id}" not found`);

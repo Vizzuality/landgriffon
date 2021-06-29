@@ -34,7 +34,9 @@ import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update
 @Controller(`/api/v1/sourcing-locations`)
 @ApiTags(sourcingLocationResource.className)
 export class SourcingLocationsController {
-  constructor(public readonly service: SourcingLocationsService) {}
+  constructor(
+    public readonly sourcingLocationsService: SourcingLocationsService,
+  ) {}
 
   @ApiOperation({
     description: 'Find all sourcing locations',
@@ -49,8 +51,13 @@ export class SourcingLocationsController {
   async findAll(
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
   ): Promise<SourcingLocation> {
-    const results = await this.service.findAllPaginated(fetchSpecification);
-    return this.service.serialize(results.data, results.metadata);
+    const results = await this.sourcingLocationsService.findAllPaginated(
+      fetchSpecification,
+    );
+    return this.sourcingLocationsService.serialize(
+      results.data,
+      results.metadata,
+    );
   }
 
   @ApiOperation({ description: 'Find sourcing location by id' })
@@ -58,7 +65,9 @@ export class SourcingLocationsController {
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<SourcingLocation> {
-    return await this.service.serialize(await this.service.getById(id));
+    return await this.sourcingLocationsService.serialize(
+      await this.sourcingLocationsService.getById(id),
+    );
   }
 
   @ApiOperation({ description: 'Create a sourcing location' })
@@ -67,7 +76,9 @@ export class SourcingLocationsController {
   async create(
     @Body() dto: CreateSourcingLocationDto,
   ): Promise<SourcingLocation> {
-    return await this.service.serialize(await this.service.create(dto));
+    return await this.sourcingLocationsService.serialize(
+      await this.sourcingLocationsService.create(dto),
+    );
   }
 
   @ApiOperation({ description: 'Updates a sourcing location' })
@@ -77,13 +88,15 @@ export class SourcingLocationsController {
     @Body(new ValidationPipe()) dto: UpdateSourcingLocationDto,
     @Param('id') id: string,
   ): Promise<SourcingLocation> {
-    return await this.service.serialize(await this.service.update(id, dto));
+    return await this.sourcingLocationsService.serialize(
+      await this.sourcingLocationsService.update(id, dto),
+    );
   }
 
   @ApiOperation({ description: 'Deletes a sourcing location' })
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
-    return await this.service.remove(id);
+    return await this.sourcingLocationsService.remove(id);
   }
 }

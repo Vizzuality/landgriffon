@@ -22,10 +22,10 @@ export class BusinessUnitsService extends AppBaseService<
 > {
   constructor(
     @InjectRepository(BusinessUnitRepository)
-    protected readonly repository: BusinessUnitRepository,
+    protected readonly businessUnitRepository: BusinessUnitRepository,
   ) {
     super(
-      repository,
+      businessUnitRepository,
       businessUnitResource.name.singular,
       businessUnitResource.name.plural,
     );
@@ -39,7 +39,7 @@ export class BusinessUnitsService extends AppBaseService<
   }
 
   async getBusinessUnitById(id: number): Promise<BusinessUnit> {
-    const found = await this.repository.findOne(id);
+    const found = await this.businessUnitRepository.findOne(id);
 
     if (!found) {
       throw new NotFoundException(`Business Unit with ID "${id}" not found`);

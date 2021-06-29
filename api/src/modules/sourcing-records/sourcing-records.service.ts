@@ -22,10 +22,10 @@ export class SourcingRecordsService extends AppBaseService<
 > {
   constructor(
     @InjectRepository(SourcingRecordRepository)
-    protected readonly repository: SourcingRecordRepository,
+    protected readonly sourcingRecordRepository: SourcingRecordRepository,
   ) {
     super(
-      repository,
+      sourcingRecordRepository,
       sourcingRecordResource.name.singular,
       sourcingRecordResource.name.plural,
     );
@@ -46,7 +46,7 @@ export class SourcingRecordsService extends AppBaseService<
   }
 
   async getSourcingRecordById(id: number): Promise<SourcingRecord> {
-    const found = await this.repository.findOne(id);
+    const found = await this.sourcingRecordRepository.findOne(id);
 
     if (!found) {
       throw new NotFoundException(`Business Unit with ID "${id}" not found`);

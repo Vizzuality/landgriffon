@@ -31,7 +31,7 @@ import { UpdateLayerDto } from 'modules/layers/dto/update.layer.dto';
 @Controller(`/api/v1/layers`)
 @ApiTags(LayerResource.className)
 export class LayersController {
-  constructor(public readonly service: LayersService) {}
+  constructor(public readonly layersService: LayersService) {}
 
   @ApiOperation({
     description: 'Find all business units',
@@ -46,8 +46,10 @@ export class LayersController {
   async findAll(
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
   ): Promise<Layer> {
-    const results = await this.service.findAllPaginated(fetchSpecification);
-    return this.service.serialize(results.data, results.metadata);
+    const results = await this.layersService.findAllPaginated(
+      fetchSpecification,
+    );
+    return this.layersService.serialize(results.data, results.metadata);
   }
 
   @ApiOperation({ description: 'Find business unit by id' })
@@ -55,14 +57,18 @@ export class LayersController {
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Layer> {
-    return await this.service.serialize(await this.service.getById(id));
+    return await this.layersService.serialize(
+      await this.layersService.getById(id),
+    );
   }
 
   @ApiOperation({ description: 'Create a business unit' })
   @ApiOkResponse({ type: Layer })
   @Post()
   async create(@Body() dto: CreateLayerDto): Promise<Layer> {
-    return await this.service.serialize(await this.service.create(dto));
+    return await this.layersService.serialize(
+      await this.layersService.create(dto),
+    );
   }
 
   @ApiOperation({ description: 'Updates a business unit' })
@@ -72,13 +78,15 @@ export class LayersController {
     @Body(new ValidationPipe()) dto: UpdateLayerDto,
     @Param('id') id: string,
   ): Promise<Layer> {
-    return await this.service.serialize(await this.service.update(id, dto));
+    return await this.layersService.serialize(
+      await this.layersService.update(id, dto),
+    );
   }
 
   @ApiOperation({ description: 'Deletes a business unit' })
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
-    return await this.service.remove(id);
+    return await this.layersService.remove(id);
   }
 }

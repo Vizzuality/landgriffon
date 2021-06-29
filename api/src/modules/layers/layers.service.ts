@@ -19,9 +19,13 @@ export class LayersService extends AppBaseService<
 > {
   constructor(
     @InjectRepository(LayerRepository)
-    protected readonly repository: LayerRepository,
+    protected readonly layerRepository: LayerRepository,
   ) {
-    super(repository, LayerResource.name.singular, LayerResource.name.plural);
+    super(
+      layerRepository,
+      LayerResource.name.singular,
+      LayerResource.name.plural,
+    );
   }
 
   get serializerConfig(): JSONAPISerializerConfig<Layer> {
@@ -32,7 +36,7 @@ export class LayersService extends AppBaseService<
   }
 
   async getLayerById(id: number): Promise<Layer> {
-    const found = await this.repository.findOne(id);
+    const found = await this.layerRepository.findOne(id);
 
     if (!found) {
       throw new NotFoundException(`Business Unit with ID "${id}" not found`);

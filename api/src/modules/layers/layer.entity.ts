@@ -18,8 +18,8 @@ export enum LAYERS_STATUS {
 export const LayerResource: BaseServiceResource = {
   className: 'Layer',
   name: {
-    singular: 'Layer',
-    plural: 'Layers',
+    singular: 'layer',
+    plural: 'layers',
   },
   entitiesAllowedAsIncludes: [],
 };

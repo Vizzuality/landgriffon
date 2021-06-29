@@ -22,10 +22,10 @@ export class GeoRegionsService extends AppBaseService<
 > {
   constructor(
     @InjectRepository(GeoRegionRepository)
-    protected readonly repository: GeoRegionRepository,
+    protected readonly geoRegionRepository: GeoRegionRepository,
   ) {
     super(
-      repository,
+      geoRegionRepository,
       geoRegionResource.name.singular,
       geoRegionResource.name.plural,
     );
@@ -39,7 +39,7 @@ export class GeoRegionsService extends AppBaseService<
   }
 
   async getGeoRegionById(id: number): Promise<GeoRegion> {
-    const found = await this.repository.findOne(id);
+    const found = await this.geoRegionRepository.findOne(id);
 
     if (!found) {
       throw new NotFoundException(`geo region with ID "${id}" not found`);

@@ -40,3 +40,4 @@ yarn-error.log*
 
 # Storybook
 public/styles/*.storybook.css
+storybook-static

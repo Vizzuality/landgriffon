@@ -4,6 +4,6 @@
     "**/*.ts",
     "**/*.tsx",
     "**/*.js",
-    "./.eslintrc.js"
+    ".eslintrc.js"
   ]
 }

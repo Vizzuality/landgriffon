@@ -4,7 +4,6 @@ import {
   Column,
   BaseEntity,
   ManyToOne,
-  JoinColumn,
   Tree,
   TreeChildren,
   TreeParent,
@@ -76,6 +75,7 @@ export class Material extends BaseEntity {
     (srcLoc: SourcingLocation) => srcLoc.material,
   )
   sourcingLocations: SourcingLocation[];
+
   @ManyToOne(() => Layer, (layer: Layer) => layer.materials, { eager: false })
   layer: Layer;
 

@@ -2,7 +2,6 @@ import {
   BaseEntity,
   Column,
   Entity,
-  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -46,29 +45,38 @@ export class SourcingLocation extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   title: string;
 
-  /**
-   * @debt Only reference: Add relationship to material entity
-   */
-  @ManyToOne(() => Material, (mat: Material) => mat.sourcingLocations)
+  @ManyToOne(() => Material, (mat: Material) => mat.sourcingLocations, {
+    eager: false,
+  })
   material: Material;
 
-  @ManyToOne(() => AdminRegion, (aR: AdminRegion) => aR.sourcingLocations)
+  @ManyToOne(() => AdminRegion, (aR: AdminRegion) => aR.sourcingLocations, {
+    eager: false,
+  })
   adminRegion: AdminRegion;
 
-  @ManyToOne(() => BusinessUnit, (bu: BusinessUnit) => bu.sourcingLocations)
+  @ManyToOne(() => BusinessUnit, (bu: BusinessUnit) => bu.sourcingLocations, {
+    eager: false,
+  })
   businessUnit: BusinessUnit;
 
-  @ManyToOne(() => Supplier, (supplier: Supplier) => supplier.sourcingLocations)
+  @ManyToOne(
+    () => Supplier,
+    (supplier: Supplier) => supplier.sourcingLocations,
+    {
+      eager: false,
+    },
+  )
   t1Supplier: Supplier;
 
-  @ManyToOne(() => Supplier, (supplier: Supplier) => supplier.sourcingLocations)
+  @ManyToOne(
+    () => Supplier,
+    (supplier: Supplier) => supplier.sourcingLocations,
+    {
+      eager: false,
+    },
+  )
   producer: Supplier;
-
-  /**
-   * @debt Only reference: Add relationship to admin-region
-   */
-  @Column()
-  sourcingRecordGroupId: string;
 
   @Column({
     type: 'enum',
@@ -77,7 +85,7 @@ export class SourcingLocation extends BaseEntity {
     enumName: 'location_types',
     default: LOCATION_TYPES.UNKNOWN,
   })
-  locationTypes: LOCATION_TYPES;
+  locationType: LOCATION_TYPES;
 
   @Column({ type: 'text', name: 'location_address_input', nullable: true })
   locationAddressInput: string;
@@ -104,15 +112,16 @@ export class SourcingLocation extends BaseEntity {
 
   @Column({ type: 'jsonb', nullable: true })
   metadata: JSON;
+
   @Column({
     type: 'timestamp',
-    name: 'last_edited',
     default: () => 'CURRENT_TIMESTAMP',
   })
   @ApiPropertyOptional()
   lastEdited: string;
 
-  @ApiPropertyOptional()
-  @ManyToOne(() => User, (user: User) => user.sourcingLocations)
+  @ManyToOne(() => User, (user: User) => user.sourcingLocations, {
+    eager: false,
+  })
   lastEditedUser: User;
 }

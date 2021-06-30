@@ -20,15 +20,14 @@ export const geoRegionResource: BaseServiceResource = {
 
 @Entity()
 export class GeoRegion extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
   @ApiProperty()
+  @PrimaryGeneratedColumn('uuid')
   id!: string;
 
   @Column({ type: 'text', array: true, nullable: true })
   h3Compact?: string[];
-  @Column({ type: 'text', array: true, nullable: true })
 
+  @Column({ type: 'text', nullable: true })
   @ApiPropertyOptional()
   name?: string;
 
@@ -36,7 +35,7 @@ export class GeoRegion extends BaseEntity {
   @ApiPropertyOptional()
   theGeom?: JSON;
 
+  @ApiPropertyOptional()
   @OneToMany(() => AdminRegion, (adminReg: AdminRegion) => adminReg.geoRegion)
-  adminRegions!: AdminRegion[];
-
+  adminRegions?: AdminRegion[];
 }

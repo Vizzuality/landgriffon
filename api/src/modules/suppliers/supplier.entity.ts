@@ -5,9 +5,9 @@ import {
   BaseEntity,
   OneToMany,
 } from 'typeorm';
-import { BaseServiceResource } from 'types/resource.interface';
+
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 

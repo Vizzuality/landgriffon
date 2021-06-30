@@ -64,19 +64,24 @@ export class AdminRegion extends BaseEntity {
   @ApiPropertyOptional()
   isoA3?: string;
 
-  @ManyToOne(() => GeoRegion, (geo: GeoRegion) => geo.id, { eager: false })
-  @ApiProperty()
-  geoRegion: GeoRegion;
+  @OneToMany(
+    () => IndicatorCoefficient,
+    (ic: IndicatorCoefficient) => ic.adminRegion,
+  )
+  indicatorCoefficients: IndicatorCoefficient[];
 
   /**
    * @debt: check if this needs to be required
    */
+
+  @ApiPropertyOptional()
   @OneToMany(
     () => SourcingLocation,
     (srcLoc: SourcingLocation) => srcLoc.material,
   )
   sourcingLocations: SourcingLocation[];
 
+  @ApiProperty()
   @ManyToOne(() => GeoRegion, (geo: GeoRegion) => geo.adminRegions)
   geoRegion: GeoRegion;
 }

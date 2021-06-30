@@ -7157,10 +7157,10 @@ cyclist@^1.0.1:
   resolved "https://registry.yarnpkg.com/cyclist/-/cyclist-1.0.1.tgz#596e9698fd0c80e12038c2b82d6eb1b35b6224d9"
   integrity sha1-WW6WmP0MgOEgOMK4LW6xs1tiJNk=
 
-cypress-cucumber-preprocessor@4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/cypress-cucumber-preprocessor/-/cypress-cucumber-preprocessor-4.1.0.tgz#cced1796ffd0221591dcf7a35cfa7ca6a4280fc2"
-  integrity sha512-lTbqMXEoDBiQo5jh7z8lFNELyXB35I3d9FSEOP/A6L/TaxfmIVySzNbeWPZbk3AsVjYYThoHelSO5clo9yfRfQ==
+cypress-cucumber-preprocessor@^4.1.2:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/cypress-cucumber-preprocessor/-/cypress-cucumber-preprocessor-4.1.2.tgz#bd653001c2b3441c29685f0699461c38d4c4bd63"
+  integrity sha512-9TPpYeF5VGAO99TWzGnEMIwXamhDvvJP+may/CZKbaEeY8w3Bh82FIGgRiE59OnA92oe/BXJwNrduNgPQ1qt5w==
   dependencies:
     "@cypress/browserify-preprocessor" "^3.0.1"
     chai "^4.2.0"
@@ -7169,6 +7169,7 @@ cypress-cucumber-preprocessor@4.1.0:
     cucumber "^4.2.1"
     cucumber-expressions "^6.0.1"
     cucumber-tag-expressions "^1.1.1"
+    dargs "^7.0.0"
     debug "^3.0.1"
     gherkin "^5.1.0"
     glob "^7.1.2"
@@ -7252,6 +7253,11 @@ damerau-levenshtein@^1.0.6:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/damerau-levenshtein/-/damerau-levenshtein-1.0.7.tgz#64368003512a1a6992593741a09a9d31a836f55d"
   integrity sha512-VvdQIPGdWP0SqFXghj79Wf/5LArmreyMsGLa6FG6iC4t3j7j5s71TrwWmT/4akbDQIqjfACkLZmjXhA7g2oUZw==
+
+dargs@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/dargs/-/dargs-7.0.0.tgz#04015c41de0bcb69ec84050f3d9be0caf8d6d5cc"
+  integrity sha512-2iy1EkLdlBzQGvbweYRFxmFath8+K7+AKB0TlhHWkNuH+TmovaMH/Wp7V7R4u7f4SnX3OgLsU9t1NI9ioDnUpg==
 
 dash-ast@^1.0.0:
   version "1.0.0"

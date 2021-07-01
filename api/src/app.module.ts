@@ -17,6 +17,8 @@ import { IndicatorsModule } from 'modules/indicators/indicators.module';
 import { IndicatorCoefficientsModule } from 'modules/indicator-coefficients/indicator-coefficients.module';
 import { TerminusModule } from '@nestjs/terminus';
 import { HealthController } from 'health.controller';
+import { UnitsModule } from 'modules/units/units.module';
+import { UnitConversionsModule } from 'modules/unit-conversions/unit-conversions.module';
 
 @Module({
   imports: [
@@ -34,6 +36,8 @@ import { HealthController } from 'health.controller';
     IndicatorsModule,
     IndicatorCoefficientsModule,
     TerminusModule,
+    UnitsModule,
+    UnitConversionsModule,
   ],
   providers: [
     {

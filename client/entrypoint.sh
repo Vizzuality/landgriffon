@@ -14,12 +14,12 @@ case "$1" in
         echo "Build web application"
         exec yarn build
         ;;
-    start)
+    start:prod)
         echo "Run previously built application"
         exec yarn start
         ;;
     *)
-        echo "Usage: entrypoint.sh {develop|test|build|start}" >&2
+        echo "Usage: entrypoint.sh {develop|test|build|start:prod}" >&2
         exit 1
         ;;
 esac

@@ -13,13 +13,10 @@ import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { GeoRegionsModule } from 'modules/geo-regions/geo-regions.module';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
-<<<<<<< HEAD
 import { IndicatorsModule } from 'modules/indicators/indicators.module';
 import { IndicatorCoefficientsModule } from 'modules/indicator-coefficients/indicator-coefficients.module';
-=======
 import { TerminusModule } from '@nestjs/terminus';
 import { HealthController } from 'health.controller';
->>>>>>> 061dcfc (API healthcheck endpoint)
 
 @Module({
   imports: [

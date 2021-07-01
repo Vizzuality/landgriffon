@@ -12,6 +12,9 @@ import { AppInfoDTO } from 'dto/info.dto';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sourcing-record.dto';
+import { FileService } from 'modules/files/file.service';
+import { XlsxParser } from 'modules/files/xlsx.parser';
+import { WorkBook } from 'xlsx';
 
 @Injectable()
 export class SourcingRecordsService extends AppBaseService<
@@ -23,6 +26,8 @@ export class SourcingRecordsService extends AppBaseService<
   constructor(
     @InjectRepository(SourcingRecordRepository)
     protected readonly sourcingRecordRepository: SourcingRecordRepository,
+    private readonly fileService: FileService,
+    private readonly xlsxParser: XlsxParser,
   ) {
     super(
       sourcingRecordRepository,
@@ -53,5 +58,16 @@ export class SourcingRecordsService extends AppBaseService<
     }
 
     return found;
+  }
+
+  async loadXLSXDataSet(filePath: string): Promise<WorkBook> {
+    await this.fileService.isFilePresentInFs(filePath);
+    try {
+      return this.xlsxParser.transformToJson(filePath);
+    } catch (err) {
+      throw err;
+    } finally {
+      await this.fileService.deleteDataFromFS(filePath);
+    }
   }
 }

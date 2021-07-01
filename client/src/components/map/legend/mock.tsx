@@ -1,5 +1,5 @@
 import Icon from 'components/icon';
-import HEXAGON_SVG from 'svgs/map/hexagon.svg';
+import HEXAGON_SVG from 'assets/map/hexagon.svg';
 
 const ITEMS = [
   {

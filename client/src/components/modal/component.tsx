@@ -9,7 +9,7 @@ import { FocusScope } from '@react-aria/focus';
 
 import Icon from 'components/icon';
 
-import CLOSE_SVG from 'svgs/ui/close.svg?sprite';
+import CLOSE_SVG from 'assets/ui/close.svg?sprite';
 
 import { ModalProps } from './types';
 

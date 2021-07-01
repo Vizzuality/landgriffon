@@ -2,8 +2,8 @@ import { FC, useCallback, useState } from 'react';
 import cx from 'classnames';
 
 import Icon from 'components/icon';
-import LEGEND_SVG from 'svgs/map/legend.svg?sprite';
-import ARROW_DOWN_SVG from 'svgs/ui/arrow-down.svg?sprite';
+import LEGEND_SVG from 'assets/map/legend.svg?sprite';
+import ARROW_DOWN_SVG from 'assets/ui/arrow-down.svg?sprite';
 
 import { useId } from '@react-aria/utils';
 import SortableList from './sortable/list';

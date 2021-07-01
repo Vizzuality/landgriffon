@@ -10,8 +10,8 @@ import { useButton } from '@react-aria/button'; // eslint-disable-line @typescri
 import { AriaSearchFieldProps } from '@react-types/searchfield';
 
 import Icon from 'components/icon';
-import SEARCH_SVG from 'svgs/ui/search.svg?sprite';
-import CLOSE_SVG from 'svgs/ui/close.svg?sprite'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import SEARCH_SVG from 'assets/ui/search.svg?sprite';
+import CLOSE_SVG from 'assets/ui/close.svg?sprite'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 const THEME = {
   dark: 'text-white',

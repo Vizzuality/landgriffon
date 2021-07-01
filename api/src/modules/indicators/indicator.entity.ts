@@ -6,6 +6,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { BaseServiceResource } from 'types/resource.interface';
 
 export enum INDICATOR_STATUS {
   ACTIVE = 'active',
@@ -13,37 +15,53 @@ export enum INDICATOR_STATUS {
   DELETED = 'deleted',
 }
 
+export const IndicatorResource: BaseServiceResource = {
+  className: 'Indicator',
+  name: {
+    singular: 'indicator',
+    plural: 'indicators',
+  },
+  entitiesAllowedAsIncludes: [],
+};
+
 @Entity()
 export class Indicator extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @ApiProperty()
+  id!: string;
 
   @Column({ type: 'text', nullable: false, unique: true })
-  name: string;
+  @ApiProperty()
+  name!: string;
 
   @Column({ type: 'text', nullable: true })
-  description: string;
+  @ApiPropertyOptional()
+  description?: string;
 
   /**
    * @debt: Reference: add relation to Unit
    */
-  @Column()
-  unitId: string;
+  @Column({ nullable: true })
+  @ApiPropertyOptional()
+  unitId?: string;
 
   @Column({
     type: 'enum',
     enum: INDICATOR_STATUS,
-    enumName: 'indicator_status',
+    enumName: 'indicatorStatus',
     default: INDICATOR_STATUS.INACTIVE,
   })
-  status: INDICATOR_STATUS;
+  @ApiProperty()
+  status!: INDICATOR_STATUS;
 
   @Column({ type: 'jsonb', nullable: true })
-  metadata: JSON;
+  @ApiPropertyOptional()
+  metadata?: JSON;
 
   @OneToMany(
     () => IndicatorCoefficient,
     (ic: IndicatorCoefficient) => ic.indicator,
   )
+  @ApiPropertyOptional()
   indicatorCoefficients: IndicatorCoefficient[];
 }

@@ -6,6 +6,8 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFile,
+  UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
@@ -30,6 +32,9 @@ import {
 } from 'modules/sourcing-records/sourcing-record.entity';
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sourcing-record.dto';
+import { ApiConsumesXLSX } from 'decorators/xlsx-upload.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { uploadOptions } from 'utils/file-uploads.utils';
 
 @Controller(`/api/v1/sourcing-records`)
 @ApiTags(sourcingRecordResource.className)
@@ -94,5 +99,14 @@ export class SourcingRecordsController {
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     return await this.sourcingRecordsService.remove(id);
+  }
+
+  @ApiConsumesXLSX()
+  @UseInterceptors(FileInterceptor('file', uploadOptions))
+  @Post('submissions/xlsx')
+  async handleUploadXLSX(
+    @UploadedFile() xlsxFile: Express.Multer.File,
+  ): Promise<void> {
+    await this.sourcingRecordsService.loadXLSXDataSet(xlsxFile.path);
   }
 }

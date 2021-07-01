@@ -19,5 +19,9 @@
     "synchronize": false,
     "migrationsRun": true,
     "dropSchema": false
+  },
+  "fileUploads": {
+    "sizeLimit": "API_FILE_SIZE_LIMIT",
+    "storagePath": "/tmp/csv-uploads"
   }
 }

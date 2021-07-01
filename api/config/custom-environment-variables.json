@@ -17,5 +17,10 @@
     "database": "DB_DATABASE",
     "synchronize": "DB_SYNCHRONIZE",
     "migrationsRun": "DB_MIGRATIONS_RUN"
+  },
+  "fileUploads": {
+    "sizeLimit": "FILE_SIZE_LIMIT",
+    "storagePath": "/tmp/csv-uploads"
   }
+
 }

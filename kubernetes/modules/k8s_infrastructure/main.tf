@@ -67,4 +67,5 @@ resource "kubectl_manifest" "cni_plugin" {
 module "lb_controller" {
   source       = "./lb_controller"
   cluster_name = var.cluster_name
+  aws_region   = var.aws_region
 }

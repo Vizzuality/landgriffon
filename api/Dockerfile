@@ -7,6 +7,7 @@ ARG GID=5000
 ENV NAME landgriffon-api
 ENV USER $NAME
 ENV APP_HOME /opt/$NAME
+ENV NODE_PATH src
 
 RUN addgroup -g $GID $USER &&  adduser -u $UID -D -G $USER $USER
 

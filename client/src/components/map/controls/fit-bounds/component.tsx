@@ -5,7 +5,7 @@ import Icon from 'components/icon';
 
 import { ViewportProps } from 'react-map-gl';
 
-import FIT_BOUNDS_SVG from 'svgs/map/fit-bounds.svg?sprite';
+import FIT_BOUNDS_SVG from 'assets/map/fit-bounds.svg?sprite';
 
 export interface FitBoundsControlProps {
   bounds?: {

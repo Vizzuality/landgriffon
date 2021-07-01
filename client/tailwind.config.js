@@ -2,7 +2,7 @@
 const forms = require('@tailwindcss/forms');
 const typography = require('@tailwindcss/typography');
 // const colors = require('tailwindcss/colors');
-const lineClamp = require('./lib/tailwind/line-clamp');
+const lineClamp = require('./src/lib/tailwind/line-clamp');
 
 module.exports = {
   purge: {

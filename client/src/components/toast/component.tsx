@@ -1,12 +1,12 @@
 import { FC, useCallback, useEffect, useRef } from 'react';
 import cx from 'classnames';
 
-import SUCCESS_SVG from 'svgs/notifications/success.svg?sprite';
-import ERROR_SVG from 'svgs/notifications/error.svg?sprite';
-import WARNING_SVG from 'svgs/notifications/warning.svg?sprite';
-import INFO_SVG from 'svgs/notifications/info.svg?sprite';
+import SUCCESS_SVG from 'assets/notifications/success.svg?sprite';
+import ERROR_SVG from 'assets/notifications/error.svg?sprite';
+import WARNING_SVG from 'assets/notifications/warning.svg?sprite';
+import INFO_SVG from 'assets/notifications/info.svg?sprite';
 
-import CLOSE_SVG from 'svgs/ui/close.svg?sprite';
+import CLOSE_SVG from 'assets/ui/close.svg?sprite';
 
 import Icon from 'components/icon';
 

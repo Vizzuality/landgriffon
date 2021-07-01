@@ -4,7 +4,7 @@
 </g>
 <path d="M16.25 1.14434C15.4765 0.697756 14.5235 0.697755 13.75 1.14434L1.89359 7.98964C1.12009 8.43622 0.643594 9.26154 0.643594 10.1547V23.8453C0.643594 24.7385 1.12009 25.5638 1.89359 26.0104L13.75 32.8557C14.5235 33.3022 15.4765 33.3022 16.25 32.8557L28.1064 26.0104C28.8799 25.5638 29.3564 24.7385 29.3564 23.8453V10.1547C29.3564 9.26154 28.8799 8.43622 28.1064 7.98964L16.25 1.14434Z" stroke="#00BFFF" stroke-opacity="0.5"/>
 <defs>
-<filter id="filter0_i" x="0.144531" y="0.309326" width="29.7128" height="37.3812" 
+<filter id="filter0_i" x="0.144531" y="0.309326" width="29.7128" height="37.3812"
   filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>

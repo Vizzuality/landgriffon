@@ -15,8 +15,8 @@ module.exports = {
     config.resolve.modules = [path.resolve(__dirname, ".."), "node_modules"];
 
     // *************************
-    // SVGS
-    // Remove how storybook is handling the svgs. They are using file-loader
+    // assets
+    // Remove how storybook is handling the assets. They are using file-loader
     // https://github.com/JetBrains/svg-sprite-loader/issues/267
     config.module.rules = config.module.rules.map(rule => {
       if (rule.test.toString().includes('svg')) {
@@ -27,7 +27,7 @@ module.exports = {
       }
     });
 
-    // Add custom loaders for svgs
+    // Add custom loaders for assets
     config.module.rules.push({
       test: /\.svg$/,
       use: [

@@ -3,6 +3,11 @@ variable "subnet_ids" {
   description = "A list of public subnet ids to which the EKS cluster will be connected."
 }
 
+variable "aws_region" {
+  type        = string
+  description = "A valid AWS region to house VPC resources."
+}
+
 variable "project" {
   type        = string
   description = "A project namespace for the infrastructure."

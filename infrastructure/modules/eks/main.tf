@@ -76,9 +76,13 @@ resource "aws_iam_role_policy_attachment" "eks-admin-AmazonEKSServicePolicy" {
   role       = aws_iam_role.eks-cluster-admin.name
 }
 
+data "external" "thumbprint" {
+  program = ["${path.module}/thumbprint.sh", var.aws_region]
+}
+
 resource "aws_iam_openid_connect_provider" "example" {
   client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = []
+  thumbprint_list = [data.external.thumbprint.result.thumbprint]
   url             = aws_eks_cluster.eks_cluster.identity.0.oidc.0.issuer
 }
 
@@ -111,10 +115,8 @@ resource "aws_iam_policy" "eks-admin-ClusterAutoscaleAccessPolicy" {
   policy = data.aws_iam_policy_document.eks-admin-ClusterAutoscaleAccessPolicy-document.json
 }
 
-data "aws_caller_identity" "current" {}
-
 resource "aws_iam_role_policy_attachment" "eks-admin-ClusterAutoscaleAccessPolicy" {
-  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/ClusterAutoscaleAccessPolicy"
+  policy_arn = aws_iam_policy.eks-admin-ClusterAutoscaleAccessPolicy.arn
   role       = aws_iam_role.eks-node-group-iam-role.name
 }
 

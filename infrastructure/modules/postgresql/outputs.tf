@@ -3,16 +3,12 @@ output "security_group_id" {
   description = "Security group ID to access postgresql database"
 }
 
-output "secrets_postgresql-writer_arn" {
+output "postgresql-password-secret-arn" {
   value = aws_secretsmanager_secret.postgresql-admin.arn
 }
 
-output "secrets_postgresql-writer_name" {
-  value = aws_secretsmanager_secret.postgresql-admin.name
-}
-
-output "secrets_postgresql-writer_policy_arn" {
-  value = aws_iam_policy.secrets_postgresql-writer.arn
+output "postgresql-password-secret-version-arn" {
+  value = aws_secretsmanager_secret_version.postgresql-admin.arn
 }
 
 output "username" {

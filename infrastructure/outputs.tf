@@ -14,11 +14,6 @@ output "bastion_hostname" {
   description = "Hostname of bastion host for VPC"
 }
 
-//output "bastion_dns" {
-//  value       = cloudflare_record.bastion_dns.hostname
-//  description = "DNS name of bastion host for VPC"
-//}
-
 output "vpc_id" {
   value = module.vpc.id
 }
@@ -33,6 +28,23 @@ output "private_subnet_ids" {
 
 output "postgres_host" {
   value = module.postgresql.host
+}
+
+output "postgres_port" {
+  value = module.postgresql.port
+}
+
+output "postgres_username" {
+  value = module.postgresql.username
+  sensitive = true
+}
+
+output "postgres_password_secret_arn" {
+  value = module.postgresql.postgresql-password-secret-arn
+}
+
+output "postgres_password_secret_version_arn" {
+  value = module.postgresql.postgresql-password-secret-version-arn
 }
 
 output "kubectl_config" {

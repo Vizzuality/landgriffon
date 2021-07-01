@@ -21,6 +21,13 @@ module "vpc" {
   region  = var.aws_region
   project = var.project_name
   tags    = local.tags
+  private_subnet_tags = {
+    "kubernetes.io/role/internal-elb" : 1
+
+  }
+  public_subnet_tags = {
+    "kubernetes.io/role/elb" : 1
+  }
 }
 
 module "bastion" {
@@ -52,6 +59,7 @@ module "eks" {
   project        = var.project_name
   vpc_id         = module.vpc.id
   subnet_ids =     module.vpc.private_subnets.*.id
+  aws_region = var.aws_region
 }
 
 module "default-node-group" {

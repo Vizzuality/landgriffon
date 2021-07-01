@@ -9,43 +9,62 @@ import { Indicator } from 'modules/indicators/indicator.entity';
 import { Material } from 'modules/materials/material.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { User } from 'modules/users/user.entity';
+import { BaseServiceResource } from 'types/resource.interface';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
+export const indicatorCoefficientResource: BaseServiceResource = {
+  className: 'IndicatorCoefficient',
+  name: {
+    singular: 'indicatorCoefficient',
+    plural: 'indicatorCoefficients',
+  },
+  entitiesAllowedAsIncludes: [],
+};
 
 @Entity()
 export class IndicatorCoefficient extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @ApiProperty()
+  id!: string;
 
   @Column({ type: 'int', nullable: true })
+  @ApiPropertyOptional()
   value?: number;
 
   @Column({ type: 'int' })
-  year?: number;
+  @ApiProperty()
+  year!: number;
 
   @ManyToOne(() => AdminRegion, (ar: AdminRegion) => ar.indicatorCoefficients)
+  @ApiPropertyOptional()
   adminRegion: AdminRegion;
 
   /**
    * @debt: Reference only: add relation to indicator-source
    */
-
-  @Column()
-  indicatorSourceId: string;
+  @ApiPropertyOptional()
+  @Column({ nullable: true })
+  indicatorSourceId?: string;
 
   @Column({
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
-  lastEdited: string;
+  @ApiProperty()
+  lastEdited!: string;
 
   @ManyToOne(() => User, (user: User) => user.indicatorCoefficients)
-  user: User;
+  @ApiProperty({ type: () => User })
+  user!: User;
 
   @ManyToOne(
     () => Indicator,
     (indicator: Indicator) => indicator.indicatorCoefficients,
   )
-  indicator: Indicator;
+  @ApiProperty()
+  indicator!: Indicator;
 
   @ManyToOne(() => Material, (mat: Material) => mat.indicatorCoefficients)
-  material: Material;
+  @ApiProperty()
+  material!: Material;
 }

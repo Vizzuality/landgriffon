@@ -1,0 +1,102 @@
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  ValidationPipe,
+} from '@nestjs/common';
+import { IndicatorCoefficientsService } from 'modules/indicator-coefficients/indicator-coefficients.service';
+import {
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import {
+  JSONAPIQueryParams,
+  JSONAPISingleEntityQueryParams,
+} from 'decorators/json-api-parameters.decorator';
+import {
+  FetchSpecification,
+  ProcessFetchSpecification,
+} from 'nestjs-base-service';
+import {
+  IndicatorCoefficient,
+  indicatorCoefficientResource,
+} from 'modules/indicator-coefficients/indicator-coefficient.entity';
+import { CreateIndicatorCoefficientDto } from 'modules/indicator-coefficients/dto/create.indicator-coefficient.dto';
+import { UpdateIndicatorCoefficientDto } from 'modules/indicator-coefficients/dto/update.indicator-coefficient.dto';
+
+@Controller(`/api/v1/indicator-coefficients`)
+@ApiTags(indicatorCoefficientResource.className)
+export class IndicatorCoefficientsController {
+  constructor(
+    public readonly indicatorCoefficientsService: IndicatorCoefficientsService,
+  ) {}
+
+  @ApiOperation({
+    description: 'Find all indicator coefficients',
+  })
+  @ApiOkResponse({
+    type: IndicatorCoefficient,
+  })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @JSONAPIQueryParams()
+  @Get()
+  async findAll(
+    @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
+  ): Promise<IndicatorCoefficient> {
+    const results = await this.indicatorCoefficientsService.findAllPaginated(
+      fetchSpecification,
+    );
+    return this.indicatorCoefficientsService.serialize(
+      results.data,
+      results.metadata,
+    );
+  }
+
+  @ApiOperation({ description: 'Find indicator coefficient by id' })
+  @ApiOkResponse({ type: IndicatorCoefficient })
+  @JSONAPISingleEntityQueryParams()
+  @Get(':id')
+  async findOne(@Param('id') id: string): Promise<IndicatorCoefficient> {
+    return await this.indicatorCoefficientsService.serialize(
+      await this.indicatorCoefficientsService.getById(id),
+    );
+  }
+
+  @ApiOperation({ description: 'Create a indicator coefficient' })
+  @ApiOkResponse({ type: IndicatorCoefficient })
+  @Post()
+  async create(
+    @Body() dto: CreateIndicatorCoefficientDto,
+  ): Promise<IndicatorCoefficient> {
+    return await this.indicatorCoefficientsService.serialize(
+      await this.indicatorCoefficientsService.create(dto),
+    );
+  }
+
+  @ApiOperation({ description: 'Updates a indicator coefficient' })
+  @ApiOkResponse({ type: IndicatorCoefficient })
+  @Patch(':id')
+  async update(
+    @Body(new ValidationPipe()) dto: UpdateIndicatorCoefficientDto,
+    @Param('id') id: string,
+  ): Promise<IndicatorCoefficient> {
+    return await this.indicatorCoefficientsService.serialize(
+      await this.indicatorCoefficientsService.update(id, dto),
+    );
+  }
+
+  @ApiOperation({ description: 'Deletes a indicator coefficient' })
+  @ApiOkResponse()
+  @Delete(':id')
+  async delete(@Param('id') id: string): Promise<void> {
+    return await this.indicatorCoefficientsService.remove(id);
+  }
+}

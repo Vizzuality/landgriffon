@@ -1,5 +1,5 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { Indicator } from './indicator.entity';
+import { Indicator } from 'modules/indicators/indicator.entity';
 
 @EntityRepository(Indicator)
 export class IndicatorRepository extends Repository<Indicator> {}

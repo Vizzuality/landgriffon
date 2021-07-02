@@ -77,6 +77,3 @@ jobs:
         run: |
           kubectl rollout restart deployment api
           kubectl rollout restart deployment client
-
-
-

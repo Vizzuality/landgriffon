@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import cx from 'classnames';
 
 export interface LegendTypeBasicProps {
@@ -9,7 +8,7 @@ export interface LegendTypeBasicProps {
   }>;
 }
 
-export const LegendTypeBasic: FC<LegendTypeBasicProps> = ({
+export const LegendTypeBasic: React.FC<LegendTypeBasicProps> = ({
   className = '',
   items,
 }: LegendTypeBasicProps) => (

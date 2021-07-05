@@ -1,4 +1,4 @@
-import { Children, FC } from 'react';
+import { Children } from 'react';
 import cx from 'classnames';
 
 export interface ControlsProps {
@@ -6,7 +6,7 @@ export interface ControlsProps {
   children: React.ReactNode;
 }
 
-export const Controls: FC<ControlsProps> = ({
+export const Controls: React.FC<ControlsProps> = ({
   className = 'absolute bottom-10 left-2',
   children,
 }: ControlsProps) => (

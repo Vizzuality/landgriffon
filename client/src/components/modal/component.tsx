@@ -1,4 +1,4 @@
-import { Children, FC, cloneElement, isValidElement, useRef } from 'react';
+import { Children, cloneElement, isValidElement, useRef } from 'react';
 import cx from 'classnames';
 
 import { AnimatePresence, motion } from 'framer-motion';
@@ -11,7 +11,7 @@ import Icon from 'components/icon';
 
 import CLOSE_SVG from 'assets/ui/close.svg?sprite';
 
-import { ModalProps } from './types';
+import type { ModalProps } from './types';
 
 const COMMON_CONTENT_CLASSES =
   'absolute top-1/2 inset-x-4 sm:left-1/2 transform -translate-y-1/2 sm:-translate-x-1/2 outline-none bg-white flex flex-col flex-grow overflow-hidden rounded-3xl py-7';
@@ -23,7 +23,7 @@ const CONTENT_CLASSES = {
 
 const OVERLAY_CLASSES = 'z-50 fixed inset-0 bg-black bg-blur';
 
-export const Modal: FC<ModalProps> = ({
+export const Modal: React.FC<ModalProps> = ({
   title,
   open,
   dismissable = true,

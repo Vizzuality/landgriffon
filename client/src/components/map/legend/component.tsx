@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import cx from 'classnames';
 
 import Icon from 'components/icon';
@@ -15,7 +15,7 @@ export interface LegendProps {
   onChangeOrder: (id: string[]) => void;
 }
 
-export const Legend: FC<LegendProps> = ({
+export const Legend: React.FC<LegendProps> = ({
   children,
   className = '',
   maxHeight,

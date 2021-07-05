@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Story } from '@storybook/react/types-6-0';
+import { Story } from '@storybook/react';
 
 // Layer manager
 import { LayerManager, Layer } from '@vizzuality/layer-manager-react';

@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import cx from 'classnames';
 
 export interface LegendTypeGradientProps {
@@ -9,7 +8,7 @@ export interface LegendTypeGradientProps {
   }>;
 }
 
-export const LegendTypeGradient: FC<LegendTypeGradientProps> = ({
+export const LegendTypeGradient: React.FC<LegendTypeGradientProps> = ({
   className = '',
   items,
 }: LegendTypeGradientProps) => (

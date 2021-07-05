@@ -1,9 +1,9 @@
-import { FC, useCallback } from 'react';
+import { useCallback } from 'react';
 import cx from 'classnames';
 
 import Icon from 'components/icon';
 
-import { ViewportProps } from 'react-map-gl';
+import type { ViewportProps } from 'react-map-gl';
 
 import FIT_BOUNDS_SVG from 'assets/map/fit-bounds.svg?sprite';
 
@@ -17,7 +17,7 @@ export interface FitBoundsControlProps {
   onFitBoundsChange: (bounds) => void;
 }
 
-export const FitBoundsControl: FC<FitBoundsControlProps> = ({
+export const FitBoundsControl: React.FC<FitBoundsControlProps> = ({
   bounds,
   className,
   onFitBoundsChange,

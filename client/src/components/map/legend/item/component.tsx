@@ -1,15 +1,14 @@
-import { FC, ReactNode } from 'react';
 import cx from 'classnames';
 
 export interface LegendItemProps {
   id: string;
   name: string;
   description?: string;
-  icon?: ReactNode;
-  children?: ReactNode;
+  icon?: React.ReactNode;
+  children?: React.ReactNode;
 }
 
-export const LegendItem: FC<LegendItemProps> = ({
+export const LegendItem: React.FC<LegendItemProps> = ({
   id,
   name,
   description,

@@ -1,4 +1,4 @@
-import { Story } from '@storybook/react/types-6-0';
+import type { Story } from '@storybook/react';
 import Avatar, { AvatarProps } from './component';
 
 export default {

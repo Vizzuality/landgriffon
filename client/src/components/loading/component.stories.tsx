@@ -1,6 +1,6 @@
-import { Story } from '@storybook/react/types-6-0';
+import type { Story } from '@storybook/react';
 import Loading from './component';
-import { LoadingProps } from './types';
+import type { LoadingProps } from './types';
 
 export default {
   title: 'Components/Loading',

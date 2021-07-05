@@ -1,4 +1,4 @@
-import { FC, useRef } from 'react';
+import { useRef } from 'react';
 import cx from 'classnames';
 
 // react aria
@@ -7,7 +7,7 @@ import { useSearchFieldState } from '@react-stately/searchfield';
 import { useButton } from '@react-aria/button'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 // react types
-import { AriaSearchFieldProps } from '@react-types/searchfield';
+import type { AriaSearchFieldProps } from '@react-types/searchfield';
 
 import Icon from 'components/icon';
 import SEARCH_SVG from 'assets/ui/search.svg?sprite';
@@ -28,7 +28,7 @@ export interface SearchProps extends AriaSearchFieldProps {
   size: 'sm' | 'base';
 }
 
-export const Search: FC<SearchProps> = ({
+export const Search: React.FC<SearchProps> = ({
   theme = 'dark',
   size = 'base',
   ...rest

@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import cx from 'classnames';
 
 import SUCCESS_SVG from 'assets/notifications/success.svg?sprite';
@@ -12,7 +12,7 @@ import Icon from 'components/icon';
 
 import { motion, useAnimation } from 'framer-motion';
 
-import { ToastProps, ToastTheme } from './types';
+import type { ToastProps, ToastTheme } from './types';
 
 const THEME: ToastTheme = {
   info: {
@@ -37,7 +37,7 @@ const THEME: ToastTheme = {
   },
 };
 
-export const Toast: FC<ToastProps> = ({
+export const Toast: React.FC<ToastProps> = ({
   id,
   content,
   level = 'info',

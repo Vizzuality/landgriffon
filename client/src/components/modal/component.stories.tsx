@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Story } from '@storybook/react/types-6-0';
-
+import type { Story } from '@storybook/react';
 import Button from 'components/button';
-import Modal, { ModalProps } from './index';
+import Modal from './index';
+import type { ModalProps } from './index';
 
 export default {
   title: 'Components/Modal',

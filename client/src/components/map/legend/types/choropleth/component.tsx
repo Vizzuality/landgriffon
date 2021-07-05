@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import cx from 'classnames';
 
 export interface LegendTypeChoroplethProps {
@@ -9,7 +8,7 @@ export interface LegendTypeChoroplethProps {
   }>;
 }
 
-export const LegendTypeChoropleth: FC<LegendTypeChoroplethProps> = ({
+export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
   className = '',
   items,
 }: LegendTypeChoroplethProps) => (

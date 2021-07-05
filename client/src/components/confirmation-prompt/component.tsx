@@ -1,12 +1,10 @@
 import classnames from 'classnames';
-
 import Modal from 'components/modal';
 import Button from 'components/button';
 import Icon from 'components/icon';
-import { FC } from 'react';
-import { ConfirmationPromptProps } from './types';
+import type { ConfirmationPromptProps } from './types';
 
-export const ConfirmationPrompt: FC<ConfirmationPromptProps> = ({
+export const ConfirmationPrompt: React.FC<ConfirmationPromptProps> = ({
   title,
   description,
   open,

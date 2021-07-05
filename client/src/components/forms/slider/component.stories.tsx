@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Story } from '@storybook/react/types-6-0';
+import { Story } from '@storybook/react';
 
 import Slider, { SliderProps } from './component';
 import Label from '../label';

@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Story } from '@storybook/react/types-6-0';
-import ZoomControl, { ZoomControlProps } from './component';
+import { Story } from '@storybook/react';
+import ZoomControl from './component';
+import type { ZoomControlProps } from './component';
 
 export default {
   title: 'Components/Map/Controls/Zoom',

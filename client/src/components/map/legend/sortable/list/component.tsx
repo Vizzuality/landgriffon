@@ -1,4 +1,4 @@
-import { Children, cloneElement, FC, isValidElement, useCallback, useMemo, useState } from 'react';
+import { Children, cloneElement, isValidElement, useCallback, useMemo, useState } from 'react';
 import cx from 'classnames';
 
 import {
@@ -28,7 +28,7 @@ export interface SortableListProps {
   onChangeOrder: (id: string[]) => void;
 }
 
-export const SortableList: FC<SortableListProps> = ({
+export const SortableList: React.FC<SortableListProps> = ({
   children,
   onChangeOrder,
 }: SortableListProps) => {

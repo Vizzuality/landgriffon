@@ -1,11 +1,12 @@
-import { useEffect, useState, useRef, useCallback, FC } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
 import cx from 'classnames';
 
 import isEmpty from 'lodash/isEmpty';
 
-import ReactMapGL, { FlyToInterpolator, TRANSITION_EVENTS, ViewportProps } from 'react-map-gl';
+import ReactMapGL, { FlyToInterpolator, TRANSITION_EVENTS } from 'react-map-gl';
+import type { ViewportProps } from 'react-map-gl';
 import { InteractiveMapProps } from 'react-map-gl/src/components/interactive-map';
 
 import { fitBounds } from '@math.gl/web-mercator';
@@ -49,7 +50,7 @@ const DEFAULT_VIEWPORT = {
   longitude: 0,
 };
 
-export const Map: FC<MapProps> = ({
+export const Map: React.FC<MapProps> = ({
   mapboxApiAccessToken,
   children,
   className,

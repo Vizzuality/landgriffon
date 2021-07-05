@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import cx from 'classnames';
 
 export interface TagProps {
@@ -6,7 +5,7 @@ export interface TagProps {
   className?: string | unknown;
 }
 
-export const Tag: FC<TagProps> = ({ children, className }: TagProps) => (
+export const Tag: React.FC<TagProps> = ({ children, className }: TagProps) => (
   <div
     className={cx({
       'relative inline-flex rounded': true,

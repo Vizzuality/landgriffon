@@ -29,14 +29,18 @@ export const analysisSlice = createSlice({
       ...state,
       isSidebarCollapsed: action.payload,
     }),
-    setSubContentCollapsed: (state, action: PayloadAction<AnalysisState['isSubContentCollapsed']>) => ({
+    setSubContentCollapsed: (
+      state,
+      action: PayloadAction<AnalysisState['isSubContentCollapsed']>
+    ) => ({
       ...state,
       isSubContentCollapsed: action.payload,
     }),
   },
 });
 
-export const { setVisualizationMode, setSidebarCollapsed, setSubContentCollapsed } = analysisSlice.actions;
+export const { setVisualizationMode, setSidebarCollapsed, setSubContentCollapsed } =
+  analysisSlice.actions;
 
 export const visualizationMode = (state: FeatureState) => state.analysis.visualizationMode;
 

@@ -1,6 +1,7 @@
-import { Story } from '@storybook/react/types-6-0';
+import type { Story } from '@storybook/react';
 import DOWNLOAD_SVG from 'assets/ui/download.svg';
-import Icon, { IconProps } from './component';
+import Icon from './component';
+import type { IconProps } from './component';
 
 export default {
   title: 'Components/Icon',

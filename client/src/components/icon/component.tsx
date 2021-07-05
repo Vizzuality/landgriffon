@@ -1,5 +1,4 @@
 import cx from 'classnames';
-import { FC } from 'react';
 
 export interface IconProps {
   icon: {
@@ -10,7 +9,7 @@ export interface IconProps {
   style?: unknown;
 }
 
-export const Icon: FC<IconProps> = ({ icon, className = 'w-5 h-5', style }: IconProps) => (
+export const Icon: React.FC<IconProps> = ({ icon, className = 'w-5 h-5', style }: IconProps) => (
   <svg
     className={cx({
       'fill-current': true,

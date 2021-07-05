@@ -7,9 +7,7 @@ import classNames from 'classnames';
 
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
 
-const impactFactors = [
-  { id: '1', name: 'Rice', 2021: 342, 2022: 632, 2023: 1332 },
-]
+const impactFactors = [{ id: '1', name: 'Rice', 2021: 342, 2022: 632, 2023: 1332 }];
 
 const AnalysisVisualization = () => {
   const currentMode = useAppSelector(visualizationMode);
@@ -97,10 +95,18 @@ const AnalysisVisualization = () => {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {impactFactors.map((impactFactor) => (
                       <tr key={impactFactor.id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{impactFactor.name}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{impactFactor['2021']}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{impactFactor['2022']}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{impactFactor['2023']}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {impactFactor.name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {impactFactor['2021']}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {impactFactor['2022']}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {impactFactor['2023']}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -111,7 +117,7 @@ const AnalysisVisualization = () => {
         </div>
       )}
     </section>
-  )
+  );
 };
 
 export default AnalysisVisualization;

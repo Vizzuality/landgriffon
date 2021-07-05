@@ -1,13 +1,10 @@
-import { FC } from 'react';
 import cx from 'classnames';
-
+import { motion, AnimatePresence } from 'framer-motion';
 import Icon from 'components/icon';
 import LOADING_SVG from 'assets/ui/loading.svg?sprite';
-import { motion, AnimatePresence } from 'framer-motion';
+import type { LoadingProps } from './types';
 
-import { LoadingProps } from './types';
-
-export const Loading: FC<LoadingProps> = ({
+export const Loading: React.FC<LoadingProps> = ({
   visible = false,
   className = 'absolute',
   iconClassName = 'w-5 h-5',

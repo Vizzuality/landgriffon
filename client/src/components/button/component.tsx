@@ -1,4 +1,3 @@
-import { ButtonHTMLAttributes, AnchorHTMLAttributes, FC } from 'react';
 import cx from 'classnames';
 
 const COMMON_CLASSNAMES =
@@ -21,17 +20,12 @@ export type AnchorButtonProps = {
 };
 
 // Button props
-export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
-  AnchorButtonProps & {
-    href?: undefined;
-  };
+export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & AnchorButtonProps;
 
 // Anchor props
-export type AnchorProps = AnchorHTMLAttributes<HTMLAnchorElement> &
+export type AnchorProps = React.AnchorHTMLAttributes<HTMLAnchorElement> &
   AnchorButtonProps & {
-    href?: string;
     disabled?: boolean;
-    shallow?: boolean;
   };
 
 // Input/output options
@@ -50,7 +44,7 @@ function buildClassName({ className, disabled, size = 'base', theme = 'primary' 
   });
 }
 
-export const Anchor: FC<AnchorProps> = ({
+export const Anchor: React.FC<AnchorProps> = ({
   children,
   theme = 'primary',
   size = 'base',
@@ -80,7 +74,7 @@ export const Anchor: FC<AnchorProps> = ({
   );
 };
 
-export const Button: FC<ButtonProps> = ({
+export const Button: React.FC<ButtonProps> = ({
   children,
   theme = 'primary',
   size = 'base',

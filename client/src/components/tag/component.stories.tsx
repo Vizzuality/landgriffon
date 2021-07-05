@@ -1,5 +1,6 @@
-import { Story } from '@storybook/react/types-6-0';
-import Tag, { TagProps } from './component';
+import type { Story } from '@storybook/react';
+import type { TagProps } from './component';
+import Tag from './component';
 
 export default {
   title: 'Components/Tag',

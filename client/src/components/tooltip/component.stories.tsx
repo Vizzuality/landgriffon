@@ -1,4 +1,4 @@
-import { Story } from '@storybook/react/types-6-0';
+import { Story } from '@storybook/react';
 import Tooltip from './component';
 import { TooltipProps } from './types';
 

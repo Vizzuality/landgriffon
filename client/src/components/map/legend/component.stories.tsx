@@ -1,7 +1,8 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Story } from '@storybook/react/types-6-0';
+import type { Story } from '@storybook/react';
 
-import Legend, { LegendProps } from './component';
+import Legend from './component';
+import type { LegendProps } from './component';
 import LegendItem from './item';
 
 import LegendTypeBasic from './types/basic';

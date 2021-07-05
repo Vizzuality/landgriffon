@@ -1,6 +1,5 @@
 import classNames from 'classnames';
 import Link from 'next/link';
-
 import type { Page } from './types';
 
 export type BreadcrumbProps = {

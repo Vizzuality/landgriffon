@@ -1,9 +1,9 @@
-import { FC, useCallback } from 'react';
+import { useCallback } from 'react';
 import cx from 'classnames';
 
 import Icon from 'components/icon';
 
-import { ViewportProps } from 'react-map-gl';
+import type { ViewportProps } from 'react-map-gl';
 
 import ZOOM_IN_SVG from 'assets/map/zoom-in.svg?sprite';
 import ZOOM_OUT_SVG from 'assets/map/zoom-out.svg?sprite';
@@ -14,7 +14,7 @@ export interface ZoomControlProps {
   onZoomChange: (zoom: number) => void;
 }
 
-export const ZoomControl: FC<ZoomControlProps> = ({
+export const ZoomControl: React.FC<ZoomControlProps> = ({
   className,
   viewport,
   onZoomChange,

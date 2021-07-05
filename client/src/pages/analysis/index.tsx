@@ -1,21 +1,16 @@
-import Link from 'next/link';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { PlusIcon } from '@heroicons/react/solid';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import ApplicationLayout from 'layouts/application';
 import Breadcrumb from 'components/breadcrumb';
 import AnalysisVisualization from 'containers/analysis-visualization';
 import Scenarios from 'containers/scenarios';
-import ScenarioForm from 'containers/scenarios/form';
-import Interventions from 'containers/interventions';
+import ScenarioNew from 'containers/scenarios/new';
+import ScenarioEdit from 'containers/scenarios/edit';
 import InterventionForm from 'containers/interventions/form';
 import { isSubContentCollapsed, setSubContentCollapsed } from 'store/features/analysis';
-import { Anchor } from 'components/button';
 
 import type { Page } from 'components/breadcrumb/types';
-
-let pages: Page[] = [];
 
 const AnalysisPage: React.FC = () => {
   const isSubContentCollapsedState = useAppSelector(isSubContentCollapsed);
@@ -23,68 +18,21 @@ const AnalysisPage: React.FC = () => {
   const { query } = useRouter();
   const { scenarios } = query;
 
-  let Content;
+  console.log(query);
 
-  /**
-   * List scenarios
-   */
-  pages = [{ name: 'Analysis', href: '/analysis' }];
-  Content = () => (
-    <>
-      <h1>Analyse impact</h1>
-      <p className="text-sm mt-2 mb-2">Select the scenario you want to analyse</p>
-      <Scenarios />
-      <Link href="/analysis?scenarios=new" shallow>
-        <Anchor size="xl">
-          <PlusIcon className="-ml-5 mr-3 h-5 w-5" aria-hidden="true" />
-          Create scenario
-        </Anchor>
-      </Link>
-      <div className="mt-4 p-6 text-center">
-        <p className="text-sm">
-          Scenarios let you simulate changes in sourcing to evaluate how they would affect impacts
-          and risks. Create a scenario to get started.
-        </p>
-      </div>
-    </>
-  );
+  const analysisContent = () => ({
+    default: <Scenarios />,
+    new: <ScenarioNew />,
+    edit: <ScenarioEdit />,
+  });
 
-  /**
-   * Create scenario
-   */
+  // Breadcrumbs
+  let pages: Page[] = [{ name: 'Analysis', href: '/analysis' }]; // Default
   if (scenarios && scenarios === 'new') {
-    pages = [
-      { name: 'Analysis', href: '/analysis' },
-      { name: 'New scenario', href: '/analysis?scenarios=new' },
-    ];
-    Content = () => (
-      <>
-        <div>
-          <ScenarioForm />
-        </div>
-        <div className="mt-10">
-          <Interventions />
-        </div>
-      </>
-    );
+    pages = [...pages, { name: 'New scenario', href: '/analysis?scenarios=new' }];
   }
-
-  /**
-   * Edit scenario
-   */
   if (scenarios && scenarios === 'edit') {
-    pages = [
-      { name: 'Analysis', href: '/analysis' },
-      { name: 'Edit scenario', href: '/analysis?scenarios=edit' },
-    ];
-    Content = () => (
-      <>
-        <h1>Edit scenario</h1>
-        <Link href="/analysis" shallow>
-          <Anchor>Cancel</Anchor>
-        </Link>
-      </>
-    );
+    pages = [...pages, { name: 'Edit scenario', href: '/analysis?scenarios=edit' }];
   }
 
   useEffect(() => {
@@ -105,7 +53,7 @@ const AnalysisPage: React.FC = () => {
               <div className="pb-10">
                 <Breadcrumb pages={pages} />
               </div>
-              <Content />
+              {analysisContent()[(scenarios || 'default') as string]}
             </div>
           </section>
 

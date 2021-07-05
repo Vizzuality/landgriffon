@@ -1,0 +1,45 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Docs/Analysis" />
+
+# Analysis
+
+## Scenarios and Interventions Workflow
+
+### User acceptance test
+
+The user should be able to...
+
+- [ ] ...create a new scenario.
+- [ ] ...see scenarios already created.
+- [ ] ...edit or delete and scenario.
+- [ ] ...add one or more interventions to a selected scenario.
+- [ ] ...see interventions created for a scenario.
+- [ ] ...edit, disable or remove an intervention of a specific scenario.
+- [ ] ...select only one scenario at the same time to visualize.
+
+### UX decisions
+
+* When the user clicks on the button to create a new scenario, a new scenario will be created throw API with the name "Untitled" and the user will redirect to the edition scenario page.
+
+### Routing
+
+* `/analysis`: list scenarios
+* `/analysis?scenario=:id`: edit a scenario given an id
+* `/analysis?new_scenario`: creates a new scenario and redirect to `/analysis?scenario=:id`
+* `/analysis?scenario=:id?new_intervention`: edit a scenario and open the form for intervention creation
+* `/analysis?scenario=:id&intervention=:id`: edit a scenario and/or an intervention given an id
+
+## Visualizations modes
+
+### User acceptance test
+
+The user should be able to...
+
+- [ ] ...choice how to visualize the data on analysis (map, table or chart). By default is map.
+- [ ] ...collapse the sidebar and content to gain more space for the visualization. By default is not collapsed.
+
+### Routing
+
+* `/analysis?mode=map|table|chart`: select the mode of visualization
+* `/analysis?collapsed=true`: collapse the sidebar

@@ -9,7 +9,8 @@ import {
 import { BaseServiceResource } from 'types/resource.interface';
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { SourcingRecordGroup } from '../sourcing-record-groups/sourcing-record-group.entity';
+import { SourcingRecordGroup } from 'modules/sourcing-record-groups/sourcing-record-group.entity';
+import { Scenario } from 'modules/scenarios/scenario.entity';
 
 export const userResource: BaseServiceResource = {
   className: 'User',
@@ -91,6 +92,12 @@ export class User extends BaseEntity {
     (srg: SourcingRecordGroup) => srg.lastEditedUser,
   )
   sourcingRecordGroups: SourcingRecordGroup[];
+
+  @OneToMany(() => Scenario, (scenario: Scenario) => scenario.user)
+  scenarios: Scenario[];
+
+  @OneToMany(() => Scenario, (scenario: Scenario) => scenario.lastEditedUser)
+  scenariosLastEdited: Scenario[];
 }
 
 export class JSONAPIUserData {

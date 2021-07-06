@@ -20,7 +20,8 @@ import { HealthController } from 'health.controller';
 import { UnitsModule } from 'modules/units/units.module';
 import { UnitConversionsModule } from 'modules/unit-conversions/unit-conversions.module';
 import { SourcingRecordGroupsModule } from 'modules/sourcing-record-groups/sourcing-record-groups.module';
-import { IndicatorSourcesModule } from './modules/indicator-sources/indicator-sources.module';
+import { IndicatorSourcesModule } from 'modules/indicator-sources/indicator-sources.module';
+import { ScenariosModule } from 'modules/scenarios/scenarios.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { IndicatorSourcesModule } from './modules/indicator-sources/indicator-so
     IndicatorSourcesModule,
     LayersModule,
     MaterialsModule,
+    ScenariosModule,
     SourcingLocationsModule,
     SourcingRecordGroupsModule,
     SourcingRecordsModule,

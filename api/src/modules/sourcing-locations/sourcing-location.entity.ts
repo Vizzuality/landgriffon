@@ -97,7 +97,6 @@ export class SourcingLocation extends BaseEntity {
     type: 'enum',
     name: 'locationAddressAccuracy',
     enum: LOCATION_ACCURACY,
-    enumName: 'location_accuracy',
     default: LOCATION_ACCURACY.LOW,
   })
   @ApiProperty()

@@ -20,26 +20,28 @@ import { HealthController } from 'health.controller';
 import { UnitsModule } from 'modules/units/units.module';
 import { UnitConversionsModule } from 'modules/unit-conversions/unit-conversions.module';
 import { SourcingRecordGroupsModule } from 'modules/sourcing-record-groups/sourcing-record-groups.module';
+import { IndicatorSourcesModule } from './modules/indicator-sources/indicator-sources.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeOrmConfig),
-    AuthenticationModule,
-    UsersModule,
-    SuppliersModule,
-    BusinessUnitsModule,
-    MaterialsModule,
-    LayersModule,
     AdminRegionsModule,
+    AuthenticationModule,
+    BusinessUnitsModule,
     GeoRegionsModule,
+    IndicatorCoefficientsModule,
+    IndicatorsModule,
+    IndicatorSourcesModule,
+    LayersModule,
+    MaterialsModule,
+    SourcingLocationsModule,
     SourcingRecordGroupsModule,
     SourcingRecordsModule,
-    SourcingLocationsModule,
-    IndicatorsModule,
-    IndicatorCoefficientsModule,
+    SuppliersModule,
     TerminusModule,
-    UnitsModule,
     UnitConversionsModule,
+    UnitsModule,
+    UsersModule,
   ],
   providers: [
     {

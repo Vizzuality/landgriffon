@@ -46,12 +46,12 @@ export class SourcingRecordGroup extends BaseEntity {
   @ManyToOne(() => User, (user: User) => user.sourcingRecordGroups, {
     eager: false,
   })
-  @ApiProperty({ type: () => User })
   lastEditedUser?: User;
 
   /**
    * @debt Auto-assign user and make not nullable
    */
   @Column({ nullable: true })
+  @ApiPropertyOptional()
   lastEditedUserId?: string;
 }

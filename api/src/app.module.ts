@@ -19,6 +19,7 @@ import { TerminusModule } from '@nestjs/terminus';
 import { HealthController } from 'health.controller';
 import { UnitsModule } from 'modules/units/units.module';
 import { UnitConversionsModule } from 'modules/unit-conversions/unit-conversions.module';
+import { SourcingRecordGroupsModule } from 'modules/sourcing-record-groups/sourcing-record-groups.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { UnitConversionsModule } from 'modules/unit-conversions/unit-conversions
     LayersModule,
     AdminRegionsModule,
     GeoRegionsModule,
+    SourcingRecordGroupsModule,
     SourcingRecordsModule,
     SourcingLocationsModule,
     IndicatorsModule,

@@ -34,7 +34,7 @@ export class SuppliersController {
   constructor(public readonly suppliersService: SuppliersService) {}
 
   @ApiOperation({
-    description: 'Find all business units',
+    description: 'Find all suppliers',
   })
   @ApiOkResponse({
     type: Supplier,
@@ -52,7 +52,7 @@ export class SuppliersController {
     return this.suppliersService.serialize(results.data, results.metadata);
   }
 
-  @ApiOperation({ description: 'Find business unit by id' })
+  @ApiOperation({ description: 'Find supplier by id' })
   @ApiOkResponse({ type: Supplier })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
@@ -62,7 +62,7 @@ export class SuppliersController {
     );
   }
 
-  @ApiOperation({ description: 'Create a business unit' })
+  @ApiOperation({ description: 'Create a supplier' })
   @ApiOkResponse({ type: Supplier })
   @Post()
   async create(@Body() dto: CreateSupplierDto): Promise<Supplier> {
@@ -71,7 +71,7 @@ export class SuppliersController {
     );
   }
 
-  @ApiOperation({ description: 'Updates a business unit' })
+  @ApiOperation({ description: 'Updates a supplier' })
   @ApiOkResponse({ type: Supplier })
   @Patch(':id')
   async update(
@@ -83,7 +83,7 @@ export class SuppliersController {
     );
   }
 
-  @ApiOperation({ description: 'Deletes a business unit' })
+  @ApiOperation({ description: 'Deletes a supplier' })
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {

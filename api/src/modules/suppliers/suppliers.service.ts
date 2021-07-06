@@ -39,7 +39,7 @@ export class SuppliersService extends AppBaseService<
     const found = await this.repository.findOne(id);
 
     if (!found) {
-      throw new NotFoundException(`Business Unit with ID "${id}" not found`);
+      throw new NotFoundException(`Supplier with ID "${id}" not found`);
     }
 
     return found;

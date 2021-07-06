@@ -34,7 +34,7 @@ export class LayersController {
   constructor(public readonly layersService: LayersService) {}
 
   @ApiOperation({
-    description: 'Find all business units',
+    description: 'Find all layers',
   })
   @ApiOkResponse({
     type: Layer,
@@ -52,7 +52,7 @@ export class LayersController {
     return this.layersService.serialize(results.data, results.metadata);
   }
 
-  @ApiOperation({ description: 'Find business unit by id' })
+  @ApiOperation({ description: 'Find layer by id' })
   @ApiOkResponse({ type: Layer })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
@@ -62,7 +62,7 @@ export class LayersController {
     );
   }
 
-  @ApiOperation({ description: 'Create a business unit' })
+  @ApiOperation({ description: 'Create a layer' })
   @ApiOkResponse({ type: Layer })
   @Post()
   async create(@Body() dto: CreateLayerDto): Promise<Layer> {
@@ -71,7 +71,7 @@ export class LayersController {
     );
   }
 
-  @ApiOperation({ description: 'Updates a business unit' })
+  @ApiOperation({ description: 'Updates a layer' })
   @ApiOkResponse({ type: Layer })
   @Patch(':id')
   async update(
@@ -83,7 +83,7 @@ export class LayersController {
     );
   }
 
-  @ApiOperation({ description: 'Deletes a business unit' })
+  @ApiOperation({ description: 'Deletes a layer' })
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {

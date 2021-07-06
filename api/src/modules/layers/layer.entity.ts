@@ -8,6 +8,7 @@ import {
 import { Material } from 'modules/materials/material.entity';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IndicatorSource } from '../indicator-sources/indicator-source.entity';
 
 export enum LAYERS_STATUS {
   ACTIVE = 'active',
@@ -53,4 +54,10 @@ export class Layer extends BaseEntity {
 
   @OneToMany(() => Material, (materials: Material) => materials.layer)
   materials: Material[];
+
+  @OneToMany(
+    () => IndicatorSource,
+    (indicatorSources: IndicatorSource) => indicatorSources.layer,
+  )
+  indicatorSources: IndicatorSource[];
 }

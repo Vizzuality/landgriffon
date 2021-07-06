@@ -11,6 +11,7 @@ import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { User } from 'modules/users/user.entity';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IndicatorSource } from 'modules/indicator-sources/indicator-source.entity';
 
 export const indicatorCoefficientResource: BaseServiceResource = {
   className: 'IndicatorCoefficient',
@@ -39,12 +40,19 @@ export class IndicatorCoefficient extends BaseEntity {
   @ApiPropertyOptional()
   adminRegion: AdminRegion;
 
-  /**
-   * @debt: Reference only: add relation to indicator-source
-   */
-  @ApiPropertyOptional()
-  @Column({ nullable: true })
-  indicatorSourceId?: string;
+  @ManyToOne(
+    () => IndicatorSource,
+    (indicatorSource: IndicatorSource) => indicatorSource.indicatorCoefficients,
+    {
+      eager: false,
+      onDelete: 'CASCADE',
+    },
+  )
+  indicatorSource!: IndicatorSource;
+
+  @Column()
+  @ApiProperty()
+  indicatorSourceId!: string;
 
   @Column({
     type: 'timestamptz',

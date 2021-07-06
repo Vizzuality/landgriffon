@@ -5,6 +5,11 @@ import { AppModule } from 'app.module';
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
 import { IndicatorCoefficientsModule } from 'modules/indicator-coefficients/indicator-coefficients.module';
 import { IndicatorCoefficientRepository } from 'modules/indicator-coefficients/indicator-coefficient.repository';
+import { IndicatorSource } from '../../src/modules/indicator-sources/indicator-source.entity';
+import {
+  createIndicatorCoefficient,
+  createIndicatorSource,
+} from '../entity-mocks';
 
 /**
  * Tests for the IndicatorCoefficientsModule.
@@ -12,14 +17,14 @@ import { IndicatorCoefficientRepository } from 'modules/indicator-coefficients/i
 
 describe('IndicatorCoefficientsModule (e2e)', () => {
   let app: INestApplication;
-  let indicatorRepository: IndicatorCoefficientRepository;
+  let indicatorCoefficientRepository: IndicatorCoefficientRepository;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule, IndicatorCoefficientsModule],
     }).compile();
 
-    indicatorRepository = moduleFixture.get<IndicatorCoefficientRepository>(
+    indicatorCoefficientRepository = moduleFixture.get<IndicatorCoefficientRepository>(
       IndicatorCoefficientRepository,
     );
 
@@ -35,7 +40,7 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
   });
 
   afterEach(async () => {
-    await indicatorRepository.delete({});
+    await indicatorCoefficientRepository.delete({});
   });
 
   afterAll(async () => {
@@ -44,14 +49,17 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
 
   describe('Indicator coefficients - Create', () => {
     test('Create a indicator should be successful (happy case)', async () => {
+      const indicatorSource: IndicatorSource = await createIndicatorSource();
+
       const response = await request(app.getHttpServer())
         .post('/api/v1/indicator-coefficients')
         .send({
+          indicatorSourceId: indicatorSource.id,
           year: 2000,
         })
         .expect(HttpStatus.CREATED);
 
-      const createdIndicatorCoefficient = await indicatorRepository.findOne(
+      const createdIndicatorCoefficient = await indicatorCoefficientRepository.findOne(
         response.body.data.id,
       );
 
@@ -65,9 +73,7 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
 
   describe('Indicator coefficients - Update', () => {
     test('Update a indicator coefficient should be successful (happy case)', async () => {
-      const indicatorCoefficient: IndicatorCoefficient = new IndicatorCoefficient();
-      indicatorCoefficient.year = 2000;
-      await indicatorCoefficient.save();
+      const indicatorCoefficient: IndicatorCoefficient = await createIndicatorCoefficient();
 
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/indicator-coefficients/${indicatorCoefficient.id}`)
@@ -82,9 +88,7 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
 
   describe('Indicator coefficients - Delete', () => {
     test('Delete a indicator coefficient should be successful (happy case)', async () => {
-      const indicatorCoefficient: IndicatorCoefficient = new IndicatorCoefficient();
-      indicatorCoefficient.year = 2000;
-      await indicatorCoefficient.save();
+      const indicatorCoefficient: IndicatorCoefficient = await createIndicatorCoefficient();
 
       await request(app.getHttpServer())
         .delete(`/api/v1/indicator-coefficients/${indicatorCoefficient.id}`)
@@ -92,16 +96,14 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(
-        await indicatorRepository.findOne(indicatorCoefficient.id),
+        await indicatorCoefficientRepository.findOne(indicatorCoefficient.id),
       ).toBeUndefined();
     });
   });
 
   describe('Indicator coefficients - Get all', () => {
     test('Get all indicator coefficients should be successful (happy case)', async () => {
-      const indicatorCoefficient: IndicatorCoefficient = new IndicatorCoefficient();
-      indicatorCoefficient.year = 2000;
-      await indicatorCoefficient.save();
+      const indicatorCoefficient: IndicatorCoefficient = await createIndicatorCoefficient();
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/indicator-coefficients`)
@@ -114,9 +116,7 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
 
   describe('Indicator coefficients - Get by id', () => {
     test('Get a indicator coefficient by id should be successful (happy case)', async () => {
-      const indicatorCoefficient: IndicatorCoefficient = new IndicatorCoefficient();
-      indicatorCoefficient.year = 2000;
-      await indicatorCoefficient.save();
+      const indicatorCoefficient: IndicatorCoefficient = await createIndicatorCoefficient();
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/indicator-coefficients/${indicatorCoefficient.id}`)

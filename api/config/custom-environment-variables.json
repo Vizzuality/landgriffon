@@ -20,7 +20,7 @@
   },
   "fileUploads": {
     "sizeLimit": "FILE_SIZE_LIMIT",
-    "storagePath": "/tmp/csv-uploads"
+    "storagePath": "/tmp/xlsx-uploads"
   }
 
 }

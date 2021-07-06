@@ -5,9 +5,6 @@ import {
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-/**
- * TODO: Add proper csv upload decorator
- */
 
 export function ApiConsumesXLSX(): any {
   return applyDecorators(

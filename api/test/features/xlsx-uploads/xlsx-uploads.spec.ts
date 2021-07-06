@@ -4,6 +4,7 @@ import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { STORAGE_PATH } from '../../../src/utils/file-uploads.utils';
+import { readdir } from 'fs/promises';
 
 describe('XLSX Upload Feature Tests (e2e)', () => {
   let app: INestApplication;

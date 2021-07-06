@@ -4,6 +4,8 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 # Analysis
 
+Design: https://www.figma.com/proto/tDHyfnWfMsydWmKcXaX8dV/LandGriffon-tool?node-id=989%3A491&scaling=min-zoom
+
 ## Scenarios and Interventions Workflow
 
 ### User acceptance test
@@ -21,14 +23,17 @@ The user should be able to...
 ### UX decisions
 
 * When the user clicks on the button to create a new scenario, a new scenario will be created throw API with the name "Untitled" and the user will redirect to the edition scenario page.
+* Infinite scroll for the scenarios and intervertion list
+* Action buttons should be fixed (filters and buttons)
 
 ### Routing
 
 * `/analysis`: list scenarios
-* `/analysis?scenario=:id`: edit a scenario given an id
-* `/analysis?new_scenario`: creates a new scenario and redirect to `/analysis?scenario=:id`
-* `/analysis?scenario=:id?new_intervention`: edit a scenario and open the form for intervention creation
-* `/analysis?scenario=:id&intervention=:id`: edit a scenario and/or an intervention given an id
+* `/analysis?scenario=:id`: there is a scenario selected for visualization
+* `/analysis?edit_scenario=:id`: edit a scenario given an id
+* `/analysis?new_scenario`: creates a new scenario and redirect to `/analysis?edit_scenario=:id`
+* `/analysis?edit_scenario=:id?new_intervention`: edit a scenario and open the form for intervention creation
+* `/analysis?edit_scenario=:id&edit_intervention=:id`: edit a scenario and/or an intervention given an id
 
 ## Visualizations modes
 
@@ -43,3 +48,20 @@ The user should be able to...
 
 * `/analysis?mode=map|table|chart`: select the mode of visualization
 * `/analysis?collapsed=true`: collapse the sidebar
+
+## Map
+
+### User acceptance test
+
+The user should be able to...
+
+- [ ] ...visualize the layer defined by the filters on the map
+- [ ] ...the layer should be visualized by a choropleth h3 layer
+- [ ] ...see the impact of a selected scenario on the map (pending to define)
+- [ ] ...see a legend, navigate and change the zoom
+- [ ] ...save the status of the map in the URL (viewport and filters)
+
+### Routing
+
+* `/analysis?center=[lat,lng]&zoom=1`: viewport of the map
+* `/analysis?filters=`: filters applied (pending to define)

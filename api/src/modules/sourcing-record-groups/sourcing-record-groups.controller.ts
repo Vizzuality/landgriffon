@@ -8,7 +8,7 @@ import {
   Post,
   ValidationPipe,
 } from '@nestjs/common';
-import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
+import { SourcingRecordGroupsService } from 'modules/sourcing-record-groups/sourcing-record-groups.service';
 import {
   ApiForbiddenResponse,
   ApiOkResponse,
@@ -25,22 +25,24 @@ import {
   ProcessFetchSpecification,
 } from 'nestjs-base-service';
 import {
-  SourcingRecord,
-  sourcingRecordResource,
-} from 'modules/sourcing-records/sourcing-record.entity';
-import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
-import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sourcing-record.dto';
+  SourcingRecordGroup,
+  sourcingRecordGroupResource,
+} from 'modules/sourcing-record-groups/sourcing-record-group.entity';
+import { CreateSourcingRecordGroupDto } from 'modules/sourcing-record-groups/dto/create.sourcing-record-group.dto';
+import { UpdateSourcingRecordGroupDto } from 'modules/sourcing-record-groups/dto/update.sourcing-record-group.dto';
 
-@Controller(`/api/v1/sourcing-records`)
-@ApiTags(sourcingRecordResource.className)
-export class SourcingRecordsController {
-  constructor(public readonly sourcingRecordsService: SourcingRecordsService) {}
+@Controller(`/api/v1/sourcing-record-groups`)
+@ApiTags(sourcingRecordGroupResource.className)
+export class SourcingRecordGroupsController {
+  constructor(
+    public readonly sourcingRecordsService: SourcingRecordGroupsService,
+  ) {}
 
   @ApiOperation({
-    description: 'Find all sourcing groups',
+    description: 'Find all sourcing record groups',
   })
   @ApiOkResponse({
-    type: SourcingRecord,
+    type: SourcingRecordGroup,
   })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
@@ -48,7 +50,7 @@ export class SourcingRecordsController {
   @Get()
   async findAll(
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
-  ): Promise<SourcingRecord> {
+  ): Promise<SourcingRecordGroup> {
     const results = await this.sourcingRecordsService.findAllPaginated(
       fetchSpecification,
     );
@@ -58,38 +60,40 @@ export class SourcingRecordsController {
     );
   }
 
-  @ApiOperation({ description: 'Find sourcing group by id' })
-  @ApiOkResponse({ type: SourcingRecord })
+  @ApiOperation({ description: 'Find sourcing record group by id' })
+  @ApiOkResponse({ type: SourcingRecordGroup })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<SourcingRecord> {
+  async findOne(@Param('id') id: string): Promise<SourcingRecordGroup> {
     return await this.sourcingRecordsService.serialize(
       await this.sourcingRecordsService.getById(id),
     );
   }
 
-  @ApiOperation({ description: 'Create a sourcing group' })
-  @ApiOkResponse({ type: SourcingRecord })
+  @ApiOperation({ description: 'Create a sourcing record group' })
+  @ApiOkResponse({ type: SourcingRecordGroup })
   @Post()
-  async create(@Body() dto: CreateSourcingRecordDto): Promise<SourcingRecord> {
+  async create(
+    @Body() dto: CreateSourcingRecordGroupDto,
+  ): Promise<SourcingRecordGroup> {
     return await this.sourcingRecordsService.serialize(
       await this.sourcingRecordsService.create(dto),
     );
   }
 
-  @ApiOperation({ description: 'Updates a sourcing group' })
-  @ApiOkResponse({ type: SourcingRecord })
+  @ApiOperation({ description: 'Updates a sourcing record group' })
+  @ApiOkResponse({ type: SourcingRecordGroup })
   @Patch(':id')
   async update(
-    @Body(new ValidationPipe()) dto: UpdateSourcingRecordDto,
+    @Body(new ValidationPipe()) dto: UpdateSourcingRecordGroupDto,
     @Param('id') id: string,
-  ): Promise<SourcingRecord> {
+  ): Promise<SourcingRecordGroup> {
     return await this.sourcingRecordsService.serialize(
       await this.sourcingRecordsService.update(id, dto),
     );
   }
 
-  @ApiOperation({ description: 'Deletes a sourcing group' })
+  @ApiOperation({ description: 'Deletes a sourcing record group' })
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {

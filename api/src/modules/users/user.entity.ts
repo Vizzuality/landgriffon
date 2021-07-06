@@ -9,6 +9,7 @@ import {
 import { BaseServiceResource } from 'types/resource.interface';
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { SourcingRecordGroup } from '../sourcing-record-groups/sourcing-record-group.entity';
 
 export const userResource: BaseServiceResource = {
   className: 'User',
@@ -84,6 +85,12 @@ export class User extends BaseEntity {
     (sc: SourcingLocation) => sc.lastEditedUser,
   )
   sourcingLocations: SourcingLocation[];
+
+  @OneToMany(
+    () => SourcingRecordGroup,
+    (srg: SourcingRecordGroup) => srg.lastEditedUser,
+  )
+  sourcingRecordGroups: SourcingRecordGroup[];
 }
 
 export class JSONAPIUserData {

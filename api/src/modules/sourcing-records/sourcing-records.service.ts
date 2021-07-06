@@ -49,7 +49,7 @@ export class SourcingRecordsService extends AppBaseService<
     const found = await this.sourcingRecordRepository.findOne(id);
 
     if (!found) {
-      throw new NotFoundException(`Business Unit with ID "${id}" not found`);
+      throw new NotFoundException(`Sourcing Record with ID "${id}" not found`);
     }
 
     return found;

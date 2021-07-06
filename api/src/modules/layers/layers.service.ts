@@ -39,7 +39,7 @@ export class LayersService extends AppBaseService<
     const found = await this.layerRepository.findOne(id);
 
     if (!found) {
-      throw new NotFoundException(`Business Unit with ID "${id}" not found`);
+      throw new NotFoundException(`Layer with ID "${id}" not found`);
     }
 
     return found;

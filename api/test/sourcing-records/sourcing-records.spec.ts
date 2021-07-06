@@ -42,8 +42,8 @@ describe('SourcingRecordsModule (e2e)', () => {
     await Promise.all([app.close()]);
   });
 
-  describe('Business units - Create', () => {
-    test('Create a business unit should be successful (happy case)', async () => {
+  describe('Sourcing records - Create', () => {
+    test('Create a sourcing record should be successful (happy case)', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/sourcing-records')
         .send({
@@ -56,15 +56,15 @@ describe('SourcingRecordsModule (e2e)', () => {
       );
 
       if (!createdSourcingRecord) {
-        throw new Error('Error loading created Business Unit');
+        throw new Error('Error loading created Sourcing Record');
       }
 
       expect(createdSourcingRecord.tonnage).toEqual('1234');
     });
   });
 
-  describe('Business units - Update', () => {
-    test('Update a business unit should be successful (happy case)', async () => {
+  describe('Sourcing records - Update', () => {
+    test('Update a sourcing record should be successful (happy case)', async () => {
       const sourcingRecord: SourcingRecord = new SourcingRecord();
       sourcingRecord.tonnage = 1234;
       await sourcingRecord.save();
@@ -80,8 +80,8 @@ describe('SourcingRecordsModule (e2e)', () => {
     });
   });
 
-  describe('Business units - Delete', () => {
-    test('Delete a business unit should be successful (happy case)', async () => {
+  describe('Sourcing records - Delete', () => {
+    test('Delete a sourcing record should be successful (happy case)', async () => {
       const sourcingRecord: SourcingRecord = new SourcingRecord();
       sourcingRecord.tonnage = 1234;
       await sourcingRecord.save();
@@ -97,8 +97,8 @@ describe('SourcingRecordsModule (e2e)', () => {
     });
   });
 
-  describe('Business units - Get all', () => {
-    test('Get all business units should be successful (happy case)', async () => {
+  describe('Sourcing records - Get all', () => {
+    test('Get all sourcing records should be successful (happy case)', async () => {
       const sourcingRecord: SourcingRecord = new SourcingRecord();
       sourcingRecord.tonnage = 1234;
       await sourcingRecord.save();
@@ -112,8 +112,8 @@ describe('SourcingRecordsModule (e2e)', () => {
     });
   });
 
-  describe('Business units - Get by id', () => {
-    test('Get a business unit by id should be successful (happy case)', async () => {
+  describe('Sourcing records - Get by id', () => {
+    test('Get a sourcing record by id should be successful (happy case)', async () => {
       const sourcingRecord: SourcingRecord = new SourcingRecord();
       sourcingRecord.tonnage = 1234;
       await sourcingRecord.save();

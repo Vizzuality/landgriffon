@@ -18,8 +18,6 @@ const AnalysisPage: React.FC = () => {
   const { query } = useRouter();
   const { scenarios } = query;
 
-  console.log(query);
-
   const analysisContent = () => ({
     default: <Scenarios />,
     new: <ScenarioNew />,

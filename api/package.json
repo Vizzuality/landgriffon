@@ -49,7 +49,7 @@
     "swagger-ui-express": "^4.1.6",
     "typeorm": "^0.2.32",
     "uuid": "^8.3.2",
-    "xlsx": "^0.17.0"
+    "xlsx": "0.17.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.6.0",

@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
+import { Transition } from '@headlessui/react';
+
 import ApplicationLayout from 'layouts/application';
 import Breadcrumb from 'components/breadcrumb';
 import AnalysisVisualization from 'containers/analysis-visualization';
@@ -9,11 +11,19 @@ import ScenarioNew from 'containers/scenarios/new';
 import ScenarioEdit from 'containers/scenarios/edit';
 import InterventionForm from 'containers/interventions/form';
 import { analysis, setSubContentCollapsed } from 'store/features/analysis';
+import CollapseButton from 'containers/collapse-button';
+// import {
+//   isSidebarCollapsed,
+//   isSubContentCollapsed,
+//   setSubContentCollapsed,
+// } from 'store/features/analysis';
 
 import type { Page } from 'components/breadcrumb/types';
 
 const AnalysisPage: React.FC = () => {
-  const { isSubContentCollapsed } = useAppSelector(analysis);
+  const { isSidebarCollapsed, isSubContentCollapsed } = useAppSelector(analysis);
+  // const isCollapsed = useAppSelector(isSidebarCollapsed);
+  // const isSubContentCollapsedState = useAppSelector(isSubContentCollapsed);
   const dispatch = useAppDispatch();
   const { query } = useRouter();
   const { scenarios } = query;
@@ -41,17 +51,29 @@ const AnalysisPage: React.FC = () => {
 
   return (
     <ApplicationLayout>
-      <main className="flex-1 flex overflow-hidden">
-        <div className="flex-1 flex xl:overflow-hidden">
+      <main className="flex-1 flex">
+        <div className="flex-1 flex">
           <AnalysisVisualization />
 
           {/* Analysis content */}
-          <section className="hidden lg:block lg:flex-shrink-0 lg:order-first">
-            <div className="h-full relative flex flex-col w-96 border-r border-gray-200 bg-white p-6">
+          <section className="relative hidden lg:block lg:flex-shrink-0 lg:order-first">
+            <Transition
+              className="h-full relative flex flex-col border-r border-gray-200 bg-white p-6 w-96 overflow-x-hidden"
+              show={!isSidebarCollapsed}
+              enter="transition-opacity duration-75"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="transition-opacity duration-150"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
               <div className="pb-10">
                 <Breadcrumb pages={pages} />
               </div>
               {analysisContent()[(scenarios || 'default') as string]}
+            </Transition>
+            <div className="absolute top-4 right-0 transform translate-x-1/2 z-10">
+              <CollapseButton />
             </div>
           </section>
 

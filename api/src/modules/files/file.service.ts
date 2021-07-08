@@ -16,7 +16,7 @@ export class FileService {
     this.logger.log(`Deleting ${filePath} from file system...`);
     if (filePath.startsWith('/tmp')) {
       await this.isFilePresentInFs(filePath);
-      await unlink(filePath);
+      return unlink(filePath);
     } else {
       throw new Error(
         `Could not complete deletion: ${filePath} is not in /tmp`,

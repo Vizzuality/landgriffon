@@ -34,7 +34,6 @@ services:
       - DB_DATABASE=${API_POSTGRES_DATABASE}
       - DB_SYNCHRONIZE=${API_DB_SYNCHRONIZE}
       - JWT_SECRET=${API_AUTH_JWT_SECRET}
-      - FILE_SIZE_LIMIT=${API_FILE_SIZE_LIMIT}
     depends_on:
       - postgresql
 

@@ -35,6 +35,7 @@ import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sou
 import { ApiConsumesXLSX } from 'decorators/xlsx-upload.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { fileUploadInterceptor } from 'modules/files/file-upload.interceptor';
+import { XlsxPayloadInterceptor } from 'modules/files/xlsx-payload.interceptor';
 
 @Controller(`/api/v1/sourcing-records`)
 @ApiTags(sourcingRecordResource.className)
@@ -102,7 +103,10 @@ export class SourcingRecordsController {
   }
 
   @ApiConsumesXLSX()
-  @UseInterceptors(FileInterceptor('file', fileUploadInterceptor))
+  @UseInterceptors(
+    FileInterceptor('file', fileUploadInterceptor),
+    XlsxPayloadInterceptor,
+  )
   @Post('import')
   async importXLSX(
     @UploadedFile() xlsxFile: Express.Multer.File,

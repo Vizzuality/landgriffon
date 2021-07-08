@@ -56,5 +56,4 @@ export class SourcingRecord extends BaseEntity {
   @ManyToOne(() => User, (user: User) => user.id)
   @ApiProperty()
   lastEditedUserId?: string;
-
 }

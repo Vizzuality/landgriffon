@@ -21,7 +21,7 @@
     "dropSchema": false
   },
   "fileUploads": {
-    "sizeLimit": "API_FILE_SIZE_LIMIT",
+    "sizeLimit": 5e6,
     "storagePath": "/tmp/csv-uploads"
   }
 }

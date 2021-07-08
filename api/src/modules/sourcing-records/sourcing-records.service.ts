@@ -64,8 +64,6 @@ export class SourcingRecordsService extends AppBaseService<
     await this.fileService.isFilePresentInFs(filePath);
     try {
       return this.xlsxParser.transformToJson(filePath);
-    } catch (err) {
-      throw err;
     } finally {
       await this.fileService.deleteDataFromFS(filePath);
     }

@@ -5,10 +5,6 @@ import { WorkBook } from 'xlsx';
 @Injectable()
 export class XlsxParser {
   async transformToJson(filePath: string): Promise<WorkBook> {
-    try {
-      return XLSX.readFile(filePath);
-    } catch (err) {
-      throw err;
-    }
+    return XLSX.readFile(filePath);
   }
 }

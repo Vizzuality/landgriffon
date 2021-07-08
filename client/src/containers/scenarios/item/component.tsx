@@ -4,6 +4,7 @@ import { RadioGroup, Switch } from '@headlessui/react';
 import { DotsVerticalIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
 import type { Scenario } from '../types';
+import ScenariosComparison from '../comparison';
 
 type ScenariosItemProps = {
   data: Scenario;
@@ -26,7 +27,8 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
     <li className="col-span-1 rounded-md">
       <div
         className={classNames('flex items-center border border-gray-200 bg-white rounded', {
-          'border-green-700 bg-green-50 rounded-b-none': isSelected,
+          'border-green-700 bg-green-50': isSelected,
+          'rounded-b-none': isComparisonAvailable,
         })}
       >
         <RadioGroup.Option
@@ -81,7 +83,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
               onChange={setComparisonEnabled}
               className="flex-shrink-0 group relative rounded-full inline-flex items-center justify-center h-4 w-8 cursor-pointer focus:outline-none"
             >
-              <span className="sr-only">Use setting</span>
+              <span className="sr-only">Comparison scenario setting</span>
               <span
                 aria-hidden="true"
                 className="pointer-events-none absolute w-full h-full rounded-md"
@@ -90,42 +92,19 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                 aria-hidden="true"
                 className={classNames(
                   isComparisonEnabled ? 'bg-green-700' : 'bg-gray-200',
-                  'pointer-events-none absolute h-3 w-7 mx-auto rounded-full transition-colors ease-in-out duration-200'
+                  'pointer-events-none absolute h-3 w-7 mx-auto rounded-full transition-colors ease-in-out duration-100'
                 )}
               />
               <span
                 aria-hidden="true"
                 className={classNames(
                   isComparisonEnabled ? 'translate-x-4' : 'translate-x-0',
-                  'pointer-events-none absolute left-0 inline-block h-4 w-4 border border-gray-200 rounded-full bg-white shadow transform ring-0 transition-transform ease-in-out duration-200'
+                  'pointer-events-none absolute left-0 inline-block h-4 w-4 border border-gray-200 rounded-full bg-white shadow transform ring-0 transition-transform ease-in-out duration-100'
                 )}
               />
             </Switch>
           </div>
-          {isComparisonEnabled && (
-            <div className="mt-2">
-              <select
-                id="location"
-                name="location"
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:ring-green-700 focus:border-green-700 sm:text-sm rounded-md"
-                defaultValue="Canada"
-              >
-                <option>USA</option>
-                <option>Canada</option>
-                <option>EU</option>
-              </select>
-              <select
-                id="location"
-                name="location"
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:ring-green-700 focus:border-green-700 sm:text-sm rounded-md"
-                defaultValue="Canada"
-              >
-                <option>USA</option>
-                <option>Canada</option>
-                <option>EU</option>
-              </select>
-            </div>
-          )}
+          {isComparisonEnabled && <ScenariosComparison />}
         </div>
       )}
     </li>

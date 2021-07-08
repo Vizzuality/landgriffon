@@ -1,12 +1,16 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from 'store';
+import type { Scenario } from 'containers/scenarios/types';
 
 // Define a type for the slice state
-export interface AnalysisState {
+export type AnalysisState = {
   visualizationMode: 'map' | 'table' | 'chart';
   isSidebarCollapsed: boolean;
   isSubContentCollapsed: boolean;
-}
+  currentScenario: Scenario['id'];
+  scenarioToCompare: Scenario['id'];
+  comparisonMode: 'percentage' | 'absolute' | 'both';
+};
 
 type FeatureState = RootState & { analysis: AnalysisState };
 
@@ -15,6 +19,9 @@ const initialState: AnalysisState = {
   visualizationMode: 'map',
   isSidebarCollapsed: false,
   isSubContentCollapsed: true,
+  currentScenario: null,
+  scenarioToCompare: null,
+  comparisonMode: null,
 };
 
 export const analysisSlice = createSlice({
@@ -36,16 +43,42 @@ export const analysisSlice = createSlice({
       ...state,
       isSubContentCollapsed: action.payload,
     }),
+    setCurrentScenario: (state, action: PayloadAction<AnalysisState['currentScenario']>) => ({
+      ...state,
+      currentScenario: action.payload,
+    }),
+    setScenarioToCompare: (state, action: PayloadAction<AnalysisState['scenarioToCompare']>) => ({
+      ...state,
+      scenarioToCompare: action.payload,
+    }),
+    setComparisonMode: (state, action: PayloadAction<AnalysisState['comparisonMode']>) => ({
+      ...state,
+      comparisonMode: action.payload,
+    }),
   },
 });
 
-export const { setVisualizationMode, setSidebarCollapsed, setSubContentCollapsed } =
-  analysisSlice.actions;
+export const {
+  setVisualizationMode,
+  setSidebarCollapsed,
+  setSubContentCollapsed,
+  setCurrentScenario,
+  setScenarioToCompare,
+  setComparisonMode,
+} = analysisSlice.actions;
+
+export const analysis = (state: FeatureState) => state.analysis;
 
 export const visualizationMode = (state: FeatureState) => state.analysis.visualizationMode;
 
 export const isSidebarCollapsed = (state: FeatureState) => state.analysis.isSidebarCollapsed;
 
 export const isSubContentCollapsed = (state: FeatureState) => state.analysis.isSubContentCollapsed;
+
+export const currentScenario = (state: FeatureState) => state.analysis.currentScenario;
+
+export const scenarioToCompare = (state: FeatureState) => state.analysis.scenarioToCompare;
+
+export const comparisonMode = (state: FeatureState) => state.analysis.comparisonMode;
 
 export default analysisSlice.reducer;

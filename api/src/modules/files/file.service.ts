@@ -14,13 +14,7 @@ export class FileService {
   }
   async deleteDataFromFS(filePath: string): Promise<void> {
     this.logger.log(`Deleting ${filePath} from file system...`);
-    if (filePath.startsWith('/tmp')) {
-      await this.isFilePresentInFs(filePath);
-      return unlink(filePath);
-    } else {
-      throw new Error(
-        `Could not complete deletion: ${filePath} is not in /tmp`,
-      );
-    }
+    await this.isFilePresentInFs(filePath);
+    return unlink(filePath);
   }
 }

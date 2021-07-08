@@ -13,7 +13,7 @@ import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-reco
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sourcing-record.dto';
 import { FileService } from 'modules/files/file.service';
-import { XlsxParser } from 'modules/files/xlsx.parser';
+import { XlsxParserService } from 'modules/files/xlsx-parser.service';
 import { WorkBook } from 'xlsx';
 
 @Injectable()
@@ -27,7 +27,7 @@ export class SourcingRecordsService extends AppBaseService<
     @InjectRepository(SourcingRecordRepository)
     protected readonly sourcingRecordRepository: SourcingRecordRepository,
     private readonly fileService: FileService,
-    private readonly xlsxParser: XlsxParser,
+    private readonly xlsxParser: XlsxParserService,
   ) {
     super(
       sourcingRecordRepository,

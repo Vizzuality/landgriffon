@@ -2,6 +2,7 @@ import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer
 import * as multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import * as config from 'config';
+import * as path from 'path';
 
 /**
  * Options for Multer
@@ -20,5 +21,12 @@ export const fileUploadInterceptor: MulterOptions = {
   }),
   limits: {
     fileSize: config.get('fileUploads.sizeLimit') as number,
+  },
+  fileFilter: function (_req: any, file: Express.Multer.File, cb: any) {
+    if (path.extname(file.originalname) !== '.xlsx') {
+      return cb(null, false);
+    }
+
+    cb(null, true);
   },
 };

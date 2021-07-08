@@ -12,18 +12,11 @@ import ScenarioEdit from 'containers/scenarios/edit';
 import InterventionForm from 'containers/interventions/form';
 import { analysis, setSubContentCollapsed } from 'store/features/analysis';
 import CollapseButton from 'containers/collapse-button';
-// import {
-//   isSidebarCollapsed,
-//   isSubContentCollapsed,
-//   setSubContentCollapsed,
-// } from 'store/features/analysis';
 
 import type { Page } from 'components/breadcrumb/types';
 
 const AnalysisPage: React.FC = () => {
   const { isSidebarCollapsed, isSubContentCollapsed } = useAppSelector(analysis);
-  // const isCollapsed = useAppSelector(isSidebarCollapsed);
-  // const isSubContentCollapsedState = useAppSelector(isSubContentCollapsed);
   const dispatch = useAppDispatch();
   const { query } = useRouter();
   const { scenarios } = query;

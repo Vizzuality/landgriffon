@@ -9,6 +9,7 @@ and this project adheres to [Calendar Versioning](https://calver.org/).
 ### Added
 * Scenario dropdown for edition and remove [LANDGRIF-156](https://vizzuality.atlassian.net/browse/LANDGRIF-156)
 * Filters and sortable to scenarios list [LANDGRIF-168](https://vizzuality.atlassian.net/browse/LANDGRIF-168)
+* Updated analysis documentation and needs [LANDGRIF-195](https://vizzuality.atlassian.net/browse/LANDGRIF-195)
 
 ## 2021.07.14
 ### Added

@@ -49,6 +49,47 @@ The user should be able to...
 * `/analysis?mode=map|table|chart`: select the mode of visualization
 * `/analysis?collapsed=true`: collapse the sidebar
 
+## Filters
+
+### User acceptance test
+
+The user should be able to ...
+
+ - [ ] ... filter the data used for the visualization by indicator, group by and select a range of years.
+ - [ ] ... additionally also can filter by other fields such as material, regions or suppliers (multiple selection).
+
+### UX decisisions
+
+* "All indicators" option is only available for table and chart. In case the user wants to change to the map view and the "all indicators" is selected, we should warn it and select other indicator.
+
+### Data needs
+
+* Indicators: ?? (already asked on Jira)
+* Groups: ?? (already asked on Jira)
+* Years: ?? (already asked on Jira)
+* Materials: from API
+* Origins: from API
+* Suppliers: from API
+
+### Data format
+
+```json
+{
+  "indicators": [1, 2, 3], // ids of indicators
+  "groupBy": "material", // material, business-unit, region, supplier
+  "start_year": 2020,
+  "end_year": 2030, // only for map and chart
+  "materials": [1, 2, 3], // ids of materials
+  "origins": [1, 2, 3], // ids of locations
+  "suppliers": [1, 2, 3], // ids of suppliers
+}
+```
+
+### Routing
+
+* `analysis?filters[field_name]=value`: filters parameters
+* `analysis?filters[field_name]=value1,value2`: for multiple choices
+
 ## Map
 
 ### User acceptance test

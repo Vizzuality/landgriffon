@@ -63,7 +63,7 @@ jobs:
         run: ./cc-test-reporter format-coverage -p landgriffon -t lcov -o api-coverage.json api/coverage/lcov.info
 
       - name: Format Client Report
-        run: ./cc-test-reporter format-coverage -t lcov -o client-coverage.json client/coverage/lcov.info
+        run: ./cc-test-reporter format-coverage -t lcov -o client-coverage.json client/src/coverage/lcov.info
 
       - name: Merge API and Client coverage reports
         run: ./cc-test-reporter sum-coverage *-coverage.json -p 2 -o total-coverage.json

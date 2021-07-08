@@ -13,7 +13,7 @@ type ScenariosListProps = {
 const isScenarioSelected: (scenarioId: Scenario['id'], currentId: Scenario['id']) => boolean = (
   scenarioId,
   currentId
-): boolean => scenarioId.toString() === currentId.toString();
+): boolean => scenarioId.toString() === currentId?.toString();
 
 const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProps) => {
   const { currentScenario } = useAppSelector(analysis);

@@ -16,9 +16,9 @@ const CollapseButton: React.FC<CollapseButtonProps> = ({
     onClick={onClick}
   >
     {active ? (
-      <ChevronLeftIcon className={ICON_CLASSNAMES} />
-    ) : (
       <ChevronRightIcon className={ICON_CLASSNAMES} />
+    ) : (
+      <ChevronLeftIcon className={ICON_CLASSNAMES} />
     )}
   </button>
 );

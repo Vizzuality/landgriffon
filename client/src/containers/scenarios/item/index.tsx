@@ -1,15 +1,15 @@
 import { useAppSelector } from 'store/hooks';
-import { visualizationMode } from 'store/features/analysis';
+import { analysis } from 'store/features/analysis';
 import Component from './component';
 
 const ScenarioItemContainer = (props) => {
-  const mode = useAppSelector(visualizationMode);
+  const { visualizationMode } = useAppSelector(analysis);
   const componentProps = {
     data: null,
     isSelected: false,
     isComparisonEnabled: false,
     ...props,
-    isComparisonAvailable: mode !== 'map',
+    isComparisonAvailable: visualizationMode !== 'map',
   };
 
   return <Component {...componentProps} />;

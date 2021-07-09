@@ -24,6 +24,6 @@ export const applicationSlice = createSlice({
 
 export const { setMenuMobileOpen } = applicationSlice.actions;
 
-export const isMenuMobileOpen = (state: RootState) => state.ui.isMenuMobileOpen;
+export const ui = (state: RootState) => state.ui;
 
 export default applicationSlice.reducer;

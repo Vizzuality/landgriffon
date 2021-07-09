@@ -69,16 +69,4 @@ export const {
 
 export const analysis = (state: FeatureState) => state.analysis;
 
-export const visualizationMode = (state: FeatureState) => state.analysis.visualizationMode;
-
-export const isSidebarCollapsed = (state: FeatureState) => state.analysis.isSidebarCollapsed;
-
-export const isSubContentCollapsed = (state: FeatureState) => state.analysis.isSubContentCollapsed;
-
-export const currentScenario = (state: FeatureState) => state.analysis.currentScenario;
-
-export const scenarioToCompare = (state: FeatureState) => state.analysis.scenarioToCompare;
-
-export const comparisonMode = (state: FeatureState) => state.analysis.comparisonMode;
-
 export default analysisSlice.reducer;

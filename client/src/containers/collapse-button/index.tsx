@@ -12,7 +12,7 @@ const CollapseButtonContainer: React.FC = () => {
   const { collapsed } = query;
 
   const handleClick = useCallback(() => {
-    router.push({
+    router.replace({
       pathname: '/analysis',
       query: {
         ...query,

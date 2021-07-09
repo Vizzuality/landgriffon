@@ -3,7 +3,7 @@ import { Fragment, useCallback } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { ChartBarIcon, CollectionIcon, HomeIcon, XIcon } from '@heroicons/react/outline';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
-import { isMenuMobileOpen, setMenuMobileOpen } from 'store/features/ui';
+import { ui, setMenuMobileOpen } from 'store/features/ui';
 import MobileNavigation from 'containers/navigation/mobile';
 import DesktopNavigation from 'containers/navigation/desktop';
 import Avatar from 'components/avatar';
@@ -23,21 +23,20 @@ const navigationItems: NavigationList = [
 ];
 
 const Sidebar = () => {
-  const isMobileMenuOpen = useAppSelector(isMenuMobileOpen);
+  const { isMenuMobileOpen } = useAppSelector(ui);
   const dispatch = useAppDispatch();
   const handleOnClose = useCallback(() => {
     dispatch(setMenuMobileOpen(false));
   }, []);
-  // const { isMobileMenuOpen = false, setMobileMenuOpen } = props;
 
   return (
     <>
-      <Transition.Root show={isMobileMenuOpen} as={Fragment}>
+      <Transition.Root show={isMenuMobileOpen} as={Fragment}>
         <Dialog
           as="div"
           static
           className="fixed inset-0 flex z-40 lg:hidden"
-          open={isMobileMenuOpen}
+          open={isMenuMobileOpen}
           onClose={handleOnClose}
         >
           <Transition.Child

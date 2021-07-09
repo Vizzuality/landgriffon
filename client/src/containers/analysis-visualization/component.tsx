@@ -1,5 +1,5 @@
 import { useAppSelector } from 'store/hooks';
-import { visualizationMode } from 'store/features/analysis';
+import { analysis } from 'store/features/analysis';
 import Map from 'components/map';
 import ModeControl from './mode-control';
 
@@ -8,21 +8,21 @@ const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
 const impactFactors = [{ id: '1', name: 'Rice', 2021: 342, 2022: 632, 2023: 1332 }];
 
 const AnalysisVisualization = () => {
-  const currentMode = useAppSelector(visualizationMode);
+  const { visualizationMode } = useAppSelector(analysis);
 
   return (
     <section className="min-w-0 flex-1 h-full flex flex-col overflow-hidden lg:order-last bg-white">
       {/* Vis selector: map, table or chart */}
       <ModeControl />
 
-      {currentMode === 'map' && (
+      {visualizationMode === 'map' && (
         <Map
           mapboxApiAccessToken={MAPBOX_API_TOKEN}
           mapStyle="mapbox://styles/landgriffon/ckmdaj5gy08yx17me92nudkjd"
         />
       )}
 
-      {currentMode === 'table' && (
+      {visualizationMode === 'table' && (
         <div className="flex flex-col p-6 mt-16">
           <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">

@@ -8,12 +8,12 @@ import Scenarios from 'containers/scenarios';
 import ScenarioNew from 'containers/scenarios/new';
 import ScenarioEdit from 'containers/scenarios/edit';
 import InterventionForm from 'containers/interventions/form';
-import { isSubContentCollapsed, setSubContentCollapsed } from 'store/features/analysis';
+import { analysis, setSubContentCollapsed } from 'store/features/analysis';
 
 import type { Page } from 'components/breadcrumb/types';
 
 const AnalysisPage: React.FC = () => {
-  const isSubContentCollapsedState = useAppSelector(isSubContentCollapsed);
+  const { isSubContentCollapsed } = useAppSelector(analysis);
   const dispatch = useAppDispatch();
   const { query } = useRouter();
   const { scenarios } = query;
@@ -56,7 +56,7 @@ const AnalysisPage: React.FC = () => {
           </section>
 
           {/* Analysis aside */}
-          {!isSubContentCollapsedState && (
+          {!isSubContentCollapsed && (
             <aside className="absolute ml-96 h-full hidden lg:block lg:flex-shrink-0 w-1/2">
               <div className="h-full relative flex flex-col w-auto border-r border-gray-200 bg-white p-6 overflow-auto">
                 {/* For now, I'm going to assume we will only have the intervention form here */}

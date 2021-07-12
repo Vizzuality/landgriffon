@@ -3,11 +3,11 @@ import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   Tree,
   TreeChildren,
   TreeParent,
-  OneToMany,
 } from 'typeorm';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { BaseServiceResource } from 'types/resource.interface';

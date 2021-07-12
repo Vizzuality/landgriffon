@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { UnitConversionsService } from 'modules/unit-conversions/unit-conversions.service';
@@ -71,6 +72,7 @@ export class UnitConversionsController {
   @ApiOperation({ description: 'Create a conversion unit' })
   @ApiOkResponse({ type: UnitConversion })
   @Post()
+  @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateUnitConversionDto): Promise<UnitConversion> {
     return await this.unitConversionsService.serialize(
       await this.unitConversionsService.create(dto),

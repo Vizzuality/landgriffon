@@ -2,11 +2,11 @@ import {
   BaseEntity,
   Column,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
+  Tree,
   TreeChildren,
   TreeParent,
-  Tree,
-  OneToMany,
 } from 'typeorm';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';

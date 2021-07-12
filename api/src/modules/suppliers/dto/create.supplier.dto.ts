@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEnum,
   IsJSON,
+  IsNotEmpty,
   IsOptional,
   IsString,
   MaxLength,
@@ -11,6 +12,7 @@ import { SUPPLIER_STATUS } from 'modules/suppliers/supplier.entity';
 
 export class CreateSupplierDto {
   @IsString()
+  @IsNotEmpty()
   @MinLength(2)
   @MaxLength(40)
   @ApiProperty()

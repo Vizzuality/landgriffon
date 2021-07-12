@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { UnitsService } from 'modules/units/units.service';
@@ -65,6 +66,7 @@ export class UnitsController {
   @ApiOperation({ description: 'Create a unit' })
   @ApiOkResponse({ type: Unit })
   @Post()
+  @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateUnitDto): Promise<Unit> {
     return await this.unitsService.serialize(
       await this.unitsService.create(dto),

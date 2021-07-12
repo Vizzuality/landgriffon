@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEnum,
   IsJSON,
+  IsNotEmpty,
   IsOptional,
   IsString,
   MinLength,
@@ -12,7 +13,8 @@ export class CreateLayerDto {
   @IsString()
   @MinLength(2)
   @ApiProperty()
-  text!: string;
+  @IsNotEmpty()
+  text?: string;
 
   @IsString()
   @IsJSON()

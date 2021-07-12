@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { MaterialsService } from 'modules/materials/materials.service';
@@ -65,6 +66,7 @@ export class MaterialsController {
   @ApiOperation({ description: 'Create a material' })
   @ApiOkResponse({ type: Material })
   @Post()
+  @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateMaterialDto): Promise<Material> {
     return await this.materialsService.serialize(
       await this.materialsService.create(dto),

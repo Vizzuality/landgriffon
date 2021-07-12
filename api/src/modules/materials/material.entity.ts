@@ -1,13 +1,13 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
   BaseEntity,
+  Column,
+  Entity,
   ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
   Tree,
   TreeChildren,
   TreeParent,
-  OneToMany,
 } from 'typeorm';
 import { Layer } from 'modules/layers/layer.entity';
 import { BaseServiceResource } from 'types/resource.interface';

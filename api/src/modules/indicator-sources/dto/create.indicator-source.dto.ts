@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsJSON,
+  IsNotEmpty,
   IsOptional,
   IsString,
   MaxLength,
@@ -9,6 +10,7 @@ import {
 
 export class CreateIndicatorSourceDto {
   @IsString()
+  @IsNotEmpty()
   @MinLength(2)
   @MaxLength(40)
   @ApiProperty()

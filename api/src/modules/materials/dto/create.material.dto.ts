@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEnum,
   IsJSON,
+  IsNotEmpty,
   IsOptional,
   IsString,
   MaxLength,
@@ -11,6 +12,7 @@ import { MATERIALS_STATUS } from 'modules/materials/material.entity';
 
 export class CreateMaterialDto {
   @IsString()
+  @IsNotEmpty()
   @MinLength(2)
   @MaxLength(40)
   @ApiProperty()

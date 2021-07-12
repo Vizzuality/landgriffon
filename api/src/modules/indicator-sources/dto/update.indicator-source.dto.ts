@@ -1,12 +1,6 @@
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { CreateIndicatorSourceDto } from 'modules/indicator-sources/dto/create.indicator-source.dto';
-import {
-  IsJSON,
-  IsOptional,
-  IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class UpdateIndicatorSourceDto extends PartialType(
   CreateIndicatorSourceDto,

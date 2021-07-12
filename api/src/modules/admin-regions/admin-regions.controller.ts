@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
@@ -68,6 +69,7 @@ export class AdminRegionsController {
   @ApiOperation({ description: 'Create a admin region' })
   @ApiOkResponse({ type: AdminRegion })
   @Post()
+  @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateAdminRegionDto): Promise<AdminRegion> {
     return await this.adminRegionsService.serialize(
       await this.adminRegionsService.create(dto),

@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
@@ -73,6 +74,7 @@ export class SourcingLocationsController {
   @ApiOperation({ description: 'Create a sourcing location' })
   @ApiOkResponse({ type: SourcingLocation })
   @Post()
+  @UsePipes(ValidationPipe)
   async create(
     @Body() dto: CreateSourcingLocationDto,
   ): Promise<SourcingLocation> {

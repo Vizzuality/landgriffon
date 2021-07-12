@@ -61,6 +61,20 @@ describe('ScenariosModule (e2e)', () => {
 
       expect(createdScenario.title).toEqual('test scenario');
     });
+
+    test('Create a scenario without the required fields should fail with a 400 error', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/scenarios')
+        .send()
+        .expect(HttpStatus.BAD_REQUEST);
+
+      expect(response).toHaveErrorMessage(HttpStatus.BAD_REQUEST, [
+        'title should not be empty',
+        'title must be shorter than or equal to 40 characters',
+        'title must be longer than or equal to 2 characters',
+        'title must be a string',
+      ]);
+    });
   });
 
   describe('Scenarios - Update', () => {

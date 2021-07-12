@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEnum,
   IsJSON,
+  IsNotEmpty,
   IsOptional,
   IsString,
   MaxLength,
@@ -11,6 +12,7 @@ import { BUSINESS_UNIT_STATUS } from 'modules/business-units/business-unit.entit
 
 export class CreateBusinessUnitDto {
   @IsString()
+  @IsNotEmpty()
   @MinLength(2)
   @MaxLength(40)
   @ApiProperty()

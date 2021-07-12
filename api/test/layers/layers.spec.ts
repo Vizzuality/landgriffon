@@ -57,6 +57,19 @@ describe('LayersModule (e2e)', () => {
 
       expect(createdLayer.text).toEqual('test layer');
     });
+
+    test('Create a layer without the required fields should fail with a 400 error', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/layers')
+        .send()
+        .expect(HttpStatus.BAD_REQUEST);
+
+      expect(response).toHaveErrorMessage(HttpStatus.BAD_REQUEST, [
+        'text should not be empty',
+        'text must be longer than or equal to 2 characters',
+        'text must be a string',
+      ]);
+    });
   });
 
   describe('Layers - Update', () => {

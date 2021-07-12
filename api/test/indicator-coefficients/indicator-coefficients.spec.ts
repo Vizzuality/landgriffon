@@ -48,7 +48,7 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
   });
 
   describe('Indicator coefficients - Create', () => {
-    test('Create a indicator should be successful (happy case)', async () => {
+    test('Create an indicator coefficient should be successful (happy case)', async () => {
       const indicatorSource: IndicatorSource = await createIndicatorSource();
 
       const response = await request(app.getHttpServer())
@@ -69,6 +69,18 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
 
       expect(createdIndicatorCoefficient.year).toEqual(2000);
     });
+  });
+
+  test('Create a indicator coefficient without the required fields should fail with a 400 error', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/indicator-coefficients')
+      .send()
+      .expect(HttpStatus.BAD_REQUEST);
+
+    expect(response).toHaveErrorMessage(HttpStatus.BAD_REQUEST, [
+      'year should not be empty',
+      'year must be a number conforming to the specified constraints',
+    ]);
   });
 
   describe('Indicator coefficients - Update', () => {

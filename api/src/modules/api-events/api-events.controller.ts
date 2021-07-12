@@ -7,6 +7,8 @@ import {
   Post,
   Req,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -76,6 +78,7 @@ export class ApiEventsController {
   @ApiOperation({ description: 'Create an API event' })
   @ApiOkResponse({ type: ApiEvent })
   @Post()
+  @UsePipes(ValidationPipe)
   async create(
     @Body() dto: CreateApiEventDTO,
     @Req() req: RequestWithAuthenticatedUser,

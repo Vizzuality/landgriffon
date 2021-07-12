@@ -19,28 +19,29 @@ const AnalysisPage: React.FC = () => {
   const { isSidebarCollapsed, isSubContentCollapsed } = useAppSelector(analysis);
   const dispatch = useAppDispatch();
   const { query } = useRouter();
-  const { scenarios } = query;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { new_scenario, edit_scenario } = query;
 
-  const analysisContent = () => ({
-    default: <Scenarios />,
-    new: <ScenarioNew />,
-    edit: <ScenarioEdit />,
-  });
+  const analysisContent = () => {
+    if (new_scenario) return <ScenarioNew />;
+    if (edit_scenario) return <ScenarioEdit />;
+    return <Scenarios />;
+  };
 
   // Breadcrumbs
   let pages: Page[] = [{ name: 'Analysis', href: '/analysis' }]; // Default
-  if (scenarios && scenarios === 'new') {
-    pages = [...pages, { name: 'New scenario', href: '/analysis?scenarios=new' }];
+  if (new_scenario) {
+    pages = [...pages, { name: 'New scenario', href: '/analysis?new_scenario=true' }];
   }
-  if (scenarios && scenarios === 'edit') {
-    pages = [...pages, { name: 'Edit scenario', href: '/analysis?scenarios=edit' }];
+  if (edit_scenario) {
+    pages = [...pages, { name: 'Edit scenario', href: '/analysis?edit_scenario' }];
   }
 
   useEffect(() => {
     // Close and cancel interventions creation
     // when user goes to scenarios list
-    if (!scenarios) dispatch(setSubContentCollapsed(true));
-  }, [scenarios]);
+    if (!new_scenario && !edit_scenario) dispatch(setSubContentCollapsed(true));
+  }, [new_scenario, edit_scenario]);
 
   return (
     <ApplicationLayout>
@@ -63,7 +64,7 @@ const AnalysisPage: React.FC = () => {
               <div className="pb-10">
                 <Breadcrumb pages={pages} />
               </div>
-              {analysisContent()[(scenarios || 'default') as string]}
+              {analysisContent()}
             </Transition>
             <div className="absolute top-4 right-0 transform translate-x-1/2 z-10">
               <CollapseButton />

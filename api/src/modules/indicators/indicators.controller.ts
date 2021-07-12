@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
@@ -68,6 +69,7 @@ export class IndicatorsController {
   @ApiOperation({ description: 'Create a indicator' })
   @ApiOkResponse({ type: Indicator })
   @Post()
+  @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateIndicatorDto): Promise<Indicator> {
     return await this.indicatorsService.serialize(
       await this.indicatorsService.create(dto),

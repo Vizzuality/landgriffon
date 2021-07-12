@@ -1,5 +1,5 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { unlink, access } from 'fs/promises';
+import { access, unlink } from 'fs/promises';
 
 @Injectable()
 export class FileService {
@@ -12,6 +12,7 @@ export class FileService {
       throw new NotFoundException(`File ${filePath} could not been found`);
     }
   }
+
   async deleteDataFromFS(filePath: string): Promise<void> {
     this.logger.log(`Deleting ${filePath} from file system...`);
     await this.isFilePresentInFs(filePath);

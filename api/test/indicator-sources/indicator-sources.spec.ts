@@ -68,6 +68,21 @@ describe('IndicatorSourcesModule (e2e)', () => {
     });
   });
 
+  test('Create a indicator source without the required fields should fail with a 400 error', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/indicator-sources')
+      .send()
+      .expect(HttpStatus.BAD_REQUEST);
+
+    expect(response).toHaveErrorMessage(HttpStatus.BAD_REQUEST, [
+      'layerId must be a string',
+      'title should not be empty',
+      'title must be shorter than or equal to 40 characters',
+      'title must be longer than or equal to 2 characters',
+      'title must be a string',
+    ]);
+  });
+
   describe('Indicator sources - Update', () => {
     test('Update a indicator source should be successful (happy case)', async () => {
       const indicatorSource: IndicatorSource = await createIndicatorSource();

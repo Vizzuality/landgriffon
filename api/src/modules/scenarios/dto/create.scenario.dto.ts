@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEnum,
   IsJSON,
+  IsNotEmpty,
   IsOptional,
   IsString,
   MaxLength,
@@ -14,6 +15,7 @@ export class CreateScenarioDto {
   @MinLength(2)
   @MaxLength(40)
   @ApiProperty()
+  @IsNotEmpty()
   title!: string;
 
   @IsString()

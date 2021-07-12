@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { IndicatorCoefficientsService } from 'modules/indicator-coefficients/indicator-coefficients.service';
@@ -73,6 +74,7 @@ export class IndicatorCoefficientsController {
   @ApiOperation({ description: 'Create a indicator coefficient' })
   @ApiOkResponse({ type: IndicatorCoefficient })
   @Post()
+  @UsePipes(ValidationPipe)
   async create(
     @Body() dto: CreateIndicatorCoefficientDto,
   ): Promise<IndicatorCoefficient> {

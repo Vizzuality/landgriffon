@@ -1,11 +1,11 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import {
+  BadRequestException,
+  CallHandler,
+  ExecutionContext,
   Injectable,
   NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-  BadRequestException,
 } from '@nestjs/common';
 
 /**
@@ -13,6 +13,7 @@ import {
  */
 
 Injectable();
+
 export class XlsxPayloadInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): any {
     const request = context.switchToHttp().getRequest<Request>();

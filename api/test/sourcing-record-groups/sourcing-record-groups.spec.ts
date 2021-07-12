@@ -63,6 +63,20 @@ describe('SourcingRecordGroupsModule (e2e)', () => {
         'sourcing record group test name',
       );
     });
+
+    test('Create a sourcing record group without the required fields should fail with a 400 error', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/sourcing-record-groups')
+        .send()
+        .expect(HttpStatus.BAD_REQUEST);
+
+      expect(response).toHaveErrorMessage(HttpStatus.BAD_REQUEST, [
+        'title should not be empty',
+        'title must be shorter than or equal to 40 characters',
+        'title must be longer than or equal to 2 characters',
+        'title must be a string',
+      ]);
+    });
   });
 
   describe('Sourcing record groups - Update', () => {

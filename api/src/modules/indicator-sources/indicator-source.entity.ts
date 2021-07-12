@@ -9,7 +9,7 @@ import {
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Layer } from 'modules/layers/layer.entity';
-import { IndicatorCoefficient } from '../indicator-coefficients/indicator-coefficient.entity';
+import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
 
 export const indicatorSourceResource: BaseServiceResource = {
   className: 'IndicatorSource',

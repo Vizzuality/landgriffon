@@ -67,6 +67,21 @@ describe('MaterialsModule (e2e)', () => {
 
       expect(createdMaterial.name).toEqual('test material');
     });
+
+    test('Create a material without the required fields should fail with a 400 error', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/materials')
+        .send()
+        .expect(HttpStatus.BAD_REQUEST);
+
+      expect(response).toHaveErrorMessage(HttpStatus.BAD_REQUEST, [
+        'layerId must be a string',
+        'name must be a string',
+        'name must be longer than or equal to 2 characters',
+        'name must be shorter than or equal to 40 characters',
+        'name should not be empty',
+      ]);
+    });
   });
 
   describe('Materials - Update', () => {

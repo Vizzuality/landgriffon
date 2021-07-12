@@ -2,6 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsArray,
   IsJSON,
+  IsNotEmpty,
   IsOptional,
   IsString,
   MaxLength,
@@ -10,6 +11,7 @@ import {
 
 export class CreateGeoRegionDto {
   @IsString()
+  @IsNotEmpty()
   @MinLength(2)
   @MaxLength(40)
   @ApiPropertyOptional()

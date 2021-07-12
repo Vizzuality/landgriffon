@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { IndicatorSourcesService } from 'modules/indicator-sources/indicator-sources.service';
@@ -73,6 +74,7 @@ export class IndicatorSourcesController {
   @ApiOperation({ description: 'Create a indicator source' })
   @ApiOkResponse({ type: IndicatorSource })
   @Post()
+  @UsePipes(ValidationPipe)
   async create(
     @Body() dto: CreateIndicatorSourceDto,
   ): Promise<IndicatorSource> {

@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { SourcingRecordGroupsService } from 'modules/sourcing-record-groups/sourcing-record-groups.service';
@@ -73,6 +74,7 @@ export class SourcingRecordGroupsController {
   @ApiOperation({ description: 'Create a sourcing record group' })
   @ApiOkResponse({ type: SourcingRecordGroup })
   @Post()
+  @UsePipes(ValidationPipe)
   async create(
     @Body() dto: CreateSourcingRecordGroupDto,
   ): Promise<SourcingRecordGroup> {

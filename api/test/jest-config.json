@@ -18,6 +18,7 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
+  "setupFilesAfterEnv": ["./test/jest-custom-matchers.ts"],
   "coverageReporters": [
     [
       "lcov",

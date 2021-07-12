@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { LayersService } from 'modules/layers/layers.service';
@@ -65,6 +66,7 @@ export class LayersController {
   @ApiOperation({ description: 'Create a layer' })
   @ApiOkResponse({ type: Layer })
   @Post()
+  @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateLayerDto): Promise<Layer> {
     return await this.layersService.serialize(
       await this.layersService.create(dto),

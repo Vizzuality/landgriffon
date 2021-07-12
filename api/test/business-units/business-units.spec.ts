@@ -63,6 +63,20 @@ describe('BusinessUnitsModule (e2e)', () => {
     });
   });
 
+  test('Create a business unit without the required fields should fail with a 400 error', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/business-units')
+      .send()
+      .expect(HttpStatus.BAD_REQUEST);
+
+    expect(response).toHaveErrorMessage(HttpStatus.BAD_REQUEST, [
+      'name should not be empty',
+      'name must be shorter than or equal to 40 characters',
+      'name must be longer than or equal to 2 characters',
+      'name must be a string',
+    ]);
+  });
+
   describe('Business units - Update', () => {
     test('Update a business unit should be successful (happy case)', async () => {
       const businessUnit: BusinessUnit = new BusinessUnit();

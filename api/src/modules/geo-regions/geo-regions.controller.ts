@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
@@ -68,6 +69,7 @@ export class GeoRegionsController {
   @ApiOperation({ description: 'Create a geo region' })
   @ApiOkResponse({ type: GeoRegion })
   @Post()
+  @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateGeoRegionDto): Promise<GeoRegion> {
     return await this.geoRegionsService.serialize(
       await this.geoRegionsService.create(dto),

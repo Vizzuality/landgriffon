@@ -2,15 +2,19 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEnum,
   IsJSON,
+  IsNotEmpty,
   IsOptional,
   IsString,
+  MaxLength,
   MinLength,
 } from 'class-validator';
 import { INDICATOR_STATUS } from 'modules/indicators/indicator.entity';
 
 export class CreateIndicatorDto {
   @IsString()
+  @IsNotEmpty()
   @MinLength(2)
+  @MaxLength(40)
   @ApiProperty()
   name!: string;
 

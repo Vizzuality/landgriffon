@@ -8,7 +8,7 @@ import {
 import { Material } from 'modules/materials/material.entity';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IndicatorSource } from '../indicator-sources/indicator-source.entity';
+import { IndicatorSource } from 'modules/indicator-sources/indicator-source.entity';
 
 export enum LAYERS_STATUS {
   ACTIVE = 'active',

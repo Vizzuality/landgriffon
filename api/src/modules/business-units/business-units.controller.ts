@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
@@ -68,6 +69,7 @@ export class BusinessUnitsController {
   @ApiOperation({ description: 'Create a business unit' })
   @ApiOkResponse({ type: BusinessUnit })
   @Post()
+  @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateBusinessUnitDto): Promise<BusinessUnit> {
     return await this.businessUnitsService.serialize(
       await this.businessUnitsService.create(dto),

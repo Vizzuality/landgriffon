@@ -88,10 +88,10 @@ export class SourcingLocation extends BaseEntity {
   locationType: LOCATION_TYPES;
 
   @Column({ type: 'text', name: 'location_address_input', nullable: true })
-  locationAddressInput: string;
+  locationAddressInput?: string;
 
   @Column({ type: 'text', name: 'location_country_input', nullable: true })
-  locationCountryInput: string;
+  locationCountryInput?: string;
 
   @Column({
     type: 'enum',

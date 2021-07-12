@@ -8,6 +8,7 @@ import {
   Post,
   UploadedFile,
   UseInterceptors,
+  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
@@ -77,6 +78,7 @@ export class SourcingRecordsController {
   @ApiOperation({ description: 'Create a sourcing group' })
   @ApiOkResponse({ type: SourcingRecord })
   @Post()
+  @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateSourcingRecordDto): Promise<SourcingRecord> {
     return await this.sourcingRecordsService.serialize(
       await this.sourcingRecordsService.create(dto),

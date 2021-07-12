@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
@@ -65,6 +66,7 @@ export class SuppliersController {
   @ApiOperation({ description: 'Create a supplier' })
   @ApiOkResponse({ type: Supplier })
   @Post()
+  @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateSupplierDto): Promise<Supplier> {
     return await this.suppliersService.serialize(
       await this.suppliersService.create(dto),

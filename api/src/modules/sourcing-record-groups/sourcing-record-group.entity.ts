@@ -8,6 +8,7 @@ import {
 import { User } from 'modules/users/user.entity';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 
 export const sourcingRecordGroupResource: BaseServiceResource = {
   className: 'SourcingRecordGroup',
@@ -19,7 +20,7 @@ export const sourcingRecordGroupResource: BaseServiceResource = {
 };
 
 @Entity()
-export class SourcingRecordGroup extends BaseEntity {
+export class SourcingRecordGroup extends TimestampedBaseEntity {
   @PrimaryGeneratedColumn('uuid')
   @ApiProperty()
   id!: string;
@@ -36,22 +37,15 @@ export class SourcingRecordGroup extends BaseEntity {
   @ApiPropertyOptional()
   metadata?: JSON;
 
-  @Column({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  @ApiProperty()
-  lastEdited!: string;
-
   @ManyToOne(() => User, (user: User) => user.sourcingRecordGroups, {
     eager: false,
   })
-  lastEditedUser?: User;
+  updatedBy?: User;
 
   /**
    * @debt Auto-assign user and make not nullable
    */
   @Column({ nullable: true })
   @ApiPropertyOptional()
-  lastEditedUserId?: string;
+  updatedById?: string;
 }

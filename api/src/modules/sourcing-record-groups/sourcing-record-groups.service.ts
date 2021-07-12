@@ -37,8 +37,9 @@ export class SourcingRecordGroupsService extends AppBaseService<
         'title',
         'description',
         'metadata',
-        'lastEdited',
-        'lastEditedUserId',
+        'createdAt',
+        'updatedAt',
+        'updatedById',
       ],
       keyForAttribute: 'camelCase',
     };

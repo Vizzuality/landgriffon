@@ -12,6 +12,7 @@ import { Material } from 'modules/materials/material.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 
 export enum LOCATION_TYPES {
   PRODUCTION_UNIT = 'Production unit',
@@ -38,7 +39,7 @@ export const sourcingLocationResource: BaseServiceResource = {
 };
 
 @Entity()
-export class SourcingLocation extends BaseEntity {
+export class SourcingLocation extends TimestampedBaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -112,15 +113,8 @@ export class SourcingLocation extends BaseEntity {
   @Column({ type: 'jsonb', nullable: true })
   metadata: JSON;
 
-  @Column({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  @ApiPropertyOptional()
-  lastEdited: string;
-
   @ManyToOne(() => User, (user: User) => user.sourcingLocations, {
     eager: false,
   })
-  lastEditedUser: User;
+  updatedBy: User;
 }

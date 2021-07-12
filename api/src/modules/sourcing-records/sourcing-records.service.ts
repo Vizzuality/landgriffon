@@ -43,8 +43,9 @@ export class SourcingRecordsService extends AppBaseService<
         'year',
         'sourcingLocationsId',
         'metadata',
-        'lastEdited',
-        'lastEditedUserId',
+        'createdAt',
+        'updatedAt',
+        'updatedById',
       ],
       keyForAttribute: 'camelCase',
     };

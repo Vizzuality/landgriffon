@@ -81,22 +81,19 @@ export class User extends BaseEntity {
   @OneToMany(() => IndicatorCoefficient, (ic: IndicatorCoefficient) => ic.user)
   indicatorCoefficients: IndicatorCoefficient[];
 
-  @OneToMany(
-    () => SourcingLocation,
-    (sc: SourcingLocation) => sc.lastEditedUser,
-  )
+  @OneToMany(() => SourcingLocation, (sc: SourcingLocation) => sc.updatedBy)
   sourcingLocations: SourcingLocation[];
 
   @OneToMany(
     () => SourcingRecordGroup,
-    (srg: SourcingRecordGroup) => srg.lastEditedUser,
+    (srg: SourcingRecordGroup) => srg.updatedBy,
   )
   sourcingRecordGroups: SourcingRecordGroup[];
 
   @OneToMany(() => Scenario, (scenario: Scenario) => scenario.user)
   scenarios: Scenario[];
 
-  @OneToMany(() => Scenario, (scenario: Scenario) => scenario.lastEditedUser)
+  @OneToMany(() => Scenario, (scenario: Scenario) => scenario.updatedBy)
   scenariosLastEdited: Scenario[];
 }
 

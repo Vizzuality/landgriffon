@@ -9,6 +9,7 @@ import {
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { User } from 'modules/users/user.entity';
+import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 
 export enum SCENARIO_STATUS {
   ACTIVE = 'active',
@@ -26,7 +27,7 @@ export const scenarioResource: BaseServiceResource = {
 };
 
 @Entity()
-export class Scenario extends BaseEntity {
+export class Scenario extends TimestampedBaseEntity {
   @PrimaryGeneratedColumn('uuid')
   @ApiProperty()
   id: string;
@@ -52,12 +53,6 @@ export class Scenario extends BaseEntity {
   @Column({ type: 'jsonb', nullable: true })
   metadata?: JSON;
 
-  @Column({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  lastEdited: string;
-
   @ManyToOne(() => User, (user: User) => user.scenarios, {
     eager: false,
   })
@@ -75,12 +70,12 @@ export class Scenario extends BaseEntity {
     eager: false,
   })
   @ApiProperty({ type: () => User })
-  lastEditedUser?: User;
+  updatedBy?: User;
 
   /**
    * @debt Auto-assign user and make not nullable
    */
   @Column({ nullable: true })
   @ApiPropertyOptional()
-  lastEditedUserId?: string;
+  updatedById?: string;
 }

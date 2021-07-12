@@ -10,6 +10,7 @@ import { User } from 'modules/users/user.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 
 export const sourcingRecordResource: BaseServiceResource = {
   className: 'SourcingRecord',
@@ -21,7 +22,7 @@ export const sourcingRecordResource: BaseServiceResource = {
 };
 
 @Entity('sourcing_records')
-export class SourcingRecord extends BaseEntity {
+export class SourcingRecord extends TimestampedBaseEntity {
   @PrimaryGeneratedColumn('uuid')
   @ApiProperty()
   id!: string;
@@ -43,17 +44,10 @@ export class SourcingRecord extends BaseEntity {
   @ApiPropertyOptional()
   metadata?: JSON;
 
-  @Column({
-    type: 'timestamp',
-    name: 'last_edited',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  lastEdited: string;
-
   /**
    * @Debt: make this required and auto-set
    */
   @ManyToOne(() => User, (user: User) => user.id)
   @ApiProperty()
-  lastEditedUserId?: string;
+  updatedById?: string;
 }

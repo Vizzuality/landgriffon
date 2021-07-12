@@ -12,6 +12,7 @@ import { User } from 'modules/users/user.entity';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IndicatorSource } from 'modules/indicator-sources/indicator-source.entity';
+import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 
 export const indicatorCoefficientResource: BaseServiceResource = {
   className: 'IndicatorCoefficient',
@@ -23,7 +24,7 @@ export const indicatorCoefficientResource: BaseServiceResource = {
 };
 
 @Entity()
-export class IndicatorCoefficient extends BaseEntity {
+export class IndicatorCoefficient extends TimestampedBaseEntity {
   @PrimaryGeneratedColumn('uuid')
   @ApiProperty()
   id!: string;
@@ -53,13 +54,6 @@ export class IndicatorCoefficient extends BaseEntity {
   @Column()
   @ApiProperty()
   indicatorSourceId!: string;
-
-  @Column({
-    type: 'timestamptz',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  @ApiProperty()
-  lastEdited!: string;
 
   @ManyToOne(() => User, (user: User) => user.indicatorCoefficients)
   @ApiProperty({ type: () => User })

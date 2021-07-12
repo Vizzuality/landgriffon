@@ -33,7 +33,7 @@ export class IndicatorCoefficientsService extends AppBaseService<
 
   get serializerConfig(): JSONAPISerializerConfig<IndicatorCoefficient> {
     return {
-      attributes: ['value', 'year', 'lastEdited', 'lastEdited'],
+      attributes: ['value', 'year', 'createdAt', 'updatedAt'],
       keyForAttribute: 'camelCase',
     };
   }

@@ -20,7 +20,7 @@ const ScenariosComponent: React.FC<ScenariosProps> = ({ scenarios }: ScenariosPr
       <p className="text-sm mt-2 mb-2">Select the scenario you want to analyse</p>
       {isLoading && <p>Loading scenarios...</p>}
       {!isLoading && data && <ScenariosList data={data} />}
-      <Link href="/analysis?scenarios=new" shallow>
+      <Link href="/analysis?new_scenario=true" shallow>
         <Anchor size="xl">
           <PlusIcon className="-ml-5 mr-3 h-5 w-5" aria-hidden="true" />
           Create scenario

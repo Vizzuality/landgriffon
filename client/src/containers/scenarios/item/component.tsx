@@ -52,11 +52,12 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
               <div className="flex-1 pr-4 py-4  truncate">
                 <h2 className="text-gray-900 text-sm font-medium">{data.title}</h2>
                 <p className="text-gray-600 text-sm">
-                  {data.id === 'actual-data' ? (
+                  {data.id === 'actual-data' && (
                     <span className="text-green-700">Based on your uploaded data</span>
-                  ) : (
-                    `Last edited ${format(data.updatedAt, 'yyyy/MM/dd')}`
                   )}
+                  {data.id !== 'actual-data' &&
+                    data.updatedAt &&
+                    `Last edited ${format(data.updatedAt, 'yyyy/MM/dd')}`}
                 </p>
               </div>
             </>

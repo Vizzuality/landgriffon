@@ -18,7 +18,6 @@ jest.mock('config', () => {
       return configGet.call(config, key);
     }
   };
-
   return config;
 });
 
@@ -47,7 +46,7 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
 
   test('When a file is sent to the API and its size is too large then it should return a 413 "Payload Too Large" error', async () => {
     await request(app.getHttpServer())
-      .post('/api/v1/sourcing-records/import')
+      .post('/api/v1/sourcing-records/import/xlsx')
       .attach('file', __dirname + '/base-dataset.xlsx')
       .expect(HttpStatus.PAYLOAD_TOO_LARGE);
 

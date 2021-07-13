@@ -19,10 +19,10 @@ export class SuppliersService extends AppBaseService<
 > {
   constructor(
     @InjectRepository(SupplierRepository)
-    protected readonly repository: SupplierRepository,
+    protected readonly supplierRepository: SupplierRepository,
   ) {
     super(
-      repository,
+      supplierRepository,
       supplierResource.name.singular,
       supplierResource.name.plural,
     );
@@ -43,5 +43,9 @@ export class SuppliersService extends AppBaseService<
     }
 
     return found;
+  }
+
+  async saveMany(entityArray: Supplier[]): Promise<void> {
+    await this.supplierRepository.save(entityArray);
   }
 }

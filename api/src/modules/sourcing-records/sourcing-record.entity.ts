@@ -28,7 +28,7 @@ export class SourcingRecord extends TimestampedBaseEntity {
   @ApiProperty()
   id!: string;
 
-  @Column({ type: 'numeric', nullable: true })
+  @Column({ type: 'int', nullable: true })
   @ApiPropertyOptional()
   tonnage?: number;
 

@@ -30,7 +30,7 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
 
   test('When a file is not sent to the API then it should return a 400 code and the storage folder should be empty', async () => {
     const response = await request(app.getHttpServer())
-      .post('/api/v1/sourcing-records/import')
+      .post('/api/v1/sourcing-records/import/xlsx')
       .expect(HttpStatus.BAD_REQUEST);
     expect(response.body.errors[0].title).toEqual(
       'A .XLSX file must be provided as payload',
@@ -39,7 +39,7 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
 
   test('When a file is sent to the API and its size is allowed then it should return a 201 code and the storage folder should be empty', async () => {
     await request(app.getHttpServer())
-      .post('/api/v1/sourcing-records/import')
+      .post('/api/v1/sourcing-records/import/xlsx')
       .attach('file', __dirname + '/base-dataset.xlsx')
       .expect(HttpStatus.CREATED);
     const folderContent = await readdir(config.get('fileUploads.storagePath'));

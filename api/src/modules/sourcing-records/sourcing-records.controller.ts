@@ -115,13 +115,16 @@ export class SourcingRecordsController {
 
   @ApiConsumesXLSX()
   @UseInterceptors(
-    FileInterceptor('file', fileUploadInterceptor),
+    FileInterceptor(
+      'file',
+      fileUploadInterceptor({ allowedFileExtension: '.xlsx' }),
+    ),
     XlsxPayloadInterceptor,
   )
-  @Post('import')
+  @Post('import/xlsx')
   async importXLSX(
     @UploadedFile() xlsxFile: Express.Multer.File,
-  ): Promise<void> {
-    await this.sourcingRecordsService.loadXLSXDataSet(xlsxFile.path);
+  ): Promise<any> {
+    return await this.sourcingRecordsService.loadXLSXDataSet(xlsxFile.path);
   }
 }

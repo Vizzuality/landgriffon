@@ -33,4 +33,9 @@ export interface BaseServiceResource {
    * as `/api/v1/geo-features/...`.
    */
   moduleControllerPrefix?: string;
+
+  /**
+   * List of entity fields that can be used as filters on the list endpoint
+   */
+  columnsAllowedAsFilter: string[];
 }

@@ -2,9 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
-import { Scenario } from 'modules/scenarios/scenario.entity';
+import { Scenario, SCENARIO_STATUS } from 'modules/scenarios/scenario.entity';
 import { ScenariosModule } from 'modules/scenarios/scenarios.module';
 import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
+import { createScenario } from '../entity-mocks';
 
 /**
  * Tests for the ScenariosModule.
@@ -79,9 +80,7 @@ describe('ScenariosModule (e2e)', () => {
 
   describe('Scenarios - Update', () => {
     test('Update a scenario should be successful (happy case)', async () => {
-      const scenario: Scenario = new Scenario();
-      scenario.title = 'test scenario';
-      await scenario.save();
+      const scenario: Scenario = await createScenario();
 
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/scenarios/${scenario.id}`)
@@ -98,9 +97,7 @@ describe('ScenariosModule (e2e)', () => {
 
   describe('Scenarios - Delete', () => {
     test('Delete a scenario should be successful (happy case)', async () => {
-      const scenario: Scenario = new Scenario();
-      scenario.title = 'test scenario';
-      await scenario.save();
+      const scenario: Scenario = await createScenario();
 
       await request(app.getHttpServer())
         .delete(`/api/v1/scenarios/${scenario.id}`)
@@ -113,9 +110,7 @@ describe('ScenariosModule (e2e)', () => {
 
   describe('Scenarios - Get all', () => {
     test('Get all scenarios should be successful (happy case)', async () => {
-      const scenario: Scenario = new Scenario();
-      scenario.title = 'test scenario';
-      await scenario.save();
+      const scenario: Scenario = await createScenario();
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/scenarios`)
@@ -124,13 +119,42 @@ describe('ScenariosModule (e2e)', () => {
 
       expect(response.body.data[0].id).toEqual(scenario.id);
     });
+
+    test('Get scenarios filtered by some criteria should only return the scenarios that match said criteria', async () => {
+      const scenarioOne: Scenario = await createScenario({
+        title: 'scenario one',
+        status: SCENARIO_STATUS.ACTIVE,
+      });
+      const scenarioTwo: Scenario = await createScenario({
+        title: 'scenario two',
+        status: SCENARIO_STATUS.ACTIVE,
+      });
+      await createScenario({
+        title: 'scenario three',
+        status: SCENARIO_STATUS.DELETED,
+      });
+
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/scenarios`)
+        .query({
+          filter: {
+            status: SCENARIO_STATUS.ACTIVE,
+          },
+        })
+        .send()
+        .expect(HttpStatus.OK);
+
+      expect(response.body.data).toHaveLength(2);
+      expect(response.body.data.map((e: any) => e.id)).toEqual([
+        scenarioOne.id,
+        scenarioTwo.id,
+      ]);
+    });
   });
 
   describe('Scenarios - Get by id', () => {
     test('Get a scenario by id should be successful (happy case)', async () => {
-      const scenario: Scenario = new Scenario();
-      scenario.title = 'test scenario';
-      await scenario.save();
+      const scenario: Scenario = await createScenario();
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/scenarios/${scenario.id}`)

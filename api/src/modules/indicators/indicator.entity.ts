@@ -15,13 +15,14 @@ export enum INDICATOR_STATUS {
   DELETED = 'deleted',
 }
 
-export const IndicatorResource: BaseServiceResource = {
+export const indicatorResource: BaseServiceResource = {
   className: 'Indicator',
   name: {
     singular: 'indicator',
     plural: 'indicators',
   },
   entitiesAllowedAsIncludes: [],
+  columnsAllowedAsFilter: ['name', 'description', 'status'],
 };
 
 @Entity()

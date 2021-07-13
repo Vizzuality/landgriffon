@@ -9,6 +9,7 @@ export const unitResource: BaseServiceResource = {
     plural: 'units',
   },
   entitiesAllowedAsIncludes: [],
+  columnsAllowedAsFilter: ['name', 'description', 'symbol'],
 };
 
 @Entity('units')

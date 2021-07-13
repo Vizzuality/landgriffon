@@ -19,6 +19,7 @@ export const sourcingRecordResource: BaseServiceResource = {
     plural: 'sourcingRecords',
   },
   entitiesAllowedAsIncludes: [],
+  columnsAllowedAsFilter: ['tonnage', 'year'],
 };
 
 @Entity('sourcing_records')

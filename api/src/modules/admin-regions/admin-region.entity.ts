@@ -28,6 +28,7 @@ export const adminRegionResource: BaseServiceResource = {
     plural: 'adminRegions',
   },
   entitiesAllowedAsIncludes: [],
+  columnsAllowedAsFilter: ['name', 'description', 'status'],
 };
 
 @Entity()

@@ -27,13 +27,13 @@ import {
 } from 'nestjs-base-service';
 import {
   Indicator,
-  IndicatorResource,
+  indicatorResource,
 } from 'modules/indicators/indicator.entity';
 import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto';
 import { UpdateIndicatorDto } from 'modules/indicators/dto/update.indicator.dto';
 
 @Controller(`/api/v1/indicators`)
-@ApiTags(IndicatorResource.className)
+@ApiTags(indicatorResource.className)
 export class IndicatorsController {
   constructor(public readonly indicatorsService: IndicatorsService) {}
 
@@ -45,10 +45,19 @@ export class IndicatorsController {
   })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
-  @JSONAPIQueryParams()
+  @JSONAPIQueryParams({
+    availableFilters: indicatorResource.columnsAllowedAsFilter.map(
+      (columnName: string) => ({
+        name: columnName,
+      }),
+    ),
+  })
   @Get()
   async findAll(
-    @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
+    @ProcessFetchSpecification({
+      allowedFilters: indicatorResource.columnsAllowedAsFilter,
+    })
+    fetchSpecification: FetchSpecification,
   ): Promise<Indicator> {
     const results = await this.indicatorsService.findAllPaginated(
       fetchSpecification,

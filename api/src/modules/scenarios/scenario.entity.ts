@@ -1,10 +1,4 @@
-import {
-  BaseEntity,
-  Column,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -24,6 +18,7 @@ export const scenarioResource: BaseServiceResource = {
     plural: 'scenarios',
   },
   entitiesAllowedAsIncludes: [],
+  columnsAllowedAsFilter: ['title', 'description', 'status', 'userId'],
 };
 
 @Entity()

@@ -18,6 +18,7 @@ export const indicatorSourceResource: BaseServiceResource = {
     plural: 'indicatorSources',
   },
   entitiesAllowedAsIncludes: [],
+  columnsAllowedAsFilter: ['title', 'description', 'layerId'],
 };
 
 @Entity()

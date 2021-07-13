@@ -195,6 +195,37 @@ describe('ScenariosModule (e2e)', () => {
       expect(responseTwo.body.data).toHaveLength(1);
       expect(responseTwo).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
     });
+
+    test('Get scenarios filtered by some criteria should only return the scenarios that match said criteria', async () => {
+      const scenarioOne: Scenario = await createScenario({
+        title: 'scenario one',
+        status: SCENARIO_STATUS.ACTIVE,
+      });
+      const scenarioTwo: Scenario = await createScenario({
+        title: 'scenario two',
+        status: SCENARIO_STATUS.ACTIVE,
+      });
+      await createScenario({
+        title: 'scenario three',
+        status: SCENARIO_STATUS.DELETED,
+      });
+
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/scenarios`)
+        .query({
+          filter: {
+            status: SCENARIO_STATUS.ACTIVE,
+          },
+        })
+        .send()
+        .expect(HttpStatus.OK);
+
+      expect(response.body.data).toHaveLength(2);
+      expect(response.body.data.map((e: any) => e.id)).toEqual([
+        scenarioOne.id,
+        scenarioTwo.id,
+      ]);
+    });
   });
 
   describe('Scenarios - Get by id', () => {

@@ -78,12 +78,9 @@ export class ScenariosController {
     @Body(new ValidationPipe()) dto: UpdateScenarioDto,
     @Param('id') id: string,
   ): Promise<Scenario> {
-    const res = await this.scenariosService.update(id, dto);
-    console.log('SCENARIO', res);
-    return await this.scenariosService.serialize(res);
-    // return await this.scenariosService.serialize(
-    //   await this.scenariosService.update(id, dto),
-    // );
+    return await this.scenariosService.serialize(
+      await this.scenariosService.update(id, dto),
+    );
   }
 
   @ApiOperation({ description: 'Deletes a scenario' })

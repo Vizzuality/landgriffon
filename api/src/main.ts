@@ -10,8 +10,8 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
   const serverConfig: any = config.get('server');
 
-  app.enableCors();
   app.use(helmet());
+  app.enableCors();
 
   const swaggerOptions = new DocumentBuilder()
     .setTitle('LandGriffon API')

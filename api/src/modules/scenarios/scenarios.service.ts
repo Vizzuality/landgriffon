@@ -30,7 +30,7 @@ export class ScenariosService extends AppBaseService<
 
   get serializerConfig(): JSONAPISerializerConfig<Scenario> {
     return {
-      attributes: ['title', 'description', 'status', 'metadata'],
+      attributes: ['title', 'description', 'status', 'metadata', 'createdAt'],
       keyForAttribute: 'camelCase',
     };
   }

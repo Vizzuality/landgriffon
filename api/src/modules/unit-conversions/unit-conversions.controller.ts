@@ -45,10 +45,19 @@ export class UnitConversionsController {
   })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
-  @JSONAPIQueryParams()
+  @JSONAPIQueryParams({
+    availableFilters: unitConversionResource.columnsAllowedAsFilter.map(
+      (columnName: string) => ({
+        name: columnName,
+      }),
+    ),
+  })
   @Get()
   async findAll(
-    @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
+    @ProcessFetchSpecification({
+      allowedFilters: unitConversionResource.columnsAllowedAsFilter,
+    })
+    fetchSpecification: FetchSpecification,
   ): Promise<UnitConversion> {
     const results = await this.unitConversionsService.findAllPaginated(
       fetchSpecification,

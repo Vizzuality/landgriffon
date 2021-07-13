@@ -28,6 +28,7 @@ export const materialResource: BaseServiceResource = {
     plural: 'materials',
   },
   entitiesAllowedAsIncludes: [],
+  columnsAllowedAsFilter: ['name', 'description', 'status', 'layerId'],
 };
 
 @Entity()

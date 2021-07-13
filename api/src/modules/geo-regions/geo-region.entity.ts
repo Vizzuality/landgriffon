@@ -16,6 +16,7 @@ export const geoRegionResource: BaseServiceResource = {
     plural: 'geoRegions',
   },
   entitiesAllowedAsIncludes: [],
+  columnsAllowedAsFilter: ['name'],
 };
 
 @Entity()

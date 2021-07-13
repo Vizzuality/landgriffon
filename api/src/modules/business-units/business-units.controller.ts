@@ -45,10 +45,19 @@ export class BusinessUnitsController {
   })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
-  @JSONAPIQueryParams()
+  @JSONAPIQueryParams({
+    availableFilters: businessUnitResource.columnsAllowedAsFilter.map(
+      (columnName: string) => ({
+        name: columnName,
+      }),
+    ),
+  })
   @Get()
   async findAll(
-    @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
+    @ProcessFetchSpecification({
+      allowedFilters: businessUnitResource.columnsAllowedAsFilter,
+    })
+    fetchSpecification: FetchSpecification,
   ): Promise<BusinessUnit> {
     const results = await this.businessUnitsService.findAllPaginated(
       fetchSpecification,

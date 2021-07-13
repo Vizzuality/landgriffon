@@ -9,6 +9,7 @@ export const unitConversionResource: BaseServiceResource = {
     plural: 'unitConversions',
   },
   entitiesAllowedAsIncludes: [],
+  columnsAllowedAsFilter: ['unit1', 'unit2', 'factor'],
 };
 
 @Entity()

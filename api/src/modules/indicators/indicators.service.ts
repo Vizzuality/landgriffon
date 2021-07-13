@@ -6,7 +6,7 @@ import {
 } from 'utils/app-base.service';
 import {
   Indicator,
-  IndicatorResource,
+  indicatorResource,
 } from 'modules/indicators/indicator.entity';
 import { AppInfoDTO } from 'dto/info.dto';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
@@ -26,8 +26,8 @@ export class IndicatorsService extends AppBaseService<
   ) {
     super(
       indicatorRepository,
-      IndicatorResource.name.singular,
-      IndicatorResource.name.plural,
+      indicatorResource.name.singular,
+      indicatorResource.name.plural,
     );
   }
 

@@ -5,9 +5,8 @@ import {
 } from 'nestjs-base-service';
 
 import * as JSONAPISerializer from 'jsonapi-serializer';
-import { Repository, SelectQueryBuilder } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { castArray } from 'lodash';
 
 export class PaginationMeta {
   totalPages: number;
@@ -60,7 +59,6 @@ export type JSONAPISerializerConfig<
   Entity
 > = JSONAPISerializerAttributesConfig<Entity> & Record<string, unknown>;
 
-// @ts-expect-error some message to keep eslint happy
 export abstract class AppBaseService<
   // eslint-disable-next-line @typescript-eslint/ban-types
   Entity extends object,
@@ -145,32 +143,6 @@ export abstract class AppBaseService<
         });
 
     return { data: entities, metadata: meta };
-  }
-
-  _processBaseFilters<Filters>(
-    query: SelectQueryBuilder<Entity>,
-    filters: Filters,
-    filterKeys: any,
-  ): SelectQueryBuilder<Entity> {
-    if (filters) {
-      Object.entries(filters)
-        .filter((i: any) => Array.from(filterKeys).includes(i[0]))
-        .forEach((i: any) => this._processBaseFilter(query, i));
-    }
-
-    return query;
-  }
-
-  _processBaseFilter(
-    query: SelectQueryBuilder<Entity>,
-    [filterKey, filterValues]: [string, unknown],
-  ): SelectQueryBuilder<Entity> {
-    if (Array.isArray(filterValues) && filterValues.length) {
-      query.andWhere(`${this.alias}.${filterKey} IN (:...${filterKey}Values)`, {
-        [`${filterKey}Values`]: castArray(filterValues),
-      });
-    }
-    return query;
   }
 }
 

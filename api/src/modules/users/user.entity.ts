@@ -19,6 +19,7 @@ export const userResource: BaseServiceResource = {
     plural: 'users',
   },
   entitiesAllowedAsIncludes: ['projects'],
+  columnsAllowedAsFilter: ['email', 'displayName', 'fname', 'lname'],
 };
 
 @Entity('users')

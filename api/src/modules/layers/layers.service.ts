@@ -4,7 +4,7 @@ import {
   AppBaseService,
   JSONAPISerializerConfig,
 } from 'utils/app-base.service';
-import { Layer, LayerResource } from 'modules/layers/layer.entity';
+import { Layer, layerResource } from 'modules/layers/layer.entity';
 import { AppInfoDTO } from 'dto/info.dto';
 import { LayerRepository } from 'modules/layers/layer.repository';
 import { CreateLayerDto } from 'modules/layers/dto/create.layer.dto';
@@ -23,8 +23,8 @@ export class LayersService extends AppBaseService<
   ) {
     super(
       layerRepository,
-      LayerResource.name.singular,
-      LayerResource.name.plural,
+      layerResource.name.singular,
+      layerResource.name.plural,
     );
   }
 

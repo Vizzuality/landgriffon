@@ -36,6 +36,7 @@ export const sourcingLocationResource: BaseServiceResource = {
     plural: 'sourcingLocations',
   },
   entitiesAllowedAsIncludes: [],
+  columnsAllowedAsFilter: ['title'],
 };
 
 @Entity()

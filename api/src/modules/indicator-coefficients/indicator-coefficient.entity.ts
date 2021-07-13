@@ -21,6 +21,7 @@ export const indicatorCoefficientResource: BaseServiceResource = {
     plural: 'indicatorCoefficients',
   },
   entitiesAllowedAsIncludes: [],
+  columnsAllowedAsFilter: ['value', 'year', 'indicatorSourceId'],
 };
 
 @Entity()

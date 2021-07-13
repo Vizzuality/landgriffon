@@ -16,13 +16,14 @@ export enum LAYERS_STATUS {
   DELETED = 'deleted',
 }
 
-export const LayerResource: BaseServiceResource = {
+export const layerResource: BaseServiceResource = {
   className: 'Layer',
   name: {
     singular: 'layer',
     plural: 'layers',
   },
   entitiesAllowedAsIncludes: [],
+  columnsAllowedAsFilter: ['text', 'status'],
 };
 
 @Entity()

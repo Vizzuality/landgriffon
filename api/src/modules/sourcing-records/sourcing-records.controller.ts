@@ -51,10 +51,19 @@ export class SourcingRecordsController {
   })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
-  @JSONAPIQueryParams()
+  @JSONAPIQueryParams({
+    availableFilters: sourcingRecordResource.columnsAllowedAsFilter.map(
+      (columnName: string) => ({
+        name: columnName,
+      }),
+    ),
+  })
   @Get()
   async findAll(
-    @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
+    @ProcessFetchSpecification({
+      allowedFilters: sourcingRecordResource.columnsAllowedAsFilter,
+    })
+    fetchSpecification: FetchSpecification,
   ): Promise<SourcingRecord> {
     const results = await this.sourcingRecordsService.findAllPaginated(
       fetchSpecification,

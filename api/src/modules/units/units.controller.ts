@@ -42,10 +42,19 @@ export class UnitsController {
   })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
-  @JSONAPIQueryParams()
+  @JSONAPIQueryParams({
+    availableFilters: unitResource.columnsAllowedAsFilter.map(
+      (columnName: string) => ({
+        name: columnName,
+      }),
+    ),
+  })
   @Get()
   async findAll(
-    @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
+    @ProcessFetchSpecification({
+      allowedFilters: unitResource.columnsAllowedAsFilter,
+    })
+    fetchSpecification: FetchSpecification,
   ): Promise<Unit> {
     const results = await this.unitsService.findAllPaginated(
       fetchSpecification,

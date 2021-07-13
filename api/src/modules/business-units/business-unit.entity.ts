@@ -25,6 +25,7 @@ export const businessUnitResource: BaseServiceResource = {
     plural: 'businessUnits',
   },
   entitiesAllowedAsIncludes: [],
+  columnsAllowedAsFilter: ['name', 'description', 'status'],
 };
 
 @Entity()

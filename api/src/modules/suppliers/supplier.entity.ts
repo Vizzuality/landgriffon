@@ -24,6 +24,7 @@ export const supplierResource: BaseServiceResource = {
     plural: 'suppliers',
   },
   entitiesAllowedAsIncludes: [],
+  columnsAllowedAsFilter: ['name', 'description', 'status'],
 };
 
 @Entity()

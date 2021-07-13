@@ -10,6 +10,7 @@ export const apiEventResource: BaseServiceResource = {
     singular: 'api_event',
     plural: 'api_events',
   },
+  columnsAllowedAsFilter: [],
 };
 
 /**

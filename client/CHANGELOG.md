@@ -11,4 +11,4 @@ and this project adheres to [Calendar Versioning](https://calver.org/).
 * Show selected scenario in the URL [LANDGRIF-159](https://vizzuality.atlassian.net/browse/LANDGRIF-159)
 * Actual data as first element in the scenarios list [LANDGRIF-171](https://vizzuality.atlassian.net/browse/LANDGRIF-171)
 * Added collapsed button and show it in the URL [LANDGRIF-128](https://vizzuality.atlassian.net/browse/LANDGRIF-128)
-* Scenarios list connected with the API [LANDGRIF-125](https://vizzuality.atlassian.net/browse/LANDGRIF-125)
+* Scenarios list connected with the API [LANDGRIF-182](https://vizzuality.atlassian.net/browse/LANDGRIF-182)

@@ -104,7 +104,11 @@ export class Material extends TimestampedBaseEntity {
   @ManyToOne(() => Layer, (layer: Layer) => layer.materials, { eager: false })
   layer: Layer;
 
+  /**
+   * @debt: This columns should not be nullable but is necessary for the time being
+   * to load material data since we have no layer data yet
+   */
   @ApiProperty()
-  @Column()
+  @Column({ nullable: true })
   layerId!: string;
 }

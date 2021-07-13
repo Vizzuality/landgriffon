@@ -47,4 +47,8 @@ export class BusinessUnitsService extends AppBaseService<
 
     return found;
   }
+
+  async saveMany(entityArray: BusinessUnit[]): Promise<void> {
+    await this.businessUnitRepository.save(entityArray);
+  }
 }

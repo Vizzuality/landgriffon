@@ -8,25 +8,38 @@ import * as path from 'path';
  * Options for Multer
  */
 
-export const fileUploadInterceptor: MulterOptions = {
-  storage: multer.diskStorage({
-    filename: (
-      _req: any,
-      file: Express.Multer.File,
-      cb: (error: Error | null, filename: string) => void,
-    ) => {
-      cb(null, `${uuidv4()}_${file.originalname}`);
-    },
-    destination: config.get('fileUploads.storagePath'),
-  }),
-  limits: {
-    fileSize: config.get('fileUploads.sizeLimit') as number,
-  },
-  fileFilter: function (_req: any, file: Express.Multer.File, cb: any) {
-    if (path.extname(file.originalname) !== '.xlsx') {
-      return cb(null, false);
-    }
+/**
+ * @note Update this type if more custom params needed
+ */
 
-    cb(null, true);
-  },
+declare type uploadOptions = {
+  allowedFileExtension: string;
+};
+
+export const fileUploadInterceptor = (
+  uploadOptions: uploadOptions,
+): MulterOptions => {
+  return {
+    storage: multer.diskStorage({
+      filename: (
+        _req: any,
+        file: Express.Multer.File,
+        cb: (error: Error | null, filename: string) => void,
+      ) => {
+        cb(null, `${uuidv4()}_${file.originalname}`);
+      },
+      destination: config.get('fileUploads.storagePath'),
+    }),
+    limits: {
+      fileSize: config.get('fileUploads.sizeLimit') as number,
+    },
+    fileFilter: function (_req: any, file: Express.Multer.File, cb: any): any {
+      if (
+        path.extname(file.originalname) !== uploadOptions.allowedFileExtension
+      ) {
+        return cb(null, false);
+      }
+      cb(null, true);
+    },
+  };
 };

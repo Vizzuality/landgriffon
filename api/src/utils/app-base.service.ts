@@ -74,7 +74,6 @@ export abstract class AppBaseService<
     protected pluralAlias: string = 'base_entities',
     protected idProperty: string = 'id',
   ) {
-    // @ts-expect-error some message to keep eslint happy
     super(repository, alias, { idProperty });
   }
 

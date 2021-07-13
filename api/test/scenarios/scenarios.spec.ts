@@ -7,9 +7,13 @@ import { ScenariosModule } from 'modules/scenarios/scenarios.module';
 import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
 import { createScenario } from '../entity-mocks';
 
-/**
- * Tests for the ScenariosModule.
- */
+const expectedJSONAPIAttributes: string[] = [
+  'title',
+  'description',
+  'status',
+  'metadata',
+  'createdAt',
+];
 
 describe('ScenariosModule (e2e)', () => {
   let app: INestApplication;
@@ -61,6 +65,8 @@ describe('ScenariosModule (e2e)', () => {
       }
 
       expect(createdScenario.title).toEqual('test scenario');
+
+      expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
     });
 
     test('Create a scenario without the required fields should fail with a 400 error', async () => {
@@ -92,6 +98,8 @@ describe('ScenariosModule (e2e)', () => {
       expect(response.body.data.attributes.title).toEqual(
         'updated test scenario',
       );
+
+      expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
     });
   });
 
@@ -118,6 +126,8 @@ describe('ScenariosModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(response.body.data[0].id).toEqual(scenario.id);
+
+      expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
     });
 
     test('Get scenarios filtered by some criteria should only return the scenarios that match said criteria', async () => {
@@ -149,6 +159,41 @@ describe('ScenariosModule (e2e)', () => {
         scenarioOne.id,
         scenarioTwo.id,
       ]);
+
+      expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
+    });
+
+    test('Get scenarios in pages should return a partial list of scenarios', async () => {
+      await Promise.all(
+        Array.from(Array(10).keys()).map(() => createScenario()),
+      );
+
+      const responseOne = await request(app.getHttpServer())
+        .get(`/api/v1/scenarios`)
+        .query({
+          page: {
+            size: 3,
+          },
+        })
+        .send()
+        .expect(HttpStatus.OK);
+
+      expect(responseOne.body.data).toHaveLength(3);
+      expect(responseOne).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
+
+      const responseTwo = await request(app.getHttpServer())
+        .get(`/api/v1/scenarios`)
+        .query({
+          page: {
+            size: 3,
+            number: 4,
+          },
+        })
+        .send()
+        .expect(HttpStatus.OK);
+
+      expect(responseTwo.body.data).toHaveLength(1);
+      expect(responseTwo).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
     });
   });
 
@@ -161,7 +206,7 @@ describe('ScenariosModule (e2e)', () => {
         .send()
         .expect(HttpStatus.OK);
 
-      expect(response.body.data.id).toEqual(scenario.id);
+      expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
     });
   });
 });

@@ -1,6 +1,6 @@
 import CustomMatcherResult = jest.CustomMatcherResult;
 import { Response } from 'supertest';
-import { isEqual } from 'lodash';
+import { isEqual, xor } from 'lodash';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -9,6 +9,10 @@ declare global {
       toHaveErrorMessage(
         code: number,
         message: string | string[],
+      ): CustomMatcherResult;
+
+      toHaveJSONAPIAttributes(
+        expectedAttributes: string[],
       ): CustomMatcherResult;
     }
   }
@@ -70,6 +74,69 @@ expect.extend({
             `Expected "${message}" response error message, got "${response.body.errors[0].meta.rawError.response.message}"`,
         };
       }
+    }
+
+    return {
+      pass: true,
+      message: (): string => `ok`,
+    };
+  },
+  toHaveJSONAPIAttributes(
+    response: Response,
+    expectedAttributes: string[],
+  ): CustomMatcherResult {
+    if (response.type !== 'application/json') {
+      return {
+        pass: false,
+        message: (): string =>
+          `Expected 'application/json' response type, got ${response.type}`,
+      };
+    }
+
+    if (response.status >= 400) {
+      return {
+        pass: false,
+        message: (): string => `Got response error code "${response.status}"`,
+      };
+    }
+
+    if (!response?.body?.data) {
+      return {
+        pass: false,
+        message: (): string => `Response body is missing the JSONAPI structure`,
+      };
+    }
+
+    let responseElements: Record<string, any>[] = response.body.data;
+    if (!Array.isArray(responseElements)) {
+      responseElements = [responseElements];
+    }
+
+    try {
+      responseElements.forEach((responseElement: Record<string, any>) => {
+        const responseAttributes: string[] = Object.keys(
+          responseElement.attributes,
+        );
+
+        const differentKeys: string[] = xor(
+          responseAttributes,
+          expectedAttributes,
+        );
+        if (differentKeys.length) {
+          throw new Error(
+            `JSON API attributes mismatch: Expected attributes: ${expectedAttributes.join(
+              ', ',
+            )}. Received attributes: ${differentKeys.join(
+              ', ',
+            )}. Different keys: ${differentKeys}`,
+          );
+        }
+      });
+    } catch (e) {
+      return {
+        pass: false,
+        message: (): string => e.message,
+      };
     }
 
     return {

@@ -61,7 +61,11 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
       <RadioGroup.Label className="sr-only">Scenarios</RadioGroup.Label>
       <ul className="my-2 grid grid-cols-1 gap-5 sm:gap-2 sm:grid-cols-2 lg:grid-cols-1">
         {data.map((item) => (
-          <ScenarioItem data={item} isSelected={isScenarioSelected(item.id, currentScenario)} />
+          <ScenarioItem
+            key={item.id}
+            data={item}
+            isSelected={isScenarioSelected(item.id, currentScenario)}
+          />
         ))}
       </ul>
     </RadioGroup>

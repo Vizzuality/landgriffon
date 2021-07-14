@@ -57,7 +57,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                   )}
                   {data.id !== 'actual-data' &&
                     data.updatedAt &&
-                    `Last edited ${format(data.updatedAt, 'yyyy/MM/dd')}`}
+                    `Last edited ${format(new Date(data.updatedAt), 'yyyy/MM/dd')}`}
                 </p>
               </div>
             </>

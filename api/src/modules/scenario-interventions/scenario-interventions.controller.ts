@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
@@ -55,7 +56,7 @@ export class ScenarioInterventionsController {
     return this.scenariosService.serialize(results.data, results.metadata);
   }
 
-  @ApiOperation({ description: 'Find scenario by id' })
+  @ApiOperation({ description: 'Find scenario intervention by id' })
   @ApiOkResponse({ type: ScenarioIntervention })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
@@ -65,8 +66,9 @@ export class ScenarioInterventionsController {
     );
   }
 
-  @ApiOperation({ description: 'Create a scenario' })
+  @ApiOperation({ description: 'Create a scenario intervention' })
   @ApiOkResponse({ type: ScenarioIntervention })
+  @UsePipes(ValidationPipe)
   @Post()
   async create(
     @Body() dto: CreateScenarioInterventionDto,
@@ -76,8 +78,9 @@ export class ScenarioInterventionsController {
     );
   }
 
-  @ApiOperation({ description: 'Updates a scenario' })
+  @ApiOperation({ description: 'Update a scenario intervention' })
   @ApiOkResponse({ type: ScenarioIntervention })
+  @UsePipes(ValidationPipe)
   @Patch(':id')
   async update(
     @Body(new ValidationPipe()) dto: UpdateScenarioInterventionDto,
@@ -88,7 +91,7 @@ export class ScenarioInterventionsController {
     );
   }
 
-  @ApiOperation({ description: 'Deletes a scenario' })
+  @ApiOperation({ description: 'Delete a scenario intervention' })
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {

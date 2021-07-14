@@ -22,10 +22,10 @@ export class ScenarioInterventionsService extends AppBaseService<
 > {
   constructor(
     @InjectRepository(ScenarioInterventionRepository)
-    protected readonly repository: ScenarioInterventionRepository,
+    protected readonly scenarioInterventionRepository: ScenarioInterventionRepository,
   ) {
     super(
-      repository,
+      scenarioInterventionRepository,
       scenarioResource.name.singular,
       scenarioResource.name.plural,
     );
@@ -46,7 +46,7 @@ export class ScenarioInterventionsService extends AppBaseService<
   }
 
   async getScenarioInterventionById(id: number): Promise<ScenarioIntervention> {
-    const found = await this.repository.findOne(id);
+    const found = await this.scenarioInterventionRepository.findOne(id);
 
     if (!found) {
       throw new NotFoundException(

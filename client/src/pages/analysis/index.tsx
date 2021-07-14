@@ -30,9 +30,6 @@ const AnalysisPage: React.FC = () => {
 
   // Breadcrumbs
   let pages: Page[] = [{ name: 'Analysis', href: '/analysis' }]; // Default
-  if (new_scenario) {
-    pages = [...pages, { name: 'New scenario', href: '/analysis?new_scenario=true' }];
-  }
   if (edit_scenario) {
     pages = [...pages, { name: 'Edit scenario', href: '/analysis?edit_scenario' }];
   }

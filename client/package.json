@@ -38,6 +38,7 @@
     "@react-aria/slider": "^3.0.2",
     "@react-aria/utils": "^3.8.0",
     "@react-aria/visually-hidden": "^3.2.2",
+    "@react-hook/debounce": "^4.0.0",
     "@react-stately/overlays": "^3.1.2",
     "@react-stately/searchfield": "^3.1.2",
     "@react-stately/slider": "^3.0.2",

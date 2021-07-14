@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { PlusIcon, XCircleIcon } from '@heroicons/react/solid';
+import ScenariosFilters from 'containers/scenarios/filters';
 import ScenariosList from 'containers/scenarios/list';
 import { Anchor } from 'components/button';
 import type { UseQueryResult } from 'react-query';
@@ -17,7 +18,12 @@ const ScenariosComponent: React.FC<ScenariosProps> = ({ scenarios }: ScenariosPr
       <h1>Analyse impact</h1>
       <p className="text-sm mt-2 mb-2">Select the scenario you want to analyse</p>
       {isLoading && <p>Loading scenarios...</p>}
-      {!isLoading && data && <ScenariosList data={data as Scenarios} />}
+      {!isLoading && data && (
+        <>
+          <ScenariosFilters />
+          <ScenariosList data={data as Scenarios} />
+        </>
+      )}
       {!isLoading && error && (
         <div className="rounded-md bg-red-50 p-4 my-4">
           <div className="flex">

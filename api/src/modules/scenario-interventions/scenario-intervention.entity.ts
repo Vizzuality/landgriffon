@@ -1,5 +1,4 @@
 import {
-  BaseEntity,
   Column,
   Entity,
   JoinTable,
@@ -16,7 +15,7 @@ import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { TimestampedBaseEntity } from '../../baseEntities/timestamped-base-entity';
+import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 
 export enum SCENARIO_INTERVENTION_STATUS {
   ACTIVE = 'active',
@@ -139,7 +138,7 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   @ManyToOne(() => User, (user: User) => user.scenarioInterventionsLastEdited, {
     eager: false,
   })
-  @ApiProperty()
+  @ApiProperty({ type: () => User })
   lastEditedUser?: User;
 
   /**

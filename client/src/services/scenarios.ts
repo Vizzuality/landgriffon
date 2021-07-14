@@ -1,6 +1,7 @@
 import axios from 'axios';
 import Jsona from 'jsona';
 import { signOut } from 'next-auth/client';
+import type { ScenarioPayload } from 'containers/scenarios/types';
 
 const dataFormatter = new Jsona();
 
@@ -31,5 +32,7 @@ const onResponseError = (error) => {
 scenariosService.interceptors.response.use(onResponseSuccess, onResponseError);
 
 export const getScenarios = () => scenariosService.get('/').then(({ data }) => data);
+
+export const createScenario = (payload: ScenarioPayload) => scenariosService.post('/', payload).then(({ data }) => data);
 
 export default scenariosService;

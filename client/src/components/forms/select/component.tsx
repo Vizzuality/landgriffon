@@ -9,10 +9,10 @@ type Option = {
 };
 
 export type SelectProps = {
-  label: string;
+  label?: string;
   options: Option[];
   current: Option;
-  onChange?: (selected: Option) => Option;
+  onChange?: (selected: Option) => unknown;
 };
 
 const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
@@ -32,7 +32,7 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
           </Listbox.Label> */}
           <div className="mt-1 relative">
             <Listbox.Button className="bg-white relative w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 sm:text-sm">
-              <span className="inline-block truncate mr-1 text-gray-400">{label}</span>
+              {label && <span className="inline-block truncate mr-1 text-gray-400">{label}</span>}
               <span className="inline-block truncate">{selectedOption.label}</span>
               <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                 <SelectorIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />

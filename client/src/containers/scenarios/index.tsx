@@ -1,4 +1,5 @@
 import { useQuery } from 'react-query';
+import { useRouter } from 'next/router';
 import { getScenarios } from 'services/scenarios';
 import Component from './component';
 import type { Scenario } from './types';
@@ -12,7 +13,14 @@ const ACTUAL_DATA: Scenario = {
 };
 
 const ScenariosContainer: React.FC = () => {
-  const response = useQuery('scenariosList', getScenarios);
+  const router = useRouter();
+  const {
+    query: { sortBy },
+  } = router;
+  const queryParams = { sort: sortBy };
+  const response = useQuery(['scenariosList', queryParams], () => getScenarios(queryParams), {
+    retry: false,
+  });
   const result =
     response.isSuccess && response.data
       ? {

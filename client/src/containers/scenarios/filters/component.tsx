@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { SearchIcon, XIcon } from '@heroicons/react/solid';
 import { useDebounce } from '@react-hook/debounce';
+import classNames from 'classnames';
 import Select from 'components/forms/select';
 
 const SORT_OPTIONS = [
@@ -49,7 +50,7 @@ const ScenariosFilters = () => {
   }, [term]);
 
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between items-center">
       {isSearchEnable ? (
         <div className="w-full sm:max-w-xs">
           <div className="relative">
@@ -75,15 +76,27 @@ const ScenariosFilters = () => {
         </button>
       )}
 
-      <ul className="flex">
-        <li className="">
+      <ul className="flex space-x-2">
+        <li>
           <Link href={{ pathname: '/analysis', query: { ...query, filter: 'all' } }}>
-            <a>All</a>
+            <a
+              className={classNames('block border-b-2 border-white', {
+                'border-green-700': query.filter === 'all' || !query.filter,
+              })}
+            >
+              All
+            </a>
           </Link>
         </li>
         <li>
           <Link href={{ pathname: '/analysis', query: { ...query, filter: 'my-scenarios' } }}>
-            <a>My scenarios</a>
+            <a
+              className={classNames('block border-b-2 border-white', {
+                'border-green-700': query.filter === 'my-scenarios',
+              })}
+            >
+              My scenarios
+            </a>
           </Link>
         </li>
       </ul>

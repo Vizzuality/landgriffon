@@ -8,6 +8,7 @@ import {
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 
 export const geoRegionResource: BaseServiceResource = {
   className: 'GeoRegion',
@@ -39,4 +40,11 @@ export class GeoRegion extends BaseEntity {
   @ApiPropertyOptional()
   @OneToMany(() => AdminRegion, (adminReg: AdminRegion) => adminReg.geoRegion)
   adminRegions?: AdminRegion[];
+
+  @ApiPropertyOptional()
+  @OneToMany(
+    () => SourcingLocation,
+    (sourcingLocation: SourcingLocation) => sourcingLocation.geoRegion,
+  )
+  sourcingLocations?: SourcingLocation[];
 }

@@ -22,6 +22,7 @@ import { UnitConversionsModule } from 'modules/unit-conversions/unit-conversions
 import { SourcingRecordGroupsModule } from 'modules/sourcing-record-groups/sourcing-record-groups.module';
 import { IndicatorSourcesModule } from 'modules/indicator-sources/indicator-sources.module';
 import { ScenariosModule } from 'modules/scenarios/scenarios.module';
+import { ScenarioInterventionsModule } from 'modules/scenario-interventions/scenario-interventions.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { ScenariosModule } from 'modules/scenarios/scenarios.module';
     LayersModule,
     MaterialsModule,
     ScenariosModule,
+    ScenarioInterventionsModule,
     SourcingLocationsModule,
     SourcingRecordGroupsModule,
     SourcingRecordsModule,

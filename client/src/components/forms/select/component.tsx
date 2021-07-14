@@ -21,7 +21,7 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
 
   useEffect(() => {
     if (selectedOption && onChange) onChange(selectedOption);
-  }, [selectedOption]);
+  }, [selectedOption, onChange]);
 
   return (
     <Listbox value={selectedOption} onChange={setSelectedOption}>

@@ -2,6 +2,7 @@ import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-c
 import { IndicatorSource } from 'modules/indicator-sources/indicator-source.entity';
 import { Layer } from 'modules/layers/layer.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
+import { ScenarioIntervention } from '../src/modules/scenario-interventions/scenario-intervention.entity';
 
 async function createIndicatorCoefficient(
   additionalData: Partial<IndicatorCoefficient> = {},
@@ -63,9 +64,24 @@ async function createScenario(
   return scenario.save();
 }
 
+async function createScenarioIntervention(
+  additionalData: Partial<ScenarioIntervention> = {},
+): Promise<ScenarioIntervention> {
+  const scenarioIntervention = ScenarioIntervention.merge(
+    new ScenarioIntervention(),
+    {
+      title: 'Scenario intervention title',
+    },
+    additionalData,
+  );
+
+  return scenarioIntervention.save();
+}
+
 export {
   createIndicatorCoefficient,
   createIndicatorSource,
   createLayer,
   createScenario,
+  createScenarioIntervention,
 };

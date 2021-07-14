@@ -1,10 +1,4 @@
-import {
-  BaseEntity,
-  Column,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { User } from 'modules/users/user.entity';
@@ -13,6 +7,7 @@ import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
+import { GeoRegion } from '../geo-regions/geo-region.entity';
 
 export enum LOCATION_TYPES {
   PRODUCTION_UNIT = 'Production unit',
@@ -82,36 +77,38 @@ export class SourcingLocation extends TimestampedBaseEntity {
 
   @Column({
     type: 'enum',
-    name: 'location_types',
     enum: LOCATION_TYPES,
-    enumName: 'location_types',
     default: LOCATION_TYPES.UNKNOWN,
   })
   locationType: LOCATION_TYPES;
 
-  @Column({ type: 'text', name: 'location_address_input', nullable: true })
+  @Column({ type: 'text', nullable: true })
   locationAddressInput?: string;
 
-  @Column({ type: 'text', name: 'location_country_input', nullable: true })
+  @Column({ type: 'text', nullable: true })
   locationCountryInput?: string;
 
   @Column({
     type: 'enum',
-    name: 'locationAddressAccuracy',
     enum: LOCATION_ACCURACY,
     default: LOCATION_ACCURACY.LOW,
   })
   @ApiProperty()
   locationAccuracy: LOCATION_ACCURACY;
 
-  /**
-   * @debt Only reference: Add relationship to geo-region
-   */
+  @ManyToOne(
+    () => GeoRegion,
+    (geoRegion: GeoRegion) => geoRegion.sourcingLocations,
+    { eager: false },
+  )
+  geoRegion: GeoRegion;
+
   @Column({ nullable: true })
   @ApiPropertyOptional()
   geoRegionId?: string;
 
   @Column({ type: 'jsonb', nullable: true })
+  @ApiPropertyOptional()
   metadata: JSON;
 
   @ManyToOne(() => User, (user: User) => user.sourcingLocations, {

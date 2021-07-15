@@ -25,6 +25,11 @@ export class CreateAdminRegionDto {
 
   @IsString()
   @IsOptional()
+  @ApiPropertyOptional()
+  isoA3?: string;
+
+  @IsString()
+  @IsOptional()
   @IsEnum(Object.values(ADMIN_REGIONS_STATUS))
   @ApiPropertyOptional()
   status?: string;

@@ -7,7 +7,7 @@ import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
-import { GeoRegion } from '../geo-regions/geo-region.entity';
+import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 
 export enum LOCATION_TYPES {
   PRODUCTION_UNIT = 'Production unit',
@@ -41,6 +41,12 @@ export class SourcingLocation extends TimestampedBaseEntity {
 
   @Column({ type: 'text', nullable: true })
   title: string;
+
+  @Column({ type: 'int', nullable: true })
+  locationLatitude: number;
+
+  @Column({ type: 'int', nullable: true })
+  locationLongitude: number;
 
   @ManyToOne(() => Material, (mat: Material) => mat.sourcingLocations, {
     eager: false,

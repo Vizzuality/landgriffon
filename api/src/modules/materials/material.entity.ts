@@ -109,6 +109,6 @@ export class Material extends TimestampedBaseEntity {
    * to load material data since we have no layer data yet
    */
   @ApiProperty()
-  @Column({ nullable: true })
+  @Column()
   layerId!: string;
 }

@@ -1,7 +1,7 @@
 import {
   Column,
   Entity,
-  JoinColumn,
+  JoinTable,
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -90,46 +90,46 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
    * Relationships with other entities - links of replaced relationships on this intervention
    */
   @ManyToMany(() => Material)
-  @JoinColumn()
+  @JoinTable()
   replacedMaterials?: Material[];
 
   @ManyToMany(() => BusinessUnit)
-  @JoinColumn()
+  @JoinTable()
   replacedBusinessUnits?: BusinessUnit[];
 
   @ManyToMany(() => Supplier)
-  @JoinColumn()
+  @JoinTable()
   replacedSuppliers?: Supplier[];
 
   @ManyToMany(() => AdminRegion)
-  @JoinColumn()
+  @JoinTable()
   replacedAdminRegion?: AdminRegion[];
 
   @ManyToMany(() => SourcingLocation)
-  @JoinColumn()
+  @JoinTable()
   replacedSourcingLocation?: SourcingLocation[];
 
   /**
    * Relationships with other entities - list of "new" relationships
    */
   @ManyToMany(() => Material)
-  @JoinColumn()
+  @JoinTable()
   newMaterials?: Material[];
 
   @ManyToMany(() => BusinessUnit)
-  @JoinColumn()
+  @JoinTable()
   newBusinessUnits?: BusinessUnit[];
 
   @ManyToMany(() => Supplier)
-  @JoinColumn()
+  @JoinTable()
   newSuppliers?: Supplier[];
 
   @ManyToMany(() => AdminRegion)
-  @JoinColumn()
+  @JoinTable()
   newAdminRegion?: AdminRegion[];
 
   @ManyToMany(() => SourcingLocation)
-  @JoinColumn()
+  @JoinTable()
   newSourcingLocation?: SourcingLocation[];
 
   /**

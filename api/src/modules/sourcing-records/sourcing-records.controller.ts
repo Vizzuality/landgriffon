@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -44,7 +45,7 @@ export class SourcingRecordsController {
   constructor(public readonly sourcingRecordsService: SourcingRecordsService) {}
 
   @ApiOperation({
-    description: 'Find all sourcing groups',
+    description: 'Find all sourcing record',
   })
   @ApiOkResponse({
     type: SourcingRecord,
@@ -74,7 +75,7 @@ export class SourcingRecordsController {
     );
   }
 
-  @ApiOperation({ description: 'Find sourcing group by id' })
+  @ApiOperation({ description: 'Find sourcing record by id' })
   @ApiOkResponse({ type: SourcingRecord })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
@@ -84,7 +85,7 @@ export class SourcingRecordsController {
     );
   }
 
-  @ApiOperation({ description: 'Create a sourcing group' })
+  @ApiOperation({ description: 'Create a sourcing record' })
   @ApiOkResponse({ type: SourcingRecord })
   @Post()
   @UsePipes(ValidationPipe)
@@ -94,7 +95,7 @@ export class SourcingRecordsController {
     );
   }
 
-  @ApiOperation({ description: 'Updates a sourcing group' })
+  @ApiOperation({ description: 'Updates a sourcing record' })
   @ApiOkResponse({ type: SourcingRecord })
   @Patch(':id')
   async update(
@@ -106,7 +107,7 @@ export class SourcingRecordsController {
     );
   }
 
-  @ApiOperation({ description: 'Deletes a sourcing group' })
+  @ApiOperation({ description: 'Deletes a sourcing record' })
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
@@ -125,6 +126,10 @@ export class SourcingRecordsController {
   async importXLSX(
     @UploadedFile() xlsxFile: Express.Multer.File,
   ): Promise<any> {
-    return await this.sourcingRecordsService.loadXLSXDataSet(xlsxFile.path);
+    try {
+      return await this.sourcingRecordsService.loadXLSXDataSet(xlsxFile.path);
+    } catch (err) {
+      throw new BadRequestException(err);
+    }
   }
 }

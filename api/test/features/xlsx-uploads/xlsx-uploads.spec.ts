@@ -37,13 +37,13 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
     );
   });
 
-  test('When an empty file is sent to the API then it should return a 400 code and the storage folder should be empty', async () => {
+  test('When an empty file is sent to the API then it should return a 400 code and a error message', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/sourcing-records/import/xlsx')
       .attach('file', __dirname + '/empty.xlsx')
       .expect(HttpStatus.BAD_REQUEST);
     expect(response.body.errors[0].title).toEqual(
-      'Spreadsheet is missing requires sheets: materials, business units, suppliers, countries, for upload',
+      'XLSX file could not been parsed: Spreadsheet is missing requires sheets: materials, business units, suppliers, countries, for upload',
     );
   });
 
@@ -54,5 +54,24 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
       .expect(HttpStatus.CREATED);
     const folderContent = await readdir(config.get('fileUploads.storagePath'));
     expect(folderContent.length).toEqual(0);
+  });
+
+  test('When a file is sent to the API and it does not complain some data validation, it should return a 400 code and a error message', async () => {
+    await request(app.getHttpServer())
+      .post('/api/v1/sourcing-records/import/xlsx')
+      .attach('file', __dirname + '/base-dataset.xlsx')
+      .expect(HttpStatus.CREATED);
+    const folderContent = await readdir(config.get('fileUploads.storagePath'));
+    expect(folderContent.length).toEqual(0);
+  });
+  test('When a file is sent to the API and some data does not complain data-validation, it should return a 400 code and a error message', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/sourcing-records/import/xlsx')
+      .attach('file', __dirname + '/business-unit-name-length.xlsx')
+      .expect(HttpStatus.BAD_REQUEST);
+    expect(response.body.errors[0].title).toEqual(
+      'XLSX file could not been parsed: An instance of CreateBusinessUnitDto has failed the validation:\n' +
+        ' - property name has failed the following constraints: maxLength \n',
+    );
   });
 });

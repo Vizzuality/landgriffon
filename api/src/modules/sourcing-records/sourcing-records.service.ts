@@ -66,10 +66,22 @@ export class SourcingRecordsService extends AppBaseService<
     return found;
   }
 
-  async loadXLSXDataSet(filePath: string): Promise<any> {
+  /**
+   * @TODO:
+   * - start the transaction (in a future PR)
+   * - wipe the selected BD tables
+   * - Import sheets in order
+   */
+
+  async loadXLSXDataSet(filePath: string): Promise<void> {
     await this.fileService.isFilePresentInFs(filePath);
     try {
-      return await this.xlsxParser.transformToJson(filePath);
+      const parsedXLSXDataset = await this.xlsxParser.transformToJson(filePath);
+      // TODO: Try to persist at this point
+      await this.materialService.createTree(parsedXLSXDataset.materials);
+      await this.businessUnitService.createTree(
+        parsedXLSXDataset.businessUnits,
+      );
     } finally {
       await this.fileService.deleteDataFromFS(filePath);
     }

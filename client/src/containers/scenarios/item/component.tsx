@@ -1,10 +1,14 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useCallback, useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import { RadioGroup, Switch } from '@headlessui/react';
+import { Menu, RadioGroup, Switch, Transition } from '@headlessui/react';
 import { DotsVerticalIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
+import { useQueryClient } from 'react-query';
+import { useRouter } from 'next/router';
+
+import ScenariosComparison from 'containers/scenarios/comparison';
+import { deleteScenario } from 'services/scenarios';
 import type { Scenario } from '../types';
-import ScenariosComparison from '../comparison';
 
 type ScenariosItemProps = {
   data: Scenario;
@@ -12,9 +16,33 @@ type ScenariosItemProps = {
   isSelected: boolean;
 };
 
+const DROPDOWN_BUTTON_CLASSNAME =
+  'w-8 h-8 inline-flex items-center justify-center text-gray-900 rounded-full bg-transparent hover:text-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-700';
+const DROPDOWN_ITEM_CLASSNAME = 'block px-4 py-2 text-sm w-full text-left';
+const DROPDOWN_ITEM_ACTIVE_CLASSNAME = 'bg-gray-100 text-gray-900';
+
 const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) => {
   const { data, isSelected, isComparisonAvailable } = props;
   const [isComparisonEnabled, setComparisonEnabled] = useState(false);
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const { query } = router;
+
+  const handleEdit = useCallback(() => {
+    router.push({
+      pathname: '/analysis',
+      query: {
+        ...query,
+        edit_scenario: data.id,
+      },
+    });
+  }, []);
+
+  const handleDelete = useCallback(() => {
+    deleteScenario(data.id).then(() => {
+      queryClient.invalidateQueries('scenariosList', { exact: true });
+    });
+  }, []);
 
   useEffect(() => {
     // Disabling comparison when is not selected
@@ -50,7 +78,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                 </span>
               </div>
               <div className="flex-1 pr-4 py-4  truncate">
-                <h2 className="text-gray-900 text-sm font-medium">{data.title}</h2>
+                <h2 className="text-gray-900 text-sm font-medium truncate">{data.title}</h2>
                 <p className="text-gray-600 text-sm">
                   {data.id === 'actual-data' && (
                     <span className="text-green-700">Based on your uploaded data</span>
@@ -65,13 +93,69 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
         </RadioGroup.Option>
         {data.id !== 'actual-data' && (
           <div className="flex-shrink-0 pr-2">
-            <button
-              type="button"
-              className="w-8 h-8 inline-flex items-center justify-center text-gray-900 rounded-full bg-transparent hover:text-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-700"
-            >
-              <span className="sr-only">Open options</span>
-              <DotsVerticalIcon className="w-5 h-5" aria-hidden="true" />
-            </button>
+            <Menu as="div" className="relative inline-block text-left">
+              {({ open }) => (
+                <>
+                  <div>
+                    <Menu.Button
+                      className={classNames(DROPDOWN_BUTTON_CLASSNAME, {
+                        'ring-2 ring-green-700 text-green-700': open,
+                      })}
+                    >
+                      <span className="sr-only">Open options</span>
+                      <DotsVerticalIcon className="w-5 h-5" aria-hidden="true" />
+                    </Menu.Button>
+                  </div>
+
+                  <Transition
+                    show={open}
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
+                  >
+                    <Menu.Items
+                      static
+                      className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                    >
+                      <div className="py-1">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              type="button"
+                              className={classNames(
+                                active ? DROPDOWN_ITEM_ACTIVE_CLASSNAME : 'text-gray-700',
+                                DROPDOWN_ITEM_CLASSNAME
+                              )}
+                              onClick={handleEdit}
+                            >
+                              Edit
+                            </button>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              type="button"
+                              className={classNames(
+                                active ? DROPDOWN_ITEM_ACTIVE_CLASSNAME : 'text-gray-700',
+                                DROPDOWN_ITEM_CLASSNAME
+                              )}
+                              onClick={handleDelete}
+                            >
+                              Delete
+                            </button>
+                          )}
+                        </Menu.Item>
+                      </div>
+                    </Menu.Items>
+                  </Transition>
+                </>
+              )}
+            </Menu>
           </div>
         )}
       </div>

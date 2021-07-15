@@ -6,18 +6,12 @@ import { Material } from 'modules/materials/material.entity';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 
-interface JSONSheet {
-  name: string;
-  data: Record<string, any>[];
-}
-
 interface SourcingRecordsSheets {
   materials: Record<string, any>[];
   countries: Record<string, any>[];
   businessUnits: Record<string, any>[];
   suppliers: Record<string, any>[];
-  sourcingLocations: Record<string, any>[];
-  sourcingRecords: Record<string, any>[];
+  sourcingData: Record<string, any>[];
 }
 
 const REQUIRED_SHEETS: Array<string> = [
@@ -45,7 +39,7 @@ export class XLSXParserService {
 
   async transformToJson(filePath: string): Promise<void> {
     try {
-      const workBook = XLSX.readFile(filePath);
+      const workBook: WorkBook = XLSX.readFile(filePath);
       const importData: SourcingRecordsSheets = this.parseSheets(workBook);
 
       /**
@@ -117,8 +111,7 @@ export class XLSXParserService {
       materials,
       businessUnits,
       suppliers,
-      sourcingLocations: sourcingData,
-      sourcingRecords: sourcingData,
+      sourcingData,
       countries,
     };
   }

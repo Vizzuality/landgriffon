@@ -13,8 +13,7 @@ import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-reco
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sourcing-record.dto';
 import { FileService } from 'modules/files/file.service';
-import { XlsxParserService } from 'modules/files/xlsx-parser.service';
-import { WorkSheet } from 'xlsx';
+import { XLSXParserService } from 'modules/files/xlsx-parser.service';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
@@ -32,8 +31,8 @@ export class SourcingRecordsService extends AppBaseService<
     protected readonly materialService: MaterialsService,
     protected readonly businessUnitService: BusinessUnitsService,
     protected readonly supplierService: SuppliersService,
-    private readonly fileService: FileService,
-    private readonly xlsxParser: XlsxParserService,
+    protected readonly fileService: FileService,
+    protected readonly xlsxParser: XLSXParserService,
   ) {
     super(
       sourcingRecordRepository,
@@ -70,32 +69,9 @@ export class SourcingRecordsService extends AppBaseService<
   async loadXLSXDataSet(filePath: string): Promise<any> {
     await this.fileService.isFilePresentInFs(filePath);
     try {
-      /**
-       * Commented out to check response
-       */
-      return this.xlsxParser.transformToJson(filePath);
-      //return await this.populateDb(parsedXlsx);
+      return await this.xlsxParser.transformToJson(filePath);
     } finally {
       await this.fileService.deleteDataFromFS(filePath);
-    }
-  }
-
-  async populateDb(stuff: any): Promise<any> {
-    const materials = stuff.filter(
-      (sheet: WorkSheet) => sheet.sheet === 'materials',
-    );
-    const businessUnits = stuff.filter(
-      (sheet: WorkSheet) => sheet.sheet === 'business units',
-    );
-    const suppliers = stuff.filter(
-      (sheet: WorkSheet) => sheet.sheet === 'suppliers',
-    );
-    try {
-      await this.materialService.saveMany(materials[0].data);
-      await this.businessUnitService.saveMany(businessUnits[0].data);
-      await this.supplierService.saveMany(suppliers[0].data);
-    } catch (err) {
-      return { err, materials };
     }
   }
 }

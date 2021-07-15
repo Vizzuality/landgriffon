@@ -34,12 +34,10 @@ export const fileUploadInterceptor = (
       fileSize: config.get('fileUploads.sizeLimit') as number,
     },
     fileFilter: function (_req: any, file: Express.Multer.File, cb: any): any {
-      if (
-        path.extname(file.originalname) !== uploadOptions.allowedFileExtension
-      ) {
-        return cb(null, false);
-      }
-      cb(null, true);
+      cb(
+        null,
+        path.extname(file.originalname) === uploadOptions.allowedFileExtension,
+      );
     },
   };
 };

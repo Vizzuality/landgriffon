@@ -59,7 +59,7 @@ describe('SourcingRecordsModule (e2e)', () => {
         throw new Error('Error loading created Sourcing Record');
       }
 
-      expect(createdSourcingRecord.tonnage).toEqual('1234');
+      expect(createdSourcingRecord.tonnage).toEqual(1234);
     });
   });
 

@@ -12,7 +12,7 @@ const ACTUAL_DATA: Scenario = {
 };
 
 const ScenariosContainer: React.FC = () => {
-  const response = useQuery('scenariosList', getScenarios, { retry: false });
+  const response = useQuery('scenariosList', getScenarios);
   const result =
     response.isSuccess && response.data
       ? {

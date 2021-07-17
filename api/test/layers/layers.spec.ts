@@ -64,11 +64,15 @@ describe('LayersModule (e2e)', () => {
         .send()
         .expect(HttpStatus.BAD_REQUEST);
 
-      expect(response).toHaveErrorMessage(HttpStatus.BAD_REQUEST, [
-        'text should not be empty',
-        'text must be longer than or equal to 2 characters',
-        'text must be a string',
-      ]);
+      expect(response).toHaveErrorMessage(
+        HttpStatus.BAD_REQUEST,
+        'Bad Request Exception',
+        [
+          'text should not be empty',
+          'text must be longer than or equal to 2 characters',
+          'text must be a string',
+        ],
+      );
     });
   });
 

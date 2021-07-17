@@ -1,5 +1,4 @@
 import {
-  BaseEntity,
   Column,
   Entity,
   ManyToOne,
@@ -14,6 +13,7 @@ import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 
 export enum MATERIALS_STATUS {
   ACTIVE = 'active',
@@ -27,13 +27,22 @@ export const materialResource: BaseServiceResource = {
     singular: 'material',
     plural: 'materials',
   },
-  entitiesAllowedAsIncludes: [],
-  columnsAllowedAsFilter: ['name', 'description', 'status', 'layerId'],
+  entitiesAllowedAsIncludes: ['children'],
+  columnsAllowedAsFilter: [
+    'name',
+    'description',
+    'status',
+    'layerId',
+    'hsCodeId',
+    'earthstatId',
+    'mapspamId',
+    'metadata',
+  ],
 };
 
 @Entity()
 @Tree('materialized-path')
-export class Material extends BaseEntity {
+export class Material extends TimestampedBaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
   id!: string;
@@ -44,6 +53,10 @@ export class Material extends BaseEntity {
   @TreeParent()
   parent: Material;
 
+  @Column({ nullable: true })
+  @ApiPropertyOptional()
+  parentId?: string;
+
   @Column({ nullable: false })
   @ApiProperty()
   name!: string;
@@ -52,12 +65,23 @@ export class Material extends BaseEntity {
   @ApiPropertyOptional()
   description?: string;
 
+  @Column({ nullable: true })
+  @ApiPropertyOptional()
+  hsCodeId?: string;
+
+  @Column({ nullable: true })
+  @ApiPropertyOptional()
+  earthstatId?: string;
+
+  @Column({ nullable: true })
+  @ApiPropertyOptional()
+  mapspamId?: string;
+
   @ApiProperty()
   @Column({
     type: 'enum',
     enum: MATERIALS_STATUS,
-    enumName: 'entity_status',
-    default: MATERIALS_STATUS.INACTIVE,
+    default: MATERIALS_STATUS.ACTIVE,
   })
   status!: MATERIALS_STATUS;
 

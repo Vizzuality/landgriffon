@@ -14,7 +14,7 @@ export class CreateMaterialDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(2)
-  @MaxLength(40)
+  @MaxLength(300)
   @ApiProperty()
   name!: string;
 
@@ -62,4 +62,8 @@ export class CreateMaterialDto {
   @IsOptional()
   @ApiPropertyOptional()
   mapspamId?: string;
+
+  @IsString()
+  @IsOptional()
+  mpath?: string;
 }

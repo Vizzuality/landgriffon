@@ -47,7 +47,7 @@ export class XLSXParserService {
     try {
       const workBook: WorkBook = XLSX.readFile(filePath);
       const importData: SourcingRecordsSheets = this.parseSheets(workBook);
-      const dtoMatchedData: Partial<DTOTransformedData> = await this.dtoProcessor.processDTOsFromData(
+      const dtoMatchedData: DTOTransformedData = await this.dtoProcessor.createDTOsFromSourcingRecordsSheets(
         importData,
       );
 
@@ -56,7 +56,7 @@ export class XLSXParserService {
        * sourcing-records / sourcing-locations
        */
 
-      await this.dataValidationService.validateData({
+      await this.dataValidationService.validateDTOs({
         ...dtoMatchedData,
         sourcingData: importData.sourcingData,
       } as DTOTransformedData);

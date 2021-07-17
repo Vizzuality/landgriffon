@@ -8,7 +8,10 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { BUSINESS_UNIT_STATUS } from 'modules/business-units/business-unit.entity';
+import {
+  BUSINESS_UNIT_STATUS,
+  BusinessUnit,
+} from 'modules/business-units/business-unit.entity';
 
 export class CreateBusinessUnitDto {
   @IsString()
@@ -29,6 +32,9 @@ export class CreateBusinessUnitDto {
   @ApiPropertyOptional()
   status?: string;
 
+  @IsOptional()
+  parent?: BusinessUnit;
+
   @IsString()
   @IsOptional()
   @IsJSON()
@@ -37,6 +43,5 @@ export class CreateBusinessUnitDto {
 
   @IsString()
   @IsOptional()
-  @ApiPropertyOptional()
-  parent?: string;
+  mpath?: string;
 }

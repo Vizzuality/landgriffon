@@ -70,12 +70,16 @@ describe('SourcingLocationsModule (e2e)', () => {
         .send()
         .expect(HttpStatus.BAD_REQUEST);
 
-      expect(response).toHaveErrorMessage(HttpStatus.BAD_REQUEST, [
-        'title should not be empty',
-        'title must be shorter than or equal to 40 characters',
-        'title must be longer than or equal to 2 characters',
-        'title must be a string',
-      ]);
+      expect(response).toHaveErrorMessage(
+        HttpStatus.BAD_REQUEST,
+        'Bad Request Exception',
+        [
+          'title should not be empty',
+          'title must be shorter than or equal to 40 characters',
+          'title must be longer than or equal to 2 characters',
+          'title must be a string',
+        ],
+      );
     });
   });
 

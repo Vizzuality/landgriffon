@@ -8,7 +8,8 @@ declare global {
     interface Matchers<R> {
       toHaveErrorMessage(
         code: number,
-        message: string | string[],
+        message: string,
+        bodyMessage?: string | string[],
       ): CustomMatcherResult;
 
       toHaveJSONAPIAttributes(
@@ -22,7 +23,8 @@ expect.extend({
   toHaveErrorMessage(
     response: Response,
     code: number,
-    message: string | string[],
+    message: string,
+    bodyMessage: string | string[],
   ): CustomMatcherResult {
     if (response.type !== 'application/json') {
       return {
@@ -48,30 +50,38 @@ expect.extend({
       };
     }
 
-    if (typeof message === 'string') {
+    if (response.body.errors[0].title !== message) {
+      return {
+        pass: false,
+        message: (): string =>
+          `Expected "${message}" error message, got "${response.body.errors[0].title}"`,
+      };
+    }
+
+    if (Array.isArray(bodyMessage)) {
       if (
         !isEqual(
-          response.body.errors[0].meta.rawError.response.message,
-          message,
+          response.body.errors[0].meta.rawError.response.message.sort(),
+          bodyMessage.sort(),
         )
       ) {
         return {
           pass: false,
           message: (): string =>
-            `Expected "${message}" response error message, got "${response.body.errors[0].meta.rawError.response.message}"`,
+            `Expected "${bodyMessage}" response error body message, got "${response.body.errors[0].meta.rawError.response.message}"`,
         };
       }
     } else {
       if (
         !isEqual(
-          response.body.errors[0].meta.rawError.response.message.sort(),
-          message.sort(),
+          response.body.errors[0].meta.rawError.response.message,
+          bodyMessage,
         )
       ) {
         return {
           pass: false,
           message: (): string =>
-            `Expected "${message}" response error message, got "${response.body.errors[0].meta.rawError.response.message}"`,
+            `Expected "${bodyMessage}" response error body message, got "${response.body.errors[0].meta.rawError.response.message}"`,
         };
       }
     }

@@ -8,7 +8,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { MATERIALS_STATUS } from 'modules/materials/material.entity';
+import { Material, MATERIALS_STATUS } from 'modules/materials/material.entity';
 
 export class CreateMaterialDto {
   @IsString()
@@ -38,9 +38,28 @@ export class CreateMaterialDto {
   @IsString()
   @IsOptional()
   @ApiPropertyOptional()
-  parent?: string;
+  parentId?: string;
+
+  @IsOptional()
+  parent?: Material;
 
   @IsString()
+  @IsNotEmpty()
   @ApiProperty()
   layerId!: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional()
+  hsCodeId?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional()
+  earthstatId?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional()
+  mapspamId?: string;
 }

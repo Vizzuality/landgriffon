@@ -74,13 +74,17 @@ describe('IndicatorSourcesModule (e2e)', () => {
       .send()
       .expect(HttpStatus.BAD_REQUEST);
 
-    expect(response).toHaveErrorMessage(HttpStatus.BAD_REQUEST, [
-      'layerId must be a string',
-      'title should not be empty',
-      'title must be shorter than or equal to 40 characters',
-      'title must be longer than or equal to 2 characters',
-      'title must be a string',
-    ]);
+    expect(response).toHaveErrorMessage(
+      HttpStatus.BAD_REQUEST,
+      'Bad Request Exception',
+      [
+        'layerId must be a string',
+        'title should not be empty',
+        'title must be shorter than or equal to 40 characters',
+        'title must be longer than or equal to 2 characters',
+        'title must be a string',
+      ],
+    );
   });
 
   describe('Indicator sources - Update', () => {

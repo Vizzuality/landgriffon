@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
@@ -30,12 +30,43 @@ export class MaterialsService extends AppBaseService<
 
   get serializerConfig(): JSONAPISerializerConfig<Material> {
     return {
-      attributes: ['name', 'description', 'status', 'metadata'],
+      attributes: [
+        'name',
+        'description',
+        'status',
+        'layerId',
+        'hsCodeId',
+        'earthstatId',
+        'mapspamId',
+        'metadata',
+        'parentId',
+        'children',
+        'createdAt',
+        'updatedAt',
+      ],
       keyForAttribute: 'camelCase',
     };
   }
 
-  async getMaterialById(id: number): Promise<Material> {
+  async create(createModel: CreateMaterialDto): Promise<Material> {
+    if (createModel.parentId) {
+      try {
+        const parentMaterial: Material = await this.getMaterialById(
+          createModel.parentId,
+        );
+        createModel.parent = parentMaterial;
+      } catch (error) {
+        throw new HttpException(
+          `Parent material with ID "${createModel.parentId}" not found`,
+          400,
+        );
+      }
+    }
+
+    return super.create(createModel);
+  }
+
+  async getMaterialById(id: string): Promise<Material> {
     const found = await this.materialRepository.findOne(id);
 
     if (!found) {

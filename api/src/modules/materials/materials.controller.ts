@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -14,6 +15,7 @@ import {
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -28,14 +30,19 @@ import {
 import { Material, materialResource } from 'modules/materials/material.entity';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { UpdateMaterialDto } from 'modules/materials/dto/update.material.dto';
+import { MaterialRepository } from 'modules/materials/material.repository';
+import { ApiOkTreeResponse } from 'decorators/api-response.decorator';
 
 @Controller(`/api/v1/materials`)
 @ApiTags(materialResource.className)
 export class MaterialsController {
-  constructor(public readonly materialsService: MaterialsService) {}
+  constructor(
+    public readonly materialsService: MaterialsService,
+    public readonly materialsRepository: MaterialRepository,
+  ) {}
 
   @ApiOperation({
-    description: 'Find all materials',
+    description: 'Find all materials and return them in a list format',
   })
   @ApiOkResponse({
     type: Material,
@@ -48,6 +55,7 @@ export class MaterialsController {
         name: columnName,
       }),
     ),
+    entitiesAllowedAsIncludes: ['children'],
   })
   @Get()
   async findAll(
@@ -60,6 +68,29 @@ export class MaterialsController {
       fetchSpecification,
     );
     return this.materialsService.serialize(results.data, results.metadata);
+  }
+
+  @ApiOperation({
+    description:
+      'Find all materials and return them in a tree format. Data in the "children" will recursively extend for the full depth of the tree',
+  })
+  @ApiOkTreeResponse({
+    treeNodeType: Material,
+  })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @Get('/trees')
+  @ApiQuery({
+    name: 'depth',
+    required: false,
+    description:
+      'A non-negative integer value. If specified, limits the depth of the tree crawling. 0 will return only the tree roots',
+  })
+  async getTrees(@Query('depth') depth?: number): Promise<Material> {
+    const results = await this.materialsRepository.findTreesWithOptions({
+      depth,
+    });
+    return this.materialsService.serialize(results);
   }
 
   @ApiOperation({ description: 'Find material by id' })

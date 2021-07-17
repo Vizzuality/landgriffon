@@ -77,10 +77,14 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
       .send()
       .expect(HttpStatus.BAD_REQUEST);
 
-    expect(response).toHaveErrorMessage(HttpStatus.BAD_REQUEST, [
-      'year should not be empty',
-      'year must be a number conforming to the specified constraints',
-    ]);
+    expect(response).toHaveErrorMessage(
+      HttpStatus.BAD_REQUEST,
+      'Bad Request Exception',
+      [
+        'year should not be empty',
+        'year must be a number conforming to the specified constraints',
+      ],
+    );
   });
 
   describe('Indicator coefficients - Update', () => {

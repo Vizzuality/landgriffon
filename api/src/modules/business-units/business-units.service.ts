@@ -57,18 +57,6 @@ export class BusinessUnitsService extends AppBaseService<
   async createTree(
     importData: CreateBusinessUnitDto[],
   ): Promise<BusinessUnit[]> {
-    /**
-     * @TODO:
-     * - Validate that all entities are sane (something like validateOrReject from https://github.com/typeorm/typeorm/issues/913#issuecomment-533853309 without the hooks)
-     * - Build associations between them, because this is a tree
-     * - Save them in order, so the tree is sane
-     * - In a future world, in a future PR, do this in a transaction (https://github.com/typeorm/typeorm/blob/master/docs/transactions.md)
-     */
-
-    return Promise.all(
-      importData.map((importRow: CreateBusinessUnitDto) => {
-        return this.create(importRow);
-      }),
-    );
+    return this.businessUnitRepository.saveListToTree(importData, 'mpath');
   }
 }

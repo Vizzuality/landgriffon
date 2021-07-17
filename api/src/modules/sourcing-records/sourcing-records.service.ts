@@ -17,6 +17,7 @@ import { XLSXParserService } from 'modules/files/xlsx-parser.service';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
+import { DTOTransformedData } from '../data-validation/dto-processor.service';
 
 @Injectable()
 export class SourcingRecordsService extends AppBaseService<
@@ -76,7 +77,9 @@ export class SourcingRecordsService extends AppBaseService<
   async loadXLSXDataSet(filePath: string): Promise<void> {
     await this.fileService.isFilePresentInFs(filePath);
     try {
-      const parsedXLSXDataset = await this.xlsxParser.transformToJson(filePath);
+      const parsedXLSXDataset: DTOTransformedData = await this.xlsxParser.transformToJson(
+        filePath,
+      );
       // TODO: Try to persist at this point
       await this.materialService.createTree(parsedXLSXDataset.materials);
       await this.businessUnitService.createTree(

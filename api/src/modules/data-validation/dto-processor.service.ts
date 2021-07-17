@@ -6,13 +6,16 @@ import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-reg
 import { SourcingRecordsSheets } from 'modules/files/xlsx-parser.service';
 // eslint-disable-next-line no-restricted-imports
 import { createLayer } from '../../../test/entity-mocks';
+import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
+import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 
 export interface DTOTransformedData {
   materials: CreateMaterialDto[];
   adminRegions: CreateAdminRegionDto[];
   businessUnits: CreateBusinessUnitDto[];
   suppliers: CreateSupplierDto[];
-  sourcingData: Record<string, any>[];
+  sourcingRecords: CreateSourcingRecordDto[];
+  sourcingLocations: CreateSourcingLocationDto[];
 }
 
 /**
@@ -27,26 +30,45 @@ export interface DTOTransformedData {
 export class DtoProcessorService {
   layerId: string;
 
-  async processDTOsFromData(
+  async createDTOsFromSourcingRecordsSheets(
     importData: SourcingRecordsSheets,
-  ): Promise<Partial<DTOTransformedData>> {
-    const materials: CreateMaterialDto[] = await this.processMaterials(
+  ): Promise<DTOTransformedData> {
+    const materials: CreateMaterialDto[] = await this.createMaterialDtos(
       importData.materials,
     );
-    const businessUnits: CreateBusinessUnitDto[] = await this.processBusinessUnits(
+    const businessUnits: CreateBusinessUnitDto[] = await this.createBusinessUnitDtos(
       importData.businessUnits,
     );
-    const suppliers: CreateSupplierDto[] = await this.processSuppliers(
+    const suppliers: CreateSupplierDto[] = await this.createSupplierDtos(
       importData.suppliers,
     );
-    const adminRegions: CreateAdminRegionDto[] = await this.processAdminRegions(
+    const adminRegions: CreateAdminRegionDto[] = await this.createAdminRegionDtos(
       importData.countries,
     );
+    const sourcingRecords: CreateSourcingRecordDto[] = await this.createSourcingRecordDtos(
+      importData.sourcingData,
+    );
+    const sourcingLocations: CreateSourcingLocationDto[] = await this.createSourcingLocationDtos(
+      importData.sourcingData,
+    );
 
-    return { materials, businessUnits, suppliers, adminRegions };
+    return {
+      materials,
+      businessUnits,
+      suppliers,
+      adminRegions,
+      sourcingLocations,
+      sourcingRecords,
+    };
   }
 
-  private async processMaterials(
+  /**
+   * Creates an array of CreateMaterialDto objects from the JSON data processed from the XLSX file
+   *
+   * @param importData
+   * @private
+   */
+  private async createMaterialDtos(
     importData: Record<string, any>[],
   ): Promise<CreateMaterialDto[]> {
     /**
@@ -66,34 +88,84 @@ export class DtoProcessorService {
     return materialList;
   }
 
-  private async processBusinessUnits(
+  /**
+   * Creates an array of CreateBusinessUnitDto objects from the JSON data processed from the XLSX file
+   *
+   * @param importData
+   * @private
+   */
+  private async createBusinessUnitDtos(
     importData: Record<string, any>[],
   ): Promise<CreateBusinessUnitDto[]> {
-    const businessUnitsList: CreateBusinessUnitDto[] = [];
+    const businessUnitDtos: CreateBusinessUnitDto[] = [];
     importData.forEach((importRow: Record<string, any>) => {
-      businessUnitsList.push(this.createBusinessUnitDTOFromData(importRow));
+      businessUnitDtos.push(this.createBusinessUnitDTOFromData(importRow));
     });
-    return businessUnitsList;
+    return businessUnitDtos;
   }
 
-  private async processSuppliers(
+  /**
+   * Creates an array of CreateSupplierDto objects from the JSON data processed from the XLSX file
+   *
+   * @param importData
+   * @private
+   */
+  private async createSupplierDtos(
     importData: Record<string, any>[],
   ): Promise<CreateSupplierDto[]> {
-    const supplierList: CreateSupplierDto[] = [];
+    const supplierDtos: CreateSupplierDto[] = [];
     importData.forEach((importRow: Record<string, any>) => {
-      supplierList.push(this.crateSuppliersDTOFromData(importRow));
+      supplierDtos.push(this.crateSuppliersDTOFromData(importRow));
     });
-    return supplierList;
+    return supplierDtos;
   }
 
-  private async processAdminRegions(
+  /**
+   * Creates an array of CreateAdminRegionDto objects from the JSON data processed from the XLSX file
+   *
+   * @param importData
+   * @private
+   */
+  private async createAdminRegionDtos(
     importData: Record<string, any>[],
   ): Promise<CreateAdminRegionDto[]> {
-    const adminRegionList: CreateAdminRegionDto[] = [];
+    const adminRegionDtos: CreateAdminRegionDto[] = [];
     importData.forEach((importRow: Record<string, any>) => {
-      adminRegionList.push(this.createAdminRegionDTOFromData(importRow));
+      adminRegionDtos.push(this.createAdminRegionDTOFromData(importRow));
     });
-    return adminRegionList;
+    return adminRegionDtos;
+  }
+
+  /**
+   * Creates an array of CreateSourcingRecordDto objects from the JSON data processed from the XLSX file
+   *
+   * @param importData
+   * @private
+   */
+  private async createSourcingRecordDtos(
+    importData: Record<string, any>[],
+  ): Promise<CreateSourcingRecordDto[]> {
+    const sourcingRecordDtos: CreateSourcingRecordDto[] = [];
+    /**
+     * @TODO: actually create the DTOs
+     */
+    return sourcingRecordDtos;
+  }
+
+  /**
+   * Creates an array of CreateSourcingLocationDto objects from the JSON data processed from the XLSX file
+   *
+   * @param importData
+   * @private
+   */
+  private async createSourcingLocationDtos(
+    importData: Record<string, any>[],
+  ): Promise<CreateSourcingLocationDto[]> {
+    const sourcingLocationDtos: CreateSourcingLocationDto[] = [];
+    /**
+     * @TODO: actually create the DTOs
+     */
+    return sourcingLocationDtos;
   }
 
   private createMaterialDTOFromData(materialData: Record<string, any>): any {
@@ -101,6 +173,7 @@ export class DtoProcessorService {
     materialDto.name = materialData.name;
     materialDto.description = materialData.description;
     materialDto.hsCodeId = materialData.hs_2017_code;
+    materialDto.mpath = materialData.path_id;
     materialDto.layerId = this.layerId;
     return materialDto;
   }
@@ -110,6 +183,7 @@ export class DtoProcessorService {
     const businessUnitDto = new CreateBusinessUnitDto();
     businessUnitDto.name = businessUnitData.name;
     businessUnitDto.description = businessUnitData.description;
+    businessUnitDto.mpath = businessUnitData.path_id;
     return businessUnitDto;
   }
 

@@ -4,21 +4,18 @@ import { DTOTransformedData } from 'modules/data-validation/dto-processor.servic
 
 @Injectable()
 export class DataValidationService {
-  async validateData(
-    parsedXLSX: DTOTransformedData,
+  async validateDTOs(
+    dtoLists: DTOTransformedData,
   ): Promise<void | Array<ErrorConstructor>> {
     const validationErrorArray: Array<typeof Error> = [];
-    for (const parsedSheet in parsedXLSX) {
-      if (parsedXLSX.hasOwnProperty(parsedSheet))
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        for (const dto of parsedXLSX[parsedSheet]) {
-          try {
-            await validateOrReject(dto);
-          } catch (err) {
-            validationErrorArray.push(err);
-          }
+    for (const parsedSheet in dtoLists) {
+      for (const dto of dtoLists[parsedSheet as keyof DTOTransformedData]) {
+        try {
+          await validateOrReject(dto);
+        } catch (err) {
+          validationErrorArray.push(err);
         }
+      }
     }
 
     /**

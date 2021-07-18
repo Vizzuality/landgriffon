@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
@@ -46,6 +46,10 @@ export class MaterialsService extends AppBaseService<
       ],
       keyForAttribute: 'camelCase',
     };
+  }
+
+  async createTree(importData: CreateMaterialDto[]): Promise<Material[]> {
+    return this.materialRepository.saveListToTree(importData, 'mpath');
   }
 
   async create(createModel: CreateMaterialDto): Promise<Material> {

@@ -36,17 +36,65 @@ export const sourcingLocationResource: BaseServiceResource = {
 
 @Entity()
 export class SourcingLocation extends TimestampedBaseEntity {
+  @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
+
+  @ApiPropertyOptional()
+  @Column({ type: 'text', nullable: true })
+  title?: string;
+
+  @ApiPropertyOptional()
+  @Column({ type: 'decimal', nullable: true })
+  locationLatitude?: number;
+
+  @ApiPropertyOptional()
+  @Column({ type: 'decimal', nullable: true })
+  locationLongitude?: number;
+
+  @Column({
+    type: 'enum',
+    enum: LOCATION_TYPES,
+    default: LOCATION_TYPES.UNKNOWN,
+  })
+  @ApiProperty()
+  locationType!: LOCATION_TYPES;
 
   @Column({ type: 'text', nullable: true })
-  title: string;
+  @ApiPropertyOptional()
+  locationAddressInput?: string;
 
-  @Column({ type: 'int', nullable: true })
-  locationLatitude: number;
+  @Column({ type: 'text', nullable: true })
+  @ApiPropertyOptional()
+  locationCountryInput?: string;
 
-  @Column({ type: 'int', nullable: true })
-  locationLongitude: number;
+  @Column({
+    type: 'enum',
+    enum: LOCATION_ACCURACY,
+    default: LOCATION_ACCURACY.LOW,
+  })
+  @ApiProperty()
+  locationAccuracy!: LOCATION_ACCURACY;
+
+  @ManyToOne(
+    () => GeoRegion,
+    (geoRegion: GeoRegion) => geoRegion.sourcingLocations,
+    { eager: false },
+  )
+  geoRegion: GeoRegion;
+
+  @Column({ nullable: true })
+  @ApiPropertyOptional()
+  geoRegionId?: string;
+
+  @Column({ type: 'jsonb', nullable: true })
+  @ApiPropertyOptional()
+  metadata: JSON;
+
+  @ManyToOne(() => User, (user: User) => user.sourcingLocations, {
+    eager: false,
+  })
+  updatedBy: User;
 
   @ManyToOne(() => Material, (mat: Material) => mat.sourcingLocations, {
     eager: false,
@@ -80,45 +128,4 @@ export class SourcingLocation extends TimestampedBaseEntity {
     },
   )
   producer: Supplier;
-
-  @Column({
-    type: 'enum',
-    enum: LOCATION_TYPES,
-    default: LOCATION_TYPES.UNKNOWN,
-  })
-  locationType: LOCATION_TYPES;
-
-  @Column({ type: 'text', nullable: true })
-  locationAddressInput?: string;
-
-  @Column({ type: 'text', nullable: true })
-  locationCountryInput?: string;
-
-  @Column({
-    type: 'enum',
-    enum: LOCATION_ACCURACY,
-    default: LOCATION_ACCURACY.LOW,
-  })
-  @ApiProperty()
-  locationAccuracy: LOCATION_ACCURACY;
-
-  @ManyToOne(
-    () => GeoRegion,
-    (geoRegion: GeoRegion) => geoRegion.sourcingLocations,
-    { eager: false },
-  )
-  geoRegion: GeoRegion;
-
-  @Column({ nullable: true })
-  @ApiPropertyOptional()
-  geoRegionId?: string;
-
-  @Column({ type: 'jsonb', nullable: true })
-  @ApiPropertyOptional()
-  metadata: JSON;
-
-  @ManyToOne(() => User, (user: User) => user.sourcingLocations, {
-    eager: false,
-  })
-  updatedBy: User;
 }

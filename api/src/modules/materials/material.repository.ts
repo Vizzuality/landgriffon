@@ -1,4 +1,4 @@
-import { EntityRepository, TreeRepository } from 'typeorm';
+import { EntityRepository } from 'typeorm';
 import { Material } from 'modules/materials/material.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
@@ -8,7 +8,10 @@ export interface FindTreesWithOptionsArgs {
 }
 
 @EntityRepository(Material)
-export class MaterialRepository extends TreeRepository<Material> {
+export class MaterialRepository extends ExtendedTreeRepository<
+  Material,
+  CreateMaterialDto
+> {
   async findTreesWithOptions(
     args?: FindTreesWithOptionsArgs,
   ): Promise<Material[]> {

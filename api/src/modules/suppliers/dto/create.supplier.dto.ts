@@ -9,7 +9,6 @@ import {
   MinLength,
 } from 'class-validator';
 import { Supplier, SUPPLIER_STATUS } from 'modules/suppliers/supplier.entity';
-import { Material } from '../../materials/material.entity';
 
 export class CreateSupplierDto {
   @IsString()

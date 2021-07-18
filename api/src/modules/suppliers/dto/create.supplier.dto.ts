@@ -8,7 +8,8 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { SUPPLIER_STATUS } from 'modules/suppliers/supplier.entity';
+import { Supplier, SUPPLIER_STATUS } from 'modules/suppliers/supplier.entity';
+import { Material } from '../../materials/material.entity';
 
 export class CreateSupplierDto {
   @IsString()
@@ -37,6 +38,8 @@ export class CreateSupplierDto {
 
   @IsString()
   @IsOptional()
-  @ApiPropertyOptional()
-  parent?: string;
+  mpath?: string;
+
+  @IsOptional()
+  parent?: Supplier;
 }

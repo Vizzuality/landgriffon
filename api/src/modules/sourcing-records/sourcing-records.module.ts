@@ -7,6 +7,8 @@ import { FileModule } from 'modules/files/file.module';
 import { MaterialsModule } from 'modules/materials/materials.module';
 import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
+import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
+import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { SuppliersModule } from 'modules/suppliers/suppliers.module';
     MaterialsModule,
     BusinessUnitsModule,
     SuppliersModule,
+    AdminRegionsModule,
+    SourcingLocationsModule,
   ],
   controllers: [SourcingRecordsController],
   providers: [SourcingRecordsService],

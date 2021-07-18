@@ -4,6 +4,8 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
+  TreeChildren,
+  TreeParent,
 } from 'typeorm';
 
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
@@ -33,8 +35,11 @@ export class Supplier extends BaseEntity {
   @ApiProperty()
   id: string;
 
-  @Column({ type: 'ltree', nullable: true, unique: true })
-  path?: string;
+  @TreeChildren()
+  children: Supplier[];
+
+  @TreeParent()
+  parent: Supplier;
 
   @ApiProperty()
   @Column({ nullable: false })
@@ -48,8 +53,7 @@ export class Supplier extends BaseEntity {
   @Column({
     type: 'enum',
     enum: SUPPLIER_STATUS,
-    enumName: 'entityStatus',
-    default: SUPPLIER_STATUS.INACTIVE,
+    default: SUPPLIER_STATUS.ACTIVE,
   })
   status!: SUPPLIER_STATUS;
 

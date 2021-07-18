@@ -193,6 +193,7 @@ export class DtoProcessorService {
     const suppliersDto = new CreateSupplierDto();
     suppliersDto.name = supplierData.name;
     suppliersDto.description = supplierData.description;
+    suppliersDto.mpath = supplierData.path_id;
     return suppliersDto;
   }
 

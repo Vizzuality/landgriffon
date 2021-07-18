@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   MaxLength,
@@ -14,11 +15,9 @@ import {
 
 export class CreateSourcingLocationDto {
   @IsString()
-  @MinLength(2)
-  @MaxLength(40)
-  @ApiProperty()
-  @IsNotEmpty()
-  title!: string;
+  @IsOptional()
+  @ApiPropertyOptional()
+  title?: string;
 
   @IsString()
   @IsOptional()
@@ -29,15 +28,11 @@ export class CreateSourcingLocationDto {
 
   @IsString()
   @IsOptional()
-  @MinLength(2)
-  @MaxLength(40)
   @ApiPropertyOptional()
   t1SupplierId?: string;
 
   @IsString()
   @IsOptional()
-  @MinLength(2)
-  @MaxLength(40)
   @ApiPropertyOptional()
   producerId?: string;
 
@@ -49,13 +44,11 @@ export class CreateSourcingLocationDto {
 
   @IsString()
   @IsOptional()
-  @MinLength(2)
   @ApiPropertyOptional()
   locationAddressInput?: string;
 
   @IsString()
   @IsOptional()
-  @MinLength(2)
   @ApiPropertyOptional()
   locationCountryInput?: string;
 
@@ -64,4 +57,14 @@ export class CreateSourcingLocationDto {
   @IsEnum(Object.values(LOCATION_ACCURACY))
   @ApiPropertyOptional()
   locationAccuracy?: string;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiPropertyOptional()
+  locationLatitude?: number;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiPropertyOptional()
+  locationLongitude?: number;
 }

@@ -84,7 +84,6 @@ export class SourcingRecordsService extends AppBaseService<
       const parsedXLSXDataset: DTOTransformedData = await this.xlsxParser.transformToJson(
         filePath,
       );
-      // TODO: Try to persist at this point
       await this.materialService.createTree(parsedXLSXDataset.materials);
       await this.businessUnitService.createTree(
         parsedXLSXDataset.businessUnits,

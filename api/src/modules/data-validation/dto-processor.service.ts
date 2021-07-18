@@ -8,6 +8,7 @@ import { SourcingRecordsSheets } from 'modules/files/xlsx-parser.service';
 import { createLayer } from '../../../test/entity-mocks';
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
+import { isEmpty } from 'lodash';
 
 export interface DTOTransformedData {
   materials: CreateMaterialDto[];
@@ -162,9 +163,11 @@ export class DtoProcessorService {
     importData: Record<string, any>[],
   ): Promise<CreateSourcingLocationDto[]> {
     const sourcingLocationDtos: CreateSourcingLocationDto[] = [];
-    /**
-     * @TODO: actually create the DTOs
-     */
+    importData.forEach((importRow: Record<string, any>) => {
+      sourcingLocationDtos.push(
+        this.createSourcingLocationDTOFromData(importRow),
+      );
+    });
     return sourcingLocationDtos;
   }
 
@@ -205,5 +208,28 @@ export class DtoProcessorService {
     adminRegionDto.name = adminRegionData.name;
     adminRegionDto.isoA3 = adminRegionData.iso_a3;
     return adminRegionDto;
+  }
+
+  private createSourcingLocationDTOFromData(
+    sourcingLocationData: Record<string, any>,
+  ): CreateSourcingLocationDto {
+    const sourcingLocationDto = new CreateSourcingLocationDto();
+
+    sourcingLocationDto.locationCountryInput =
+      sourcingLocationData.location_country_input;
+    sourcingLocationDto.locationAddressInput =
+      sourcingLocationData.location_address_input;
+    sourcingLocationDto.locationLatitude = isEmpty(
+      sourcingLocationData.location_latitude_input,
+    )
+      ? undefined
+      : parseFloat(sourcingLocationData.location_latitude_input);
+    sourcingLocationDto.locationLongitude = isEmpty(
+      sourcingLocationData.location_longitude_input,
+    )
+      ? undefined
+      : parseFloat(sourcingLocationData.location_longitude_input);
+
+    return sourcingLocationDto;
   }
 }

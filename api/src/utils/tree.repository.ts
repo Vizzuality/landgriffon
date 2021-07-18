@@ -9,6 +9,13 @@ export class ExtendedTreeRepository<
   Entity,
   CreateDto extends { parent?: Entity }
 > extends TreeRepository<Entity> {
+  /**
+   * Takes a list of DTO objects and saves them as a tree
+   * It uses importData[pathKey]:string as a fully realized materialized path
+   *
+   * @param importData
+   * @param pathKey
+   */
   public async saveListToTree(
     importData: CreateDto[],
     pathKey: keyof CreateDto,

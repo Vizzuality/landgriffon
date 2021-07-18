@@ -17,7 +17,9 @@ import { XLSXParserService } from 'modules/files/xlsx-parser.service';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
-import { DTOTransformedData } from '../data-validation/dto-processor.service';
+import { DTOTransformedData } from 'modules/data-validation/dto-processor.service';
+import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
+import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 
 @Injectable()
 export class SourcingRecordsService extends AppBaseService<
@@ -32,6 +34,8 @@ export class SourcingRecordsService extends AppBaseService<
     protected readonly materialService: MaterialsService,
     protected readonly businessUnitService: BusinessUnitsService,
     protected readonly supplierService: SuppliersService,
+    protected readonly adminRegionService: AdminRegionsService,
+    protected readonly sourcingLocationService: SourcingLocationsService,
     protected readonly fileService: FileService,
     protected readonly xlsxParser: XLSXParserService,
   ) {
@@ -85,6 +89,8 @@ export class SourcingRecordsService extends AppBaseService<
       await this.businessUnitService.createTree(
         parsedXLSXDataset.businessUnits,
       );
+      await this.supplierService.createTree(parsedXLSXDataset.suppliers);
+      await this.adminRegionService.createTree(parsedXLSXDataset.adminRegions);
     } finally {
       await this.fileService.deleteDataFromFS(filePath);
     }

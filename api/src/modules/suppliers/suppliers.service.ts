@@ -48,4 +48,8 @@ export class SuppliersService extends AppBaseService<
   async saveMany(entityArray: Supplier[]): Promise<void> {
     await this.supplierRepository.save(entityArray);
   }
+
+  async createTree(importData: CreateSupplierDto[]): Promise<Supplier[]> {
+    return this.supplierRepository.saveListToTree(importData, 'mpath');
+  }
 }

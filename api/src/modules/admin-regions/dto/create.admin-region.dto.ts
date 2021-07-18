@@ -8,7 +8,10 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { ADMIN_REGIONS_STATUS } from 'modules/admin-regions/admin-region.entity';
+import {
+  ADMIN_REGIONS_STATUS,
+  AdminRegion,
+} from 'modules/admin-regions/admin-region.entity';
 
 export class CreateAdminRegionDto {
   @IsString()
@@ -40,8 +43,10 @@ export class CreateAdminRegionDto {
   @ApiPropertyOptional()
   metadata?: string;
 
+  @IsOptional()
+  parent?: AdminRegion;
+
   @IsString()
   @IsOptional()
-  @ApiPropertyOptional()
-  parent?: string;
+  mpath?: string;
 }

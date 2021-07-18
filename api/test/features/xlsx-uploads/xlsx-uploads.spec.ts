@@ -9,11 +9,21 @@ import { MaterialRepository } from 'modules/materials/material.repository';
 import { Material } from 'modules/materials/material.entity';
 import { readdir } from 'fs/promises';
 import * as config from 'config';
+import { Supplier } from 'modules/suppliers/supplier.entity';
+import { SupplierRepository } from 'modules/suppliers/supplier.repository';
+import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
+import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
+import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
+import { AdminRegion } from '../../../src/modules/admin-regions/admin-region.entity';
 
 describe('XLSX Upload Feature Tests (e2e)', () => {
   let app: INestApplication;
   let businessUnitRepository: BusinessUnitRepository;
   let materialRepository: MaterialRepository;
+  let supplierRepository: SupplierRepository;
+  let adminRegionRepository: AdminRegionRepository;
+  let sourcingLocationRepository: SourcingLocationRepository;
+  let sourcingRecordRepository: SourcingRecordRepository;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -25,6 +35,18 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
     );
     materialRepository = moduleFixture.get<MaterialRepository>(
       MaterialRepository,
+    );
+    supplierRepository = moduleFixture.get<SupplierRepository>(
+      SupplierRepository,
+    );
+    adminRegionRepository = moduleFixture.get<AdminRegionRepository>(
+      AdminRegionRepository,
+    );
+    sourcingLocationRepository = moduleFixture.get<SourcingLocationRepository>(
+      SourcingLocationRepository,
+    );
+    sourcingRecordRepository = moduleFixture.get<SourcingRecordRepository>(
+      SourcingRecordRepository,
     );
 
     app = moduleFixture.createNestApplication();
@@ -41,6 +63,10 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
   afterEach(async () => {
     await materialRepository.delete({});
     await businessUnitRepository.delete({});
+    await adminRegionRepository.delete({});
+    await supplierRepository.delete({});
+    await sourcingLocationRepository.delete({});
+    await sourcingRecordRepository.delete({});
   });
 
   afterAll(async () => {
@@ -89,7 +115,7 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
   test('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (happy case)', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/sourcing-records/import/xlsx')
-      .attach('file', __dirname + '/simple.xlsx')
+      .attach('file', __dirname + '/base-dataset.xlsx')
       .expect(HttpStatus.CREATED);
 
     const businessUnits: BusinessUnit[] = await businessUnitRepository.find();
@@ -101,5 +127,15 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
     expect(materials).toHaveLength(305);
     const materialsRoots: Material[] = await materialRepository.findRoots();
     expect(materialsRoots).toHaveLength(30);
+
+    const suppliers: Supplier[] = await supplierRepository.find();
+    expect(suppliers).toHaveLength(4);
+    const suppliersRoots: Supplier[] = await supplierRepository.findRoots();
+    expect(suppliersRoots).toHaveLength(3);
+
+    const adminRegions: AdminRegion[] = await adminRegionRepository.find();
+    expect(adminRegions).toHaveLength(238);
+    const adminRegionsRoots: AdminRegion[] = await adminRegionRepository.findRoots();
+    expect(adminRegionsRoots).toHaveLength(238);
   });
 });

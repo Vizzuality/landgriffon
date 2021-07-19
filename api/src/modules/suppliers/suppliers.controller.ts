@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -14,6 +15,7 @@ import {
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -28,11 +30,17 @@ import {
 import { Supplier, supplierResource } from 'modules/suppliers/supplier.entity';
 import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
 import { UpdateSupplierDto } from 'modules/suppliers/dto/update.supplier.dto';
+import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
+import { SupplierRepository } from 'modules/suppliers/supplier.repository';
+import { ParseOptionalIntPipe } from '../../pipes/parse-optional-int.pipe';
 
 @Controller(`/api/v1/suppliers`)
 @ApiTags(supplierResource.className)
 export class SuppliersController {
-  constructor(public readonly suppliersService: SuppliersService) {}
+  constructor(
+    public readonly suppliersService: SuppliersService,
+    public readonly suppliersRepository: SupplierRepository,
+  ) {}
 
   @ApiOperation({
     description: 'Find all suppliers',
@@ -60,6 +68,31 @@ export class SuppliersController {
       fetchSpecification,
     );
     return this.suppliersService.serialize(results.data, results.metadata);
+  }
+
+  @ApiOperation({
+    description:
+      'Find all suppliers and return them in a tree format. Data in the "children" will recursively extend for the full depth of the tree',
+  })
+  @ApiOkTreeResponse({
+    treeNodeType: Supplier,
+  })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @Get('/trees')
+  @ApiQuery({
+    name: 'depth',
+    required: false,
+    description:
+      'A non-negative integer value. If specified, limits the depth of the tree crawling. 0 will return only the tree roots',
+  })
+  async getTrees(
+    @Query('depth', ParseOptionalIntPipe) depth?: number,
+  ): Promise<Supplier> {
+    const results = await this.suppliersRepository.findTreesWithOptions({
+      depth,
+    });
+    return this.suppliersService.serialize(results);
   }
 
   @ApiOperation({ description: 'Find supplier by id' })

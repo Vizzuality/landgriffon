@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
@@ -30,12 +30,39 @@ export class SuppliersService extends AppBaseService<
 
   get serializerConfig(): JSONAPISerializerConfig<Supplier> {
     return {
-      attributes: ['name', 'description', 'status', 'metadata'],
+      attributes: [
+        'name',
+        'description',
+        'status',
+        'metadata',
+        'parentId',
+        'children',
+        'createdAt',
+        'updatedAt',
+      ],
       keyForAttribute: 'camelCase',
     };
   }
 
-  async getSupplierById(id: number): Promise<Supplier> {
+  async create(createModel: CreateSupplierDto): Promise<Supplier> {
+    if (createModel.parentId) {
+      try {
+        const parentSupplier: Supplier = await this.getSupplierById(
+          createModel.parentId,
+        );
+        createModel.parent = parentSupplier;
+      } catch (error) {
+        throw new HttpException(
+          `Parent supplier with ID "${createModel.parentId}" not found`,
+          400,
+        );
+      }
+    }
+
+    return super.create(createModel);
+  }
+
+  async getSupplierById(id: string): Promise<Supplier> {
     const found = await this.repository.findOne(id);
 
     if (!found) {

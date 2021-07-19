@@ -83,7 +83,7 @@ export class SourcingLocationsController {
   @ApiOperation({ description: 'Create a sourcing location' })
   @ApiOkResponse({ type: SourcingLocation })
   @Post()
-  @UsePipes(ValidationPipe)
+  @UsePipes(new ValidationPipe())
   async create(
     @Body() dto: CreateSourcingLocationDto,
   ): Promise<SourcingLocation> {

@@ -70,6 +70,8 @@ describe('Materials - Create', () => {
       .send()
       .expect(HttpStatus.BAD_REQUEST);
 
+    console.log('RESPONSEEEE', response.body);
+
     expect(response).toHaveErrorMessage(
       HttpStatus.BAD_REQUEST,
       'Bad Request Exception',
@@ -78,7 +80,7 @@ describe('Materials - Create', () => {
         'layerId should not be empty',
         'name must be a string',
         'name must be longer than or equal to 2 characters',
-        'name must be shorter than or equal to 40 characters',
+        'name must be shorter than or equal to 300 characters',
         'name should not be empty',
       ],
     );

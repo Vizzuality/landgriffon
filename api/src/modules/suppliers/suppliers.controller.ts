@@ -32,7 +32,7 @@ import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
 import { UpdateSupplierDto } from 'modules/suppliers/dto/update.supplier.dto';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
-import { ParseOptionalIntPipe } from '../../pipes/parse-optional-int.pipe';
+import { ParseOptionalIntPipe } from 'pipes/parse-optional-int.pipe';
 
 @Controller(`/api/v1/suppliers`)
 @ApiTags(supplierResource.className)

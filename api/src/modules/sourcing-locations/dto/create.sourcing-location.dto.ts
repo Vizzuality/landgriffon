@@ -16,8 +16,11 @@ import {
 export class CreateSourcingLocationDto {
   @IsString()
   @IsOptional()
-  @ApiPropertyOptional()
-  title?: string;
+  @MinLength(2)
+  @MaxLength(40)
+  @ApiProperty()
+  @IsNotEmpty()
+  title!: string;
 
   @IsString()
   @IsOptional()
@@ -28,11 +31,15 @@ export class CreateSourcingLocationDto {
 
   @IsString()
   @IsOptional()
+  @MinLength(2)
+  @MaxLength(40)
   @ApiPropertyOptional()
   t1SupplierId?: string;
 
   @IsString()
   @IsOptional()
+  @MinLength(2)
+  @MaxLength(40)
   @ApiPropertyOptional()
   producerId?: string;
 
@@ -42,13 +49,19 @@ export class CreateSourcingLocationDto {
   @ApiPropertyOptional()
   locationType?: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
+  /**
+   * @debt: MinLength validation giving troubles with current data-set even
+   * this property is not mandatory. Check and fix required
+   */
+  //@MinLength(3)
   @ApiPropertyOptional()
   locationAddressInput?: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
+  @MinLength(2)
   @ApiPropertyOptional()
   locationCountryInput?: string;
 

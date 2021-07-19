@@ -39,6 +39,11 @@ export class CreateSupplierDto {
   @IsOptional()
   mpath?: string;
 
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional()
+  parentId?: string;
+
   @IsOptional()
   parent?: Supplier;
 }

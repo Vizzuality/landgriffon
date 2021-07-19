@@ -1,9 +1,9 @@
 import {
-  BaseEntity,
   Column,
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
+  Tree,
   TreeChildren,
   TreeParent,
 } from 'typeorm';
@@ -12,6 +12,7 @@ import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.e
 
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 
 export enum SUPPLIER_STATUS {
   ACTIVE = 'active',
@@ -30,9 +31,10 @@ export const supplierResource: BaseServiceResource = {
 };
 
 @Entity()
-export class Supplier extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
+@Tree('materialized-path')
+export class Supplier extends TimestampedBaseEntity {
   @ApiProperty()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @TreeChildren()
@@ -40,6 +42,10 @@ export class Supplier extends BaseEntity {
 
   @TreeParent()
   parent: Supplier;
+
+  @Column({ nullable: true })
+  @ApiPropertyOptional()
+  parentId?: string;
 
   @ApiProperty()
   @Column({ nullable: false })

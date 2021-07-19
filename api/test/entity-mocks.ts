@@ -4,6 +4,7 @@ import { Layer } from 'modules/layers/layer.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { ScenarioIntervention } from '../src/modules/scenario-interventions/scenario-intervention.entity';
 import { Material } from '../src/modules/materials/material.entity';
+import { Supplier } from '../src/modules/suppliers/supplier.entity';
 
 async function createIndicatorCoefficient(
   additionalData: Partial<IndicatorCoefficient> = {},
@@ -49,6 +50,20 @@ async function createLayer(
   const layer = Layer.merge(new Layer(), additionalData);
 
   return layer.save();
+}
+
+async function createSupplier(
+  additionalData: Partial<Supplier> = {},
+): Promise<Supplier> {
+  const supplier = Supplier.merge(
+    new Supplier(),
+    {
+      name: 'Material name',
+    },
+    additionalData,
+  );
+
+  return supplier.save();
 }
 
 async function createMaterial(
@@ -103,6 +118,7 @@ export {
   createIndicatorSource,
   createLayer,
   createMaterial,
+  createSupplier,
   createScenario,
   createScenarioIntervention,
 };

@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -86,7 +87,9 @@ export class MaterialsController {
     description:
       'A non-negative integer value. If specified, limits the depth of the tree crawling. 0 will return only the tree roots',
   })
-  async getTrees(@Query('depth') depth?: number): Promise<Material> {
+  async getTrees(
+    @Query('depth', ParseIntPipe) depth?: number,
+  ): Promise<Material> {
     const results = await this.materialsRepository.findTreesWithOptions({
       depth,
     });

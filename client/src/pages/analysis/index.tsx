@@ -49,7 +49,7 @@ const AnalysisPage: React.FC = () => {
           {/* Analysis content */}
           <section className="relative hidden lg:block lg:flex-shrink-0 lg:order-first">
             <Transition
-              className="h-full relative flex flex-col border-r border-gray-200 bg-white p-6 w-96 overflow-x-hidden"
+              className="h-full max-h-screen relative flex flex-col border-r border-gray-200 bg-white p-6 w-96 overflow-hidden"
               show={!isSidebarCollapsed}
               enter="transition-opacity duration-75"
               enterFrom="opacity-0"

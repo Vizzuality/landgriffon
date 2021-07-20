@@ -31,7 +31,7 @@ const onResponseError = (error) => {
 
 scenariosService.interceptors.response.use(onResponseSuccess, onResponseError);
 
-export const getScenarios = () => scenariosService.get('/').then(({ data }) => data);
+export const getScenarios = (payload) => scenariosService.get(`/?page[size]=10&page[number]=${payload.pageNumber}`).then(({ data }) => data);
 
 export const createScenario = (payload: ScenarioPayload) => scenariosService.post('/', payload).then(({ data }) => data);
 

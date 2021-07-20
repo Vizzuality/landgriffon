@@ -1,6 +1,9 @@
-import { useQuery } from 'react-query';
+import { useState } from 'react';
+import { useQuery, useInfiniteQuery } from 'react-query';
 import { getScenarios } from 'services/scenarios';
 import Component from './component';
+import flatten from 'lodash/flatten';
+// import concat from 'lodash/flatten';
 import type { Scenario } from './types';
 
 /**
@@ -12,17 +15,22 @@ const ACTUAL_DATA: Scenario = {
 };
 
 const ScenariosContainer: React.FC = () => {
-  const response = useQuery('scenariosList', getScenarios, { retry: false });
-  const result =
-    response.isSuccess && response.data
-      ? {
-          ...response,
-          // injecting actual data
-          data: [ACTUAL_DATA, ...response.data],
-        }
-      : response;
+  const [pageNumber, setPageNumber] = useState(1);
 
-  return <Component scenarios={result} />;
+  const query = useInfiniteQuery(['scenariosList', pageNumber], () => getScenarios({ pageNumber }), {
+    retry: false,
+    keepPreviousData: true,
+    select: (data) => flatten(data.pages),
+
+    // getNextPageParam: (data) => {
+    //   if (data.length === 10) {
+    //     setPageNumber(pageNumber+1)
+    //     return pageNumber+1
+    //   }
+    // }
+  });
+
+  return <Component scenarios={query} />;
 };
 
 export default ScenariosContainer;

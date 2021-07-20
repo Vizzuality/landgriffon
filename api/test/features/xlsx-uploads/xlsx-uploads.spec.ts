@@ -13,8 +13,11 @@ import { Supplier } from 'modules/suppliers/supplier.entity';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
+import { SourcingRecordGroupRepository } from 'modules/sourcing-record-groups/sourcing-record-group.repository';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
 import { AdminRegion } from '../../../src/modules/admin-regions/admin-region.entity';
+import { SourcingLocation } from '../../../src/modules/sourcing-locations/sourcing-location.entity';
+import { SourcingRecord } from '../../../src/modules/sourcing-records/sourcing-record.entity';
 
 describe('XLSX Upload Feature Tests (e2e)', () => {
   let app: INestApplication;
@@ -24,6 +27,7 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
   let adminRegionRepository: AdminRegionRepository;
   let sourcingLocationRepository: SourcingLocationRepository;
   let sourcingRecordRepository: SourcingRecordRepository;
+  let sourcingRecordGroupRepository: SourcingRecordGroupRepository;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -48,6 +52,9 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
     sourcingRecordRepository = moduleFixture.get<SourcingRecordRepository>(
       SourcingRecordRepository,
     );
+    sourcingRecordGroupRepository = moduleFixture.get<SourcingRecordGroupRepository>(
+      SourcingRecordGroupRepository,
+    );
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(
@@ -67,6 +74,8 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
     await supplierRepository.delete({});
     await sourcingLocationRepository.delete({});
     await sourcingRecordRepository.delete({});
+    await sourcingRecordGroupRepository.delete({});
+    jest.clearAllTimers();
   });
 
   afterAll(async () => {
@@ -75,7 +84,7 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
 
   test('When a file is not sent to the API then it should return a 400 code and the storage folder should be empty', async () => {
     const response = await request(app.getHttpServer())
-      .post('/api/v1/sourcing-records/import/xlsx')
+      .post('/api/v1/import/xlsx')
       .expect(HttpStatus.BAD_REQUEST);
     expect(response.body.errors[0].title).toEqual(
       'A .XLSX file must be provided as payload',
@@ -84,7 +93,7 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
 
   test('When an empty file is sent to the API then it should return a 400 code and a error message', async () => {
     const response = await request(app.getHttpServer())
-      .post('/api/v1/sourcing-records/import/xlsx')
+      .post('/api/v1/import/xlsx')
       .attach('file', __dirname + '/empty.xlsx')
       .expect(HttpStatus.BAD_REQUEST);
     expect(response.body.errors[0].title).toEqual(
@@ -94,7 +103,7 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
 
   test('When a file is sent to the API and some data does not comply with data validation rules, it should return a 400 code and a error message', async () => {
     const response = await request(app.getHttpServer())
-      .post('/api/v1/sourcing-records/import/xlsx')
+      .post('/api/v1/import/xlsx')
       .attach('file', __dirname + '/business-unit-name-length.xlsx')
       .expect(HttpStatus.BAD_REQUEST);
     expect(response.body.errors[0].title).toEqual(
@@ -105,7 +114,7 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
 
   test('When a file is sent to the API and its size is allowed then it should return a 201 code and the storage folder should be empty', async () => {
     await request(app.getHttpServer())
-      .post('/api/v1/sourcing-records/import/xlsx')
+      .post('/api/v1/import/xlsx')
       .attach('file', __dirname + '/base-dataset.xlsx')
       .expect(HttpStatus.CREATED);
     const folderContent = await readdir(config.get('fileUploads.storagePath'));
@@ -114,7 +123,7 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
 
   test('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (happy case)', async () => {
     const response = await request(app.getHttpServer())
-      .post('/api/v1/sourcing-records/import/xlsx')
+      .post('/api/v1/import/xlsx')
       .attach('file', __dirname + '/base-dataset.xlsx')
       .expect(HttpStatus.CREATED);
 
@@ -137,5 +146,22 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
     expect(adminRegions).toHaveLength(238);
     const adminRegionsRoots: AdminRegion[] = await adminRegionRepository.findRoots();
     expect(adminRegionsRoots).toHaveLength(238);
+
+    const sourcingRecords: SourcingRecord[] = await sourcingRecordRepository.find();
+    expect(sourcingRecords).toHaveLength(825);
+  });
+
+  test('When a file is sent 2 times to the API, then imported data length should be equal, and database has been cleaned in between', async () => {
+    jest.setTimeout(10000);
+    await request(app.getHttpServer())
+      .post('/api/v1/import/xlsx')
+      .attach('file', __dirname + '/base-dataset.xlsx');
+
+    await request(app.getHttpServer())
+      .post('/api/v1/import/xlsx')
+      .attach('file', __dirname + '/base-dataset.xlsx');
+
+    const sourcingLocations: SourcingLocation[] = await sourcingLocationRepository.find();
+    expect(sourcingLocations.length).toEqual(825);
   });
 });

@@ -79,7 +79,12 @@ export class MaterialsService extends AppBaseService<
 
     return found;
   }
+
   async saveMany(entityArray: Material[]): Promise<void> {
     await this.materialRepository.save(entityArray);
+  }
+
+  async clearTable(): Promise<void> {
+    await this.materialRepository.delete({});
   }
 }

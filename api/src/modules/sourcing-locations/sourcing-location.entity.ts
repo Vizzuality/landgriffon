@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { User } from 'modules/users/user.entity';
@@ -8,6 +14,7 @@ import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { SourcingRecordGroup } from 'modules/sourcing-record-groups/sourcing-record-group.entity';
 
 export enum LOCATION_TYPES {
   PRODUCTION_UNIT = 'Production unit',
@@ -106,6 +113,10 @@ export class SourcingLocation extends TimestampedBaseEntity {
   })
   adminRegion: AdminRegion;
 
+  @Column({ nullable: true })
+  @ApiPropertyOptional()
+  adminRegionId?: string;
+
   @ManyToOne(() => BusinessUnit, (bu: BusinessUnit) => bu.sourcingLocations, {
     eager: false,
   })
@@ -128,4 +139,16 @@ export class SourcingLocation extends TimestampedBaseEntity {
     },
   )
   producer: Supplier;
+
+  @ManyToOne(
+    () => SourcingRecordGroup,
+    (sourcingRecordGroup: SourcingRecordGroup) => sourcingRecordGroup.id,
+    {
+      eager: false,
+      onDelete: 'CASCADE',
+    },
+  )
+  @JoinColumn()
+  @ApiPropertyOptional()
+  sourcingRecordGroupId: string;
 }

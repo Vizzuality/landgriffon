@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import * as XLSX from 'xlsx';
 import { WorkBook, WorkSheet } from 'xlsx';
 import { difference } from 'lodash';
-import { DataValidationService } from 'modules/data-validation/data-validation.service';
 // eslint-disable-next-line no-restricted-imports
 import {
   DtoProcessorService,
   DTOTransformedData,
 } from 'modules/data-validation/dto-processor.service';
+import { DataValidationService } from 'modules/data-validation/data-validation.service';
 
 export interface SourcingRecordsSheets {
   materials: Record<string, any>[];

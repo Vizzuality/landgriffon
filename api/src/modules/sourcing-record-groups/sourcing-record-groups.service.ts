@@ -56,4 +56,8 @@ export class SourcingRecordGroupsService extends AppBaseService<
 
     return found;
   }
+
+  async clearTable(): Promise<void> {
+    await this.sourcingRecordGroupRepository.delete({});
+  }
 }

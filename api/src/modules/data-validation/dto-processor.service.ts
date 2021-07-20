@@ -104,7 +104,6 @@ export class DtoProcessorService {
     });
     return businessUnitDtos;
   }
-
   /**
    * Creates an array of CreateSupplierDto objects from the JSON data processed from the XLSX file
    *
@@ -147,9 +146,9 @@ export class DtoProcessorService {
     importData: Record<string, any>[],
   ): Promise<CreateSourcingRecordDto[]> {
     const sourcingRecordDtos: CreateSourcingRecordDto[] = [];
-    /**
-     * @TODO: actually create the DTOs
-     */
+    importData.forEach((importRow: Record<string, any>) => {
+      sourcingRecordDtos.push(this.createSourcingRecordDTOFromData(importRow));
+    });
     return sourcingRecordDtos;
   }
 
@@ -229,7 +228,16 @@ export class DtoProcessorService {
     )
       ? undefined
       : parseFloat(sourcingLocationData.location_longitude_input);
-
+    sourcingLocationDto.metadata = sourcingLocationData.metadata;
     return sourcingLocationDto;
+  }
+
+  private createSourcingRecordDTOFromData(
+    sourcingRecordData: Record<string, any>,
+  ): CreateSourcingRecordDto {
+    const sourcingRecordDto = new CreateSourcingRecordDto();
+    sourcingRecordDto.tonnage = sourcingRecordData.tonnage;
+    sourcingRecordDto.year = sourcingRecordData.year;
+    return sourcingRecordDto;
   }
 }

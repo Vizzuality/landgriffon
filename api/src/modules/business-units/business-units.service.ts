@@ -59,4 +59,8 @@ export class BusinessUnitsService extends AppBaseService<
   ): Promise<BusinessUnit[]> {
     return this.businessUnitRepository.saveListToTree(importData, 'mpath');
   }
+
+  async clearTable(): Promise<void> {
+    await this.businessUnitRepository.delete({});
+  }
 }

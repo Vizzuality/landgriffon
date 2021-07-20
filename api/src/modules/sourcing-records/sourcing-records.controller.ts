@@ -68,6 +68,30 @@ export class SourcingRecordsController {
     );
   }
 
+  @ApiOperation({
+    description: 'Find years associated with existing sourcing records',
+  })
+  @ApiOkResponse({
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          description: 'List of years',
+          type: 'array',
+          items: {
+            type: 'integer',
+            example: [2021, 2020, 2018],
+          },
+        },
+      },
+    },
+  })
+  @Get('/years')
+  async getYears(): Promise<{ data: number[] }> {
+    const years: number[] = await this.sourcingRecordsService.getYears();
+    return { data: years };
+  }
+
   @ApiOperation({ description: 'Find sourcing record by id' })
   @ApiOkResponse({ type: SourcingRecord })
   @JSONAPISingleEntityQueryParams()

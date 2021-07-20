@@ -1,16 +1,14 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateSourcingRecordDto {
   @IsNumber()
-  @IsOptional()
-  @ApiPropertyOptional()
-  tonnage?: string;
+  @ApiProperty()
+  tonnage!: number;
 
   @IsNumber()
-  @IsOptional()
-  @ApiPropertyOptional()
-  year?: string;
+  @ApiProperty()
+  year!: number;
 
   @IsString()
   @IsOptional()

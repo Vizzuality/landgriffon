@@ -33,6 +33,7 @@ import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { UpdateMaterialDto } from 'modules/materials/dto/update.material.dto';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
+import { ParseOptionalIntPipe } from 'pipes/parse-optional-int.pipe';
 
 @Controller(`/api/v1/materials`)
 @ApiTags(materialResource.className)
@@ -88,7 +89,7 @@ export class MaterialsController {
       'A non-negative integer value. If specified, limits the depth of the tree crawling. 0 will return only the tree roots',
   })
   async getTrees(
-    @Query('depth', ParseIntPipe) depth?: number,
+    @Query('depth', ParseOptionalIntPipe) depth?: number,
   ): Promise<Material> {
     const results = await this.materialsRepository.findTreesWithOptions({
       depth,

@@ -20,7 +20,7 @@ export class CreateSourcingLocationDto {
   @MaxLength(40)
   @ApiProperty()
   @IsNotEmpty()
-  title!: string;
+  title?: string;
 
   @IsString()
   @IsOptional()
@@ -80,4 +80,13 @@ export class CreateSourcingLocationDto {
   @IsOptional()
   @ApiPropertyOptional()
   locationLongitude?: number;
+
+  @IsOptional()
+  @ApiPropertyOptional()
+  metadata?: JSON;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional()
+  sourcingRecordGroupId?: number;
 }

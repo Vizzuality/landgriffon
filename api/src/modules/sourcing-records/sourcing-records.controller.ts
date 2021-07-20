@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -7,8 +6,6 @@ import {
   Param,
   Patch,
   Post,
-  UploadedFile,
-  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -34,10 +31,6 @@ import {
 } from 'modules/sourcing-records/sourcing-record.entity';
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sourcing-record.dto';
-import { ApiConsumesXLSX } from 'decorators/xlsx-upload.decorator';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { fileUploadInterceptor } from 'modules/files/file-upload.interceptor';
-import { XlsxPayloadInterceptor } from 'modules/files/xlsx-payload.interceptor';
 
 @Controller(`/api/v1/sourcing-records`)
 @ApiTags(sourcingRecordResource.className)
@@ -112,24 +105,5 @@ export class SourcingRecordsController {
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     return await this.sourcingRecordsService.remove(id);
-  }
-
-  @ApiConsumesXLSX()
-  @UseInterceptors(
-    FileInterceptor(
-      'file',
-      fileUploadInterceptor({ allowedFileExtension: '.xlsx' }),
-    ),
-    XlsxPayloadInterceptor,
-  )
-  @Post('import/xlsx')
-  async importXLSX(
-    @UploadedFile() xlsxFile: Express.Multer.File,
-  ): Promise<any> {
-    try {
-      return await this.sourcingRecordsService.loadXLSXDataSet(xlsxFile.path);
-    } catch (err) {
-      throw new BadRequestException(err);
-    }
   }
 }

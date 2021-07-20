@@ -56,4 +56,12 @@ export class SourcingLocationsService extends AppBaseService<
 
     return found;
   }
+
+  async clearTable(): Promise<void> {
+    await this.sourcingLocationRepository.delete({});
+  }
+
+  async save(entityArray: any[]): Promise<void> {
+    await this.sourcingLocationRepository.save(entityArray);
+  }
 }

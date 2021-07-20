@@ -37,7 +37,7 @@ export class SourcingRecord extends TimestampedBaseEntity {
 
   @ManyToOne(() => SourcingLocation, (srcLoc: SourcingLocation) => srcLoc.id)
   @JoinColumn()
-  @ApiProperty()
+  @ApiPropertyOptional()
   sourcingLocationsId: string;
 
   @Column({ type: 'jsonb', nullable: true })

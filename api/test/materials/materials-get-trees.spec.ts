@@ -8,6 +8,7 @@ import { MaterialRepository } from 'modules/materials/material.repository';
 import { createMaterial } from '../entity-mocks';
 import { expectedJSONAPIAttributes } from './config';
 
+//TODO: Allow these tests when feature fix is merged
 describe('Materials - Get trees', () => {
   let app: INestApplication;
   let materialRepository: MaterialRepository;

@@ -79,4 +79,8 @@ export class SuppliersService extends AppBaseService<
   async createTree(importData: CreateSupplierDto[]): Promise<Supplier[]> {
     return this.supplierRepository.saveListToTree(importData, 'mpath');
   }
+
+  async clearTable(): Promise<void> {
+    await this.supplierRepository.delete({});
+  }
 }

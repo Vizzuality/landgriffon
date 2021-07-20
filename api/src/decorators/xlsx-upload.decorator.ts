@@ -2,7 +2,7 @@ import { applyDecorators } from '@nestjs/common';
 import {
   ApiBody,
   ApiConsumes,
-  ApiOkResponse,
+  ApiCreatedResponse,
   ApiOperation,
 } from '@nestjs/swagger';
 
@@ -23,6 +23,6 @@ export function ApiConsumesXLSX(): any {
         },
       },
     }),
-    ApiOkResponse(),
+    ApiCreatedResponse(),
   );
 }

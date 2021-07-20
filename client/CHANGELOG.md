@@ -7,6 +7,8 @@ and this project adheres to [Calendar Versioning](https://calver.org/).
 
 ## 2021.07.14 [Unreleased]
 ### Added
+* Add scroll to scenarios list [LANDGRIF-155](https://vizzuality.atlassian.net/browse/LANDGRIF-155)
+* Create a new scenario [LANDGRIF-154](https://vizzuality.atlassian.net/browse/LANDGRIF-154)
 * Show visualization mode in the URL (map, table or chart) [LANDGRIF-119](https://vizzuality.atlassian.net/browse/LANDGRIF-119)
 * Show selected scenario in the URL [LANDGRIF-159](https://vizzuality.atlassian.net/browse/LANDGRIF-159)
 * Actual data as first element in the scenarios list [LANDGRIF-171](https://vizzuality.atlassian.net/browse/LANDGRIF-171)

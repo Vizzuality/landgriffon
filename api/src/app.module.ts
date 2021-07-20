@@ -24,7 +24,6 @@ import { IndicatorSourcesModule } from 'modules/indicator-sources/indicator-sour
 import { ScenariosModule } from 'modules/scenarios/scenarios.module';
 import { ScenarioInterventionsModule } from 'modules/scenario-interventions/scenario-interventions.module';
 import { ImportDataModule } from 'modules/import-data/import-data.module';
-import { FileModule } from 'modules/files/file.module';
 
 @Module({
   imports: [
@@ -49,7 +48,6 @@ import { FileModule } from 'modules/files/file.module';
     UnitsModule,
     UsersModule,
     ImportDataModule,
-    FileModule,
   ],
   providers: [
     {

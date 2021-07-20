@@ -3,14 +3,14 @@ import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
 import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
 import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-region.dto';
-import { SourcingRecordsSheets } from 'modules/files/xlsx-parser.service';
-// eslint-disable-next-line no-restricted-imports
-import { createLayer } from '../../../test/entity-mocks';
+import { SourcingRecordsSheets } from 'modules/import-data/sourcing-records/import.service';
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { isEmpty } from 'lodash';
+import { Layer } from 'modules/layers/layer.entity';
+import { WorkSheet } from 'xlsx';
 
-export interface DTOTransformedData {
+export interface SourcingRecordsDtos {
   materials: CreateMaterialDto[];
   adminRegions: CreateAdminRegionDto[];
   businessUnits: CreateBusinessUnitDto[];
@@ -18,6 +18,18 @@ export interface DTOTransformedData {
   sourcingRecords: CreateSourcingRecordDto[];
   sourcingLocations: CreateSourcingLocationDto[];
 }
+
+const NON_META_PROPERTIES: Array<string> = [
+  'material.path',
+  'business_unit.path',
+  't1_supplier.name',
+  'producer.name',
+  'location_type',
+  'location_country_input',
+  'location_address_input',
+  'location_latitude_input',
+  'location_longitude_input',
+];
 
 /**
  *
@@ -28,12 +40,13 @@ export interface DTOTransformedData {
  */
 
 @Injectable()
-export class DtoProcessorService {
-  layerId: string;
+export class SourcingRecordsDtoProcessorService {
+  private layerId: string;
 
   async createDTOsFromSourcingRecordsSheets(
     importData: SourcingRecordsSheets,
-  ): Promise<DTOTransformedData> {
+    sourcingRecordGroupId: string,
+  ): Promise<SourcingRecordsDtos> {
     const materials: CreateMaterialDto[] = await this.createMaterialDtos(
       importData.materials,
     );
@@ -46,11 +59,17 @@ export class DtoProcessorService {
     const adminRegions: CreateAdminRegionDto[] = await this.createAdminRegionDtos(
       importData.countries,
     );
-    const sourcingRecords: CreateSourcingRecordDto[] = await this.createSourcingRecordDtos(
+
+    const processedSourcingData: Record<string, any>[] = this.cleanCustomData(
       importData.sourcingData,
     );
+
+    const sourcingRecords: CreateSourcingRecordDto[] = await this.createSourcingRecordDtos(
+      processedSourcingData,
+    );
     const sourcingLocations: CreateSourcingLocationDto[] = await this.createSourcingLocationDtos(
-      importData.sourcingData,
+      processedSourcingData,
+      sourcingRecordGroupId,
     );
 
     return {
@@ -61,6 +80,78 @@ export class DtoProcessorService {
       sourcingLocations,
       sourcingRecords,
     };
+  }
+
+  private isMeta(field: string): boolean {
+    return !NON_META_PROPERTIES.includes(field);
+  }
+
+  private getYear(field: string): number | null {
+    const regexMatch: RegExpMatchArray | null = field.match(/\d{4}_/gm);
+
+    return regexMatch ? parseInt(regexMatch[0]) : null;
+  }
+
+  private cleanCustomData(customData: WorkSheet[]): Record<string, any>[] {
+    const sourcingRecordData: Record<string, any>[] = [];
+    /**
+     * Clean all hashmaps that are empty therefore useless
+     */
+    const nonEmptyData = customData.filter(
+      (row: WorkSheet) => row['material.path'] !== '',
+    );
+    /**
+     * Separate base properties common for each sourcing-record row
+     * Separate metadata properties to metadata object common for each sourcing-record row
+     * Check if current key contains a year ('2018_tonnage') if so, get the year and its value
+     */
+    for (const eachRecordOfCustomData of nonEmptyData) {
+      const years: Record<string, any> = {};
+      const baseProps: Record<string, any> = {};
+      const metadata: Record<string, any> = {};
+      for (const field in eachRecordOfCustomData) {
+        if (
+          eachRecordOfCustomData.hasOwnProperty(field) &&
+          this.getYear(field)
+        ) {
+          years[field] = eachRecordOfCustomData[field];
+        } else if (this.isMeta(field)) {
+          metadata[field] = eachRecordOfCustomData[field];
+        } else {
+          baseProps[field] = eachRecordOfCustomData[field];
+        }
+      }
+      /**
+       * For each year, spread the base properties and attach metadata
+       * to build each sourcing-record row
+       */
+      for (const year in years) {
+        if (years.hasOwnProperty(year)) {
+          const cleanRow: any = {
+            ...baseProps,
+            metadata,
+          };
+          cleanRow['year'] = this.getYear(year);
+          cleanRow['tonnage'] = years[year];
+          sourcingRecordData.push(cleanRow);
+        }
+      }
+    }
+    return sourcingRecordData;
+  }
+
+  /**
+   * @deprecated Temporary hack, to be removed soon
+   *
+   * @param additionalData
+   * @private
+   */
+  private async createLayer(
+    additionalData: Partial<Layer> = {},
+  ): Promise<Layer> {
+    const layer = Layer.merge(new Layer(), additionalData);
+
+    return layer.save();
   }
 
   /**
@@ -76,9 +167,9 @@ export class DtoProcessorService {
      * @TODO
      * @HARDCORE_COWBOY_STUFF_START
      * Remove this as soon as Layer data is provided
-     * in the base dataset
+     * in the base dataset. Also remove the implementation
      */
-    this.layerId = (await createLayer()).id;
+    this.layerId = (await this.createLayer()).id;
     /**
      * @HARDCORE_COWBOY_STUFF_END
      */
@@ -104,6 +195,7 @@ export class DtoProcessorService {
     });
     return businessUnitDtos;
   }
+
   /**
    * Creates an array of CreateSupplierDto objects from the JSON data processed from the XLSX file
    *
@@ -160,11 +252,15 @@ export class DtoProcessorService {
    */
   private async createSourcingLocationDtos(
     importData: Record<string, any>[],
+    sourcingRecordGroupId: string,
   ): Promise<CreateSourcingLocationDto[]> {
     const sourcingLocationDtos: CreateSourcingLocationDto[] = [];
     importData.forEach((importRow: Record<string, any>) => {
       sourcingLocationDtos.push(
-        this.createSourcingLocationDTOFromData(importRow),
+        this.createSourcingLocationDTOFromData(
+          importRow,
+          sourcingRecordGroupId,
+        ),
       );
     });
     return sourcingLocationDtos;
@@ -211,6 +307,7 @@ export class DtoProcessorService {
 
   private createSourcingLocationDTOFromData(
     sourcingLocationData: Record<string, any>,
+    sourcingRecordGroupId: string,
   ): CreateSourcingLocationDto {
     const sourcingLocationDto = new CreateSourcingLocationDto();
 
@@ -229,6 +326,7 @@ export class DtoProcessorService {
       ? undefined
       : parseFloat(sourcingLocationData.location_longitude_input);
     sourcingLocationDto.metadata = sourcingLocationData.metadata;
+    sourcingLocationDto.sourcingRecordGroupId = sourcingRecordGroupId;
     return sourcingLocationDto;
   }
 

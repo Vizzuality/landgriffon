@@ -27,13 +27,13 @@ export class SourcingRecord extends TimestampedBaseEntity {
   @ApiProperty()
   id!: string;
 
-  @Column({ type: 'int', nullable: true })
-  @ApiPropertyOptional()
-  tonnage?: number;
+  @Column({ type: 'decimal' })
+  @ApiProperty()
+  tonnage!: number;
 
-  @Column({ type: 'int', nullable: true })
-  @ApiPropertyOptional()
-  year?: number;
+  @Column({ type: 'int' })
+  @ApiProperty()
+  year!: number;
 
   @ManyToOne(() => SourcingLocation, (srcLoc: SourcingLocation) => srcLoc.id)
   @JoinColumn()

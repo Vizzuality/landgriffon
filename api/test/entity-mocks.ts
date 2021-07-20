@@ -5,6 +5,7 @@ import { Scenario } from 'modules/scenarios/scenario.entity';
 import { ScenarioIntervention } from '../src/modules/scenario-interventions/scenario-intervention.entity';
 import { Material } from '../src/modules/materials/material.entity';
 import { Supplier } from '../src/modules/suppliers/supplier.entity';
+import { SourcingRecord } from '../src/modules/sourcing-records/sourcing-record.entity';
 
 async function createIndicatorCoefficient(
   additionalData: Partial<IndicatorCoefficient> = {},
@@ -113,6 +114,21 @@ async function createScenarioIntervention(
   return scenarioIntervention.save();
 }
 
+async function createSourcingRecord(
+  additionalData: Partial<SourcingRecord> = {},
+): Promise<SourcingRecord> {
+  const sourcingRecord = SourcingRecord.merge(
+    new SourcingRecord(),
+    {
+      year: 2020,
+      tonnage: 1002.56,
+    },
+    additionalData,
+  );
+
+  return sourcingRecord.save();
+}
+
 export {
   createIndicatorCoefficient,
   createIndicatorSource,
@@ -121,4 +137,5 @@ export {
   createSupplier,
   createScenario,
   createScenarioIntervention,
+  createSourcingRecord,
 };

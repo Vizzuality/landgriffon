@@ -32,7 +32,7 @@ import { Material, materialResource } from 'modules/materials/material.entity';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { UpdateMaterialDto } from 'modules/materials/dto/update.material.dto';
 import { MaterialRepository } from 'modules/materials/material.repository';
-import { ApiOkTreeResponse } from 'decorators/api-response.decorator';
+import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
 
 @Controller(`/api/v1/materials`)
 @ApiTags(materialResource.className)

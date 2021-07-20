@@ -69,9 +69,6 @@ describe('Materials - Create', () => {
       .post('/api/v1/materials')
       .send()
       .expect(HttpStatus.BAD_REQUEST);
-
-    console.log('RESPONSEEEE', response.body);
-
     expect(response).toHaveErrorMessage(
       HttpStatus.BAD_REQUEST,
       'Bad Request Exception',

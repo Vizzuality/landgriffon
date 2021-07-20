@@ -64,7 +64,6 @@ describe('ScenariosModule (e2e)', () => {
       if (!createdScenario) {
         throw new Error('Error loading created Scenario');
       }
-      console.log('RESPONSE', response.body);
 
       expect(createdScenario.title).toEqual('test scenario');
 

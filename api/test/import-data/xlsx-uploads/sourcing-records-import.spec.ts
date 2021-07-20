@@ -15,11 +15,11 @@ import { AdminRegionRepository } from 'modules/admin-regions/admin-region.reposi
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { SourcingRecordGroupRepository } from 'modules/sourcing-record-groups/sourcing-record-group.repository';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
-import { AdminRegion } from '../../../src/modules/admin-regions/admin-region.entity';
-import { SourcingLocation } from '../../../src/modules/sourcing-locations/sourcing-location.entity';
-import { SourcingRecord } from '../../../src/modules/sourcing-records/sourcing-record.entity';
+import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 
-describe('XLSX Upload Feature Tests (e2e)', () => {
+describe('Sourcing Records import', () => {
   let app: INestApplication;
   let businessUnitRepository: BusinessUnitRepository;
   let materialRepository: MaterialRepository;
@@ -84,7 +84,7 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
 
   test('When a file is not sent to the API then it should return a 400 code and the storage folder should be empty', async () => {
     const response = await request(app.getHttpServer())
-      .post('/api/v1/import/xlsx')
+      .post('/api/v1/import/sourcing-records')
       .expect(HttpStatus.BAD_REQUEST);
     expect(response.body.errors[0].title).toEqual(
       'A .XLSX file must be provided as payload',
@@ -93,7 +93,7 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
 
   test('When an empty file is sent to the API then it should return a 400 code and a error message', async () => {
     const response = await request(app.getHttpServer())
-      .post('/api/v1/import/xlsx')
+      .post('/api/v1/import/sourcing-records')
       .attach('file', __dirname + '/empty.xlsx')
       .expect(HttpStatus.BAD_REQUEST);
     expect(response.body.errors[0].title).toEqual(
@@ -103,18 +103,18 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
 
   test('When a file is sent to the API and some data does not comply with data validation rules, it should return a 400 code and a error message', async () => {
     const response = await request(app.getHttpServer())
-      .post('/api/v1/import/xlsx')
+      .post('/api/v1/import/sourcing-records')
       .attach('file', __dirname + '/business-unit-name-length.xlsx')
       .expect(HttpStatus.BAD_REQUEST);
     expect(response.body.errors[0].title).toEqual(
-      'XLSX file could not been parsed: An instance of CreateBusinessUnitDto has failed the validation:\n' +
+      'An instance of CreateBusinessUnitDto has failed the validation:\n' +
         ' - property name has failed the following constraints: maxLength \n',
     );
   });
 
   test('When a file is sent to the API and its size is allowed then it should return a 201 code and the storage folder should be empty', async () => {
     await request(app.getHttpServer())
-      .post('/api/v1/import/xlsx')
+      .post('/api/v1/import/sourcing-records')
       .attach('file', __dirname + '/base-dataset.xlsx')
       .expect(HttpStatus.CREATED);
     const folderContent = await readdir(config.get('fileUploads.storagePath'));
@@ -123,7 +123,7 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
 
   test('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (happy case)', async () => {
     const response = await request(app.getHttpServer())
-      .post('/api/v1/import/xlsx')
+      .post('/api/v1/import/sourcing-records')
       .attach('file', __dirname + '/base-dataset.xlsx')
       .expect(HttpStatus.CREATED);
 
@@ -149,16 +149,22 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
 
     const sourcingRecords: SourcingRecord[] = await sourcingRecordRepository.find();
     expect(sourcingRecords).toHaveLength(825);
+
+    /**
+     * @TODO: this is a bug. There should NOT be as many sourcing locations as there are records. There should be around 1/10
+     */
+    const sourcingLocations: SourcingLocation[] = await sourcingLocationRepository.find();
+    expect(sourcingLocations).not.toHaveLength(825);
   });
 
   test('When a file is sent 2 times to the API, then imported data length should be equal, and database has been cleaned in between', async () => {
     jest.setTimeout(10000);
     await request(app.getHttpServer())
-      .post('/api/v1/import/xlsx')
+      .post('/api/v1/import/sourcing-records')
       .attach('file', __dirname + '/base-dataset.xlsx');
 
     await request(app.getHttpServer())
-      .post('/api/v1/import/xlsx')
+      .post('/api/v1/import/sourcing-records')
       .attach('file', __dirname + '/base-dataset.xlsx');
 
     const sourcingLocations: SourcingLocation[] = await sourcingLocationRepository.find();

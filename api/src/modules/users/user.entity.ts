@@ -88,9 +88,10 @@ export class User extends BaseEntity {
 
   @OneToMany(
     () => SourcingLocationGroup,
-    (srg: SourcingLocationGroup) => srg.updatedBy,
+    (sourcingLocationGroup: SourcingLocationGroup) =>
+      sourcingLocationGroup.updatedBy,
   )
-  sourcingRecordGroups: SourcingLocationGroup[];
+  sourcingLocationGroups: SourcingLocationGroup[];
 
   @OneToMany(() => Scenario, (scenario: Scenario) => scenario.user)
   scenarios: Scenario[];

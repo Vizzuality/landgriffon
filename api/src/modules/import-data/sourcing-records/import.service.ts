@@ -43,7 +43,7 @@ export class SourcingRecordsImportService {
     protected readonly adminRegionService: AdminRegionsService,
     protected readonly sourcingLocationService: SourcingLocationsService,
     protected readonly sourcingRecordService: SourcingRecordsService,
-    protected readonly sourcingRecordGroupService: SourcingLocationGroupsService,
+    protected readonly sourcingLocationGroupService: SourcingLocationGroupsService,
     protected readonly fileService: ImportDataService<SourcingRecordsSheets>,
     protected readonly dtoProcessor: SourcingRecordsDtoProcessorService,
   ) {}
@@ -56,14 +56,14 @@ export class SourcingRecordsImportService {
         SHEETS_MAP,
       );
 
-      const sourcingRecordGroup: SourcingLocationGroup = await this.sourcingRecordGroupService.create(
+      const sourcingLocationGroup: SourcingLocationGroup = await this.sourcingLocationGroupService.create(
         {
           title: 'Sourcing Records import from XLSX file',
         },
       );
       const dtoMatchedData: SourcingRecordsDtos = await this.dtoProcessor.createDTOsFromSourcingRecordsSheets(
         parsedXLSXDataset,
-        sourcingRecordGroup.id,
+        sourcingLocationGroup.id,
       );
 
       await this.validateDTOs(dtoMatchedData);

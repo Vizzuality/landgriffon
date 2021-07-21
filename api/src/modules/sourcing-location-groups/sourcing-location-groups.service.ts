@@ -6,7 +6,7 @@ import {
 } from 'utils/app-base.service';
 import {
   SourcingLocationGroup,
-  sourcingRecordGroupResource,
+  sourcingLocationGroupResource,
 } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { AppInfoDTO } from 'dto/info.dto';
 import { SourcingLocationGroupRepository } from 'modules/sourcing-location-groups/sourcing-location-group.repository';
@@ -22,12 +22,12 @@ export class SourcingLocationGroupsService extends AppBaseService<
 > {
   constructor(
     @InjectRepository(SourcingLocationGroupRepository)
-    protected readonly sourcingRecordGroupRepository: SourcingLocationGroupRepository,
+    protected readonly sourcingLocationGroupRepository: SourcingLocationGroupRepository,
   ) {
     super(
-      sourcingRecordGroupRepository,
-      sourcingRecordGroupResource.name.singular,
-      sourcingRecordGroupResource.name.plural,
+      sourcingLocationGroupRepository,
+      sourcingLocationGroupResource.name.singular,
+      sourcingLocationGroupResource.name.plural,
     );
   }
 
@@ -45,12 +45,14 @@ export class SourcingLocationGroupsService extends AppBaseService<
     };
   }
 
-  async getSourcingRecordGroupById(id: number): Promise<SourcingLocationGroup> {
-    const found = await this.sourcingRecordGroupRepository.findOne(id);
+  async getSourcingLocationGroupById(
+    id: number,
+  ): Promise<SourcingLocationGroup> {
+    const found = await this.sourcingLocationGroupRepository.findOne(id);
 
     if (!found) {
       throw new NotFoundException(
-        `Sourcing Record Group with ID "${id}" not found`,
+        `Sourcing Location Group with ID "${id}" not found`,
       );
     }
 
@@ -58,6 +60,6 @@ export class SourcingLocationGroupsService extends AppBaseService<
   }
 
   async clearTable(): Promise<void> {
-    await this.sourcingRecordGroupRepository.delete({});
+    await this.sourcingLocationGroupRepository.delete({});
   }
 }

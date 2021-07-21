@@ -88,5 +88,5 @@ export class CreateSourcingLocationDto {
   @IsString()
   @IsOptional()
   @ApiPropertyOptional()
-  sourcingRecordGroupId?: string;
+  sourcingLocationGroupId?: string;
 }

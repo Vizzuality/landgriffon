@@ -47,7 +47,7 @@ export class SourcingRecordsDtoProcessorService {
 
   async createDTOsFromSourcingRecordsSheets(
     importData: SourcingRecordsSheets,
-    sourcingRecordGroupId: string,
+    sourcingLocationGroupId: string,
   ): Promise<SourcingRecordsDtos> {
     const materials: CreateMaterialDto[] = await this.createMaterialDtos(
       importData.materials,
@@ -71,7 +71,7 @@ export class SourcingRecordsDtoProcessorService {
     );
     const sourcingLocations: CreateSourcingLocationDto[] = await this.createSourcingLocationDtos(
       processedSourcingData.sourcingLocations,
-      sourcingRecordGroupId,
+      sourcingLocationGroupId,
     );
 
     return {
@@ -262,14 +262,14 @@ export class SourcingRecordsDtoProcessorService {
    */
   private async createSourcingLocationDtos(
     importData: Record<string, any>[],
-    sourcingRecordGroupId: string,
+    sourcingLocationGroupId: string,
   ): Promise<CreateSourcingLocationDto[]> {
     const sourcingLocationDtos: CreateSourcingLocationDto[] = [];
     importData.forEach((importRow: Record<string, any>) => {
       sourcingLocationDtos.push(
         this.createSourcingLocationDTOFromData(
           importRow,
-          sourcingRecordGroupId,
+          sourcingLocationGroupId,
         ),
       );
     });
@@ -317,7 +317,7 @@ export class SourcingRecordsDtoProcessorService {
 
   private createSourcingLocationDTOFromData(
     sourcingLocationData: Record<string, any>,
-    sourcingRecordGroupId: string,
+    sourcingLocationGroupId: string,
   ): CreateSourcingLocationDto {
     const sourcingLocationDto = new CreateSourcingLocationDto();
     sourcingLocationDto.locationCountryInput =
@@ -335,7 +335,7 @@ export class SourcingRecordsDtoProcessorService {
       ? undefined
       : parseFloat(sourcingLocationData.location_longitude_input);
     sourcingLocationDto.metadata = sourcingLocationData.metadata;
-    sourcingLocationDto.sourcingRecordGroupId = sourcingRecordGroupId;
+    sourcingLocationDto.sourcingLocationGroupId = sourcingLocationGroupId;
     return sourcingLocationDto;
   }
 

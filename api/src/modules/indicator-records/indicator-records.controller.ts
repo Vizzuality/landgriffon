@@ -1,0 +1,113 @@
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
+import {
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import {
+  JSONAPIQueryParams,
+  JSONAPISingleEntityQueryParams,
+} from 'decorators/json-api-parameters.decorator';
+import {
+  FetchSpecification,
+  ProcessFetchSpecification,
+} from 'nestjs-base-service';
+import {
+  IndicatorRecord,
+  indicatorRecordResource,
+} from 'modules/indicator-records/indicator-record.entity';
+import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
+import { CreateIndicatorRecordDto } from 'modules/indicator-records/dto/create.indicator-record.dto';
+import { UpdateIndicatorRecordDto } from 'modules/indicator-records/dto/update.indicator-record.dto';
+
+@Controller(`/api/v1/indicator-records`)
+@ApiTags(indicatorRecordResource.className)
+export class IndicatorRecordsController {
+  constructor(
+    public readonly indicatorRecordService: IndicatorRecordsService,
+  ) {}
+
+  @ApiOperation({
+    description: 'Find all indicator records',
+  })
+  @ApiOkResponse({
+    type: IndicatorRecord,
+  })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @JSONAPIQueryParams({
+    availableFilters: indicatorRecordResource.columnsAllowedAsFilter.map(
+      (columnName: string) => ({
+        name: columnName,
+      }),
+    ),
+  })
+  @Get()
+  async findAll(
+    @ProcessFetchSpecification({
+      allowedFilters: indicatorRecordResource.columnsAllowedAsFilter,
+    })
+    fetchSpecification: FetchSpecification,
+  ): Promise<IndicatorRecord> {
+    const results = await this.indicatorRecordService.findAllPaginated(
+      fetchSpecification,
+    );
+    return this.indicatorRecordService.serialize(
+      results.data,
+      results.metadata,
+    );
+  }
+
+  @ApiOperation({ description: 'Find indicator resource by id' })
+  @ApiOkResponse({ type: IndicatorRecord })
+  @JSONAPISingleEntityQueryParams()
+  @Get(':id')
+  async findOne(@Param('id') id: string): Promise<IndicatorRecord> {
+    return await this.indicatorRecordService.serialize(
+      await this.indicatorRecordService.getById(id),
+    );
+  }
+
+  @ApiOperation({ description: 'Create a indicator resource' })
+  @ApiOkResponse({ type: IndicatorRecord })
+  @Post()
+  @UsePipes(ValidationPipe)
+  async create(
+    @Body() dto: CreateIndicatorRecordDto,
+  ): Promise<IndicatorRecord> {
+    return await this.indicatorRecordService.serialize(
+      await this.indicatorRecordService.create(dto),
+    );
+  }
+
+  @ApiOperation({ description: 'Updates a indicator resource' })
+  @ApiOkResponse({ type: IndicatorRecord })
+  @Patch(':id')
+  async update(
+    @Body(new ValidationPipe()) dto: UpdateIndicatorRecordDto,
+    @Param('id') id: string,
+  ): Promise<IndicatorRecord> {
+    return await this.indicatorRecordService.serialize(
+      await this.indicatorRecordService.update(id, dto),
+    );
+  }
+
+  @ApiOperation({ description: 'Deletes a indicator resource' })
+  @ApiOkResponse()
+  @Delete(':id')
+  async delete(@Param('id') id: string): Promise<void> {
+    return await this.indicatorRecordService.remove(id);
+  }
+}

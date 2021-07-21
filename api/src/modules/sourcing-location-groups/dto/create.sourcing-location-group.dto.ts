@@ -8,7 +8,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class CreateSourcingRecordGroupDto {
+export class CreateSourcingLocationGroupDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(2)

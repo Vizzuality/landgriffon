@@ -1,9 +1,9 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { CreateSourcingRecordGroupDto } from 'modules/sourcing-record-groups/dto/create.sourcing-record-group.dto';
+import { CreateSourcingLocationGroupDto } from 'modules/sourcing-location-groups/dto/create.sourcing-location-group.dto';
 import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
-export class UpdateSourcingRecordGroupDto extends PartialType(
-  CreateSourcingRecordGroupDto,
+export class UpdateSourcingLocationGroupDto extends PartialType(
+  CreateSourcingLocationGroupDto,
 ) {
   @IsString()
   @IsOptional()

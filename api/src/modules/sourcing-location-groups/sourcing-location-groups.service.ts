@@ -5,24 +5,24 @@ import {
   JSONAPISerializerConfig,
 } from 'utils/app-base.service';
 import {
-  SourcingRecordGroup,
+  SourcingLocationGroup,
   sourcingRecordGroupResource,
-} from 'modules/sourcing-record-groups/sourcing-record-group.entity';
+} from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { AppInfoDTO } from 'dto/info.dto';
-import { SourcingRecordGroupRepository } from 'modules/sourcing-record-groups/sourcing-record-group.repository';
-import { CreateSourcingRecordGroupDto } from 'modules/sourcing-record-groups/dto/create.sourcing-record-group.dto';
-import { UpdateSourcingRecordGroupDto } from 'modules/sourcing-record-groups/dto/update.sourcing-record-group.dto';
+import { SourcingLocationGroupRepository } from 'modules/sourcing-location-groups/sourcing-location-group.repository';
+import { CreateSourcingLocationGroupDto } from 'modules/sourcing-location-groups/dto/create.sourcing-location-group.dto';
+import { UpdateSourcingLocationGroupDto } from 'modules/sourcing-location-groups/dto/update.sourcing-location-group.dto';
 
 @Injectable()
-export class SourcingRecordGroupsService extends AppBaseService<
-  SourcingRecordGroup,
-  CreateSourcingRecordGroupDto,
-  UpdateSourcingRecordGroupDto,
+export class SourcingLocationGroupsService extends AppBaseService<
+  SourcingLocationGroup,
+  CreateSourcingLocationGroupDto,
+  UpdateSourcingLocationGroupDto,
   AppInfoDTO
 > {
   constructor(
-    @InjectRepository(SourcingRecordGroupRepository)
-    protected readonly sourcingRecordGroupRepository: SourcingRecordGroupRepository,
+    @InjectRepository(SourcingLocationGroupRepository)
+    protected readonly sourcingRecordGroupRepository: SourcingLocationGroupRepository,
   ) {
     super(
       sourcingRecordGroupRepository,
@@ -31,7 +31,7 @@ export class SourcingRecordGroupsService extends AppBaseService<
     );
   }
 
-  get serializerConfig(): JSONAPISerializerConfig<SourcingRecordGroup> {
+  get serializerConfig(): JSONAPISerializerConfig<SourcingLocationGroup> {
     return {
       attributes: [
         'title',
@@ -45,7 +45,7 @@ export class SourcingRecordGroupsService extends AppBaseService<
     };
   }
 
-  async getSourcingRecordGroupById(id: number): Promise<SourcingRecordGroup> {
+  async getSourcingRecordGroupById(id: number): Promise<SourcingLocationGroup> {
     const found = await this.sourcingRecordGroupRepository.findOne(id);
 
     if (!found) {

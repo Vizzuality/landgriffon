@@ -15,7 +15,7 @@ export const sourcingRecordGroupResource: BaseServiceResource = {
 };
 
 @Entity()
-export class SourcingRecordGroup extends TimestampedBaseEntity {
+export class SourcingLocationGroup extends TimestampedBaseEntity {
   @PrimaryGeneratedColumn('uuid')
   @ApiProperty()
   id!: string;

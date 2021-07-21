@@ -14,7 +14,7 @@ import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
-import { SourcingRecordGroup } from 'modules/sourcing-record-groups/sourcing-record-group.entity';
+import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 
 export enum LOCATION_TYPES {
   PRODUCTION_UNIT = 'Production unit',
@@ -141,8 +141,8 @@ export class SourcingLocation extends TimestampedBaseEntity {
   producer: Supplier;
 
   @ManyToOne(
-    () => SourcingRecordGroup,
-    (sourcingRecordGroup: SourcingRecordGroup) => sourcingRecordGroup.id,
+    () => SourcingLocationGroup,
+    (sourcingRecordGroup: SourcingLocationGroup) => sourcingRecordGroup.id,
     {
       eager: false,
       onDelete: 'CASCADE',

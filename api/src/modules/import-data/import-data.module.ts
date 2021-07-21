@@ -6,7 +6,7 @@ import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
-import { SourcingRecordGroupsModule } from 'modules/sourcing-record-groups/sourcing-record-groups.module';
+import { SourcingLocationGroupsModule } from 'modules/sourcing-location-groups/sourcing-location-groups.module';
 import { ImportDataService } from 'modules/import-data/import-data.service';
 import { SourcingRecordsImportService } from 'modules/import-data/sourcing-records/import.service';
 import { SourcingRecordsDtoProcessorService } from 'modules/import-data/sourcing-records/dto-processor.service';
@@ -19,7 +19,7 @@ import { SourcingRecordsDtoProcessorService } from 'modules/import-data/sourcing
     AdminRegionsModule,
     SourcingLocationsModule,
     SourcingRecordsModule,
-    SourcingRecordGroupsModule,
+    SourcingLocationGroupsModule,
   ],
   providers: [
     SourcingRecordsImportService,

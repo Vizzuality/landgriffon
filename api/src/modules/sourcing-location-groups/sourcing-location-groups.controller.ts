@@ -9,7 +9,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { SourcingRecordGroupsService } from 'modules/sourcing-record-groups/sourcing-record-groups.service';
+import { SourcingLocationGroupsService } from 'modules/sourcing-location-groups/sourcing-location-groups.service';
 import {
   ApiForbiddenResponse,
   ApiOkResponse,
@@ -26,24 +26,24 @@ import {
   ProcessFetchSpecification,
 } from 'nestjs-base-service';
 import {
-  SourcingRecordGroup,
+  SourcingLocationGroup,
   sourcingRecordGroupResource,
-} from 'modules/sourcing-record-groups/sourcing-record-group.entity';
-import { CreateSourcingRecordGroupDto } from 'modules/sourcing-record-groups/dto/create.sourcing-record-group.dto';
-import { UpdateSourcingRecordGroupDto } from 'modules/sourcing-record-groups/dto/update.sourcing-record-group.dto';
+} from 'modules/sourcing-location-groups/sourcing-location-group.entity';
+import { CreateSourcingLocationGroupDto } from 'modules/sourcing-location-groups/dto/create.sourcing-location-group.dto';
+import { UpdateSourcingLocationGroupDto } from 'modules/sourcing-location-groups/dto/update.sourcing-location-group.dto';
 
-@Controller(`/api/v1/sourcing-record-groups`)
+@Controller(`/api/v1/sourcing-location-groups`)
 @ApiTags(sourcingRecordGroupResource.className)
-export class SourcingRecordGroupsController {
+export class SourcingLocationGroupsController {
   constructor(
-    public readonly sourcingRecordsService: SourcingRecordGroupsService,
+    public readonly sourcingRecordsService: SourcingLocationGroupsService,
   ) {}
 
   @ApiOperation({
     description: 'Find all sourcing record groups',
   })
   @ApiOkResponse({
-    type: SourcingRecordGroup,
+    type: SourcingLocationGroup,
   })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
@@ -60,7 +60,7 @@ export class SourcingRecordGroupsController {
       allowedFilters: sourcingRecordGroupResource.columnsAllowedAsFilter,
     })
     fetchSpecification: FetchSpecification,
-  ): Promise<SourcingRecordGroup> {
+  ): Promise<SourcingLocationGroup> {
     const results = await this.sourcingRecordsService.findAllPaginated(
       fetchSpecification,
     );
@@ -71,34 +71,34 @@ export class SourcingRecordGroupsController {
   }
 
   @ApiOperation({ description: 'Find sourcing record group by id' })
-  @ApiOkResponse({ type: SourcingRecordGroup })
+  @ApiOkResponse({ type: SourcingLocationGroup })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<SourcingRecordGroup> {
+  async findOne(@Param('id') id: string): Promise<SourcingLocationGroup> {
     return await this.sourcingRecordsService.serialize(
       await this.sourcingRecordsService.getById(id),
     );
   }
 
   @ApiOperation({ description: 'Create a sourcing record group' })
-  @ApiOkResponse({ type: SourcingRecordGroup })
+  @ApiOkResponse({ type: SourcingLocationGroup })
   @Post()
   @UsePipes(ValidationPipe)
   async create(
-    @Body() dto: CreateSourcingRecordGroupDto,
-  ): Promise<SourcingRecordGroup> {
+    @Body() dto: CreateSourcingLocationGroupDto,
+  ): Promise<SourcingLocationGroup> {
     return await this.sourcingRecordsService.serialize(
       await this.sourcingRecordsService.create(dto),
     );
   }
 
   @ApiOperation({ description: 'Updates a sourcing record group' })
-  @ApiOkResponse({ type: SourcingRecordGroup })
+  @ApiOkResponse({ type: SourcingLocationGroup })
   @Patch(':id')
   async update(
-    @Body(new ValidationPipe()) dto: UpdateSourcingRecordGroupDto,
+    @Body(new ValidationPipe()) dto: UpdateSourcingLocationGroupDto,
     @Param('id') id: string,
-  ): Promise<SourcingRecordGroup> {
+  ): Promise<SourcingLocationGroup> {
     return await this.sourcingRecordsService.serialize(
       await this.sourcingRecordsService.update(id, dto),
     );

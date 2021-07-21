@@ -9,7 +9,7 @@ import {
 import { BaseServiceResource } from 'types/resource.interface';
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { SourcingRecordGroup } from 'modules/sourcing-record-groups/sourcing-record-group.entity';
+import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 
@@ -87,10 +87,10 @@ export class User extends BaseEntity {
   sourcingLocations: SourcingLocation[];
 
   @OneToMany(
-    () => SourcingRecordGroup,
-    (srg: SourcingRecordGroup) => srg.updatedBy,
+    () => SourcingLocationGroup,
+    (srg: SourcingLocationGroup) => srg.updatedBy,
   )
-  sourcingRecordGroups: SourcingRecordGroup[];
+  sourcingRecordGroups: SourcingLocationGroup[];
 
   @OneToMany(() => Scenario, (scenario: Scenario) => scenario.user)
   scenarios: Scenario[];

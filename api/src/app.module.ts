@@ -24,6 +24,7 @@ import { IndicatorSourcesModule } from 'modules/indicator-sources/indicator-sour
 import { ScenariosModule } from 'modules/scenarios/scenarios.module';
 import { ScenarioInterventionsModule } from 'modules/scenario-interventions/scenario-interventions.module';
 import { ImportDataModule } from 'modules/import-data/import-data.module';
+import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { ImportDataModule } from 'modules/import-data/import-data.module';
     IndicatorCoefficientsModule,
     IndicatorsModule,
     IndicatorSourcesModule,
+    IndicatorRecordsModule,
     LayersModule,
     MaterialsModule,
     ScenariosModule,

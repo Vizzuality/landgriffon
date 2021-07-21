@@ -87,9 +87,10 @@ export class IndicatorsController {
 
   @ApiOperation({ description: 'Updates a indicator' })
   @ApiOkResponse({ type: Indicator })
+  @UsePipes(ValidationPipe)
   @Patch(':id')
   async update(
-    @Body(new ValidationPipe()) dto: UpdateIndicatorDto,
+    @Body() dto: UpdateIndicatorDto,
     @Param('id') id: string,
   ): Promise<Indicator> {
     return await this.indicatorsService.serialize(

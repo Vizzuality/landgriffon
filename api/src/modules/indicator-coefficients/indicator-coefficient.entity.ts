@@ -14,7 +14,7 @@ export const indicatorCoefficientResource: BaseServiceResource = {
     singular: 'indicatorCoefficient',
     plural: 'indicatorCoefficients',
   },
-  entitiesAllowedAsIncludes: [],
+  entitiesAllowedAsIncludes: ['indicators'],
   columnsAllowedAsFilter: ['value', 'year', 'indicatorSourceId'],
 };
 

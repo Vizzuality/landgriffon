@@ -19,7 +19,7 @@ import { TerminusModule } from '@nestjs/terminus';
 import { HealthController } from 'health.controller';
 import { UnitsModule } from 'modules/units/units.module';
 import { UnitConversionsModule } from 'modules/unit-conversions/unit-conversions.module';
-import { SourcingRecordGroupsModule } from 'modules/sourcing-record-groups/sourcing-record-groups.module';
+import { SourcingLocationGroupsModule } from 'modules/sourcing-location-groups/sourcing-location-groups.module';
 import { IndicatorSourcesModule } from 'modules/indicator-sources/indicator-sources.module';
 import { ScenariosModule } from 'modules/scenarios/scenarios.module';
 import { ScenarioInterventionsModule } from 'modules/scenario-interventions/scenario-interventions.module';
@@ -40,7 +40,7 @@ import { ImportDataModule } from 'modules/import-data/import-data.module';
     ScenariosModule,
     ScenarioInterventionsModule,
     SourcingLocationsModule,
-    SourcingRecordGroupsModule,
+    SourcingLocationGroupsModule,
     SourcingRecordsModule,
     SuppliersModule,
     TerminusModule,

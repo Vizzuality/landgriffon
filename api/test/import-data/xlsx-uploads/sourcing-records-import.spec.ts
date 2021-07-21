@@ -13,7 +13,7 @@ import { Supplier } from 'modules/suppliers/supplier.entity';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
-import { SourcingRecordGroupRepository } from 'modules/sourcing-record-groups/sourcing-record-group.repository';
+import { SourcingLocationGroupRepository } from 'modules/sourcing-location-groups/sourcing-location-group.repository';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
@@ -27,7 +27,7 @@ describe('Sourcing Records import', () => {
   let adminRegionRepository: AdminRegionRepository;
   let sourcingLocationRepository: SourcingLocationRepository;
   let sourcingRecordRepository: SourcingRecordRepository;
-  let sourcingRecordGroupRepository: SourcingRecordGroupRepository;
+  let sourcingRecordGroupRepository: SourcingLocationGroupRepository;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -52,8 +52,8 @@ describe('Sourcing Records import', () => {
     sourcingRecordRepository = moduleFixture.get<SourcingRecordRepository>(
       SourcingRecordRepository,
     );
-    sourcingRecordGroupRepository = moduleFixture.get<SourcingRecordGroupRepository>(
-      SourcingRecordGroupRepository,
+    sourcingRecordGroupRepository = moduleFixture.get<SourcingLocationGroupRepository>(
+      SourcingLocationGroupRepository,
     );
 
     app = moduleFixture.createNestApplication();
@@ -154,7 +154,7 @@ describe('Sourcing Records import', () => {
      * @TODO: this is a bug. There should NOT be as many sourcing locations as there are records. There should be around 1/10
      */
     const sourcingLocations: SourcingLocation[] = await sourcingLocationRepository.find();
-    expect(sourcingLocations).not.toHaveLength(825);
+    expect(sourcingLocations).toHaveLength(75);
   });
 
   test('When a file is sent 2 times to the API, then imported data length should be equal, and database has been cleaned in between', async () => {
@@ -167,7 +167,7 @@ describe('Sourcing Records import', () => {
       .post('/api/v1/import/sourcing-records')
       .attach('file', __dirname + '/base-dataset.xlsx');
 
-    const sourcingLocations: SourcingLocation[] = await sourcingLocationRepository.find();
-    expect(sourcingLocations.length).toEqual(825);
+    const sourcingRecords: SourcingRecord[] = await sourcingRecordRepository.find();
+    expect(sourcingRecords.length).toEqual(825);
   });
 });

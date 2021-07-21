@@ -10,9 +10,9 @@ import {
   SourcingRecordsDtos,
 } from 'modules/import-data/sourcing-records/dto-processor.service';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
-import { SourcingRecordGroupsService } from 'modules/sourcing-record-groups/sourcing-record-groups.service';
+import { SourcingLocationGroupsService } from 'modules/sourcing-location-groups/sourcing-location-groups.service';
 import { validateOrReject } from 'class-validator';
-import { SourcingRecordGroup } from 'modules/sourcing-record-groups/sourcing-record-group.entity';
+import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 
 export interface SourcingRecordsSheets extends Record<string, any[]> {
   materials: Record<string, any>[];
@@ -43,7 +43,7 @@ export class SourcingRecordsImportService {
     protected readonly adminRegionService: AdminRegionsService,
     protected readonly sourcingLocationService: SourcingLocationsService,
     protected readonly sourcingRecordService: SourcingRecordsService,
-    protected readonly sourcingRecordGroupService: SourcingRecordGroupsService,
+    protected readonly sourcingRecordGroupService: SourcingLocationGroupsService,
     protected readonly fileService: ImportDataService<SourcingRecordsSheets>,
     protected readonly dtoProcessor: SourcingRecordsDtoProcessorService,
   ) {}
@@ -56,7 +56,7 @@ export class SourcingRecordsImportService {
         SHEETS_MAP,
       );
 
-      const sourcingRecordGroup: SourcingRecordGroup = await this.sourcingRecordGroupService.create(
+      const sourcingRecordGroup: SourcingLocationGroup = await this.sourcingRecordGroupService.create(
         {
           title: 'Sourcing Records import from XLSX file',
         },

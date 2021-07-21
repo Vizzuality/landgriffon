@@ -24,11 +24,13 @@ const NON_META_PROPERTIES: Array<string> = [
   'business_unit.path',
   't1_supplier.name',
   'producer.name',
-  'location_type',
+];
+const SOURCING_LOCATION_PROPERTIES: Array<string> = [
   'location_country_input',
   'location_address_input',
   'location_latitude_input',
   'location_longitude_input',
+  'location_type',
 ];
 
 /**
@@ -60,15 +62,15 @@ export class SourcingRecordsDtoProcessorService {
       importData.countries,
     );
 
-    const processedSourcingData: Record<string, any>[] = this.cleanCustomData(
+    const processedSourcingData: Record<string, any> = this.cleanCustomData(
       importData.sourcingData,
     );
 
     const sourcingRecords: CreateSourcingRecordDto[] = await this.createSourcingRecordDtos(
-      processedSourcingData,
+      processedSourcingData.sourcingRecords,
     );
     const sourcingLocations: CreateSourcingLocationDto[] = await this.createSourcingLocationDtos(
-      processedSourcingData,
+      processedSourcingData.sourcingLocations,
       sourcingRecordGroupId,
     );
 
@@ -81,6 +83,9 @@ export class SourcingRecordsDtoProcessorService {
       sourcingRecords,
     };
   }
+  private isSourcingLocationData(field: string): boolean {
+    return !SOURCING_LOCATION_PROPERTIES.includes(field);
+  }
 
   private isMeta(field: string): boolean {
     return !NON_META_PROPERTIES.includes(field);
@@ -92,8 +97,9 @@ export class SourcingRecordsDtoProcessorService {
     return regexMatch ? parseInt(regexMatch[0]) : null;
   }
 
-  private cleanCustomData(customData: WorkSheet[]): Record<string, any>[] {
-    const sourcingRecordData: Record<string, any>[] = [];
+  private cleanCustomData(customData: WorkSheet[]): any {
+    const sourcingRecords: Record<string, any>[] = [];
+    const sourcingLocations: Record<string, any>[] = [];
     /**
      * Clean all hashmaps that are empty therefore useless
      */
@@ -109,6 +115,7 @@ export class SourcingRecordsDtoProcessorService {
       const years: Record<string, any> = {};
       const baseProps: Record<string, any> = {};
       const metadata: Record<string, any> = {};
+      const sourcingLocation: Record<string, any> = {};
       for (const field in eachRecordOfCustomData) {
         if (
           eachRecordOfCustomData.hasOwnProperty(field) &&
@@ -117,10 +124,14 @@ export class SourcingRecordsDtoProcessorService {
           years[field] = eachRecordOfCustomData[field];
         } else if (this.isMeta(field)) {
           metadata[field] = eachRecordOfCustomData[field];
+        } else if (this.isSourcingLocationData(field)) {
+          sourcingLocation[field] = eachRecordOfCustomData[field];
         } else {
           baseProps[field] = eachRecordOfCustomData[field];
         }
       }
+      const sourcingLocationWithMeta = { ...sourcingLocation, metadata };
+      sourcingLocations.push(sourcingLocationWithMeta);
       /**
        * For each year, spread the base properties and attach metadata
        * to build each sourcing-record row
@@ -129,15 +140,14 @@ export class SourcingRecordsDtoProcessorService {
         if (years.hasOwnProperty(year)) {
           const cleanRow: any = {
             ...baseProps,
-            metadata,
           };
           cleanRow['year'] = this.getYear(year);
           cleanRow['tonnage'] = years[year];
-          sourcingRecordData.push(cleanRow);
+          sourcingRecords.push(cleanRow);
         }
       }
     }
-    return sourcingRecordData;
+    return { sourcingLocations, sourcingRecords };
   }
 
   /**
@@ -310,7 +320,6 @@ export class SourcingRecordsDtoProcessorService {
     sourcingRecordGroupId: string,
   ): CreateSourcingLocationDto {
     const sourcingLocationDto = new CreateSourcingLocationDto();
-
     sourcingLocationDto.locationCountryInput =
       sourcingLocationData.location_country_input;
     sourcingLocationDto.locationAddressInput =

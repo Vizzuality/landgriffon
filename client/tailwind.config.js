@@ -12,6 +12,9 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
+      fontSize: {
+        '2xs': '.625rem',
+      },
       colors: {
         gray: {
           900: '#15181F',

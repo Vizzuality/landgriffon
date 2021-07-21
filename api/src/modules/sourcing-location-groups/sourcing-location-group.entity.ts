@@ -4,11 +4,11 @@ import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 
-export const sourcingRecordGroupResource: BaseServiceResource = {
-  className: 'SourcingRecordGroup',
+export const sourcingLocationGroupResource: BaseServiceResource = {
+  className: 'SourcingLocationGroup',
   name: {
-    singular: 'sourcingRecordGroup',
-    plural: 'sourcingRecordGroups',
+    singular: 'sourcingLocationGroup',
+    plural: 'sourcingLocationGroups',
   },
   entitiesAllowedAsIncludes: [],
   columnsAllowedAsFilter: ['title', 'description'],
@@ -32,7 +32,7 @@ export class SourcingLocationGroup extends TimestampedBaseEntity {
   @ApiPropertyOptional()
   metadata?: JSON;
 
-  @ManyToOne(() => User, (user: User) => user.sourcingRecordGroups, {
+  @ManyToOne(() => User, (user: User) => user.sourcingLocationGroups, {
     eager: false,
   })
   updatedBy?: User;

@@ -142,7 +142,7 @@ export class SourcingLocation extends TimestampedBaseEntity {
 
   @ManyToOne(
     () => SourcingLocationGroup,
-    (sourcingRecordGroup: SourcingLocationGroup) => sourcingRecordGroup.id,
+    (sourcingLocationGroup: SourcingLocationGroup) => sourcingLocationGroup.id,
     {
       eager: false,
       onDelete: 'CASCADE',
@@ -150,5 +150,5 @@ export class SourcingLocation extends TimestampedBaseEntity {
   )
   @JoinColumn()
   @ApiPropertyOptional()
-  sourcingRecordGroupId: string;
+  sourcingLocationGroupId: string;
 }

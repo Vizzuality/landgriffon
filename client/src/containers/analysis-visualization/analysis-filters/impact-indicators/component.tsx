@@ -1,6 +1,6 @@
-import { Fragment, useState } from 'react'
-import { Listbox, Transition } from '@headlessui/react'
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
+import { Fragment, useState } from 'react';
+import { Listbox, Transition } from '@headlessui/react';
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
 
 const impactIndicators = [
   { id: 1, name: 'All impact indicators' },
@@ -8,14 +8,14 @@ const impactIndicators = [
   { id: 3, name: 'Deforestation (Ha)' },
   { id: 4, name: 'Unsustainable water use (M3)' },
   { id: 5, name: 'Biodiversity (x)' },
-]
+];
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(' ');
 }
 
-const ImpactIndicators: React.FC = () =>  {
-  const [selected, setSelected] = useState(impactIndicators[0])
+const ImpactIndicators: React.FC = () => {
+  const [selected, setSelected] = useState(impactIndicators[0]);
 
   return (
     <Listbox value={selected} onChange={setSelected}>
@@ -26,10 +26,11 @@ const ImpactIndicators: React.FC = () =>  {
             <Listbox.Button className="bg-white relative w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 sm:text-sm">
               <span className="block truncate">{selected.name}</span>
               <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                {open ?
-                  <ChevronUpIcon className="h-5 w-5 text-gray-900" aria-hidden="true" /> :
+                {open ? (
+                  <ChevronUpIcon className="h-5 w-5 text-gray-900" aria-hidden="true" />
+                ) : (
                   <ChevronDownIcon className="h-5 w-5 text-gray-900" aria-hidden="true" />
-                }
+                )}
               </span>
             </Listbox.Button>
 
@@ -59,7 +60,12 @@ const ImpactIndicators: React.FC = () =>  {
                   >
                     {({ selected }) => (
                       <>
-                        <span className={classNames(selected ? 'font-semibold' : 'font-normal', 'block truncate')}>
+                        <span
+                          className={classNames(
+                            selected ? 'font-semibold' : 'font-normal',
+                            'block truncate'
+                          )}
+                        >
                           {indicator.name}
                         </span>
                       </>
@@ -73,6 +79,6 @@ const ImpactIndicators: React.FC = () =>  {
       )}
     </Listbox>
   );
-}
+};
 
 export default ImpactIndicators;

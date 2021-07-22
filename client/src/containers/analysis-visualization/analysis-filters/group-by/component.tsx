@@ -1,20 +1,20 @@
-import { Fragment, useState } from 'react'
-import { Listbox, Transition } from '@headlessui/react'
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
+import { Fragment, useState } from 'react';
+import { Listbox, Transition } from '@headlessui/react';
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
 
 const groups = [
   { id: 1, name: 'Material' },
   { id: 2, name: 'Business Unit' },
   { id: 3, name: 'Region' },
   { id: 4, name: 'Supplier' },
-]
+];
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(' ');
 }
 
-const GroupBy: React.FC = () =>  {
-  const [selected, setSelected] = useState(groups[0])
+const GroupBy: React.FC = () => {
+  const [selected, setSelected] = useState(groups[0]);
 
   return (
     <Listbox value={selected} onChange={setSelected}>
@@ -28,10 +28,11 @@ const GroupBy: React.FC = () =>  {
                 <span className="text-gray-500 mr-1">by</span>
                 <span className="truncate">{selected.name.toLowerCase()}</span>
                 <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                  {open ?
-                    <ChevronUpIcon className="h-5 w-5 text-gray-900" aria-hidden="true" /> :
+                  {open ? (
+                    <ChevronUpIcon className="h-5 w-5 text-gray-900" aria-hidden="true" />
+                  ) : (
                     <ChevronDownIcon className="h-5 w-5 text-gray-900" aria-hidden="true" />
-                  }
+                  )}
                 </span>
               </div>
             </Listbox.Button>
@@ -81,6 +82,6 @@ const GroupBy: React.FC = () =>  {
       )}
     </Listbox>
   );
-}
+};
 
 export default GroupBy;

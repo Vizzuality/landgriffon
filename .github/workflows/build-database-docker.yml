@@ -1,8 +1,8 @@
 name: Build database docker image
 on:
   push:
-    paths:
-      - 'database/**'
+#    paths:
+#      - 'database/**'
 #    branches: [ main ]
   workflow_dispatch:
 

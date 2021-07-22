@@ -10,6 +10,7 @@ defaults:
     working-directory: marketing
 jobs:
   marketing:
+    name: Deploy marketing site
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1

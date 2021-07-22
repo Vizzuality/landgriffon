@@ -6,9 +6,9 @@
 # inadvertently.
 ENVFILE := $(if $(environment), .env-test-e2e, .env)
 CIENV := $(if $(filter $(environment), ci), -f docker-compose-test-e2e.ci.yml , -f docker-compose-test-e2e.local.yml)
-API_DB_INSTANCE := $(if $(environment), test-e2e-postgresql-api, postgresql-api)
+API_DB_INSTANCE := $(if $(environment), test-e2e-postgresql-api, postgresql)
 API_POSTGRES_USER := $(if $(filter $(environment), ci),${API_POSTGRES_USER},$(shell grep -e API_POSTGRES_USER ${ENVFILE} | sed 's/^.*=//'))
-API_POSTGRES_DB := $(if $(filter $(environment), ci),${API_POSTGRES_DB},$(shell grep -e API_POSTGRES_DB ${ENVFILE} | sed 's/^.*=//'))
+API_POSTGRES_DATABASE := $(if $(filter $(environment), ci),${API_POSTGRES_DATABASE},$(shell grep -e API_POSTGRES_DATABASE ${ENVFILE} | sed 's/^.*=//'))
 
 DOCKER_COMPOSE_FILE := $(if $(environment), -f docker-compose-test-e2e.yml $(CIENV), -f docker-compose.yml )
 COMPOSE_PROJECT_NAME := "landgriffon"
@@ -24,7 +24,7 @@ test-commands:
 	@echo $(ENVFILE)
 	@echo $(DOCKER_COMPOSE_FILE)
 	@echo $(CIENV)
-	@echo $(API_POSTGRES_DB)
+	@echo $(API_POSTGRES_DATABASE)
 	@echo $(GEO_POSTGRES_USER)
 
 # Starts the API application
@@ -58,13 +58,8 @@ clean-slate: stop
 	docker system prune --volumes -f
 
 # Runs the test suite of the API application
-test-api:
+test-api: start setup-api-db run-api-tests
 	@echo "$(RED)Running test suite:$(NC)"
-	# start from clean slate, in case anything was left around from previous runs (mostly relevant locally, not in CI) and spin the instances (geoprocessing, api and the DBs)
-	docker-compose $(DOCKER_COMPOSE_FILE) --project-name ${COMPOSE_PROJECT_NAME} up -d --build api
-	docker-compose $(DOCKER_COMPOSE_FILE) --project-name ${COMPOSE_PROJECT_NAME} up -d --build api
-	docker-compose $(DOCKER_COMPOSE_FILE) exec -T api ./entrypoint.sh test
-	$(MAKE) clean-slate
 
 # Runs all test suites
 # This is meant to be an aggregator of smaller test run tasks

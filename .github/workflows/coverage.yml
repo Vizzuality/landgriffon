@@ -1,6 +1,7 @@
 name: Merge and upload code coverage reports
 on:
   push:
+  workflow_dispatch:
 env:
   CC_TEST_REPORTER_URL: https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
   CC_TEST_REPORTER_ID: 29691479b26fbb03a9d926e1d6b0bba99c7eae3bb235e26a8b269219fe3c62fc

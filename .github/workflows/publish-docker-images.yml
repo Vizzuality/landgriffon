@@ -8,6 +8,7 @@ on:
       - 'api/**'
       - 'client/**'
       - '.github/**'
+  workflow_dispatch:
 
 jobs:
   push_api_to_registry:

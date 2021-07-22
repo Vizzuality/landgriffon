@@ -2,6 +2,7 @@ name: API Tests
 
 on:
   push:
+  workflow_dispatch:
 
 env:
   NODE_ENV: test

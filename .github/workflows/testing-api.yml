@@ -2,6 +2,9 @@ name: API Tests
 
 on:
   push:
+    paths:
+      - 'api/**'
+      - '.github/**'
   workflow_dispatch:
 
 env:

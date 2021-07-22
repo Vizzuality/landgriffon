@@ -70,7 +70,7 @@ export class IndicatorRecordsController {
     );
   }
 
-  @ApiOperation({ description: 'Find indicator resource by id' })
+  @ApiOperation({ description: 'Find indicator record by id' })
   @ApiOkResponse({ type: IndicatorRecord })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
@@ -80,7 +80,7 @@ export class IndicatorRecordsController {
     );
   }
 
-  @ApiOperation({ description: 'Create a indicator resource' })
+  @ApiOperation({ description: 'Create a indicator record' })
   @ApiOkResponse({ type: IndicatorRecord })
   @Post()
   @UsePipes(ValidationPipe)
@@ -92,7 +92,7 @@ export class IndicatorRecordsController {
     );
   }
 
-  @ApiOperation({ description: 'Updates a indicator resource' })
+  @ApiOperation({ description: 'Updates a indicator record' })
   @ApiOkResponse({ type: IndicatorRecord })
   @Patch(':id')
   async update(
@@ -104,7 +104,7 @@ export class IndicatorRecordsController {
     );
   }
 
-  @ApiOperation({ description: 'Deletes a indicator resource' })
+  @ApiOperation({ description: 'Deletes a indicator record' })
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {

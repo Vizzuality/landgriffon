@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEnum,
   IsNotEmpty,
@@ -8,12 +8,12 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { TASK_STATUS } from 'modules/indicator-records/indicator-record.entity';
+import { INDICATOR_RECORD_STATUS } from 'modules/indicator-records/indicator-record.entity';
 
 export class CreateIndicatorRecordDto {
   @IsNumber()
   @IsNotEmpty()
-  @ApiPropertyOptional()
+  @ApiProperty()
   value!: number;
 
   @IsString()
@@ -22,9 +22,9 @@ export class CreateIndicatorRecordDto {
   sourcingRecordId?: string;
 
   @IsString()
-  @IsOptional()
-  @ApiPropertyOptional()
-  indicatorId?: string;
+  @IsNotEmpty()
+  @ApiProperty()
+  indicatorId!: string;
 
   @IsString()
   @IsOptional()
@@ -33,7 +33,7 @@ export class CreateIndicatorRecordDto {
 
   @IsString()
   @IsOptional()
-  @IsEnum(Object.values(TASK_STATUS))
+  @IsEnum(Object.values(INDICATOR_RECORD_STATUS))
   @ApiPropertyOptional()
   status?: string;
 
@@ -42,5 +42,5 @@ export class CreateIndicatorRecordDto {
   @MinLength(4)
   @MaxLength(50)
   @ApiPropertyOptional()
-  statusMsg: string;
+  statusMsg?: string;
 }

@@ -38,7 +38,10 @@ services:
       - postgresql
 
   postgresql:
-    image: postgres:13.3
+    build:
+      context: database
+      args:
+        - PG_H3_VERSION=3.7.1
     container_name: landgriffon-postgresql
     env_file: .env
     ports:

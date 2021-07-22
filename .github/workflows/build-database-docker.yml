@@ -1,0 +1,27 @@
+name: Build database docker image
+on:
+  push:
+    paths:
+      - 'database/**'
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  PG_H3_VERSION: 3.7.1
+
+jobs:
+  testing-api:
+    name: Build database docker image
+    runs-on: ubuntu-20.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Push to Docker Hub
+        uses: docker/build-push-action@v2
+        with:
+          context: database
+          push: true
+          tags: vizzuality/landgriffon-database:latest

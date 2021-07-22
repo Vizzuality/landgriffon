@@ -8,6 +8,7 @@ on:
       - 'api/**'
       - 'client/**'
       - '.github/**'
+  workflow_dispatch:
 
 jobs:
   deploy_images_to_kubernetes:

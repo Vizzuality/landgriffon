@@ -32,7 +32,16 @@ export class IndicatorRecordsService extends AppBaseService<
   }
   get serializerConfig(): JSONAPISerializerConfig<IndicatorRecord> {
     return {
-      attributes: ['value', 'status', 'statusMsg', 'createdAt', 'updatedAt'],
+      attributes: [
+        'value',
+        'status',
+        'statusMsg',
+        'createdAt',
+        'updatedAt',
+        'indicatorId',
+        'indicatorCoefficientId',
+        'sourcingRecordId',
+      ],
       keyForAttribute: 'camelCase',
     };
   }

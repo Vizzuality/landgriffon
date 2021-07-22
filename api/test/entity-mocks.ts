@@ -7,6 +7,7 @@ import { Material } from '../src/modules/materials/material.entity';
 import { Supplier } from '../src/modules/suppliers/supplier.entity';
 import { SourcingRecord } from '../src/modules/sourcing-records/sourcing-record.entity';
 import { IndicatorRecord } from '../src/modules/indicator-records/indicator-record.entity';
+import { Indicator } from '../src/modules/indicators/indicator.entity';
 
 async function createIndicatorCoefficient(
   additionalData: Partial<IndicatorCoefficient> = {},
@@ -25,6 +26,20 @@ async function createIndicatorCoefficient(
   }
 
   return indicatorCoefficient.save();
+}
+
+async function createIndicator(
+  additionalData: Partial<Indicator> = {},
+): Promise<Indicator> {
+  const indicator = Indicator.merge(
+    new Indicator(),
+    {
+      name: 'test indicator',
+    },
+    additionalData,
+  );
+
+  return indicator.save();
 }
 
 async function createIndicatorRecord(
@@ -145,6 +160,7 @@ async function createSourcingRecord(
 }
 
 export {
+  createIndicator,
   createIndicatorCoefficient,
   createIndicatorRecord,
   createIndicatorSource,

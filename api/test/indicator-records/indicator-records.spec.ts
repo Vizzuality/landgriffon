@@ -2,10 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
-import { createIndicatorRecord } from '../entity-mocks';
+import { createIndicator, createIndicatorRecord } from '../entity-mocks';
 import { IndicatorRecordsModule } from '../../src/modules/indicator-records/indicator-records.module';
 import { IndicatorRecordRepository } from '../../src/modules/indicator-records/indicator-record.repository';
 import { IndicatorRecord } from '../../src/modules/indicator-records/indicator-record.entity';
+import { Indicator } from '../../src/modules/indicators/indicator.entity';
 
 /**
  * Tests for the IndicatorRecordsModule.
@@ -45,10 +46,12 @@ describe('IndicatorRecordsModule (e2e)', () => {
 
   describe('Indicator record - Create', () => {
     test('Create an indicator record should be successful (happy case)', async () => {
+      const indicator: Indicator = await createIndicator();
       const response = await request(app.getHttpServer())
         .post('/api/v1/indicator-records')
         .send({
           value: 2000,
+          indicatorId: indicator.id,
         })
         .expect(HttpStatus.CREATED);
 
@@ -70,12 +73,16 @@ describe('IndicatorRecordsModule (e2e)', () => {
       .send()
       .expect(HttpStatus.BAD_REQUEST);
 
+    console.log(response.body.errors[0].data);
+
     expect(response).toHaveErrorMessage(
       HttpStatus.BAD_REQUEST,
       'Bad Request Exception',
       [
         'value should not be empty',
         'value must be a number conforming to the specified constraints',
+        'indicatorId should not be empty',
+        'indicatorId must be a string',
       ],
     );
   });

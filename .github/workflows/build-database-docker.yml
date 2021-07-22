@@ -1,9 +1,9 @@
 name: Build database docker image
 on:
   push:
-#    paths:
-#      - 'database/**'
-#    branches: [ main ]
+  #    paths:
+  #      - 'database/**'
+  #    branches: [ main ]
   workflow_dispatch:
 
 env:

@@ -6,17 +6,19 @@ import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-reg
 import { SourcingRecordsSheets } from 'modules/import-data/sourcing-records/import.service';
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
-import { isEmpty } from 'lodash';
 import { Layer } from 'modules/layers/layer.entity';
 import { WorkSheet } from 'xlsx';
+
+export interface SourcingData extends CreateSourcingLocationDto {
+  sourcingRecords: CreateSourcingRecordDto[];
+}
 
 export interface SourcingRecordsDtos {
   materials: CreateMaterialDto[];
   adminRegions: CreateAdminRegionDto[];
   businessUnits: CreateBusinessUnitDto[];
   suppliers: CreateSupplierDto[];
-  sourcingRecords: CreateSourcingRecordDto[];
-  sourcingLocations: CreateSourcingLocationDto[];
+  sourcingData: SourcingData[];
 }
 
 const NON_META_PROPERTIES: Array<string> = [
@@ -65,26 +67,23 @@ export class SourcingRecordsDtoProcessorService {
     const processedSourcingData: Record<string, any> = this.cleanCustomData(
       importData.sourcingData,
     );
-
-    const sourcingRecords: CreateSourcingRecordDto[] = await this.createSourcingRecordDtos(
-      processedSourcingData.sourcingRecords,
-    );
-    const sourcingLocations: CreateSourcingLocationDto[] = await this.createSourcingLocationDtos(
-      processedSourcingData.sourcingLocations,
+    /**
+     * Builds SourcingData from parsed XLSX
+     */
+    const sourcingData: SourcingData[] = await this.createSourcingDataDTOs(
+      processedSourcingData.sourcingData,
       sourcingLocationGroupId,
     );
-
     return {
       materials,
       businessUnits,
       suppliers,
       adminRegions,
-      sourcingLocations,
-      sourcingRecords,
+      sourcingData,
     };
   }
   private isSourcingLocationData(field: string): boolean {
-    return !SOURCING_LOCATION_PROPERTIES.includes(field);
+    return SOURCING_LOCATION_PROPERTIES.includes(field);
   }
 
   private isMeta(field: string): boolean {
@@ -97,9 +96,11 @@ export class SourcingRecordsDtoProcessorService {
     return regexMatch ? parseInt(regexMatch[0]) : null;
   }
 
-  private cleanCustomData(customData: WorkSheet[]): any {
-    const sourcingRecords: Record<string, any>[] = [];
-    const sourcingLocations: Record<string, any>[] = [];
+  private cleanCustomData(
+    customData: WorkSheet[],
+  ): { sourcingData: SourcingData[] } {
+    const sourcingData: SourcingData[] = [];
+
     /**
      * Clean all hashmaps that are empty therefore useless
      */
@@ -107,11 +108,12 @@ export class SourcingRecordsDtoProcessorService {
       (row: WorkSheet) => row['material.path'] !== '',
     );
     /**
-     * Separate base properties common for each sourcing-record row
-     * Separate metadata properties to metadata object common for each sourcing-record row
+     * Separate base properties common for each sourcing-location row
+     * Separate metadata properties to metadata object common for each sourcing-location row
      * Check if current key contains a year ('2018_tonnage') if so, get the year and its value
      */
     for (const eachRecordOfCustomData of nonEmptyData) {
+      const sourcingRecords: Record<string, any>[] = [];
       const years: Record<string, any> = {};
       const baseProps: Record<string, any> = {};
       const metadata: Record<string, any> = {};
@@ -122,16 +124,14 @@ export class SourcingRecordsDtoProcessorService {
           this.getYear(field)
         ) {
           years[field] = eachRecordOfCustomData[field];
-        } else if (this.isMeta(field)) {
-          metadata[field] = eachRecordOfCustomData[field];
         } else if (this.isSourcingLocationData(field)) {
           sourcingLocation[field] = eachRecordOfCustomData[field];
+        } else if (this.isMeta(field)) {
+          metadata[field] = eachRecordOfCustomData[field];
         } else {
           baseProps[field] = eachRecordOfCustomData[field];
         }
       }
-      const sourcingLocationWithMeta = { ...sourcingLocation, metadata };
-      sourcingLocations.push(sourcingLocationWithMeta);
       /**
        * For each year, spread the base properties and attach metadata
        * to build each sourcing-record row
@@ -146,8 +146,18 @@ export class SourcingRecordsDtoProcessorService {
           sourcingRecords.push(cleanRow);
         }
       }
+      /**
+       * For each SourcingLocation, attach belonging sourcing-records to have awareness
+       * of their relationship
+       */
+      const sourcingLocationWithSourcingRecords = {
+        ...sourcingLocation,
+        sourcingRecords,
+        metadata,
+      };
+      sourcingData.push(sourcingLocationWithSourcingRecords as SourcingData);
     }
-    return { sourcingLocations, sourcingRecords };
+    return { sourcingData };
   }
 
   /**
@@ -239,39 +249,31 @@ export class SourcingRecordsDtoProcessorService {
   }
 
   /**
-   * Creates an array of CreateSourcingRecordDto objects from the JSON data processed from the XLSX file
+   * Creates an array of SourcingLocation and nested SourcingRecord objects from the JSON data processed from the XLSX file
    *
    * @param importData
+   * @param sourcingLocationGroupId
    * @private
    */
-  private async createSourcingRecordDtos(
-    importData: Record<string, any>[],
-  ): Promise<CreateSourcingRecordDto[]> {
-    const sourcingRecordDtos: CreateSourcingRecordDto[] = [];
-    importData.forEach((importRow: Record<string, any>) => {
-      sourcingRecordDtos.push(this.createSourcingRecordDTOFromData(importRow));
-    });
-    return sourcingRecordDtos;
-  }
-
-  /**
-   * Creates an array of CreateSourcingLocationDto objects from the JSON data processed from the XLSX file
-   *
-   * @param importData
-   * @private
-   */
-  private async createSourcingLocationDtos(
+  private async createSourcingDataDTOs(
     importData: Record<string, any>[],
     sourcingLocationGroupId: string,
-  ): Promise<CreateSourcingLocationDto[]> {
-    const sourcingLocationDtos: CreateSourcingLocationDto[] = [];
+  ): Promise<SourcingData[]> {
+    const sourcingLocationDtos: any[] = [];
     importData.forEach((importRow: Record<string, any>) => {
-      sourcingLocationDtos.push(
-        this.createSourcingLocationDTOFromData(
-          importRow,
-          sourcingLocationGroupId,
-        ),
+      const sourcingLocationDto = this.createSourcingLocationDTOFromData(
+        importRow,
+        sourcingLocationGroupId,
       );
+      const sourcingRecords: CreateSourcingRecordDto[] = importRow.sourcingRecords.map(
+        (sourcingRecord: CreateSourcingRecordDto) => {
+          return this.createSourcingRecordDTOFromData(sourcingRecord);
+        },
+      );
+      sourcingLocationDtos.push({
+        ...sourcingLocationDto,
+        sourcingRecords,
+      });
     });
     return sourcingLocationDtos;
   }
@@ -324,16 +326,14 @@ export class SourcingRecordsDtoProcessorService {
       sourcingLocationData.location_country_input;
     sourcingLocationDto.locationAddressInput =
       sourcingLocationData.location_address_input;
-    sourcingLocationDto.locationLatitude = isEmpty(
-      sourcingLocationData.location_latitude_input,
-    )
-      ? undefined
-      : parseFloat(sourcingLocationData.location_latitude_input);
-    sourcingLocationDto.locationLongitude = isEmpty(
-      sourcingLocationData.location_longitude_input,
-    )
-      ? undefined
-      : parseFloat(sourcingLocationData.location_longitude_input);
+    sourcingLocationDto.locationLatitude =
+      sourcingLocationData.location_latitude_input === ''
+        ? undefined
+        : parseFloat(sourcingLocationData.location_latitude_input);
+    sourcingLocationDto.locationLongitude =
+      sourcingLocationData.location_longitude_input === ''
+        ? undefined
+        : parseFloat(sourcingLocationData.location_longitude_input);
     sourcingLocationDto.metadata = sourcingLocationData.metadata;
     sourcingLocationDto.sourcingLocationGroupId = sourcingLocationGroupId;
     return sourcingLocationDto;

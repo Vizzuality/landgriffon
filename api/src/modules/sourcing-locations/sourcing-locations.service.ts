@@ -61,7 +61,7 @@ export class SourcingLocationsService extends AppBaseService<
     await this.sourcingLocationRepository.delete({});
   }
 
-  async save(entityArray: any[]): Promise<void> {
-    await this.sourcingLocationRepository.save(entityArray);
+  async save(entityArray: any): Promise<any> {
+    return await this.sourcingLocationRepository.save(entityArray);
   }
 }

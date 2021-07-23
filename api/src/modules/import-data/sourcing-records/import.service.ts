@@ -6,6 +6,7 @@ import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { ImportDataService } from 'modules/import-data/import-data.service';
 import {
+  SourcingData,
   SourcingRecordsDtoProcessorService,
   SourcingRecordsDtos,
 } from 'modules/import-data/sourcing-records/dto-processor.service';
@@ -13,6 +14,7 @@ import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-record
 import { SourcingLocationGroupsService } from 'modules/sourcing-location-groups/sourcing-location-groups.service';
 import { validateOrReject } from 'class-validator';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 
 export interface SourcingRecordsSheets extends Record<string, any[]> {
   materials: Record<string, any>[];
@@ -48,7 +50,7 @@ export class SourcingRecordsImportService {
     protected readonly dtoProcessor: SourcingRecordsDtoProcessorService,
   ) {}
 
-  async importSourcingRecords(filePath: string): Promise<void> {
+  async importSourcingRecords(filePath: string): Promise<any> {
     await this.fileService.isFilePresentInFs(filePath);
     try {
       const parsedXLSXDataset: SourcingRecordsSheets = await this.fileService.transformToJson(
@@ -65,7 +67,6 @@ export class SourcingRecordsImportService {
         parsedXLSXDataset,
         sourcingLocationGroup.id,
       );
-
       await this.validateDTOs(dtoMatchedData);
 
       await this.cleanDataBeforeImport();
@@ -73,8 +74,7 @@ export class SourcingRecordsImportService {
       await this.businessUnitService.createTree(dtoMatchedData.businessUnits);
       await this.supplierService.createTree(dtoMatchedData.suppliers);
       await this.adminRegionService.createTree(dtoMatchedData.adminRegions);
-      await this.sourcingLocationService.save(dtoMatchedData.sourcingLocations);
-      await this.sourcingRecordService.save(dtoMatchedData.sourcingRecords);
+      return await this.saveSourcingData(dtoMatchedData.sourcingData);
     } finally {
       await this.fileService.deleteDataFromFS(filePath);
     }
@@ -85,11 +85,13 @@ export class SourcingRecordsImportService {
   ): Promise<void | Array<ErrorConstructor>> {
     const validationErrorArray: Array<typeof Error> = [];
     for (const parsedSheet in dtoLists) {
-      for (const dto of dtoLists[parsedSheet as keyof SourcingRecordsDtos]) {
-        try {
-          await validateOrReject(dto);
-        } catch (err) {
-          validationErrorArray.push(err);
+      if (dtoLists.hasOwnProperty(parsedSheet)) {
+        for (const dto of dtoLists[parsedSheet as keyof SourcingRecordsDtos]) {
+          try {
+            await validateOrReject(dto);
+          } catch (err) {
+            validationErrorArray.push(err);
+          }
         }
       }
     }
@@ -119,5 +121,32 @@ export class SourcingRecordsImportService {
         `Database could not been cleaned before loading new dataset: ${err.message}`,
       );
     }
+  }
+
+  /**
+   *
+   * @param sourcingData: Array of Sourcing-Locations with nested Sourcing-Records
+   * @private
+   * Saves each Sourcing Location and returns and ID to attach to its related
+   * Sourcing-Records, to keep relation
+   * Save Sourcing-Record array (ORM will manage better than us) with attached Sourcing-Location ID
+   * @debt: There MUST be a cleaner and more performant way to do this
+   */
+
+  private async saveSourcingData(sourcingData: SourcingData[]): Promise<void> {
+    await Promise.all(
+      sourcingData.map(async (sourcingLocation: any) => {
+        const { id } = await this.sourcingLocationService.save(
+          sourcingLocation,
+        );
+        const sourcingRecords: SourcingRecord[] = sourcingLocation.sourcingRecords.map(
+          (sourcingRecord: SourcingRecord) => ({
+            ...sourcingRecord,
+            sourcingLocationId: id,
+          }),
+        );
+        await this.sourcingRecordService.save(sourcingRecords);
+      }),
+    );
   }
 }

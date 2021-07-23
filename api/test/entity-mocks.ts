@@ -8,6 +8,7 @@ import { Supplier } from '../src/modules/suppliers/supplier.entity';
 import { SourcingRecord } from '../src/modules/sourcing-records/sourcing-record.entity';
 import { IndicatorRecord } from '../src/modules/indicator-records/indicator-record.entity';
 import { Indicator } from '../src/modules/indicators/indicator.entity';
+import { SourcingLocation } from '../src/modules/sourcing-locations/sourcing-location.entity';
 
 async function createIndicatorCoefficient(
   additionalData: Partial<IndicatorCoefficient> = {},
@@ -144,6 +145,22 @@ async function createScenarioIntervention(
   return scenarioIntervention.save();
 }
 
+async function createSourcingLocation(
+  additionalData: Partial<SourcingLocation> = {},
+): Promise<SourcingLocation> {
+  const sourcingLocation = SourcingLocation.merge(
+    new SourcingLocation(),
+    {
+      title: 'test sourcing location',
+      locationAddressInput: 'pqrst',
+      locationCountryInput: 'uvwxy',
+    },
+    additionalData,
+  );
+
+  return sourcingLocation.save();
+}
+
 async function createSourcingRecord(
   additionalData: Partial<SourcingRecord> = {},
 ): Promise<SourcingRecord> {
@@ -169,5 +186,6 @@ export {
   createSupplier,
   createScenario,
   createScenarioIntervention,
+  createSourcingLocation,
   createSourcingRecord,
 };

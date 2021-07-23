@@ -17,7 +17,7 @@ export const sourcingRecordResource: BaseServiceResource = {
     singular: 'sourcingRecord',
     plural: 'sourcingRecords',
   },
-  entitiesAllowedAsIncludes: [],
+  entitiesAllowedAsIncludes: ['sourcingLocation'],
   columnsAllowedAsFilter: ['tonnage', 'year'],
 };
 
@@ -35,10 +35,14 @@ export class SourcingRecord extends TimestampedBaseEntity {
   @ApiProperty()
   year!: number;
 
-  @ManyToOne(() => SourcingLocation, (srcLoc: SourcingLocation) => srcLoc.id)
-  @JoinColumn()
-  @ApiPropertyOptional()
-  sourcingLocationsId: string;
+  @ManyToOne(() => SourcingLocation, (srcLoc: SourcingLocation) => srcLoc.id, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'sourcingLocationId' })
+  sourcingLocation: SourcingLocation;
+
+  @Column({ nullable: true })
+  sourcingLocationId: string;
 
   @Column({ type: 'jsonb', nullable: true })
   @ApiPropertyOptional()
@@ -49,5 +53,5 @@ export class SourcingRecord extends TimestampedBaseEntity {
    */
   @ManyToOne(() => User, (user: User) => user.id)
   @ApiProperty()
-  updatedById?: string;
+  updatedBy?: string;
 }

@@ -36,11 +36,12 @@ export class SourcingRecordsService extends AppBaseService<
       attributes: [
         'tonnage',
         'year',
-        'sourcingLocationsId',
+        'sourcingLocationId',
+        'sourcingLocation',
         'metadata',
         'createdAt',
         'updatedAt',
-        'updatedById',
+        'updatedBy',
       ],
       keyForAttribute: 'camelCase',
     };
@@ -59,7 +60,7 @@ export class SourcingRecordsService extends AppBaseService<
   async clearTable(): Promise<void> {
     await this.sourcingRecordRepository.delete({});
   }
-  async save(entityArray: any[]): Promise<void> {
+  async save(entityArray: SourcingRecord[]): Promise<void> {
     await this.sourcingRecordRepository.save(entityArray);
   }
   async getYears(): Promise<number[]> {

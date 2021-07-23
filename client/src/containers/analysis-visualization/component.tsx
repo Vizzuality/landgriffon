@@ -1,6 +1,7 @@
 import { useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
 import Map from 'components/map';
+import AnalysisFilters from './analysis-filters';
 import ModeControl from './mode-control';
 
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
@@ -11,8 +12,9 @@ const AnalysisVisualization = () => {
   const { visualizationMode } = useAppSelector(analysis);
 
   return (
-    <section className="min-w-0 flex-1 h-full flex flex-col overflow-hidden lg:order-last bg-white">
+    <section className="relative min-w-0 flex-1 h-full flex flex-col overflow-hidden lg:order-last bg-white">
       {/* Vis selector: map, table or chart */}
+      <AnalysisFilters />
       <ModeControl />
 
       {visualizationMode === 'map' && (

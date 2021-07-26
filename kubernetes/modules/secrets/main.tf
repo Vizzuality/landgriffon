@@ -40,7 +40,7 @@ resource "kubernetes_secret" "db_secret" {
   }
 
   data = {
-    DB_HOST        = sensitive(local.postgres_secret_json.host)
+    DB_HOST        = "postgres-postgresql.default.svc.cluster.local"
     DB_USERNAME    = sensitive(local.postgres_secret_json.username)
     DB_PASSWORD    = sensitive(local.postgres_secret_json.password)
     DB_DATABASE    = "landgriffon"
@@ -55,5 +55,16 @@ resource "kubernetes_secret" "api_secret" {
 
   data = {
     JWT_SECRET = aws_secretsmanager_secret_version.jwt_secret_version.secret_string
+  }
+}
+
+resource "kubernetes_secret" "postgres-secret" {
+  metadata {
+    name = "postgres-secret"
+  }
+
+  data = {
+    postgresql-password          = sensitive(local.postgres_secret_json.password)
+    postgresql-postgres-password = sensitive(local.postgres_secret_json.password)
   }
 }

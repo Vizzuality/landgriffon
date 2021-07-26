@@ -56,12 +56,12 @@ resource "kubernetes_deployment" "client_deployment" {
           image_pull_policy = "Always"
           name              = "client"
 
-          args = ["start"]
+          args = ["start:prod"]
 
           resources {
             limits = {
-              cpu    = "0.5"
-              memory = "512Mi"
+              cpu    = "500m"
+              memory = "256Mi"
             }
             requests = {
               cpu    = "250m"

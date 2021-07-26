@@ -3,7 +3,7 @@
 # - Ingress + Egress on port 22 from www
 #
 resource "aws_security_group" "bastion_security_group" {
-  vpc_id = var.vpc.id
+  vpc_id      = var.vpc.id
   description = "Default security group for the bastion host"
 
   tags = merge(

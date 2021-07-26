@@ -35,7 +35,7 @@ output "postgres_port" {
 }
 
 output "postgres_username" {
-  value = module.postgresql.username
+  value     = module.postgresql.username
   sensitive = true
 }
 

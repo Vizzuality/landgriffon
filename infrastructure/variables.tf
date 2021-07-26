@@ -91,3 +91,23 @@ variable "default_node_group_desired_size" {
   type    = number
   default = 1
 }
+
+variable "data_node_group_instance_types" {
+  type    = string
+  default = "m5a.large"
+}
+
+variable "data_node_group_min_size" {
+  type    = number
+  default = 1
+}
+
+variable "data_node_group_max_size" {
+  type    = number
+  default = 1
+}
+
+variable "data_node_group_desired_size" {
+  type    = number
+  default = 1
+}

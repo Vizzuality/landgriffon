@@ -55,10 +55,10 @@ module "dns" {
 }
 
 module "eks" {
-  source         = "./modules/eks"
-  project        = var.project_name
-  vpc_id         = module.vpc.id
-  subnet_ids =     module.vpc.private_subnets.*.id
+  source     = "./modules/eks"
+  project    = var.project_name
+  vpc_id     = module.vpc.id
+  subnet_ids = module.vpc.private_subnets.*.id
   aws_region = var.aws_region
 }
 
@@ -72,14 +72,30 @@ module "default-node-group" {
   max_size        = var.default_node_group_max_size
   desired_size    = var.default_node_group_desired_size
   node_role_arn   = module.eks.node_role_arn
-  subnet_ids =     module.vpc.private_subnets.*.id
+  subnet_ids      = module.vpc.private_subnets.*.id
   labels = {
     type : "default"
   }
 }
 
+module "data-node-group" {
+  source          = "./modules/node_group"
+  cluster         = module.eks.cluster
+  cluster_name    = module.eks.cluster_name
+  node_group_name = "data-node-group"
+  instance_types  = var.data_node_group_instance_types
+  min_size        = var.data_node_group_min_size
+  max_size        = var.data_node_group_max_size
+  desired_size    = var.data_node_group_desired_size
+  node_role_arn   = module.eks.node_role_arn
+  subnet_ids      = [module.vpc.private_subnets[0].id]
+  labels = {
+    type : "data"
+  }
+}
+
 module "postgresql" {
-  source                      = "./modules/postgresql"
+  source = "./modules/postgresql"
 
   availability_zone_names     = module.vpc.private_subnets.*.availability_zone
   log_retention_period        = var.rds_log_retention_period

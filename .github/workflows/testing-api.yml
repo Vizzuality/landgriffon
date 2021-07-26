@@ -28,6 +28,7 @@ jobs:
         env:
           POSTGRES_USER: landgriffon
           POSTGRES_PASSWORD: landgriffon
+          POSTGRES_DB: landgriffon
 
     steps:
       - name: Checkout code

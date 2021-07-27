@@ -57,7 +57,7 @@ export class MaterialsController {
         name: columnName,
       }),
     ),
-    entitiesAllowedAsIncludes: ['children'],
+    entitiesAllowedAsIncludes: materialResource.entitiesAllowedAsIncludes,
   })
   @Get()
   async findAll(
@@ -101,9 +101,15 @@ export class MaterialsController {
   @ApiOkResponse({ type: Material })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Material> {
+  async findOne(
+    @ProcessFetchSpecification({
+      allowedFilters: materialResource.columnsAllowedAsFilter,
+    })
+    fetchSpecification: FetchSpecification,
+    @Param('id') id: string,
+  ): Promise<Material> {
     return await this.materialsService.serialize(
-      await this.materialsService.getById(id),
+      await this.materialsService.getById(id, fetchSpecification),
     );
   }
 

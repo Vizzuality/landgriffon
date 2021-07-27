@@ -34,6 +34,7 @@ export class MaterialsService extends AppBaseService<
         'name',
         'description',
         'status',
+        'layer',
         'layerId',
         'hsCodeId',
         'earthstatId',

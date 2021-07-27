@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -27,7 +28,7 @@ export const materialResource: BaseServiceResource = {
     singular: 'material',
     plural: 'materials',
   },
-  entitiesAllowedAsIncludes: ['children'],
+  entitiesAllowedAsIncludes: ['children', 'layer'],
   columnsAllowedAsFilter: [
     'name',
     'description',
@@ -101,7 +102,11 @@ export class Material extends TimestampedBaseEntity {
   )
   sourcingLocations: SourcingLocation[];
 
-  @ManyToOne(() => Layer, (layer: Layer) => layer.materials, { eager: false })
+  @ManyToOne(() => Layer, (layer: Layer) => layer.materials, {
+    eager: false,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'layerId' })
   layer: Layer;
 
   /**

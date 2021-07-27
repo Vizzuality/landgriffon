@@ -8,9 +8,10 @@ import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sou
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { Layer } from 'modules/layers/layer.entity';
 import { WorkSheet } from 'xlsx';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 
 export interface SourcingData extends CreateSourcingLocationDto {
-  sourcingRecords: CreateSourcingRecordDto[];
+  sourcingRecords: SourcingRecord[];
 }
 
 export interface SourcingRecordsDtos {

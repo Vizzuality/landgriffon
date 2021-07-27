@@ -76,11 +76,11 @@ describe('Sourcing Records import', () => {
     await sourcingLocationRepository.delete({});
     await sourcingRecordRepository.delete({});
     await sourcingLocationGroupRepository.delete({});
-    jest.clearAllTimers();
   });
 
   afterAll(async () => {
     await Promise.all([app.close()]);
+    jest.clearAllTimers();
   });
 
   test('When a file is not sent to the API then it should return a 400 code and the storage folder should be empty', async () => {
@@ -183,7 +183,7 @@ describe('Sourcing Records import', () => {
       sourcingRecords[0].sourcingLocationId,
     );
 
-    expect(sourcingRecords[0].sourcingLocationId).toBeTruthy();
-    expect(sourcingLocation).toBeDefined();
+    expect(sourcingRecords[0]).toMatchObject(new SourcingRecord());
+    expect(sourcingLocation).toMatchObject(new SourcingLocation());
   });
 });

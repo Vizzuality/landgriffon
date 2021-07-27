@@ -42,7 +42,7 @@ export class SourcingRecord extends TimestampedBaseEntity {
   sourcingLocation: SourcingLocation;
 
   @Column({ nullable: true })
-  sourcingLocationId: string;
+  sourcingLocationId!: string;
 
   @Column({ type: 'jsonb', nullable: true })
   @ApiPropertyOptional()

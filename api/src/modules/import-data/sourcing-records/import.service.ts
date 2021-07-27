@@ -50,7 +50,7 @@ export class SourcingRecordsImportService {
     protected readonly dtoProcessor: SourcingRecordsDtoProcessorService,
   ) {}
 
-  async importSourcingRecords(filePath: string): Promise<any> {
+  async importSourcingRecords(filePath: string): Promise<void> {
     await this.fileService.isFilePresentInFs(filePath);
     try {
       const parsedXLSXDataset: SourcingRecordsSheets = await this.fileService.transformToJson(
@@ -74,7 +74,7 @@ export class SourcingRecordsImportService {
       await this.businessUnitService.createTree(dtoMatchedData.businessUnits);
       await this.supplierService.createTree(dtoMatchedData.suppliers);
       await this.adminRegionService.createTree(dtoMatchedData.adminRegions);
-      return await this.saveSourcingData(dtoMatchedData.sourcingData);
+      await this.saveSourcingData(dtoMatchedData.sourcingData);
     } finally {
       await this.fileService.deleteDataFromFS(filePath);
     }
@@ -130,23 +130,21 @@ export class SourcingRecordsImportService {
    * Saves each Sourcing Location and returns and ID to attach to its related
    * Sourcing-Records, to keep relation
    * Save Sourcing-Record array (ORM will manage better than us) with attached Sourcing-Location ID
-   * @debt: There MUST be a cleaner and more performant way to do this
    */
 
   private async saveSourcingData(sourcingData: SourcingData[]): Promise<void> {
+    const sourcingRecordsWithSourcingIDs: SourcingRecord[] = [];
     await Promise.all(
-      sourcingData.map(async (sourcingLocation: any) => {
-        const { id } = await this.sourcingLocationService.save(
-          sourcingLocation,
-        );
-        const sourcingRecords: SourcingRecord[] = sourcingLocation.sourcingRecords.map(
-          (sourcingRecord: SourcingRecord) => ({
+      sourcingData.map(async (sourcingData: SourcingData) => {
+        const { id } = await this.sourcingLocationService.save(sourcingData);
+        sourcingData.sourcingRecords.forEach((sourcingRecord: SourcingRecord) =>
+          sourcingRecordsWithSourcingIDs.push({
             ...sourcingRecord,
             sourcingLocationId: id,
-          }),
+          } as SourcingRecord),
         );
-        await this.sourcingRecordService.save(sourcingRecords);
       }),
     );
+    await this.sourcingRecordService.save(sourcingRecordsWithSourcingIDs);
   }
 }

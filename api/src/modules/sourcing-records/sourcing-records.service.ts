@@ -60,7 +60,7 @@ export class SourcingRecordsService extends AppBaseService<
   async clearTable(): Promise<void> {
     await this.sourcingRecordRepository.delete({});
   }
-  async save(entityArray: SourcingRecord[]): Promise<void> {
+  async save(entityArray: any[]): Promise<void> {
     await this.sourcingRecordRepository.save(entityArray);
   }
   async getYears(): Promise<number[]> {

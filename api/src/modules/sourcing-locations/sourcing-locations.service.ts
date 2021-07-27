@@ -61,7 +61,12 @@ export class SourcingLocationsService extends AppBaseService<
     await this.sourcingLocationRepository.delete({});
   }
 
-  async save(entityArray: any): Promise<any> {
-    return await this.sourcingLocationRepository.save(entityArray);
+  /**
+   *
+   * @debt Add proper input type when defined. Current workaround
+   * 'SourcingData' mess with Entity typing
+   */
+  async save(sourcingLocation: any): Promise<SourcingLocation> {
+    return await this.sourcingLocationRepository.save(sourcingLocation);
   }
 }

@@ -35,9 +35,13 @@ export class SourcingRecord extends TimestampedBaseEntity {
   @ApiProperty()
   year!: number;
 
-  @ManyToOne(() => SourcingLocation, (srcLoc: SourcingLocation) => srcLoc.id, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(
+    () => SourcingLocation,
+    (sourcingLocation1: SourcingLocation) => sourcingLocation1.id,
+    {
+      onDelete: 'CASCADE',
+    },
+  )
   @JoinColumn({ name: 'sourcingLocationId' })
   sourcingLocation: SourcingLocation;
 

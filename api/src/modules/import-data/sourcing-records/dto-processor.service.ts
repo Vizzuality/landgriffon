@@ -10,6 +10,10 @@ import { Layer } from 'modules/layers/layer.entity';
 import { WorkSheet } from 'xlsx';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 
+/**
+ * @debt: Define a more accurate DTO / Interface / Class for API-DB trades
+ * and spread through typing
+ */
 export interface SourcingData extends CreateSourcingLocationDto {
   sourcingRecords: SourcingRecord[];
 }

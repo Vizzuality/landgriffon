@@ -34,7 +34,6 @@ describe('Sourcing records - Create', () => {
   afterEach(async () => {
     await sourcingRecordRepository.delete({});
   });
-
   afterAll(async () => {
     await Promise.all([app.close()]);
   });

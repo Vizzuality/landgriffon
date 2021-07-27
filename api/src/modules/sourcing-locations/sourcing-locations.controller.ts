@@ -53,6 +53,8 @@ export class SourcingLocationsController {
         name: columnName,
       }),
     ),
+    entitiesAllowedAsIncludes:
+      sourcingLocationResource.entitiesAllowedAsIncludes,
   })
   @Get()
   async findAll(
@@ -74,9 +76,15 @@ export class SourcingLocationsController {
   @ApiOkResponse({ type: SourcingLocation })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<SourcingLocation> {
+  async findOne(
+    @ProcessFetchSpecification({
+      allowedFilters: sourcingLocationResource.columnsAllowedAsFilter,
+    })
+    fetchSpecification: FetchSpecification,
+    @Param('id') id: string,
+  ): Promise<SourcingLocation> {
     return await this.sourcingLocationsService.serialize(
-      await this.sourcingLocationsService.getById(id),
+      await this.sourcingLocationsService.getById(id, fetchSpecification),
     );
   }
 

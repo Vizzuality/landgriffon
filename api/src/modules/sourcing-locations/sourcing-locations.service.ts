@@ -37,6 +37,8 @@ export class SourcingLocationsService extends AppBaseService<
         'title',
         'locationType',
         'locationAccuracy',
+        'sourcingLocationGroupId',
+        'sourcingLocationGroup',
         'createdAt',
         'updatedAt',
         'metadata',

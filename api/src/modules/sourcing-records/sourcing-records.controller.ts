@@ -96,9 +96,15 @@ export class SourcingRecordsController {
   @ApiOkResponse({ type: SourcingRecord })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<SourcingRecord> {
+  async findOne(
+    @ProcessFetchSpecification({
+      allowedFilters: sourcingRecordResource.columnsAllowedAsFilter,
+    })
+    fetchSpecification: FetchSpecification,
+    @Param('id') id: string,
+  ): Promise<SourcingRecord> {
     return await this.sourcingRecordsService.serialize(
-      await this.sourcingRecordsService.getById(id),
+      await this.sourcingRecordsService.getById(id, fetchSpecification),
     );
   }
 

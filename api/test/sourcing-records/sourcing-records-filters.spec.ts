@@ -6,10 +6,10 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
 import { createSourcingLocation, createSourcingRecord } from '../entity-mocks';
-import { SourcingLocation } from '../../src/modules/sourcing-locations/sourcing-location.entity';
-import { SourcingLocationRepository } from '../../src/modules/sourcing-locations/sourcing-location.repository';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 
-describe('Sourcing records - Get by id', () => {
+describe('Sourcing records -Filters', () => {
   let app: INestApplication;
   let sourcingRecordRepository: SourcingRecordRepository;
   let sourcingLocationRepository: SourcingLocationRepository;
@@ -43,17 +43,6 @@ describe('Sourcing records - Get by id', () => {
 
   afterAll(async () => {
     await Promise.all([app.close()]);
-  });
-
-  test('Get a sourcing record by id should be successful (happy case)', async () => {
-    const sourcingRecord: SourcingRecord = await createSourcingRecord();
-
-    const response = await request(app.getHttpServer())
-      .get(`/api/v1/sourcing-records/${sourcingRecord.id}`)
-      .send()
-      .expect(HttpStatus.OK);
-
-    expect(response.body.data.id).toEqual(sourcingRecord.id);
   });
 
   /**

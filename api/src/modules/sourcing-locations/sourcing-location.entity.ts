@@ -37,7 +37,7 @@ export const sourcingLocationResource: BaseServiceResource = {
     singular: 'sourcingLocation',
     plural: 'sourcingLocations',
   },
-  entitiesAllowedAsIncludes: [],
+  entitiesAllowedAsIncludes: ['sourcingLocationGroup'],
   columnsAllowedAsFilter: ['title'],
 };
 
@@ -101,16 +101,31 @@ export class SourcingLocation extends TimestampedBaseEntity {
   @ManyToOne(() => User, (user: User) => user.sourcingLocations, {
     eager: false,
   })
+  @JoinColumn({ name: 'updatedById' })
   updatedBy: User;
+
+  /**
+   * @debt: Make this required and auto-set once auth is great again
+   */
+  @Column({ nullable: true })
+  updatedById: string;
 
   @ManyToOne(() => Material, (mat: Material) => mat.sourcingLocations, {
     eager: false,
+    onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'materialId' })
   material: Material;
+
+  @ApiPropertyOptional()
+  @Column({ nullable: true })
+  materialId: string;
 
   @ManyToOne(() => AdminRegion, (aR: AdminRegion) => aR.sourcingLocations, {
     eager: false,
+    onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'adminRegionId' })
   adminRegion: AdminRegion;
 
   @Column({ nullable: true })
@@ -119,14 +134,21 @@ export class SourcingLocation extends TimestampedBaseEntity {
 
   @ManyToOne(() => BusinessUnit, (bu: BusinessUnit) => bu.sourcingLocations, {
     eager: false,
+    onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'businessUnitId' })
   businessUnit: BusinessUnit;
+
+  @ApiPropertyOptional()
+  @Column({ nullable: true })
+  businessUnitId: string;
 
   @ManyToOne(
     () => Supplier,
     (supplier: Supplier) => supplier.sourcingLocations,
     {
       eager: false,
+      onDelete: 'CASCADE',
     },
   )
   t1Supplier: Supplier;
@@ -136,6 +158,7 @@ export class SourcingLocation extends TimestampedBaseEntity {
     (supplier: Supplier) => supplier.sourcingLocations,
     {
       eager: false,
+      onDelete: 'CASCADE',
     },
   )
   producer: Supplier;
@@ -148,7 +171,10 @@ export class SourcingLocation extends TimestampedBaseEntity {
       onDelete: 'CASCADE',
     },
   )
-  @JoinColumn()
-  @ApiPropertyOptional()
-  sourcingLocationGroupId: string;
+  @JoinColumn({ name: 'sourcingLocationGroupId' })
+  sourcingLocationGroup: SourcingLocationGroup;
+
+  @Column({ nullable: true })
+  @ApiProperty()
+  sourcingLocationGroupId!: string;
 }

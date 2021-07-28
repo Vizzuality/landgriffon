@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+    landgriffon-seed-data:
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        volumes:
+            - '../data/seed:/data'
+        command: make
+        env_file:
+            - '../../.env'
+        environment:
+            - PGHOST=postgresql
+            - PGUSER=${API_POSTGRES_USERNAME}
+            - PGPASSWORD=${API_POSTGRES_PASSWORD}
+            - PGDATABASE=${API_POSTGRES_DATABASE}
+
+networks:
+    default:
+        external: true
+        name: landgriffon_default

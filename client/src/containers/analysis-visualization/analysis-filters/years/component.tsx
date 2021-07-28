@@ -1,54 +1,58 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useCallback, useState, useEffect } from 'react';
+import type { UseQueryResult } from 'react-query';
 import { Select } from 'antd';
-import { Popover, Transition, Listbox, RadioGroup } from '@headlessui/react';
+import { Popover, Transition } from '@headlessui/react';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
 
-const availableYears = [
-  {
-    id: '2019',
-    name: '2019',
-    disabled: false,
-    projected: false,
-  },
-  {
-    id: '2020',
-    name: '2020',
-    disabled: false,
-    projected: false,
-  },
-  {
-    id: '2021',
-    name: '2021',
-    disabled: false,
-    projected: true,
-  },
-  {
-    id: '2022',
-    name: '2022',
-    disabled: false,
-    projected: true,
-  },
-  {
-    id: '2023',
-    name: '2023',
-    disabled: false,
-    projected: true,
-  },
-];
+import type { Year } from 'types';
+import classNames from 'classnames';
 
+type YearsFilterProps = {
+  years: {
+    data: Year[];
+    isLoading: UseQueryResult['isLoading'];
+    error: UseQueryResult['error'];
+  };
+  isRange: boolean;
+};
 
-function handleChange(value) {
-  console.log(`selected ${value}`);
-}
+const YearsFilter: React.FC<YearsFilterProps> = ({ years, isRange }: YearsFilterProps) => {
+  const [value, setValue] = useState(null);
+  const [valueEnd, setValueEnd] = useState(null);
+  const { data, isLoading, error } = years;
 
-const YearsFilter = () => {
+  const availableYears = (data && data[0]) || [];
+
+  const isDisabled = error || availableYears.length === 0;
+
+  useEffect(() => {
+    if (!isLoading && availableYears) {
+      setValue(availableYears[0]);
+      setValueEnd(availableYears[0]);
+    }
+  }, [availableYears, isLoading]);
+
+  const handleChange = useCallback((currentValue) => {
+    setValue(currentValue);
+  }, []);
+
+  const handleChangeEnd = useCallback((currentValue) => {
+    setValueEnd(currentValue);
+  }, []);
+
   return (
     <Popover className="relative">
       {({ open }) => (
         <>
-          <Popover.Button className="bg-white relative w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 sm:text-sm">
-            {/* TODO: Dynamic title */}
-            <span className="block truncate">AÑOZ</span>
+          {/* TODO: Improve disabled */}
+          <Popover.Button
+            {...(isDisabled ? { disabled: true } : {})}
+            className="bg-white relative w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 sm:text-sm"
+          >
+            <span className="block h-5 truncate">
+              <span className="text-gray-600 mr-1">{isRange ? 'from' : 'in'}</span>
+              <span>{isRange ? `${value}-${valueEnd}` : value}</span>
+            </span>
             <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
               {open ? (
                 <ChevronUpIcon className="h-5 w-5 text-gray-900" aria-hidden="true" />
@@ -67,24 +71,51 @@ const YearsFilter = () => {
               <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                 <div className="relative rounded-lg bg-white p-4">
                   <div className="text-sm text-gray-500">Year</div>
-                  <Select
-                    defaultValue={availableYears[0].id}
-                    // TODO: onChange
-                    onChange={handleChange}
-                    className='w-full'
-                  >
-                    {availableYears.map((year) =>
-                      <Select.Option
-                        key={year.id}
-                        value={year.id}
-                      >
-                        <span>{year.name}</span>
-                        {year.projected &&
-                          <span>projected year</span>
-                        }
-                      </Select.Option>
+                  <div
+                    className={classNames(
+                      'grid',
+                      isRange ? 'grid-cols-2' : 'grid-cols-1',
+                      'gap-2 mt-2'
                     )}
-                  </Select>
+                  >
+                    <Select
+                      defaultValue={value}
+                      onChange={handleChange}
+                      value={value}
+                      dropdownStyle={{ minWidth: 'min-content' }}
+                    >
+                      {availableYears.map((year) => (
+                        <Select.Option key={`year-${year}`} value={year} >
+                          <span>{year}</span>
+                          {/* TODO: projected? */}
+                          {year > 2020 && (
+                            <span className="text-2xs text-gray-400 italic ml-2 truncate">
+                              projected year
+                            </span>
+                          )}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                    {isRange && (
+                      <Select
+                        defaultValue={valueEnd}
+                        onChange={handleChangeEnd}
+                        dropdownStyle={{ minWidth: 'min-content' }}
+                      >
+                        {availableYears.map((year) => (
+                          <Select.Option key={`year-${year}`} value={year}>
+                            <span>{year}</span>
+                            {/* TODO: projected? */}
+                            {year > 2020 && (
+                              <span className="text-2xs text-gray-400 italic ml-2">
+                                projected year
+                              </span>
+                            )}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    )}
+                  </div>
                 </div>
               </div>
             </Popover.Panel>

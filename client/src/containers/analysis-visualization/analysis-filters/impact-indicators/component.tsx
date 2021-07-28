@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Select } from 'antd';
 import type { UseQueryResult } from 'react-query';
+
 import type { Indicator } from 'types';
 
 type ImpactIndicatorsFilterProps = {
@@ -38,6 +39,7 @@ const ImpactIndicatorsFilter: React.FC<ImpactIndicatorsFilterProps> = ({
       options={options}
       value={value}
       placeholder={error ? 'Something went wrong' : null}
+      disabled={!!error}
     />
   );
 };

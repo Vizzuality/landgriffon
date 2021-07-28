@@ -1,17 +1,16 @@
 import { Select } from 'antd';
 
-const groups = [
-  { id: 1, name: 'Material' },
-  { id: 2, name: 'Business Unit' },
-  { id: 3, name: 'Region' },
-  { id: 4, name: 'Supplier' },
-];
+import type { Group } from 'types';
+
+type GroupByFilterProps = {
+  groups: Group[];
+};
 
 function handleChange(value) {
   console.log(`selected ${value}`);
 }
 
-const GroupByFilter = () => (
+const GroupByFilter: React.FC<GroupByFilterProps> = ({ groups }: GroupByFilterProps) => (
   <>
     <Select
       defaultValue={groups[0].id}

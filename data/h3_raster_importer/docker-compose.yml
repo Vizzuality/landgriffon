@@ -6,15 +6,10 @@ services:
             dockerfile: Dockerfile
         volumes:
             - '../data/seed:/data'
-        command: make
+        command: pip freeze
         env_file:
             - '../../.env'
-        environment:
-            - PGHOST=postgresql
-            - PGUSER=${API_POSTGRES_USERNAME}
-            - PGPASSWORD=${API_POSTGRES_PASSWORD}
-            - PGDATABASE=${API_POSTGRES_DATABASE}
-
+        
 networks:
     default:
         external: true

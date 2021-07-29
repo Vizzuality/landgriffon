@@ -2,7 +2,11 @@
 
 All GeoTiffs in the folder must have identical projection, transform, etc.
 The resulting table will contain a column for each GeoTiff.
-Postgres connection params read from environment PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD
+Postgres connection params read from environment:
+ - API_POSTGRES_HOST
+ - API_POSTGRES_USER
+ - API_POSTGRES_PASSWORD
+ - API_POSTGRES_DATABASE
 
 Usage:
     tiff_folder_to_h3_table.py <folder> <table> [--h3-res=6]
@@ -38,7 +42,7 @@ DTYPES_TO_PG = {
     'uint64': 'bigint',
     'int8': 'smallint',
     'int16': 'smallint',
-    'int32': 'bigint',
+    'int32': 'int',
     'int64': 'bigint',
     'float32': 'real',
     'float64': 'double precision'

@@ -1,13 +1,10 @@
 FROM perrygeo/gdal-base
 
 RUN pip install --upgrade --no-cache-dir pip
-RUN pip install --no-cache-dir \
-    numpy==1.21.1 \
-    pandas==1.3.1 \
-    rasterio==1.2.6 \
-    h3ronpy==0.11.0 \
-    psycopg2-binary==2.9.1 \
-    docopt==0.6.0
+
+COPY ./requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
 RUN mkdir -p data/
 
 COPY ./ ./

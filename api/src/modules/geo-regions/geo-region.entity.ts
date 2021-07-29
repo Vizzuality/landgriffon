@@ -2,6 +2,7 @@ import {
   BaseEntity,
   Column,
   Entity,
+  Index,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -33,9 +34,9 @@ export class GeoRegion extends BaseEntity {
   @ApiPropertyOptional()
   name?: string;
 
+  @Index({ spatial: true })
   @Column({
     type: 'geometry',
-    spatialFeatureType: 'MULTIPOLYGON',
     srid: 4326,
     nullable: true,
   })

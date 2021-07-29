@@ -21,6 +21,6 @@
   "fileUploads": {
     "sizeLimit": "FILE_SIZE_LIMIT",
     "storagePath": "FILE_STORAGE_PATH"
-  }
-
+  },
+  "geocoding": {"gmapsApiKey": "GMAPS_API_KEY" }
 }

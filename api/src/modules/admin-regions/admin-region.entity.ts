@@ -2,6 +2,7 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -27,11 +28,11 @@ export const adminRegionResource: BaseServiceResource = {
     singular: 'adminRegion',
     plural: 'adminRegions',
   },
-  entitiesAllowedAsIncludes: [],
+  entitiesAllowedAsIncludes: ['geoRegion'],
   columnsAllowedAsFilter: ['name', 'description', 'status'],
 };
 
-@Entity()
+@Entity('admin_region')
 @Tree('materialized-path')
 export class AdminRegion extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
@@ -92,5 +93,10 @@ export class AdminRegion extends BaseEntity {
 
   @ApiProperty()
   @ManyToOne(() => GeoRegion, (geo: GeoRegion) => geo.adminRegions)
+  @JoinColumn({ name: 'geoRegionId' })
   geoRegion: GeoRegion;
+
+  @ApiPropertyOptional()
+  @Column({ nullable: true })
+  geoRegionId: string;
 }

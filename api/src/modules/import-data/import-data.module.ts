@@ -10,6 +10,8 @@ import { SourcingLocationGroupsModule } from 'modules/sourcing-location-groups/s
 import { ImportDataService } from 'modules/import-data/import-data.service';
 import { SourcingRecordsImportService } from 'modules/import-data/sourcing-records/import.service';
 import { SourcingRecordsDtoProcessorService } from 'modules/import-data/sourcing-records/dto-processor.service';
+import { GeoCodingModule } from 'modules/geo-coding/geo-coding.module';
+import { GeoRegionsModule } from 'modules/geo-regions/geo-regions.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { SourcingRecordsDtoProcessorService } from 'modules/import-data/sourcing
     SourcingLocationsModule,
     SourcingRecordsModule,
     SourcingLocationGroupsModule,
+    GeoCodingModule,
+    GeoRegionsModule,
   ],
   providers: [
     SourcingRecordsImportService,

@@ -54,7 +54,7 @@ describe('Sourcing records -Filters', () => {
   test('When I fetch a sourcing-record and I include its sourcing-location relation in the query, then I should receive said sourcing-record and its sourcing-location', async () => {
     const sourcingLocation: SourcingLocation = await createSourcingLocation();
     const sourcingRecord: SourcingRecord = await createSourcingRecord({
-      sourcingLocationId: sourcingLocation.id,
+      sourcingLocation: sourcingLocation,
     });
     const response = await request(app.getHttpServer())
       .get(

@@ -3,6 +3,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
@@ -15,14 +16,18 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 
 export enum LOCATION_TYPES {
-  PRODUCTION_UNIT = 'Production unit',
-  PROCESSING_FACILITY = 'Processing facility',
-  TIER1_TRADE_FACILITY = 'Tier 1 Trade facility',
-  TIER2_TRADE_FACILITY = 'Tier 2 Trade facility',
-  ORIGIN_COUNTRY = 'Origin Country',
-  UNKNOWN = 'Unknown',
+  PRODUCTION_UNIT = 'production unit',
+  PROCESSING_FACILITY = 'processing facility',
+  TIER1_TRADE_FACILITY = 'tier 1 Trade facility',
+  TIER2_TRADE_FACILITY = 'tier 2 Trade facility',
+  ORIGIN_COUNTRY = 'origin Country',
+  UNKNOWN = 'unknown',
+  AGGREGATION_POINT = 'aggregation point',
+  POINT_OF_PRODUCTION = 'point of production',
+  COUNTRY_OF_PRODUCTION = 'country of production',
 }
 
 export enum LOCATION_ACCURACY {
@@ -157,6 +162,7 @@ export class SourcingLocation extends TimestampedBaseEntity {
     () => Supplier,
     (supplier: Supplier) => supplier.sourcingLocations,
     {
+      cascade: true,
       eager: false,
       onDelete: 'CASCADE',
     },
@@ -177,4 +183,11 @@ export class SourcingLocation extends TimestampedBaseEntity {
   @Column({ nullable: true })
   @ApiProperty()
   sourcingLocationGroupId!: string;
+
+  @OneToMany(
+    () => SourcingRecord,
+    (sourcingRecords: SourcingRecord) => sourcingRecords.sourcingLocation,
+    { cascade: true, onDelete: 'CASCADE' },
+  )
+  sourcingRecords: SourcingRecord[];
 }

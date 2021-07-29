@@ -20,8 +20,8 @@ export class H3DataRepository extends Repository<H3Data> {
         `SELECT h3index, ${h3ColumnName} FROM ${h3TableName}`,
       );
       return h3DataResult.reduce(
-        (obj: any, item: any) =>
-          Object.assign(obj, { [item['h3index']]: item[h3ColumnName] }),
+        (acc: any, cur: any) =>
+          Object.assign(acc, { [cur['h3index']]: cur[h3ColumnName] }),
         {},
       );
     } catch (err) {

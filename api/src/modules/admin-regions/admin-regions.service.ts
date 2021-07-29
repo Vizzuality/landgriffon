@@ -33,7 +33,7 @@ export class AdminRegionsService extends AppBaseService<
 
   get serializerConfig(): JSONAPISerializerConfig<AdminRegion> {
     return {
-      attributes: ['name', 'description', 'status'],
+      attributes: ['name', 'description', 'status', 'geoRegionId', 'geoRegion'],
       keyForAttribute: 'camelCase',
     };
   }
@@ -50,5 +50,45 @@ export class AdminRegionsService extends AppBaseService<
 
   async createTree(importData: CreateAdminRegionDto[]): Promise<AdminRegion[]> {
     return this.adminRegionRepository.saveListToTree(importData, 'mpath');
+  }
+
+  // TODO: proper typing after validating this works
+  async getAdminAndGeoRegionIdByCountryIsoAlpha2(
+    countryIsoAlpha2Code: string,
+  ): Promise<{ id: string; geoRegionId: string }> {
+    const adminAndGeoRegionId = await this.adminRegionRepository
+      .createQueryBuilder('ar')
+      .select('id')
+      .addSelect('"geoRegionId"')
+      .where('ar.isoA2 = :countryIsoAlpha2Code', {
+        countryIsoAlpha2Code: countryIsoAlpha2Code,
+      })
+      .getRawOne();
+    if (!adminAndGeoRegionId)
+      throw new Error(
+        `An Admin Region with ${countryIsoAlpha2Code} ISO Alpha 2 code could not been found`,
+      );
+    return adminAndGeoRegionId;
+  }
+
+  async getAdminRegionByName(adminRegionName: string): Promise<AdminRegion> {
+    const adminRegion = await this.adminRegionRepository.findOne({
+      where: { name: adminRegionName },
+    });
+
+    if (!adminRegion)
+      throw new Error(
+        `An Admin Region with name ${adminRegionName} could not been found`,
+      );
+    return adminRegion;
+  }
+
+  async getAdminRegionIdByCoordinates(coordinates: {
+    lng: number;
+    lat: number;
+  }): Promise<{ adminRegionId: string; geoRegionId: string }> {
+    return await this.adminRegionRepository.getAdminRegionAndGeoRegionIdByCoordinates(
+      coordinates,
+    );
   }
 }

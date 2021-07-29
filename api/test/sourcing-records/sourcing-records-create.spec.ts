@@ -4,8 +4,6 @@ import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
-import { createSourcingLocation } from '../entity-mocks';
-import { SourcingLocation } from '../../src/modules/sourcing-locations/sourcing-location.entity';
 
 describe('Sourcing records - Create', () => {
   let app: INestApplication;

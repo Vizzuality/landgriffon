@@ -23,5 +23,7 @@
   "fileUploads": {
     "sizeLimit": 5e6,
     "storagePath": "/tmp/csv-uploads"
-  }
+  },
+  "geolocation": {"gmapsApiKey":  null}
+
 }

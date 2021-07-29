@@ -12,6 +12,7 @@ import { AppInfoDTO } from 'dto/info.dto';
 import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
 import { CreateGeoRegionDto } from 'modules/geo-regions/dto/create.geo-region.dto';
 import { UpdateGeoRegionDto } from 'modules/geo-regions/dto/update.geo-region.dto';
+import { LocationGeoRegionDto } from 'modules/geo-regions/dto/location.geo-region.dto';
 
 @Injectable()
 export class GeoRegionsService extends AppBaseService<
@@ -47,4 +48,31 @@ export class GeoRegionsService extends AppBaseService<
 
     return found;
   }
+
+  /**
+   *
+   * @param newGeoRegionValues
+   * Creates a new geo-region row and generates a 50km radius as multipolygon geometry
+   * by given coordinates
+   *
+   * @return generated geo-regions id
+   */
+
+  async saveGeoRegionAsRadius(
+    newGeoRegionValues: LocationGeoRegionDto,
+  ): Promise<GeoRegion> {
+    return await this.geoRegionRepository.saveGeoRegionAsRadius(
+      newGeoRegionValues,
+    );
+  }
+
+  async saveGeoRegionAsPoint(
+    newGeroRegionValues: LocationGeoRegionDto,
+  ): Promise<Pick<GeoRegion, 'id'>> {
+    return await this.geoRegionRepository.saveGeoRegionAsPoint(
+      newGeroRegionValues,
+    );
+  }
 }
+
+// '${newGeoRegionValues.name}'

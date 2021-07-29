@@ -36,7 +36,6 @@ export class SourcingRecordsService extends AppBaseService<
       attributes: [
         'tonnage',
         'year',
-        'sourcingLocationId',
         'sourcingLocation',
         'metadata',
         'createdAt',

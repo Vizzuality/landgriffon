@@ -175,7 +175,6 @@ export class SourcingRecordsDtoProcessorService {
     additionalData: Partial<Layer> = {},
   ): Promise<Layer> {
     const layer = Layer.merge(new Layer(), additionalData);
-
     return layer.save();
   }
 
@@ -319,6 +318,7 @@ export class SourcingRecordsDtoProcessorService {
     const adminRegionDto = new CreateAdminRegionDto();
     adminRegionDto.name = adminRegionData.name;
     adminRegionDto.isoA3 = adminRegionData.iso_a3;
+    adminRegionDto.isoA2 = adminRegionData.iso_a2;
     return adminRegionDto;
   }
 
@@ -327,10 +327,13 @@ export class SourcingRecordsDtoProcessorService {
     sourcingLocationGroupId: string,
   ): CreateSourcingLocationDto {
     const sourcingLocationDto = new CreateSourcingLocationDto();
+    sourcingLocationDto.locationType = sourcingLocationData.location_type;
     sourcingLocationDto.locationCountryInput =
       sourcingLocationData.location_country_input;
     sourcingLocationDto.locationAddressInput =
-      sourcingLocationData.location_address_input;
+      sourcingLocationData.location_address_input === ''
+        ? undefined
+        : sourcingLocationData.location_address_input;
     sourcingLocationDto.locationLatitude =
       sourcingLocationData.location_latitude_input === ''
         ? undefined

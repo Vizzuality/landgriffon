@@ -29,6 +29,11 @@ export class CreateAdminRegionDto {
   @IsString()
   @IsOptional()
   @ApiPropertyOptional()
+  isoA2?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional()
   isoA3?: string;
 
   @IsString()

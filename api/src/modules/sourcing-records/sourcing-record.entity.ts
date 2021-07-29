@@ -1,7 +1,7 @@
 import {
   Column,
   Entity,
-  JoinColumn,
+  JoinTable,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -37,16 +37,10 @@ export class SourcingRecord extends TimestampedBaseEntity {
 
   @ManyToOne(
     () => SourcingLocation,
-    (sourcingLocation1: SourcingLocation) => sourcingLocation1.id,
-    {
-      onDelete: 'CASCADE',
-    },
+    (sourcingLocation: SourcingLocation) => sourcingLocation.id,
   )
-  @JoinColumn({ name: 'sourcingLocationId' })
+  @JoinTable()
   sourcingLocation: SourcingLocation;
-
-  @Column({ nullable: true })
-  sourcingLocationId!: string;
 
   @Column({ type: 'jsonb', nullable: true })
   @ApiPropertyOptional()

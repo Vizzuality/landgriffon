@@ -16,5 +16,6 @@
       "expiresIn": "1d",
       "secret": "myVeryBadJWTSecretForTests"
     }
-  }
+  },
+  "geolocation": {"gmapsApiKey":  "superTestApiKey"}
 }

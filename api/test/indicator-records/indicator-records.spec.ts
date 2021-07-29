@@ -73,8 +73,6 @@ describe('IndicatorRecordsModule (e2e)', () => {
       .send()
       .expect(HttpStatus.BAD_REQUEST);
 
-    console.log(response.body.errors[0].data);
-
     expect(response).toHaveErrorMessage(
       HttpStatus.BAD_REQUEST,
       'Bad Request Exception',
@@ -90,7 +88,6 @@ describe('IndicatorRecordsModule (e2e)', () => {
   describe('Indicator records - Update', () => {
     test('Update a indicator records should be successful (happy case)', async () => {
       const indicatorRecord: IndicatorRecord = await createIndicatorRecord();
-      console.log(indicatorRecord);
 
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/indicator-records/${indicatorRecord.id}`)

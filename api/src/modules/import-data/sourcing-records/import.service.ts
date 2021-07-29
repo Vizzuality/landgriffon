@@ -14,7 +14,15 @@ import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-record
 import { SourcingLocationGroupsService } from 'modules/sourcing-location-groups/sourcing-location-groups.service';
 import { validateOrReject } from 'class-validator';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
-import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
+import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
+
+export interface LocationData {
+  locationAddressInput?: string;
+  locationCountryInput?: string;
+  locationLatitude?: string;
+  locationLongitude?: string;
+}
 
 export interface SourcingRecordsSheets extends Record<string, any[]> {
   materials: Record<string, any>[];
@@ -48,9 +56,10 @@ export class SourcingRecordsImportService {
     protected readonly sourcingLocationGroupService: SourcingLocationGroupsService,
     protected readonly fileService: ImportDataService<SourcingRecordsSheets>,
     protected readonly dtoProcessor: SourcingRecordsDtoProcessorService,
+    protected readonly geoCodingService: GeoCodingService,
   ) {}
 
-  async importSourcingRecords(filePath: string): Promise<void> {
+  async importSourcingRecords(filePath: string): Promise<any> {
     await this.fileService.isFilePresentInFs(filePath);
     try {
       const parsedXLSXDataset: SourcingRecordsSheets = await this.fileService.transformToJson(
@@ -73,8 +82,15 @@ export class SourcingRecordsImportService {
       await this.materialService.createTree(dtoMatchedData.materials);
       await this.businessUnitService.createTree(dtoMatchedData.businessUnits);
       await this.supplierService.createTree(dtoMatchedData.suppliers);
-      await this.adminRegionService.createTree(dtoMatchedData.adminRegions);
-      await this.saveSourcingData(dtoMatchedData.sourcingData);
+      //TODO: Once GADM import is merged, we no longer need to populate admin-regions by the xlsx file
+      //await this.adminRegionService.createTree(dtoMatchedData.adminRegions);
+
+      const geoCodedSourcingData = await this.geoCodingService.geoCodeLocations(
+        dtoMatchedData.sourcingData,
+      );
+
+      await this.sourcingLocationService.save(geoCodedSourcingData);
+      //return await this.getAdminRegionByGeoLocation(sour);
     } finally {
       await this.fileService.deleteDataFromFS(filePath);
     }
@@ -107,6 +123,8 @@ export class SourcingRecordsImportService {
   /**
    * @note: Deletes DB content from required entities
    * to ensure DB is prune prior loading a XLSX dataset
+   * TODO: Check if we need to clean admin-regions up (plus geo-regions)
+   * The latter should be loaded as part of the data-pipeline importing GADM
    */
   private async cleanDataBeforeImport(): Promise<void> {
     this.logger.log('Cleaning Database...');
@@ -114,37 +132,12 @@ export class SourcingRecordsImportService {
       await this.materialService.clearTable();
       await this.businessUnitService.clearTable();
       await this.supplierService.clearTable();
-      await this.sourcingLocationService.clearTable();
       await this.sourcingRecordService.clearTable();
+      await this.sourcingLocationService.clearTable();
     } catch (err) {
       throw new Error(
         `Database could not been cleaned before loading new dataset: ${err.message}`,
       );
     }
-  }
-
-  /**
-   *
-   * @param sourcingData: Array of Sourcing-Locations with nested Sourcing-Records
-   * @private
-   * Saves each Sourcing Location and returns and ID to attach to its related
-   * Sourcing-Records, to keep relation
-   * Save Sourcing-Record array (ORM will manage better than us) with attached Sourcing-Location ID
-   */
-
-  private async saveSourcingData(sourcingData: SourcingData[]): Promise<void> {
-    const sourcingRecordsWithSourcingIDs: SourcingRecord[] = [];
-    await Promise.all(
-      sourcingData.map(async (sourcingData: SourcingData) => {
-        const { id } = await this.sourcingLocationService.save(sourcingData);
-        sourcingData.sourcingRecords.forEach((sourcingRecord: SourcingRecord) =>
-          sourcingRecordsWithSourcingIDs.push({
-            ...sourcingRecord,
-            sourcingLocationId: id,
-          } as SourcingRecord),
-        );
-      }),
-    );
-    await this.sourcingRecordService.save(sourcingRecordsWithSourcingIDs);
   }
 }

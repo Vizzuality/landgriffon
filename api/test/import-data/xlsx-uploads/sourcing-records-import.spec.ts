@@ -16,10 +16,23 @@ import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-
 import { SourcingLocationGroupRepository } from 'modules/sourcing-location-groups/sourcing-location-group.repository';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
-import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import {
+  LOCATION_TYPES,
+  SourcingLocation,
+} from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
+import { SourcingData } from 'modules/import-data/sourcing-records/dto-processor.service';
 
 describe('Sourcing Records import', () => {
+  const geoCodingServiceMock = {
+    geoCodeLocations: async (sourcingData: any): Promise<any> => {
+      return sourcingData.filter(
+        (each: SourcingData) => each.locationType != '#N/A',
+      );
+    },
+  };
+
   let app: INestApplication;
   let businessUnitRepository: BusinessUnitRepository;
   let materialRepository: MaterialRepository;
@@ -33,7 +46,10 @@ describe('Sourcing Records import', () => {
     jest.setTimeout(10000);
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule, SourcingRecordsModule],
-    }).compile();
+    })
+      .overrideProvider(GeoCodingService)
+      .useValue(geoCodingServiceMock)
+      .compile();
 
     businessUnitRepository = moduleFixture.get<BusinessUnitRepository>(
       BusinessUnitRepository,
@@ -73,8 +89,8 @@ describe('Sourcing Records import', () => {
     await businessUnitRepository.delete({});
     await adminRegionRepository.delete({});
     await supplierRepository.delete({});
-    await sourcingLocationRepository.delete({});
     await sourcingRecordRepository.delete({});
+    await sourcingLocationRepository.delete({});
     await sourcingLocationGroupRepository.delete({});
   });
 
@@ -114,7 +130,7 @@ describe('Sourcing Records import', () => {
   });
 
   test('When a file is sent to the API and its size is allowed then it should return a 201 code and the storage folder should be empty', async () => {
-    await request(app.getHttpServer())
+    const res = await request(app.getHttpServer())
       .post('/api/v1/import/sourcing-records')
       .attach('file', __dirname + '/base-dataset.xlsx')
       .expect(HttpStatus.CREATED);
@@ -143,19 +159,19 @@ describe('Sourcing Records import', () => {
     const suppliersRoots: Supplier[] = await supplierRepository.findRoots();
     expect(suppliersRoots).toHaveLength(3);
 
-    const adminRegions: AdminRegion[] = await adminRegionRepository.find();
-    expect(adminRegions).toHaveLength(238);
-    const adminRegionsRoots: AdminRegion[] = await adminRegionRepository.findRoots();
-    expect(adminRegionsRoots).toHaveLength(238);
+    /**
+     * @note: Double check that admin-regions are not longer imported from the xlsx before deleting assertion below
+     */
+    // const adminRegions: AdminRegion[] = await adminRegionRepository.find();
+    // expect(adminRegions).toHaveLength(238);
+    // const adminRegionsRoots: AdminRegion[] = await adminRegionRepository.findRoots();
+    // expect(adminRegionsRoots).toHaveLength(238);
 
     const sourcingRecords: SourcingRecord[] = await sourcingRecordRepository.find();
-    expect(sourcingRecords).toHaveLength(825);
+    expect(sourcingRecords).toHaveLength(374);
 
-    /**
-     * @TODO: this is a bug. There should NOT be as many sourcing locations as there are records. There should be around 1/10
-     */
     const sourcingLocations: SourcingLocation[] = await sourcingLocationRepository.find();
-    expect(sourcingLocations).toHaveLength(75);
+    expect(sourcingLocations).toHaveLength(34);
   });
 
   test('When a file is sent 2 times to the API, then imported data length should be equal, and database has been cleaned in between', async () => {
@@ -168,7 +184,7 @@ describe('Sourcing Records import', () => {
       .attach('file', __dirname + '/base-dataset.xlsx');
 
     const sourcingRecords: SourcingRecord[] = await sourcingRecordRepository.find();
-    expect(sourcingRecords.length).toEqual(825);
+    expect(sourcingRecords.length).toEqual(374);
   });
 
   test('When a file is sent to the API and gets processed, then a request to Sourcing-Records should return a existing Sourcing-Location ID', async () => {
@@ -180,7 +196,7 @@ describe('Sourcing Records import', () => {
     const sourcingLocation:
       | SourcingLocation
       | undefined = await sourcingLocationRepository.findOne(
-      sourcingRecords[0].sourcingLocationId,
+      sourcingRecords[0].sourcingLocation,
     );
 
     expect(sourcingRecords[0]).toMatchObject(new SourcingRecord());

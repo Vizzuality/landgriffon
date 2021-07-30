@@ -43,8 +43,8 @@ requirements: test_environment
 	python3 -m pip install -r requirements.txt
 
 # ## Make Dataset
-# data: requirements
-# 	python3 src/data/make_dataset.py data/raw data/processed
+seed-data:
+	docker-compose -f ./docker-compose-data_management.yml up --build
 
 ## Delete all compiled Python files
 clean:

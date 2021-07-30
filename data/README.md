@@ -97,6 +97,11 @@ or up and serve the documentation:
 ``` bash
 make serve-doc
 ```
+### Seed geodata into the geodb.
+To seed the geodb database you need to follow the next instructions: And have a user set already in the metadata DB.
+``` bash
+make seed-data
+```
 
 --------
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>

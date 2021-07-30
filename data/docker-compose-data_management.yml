@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  landgriffon-seed-data:
+    build:
+        context: ./data_download
+        dockerfile: Dockerfile
+    volumes:
+    - './data/seed/gadm_3.6/:/gadm_3.6/data/'
+    command: make
+    env_file:
+        - '../.env'

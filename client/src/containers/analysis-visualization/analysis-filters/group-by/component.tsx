@@ -17,10 +17,18 @@ const GroupByFilter: React.FC<GroupByFilterProps> = ({ groups }: GroupByFilterPr
       // TODO: onChange
       onChange={handleChange}
       className="w-40"
+      optionLabelProp="label"
     >
       {groups.map((group) => (
-        <Select.Option key={group.id} value={group.id}>
-          {/* TODO: add 'by' before */}
+        <Select.Option
+          key={group.id}
+          value={group.id}
+          label={
+            <>
+              <span className="text-gray-500">by</span> {group.name}
+            </>
+          }
+        >
           {group.name}
         </Select.Option>
       ))}

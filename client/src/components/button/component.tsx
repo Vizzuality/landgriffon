@@ -1,11 +1,11 @@
 import cx from 'classnames';
 
 const COMMON_CLASSNAMES =
-  'inline-flex items-center justify-center font-medium rounded-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500';
+  'inline-flex items-center justify-center font-medium rounded-md cursor-pointer focus:outline-none focus:ring-1 focus:ring-green-700';
 
 const THEME = {
   primary: 'border-transparent shadow-sm text-white bg-green-700 hover:bg-green-800',
-  secondary: 'border-gray-300 shadow-sm text-gray-700 bg-white hover:bg-gray-50',
+  secondary: 'border border-gray-300 focus:border-green-700 shadow-sm text-gray-700 bg-white hover:bg-gray-50',
 };
 
 const SIZE = {

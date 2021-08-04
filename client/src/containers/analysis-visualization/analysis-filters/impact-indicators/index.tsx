@@ -7,7 +7,7 @@ import type { Indicator } from 'types';
 import Component from './component';
 
 const ALL_INDICATORS: Indicator = {
-  id: 'all-indicators',
+  id: 'all',
   name: 'All indicators',
 };
 

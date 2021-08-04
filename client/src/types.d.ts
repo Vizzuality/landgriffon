@@ -19,6 +19,12 @@ export type Material = {
   children: Material[];
 };
 
+export type Supplier = {
+  id: string;
+  name: string;
+  children: Supplier[];
+};
+
 export type OriginRegion = {
   id: string;
   name: string;

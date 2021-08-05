@@ -2,9 +2,7 @@ name: Client Tests
 
 on:
   push:
-    paths:
-      - 'client/**'
-      - '.github/**'
+
   workflow_dispatch:
 
 env:

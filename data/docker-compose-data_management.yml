@@ -9,3 +9,8 @@ services:
     command: make
     env_file:
         - '../.env'
+
+networks:
+    default:
+        external: true
+        name: landgriffon_default

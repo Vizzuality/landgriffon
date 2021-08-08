@@ -33,7 +33,12 @@ export class GeoRegion extends BaseEntity {
   @ApiPropertyOptional()
   name?: string;
 
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({
+    type: 'geometry',
+    spatialFeatureType: 'MULTIPOLYGON',
+    srid: 4326,
+    nullable: true,
+  })
   @ApiPropertyOptional()
   theGeom?: JSON;
 

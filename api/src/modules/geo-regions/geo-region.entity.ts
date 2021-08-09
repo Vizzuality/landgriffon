@@ -29,7 +29,7 @@ export class GeoRegion extends BaseEntity {
   @Column({ type: 'text', array: true, nullable: true })
   h3Compact?: string[];
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'text', unique: true, nullable: true })
   @ApiPropertyOptional()
   name?: string;
 

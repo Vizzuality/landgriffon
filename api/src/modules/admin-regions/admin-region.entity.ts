@@ -42,6 +42,7 @@ export class AdminRegion extends BaseEntity {
   children: AdminRegion[];
 
   @TreeParent()
+  @ApiPropertyOptional()
   parent: AdminRegion;
 
   @Column({ nullable: true })

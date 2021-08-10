@@ -119,7 +119,7 @@ export class Material extends TimestampedBaseEntity {
   @Column()
   layerId!: string;
 
-  @OneToOne(() => H3Data)
+  @OneToOne(() => H3Data, { nullable: true })
   @JoinColumn()
-  h3Grid: H3Data;
+  h3Grid?: H3Data;
 }

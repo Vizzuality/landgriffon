@@ -63,6 +63,10 @@ export class AdminRegion extends BaseEntity {
 
   @Column({ nullable: true })
   @ApiPropertyOptional()
+  isoA2?: string;
+
+  @Column({ nullable: true })
+  @ApiPropertyOptional()
   isoA3?: string;
 
   @OneToMany(

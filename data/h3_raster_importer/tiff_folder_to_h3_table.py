@@ -48,8 +48,11 @@ DTYPES_TO_PG = {
     'float64': 'double precision'
 }
 BLOCKSIZE=512
+H3_TABLE_PREFIX = 'h3_grid'
+H3_MASTER_TABLE = 'h3_data'
 
 logging.basicConfig(level=logging.INFO)
+
 
 def slugify(s):
     return re.sub("[^0-9a-z_]+", "_", s.lower())
@@ -107,6 +110,7 @@ def load_raster_list_to_h3_table(raster_list, table, h3_res):
     )
     cursor = conn.cursor()
     cursor.execute(f"DROP TABLE IF EXISTS {table};")
+    cursor.execute(f"""DELETE FROM {H3_MASTER_TABLE} WHERE "h3tableName" = '{table}'""")
     
     first = True
 
@@ -126,6 +130,12 @@ def load_raster_list_to_h3_table(raster_list, table, h3_res):
             cursor.copy_from(buffer, table, sep=',')
             conn.commit()
     
+    for column in block_df.columns:
+        cursor.execute(f"""
+            INSERT INTO {H3_MASTER_TABLE} ("h3tableName", "h3columnName", "h3resolution")
+            ('{table}', '{column}', {h3_res})
+        """)
+
     cursor.close()
 
 

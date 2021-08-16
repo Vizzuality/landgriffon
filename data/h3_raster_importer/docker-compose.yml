@@ -6,10 +6,10 @@ services:
             dockerfile: Dockerfile
         volumes:
             - '../data/seed:/data'
-        command: pip freeze
+        command: make
         env_file:
             - '../../.env'
-        
+
 networks:
     default:
         external: true

@@ -110,7 +110,7 @@ def load_raster_list_to_h3_table(raster_list, table, h3_res):
     )
     cursor = conn.cursor()
     cursor.execute(f"DROP TABLE IF EXISTS {table};")
-    cursor.execute(f"""DELETE FROM {H3_MASTER_TABLE} WHERE "h3tableName" = '{table}'""")
+    cursor.execute(f"""DELETE FROM {H3_MASTER_TABLE} WHERE "h3tableName" = '{table}';""")
     
     first = True
 
@@ -119,7 +119,6 @@ def load_raster_list_to_h3_table(raster_list, table, h3_res):
             cols = zip(block_df.columns, block_df.dtypes)
             schema = ', '.join([f"{col} {DTYPES_TO_PG[str(dtype)]}" for col, dtype in cols])            
             cursor.execute(f"CREATE TABLE {table} (h3index h3index PRIMARY KEY, {schema});")
-            conn.commit()
             logging.info(f"Created table {table} with columns {', '.join(block_df.columns)}")
             first = False
 
@@ -128,14 +127,15 @@ def load_raster_list_to_h3_table(raster_list, table, h3_res):
             block_df.to_csv(buffer, header=False)
             buffer.seek(0)
             cursor.copy_from(buffer, table, sep=',')
-            conn.commit()
-    
+            
+    # add rows to master table for each column
     for column in block_df.columns:
         cursor.execute(f"""
             INSERT INTO {H3_MASTER_TABLE} ("h3tableName", "h3columnName", "h3resolution")
-            ('{table}', '{column}', {h3_res})
+            VALUES ('{table}', '{column}', {h3_res});
         """)
-
+    
+    conn.commit()
     cursor.close()
 
 

@@ -32,7 +32,7 @@ data/gadm/gadm36_levels0-2_simp.shp: data/gadm/gadm36_0_simp.shp data/gadm/gadm3
 				: level == 1 ? NAME_1 \
 				: level == 2 ? NAME_2 \
 				: null' \
-		-filter-fields path_id,name,level,GID_0 \
+		-filter-fields path_id,name,level \
 		-merge-layers force -o $@
 
 data/gadm/gadm36_%_simp.shp: data/gadm/gadm36_%.shp

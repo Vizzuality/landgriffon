@@ -1,14 +1,12 @@
-H3_RESOLUTION:=6
 
 .PHONY: import
 
 import: data/gadm/gadm36_levels0-2_simp.shp
-# load shapefile into new `gadm_levels0_2 table
-
 #	PGPASSWORD=$$API_POSTGRES_PASSWORD \
 	psql -d $$API_POSTGRES_DATABASE -h $$API_POSTGRES_HOST -p $$API_POSTGRES_PORT -U $$API_POSTGRES_USERNAME \
 		-c 'DROP TABLE IF EXISTS gadm_levels0_2'
 
+# load shapefile into new `gadm_levels0_2 table
 	ogr2ogr -makevalid -update -append \
 		-nln gadm_levels0_2 -nlt PROMOTE_TO_MULTI -geomfield the_geom \
 		-t_srs EPSG:4326 -a_srs EPSG:4326 --config OGR_TRUNCATE YES \
@@ -26,7 +24,7 @@ data/gadm/gadm36_levels0-2_simp.shp: data/gadm/gadm36_0_simp.shp data/gadm/gadm3
 				: this.layer_name == "gadm36_1_simp" ? 1 \
 				: this.layer_name == "gadm36_2_simp" ? 2 \
 				: null' \
-		-each 'mpath = level == 0 ? GID_0 \
+		-each 'path_id = level == 0 ? GID_0 \
 				: level == 1 ? GID_1 \
 				: level == 2 ? GID_2 \
 				: null' \
@@ -34,7 +32,7 @@ data/gadm/gadm36_levels0-2_simp.shp: data/gadm/gadm36_0_simp.shp data/gadm/gadm3
 				: level == 1 ? NAME_1 \
 				: level == 2 ? NAME_2 \
 				: null' \
-		-filter-fields mpath,name,level,GID_0 \
+		-filter-fields path_id,name,level,GID_0 \
 		-merge-layers force -o $@
 
 data/gadm/gadm36_%_simp.shp: data/gadm/gadm36_%.shp

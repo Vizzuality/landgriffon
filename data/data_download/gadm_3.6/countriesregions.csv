@@ -1,0 +1,251 @@
+﻿alpha2,alpha3,name,region
+AF,AFG,Afghanistan,Asia
+AL,ALB,Albania,Europe
+DZ,DZA,Algeria,Africa
+AS,ASM,American Samoa,Oceania
+AD,AND,Andorra,Europe
+AO,AGO,Angola,Africa
+AI,AIA,Anguilla,America
+AQ,ATA,Antarctica,Antarctica
+AG,ATG,Antigua And Barbuda,America
+AR,ARG,Argentina,America
+AM,ARM,Armenia,Europe
+AW,ABW,Aruba,America
+AU,AUS,Australia,Oceania
+AT,AUT,Austria,Europe
+AZ,AZE,Azerbaijan,Europe
+BS,BHS,Bahamas,America
+BH,BHR,Bahrain,Asia
+BD,BGD,Bangladesh,Asia
+BB,BRB,Barbados,America
+BY,BLR,Belarus,CIS
+BE,BEL,Belgium,Europe
+BZ,BLZ,Belize,America
+BJ,BEN,Benin,Africa
+BM,BMU,Bermuda,America
+BT,BTN,Bhutan,Asia
+BO,BOL,Bolivia,America
+BQ,BES,Bonaire,
+BA,BIH,Bosnia And Herzegovina,Europe
+BW,BWA,Botswana,Africa
+BV,BVT,Bouvet Island,Antarctica
+BR,BRA,Brazil,America
+IO,IOT,British Indian Ocean Territory,Africa
+BN,BRN,Brunei Darussalam,Asia
+BG,BGR,Bulgaria,Europe
+BF,BFA,Burkina Faso,Africa
+BI,BDI,Burundi,Africa
+CV,CPV,Cape Verde,Africa
+KH,KHM,Cambodia,Asia
+CM,CMR,Cameroon,Africa
+CA,CAN,Canada,North America
+KY,CYM,Cayman Islands,America
+CF,CAF,Central African Republic,Africa
+TD,TCD,Chad,Africa
+CL,CHL,Chile,America
+CN,CHN,China,Asia
+CX,CXR,Christmas Island,Oceania
+CC,CCK,Cocos Islands (Keeling),Oceania
+CO,COL,Colombia,America
+KM,COM,Comoros,Africa
+CD,COD,The Democratic Republic of the Congo,Africa
+CG,COG,Republic of the Congo,Africa
+CK,COK,Cook Islands,Oceania
+CR,CRI,Costa Rica,America
+HR,HRV,Croatia,Europe
+CU,CUB,Cuba,America
+CW,CUW,Curaçao,
+CY,CYP,Cyprus,Europe
+CZ,CZE,Czech Republic,Europe
+CI,CIV,Cote D'Ivoire,AIME
+DK,DNK,Denmark,Europe
+DJ,DJI,Djibouti,Africa
+DM,DMA,Dominica,America
+DO,DOM,Dominican Republic,America
+EC,ECU,Ecuador,America
+EG,EGY,Egypt,AIME
+SV,SLV,El Salvador,America
+GQ,GNQ,Equatorial Guinea,Africa
+ER,ERI,Eritrea,Africa
+EE,EST,Estonia,Europe
+SZ,SWZ,Swaziland,Africa
+ET,ETH,Ethiopia,Africa
+FK,FLK,Falkland Islands,America
+FO,FRO,Faroe Islands,Europe
+FJ,FJI,Fiji,Oceania
+FI,FIN,Finland,Europe
+FR,FRA,France,Europe
+GF,GUF,French Guiana,America
+PF,PYF,French Polynesia,Oceania
+TF,ATF,French Southern Territories,Antarctica
+GA,GAB,Gabon,Africa
+GM,GMB,Gambia,Africa
+GE,GEO,Georgia,Europe
+DE,DEU,Germany,Europe
+GH,GHA,Ghana,AIME
+GI,GIB,Gibraltar,Europe
+GR,GRC,Greece,Europe
+GL,GRL,Greenland,America
+GD,GRD,Grenada,America
+GP,GLP,Guadeloupe,America
+GU,GUM,Guam,Oceania
+GT,GTM,Guatemala,America
+GG,GGY,Guernsey,Europe
+GN,GIN,Guinea,Africa
+GW,GNB,Guinea-Bissau,Africa
+GY,GUY,Guyana,America
+HT,HTI,Haiti,America
+HM,HMD,Heard Island And Mcdonald Islands,Oceania
+VA,VAT,Vatican (Or Holy See),Europe
+HN,HND,Honduras,America
+HK,HKG,Hong Kong,Asia
+HU,HUN,Hungary,Europe
+IS,ISL,Iceland,Europe
+IN,IND,India,AIME
+ID,IDN,Indonesia,Asia
+IR,IRN,Iran,Asia
+IQ,IRQ,Iraq,Asia
+IE,IRL,Ireland,Europe
+IM,IMN,Isle of Man,Europe
+IL,ISR,Israel,AIME
+IT,ITA,Italy,Europe
+JM,JAM,Jamaica,America
+JP,JPN,Japan,Asia
+JE,JEY,Jersey,Europe
+JO,JOR,Jordan,CIS
+KZ,KAZ,Kazakhstan,CIS
+KE,KEN,Kenya,AIME
+KI,KIR,Kiribati,Oceania
+KP,PRK,North Korea,Asia
+KR,KOR,South Korea,Asia
+KW,KWT,Kuwait,Asia
+KG,KGZ,Kyrgyzstan,CIS
+LA,LAO,Lao,Asia
+LV,LVA,Latvia,Europe
+LB,LBN,Lebanon,AIME
+LS,LSO,Lesotho,Africa
+LR,LBR,Liberia,Africa
+LY,LBY,Libya,Africa
+LI,LIE,Liechtenstein,Europe
+LT,LTU,Lithuania,Europe
+LU,LUX,Luxembourg,Europe
+MO,MAC,Macau,Asia
+MG,MDG,Madagascar,Africa
+MW,MWI,Malawi,Africa
+MY,MYS,Malaysia,Asia
+MV,MDV,Maldives,Asia
+ML,MLI,Mali,Africa
+MT,MLT,Malta,Europe
+MH,MHL,Marshall Islands,Oceania
+MQ,MTQ,Martinique,America
+MR,MRT,Mauritania,Africa
+MU,MUS,Mauritius,Africa
+YT,MYT,Mayotte,Africa
+MX,MEX,Mexico,America
+FM,FSM,"Micronesia, Federated States Of",Oceania
+MD,MDA,Moldova,Europe
+MC,MCO,Monaco,Europe
+MN,MNG,Mongolia,Asia
+ME,MNE,Montenegro,Europe
+MS,MSR,Montserrat,America
+MA,MAR,Morocco,AIME
+MZ,MOZ,Mozambique,Africa
+MM,MMR,Myanmar,Asia
+NA,NAM,Namibia,Africa
+NR,NRU,Nauru,Oceania
+NP,NPL,Nepal,Asia
+NL,NLD,Netherlands,Europe
+NC,NCL,New Caledonia,Oceania
+NZ,NZL,New Zealand,Oceania
+NI,NIC,Nicaragua,America
+NE,NER,Niger,Africa
+NG,NGA,Nigeria,Africa
+NU,NIU,Niue,Oceania
+NF,NFK,Norfolk Island,Oceania
+MP,MNP,Northern Mariana Islands,Oceania
+NO,NOR,Norway,Europe
+OM,OMN,Oman,Asia
+PK,PAK,Pakistan,Asia
+PW,PLW,Palau,Oceania
+PS,PSE,Palestinian Territories,Asia
+PA,PAN,Panama,America
+PG,PNG,Papua New Guinea,Oceania
+PY,PRY,Paraguay,America
+PE,PER,Peru,America
+PH,PHL,Philippines,Asia
+PN,PCN,Pitcairn,Oceania
+PL,POL,Poland,Europe
+PT,PRT,Portugal,Europe
+PR,PRI,Puerto Rico,America
+QA,QAT,Qatar,Asia
+MK,MKD,Macedonia,Europe
+RO,ROU,Romania,Europe
+RU,RUS,Russian Federation,CIS
+RW,RWA,Rwanda,Africa
+RE,REU,Reunion,Africa
+BL,BLM,Saint Barthélemy,
+SH,SHN,Saint Helena,Africa
+KN,KNA,Saint Kitts And Nevis,America
+LC,LCA,Saint Lucia,America
+MF,MAF,Saint Martin (French Part),America
+PM,SPM,Saint Pierre And Miquelon,America
+VC,VCT,Saint Vincent And The Grenadines,America
+WS,WSM,Samoa,Oceania
+SM,SMR,San Marino,Europe
+ST,STP,Sao Tome And Principe,Africa
+SA,SAU,Saudi Arabia,AIME
+SN,SEN,Senegal,Africa
+RS,SRB,Serbia,Europe
+SC,SYC,Seychelles,Africa
+SL,SLE,Sierra Leone,Africa
+SG,SGP,Singapore,Asia
+SX,SXM,Sint Maarten (Dutch part),
+SK,SVK,Slovakia,Europe
+SI,SVN,Slovenia,Europe
+SB,SLB,Solomon Islands,Oceania
+SO,SOM,Somalia,Africa
+ZA,ZAF,South Africa,AIME
+GS,SGS,South Georgia And The South Sandwich Islands,America
+SS,SSD,South Sudan,
+ES,ESP,Spain,Europe
+LK,LKA,Sri Lanka,Asia
+SD,SDN,Sudan,Africa
+SR,SUR,Suriname,America
+SJ,SJM,Svalbard And Jan Mayen,Europe
+SE,SWE,Sweden,Europe
+CH,CHE,Switzerland,Europe
+SY,SYR,Syrian Arab Republic,Asia
+TW,TWN,Taiwan,Asia
+TJ,TJK,Tajikistan,Asia
+TZ,TZA,Tanzania,Africa
+TH,THA,Thailand,Asia
+TL,TLS,Timor-Leste (East Timor),Asia
+TG,TGO,Togo,Africa
+TK,TKL,Tokelau,Oceania
+TO,TON,Tonga,Oceania
+TT,TTO,Trinidad And Tobago,America
+TN,TUN,Tunisia,Africa
+TR,TUR,Turkey,AIME
+TM,TKM,Turkmenistan,Asia
+TC,TCA,Turks And Caicos Islands,America
+TV,TUV,Tuvalu,Oceania
+UG,UGA,Uganda,Africa
+UA,UKR,Ukraine,CIS
+AE,ARE,United Arab Emirates,AIME
+GB,GBR,United Kingdom,Europe
+UM,UMI,United States Minor Outlying Islands,America
+US,USA,United States of America,North America
+UY,URY,Uruguay,America
+UZ,UZB,Uzbekistan,Asia
+VU,VUT,Vanuatu,Oceania
+VE,VEN,Venezuela,America
+VN,VNM,Vietnam,Asia
+VG,VGB,"Virgin Islands, British",America
+VI,VIR,"Virgin Islands, U.S.",North America
+WF,WLF,Wallis And Futuna,Oceania
+EH,ESH,Western Sahara,Africa
+YE,YEM,Yemen,Asia
+ZM,ZMB,Zambia,Africa
+ZW,ZWE,Zimbabwe,Africa
+AX,ALA,Åland Islands,Europe
+GLO,GLO,Global,

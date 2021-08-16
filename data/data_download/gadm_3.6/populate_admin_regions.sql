@@ -2,18 +2,16 @@
 -- 1. Upsert from gadm to geo_region converting geometry to H3
 INSERT INTO geo_region 
     ("name", "h3Compact", "theGeom")
-SELECT *
-FROM (
-    SELECT
-        mpath,
-        array(
-            SELECT h3_compact(array(
-                SELECT h3_polyfill(wkb_geometry, 6)
-            ))
-        ) AS "h3Compact",
-        wkb_geometry
-    FROM gadm_levels0_2
-) gadm
+
+SELECT
+    path_id,
+    array(
+        SELECT h3_compact(array(
+            SELECT h3_polyfill(wkb_geometry, 6)
+        ))
+    ) AS "h3Compact",
+    wkb_geometry
+FROM gadm_levels0_2
 ON CONFLICT (name) DO UPDATE SET
     "h3Compact" = EXCLUDED."h3Compact",
     "theGeom" = EXCLUDED."theGeom";
@@ -22,7 +20,7 @@ ON CONFLICT (name) DO UPDATE SET
 BEGIN;
 
 INSERT INTO admin_region 
-    ("name", "mpath", "geoRegionId", "isoA3")
+    ("name", "code", "geoRegionId", "isoA3")
 SELECT 
     gadm_levels0_2.name, gadm_levels0_2.mpath, geo_region.id, gadm_levels0_2.GID_0
 FROM geo_region
@@ -30,13 +28,12 @@ FROM geo_region
 -- TypeORM doesn't make mpath unique for some reason?
 -- so we use a WHERE clause instead of an ON CONFLICT
 WHERE NOT EXISTS (SELECT 1 FROM admin_region a WHERE a.mpath = gadm_levels0_2.mpath);
--- ON CONFLICT (mpath) DO UPDATE SET
---     "geoRegionId" = EXCLUDED."geoRegionId";
+ON CONFLICT (mpath) DO UPDATE SET
+    "geoRegionId" = EXCLUDED."geoRegionId";
 
 -- 3. Add parentIds since these are tracked separately from the path
 UPDATE admin_region child
 SET "parentId" = parent.id
 FROM admin_region parent
-WHERE subpath(child.mpath::ltree, 0, -1)::text = parent.mpath;
-
+WHERE child.mpath LIKE CONCAT(parent.mpath, '_%') AND child.mpath NOT LIKE CONCAT(parent.mpath, '_%._%')
 COMMIT;

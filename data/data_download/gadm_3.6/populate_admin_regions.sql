@@ -2,22 +2,22 @@
 CREATE EXTENSION IF NOT EXISTS ltree;
 
 -- 1. Upsert from gadm to geo_region converting geometry to H3
-/* INSERT INTO geo_region 
-    ("name", "h3Compact", "theGeom")
+INSERT INTO geo_region 
+("name", "h3Compact", "theGeom")
 
 SELECT
-    path_id,
-    array(
-        SELECT h3_compact(array(
-            SELECT h3_polyfill(wkb_geometry, 6)
-        ))
-    ) AS "h3Compact",
-    wkb_geometry
+path_id,
+array(
+    SELECT h3_compact(array(
+        SELECT h3_polyfill(wkb_geometry, 6)
+    ))
+) AS "h3Compact",
+wkb_geometry
 FROM gadm_levels0_2
 ON CONFLICT (name) DO UPDATE SET
-    "h3Compact" = EXCLUDED."h3Compact",
-    "theGeom" = EXCLUDED."theGeom";
- */
+"h3Compact" = EXCLUDED."h3Compact",
+"theGeom" = EXCLUDED."theGeom";
+
 -- 2. Insert into admin_region referencing geo_region
 BEGIN;
 
@@ -61,7 +61,7 @@ WHERE admin_region.id = q.id;
 
 COMMIT;
 
--- 3.
+-- 3. add alpha2 code
 BEGIN;
 
 CREATE TEMP TABLE tmp_countries 

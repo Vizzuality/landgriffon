@@ -2,12 +2,8 @@
 .PHONY: import
 
 import: data/gadm/gadm36_levels0-2_simp.shp
-#	PGPASSWORD=$$API_POSTGRES_PASSWORD \
-	psql -d $$API_POSTGRES_DATABASE -h $$API_POSTGRES_HOST -p $$API_POSTGRES_PORT -U $$API_POSTGRES_USERNAME \
-		-c 'DROP TABLE IF EXISTS gadm_levels0_2'
-
 # load shapefile into new `gadm_levels0_2 table
-#	ogr2ogr -makevalid -update -append \
+	ogr2ogr -makevalid -update -append \
 		-nln gadm_levels0_2 -nlt PROMOTE_TO_MULTI -geomfield the_geom \
 		-t_srs EPSG:4326 -a_srs EPSG:4326 --config OGR_TRUNCATE YES \
 		-f PostgreSQL PG:"dbname=$$API_POSTGRES_DATABASE host=$$API_POSTGRES_HOST port=$$API_POSTGRES_PORT user=$$API_POSTGRES_USERNAME password=$$API_POSTGRES_PASSWORD" \

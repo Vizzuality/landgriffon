@@ -1,6 +1,8 @@
+--
+CREATE EXTENSION IF NOT EXISTS ltree;
 
 -- 1. Upsert from gadm to geo_region converting geometry to H3
-INSERT INTO geo_region 
+/* INSERT INTO geo_region 
     ("name", "h3Compact", "theGeom")
 
 SELECT
@@ -15,7 +17,7 @@ FROM gadm_levels0_2
 ON CONFLICT (name) DO UPDATE SET
     "h3Compact" = EXCLUDED."h3Compact",
     "theGeom" = EXCLUDED."theGeom";
-
+ */
 -- 2. Insert into admin_region referencing geo_region
 BEGIN;
 
@@ -24,10 +26,10 @@ INSERT INTO admin_region
     ("name", "gadmId", "geoRegionId", "isoA3")
 SELECT 
     gadm_levels0_2.name, 
-    gadm_levels0_2.path_id, 
+    gadm_levels0_2.mpath, 
     geo_region.id, 
     CASE 
-        WHEN gadm_levels0_2.GID_0 = gadm_levels0_2.path_id THEN gadm_levels0_2.GID_0
+        WHEN gadm_levels0_2.GID_0 = gadm_levels0_2.mpath THEN gadm_levels0_2.GID_0
         ELSE null
     END
 FROM geo_region
@@ -39,17 +41,17 @@ ON CONFLICT ("gadmId") DO UPDATE SET
 UPDATE admin_region child
 SET "parentId" = parent.id
 FROM admin_region parent
-WHERE child."gadmId" LIKE parent."gadmId" || '_%' AND child.mpath NOT LIKE parent."gadmId" || '_%._%';
+WHERE subpath(child."gadmId"::ltree, 0, -1)::text = parent."gadmId";
 
 -- 2.3 Create the id-based materialized path as `parent.mpath`.`child.id` from 
 -- the tree as this is usually created by TypeORM
-WITH q AS (
-    SELECT ancestor.id, ancestor.id AS mpath
-    FROM admin_region ancestor
+WITH RECURSIVE q(id, mpath) AS (
+    SELECT id, id::text as mpath
+    FROM admin_region
     WHERE "parentId" is null
     UNION ALL
     SELECT child.id, CONCAT(q.mpath, '.', child.id) as mpath
-    FROM admin_region child
+    FROM q, admin_region child
     WHERE child."parentId" = q.id
 )
 UPDATE admin_region
@@ -59,15 +61,18 @@ WHERE admin_region.id = q.id;
 
 COMMIT;
 
--- 3. add ISOa2 codes from csv
+-- 3.
 BEGIN;
 
-CREATE TEMP UNLOGGED TABLE country_codes (alpha2 text, alpha3 text, name text, region text) ON COMMIT DROP
-COPY country_codes FROM 'countriesregions.csv' WITH (FORMAT csv);
+CREATE TEMP TABLE tmp_countries 
+(alpha2 varchar, alpha3 varchar, name varchar, region varchar)
+ON COMMIT DROP;
 
-UPDATE admin_region
-SET "isoA2" = country_codes.alpha2
-FROM country_codes
-WHERE admin_region."isoA3" = country_codes.alpha3;
+\copy tmp_countries FROM 'countriesregions.csv' WITH (FORMAT csv);
+
+UPDATE admin_region 
+SET "isoA2" = tmp_countries.alpha2
+FROM tmp_countries
+WHERE admin_region."isoA3" = tmp_countries.alpha3;
 
 COMMIT;

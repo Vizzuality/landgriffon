@@ -6,7 +6,7 @@ INSERT INTO geo_region
 ("name", "h3Compact", "theGeom")
 
 SELECT
-path_id,
+mpath,
 array(
     SELECT h3_compact(array(
         SELECT h3_polyfill(wkb_geometry, 6)

@@ -41,7 +41,8 @@ ON CONFLICT ("gadmId") DO UPDATE SET
 UPDATE admin_region child
 SET "parentId" = parent.id
 FROM admin_region parent
-WHERE subpath(child."gadmId"::ltree, 0, -1)::text = parent."gadmId";
+WHERE subpath(child."gadmId"::ltree, 0, -1)::text = replace(parent."gadmId", '_1', '');
+-- for some reason GADM has "_1" appended to the end of some IDs
 
 -- 2.3 Create the id-based materialized path as `parent.mpath`.`child.id` from 
 -- the tree as this is usually created by TypeORM

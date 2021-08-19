@@ -1,4 +1,14 @@
-import { BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+
+export interface H3IndexValueData {
+  [key: string]: number;
+}
 
 @Entity('h3_data')
 @Index(['h3tableName', 'h3columnName'], { unique: true })
@@ -13,5 +23,5 @@ export class H3Data extends BaseEntity {
   h3columnName!: string;
 
   @Column({ type: 'int' })
-  h3resolution: number
+  h3resolution: number;
 }

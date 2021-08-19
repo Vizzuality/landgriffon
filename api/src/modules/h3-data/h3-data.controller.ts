@@ -1,22 +1,23 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { H3DataService } from 'modules/h3-data/h3-data.service';
-import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 
 @Controller('api/v1/h3-data')
 @ApiTags(H3Data.name)
 export class H3DataController {
   constructor(protected readonly h3DataService: H3DataService) {}
 
-  @ApiOperation({ description: 'Get all H3 table info' })
-  @ApiOkResponse({ type: () => H3Data })
-  @Get()
-  async findAll(): Promise<H3Data[]> {
-    return await this.h3DataService.findAll();
-  }
-  @ApiOperation({ description: 'Retrieve one H3 data providing its name' })
-  @Get(':h3name')
-  async findOneByName(@Param('h3name') h3tableName: string): Promise<unknown> {
-    return await this.h3DataService.findOne(h3tableName);
+  @ApiOperation({ description: 'Retrieve H3 data providing its name' })
+  @Get(':h3TableName/:h3ColumnName')
+  async findOneByName(
+    @Param('h3TableName') h3TableName: string,
+    @Param('h3ColumnName') h3ColumnName: string,
+  ): Promise<{ data: H3IndexValueData }> {
+    const h3Data = await this.h3DataService.findH3ByName(
+      h3TableName,
+      h3ColumnName,
+    );
+    return { data: h3Data };
   }
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Select } from 'antd';
+import { ChevronDownIcon } from '@heroicons/react/solid';
 import type { UseQueryResult } from 'react-query';
 
 import type { Indicator } from 'types';
@@ -40,6 +41,7 @@ const ImpactIndicatorsFilter: React.FC<ImpactIndicatorsFilterProps> = ({
       value={value}
       placeholder={error ? 'Something went wrong' : null}
       disabled={!!error}
+      suffixIcon={<ChevronDownIcon />}
     />
   );
 };

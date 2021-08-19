@@ -4,12 +4,13 @@ import { Select } from 'antd';
 import { Popover, Transition } from '@headlessui/react';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
 
-import type { Year } from 'types';
 import classNames from 'classnames';
 
 type YearsFilterProps = {
   years: {
-    data: Year[];
+    data: {
+      data: number[];
+    };
     isLoading: UseQueryResult['isLoading'];
     error: UseQueryResult['error'];
   };
@@ -21,7 +22,7 @@ const YearsFilter: React.FC<YearsFilterProps> = ({ years, isRange }: YearsFilter
   const [valueEnd, setValueEnd] = useState(null);
   const { data, isLoading, error } = years;
 
-  const availableYears = (data && data[0]) || [];
+  const availableYears = (data && data.data) || [];
 
   const isDisabled = error || availableYears.length === 0;
 
@@ -86,7 +87,7 @@ const YearsFilter: React.FC<YearsFilterProps> = ({ years, isRange }: YearsFilter
                       suffixIcon={<ChevronDownIcon />}
                     >
                       {availableYears.map((year) => (
-                        <Select.Option key={`year-${year}`} value={year} >
+                        <Select.Option key={`year-${year}`} value={year}>
                           <span>{year}</span>
                           {/* TODO: projected? */}
                           {year > 2020 && (

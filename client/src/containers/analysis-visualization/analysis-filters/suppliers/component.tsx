@@ -47,6 +47,7 @@ const MaterialsFilter: React.FC<SuppliersFilterProps> = ({ suppliers }: Supplier
         multiple
         showArrow
         suffixIcon={<ChevronDownIcon />}
+        value={value}
         treeDefaultExpandAll
         treeCheckable
         disabled={!!error}

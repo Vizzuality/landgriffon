@@ -1,11 +1,11 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, ReactElement, useState } from 'react';
 import { Popover, Transition } from '@headlessui/react';
 import { FilterIcon } from '@heroicons/react/solid';
 
 import Button from 'components/button';
 
 type MoreFiltersProps = {
-  filters: React.FC[];
+  filters: ReactElement[];
 };
 
 const MoreFilters: React.FC<MoreFiltersProps> = ({ filters }: MoreFiltersProps) => {

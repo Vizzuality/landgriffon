@@ -12,10 +12,7 @@ const YearsFilter: React.FC = () => {
   // if (response.isSuccess && response.data) return null;
   const result = response.isSuccess && response.data && response;
 
-  // TODO: remove
-  if (response.isSuccess && response.data) {
-    result.data = [[2021, 2020, 2018]];
-  }
+  if (typeof result === 'undefined') return null;
 
   const isRange = visualizationMode !== 'map';
 

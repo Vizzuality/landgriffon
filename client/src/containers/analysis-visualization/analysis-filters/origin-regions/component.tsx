@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { Select } from 'antd';
 import type { UseQueryResult } from 'react-query';
 import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
@@ -18,10 +18,6 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
 }: OriginRegionsFilterProps) => {
   const [value, setValue] = useState([]);
   const { data, isLoading, error } = originRegions;
-
-  // useEffect(() => {
-  //   if (!isLoading && data) setValue(data[0].id);
-  // }, [data, isLoading]);
 
   const handleChange = useCallback((currentValue) => {
     setValue(currentValue);

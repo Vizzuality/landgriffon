@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Select } from 'antd';
 import type { UseQueryResult } from 'react-query';
+import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
 
 import type { OriginRegion } from 'types';
 
@@ -41,9 +42,12 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
         loading={isLoading}
         options={options}
         mode="multiple"
+        showArrow
+        suffixIcon={<ChevronDownIcon />}
         value={value}
         placeholder={error ? 'Something went wrong' : 'Select origin regions'}
         disabled={!!error}
+        removeIcon={<XIcon />}
       />
     </div>
   );

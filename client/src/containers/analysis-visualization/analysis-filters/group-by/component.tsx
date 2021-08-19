@@ -1,4 +1,5 @@
 import { Select } from 'antd';
+import { ChevronDownIcon } from '@heroicons/react/solid';
 
 import type { Group } from 'types';
 
@@ -18,6 +19,7 @@ const GroupByFilter: React.FC<GroupByFilterProps> = ({ groups }: GroupByFilterPr
       onChange={handleChange}
       className="w-40"
       optionLabelProp="label"
+      suffixIcon={<ChevronDownIcon />}
     >
       {groups.map((group) => (
         <Select.Option

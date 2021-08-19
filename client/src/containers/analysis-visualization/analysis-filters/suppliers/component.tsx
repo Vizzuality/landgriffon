@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import type { UseQueryResult } from 'react-query';
 import { TreeSelect } from 'antd';
+import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
 
 import type { Supplier } from 'types';
 
@@ -44,11 +45,13 @@ const MaterialsFilter: React.FC<SuppliersFilterProps> = ({ suppliers }: Supplier
         loading={isLoading}
         placeholder={error ? 'Something went wrong' : 'Select suppliers'}
         multiple
-        allowClear
+        showArrow
+        suffixIcon={<ChevronDownIcon />}
         treeDefaultExpandAll
         treeCheckable
         disabled={!!error}
         treeNodeFilterProp="title"
+        removeIcon={<XIcon />}
       >
         {data.map((supplier) => renderTreeNode(supplier))}
       </TreeSelect>

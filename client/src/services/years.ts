@@ -1,8 +1,5 @@
 import axios from 'axios';
-import Jsona from 'jsona';
 import { signOut } from 'next-auth/client';
-
-const dataFormatter = new Jsona();
 
 const yearsService = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/sourcing-records/years`,
@@ -10,7 +7,7 @@ const yearsService = axios.create({
   transformResponse: (response) => {
     try {
       const parsedData = JSON.parse(response);
-      return dataFormatter.deserialize(parsedData);
+      return parsedData;
     } catch (error) {
       return response;
     }

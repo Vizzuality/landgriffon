@@ -48,6 +48,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({ materials }: Material
         showArrow
         treeDefaultExpandAll
         treeCheckable
+        value={value}
         disabled={!!error}
         treeNodeFilterProp="title"
         suffixIcon={<ChevronDownIcon />}

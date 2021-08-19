@@ -3,19 +3,19 @@ import Component from './component';
 
 const ALL_GROUPS: Group[] = [
   {
-    id: '0',
+    id: 'material',
     name: 'Material',
   },
   {
-    id: '1',
+    id: 'business-unit',
     name: 'Business Unit',
   },
   {
-    id: '2',
+    id: 'region',
     name: 'Region',
   },
   {
-    id: '3',
+    id: 'supplier',
     name: 'Supplier',
   },
 ];

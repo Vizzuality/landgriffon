@@ -5,7 +5,8 @@ const COMMON_CLASSNAMES =
 
 const THEME = {
   primary: 'border-transparent shadow-sm text-white bg-green-700 hover:bg-green-800',
-  secondary: 'border border-gray-300 focus:border-green-700 shadow-sm text-gray-700 bg-white hover:bg-gray-50',
+  secondary:
+    'border border-gray-300 focus:border-green-700 shadow-sm text-gray-700 bg-white hover:bg-gray-50',
 };
 
 const SIZE = {

@@ -11,18 +11,9 @@ type MoreFiltersProps = {
 const MoreFilters: React.FC<MoreFiltersProps> = ({ filters }: MoreFiltersProps) => {
   const [open, setOpen] = useState(false);
 
-  const handleApply = () => {
-    console.log('clicked Apply');
-    setOpen(false);
-  };
-
   return (
-    <Popover className="relative">
-      <Button
-        theme="secondary"
-        // className="bg-white relative flex border border-gray-300 rounded-md shadow-sm px-3 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 sm:text-sm"
-        onClick={() => setOpen(!open)}
-      >
+    <Popover className="">
+      <Button theme="secondary" onClick={() => setOpen(!open)}>
         <span className="block h-5 truncate">
           <FilterIcon className="h-5 w-5 text-gray-900" aria-hidden="true" />
         </span>
@@ -30,6 +21,14 @@ const MoreFilters: React.FC<MoreFiltersProps> = ({ filters }: MoreFiltersProps) 
           {filters.length}
         </span>
       </Button>
+      {open && (
+        <button
+          type="button"
+          aria-label="close dropdown"
+          className="fixed w-full h-full top-0 left-0 bg-transparent cursor-default"
+          onClick={() => setOpen(!open)}
+        />
+      )}
       <Transition
         show={open}
         as={Fragment}
@@ -42,18 +41,9 @@ const MoreFilters: React.FC<MoreFiltersProps> = ({ filters }: MoreFiltersProps) 
             <div className="relative rounded-lg bg-white p-4">
               <div className="flex justify-between mb-4">
                 <div>Filter by</div>
-                <Button onClick={() => console.log('clicked Clear all')}>Clear all</Button>
               </div>
               {/* TODO: error, no `key` */}
               <div className="flex flex-col gap-3">{filters}</div>
-              <div className="flex gap-2 mt-4">
-                <Button theme="secondary" className="px-8" onClick={() => setOpen(false)}>
-                  Cancel
-                </Button>
-                <Button theme="primary" className="flex-grow" onClick={handleApply}>
-                  Apply
-                </Button>
-              </div>
             </div>
           </div>
         </Popover.Panel>

@@ -17,5 +17,5 @@
       "secret": "myVeryBadJWTSecretForTests"
     }
   },
-  "geolocation": {"gmapsApiKey":  "superTestApiKey"}
+  "geolocation": {"gmapsApiKey":  "myVeryBadJWTSecretForTests"}
 }

@@ -11,6 +11,7 @@ env:
   DB_USERNAME: landgriffon
   DB_PASSWORD: landgriffon
   DB_DATABASE: landgriffon
+  GMAPS_API_KEY: secretApiKey
 
 jobs:
   testing-api:

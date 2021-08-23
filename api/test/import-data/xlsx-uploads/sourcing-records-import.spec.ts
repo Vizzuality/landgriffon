@@ -15,16 +15,17 @@ import { AdminRegionRepository } from 'modules/admin-regions/admin-region.reposi
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { SourcingLocationGroupRepository } from 'modules/sourcing-location-groups/sourcing-location-group.repository';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
-import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
-import {
-  LOCATION_TYPES,
-  SourcingLocation,
-} from 'modules/sourcing-locations/sourcing-location.entity';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
-import { SourcingData } from 'modules/import-data/sourcing-records/dto-processor.service';
+import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 
 describe('Sourcing Records import', () => {
+  /**
+   * @note: We are currently ignoring '#N/A' location type values in production code
+   * so this mock filters them to avoid DB constraint errors for not be one of the allowed
+   * location types (enum)
+   */
   const geoCodingServiceMock = {
     geoCodeLocations: async (sourcingData: any): Promise<any> => {
       return sourcingData.filter(
@@ -101,7 +102,7 @@ describe('Sourcing Records import', () => {
 
   test('When a file is not sent to the API then it should return a 400 code and the storage folder should be empty', async () => {
     const response = await request(app.getHttpServer())
-      .post('/api/v1/import/sourcing-records')
+      .post('/api/v1/import/sourcing-data')
       .expect(HttpStatus.BAD_REQUEST);
     expect(response.body.errors[0].title).toEqual(
       'A .XLSX file must be provided as payload',
@@ -110,7 +111,7 @@ describe('Sourcing Records import', () => {
 
   test('When an empty file is sent to the API then it should return a 400 code and a error message', async () => {
     const response = await request(app.getHttpServer())
-      .post('/api/v1/import/sourcing-records')
+      .post('/api/v1/import/sourcing-data')
       .attach('file', __dirname + '/empty.xlsx')
       .expect(HttpStatus.BAD_REQUEST);
     expect(response.body.errors[0].title).toEqual(
@@ -120,7 +121,7 @@ describe('Sourcing Records import', () => {
 
   test('When a file is sent to the API and some data does not comply with data validation rules, it should return a 400 code and a error message', async () => {
     const response = await request(app.getHttpServer())
-      .post('/api/v1/import/sourcing-records')
+      .post('/api/v1/import/sourcing-data')
       .attach('file', __dirname + '/business-unit-name-length.xlsx')
       .expect(HttpStatus.BAD_REQUEST);
     expect(response.body.errors[0].title).toEqual(
@@ -131,7 +132,7 @@ describe('Sourcing Records import', () => {
 
   test('When a file is sent to the API and its size is allowed then it should return a 201 code and the storage folder should be empty', async () => {
     const res = await request(app.getHttpServer())
-      .post('/api/v1/import/sourcing-records')
+      .post('/api/v1/import/sourcing-data')
       .attach('file', __dirname + '/base-dataset.xlsx')
       .expect(HttpStatus.CREATED);
     const folderContent = await readdir(config.get('fileUploads.storagePath'));
@@ -140,7 +141,7 @@ describe('Sourcing Records import', () => {
 
   test('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (happy case)', async () => {
     const response = await request(app.getHttpServer())
-      .post('/api/v1/import/sourcing-records')
+      .post('/api/v1/import/sourcing-data')
       .attach('file', __dirname + '/base-dataset.xlsx')
       .expect(HttpStatus.CREATED);
 
@@ -176,11 +177,11 @@ describe('Sourcing Records import', () => {
 
   test('When a file is sent 2 times to the API, then imported data length should be equal, and database has been cleaned in between', async () => {
     await request(app.getHttpServer())
-      .post('/api/v1/import/sourcing-records')
+      .post('/api/v1/import/sourcing-data')
       .attach('file', __dirname + '/base-dataset.xlsx');
 
     await request(app.getHttpServer())
-      .post('/api/v1/import/sourcing-records')
+      .post('/api/v1/import/sourcing-data')
       .attach('file', __dirname + '/base-dataset.xlsx');
 
     const sourcingRecords: SourcingRecord[] = await sourcingRecordRepository.find();
@@ -189,7 +190,7 @@ describe('Sourcing Records import', () => {
 
   test('When a file is sent to the API and gets processed, then a request to Sourcing-Records should return a existing Sourcing-Location ID', async () => {
     await request(app.getHttpServer())
-      .post('/api/v1/import/sourcing-records')
+      .post('/api/v1/import/sourcing-data')
       .attach('file', __dirname + '/base-dataset.xlsx');
 
     const sourcingRecords: SourcingRecord[] = await sourcingRecordRepository.find();

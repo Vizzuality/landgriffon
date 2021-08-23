@@ -47,7 +47,7 @@ export class AdminRegion extends BaseEntity {
   parent: AdminRegion;
 
   @Column({ type: 'text', unique: true, nullable: true })
-  gadmId?: string
+  gadmId?: string;
 
   @Column({ nullable: true })
   @ApiPropertyOptional()

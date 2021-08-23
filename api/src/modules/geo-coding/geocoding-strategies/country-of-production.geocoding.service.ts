@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GeoCodingBaseService } from 'modules/geo-coding/geo-coding.base.service';
-import { SourcingData } from 'modules/import-data/sourcing-records/dto-processor.service';
+import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 
 @Injectable()
@@ -33,12 +33,10 @@ export class CountryOfProductionService extends GeoCodingBaseService {
     } = await this.adminRegionService.getAdminAndGeoRegionIdByCountryIsoAlpha2(
       geoCodedResponse.results[0]?.address_components?.[0]?.short_name,
     );
-    const sourcingLocation = await this.sourcingLocationService.save({
+    return {
       ...sourcingData,
       adminRegionId,
       geoRegionId,
-    } as SourcingData);
-
-    return sourcingLocation;
+    } as SourcingLocation;
   }
 }

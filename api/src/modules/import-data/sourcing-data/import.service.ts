@@ -6,15 +6,13 @@ import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { ImportDataService } from 'modules/import-data/import-data.service';
 import {
-  SourcingData,
   SourcingRecordsDtoProcessorService,
   SourcingRecordsDtos,
-} from 'modules/import-data/sourcing-records/dto-processor.service';
+} from 'modules/import-data/sourcing-data/dto-processor.service';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import { SourcingLocationGroupsService } from 'modules/sourcing-location-groups/sourcing-location-groups.service';
 import { validateOrReject } from 'class-validator';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
-import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 
 export interface LocationData {
@@ -84,11 +82,9 @@ export class SourcingRecordsImportService {
       await this.supplierService.createTree(dtoMatchedData.suppliers);
       //TODO: Once GADM import is merged, we no longer need to populate admin-regions by the xlsx file
       //await this.adminRegionService.createTree(dtoMatchedData.adminRegions);
-
       const geoCodedSourcingData = await this.geoCodingService.geoCodeLocations(
         dtoMatchedData.sourcingData,
       );
-
       await this.sourcingLocationService.save(geoCodedSourcingData);
       //return await this.getAdminRegionByGeoLocation(sour);
     } finally {

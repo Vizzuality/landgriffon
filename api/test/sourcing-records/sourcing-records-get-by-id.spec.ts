@@ -57,7 +57,7 @@ describe('Sourcing records - Get by id', () => {
   });
 
   /**
-   * @debt: Right now we can add sourcing-records with no sourcing-location. This opens a door with new many use cases that worth testing
+   * @debt: Right now we can add sourcing-data with no sourcing-location. This opens a door with new many use cases that worth testing
    * but we will most likely restrict this behaviour, and related test will require an update
    * Thats the reason I see no value adding these use cases
    */

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GeoCodingBaseService } from 'modules/geo-coding/geo-coding.base.service';
-import { SourcingData } from 'modules/import-data/sourcing-records/dto-processor.service';
+import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 
 @Injectable()
 export class PointOfProductionGeocodingService extends GeoCodingBaseService {
@@ -9,16 +9,15 @@ export class PointOfProductionGeocodingService extends GeoCodingBaseService {
       throw new Error(
         'A country must be provided for Point of Production location type',
       );
-    if (sourcingData.locationAddressInput && sourcingData.locationLatitude)
+    if (this.hasBothAddressAndCoordinates(sourcingData))
       throw new Error(
-        `For ${sourcingData.locationCountryInput} coordenates ${sourcingData.locationLatitude} ,${sourcingData.locationLongitude} and address ${sourcingData.locationAddressInput} has been provided. Either and address or coordinates can be provided for a Aggregation Point Location Type`,
+        `For ${sourcingData.locationCountryInput} coordenates ${sourcingData.locationLatitude} ,${sourcingData.locationLongitude} and address ${sourcingData.locationAddressInput} has been provided. Either and address or coordinates can be provided for a Point of Production Location Type`,
       );
 
     if (sourcingData.locationLongitude && sourcingData.locationLatitude) {
       const geoCodeResponseData = await this.geoCodeByCountry(
         sourcingData.locationCountryInput,
       );
-
       const {
         id: adminRegionId,
       } = await this.adminRegionService.getAdminAndGeoRegionIdByCountryIsoAlpha2(
@@ -31,12 +30,11 @@ export class PointOfProductionGeocodingService extends GeoCodingBaseService {
           lng: sourcingData.locationLongitude,
         },
       });
-      const sourcingLocation = await this.sourcingLocationService.save({
+      return {
         ...sourcingData,
         adminRegionId,
         geoRegionId,
-      });
-      return sourcingLocation;
+      };
     }
     if (sourcingData.locationAddressInput) {
       const geocodedResponseData = await this.geoCodeByAddress(
@@ -54,12 +52,11 @@ export class PointOfProductionGeocodingService extends GeoCodingBaseService {
           lng: geocodedResponseData.results[0].geometry.location.lng,
         },
       });
-      const sourcingLocation = await this.sourcingLocationService.save({
+      return {
         ...sourcingData,
         adminRegionId,
         geoRegionId,
-      });
-      return sourcingLocation;
+      };
     }
   }
 }

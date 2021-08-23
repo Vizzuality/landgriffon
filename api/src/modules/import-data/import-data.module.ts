@@ -8,8 +8,8 @@ import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-loc
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { SourcingLocationGroupsModule } from 'modules/sourcing-location-groups/sourcing-location-groups.module';
 import { ImportDataService } from 'modules/import-data/import-data.service';
-import { SourcingRecordsImportService } from 'modules/import-data/sourcing-records/import.service';
-import { SourcingRecordsDtoProcessorService } from 'modules/import-data/sourcing-records/dto-processor.service';
+import { SourcingRecordsImportService } from 'modules/import-data/sourcing-data/import.service';
+import { SourcingRecordsDtoProcessorService } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { GeoCodingModule } from 'modules/geo-coding/geo-coding.module';
 import { GeoRegionsModule } from 'modules/geo-regions/geo-regions.module';
 

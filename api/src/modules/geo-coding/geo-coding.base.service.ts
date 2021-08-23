@@ -20,7 +20,7 @@ import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service
 import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
 
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
-import { SourcingData } from 'modules/import-data/sourcing-records/dto-processor.service';
+import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 
 /**
  * @note: Landgriffon Geocoding strategy doc:
@@ -122,52 +122,3 @@ export class GeoCodingBaseService {
     );
   }
 }
-
-/**
- * @note GeoCoding API response example for reference:
- *
- */
-//{
-//  "results": [{
-//  "address_components": [{
-//    "long_name": "Phichit",
-//    "short_name": "จ.พิจิตร",
-//    "types": ["administrative_area_level_1", "political"]
-//  }, {
-//    "long_name": "Thailand",
-//    "short_name": "TH",
-//    "types": ["country", "political"]
-//  }],
-//  "formatted_address": "Phichit, Thailand",
-//  "geometry": {
-//    "bounds": {
-//      "northeast": {
-//        "lat": 16.6451379,
-//        "lng": 100.7992393
-//      },
-//      "southwest": {
-//        "lat": 15.9162294,
-//        "lng": 99.98371929999999
-//      }
-//    },
-//    "location": {
-//      "lat": 16.2740876,
-//      "lng": 100.3346991
-//    },
-//    "location_type": "APPROXIMATE",
-//    "viewport": {
-//      "northeast": {
-//        "lat": 16.6451379,
-//        "lng": 100.7992393
-//      },
-//      "southwest": {
-//        "lat": 15.9162294,
-//        "lng": 99.98371929999999
-//      }
-//    }
-//  },
-//  "place_id": "ChIJQ7PzA3_i3zARoEsIsFT7BAE",
-//  "types": ["administrative_area_level_1", "political"]
-//}],
-//  "status": "OK"
-//}

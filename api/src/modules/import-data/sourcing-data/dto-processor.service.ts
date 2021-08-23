@@ -3,7 +3,7 @@ import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
 import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
 import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-region.dto';
-import { SourcingRecordsSheets } from 'modules/import-data/sourcing-records/import.service';
+import { SourcingRecordsSheets } from 'modules/import-data/sourcing-data/import.service';
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { Layer } from 'modules/layers/layer.entity';
@@ -152,7 +152,7 @@ export class SourcingRecordsDtoProcessorService {
         }
       }
       /**
-       * For each SourcingLocation, attach belonging sourcing-records to have awareness
+       * For each SourcingLocation, attach belonging sourcing-data to have awareness
        * of their relationship
        */
       const sourcingLocationWithSourcingRecords = {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GeoCodingBaseService } from 'modules/geo-coding/geo-coding.base.service';
-import { SourcingData } from 'modules/import-data/sourcing-records/dto-processor.service';
+import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { GeocodeResponseData } from '@googlemaps/google-maps-services-js/dist/geocode/geocode';
 
 @Injectable()
@@ -9,7 +9,7 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
     /**
      * The user must specify a country, and either an address OR coordinates
      */
-    if (sourcingData.locationAddressInput && sourcingData.locationLatitude)
+    if (this.hasBothAddressAndCoordinates(sourcingData))
       throw new Error(
         `For ${sourcingData.locationCountryInput} coordenates ${sourcingData.locationLatitude} ,${sourcingData.locationLongitude} and address ${sourcingData.locationAddressInput} has been provided. Either and address or coordinates can be provided for a Aggregation Point Location Type`,
       );
@@ -31,11 +31,11 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
       const adminRegion = await this.adminRegionService.getAdminRegionByName(
         sourcingData.locationCountryInput as string,
       );
-      return await this.sourcingLocationService.save({
+      return {
         ...sourcingData,
         adminRegionId: adminRegion.id,
         geoRegionId,
-      });
+      };
     }
     /**
      * if address, geocode the address
@@ -62,12 +62,11 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
           lng: geocodedResponsedata?.results[0]?.geometry.location.lng,
           lat: geocodedResponsedata?.results[0]?.geometry.location.lat,
         });
-        const sourcingLocation = await this.sourcingLocationService.save({
+        return {
           ...sourcingData,
           adminRegionId,
           geoRegionId,
-        });
-        return sourcingLocation;
+        };
       } else {
         /**
          * Else, follow the same logics as coordinates
@@ -82,12 +81,11 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
         const adminRegion = await this.adminRegionService.getAdminRegionByName(
           sourcingData.locationCountryInput as string,
         );
-        const sourcingLocation = await this.sourcingLocationService.save({
+        return {
           ...sourcingData,
           adminRegionId: adminRegion.id,
           geoRegionId,
-        });
-        return sourcingLocation;
+        };
       }
     }
   }

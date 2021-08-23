@@ -3,7 +3,7 @@ import { AggregationPointGeocodingService } from 'modules/geo-coding/geocoding-s
 import { PointOfProductionGeocodingService } from 'modules/geo-coding/geocoding-strategies/point-of-production.geocoding.service';
 import { CountryOfProductionService } from 'modules/geo-coding/geocoding-strategies/country-of-production.geocoding.service';
 import { UnknownLocationService } from 'modules/geo-coding/geocoding-strategies/unknown-location.geocoding.service';
-import { SourcingData } from 'modules/import-data/sourcing-records/dto-processor.service';
+import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 
 @Injectable()

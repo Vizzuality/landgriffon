@@ -10,6 +10,24 @@ import { IndicatorRecord } from '../src/modules/indicator-records/indicator-reco
 import { Indicator } from '../src/modules/indicators/indicator.entity';
 import { SourcingLocation } from '../src/modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationGroup } from '../src/modules/sourcing-location-groups/sourcing-location-group.entity';
+import {
+  ADMIN_REGIONS_STATUS,
+  AdminRegion,
+} from '../src/modules/admin-regions/admin-region.entity';
+
+async function createAdminRegion(
+  additionalData: Partial<AdminRegion> = {},
+): Promise<AdminRegion> {
+  const adminRegion = AdminRegion.merge(
+    new AdminRegion(),
+    {
+      name: 'Fake Admin Region',
+      status: ADMIN_REGIONS_STATUS.ACTIVE,
+    },
+    additionalData,
+  );
+  return adminRegion.save();
+}
 
 async function createIndicatorCoefficient(
   additionalData: Partial<IndicatorCoefficient> = {},
@@ -192,6 +210,7 @@ async function createSourcingRecord(
 }
 
 export {
+  createAdminRegion,
   createIndicator,
   createIndicatorCoefficient,
   createIndicatorRecord,

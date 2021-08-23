@@ -58,10 +58,3 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
     return res[0].id;
   }
 }
-//array(
-//  SELECT h3_compact(array(
-//  SELECT h3_polyfill( (ST_Multi(ST_Buffer(
-//  ST_GeomFromText('POINT(${newGeoRegionValues.coordinates.lng} ${newGeoRegionValues.coordinates.lat})'),
-//  50) )), 6)
-//))
-//)

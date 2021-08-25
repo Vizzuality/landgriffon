@@ -25,4 +25,11 @@ export class H3DataService {
   ): Promise<H3IndexValueData> {
     return await this.h3DataRepository.findH3ByName(h3TableName, h3ColumnName);
   }
+
+  async getH3ByIdAndResolution(
+    h3Id: string,
+    resolution: number,
+  ): Promise<unknown> {
+    return await this.h3DataRepository.getH3ByIdAndResolution(h3Id, resolution);
+  }
 }

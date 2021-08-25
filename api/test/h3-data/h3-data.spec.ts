@@ -36,6 +36,7 @@ describe('H3-Data Module (e2e)', () => {
 
   afterEach(async () => {
     await h3DataRepository.delete({});
+    await dropFakeH3Data(fakeTable);
   });
 
   afterAll(async () => {
@@ -46,7 +47,7 @@ describe('H3-Data Module (e2e)', () => {
   describe('H3 Data Module E2E Test Suite', () => {
     test('Given the H3 Data table is empty, when I query the API, then I should be acknowledged that no requested H3 Data has been found ', async () => {
       const response = await request(app.getHttpServer())
-        .get(`/api/v1/h3-data/${fakeTable}/${fakeColumn}`)
+        .get(`/api/v1/h3/data/${fakeTable}/${fakeColumn}`)
         .expect(HttpStatus.NOT_FOUND);
       expect(response.body.errors[0].title).toEqual(
         `H3 ${fakeColumn} data in ${fakeTable} could not been found`,
@@ -56,9 +57,49 @@ describe('H3-Data Module (e2e)', () => {
       await createFakeH3Data(fakeTable, fakeColumn);
 
       const response = await request(app.getHttpServer())
-        .get(`/api/v1/h3-data/${fakeTable}/${fakeColumn}`)
+        .get(`/api/v1/h3/data/${fakeTable}/${fakeColumn}`)
         .expect(HttpStatus.OK);
       expect(response.body).toEqual({ data: { '861203a4fffffff': 1000 } });
+    });
+    test('When I query a H3 data with a non available resolution, then I should get a proper error message', async () => {
+      const response = await request(app.getHttpServer()).get(
+        `/api/v1/h3/data/doYouLikeMyFakeId?resolution=0`,
+      );
+      expect(response.body.errors[0].meta.rawError.response.message[0]).toEqual(
+        'Available resolutions: 1 to 6',
+      );
+    });
+    test('When I query a H3 data with a resolution value that is not a number, then I should get a proper error message', async () => {
+      const response = await request(app.getHttpServer()).get(
+        `/api/v1/h3/data/doYouLikeMyFakeId?resolution=definitelyNotANumber`,
+      );
+      expect(response.body.errors[0].meta.rawError.response.message[1]).toEqual(
+        'resolution must be a number conforming to the specified constraints',
+      );
+    });
+    test('When I query a H3 data by its ID and it does not exist, then I should get a proper error message', async () => {
+      const FAKE_UUID = '959dc56e-a782-441a-be36-1aaa617ed843';
+      const response = await request(app.getHttpServer()).get(
+        `/api/v1/h3/data/${FAKE_UUID}`,
+      );
+      expect(response.body.errors[0].title).toEqual(
+        `Requested H3 with ID: ${FAKE_UUID} could not been found`,
+      );
+    });
+    test('When I query H3 data with no resolution provided, then I should get I should get each available h3indexes (max resolution)', async () => {
+      const id = await createFakeH3Data(fakeTable, fakeColumn, true);
+      const response = await request(app.getHttpServer()).get(
+        `/api/v1/h3/data/${id}`,
+      );
+      expect(Object.keys(response.body).length).toEqual(400);
+    });
+
+    test('When I query H3 data at minimal resolution, then I should get 8 h3indexes', async () => {
+      const id = await createFakeH3Data(fakeTable, fakeColumn, true);
+      const response = await request(app.getHttpServer()).get(
+        `/api/v1/h3/data/${id}?resolution=1`,
+      );
+      expect(Object.keys(response.body).length).toEqual(8);
     });
   });
 });

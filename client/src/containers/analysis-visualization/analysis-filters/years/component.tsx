@@ -158,6 +158,7 @@ const YearsFilter: React.FC<YearsFilterProps> = ({ years, isRange }: YearsFilter
                           value={value}
                           dropdownStyle={{ minWidth: 'min-content' }}
                           suffixIcon={<ChevronDownIcon />}
+                          showSearch
                         >
                           {availableYears.map((year) => (
                             <Select.Option key={`year-${year}`} value={year}>

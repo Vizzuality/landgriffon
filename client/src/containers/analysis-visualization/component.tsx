@@ -25,7 +25,7 @@ const AnalysisVisualization = () => {
       )}
 
       {visualizationMode === 'table' && (
-        <div className="flex flex-col p-6 mt-16">
+        <div className="flex flex-col left-12 p-6 mt-16 pl-12">
           <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
               <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">

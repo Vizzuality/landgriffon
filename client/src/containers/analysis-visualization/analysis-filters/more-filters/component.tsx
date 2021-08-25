@@ -18,7 +18,7 @@ const MoreFilters: React.FC<MoreFiltersProps> = ({ filters }: MoreFiltersProps) 
 
   return (
     <Popover>
-      <Button theme="secondary" onClick={() => setOpen(!open)}>
+      <Button theme="secondary" onClick={() => setOpen(true)}>
         <span className="block h-5 truncate">
           <FilterIcon className="h-5 w-5 text-gray-900" aria-hidden="true" />
         </span>

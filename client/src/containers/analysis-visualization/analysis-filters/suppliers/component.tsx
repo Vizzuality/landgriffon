@@ -49,6 +49,8 @@ const MaterialsFilter: React.FC<SuppliersFilterProps> = ({ suppliers }: Supplier
         disabled={!!error}
         treeNodeFilterProp="title"
         removeIcon={<XIcon />}
+        maxTagCount={5}
+        maxTagPlaceholder={(e) => `${e.length} more...`}
       >
         {options}
       </TreeSelect>

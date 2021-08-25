@@ -44,6 +44,8 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
         placeholder={error ? 'Something went wrong' : 'Select origin regions'}
         disabled={!!error}
         removeIcon={<XIcon />}
+        maxTagCount={5}
+        maxTagPlaceholder={(e) => `${e.length} more...`}
       />
     </div>
   );

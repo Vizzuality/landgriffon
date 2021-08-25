@@ -51,6 +51,8 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({ materials }: Material
         treeNodeFilterProp="title"
         suffixIcon={<ChevronDownIcon />}
         removeIcon={<XIcon />}
+        maxTagCount={5}
+        maxTagPlaceholder={(e) => `${e.length} more...`}
       >
         {data && data.map((material) => renderTreeNode(material))}
       </TreeSelect>

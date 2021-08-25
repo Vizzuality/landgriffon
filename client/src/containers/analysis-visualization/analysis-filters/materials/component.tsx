@@ -19,10 +19,6 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({ materials }: Material
   const [value, setValue] = useState([]);
   const { data, isLoading, error } = materials;
 
-  // useEffect(() =>
-  //   if (!isLoading && data) setValue([]);
-  // }, [data, isLoading]);
-
   const handleChange = useCallback((currentValue) => {
     setValue(currentValue);
   }, []);

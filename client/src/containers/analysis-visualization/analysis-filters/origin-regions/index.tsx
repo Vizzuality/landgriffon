@@ -6,23 +6,23 @@ import Component from './component';
 const OriginRegionsContainer: React.FC = () => {
   const response = useQuery('originRegionsList', getOriginRegions);
 
-  const result = response.isSuccess && response.data && response;
+  // const result = response.isSuccess && response.data && response;
 
-  // TODO: remove
-  if (response.isSuccess && response.data) {
-    result.data = [
-      {
-        id: '0',
-        name: 'Brazil',
-      },
-      {
-        id: '1',
-        name: 'Canada',
-      },
-    ];
-  }
+  // // TODO: remove
+  // if (response.isSuccess && response.data) {
+  //   result.data = [
+  //     {
+  //       id: '0',
+  //       name: 'Brazil',
+  //     },
+  //     {
+  //       id: '1',
+  //       name: 'Canada',
+  //     },
+  //   ];
+  // }
 
-  return <Component originRegions={result} />;
+  return <Component originRegions={response} />;
 };
 
 export default OriginRegionsContainer;

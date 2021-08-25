@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useMemo } from 'react';
 import type { UseQueryResult } from 'react-query';
 import { TreeSelect } from 'antd';
 import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
@@ -19,10 +19,6 @@ const MaterialsFilter: React.FC<SuppliersFilterProps> = ({ suppliers }: Supplier
   const [value, setValue] = useState([]);
   const { data, isLoading, error } = suppliers;
 
-  // useEffect(() =>
-  //   if (!isLoading && data) setValue([]);
-  // }, [data, isLoading]);
-
   const handleChange = useCallback((currentValue) => {
     setValue(currentValue);
   }, []);
@@ -33,7 +29,7 @@ const MaterialsFilter: React.FC<SuppliersFilterProps> = ({ suppliers }: Supplier
     </TreeNode>
   );
 
-  if (!data) return null;
+  const options = useMemo(() => data && data.map((supplier) => renderTreeNode(supplier)), [data]);
 
   return (
     <div>
@@ -54,7 +50,7 @@ const MaterialsFilter: React.FC<SuppliersFilterProps> = ({ suppliers }: Supplier
         treeNodeFilterProp="title"
         removeIcon={<XIcon />}
       >
-        {data.map((supplier) => renderTreeNode(supplier))}
+        {options}
       </TreeSelect>
     </div>
   );

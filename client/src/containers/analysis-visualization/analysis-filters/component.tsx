@@ -6,7 +6,11 @@ import Materials from './materials';
 import OriginRegions from './origin-regions';
 import Suppliers from './suppliers';
 
-const FILTERS = [<Materials />, <OriginRegions />, <Suppliers />];
+const FILTERS = [
+  <Materials key="materialsFilter" />,
+  <OriginRegions key="originRegionsFilter" />,
+  <Suppliers key="suppliersFilter" />,
+];
 
 const AnalysisFilters: React.FC = () => (
   <div className="absolute left-12 top-6 z-10 inline-flex gap-2">

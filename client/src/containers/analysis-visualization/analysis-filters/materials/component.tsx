@@ -33,8 +33,6 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({ materials }: Material
     </TreeNode>
   );
 
-  if (!data) return null;
-
   return (
     <div>
       <div className="mb-1">Material</div>
@@ -54,7 +52,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({ materials }: Material
         suffixIcon={<ChevronDownIcon />}
         removeIcon={<XIcon />}
       >
-        {data.map((material) => renderTreeNode(material))}
+        {data && data.map((material) => renderTreeNode(material))}
       </TreeSelect>
     </div>
   );

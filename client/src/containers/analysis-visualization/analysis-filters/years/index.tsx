@@ -9,10 +9,7 @@ const YearsFilter: React.FC = () => {
   const { visualizationMode } = useAppSelector(analysis);
   const response = useQuery('yearsList', getYears);
 
-  // if (response.isSuccess && response.data) return null;
   const result = response.isSuccess && response.data && response;
-
-  if (typeof result === 'undefined') return null;
 
   const isRange = visualizationMode !== 'map';
 

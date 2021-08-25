@@ -39,7 +39,7 @@ const ImpactIndicatorsFilter: React.FC<ImpactIndicatorsFilterProps> = ({
       loading={isLoading}
       options={options}
       value={value}
-      placeholder={error ? 'Something went wrong' : null}
+      placeholder={error ? 'Something went wrong' : 'Select Impact Indicator'}
       disabled={!!error}
       suffixIcon={<ChevronDownIcon />}
     />

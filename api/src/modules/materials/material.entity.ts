@@ -40,6 +40,7 @@ export const materialResource: BaseServiceResource = {
     'earthstatId',
     'mapspamId',
     'metadata',
+    'h3Grid',
   ],
 };
 
@@ -105,7 +106,7 @@ export class Material extends TimestampedBaseEntity {
   sourcingLocations: SourcingLocation[];
 
   @ManyToOne(() => Layer, (layer: Layer) => layer.materials, {
-    eager: false,
+    eager: true,
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'layerId' })
@@ -119,7 +120,14 @@ export class Material extends TimestampedBaseEntity {
   @Column()
   layerId!: string;
 
-  @OneToOne(() => H3Data, { nullable: true })
-  @JoinColumn()
-  h3Grid?: H3Data;
+  @OneToOne(() => H3Data, (h3grid: H3Data) => h3grid.id, { nullable: true })
+  @JoinColumn({ name: 'h3GridId' })
+  h3Grid: H3Data;
+  /**
+   * @note: Although there should not be any material with no h3GridId, this needs to be nullable
+   * since materials needs to exist before the h3 script takes care of adding these IDs to
+   * each material
+   */
+  @Column({ nullable: true })
+  h3GridId!: string;
 }

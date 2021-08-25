@@ -10,4 +10,5 @@ export const expectedJSONAPIAttributes: string[] = [
   'parentId',
   'createdAt',
   'updatedAt',
+  'h3GridId',
 ];

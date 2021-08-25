@@ -1,23 +1,25 @@
 import cx from 'classnames';
 
-const COMMON_CLASSNAMES =
-  'inline-flex items-center justify-center font-medium rounded-md cursor-pointer focus:outline-none focus:ring-1 focus:ring-green-700';
+const COMMON_CLASSNAMES = 'inline-flex items-center justify-center rounded-md cursor-pointer';
 
 const THEME = {
-  primary: 'border-transparent shadow-sm text-white bg-green-700 hover:bg-green-800',
+  primary:
+    'border-transparent shadow-sm text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-1 focus:ring-green-700',
   secondary:
-    'border border-gray-300 focus:border-green-700 shadow-sm text-gray-700 bg-white hover:bg-gray-50',
+    'border border-gray-300 focus:border-green-700 shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-green-700',
+  textLight: 'bg-transparent text-gray-500 focus:outline-none focus:text-black',
 };
 
 const SIZE = {
-  xs: 'text-xs px-2.5 py-1.5',
-  base: 'text-sm px-4 py-2',
-  xl: 'text-base px-6 py-3',
+  xs: 'font-medium text-xs px-2.5 py-1.5',
+  base: 'font-medium text-sm px-4 py-2',
+  xl: 'font-medium text-base px-6 py-3',
+  text: 'font-normal text-sm p-0',
 };
 
 export type AnchorButtonProps = {
-  theme?: 'primary' | 'secondary';
-  size?: 'xs' | 'base' | 'xl';
+  theme?: 'primary' | 'secondary' | 'textLight';
+  size?: 'xs' | 'base' | 'xl' | 'text';
 };
 
 // Button props

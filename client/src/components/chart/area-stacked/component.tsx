@@ -7,6 +7,7 @@ import { Annotation, Label, LineSubject } from '@visx/annotation';
 
 import { timeYear } from 'd3-time';
 import { format } from 'd3-format';
+import { useMemo } from 'react';
 
 const getDate = (d) => new Date(d.date).valueOf();
 const getY0 = (d) => d[0];
@@ -44,6 +45,7 @@ export type AreaStackedProps = {
     left: number;
   };
   keys?: string[];
+  target?: number;
 };
 
 const AreaStacked: React.FC<AreaStackedProps> = ({
@@ -52,10 +54,26 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
   height = 200,
   margin = { top: 40, right: 30, bottom: 50, left: 40 },
   keys = [],
+  target,
 }: AreaStackedProps) => {
   if (!width || !height) return null;
-  const lastCurrentIndex = data.findIndex((d) => !d.current);
-  console.log(lastCurrentIndex);
+  const lastCurrentIndex = useMemo(() => {
+    const i = data.findIndex((d) => !d.current);
+    if (i > -1 && i !== data.length - 1) return i;
+    return null;
+  }, [data]);
+
+  const currentData = useMemo(() => {
+    if (typeof lastCurrentIndex === 'undefined' || lastCurrentIndex === null) return data;
+
+    return data.slice(0, lastCurrentIndex + 1);
+  }, [data, lastCurrentIndex]);
+
+  const projectedData = useMemo(() => {
+    if (typeof lastCurrentIndex === 'undefined' || lastCurrentIndex === null) return [];
+
+    return data.slice(lastCurrentIndex);
+  }, [data, lastCurrentIndex]);
 
   // X:
   // X: constants
@@ -103,7 +121,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
         <AreaStack
           width={xRangeMax}
           height={yRangeMax}
-          data={data.slice(0, lastCurrentIndex)}
+          data={currentData}
           keys={keys}
           x={(d) => xScale(getDate(d.data)) ?? 0}
           y0={(d) => yScale(getY0(d)) ?? 0}
@@ -124,7 +142,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
         <AreaStack
           width={xRangeMax}
           height={yRangeMax}
-          data={data.slice(lastCurrentIndex - 1)}
+          data={projectedData}
           keys={keys}
           x={(d) => xScale(getDate(d.data)) ?? 0}
           y0={(d) => yScale(getY0(d)) ?? 0}
@@ -137,7 +155,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
                 d={path(stack) || ''}
                 stroke="transparent"
                 fill={COLORS[stack.key]}
-                fillOpacity={0.75}
+                fillOpacity={0.6}
               />
             ))
           }
@@ -179,80 +197,86 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
         />
 
         {/* Target */}
-        <Annotation y={yScale(250)}>
-          <LineSubject
-            orientation="horizontal"
-            stroke="#999"
-            strokeDasharray="2 1"
-            min={0}
-            max={xRangeMax}
-          />
+        {typeof target !== 'undefined' && target !== null && (
+          <Annotation y={yScale(target)}>
+            <LineSubject
+              orientation="horizontal"
+              stroke="#999"
+              strokeWidth={0.5}
+              strokeDasharray="2 1"
+              min={0}
+              max={xRangeMax}
+            />
 
-          <Label
-            width={41}
-            title="Target"
-            horizontalAnchor="start"
-            verticalAnchor="middle"
-            x={5}
-            backgroundPadding={{
-              top: 4,
-              left: 8,
-              bottom: 4,
-              right: 8,
-            }}
-            backgroundFill="#FFF"
-            backgroundProps={{
-              rx: 4,
-              stroke: '#656565',
-              strokeOpacity: 0.5,
-              strokeWidth: 0.5,
-            }}
-            titleFontSize={8}
-            titleFontWeight={400}
-            titleProps={{
-              color: '#656565',
-            }}
-            showAnchorLine={false}
-          />
-        </Annotation>
+            <Label
+              width={37}
+              title="Target"
+              horizontalAnchor="start"
+              verticalAnchor="middle"
+              x={5}
+              backgroundPadding={{
+                top: 3,
+                left: 6,
+                bottom: 3,
+                right: 6,
+              }}
+              backgroundFill="#FFF"
+              backgroundProps={{
+                rx: 4,
+                stroke: '#656565',
+                strokeOpacity: 0.5,
+                strokeWidth: 0.5,
+              }}
+              titleFontSize={8}
+              titleFontWeight={400}
+              titleProps={{
+                color: '#656565',
+              }}
+              showAnchorLine={false}
+            />
+          </Annotation>
+        )}
 
         {/* Projection */}
-        <Annotation x={xScale(new Date('01/01/2021').valueOf())}>
-          <LineSubject
-            orientation="vertical"
-            stroke="#999"
-            strokeDasharray="2 1"
-            min={0}
-            max={yRangeMax}
-          />
+        {typeof lastCurrentIndex !== 'undefined' && lastCurrentIndex !== null && (
+          <Annotation x={xScale(new Date(data[lastCurrentIndex].date).valueOf())}>
+            <LineSubject
+              orientation="vertical"
+              stroke="#999"
+              strokeWidth={0.5}
+              strokeDasharray="2 1"
+              min={0}
+              max={yRangeMax}
+            />
 
-          <Label
-            width={53}
-            y={5}
-            title="Projection"
-            horizontalAnchor="middle"
-            verticalAnchor="middle"
-            backgroundPadding={{
-              top: 4,
-              left: 8,
-              bottom: 4,
-              right: 8,
-            }}
-            backgroundFill="#FFF"
-            backgroundProps={{
-              rx: 4,
-              stroke: '#656565',
-              strokeOpacity: 0.5,
-              strokeWidth: 0.5,
-            }}
-            titleFontSize={8}
-            titleFontWeight={400}
-            titleProps={{
-              color: '#656565',
-            }}
-            showAnchorLine={false}
-          />
-        </Annotation>
+            <Label
+              width={49}
+              y={5}
+              title="Projection"
+              horizontalAnchor="middle"
+              verticalAnchor="middle"
+              backgroundPadding={{
+                top: 3,
+                left: 6,
+                bottom: 3,
+                right: 6,
+              }}
+              backgroundFill="#FFF"
+              backgroundProps={{
+                rx: 4,
+                stroke: '#656565',
+                strokeOpacity: 0.5,
+                strokeWidth: 0.5,
+              }}
+              titleFontSize={8}
+              titleFontWeight={400}
+              titleProps={{
+                color: '#656565',
+              }}
+              showAnchorLine={false}
+            />
+          </Annotation>
+        )}
       </Group>
     </>
   );

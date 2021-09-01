@@ -18,6 +18,7 @@ const Template: Story<ChartProps> = (props: ChartProps) => (
         data={MOCK}
         margin={{ top: 50, right: 50, bottom: 50, left: 50 }}
         keys={['beef', 'coal', 'corn', 'duck', 'mint', 'poultry', 'soy']}
+        target={120}
       />
     </Chart>
   </div>

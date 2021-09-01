@@ -57,7 +57,7 @@ const DATA = [
     poultry: 22,
     mint: 65,
     soy: 95,
-    current: true,
+    current: false,
   },
   {
     id: '43faed2d-ee2b-49cc-acb6-c173f2cb5974',

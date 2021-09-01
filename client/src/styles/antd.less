@@ -13,7 +13,7 @@
 @select-selection-item-bg: @primary-1;
 @select-selection-item-border-color: @primary-1;
 
-// Custom
+// Select Custom
 .ant-select {
   &:not(.ant-select-disabled) {
     &:hover {
@@ -78,4 +78,32 @@
 
 .ant-select-selection-item-content {
   color: @primary-color;
+}
+
+
+
+// Table Custom
+.ant-table-thead {
+  tr {
+    border-bottom: 2px solid red !important;
+  }
+}
+
+.ant-table-cell-fix-left-last {
+  border-right: 1px dotted #D1D5DB;
+}
+
+.ant-table-cell::before {
+  display: none;
+}
+.ant-table-cell-fix-left-last::after {
+  box-shadow: none;
+}
+.ant-table-cell-fix-left-last::before {
+  box-shadow: none;
+}
+.ant-table-row {
+  &.ant-table-row-level-0:nth-child(2n + 1) {
+    background: #F9FAFB; 
+  } 
 }

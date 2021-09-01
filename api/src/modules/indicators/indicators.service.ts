@@ -33,12 +33,12 @@ export class IndicatorsService extends AppBaseService<
 
   get serializerConfig(): JSONAPISerializerConfig<Indicator> {
     return {
-      attributes: ['id', 'name', 'description', 'unitId', 'status', 'metadata'],
+      attributes: ['id', 'name', 'description', 'unit', 'status', 'metadata'],
       keyForAttribute: 'camelCase',
     };
   }
 
-  async getIndicatorById(id: number): Promise<Indicator> {
+  async getIndicatorById(id: string): Promise<Indicator> {
     const found = await this.indicatorRepository.findOne(id);
 
     if (!found) {

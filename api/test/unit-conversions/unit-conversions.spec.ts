@@ -59,7 +59,7 @@ describe('UnitConversionsModule (e2e)', () => {
         throw new Error('Error loading created Unit Conversion');
       }
 
-      expect(createdUnitConversion.unit1).toEqual(1234);
+      expect(createdUnitConversion.unit1).toEqual('1234');
     });
   });
 

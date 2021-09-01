@@ -8,5 +8,6 @@ import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
   imports: [TypeOrmModule.forFeature([H3DataRepository])],
   controllers: [H3DataController],
   providers: [H3DataService],
+  exports: [H3DataService],
 })
 export class H3DataModule {}

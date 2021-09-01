@@ -10,10 +10,12 @@ import { IndicatorRecord } from '../src/modules/indicator-records/indicator-reco
 import { Indicator } from '../src/modules/indicators/indicator.entity';
 import { SourcingLocation } from '../src/modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationGroup } from '../src/modules/sourcing-location-groups/sourcing-location-group.entity';
+import { Unit } from 'modules/units/unit.entity';
 import {
   ADMIN_REGIONS_STATUS,
   AdminRegion,
 } from '../src/modules/admin-regions/admin-region.entity';
+import { UnitConversion } from '../src/modules/unit-conversions/unit-conversion.entity';
 
 async function createAdminRegion(
   additionalData: Partial<AdminRegion> = {},
@@ -87,7 +89,7 @@ async function createIndicatorSource(
     additionalData,
   );
 
-  if (!indicatorSource.layerId) {
+  if (!indicatorSource.layer) {
     const layer: Layer = await createLayer();
     indicatorSource.layer = layer;
   }
@@ -209,6 +211,31 @@ async function createSourcingRecord(
   return sourcingRecord.save();
 }
 
+async function createUnit(additionalData: Partial<Unit> = {}): Promise<Unit> {
+  const unit = Unit.merge(
+    new Unit(),
+    {
+      name: 'test unit name',
+      symbol: 'm3/year',
+    },
+    additionalData,
+  );
+  return unit.save();
+}
+
+async function createUnitConversion(
+  additionalData: Partial<UnitConversion> = {},
+): Promise<UnitConversion> {
+  const unitConversion = UnitConversion.merge(
+    new UnitConversion(),
+    {
+      factor: 1,
+    },
+    additionalData,
+  );
+  return unitConversion.save();
+}
+
 export {
   createAdminRegion,
   createIndicator,
@@ -223,4 +250,6 @@ export {
   createSourcingLocation,
   createSourcingLocationGroup,
   createSourcingRecord,
+  createUnit,
+  createUnitConversion,
 };

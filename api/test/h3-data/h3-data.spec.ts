@@ -5,6 +5,7 @@ import { AppModule } from 'app.module';
 import { H3DataRepository } from '../../src/modules/h3-data/h3-data.repository';
 import { H3DataModule } from '../../src/modules/h3-data/h3-data.module';
 import { createFakeH3Data, dropFakeH3Data } from './mocks/create-fake-h3-data';
+import { h3MaterialFixtures } from './mocks/h3-fixtures';
 
 /**
  * Tests for the H3DataModule.
@@ -36,11 +37,10 @@ describe('H3-Data Module (e2e)', () => {
 
   afterEach(async () => {
     await h3DataRepository.delete({});
-    await dropFakeH3Data(fakeTable);
+    await dropFakeH3Data([fakeTable]);
   });
 
   afterAll(async () => {
-    await dropFakeH3Data(fakeTable);
     await Promise.all([app.close()]);
   });
 
@@ -87,7 +87,11 @@ describe('H3-Data Module (e2e)', () => {
       );
     });
     test('When I query H3 data with no resolution provided, then I should get a proper error message', async () => {
-      const id = await createFakeH3Data(fakeTable, fakeColumn, true);
+      const id = await createFakeH3Data(
+        fakeTable,
+        fakeColumn,
+        h3MaterialFixtures,
+      );
       const response = await request(app.getHttpServer()).get(
         `/api/v1/h3/data/${id}`,
       );
@@ -97,7 +101,11 @@ describe('H3-Data Module (e2e)', () => {
     });
 
     test('When I query H3 data at minimal resolution, then I should get 8 h3indexes', async () => {
-      const id = await createFakeH3Data(fakeTable, fakeColumn, true);
+      const id = await createFakeH3Data(
+        fakeTable,
+        fakeColumn,
+        h3MaterialFixtures,
+      );
       const response = await request(app.getHttpServer()).get(
         `/api/v1/h3/data/${id}?resolution=1`,
       );

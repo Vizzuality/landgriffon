@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
-import { H3IndexValueData } from 'modules/h3-data/h3-data.entity';
+import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 
 /**
  * @debt: Check if we actually need extending nestjs-base-service over this module.
@@ -11,6 +11,7 @@ import { H3IndexValueData } from 'modules/h3-data/h3-data.entity';
  */
 @Injectable()
 export class H3DataService {
+  logger: Logger = new Logger(H3DataService.name);
   constructor(
     @InjectRepository(H3DataRepository)
     protected readonly h3DataRepository: H3DataRepository,
@@ -31,5 +32,18 @@ export class H3DataService {
     resolution: number,
   ): Promise<unknown> {
     return await this.h3DataRepository.getH3ByIdAndResolution(h3Id, resolution);
+  }
+
+  async calculateRiskMapByMaterialAndIndicator(
+    indicatorH3Data: H3Data,
+    materialH3Data: H3Data,
+    calculusFactor: number,
+  ): Promise<H3IndexValueData> {
+    this.logger.log(`Generating Risk Map...`);
+    return await this.h3DataRepository.calculateRiskMapByMaterialAndIndicator(
+      indicatorH3Data,
+      materialH3Data,
+      calculusFactor,
+    );
   }
 }

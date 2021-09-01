@@ -3,6 +3,7 @@ import { Axis, Orientation } from '@visx/axis';
 import { scaleTime, scaleLinear } from '@visx/scale';
 import { Group } from '@visx/group';
 import { GridRows } from '@visx/grid';
+import { Annotation, Label, LineSubject } from '@visx/annotation';
 
 import { timeYear } from 'd3-time';
 import { format } from 'd3-format';
@@ -24,6 +25,7 @@ const COLORS = {
 export type AreaStackedProps = {
   data: {
     id: string;
+    current: boolean;
     date: string;
     coal?: number;
     beef?: number;
@@ -52,6 +54,9 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
   keys = [],
 }: AreaStackedProps) => {
   if (!width || !height) return null;
+  const lastCurrentIndex = data.findIndex((d) => !d.current);
+  console.log(lastCurrentIndex);
+
   // X:
   // X: constants
   const xRangeMax = width - margin.left - margin.right;
@@ -83,64 +88,173 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
   });
 
   return (
-    <Group top={margin.top} left={margin.left}>
-      <GridRows scale={yScale} width={xRangeMax} height={yRangeMax} stroke="#e0e0e0" />
-      <AreaStack
-        width={xRangeMax}
-        height={yRangeMax}
-        data={data}
-        keys={keys}
-        x={(d) => xScale(getDate(d.data)) ?? 0}
-        y0={(d) => yScale(getY0(d)) ?? 0}
-        y1={(d) => yScale(getY1(d)) ?? 0}
-      >
-        {({ stacks, path }) =>
-          stacks.map((stack) => (
-            <path
-              key={`stack-${stack.key}`}
-              d={path(stack) || ''}
-              stroke="transparent"
-              fill={COLORS[stack.key]}
-            />
-          ))
-        }
-      </AreaStack>
+    <>
+      <Group top={margin.top} left={margin.left}>
+        {/* Grid */}
+        <GridRows
+          scale={yScale}
+          width={xRangeMax}
+          height={yRangeMax}
+          stroke="#eeeeee"
+          strokeDasharray="1 1"
+        />
 
-      {/* X Axis */}
-      <Axis
-        top={yRangeMax}
-        orientation={Orientation.bottom}
-        scale={xScale}
-        numTicks={30}
-        hideTicks
-        hideAxisLine
-        tickValues={xScale.ticks(timeYear)}
-        tickLabelProps={() => ({
-          dy: '0.5em',
-          fill: '#222',
-          fontFamily: 'Arial',
-          fontSize: 10,
-          textAnchor: 'middle',
-        })}
-      />
+        {/* Areas */}
+        <AreaStack
+          width={xRangeMax}
+          height={yRangeMax}
+          data={data.slice(0, lastCurrentIndex)}
+          keys={keys}
+          x={(d) => xScale(getDate(d.data)) ?? 0}
+          y0={(d) => yScale(getY0(d)) ?? 0}
+          y1={(d) => yScale(getY1(d)) ?? 0}
+        >
+          {({ stacks, path }) =>
+            stacks.map((stack) => (
+              <path
+                key={`stack-${stack.key}`}
+                d={path(stack) || ''}
+                stroke="transparent"
+                fill={COLORS[stack.key]}
+              />
+            ))
+          }
+        </AreaStack>
 
-      {/* Y Axis */}
-      <Axis
-        orientation={Orientation.left}
-        scale={yScale}
-        hideTicks
-        hideAxisLine
-        tickFormat={format('.3~s')}
-        tickLabelProps={() => ({
-          dx: '-0.25em',
-          dy: '-0.25em',
-          fill: '#222',
-          fontFamily: 'Arial',
-          fontSize: 10,
-          textAnchor: 'end',
-        })}
-      />
-    </Group>
+        <AreaStack
+          width={xRangeMax}
+          height={yRangeMax}
+          data={data.slice(lastCurrentIndex - 1)}
+          keys={keys}
+          x={(d) => xScale(getDate(d.data)) ?? 0}
+          y0={(d) => yScale(getY0(d)) ?? 0}
+          y1={(d) => yScale(getY1(d)) ?? 0}
+        >
+          {({ stacks, path }) =>
+            stacks.map((stack) => (
+              <path
+                key={`stack-${stack.key}`}
+                d={path(stack) || ''}
+                stroke="transparent"
+                fill={COLORS[stack.key]}
+                fillOpacity={0.75}
+              />
+            ))
+          }
+        </AreaStack>
+
+        {/* X Axis */}
+        <Axis
+          top={yRangeMax}
+          orientation={Orientation.bottom}
+          scale={xScale}
+          numTicks={30}
+          hideTicks
+          hideAxisLine
+          tickValues={xScale.ticks(timeYear)}
+          tickLabelProps={() => ({
+            dy: '0.5em',
+            fill: '#222',
+            fontFamily: 'Arial',
+            fontSize: 10,
+            textAnchor: 'middle',
+          })}
+        />
+
+        {/* Y Axis */}
+        <Axis
+          orientation={Orientation.left}
+          scale={yScale}
+          hideTicks
+          hideAxisLine
+          tickFormat={format('.3~s')}
+          tickLabelProps={() => ({
+            dx: '-0.25em',
+            dy: '-0.25em',
+            fill: '#222',
+            fontFamily: 'Arial',
+            fontSize: 10,
+            textAnchor: 'end',
+          })}
+        />
+
+        {/* Target */}
+        <Annotation y={yScale(250)}>
+          <LineSubject
+            orientation="horizontal"
+            stroke="#999"
+            strokeDasharray="2 1"
+            min={0}
+            max={xRangeMax}
+          />
+
+          <Label
+            width={41}
+            title="Target"
+            horizontalAnchor="start"
+            verticalAnchor="middle"
+            x={5}
+            backgroundPadding={{
+              top: 4,
+              left: 8,
+              bottom: 4,
+              right: 8,
+            }}
+            backgroundFill="#FFF"
+            backgroundProps={{
+              rx: 4,
+              stroke: '#656565',
+              strokeOpacity: 0.5,
+              strokeWidth: 0.5,
+            }}
+            titleFontSize={8}
+            titleFontWeight={400}
+            titleProps={{
+              color: '#656565',
+            }}
+            showAnchorLine={false}
+          />
+        </Annotation>
+
+        {/* Projection */}
+        <Annotation x={xScale(new Date('01/01/2021').valueOf())}>
+          <LineSubject
+            orientation="vertical"
+            stroke="#999"
+            strokeDasharray="2 1"
+            min={0}
+            max={yRangeMax}
+          />
+
+          <Label
+            width={53}
+            y={5}
+            title="Projection"
+            horizontalAnchor="middle"
+            verticalAnchor="middle"
+            backgroundPadding={{
+              top: 4,
+              left: 8,
+              bottom: 4,
+              right: 8,
+            }}
+            backgroundFill="#FFF"
+            backgroundProps={{
+              rx: 4,
+              stroke: '#656565',
+              strokeOpacity: 0.5,
+              strokeWidth: 0.5,
+            }}
+            titleFontSize={8}
+            titleFontWeight={400}
+            titleProps={{
+              color: '#656565',
+            }}
+            showAnchorLine={false}
+          />
+        </Annotation>
+      </Group>
+    </>
   );
 };
 

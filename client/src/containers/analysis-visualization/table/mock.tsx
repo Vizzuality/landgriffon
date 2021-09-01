@@ -1,3 +1,19 @@
+import { SwitchVerticalIcon } from '@heroicons/react/outline';
+
+interface TitleProps {
+  title: string;
+}
+
+const Title: React.FC<TitleProps> = ({ title }: TitleProps) => (
+  <div className="flex items-center">
+    <p className="m-0">{title}</p>
+    <button type="button" onClick={() => console.log('sort column')}>
+      {' '}
+      <SwitchVerticalIcon className="w-3 h-3 mx-4 text-black" />
+    </button>
+  </div>
+);
+
 export const COLUMNS = [
   {
     title: 'YEAR',
@@ -7,35 +23,42 @@ export const COLUMNS = [
     fixed: 'left',
   },
   {
-    title: '2021',
-    dataIndex: '2021',
-    key: '2021',
-    width: 50,
+    title: '2021-2025',
+    dataIndex: 'all',
+    key: 'all',
+    width: 100,
     fixed: 'left',
   },
   {
-    title: '2022',
+    title: () => <Title title="2021" />,
+    dataIndex: '2021',
+    key: '2021',
+    width: 100,
+    fixed: 'left',
+  },
+  {
+    title: () => <Title title="2022" />,
     dataIndex: '2022',
     key: '2022',
-    width: 150,
+    width: 100,
   },
   {
-    title: '2023',
+    title: () => <Title title="2023" />,
     dataIndex: '2023',
     key: '2023',
-    width: 150,
+    width: 100,
   },
   {
-    title: '2024',
+    title: () => <Title title="2024" />,
     dataIndex: '2024',
     key: '2024',
-    width: 150,
+    width: 100,
   },
   {
-    title: '2025',
+    title: () => <Title title="2025" />,
     dataIndex: '2025',
     key: '2025',
-    width: 150,
+    width: 100,
   },
 ];
 
@@ -43,6 +66,7 @@ export const DATA = [
   {
     key: '1',
     commodity: 'Carbon emissions (tCO2)',
+    all: 'Graphic',
     2021: 20,
     2022: 30,
     2023: 50,
@@ -52,6 +76,7 @@ export const DATA = [
       {
         key: 11,
         commodity: 'Rice',
+        all: 'Graphic',
         2021: 220,
         2022: 230,
         2023: 250,
@@ -61,6 +86,7 @@ export const DATA = [
       {
         key: 12,
         commodity: 'Palm Oil',
+        all: 'Graphic',
         2021: 20,
         2022: 130,
         2023: 20,
@@ -70,6 +96,7 @@ export const DATA = [
       {
         key: 13,
         commodity: 'Cocoa',
+        all: 'Graphic',
         2021: 220,
         2022: 230,
         2023: 250,
@@ -79,6 +106,7 @@ export const DATA = [
       {
         key: 14,
         commodity: 'Beef',
+        all: 'Graphic',
         2021: 20,
         2022: 130,
         2023: 20,
@@ -88,6 +116,7 @@ export const DATA = [
       {
         key: 15,
         commodity: 'Carrots',
+        all: 'Graphic',
         2021: 220,
         2022: 230,
         2023: 250,
@@ -97,6 +126,7 @@ export const DATA = [
       {
         key: 16,
         commodity: 'Corn',
+        all: 'Graphic',
         2021: 20,
         2022: 130,
         2023: 20,
@@ -106,6 +136,7 @@ export const DATA = [
       {
         key: 17,
         commodity: 'Melon',
+        all: 'Graphic',
         2021: 220,
         2022: 230,
         2023: 250,
@@ -117,6 +148,7 @@ export const DATA = [
   {
     key: '2',
     commodity: 'Deforestation (Ha)',
+    all: 'Graphic',
     2021: 20,
     2022: 30,
     2023: 150,
@@ -126,6 +158,7 @@ export const DATA = [
       {
         key: 21,
         commodity: 'Rice',
+        all: 'Graphic',
         2021: 220,
         2022: 230,
         2023: 250,
@@ -135,6 +168,7 @@ export const DATA = [
       {
         key: 22,
         commodity: 'Palm Oil',
+        all: 'Graphic',
         2021: 20,
         2022: 130,
         2023: 20,
@@ -144,6 +178,7 @@ export const DATA = [
       {
         key: 23,
         commodity: 'Cocoa',
+        all: 'Graphic',
         2021: 220,
         2022: 230,
         2023: 250,
@@ -153,6 +188,7 @@ export const DATA = [
       {
         key: 24,
         commodity: 'Beef',
+        all: 'Graphic',
         2021: 20,
         2022: 130,
         2023: 20,
@@ -162,6 +198,7 @@ export const DATA = [
       {
         key: 25,
         commodity: 'Carrots',
+        all: 'Graphic',
         2021: 220,
         2022: 230,
         2023: 250,
@@ -171,6 +208,7 @@ export const DATA = [
       {
         key: 26,
         commodity: 'Corn',
+        all: 'Graphic',
         2021: 20,
         2022: 130,
         2023: 20,
@@ -180,6 +218,7 @@ export const DATA = [
       {
         key: 27,
         commodity: 'Melon',
+        all: 'Graphic',
         2021: 220,
         2022: 230,
         2023: 250,
@@ -191,6 +230,7 @@ export const DATA = [
   {
     key: '3',
     commodity: 'Unsustainable water use (M3)',
+    all: 'Graphic',
     2021: 200,
     2022: 30,
     2023: 150,
@@ -200,6 +240,7 @@ export const DATA = [
       {
         key: 31,
         commodity: 'Rice',
+        all: 'Graphic',
         2021: 220,
         2022: 230,
         2023: 250,
@@ -209,6 +250,7 @@ export const DATA = [
       {
         key: 32,
         commodity: 'Palm Oil',
+        all: 'Graphic',
         2021: 20,
         2022: 130,
         2023: 20,
@@ -218,6 +260,7 @@ export const DATA = [
       {
         key: 33,
         commodity: 'Cocoa',
+        all: 'Graphic',
         2021: 220,
         2022: 230,
         2023: 250,
@@ -227,6 +270,7 @@ export const DATA = [
       {
         key: 34,
         commodity: 'Beef',
+        all: 'Graphic',
         2021: 20,
         2022: 130,
         2023: 20,
@@ -236,6 +280,7 @@ export const DATA = [
       {
         key: 35,
         commodity: 'Carrots',
+        all: 'Graphic',
         2021: 220,
         2022: 230,
         2023: 250,
@@ -245,6 +290,7 @@ export const DATA = [
       {
         key: 36,
         commodity: 'Corn',
+        all: 'Graphic',
         2021: 20,
         2022: 130,
         2023: 20,
@@ -254,6 +300,7 @@ export const DATA = [
       {
         key: 37,
         commodity: 'Melon',
+        all: 'Graphic',
         2021: 220,
         2022: 230,
         2023: 250,
@@ -265,6 +312,7 @@ export const DATA = [
   {
     key: '4',
     commodity: 'Biodiversity (X)',
+    all: 'Graphic',
     2021: 50,
     2022: 30,
     2023: 100,
@@ -274,6 +322,7 @@ export const DATA = [
       {
         key: 41,
         commodity: 'Rice',
+        all: 'Graphic',
         2021: 220,
         2022: 230,
         2023: 250,
@@ -283,6 +332,7 @@ export const DATA = [
       {
         key: 42,
         commodity: 'Palm Oil',
+        all: 'Graphic',
         2021: 20,
         2022: 130,
         2023: 20,
@@ -292,6 +342,7 @@ export const DATA = [
       {
         key: 43,
         commodity: 'Cocoa',
+        all: 'Graphic',
         2021: 220,
         2022: 230,
         2023: 250,
@@ -301,6 +352,7 @@ export const DATA = [
       {
         key: 44,
         commodity: 'Beef',
+        all: 'Graphic',
         2021: 20,
         2022: 130,
         2023: 20,
@@ -310,6 +362,7 @@ export const DATA = [
       {
         key: 45,
         commodity: 'Carrots',
+        all: 'Graphic',
         2021: 220,
         2022: 230,
         2023: 250,
@@ -319,6 +372,7 @@ export const DATA = [
       {
         key: 46,
         commodity: 'Corn',
+        all: 'Graphic',
         2021: 20,
         2022: 130,
         2023: 20,
@@ -328,6 +382,7 @@ export const DATA = [
       {
         key: 47,
         commodity: 'Melon',
+        all: 'Graphic',
         2021: 220,
         2022: 230,
         2023: 250,

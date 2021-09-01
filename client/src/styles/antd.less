@@ -83,11 +83,6 @@
 
 
 // Table Custom
-.ant-table-thead {
-  tr {
-    border-bottom: 2px solid red !important;
-  }
-}
 
 .ant-table-cell-fix-left-last {
   border-right: 1px dotted #D1D5DB;
@@ -102,8 +97,8 @@
 .ant-table-cell-fix-left-last::before {
   box-shadow: none;
 }
-.ant-table-row {
-  &.ant-table-row-level-0:nth-child(2n + 1) {
-    background: #F9FAFB; 
-  } 
+
+.ant-table-cell.ant-table-cell-fix-left.ant-table-cell-with-append {
+  display: flex;
+  align-items: center;
 }

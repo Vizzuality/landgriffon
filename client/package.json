@@ -48,6 +48,7 @@
     "@tailwindcss/forms": "^0.3.2",
     "@tailwindcss/typography": "^0.4.1",
     "@tippyjs/react": "^4.2.5",
+    "@visx/axis": "^2.1.0",
     "@visx/mock-data": "^2.1.0",
     "@visx/responsive": "^2.1.0",
     "@visx/scale": "^2.1.0",

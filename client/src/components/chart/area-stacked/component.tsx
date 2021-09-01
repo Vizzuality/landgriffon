@@ -6,12 +6,12 @@ const getY0 = (d) => d[0];
 const getY1 = (d) => d[1];
 
 const COLORS = {
-  coal: '#FFFF00',
-  beef: '#FFEE00',
+  beef: '#FFFF00',
+  coal: '#FFEE00',
   corn: '#FFDD00',
   duck: '#FFCC00',
-  poultry: '#FFBB00',
-  mint: '#FFAA00',
+  mint: '#FFBB00',
+  poultry: '#FFAA00',
   soy: '#FF9900',
 };
 
@@ -27,8 +27,8 @@ export type AreaStackedProps = {
     mint?: number;
     soy?: number;
   }[];
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
   margin?: {
     top: number;
     right: number;
@@ -40,8 +40,8 @@ export type AreaStackedProps = {
 
 const AreaStacked: React.FC<AreaStackedProps> = ({
   data,
-  width,
-  height,
+  width = 400,
+  height = 200,
   margin = { top: 0, right: 0, bottom: 0, left: 0 },
   keys = [],
 }: AreaStackedProps) => {

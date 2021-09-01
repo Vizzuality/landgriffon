@@ -4478,7 +4478,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/lodash@^4.14.146":
+"@types/lodash@^4.14.146", "@types/lodash@^4.14.160":
   version "4.14.172"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.172.tgz#aad774c28e7bfd7a67de25408e03ee5a8c3d028a"
   integrity sha512-/BHF5HAx3em7/KkzVKm3LrsD6HZAXuXO1AJZQ3cRRBZj4oHZDviWPYu0aEplAqDFNHZPW6d3G7KN+ONcCCC7pw==
@@ -4818,6 +4818,20 @@
     "@typescript-eslint/types" "4.25.0"
     eslint-visitor-keys "^2.0.0"
 
+"@visx/axis@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@visx/axis/-/axis-2.1.0.tgz#f96bbeaa02e11c8599f3d9c93e0aae7af0f00a1f"
+  integrity sha512-+dYffMXnbJM1kWzXu2s394SpP8AE7XtTpSke6Yj2NNDU3PkxKX+l15IkLMCLUuemguJkysyyCHfhF7smiOvs5w==
+  dependencies:
+    "@types/react" "*"
+    "@visx/group" "2.1.0"
+    "@visx/point" "2.1.0"
+    "@visx/scale" "2.1.0"
+    "@visx/shape" "2.1.0"
+    "@visx/text" "2.1.0"
+    classnames "^2.3.1"
+    prop-types "^15.6.0"
+
 "@visx/curve@2.1.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@visx/curve/-/curve-2.1.0.tgz#f614bfe3db66df7db7382db7a75ced1506b94602"
@@ -4843,6 +4857,11 @@
     "@types/d3-random" "^2.2.0"
     d3-random "^2.2.2"
 
+"@visx/point@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@visx/point/-/point-2.1.0.tgz#b3e263826f28b3a170d6604dea8ffa27a4b9ac3b"
+  integrity sha512-vVnfI7oqjjttkn05Xi/ooR0UqQRoGf68lyT3SOl0WPHvIQBGNh3XoVUBHDr15/NUkfErgK6TNlfXY763YncPWg==
+
 "@visx/responsive@^2.1.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@visx/responsive/-/responsive-2.1.0.tgz#fe98d7de61b4ed1b0e2a12d92b70d5d02844d1e6"
@@ -4866,7 +4885,7 @@
     d3-scale "^3.3.0"
     d3-time "^2.1.1"
 
-"@visx/shape@^2.1.0":
+"@visx/shape@2.1.0", "@visx/shape@^2.1.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@visx/shape/-/shape-2.1.0.tgz#7b8b3b0439037ffb8cd5c0fba3da16f0746a71c0"
   integrity sha512-mc32amXcdkQrcKGOdP6CJ5Dy13iCHWzgnJNcebqSSoQocwqNddR+rc0yIO72V0YZrqOSH5v7X1MKiZHqPoC9xw==
@@ -4883,6 +4902,18 @@
     d3-shape "^1.2.0"
     lodash "^4.17.15"
     prop-types "^15.5.10"
+
+"@visx/text@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@visx/text/-/text-2.1.0.tgz#ccdf27832f8b9d846a8fdec5adad807515682448"
+  integrity sha512-8vdnzoP75lIkDUHfmshcdn+Ic3K9l+HveGTZBVNu3qCSWLn2/F61HpA6BLRSg/vzxMhNav+hoBkBgRRYe8R7mw==
+  dependencies:
+    "@types/lodash" "^4.14.160"
+    "@types/react" "*"
+    classnames "^2.3.1"
+    lodash "^4.17.20"
+    prop-types "^15.7.2"
+    reduce-css-calc "^1.3.0"
 
 "@vizzuality/layer-manager-layers-deckgl@^1.0.0-alpha.3":
   version "1.0.0-alpha.3"
@@ -5869,6 +5900,11 @@ bail@^1.0.0:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/bail/-/bail-1.0.5.tgz#b6fa133404a392cbc1f8c4bf63f5953351e7a776"
   integrity sha512-xFbRxM1tahm08yHBP16MMjVUAvDaBMD38zsM9EMAUN61omwLmKlOpB/Zku5QkjZ8TZ4vn53pj+t518cH0S03RQ==
+
+balanced-match@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-0.4.2.tgz#cb3f3e3c732dc0f01ee70b403f302e61d7709838"
+  integrity sha1-yz8+PHMtwPAe5wtAPzAuYddwmDg=
 
 balanced-match@^1.0.0:
   version "1.0.2"
@@ -11677,6 +11713,11 @@ match-sorter@^6.0.2:
     "@babel/runtime" "^7.12.5"
     remove-accents "0.4.2"
 
+math-expression-evaluator@^1.2.14:
+  version "1.3.8"
+  resolved "https://registry.yarnpkg.com/math-expression-evaluator/-/math-expression-evaluator-1.3.8.tgz#320da3b2bc1512f4f50fc3020b2b1cd5c8e9d577"
+  integrity sha512-9FbRY3i6U+CbHgrdNbAUaisjWTozkm1ZfupYQJiZ87NtYHk2Zh9DvxMgp/fifxVhqTLpd5fCCLossUbpZxGeKw==
+
 math.gl@^3.0.0, math.gl@^3.0.0-beta.3:
   version "3.4.2"
   resolved "https://registry.yarnpkg.com/math.gl/-/math.gl-3.4.2.tgz#1d39b6b9f735b57134c26f079607611dbf4e8c89"
@@ -14474,6 +14515,15 @@ recursive-readdir@2.2.2:
   dependencies:
     minimatch "3.0.4"
 
+reduce-css-calc@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/reduce-css-calc/-/reduce-css-calc-1.3.0.tgz#747c914e049614a4c9cfbba629871ad1d2927716"
+  integrity sha1-dHyRTgSWFKTJz7umKYca0dKSdxY=
+  dependencies:
+    balanced-match "^0.4.2"
+    math-expression-evaluator "^1.2.14"
+    reduce-function-call "^1.0.1"
+
 reduce-css-calc@^2.1.8:
   version "2.1.8"
   resolved "https://registry.yarnpkg.com/reduce-css-calc/-/reduce-css-calc-2.1.8.tgz#7ef8761a28d614980dc0c982f772c93f7a99de03"
@@ -14481,6 +14531,13 @@ reduce-css-calc@^2.1.8:
   dependencies:
     css-unit-converter "^1.1.1"
     postcss-value-parser "^3.3.0"
+
+reduce-function-call@^1.0.1:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/reduce-function-call/-/reduce-function-call-1.0.3.tgz#60350f7fb252c0a67eb10fd4694d16909971300f"
+  integrity sha512-Hl/tuV2VDgWgCSEeWMLwxLZqX7OK59eU1guxXsRKTAyeYimivsKdtcV4fu3r710tpG5GmDKDhQ0HSZLExnNmyQ==
+  dependencies:
+    balanced-match "^1.0.0"
 
 redux-thunk@^2.3.0:
   version "2.3.0"

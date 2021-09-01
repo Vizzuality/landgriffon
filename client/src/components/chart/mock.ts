@@ -1,7 +1,29 @@
 export default [
   {
+    id: '43faed2d-ee2b-49cc-acb6-c173f2cb5974',
+    date: '01/01/2025',
+    coal: 48,
+    beef: 25,
+    corn: 52,
+    duck: 98,
+    poultry: 44,
+    mint: 88,
+    soy: 7,
+  },
+  {
+    id: '284e38d9-7127-4225-ac6c-74e9a1cfa740',
+    date: '01/01/2024',
+    coal: 33,
+    beef: 24,
+    corn: 75,
+    duck: 14,
+    poultry: 63,
+    mint: 18,
+    soy: 29,
+  },
+  {
     id: '70d06b9f-16aa-420f-80d5-3b09dd557b60',
-    date: '12/31/2023',
+    date: '01/01/2023',
     coal: 89,
     beef: 6,
     corn: 92,
@@ -12,7 +34,7 @@ export default [
   },
   {
     id: '284e38d9-7127-4225-ac6c-74e9a1cfa740',
-    date: '12/31/2022',
+    date: '01/01/2022',
     coal: 33,
     beef: 24,
     corn: 75,
@@ -23,7 +45,7 @@ export default [
   },
   {
     id: '54983fb6-2fc5-49d5-92ff-8bd015a105a3',
-    date: '12/31/2021',
+    date: '01/01/2021',
     coal: 45,
     beef: 7,
     corn: 13,
@@ -34,7 +56,7 @@ export default [
   },
   {
     id: '43faed2d-ee2b-49cc-acb6-c173f2cb5974',
-    date: '12/31/2020',
+    date: '01/01/2020',
     coal: 48,
     beef: 25,
     corn: 52,

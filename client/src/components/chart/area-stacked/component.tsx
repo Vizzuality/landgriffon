@@ -1,5 +1,11 @@
 import { AreaStack } from '@visx/shape';
+import { Axis, Orientation } from '@visx/axis';
 import { scaleTime, scaleLinear } from '@visx/scale';
+import { Group } from '@visx/group';
+import { GridRows } from '@visx/grid';
+
+import { timeYear } from 'd3-time';
+import { format } from 'd3-format';
 
 const getDate = (d) => new Date(d.date).valueOf();
 const getY0 = (d) => d[0];
@@ -42,55 +48,92 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
   data,
   width = 400,
   height = 200,
-  margin = { top: 0, right: 0, bottom: 0, left: 0 },
+  margin = { top: 40, right: 30, bottom: 50, left: 40 },
   keys = [],
 }: AreaStackedProps) => {
   if (!width || !height) return null;
-  // bounds
-  const yMax = height - margin.top - margin.bottom;
-  const xMax = width - margin.left - margin.right;
-
-  // Y: max
-  const domainMaxY = Math.max(
-    ...data.map((d) => {
-      const sum = keys.reduce((acc, k) => acc + d[k], 0);
-
-      return sum;
-    })
-  );
-
-  // scales
+  // X:
+  // X: constants
+  const xRangeMax = width - margin.left - margin.right;
+  // X: scale
   const xScale = scaleTime<number>({
-    range: [0, xMax],
+    nice: true,
+    range: [0, xRangeMax],
     domain: [Math.min(...data.map(getDate)), Math.max(...data.map(getDate))],
   });
+
+  // Y:
+  // Y: constants
+  const yRangeMax = height - margin.top - margin.bottom;
+  const yDomainMax = Math.max(
+    ...data.map((d) =>
+      keys.reduce((acc, k) => {
+        if (typeof d[k] === 'number') {
+          return acc + d[k];
+        }
+        return 0;
+      }, 0)
+    )
+  );
+
+  // Y: scale
   const yScale = scaleLinear<number>({
-    range: [yMax, 0],
-    domain: [0, domainMaxY],
+    range: [yRangeMax, 0],
+    domain: [0, yDomainMax],
   });
 
   return (
-    <AreaStack
-      top={margin.top}
-      left={margin.left}
-      data={data}
-      keys={keys}
-      x={(d) => xScale(getDate(d.data)) ?? 0}
-      y0={(d) => yScale(getY0(d)) ?? 0}
-      y1={(d) => yScale(getY1(d)) ?? 0}
-      offset="none"
-    >
-      {({ stacks, path }) =>
-        stacks.map((stack) => (
-          <path
-            key={`stack-${stack.key}`}
-            d={path(stack) || ''}
-            stroke="transparent"
-            fill={COLORS[stack.key]}
-          />
-        ))
-      }
-    </AreaStack>
+    <Group top={margin.top} left={margin.left}>
+      <GridRows scale={yScale} width={xRangeMax} height={yRangeMax} stroke="#e0e0e0" />
+      <AreaStack
+        width={xRangeMax}
+        height={yRangeMax}
+        data={data}
+        keys={keys}
+        x={(d) => xScale(getDate(d.data)) ?? 0}
+        y0={(d) => yScale(getY0(d)) ?? 0}
+        y1={(d) => yScale(getY1(d)) ?? 0}
+      >
+        {({ stacks, path }) =>
+          stacks.map((stack) => (
+            <path
+              key={`stack-${stack.key}`}
+              d={path(stack) || ''}
+              stroke="transparent"
+              fill={COLORS[stack.key]}
+            />
+          ))
+        }
+      </AreaStack>
+
+      {/* X Axis */}
+      <Axis
+        top={yRangeMax}
+        orientation={Orientation.bottom}
+        scale={xScale}
+        numTicks={30}
+        hideTicks
+        hideAxisLine
+        tickValues={xScale.ticks(timeYear)}
+      />
+
+      {/* Y Axis */}
+      <Axis
+        orientation={Orientation.left}
+        scale={yScale}
+        hideTicks
+        hideAxisLine
+        tickFormat={format('.3s')}
+        tickLabelProps={() => ({
+          dx: '-0.25em',
+          dy: '0em',
+          fill: '#222',
+          fontFamily: 'Arial',
+          fontSize: 10,
+          textAnchor: 'end',
+        })}
+      />
+    </Group>
   );
 };
 

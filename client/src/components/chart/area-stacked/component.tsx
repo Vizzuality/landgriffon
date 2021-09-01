@@ -115,6 +115,13 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
         hideTicks
         hideAxisLine
         tickValues={xScale.ticks(timeYear)}
+        tickLabelProps={() => ({
+          dy: '0.5em',
+          fill: '#222',
+          fontFamily: 'Arial',
+          fontSize: 10,
+          textAnchor: 'middle',
+        })}
       />
 
       {/* Y Axis */}
@@ -123,10 +130,10 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
         scale={yScale}
         hideTicks
         hideAxisLine
-        tickFormat={format('.3s')}
+        tickFormat={format('.3~s')}
         tickLabelProps={() => ({
           dx: '-0.25em',
-          dy: '0em',
+          dy: '-0.25em',
           fill: '#222',
           fontFamily: 'Arial',
           fontSize: 10,

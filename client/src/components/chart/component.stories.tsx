@@ -12,7 +12,7 @@ export default {
 };
 
 const Template: Story<ChartProps> = (props: ChartProps) => (
-  <div className="w-full h-80">
+  <div className="w-full h-96">
     <Chart {...props}>
       <AreaStacked
         data={MOCK}

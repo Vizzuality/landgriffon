@@ -14,10 +14,9 @@ export interface TableProps {
 
 export const Table: React.FC<TableProps> = ({ columns, dataSource }: TableProps) => (
   <TableAntd
+    className="w-full"
     expandable={{
       rowExpandable: (record) => !!record.children,
-
-
       expandIcon: ({ expanded, onExpand, record }) => {
         if (!record.children) return null;
         if (expanded)

@@ -1,17 +1,21 @@
-import { AreaStack } from '@visx/shape';
+import { AreaStack, Bar, Line } from '@visx/shape';
 import { Axis, Orientation } from '@visx/axis';
 import { scaleTime, scaleLinear } from '@visx/scale';
 import { Group } from '@visx/group';
 import { GridRows } from '@visx/grid';
 import { Annotation, Label, LineSubject } from '@visx/annotation';
+import { useTooltip, TooltipWithBounds } from '@visx/tooltip';
+import { localPoint } from '@visx/event';
+import { bisector } from 'd3-array';
 
 import { timeYear } from 'd3-time';
 import { format } from 'd3-format';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 const getDate = (d) => new Date(d.date).valueOf();
 const getY0 = (d) => d[0];
 const getY1 = (d) => d[1];
+const bisectDate = bisector((d) => new Date(d.date)).left;
 
 const COLORS = {
   beef: '#FFFF00',
@@ -57,6 +61,9 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
   target,
 }: AreaStackedProps) => {
   if (!width || !height) return null;
+
+  const { showTooltip, hideTooltip, tooltipData, tooltipTop, tooltipLeft } = useTooltip();
+
   const lastCurrentIndex = useMemo(() => {
     const i = data.findIndex((d) => !d.current);
     if (i > -1 && i !== data.length - 1) return i;
@@ -105,179 +112,269 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
     domain: [0, yDomainMax],
   });
 
+  // Callbacks
+  const handleTooltip = useCallback(
+    (event: React.TouchEvent<SVGRectElement> | React.MouseEvent<SVGRectElement>) => {
+      const { x } = localPoint(event) || { x: 0 };
+      const x0 = xScale.invert(x);
+      const index = bisectDate(data, x0, 1);
+      const d0 = data[index - 1];
+      const d1 = data[index];
+      let d = d0;
+
+      if (d1 && getDate(d1)) {
+        d = x0.valueOf() - getDate(d0).valueOf() > getDate(d1).valueOf() - x0.valueOf() ? d1 : d0;
+      }
+
+      const y = keys.reduce((acc, k) => {
+        if (typeof d[k] === 'number') {
+          return acc + d[k];
+        }
+        return 0;
+      }, 0);
+
+      showTooltip({
+        tooltipData: d,
+        tooltipLeft: xScale(getDate(d)),
+        tooltipTop: yScale(y),
+      });
+    },
+    [showTooltip, xScale, yScale, keys]
+  );
+
   return (
     <>
-      <Group top={margin.top} left={margin.left}>
-        {/* Grid */}
-        <GridRows
-          scale={yScale}
-          width={xRangeMax}
-          height={yRangeMax}
-          stroke="#eeeeee"
-          strokeDasharray="1 1"
-        />
+      <svg width={width} height={height}>
+        <Group top={margin.top} left={margin.left}>
+          {/* Grid */}
+          <GridRows
+            scale={yScale}
+            width={xRangeMax}
+            height={yRangeMax}
+            stroke="#eeeeee"
+            strokeDasharray="1 1"
+          />
 
-        {/* Areas */}
-        <AreaStack
-          width={xRangeMax}
-          height={yRangeMax}
-          data={currentData}
-          keys={keys}
-          x={(d) => xScale(getDate(d.data)) ?? 0}
-          y0={(d) => yScale(getY0(d)) ?? 0}
-          y1={(d) => yScale(getY1(d)) ?? 0}
-        >
-          {({ stacks, path }) =>
-            stacks.map((stack) => (
-              <path
-                key={`stack-${stack.key}`}
-                d={path(stack) || ''}
-                stroke="transparent"
-                fill={COLORS[stack.key]}
+          {/* Areas */}
+          <AreaStack
+            width={xRangeMax}
+            height={yRangeMax}
+            data={currentData}
+            keys={keys}
+            x={(d) => xScale(getDate(d.data)) ?? 0}
+            y0={(d) => yScale(getY0(d)) ?? 0}
+            y1={(d) => yScale(getY1(d)) ?? 0}
+          >
+            {({ stacks, path }) =>
+              stacks.map((stack) => (
+                <path
+                  key={`stack-${stack.key}`}
+                  d={path(stack) || ''}
+                  stroke="transparent"
+                  fill={COLORS[stack.key]}
+                />
+              ))
+            }
+          </AreaStack>
+
+          <AreaStack
+            width={xRangeMax}
+            height={yRangeMax}
+            data={projectedData}
+            keys={keys}
+            x={(d) => xScale(getDate(d.data)) ?? 0}
+            y0={(d) => yScale(getY0(d)) ?? 0}
+            y1={(d) => yScale(getY1(d)) ?? 0}
+          >
+            {({ stacks, path }) =>
+              stacks.map((stack) => (
+                <path
+                  key={`stack-${stack.key}`}
+                  d={path(stack) || ''}
+                  stroke="transparent"
+                  fill={COLORS[stack.key]}
+                  fillOpacity={0.6}
+                />
+              ))
+            }
+          </AreaStack>
+
+          {/* Tooltip Area */}
+          <Bar
+            width={xRangeMax}
+            height={yRangeMax}
+            fill="transparent"
+            onTouchStart={handleTooltip}
+            onTouchMove={handleTooltip}
+            onMouseMove={handleTooltip}
+            onMouseLeave={() => hideTooltip()}
+          />
+
+          {/* Tooltip */}
+          {tooltipData && (
+            <g>
+              <Line
+                from={{ x: tooltipLeft, y: 0 }}
+                to={{ x: tooltipLeft, y: yRangeMax }}
+                stroke="#F00"
+                strokeWidth={2}
+                pointerEvents="none"
+                strokeDasharray="5,2"
               />
-            ))
-          }
-        </AreaStack>
-
-        <AreaStack
-          width={xRangeMax}
-          height={yRangeMax}
-          data={projectedData}
-          keys={keys}
-          x={(d) => xScale(getDate(d.data)) ?? 0}
-          y0={(d) => yScale(getY0(d)) ?? 0}
-          y1={(d) => yScale(getY1(d)) ?? 0}
-        >
-          {({ stacks, path }) =>
-            stacks.map((stack) => (
-              <path
-                key={`stack-${stack.key}`}
-                d={path(stack) || ''}
-                stroke="transparent"
-                fill={COLORS[stack.key]}
-                fillOpacity={0.6}
+              <circle
+                cx={tooltipLeft}
+                cy={tooltipTop + 1}
+                r={4}
+                fill="black"
+                fillOpacity={0.1}
+                stroke="black"
+                strokeOpacity={0.1}
+                strokeWidth={2}
+                pointerEvents="none"
               />
-            ))
-          }
-        </AreaStack>
+              <circle
+                cx={tooltipLeft}
+                cy={tooltipTop}
+                r={4}
+                fill="#F00"
+                stroke="white"
+                strokeWidth={2}
+                pointerEvents="none"
+              />
+            </g>
+          )}
 
-        {/* X Axis */}
-        <Axis
-          top={yRangeMax}
-          orientation={Orientation.bottom}
-          scale={xScale}
-          numTicks={30}
-          hideTicks
-          hideAxisLine
-          tickValues={xScale.ticks(timeYear)}
-          tickLabelProps={() => ({
-            dy: '0.5em',
-            fill: '#222',
-            fontFamily: 'Arial',
-            fontSize: 10,
-            textAnchor: 'middle',
-          })}
-        />
+          {/* X Axis */}
+          <Axis
+            top={yRangeMax}
+            orientation={Orientation.bottom}
+            scale={xScale}
+            numTicks={30}
+            hideTicks
+            hideAxisLine
+            tickValues={xScale.ticks(timeYear)}
+            tickLabelProps={() => ({
+              dy: '0.5em',
+              fill: '#222',
+              fontFamily: 'Arial',
+              fontSize: 10,
+              textAnchor: 'middle',
+            })}
+          />
 
-        {/* Y Axis */}
-        <Axis
-          orientation={Orientation.left}
-          scale={yScale}
-          hideTicks
-          hideAxisLine
-          tickFormat={format('.3~s')}
-          tickLabelProps={() => ({
-            dx: '-0.25em',
-            dy: '-0.25em',
-            fill: '#222',
-            fontFamily: 'Arial',
-            fontSize: 10,
-            textAnchor: 'end',
-          })}
-        />
+          {/* Y Axis */}
+          <Axis
+            orientation={Orientation.left}
+            scale={yScale}
+            hideTicks
+            hideAxisLine
+            tickFormat={format('.3~s')}
+            tickLabelProps={() => ({
+              dx: '-0.25em',
+              dy: '-0.25em',
+              fill: '#222',
+              fontFamily: 'Arial',
+              fontSize: 10,
+              textAnchor: 'end',
+            })}
+          />
 
-        {/* Target */}
-        {typeof target !== 'undefined' && target !== null && (
-          <Annotation y={yScale(target)}>
-            <LineSubject
-              orientation="horizontal"
-              stroke="#999"
-              strokeWidth={0.5}
-              strokeDasharray="2 1"
-              min={0}
-              max={xRangeMax}
-            />
+          {/* Target */}
+          {typeof target !== 'undefined' && target !== null && (
+            <Annotation y={yScale(target)}>
+              <LineSubject
+                orientation="horizontal"
+                stroke="#999"
+                strokeWidth={0.5}
+                strokeDasharray="2 1"
+                min={0}
+                max={xRangeMax}
+              />
 
-            <Label
-              width={37}
-              title="Target"
-              horizontalAnchor="start"
-              verticalAnchor="middle"
-              x={5}
-              backgroundPadding={{
-                top: 3,
-                left: 6,
-                bottom: 3,
-                right: 6,
-              }}
-              backgroundFill="#FFF"
-              backgroundProps={{
-                rx: 4,
-                stroke: '#656565',
-                strokeOpacity: 0.5,
-                strokeWidth: 0.5,
-              }}
-              titleFontSize={8}
-              titleFontWeight={400}
-              titleProps={{
-                color: '#656565',
-              }}
-              showAnchorLine={false}
-            />
-          </Annotation>
-        )}
+              <Label
+                width={37}
+                title="Target"
+                horizontalAnchor="start"
+                verticalAnchor="middle"
+                x={5}
+                backgroundPadding={{
+                  top: 3,
+                  left: 6,
+                  bottom: 3,
+                  right: 6,
+                }}
+                backgroundFill="#FFF"
+                backgroundProps={{
+                  rx: 4,
+                  stroke: '#656565',
+                  strokeOpacity: 0.5,
+                  strokeWidth: 0.5,
+                }}
+                titleFontSize={8}
+                titleFontWeight={400}
+                titleProps={{
+                  color: '#656565',
+                }}
+                showAnchorLine={false}
+              />
+            </Annotation>
+          )}
 
-        {/* Projection */}
-        {typeof lastCurrentIndex !== 'undefined' && lastCurrentIndex !== null && (
-          <Annotation x={xScale(new Date(data[lastCurrentIndex].date).valueOf())}>
-            <LineSubject
-              orientation="vertical"
-              stroke="#999"
-              strokeWidth={0.5}
-              strokeDasharray="2 1"
-              min={0}
-              max={yRangeMax}
-            />
+          {/* Projection */}
+          {typeof lastCurrentIndex !== 'undefined' && lastCurrentIndex !== null && (
+            <Annotation x={xScale(new Date(data[lastCurrentIndex].date).valueOf())}>
+              <LineSubject
+                orientation="vertical"
+                stroke="#999"
+                strokeWidth={0.5}
+                strokeDasharray="2 1"
+                min={0}
+                max={yRangeMax}
+              />
 
-            <Label
-              width={49}
-              y={5}
-              title="Projection"
-              horizontalAnchor="middle"
-              verticalAnchor="middle"
-              backgroundPadding={{
-                top: 3,
-                left: 6,
-                bottom: 3,
-                right: 6,
-              }}
-              backgroundFill="#FFF"
-              backgroundProps={{
-                rx: 4,
-                stroke: '#656565',
-                strokeOpacity: 0.5,
-                strokeWidth: 0.5,
-              }}
-              titleFontSize={8}
-              titleFontWeight={400}
-              titleProps={{
-                color: '#656565',
-              }}
-              showAnchorLine={false}
-            />
-          </Annotation>
-        )}
-      </Group>
+              <Label
+                width={49}
+                y={5}
+                title="Projection"
+                horizontalAnchor="middle"
+                verticalAnchor="middle"
+                backgroundPadding={{
+                  top: 3,
+                  left: 6,
+                  bottom: 3,
+                  right: 6,
+                }}
+                backgroundFill="#FFF"
+                backgroundProps={{
+                  rx: 4,
+                  stroke: '#656565',
+                  strokeOpacity: 0.5,
+                  strokeWidth: 0.5,
+                }}
+                titleFontSize={8}
+                titleFontWeight={400}
+                titleProps={{
+                  color: '#656565',
+                }}
+                showAnchorLine={false}
+              />
+            </Annotation>
+          )}
+        </Group>
+      </svg>
+
+      {tooltipData && (
+        <div>
+          <TooltipWithBounds
+            key={Math.random()}
+            top={tooltipTop - 12}
+            left={tooltipLeft + 12}
+            // style={tooltipStyles}
+          >
+            {`$${JSON.stringify(tooltipData, 2, 0)}`}
+          </TooltipWithBounds>
+        </div>
+      )}
     </>
   );
 };

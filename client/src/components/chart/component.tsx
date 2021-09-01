@@ -7,19 +7,17 @@ export type ChartProps = {
 
 const Chart: React.FC<ChartProps> = ({ children }: ChartProps) => (
   <ParentSize>
-    {({ width, height }) => (
-      <svg width={width} height={height}>
-        {Children.map(children, (Child) => {
-          if (isValidElement(Child)) {
-            return cloneElement(Child, {
-              width,
-              height,
-            });
-          }
-          return null;
-        })}
-      </svg>
-    )}
+    {({ width, height }) =>
+      Children.map(children, (Child) => {
+        if (isValidElement(Child)) {
+          return cloneElement(Child, {
+            width,
+            height,
+          });
+        }
+        return null;
+      })
+    }
   </ParentSize>
 );
 

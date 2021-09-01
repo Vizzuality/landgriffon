@@ -1,4 +1,4 @@
-export default [
+const DATA = [
   {
     id: '43faed2d-ee2b-49cc-acb6-c173f2cb5974',
     date: '01/01/2025',
@@ -9,6 +9,7 @@ export default [
     poultry: 44,
     mint: 88,
     soy: 7,
+    current: false,
   },
   {
     id: '284e38d9-7127-4225-ac6c-74e9a1cfa740',
@@ -20,6 +21,7 @@ export default [
     poultry: 63,
     mint: 18,
     soy: 29,
+    current: false,
   },
   {
     id: '70d06b9f-16aa-420f-80d5-3b09dd557b60',
@@ -31,6 +33,7 @@ export default [
     poultry: 97,
     mint: 8,
     soy: 39,
+    current: false,
   },
   {
     id: '284e38d9-7127-4225-ac6c-74e9a1cfa740',
@@ -42,6 +45,7 @@ export default [
     poultry: 63,
     mint: 18,
     soy: 29,
+    current: false,
   },
   {
     id: '54983fb6-2fc5-49d5-92ff-8bd015a105a3',
@@ -53,6 +57,7 @@ export default [
     poultry: 22,
     mint: 65,
     soy: 95,
+    current: true,
   },
   {
     id: '43faed2d-ee2b-49cc-acb6-c173f2cb5974',
@@ -64,5 +69,8 @@ export default [
     poultry: 44,
     mint: 88,
     soy: 7,
+    current: true,
   },
 ];
+
+export default DATA.sort((a, b) => (a.date > b.date ? 1 : -1));

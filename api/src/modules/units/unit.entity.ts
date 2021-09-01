@@ -1,6 +1,14 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Indicator } from 'modules/indicators/indicator.entity';
 
 export const unitResource: BaseServiceResource = {
   className: 'Unit',
@@ -14,9 +22,6 @@ export const unitResource: BaseServiceResource = {
 
 @Entity('units')
 export class Unit extends BaseEntity {
-  /**
-   * @debt: Add relation to indicators
-   */
   @PrimaryGeneratedColumn('uuid')
   @ApiProperty()
   id!: string;
@@ -25,11 +30,18 @@ export class Unit extends BaseEntity {
   @ApiProperty()
   name!: string;
 
+  @Column({ type: 'text', nullable: true })
+  shortName!: string;
+
   @Column({ type: 'character varying', nullable: true })
-  @ApiPropertyOptional()
-  symbol?: string;
+  @ApiProperty()
+  symbol: string;
 
   @Column({ type: 'text', nullable: true })
   @ApiPropertyOptional()
   description?: number;
+
+  @OneToMany(() => Indicator, (indicator: Indicator) => indicator.unit)
+  @JoinColumn()
+  indicators!: Indicator[];
 }

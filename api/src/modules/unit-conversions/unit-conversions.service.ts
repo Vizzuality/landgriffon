@@ -47,4 +47,16 @@ export class UnitConversionsService extends AppBaseService<
 
     return found;
   }
+
+  async getUnitConversionByUnitId(unitId: string): Promise<UnitConversion> {
+    const unitConversion = await this.unitConversionRepository.findOne({
+      where: { unit: unitId },
+    });
+    if (!unitConversion) {
+      throw new NotFoundException(
+        `Conversion unit with Unit ID "${unitId}" not found`,
+      );
+    }
+    return unitConversion;
+  }
 }

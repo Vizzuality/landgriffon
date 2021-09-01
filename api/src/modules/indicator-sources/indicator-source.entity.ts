@@ -2,6 +2,7 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -27,9 +28,15 @@ export class IndicatorSource extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty()
   title!: string;
+
+  @Column({ type: 'text', nullable: true })
+  shortName!: string;
+
+  @Column({ type: 'text', nullable: true, unique: true })
+  nameCode?: string;
 
   @Column({ type: 'text', nullable: true })
   @ApiPropertyOptional()
@@ -42,11 +49,8 @@ export class IndicatorSource extends BaseEntity {
   @ManyToOne(() => Layer, (layer: Layer) => layer.indicatorSources, {
     eager: false,
   })
+  @JoinColumn()
   layer!: Layer;
-
-  @Column()
-  @ApiProperty()
-  layerId!: string;
 
   @OneToMany(
     () => IndicatorCoefficient,

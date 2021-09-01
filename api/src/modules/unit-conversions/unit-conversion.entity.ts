@@ -1,6 +1,14 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Unit } from 'modules/units/unit.entity';
 
 export const unitConversionResource: BaseServiceResource = {
   className: 'UnitConversion',
@@ -18,17 +26,21 @@ export class UnitConversion extends BaseEntity {
   @ApiProperty()
   id!: string;
 
-  @Column({ type: 'int', nullable: true })
+  @Column({ type: 'text', nullable: true })
   @ApiPropertyOptional()
   unit1?: number;
 
-  @Column({ type: 'int', nullable: true })
+  @Column({ type: 'text', nullable: true })
   @ApiPropertyOptional()
   unit2?: number;
 
   @Column({ type: 'float', nullable: true })
   @ApiPropertyOptional()
   factor?: number;
+
+  @OneToOne(() => Unit, (unit: Unit) => unit.id)
+  @JoinColumn()
+  unit: Unit;
 
   /**
    * @note: 'unit_2 = unit_1 * factor'] // 1000

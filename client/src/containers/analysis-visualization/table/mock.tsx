@@ -1,68 +1,4 @@
-import { SwitchVerticalIcon } from '@heroicons/react/outline';
-
-interface TitleProps {
-  title: string;
-}
-
-const Title: React.FC<TitleProps> = ({ title }: TitleProps) => (
-  <div className="flex items-center">
-    <p className="m-0">{title}</p>
-    <button type="button" onClick={() => console.log('sort column')}>
-      {' '}
-      <SwitchVerticalIcon className="w-3 h-3 mx-4 text-black" />
-    </button>
-  </div>
-);
-
-export const COLUMNS = [
-  {
-    title: 'YEAR',
-    dataIndex: 'commodity',
-    key: 'commodity',
-    width: 150,
-    fixed: 'left',
-  },
-  {
-    title: '2021-2025',
-    dataIndex: 'all',
-    key: 'all',
-    width: 100,
-    fixed: 'left',
-  },
-  {
-    title: () => <Title title="2021" />,
-    dataIndex: '2021',
-    key: '2021',
-    width: 100,
-    fixed: 'left',
-  },
-  {
-    title: () => <Title title="2022" />,
-    dataIndex: '2022',
-    key: '2022',
-    width: 100,
-  },
-  {
-    title: () => <Title title="2023" />,
-    dataIndex: '2023',
-    key: '2023',
-    width: 100,
-  },
-  {
-    title: () => <Title title="2024" />,
-    dataIndex: '2024',
-    key: '2024',
-    width: 100,
-  },
-  {
-    title: () => <Title title="2025" />,
-    dataIndex: '2025',
-    key: '2025',
-    width: 100,
-  },
-];
-
-export const DATA = [
+const DATA = [
   {
     key: '1',
     commodity: 'Carbon emissions (tCO2)',
@@ -392,3 +328,5 @@ export const DATA = [
     ],
   },
 ];
+
+export default DATA;

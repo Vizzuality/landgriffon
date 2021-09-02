@@ -1,3 +1,5 @@
+import { useCallback, useMemo } from 'react';
+
 import { AreaStack, Bar, Line } from '@visx/shape';
 import { Axis, Orientation } from '@visx/axis';
 import { scaleTime, scaleLinear } from '@visx/scale';
@@ -6,40 +8,25 @@ import { GridRows } from '@visx/grid';
 import { Annotation, Label, LineSubject } from '@visx/annotation';
 import { useTooltip } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
-import { bisector } from 'd3-array';
 
+import { bisector } from 'd3-array';
 import { timeYear } from 'd3-time';
 import { format } from 'd3-format';
-import { useCallback, useMemo } from 'react';
-import AreaStackedTooltip from './tooltip';
+
+import chroma from 'chroma-js';
+
+import Tooltip from 'components/chart/tooltip';
 
 const getDate = (d) => new Date(d.date).valueOf();
 const getY0 = (d) => d[0];
 const getY1 = (d) => d[1];
 const bisectDate = bisector((d) => new Date(d.date)).left;
 
-const COLORS = {
-  beef: '#FFFF00',
-  coal: '#FFEE00',
-  corn: '#FFDD00',
-  duck: '#FFCC00',
-  mint: '#FFBB00',
-  poultry: '#FFAA00',
-  soy: '#FF9900',
-};
-
 export type AreaStackedProps = {
   data: {
     id: string;
     current: boolean;
     date: string;
-    coal?: number;
-    beef?: number;
-    corn?: number;
-    duck?: number;
-    poultry?: number;
-    mint?: number;
-    soy?: number;
   }[];
   width?: number;
   height?: number;
@@ -113,6 +100,22 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
     domain: [0, yDomainMax],
   });
 
+  // Color: scale
+  const colorScale = chroma.scale(['#8DD3C7', '#BEBADA', '#FDB462']).colors(keys.length);
+
+  // COLORS
+  const COLORS = useMemo(
+    () =>
+      keys.reduce(
+        (acc, k, i) => ({
+          ...acc,
+          [k]: colorScale[i],
+        }),
+        {}
+      ),
+    [keys]
+  );
+
   // Callbacks
   const handleTooltip = useCallback(
     (event: React.TouchEvent<SVGRectElement> | React.MouseEvent<SVGRectElement>) => {
@@ -161,7 +164,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
             width={xRangeMax}
             height={yRangeMax}
             data={currentData}
-            keys={keys}
+            keys={[...keys].reverse()}
             x={(d) => xScale(getDate(d.data)) ?? 0}
             y0={(d) => yScale(getY0(d)) ?? 0}
             y1={(d) => yScale(getY1(d)) ?? 0}
@@ -182,7 +185,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
             width={xRangeMax}
             height={yRangeMax}
             data={projectedData}
-            keys={keys}
+            keys={[...keys].reverse()}
             x={(d) => xScale(getDate(d.data)) ?? 0}
             y0={(d) => yScale(getY0(d)) ?? 0}
             y1={(d) => yScale(getY1(d)) ?? 0}
@@ -194,7 +197,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
                   d={path(stack) || ''}
                   stroke="transparent"
                   fill={COLORS[stack.key]}
-                  fillOpacity={0.6}
+                  fillOpacity={0.75}
                 />
               ))
             }
@@ -211,13 +214,13 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
             onMouseLeave={() => hideTooltip()}
           />
 
-          {/* Tooltip */}
+          {/* Highlight */}
           {tooltipData && (
             <g>
               <Line
                 from={{ x: tooltipLeft, y: 0 }}
                 to={{ x: tooltipLeft, y: yRangeMax }}
-                stroke="#F00"
+                stroke="#999"
                 strokeWidth={2}
                 pointerEvents="none"
                 strokeDasharray="5,2"
@@ -237,7 +240,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
                 cx={tooltipLeft}
                 cy={tooltipTop}
                 r={4}
-                fill="#F00"
+                fill="#999"
                 stroke="white"
                 strokeWidth={2}
                 pointerEvents="none"
@@ -364,12 +367,13 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
         </Group>
       </svg>
 
-      <AreaStackedTooltip
+      <Tooltip
         title="Carbon emissions (CO2e)"
         tooltipTop={tooltipTop}
         tooltipLeft={tooltipLeft + margin.left}
         tooltipData={tooltipData}
         keys={keys}
+        colors={COLORS}
       />
     </div>
   );

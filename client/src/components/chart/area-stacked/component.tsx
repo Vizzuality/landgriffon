@@ -4,13 +4,14 @@ import { scaleTime, scaleLinear } from '@visx/scale';
 import { Group } from '@visx/group';
 import { GridRows } from '@visx/grid';
 import { Annotation, Label, LineSubject } from '@visx/annotation';
-import { useTooltip, TooltipWithBounds } from '@visx/tooltip';
+import { useTooltip } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
 import { bisector } from 'd3-array';
 
 import { timeYear } from 'd3-time';
 import { format } from 'd3-format';
 import { useCallback, useMemo } from 'react';
+import AreaStackedTooltip from './tooltip';
 
 const getDate = (d) => new Date(d.date).valueOf();
 const getY0 = (d) => d[0];
@@ -143,7 +144,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
   );
 
   return (
-    <>
+    <div className="relative">
       <svg width={width} height={height}>
         <Group top={margin.top} left={margin.left}>
           {/* Grid */}
@@ -363,19 +364,14 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
         </Group>
       </svg>
 
-      {tooltipData && (
-        <div>
-          <TooltipWithBounds
-            key={Math.random()}
-            top={tooltipTop - 12}
-            left={tooltipLeft + 12}
-            // style={tooltipStyles}
-          >
-            {`$${JSON.stringify(tooltipData, 2, 0)}`}
-          </TooltipWithBounds>
-        </div>
-      )}
-    </>
+      <AreaStackedTooltip
+        title="Carbon emissions (CO2e)"
+        tooltipTop={tooltipTop}
+        tooltipLeft={tooltipLeft + margin.left}
+        tooltipData={tooltipData}
+        keys={keys}
+      />
+    </div>
   );
 };
 

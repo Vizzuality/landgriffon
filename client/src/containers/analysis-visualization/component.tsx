@@ -1,8 +1,10 @@
 import { useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
 import Map from 'components/map';
-import AnalysisFilters from './analysis-filters';
+
 import ModeControl from './mode-control';
+import AnalysisChart from './analysis-chart';
+import AnalysisFilters from './analysis-filters';
 
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
 
@@ -86,7 +88,9 @@ const AnalysisVisualization = () => {
       {visualizationMode === 'chart' && (
         <div className="flex flex-col p-6 pl-12 mt-16 left-12">
           <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">Chart</div>
+            <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+              <AnalysisChart />
+            </div>
           </div>
         </div>
       )}

@@ -20,7 +20,7 @@ import Tooltip from 'components/chart/area-stacked/tooltip';
 const getDate = (d) => new Date(d.date).valueOf();
 const getY0 = (d) => d[0];
 const getY1 = (d) => d[1];
-const bisectDate = bisector((d) => new Date(d.date)).left;
+const bisectDate = bisector((d) => new Date(d.date)).center;
 
 export type AreaStackedProps = {
   data: {

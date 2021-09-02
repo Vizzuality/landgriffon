@@ -38,6 +38,11 @@ export type AreaStackedProps = {
   };
   keys?: string[];
   target?: number;
+  settings?: {
+    tooltip: boolean;
+    projection: boolean;
+    target: boolean;
+  };
 };
 
 const AreaStacked: React.FC<AreaStackedProps> = ({
@@ -47,6 +52,11 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
   margin = { top: 40, right: 30, bottom: 50, left: 40 },
   keys = [],
   target,
+  settings = {
+    tooltip: true,
+    projection: true,
+    target: false,
+  },
 }: AreaStackedProps) => {
   if (!width || !height) return null;
 
@@ -219,7 +229,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
           />
 
           {/* Highlight */}
-          {tooltipData && (
+          {settings.tooltip && tooltipData && (
             <g>
               <Line
                 from={{ x: tooltipLeft, y: 0 }}
@@ -288,7 +298,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
           />
 
           {/* Target */}
-          {typeof target !== 'undefined' && target !== null && (
+          {typeof target !== 'undefined' && target !== null && settings.target && (
             <Annotation y={yScale(target)}>
               <LineSubject
                 orientation="horizontal"
@@ -329,56 +339,59 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
           )}
 
           {/* Projection */}
-          {typeof lastCurrentIndex !== 'undefined' && lastCurrentIndex !== null && (
-            <Annotation x={xScale(new Date(data[lastCurrentIndex].date).valueOf())}>
-              <LineSubject
-                orientation="vertical"
-                stroke="#999"
-                strokeWidth={0.5}
-                strokeDasharray="2 1"
-                min={0}
-                max={yRangeMax}
-              />
+          {typeof lastCurrentIndex !== 'undefined' &&
+            lastCurrentIndex !== null &&
+            settings.projection && (
+              <Annotation x={xScale(new Date(data[lastCurrentIndex].date).valueOf())}>
+                <LineSubject
+                  orientation="vertical"
+                  stroke="#999"
+                  strokeDasharray="5 2"
+                  min={0}
+                  max={yRangeMax}
+                />
 
-              <Label
-                width={49}
-                y={5}
-                title="Projection"
-                horizontalAnchor="middle"
-                verticalAnchor="middle"
-                backgroundPadding={{
-                  top: 3,
-                  left: 6,
-                  bottom: 3,
-                  right: 6,
-                }}
-                backgroundFill="#FFF"
-                backgroundProps={{
-                  rx: 4,
-                  stroke: '#656565',
-                  strokeOpacity: 0.5,
-                  strokeWidth: 0.5,
-                }}
-                titleFontSize={8}
-                titleFontWeight={400}
-                titleProps={{
-                  color: '#656565',
-                }}
-                showAnchorLine={false}
-              />
-            </Annotation>
-          )}
+                <Label
+                  width={51}
+                  y={5}
+                  title="Projection"
+                  horizontalAnchor="middle"
+                  verticalAnchor="middle"
+                  backgroundPadding={{
+                    top: 3,
+                    left: 6,
+                    bottom: 3,
+                    right: 6,
+                  }}
+                  backgroundFill="#FFF"
+                  backgroundProps={{
+                    rx: 4,
+                    stroke: '#656565',
+                    strokeOpacity: 0.5,
+                    strokeWidth: 0.5,
+                  }}
+                  titleFontSize={8}
+                  titleFontWeight={400}
+                  titleProps={{
+                    color: '#656565',
+                  }}
+                  showAnchorLine={false}
+                />
+              </Annotation>
+            )}
         </Group>
       </svg>
 
-      <Tooltip
-        title="Carbon emissions (CO2e)"
-        tooltipTop={tooltipTop}
-        tooltipLeft={tooltipLeft + margin.left}
-        tooltipData={tooltipData}
-        keys={keys}
-        colors={COLORS}
-      />
+      {settings.tooltip && (
+        <Tooltip
+          title="Carbon emissions (CO2e)"
+          tooltipTop={tooltipTop}
+          tooltipLeft={tooltipLeft + margin.left}
+          tooltipData={tooltipData}
+          keys={keys}
+          colors={COLORS}
+        />
+      )}
     </div>
   );
 };

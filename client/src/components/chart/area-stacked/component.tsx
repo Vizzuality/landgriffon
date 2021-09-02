@@ -15,7 +15,7 @@ import { format } from 'd3-format';
 
 import chroma from 'chroma-js';
 
-import Tooltip from 'components/chart/tooltip';
+import Tooltip from 'components/chart/area-stacked/tooltip';
 
 const getDate = (d) => new Date(d.date).valueOf();
 const getY0 = (d) => d[0];

@@ -12,7 +12,7 @@ const AnalysisVisualization = () => {
   const { visualizationMode } = useAppSelector(analysis);
 
   return (
-    <section className="relative min-w-0 flex-1 h-full flex flex-col overflow-hidden lg:order-last bg-white">
+    <section className="relative flex flex-col flex-1 h-full min-w-0 overflow-hidden bg-white lg:order-last">
       {/* Vis selector: map, table or chart */}
       <AnalysisFilters />
       <ModeControl />
@@ -25,34 +25,34 @@ const AnalysisVisualization = () => {
       )}
 
       {visualizationMode === 'table' && (
-        <div className="flex flex-col left-12 p-6 mt-16 pl-12">
+        <div className="flex flex-col p-6 pl-12 mt-16 left-12">
           <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-              <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+            <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+              <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                       >
                         Commodity
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                       >
                         2021
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                       >
                         2022
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                       >
                         2023
                       </th>
@@ -61,16 +61,16 @@ const AnalysisVisualization = () => {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {impactFactors.map((impactFactor) => (
                       <tr key={impactFactor.id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <td className="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
                           {impactFactor.name}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                           {impactFactor['2021']}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                           {impactFactor['2022']}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                           {impactFactor['2023']}
                         </td>
                       </tr>
@@ -79,6 +79,14 @@ const AnalysisVisualization = () => {
                 </table>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {visualizationMode === 'chart' && (
+        <div className="flex flex-col p-6 pl-12 mt-16 left-12">
+          <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">Chart</div>
           </div>
         </div>
       )}

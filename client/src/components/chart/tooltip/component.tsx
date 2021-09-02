@@ -1,16 +1,6 @@
 import { TooltipWithBounds } from '@visx/tooltip';
 import { ReactNode } from 'react';
 
-const COLORS = {
-  beef: '#FFFF00',
-  coal: '#FFEE00',
-  corn: '#FFDD00',
-  duck: '#FFCC00',
-  mint: '#FFBB00',
-  poultry: '#FFAA00',
-  soy: '#FF9900',
-};
-
 export type AreaStackedTooltipProps = {
   title: string | ReactNode;
   tooltipData:
@@ -30,6 +20,7 @@ export type AreaStackedTooltipProps = {
   tooltipTop?: number;
   tooltipLeft?: number;
   keys?: string[];
+  colors: Record<string, string>;
 };
 
 const AreaStackedTooltip: React.FC<AreaStackedTooltipProps> = ({
@@ -38,6 +29,7 @@ const AreaStackedTooltip: React.FC<AreaStackedTooltipProps> = ({
   tooltipTop,
   title,
   keys,
+  colors,
 }: AreaStackedTooltipProps) => {
   if (!tooltipData) return null;
 
@@ -49,7 +41,7 @@ const AreaStackedTooltip: React.FC<AreaStackedTooltipProps> = ({
         <ul className="space-y-1">
           {keys.map((k) => (
             <li key={k} className="flex items-center space-x-1">
-              <div className="w-2.5 h-2.5 rounded-full" style={{ background: COLORS[k] }} />
+              <div className="w-2.5 h-2.5 rounded-full" style={{ background: colors[k] }} />
               <div>{k}:</div>
               <div>{tooltipData[k]}</div>
             </li>

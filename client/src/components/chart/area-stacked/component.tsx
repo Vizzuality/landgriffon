@@ -174,7 +174,9 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
                 <path
                   key={`stack-${stack.key}`}
                   d={path(stack) || ''}
-                  stroke="transparent"
+                  stroke="#FFF"
+                  strokeOpacity={0.25}
+                  strokeWidth={0.5}
                   fill={COLORS[stack.key]}
                 />
               ))
@@ -195,7 +197,9 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
                 <path
                   key={`stack-${stack.key}`}
                   d={path(stack) || ''}
-                  stroke="transparent"
+                  stroke="#FFF"
+                  strokeOpacity={0.25}
+                  strokeWidth={0.5}
                   fill={COLORS[stack.key]}
                   fillOpacity={0.75}
                 />

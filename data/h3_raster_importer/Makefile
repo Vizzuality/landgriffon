@@ -25,14 +25,7 @@ data/mapspam/spam2010v2r0_global_prod: data/mapspam/spam2010v2r0_global_prod.geo
 	mkdir -p $@
 	unzip -u $< *_A.tif -d $@
 
-#split the zip file into multiple archives, each is less than 1024MB
-#ngle-archive.zip -u $< *_Production.tif -d data/earthstat/earthstat2000_global_prod mushrom kapokseed gooseberry legumenes barley melontec canaryseed cranberry production
-# zip -r -s 50m $< --out $@
-# zip -F $< --out data/earthstat/earthstat2000_global_prod/single-archive.zip
-# unzip -o -u data/earthstat/earthstat2000_global_prod/single-archive.zip -d data/earthstat/earthstat2000_global_prod
-#output_name = $(basename $$tiffile .tif)__noData.tif; \
-#gdal_translate -a_nodata -9999 -of GTiff $$tiffile $$output_raster; \
-		#rm $$tiffile -f;
+
 data/earthstat/earthstat2000_global_prod: data/earthstat/HarvestedAreaYield175Crops_Geotiff.zip
 	mkdir -p $@
 	unzip -j -o -u $< *_Production.tif -d data/earthstat/earthstat2000_global_prod

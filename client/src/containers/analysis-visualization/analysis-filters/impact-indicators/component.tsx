@@ -1,42 +1,64 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
+
+import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { analysis, setFilter } from 'store/features/analysis';
+
 import { Select } from 'antd';
 import { ChevronDownIcon } from '@heroicons/react/solid';
-import type { UseQueryResult } from 'react-query';
 
-import type { Indicator } from 'types';
+import { useIndicators } from 'lib/hooks/indicators';
 
-type ImpactIndicatorsFilterProps = {
-  indicators: {
-    data: Indicator[];
-    isLoading: UseQueryResult['isLoading'];
-    error: UseQueryResult['error'];
-  };
-};
+type ImpactIndicatorsFilterProps = {};
 
-const ImpactIndicatorsFilter: React.FC<ImpactIndicatorsFilterProps> = ({
-  indicators,
-}: ImpactIndicatorsFilterProps) => {
-  const [value, setValue] = useState(null);
-  const { data, isLoading, error } = indicators;
+const ImpactIndicatorsFilter: React.FC<ImpactIndicatorsFilterProps> = () => {
+  const { visualizationMode, filters } = useAppSelector(analysis);
+  const dispatch = useAppDispatch();
+
+  const [value, setValue] = useState(filters.indicator);
+  const { data, isFetching, isFetched, error } = useIndicators();
+
+  const options = useMemo(() => {
+    const ALL = {
+      id: 'all',
+      name: 'All indicators',
+    };
+
+    let d = data || [];
+
+    if (visualizationMode !== 'map') {
+      d = [...[ALL], ...data];
+    }
+
+    return d.map((indicator) => ({ label: indicator.name, value: indicator.id }));
+  }, [data, visualizationMode]);
 
   useEffect(() => {
-    if (!isLoading && data) setValue(data[0].id);
-  }, [data, isLoading]);
+    if (isFetched && options && options.length) {
+      setValue(options[0].value);
+      dispatch(
+        setFilter({
+          id: 'indicator',
+          value: options[0].value,
+        })
+      );
+    }
+  }, [options, isFetched]);
 
   const handleChange = useCallback((currentValue) => {
     setValue(currentValue);
+    dispatch(
+      setFilter({
+        id: 'indicator',
+        value: currentValue,
+      })
+    );
   }, []);
-
-  const options = useMemo(
-    () => data && data.map((indicator) => ({ label: indicator.name, value: indicator.id })),
-    [data]
-  );
 
   return (
     <Select
       onChange={handleChange}
       className="w-60"
-      loading={isLoading}
+      loading={isFetching}
       options={options}
       value={value}
       placeholder={error ? 'Something went wrong' : 'Select Impact Indicator'}

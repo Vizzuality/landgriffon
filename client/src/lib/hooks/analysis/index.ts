@@ -8,7 +8,7 @@ import uniq from 'lodash/uniq';
 import { DATA } from './mock';
 
 interface AnalysisChartOptions {
-  filters: {};
+  filters: Record<string, unknown>;
 }
 
 export function useAnalysisChart(options: AnalysisChartOptions) {
@@ -35,7 +35,7 @@ export function useAnalysisChart(options: AnalysisChartOptions) {
 
   return useMemo(() => {
     const parsedData2 = DATA.map((d) => {
-      const { id, indicator, children } = d;
+      const { id, indicator: indicatorName, children } = d;
 
       const years = uniq(
         flatten(
@@ -71,7 +71,7 @@ export function useAnalysisChart(options: AnalysisChartOptions) {
       });
       return {
         id,
-        indicator,
+        indicator: indicatorName,
         keys,
         values,
         filters,

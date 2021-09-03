@@ -1,4 +1,5 @@
 import cx from 'classnames';
+import { forwardRef } from 'react';
 
 const COMMON_CLASSNAMES = 'inline-flex items-center justify-center rounded-md cursor-pointer';
 
@@ -76,6 +77,47 @@ export const Anchor: React.FC<AnchorProps> = ({
     </a>
   );
 };
+
+// Same as Anchor but it could be used inside <Link> elements
+export const AnchorLink = forwardRef<HTMLAnchorElement, AnchorProps>(
+  (
+    {
+      children,
+      theme = 'primary',
+      size = 'base',
+      className,
+      disabled,
+      href,
+      ...restProps
+    }: AnchorProps,
+    ref
+  ) => {
+    // Anchor element doesn't support disabled attribute
+    // https://www.w3.org/TR/2014/REC-html5-20141028/disabled-elements.html
+    if (disabled) {
+      return (
+        <span {...restProps} ref={ref}>
+          {children}
+        </span>
+      );
+    }
+    return (
+      <a
+        href={href}
+        className={buildClassName({
+          className,
+          disabled,
+          size,
+          theme,
+        } as AnchorProps)}
+        {...restProps}
+        ref={ref}
+      >
+        {children}
+      </a>
+    );
+  }
+);
 
 export const Button: React.FC<ButtonProps> = ({
   children,

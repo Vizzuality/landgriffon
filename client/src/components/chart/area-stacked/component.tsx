@@ -267,7 +267,6 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
             top={yRangeMax}
             orientation={Orientation.bottom}
             scale={xScale}
-            numTicks={30}
             hideTicks
             hideAxisLine
             tickValues={xScale.ticks(timeYear)}
@@ -286,6 +285,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
             scale={yScale}
             hideTicks
             hideAxisLine
+            numTicks={4}
             tickFormat={format('.3~s')}
             tickLabelProps={() => ({
               dx: '-0.25em',

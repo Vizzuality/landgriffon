@@ -58,11 +58,10 @@ export class H3DataRepository extends Repository<H3Data> {
         `Requested H3 with ID: ${h3Id} could not been found`,
       );
     try {
-      const h3data = await this
-        .query(` select h3parent.h3_to_parent, sum(${h3Info.h3columnName})  from
-            (select h3_to_parent(h3index, ${resolution}), h3index, ${h3Info.h3columnName}
-            from ${h3Info.h3tableName} hgsvrgp) as h3parent
-            group by h3parent.h3_to_parent`);
+      const h3data = await this.query(
+        `select h3_to_parent(h3index, ${resolution}) as h3_to_parent, sum(${h3Info.h3columnName})
+               from ${h3Info.h3tableName} hgsvrgp group by h3_to_parent`,
+      );
 
       return h3data.reduce(
         (acc: any, cur: any) =>

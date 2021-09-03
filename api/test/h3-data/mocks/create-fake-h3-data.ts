@@ -12,11 +12,13 @@ export const createFakeH3Data = async (
       `INSERT INTO h3_data ("h3tableName", "h3columnName", "h3resolution") VALUES ('${h3TableName}', '${h3ColumnName}', 6 );`,
   );
   if (bulk) {
+    let query = `INSERT INTO ${h3TableName} (h3index,  ${h3ColumnName}) VALUES `;
+    const queryArr = [];
     for (const [key, value] of Object.entries(h3Fixtures)) {
-      await getManager().query(
-        `INSERT INTO ${h3TableName} (h3index,  ${h3ColumnName}) VALUES ('${key}', ${value})`,
-      );
+      queryArr.push(`('${key}', ${value})`);
     }
+    query = query.concat(queryArr.join());
+    await getManager().query(query);
   }
 
   const res = await getManager().query(`SELECT id FROM h3_data;`);

@@ -80,18 +80,20 @@ describe('H3-Data Module (e2e)', () => {
     test('When I query a H3 data by its ID and it does not exist, then I should get a proper error message', async () => {
       const FAKE_UUID = '959dc56e-a782-441a-be36-1aaa617ed843';
       const response = await request(app.getHttpServer()).get(
-        `/api/v1/h3/data/${FAKE_UUID}`,
+        `/api/v1/h3/data/${FAKE_UUID}?resolution=1`,
       );
       expect(response.body.errors[0].title).toEqual(
         `Requested H3 with ID: ${FAKE_UUID} could not been found`,
       );
     });
-    test('When I query H3 data with no resolution provided, then I should get I should get each available h3indexes (max resolution)', async () => {
+    test('When I query H3 data with no resolution provided, then I should get a proper error message', async () => {
       const id = await createFakeH3Data(fakeTable, fakeColumn, true);
       const response = await request(app.getHttpServer()).get(
         `/api/v1/h3/data/${id}`,
       );
-      expect(Object.keys(response.body).length).toEqual(400);
+      expect(response.body.errors[0].meta.rawError.response.message[2]).toEqual(
+        'resolution should not be empty',
+      );
     });
 
     test('When I query H3 data at minimal resolution, then I should get 8 h3indexes', async () => {
@@ -99,7 +101,17 @@ describe('H3-Data Module (e2e)', () => {
       const response = await request(app.getHttpServer()).get(
         `/api/v1/h3/data/${id}?resolution=1`,
       );
-      expect(Object.keys(response.body).length).toEqual(8);
+
+      expect(response.body).toEqual({
+        '81123ffffffffff': 1000,
+        '8112fffffffffff': 0,
+        '8128bffffffffff': 0,
+        '8127bffffffffff': 0,
+        '8112bffffffffff': 0,
+        '81273ffffffffff': 0,
+        '8128fffffffffff': 0,
+        '81127ffffffffff': 0,
+      });
     });
   });
 });

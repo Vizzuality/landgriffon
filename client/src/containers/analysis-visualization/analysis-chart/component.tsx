@@ -34,7 +34,11 @@ const AnalysisChart: React.FC<AnalysisChartProps> = () => {
           const { id, indicator, keys, values } = d;
 
           return (
-            <Widget key={id} title={indicator}>
+            <Widget
+              key={`${id}-${data.length}`}
+              title={indicator}
+              height={data.length > 1 ? 250 : 500}
+            >
               <Chart>
                 <AreaStacked
                   data={values}

@@ -10,6 +10,18 @@ export type AnalysisState = {
   currentScenario: Scenario['id'];
   scenarioToCompare: Scenario['id'];
   comparisonMode: 'percentage' | 'absolute' | 'both';
+  filters: {
+    indicator: string;
+    by: string;
+    year: number;
+    years: {
+      from: number;
+      to: number;
+    };
+    material: string[];
+    origins: string[];
+    suppliers: string[];
+  };
 };
 
 type FeatureState = RootState & { analysis: AnalysisState };
@@ -22,6 +34,18 @@ const initialState: AnalysisState = {
   currentScenario: null,
   scenarioToCompare: null,
   comparisonMode: null,
+  filters: {
+    indicator: null,
+    by: 'material',
+    year: 2015,
+    years: {
+      from: 2011,
+      to: 2015,
+    },
+    material: [],
+    origins: [],
+    suppliers: [],
+  },
 };
 
 export const analysisSlice = createSlice({
@@ -55,6 +79,17 @@ export const analysisSlice = createSlice({
       ...state,
       comparisonMode: action.payload,
     }),
+    setFilter: (state, action: PayloadAction<{ id: string; value: any }>) => ({
+      ...state,
+      filters: {
+        ...state.filters,
+        [action.payload.id]: action.payload.value,
+      },
+    }),
+    setFilters: (state, action: PayloadAction<AnalysisState['filters']>) => ({
+      ...state,
+      filters: action.payload,
+    }),
   },
 });
 
@@ -65,6 +100,8 @@ export const {
   setCurrentScenario,
   setScenarioToCompare,
   setComparisonMode,
+  setFilter,
+  setFilters,
 } = analysisSlice.actions;
 
 export const analysis = (state: FeatureState) => state.analysis;

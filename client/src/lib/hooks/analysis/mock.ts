@@ -1,76 +1,362 @@
-const DATA = [
+export const DATA = [
   {
-    id: '43faed2d-ee2b-49cc-acb6-c173f2cb5974',
-    date: '01/01/2025',
-    coal: 48,
-    beef: 25,
-    corn: 52,
-    duck: 98,
-    poultry: 44,
-    mint: 88,
-    soy: 7,
-    current: false,
+    id: '5e8dda24-4164-46dc-97fe-d5030b5bb314',
+    indicator: 'Carbon emissions',
+    values: [
+      { year: 2020, value: 350, calculated: false },
+      { year: 2021, value: 200, calculated: false },
+      { year: 2022, value: 300, calculated: true },
+      { year: 2023, value: 100, calculated: true },
+      { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+    ],
+    children: [
+      {
+        id: 'coal',
+        name: 'Coal',
+        values: [
+          { year: 2020, value: 350, calculated: false },
+          { year: 2021, value: 200, calculated: false },
+          { year: 2022, value: 300, calculated: true },
+          { year: 2023, value: 100, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'beef',
+        name: 'Beef',
+        values: [
+          { year: 2020, value: 350, calculated: false },
+          { year: 2021, value: 200, calculated: false },
+          { year: 2022, value: 300, calculated: true },
+          { year: 2023, value: 100, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'corn',
+        name: 'Corn',
+        values: [
+          { year: 2020, value: 350, calculated: false },
+          { year: 2021, value: 200, calculated: false },
+          { year: 2022, value: 300, calculated: true },
+          { year: 2023, value: 100, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'duck',
+        name: 'Duck',
+        values: [
+          { year: 2020, value: 350, calculated: false },
+          { year: 2021, value: 200, calculated: false },
+          { year: 2022, value: 450, calculated: true },
+          { year: 2023, value: 25, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'poultry',
+        name: 'Poultry',
+        values: [
+          { year: 2020, value: 350, calculated: false },
+          { year: 2021, value: 89, calculated: false },
+          { year: 2022, value: 300, calculated: true },
+          { year: 2023, value: 30, calculated: true },
+          { year: 2024, value: 40, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'mint',
+        name: 'Mint',
+        values: [
+          { year: 2020, value: 350, calculated: false },
+          { year: 2021, value: 35, calculated: false },
+          { year: 2022, value: 50, calculated: true },
+          { year: 2023, value: 89, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'soy',
+        name: 'Soy',
+        values: [
+          { year: 2020, value: 30, calculated: false },
+          { year: 2021, value: 87, calculated: false },
+          { year: 2022, value: 78, calculated: true },
+          { year: 2023, value: 50, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+    ],
   },
   {
-    id: '284e38d9-7127-4225-ac6c-74e9a1cfa740',
-    date: '01/01/2024',
-    coal: 33,
-    beef: 24,
-    corn: 75,
-    duck: 14,
-    poultry: 63,
-    mint: 18,
-    soy: 29,
-    current: false,
+    id: '15ce1b0c-ded2-4f37-b239-a4f18afbc061',
+    indicator: 'Deforestation',
+    values: [
+      { year: 2020, value: 350, calculated: false },
+      { year: 2021, value: 200, calculated: false },
+      { year: 2022, value: 300, calculated: true },
+      { year: 2023, value: 100, calculated: true },
+      { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+    ],
+    children: [
+      {
+        id: 'coal',
+        name: 'Coal',
+        values: [
+          { year: 2020, value: 350, calculated: false },
+          { year: 2021, value: 200, calculated: false },
+          { year: 2022, value: 300, calculated: true },
+          { year: 2023, value: 100, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'beef',
+        name: 'Beef',
+        values: [
+          { year: 2020, value: 350, calculated: false },
+          { year: 2021, value: 200, calculated: false },
+          { year: 2022, value: 300, calculated: true },
+          { year: 2023, value: 100, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'corn',
+        name: 'Corn',
+        values: [
+          { year: 2020, value: 350, calculated: false },
+          { year: 2021, value: 200, calculated: false },
+          { year: 2022, value: 300, calculated: true },
+          { year: 2023, value: 100, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'duck',
+        name: 'Duck',
+        values: [
+          { year: 2020, value: 350, calculated: false },
+          { year: 2021, value: 200, calculated: false },
+          { year: 2022, value: 450, calculated: true },
+          { year: 2023, value: 25, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'poultry',
+        name: 'Poultry',
+        values: [
+          { year: 2020, value: 350, calculated: false },
+          { year: 2021, value: 89, calculated: false },
+          { year: 2022, value: 300, calculated: true },
+          { year: 2023, value: 30, calculated: true },
+          { year: 2024, value: 40, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'mint',
+        name: 'Mint',
+        values: [
+          { year: 2020, value: 350, calculated: false },
+          { year: 2021, value: 35, calculated: false },
+          { year: 2022, value: 50, calculated: true },
+          { year: 2023, value: 89, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'soy',
+        name: 'Soy',
+        values: [
+          { year: 2020, value: 30, calculated: false },
+          { year: 2021, value: 87, calculated: false },
+          { year: 2022, value: 78, calculated: true },
+          { year: 2023, value: 50, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+    ],
   },
   {
-    id: '70d06b9f-16aa-420f-80d5-3b09dd557b60',
-    date: '01/01/2023',
-    coal: 89,
-    beef: 6,
-    corn: 92,
-    duck: 25,
-    poultry: 97,
-    mint: 8,
-    soy: 39,
-    current: false,
+    id: '5aa4f430-489f-49ec-b804-cf35a4afa269',
+    indicator: 'Unsustainable water use (M3)',
+    values: [
+      { year: 2020, value: 350, calculated: false },
+      { year: 2021, value: 200, calculated: false },
+      { year: 2022, value: 300, calculated: true },
+      { year: 2023, value: 100, calculated: true },
+      { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+    ],
+    children: [
+      {
+        id: 'coal',
+        name: 'Coal',
+        values: [
+          { year: 2020, value: 230, calculated: false },
+          { year: 2021, value: 5, calculated: false },
+          { year: 2022, value: 56, calculated: true },
+          { year: 2023, value: 100, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'beef',
+        name: 'Beef',
+        values: [
+          { year: 2020, value: 40, calculated: false },
+          { year: 2021, value: 76, calculated: false },
+          { year: 2022, value: 300, calculated: true },
+          { year: 2023, value: 89, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'corn',
+        name: 'Corn',
+        values: [
+          { year: 2020, value: 150, calculated: false },
+          { year: 2021, value: 200, calculated: false },
+          { year: 2022, value: 50, calculated: true },
+          { year: 2023, value: 100, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'duck',
+        name: 'Duck',
+        values: [
+          { year: 2020, value: 175, calculated: false },
+          { year: 2021, value: 200, calculated: false },
+          { year: 2022, value: 327, calculated: true },
+          { year: 2023, value: 25, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'poultry',
+        name: 'Poultry',
+        values: [
+          { year: 2020, value: 350, calculated: false },
+          { year: 2021, value: 89, calculated: false },
+          { year: 2022, value: 300, calculated: true },
+          { year: 2023, value: 30, calculated: true },
+          { year: 2024, value: 40, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'mint',
+        name: 'Mint',
+        values: [
+          { year: 2020, value: 350, calculated: false },
+          { year: 2021, value: 35, calculated: false },
+          { year: 2022, value: 50, calculated: true },
+          { year: 2023, value: 89, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'soy',
+        name: 'Soy',
+        values: [
+          { year: 2020, value: 30, calculated: false },
+          { year: 2021, value: 87, calculated: false },
+          { year: 2022, value: 78, calculated: true },
+          { year: 2023, value: 50, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+    ],
   },
   {
-    id: '284e38d9-7127-4225-ac6c-74e9a1cfa740',
-    date: '01/01/2022',
-    coal: 33,
-    beef: 24,
-    corn: 75,
-    duck: 14,
-    poultry: 63,
-    mint: 18,
-    soy: 29,
-    current: false,
-  },
-  {
-    id: '54983fb6-2fc5-49d5-92ff-8bd015a105a3',
-    date: '01/01/2021',
-    coal: 45,
-    beef: 7,
-    corn: 13,
-    duck: 65,
-    poultry: 22,
-    mint: 65,
-    soy: 95,
-    current: false,
-  },
-  {
-    id: '43faed2d-ee2b-49cc-acb6-c173f2cb5974',
-    date: '01/01/2020',
-    coal: 48,
-    beef: 25,
-    corn: 52,
-    duck: 98,
-    poultry: 44,
-    mint: 88,
-    soy: 7,
-    current: true,
+    id: '56e7b73f-1e1d-4071-8303-f67be76bc967',
+    indicator: 'Biodiversity (X)',
+    values: [
+      { year: 2020, value: 350, calculated: false },
+      { year: 2021, value: 200, calculated: false },
+      { year: 2022, value: 300, calculated: true },
+      { year: 2023, value: 100, calculated: true },
+      { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+    ],
+    children: [
+      {
+        id: 'coal',
+        name: 'Coal',
+        values: [
+          { year: 2020, value: 200, calculated: false },
+          { year: 2021, value: 45, calculated: false },
+          { year: 2022, value: 300, calculated: true },
+          { year: 2023, value: 100, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'beef',
+        name: 'Beef',
+        values: [
+          { year: 2020, value: 100, calculated: false },
+          { year: 2021, value: 45, calculated: false },
+          { year: 2022, value: 300, calculated: true },
+          { year: 2023, value: 100, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'corn',
+        name: 'Corn',
+        values: [
+          { year: 2020, value: 350, calculated: false },
+          { year: 2021, value: 45, calculated: false },
+          { year: 2022, value: 36, calculated: true },
+          { year: 2023, value: 100, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'duck',
+        name: 'Duck',
+        values: [
+          { year: 2020, value: 90, calculated: false },
+          { year: 2021, value: 45, calculated: false },
+          { year: 2022, value: 450, calculated: true },
+          { year: 2023, value: 25, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'poultry',
+        name: 'Poultry',
+        values: [
+          { year: 2020, value: 98, calculated: false },
+          { year: 2021, value: 89, calculated: false },
+          { year: 2022, value: 300, calculated: true },
+          { year: 2023, value: 30, calculated: true },
+          { year: 2024, value: 40, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'mint',
+        name: 'Mint',
+        values: [
+          { year: 2020, value: 126, calculated: false },
+          { year: 2021, value: 35, calculated: false },
+          { year: 2022, value: 50, calculated: true },
+          { year: 2023, value: 89, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+      {
+        id: 'soy',
+        name: 'Soy',
+        values: [
+          { year: 2020, value: 30, calculated: false },
+          { year: 2021, value: 87, calculated: false },
+          { year: 2022, value: 78, calculated: true },
+          { year: 2023, value: 50, calculated: true },
+          { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
+        ],
+      },
+    ],
   },
 ];
-
-export default DATA.sort((a, b) => (a.date > b.date ? 1 : -1));

@@ -60,9 +60,9 @@ def slugify(s):
 
 def gen_raster_h3(raster_list, h3_res, geo=False):
     """Convert a list of identically formatted rasters to H3
-    
+
     A function for efficiently turning a set of rasters into an H3 table.
-    
+
     Takes a list of 1-band rasters with identical projection/transform.
     Reads each raster in blocks, and converts to h3 (nearest to centroid).
     Yields a dataframe with an h3index and one column for each raster's value.
@@ -70,14 +70,14 @@ def gen_raster_h3(raster_list, h3_res, geo=False):
     Args:
         raster_list: list of paths to rasters
         h3_res: h3 resolution to use for resampling
-    
+
     Yields:
-        A Pandas dataframe for each raster block (usu. 512x512) with an 
+        A Pandas dataframe for each raster block (usu. 512x512) with an
         h3index and one column for each raster's value.
     """
     readers = [rio.open(r) for r in raster_list]
     names = [slugify(os.path.splitext(os.path.basename(r))[0]) for r in raster_list]
-    
+
     base = readers[0]
     for j in range(ceil(base.height/BLOCKSIZE)):
         for i in range(ceil(base.width/BLOCKSIZE)):
@@ -89,6 +89,7 @@ def gen_raster_h3(raster_list, h3_res, geo=False):
                     raise ValueError("Transforms do not match")
                 arr = src.read(1, window=window)
                 _df = h3ronpy.raster.raster_to_dataframe(arr, w_transform, h3_res, nodata_value=src.profile['nodata'], compacted=False, geo=geo)
+                _df = _df.fillna(-9999)
                 dfs.append(_df.set_index('h3index')['value'])
             df = pd.concat(dfs, axis=1)
             logging.info(f'Reading block {j}, {i}: h3index count {len(df)}')
@@ -111,13 +112,13 @@ def load_raster_list_to_h3_table(raster_list, table, h3_res):
     cursor = conn.cursor()
     cursor.execute(f"DROP TABLE IF EXISTS {table};")
     cursor.execute(f"""DELETE FROM {H3_MASTER_TABLE} WHERE "h3tableName" = '{table}';""")
-    
+
     first = True
 
     for block_df in gen_raster_h3(raster_list, h3_res):
         if first:
             cols = zip(block_df.columns, block_df.dtypes)
-            schema = ', '.join([f"{col} {DTYPES_TO_PG[str(dtype)]}" for col, dtype in cols])            
+            schema = ', '.join([f"{col} {DTYPES_TO_PG[str(dtype)]}" for col, dtype in cols])
             cursor.execute(f"CREATE TABLE {table} (h3index h3index PRIMARY KEY, {schema});")
             logging.info(f"Created table {table} with columns {', '.join(block_df.columns)}")
             first = False
@@ -127,21 +128,21 @@ def load_raster_list_to_h3_table(raster_list, table, h3_res):
             block_df.to_csv(buffer, header=False)
             buffer.seek(0)
             cursor.copy_from(buffer, table, sep=',')
-            
+
     # add rows to master table for each column
     for column in block_df.columns:
         cursor.execute(f"""
             INSERT INTO {H3_MASTER_TABLE} ("h3tableName", "h3columnName", "h3resolution")
             VALUES ('{table}', '{column}', {h3_res});
         """)
-    
+
     conn.commit()
     cursor.close()
 
 
 def main(folder, table, h3_res):
     tiffs = [
-        os.path.join(folder, f) 
+        os.path.join(folder, f)
         for f in os.listdir(folder)
         if os.path.splitext(f)[1] == '.tif'
     ]

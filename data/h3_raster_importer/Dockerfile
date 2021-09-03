@@ -1,5 +1,7 @@
 FROM perrygeo/gdal-base
 
+RUN apt-get install zip
+
 RUN pip install --upgrade --no-cache-dir pip
 
 COPY ./requirements.txt requirements.txt

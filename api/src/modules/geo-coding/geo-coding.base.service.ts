@@ -31,7 +31,7 @@ import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.se
 export class GeoCodingBaseService {
   private logger: Logger = new Logger(GeoCodingBaseService.name);
   private readonly client: ClientType;
-  private readonly apiKey: string = config.get('geocoding.gmapsApiKey');
+  private readonly apiKey: string = config.get('geolocation.gmapsApiKey');
 
   constructor(
     protected readonly adminRegionService: AdminRegionsService,

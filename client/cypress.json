@@ -2,5 +2,6 @@
   "baseUrl": "http://localhost:3000",
   "screenshotOnRunFailure": true,
   "videoUploadOnPasses": false,
+  "pageLoadTimeout": 100000,
   "ignoreTestFiles": "*.ts"
 }

@@ -3,7 +3,7 @@ import cx from 'classnames';
 import { useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
 
-import { useAnalysisChart } from 'lib/hooks/analysis';
+import { useAnalysisChart, useAnalysisLegend } from 'lib/hooks/analysis';
 
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -16,7 +16,11 @@ export type AnalysisChartProps = {};
 
 const AnalysisChart: React.FC<AnalysisChartProps> = () => {
   const { filters } = useAppSelector(analysis);
-  const { data, isFetching } = useAnalysisChart({ filters });
+
+  const { data: chartData, isFetching: chartIsFetching } = useAnalysisChart({ filters });
+  const { data: legendData, isFetching: legendIsFetching } = useAnalysisLegend({ filters });
+
+  const isFetching = chartIsFetching || legendIsFetching;
 
   return (
     <div className="relative">
@@ -28,28 +32,30 @@ const AnalysisChart: React.FC<AnalysisChartProps> = () => {
 
       <AnimatePresence>
         <div
+          key="analysis-chart"
           className={cx({
             'grid grid-cols-1 gap-5': true,
-            'md:grid-cols-2': data.length > 1,
+            'md:grid-cols-2': chartData.length > 1,
           })}
         >
-          {data.map((d) => {
-            const { id, indicator, keys, values } = d;
+          {chartData.map((d) => {
+            const { id, indicator, keys, values, colors } = d;
 
             return (
               <motion.div
-                key={`${id}-${data.length}`}
+                key={`${id}-${JSON.stringify(filters)}`}
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
               >
-                <Widget title={indicator} height={data.length > 1 ? 250 : 500}>
+                <Widget title={indicator} height={chartData.length > 1 ? 325 : 500}>
                   <Chart>
                     <AreaStacked
+                      title={indicator}
                       data={values}
                       margin={{ top: 12, right: 12, bottom: 30, left: 30 }}
                       keys={keys}
-                      target={120}
+                      colors={colors}
+                      // target={120}
                       settings={{
                         tooltip: true,
                         projection: true,
@@ -62,6 +68,20 @@ const AnalysisChart: React.FC<AnalysisChartProps> = () => {
             );
           })}
         </div>
+
+        <motion.ul
+          key={`analysis-legend-${JSON.stringify(filters)}`}
+          className="flex mt-4 space-x-3"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          {legendData.map((l) => (
+            <li key={`${l.id}-${JSON.stringify(filters)}`} className="flex items-center space-x-1">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: l.color }} />
+              <div>{l.name}</div>
+            </li>
+          ))}
+        </motion.ul>
       </AnimatePresence>
     </div>
   );

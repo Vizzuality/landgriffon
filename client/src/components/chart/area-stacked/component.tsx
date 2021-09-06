@@ -13,8 +13,6 @@ import { bisector } from 'd3-array';
 import { timeYear } from 'd3-time';
 import { format } from 'd3-format';
 
-import chroma from 'chroma-js';
-
 import Tooltip from 'components/chart/area-stacked/tooltip';
 
 const getDate = (d) => new Date(d.date).valueOf();
@@ -23,6 +21,7 @@ const getY1 = (d) => d[1];
 const bisectDate = bisector((d) => new Date(d.date)).center;
 
 export type AreaStackedProps = {
+  title: string;
   data: {
     id: string;
     current: boolean;
@@ -37,6 +36,7 @@ export type AreaStackedProps = {
     left: number;
   };
   keys?: string[];
+  colors?: Record<string, string>;
   target?: number;
   settings?: {
     tooltip: boolean;
@@ -46,11 +46,13 @@ export type AreaStackedProps = {
 };
 
 const AreaStacked: React.FC<AreaStackedProps> = ({
+  title,
   data,
   width = 400,
   height = 200,
   margin = { top: 40, right: 30, bottom: 50, left: 40 },
   keys = [],
+  colors,
   target,
   settings = {
     tooltip: true,
@@ -109,22 +111,6 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
     range: [yRangeMax, 0],
     domain: [0, yDomainMax],
   });
-
-  // Color: scale
-  const colorScale = chroma.scale(['#8DD3C7', '#BEBADA', '#FDB462']).colors(keys.length);
-
-  // COLORS
-  const COLORS = useMemo(
-    () =>
-      keys.reduce(
-        (acc, k, i) => ({
-          ...acc,
-          [k]: colorScale[i],
-        }),
-        {}
-      ),
-    [keys]
-  );
 
   // Callbacks
   const handleTooltip = useCallback(
@@ -187,7 +173,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
                   stroke="#FFF"
                   strokeOpacity={0.25}
                   strokeWidth={0.5}
-                  fill={COLORS[stack.key]}
+                  fill={colors[stack.key]}
                 />
               ))
             }
@@ -210,7 +196,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
                   stroke="#FFF"
                   strokeOpacity={0.25}
                   strokeWidth={0.5}
-                  fill={COLORS[stack.key]}
+                  fill={colors[stack.key]}
                   fillOpacity={0.75}
                 />
               ))
@@ -384,12 +370,12 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
 
       {settings.tooltip && (
         <Tooltip
-          title="Carbon emissions (CO2e)"
+          title={title}
           tooltipTop={tooltipTop}
           tooltipLeft={tooltipLeft + margin.left}
           tooltipData={tooltipData}
           keys={keys}
-          colors={COLORS}
+          colors={colors}
         />
       )}
     </div>

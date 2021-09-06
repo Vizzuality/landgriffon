@@ -14,7 +14,7 @@ const AnalysisVisualization = () => {
   const { visualizationMode } = useAppSelector(analysis);
 
   return (
-    <section className="relative flex flex-col flex-1 h-full min-w-0 overflow-hidden bg-white lg:order-last">
+    <section className="relative flex flex-col flex-1 h-full bg-gray-50 lg:order-last">
       {/* Vis selector: map, table or chart */}
       <AnalysisFilters />
       <ModeControl />
@@ -87,7 +87,7 @@ const AnalysisVisualization = () => {
 
       {visualizationMode === 'chart' && (
         <div className="flex flex-col p-6 pl-12 mt-16 left-12">
-          <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div className="-my-2 sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
               <AnalysisChart />
             </div>

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useCallback, useMemo, useEffect } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis, setFilter } from 'store/features/analysis';
@@ -14,7 +14,6 @@ const ImpactIndicatorsFilter: React.FC<ImpactIndicatorsFilterProps> = () => {
   const { visualizationMode, filters } = useAppSelector(analysis);
   const dispatch = useAppDispatch();
 
-  const [value, setValue] = useState(filters.indicator);
   const { data, isFetching, isFetched, error } = useIndicators();
 
   const options = useMemo(() => {
@@ -33,19 +32,15 @@ const ImpactIndicatorsFilter: React.FC<ImpactIndicatorsFilterProps> = () => {
   }, [data, visualizationMode]);
 
   useEffect(() => {
-    if (isFetched && options && options.length) {
-      setValue(options[0].value);
-      dispatch(
-        setFilter({
-          id: 'indicator',
-          value: options[0].value,
-        })
-      );
-    }
+    dispatch(
+      setFilter({
+        id: 'indicator',
+        value: options[0].value,
+      })
+    );
   }, [options, isFetched]);
 
   const handleChange = useCallback((currentValue) => {
-    setValue(currentValue);
     dispatch(
       setFilter({
         id: 'indicator',
@@ -60,7 +55,7 @@ const ImpactIndicatorsFilter: React.FC<ImpactIndicatorsFilterProps> = () => {
       className="w-60"
       loading={isFetching}
       options={options}
-      value={value}
+      value={filters.indicator}
       placeholder={error ? 'Something went wrong' : 'Select Impact Indicator'}
       disabled={!!error}
       suffixIcon={<ChevronDownIcon />}

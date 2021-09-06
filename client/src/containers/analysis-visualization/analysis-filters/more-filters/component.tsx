@@ -12,20 +12,20 @@ const MoreFilters: React.FC<MoreFiltersProps> = ({ filters }: MoreFiltersProps) 
   const [open, setOpen] = useState(false);
 
   const handleApply = () => {
-    console.log('clicked Apply');
     setOpen(false);
   };
 
   return (
     <Popover>
-      <Button theme="secondary" onClick={() => setOpen(true)}>
+      <Button theme="secondary" onClick={() => setOpen(!open)}>
         <span className="block h-5 truncate">
-          <FilterIcon className="h-5 w-5 text-gray-900" aria-hidden="true" />
+          <FilterIcon className="w-5 h-5 text-gray-900" aria-hidden="true" />
         </span>
-        <span className="flex justify-center items-center ml-1 w-5 h-5 text-xs text-white font-semibold rounded-full bg-green-700">
+        <span className="flex items-center justify-center w-5 h-5 ml-1 text-xs font-semibold text-white bg-green-700 rounded-full">
           {filters.length}
         </span>
       </Button>
+
       <Transition
         show={open}
         as={Fragment}
@@ -33,9 +33,9 @@ const MoreFilters: React.FC<MoreFiltersProps> = ({ filters }: MoreFiltersProps) 
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
       >
-        <Popover.Panel static className="absolute w-80 z-10 mt-1 right-0">
+        <Popover.Panel static className="absolute right-0 z-10 mt-1 w-80">
           <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-            <div className="relative rounded-lg bg-white p-4">
+            <div className="relative p-4 bg-white rounded-lg">
               <div className="flex justify-between mb-4">
                 <div>Filter by</div>
                 <Button

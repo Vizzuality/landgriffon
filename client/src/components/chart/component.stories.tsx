@@ -15,9 +15,19 @@ const Template: Story<ChartProps> = (props: ChartProps) => (
   <div className="w-full h-96">
     <Chart>
       <AreaStacked
+        title="Testing"
         data={MOCK}
         margin={{ top: 50, right: 50, bottom: 50, left: 50 }}
         keys={['beef', 'coal', 'corn', 'duck', 'mint', 'poultry', 'soy']}
+        colors={{
+          beef: '#FF0000',
+          coal: '#FF1100',
+          corn: '#FF2200',
+          duck: '#FF3300',
+          mint: '#FF4400',
+          poultry: '#FF5500',
+          soy: '#FF6600',
+        }}
         target={120}
         {...props}
       />

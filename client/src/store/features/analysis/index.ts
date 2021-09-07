@@ -13,11 +13,8 @@ export type AnalysisState = {
   filters: {
     indicator: string;
     by: string;
-    year: number;
-    years: {
-      from: number;
-      to: number;
-    };
+    startYear: number;
+    endYear: number;
     material: string[];
     origins: string[];
     suppliers: string[];
@@ -37,11 +34,8 @@ const initialState: AnalysisState = {
   filters: {
     indicator: null,
     by: 'material',
-    year: 2015,
-    years: {
-      from: 2011,
-      to: 2015,
-    },
+    startYear: 2010,
+    endYear: 2020,
     material: [],
     origins: [],
     suppliers: [],

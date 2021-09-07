@@ -30,7 +30,6 @@ type GroupByFilterProps = {};
 
 const GroupByFilter: React.FC<GroupByFilterProps> = () => {
   const { filters } = useAppSelector(analysis);
-
   const dispatch = useAppDispatch();
 
   const handleChange = useCallback((value) => {

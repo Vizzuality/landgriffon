@@ -43,7 +43,7 @@ const YearsFilter: React.FC<YearsFilterProps> = () => {
         );
       }
     }
-  }, [availableYears, isLoading]);
+  }, [visualizationMode, availableYears, isLoading]);
 
   const handleChange = useCallback((currentValue) => {
     dispatch(
@@ -163,7 +163,11 @@ const YearsFilter: React.FC<YearsFilterProps> = () => {
                           showSearch
                         >
                           {availableYears.map((year) => (
-                            <Select.Option key={`year-${year}`} value={year}>
+                            <Select.Option
+                              key={`year-${year}`}
+                              value={year}
+                              disabled={year >= filters.endYear}
+                            >
                               <span>{year}</span>
                             </Select.Option>
                           ))}
@@ -178,7 +182,11 @@ const YearsFilter: React.FC<YearsFilterProps> = () => {
                           onBlur={handleOnBlur}
                         >
                           {availableYears.map((year) => (
-                            <Select.Option key={`year-${year}`} value={year}>
+                            <Select.Option
+                              key={`year-${year}`}
+                              value={year}
+                              disabled={year <= filters.startYear}
+                            >
                               {year}
                             </Select.Option>
                           ))}

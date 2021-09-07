@@ -1,26 +1,25 @@
 import { Fragment, useCallback, useState, useEffect } from 'react';
-import type { UseQueryResult } from 'react-query';
+
+import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { analysis, setFilter } from 'store/features/analysis';
+
+import { useYears } from 'lib/hooks/years';
+
 import { Select } from 'antd';
 import { Popover, Transition } from '@headlessui/react';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
+
 import { toNumber, isFinite } from 'lodash';
 
-type YearsFilterProps = {
-  years: {
-    data: {
-      data: number[];
-    };
-    isLoading: UseQueryResult['isLoading'];
-    error: UseQueryResult['error'];
-  };
-  isRange: boolean;
-};
+type YearsFilterProps = {};
 
-const YearsFilter: React.FC<YearsFilterProps> = ({ years, isRange }: YearsFilterProps) => {
-  const [value, setValue] = useState(null);
-  const [valueEnd, setValueEnd] = useState(null);
+const YearsFilter: React.FC<YearsFilterProps> = () => {
   const [additionalYear, setAdditionalYear] = useState();
-  const { data, isLoading, error } = years;
+
+  const { visualizationMode, filters } = useAppSelector(analysis);
+  const dispatch = useAppDispatch();
+
+  const { data, isLoading, error } = useYears();
 
   const availableYears = (data && data.data) || [];
 
@@ -28,36 +27,40 @@ const YearsFilter: React.FC<YearsFilterProps> = ({ years, isRange }: YearsFilter
 
   useEffect(() => {
     if (!isLoading && availableYears) {
-      setValue(availableYears[0]);
+      dispatch(
+        setFilter({
+          id: 'startYear',
+          value: availableYears[0],
+        })
+      );
 
       if (availableYears.length > 1) {
-        setValueEnd(availableYears[1]);
-      } else {
-        setValueEnd(availableYears[0]);
+        dispatch(
+          setFilter({
+            id: 'endYear',
+            value: availableYears[availableYears.length - 1],
+          })
+        );
       }
     }
   }, [availableYears, isLoading]);
 
   const handleChange = useCallback((currentValue) => {
-    console.log('valueEnd:', valueEnd);
-    console.log('currentValue:', currentValue);
-
-    if (valueEnd) {
-      if (currentValue < valueEnd) setValue(currentValue);
-    } else {
-      setValue(currentValue);
-    }
+    dispatch(
+      setFilter({
+        id: 'startYear',
+        value: currentValue,
+      })
+    );
   }, []);
 
   const handleChangeEnd = useCallback((currentValue) => {
-    console.log('value:', value);
-    console.log('currentValue:', currentValue);
-
-    if (value) {
-      if (currentValue > value) setValueEnd(currentValue);
-    } else {
-      setValueEnd(currentValue);
-    }
+    dispatch(
+      setFilter({
+        id: 'endYear',
+        value: currentValue,
+      })
+    );
   }, []);
 
   const handleOnSearch = (e) => {
@@ -81,11 +84,11 @@ const YearsFilter: React.FC<YearsFilterProps> = ({ years, isRange }: YearsFilter
     <Popover className="relative">
       {({ open }) => (
         <>
-          {!isRange && (
+          {visualizationMode === 'map' && (
             <Select
-              defaultValue={valueEnd}
+              // defaultValue={valueEnd}
               onChange={handleChangeEnd}
-              value={valueEnd}
+              value={filters.endYear}
               optionLabelProp="label"
               className="w-28"
               suffixIcon={<ChevronDownIcon />}
@@ -121,23 +124,23 @@ const YearsFilter: React.FC<YearsFilterProps> = ({ years, isRange }: YearsFilter
               )}
             </Select>
           )}
-          {isRange && (
+          {visualizationMode !== 'map' && (
             <>
               <Popover.Button
                 {...(isDisabled ? { disabled: true } : {})}
-                className="bg-white relative w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 sm:text-sm"
+                className="relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-300 rounded-md shadow-sm cursor-default focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 sm:text-sm"
               >
                 <span className="block h-5 truncate">
-                  <span className="text-gray-600 mr-1">from</span>
+                  <span className="mr-1 text-gray-600">from</span>
                   <span>
-                    {value}-{valueEnd}
+                    {filters.startYear}-{filters.endYear}
                   </span>
                 </span>
                 <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                   {open ? (
-                    <ChevronUpIcon className="h-5 w-5 text-gray-900" aria-hidden="true" />
+                    <ChevronUpIcon className="w-5 h-5 text-gray-900" aria-hidden="true" />
                   ) : (
-                    <ChevronDownIcon className="h-5 w-5 text-gray-900" aria-hidden="true" />
+                    <ChevronDownIcon className="w-5 h-5 text-gray-900" aria-hidden="true" />
                   )}
                 </span>
               </Popover.Button>
@@ -147,15 +150,14 @@ const YearsFilter: React.FC<YearsFilterProps> = ({ years, isRange }: YearsFilter
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
-                <Popover.Panel className="absolute w-60 z-20 mt-1">
+                <Popover.Panel className="absolute z-20 mt-1 w-60">
                   <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-                    <div className="relative rounded-lg bg-white p-4">
+                    <div className="relative p-4 bg-white rounded-lg">
                       <div className="grid grid-cols-1 gap-2">
                         <div>From</div>
                         <Select
-                          defaultValue={value}
                           onChange={handleChange}
-                          value={value}
+                          value={filters.startYear}
                           dropdownStyle={{ minWidth: 'min-content' }}
                           suffixIcon={<ChevronDownIcon />}
                           showSearch
@@ -168,9 +170,8 @@ const YearsFilter: React.FC<YearsFilterProps> = ({ years, isRange }: YearsFilter
                         </Select>
                         <div>To</div>
                         <Select
-                          defaultValue={valueEnd}
                           onChange={handleChangeEnd}
-                          value={valueEnd}
+                          value={filters.endYear}
                           suffixIcon={<ChevronDownIcon />}
                           showSearch
                           onSearch={handleOnSearch}

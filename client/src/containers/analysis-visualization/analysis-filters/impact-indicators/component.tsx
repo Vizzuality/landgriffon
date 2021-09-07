@@ -32,12 +32,14 @@ const ImpactIndicatorsFilter: React.FC<ImpactIndicatorsFilterProps> = () => {
   }, [data, visualizationMode]);
 
   useEffect(() => {
-    dispatch(
-      setFilter({
-        id: 'indicator',
-        value: options[0].value,
-      })
-    );
+    if (isFetched && options.length) {
+      dispatch(
+        setFilter({
+          id: 'indicator',
+          value: options[0].value,
+        })
+      );
+    }
   }, [options, isFetched]);
 
   const handleChange = useCallback((currentValue) => {

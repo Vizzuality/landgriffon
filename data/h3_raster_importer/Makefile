@@ -1,6 +1,6 @@
 
 
-all: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_waterFootprint_global
+all:  h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_wf_global
 
 #######################################
 # MapSPAM crop production
@@ -23,6 +23,14 @@ data/waterFootprint/Report50-WF-of-production-RasterFiles.zip:
 	mkdir -p data/waterFootprint
 	wget -q -O $@ https://data.4tu.nl/ndownloader/files/23992634
 
+# # Download crop specific water footprint
+# data/waterFootprint/Report47-App-IV-CropWaterFootprints-RasterMaps.zip:
+# 	mkdir -p data/waterFootprint
+# 	wget -q -O $@ https://waterfootprint.org/media/downloads/Report47-App-IV-CropWaterFootprints-RasterMaps.zip
+
+# Download net carbon flux:
+#https://services2.arcgis.com/g8WusZB13b9OegfU/arcgis/rest/services/Forest_greenhouse_gas_net_flux/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson
+
 #EXTRACT DATASETS:
 # <tiff_folder>: <zipfile>
 # Unzip to folder
@@ -43,14 +51,14 @@ data/earthstat/earthstat2000_global_prod: data/earthstat/HarvestedAreaYield175Cr
 		rm -f "$${tiffile}";\
 	done
 
-#extract wf data
-#unzip -j -o -u data/waterFootprint/generic_waterfootprint/Report50-WF-of-production-RasterFiles.zip */wf_bltot_mmyr/* -d $@
+#extract generic wf data
 data/waterFootprint/generic_waterfootprint: data/waterFootprint/Report50-WF-of-production-RasterFiles.zip
 	mkdir -p $@
 	unzip -jn -o -u $< -d $@
-	unzip -o -u data/waterFootprint/generic_waterfootprint/Report50-WF-of-production-RasterFiles.zip -d $@
-	gdal_translate -of GTiff data/waterFootprint/generic_waterfootprint/Report50-WF-of-prodn-RasterFiles/wf_bltot_mmyr/hdr.adf data/waterFootprint/generic_waterfootprint/wf_bltot_mmyr.tif
-	gdal_translate -of GTiff data/waterFootprint/generic_waterfootprint/Report50-WF-of-prodn-RasterFiles/wf_gntot_mmyr/hdr.adf data/waterFootprint/generic_waterfootprint/wf_gntot_mmyr.tif
+	unzip -j -o -u data/waterFootprint/generic_waterfootprint/Report50-WF-of-production-RasterFiles.zip */wf_bltot_mmyr/* -d $@
+	gdal_translate -of GTiff data/waterFootprint/generic_waterfootprint/hdr.adf data/waterFootprint/generic_waterfootprint/wf_bltot_mmyr.tif
+
+
 
 #CONVERT DATASETS:
 # <table>: <tiff_folder>
@@ -67,8 +75,8 @@ h3_grid_earthstat2000_global_prod: data/earthstat/earthstat2000_global_prod
 
 
 # Convert the wf tiffs in the folder to h3indexes at resolution 6
-h3_grid_waterFootprint_global: data/waterFootprint/generic_waterfootprint
-	python tiff_folder_to_h3_table.py $< h3_grid_waterFootprint_global --h3-res=6
+h3_grid_wf_global: data/waterFootprint/generic_waterfootprint
+	python tiff_folder_to_h3_table.py data/waterFootprint/generic_waterfootprint h3_grid_wf_global --h3-res=6
 
 # ^^^
 #######################################

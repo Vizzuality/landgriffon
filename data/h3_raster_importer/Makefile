@@ -1,6 +1,6 @@
 
 
-all:  h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_wf_global
+all: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_wf_global
 
 #######################################
 # MapSPAM crop production
@@ -47,7 +47,7 @@ data/earthstat/earthstat2000_global_prod: data/earthstat/HarvestedAreaYield175Cr
 	for tiffile in data/earthstat/earthstat2000_global_prod/*.tif; do \
 		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
 		output_file="data/earthstat/earthstat2000_global_prod/earthstat2000_global_$${table_name}.tif";\
-		gdal_translate -a_nodata -1 -of GTiff "$${tiffile}" "$${output_file}";\
+		gdal_translate -a_nodata 0 -of GTiff "$${tiffile}" "$${output_file}";\
 		rm -f "$${tiffile}";\
 	done
 

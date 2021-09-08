@@ -89,7 +89,6 @@ def gen_raster_h3(raster_list, h3_res, geo=False):
                     raise ValueError("Transforms do not match")
                 arr = src.read(1, window=window)
                 _df = h3ronpy.raster.raster_to_dataframe(arr, w_transform, h3_res, nodata_value=src.profile['nodata'], compacted=False, geo=geo)
-                _df = _df.fillna(-1)
                 dfs.append(_df.set_index('h3index')['value'])
             df = pd.concat(dfs, axis=1)
             logging.info(f'Reading block {j}, {i}: h3index count {len(df)}')
@@ -125,9 +124,9 @@ def load_raster_list_to_h3_table(raster_list, table, h3_res):
 
         # efficiently copy as file blob
         with StringIO() as buffer:
-            block_df.to_csv(buffer, header=False)
+            block_df.to_csv(buffer, na_rep="NULL", header=False)
             buffer.seek(0)
-            cursor.copy_from(buffer, table, sep=',')
+            cursor.copy_from(buffer, table, sep=',', null="NULL")
 
     # add rows to master table for each column
     for column in block_df.columns:

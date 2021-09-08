@@ -17,6 +17,7 @@ const Template: Story<WidgetProps> = (props: WidgetProps) => (
     <Widget {...props}>
       <Chart>
         <AreaStacked
+          title="Carbon emissions"
           data={MOCK}
           margin={{ top: 12, right: 12, bottom: 30, left: 30 }}
           keys={['beef', 'coal', 'corn', 'duck', 'mint', 'poultry', 'soy']}

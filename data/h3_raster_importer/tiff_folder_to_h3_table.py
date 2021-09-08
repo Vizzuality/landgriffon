@@ -87,7 +87,7 @@ def gen_raster_h3(raster_list, h3_res, geo=False):
             for src in readers:
                 if src.transform != base.transform:
                     raise ValueError("Transforms do not match")
-                arr = src.read(1, window=window, masked=True)
+                arr = src.read(1, window=window)
                 _df = h3ronpy.raster.raster_to_dataframe(arr, w_transform, h3_res, nodata_value=src.profile['nodata'], compacted=False, geo=geo)
                 _df = _df.fillna(-1)
                 dfs.append(_df.set_index('h3index')['value'])

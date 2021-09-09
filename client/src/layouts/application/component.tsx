@@ -13,7 +13,7 @@ const ApplicationLayout: React.FC<ApplicationLayoutProps> = (props: ApplicationL
       {/* Navigation */}
       <Sidebar />
 
-      <div className="flex-1 min-w-0 flex flex-col">
+      <div className="pl-0 flex-1 min-w-0 flex flex-col lg:pl-28">
         {/* Mobile top navigation */}
         <HeaderMobile />
 

@@ -80,7 +80,7 @@ const AnalysisVisualization: React.FC = () => {
       {visualizationMode === 'map' && <AnalysisMap />}
 
       {visualizationMode === 'table' && (
-        <div className="flex p-6 pl-12 mt-16 left-12" style={{ maxWidth: '1800px' }}>
+        <div className="flex p-6 pl-12 mt-16 left-12">
           <Table columns={TABLE_COLUMNS} dataSource={DATA} />
         </div>
       )}

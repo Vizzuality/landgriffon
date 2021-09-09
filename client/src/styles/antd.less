@@ -126,8 +126,10 @@ thead[class*="ant-table-thead"] th{
 }
 
 .ant-table-row {
-  &.ant-table-row-level-1:nth-of-type(2n) {
+  &:nth-of-type(2n +1) {
     background-color: @gray-100;
+    .ant-table-cell-fix-left {
+      background-color: @gray-100;
+    }
   }
 }
-    

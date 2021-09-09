@@ -34,7 +34,7 @@ export const Table: React.FC<TableProps> = ({ columns, dataSource }: TableProps)
     dataSource={dataSource}
     columns={columns}
     pagination={false}
-    scroll={{ x: '110%' }}
+    scroll={{ x: '110%', scrollToFirstRowOnChange: true }}
   />
 );
 

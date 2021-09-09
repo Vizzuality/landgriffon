@@ -1,3 +1,7 @@
+import { useMemo } from 'react';
+import { useAppSelector } from 'store/hooks';
+import { analysis } from 'store/features/analysis';
+
 import { DownloadIcon } from '@heroicons/react/outline';
 import { InformationCircleIcon } from '@heroicons/react/solid';
 
@@ -11,13 +15,18 @@ import DATA from './mock';
 export type AnalysisTableProps = {};
 
 const AnalysisTable: React.FC<AnalysisTableProps> = () => {
-  const getValueByYear = (columnYear, record) => {
-    if (record.values) {
-      const dataIndex = record.values.find((el) => el.year === columnYear).value;
-      return dataIndex;
-    }
-    return null;
-  };
+  const { filters } = useAppSelector(analysis);
+
+  console.log('FILTERS', filters);
+
+  const getValueByYear = (columnYear, record) =>
+    useMemo(() => {
+      if (record.values) {
+        const dataIndex = record.values.find((el) => el.year === columnYear).value;
+        return dataIndex;
+      }
+      return null;
+    }, []);
 
   const TABLE_COLUMNS = [
     {

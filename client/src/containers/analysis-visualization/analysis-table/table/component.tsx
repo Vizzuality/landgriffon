@@ -5,8 +5,8 @@ import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline';
 export interface TableProps {
   columns: Array<object>;
   dataSource: Array<{
-    key: string;
-    commodity: string;
+    id: string;
+    indicator: string;
     children?: React.ReactNode;
     [key: number]: number;
   }>;

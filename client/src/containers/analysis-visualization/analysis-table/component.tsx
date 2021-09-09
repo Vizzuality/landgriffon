@@ -11,11 +11,19 @@ import DATA from './mock';
 export type AnalysisTableProps = {};
 
 const AnalysisTable: React.FC<AnalysisTableProps> = () => {
+  const getValueByYear = (columnYear, record) => {
+    if (record.values) {
+      const dataIndex = record.values.find((el) => el.year === columnYear).value;
+      return dataIndex;
+    }
+    return null;
+  };
+
   const TABLE_COLUMNS = [
     {
       title: 'YEAR',
-      dataIndex: 'commodity',
-      key: 'commodity',
+      dataIndex: 'indicator',
+      key: 'indicator',
       width: 150,
       fixed: 'left',
     },
@@ -28,32 +36,32 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
     },
     {
       title: () => <TableTitle title="2021" />,
-      dataIndex: '2021',
-      key: '2021',
+      render: (record) => getValueByYear(2021, record),
+      key: 'values',
       width: 100,
       fixed: 'left',
     },
     {
       title: () => <TableTitle title="2022" />,
-      dataIndex: '2022',
+      render: (record) => getValueByYear(2022, record),
       key: '2022',
       width: 100,
     },
     {
       title: () => <TableTitle title="2023" />,
-      dataIndex: '2023',
+      render: (record) => getValueByYear(2023, record),
       key: '2023',
       width: 100,
     },
     {
       title: () => <TableTitle title="2024" />,
-      dataIndex: '2024',
+      render: (record) => getValueByYear(2024, record),
       key: '2024',
       width: 100,
     },
     {
       title: () => <TableTitle title="2025" />,
-      dataIndex: '2025',
+      render: (record) => getValueByYear(2025, record),
       key: '2025',
       width: 100,
     },

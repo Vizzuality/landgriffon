@@ -25,10 +25,13 @@ export function useIndicators() {
 
   const { data } = query;
 
-  return useMemo(() => {
-    return {
+  return useMemo(
+    () => ({
       ...query,
       data,
-    };
-  }, [query, data]);
+    }),
+    [query, data]
+  );
 }
+
+export default useIndicators;

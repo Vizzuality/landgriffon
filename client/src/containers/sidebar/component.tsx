@@ -110,7 +110,7 @@ const Sidebar = () => {
       </Transition.Root>
 
       {/* Static sidebar for desktop */}
-      <div className="hidden lg:flex lg:flex-shrink-0">
+      <div className="hidden lg:flex lg:flex-shrink-0 fixed h-screen w-28 z-10">
         <div className="flex flex-col w-28 bg-green-700">
           <div className="flex flex-col h-0 flex-1 overflow-y-auto">
             <div className="flex-1 flex flex-col">

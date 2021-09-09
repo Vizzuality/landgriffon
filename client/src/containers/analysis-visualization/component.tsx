@@ -1,6 +1,10 @@
 import { useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
 
+import Button from 'components/button';
+
+import { DownloadIcon } from '@heroicons/react/outline';
+import { InformationCircleIcon } from '@heroicons/react/solid';
 import Table from './table';
 import DATA from './table/mock';
 import Title from './table/title';
@@ -80,7 +84,24 @@ const AnalysisVisualization: React.FC = () => {
       {visualizationMode === 'map' && <AnalysisMap />}
 
       {visualizationMode === 'table' && (
-        <div className="flex p-6 pl-12 mt-16 left-12">
+        <div className="flex flex-col p-6 pl-12 mt-16 left-12">
+          <div className="flex justify-between my-6">
+            <div className="flex items-center">
+              <InformationCircleIcon className="w-5 h-4 mr-2 text-black" />
+              <p className="m-0">
+                Viewing absolute values for <b>Actual Data</b>
+              </p>
+            </div>
+            <Button
+              theme="secondary"
+              size="base"
+              className="flex-shrink-0"
+              onClick={() => console.log('onDownload')}
+            >
+              <DownloadIcon className="w-5 h-4 mr-2 text-black" />
+              Download
+            </Button>
+          </div>
           <Table columns={TABLE_COLUMNS} dataSource={DATA} />
         </div>
       )}

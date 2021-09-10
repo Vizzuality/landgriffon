@@ -10,6 +10,7 @@ export type AnalysisState = {
   currentScenario: Scenario['id'];
   scenarioToCompare: Scenario['id'];
   comparisonMode: 'percentage' | 'absolute' | 'both';
+  layer: 'impact' | 'risk' | 'crop';
   filters: {
     indicator: string;
     by: string;
@@ -31,6 +32,7 @@ const initialState: AnalysisState = {
   currentScenario: null,
   scenarioToCompare: null,
   comparisonMode: null,
+  layer: 'impact',
   filters: {
     indicator: null,
     by: 'material',
@@ -73,6 +75,10 @@ export const analysisSlice = createSlice({
       ...state,
       comparisonMode: action.payload,
     }),
+    setLayer: (state, action: PayloadAction<AnalysisState['layer']>) => ({
+      ...state,
+      layer: action.payload,
+    }),
     setFilter: (state, action: PayloadAction<{ id: string; value: any }>) => ({
       ...state,
       filters: {
@@ -94,6 +100,7 @@ export const {
   setCurrentScenario,
   setScenarioToCompare,
   setComparisonMode,
+  setLayer,
   setFilter,
   setFilters,
 } = analysisSlice.actions;

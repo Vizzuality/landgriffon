@@ -13,7 +13,7 @@ const FILTERS = [
 ];
 
 const AnalysisFilters: React.FC = () => (
-  <div className="absolute z-10 inline-flex gap-2 left-12 top-6">
+  <div className="inline-flex gap-2">
     <ImpactIndicatorsFilter />
     <GroupByFilter />
     <YearsFilter />

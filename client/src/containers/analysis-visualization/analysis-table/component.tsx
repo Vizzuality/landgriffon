@@ -53,6 +53,14 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
       fixed: 'left',
     },
     {
+      title: () => <TableTitle title="2020" />,
+      render: (record) => getValueByYear(2020, record),
+      key: 'values',
+      width: 100,
+      fixed: 'left',
+      sorter: (record) => record.values.sort((a, b) => a.value - b.value),
+    },
+    {
       title: () => <TableTitle title="2021" />,
       render: (record) => getValueByYear(2021, record),
       key: 'values',
@@ -84,7 +92,6 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
   ];
 
   function onChange(pagination: any, sorter: any, extra: any) {
-    // eslint-disable-next-line no-console
     console.info('params', pagination, sorter, extra);
   }
   return (
@@ -100,8 +107,7 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
           theme="secondary"
           size="base"
           className="flex-shrink-0"
-          // eslint-disable-next-line no-console
-          onClick={() => console.log('onDownload')}
+          onClick={() => console.info('onDownload')}
         >
           <DownloadIcon className="w-5 h-4 mr-2 text-black" />
           Download

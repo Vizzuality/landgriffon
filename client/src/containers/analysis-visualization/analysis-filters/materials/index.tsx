@@ -1,12 +1,15 @@
-import { useQuery } from 'react-query';
+import { useCallback } from 'react';
+import { useAppDispatch } from 'store/hooks';
+import { setFilter } from 'store/features/analysis';
 
-import { getMaterialsTrees } from 'services/materials';
 import Component from './component';
 
-const MaterialsFilter: React.FC = () => {
-  const response = useQuery('materialsTreesList', getMaterialsTrees);
+export default (props) => {
+  const dispatch = useAppDispatch();
+  const handleChange = useCallback(
+    ({ value }) => dispatch(setFilter({ id: 'materials', value: [value] })),
+    []
+  );
 
-  return <Component materials={response} />;
+  return <Component onChange={handleChange} {...props} />;
 };
-
-export default MaterialsFilter;

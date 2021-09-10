@@ -31,12 +31,9 @@ export const Legend: React.FC<LegendProps> = ({
 
   return (
     <div
-      className={cx(
-        'bg-white rounded-lg flex flex-col flex-grow border border-gray-100',
-        {
-          [className]: !!className,
-        }
-      )}
+      className={cx('bg-white rounded-lg flex flex-col flex-grow border border-gray-100', {
+        [className]: !!className,
+      })}
     >
       <button
         type="button"

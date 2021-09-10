@@ -7,14 +7,11 @@ import uniq from 'lodash/uniq';
 import uniqBy from 'lodash/uniqBy';
 
 import chroma from 'chroma-js';
+import { AnalysisChartOptions, AnalysisTableOptions } from './types';
 
 import { DATA } from './mock';
 
 const COLOR_SCALE = chroma.scale(['#8DD3C7', '#BEBADA', '#FDB462']);
-
-interface AnalysisChartOptions {
-  filters: Record<string, unknown>;
-}
 
 export function useAnalysisChart(options: AnalysisChartOptions) {
   // const [session] = useSession();
@@ -151,6 +148,67 @@ export function useAnalysisLegend(options: AnalysisChartOptions) {
         color: colorScale[i],
       }));
     }, []);
+
+    return {
+      ...query,
+      data: parsedData,
+    };
+  }, [query, data?.data]);
+}
+
+// ANALYSIS TABLE
+export function useAnalysisTable(options: AnalysisTableOptions) {
+  // const [session] = useSession();
+  const { filters } = options;
+  const { indicator } = filters;
+
+  const query = useQuery(
+    ['analysis-table', JSON.stringify(options)],
+    async () =>
+      analysisService
+        .request({
+          method: 'GET',
+          url: `/`,
+          headers: {
+            // Authorization: `Bearer ${session.accessToken}`,
+          },
+          params: {
+            // include: '',
+          },
+        })
+        .then((response) => response.data),
+    {
+      keepPreviousData: true,
+      placeholderData: {
+        data: [],
+      },
+    }
+  );
+
+  const { data } = query;
+
+  return useMemo(() => {
+    const parsedData = DATA.map((d) => {
+      const { id, indicator: indicatorName, values, children } = d;
+
+      const parsedChildren = children.map((ch) => ({
+        indicator: ch.name,
+        key: ch.id,
+        values: ch.values,
+      }));
+
+      return {
+        key: id,
+        indicator: indicatorName,
+        children: parsedChildren,
+        values,
+        filters,
+      };
+    }).filter((d) => {
+      // Remove this for API filters
+      if (typeof indicator !== undefined && indicator !== 'all') return indicator === d.key;
+      return true;
+    });
 
     return {
       ...query,

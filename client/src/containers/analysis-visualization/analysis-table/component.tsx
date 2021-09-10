@@ -10,14 +10,24 @@ import Button from 'components/button';
 import Table from 'containers/analysis-visualization/analysis-table/table';
 import TableTitle from 'containers/analysis-visualization/analysis-table/table-title';
 
-import DATA from './mock';
+import { DATA } from 'lib/hooks/analysis/mock';
 
 export type AnalysisTableProps = {};
 
 const AnalysisTable: React.FC<AnalysisTableProps> = () => {
   const { filters } = useAppSelector(analysis);
+  console.log('filters', filters);
 
-  console.log('FILTERS', filters);
+  const PARSED_DATA = DATA.map((el) => ({
+    key: el.id,
+    indicator: el.indicator,
+    values: el.values,
+    children: el.children.map((ch) => ({
+      indicator: ch.name,
+      key: ch.id,
+      values: ch.values,
+    })),
+  }));
 
   const getValueByYear = (columnYear, record) =>
     useMemo(() => {
@@ -72,13 +82,6 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
       width: 100,
       sorter: (record) => record.values.sort((a, b) => a.value - b.value),
     },
-    {
-      title: () => <TableTitle title="2025" />,
-      render: (record) => getValueByYear(2025, record),
-      key: '2025',
-      width: 100,
-      sorter: (record) => record.values.sort((a, b) => a.value - b.value),
-    },
   ];
 
   function onChange(pagination: any, sorter: any, extra: any) {
@@ -105,7 +108,7 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
           Download
         </Button>
       </div>
-      <Table columns={TABLE_COLUMNS} dataSource={DATA} onChange={onChange} />
+      <Table columns={TABLE_COLUMNS} dataSource={PARSED_DATA} onChange={onChange} />
     </>
   );
 };

@@ -3,7 +3,7 @@ import cx from 'classnames';
 
 import Icon from 'components/icon';
 import LEGEND_SVG from 'assets/map/legend.svg?sprite';
-import ARROW_DOWN_SVG from 'assets/ui/arrow-down.svg?sprite';
+import { ArrowDownIcon } from '@heroicons/react/outline';
 
 import { useId } from '@react-aria/utils';
 import SortableList from './sortable/list';
@@ -31,25 +31,26 @@ export const Legend: React.FC<LegendProps> = ({
 
   return (
     <div
-      className={cx({
-        'bg-black rounded-3xl flex flex-col flex-grow': true,
-        [className]: !!className,
-      })}
+      className={cx(
+        'bg-white rounded-lg flex flex-col flex-grow border border-gray-100',
+        {
+          [className]: !!className,
+        }
+      )}
     >
       <button
         type="button"
         aria-expanded={active}
         aria-controls={id}
-        className="relative flex items-center w-full px-5 py-3 space-x-2 text-xs text-white uppercase font-heading"
+        className="relative flex justify-space-between w-full px-4 py-2 space-x-2 text-sm text-black font-heading"
         onClick={onToggleActive}
       >
-        <Icon icon={LEGEND_SVG} className="w-4 h-4 text-gray-300" />
         <span>Legend</span>
+        <Icon icon={LEGEND_SVG} className="w-4 h-4 text-black" />
 
-        <Icon
-          icon={ARROW_DOWN_SVG}
+        <ArrowDownIcon
           className={cx({
-            'absolute w-3 h-3 transition-transform transform -translate-y-1/2 text-blue-500 top-1/2 right-5':
+            'absolute w-3 h-3 transition-transform transform -translate-y-1/2 text-black top-1/2 right-5':
               true,
             'rotate-180': active,
           })}
@@ -58,16 +59,16 @@ export const Legend: React.FC<LegendProps> = ({
 
       {active && (
         <div
-          className="relative flex flex-col flex-grow overflow-hidden rounded-3xl"
+          className="relative flex flex-col flex-grow overflow-hidden rounded-lg rounded-t-none"
           style={{
             maxHeight,
           }}
         >
-          <div className="absolute top-0 left-0 z-10 w-full h-4 pointer-events-none bg-gradient-to-b from-black via-black" />
+          <div className="absolute top-0 left-0 z-10 w-full h-4 pointer-events-none bg-gradient-to-b from-white via-white" />
           <div className="overflow-x-hidden overflow-y-auto">
             <SortableList onChangeOrder={onChangeOrder}>{children}</SortableList>
           </div>
-          <div className="absolute bottom-0 left-0 z-10 w-full h-3 pointer-events-none bg-gradient-to-t from-black via-black" />
+          <div className="absolute bottom-0 left-0 z-10 w-full h-3 pointer-events-none bg-gradient-to-t from-white via-white" />
         </div>
       )}
     </div>

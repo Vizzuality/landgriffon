@@ -15,6 +15,9 @@ module.exports = {
       fontSize: {
         '2xs': '0.625rem',
       },
+      height: {
+        'screen-minus-header': "calc(100vh - theme('spacing.16'))",
+      },
       colors: {
         gray: {
           900: '#15181F',

@@ -1,13 +1,11 @@
 import { useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
-import Map from 'components/map';
 
 import LayerControl from './layer-control';
 import ModeControl from './mode-control';
 import AnalysisChart from './analysis-chart';
+import AnalysisMap from './analysis-map';
 import AnalysisFilters from './analysis-filters';
-
-const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
 
 const impactFactors = [{ id: '1', name: 'Rice', 2021: 342, 2022: 632, 2023: 1332 }];
 
@@ -15,7 +13,7 @@ const AnalysisVisualization = () => {
   const { visualizationMode } = useAppSelector(analysis);
 
   return (
-    <section className="relative flex flex-col flex-1 h-full bg-gray-50 lg:order-last">
+    <section className="relative flex flex-col flex-1 h-screen-minus-header bg-gray-50 lg:order-last">
       <div className="absolute left-12 top-6 z-10 flex gap-2">
         <LayerControl />
         <AnalysisFilters />
@@ -23,15 +21,10 @@ const AnalysisVisualization = () => {
 
       <ModeControl />
 
-      {visualizationMode === 'map' && (
-        <Map
-          mapboxApiAccessToken={MAPBOX_API_TOKEN}
-          mapStyle="mapbox://styles/landgriffon/ckmdaj5gy08yx17me92nudkjd"
-        />
-      )}
+      {visualizationMode === 'map' && <AnalysisMap />}
 
       {visualizationMode === 'table' && (
-        <div className="flex flex-col p-6 pl-12 mt-16 left-12">
+        <div className="flex flex-col p-6 pl-12 mt-16 left-12 overflow-x-hidden">
           <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
               <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
@@ -90,7 +83,7 @@ const AnalysisVisualization = () => {
       )}
 
       {visualizationMode === 'chart' && (
-        <div className="flex flex-col p-6 pl-12 mt-16 left-12">
+        <div className="flex flex-col p-6 pl-12 mt-16 left-12 overflow-x-hidden">
           <div className="-my-2 sm:-mx-6">
             <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
               <AnalysisChart />

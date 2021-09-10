@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { useAnalysisTable } from 'lib/hooks/analysis';
+import { useAnalysisTable, useIndicatorAnalysisTable } from 'lib/hooks/analysis';
 
 import { useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
@@ -9,6 +9,7 @@ import { DownloadIcon } from '@heroicons/react/outline';
 import { InformationCircleIcon } from '@heroicons/react/solid';
 
 import Button from 'components/button';
+import Loading from 'components/loading';
 
 import Table from 'containers/analysis-visualization/analysis-table/table';
 import TableTitle from 'containers/analysis-visualization/analysis-table/table-title';
@@ -18,7 +19,13 @@ export type AnalysisTableProps = {};
 const AnalysisTable: React.FC<AnalysisTableProps> = () => {
   const { filters } = useAppSelector(analysis);
 
-  const { data: tableData } = useAnalysisTable({ filters });
+  console.log({ filters });
+
+  const { data: tableData, isFetching: tableDataIsFetching } = useAnalysisTable({ filters });
+
+  const { data: indicatorTableData } = useIndicatorAnalysisTable({ filters });
+
+  console.log('-', indicatorTableData);
 
   const getValueByYear = (columnYear, record) =>
     useMemo(() => {
@@ -99,7 +106,16 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
           Download
         </Button>
       </div>
-      <Table columns={TABLE_COLUMNS} dataSource={tableData} onChange={onChange} />
+      <div className="relative">
+        <Loading
+          visible={tableDataIsFetching}
+          className="absolute z-10 flex items-center justify-center w-full h-full bg-white bg-opacity-75"
+          iconClassName="w-5 h-5 text-gray-500"
+        />
+        {tableData && !tableDataIsFetching && (
+          <Table columns={TABLE_COLUMNS} dataSource={tableData} onChange={onChange} />
+        )}
+      </div>
     </>
   );
 };

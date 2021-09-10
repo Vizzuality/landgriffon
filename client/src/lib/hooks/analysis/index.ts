@@ -156,9 +156,7 @@ export function useAnalysisLegend(options: AnalysisChartOptions) {
   }, [query, data?.data]);
 }
 
-// ANALYSIS TABLE
 export function useAnalysisTable(options: AnalysisTableOptions) {
-  // const [session] = useSession();
   const { filters } = options;
   const { indicator } = filters;
 
@@ -169,12 +167,8 @@ export function useAnalysisTable(options: AnalysisTableOptions) {
         .request({
           method: 'GET',
           url: `/`,
-          headers: {
-            // Authorization: `Bearer ${session.accessToken}`,
-          },
-          params: {
-            // include: '',
-          },
+          headers: {},
+          params: {},
         })
         .then((response) => response.data),
     {
@@ -209,6 +203,64 @@ export function useAnalysisTable(options: AnalysisTableOptions) {
       if (typeof indicator !== undefined && indicator !== 'all') return indicator === d.key;
       return true;
     });
+
+    return {
+      ...query,
+      data: parsedData,
+    };
+  }, [query, data?.data]);
+}
+
+export function useIndicatorAnalysisTable(options: AnalysisTableOptions) {
+  const { filters } = options;
+  const { indicator } = filters;
+
+  const query = useQuery(
+    ['analysis-table-indicator', JSON.stringify(options)],
+    async () =>
+      analysisService
+        .request({
+          method: 'GET',
+          url: `/`,
+          headers: {},
+          params: {
+            'filter[indicator]': indicator,
+          },
+        })
+        .then((response) => response.data),
+    {
+      keepPreviousData: true,
+      placeholderData: {
+        data: [],
+      },
+    }
+  );
+
+  const { data } = query;
+
+  return useMemo(() => {
+    const parsedData = DATA.map((d) => {
+      const { id, children } = d;
+
+      return {
+        key: id,
+        children,
+        filters,
+      };
+    })
+      .filter((d) => {
+        // Remove this for API filters
+        if (typeof indicator !== undefined && indicator !== 'all') return indicator === d.key;
+        return true;
+      })
+      .map((item) => {
+        const nestedParsedData = item.children.map((ch) => ({
+          key: ch.id,
+          indicator: ch.name,
+          values: ch.values,
+        }));
+        return nestedParsedData;
+      });
 
     return {
       ...query,

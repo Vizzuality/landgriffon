@@ -1,27 +1,28 @@
-import { useCallback, useState } from 'react';
-import type { UseQueryResult } from 'react-query';
-import { TreeSelect } from 'antd';
+import React, { useCallback, useState } from 'react';
+import { useQuery } from 'react-query';
+import { TreeSelect, TreeSelectProps } from 'antd';
 import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
 
-import type { Material } from 'types';
+import { getMaterialsTrees } from 'services/materials';
 
 const { TreeNode } = TreeSelect;
 
-type MaterialsFilterProps = {
-  materials: {
-    data: Material[];
-    isLoading: UseQueryResult['isLoading'];
-    error: UseQueryResult['error'];
-  };
+type MaterialsFilterProps = TreeSelectProps<{}> & {
+  onChange: (value) => void;
 };
 
-const MaterialsFilter: React.FC<MaterialsFilterProps> = ({ materials }: MaterialsFilterProps) => {
-  const [value, setValue] = useState([]);
-  const { data, isLoading, error } = materials;
+const MaterialsFilter: React.FC<MaterialsFilterProps> = (props: MaterialsFilterProps) => {
+  const { multiple, onChange } = props;
+  const [value, setValue] = useState(multiple ? [] : undefined);
+  const { data, isLoading, error } = useQuery('materialsTreesList', getMaterialsTrees);
 
-  const handleChange = useCallback((currentValue) => {
-    setValue(currentValue);
-  }, []);
+  const handleChange = useCallback(
+    (currentValue) => {
+      setValue(currentValue);
+      if (onChange) onChange(currentValue);
+    },
+    [onChange]
+  );
 
   const renderTreeNode = (material) => (
     <TreeNode key={material.id} value={material.id} title={material.name}>
@@ -30,29 +31,27 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({ materials }: Material
   );
 
   return (
-    <div>
-      <div className="mb-1">Material</div>
-      <TreeSelect
-        onChange={handleChange}
-        labelInValue
-        className="w-full"
-        loading={isLoading}
-        placeholder={error ? 'Something went wrong' : 'Select materials'}
-        multiple
-        showArrow
-        treeDefaultExpandAll
-        treeCheckable
-        value={value}
-        disabled={!!error}
-        treeNodeFilterProp="title"
-        suffixIcon={<ChevronDownIcon />}
-        removeIcon={<XIcon />}
-        maxTagCount={5}
-        maxTagPlaceholder={(e) => `${e.length} more...`}
-      >
-        {data && data.map((material) => renderTreeNode(material))}
-      </TreeSelect>
-    </div>
+    <TreeSelect
+      onChange={handleChange}
+      labelInValue
+      className="w-40"
+      loading={isLoading}
+      placeholder={error ? 'Something went wrong' : 'Select materials'}
+      multiple={false}
+      showArrow
+      treeDefaultExpandAll
+      treeCheckable={false}
+      value={value}
+      disabled={!!error}
+      treeNodeFilterProp="title"
+      suffixIcon={<ChevronDownIcon />}
+      removeIcon={<XIcon />}
+      maxTagCount={5}
+      maxTagPlaceholder={(e) => `${e.length} more...`}
+      {...props}
+    >
+      {data && data.map((material) => renderTreeNode(material))}
+    </TreeSelect>
   );
 };
 

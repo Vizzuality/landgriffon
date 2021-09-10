@@ -16,7 +16,7 @@ export type AnalysisState = {
     by: string;
     startYear: number;
     endYear: number;
-    material: string[];
+    materials: string[];
     origins: string[];
     suppliers: string[];
   };
@@ -38,7 +38,7 @@ const initialState: AnalysisState = {
     by: 'material',
     startYear: 2010,
     endYear: 2020,
-    material: [],
+    materials: [],
     origins: [],
     suppliers: [],
   },
@@ -88,7 +88,19 @@ export const analysisSlice = createSlice({
     }),
     setFilters: (state, action: PayloadAction<AnalysisState['filters']>) => ({
       ...state,
-      filters: action.payload,
+      filters: {
+        ...state.filters,
+        ...action.payload,
+      },
+    }),
+    clearMoreFilters: (state) => ({
+      ...state,
+      filters: {
+        ...state.filters,
+        materials: initialState.filters.materials,
+        origins: initialState.filters.origins,
+        suppliers: initialState.filters.suppliers,
+      },
     }),
   },
 });
@@ -103,6 +115,7 @@ export const {
   setLayer,
   setFilter,
   setFilters,
+  clearMoreFilters,
 } = analysisSlice.actions;
 
 export const analysis = (state: FeatureState) => state.analysis;

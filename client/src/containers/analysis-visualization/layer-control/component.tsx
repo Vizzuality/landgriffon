@@ -21,7 +21,7 @@ const LAYERS_OPTIONS: LayerOption[] = [
   },
   {
     id: 'crop',
-    name: 'Crop',
+    name: 'Crop production',
   },
 ];
 
@@ -38,7 +38,7 @@ const LayerControl: React.FC = () => {
       <Select
         value={layer}
         onChange={handleChange}
-        className="w-24"
+        className="w-36"
         optionLabelProp="label"
         suffixIcon={<ChevronDownIcon />}
       >

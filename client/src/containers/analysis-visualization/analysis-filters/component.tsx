@@ -1,24 +1,24 @@
+import { useAppSelector } from 'store/hooks';
+import { analysis } from 'store/features/analysis';
+
 import ImpactIndicatorsFilter from './impact-indicators';
 import GroupByFilter from './group-by';
 import YearsFilter from './years';
-import MoreFilters from './more-filters';
 import Materials from './materials';
-import OriginRegions from './origin-regions';
-import Suppliers from './suppliers';
+import MoreFilters from './more-filters';
 
-const FILTERS = [
-  <Materials key="materialsFilter" />,
-  <OriginRegions key="originRegionsFilter" />,
-  <Suppliers key="suppliersFilter" />,
-];
+const AnalysisFilters: React.FC = () => {
+  const { layer } = useAppSelector(analysis);
 
-const AnalysisFilters: React.FC = () => (
-  <div className="inline-flex gap-2">
-    <ImpactIndicatorsFilter />
-    <GroupByFilter />
-    <YearsFilter />
-    <MoreFilters filters={FILTERS} />
-  </div>
-);
+  return (
+    <div className="inline-flex gap-2">
+      {layer !== 'crop' && <ImpactIndicatorsFilter />}
+      {layer !== 'impact' && <Materials />}
+      {layer === 'impact' && <GroupByFilter />}
+      <YearsFilter />
+      {layer === 'impact' && <MoreFilters />}
+    </div>
+  );
+};
 
 export default AnalysisFilters;

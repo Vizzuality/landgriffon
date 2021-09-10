@@ -28,8 +28,8 @@ const DATA = [
         indicator: 'Palm Oil',
         all: 'Graphic',
         values: [
-          { year: 2021, value: 220, calculated: true },
-          { year: 2022, value: 30, calculated: true },
+          { year: 2021, value: 20, calculated: true },
+          { year: 2022, value: 60, calculated: true },
           { year: 2023, value: 20, calculated: true },
           { year: 2024, value: 10, calculated: true },
           { year: 2025, value: 50, calculated: true },
@@ -40,7 +40,7 @@ const DATA = [
         indicator: 'Cocoa',
         all: 'Graphic',
         values: [
-          { year: 2021, value: 220, calculated: true },
+          { year: 2021, value: 60, calculated: true },
           { year: 2022, value: 30, calculated: true },
           { year: 2023, value: 20, calculated: true },
           { year: 2024, value: 10, calculated: true },
@@ -52,7 +52,7 @@ const DATA = [
         indicator: 'Beef',
         all: 'Graphic',
         values: [
-          { year: 2021, value: 220, calculated: true },
+          { year: 2021, value: 100, calculated: true },
           { year: 2022, value: 30, calculated: true },
           { year: 2023, value: 20, calculated: true },
           { year: 2024, value: 10, calculated: true },
@@ -64,7 +64,7 @@ const DATA = [
         indicator: 'Carrots',
         all: 'Graphic',
         values: [
-          { year: 2021, value: 220, calculated: true },
+          { year: 2021, value: 120, calculated: true },
           { year: 2022, value: 30, calculated: true },
           { year: 2023, value: 20, calculated: true },
           { year: 2024, value: 10, calculated: true },
@@ -393,4 +393,9 @@ const DATA = [
   },
 ];
 
-export default DATA;
+const PARSED_DATA = DATA.map(({ id: key, ...rest }) => ({
+  key,
+  ...rest,
+}));
+
+export default PARSED_DATA;

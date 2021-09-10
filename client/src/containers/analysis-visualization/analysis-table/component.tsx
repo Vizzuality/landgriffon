@@ -49,6 +49,7 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
       key: 'values',
       width: 100,
       fixed: 'left',
+      sorter: (record) => record.values.sort((a, b) => a.value - b.value),
     },
     {
       title: () => <TableTitle title="2022" />,
@@ -75,6 +76,11 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
       width: 100,
     },
   ];
+
+  function onChange(pagination: any, sorter: any, extra: any) {
+    // eslint-disable-next-line no-console
+    console.info('params', pagination, sorter, extra);
+  }
   return (
     <>
       <div className="flex justify-between my-6">
@@ -88,13 +94,14 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
           theme="secondary"
           size="base"
           className="flex-shrink-0"
+          // eslint-disable-next-line no-console
           onClick={() => console.log('onDownload')}
         >
           <DownloadIcon className="w-5 h-4 mr-2 text-black" />
           Download
         </Button>
       </div>
-      <Table columns={TABLE_COLUMNS} dataSource={DATA} />
+      <Table columns={TABLE_COLUMNS} dataSource={DATA} onChange={onChange} />
     </>
   );
 };

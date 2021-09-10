@@ -5,14 +5,15 @@ import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline';
 export interface TableProps {
   columns: Array<object>;
   dataSource: Array<{
-    id: string;
+    key: string;
     indicator: string;
     children?: React.ReactNode;
     [key: number]: number;
   }>;
+  onChange: (pagination: any, filters: any, sorter: any, extra: any) => void;
 }
 
-export const Table: React.FC<TableProps> = ({ columns, dataSource }: TableProps) => (
+export const Table: React.FC<TableProps> = ({ columns, dataSource, onChange }: TableProps) => (
   <TableAntd
     expandable={{
       rowExpandable: (record) => !!record.children,
@@ -35,6 +36,7 @@ export const Table: React.FC<TableProps> = ({ columns, dataSource }: TableProps)
     columns={columns}
     pagination={false}
     scroll={{ x: '110%', scrollToFirstRowOnChange: true }}
+    onChange={onChange}
   />
 );
 

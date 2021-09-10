@@ -56,24 +56,28 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
       render: (record) => getValueByYear(2022, record),
       key: '2022',
       width: 100,
+      sorter: (record) => record.values.sort((a, b) => a.value - b.value),
     },
     {
       title: () => <TableTitle title="2023" />,
       render: (record) => getValueByYear(2023, record),
       key: '2023',
       width: 100,
+      sorter: (record) => record.values.sort((a, b) => a.value - b.value),
     },
     {
       title: () => <TableTitle title="2024" />,
       render: (record) => getValueByYear(2024, record),
       key: '2024',
       width: 100,
+      sorter: (record) => record.values.sort((a, b) => a.value - b.value),
     },
     {
       title: () => <TableTitle title="2025" />,
       render: (record) => getValueByYear(2025, record),
       key: '2025',
       width: 100,
+      sorter: (record) => record.values.sort((a, b) => a.value - b.value),
     },
   ];
 

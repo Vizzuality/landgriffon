@@ -2,6 +2,7 @@ import { useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
 import Map from 'components/map';
 
+import LayerControl from './layer-control';
 import ModeControl from './mode-control';
 import AnalysisChart from './analysis-chart';
 import AnalysisFilters from './analysis-filters';
@@ -15,8 +16,11 @@ const AnalysisVisualization = () => {
 
   return (
     <section className="relative flex flex-col flex-1 h-full bg-gray-50 lg:order-last">
-      {/* Vis selector: map, table or chart */}
-      <AnalysisFilters />
+      <div className="absolute left-12 top-6 z-10 flex gap-2">
+        <LayerControl />
+        <AnalysisFilters />
+      </div>
+
       <ModeControl />
 
       {visualizationMode === 'map' && (

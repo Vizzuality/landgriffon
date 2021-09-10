@@ -1,4 +1,7 @@
 import { useMemo } from 'react';
+
+import { useAnalysisTable } from 'lib/hooks/analysis';
+
 import { useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
 
@@ -10,24 +13,12 @@ import Button from 'components/button';
 import Table from 'containers/analysis-visualization/analysis-table/table';
 import TableTitle from 'containers/analysis-visualization/analysis-table/table-title';
 
-import { DATA } from 'lib/hooks/analysis/mock';
-
 export type AnalysisTableProps = {};
 
 const AnalysisTable: React.FC<AnalysisTableProps> = () => {
   const { filters } = useAppSelector(analysis);
-  console.log('filters', filters);
 
-  const PARSED_DATA = DATA.map((el) => ({
-    key: el.id,
-    indicator: el.indicator,
-    values: el.values,
-    children: el.children.map((ch) => ({
-      indicator: ch.name,
-      key: ch.id,
-      values: ch.values,
-    })),
-  }));
+  const { data: tableData } = useAnalysisTable({ filters });
 
   const getValueByYear = (columnYear, record) =>
     useMemo(() => {
@@ -108,7 +99,7 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
           Download
         </Button>
       </div>
-      <Table columns={TABLE_COLUMNS} dataSource={PARSED_DATA} onChange={onChange} />
+      <Table columns={TABLE_COLUMNS} dataSource={tableData} onChange={onChange} />
     </>
   );
 };

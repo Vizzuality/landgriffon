@@ -19,13 +19,10 @@ export type AnalysisTableProps = {};
 const AnalysisTable: React.FC<AnalysisTableProps> = () => {
   const { filters } = useAppSelector(analysis);
 
-  console.log({ filters });
+  const { data: tableData, isFetched: tableDataIsFetched } = useAnalysisTable({ filters });
 
-  const { data: tableData, isFetching: tableDataIsFetching } = useAnalysisTable({ filters });
-
-  const { data: indicatorTableData } = useIndicatorAnalysisTable({ filters });
-
-  console.log('-', indicatorTableData);
+  const { data: indicatorTableData, isFetched: indicatorTableDataIsFetched } =
+    useIndicatorAnalysisTable({ filters });
 
   const getValueByYear = (columnYear, record) =>
     useMemo(() => {
@@ -35,6 +32,10 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
       }
       return null;
     }, []);
+
+  const FILTERED_DATA = filters.indicator === 'all' ? tableData : indicatorTableData[0];
+
+  const filteredDataIsFetched = tableDataIsFetched || indicatorTableDataIsFetched;
 
   const TABLE_COLUMNS = [
     {
@@ -108,12 +109,12 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
       </div>
       <div className="relative">
         <Loading
-          visible={tableDataIsFetching}
+          visible={!filteredDataIsFetched}
           className="absolute z-10 flex items-center justify-center w-full h-full bg-white bg-opacity-75"
           iconClassName="w-5 h-5 text-gray-500"
         />
-        {tableData && !tableDataIsFetching && (
-          <Table columns={TABLE_COLUMNS} dataSource={tableData} onChange={onChange} />
+        {FILTERED_DATA && filteredDataIsFetched && (
+          <Table columns={TABLE_COLUMNS} dataSource={FILTERED_DATA} onChange={onChange} />
         )}
       </div>
     </>

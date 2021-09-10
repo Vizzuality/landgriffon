@@ -39,6 +39,7 @@ module.exports = {
     'import/prefer-default-export': 0,
     'jsx-a11y/anchor-is-valid': 0,
     'import/no-named-as-default': 0,
+    'no-console': [1, { allow: ['info'] }],
     'import/extensions': [
       'error',
       'ignorePackages',

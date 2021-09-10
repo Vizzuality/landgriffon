@@ -3,7 +3,7 @@ export const DATA = [
     id: '5e8dda24-4164-46dc-97fe-d5030b5bb314',
     indicator: 'Carbon emissions',
     values: [
-      { year: 2020, value: 350, calculated: false },
+      { year: 2020, value: 300, calculated: false },
       { year: 2021, value: 200, calculated: false },
       { year: 2022, value: 300, calculated: true },
       { year: 2023, value: 100, calculated: true },
@@ -93,7 +93,7 @@ export const DATA = [
     id: '15ce1b0c-ded2-4f37-b239-a4f18afbc061',
     indicator: 'Deforestation',
     values: [
-      { year: 2020, value: 350, calculated: false },
+      { year: 2020, value: 150, calculated: false },
       { year: 2021, value: 200, calculated: false },
       { year: 2022, value: 300, calculated: true },
       { year: 2023, value: 100, calculated: true },
@@ -183,7 +183,7 @@ export const DATA = [
     id: '5aa4f430-489f-49ec-b804-cf35a4afa269',
     indicator: 'Unsustainable water use (M3)',
     values: [
-      { year: 2020, value: 350, calculated: false },
+      { year: 2020, value: 70, calculated: false },
       { year: 2021, value: 200, calculated: false },
       { year: 2022, value: 300, calculated: true },
       { year: 2023, value: 100, calculated: true },
@@ -273,7 +273,7 @@ export const DATA = [
     id: '56e7b73f-1e1d-4071-8303-f67be76bc967',
     indicator: 'Biodiversity (X)',
     values: [
-      { year: 2020, value: 350, calculated: false },
+      { year: 2020, value: 50, calculated: false },
       { year: 2021, value: 200, calculated: false },
       { year: 2022, value: 300, calculated: true },
       { year: 2023, value: 100, calculated: true },

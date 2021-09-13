@@ -10,7 +10,9 @@ class MyDocument extends Document {
   render(): JSX.Element {
     return (
       <Html>
-        <Head />
+        <Head>
+          <link href="https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.css" rel="stylesheet" />
+        </Head>
         <body>
           <Main />
           <NextScript />

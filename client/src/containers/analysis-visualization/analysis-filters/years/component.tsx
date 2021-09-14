@@ -63,7 +63,7 @@ const YearsFilter: React.FC<YearsFilterProps> = () => {
     );
   }, []);
 
-  const handleOnSearch = (e) => {
+  const handleOnSearch = useCallback((e) => {
     if (!isFinite(toNumber(e))) return;
     if (toNumber(e) <= availableYears[0]) return;
 
@@ -74,11 +74,11 @@ const YearsFilter: React.FC<YearsFilterProps> = () => {
     });
 
     if (!exists) setAdditionalYear(e);
-  };
+  }, []);
 
-  const handleOnBlur = () => {
+  const handleOnBlur = useCallback(() => {
     setAdditionalYear(null);
-  };
+  }, []);
 
   return (
     <Popover className="relative">
@@ -93,7 +93,7 @@ const YearsFilter: React.FC<YearsFilterProps> = () => {
               className="w-28"
               suffixIcon={<ChevronDownIcon />}
               showSearch
-              onSearch={handleOnSearch}
+              // onSearch={handleOnSearch}
               onBlur={handleOnBlur}
             >
               {availableYears.map((year) => (

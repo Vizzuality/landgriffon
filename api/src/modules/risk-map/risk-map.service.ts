@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { IndicatorSourcesService } from 'modules/indicator-sources/indicator-sources.service';
@@ -15,10 +20,11 @@ import { UnitConversionsService } from 'modules/unit-conversions/unit-conversion
 @Injectable()
 export class RiskMapService {
   constructor(
+    @Inject(forwardRef(() => H3DataService))
+    private readonly h3dataService: H3DataService,
     private readonly materialService: MaterialsService,
     private readonly indicatorService: IndicatorsService,
     private readonly indicatorSourceService: IndicatorSourcesService,
-    private readonly h3dataService: H3DataService,
     private readonly unitConversionsService: UnitConversionsService,
   ) {}
 

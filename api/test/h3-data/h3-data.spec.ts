@@ -6,6 +6,8 @@ import { H3DataRepository } from '../../src/modules/h3-data/h3-data.repository';
 import { H3DataModule } from '../../src/modules/h3-data/h3-data.module';
 import { createFakeH3Data, dropFakeH3Data } from './mocks/create-fake-h3-data';
 import { h3MaterialFixtures } from './mocks/h3-fixtures';
+import { createMaterial } from '../entity-mocks';
+import { MaterialRepository } from '../../src/modules/materials/material.repository';
 
 /**
  * Tests for the H3DataModule.
@@ -14,6 +16,8 @@ import { h3MaterialFixtures } from './mocks/h3-fixtures';
 describe('H3-Data Module (e2e)', () => {
   let app: INestApplication;
   let h3DataRepository: H3DataRepository;
+  let materialRepository: MaterialRepository;
+  const FAKE_UUID = '959dc56e-a782-441a-be36-1aaa617ed843';
   const fakeTable = 'faketable';
   const fakeColumn = 'fakecolumn';
 
@@ -23,6 +27,9 @@ describe('H3-Data Module (e2e)', () => {
     }).compile();
 
     h3DataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
+    materialRepository = moduleFixture.get<MaterialRepository>(
+      MaterialRepository,
+    );
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(
@@ -36,6 +43,7 @@ describe('H3-Data Module (e2e)', () => {
   });
 
   afterEach(async () => {
+    await materialRepository.delete({});
     await h3DataRepository.delete({});
     await dropFakeH3Data([fakeTable]);
   });
@@ -61,39 +69,35 @@ describe('H3-Data Module (e2e)', () => {
         .expect(HttpStatus.OK);
       expect(response.body).toEqual({ data: { '861203a4fffffff': 1000 } });
     });
-    test('When I query a H3 data with a non available resolution, then I should get a proper error message', async () => {
+    test('When I query a material H3 with a non available resolution, then I should get a proper error message', async () => {
       const response = await request(app.getHttpServer()).get(
-        `/api/v1/h3/data/doYouLikeMyFakeId?resolution=0`,
+        `/api/v1/h3/material?materialId=${FAKE_UUID}&resolution=0`,
       );
       expect(response.body.errors[0].meta.rawError.response.message[0]).toEqual(
         'Available resolutions: 1 to 6',
       );
     });
-    test('When I query a H3 data with a resolution value that is not a number, then I should get a proper error message', async () => {
+    test('When I query a material H3 data with a resolution value that is not a number, then I should get a proper error message', async () => {
       const response = await request(app.getHttpServer()).get(
-        `/api/v1/h3/data/doYouLikeMyFakeId?resolution=definitelyNotANumber`,
+        `/api/v1/h3/material?materialId=${FAKE_UUID}&resolution=definitelyNotANumber`,
       );
       expect(response.body.errors[0].meta.rawError.response.message[1]).toEqual(
         'resolution must be a number conforming to the specified constraints',
       );
     });
-    test('When I query a H3 data by its ID and it does not exist, then I should get a proper error message', async () => {
-      const FAKE_UUID = '959dc56e-a782-441a-be36-1aaa617ed843';
+    test('When I query a material H3 data but it has no H3 data available, then I should get a proper error message', async () => {
+      const material = await createMaterial({ name: 'Material with no H3' });
       const response = await request(app.getHttpServer()).get(
-        `/api/v1/h3/data/${FAKE_UUID}?resolution=1`,
+        `/api/v1/h3/material?materialId=${material.id}&resolution=1`,
       );
       expect(response.body.errors[0].title).toEqual(
-        `Requested H3 with ID: ${FAKE_UUID} could not been found`,
+        `No H3 Data available for Material: ${material.name}`,
       );
     });
-    test('When I query H3 data with no resolution provided, then I should get a proper error message', async () => {
-      const id = await createFakeH3Data(
-        fakeTable,
-        fakeColumn,
-        h3MaterialFixtures,
-      );
+    test('When I query a material H3 data with no resolution provided, then I should get a proper error message', async () => {
+      const material = await createMaterial();
       const response = await request(app.getHttpServer()).get(
-        `/api/v1/h3/data/${id}`,
+        `/api/v1/h3/material?materialId=${material.id}`,
       );
       expect(response.body.errors[0].meta.rawError.response.message[2]).toEqual(
         'resolution should not be empty',
@@ -101,13 +105,14 @@ describe('H3-Data Module (e2e)', () => {
     });
 
     test('When I query H3 data at minimal resolution, then I should get 8 h3indexes', async () => {
-      const id = await createFakeH3Data(
+      const h3GridId = await createFakeH3Data(
         fakeTable,
         fakeColumn,
         h3MaterialFixtures,
       );
+      const material = await createMaterial({ h3GridId });
       const response = await request(app.getHttpServer()).get(
-        `/api/v1/h3/data/${id}?resolution=1`,
+        `/api/v1/h3/material?materialId=${material.id}&resolution=1`,
       );
 
       expect(response.body).toEqual({

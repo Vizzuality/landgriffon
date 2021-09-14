@@ -85,7 +85,7 @@ describe('Risk Map Test Suite (e2e)', () => {
 
   test('When I try to GET a Risk-Map but the query parameters are not valid, then I should get a proper error message', async () => {
     const response = await request(app.getHttpServer())
-      .get(`/api/v1/risk-map`)
+      .get(`/api/v1/h3/risk-map`)
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response).toHaveErrorMessage(
@@ -107,7 +107,7 @@ describe('Risk Map Test Suite (e2e)', () => {
     const indicator = await createIndicator({ unit, name: 'Indicator Name' });
 
     const response = await request(app.getHttpServer()).get(
-      `/api/v1/risk-map?materialId=${FAKE_UUID}&indicatorId=${indicator.id}&year=2020`,
+      `/api/v1/h3/risk-map?materialId=${FAKE_UUID}&indicatorId=${indicator.id}&year=2020`,
     );
 
     expect(response.body.errors[0].title).toEqual(
@@ -128,7 +128,7 @@ describe('Risk Map Test Suite (e2e)', () => {
     });
 
     const response = await request(app.getHttpServer()).get(
-      `/api/v1/risk-map?materialId=${material.id}&indicatorId=${indicator.id}&year=2020`,
+      `/api/v1/h3/risk-map?materialId=${material.id}&indicatorId=${indicator.id}&year=2020`,
     );
 
     expect(response.body.errors[0].title).toEqual(
@@ -161,7 +161,7 @@ describe('Risk Map Test Suite (e2e)', () => {
     });
 
     const response = await request(app.getHttpServer()).get(
-      `/api/v1/risk-map?materialId=${material.id}&indicatorId=${indicator.id}&year=2020`,
+      `/api/v1/h3/risk-map?materialId=${material.id}&indicatorId=${indicator.id}&year=2020`,
     );
 
     expect(response.body.indicator).toEqual(indicator.name);

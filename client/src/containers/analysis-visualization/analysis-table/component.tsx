@@ -26,18 +26,18 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
 
   const getValueByYear = (columnYear, record) =>
     useMemo(() => {
-      if (record.values) {
-        const dataIndex = record.values.find((el) => el.year === columnYear).value;
+      if (record && record.values) {
+        const dataIndex = record.values.find((el) => el.year === columnYear)?.value;
         return dataIndex;
       }
       return null;
     }, []);
 
-  const FILTERED_DATA = filters.indicator === 'all' ? tableData : indicatorTableData[0];
+  const FILTERED_DATA = filters.indicator === 'all' ? tableData : indicatorTableData;
 
   const filteredDataIsFetched = tableDataIsFetched || indicatorTableDataIsFetched;
 
-  const TABLE_COLUMNS = [
+  const tableInitialColumns = [
     {
       title: 'YEAR',
       dataIndex: 'indicator',
@@ -46,54 +46,39 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
       fixed: 'left',
     },
     {
-      title: '2021-2025',
+      title: `${filters.startYear}-${filters.endYear}`,
       dataIndex: 'all',
       key: 'all',
       width: 100,
       fixed: 'left',
     },
-    {
-      title: () => <TableTitle title="2020" />,
-      render: (record) => getValueByYear(2020, record),
-      key: 'values',
-      width: 100,
-      fixed: 'left',
-      sorter: (record) => record.values.sort((a, b) => a.value - b.value),
-    },
-    {
-      title: () => <TableTitle title="2021" />,
-      render: (record) => getValueByYear(2021, record),
-      key: 'values',
-      width: 100,
-      fixed: 'left',
-      sorter: (record) => record.values.sort((a, b) => a.value - b.value),
-    },
-    {
-      title: () => <TableTitle title="2022" />,
-      render: (record) => getValueByYear(2022, record),
-      key: '2022',
-      width: 100,
-      sorter: (record) => record.values.sort((a, b) => a.value - b.value),
-    },
-    {
-      title: () => <TableTitle title="2023" />,
-      render: (record) => getValueByYear(2023, record),
-      key: '2023',
-      width: 100,
-      sorter: (record) => record.values.sort((a, b) => a.value - b.value),
-    },
-    {
-      title: () => <TableTitle title="2024" />,
-      render: (record) => getValueByYear(2024, record),
-      key: '2024',
-      width: 100,
-      sorter: (record) => record.values.sort((a, b) => a.value - b.value),
-    },
   ];
+
+  const rangeOfYears = (start, end) =>
+    Array(end - start + 1)
+      .fill(start)
+      .map((year, index) => year + index);
+
+  // Substitute parameters by (filters.startYear, filters.endYear);
+  const filteredYears = rangeOfYears(2020, 2024);
+
+  const tableYearColumns = filteredYears.map((y) => {
+    const isPastOrCurrentYear = y <= new Date().getFullYear();
+    return {
+      title: () => <TableTitle title={y} />,
+      render: (record) => getValueByYear(y, record),
+      key: 'values',
+      width: 100,
+      ...(isPastOrCurrentYear && { fixed: 'left' }),
+    };
+  });
+
+  const TABLE_COLUMNS = (tableInitialColumns as []).concat(tableYearColumns as []);
 
   function onChange(pagination: any, sorter: any, extra: any) {
     console.info('params', pagination, sorter, extra);
   }
+
   return (
     <>
       <div className="flex justify-between my-6">

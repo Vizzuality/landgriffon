@@ -1,9 +1,7 @@
 import type { NextPageContext } from 'next';
 import { getSession } from 'next-auth/client';
-import { QueryClient } from 'react-query';
+import { useUsers } from 'lib/hooks/users';
 import { dehydrate } from 'react-query/hydration';
-
-import USERS from 'services/users';
 
 type AuthProps = {
   // TO-DO: change to a better type definition using Next types
@@ -68,18 +66,7 @@ export function withUser(getServerSidePropsFunc?: AuthHOC) {
         props: {},
       };
     }
-
-    const queryClient = new QueryClient();
-
-    await queryClient.prefetchQuery('me', () =>
-      USERS.request({
-        method: 'GET',
-        url: '/me',
-        headers: {
-          Authorization: `Bearer ${session.accessToken}`,
-        },
-      }).then((response) => response.data)
-    );
+    const { queryClient } = useUsers(session);
 
     if (getServerSidePropsFunc) {
       const SSPF = (await getServerSidePropsFunc(context)) || {};

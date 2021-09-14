@@ -1,6 +1,5 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { RiskMapService } from 'modules/risk-map/risk-map.service';
-import { RiskMapController } from 'modules/risk-map/risk-map.controller';
 import { MaterialsModule } from 'modules/materials/materials.module';
 import { IndicatorsModule } from 'modules/indicators/indicators.module';
 import { IndicatorSourcesModule } from 'modules/indicator-sources/indicator-sources.module';
@@ -12,10 +11,10 @@ import { UnitConversionsModule } from 'modules/unit-conversions/unit-conversions
     MaterialsModule,
     IndicatorsModule,
     IndicatorSourcesModule,
-    H3DataModule,
+    forwardRef(() => H3DataModule),
     UnitConversionsModule,
   ],
   providers: [RiskMapService],
-  controllers: [RiskMapController],
+  exports: [RiskMapService],
 })
 export class RiskMapModule {}

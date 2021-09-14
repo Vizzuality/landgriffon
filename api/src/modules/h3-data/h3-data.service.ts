@@ -1,7 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
+import { MaterialsService } from 'modules/materials/materials.service';
+import { RiskMapService } from 'modules/risk-map/risk-map.service';
 
 /**
  * @debt: Check if we actually need extending nestjs-base-service over this module.
@@ -15,6 +17,8 @@ export class H3DataService {
   constructor(
     @InjectRepository(H3DataRepository)
     protected readonly h3DataRepository: H3DataRepository,
+    protected readonly materialService: MaterialsService,
+    protected readonly riskMapService: RiskMapService,
   ) {}
 
   /**
@@ -27,11 +31,19 @@ export class H3DataService {
     return await this.h3DataRepository.findH3ByName(h3TableName, h3ColumnName);
   }
 
-  async getH3ByIdAndResolution(
-    h3Id: string,
+  async getMaterialH3ByResolution(
+    materialId: string,
     resolution: number,
   ): Promise<unknown> {
-    return await this.h3DataRepository.getH3ByIdAndResolution(h3Id, resolution);
+    const material = await this.materialService.getMaterialById(materialId);
+    if (!material.h3Grid)
+      throw new NotFoundException(
+        `No H3 Data available for Material: ${material.name}`,
+      );
+    return await this.h3DataRepository.getH3ByIdAndResolution(
+      material.h3GridId,
+      resolution,
+    );
   }
 
   async calculateRiskMapByMaterialAndIndicator(

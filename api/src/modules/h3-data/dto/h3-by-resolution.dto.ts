@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsUUID } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 /**
  * DTO for querying a resolution given a H3 ID
@@ -17,7 +18,13 @@ export enum AvailableResolutions {
 /**
  * @debt: Add some bypass to exception filter to return validation errors on a more readable way
  */
-export class H3ByResolutionDto {
+export class MaterialH3ByResolutionDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsUUID()
+  materialId!: string;
+
+  @ApiProperty()
   @IsNotEmpty()
   @Type(() => Number)
   @IsNumber()

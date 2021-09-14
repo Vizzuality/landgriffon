@@ -13,7 +13,7 @@ const AnalysisVisualization = () => {
   const { visualizationMode } = useAppSelector(analysis);
 
   return (
-    <section className="relative flex flex-col flex-1 h-screen-minus-header bg-gray-50 lg:order-last">
+    <section className="relative flex flex-col flex-1 sm:h-screen-minus-header md:h-full bg-gray-50 lg:order-last">
       <div className="absolute left-12 top-6 z-10 flex gap-2">
         <LayerControl />
         <AnalysisFilters />

@@ -1,11 +1,8 @@
 import { useCallback, useState } from 'react';
 import cx from 'classnames';
 
-import Icon from 'components/icon';
-import LEGEND_SVG from 'assets/map/legend.svg?sprite';
-import { ArrowDownIcon } from '@heroicons/react/outline';
+import { ArrowUpIcon } from '@heroicons/react/outline';
 
-import { useId } from '@react-aria/utils';
 import SortableList from './sortable/list';
 
 export interface LegendProps {
@@ -23,29 +20,25 @@ export const Legend: React.FC<LegendProps> = ({
 }: LegendProps) => {
   const [active, setActive] = useState(true);
 
-  const id = useId();
-
   const onToggleActive = useCallback(() => {
     setActive(!active);
   }, [active]);
 
   return (
     <div
-      className={cx('bg-white rounded-lg flex flex-col flex-grow border border-gray-100', {
+      className={cx('bg-white rounded-lg flex flex-col flex-grow border border-gray-200', {
         [className]: !!className,
       })}
     >
       <button
         type="button"
         aria-expanded={active}
-        aria-controls={id}
-        className="relative flex justify-space-between w-full px-4 py-2 space-x-2 text-sm text-black font-heading"
+        className="relative flex justify-space-between w-full px-4 py-2 space-x-2 text-sm text-black font-heading focus:outline-none"
         onClick={onToggleActive}
       >
         <span>Legend</span>
-        <Icon icon={LEGEND_SVG} className="w-4 h-4 text-black" />
 
-        <ArrowDownIcon
+        <ArrowUpIcon
           className={cx({
             'absolute w-3 h-3 transition-transform transform -translate-y-1/2 text-black top-1/2 right-5':
               true,

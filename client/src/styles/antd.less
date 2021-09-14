@@ -85,8 +85,6 @@
   color: @primary-color;
 }
 
-
-
 // Table Custom
 
 .ant-table-cell-fix-left-last {
@@ -145,4 +143,9 @@ thead[class*="ant-table-thead"] th{
       background-color: @gray-100;
     }
   }
+}
+
+.ant-table-ping-right:not(.ant-table-has-fix-right) .ant-table-container::after { 
+  box-shadow: none;
+  -webkit-box-shadow: none; 
 }

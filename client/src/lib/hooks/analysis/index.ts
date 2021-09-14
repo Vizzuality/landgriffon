@@ -260,7 +260,8 @@ export function useIndicatorAnalysisTable(options: AnalysisTableOptions) {
           values: ch.values,
         }));
         return nestedParsedData;
-      });
+      })
+      .flat(1);
 
     return {
       ...query,

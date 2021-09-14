@@ -11,7 +11,7 @@ const AnalysisFilters: React.FC = () => {
   const { layer } = useAppSelector(analysis);
 
   return (
-    <div className="inline-flex gap-2">
+    <div className="inline-flex gap-2 flex-wrap">
       {layer !== 'crop' && <ImpactIndicatorsFilter />}
       {layer !== 'impact' && <Materials />}
       {layer === 'impact' && <GroupByFilter />}

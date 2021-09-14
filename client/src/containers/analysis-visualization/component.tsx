@@ -13,7 +13,7 @@ const AnalysisVisualization = () => {
   const { visualizationMode } = useAppSelector(analysis);
 
   return (
-    <section className="relative flex flex-col flex-1 sm:h-screen-minus-header md:h-full bg-gray-50 lg:order-last">
+    <section className="relative flex flex-col flex-1 w-screen md:w-full sm:h-screen-minus-header md:h-full bg-gray-50 lg:order-last">
       <div className={`${visualizationMode === 'map' ? 'absolute' : 'relative'} top-6 z-10 flex gap-2 flex-wrap justify-between w-full px-12`}>
         <div className="flex gap-2 flex-wrap">
           <LayerControl />

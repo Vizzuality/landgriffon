@@ -14,17 +14,20 @@ const AnalysisVisualization = () => {
 
   return (
     <section className="relative flex flex-col flex-1 sm:h-screen-minus-header md:h-full bg-gray-50 lg:order-last">
-      <div className="absolute left-12 top-6 z-10 flex gap-2">
-        <LayerControl />
-        <AnalysisFilters />
+      <div className={`${visualizationMode === 'map' ? 'absolute' : 'relative'} top-6 z-10 flex gap-2 flex-wrap justify-between w-full px-12`}>
+        <div className="flex gap-2 flex-wrap">
+          <LayerControl />
+          <AnalysisFilters />
+        </div>
+        <div className="2xl:mr-20 z-10 inline-flex shadow-sm rounded-md">
+          <ModeControl />
+        </div>
       </div>
-
-      <ModeControl />
 
       {visualizationMode === 'map' && <AnalysisMap />}
 
       {visualizationMode === 'table' && (
-        <div className="flex flex-col p-6 pl-12 mt-16 left-12 overflow-x-hidden">
+        <div className="flex flex-col p-6 pl-12 left-12 mt-16 overflow-x-hidden">
           <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
               <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
@@ -85,7 +88,7 @@ const AnalysisVisualization = () => {
       {visualizationMode === 'chart' && (
         <div className="flex flex-col p-6 pl-12 mt-16 left-12 overflow-x-hidden">
           <div className="-my-2 sm:-mx-6">
-            <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+            <div className="inline-block min-w-full py-2 align-middle">
               <AnalysisChart />
             </div>
           </div>

@@ -43,8 +43,15 @@ requirements: test_environment
 	python3 -m pip install -r requirements.txt
 
 # ## Make Dataset
-seed-data:
+seed-data: seed-gadm seed_h3_tables
+
+seed-gadm:
 	docker-compose -f ./docker-compose-data_management.yml up --build
+
+seed_h3_tables:
+	@echo "Starting seeding h3 tables... "
+	docker-compose -f ./h3_raster_importer/docker-compose.yml up --build
+
 
 ## Delete all compiled Python files
 clean:

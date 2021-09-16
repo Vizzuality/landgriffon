@@ -80,21 +80,24 @@ export class H3DataRepository extends Repository<H3Data> {
     materialH3Data: H3Data,
     calculusFactor: number,
   ): Promise<H3IndexValueData> {
+    // try {
+    //   const riskmap = await this.query(
+    //     `SELECT tmp.matchingh3indexes, tmp.indicatorvalues*tmp.materialvalues/${calculusFactor} AS valuesresult FROM ` +
+    //       `(SELECT m.h3index AS matchingh3indexes, i.${indicatorH3Data.h3columnName} AS indicatorvalues, ` +
+    //       `${materialH3Data.h3columnName} AS materialvalues FROM ${materialH3Data.h3tableName} AS m, ` +
+    //       `${indicatorH3Data.h3tableName} AS i WHERE i.h3index = m.h3index) AS tmp`,
+    //   );
+    //   return h3Reducer(riskmap, 'matchingh3indexes', 'valuesresult');
+    // } catch (err) {
+    //   throw new ServiceUnavailableException(
+    //     `Risk Map could not been generated: ` + err,
+    //   );
+    // }
     /**
-     * @debt: Check with data if the result of this query should be cached
+     * TODO: mocked response to unblock FE.
+     *
      */
-    try {
-      const riskmap = await this.query(
-        `SELECT tmp.matchingh3indexes, tmp.indicatorvalues*tmp.materialvalues/${calculusFactor} AS valuesresult FROM ` +
-          `(SELECT m.h3index AS matchingh3indexes, i.${indicatorH3Data.h3columnName} AS indicatorvalues, ` +
-          `${materialH3Data.h3columnName} AS materialvalues FROM ${materialH3Data.h3tableName} AS m, ` +
-          `${indicatorH3Data.h3tableName} AS i WHERE i.h3index = m.h3index) AS tmp`,
-      );
-      return h3Reducer(riskmap, 'matchingh3indexes', 'valuesresult');
-    } catch (err) {
-      throw new ServiceUnavailableException(
-        `Risk Map could not been generated: ` + err,
-      );
-    }
+
+    return (null as unknown) as H3IndexValueData;
   }
 }

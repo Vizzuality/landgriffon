@@ -9,11 +9,12 @@ Postgres connection params read from environment:
  - API_POSTGRES_DATABASE
 
 Usage:
-    tiff_folder_to_h3_table.py <folder> <table> [--h3-res=6]
+    tiff_folder_to_h3_table.py <folder> <table>  <data_type> [--h3-res=6]
 
 Arguments:
     <folder>          Folder containing GeoTiffs.
     <table>           Postgresql table to overwrite.
+    <data_type>       Type of the data imported
 
 Options:
     -h                Show help
@@ -101,7 +102,7 @@ def gen_raster_h3(raster_list, h3_res, geo=False):
         src.close()
 
 
-def load_raster_list_to_h3_table(raster_list, table, h3_res):
+def load_raster_list_to_h3_table(raster_list, table, data_type, h3_res):
     conn = psycopg2.connect(
         host=os.getenv('API_POSTGRES_HOST'),
         port=os.getenv('API_POSTGRES_PORT'),
@@ -131,22 +132,22 @@ def load_raster_list_to_h3_table(raster_list, table, h3_res):
     # add rows to master table for each column
     for column in block_df.columns:
         cursor.execute(f"""
-            INSERT INTO {H3_MASTER_TABLE} ("h3tableName", "h3columnName", "h3resolution")
-            VALUES ('{table}', '{column}', {h3_res});
+            INSERT INTO {H3_MASTER_TABLE} ("h3tableName", "h3columnName", "h3resolution", "data_type")
+            VALUES ('{table}', '{column}', {h3_res}, '{data_type}');
         """)
 
     conn.commit()
     cursor.close()
 
 
-def main(folder, table, h3_res):
+def main(folder, table, data_type, h3_res):
     tiffs = [
         os.path.join(folder, f)
         for f in os.listdir(folder)
         if os.path.splitext(f)[1] == '.tif'
     ]
     logging.info(f'Found {len(tiffs)} tiffs')
-    load_raster_list_to_h3_table(tiffs, table, h3_res)
+    load_raster_list_to_h3_table(tiffs, table, data_type, h3_res)
     logging.info('Done')
 
 
@@ -155,5 +156,6 @@ if __name__ == "__main__":
     main(
         args['<folder>'],
         args['<table>'],
+        args['<data_type>'],
         int(args['--h3-res'])
     )

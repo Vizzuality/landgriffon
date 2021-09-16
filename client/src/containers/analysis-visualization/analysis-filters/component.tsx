@@ -8,15 +8,15 @@ import Materials from './materials';
 import MoreFilters from './more-filters';
 
 const AnalysisFilters: React.FC = () => {
-  const { layer } = useAppSelector(analysis);
+  const { dataset } = useAppSelector(analysis);
 
   return (
     <div className="inline-flex gap-2 flex-wrap">
-      {layer !== 'crop' && <ImpactIndicatorsFilter />}
-      {layer !== 'impact' && <Materials />}
-      {layer === 'impact' && <GroupByFilter />}
+      {dataset !== 'material' && <ImpactIndicatorsFilter />}
+      {dataset !== 'impact' && <Materials />}
+      {dataset === 'impact' && <GroupByFilter />}
       <YearsFilter />
-      {layer === 'impact' && <MoreFilters />}
+      {dataset === 'impact' && <MoreFilters />}
     </div>
   );
 };

@@ -3,14 +3,14 @@ import { Select } from 'antd';
 import { ChevronDownIcon } from '@heroicons/react/solid';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { analysis, setLayer } from 'store/features/analysis';
+import { analysis, setDataset } from 'store/features/analysis';
 
-type LayerOption = {
+type DatasetOption = {
   id: string;
   name: string;
 };
 
-const LAYERS_OPTIONS: LayerOption[] = [
+const DATASETS_OPTIONS: DatasetOption[] = [
   {
     id: 'impact',
     name: 'Impact',
@@ -20,29 +20,29 @@ const LAYERS_OPTIONS: LayerOption[] = [
     name: 'Risk',
   },
   {
-    id: 'crop',
-    name: 'Crop production',
+    id: 'material',
+    name: 'Material production',
   },
 ];
 
-const LayerControl: React.FC = () => {
-  const { layer } = useAppSelector(analysis);
+const DatasetControl: React.FC = () => {
+  const { dataset } = useAppSelector(analysis);
   const dispatch = useAppDispatch();
 
   const handleChange = useCallback((value) => {
-    dispatch(setLayer(value));
+    dispatch(setDataset(value));
   }, []);
 
   return (
     <>
       <Select
-        value={layer}
+        value={dataset}
         onChange={handleChange}
         className="w-36"
         optionLabelProp="label"
         suffixIcon={<ChevronDownIcon />}
       >
-        {LAYERS_OPTIONS.map((option) => (
+        {DATASETS_OPTIONS.map((option) => (
           <Select.Option key={option.id} value={option.id} label={option.name}>
             {option.name}
           </Select.Option>
@@ -52,4 +52,4 @@ const LayerControl: React.FC = () => {
   );
 };
 
-export default LayerControl;
+export default DatasetControl;

@@ -3,7 +3,7 @@ import { Popover, Transition } from '@headlessui/react';
 import { FilterIcon } from '@heroicons/react/solid';
 
 import { useAppDispatch } from 'store/hooks';
-import { clearMoreFilters, setFilters } from 'store/features/analysis';
+import { setFilters } from 'store/features/analysis';
 import Button from 'components/button';
 
 import type { AnalysisState } from 'store/features/analysis';
@@ -12,25 +12,41 @@ import Materials from '../materials/component';
 import OriginRegions from '../origin-regions';
 import Suppliers from '../suppliers';
 
+const INITIAL_FILTERS: Partial<AnalysisState['filters']> = {
+  materials: [],
+  origins: [],
+  suppliers: [],
+};
+
 const MoreFilters: React.FC = () => {
   const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
-  const [moreFilters, setMoreFilters] = useState({});
+  const [moreFilters, setMoreFilters] = useState(INITIAL_FILTERS);
 
   const handleApply = () => {
-    dispatch(setFilters(moreFilters as AnalysisState['filters']));
+    dispatch(
+      setFilters({
+        materials: moreFilters.materials,
+        origins: moreFilters.origins,
+        suppliers: moreFilters.suppliers,
+      } as AnalysisState['filters'])
+    );
     setOpen(false);
   };
 
-  const handleClearFilters = useCallback(() => dispatch(clearMoreFilters()), []);
+  const handleClearFilters = useCallback(() => {
+    setMoreFilters(INITIAL_FILTERS); // reset filters
+  }, []);
+
   const handleChangeFilter = useCallback(
     // only save ids on store
-    (key, values) => setMoreFilters({ [key]: values.map(({ value }) => value) }),
+    (key, values) =>
+      setMoreFilters({ [key]: values.map(({ value }) => value) } as AnalysisState['filters']),
     []
   );
 
   return (
-    <Popover>
+    <Popover className="relative">
       <Button theme="secondary" onClick={() => setOpen(!open)}>
         <span className="block h-5 truncate">
           <FilterIcon className="w-5 h-5 text-gray-900" aria-hidden="true" />

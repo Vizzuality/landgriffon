@@ -1,9 +1,12 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Select } from 'antd';
 import { ChevronDownIcon } from '@heroicons/react/solid';
+import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis, setDataset } from 'store/features/analysis';
+
+import type { AnalysisState } from 'store/features/analysis';
 
 type DatasetOption = {
   id: string;
@@ -26,15 +29,21 @@ const DATASETS_OPTIONS: DatasetOption[] = [
 ];
 
 const DatasetControl: React.FC = () => {
-  const { dataset } = useAppSelector(analysis);
+  const { dataset, visualizationMode } = useAppSelector(analysis);
   const dispatch = useAppDispatch();
 
   const handleChange = useCallback((value) => {
     dispatch(setDataset(value));
   }, []);
 
+  useEffect(() => {
+    if (visualizationMode !== 'map') {
+      dispatch(setDataset(DATASETS_OPTIONS[0].id as AnalysisState['dataset']));
+    }
+  }, [visualizationMode]);
+
   return (
-    <>
+    <div className={classNames({ hidden: visualizationMode !== 'map' })}>
       <Select
         value={dataset}
         onChange={handleChange}
@@ -48,7 +57,7 @@ const DatasetControl: React.FC = () => {
           </Select.Option>
         ))}
       </Select>
-    </>
+    </div>
   );
 };
 

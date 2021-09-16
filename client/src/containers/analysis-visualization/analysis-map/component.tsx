@@ -2,6 +2,7 @@ import Map from 'components/map';
 import Legend from 'components/map/legend';
 import LegendItem from 'components/map/legend/item';
 import LegendTypeChoropleth from 'components/map/legend/types/choropleth';
+import mapStyle from './map-style.json';
 
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
 
@@ -62,23 +63,17 @@ const AnalysisMap: React.FC<AnalysisMapProps> = () => {
 
   return (
     <>
-      <Map
-        mapboxApiAccessToken={MAPBOX_API_TOKEN}
-        mapStyle="mapbox://styles/landgriffon/ckmdaj5gy08yx17me92nudkjd"
-      />
+      <Map mapboxApiAccessToken={MAPBOX_API_TOKEN} mapStyle={mapStyle} />
       <Legend
         className="absolute z-10 bottom-10 right-10 w-72"
         maxHeight={400}
         onChangeOrder={() => {}}
       >
-        {legendItems.map((i) => {
-          const { items } = i;
-          return (
-            <LegendItem key={i.id} {...i}>
-              <LegendTypeChoropleth className="text-sm text-gray-300" items={items} />
-            </LegendItem>
-          );
-        })}
+        {legendItems.map((i) => (
+          <LegendItem key={i.id} {...i}>
+            <LegendTypeChoropleth className="text-sm text-gray-300" items={i.items} />
+          </LegendItem>
+        ))}
       </Legend>
     </>
   );

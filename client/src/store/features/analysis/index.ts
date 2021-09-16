@@ -3,6 +3,11 @@ import type { RootState } from 'store';
 import type { Scenario } from 'containers/scenarios/types';
 
 // Define a type for the slice state
+type Option = {
+  label: string;
+  value: string;
+};
+
 export type AnalysisState = {
   visualizationMode: 'map' | 'table' | 'chart';
   isSidebarCollapsed: boolean;
@@ -16,9 +21,9 @@ export type AnalysisState = {
     by: string;
     startYear: number;
     endYear: number;
-    materials: string[];
-    origins: string[];
-    suppliers: string[];
+    materials: Option[];
+    origins: Option[];
+    suppliers: Option[];
   };
 };
 
@@ -93,15 +98,6 @@ export const analysisSlice = createSlice({
         ...action.payload,
       },
     }),
-    clearMoreFilters: (state) => ({
-      ...state,
-      filters: {
-        ...state.filters,
-        materials: initialState.filters.materials,
-        origins: initialState.filters.origins,
-        suppliers: initialState.filters.suppliers,
-      },
-    }),
   },
 });
 
@@ -115,7 +111,6 @@ export const {
   setDataset,
   setFilter,
   setFilters,
-  clearMoreFilters,
 } = analysisSlice.actions;
 
 export const analysis = (state: FeatureState) => state.analysis;

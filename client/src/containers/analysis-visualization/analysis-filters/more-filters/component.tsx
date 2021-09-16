@@ -9,8 +9,8 @@ import Button from 'components/button';
 import type { AnalysisState } from 'store/features/analysis';
 
 import Materials from '../materials/component';
-import OriginRegions from '../origin-regions';
-import Suppliers from '../suppliers';
+import OriginRegions from '../origin-regions/component';
+import Suppliers from '../suppliers/component';
 
 const INITIAL_FILTERS: Partial<AnalysisState['filters']> = {
   materials: [],
@@ -18,21 +18,23 @@ const INITIAL_FILTERS: Partial<AnalysisState['filters']> = {
   suppliers: [],
 };
 
+const MAX_TAG_COUNT = 4;
+
 const MoreFilters: React.FC = () => {
   const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
   const [moreFilters, setMoreFilters] = useState(INITIAL_FILTERS);
 
-  const handleApply = () => {
+  const handleApply = useCallback(() => {
     dispatch(
       setFilters({
-        materials: moreFilters.materials,
-        origins: moreFilters.origins,
-        suppliers: moreFilters.suppliers,
+        materials: moreFilters.materials || INITIAL_FILTERS.materials,
+        origins: moreFilters.origins || INITIAL_FILTERS.origins,
+        suppliers: moreFilters.suppliers || INITIAL_FILTERS.suppliers,
       } as AnalysisState['filters'])
     );
     setOpen(false);
-  };
+  }, [moreFilters]);
 
   const handleClearFilters = useCallback(() => {
     setMoreFilters(INITIAL_FILTERS); // reset filters
@@ -40,8 +42,9 @@ const MoreFilters: React.FC = () => {
 
   const handleChangeFilter = useCallback(
     // only save ids on store
-    (key, values) =>
-      setMoreFilters({ [key]: values.map(({ value }) => value) } as AnalysisState['filters']),
+    (key, values) => {
+      setMoreFilters({ [key]: values } as AnalysisState['filters']);
+    },
     []
   );
 
@@ -79,11 +82,31 @@ const MoreFilters: React.FC = () => {
                     className="w-full"
                     multiple
                     treeCheckable
+                    value={moreFilters.materials}
+                    maxTagCount={MAX_TAG_COUNT}
                     onChange={(values) => handleChangeFilter('materials', values)}
                   />
                 </div>
-                <OriginRegions />
-                <Suppliers />
+                <div>
+                  <div className="mb-1">Origins</div>
+                  <OriginRegions
+                    className="w-full"
+                    value={moreFilters.origins}
+                    maxTagCount={MAX_TAG_COUNT}
+                    onChange={(values) => handleChangeFilter('origins', values)}
+                  />
+                </div>
+                <div>
+                  <div className="mb-1">Suppliers</div>
+                  <Suppliers
+                    className="w-full"
+                    multiple
+                    treeCheckable
+                    value={moreFilters.suppliers}
+                    maxTagCount={MAX_TAG_COUNT}
+                    onChange={(values) => handleChangeFilter('suppliers', values)}
+                  />
+                </div>
               </div>
               <div className="flex gap-2 mt-4">
                 <Button theme="secondary" className="px-8" onClick={() => setOpen(false)}>

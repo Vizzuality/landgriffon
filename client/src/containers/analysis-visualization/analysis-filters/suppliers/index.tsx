@@ -1,12 +1,17 @@
-import { useQuery } from 'react-query';
+import { useCallback } from 'react';
+import { useAppDispatch } from 'store/hooks';
+import { setFilter } from 'store/features/analysis';
 
-import { getSuppliersTrees } from 'services/suppliers';
 import Component from './component';
 
-const SuppliersFilter: React.FC = () => {
-  const response = useQuery('suppliersTreesList', getSuppliersTrees);
+const SuppliersContainer: React.FC = (props) => {
+  const dispatch = useAppDispatch();
+  const handleChange = useCallback(
+    ({ value }) => dispatch(setFilter({ id: 'suppliers', value: [value] })),
+    []
+  );
 
-  return <Component suppliers={response} />;
+  return <Component onChange={handleChange} {...props} />;
 };
 
-export default SuppliersFilter;
+export default SuppliersContainer;

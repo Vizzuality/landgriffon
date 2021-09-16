@@ -1,23 +1,19 @@
 import { useState, useCallback, useMemo } from 'react';
-import { Select } from 'antd';
-import type { UseQueryResult } from 'react-query';
+import { Select, SelectProps } from 'antd';
 import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
+import { useQuery } from 'react-query';
 
-import type { OriginRegion } from 'types';
+import { getOriginRegions } from 'services/origin-regions';
 
-type OriginRegionsFilterProps = {
-  originRegions: {
-    data: OriginRegion[];
-    isLoading: UseQueryResult['isLoading'];
-    error: UseQueryResult['error'];
-  };
+type OriginRegionsFilterProps = SelectProps<{}> & {
+  onChange: (value) => void;
 };
 
-const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
-  originRegions,
-}: OriginRegionsFilterProps) => {
+const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = (
+  props: OriginRegionsFilterProps
+) => {
   const [value, setValue] = useState([]);
-  const { data, isLoading, error } = originRegions;
+  const { data, isLoading, error } = useQuery('originRegionsList', getOriginRegions);
 
   const handleChange = useCallback((currentValue) => {
     setValue(currentValue);
@@ -30,24 +26,21 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
   );
 
   return (
-    <div>
-      <div className="mb-1">Origin regions</div>
-      <Select
-        onChange={handleChange}
-        className="w-full"
-        loading={isLoading}
-        options={options}
-        mode="multiple"
-        showArrow
-        suffixIcon={<ChevronDownIcon />}
-        value={value}
-        placeholder={error ? 'Something went wrong' : 'Select origin regions'}
-        disabled={!!error}
-        removeIcon={<XIcon />}
-        maxTagCount={5}
-        maxTagPlaceholder={(e) => `${e.length} more...`}
-      />
-    </div>
+    <Select
+      onChange={handleChange}
+      loading={isLoading}
+      options={options}
+      mode="multiple"
+      showArrow
+      suffixIcon={<ChevronDownIcon />}
+      value={value}
+      placeholder={error ? 'Something went wrong' : 'Select origin regions'}
+      disabled={!!error}
+      removeIcon={<XIcon />}
+      maxTagCount={5}
+      maxTagPlaceholder={(e) => `${e.length} more...`}
+      {...props}
+    />
   );
 };
 

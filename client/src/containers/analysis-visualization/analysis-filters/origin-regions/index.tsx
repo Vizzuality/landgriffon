@@ -1,12 +1,17 @@
-import { useQuery } from 'react-query';
+import { useCallback } from 'react';
+import { useAppDispatch } from 'store/hooks';
+import { setFilter } from 'store/features/analysis';
 
-import { getOriginRegions } from 'services/origin-regions';
 import Component from './component';
 
-const OriginRegionsContainer: React.FC = () => {
-  const response = useQuery('originRegionsList', getOriginRegions);
+const SuppliersContainer: React.FC = (props) => {
+  const dispatch = useAppDispatch();
+  const handleChange = useCallback(
+    ({ value }) => dispatch(setFilter({ id: 'origin', value: [value] })),
+    []
+  );
 
-  return <Component originRegions={response} />;
+  return <Component onChange={handleChange} {...props} />;
 };
 
-export default OriginRegionsContainer;
+export default SuppliersContainer;

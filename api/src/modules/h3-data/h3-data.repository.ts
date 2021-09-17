@@ -1,4 +1,4 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository, Repository, getManager } from 'typeorm';
 import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 import { NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 import { h3Reducer } from 'modules/h3-data/helpers/h3reducer.helper';
@@ -54,6 +54,10 @@ export class H3DataRepository extends Repository<H3Data> {
       throw new NotFoundException(
         `Requested H3 with ID: ${h3Id} could not been found`,
       );
+    /**
+     * @debt: Make this query with queryBuilder. In this case we can uses entity extended query builder,
+     * and we should, since this query points to an entity mapped by TypeORM
+     */
     try {
       const h3data = await this.query(
         `select h3_to_parent(h3index, ${resolution}) as h3_to_parent, sum(${h3Info.h3columnName})
@@ -80,24 +84,29 @@ export class H3DataRepository extends Repository<H3Data> {
     materialH3Data: H3Data,
     calculusFactor: number,
   ): Promise<H3IndexValueData> {
-    // try {
-    //   const riskmap = await this.query(
-    //     `SELECT tmp.matchingh3indexes, tmp.indicatorvalues*tmp.materialvalues/${calculusFactor} AS valuesresult FROM ` +
-    //       `(SELECT m.h3index AS matchingh3indexes, i.${indicatorH3Data.h3columnName} AS indicatorvalues, ` +
-    //       `${materialH3Data.h3columnName} AS materialvalues FROM ${materialH3Data.h3tableName} AS m, ` +
-    //       `${indicatorH3Data.h3tableName} AS i WHERE i.h3index = m.h3index) AS tmp`,
-    //   );
-    //   return h3Reducer(riskmap, 'matchingh3indexes', 'valuesresult');
-    // } catch (err) {
-    //   throw new ServiceUnavailableException(
-    //     `Risk Map could not been generated: ` + err,
-    //   );
-    // }
     /**
-     * TODO: mocked response to unblock FE.
-     *
+     * @note Using query in order to parse the resultant array into a single hash-map
+     * so the frontend has a constant time complexity when manipulating this data
+     * also, wee need to attach + info about the map: measure unit in which the values should be shown, indicator data, etc..
+     * We could not do this using streams
      */
+    const riskmap = await getManager()
+      .createQueryBuilder()
+      .select('materialh3.h3index')
+      .addSelect(
+        `indicatorh3.${indicatorH3Data.h3columnName} * ${materialH3Data.h3columnName} / ${calculusFactor} `,
+        'value',
+      )
+      .from(materialH3Data.h3tableName, 'materialh3')
+      .addFrom(indicatorH3Data.h3tableName, 'indicatorh3')
+      .where(`indicatorh3.h3index = materialh3.h3index`)
+      .getRawMany();
 
-    return (null as unknown) as H3IndexValueData;
+    if (!riskmap) {
+      throw new ServiceUnavailableException(
+        'RiskMap could not been calculated',
+      );
+    }
+    return h3Reducer(riskmap, 'h3index', 'value');
   }
 }

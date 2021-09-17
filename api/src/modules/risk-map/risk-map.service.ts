@@ -51,6 +51,7 @@ export class RiskMapService {
       material.h3Grid,
       unitConversion.factor as number,
     );
+
     return {
       indicator: indicator.name,
       material: material.name,

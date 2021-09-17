@@ -34,7 +34,7 @@ export class H3DataService {
   async getMaterialH3ByResolution(
     materialId: string,
     resolution: number,
-  ): Promise<unknown> {
+  ): Promise<H3IndexValueData> {
     const material = await this.materialService.getMaterialById(materialId);
     if (!material.h3Grid)
       throw new NotFoundException(
@@ -51,7 +51,6 @@ export class H3DataService {
     materialH3Data: H3Data,
     calculusFactor: number,
   ): Promise<H3IndexValueData> {
-    this.logger.log(`Generating Risk Map...`);
     return await this.h3DataRepository.calculateRiskMapByMaterialAndIndicator(
       indicatorH3Data,
       materialH3Data,

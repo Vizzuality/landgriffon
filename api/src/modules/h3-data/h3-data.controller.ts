@@ -34,7 +34,7 @@ export class H3DataController {
   async geth3ByIdAndResolution(
     @Query(ValidationPipe)
     queryParams: MaterialH3ByResolutionDto,
-  ): Promise<any> {
+  ): Promise<H3IndexValueData> {
     const { materialId, resolution } = queryParams;
     return await this.h3DataService.getMaterialH3ByResolution(
       materialId,

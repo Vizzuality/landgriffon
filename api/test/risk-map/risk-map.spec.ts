@@ -171,7 +171,6 @@ describe('Risk Map Test Suite (e2e)', () => {
       name: unit.name,
       symbol: unit.symbol,
     });
-    // TODO: Uncomment this assertion as soons as finish risk-map implementation. This is commented out to unblock FE
-    //expect(Object.entries(response.body.riskMap).length).toEqual(384);
+    expect(Object.entries(response.body.riskMap).length).toEqual(384);
   });
 });

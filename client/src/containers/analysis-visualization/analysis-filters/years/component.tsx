@@ -180,6 +180,7 @@ const YearsFilter: React.FC<YearsFilterProps> = () => {
                           showSearch
                           onSearch={handleOnSearch}
                           onBlur={handleOnBlur}
+                          getPopupContainer={(triggerNode) => triggerNode.parentNode}
                         >
                           {availableYears.map((year) => (
                             <Select.Option

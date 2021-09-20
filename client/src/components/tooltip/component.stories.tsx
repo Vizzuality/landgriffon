@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { Story } from '@storybook/react';
 import Tooltip from './component';
 import { TooltipProps } from './types';

@@ -20,7 +20,7 @@ export class H3DataController {
   async findOneByName(
     @Param('h3TableName') h3TableName: string,
     @Param('h3ColumnName') h3ColumnName: string,
-  ): Promise<{ data: H3IndexValueData }> {
+  ): Promise<{ data: H3IndexValueData[] }> {
     const h3Data = await this.h3DataService.findH3ByName(
       h3TableName,
       h3ColumnName,
@@ -34,7 +34,7 @@ export class H3DataController {
   async geth3ByIdAndResolution(
     @Query(ValidationPipe)
     queryParams: MaterialH3ByResolutionDto,
-  ): Promise<H3IndexValueData> {
+  ): Promise<Array<H3IndexValueData>> {
     const { materialId, resolution } = queryParams;
     return await this.h3DataService.getMaterialH3ByResolution(
       materialId,

@@ -10,5 +10,5 @@ export class RiskMapResponseDTO {
     name: string;
     symbol: string;
   };
-  riskMap: H3IndexValueData;
+  riskMap: H3IndexValueData[];
 }

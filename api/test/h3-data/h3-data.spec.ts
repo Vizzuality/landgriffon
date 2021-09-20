@@ -104,7 +104,7 @@ describe('H3-Data Module (e2e)', () => {
       );
     });
 
-    test('When I query H3 data at minimal resolution, then I should get 8 h3indexes', async () => {
+    test.only('When I query H3 data at minimal resolution, then I should get 8 h3indexes', async () => {
       const h3GridId = await createFakeH3Data(
         fakeTable,
         fakeColumn,
@@ -115,16 +115,16 @@ describe('H3-Data Module (e2e)', () => {
         `/api/v1/h3/material?materialId=${material.id}&resolution=1`,
       );
 
-      expect(response.body).toEqual({
-        '81123ffffffffff': 1000,
-        '8112fffffffffff': 0,
-        '8128bffffffffff': 0,
-        '8127bffffffffff': 0,
-        '8112bffffffffff': 0,
-        '81273ffffffffff': 0,
-        '8128fffffffffff': 0,
-        '81127ffffffffff': 0,
-      });
+      expect(response.body).toEqual([
+        { h: '81123ffffffffff', v: 1000 },
+        { h: '8112fffffffffff', v: 0 },
+        { h: '8128bffffffffff', v: 0 },
+        { h: '8127bffffffffff', v: 0 },
+        { h: '8112bffffffffff', v: 0 },
+        { h: '81273ffffffffff', v: 0 },
+        { h: '8128fffffffffff', v: 0 },
+        { h: '81127ffffffffff', v: 0 },
+      ]);
     });
   });
 });

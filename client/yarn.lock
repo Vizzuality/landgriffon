@@ -1415,6 +1415,11 @@
     "@math.gl/polygon" "^3.5.4"
     earcut "^2.0.6"
 
+"@deck.gl/mapbox@^8.5.8":
+  version "8.5.8"
+  resolved "https://registry.yarnpkg.com/@deck.gl/mapbox/-/mapbox-8.5.8.tgz#8b724401118746acb2bf1c11f39d61e430012eca"
+  integrity sha512-57iiPx6aL9Lq5XnkCFvCvmUp3Vpitf5iFiv3ztPd+e5/h3oRtI4qazK26gx3I8WfNkvkbLcw6WonZ3EhRKpxfA==
+
 "@deck.gl/mesh-layers@^8.5.8":
   version "8.5.8"
   resolved "https://registry.yarnpkg.com/@deck.gl/mesh-layers/-/mesh-layers-8.5.8.tgz#dfcf8282b8804c9bc37fff97eb12fda6515ffc13"
@@ -4530,6 +4535,46 @@
     prop-types "^15.5.10"
     react-use-measure "^2.0.4"
 
+"@vizzuality/layer-manager-plugin-mapboxgl@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@vizzuality/layer-manager-plugin-mapboxgl/-/layer-manager-plugin-mapboxgl-1.0.1.tgz#94ba7902a956c10f84a7eb2b395ba0243f2da6b5"
+  integrity sha512-YqoOs+J60tCegey02MBx22bkD+z+lwXKOENDUYN8DCBX9XBBAq1kmUsjrlsx0uki+Dq94VtogWhubZd5PlbAfw==
+  dependencies:
+    "@deck.gl/core" "^8.5.8"
+    "@deck.gl/mapbox" "^8.5.8"
+    "@vizzuality/layer-manager-utils" "^1.0.1"
+    cancelable-promise "^3.2.3"
+    react "^17.0.2"
+
+"@vizzuality/layer-manager-react@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@vizzuality/layer-manager-react/-/layer-manager-react-1.0.1.tgz#fb22e51480df9d177e4c68b4183a0df2cb87624f"
+  integrity sha512-luxBDQ/eVpgLmbYf+9fTs+bDu7eDOrovs/oUEFc5kdJpvX1r334r6XFZWQZeL0xvcx5B7a3Eu1hjYpviuN1FsA==
+  dependencies:
+    "@vizzuality/layer-manager" "^4.0.1"
+    "@vizzuality/layer-manager-utils" "^1.0.1"
+    cancelable-promise "^3.2.3"
+    fast-deep-equal "^3.1.3"
+
+"@vizzuality/layer-manager-utils@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@vizzuality/layer-manager-utils/-/layer-manager-utils-1.0.1.tgz#4664052ee4ab18c13168118926e5fa734c51d1e2"
+  integrity sha512-t3pk0RSxDXuqvJHw6iStTTTObQQVv+a68hFuAyKvQgwiOsf5lRcDOg4XQNuezutRt+vaS+093OImekeBQCTrxg==
+  dependencies:
+    axios "^0.21.4"
+    cancelable-promise "^3.2.3"
+
+"@vizzuality/layer-manager@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@vizzuality/layer-manager/-/layer-manager-4.0.1.tgz#31d00034c14bb0e1aa37356106ac57d2426cc4a4"
+  integrity sha512-5mCYWiPvR2p5dXmBO4slCzUrQMdfBdNzI+P/cVfbsag2vXpUIpx3fu1vPgNtVD8s+3enEkHdLnnjhuXjywrz/g==
+  dependencies:
+    "@vizzuality/layer-manager-utils" "^1.0.1"
+    axios "^0.21.4"
+    cancelable-promise "^3.2.3"
+    fast-deep-equal "^3.1.3"
+    mapbox-gl "^2.2.0"
+
 "@webassemblyjs/ast@1.11.1":
   version "1.11.1"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.11.1.tgz#2bfd767eae1a6996f432ff7e8d7fc75679c0b6a7"
@@ -5420,7 +5465,7 @@ axe-core@^4.0.2:
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.3.3.tgz#b55cd8e8ddf659fe89b064680e1c6a4dceab0325"
   integrity sha512-/lqqLAmuIPi79WYfRpy2i8z+x+vxU3zX2uAm0gs1q52qTuKwolOj1P8XbufpXcsydrpKx2yGn2wzAnxCMV86QA==
 
-axios@*, axios@^0.21.1:
+axios@*, axios@^0.21.1, axios@^0.21.4:
   version "0.21.4"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.4.tgz#c67b90dc0568e5c1cf2b0b858c43ba28e2eda575"
   integrity sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==
@@ -6230,6 +6275,11 @@ camelcase@^5.0.0, camelcase@^5.3.1:
   version "5.3.1"
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-5.3.1.tgz#e3c9b31569e106811df242f715725a1f4c494320"
   integrity sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
+
+cancelable-promise@^3.2.3:
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/cancelable-promise/-/cancelable-promise-3.2.3.tgz#7bc579c003fa05147d942ca9f6c4e39217d832e4"
+  integrity sha512-P0yW/pq7ZEx4znOnDd4PqA5l+I/INpo32BE4Rg3QQxVBhKk7g9hAbmJt7oYbffo1q8j+1QfSZHGmjHMqj8RoJw==
 
 caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001125, caniuse-lite@^1.0.30001202, caniuse-lite@^1.0.30001219, caniuse-lite@^1.0.30001228, caniuse-lite@^1.0.30001252, caniuse-lite@^1.0.30001254:
   version "1.0.30001257"
@@ -11351,7 +11401,7 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
-mapbox-gl@^2.3.0:
+mapbox-gl@^2.2.0, mapbox-gl@^2.3.0:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/mapbox-gl/-/mapbox-gl-2.4.1.tgz#cd17d35bd4262bc6a9e0e49fef165f8f0dbf6fef"
   integrity sha512-iTF5UPm63ojEi91A2lSpM5wDfnttuPXJmJRwD65R4n2mAYoQjjRwXvXIgcxKDnZDpdczF1jIFeS1R+H8jp1NCQ==

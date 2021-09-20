@@ -1,9 +1,9 @@
 /* eslint-disable */
 const withPlugins = require('next-compose-plugins');
-const withOptimizedImages = require('next-optimized-images');
 const withAntdLess = require('next-plugin-antd-less');
 
 const nextConfig = {
+  reactStrictMode: true,
   webpack: (config) => {
     config.node = {
       fs: 'empty',
@@ -15,9 +15,7 @@ const nextConfig = {
 
 module.exports = withPlugins(
   [
-    withOptimizedImages({
-      optimizeImages: false,
-    }),
+    // Used to customize Andt components
     withAntdLess({
       lessVarsFilePath: './src/styles/antd.less',
     })

@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useCallback } from 'react';
 import Tippy from '@tippyjs/react/headless';
 import { useSpring, motion } from 'framer-motion';
 import { SpringOptions } from 'popmotion';
@@ -17,12 +17,12 @@ export const Tooltip: FC<TooltipProps> = ({
   const opacity = useSpring(0, springConfig);
   const scale = useSpring(0.95, springConfig);
 
-  function onMount() {
+  const onMount = useCallback(() => {
     scale.set(1);
     opacity.set(1);
-  }
+  }, []);
 
-  function onHide({ unmount }) {
+  const onHide = useCallback(({ unmount }) => {
     const cleanup = scale.onChange((value) => {
       if (value <= 0.95) {
         cleanup();
@@ -32,7 +32,7 @@ export const Tooltip: FC<TooltipProps> = ({
 
     scale.set(0.95);
     opacity.set(0);
-  }
+  }, []);
 
   return (
     <Tippy

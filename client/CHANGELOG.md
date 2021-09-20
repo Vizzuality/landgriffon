@@ -5,8 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## 0.3.0 [Unreleased]
+## 0.4.0
+### Added
+* First version of table mode
 
+## 0.3.1
+### Changed
+* Migrated requests from containers to react hooks
+
+## 0.3.0
 ### Added
 * Block search spiders: added robots.txt
 * Save filters on Redux store [LANDGRIF-242](https://vizzuality.atlassian.net/browse/LANDGRIF-242)
@@ -15,9 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 * Dataset selector (aka layer selector) in the filters [LANDGRIF-264](https://vizzuality.atlassian.net/browse/LANDGRIF-264)
 * Filters populated with data from the API
 * Area charts and widgets behavior for the chart mode
-
-### Changed
-* Migrated requests from containers to react hooks
 
 ## 0.2.0
 ### Added

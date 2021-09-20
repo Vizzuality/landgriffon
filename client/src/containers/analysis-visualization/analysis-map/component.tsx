@@ -1,14 +1,36 @@
-import Map from 'components/map';
+import DeckGL from '@deck.gl/react';
+import { StaticMap } from 'react-map-gl';
+import { H3HexagonLayer } from '@deck.gl/geo-layers';
+
 import Legend from 'components/map/legend';
 import LegendItem from 'components/map/legend/item';
 import LegendTypeChoropleth from 'components/map/legend/types/choropleth';
-import mapStyle from './map-style.json';
 
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
+const INITIAL_VIEW_STATE = {
+  longitude: -122.41669,
+  latitude: 37.7853,
+  zoom: 11,
+  pitch: 0,
+  bearing: 0,
+};
 
-export type AnalysisMapProps = {};
+const layers = [
+  new H3HexagonLayer({
+    id: 'h3-hexagon-layer',
+    data: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/sf.h3cells.json',
+    pickable: true,
+    wireframe: false,
+    filled: true,
+    extruded: true,
+    elevationScale: 20,
+    getHexagon: (d) => d.hex,
+    getFillColor: (d) => [255, (1 - d.count / 500) * 255, 0],
+    getElevation: (d) => d.count,
+  }),
+];
 
-const AnalysisMap: React.FC<AnalysisMapProps> = () => {
+const AnalysisMap: React.FC = () => {
   const mockedLayers = [
     {
       id: 'choropleth-example-1',
@@ -63,7 +85,9 @@ const AnalysisMap: React.FC<AnalysisMapProps> = () => {
 
   return (
     <>
-      <Map mapboxApiAccessToken={MAPBOX_API_TOKEN} mapStyle={mapStyle} />
+      <DeckGL initialViewState={INITIAL_VIEW_STATE} controller layers={layers}>
+        <StaticMap mapboxApiAccessToken={MAPBOX_API_TOKEN} />
+      </DeckGL>
       <Legend
         className="absolute z-10 bottom-10 right-10 w-72"
         maxHeight={400}

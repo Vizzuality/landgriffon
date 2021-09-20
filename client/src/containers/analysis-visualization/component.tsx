@@ -9,7 +9,7 @@ import AnalysisFilters from './analysis-filters';
 
 const impactFactors = [{ id: '1', name: 'Rice', 2021: 342, 2022: 632, 2023: 1332 }];
 
-const AnalysisVisualization = () => {
+const AnalysisVisualization: React.FC = () => {
   const { visualizationMode } = useAppSelector(analysis);
 
   return (

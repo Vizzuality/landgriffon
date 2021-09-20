@@ -64,7 +64,7 @@ resource "kubernetes_ingress" "landgriffon" {
     annotations = {
       "kubernetes.io/ingress.class"                = "alb"
       "alb.ingress.kubernetes.io/scheme"           = "internet-facing"
-      "alb.ingress.kubernetes.io/healthcheck-path" = "/health_check"
+      "alb.ingress.kubernetes.io/healthcheck-path" = "/health"
       "alb.ingress.kubernetes.io/certificate-arn"  = aws_acm_certificate_validation.aws_env_resourcewatch_org_domain_cert_validation.certificate_arn
       "alb.ingress.kubernetes.io/listen-ports"     = "[{\"HTTP\": 80}, {\"HTTPS\": 443}]"
     }

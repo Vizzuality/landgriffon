@@ -2,10 +2,10 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { Transition } from '@headlessui/react';
+import dynamic from 'next/dynamic';
 
 import ApplicationLayout from 'layouts/application';
 import Breadcrumb from 'components/breadcrumb';
-import AnalysisVisualization from 'containers/analysis-visualization';
 import Scenarios from 'containers/scenarios';
 import ScenarioNew from 'containers/scenarios/new';
 import ScenarioEdit from 'containers/scenarios/edit';
@@ -14,6 +14,10 @@ import { analysis, setSubContentCollapsed } from 'store/features/analysis';
 import CollapseButton from 'containers/collapse-button';
 
 import type { Page } from 'components/breadcrumb/types';
+
+const AnalysisVisualizationNoSSR = dynamic(() => import('containers/analysis-visualization'), {
+  ssr: false,
+});
 
 const AnalysisPage: React.FC = () => {
   const { isSidebarCollapsed, isSubContentCollapsed } = useAppSelector(analysis);
@@ -44,7 +48,7 @@ const AnalysisPage: React.FC = () => {
     <ApplicationLayout>
       <main className="flex-1 flex">
         <div className="flex-1 flex h-screen-minus-header lg:h-screen">
-          <AnalysisVisualization />
+          <AnalysisVisualizationNoSSR />
 
           {/* Analysis content */}
           <section className="relative hidden lg:block lg:flex-shrink-0 lg:order-first">

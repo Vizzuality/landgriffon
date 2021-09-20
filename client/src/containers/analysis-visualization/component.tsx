@@ -20,7 +20,7 @@ const AnalysisVisualization: React.FC = () => {
       >
         <div className="flex gap-2 flex-wrap">
           <DatasetControl />
-          <AnalysisFilters />
+          {/* <AnalysisFilters /> */}
         </div>
         <div className="2xl:mr-20 z-10 inline-flex shadow-sm rounded-md">
           <ModeControl />

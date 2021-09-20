@@ -27,14 +27,14 @@ export class H3DataService {
   async findH3ByName(
     h3TableName: string,
     h3ColumnName: string,
-  ): Promise<H3IndexValueData> {
+  ): Promise<H3IndexValueData[]> {
     return await this.h3DataRepository.findH3ByName(h3TableName, h3ColumnName);
   }
 
   async getMaterialH3ByResolution(
     materialId: string,
     resolution: number,
-  ): Promise<H3IndexValueData> {
+  ): Promise<Array<H3IndexValueData>> {
     const material = await this.materialService.getMaterialById(materialId);
     if (!material.h3Grid)
       throw new NotFoundException(
@@ -50,7 +50,7 @@ export class H3DataService {
     indicatorH3Data: H3Data,
     materialH3Data: H3Data,
     calculusFactor: number,
-  ): Promise<H3IndexValueData> {
+  ): Promise<H3IndexValueData[]> {
     return await this.h3DataRepository.calculateRiskMapByMaterialAndIndicator(
       indicatorH3Data,
       materialH3Data,

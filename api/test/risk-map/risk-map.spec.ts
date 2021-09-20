@@ -171,6 +171,6 @@ describe('Risk Map Test Suite (e2e)', () => {
       name: unit.name,
       symbol: unit.symbol,
     });
-    expect(Object.entries(response.body.riskMap).length).toEqual(384);
+    expect(response.body.riskMap.length).toEqual(384);
   });
 });

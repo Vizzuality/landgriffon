@@ -7,7 +7,10 @@ import {
 } from 'typeorm';
 
 export interface H3IndexValueData {
-  [key: string]: number;
+  //H3 index
+  h: string;
+  // Values for an h3 index
+  v: number;
 }
 
 @Entity('h3_data')

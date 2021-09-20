@@ -1,10 +1,9 @@
 import { getManager } from 'typeorm';
-import { H3IndexValueData } from '../../../src/modules/h3-data/h3-data.entity';
 
 export const createFakeH3Data = async (
   h3TableName: string,
   h3ColumnName: string,
-  aditionalH3Data?: H3IndexValueData,
+  aditionalH3Data?: Record<any, unknown>,
 ): Promise<string> => {
   await getManager().query(
     `CREATE TABLE ${h3TableName} (h3index h3index, ${h3ColumnName} float4);` +

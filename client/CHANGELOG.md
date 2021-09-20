@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 * Filters populated with data from the API
 * Area charts and widgets behavior for the chart mode
 
+### Changed
+* Migrated requests from containers to react hooks
+
 ## 0.2.0
 ### Added
 * Scenario dropdown for edition and remove [LANDGRIF-156](https://vizzuality.atlassian.net/browse/LANDGRIF-156)

@@ -1,12 +1,11 @@
-import React, { Fragment, useCallback, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { Popover, Transition } from '@headlessui/react';
 import { FilterIcon } from '@heroicons/react/solid';
 
-import { useAppDispatch } from 'store/hooks';
-import { setFilters } from 'store/features/analysis';
-import Button from 'components/button';
-
+import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { analysis, setFilters } from 'store/features/analysis';
 import type { AnalysisState } from 'store/features/analysis';
+import Button from 'components/button';
 
 import Materials from '../materials/component';
 import OriginRegions from '../origin-regions/component';
@@ -21,9 +20,15 @@ const INITIAL_FILTERS: Partial<AnalysisState['filters']> = {
 const MAX_TAG_COUNT = 4;
 
 const MoreFilters: React.FC = () => {
+  const { filters } = useAppSelector(analysis);
   const dispatch = useAppDispatch();
+
+  const { materials, origins, suppliers } = filters;
+  const selectedFilters = { materials, origins, suppliers };
+
   const [open, setOpen] = useState(false);
-  const [moreFilters, setMoreFilters] = useState(INITIAL_FILTERS);
+  const [moreFilters, setMoreFilters] = useState(selectedFilters);
+  const [counter, setCounter] = useState(0);
 
   const handleApply = useCallback(() => {
     dispatch(
@@ -37,7 +42,7 @@ const MoreFilters: React.FC = () => {
   }, [moreFilters]);
 
   const handleClearFilters = useCallback(() => {
-    setMoreFilters(INITIAL_FILTERS); // reset filters
+    setMoreFilters(INITIAL_FILTERS as AnalysisState['filters']); // reset filters
   }, []);
 
   const handleChangeFilter = useCallback(
@@ -48,6 +53,12 @@ const MoreFilters: React.FC = () => {
     []
   );
 
+  useEffect(() => {
+    const counters = Object.keys(selectedFilters).map((key) => selectedFilters[key].length);
+    const total = counters.reduce((a, b) => a + b);
+    setCounter(total);
+  }, [selectedFilters]);
+
   return (
     <Popover className="relative">
       <Button theme="secondary" onClick={() => setOpen(!open)}>
@@ -55,7 +66,7 @@ const MoreFilters: React.FC = () => {
           <FilterIcon className="w-5 h-5 text-gray-900" aria-hidden="true" />
         </span>
         <span className="flex items-center justify-center w-5 h-5 ml-1 text-xs font-semibold text-white bg-green-700 rounded-full">
-          3
+          {counter}
         </span>
       </Button>
 

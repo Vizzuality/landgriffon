@@ -1,7 +1,8 @@
-import DeckGL from '@deck.gl/react';
-import { StaticMap } from 'react-map-gl';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
+import { LayerManager, Layer } from '@vizzuality/layer-manager-react';
+import PluginMapboxGl from '@vizzuality/layer-manager-plugin-mapboxgl';
 
+import Map from 'components/map';
 import Legend from 'components/map/legend';
 import LegendItem from 'components/map/legend/item';
 import LegendTypeChoropleth from 'components/map/legend/types/choropleth';
@@ -16,18 +17,27 @@ const INITIAL_VIEW_STATE = {
 };
 
 const layers = [
-  new H3HexagonLayer({
-    id: 'h3-hexagon-layer',
-    data: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/sf.h3cells.json',
-    pickable: true,
-    wireframe: false,
-    filled: true,
-    extruded: true,
-    elevationScale: 20,
-    getHexagon: (d) => d.hex,
-    getFillColor: (d) => [255, (1 - d.count / 500) * 255, 0],
-    getElevation: (d) => d.count,
-  }),
+  {
+    id: 'h3-layer',
+    type: 'deck',
+    source: { parse: false },
+    render: { parse: false },
+    deck: [
+      {
+        id: 'h3-layer-demo',
+        type: H3HexagonLayer,
+        data: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/sf.h3cells.json',
+        pickable: true,
+        wireframe: false,
+        filled: true,
+        extruded: true,
+        elevationScale: 20,
+        getHexagon: (d) => d.hex,
+        getFillColor: (d) => [255, (1 - d.count / 500) * 255, 0],
+        getElevation: (d) => d.count,
+      },
+    ],
+  },
 ];
 
 const AnalysisMap: React.FC = () => {
@@ -85,9 +95,17 @@ const AnalysisMap: React.FC = () => {
 
   return (
     <>
-      <DeckGL initialViewState={INITIAL_VIEW_STATE} controller layers={layers}>
-        <StaticMap mapboxApiAccessToken={MAPBOX_API_TOKEN} />
-      </DeckGL>
+      <Map viewport={INITIAL_VIEW_STATE} mapboxApiAccessToken={MAPBOX_API_TOKEN}>
+        {(map) => (
+          <>
+            <LayerManager map={map} plugin={PluginMapboxGl}>
+              {layers.map((l) => (
+                <Layer key={l.id} {...l} />
+              ))}
+            </LayerManager>
+          </>
+        )}
+      </Map>
       <Legend
         className="absolute z-10 bottom-10 right-10 w-72"
         maxHeight={400}

@@ -48,9 +48,12 @@ const MoreFilters: React.FC = () => {
   const handleChangeFilter = useCallback(
     // only save ids on store
     (key, values) => {
-      setMoreFilters({ [key]: values } as AnalysisState['filters']);
+      setMoreFilters({
+        ...moreFilters,
+        [key]: values,
+      } as AnalysisState['filters']);
     },
-    []
+    [moreFilters]
   );
 
   useEffect(() => {

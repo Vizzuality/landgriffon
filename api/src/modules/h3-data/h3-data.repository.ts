@@ -19,17 +19,17 @@ export class H3DataRepository extends Repository<H3Data> {
     h3TableName: string,
     h3ColumnName: string,
   ): Promise<H3IndexValueData[]> {
-    const h3DataResult = await this.createQueryBuilder()
-      .select('h3index', 'h')
-      .addSelect(`${h3ColumnName}`, 'v')
-      .getRawOne();
-
-    if (!h3DataResult) {
-      throw new NotFoundException(
-        `H3 ${h3ColumnName} data in ${h3TableName} could not been found`,
-      );
-    }
-    return h3DataResult;
+    try {
+      return await getManager()
+        .createQueryBuilder()
+        .select('h3index', 'h')
+        .addSelect(`${h3ColumnName}`, 'v')
+        .from(`${h3TableName}`, 'h3')
+        .getRawOne();
+    } catch (err) {}
+    throw new NotFoundException(
+      `H3 ${h3ColumnName} data in ${h3TableName} could not been found`,
+    );
   }
 
   /** Retrieves single crop data by a given resolution
@@ -40,7 +40,10 @@ export class H3DataRepository extends Repository<H3Data> {
    *
    */
 
-  async getH3ByIdAndResolution(h3Id: string, resolution: number): Promise<any> {
+  async getH3ByIdAndResolution(
+    h3Id: string,
+    resolution: number,
+  ): Promise<H3IndexValueData[]> {
     const h3Info = await this.createQueryBuilder('h3')
       .select('"h3tableName"')
       .addSelect('"h3columnName"')

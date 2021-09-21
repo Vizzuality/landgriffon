@@ -53,21 +53,24 @@ describe('H3-Data Module (e2e)', () => {
   });
 
   describe('H3 Data Module E2E Test Suite', () => {
-    test('Given the H3 Data table is empty, when I query the API, then I should be acknowledged that no requested H3 Data has been found ', async () => {
+    test.only('Given the H3 Data table is empty, when I query the API, then I should be acknowledged that no requested H3 Data has been found ', async () => {
       const response = await request(app.getHttpServer())
         .get(`/api/v1/h3/data/${fakeTable}/${fakeColumn}`)
         .expect(HttpStatus.NOT_FOUND);
+
+      console.log(response.body);
       expect(response.body.errors[0].title).toEqual(
         `H3 ${fakeColumn} data in ${fakeTable} could not been found`,
       );
     });
-    test('Given the H3 Data table is populated, when I query the API, then I should get its data in with h3index as key, and column values as value', async () => {
+    test.only('Given the H3 Data table is populated, when I query the API, then I should get its data in with h3index as key, and column values as value', async () => {
       await createFakeH3Data(fakeTable, fakeColumn);
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/h3/data/${fakeTable}/${fakeColumn}`)
         .expect(HttpStatus.OK);
-      expect(response.body).toEqual({ data: { '861203a4fffffff': 1000 } });
+
+      expect(response.body.data).toEqual({ h: '861203a4fffffff', v: 1000 });
     });
     test('When I query a material H3 with a non available resolution, then I should get a proper error message', async () => {
       const response = await request(app.getHttpServer()).get(
@@ -104,7 +107,7 @@ describe('H3-Data Module (e2e)', () => {
       );
     });
 
-    test.only('When I query H3 data at minimal resolution, then I should get 8 h3indexes', async () => {
+    test('When I query H3 data at minimal resolution, then I should get 8 h3indexes', async () => {
       const h3GridId = await createFakeH3Data(
         fakeTable,
         fakeColumn,

@@ -58,7 +58,6 @@ describe('H3-Data Module (e2e)', () => {
         .get(`/api/v1/h3/data/${fakeTable}/${fakeColumn}`)
         .expect(HttpStatus.NOT_FOUND);
 
-      console.log(response.body);
       expect(response.body.errors[0].title).toEqual(
         `H3 ${fakeColumn} data in ${fakeTable} could not been found`,
       );
@@ -94,7 +93,7 @@ describe('H3-Data Module (e2e)', () => {
         `/api/v1/h3/material?materialId=${material.id}&resolution=1`,
       );
       expect(response.body.errors[0].title).toEqual(
-        `No H3 Data available for Material: ${material.name}`,
+        `There is no H3 Data for Material with ID: ${material.id}`,
       );
     });
     test('When I query a material H3 data with no resolution provided, then I should get a proper error message', async () => {
@@ -108,12 +107,12 @@ describe('H3-Data Module (e2e)', () => {
     });
 
     test('When I query H3 data at minimal resolution, then I should get 8 h3indexes', async () => {
-      const h3GridId = await createFakeH3Data(
+      const h3Data = await createFakeH3Data(
         fakeTable,
         fakeColumn,
         h3MaterialFixtures,
       );
-      const material = await createMaterial({ h3GridId });
+      const material = await createMaterial({ producer: h3Data });
       const response = await request(app.getHttpServer()).get(
         `/api/v1/h3/material?materialId=${material.id}&resolution=1`,
       );

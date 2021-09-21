@@ -66,4 +66,7 @@ export class CreateMaterialDto {
   @IsString()
   @IsOptional()
   mpath?: string;
+
+  @IsOptional()
+  datasetId?: string;
 }

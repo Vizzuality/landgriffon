@@ -74,15 +74,9 @@ export class Indicator extends BaseEntity {
   @ApiPropertyOptional()
   indicatorCoefficients: IndicatorCoefficient[];
 
-  // TODO: Check with data if this relation can be stablished / make sense
-
-  @OneToOne(() => H3Data, (h3grid: H3Data) => h3grid.id, {
+  @OneToMany(() => H3Data, (h3grid: H3Data) => h3grid.indicators, {
     nullable: true,
-    eager: true,
   })
-  @JoinColumn({ name: 'h3GridId' })
+  @JoinColumn()
   h3Grid: H3Data;
-
-  @Column({ nullable: true })
-  h3GridId!: string;
 }

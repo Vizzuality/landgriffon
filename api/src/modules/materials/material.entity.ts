@@ -112,25 +112,28 @@ export class Material extends TimestampedBaseEntity {
   @JoinColumn({ name: 'layerId' })
   layer: Layer;
 
-  /**
-   * @debt: This columns should not be nullable but is necessary for the time being
-   * to load material data since we have no layer data yet
-   */
   @ApiProperty()
   @Column()
   layerId!: string;
+
+  @Column({ type: 'text', nullable: true })
+  datasetId: string;
 
   @OneToOne(() => H3Data, (h3grid: H3Data) => h3grid.id, {
     nullable: true,
     eager: true,
   })
-  @JoinColumn({ name: 'h3GridId' })
-  h3Grid: H3Data;
-  /**
-   * @note: Although there should not be any material with no h3GridId, this needs to be nullable
-   * since materials needs to exist before the h3 script takes care of adding these IDs to
-   * each material
-   */
+  @JoinColumn()
+  producer: H3Data;
   @Column({ nullable: true })
-  h3GridId!: string;
+  producerId: string;
+
+  @OneToOne(() => H3Data, (h3grid: H3Data) => h3grid.id, {
+    nullable: true,
+    eager: true,
+  })
+  @JoinColumn()
+  harvest: H3Data;
+  @Column({ nullable: true })
+  harvestId: string;
 }

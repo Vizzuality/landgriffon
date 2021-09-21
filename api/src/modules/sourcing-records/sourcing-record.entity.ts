@@ -38,6 +38,7 @@ export class SourcingRecord extends TimestampedBaseEntity {
   @ManyToOne(
     () => SourcingLocation,
     (sourcingLocation: SourcingLocation) => sourcingLocation.id,
+    { onDelete: 'CASCADE' },
   )
   @JoinTable()
   sourcingLocation: SourcingLocation;

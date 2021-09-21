@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
-import { RiskMapModule } from '../../src/modules/risk-map/risk-map.module';
 import {
   createIndicator,
   createMaterial,
@@ -23,6 +22,7 @@ import {
 } from '../h3-data/mocks/h3-fixtures';
 import { H3DataRepository } from '../../src/modules/h3-data/h3-data.repository';
 import { UnitConversionRepository } from '../../src/modules/unit-conversions/unit-conversion.repository';
+import { H3DataModule } from '../../src/modules/h3-data/h3-data.module';
 
 /**
  * Tests for the Risk Map module.
@@ -44,7 +44,7 @@ describe('Risk Map Test Suite (e2e)', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, RiskMapModule],
+      imports: [AppModule, H3DataModule],
     }).compile();
 
     materialRepository = moduleFixture.get<MaterialRepository>(
@@ -72,10 +72,10 @@ describe('Risk Map Test Suite (e2e)', () => {
 
   afterEach(async () => {
     await materialRepository.delete({});
+    await h3DataRepository.delete({});
     await indicatorRepository.delete({});
     await unitConversionRepository.delete({});
     await unitRepository.delete({});
-    await h3DataRepository.delete({});
     await dropFakeH3Data([INDICATOR_FAKE_H3_TABLE, MATERIAL_FAKE_H3_TABLE]);
   });
 
@@ -98,6 +98,9 @@ describe('Risk Map Test Suite (e2e)', () => {
         'materialId must be a UUID',
         'year should not be empty',
         'year must be a number conforming to the specified constraints',
+        'resolution should not be empty',
+        'resolution must be a number conforming to the specified constraints',
+        'Available resolutions: 1 to 6',
       ],
     );
   });
@@ -107,42 +110,40 @@ describe('Risk Map Test Suite (e2e)', () => {
     const indicator = await createIndicator({ unit, name: 'Indicator Name' });
 
     const response = await request(app.getHttpServer()).get(
-      `/api/v1/h3/risk-map?materialId=${FAKE_UUID}&indicatorId=${indicator.id}&year=2020`,
+      `/api/v1/h3/risk-map?materialId=${FAKE_UUID}&indicatorId=${indicator.id}&year=2020&resolution=1`,
     );
 
     expect(response.body.errors[0].title).toEqual(
-      `There is no H3 Data for Indicator: ${indicator.name}`,
+      `There is no H3 Data for Indicator with ID: ${indicator.id}`,
     );
   });
   test('When I try to GET a Risk-Map with correct queries, but there is no H3 Data available for requested Material, then I should get a proper error message', async () => {
-    const material = await createMaterial({ name: 'Material Name' });
-    const h3GridId = await createFakeH3Data(
-      INDICATOR_FAKE_H3_TABLE,
-      INDICATOR_FAKE_H3_COLUMN,
-    );
     const unit = await createUnit();
     const indicator = await createIndicator({
       unit,
       name: 'Indicator Name',
-      h3GridId,
+    });
+    const h3Data = await createFakeH3Data(
+      INDICATOR_FAKE_H3_TABLE,
+      INDICATOR_FAKE_H3_COLUMN,
+      false,
+      indicator.id,
+    );
+    const material = await createMaterial({
+      name: 'Material Name',
     });
 
     const response = await request(app.getHttpServer()).get(
-      `/api/v1/h3/risk-map?materialId=${material.id}&indicatorId=${indicator.id}&year=2020`,
+      `/api/v1/h3/risk-map?materialId=${material.id}&indicatorId=${indicator.id}&year=2020&resolution=1`,
     );
 
     expect(response.body.errors[0].title).toEqual(
-      `There is no H3 Data for Material: ${material.name}`,
+      `There is no H3 Data for Material with ID: ${material.id}`,
     );
   });
 
   test('Given there is H3 Data available, When I try to GET a Risk-Map with proper query parameters, then I should get a calculated Risk-Map', async () => {
-    const indicatorH3GridId = await createFakeH3Data(
-      INDICATOR_FAKE_H3_TABLE,
-      INDICATOR_FAKE_H3_COLUMN,
-      h3IndicatorFixtures,
-    );
-    const materialH3GridId = await createFakeH3Data(
+    const materialH3Data = await createFakeH3Data(
       MATERIAL_FAKE_H3_TABLE,
       MATERIAL_FAKE_H3_COLUMN,
       h3MaterialFixtures,
@@ -150,7 +151,7 @@ describe('Risk Map Test Suite (e2e)', () => {
 
     const material = await createMaterial({
       name: 'Material Name',
-      h3GridId: materialH3GridId,
+      harvest: materialH3Data,
     });
 
     const unit = await createUnit();
@@ -158,11 +159,16 @@ describe('Risk Map Test Suite (e2e)', () => {
     const indicator = await createIndicator({
       unit,
       name: 'Indicator Name',
-      h3GridId: indicatorH3GridId,
     });
+    const indicatorH3Data = await createFakeH3Data(
+      INDICATOR_FAKE_H3_TABLE,
+      INDICATOR_FAKE_H3_COLUMN,
+      h3IndicatorFixtures,
+      indicator.id,
+    );
 
     const response = await request(app.getHttpServer()).get(
-      `/api/v1/h3/risk-map?materialId=${material.id}&indicatorId=${indicator.id}&year=2020`,
+      `/api/v1/h3/risk-map?materialId=${material.id}&indicatorId=${indicator.id}&year=2020&resolution=6`,
     );
 
     expect(response.body.length).toEqual(384);

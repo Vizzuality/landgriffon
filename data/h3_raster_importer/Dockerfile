@@ -1,21 +1,17 @@
 FROM perrygeo/gdal-base
 
-ENV NVM_DIR /usr/local/nvm
-RUN apt-get install zip
-
+RUN apt-get --allow-releaseinfo-change update
+RUN apt-get install -y build-essential zip nodejs npm
 
 RUN pip install --upgrade --no-cache-dir pip
 
 COPY ./requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
-RUN mkdir -p "$NVM_DIR"; \
-    wget -q \
-        "https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh" | \
-        bash \
-    ; \
-    source $NVM_DIR/nvm.sh; \
-    nvm install --lts --latest-npm \
-    && npm install @mapbox/mapbox-gl-style-spec --global
+
+# confirm installation
+RUN node -v
+RUN npm -v
+
 RUN npm i -g mapshaper@0.5.34
 
 WORKDIR /

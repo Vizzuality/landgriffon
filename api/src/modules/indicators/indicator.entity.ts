@@ -26,7 +26,7 @@ export const indicatorResource: BaseServiceResource = {
     singular: 'indicator',
     plural: 'indicators',
   },
-  entitiesAllowedAsIncludes: [],
+  entitiesAllowedAsIncludes: ['unit'],
   columnsAllowedAsFilter: ['name', 'description', 'status'],
 };
 

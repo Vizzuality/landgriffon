@@ -1,5 +1,5 @@
 
-all: data/biodiversity/6kcchn7e3u_official_teow/wwf_terr_ecos_m.shp
+all: h3_grid_bio_global
 
 crop: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha
 
@@ -122,13 +122,38 @@ data/biodiversity/6kcchn7e3u_official_teow: data/biodiversity/6kcchn7e3u_officia
 
 # join attributes of csv and ecoregions to get the biodiversity risk values
 data/biodiversity/6kcchn7e3u_official_teow/wwf_terr_ecos_m.shp: data/biodiversity/6kcchn7e3u_official_teow
-	for shp in data/biodiversity/6kcchn7e3u_official_teow/*.shp; do\
-		shp_file="$${shp}";\
-	done
-	mapshaper "$${shp_file}" -simplify 15% planar keep-shapes \
+	mapshaper data/biodiversity/6kcchn7e3u_official_teow/wwf_terr_ecos.shp -simplify 10% planar keep-shapes \
 	-clean \
 	-join ./LCIA_UNEP_SETAC/Ch6_PSL_regional_ecoregions_v01.csv keys=eco_code,eco_code \
 	-o $@ force
+
+# rasterize biodiversity dataset
+ data/biodiversity/6kcchn7e3u_official_teow/lcia_psl_regional: data/biodiversity/6kcchn7e3u_official_teow/wwf_terr_ecos_m.shp
+	mkdir -p $@
+	gdal_rasterize -l wwf_terr_ecos_m -a Annual_cro -tr 0.0833333333333286 0.0833333333333286 -a_nodata 0.0 \
+	-te -180.0 -90.0 180.0 90.0 -ot Float32 \
+	-of GTiff $< data/biodiversity/6kcchn7e3u_official_teow/lcia_psl_regional/lcia_psl_r_annual_crops.tif; \
+	gdal_rasterize -l wwf_terr_ecos_m -a Permanent_ -tr 0.0833333333333286 0.0833333333333286 -a_nodata 0.0 \
+	-te -180.0 -90.0 180.0 90.0 -ot Float32 \
+	-of GTiff $< data/biodiversity/6kcchn7e3u_official_teow/lcia_psl_regional/lcia_psl_r_permanent_crops.tif; \
+	gdal_rasterize -l wwf_terr_ecos_m -a Pasture -tr 0.0833333333333286 0.0833333333333286 -a_nodata 0.0 \
+	-te -180.0 -90.0 180.0 90.0 -ot Float32 \
+	-of GTiff $< data/biodiversity/6kcchn7e3u_official_teow/lcia_psl_regional/lcia_psl_r_pasture.tif; \
+	gdal_rasterize -l wwf_terr_ecos_m -a Urban -tr 0.0833333333333286 0.0833333333333286 -a_nodata 0.0 \
+	-te -180.0 -90.0 180.0 90.0 -ot Float32 \
+	-of GTiff $< data/biodiversity/6kcchn7e3u_official_teow/lcia_psl_regional/lcia_psl_r_urban.tif; \
+	gdal_rasterize -l wwf_terr_ecos_m -a Extensive_ -tr 0.0833333333333286 0.0833333333333286 -a_nodata 0.0 \
+	-te -180.0 -90.0 180.0 90.0 -ot Float32 \
+	-of GTiff $< data/biodiversity/6kcchn7e3u_official_teow/lcia_psl_regional/lcia_psl_r_extensive_forestry.tif; \
+	gdal_rasterize -l wwf_terr_ecos_m -a Intensive_ -tr 0.0833333333333286 0.0833333333333286 -a_nodata 0.0 \
+	-te -180.0 -90.0 180.0 90.0 -ot Float32 \
+	-of GTiff $< data/biodiversity/6kcchn7e3u_official_teow/lcia_psl_regional/lcia_psl_r_intensive_forestry.tif;
+
+# convert the biodiversity rasters to h3 tables
+h3_grid_bio_global: data/biodiversity/6kcchn7e3u_official_teow/lcia_psl_regional
+	python tiff_folder_to_h3_table.py $< $@ indicator --h3-res=6
+
+
 
 # DEFORESTATION
 # TODO

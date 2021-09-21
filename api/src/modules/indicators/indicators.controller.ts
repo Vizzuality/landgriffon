@@ -69,9 +69,15 @@ export class IndicatorsController {
   @ApiOkResponse({ type: Indicator })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Indicator> {
+  async findOne(
+    @Param('id') id: string,
+    @ProcessFetchSpecification({
+      allowedFilters: indicatorResource.columnsAllowedAsFilter,
+    })
+    fetchSpecification: FetchSpecification,
+  ): Promise<Indicator> {
     return await this.indicatorsService.serialize(
-      await this.indicatorsService.getById(id),
+      await this.indicatorsService.getById(id, fetchSpecification),
     );
   }
 

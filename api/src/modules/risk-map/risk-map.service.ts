@@ -8,8 +8,8 @@ import { MaterialsService } from 'modules/materials/materials.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { IndicatorSourcesService } from 'modules/indicator-sources/indicator-sources.service';
 import { H3DataService } from 'modules/h3-data/h3-data.service';
-import { RiskMapResponseDTO } from 'modules/risk-map/dto/response-risk-map.dto';
 import { UnitConversionsService } from 'modules/unit-conversions/unit-conversions.service';
+import { H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 
 /**
  * @note: Formula for Waterfootprint calculus:
@@ -31,7 +31,7 @@ export class RiskMapService {
   async calculateRiskMapByMaterialAndIndicator(
     materialId: string,
     indicatorId: string,
-  ): Promise<RiskMapResponseDTO> {
+  ): Promise<H3IndexValueData[]> {
     const indicator = await this.indicatorService.getIndicatorById(indicatorId);
     if (!indicator.h3Grid)
       throw new NotFoundException(
@@ -46,17 +46,10 @@ export class RiskMapService {
       indicator.unit.id,
     );
 
-    const riskMap = await this.h3dataService.calculateRiskMapByMaterialAndIndicator(
+    return await this.h3dataService.calculateRiskMapByMaterialAndIndicator(
       indicator.h3Grid,
       material.h3Grid,
       unitConversion.factor as number,
     );
-
-    return {
-      indicator: indicator.name,
-      material: material.name,
-      unit: { name: indicator.unit.name, symbol: indicator.unit.symbol },
-      riskMap,
-    };
   }
 }

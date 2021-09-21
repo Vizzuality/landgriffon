@@ -33,6 +33,7 @@ import { UpdateMaterialDto } from 'modules/materials/dto/update.material.dto';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
 import { ParseOptionalIntPipe } from 'pipes/parse-optional-int.pipe';
+import { Unit } from 'modules/units/unit.entity';
 
 @Controller(`/api/v1/materials`)
 @ApiTags(materialResource.className)
@@ -106,10 +107,18 @@ export class MaterialsController {
     })
     fetchSpecification: FetchSpecification,
     @Param('id') id: string,
-  ): Promise<Material> {
-    return await this.materialsService.serialize(
-      await this.materialsService.getById(id, fetchSpecification),
+  ): Promise<Material & Pick<Unit, 'name'> & Pick<Unit, 'symbol'>> {
+    const material = await this.materialsService.getById(
+      id,
+      fetchSpecification,
     );
+    // TODO: Hardcoded value to unblock FE. Remove this ASA Science can provide this data
+    const materialWithUnit = {
+      ...material,
+      unit: { symbol: 'tons' },
+    };
+
+    return await this.materialsService.serialize(materialWithUnit);
   }
 
   @ApiOperation({ description: 'Create a material' })

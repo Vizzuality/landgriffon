@@ -4,7 +4,6 @@ import { H3DataService } from 'modules/h3-data/h3-data.service';
 import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 import { MaterialH3ByResolutionDto } from 'modules/h3-data/dto/h3-by-resolution.dto';
 import { GetRiskMapDto } from 'modules/risk-map/dto/get-risk-map.dto';
-import { RiskMapResponseDTO } from 'modules/risk-map/dto/response-risk-map.dto';
 import { RiskMapService } from 'modules/risk-map/risk-map.service';
 
 @Controller('api/v1/h3')
@@ -48,7 +47,7 @@ export class H3DataController {
   @Get('risk-map')
   async getRiskMap(
     @Query(ValidationPipe) queryParams: GetRiskMapDto,
-  ): Promise<RiskMapResponseDTO> {
+  ): Promise<H3IndexValueData[]> {
     const { materialId, indicatorId } = queryParams;
     return await this.riskMapService.calculateRiskMapByMaterialAndIndicator(
       materialId,

@@ -1,15 +1,17 @@
 import { getManager } from 'typeorm';
+import { H3Data } from 'modules/h3-data/h3-data.entity';
 
 export const createFakeH3Data = async (
   h3TableName: string,
   h3ColumnName: string,
-  aditionalH3Data?: Record<any, unknown>,
-): Promise<string> => {
+  aditionalH3Data?: any,
+  indicatorId?: string,
+): Promise<H3Data> => {
   await getManager().query(
     `CREATE TABLE ${h3TableName} (h3index h3index, ${h3ColumnName} float4);` +
-      `INSERT INTO ${h3TableName} (h3index, ${h3ColumnName} ) VALUES ('861203a4fffffff', 1000);` +
-      `INSERT INTO h3_data ("h3tableName", "h3columnName", "h3resolution") VALUES ('${h3TableName}', '${h3ColumnName}', 6 );`,
+      `INSERT INTO ${h3TableName} (h3index, ${h3ColumnName} ) VALUES ('861203a4fffffff', 1000);`,
   );
+
   if (aditionalH3Data) {
     let query = `INSERT INTO ${h3TableName} (h3index,  ${h3ColumnName}) VALUES `;
     const queryArr = [];
@@ -19,10 +21,14 @@ export const createFakeH3Data = async (
     query = query.concat(queryArr.join());
     await getManager().query(query);
   }
-  const res = await getManager().query(
-    `SELECT id FROM h3_data WHERE "h3columnName" = '${h3ColumnName}';`,
-  );
-  return res[0].id;
+
+  const h3data = new H3Data();
+  h3data.h3tableName = h3TableName;
+  h3data.h3columnName = h3ColumnName;
+  h3data.h3resolution = 6;
+  if (indicatorId) h3data.indicatorId = indicatorId;
+
+  return h3data.save();
 };
 
 export const dropFakeH3Data = async (h3TableNames: string[]): Promise<void> => {

@@ -3,8 +3,11 @@ import {
   Column,
   Entity,
   Index,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Indicator } from 'modules/indicators/indicator.entity';
 
 /**
  * @note: Interface props are marked as 'h' and 'v' because that is what the DB returns when querying a h3 maps
@@ -16,6 +19,13 @@ export interface H3IndexValueData {
   h: string;
   // Values for an h3 index
   v: number;
+}
+
+export enum H3_DATA_TYPES {
+  HARVEST = 'harvest_area',
+  PRODUCTION = 'production',
+  YIELD = 'yield',
+  INDICATOR = 'indicator',
 }
 
 @Entity('h3_data')
@@ -32,4 +42,21 @@ export class H3Data extends BaseEntity {
 
   @Column({ type: 'int' })
   h3resolution: number;
+
+  @ManyToOne(() => Indicator, (indicator: Indicator) => indicator.id)
+  @JoinColumn({ name: 'indicatorId' })
+  indicators: Indicator[];
+
+  @Column({ nullable: true })
+  indicatorId: string;
+
+  @Column({
+    type: 'enum',
+    enum: H3_DATA_TYPES,
+    nullable: true,
+  })
+  dataType: H3_DATA_TYPES;
+
+  @Column({ type: 'json', nullable: true })
+  metadata?: JSON;
 }

@@ -32,7 +32,7 @@ import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { UpdateMaterialDto } from 'modules/materials/dto/update.material.dto';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
-import { ParseOptionalIntPipe } from 'pipes/parse-optional-int.pipe';
+import { ParseOptionalIntPipe } from 'pipes/parse-optional-int.pipe';import { Unit } from 'modules/units/unit.entity';
 
 @Controller(`/api/v1/materials`)
 @ApiTags(materialResource.className)

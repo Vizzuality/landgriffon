@@ -20,7 +20,7 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 
-describe('Sourcing Records import', () => {
+describe('Sourcing Data import', () => {
   /**
    * @note: We are currently ignoring '#N/A' location type values in production code
    * so this mock filters them to avoid DB constraint errors for not be one of the allowed
@@ -160,19 +160,11 @@ describe('Sourcing Records import', () => {
     const suppliersRoots: Supplier[] = await supplierRepository.findRoots();
     expect(suppliersRoots).toHaveLength(3);
 
-    /**
-     * @note: Double check that admin-regions are not longer imported from the xlsx before deleting assertion below
-     */
-    // const adminRegions: AdminRegion[] = await adminRegionRepository.find();
-    // expect(adminRegions).toHaveLength(238);
-    // const adminRegionsRoots: AdminRegion[] = await adminRegionRepository.findRoots();
-    // expect(adminRegionsRoots).toHaveLength(238);
-
     const sourcingRecords: SourcingRecord[] = await sourcingRecordRepository.find();
-    expect(sourcingRecords).toHaveLength(374);
+    expect(sourcingRecords).toHaveLength(440);
 
     const sourcingLocations: SourcingLocation[] = await sourcingLocationRepository.find();
-    expect(sourcingLocations).toHaveLength(34);
+    expect(sourcingLocations).toHaveLength(40);
   });
 
   test('When a file is sent 2 times to the API, then imported data length should be equal, and database has been cleaned in between', async () => {
@@ -185,7 +177,7 @@ describe('Sourcing Records import', () => {
       .attach('file', __dirname + '/base-dataset.xlsx');
 
     const sourcingRecords: SourcingRecord[] = await sourcingRecordRepository.find();
-    expect(sourcingRecords.length).toEqual(374);
+    expect(sourcingRecords.length).toEqual(440);
   });
 
   test('When a file is sent to the API and gets processed, then a request to Sourcing-Records should return a existing Sourcing-Location ID', async () => {

@@ -16,6 +16,7 @@ import {
   AdminRegion,
 } from '../src/modules/admin-regions/admin-region.entity';
 import { UnitConversion } from '../src/modules/unit-conversions/unit-conversion.entity';
+import { H3Data } from '../src/modules/h3-data/h3-data.entity';
 
 async function createAdminRegion(
   additionalData: Partial<AdminRegion> = {},
@@ -29,6 +30,14 @@ async function createAdminRegion(
     additionalData,
   );
   return adminRegion.save();
+}
+
+async function createH3Data(
+  additionalData: Partial<H3Data> = {},
+): Promise<H3Data> {
+  const h3Data = H3Data.merge(new H3Data(), additionalData);
+
+  return h3Data.save();
 }
 
 async function createIndicatorCoefficient(
@@ -238,6 +247,7 @@ async function createUnitConversion(
 
 export {
   createAdminRegion,
+  createH3Data,
   createIndicator,
   createIndicatorCoefficient,
   createIndicatorRecord,

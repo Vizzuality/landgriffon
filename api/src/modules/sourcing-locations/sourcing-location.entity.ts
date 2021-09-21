@@ -156,25 +156,30 @@ export class SourcingLocation extends TimestampedBaseEntity {
       onDelete: 'CASCADE',
     },
   )
+  @JoinColumn({ name: 't1SupplierId' })
   t1Supplier: Supplier;
+
+  @Column({ nullable: true })
+  t1SupplierId: string;
 
   @ManyToOne(
     () => Supplier,
     (supplier: Supplier) => supplier.sourcingLocations,
     {
-      cascade: true,
       eager: false,
       onDelete: 'CASCADE',
     },
   )
+  @JoinColumn({ name: 'producerId' })
   producer: Supplier;
+  @Column({ nullable: true })
+  producerId: string;
 
   @ManyToOne(
     () => SourcingLocationGroup,
     (sourcingLocationGroup: SourcingLocationGroup) => sourcingLocationGroup.id,
     {
       eager: false,
-      onDelete: 'CASCADE',
     },
   )
   @JoinColumn({ name: 'sourcingLocationGroupId' })

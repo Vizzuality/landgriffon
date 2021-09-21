@@ -1,6 +1,10 @@
 import { EntityRepository, Repository, getManager } from 'typeorm';
 import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
-import { NotFoundException, ServiceUnavailableException } from '@nestjs/common';
+import {
+  Logger,
+  NotFoundException,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 
 /**
  * @note: Column aliases are marked as 'h' and 'v' so that DB returns data in the format the consumer needs to be
@@ -9,6 +13,7 @@ import { NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 
 @EntityRepository(H3Data)
 export class H3DataRepository extends Repository<H3Data> {
+  logger: Logger = new Logger(H3DataRepository.name);
   /** Retrieves data from dynamically generated H3 data
    *
    * @param h3ColumnName: Name of the column inside the dynamically generated table
@@ -40,10 +45,10 @@ export class H3DataRepository extends Repository<H3Data> {
    *
    */
 
-  async getH3ByIdAndResolution(
+  async getMaterialMapByResolution(
     h3Id: string,
     resolution: number,
-  ): Promise<H3IndexValueData[]> {
+  ): Promise<any> {
     const h3Info = await this.createQueryBuilder('h3')
       .select('"h3tableName"')
       .addSelect('"h3columnName"')
@@ -54,14 +59,22 @@ export class H3DataRepository extends Repository<H3Data> {
       throw new NotFoundException(
         `Requested H3 with ID: ${h3Id} could not been found`,
       );
+    try {
+      const materialMap = await getManager()
+        .createQueryBuilder()
+        .select(`h3_to_parent(h3index, ${resolution})`, 'h')
+        .addSelect(`sum(${h3Info.h3columnName})`, 'v')
+        .from(`${h3Info.h3tableName}`, 'h3table')
+        .groupBy('h')
+        .getRawMany();
 
-    return await getManager()
-      .createQueryBuilder()
-      .select(`h3_to_parent(h3index, ${resolution})`, 'h')
-      .addSelect(`sum(${h3Info.h3columnName})`, 'v')
-      .from(`${h3Info.h3tableName}`, 'h3table')
-      .groupBy('h')
-      .getRawMany();
+      this.logger.log('Material Map generated');
+      return materialMap;
+    } catch (err) {
+      throw new ServiceUnavailableException(
+        'Material Map could not been generated',
+      );
+    }
   }
 
   /**
@@ -69,30 +82,31 @@ export class H3DataRepository extends Repository<H3Data> {
    * @param indicatorH3Data H3 format data of a Indicator
    * @param materialH3Data  H3 format data of a material
    * @param calculusFactor Integer value to perform calculus. Represents the factor
+   * @param resolution Integer value that represent the resolution which the h3 response should be calculated
    */
 
-  async calculateRiskMapByMaterialAndIndicator(
+  async getRiskMapByResolution(
     indicatorH3Data: H3Data,
     materialH3Data: H3Data,
     calculusFactor: number,
+    resolution: number,
   ): Promise<H3IndexValueData[]> {
-    const riskmap = await getManager()
+    const riskMap = await getManager()
       .createQueryBuilder()
-      .select('materialh3.h3index', 'h')
+      .select(`h3_to_parent(materialh3.h3index, ${resolution})`, 'h')
       .addSelect(
-        `indicatorh3.${indicatorH3Data.h3columnName} * ${materialH3Data.h3columnName} / ${calculusFactor} `,
+        `sum(indicatorh3.${indicatorH3Data.h3columnName} * (materialh3.${materialH3Data.h3columnName}/(h3_hex_area(6)*100))/${calculusFactor})`,
         'v',
       )
       .from(materialH3Data.h3tableName, 'materialh3')
       .addFrom(indicatorH3Data.h3tableName, 'indicatorh3')
       .where(`indicatorh3.h3index = materialh3.h3index`)
+      .andWhere(`${materialH3Data.h3columnName} is not null`)
+      .andWhere(`${indicatorH3Data.h3columnName} is not null`)
+      .groupBy('"h"')
       .getRawMany();
 
-    if (!riskmap) {
-      throw new ServiceUnavailableException(
-        'RiskMap could not been calculated',
-      );
-    }
-    return riskmap;
+    this.logger.log('Risk Map generated');
+    return riskMap;
   }
 }

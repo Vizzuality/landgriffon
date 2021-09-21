@@ -9,6 +9,7 @@ import {
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Indicator } from 'modules/indicators/indicator.entity';
+import { UnitConversion } from 'modules/unit-conversions/unit-conversion.entity';
 
 export const unitResource: BaseServiceResource = {
   className: 'Unit',
@@ -44,4 +45,11 @@ export class Unit extends BaseEntity {
   @OneToMany(() => Indicator, (indicator: Indicator) => indicator.unit)
   @JoinColumn()
   indicators!: Indicator[];
+
+  @OneToMany(
+    () => UnitConversion,
+    (unitConversion: UnitConversion) => unitConversion.unit,
+  )
+  @JoinColumn()
+  unitConversions: UnitConversion[];
 }

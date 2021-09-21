@@ -6,6 +6,7 @@ import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { ImportDataService } from 'modules/import-data/import-data.service';
 import {
+  SourcingData,
   SourcingRecordsDtoProcessorService,
   SourcingRecordsDtos,
 } from 'modules/import-data/sourcing-data/dto-processor.service';
@@ -14,6 +15,7 @@ import { SourcingLocationGroupsService } from 'modules/sourcing-location-groups/
 import { validateOrReject } from 'class-validator';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
+import { Supplier } from 'modules/suppliers/supplier.entity';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -74,19 +76,30 @@ export class SourcingRecordsImportService {
         parsedXLSXDataset,
         sourcingLocationGroup.id,
       );
-      await this.validateDTOs(dtoMatchedData);
 
+      await this.validateDTOs(dtoMatchedData);
       await this.cleanDataBeforeImport();
-      await this.materialService.createTree(dtoMatchedData.materials);
-      await this.businessUnitService.createTree(dtoMatchedData.businessUnits);
-      await this.supplierService.createTree(dtoMatchedData.suppliers);
-      //TODO: Once GADM import is merged, we no longer need to populate admin-regions by the xlsx file
-      //await this.adminRegionService.createTree(dtoMatchedData.adminRegions);
-      const geoCodedSourcingData = await this.geoCodingService.geoCodeLocations(
+      const materials = await this.materialService.createTree(
+        dtoMatchedData.materials,
+      );
+      const businessUnits = await this.businessUnitService.createTree(
+        dtoMatchedData.businessUnits,
+      );
+
+      const suppliers = await this.supplierService.createTree(
+        dtoMatchedData.suppliers,
+      );
+      const sourcingDataWithOrganizationalEntities = this.relateSourcingDataWithOrganizationalEntities(
+        suppliers,
+        businessUnits,
+        materials,
         dtoMatchedData.sourcingData,
       );
+
+      const geoCodedSourcingData = await this.geoCodingService.geoCodeLocations(
+        sourcingDataWithOrganizationalEntities,
+      );
       await this.sourcingLocationService.save(geoCodedSourcingData);
-      //return await this.getAdminRegionByGeoLocation(sour);
     } finally {
       await this.fileService.deleteDataFromFS(filePath);
     }
@@ -128,12 +141,47 @@ export class SourcingRecordsImportService {
       await this.materialService.clearTable();
       await this.businessUnitService.clearTable();
       await this.supplierService.clearTable();
-      await this.sourcingRecordService.clearTable();
       await this.sourcingLocationService.clearTable();
+      await this.sourcingRecordService.clearTable();
     } catch (err) {
       throw new Error(
         `Database could not been cleaned before loading new dataset: ${err.message}`,
       );
     }
+  }
+
+  /**
+   *@note: Type hack as mpath property does not exist on Materials and BusinessUnits, but its created
+   * by typeorm when using @Tree('materialized-path)'.
+   * It's what we can use to know which material/business unit relates to which sourcing-location
+   * in a synchronous way avoiding hitting the DB
+   */
+  relateSourcingDataWithOrganizationalEntities(
+    suppliers: Supplier[],
+    businessUnits: Record<string, any>[],
+    materials: Record<string, any>[],
+    sourcingData: SourcingData[],
+  ): any {
+    for (const sourcingLocation of sourcingData) {
+      for (const supplier of suppliers) {
+        if (sourcingLocation.producerId === supplier.name) {
+          sourcingLocation.producerId = supplier.id;
+        }
+        if (sourcingLocation.t1SupplierId === supplier.name) {
+          sourcingLocation.t1SupplierId = supplier.id;
+        }
+      }
+      for (const businessUnit of businessUnits) {
+        if (sourcingLocation.businessUnitId === businessUnit.mpath) {
+          sourcingLocation.businessUnitId = businessUnit.id;
+        }
+      }
+      for (const material of materials) {
+        if (sourcingLocation.materialId === material.mpath) {
+          sourcingLocation.materialId = material.id;
+        }
+      }
+    }
+    return sourcingData;
   }
 }

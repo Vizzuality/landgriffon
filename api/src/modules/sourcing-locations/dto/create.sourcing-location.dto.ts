@@ -34,6 +34,13 @@ export class CreateSourcingLocationDto {
   @MinLength(2)
   @MaxLength(40)
   @ApiPropertyOptional()
+  materialId?: string;
+
+  @IsString()
+  @IsOptional()
+  @MinLength(2)
+  @MaxLength(40)
+  @ApiPropertyOptional()
   t1SupplierId?: string;
 
   @IsString()

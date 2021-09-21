@@ -26,13 +26,11 @@ export interface SourcingRecordsDtos {
   sourcingData: SourcingData[];
 }
 
-const NON_META_PROPERTIES: Array<string> = [
+const SOURCING_LOCATION_PROPERTIES: Array<string> = [
   'material.path',
   'business_unit.path',
   't1_supplier.name',
   'producer.name',
-];
-const SOURCING_LOCATION_PROPERTIES: Array<string> = [
   'location_country_input',
   'location_address_input',
   'location_latitude_input',
@@ -91,10 +89,6 @@ export class SourcingRecordsDtoProcessorService {
     return SOURCING_LOCATION_PROPERTIES.includes(field);
   }
 
-  private isMeta(field: string): boolean {
-    return !NON_META_PROPERTIES.includes(field);
-  }
-
   private getYear(field: string): number | null {
     const regexMatch: RegExpMatchArray | null = field.match(/\d{4}_/gm);
 
@@ -131,7 +125,7 @@ export class SourcingRecordsDtoProcessorService {
           years[field] = eachRecordOfCustomData[field];
         } else if (this.isSourcingLocationData(field)) {
           sourcingLocation[field] = eachRecordOfCustomData[field];
-        } else if (this.isMeta(field)) {
+        } else if (!this.isSourcingLocationData(field)) {
           metadata[field] = eachRecordOfCustomData[field];
         } else {
           baseProps[field] = eachRecordOfCustomData[field];
@@ -155,6 +149,7 @@ export class SourcingRecordsDtoProcessorService {
        * For each SourcingLocation, attach belonging sourcing-data to have awareness
        * of their relationship
        */
+
       const sourcingLocationWithSourcingRecords = {
         ...sourcingLocation,
         sourcingRecords,
@@ -162,6 +157,7 @@ export class SourcingRecordsDtoProcessorService {
       };
       sourcingData.push(sourcingLocationWithSourcingRecords as SourcingData);
     }
+
     return { sourcingData };
   }
 
@@ -289,6 +285,7 @@ export class SourcingRecordsDtoProcessorService {
     materialDto.hsCodeId = materialData.hs_2017_code;
     materialDto.mpath = materialData.path_id;
     materialDto.layerId = this.layerId;
+    materialDto.datasetId = materialData.datasetId;
     return materialDto;
   }
 
@@ -344,6 +341,18 @@ export class SourcingRecordsDtoProcessorService {
         : parseFloat(sourcingLocationData.location_longitude_input);
     sourcingLocationDto.metadata = sourcingLocationData.metadata;
     sourcingLocationDto.sourcingLocationGroupId = sourcingLocationGroupId;
+    sourcingLocationDto.businessUnitId =
+      sourcingLocationData['business_unit.path'];
+    sourcingLocationDto.materialId = sourcingLocationData['material.path'];
+    sourcingLocationDto.producerId =
+      sourcingLocationData['producer.name'] === ''
+        ? undefined
+        : sourcingLocationData['producer.name'];
+    sourcingLocationDto.t1SupplierId =
+      sourcingLocationData['t1_supplier.name'] === ''
+        ? undefined
+        : sourcingLocationData['t1_supplier.name'];
+
     return sourcingLocationDto;
   }
 

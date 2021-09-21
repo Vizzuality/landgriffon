@@ -41,8 +41,8 @@ const initialState: AnalysisState = {
   filters: {
     indicator: null,
     by: 'material',
-    startYear: 2010,
-    endYear: 2020,
+    startYear: null,
+    endYear: null,
     materials: [],
     origins: [],
     suppliers: [],

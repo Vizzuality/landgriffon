@@ -25,12 +25,14 @@ const YearsFilter: React.FC<YearsFilterProps> = () => {
 
   const isDisabled = error || availableYears.length === 0;
 
+  const { startYear, endYear } = filters;
+
   useEffect(() => {
     if (!isLoading && availableYears) {
       dispatch(
         setFilter({
           id: 'startYear',
-          value: availableYears[0],
+          value: startYear || availableYears[0],
         })
       );
 
@@ -38,7 +40,7 @@ const YearsFilter: React.FC<YearsFilterProps> = () => {
         dispatch(
           setFilter({
             id: 'endYear',
-            value: availableYears[availableYears.length - 1],
+            value: endYear || availableYears[availableYears.length - 1],
           })
         );
       }

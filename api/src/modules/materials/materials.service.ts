@@ -45,6 +45,7 @@ export class MaterialsService extends AppBaseService<
         'createdAt',
         'updatedAt',
         'h3GridId',
+        'unit',
       ],
       keyForAttribute: 'camelCase',
     };

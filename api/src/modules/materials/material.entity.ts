@@ -133,4 +133,7 @@ export class Material extends TimestampedBaseEntity {
    */
   @Column({ nullable: true })
   h3GridId!: string;
+
+  // TODO: Hardcoded value to unblock FE. Remove this ASA Science team can provide this data
+  unit: any;
 }

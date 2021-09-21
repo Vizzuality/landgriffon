@@ -3,7 +3,7 @@ all: h3_grid_bio_global
 
 crop: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha
 
-indicators: h3_grid_wf_global
+indicators: h3_grid_wf_global h3_grid_bio_global
 
 #######################################
 # MapSPAM crop production and harvest area

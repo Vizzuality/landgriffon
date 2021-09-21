@@ -165,12 +165,6 @@ describe('Risk Map Test Suite (e2e)', () => {
       `/api/v1/h3/risk-map?materialId=${material.id}&indicatorId=${indicator.id}&year=2020`,
     );
 
-    expect(response.body.indicator).toEqual(indicator.name);
-    expect(response.body.material).toEqual(material.name);
-    expect(response.body.unit).toEqual({
-      name: unit.name,
-      symbol: unit.symbol,
-    });
-    expect(response.body.riskMap.length).toEqual(384);
+    expect(response.body.length).toEqual(384);
   });
 });

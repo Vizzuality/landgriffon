@@ -4,6 +4,7 @@ import { AppModule } from 'app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as config from 'config';
 import * as helmet from 'helmet';
+import * as compression from 'compression';
 
 async function bootstrap(): Promise<void> {
   const logger = new Logger('bootstrap');
@@ -12,6 +13,7 @@ async function bootstrap(): Promise<void> {
 
   app.use(helmet());
   app.enableCors();
+  app.use(compression());
 
   const swaggerOptions = new DocumentBuilder()
     .setTitle('LandGriffon API')

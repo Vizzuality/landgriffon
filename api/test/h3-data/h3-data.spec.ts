@@ -53,7 +53,7 @@ describe('H3-Data Module (e2e)', () => {
   });
 
   describe('H3 Data Module E2E Test Suite', () => {
-    test.only('Given the H3 Data table is empty, when I query the API, then I should be acknowledged that no requested H3 Data has been found ', async () => {
+    test('Given the H3 Data table is empty, when I query the API, then I should be acknowledged that no requested H3 Data has been found ', async () => {
       const response = await request(app.getHttpServer())
         .get(`/api/v1/h3/data/${fakeTable}/${fakeColumn}`)
         .expect(HttpStatus.NOT_FOUND);
@@ -63,7 +63,7 @@ describe('H3-Data Module (e2e)', () => {
         `H3 ${fakeColumn} data in ${fakeTable} could not been found`,
       );
     });
-    test.only('Given the H3 Data table is populated, when I query the API, then I should get its data in with h3index as key, and column values as value', async () => {
+    test('Given the H3 Data table is populated, when I query the API, then I should get its data in with h3index as key, and column values as value', async () => {
       await createFakeH3Data(fakeTable, fakeColumn);
 
       const response = await request(app.getHttpServer())

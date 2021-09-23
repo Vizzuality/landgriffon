@@ -1,6 +1,6 @@
 export const DATA = [
   {
-    id: '5e8dda24-4164-46dc-97fe-d5030b5bb314',
+    id: 'bd0cf013-05e1-4230-912a-aae592f96c30',
     indicator: 'Carbon emissions',
     values: [
       { year: 2020, value: 300, calculated: false },
@@ -90,7 +90,7 @@ export const DATA = [
     ],
   },
   {
-    id: '15ce1b0c-ded2-4f37-b239-a4f18afbc061',
+    id: '457116a8-90f6-4b0b-8517-9965e880b6a8',
     indicator: 'Deforestation',
     values: [
       { year: 2020, value: 150, calculated: false },
@@ -180,7 +180,7 @@ export const DATA = [
     ],
   },
   {
-    id: '5aa4f430-489f-49ec-b804-cf35a4afa269',
+    id: '1224d1d9-c3ae-450f-acb6-67f4ed33b5f7',
     indicator: 'Unsustainable water use (M3)',
     values: [
       { year: 2020, value: 70, calculated: false },
@@ -270,7 +270,7 @@ export const DATA = [
     ],
   },
   {
-    id: '56e7b73f-1e1d-4071-8303-f67be76bc967',
+    id: '73f95f81-eb4b-4a1b-a148-1ff9f67db07f',
     indicator: 'Biodiversity (X)',
     values: [
       { year: 2020, value: 50, calculated: false },

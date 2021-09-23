@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { getScenarios } from 'services/scenarios';
@@ -12,20 +13,16 @@ const ACTUAL_DATA: Scenario = {
 };
 
 export function useScenarios(queryParams) {
-  const response = useQuery(
-    ['scenariosList', queryParams],
-    async () => getScenarios(queryParams),
-    {
-      retry: false,
-    }
-  );
+  const response = useQuery(['scenariosList', queryParams], async () => getScenarios(queryParams), {
+    retry: false,
+  });
   const data =
     response.isSuccess && response.data
       ? {
-          ...response,
-          // injecting actual data
-          data: [ACTUAL_DATA, ...response.data],
-        }
+        ...response,
+        // injecting actual data
+        data: [ACTUAL_DATA, ...response.data],
+      }
       : response;
 
   return useMemo(() => {

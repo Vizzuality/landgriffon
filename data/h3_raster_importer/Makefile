@@ -1,5 +1,5 @@
 
-all: h3_grid_bio_global
+all: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_wf_global h3_grid_bio_global
 
 crop: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha
 
@@ -157,24 +157,38 @@ h3_grid_bio_global: data/biodiversity/6kcchn7e3u_official_teow/lcia_psl_regional
 
 # DEFORESTATION
 # TODO
+#text: https://storage.googleapis.com/earthenginepartners-hansen/GFC-2020-v1.8/lossyear.txt
+
 
 # CARBON EMISSIONS
 #
 # Download net carbon flux:
 #https://services2.arcgis.com/g8WusZB13b9OegfU/arcgis/rest/services/Forest_greenhouse_gas_net_flux/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson
-data/gfw_carbon/forest_greenhouse_gas_net_flux.csv:
-	mkdir -p data/gfw_carbon
-	wget -O $@ "https://opendata.arcgis.com/api/v3/datasets/66eafb4f16f9478c828c3225d26b4989_0/downloads/data?format=csv&spatialRefId=4326"
+# data/gfw_carbon/forest_greenhouse_gas_net_flux.csv:
+# 	mkdir -p data/gfw_carbon
+# 	wget -O $@ "https://opendata.arcgis.com/api/v3/datasets/66eafb4f16f9478c828c3225d26b4989_0/downloads/data?format=csv&spatialRefId=4326"
 
+# # download individual data
+# data/gfw_carbon/forest_greenhouse_gas_net_flux_simp.txt: data/gfw_carbon/forest_greenhouse_gas_net_flux.csv
+# 	mkdir -p data/gfw_carbon
+# 	sed -i 1d $<
+# 	cut -d',' -f2 $< | head -271 > $@
+# 	for id in $$(cat $@); do \
+# 	table_name=`basename -s .tif "$$id" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
+# 	output_file="data/gfw_carbon/$${table_name}.tif";\
+# 	wget -O "$$output_file" "$$id"; \
+# 	done
 
-data/gfw_carbon/forest_greenhouse_gas_net_flux_simp.txt: data/gfw_carbon/forest_greenhouse_gas_net_flux.csv
-	cut -d',' -f2 $< | head -271 > $@
-	lines=$(cat $@)
-	for line in "$${lines}"; do \
-		echo "$${line}";\
-	done
+# data/gfw_carbon/merged_tiles/forest_greenhouse_gas_net_flux_2001_2020_tCO2eq.tif:
+# 	mkdir -p data/gfw_carbon/merged_tiles
+# 	gdalbuildvrt data/gfw_carbon/forest_greenhouse_gas_net_flux_2001_2020_tCO2eq.vrt data/gfw_carbon/*.tif
+# 	gdal_translate -of GTiff -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 \
+# 	data/gfw_carbon/forest_greenhouse_gas_net_flux_2001_2020_tCO2eq.vrt $@
 
+# h3_grid_bio_global: data/biodiversity/6kcchn7e3u_official_teow/lcia_psl_regional
+# 	python tiff_folder_to_h3_table.py $< $@ indicator --h3-res=6
 
+#gdalwarp -r near -multi -of GTiff -co COMPRESS=JPEG -co JPEG_QUALITY=75 /home/elena/vizzuality/repos/landgriffon/data/data/seed/gfw_carbon/forest_greenhouse_gas_net_flux_2001_2020_tCO2eq.vrt /home/elena/personal/test/test_warp_v2.tif
 # ^^^
 #######################################
 

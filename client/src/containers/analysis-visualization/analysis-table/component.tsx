@@ -62,13 +62,14 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
   // Substitute parameters by (filters.startYear, filters.endYear);
   const filteredYears = rangeOfYears(2020, 2024);
 
-  const tableYearColumns = filteredYears.map((y) => {
+  const tableYearColumns = filteredYears.map((y, i) => {
     const isPastOrCurrentYear = y <= new Date().getFullYear();
     return {
       title: () => <TableTitle title={y} />,
       render: (record) => getValueByYear(y, record),
       key: 'values',
       width: 100,
+      sorter: (a, b) => a.values[i].value - b.values[i].value,
       ...(isPastOrCurrentYear && { fixed: 'left' }),
     };
   });

@@ -1,7 +1,7 @@
 
 
-all: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_wf_global
-
+#all: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_wf_global
+all: h3_grid_earthstat2000_global_prod
 #######################################
 # MapSPAM crop production
 # vvv
@@ -41,7 +41,7 @@ data/mapspam/spam2010v2r0_global_prod: data/mapspam/spam2010v2r0_global_prod.geo
 
 # Unzip to folder
 # Only extract the files that contain production. Set the no data to -1 as the mapspam datasets.
-data/earthstat/earthstat2000_global_prod: data/earthstat/HarvestedAreaYield175Crops_Geotiff.zip
+data/earthstat/earthstat2000_global_prod: data/earthstat/HarvestedAreaYield175Crops_Geotiff_Sample_v2.zip
 	mkdir -p $@
 	unzip -j -o -u $< *_Production.tif -d data/earthstat/earthstat2000_global_prod
 	for tiffile in data/earthstat/earthstat2000_global_prod/*.tif; do \

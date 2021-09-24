@@ -9,7 +9,7 @@ import { Hydrate } from 'react-query/hydration';
 
 import store from 'store';
 
-import 'styles/globals.css';
+import 'styles/tailwind.css';
 
 const queryClient = new QueryClient();
 

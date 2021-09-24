@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const forms = require('@tailwindcss/forms');
+const colors = require('tailwindcss/colors');
 
 const lineClamp = require('./lib/tailwind/line-clamp');
-
-const colors = require('tailwindcss/colors');
 
 module.exports = {
   purge: {
@@ -37,21 +36,16 @@ module.exports = {
     backgroundImage: {
       none: 'none',
       'gradient-to-t': 'linear-gradient(to top, var(--tw-gradient-stops))',
-      'gradient-to-tr':
-        'linear-gradient(to top right, var(--tw-gradient-stops))',
+      'gradient-to-tr': 'linear-gradient(to top right, var(--tw-gradient-stops))',
       'gradient-to-r': 'linear-gradient(to right, var(--tw-gradient-stops))',
-      'gradient-to-br':
-        'linear-gradient(to bottom right, var(--tw-gradient-stops))',
+      'gradient-to-br': 'linear-gradient(to bottom right, var(--tw-gradient-stops))',
       'gradient-to-b': 'linear-gradient(to bottom, var(--tw-gradient-stops))',
-      'gradient-to-bl':
-        'linear-gradient(to bottom left, var(--tw-gradient-stops))',
+      'gradient-to-bl': 'linear-gradient(to bottom left, var(--tw-gradient-stops))',
       'gradient-to-l': 'linear-gradient(to left, var(--tw-gradient-stops))',
-      'gradient-to-tl':
-        'linear-gradient(to top left, var(--tw-gradient-stops))',
+      'gradient-to-tl': 'linear-gradient(to top left, var(--tw-gradient-stops))',
       // Repeating linear gradients
       // Notice `-45deg` is not the same as `to bottom right`
-      'gradient-repeat-to-br':
-        'repeating-linear-gradient(-45deg, var(--tw-gradient-stops))',
+      'gradient-repeat-to-br': 'repeating-linear-gradient(-45deg, var(--tw-gradient-stops))',
     },
     backgroundOpacity: (theme) => theme('opacity'),
     backgroundPosition: {
@@ -96,14 +90,10 @@ module.exports = {
     },
     boxShadow: {
       sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-      DEFAULT:
-        '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
-      md:
-        '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-      lg:
-        '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-      xl:
-        '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+      DEFAULT: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+      md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+      xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
       '2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
       inner: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
       none: 'none',
@@ -137,26 +127,9 @@ module.exports = {
       DEFAULT: '1',
     },
     fontFamily: {
-      heading: 'Public Sans',
-      sans: [
-        'Basier Circle',
-        'ui-sans-serif',
-        'system-ui',
-        '-apple-system',
-        'BlinkMacSystemFont',
-        '"Segoe UI"',
-        'Roboto',
-        '"Helvetica Neue"',
-        'Arial',
-        '"Noto Sans"',
-        'sans-serif',
-        '"Apple Color Emoji"',
-        '"Segoe UI Emoji"',
-        '"Segoe UI Symbol"',
-        '"Noto Color Emoji"',
-      ],
+      heading: 'Montserrat',
+      sans: 'Public-Sans',
       mono: [
-        'Montserrat',
         'SFMono-Regular',
         'Menlo',
         'Monaco',

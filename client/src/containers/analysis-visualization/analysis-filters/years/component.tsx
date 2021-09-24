@@ -78,25 +78,19 @@ const YearsFilter: React.FC<YearsFilterProps> = () => {
     if (!exists) setAdditionalYear(e);
   }, []);
 
-  const handleOnBlur = useCallback(() => {
-    setAdditionalYear(null);
-  }, []);
-
   return (
     <Popover className="relative">
       {({ open }) => (
         <>
           {visualizationMode === 'map' && (
             <Select
-              // defaultValue={valueEnd}
               onChange={handleChangeEnd}
               value={filters.endYear}
               optionLabelProp="label"
               className="w-28"
               suffixIcon={<ChevronDownIcon />}
               showSearch
-              // onSearch={handleOnSearch}
-              onBlur={handleOnBlur}
+              onSearch={handleOnSearch}
             >
               {availableYears.map((year) => (
                 <Select.Option
@@ -163,6 +157,7 @@ const YearsFilter: React.FC<YearsFilterProps> = () => {
                           dropdownStyle={{ minWidth: 'min-content' }}
                           suffixIcon={<ChevronDownIcon />}
                           showSearch
+                          getPopupContainer={(triggerNode) => triggerNode.parentNode}
                         >
                           {availableYears.map((year) => (
                             <Select.Option
@@ -181,7 +176,6 @@ const YearsFilter: React.FC<YearsFilterProps> = () => {
                           suffixIcon={<ChevronDownIcon />}
                           showSearch
                           onSearch={handleOnSearch}
-                          onBlur={handleOnBlur}
                           getPopupContainer={(triggerNode) => triggerNode.parentNode}
                         >
                           {availableYears.map((year) => (

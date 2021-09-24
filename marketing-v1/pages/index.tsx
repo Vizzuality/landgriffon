@@ -5,7 +5,7 @@ const Home: React.FC = () => (
     <Head>
       <title>Welcome</title>
     </Head>
-    <h1>Welcome to LandGriffon Merketing Pages.</h1>
+    <h1 className='font-mono text-3xl bg-orange'>LANDGRIFFON.</h1>
   </div>
 );
 

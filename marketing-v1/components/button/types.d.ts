@@ -3,7 +3,7 @@ import { ButtonHTMLAttributes, AnchorHTMLAttributes } from 'react';
 import { LinkProps } from 'next/link';
 
 export interface AnchorButtonProps {
-  theme: 'primary' | 'primary-alt' | 'white' | 'secondary' | 'secondary-alt' | 'danger';
+  theme: 'primary' | 'secondary';
   size: 'xs' | 's' | 'base' | 'l' | 'xl';
   className?: string;
 }

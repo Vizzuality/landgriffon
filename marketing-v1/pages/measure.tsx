@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import Footer from 'containers/footer';
 import Header from 'containers/header';
 import Hero from 'containers/hero';
+import MetaFooter from 'containers/meta-footer';
 import Wrapper from 'containers/wrapper';
 
 const Measure: React.FC = () => (
@@ -22,6 +23,7 @@ const Measure: React.FC = () => (
           imageURL="/images/measure/measure-map.jpg"
         />
       </motion.div>
+      <MetaFooter />
       <Footer />
     </Wrapper>
   </div>

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import Footer from 'containers/footer';
 import Header from 'containers/header';
 import Hero from 'containers/hero';
+import MetaFooter from 'containers/meta-footer';
 import Wrapper from 'containers/wrapper';
 
 const Analize: React.FC = () => (
@@ -22,6 +23,7 @@ const Analize: React.FC = () => (
           imageURL="/images/analize/analize-1.jpg"
         />
       </motion.div>
+      <MetaFooter />
       <Footer />
     </Wrapper>
   </div>

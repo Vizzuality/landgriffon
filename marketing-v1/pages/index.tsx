@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 
 import Footer from 'containers/footer';
 import Header from 'containers/header';
+import MetaFooter from 'containers/meta-footer';
 import Wrapper from 'containers/wrapper';
 
 const Home: React.FC = () => (
@@ -23,6 +24,7 @@ const Home: React.FC = () => (
           </p>
         </div>
       </motion.div>
+      <MetaFooter />
       <Footer />
     </Wrapper>
   </div>

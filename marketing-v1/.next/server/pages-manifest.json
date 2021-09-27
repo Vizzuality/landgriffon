@@ -2,6 +2,7 @@
   "/_app": "pages/_app.js",
   "/_document": "pages/_document.js",
   "/_error": "pages/_error.js",
-  "/measure": "pages/measure.js",
-  "/analize": "pages/analize.js"
+  "/analyze": "pages/analyze.js",
+  "/forecast": "pages/forecast.js",
+  "/measure": "pages/measure.js"
 }

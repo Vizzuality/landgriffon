@@ -24,10 +24,15 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/analize": [
+    "/analyze": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/analize.js"
+      "static/chunks/pages/analyze.js"
+    ],
+    "/forecast": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/forecast.js"
     ],
     "/measure": [
       "static/chunks/webpack.js",

@@ -15,7 +15,12 @@ const Analize: React.FC = () => (
       </Head>
       <Header />
       <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-        <Hero />
+        <Hero
+          title="Analize"
+          subtitle="See sources of impact and risk and understand what you can do about them."
+          description="Track progress towards corporate targets or examine individual sources. What are your biggest sources of impacts? Which materials, suppliers, regions are at high risk?"
+          imageURL="/images/analize/analize-1.jpg"
+        />
       </motion.div>
       <Footer />
     </Wrapper>

@@ -3,8 +3,6 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import Icon from 'containers/icon';
-
 import FACEBOOK_SVG from 'svgs/social-media/facebook.svg';
 import LINKEDIN_SVG from 'svgs/social-media/linkedin.svg';
 import MEDIUM_SVG from 'svgs/social-media/medium.svg';
@@ -34,28 +32,16 @@ export const Footer = () => (
     <div className="items-center justify-between mt-10 space-y-10 md:space-y-0 md:flex">
       <nav className="flex space-x-11">
         <Link href="https://twitter.com/vizzuality">
-          <Icon
-            className="w-5 h-5 text-black border fill-current border-orange"
-            icon={TWITTER_SVG}
-          />
+          <Image alt="twitter" className="text-black" height={20} width={20} src={TWITTER_SVG} />
         </Link>
         <Link href="https://www.facebook.com/vizzuality">
-          <Icon
-            className="w-5 h-5 text-black border fill-current border-orange"
-            icon={FACEBOOK_SVG}
-          />
+          <Image alt="twitter" className="text-black" height={20} width={20} src={FACEBOOK_SVG} />
         </Link>
         <Link href="https://www.linkedin.com/company/vizzuality">
-          <Icon
-            className="w-5 h-5 text-black border fill-current border-orange"
-            icon={LINKEDIN_SVG}
-          />
+          <Image alt="twitter" className="text-black" height={20} width={20} src={LINKEDIN_SVG} />
         </Link>
         <Link href="https://medium.com/vizzuality-blog">
-          <Icon
-            className="w-5 h-5 text-black border fill-current border-orange"
-            icon={MEDIUM_SVG}
-          />
+          <Image alt="twitter" className="text-black" height={20} width={20} src={MEDIUM_SVG} />
         </Link>
       </nav>
 

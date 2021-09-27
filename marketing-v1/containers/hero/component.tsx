@@ -26,9 +26,9 @@ export const Hero: React.FC<HeroProps> = ({
             01 Measure
           </h3>
         </Link>
-        <Link href="/analize">
+        <Link href="/analyze">
           <h3 className="pb-px border-b-2 border-transparent opacity-50 cursor-pointer hover:opacity-100 hover:font-semibold hover:border-black">
-            02 Analize
+            02 Analyze
           </h3>
         </Link>
         <Link href="/forecast">

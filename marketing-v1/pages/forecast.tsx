@@ -6,6 +6,7 @@ import Footer from 'containers/footer';
 import Header from 'containers/header';
 import Hero from 'containers/hero';
 import MetaFooter from 'containers/meta-footer';
+import SubNav from 'containers/sub-nav';
 
 const Forecast: React.FC = () => (
   <div>
@@ -21,6 +22,7 @@ const Forecast: React.FC = () => (
         imageURL="/images/forecast/forecast-1.jpg"
       />
     </motion.div>
+    <SubNav type="forecast" />
     <MetaFooter />
     <Footer />
   </div>

@@ -6,6 +6,7 @@ import Footer from 'containers/footer';
 import Header from 'containers/header';
 import Hero from 'containers/hero';
 import MetaFooter from 'containers/meta-footer';
+import SubNav from 'containers/sub-nav';
 
 const Measure: React.FC = () => (
   <div>
@@ -21,6 +22,7 @@ const Measure: React.FC = () => (
         imageURL="/images/measure/measure-map.jpg"
       />
     </motion.div>
+    <SubNav type="measure" />
     <MetaFooter />
     <Footer />
   </div>

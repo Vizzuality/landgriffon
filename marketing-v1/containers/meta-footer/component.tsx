@@ -11,7 +11,13 @@ export const MetaFooter = () => (
         <p className="w-2/5 text-3xl">Be the first to hear about new releases and updates.</p>
         <form className="w-2/4 space-y-3 lg:pl-44">
           <div className="flex items-center justify-between">
-            <p>E-mail adress</p>
+            <input
+              id="agree"
+              name="agree"
+              type="input"
+              placeholder="Email address"
+              className="w-full h-10 mr-3 text-black placeholder-black bg-transparent border-b cursor-pointer border-darkGray border-px"
+            />
             <Button
               theme="secondary"
               size="s"
@@ -27,7 +33,7 @@ export const MetaFooter = () => (
                 id="agree"
                 name="agree"
                 type="radio"
-                className="mr-3 text-indigo-600 bg-transparent cursor-pointer w-7 h-7 border-darkGray border-px focus:ring-indigo-500"
+                className="mr-3 text-black bg-transparent cursor-pointer w-7 h-7 border-darkGray border-px"
               />
               <p>
                 By signing up here I agree to receive LandGriffon email newsletter.{' '}
@@ -35,7 +41,7 @@ export const MetaFooter = () => (
                   className="underline cursor-pointer"
                   href="https://landgriffon.com/privacy-policy"
                 >
-                  Privacy statement
+                  Privacy statement.
                 </a>
               </p>
             </label>

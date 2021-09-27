@@ -719,6 +719,9 @@ module.exports = {
   },
   variants: {
     extend: {
+      borderColor: ['hover'],
+      borderStyle: ['hover'],
+      borderWidth: ['hover'],
       fontWeight: ['hover'],
     },
   },

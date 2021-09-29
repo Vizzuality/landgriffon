@@ -11,11 +11,12 @@ import { Indicator } from 'modules/indicators/indicator.entity';
 
 /**
  * @note: Interface props are marked as 'h' and 'v' because that is what the DB returns when querying a h3 maps
- * So we avoid doing transformations within the API and let the DB handle the heavy job
+ * So we avoid doing transformations within the API and let the DB handle the heavy job. This also minimizes the
+ * response size sent to the frontend
  */
 
 export interface H3IndexValueData {
-  //H3 index
+  // H3 index
   h: string;
   // Values for an h3 index
   v: number;

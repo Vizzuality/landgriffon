@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsNumber, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { GetMaterialH3ByResolutionDto } from 'modules/h3-data/dto/h3-by-resolution.dto';
+import { GetMaterialH3ByResolutionDto } from 'modules/h3-data/dto/get-material-h3-by-resolution.dto';
 /**
  * @note: DTO for querying a Risk Map given Material and Indicator IDs, for a year
  * Currently we are just working with one year, whose values are implicitly present

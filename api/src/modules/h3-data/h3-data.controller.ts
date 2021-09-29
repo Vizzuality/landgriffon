@@ -2,10 +2,10 @@ import { Controller, Get, Param, Query, ValidationPipe } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { H3DataService } from 'modules/h3-data/h3-data.service';
 import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
-import { GetMaterialH3ByResolutionDto } from 'modules/h3-data/dto/h3-by-resolution.dto';
-import { GetRiskMapH3Dto } from 'modules/h3-data/dto/get-risk-map.dto';
+import { GetMaterialH3ByResolutionDto } from 'modules/h3-data/dto/get-material-h3-by-resolution.dto';
+import { GetRiskMapH3Dto } from 'modules/h3-data/dto/get-risk-map-h3.dto';
 
-@Controller('api/v1/h3')
+@Controller('/api/v1/h3')
 @ApiTags(H3Data.name)
 export class H3DataController {
   constructor(protected readonly h3DataService: H3DataService) {}
@@ -26,7 +26,7 @@ export class H3DataController {
   @ApiOperation({ description: 'Get h3 indexes by ID in a given resolution' })
   @ApiQuery({ type: GetMaterialH3ByResolutionDto })
   @Get('material')
-  async geth3ByIdAndResolution(
+  async getH3ByIdAndResolution(
     @Query(ValidationPipe)
     queryParams: GetMaterialH3ByResolutionDto,
   ): Promise<H3IndexValueData[]> {

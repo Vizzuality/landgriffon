@@ -56,7 +56,7 @@ export class H3DataService {
     materialId: string,
     indicatorId: string,
     resolution: number,
-  ): Promise<any> {
+  ): Promise<H3IndexValueData[]> {
     /**
      * @note To generate a Risk Map, a harvestId and h3Data by indicatorId are required
      */

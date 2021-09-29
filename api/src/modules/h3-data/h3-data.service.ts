@@ -46,7 +46,7 @@ export class H3DataService {
         `There is no H3 Data for Material with ID: ${materialId}`,
       );
 
-    return await this.h3DataRepository.getMaterialMapByResolution(
+    return this.h3DataRepository.getMaterialMapByResolution(
       producerId,
       resolution,
     );
@@ -86,7 +86,7 @@ export class H3DataService {
       factor,
     } = await this.unitConversionsService.getUnitConversionByUnitId(unit.id);
 
-    return await this.h3DataRepository.getRiskMapByResolution(
+    return this.h3DataRepository.getRiskMapByResolution(
       indicatorH3Data,
       materialH3Data as H3Data,
       factor as number,

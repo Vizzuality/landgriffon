@@ -40,7 +40,7 @@ export class H3DataRepository extends Repository<H3Data> {
   /** Retrieves single crop data by a given resolution
    *
    * @param h3Id: Name of the column inside the dynamically generated table
-   * @param resolution: An interger between 1 (min resolution) and 6 (max resolution).
+   * @param resolution: An integer between 1 (min resolution) and 6 (max resolution).
    * Resolution validation done at route handler
    *
    */
@@ -48,7 +48,7 @@ export class H3DataRepository extends Repository<H3Data> {
   async getMaterialMapByResolution(
     h3Id: string,
     resolution: number,
-  ): Promise<any> {
+  ): Promise<H3IndexValueData[]> {
     const h3Info = await this.createQueryBuilder('h3')
       .select('"h3tableName"')
       .addSelect('"h3columnName"')

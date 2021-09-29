@@ -109,10 +109,14 @@ describe('Risk Map Test Suite (e2e)', () => {
     const unit = await createUnit();
     const indicator = await createIndicator({ unit, name: 'Indicator Name' });
 
-    const response = await request(app.getHttpServer()).get(
-      `/api/v1/h3/risk-map?materialId=${FAKE_UUID}&indicatorId=${indicator.id}&year=2020&resolution=1`,
-    );
-
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/h3/risk-map`)
+      .query({
+        indicatorId: indicator.id,
+        resolution: 1,
+        year: 2020,
+        materialId: FAKE_UUID,
+      });
     expect(response.body.errors[0].title).toEqual(
       `There is no H3 Data for Indicator with ID: ${indicator.id}`,
     );
@@ -133,9 +137,14 @@ describe('Risk Map Test Suite (e2e)', () => {
       name: 'Material Name',
     });
 
-    const response = await request(app.getHttpServer()).get(
-      `/api/v1/h3/risk-map?materialId=${material.id}&indicatorId=${indicator.id}&year=2020&resolution=1`,
-    );
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/h3/risk-map`)
+      .query({
+        materialId: material.id,
+        indicatorId: indicator.id,
+        resolution: 1,
+        year: 2020,
+      });
 
     expect(response.body.errors[0].title).toEqual(
       `There is no H3 Data for Material with ID: ${material.id}`,
@@ -167,9 +176,14 @@ describe('Risk Map Test Suite (e2e)', () => {
       indicator.id,
     );
 
-    const response = await request(app.getHttpServer()).get(
-      `/api/v1/h3/risk-map?materialId=${material.id}&indicatorId=${indicator.id}&year=2020&resolution=6`,
-    );
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/h3/risk-map`)
+      .query({
+        materialId: material.id,
+        indicatorId: indicator.id,
+        resolution: 6,
+        year: 2020,
+      });
 
     expect(response.body.length).toEqual(384);
   });

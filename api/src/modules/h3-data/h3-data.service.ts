@@ -5,6 +5,7 @@ import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { UnitConversionsService } from 'modules/unit-conversions/unit-conversions.service';
+import { H3MapResponse } from 'modules/h3-data/dto/h3-map-response.dto';
 
 /**
  * @debt: Check if we actually need extending nestjs-base-service over this module.
@@ -36,27 +37,44 @@ export class H3DataService {
   async getMaterialMapByResolution(
     materialId: string,
     resolution: number,
-  ): Promise<Array<H3IndexValueData>> {
+  ): Promise<H3MapResponse> {
+    /**
+     * @note Currently we need to retrieve a unit to be shown on client, for a material
+     * As all material-maps share the same unit, and we have no way no retrieve this unit from DB
+     * as it does not exist, we hardcode it here and send it back as response
+     */
+    const MATERIAL_UNIT = 'tonnes';
     /**
      * @note To generate a Material Map, a producerId is required
      */
     const { producerId } = await this.materialService.getById(materialId);
-    if (!producerId)
+    const materialH3Data = await this.h3DataRepository.findOne(producerId);
+
+    if (!materialH3Data)
       throw new NotFoundException(
         `There is no H3 Data for Material with ID: ${materialId}`,
       );
 
-    return this.h3DataRepository.getMaterialMapByResolution(
-      producerId,
+    const materialMap = await this.h3DataRepository.getMaterialMapByResolution(
+      materialH3Data,
       resolution,
     );
+
+    const quantiles = await this.h3DataRepository.calculateQuantiles(
+      materialH3Data,
+    );
+
+    return {
+      data: materialMap,
+      metadata: { quantiles: quantiles[0], unit: MATERIAL_UNIT },
+    };
   }
 
   async getRiskMapByResolution(
     materialId: string,
     indicatorId: string,
     resolution: number,
-  ): Promise<H3IndexValueData[]> {
+  ): Promise<H3MapResponse> {
     /**
      * @note To generate a Risk Map, a harvestId and h3Data by indicatorId are required
      */
@@ -86,11 +104,20 @@ export class H3DataService {
       factor,
     } = await this.unitConversionsService.getUnitConversionByUnitId(unit.id);
 
-    return this.h3DataRepository.getRiskMapByResolution(
+    const riskMap = await this.h3DataRepository.getRiskMapByResolution(
       indicatorH3Data,
       materialH3Data as H3Data,
       factor as number,
       resolution,
     );
+
+    const quantiles = await this.h3DataRepository.calculateQuantiles(
+      materialH3Data as H3Data,
+    );
+
+    return {
+      data: riskMap,
+      metadata: { quantiles: quantiles[0], unit: unit.symbol },
+    };
   }
 }

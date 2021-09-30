@@ -117,7 +117,7 @@ describe('H3-Data Module (e2e)', () => {
         `/api/v1/h3/material?materialId=${material.id}&resolution=1`,
       );
 
-      expect(response.body).toEqual([
+      expect(response.body.data).toEqual([
         { h: '81123ffffffffff', v: 1000 },
         { h: '8112fffffffffff', v: 0 },
         { h: '8128bffffffffff', v: 0 },

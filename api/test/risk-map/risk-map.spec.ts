@@ -185,6 +185,6 @@ describe('Risk Map Test Suite (e2e)', () => {
         year: 2020,
       });
 
-    expect(response.body.length).toEqual(384);
+    expect(response.body.data.length).toEqual(384);
   });
 });

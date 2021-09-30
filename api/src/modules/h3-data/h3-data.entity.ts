@@ -22,6 +22,15 @@ export interface H3IndexValueData {
   v: number;
 }
 
+export interface Quantiles {
+  min: number;
+  percentilecont20: number;
+  percentilecont40: number;
+  percentilecont60: number;
+  percentilecont80: number;
+  percentilecont1: number;
+}
+
 export enum H3_DATA_TYPES {
   HARVEST = 'harvest_area',
   PRODUCTION = 'production',

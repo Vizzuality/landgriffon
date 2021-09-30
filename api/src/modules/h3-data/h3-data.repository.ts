@@ -1,5 +1,9 @@
 import { EntityRepository, Repository, getManager } from 'typeorm';
-import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
+import {
+  H3Data,
+  H3IndexValueData,
+  Quantiles,
+} from 'modules/h3-data/h3-data.entity';
 import {
   Logger,
   NotFoundException,
@@ -39,32 +43,23 @@ export class H3DataRepository extends Repository<H3Data> {
 
   /** Retrieves single crop data by a given resolution
    *
-   * @param h3Id: Name of the column inside the dynamically generated table
+   * @param materialH3Data: H3 Data table and column name for a specific material
    * @param resolution: An integer between 1 (min resolution) and 6 (max resolution).
    * Resolution validation done at route handler
    *
    */
 
   async getMaterialMapByResolution(
-    h3Id: string,
+    materialH3Data: H3Data,
     resolution: number,
   ): Promise<H3IndexValueData[]> {
-    const h3Info = await this.createQueryBuilder('h3')
-      .select('"h3tableName"')
-      .addSelect('"h3columnName"')
-      .where('h3.id = :id', { id: h3Id })
-      .getRawOne();
-
-    if (!h3Info)
-      throw new NotFoundException(
-        `Requested H3 with ID: ${h3Id} could not been found`,
-      );
     try {
       const materialMap = await getManager()
         .createQueryBuilder()
         .select(`h3_to_parent(h3index, ${resolution})`, 'h')
-        .addSelect(`sum(${h3Info.h3columnName})`, 'v')
-        .from(`${h3Info.h3tableName}`, 'h3table')
+        .addSelect(`sum(${materialH3Data.h3columnName})`, 'v')
+        .from(`${materialH3Data.h3tableName}`, 'h3table')
+        .where(`${materialH3Data.h3columnName} is not null`)
         .groupBy('h')
         .getRawMany();
 
@@ -105,8 +100,30 @@ export class H3DataRepository extends Repository<H3Data> {
       .andWhere(`${indicatorH3Data.h3columnName} is not null`)
       .groupBy('"h"')
       .getRawMany();
-
     this.logger.log('Risk Map generated');
     return riskMap;
+  }
+
+  /**
+   * @debt: Refactor this to use queryBuilder. Even tho all values are previously validated, this isn't right, but
+   * has been don for the time being to unblock FE. Check with Data if calculus is accurate
+   */
+  async calculateQuantiles(materialH3Data: H3Data): Promise<Quantiles[]> {
+    try {
+      return getManager().query(
+        `select * from
+                (select min(${materialH3Data.h3columnName}) from ${materialH3Data.h3tableName} ) as min,
+                    (select
+                        percentile_cont(0.2) within group(order by ${materialH3Data.h3columnName}) as percentile_cont_20,
+                        percentile_cont(0.40) within group(order by ${materialH3Data.h3columnName}) as percentile_cont_40,
+                        percentile_cont(0.60) within group(order by ${materialH3Data.h3columnName}) as percentile_cont_60,
+                        percentile_cont(0.80) within group(order by ${materialH3Data.h3columnName}) as percentile_cont_80,
+                        percentile_cont(1) within group(order by ${materialH3Data.h3columnName}) as percentile_cont_1
+                from ${materialH3Data.h3tableName}
+                where ${materialH3Data.h3columnName} > 0) as quantiles`,
+      );
+    } catch (err) {
+      throw new Error(`Quantiles could not been calculated`);
+    }
   }
 }

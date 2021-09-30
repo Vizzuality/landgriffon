@@ -4,7 +4,6 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   Tree,
   TreeChildren,
@@ -119,21 +118,21 @@ export class Material extends TimestampedBaseEntity {
   @Column({ type: 'text', nullable: true })
   datasetId: string;
 
-  @OneToOne(() => H3Data, (h3grid: H3Data) => h3grid.id, {
+  @ManyToOne(() => H3Data, (h3grid: H3Data) => h3grid.id, {
     nullable: true,
     eager: true,
   })
   @JoinColumn()
   producer: H3Data;
-  @Column({ nullable: true })
+  @Column({ nullable: true, unique: false })
   producerId: string;
 
-  @OneToOne(() => H3Data, (h3grid: H3Data) => h3grid.id, {
+  @ManyToOne(() => H3Data, (h3grid: H3Data) => h3grid.id, {
     nullable: true,
     eager: true,
   })
   @JoinColumn()
   harvest: H3Data;
-  @Column({ nullable: true })
+  @Column({ nullable: true, unique: false })
   harvestId: string;
 }

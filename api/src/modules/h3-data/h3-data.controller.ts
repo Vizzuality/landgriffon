@@ -4,6 +4,7 @@ import { H3DataService } from 'modules/h3-data/h3-data.service';
 import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 import { GetMaterialH3ByResolutionDto } from 'modules/h3-data/dto/get-material-h3-by-resolution.dto';
 import { GetRiskMapH3Dto } from 'modules/h3-data/dto/get-risk-map-h3.dto';
+import { H3MapResponse } from 'modules/h3-data/dto/h3-map-response.dto';
 
 @Controller('/api/v1/h3')
 @ApiTags(H3Data.name)
@@ -29,7 +30,7 @@ export class H3DataController {
   async getH3ByIdAndResolution(
     @Query(ValidationPipe)
     queryParams: GetMaterialH3ByResolutionDto,
-  ): Promise<H3IndexValueData[]> {
+  ): Promise<H3MapResponse> {
     const { materialId, resolution } = queryParams;
     return await this.h3DataService.getMaterialMapByResolution(
       materialId,
@@ -43,7 +44,7 @@ export class H3DataController {
   @Get('risk-map')
   async getRiskMap(
     @Query(ValidationPipe) queryParams: GetRiskMapH3Dto,
-  ): Promise<H3IndexValueData[]> {
+  ): Promise<H3MapResponse> {
     const { materialId, indicatorId, resolution } = queryParams;
     return await this.h3DataService.getRiskMapByResolution(
       materialId,

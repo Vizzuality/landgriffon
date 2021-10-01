@@ -24,24 +24,24 @@ export const AboutHero = () => (
           </p>
         </div>
       </div>
-      <div className="flex flex-col space-y-4">
+      <div className="flex flex-col space-y-2">
         <div className="flex justify-between space-x-4">
           <div>
-            <Image width="433px" height="305px" src="/images/about/about-1.jpg" />
+            <Image width="473px" height="330px" src="/images/about/about-1.jpg" />
           </div>
           <div>
-            <Image width="433px" height="305px" src="/images/about/about-2.jpg" />
+            <Image width="473px" height="330px" src="/images/about/about-2.jpg" />
           </div>
           <div>
-            <Image width="433px" height="305px" src="/images/about/about-3.jpg" />
+            <Image width="473px" height="330px" src="/images/about/about-3.jpg" />
           </div>
         </div>
         <div className="flex justify-between space-x-4">
           <div>
-            <Image width="660px" height="354px" src="/images/about/about-4.jpg" />
+            <Image width="720px" height="386px" src="/images/about/about-4.jpg" />
           </div>
           <div>
-            <Image width="660px" height="354px" src="/images/about/about-5.jpg" />
+            <Image width="720px" height="386px" src="/images/about/about-5.jpg" />
           </div>
         </div>
       </div>

@@ -2,9 +2,10 @@ import Head from 'next/head';
 
 import { motion } from 'framer-motion';
 
+import AboutHero from 'containers/about/hero';
+import TeamCarousel from 'containers/about/team-carousel';
 import Footer from 'containers/footer';
 import Header from 'containers/header';
-import TeamCarousel from 'containers/team-carousel';
 import Wrapper from 'containers/wrapper';
 
 const AboutUs: React.FC = () => (
@@ -15,6 +16,7 @@ const AboutUs: React.FC = () => (
       </Head>
       <Header />
       <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+        <AboutHero />
         <TeamCarousel />
       </motion.div>
       <Footer />

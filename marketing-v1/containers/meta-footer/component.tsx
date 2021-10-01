@@ -28,7 +28,7 @@ export const MetaFooter = () => (
             </Button>
           </div>
           <div className="flex items-center">
-            <label htmlFor="agree" className="flex block font-sans text-base text-black">
+            <label htmlFor="agree" className="block font-sans text-base text-black">
               <input
                 id="agree"
                 name="agree"

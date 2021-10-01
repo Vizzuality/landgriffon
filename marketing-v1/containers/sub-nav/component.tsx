@@ -18,8 +18,8 @@ export interface SubNavProps {
 }
 
 export const SubNav: React.FC<SubNavProps> = ({ type }: SubNavProps) => (
-  <section className="flex flex-col flex-grow w-full h-full py-12 mx-auto font-sans bg-white md:container">
-    <div className="flex justify-between text-4xl font-semibold">
+  <section className="flex flex-col flex-grow w-full h-full py-12 mx-auto bg-white md:container">
+    <div className="flex justify-between text-4xl font-sans-semibold">
       <Link href={NAVIGATION_LEFT_HREF[type]}>
         <a className="flex items-center" href={NAVIGATION_LEFT_HREF[type]}>
           <Image height="50px" width="100px" src={ARROW_LEFT_SVG} />

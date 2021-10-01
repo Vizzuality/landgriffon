@@ -34,7 +34,7 @@ const Home: React.FC = () => (
               We help companies become sustainable by understanding and planning strategies to
               manage environmental impacts and risks in food supply chains.{' '}
             </p>
-            <h3 className="font-semibold underline cursor-pointer hover:no-underline">
+            <h3 className="underline cursor-pointer font-sans-semibold hover:no-underline">
               Sign up to know more about LandGriffon
             </h3>
           </div>
@@ -43,8 +43,8 @@ const Home: React.FC = () => (
 
       <section className="pt-40 pb-20">
         <Wrapper>
-          <h2 className="pb-12 text-5xl font-semibold text-green">Services</h2>
-          <div className="flex items-center justify-between">
+          <h2 className="pb-12 text-5xl font-sans-semibold text-green">Services</h2>
+          <div className="flex items-center justify-between font-sans">
             <h3 className="w-4/6 text-7xl">Measure and manage supply chain impacts.</h3>
             <p className="w-2/6 text-xl">
               LandGriffon is a powerful modeling tool backed by a team of experts to empower you to
@@ -54,7 +54,7 @@ const Home: React.FC = () => (
         </Wrapper>
       </section>
 
-      <section className="font-sans bg-bege">
+      <section className="bg-bege">
         <Wrapper>
           <div className="flex justify-between space-x-64 p-28">
             <Image
@@ -65,26 +65,35 @@ const Home: React.FC = () => (
             />
             <nav className="flex flex-col self-center h-full space-y-10">
               <div className="border-b border-black">
-                <a className="text-5xl font-semibold underline" href="/measure">
+                <a
+                  className="text-5xl underline font-sans-semibold hover:no-underline"
+                  href="/measure"
+                >
                   01 Measure
                 </a>
-                <p className="text-xl py-9">
+                <p className="font-sans text-xl py-9">
                   Turn procurement data into accurate estimates of environmental impacts.
                 </p>
               </div>
               <div className="border-b border-black">
-                <a className="text-5xl font-semibold underline" href="/analyze">
+                <a
+                  className="text-5xl underline font-sans-semibold hover:no-underline"
+                  href="/analyze"
+                >
                   02 Analyze
                 </a>
-                <p className="text-xl py-9">
+                <p className="font-sans text-xl py-9">
                   Identify where your supply chain impacts are and uncover the key drivers.{' '}
                 </p>
               </div>
               <div className="border-b border-black">
-                <a className="text-5xl font-semibold underline" href="/forecast">
+                <a
+                  className="text-5xl underline font-sans-semibold hover:no-underline"
+                  href="/forecast"
+                >
                   03 Forecast
                 </a>
-                <p className="text-xl py-9">
+                <p className="font-sans text-xl py-9">
                   Prioritize areas for change and plot a path to sustainability.
                 </p>
               </div>
@@ -95,9 +104,9 @@ const Home: React.FC = () => (
 
       <section className="pt-40 pb-20">
         <Wrapper>
-          <h2 className="pb-12 text-5xl font-semibold text-green">How it works</h2>
+          <h2 className="pb-12 text-5xl font-sans-semibold text-green">How it works</h2>
           <div className="flex items-center justify-between">
-            <h3 className="text-6xl">
+            <h3 className="font-sans text-6xl">
               LandGriffon works anywhere where you are on your journey in managing your supply
               chain.
             </h3>

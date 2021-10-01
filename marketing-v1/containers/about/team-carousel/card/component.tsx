@@ -9,7 +9,7 @@ export interface CardProps {
 }
 
 export const Card: React.FC<CardProps> = ({ role, name, photo }: CardProps) => (
-  <div className="flex flex-col justify-between font-sans font-semibold bg-white w-72 h-max rounded-3xl">
+  <div className="flex flex-col justify-between bg-white font-sans-semibold w-72 h-max rounded-3xl">
     <div className="p-5">
       <p className="text-sm text-green">{role}</p>
       <p className="text-xl text-black">{name}</p>

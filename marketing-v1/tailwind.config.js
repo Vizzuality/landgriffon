@@ -129,6 +129,7 @@ module.exports = {
     fontFamily: {
       heading: 'Montserrat',
       sans: 'Public-Sans',
+      'sans-semibold': 'Public-Sans-SemiBold',
       mono: [
         'SFMono-Regular',
         'Menlo',
@@ -722,6 +723,7 @@ module.exports = {
       borderColor: ['hover'],
       borderStyle: ['hover'],
       borderWidth: ['hover'],
+      fontFamily: ['hover'],
       fontWeight: ['hover'],
     },
   },

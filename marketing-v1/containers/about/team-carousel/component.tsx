@@ -17,7 +17,7 @@ export interface ArrowProps {
 const NextArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
   <button
     aria-label="Next"
-    className="absolute right-0 flex items-center space-x-6 font-sans text-4xl font-semibold -bottom-48"
+    className="absolute right-0 flex items-center space-x-6 text-4xl font-sans-semibold -bottom-48"
     type="button"
     onClick={onClick}
   >
@@ -29,7 +29,7 @@ const NextArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
 const PrevArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
   <button
     aria-label="Previous"
-    className="absolute left-0 flex items-center space-x-6 font-sans text-4xl font-semibold -bottom-48"
+    className="absolute left-0 flex items-center space-x-6 text-4xl font-sans-semibold -bottom-48"
     type="button"
     onClick={onClick}
   >

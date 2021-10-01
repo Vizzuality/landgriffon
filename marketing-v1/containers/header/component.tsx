@@ -14,7 +14,7 @@ export const Header = () => (
       </Link>
       <div className="flex items-center space-x-4 font-sans md:space-x-12">
         <Link href="/about-us">
-          <div className="font-sans text-base cursor-pointer hover:font-semibold">
+          <div className="font-sans text-base cursor-pointer hover:font-sans-semibold">
             <p>About Us</p>
           </div>
         </Link>

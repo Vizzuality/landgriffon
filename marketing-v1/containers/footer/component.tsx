@@ -58,7 +58,7 @@ export const Footer = () => (
         <p>@LandGriffon 2021</p>
         <Link href="https://landgriffon.com/privacy-policy">
           <a
-            className="cursor-pointer hover:font-semibold"
+            className="cursor-pointer hover:font-sans-semibold"
             href="https://landgriffon.com/privacy-policy"
           >
             <p>Privacy policy</p>

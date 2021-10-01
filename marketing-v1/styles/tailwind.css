@@ -26,6 +26,14 @@
   }
 
   @font-face {
+    font-family: "Public-Sans-SemiBold";
+    src: url("/fonts/PublicSans-semibold.woff") format("woff");
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
     font-family: "Montserrat";
     src: url("/fonts/Montserrat.woff") format("woff");
     font-weight: 600;

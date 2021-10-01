@@ -34,7 +34,7 @@ const Home: React.FC = () => (
               We help companies become sustainable by understanding and planning strategies to
               manage environmental impacts and risks in food supply chains.{' '}
             </p>
-            <h3 className="font-semibold underline cursor-pointer">
+            <h3 className="font-semibold underline cursor-pointer hover:no-underline">
               Sign up to know more about LandGriffon
             </h3>
           </div>

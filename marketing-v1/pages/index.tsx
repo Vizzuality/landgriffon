@@ -4,9 +4,10 @@ import { motion } from 'framer-motion';
 
 import Footer from 'containers/footer';
 import Header from 'containers/header';
-import Features from 'containers/home/features';
+import About from 'containers/home/about';
 import Hero from 'containers/home/hero';
 import Services from 'containers/home/services';
+import Works from 'containers/home/works';
 import MetaFooter from 'containers/meta-footer';
 
 const Home: React.FC = () => (
@@ -19,7 +20,8 @@ const Home: React.FC = () => (
     <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       <Hero />
       <Services />
-      <Features />
+      <Works />
+      <About />
     </motion.div>
 
     <MetaFooter />

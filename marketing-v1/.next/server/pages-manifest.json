@@ -2,8 +2,6 @@
   "/_app": "pages/_app.js",
   "/_document": "pages/_document.js",
   "/_error": "pages/_error.js",
-  "/about-us": "pages/about-us.js",
-  "/": "pages/index.js",
-  "/forecast": "pages/forecast.js",
-  "/next/dist/pages/_error": "pages/next/dist/pages/_error.js"
+  "/analyze": "pages/analyze.js",
+  "/": "pages/index.js"
 }

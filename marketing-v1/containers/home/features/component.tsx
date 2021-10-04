@@ -7,8 +7,8 @@ import Wrapper from 'containers/wrapper';
 import { FEATURES } from './constants';
 
 export const HomeFeatures = () => (
-  <>
-    <section className="pt-40 pb-20">
+  <section>
+    <div className="pt-40 pb-20">
       <Wrapper>
         <h2 className="pb-12 text-5xl font-sans-semibold text-green">How it works</h2>
         <div className="flex items-center justify-between">
@@ -17,8 +17,8 @@ export const HomeFeatures = () => (
           </h3>
         </div>
       </Wrapper>
-    </section>
-    <section className="py-28 bg-lightBlue">
+    </div>
+    <div className="py-28 bg-lightBlue">
       <Wrapper>
         <ul className="flex items-center justify-between space-x-10">
           {FEATURES.map((f) => (
@@ -34,8 +34,8 @@ export const HomeFeatures = () => (
           ))}
         </ul>
       </Wrapper>
-    </section>
-  </>
+    </div>
+  </section>
 );
 
 export default HomeFeatures;

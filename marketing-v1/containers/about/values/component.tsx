@@ -7,7 +7,7 @@ import Wrapper from 'containers/wrapper';
 import { VALUES } from './constants';
 
 export const AboutValues = () => (
-  <section className="w-full bg-lightBlue">
+  <section className="w-full bg-lightBlue pb-36 pt-28">
     <Wrapper>
       <div className="grid grid-cols-2">
         <h4 className="font-sans text-7xl">Our values</h4>

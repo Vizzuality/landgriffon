@@ -1,8 +1,8 @@
-import React from "react";
+import React from 'react';
 
-import Wrapper from "containers/wrapper";
+import Wrapper from 'containers/wrapper';
 
-import Button from "components/button";
+import Button from 'components/button';
 
 export const MetaFooter = () => (
   <section className="w-full py-12 font-sans bg-orange">

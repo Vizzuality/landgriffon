@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react';
 
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image';
+import Link from 'next/link';
 
-import Wrapper from "containers/wrapper";
+import Wrapper from 'containers/wrapper';
 
-import SOCIAL_MEDIA from "./constants";
+import SOCIAL_MEDIA from './constants';
 
 export const Footer = () => (
   <Wrapper>

@@ -11,7 +11,7 @@ export const AboutHero = () => (
 
     <Wrapper>
       <div className="relative">
-        <div className="flex justify-center pt-32 pb-10 mx-16 border-b border-black border-b-px">
+        <div className="flex justify-center pt-8 pb-10 mx-16 border-b border-black border-b-px">
           <h1 className="font-sans-semibold text-7xl">Supported by a team of experts</h1>
         </div>
         <div className="flex justify-between px-16 pt-16 pb-24">

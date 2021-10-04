@@ -17,11 +17,11 @@ export interface ArrowProps {
 const NextArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
   <button
     aria-label="Next"
-    className="absolute right-0 flex items-center space-x-6 text-4xl font-sans-semibold -bottom-48"
+    className="absolute right-0 flex items-center text-4xl font-sans-semibold -bottom-48"
     type="button"
     onClick={onClick}
   >
-    <p>Next</p>
+    <p className="mr-6">Next</p>
     <Image height="44px" width="84px" src={ARROW_NEXT_SVG} />
   </button>
 );
@@ -29,7 +29,7 @@ const NextArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
 const PrevArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
   <button
     aria-label="Previous"
-    className="absolute left-0 flex items-center space-x-6 text-4xl font-sans-semibold -bottom-48"
+    className="container absolute left-0 flex items-center space-x-6 text-4xl font-sans-semibold -bottom-48"
     type="button"
     onClick={onClick}
   >
@@ -42,9 +42,9 @@ export const TeamCarousel: React.FC = () => {
   const settings = {
     dots: false,
     infinite: true,
-    speed: 500,
-    slidesToShow: 6,
-    slidesToScroll: 3,
+    speed: 1000,
+    slidesToShow: 5,
+    slidesToScroll: 1,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
   };
@@ -53,11 +53,13 @@ export const TeamCarousel: React.FC = () => {
     <div className="relative pb-56">
       <div className="absolute top-0 left-0 w-full bg-center bg-cover bg-bege h-2/6" />
       <div className="absolute bottom-0 left-0 w-full bg-lightBlue h-4/6" />
-      <Slider {...settings}>
-        {TEAM.map((t) => (
-          <Card key={t.key} role={t.role} name={t.name} photo={t.img} />
-        ))}
-      </Slider>
+      <div className="">
+        <Slider {...settings}>
+          {TEAM.map((t) => (
+            <Card key={t.key} role={t.role} name={t.name} photo={t.img} />
+          ))}
+        </Slider>
+      </div>
     </div>
   );
 };

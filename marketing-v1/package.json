@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "check-types": "tsc --noemit -p tsconfig.json",
-    "lint": "eslint -c .eslintrc.js --ext .js,.jsx,.ts,.tsx --fix --ignore-path .eslintignore . && yarn check-types"
+    "lint": "eslint -c .eslintrc.js --ext .js,.jsx,.ts,.tsx --fix . && yarn check-types"
   },
   "dependencies": {
     "@dnd-kit/core": "^3.0.3",

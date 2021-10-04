@@ -1,17 +1,17 @@
-import React from 'react';
+import React from "react";
 
-import Image from 'next/image';
-import Link from 'next/link';
+import Image from "next/image";
+import Link from "next/link";
 
-import ARROW_LEFT_SVG from 'svgs/arrow-left.svg';
-import ARROW_RIGHT_SVG from 'svgs/arrow-right.svg';
+import ARROW_LEFT_SVG from "svgs/arrow-left.svg";
+import ARROW_RIGHT_SVG from "svgs/arrow-right.svg";
 
 import {
   NAVIGATION_LEFT,
   NAVIGATION_LEFT_HREF,
   NAVIGATION_RIGHT,
   NAVIGATION_RIGHT_HREF,
-} from './constants';
+} from "./constants";
 
 export interface SubNavProps {
   type: string;

@@ -7,15 +7,18 @@ import Wrapper from 'containers/wrapper';
 
 import { FEATURES } from './constants';
 
-export const HomeFeatures = () => (
+export const HomeWorks = () => (
   <section className="font-sans">
     <div className="pt-40 pb-20">
       <Wrapper>
-        <h2 className="pb-12 text-5xl font-sans-semibold text-green">How it works</h2>
-        <div className="flex items-center justify-between">
-          <h4 className="text-6xl">
-            LandGriffon works anywhere where you are on your journey in managing your supply chain.
-          </h4>
+        <div className="px-16">
+          <h2 className="pb-12 text-5xl font-sans-semibold text-green">How it works</h2>
+          <div className="flex items-center justify-between">
+            <h4 className="text-6xl">
+              LandGriffon works anywhere where you are on your journey in managing your supply
+              chain.
+            </h4>
+          </div>
         </div>
       </Wrapper>
     </div>
@@ -90,4 +93,4 @@ export const HomeFeatures = () => (
   </section>
 );
 
-export default HomeFeatures;
+export default HomeWorks;

@@ -39,7 +39,6 @@ module "bastion" {
   subnet_id          = module.vpc.public_subnet_ids[0]
   vpc                = module.vpc
   user_data          = data.template_file.bastion_setup.rendered
-  security_group_ids = [aws_security_group.postgresql.id]
 }
 
 module "dns" {
@@ -92,25 +91,6 @@ module "data-node-group" {
   labels = {
     type : "data"
   }
-}
-
-module "postgresql" {
-  source = "./modules/postgresql"
-
-  availability_zone_names     = module.vpc.private_subnets.*.availability_zone
-  log_retention_period        = var.rds_log_retention_period
-  private_subnet_ids          = module.vpc.private_subnets.*.id
-  project                     = var.project_name
-  rds_backup_retention_period = var.rds_backup_retention_period
-  rds_db_name                 = "landgriffon"
-  rds_user_name               = "postgres"
-  rds_engine_version          = var.rds_engine_version
-  rds_instance_class          = var.rds_instance_class
-  rds_instance_count          = var.rds_instance_count
-  tags                        = local.tags
-  vpc_id                      = module.vpc.id
-  rds_port                    = 5432
-  vpc_cidr_block              = module.vpc.cidr_block
 }
 
 module "s3_bucket" {

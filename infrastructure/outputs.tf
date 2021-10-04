@@ -26,27 +26,6 @@ output "private_subnet_ids" {
   value = module.vpc.private_subnet_ids
 }
 
-output "postgres_host" {
-  value = module.postgresql.host
-}
-
-output "postgres_port" {
-  value = module.postgresql.port
-}
-
-output "postgres_username" {
-  value     = module.postgresql.username
-  sensitive = true
-}
-
-output "postgres_password_secret_arn" {
-  value = module.postgresql.postgresql-password-secret-arn
-}
-
-output "postgres_password_secret_version_arn" {
-  value = module.postgresql.postgresql-password-secret-version-arn
-}
-
 output "kubectl_config" {
   value       = module.eks.kubeconfig
   description = "Configuration snippet for the kubectl CLI tool that allows access to this EKS cluster"

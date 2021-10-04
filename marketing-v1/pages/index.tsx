@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 
 import Footer from 'containers/footer';
 import Header from 'containers/header';
+import Features from 'containers/home/features';
 import MetaFooter from 'containers/meta-footer';
 import Wrapper from 'containers/wrapper';
 
@@ -102,23 +103,7 @@ const Home: React.FC = () => (
         </Wrapper>
       </section>
 
-      <section className="pt-40 pb-20">
-        <Wrapper>
-          <h2 className="pb-12 text-5xl font-sans-semibold text-green">How it works</h2>
-          <div className="flex items-center justify-between">
-            <h3 className="font-sans text-6xl">
-              LandGriffon works anywhere where you are on your journey in managing your supply
-              chain.
-            </h3>
-          </div>
-        </Wrapper>
-      </section>
-
-      <section className="pt-40 pb-20 bg-lightBlue">
-        <Wrapper>
-          <div className="flex items-center justify-between" />
-        </Wrapper>
-      </section>
+      <Features />
     </motion.div>
 
     <MetaFooter />

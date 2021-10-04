@@ -1,11 +1,11 @@
-import React from 'react';
+import React from "react";
 
-import Image from 'next/image';
-import Link from 'next/link';
+import Image from "next/image";
+import Link from "next/link";
 
-import Wrapper from 'containers/wrapper';
+import Wrapper from "containers/wrapper";
 
-import SOCIAL_MEDIA from './constants';
+import SOCIAL_MEDIA from "./constants";
 
 export const Footer = () => (
   <Wrapper>
@@ -23,9 +23,6 @@ export const Footer = () => (
           >
             Contact Us
           </a>
-        </Link>
-        <Link href="/">
-          <p className="hover:opacity-40">Blog</p>
         </Link>
       </nav>
 
@@ -46,11 +43,17 @@ export const Footer = () => (
           ))}
         </nav>
 
-        <div className="flex">
-          <Image alt="UE Flag" src="/images/footer/UE_flag.jpg" height="43px" width="62px" />
+        <div className="flex items-center">
+          <Image
+            alt="UE Flag"
+            src="/images/footer/UE_flag.jpg"
+            height={43}
+            width={62}
+          />
           <p className="w-56 pl-3 font-medium text-xxs">
-            This project has received funding from the European Union&apos;s Horizon 2020 research
-            and innovation programme under grant agreement No 101004174
+            This project has received funding from the European Union&apos;s
+            Horizon 2020 research and innovation programme under grant agreement
+            No 101004174
           </p>
         </div>
       </div>

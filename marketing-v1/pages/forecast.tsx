@@ -23,8 +23,8 @@ const Forecast: React.FC = () => (
         imageURL="/images/forecast/forecast-1.jpg"
       />
       <Content />
+      <SubNav type="forecast" />
     </motion.div>
-    <SubNav type="forecast" />
     <MetaFooter />
     <Footer />
   </div>

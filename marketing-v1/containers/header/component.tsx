@@ -24,7 +24,7 @@ export const Header = () => (
           className="flex-shrink-0 ml-5 w-36 h-11 md:w-44"
           onClick={() => console.info('Contact us')}
         >
-          <a target="_blank" href="https://landgriffon.com" rel="noreferrer">
+          <a target="_blank" href="/contact" rel="noreferrer">
             Contact us
           </a>
         </Button>

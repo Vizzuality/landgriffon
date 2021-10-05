@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { motion } from 'framer-motion';
 
 import Footer from 'containers/footer';
+import Content from 'containers/forecast/content';
 import Header from 'containers/header';
 import Hero from 'containers/hero';
 import MetaFooter from 'containers/meta-footer';
@@ -21,6 +22,7 @@ const Forecast: React.FC = () => (
         description="Simulate scenarios of of how your company’s procurement will change over time. Evaluate options for improvement and prioritize areas for intervention."
         imageURL="/images/forecast/forecast-1.jpg"
       />
+      <Content />
     </motion.div>
     <SubNav type="forecast" />
     <MetaFooter />

@@ -3,7 +3,6 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-
 import Wrapper from 'containers/wrapper';
 
 export const HomeAbout = () => (

@@ -5,8 +5,10 @@ import { motion } from 'framer-motion';
 import Footer from 'containers/footer';
 import Header from 'containers/header';
 import Hero from 'containers/hero';
+import Content from 'containers/measure/content';
 import MetaFooter from 'containers/meta-footer';
 import SubNav from 'containers/sub-nav';
+
 
 const Measure: React.FC = () => (
   <div>
@@ -21,6 +23,7 @@ const Measure: React.FC = () => (
         description="Do you know all your farm locations or are you just starting out? No matter your level of value chain information, our accurate probabilistic sourcing model tells you where your materials are most likely to come from."
         imageURL="/images/measure/measure-map.jpg"
       />
+      <Content />
     </motion.div>
     <SubNav type="measure" />
     <MetaFooter />

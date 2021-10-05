@@ -28,8 +28,8 @@ const Analyze: React.FC = () => (
         imageURL="/images/analyze/analyze-1.jpg"
       />
       <Content />
+      <SubNav type="analyze" />
     </motion.div>
-    <SubNav type="analyze" />
     <MetaFooter />
     <Footer />
   </div>

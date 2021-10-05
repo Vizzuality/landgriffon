@@ -24,8 +24,8 @@ const Measure: React.FC = () => (
         imageURL="/images/measure/measure-map.jpg"
       />
       <Content />
+      <SubNav type="measure" />
     </motion.div>
-    <SubNav type="measure" />
     <MetaFooter />
     <Footer />
   </div>

@@ -17,3 +17,10 @@ variable "vpc_id" {
   type        = string
   description = "ID of the VPC."
 }
+
+
+variable "k8s_version" {
+  type        = string
+  description = "Version of Kubernetes to use"
+  default     = "1.21"
+}

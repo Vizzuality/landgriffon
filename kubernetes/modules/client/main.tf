@@ -11,7 +11,7 @@ provider "kubernetes" {
 resource "kubernetes_service" "client_service" {
   metadata {
     name = kubernetes_deployment.client_deployment.metadata[0].name
-
+    namespace = var.namespace
   }
   spec {
     selector = {
@@ -28,6 +28,7 @@ resource "kubernetes_service" "client_service" {
 resource "kubernetes_deployment" "client_deployment" {
   metadata {
     name = "client"
+    namespace = var.namespace
   }
 
   spec {

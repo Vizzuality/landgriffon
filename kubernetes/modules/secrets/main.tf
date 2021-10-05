@@ -8,21 +8,45 @@ provider "kubernetes" {
   token                  = data.aws_eks_cluster_auth.cluster.token
 }
 
+
+# JWT
 resource "random_password" "jwt_secret_generator" {
   length  = 64
   special = true
 }
 
 resource "aws_secretsmanager_secret" "jwt_secret" {
-  name = "jwt-secret"
+  name = "jwt-secret-${var.namespace}"
+  description = "Credentials for the ${var.namespace} JWT token generation"
+
 }
 
-data "aws_secretsmanager_secret" "postgres_secret" {
-  name = "landgriffon-postgresql-user-password"
+resource "kubernetes_secret" "api_secret" {
+  metadata {
+    name = "api"
+    namespace = var.namespace
+  }
+
+  data = {
+    JWT_SECRET = aws_secretsmanager_secret_version.jwt_secret_version.secret_string
+  }
 }
 
-data "aws_secretsmanager_secret_version" "postgres_secret_version" {
-  secret_id = data.aws_secretsmanager_secret.postgres_secret.id
+
+#Postgres
+resource "random_password" "postgresql_user_generator" {
+  length  = 24
+  special = true
+}
+
+resource "aws_secretsmanager_secret" "postgres_user_secret" {
+  name = "landgriffon-${var.namespace}-postgresql-user-password"
+  description = "Credentials for the ${var.namespace} user of the K8S PostgreSQL Server"
+}
+
+resource "aws_secretsmanager_secret_version" "postgres_user_secret_version" {
+  secret_id = aws_secretsmanager_secret.postgres_user_secret.id
+  secret_string = jsonencode(local.postgres_secret_json)
 }
 
 resource "aws_secretsmanager_secret_version" "jwt_secret_version" {
@@ -31,40 +55,23 @@ resource "aws_secretsmanager_secret_version" "jwt_secret_version" {
 }
 
 locals {
-  postgres_secret_json = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.postgres_secret_version.secret_string))
+  postgres_secret_json = {
+    username = "landgriffon-${var.namespace}"
+    password = random_password.postgresql_user_generator.result
+  }
 }
 
 resource "kubernetes_secret" "db_secret" {
   metadata {
     name = "db"
+    namespace = var.namespace
   }
 
   data = {
     DB_HOST        = "postgres-postgresql.default.svc.cluster.local"
     DB_USERNAME    = sensitive(local.postgres_secret_json.username)
     DB_PASSWORD    = sensitive(local.postgres_secret_json.password)
-    DB_DATABASE    = "landgriffon"
+    DB_DATABASE    = "landgriffon-${var.namespace}"
     DB_SYNCHRONIZE = "true"
-  }
-}
-
-resource "kubernetes_secret" "api_secret" {
-  metadata {
-    name = "api"
-  }
-
-  data = {
-    JWT_SECRET = aws_secretsmanager_secret_version.jwt_secret_version.secret_string
-  }
-}
-
-resource "kubernetes_secret" "postgres-secret" {
-  metadata {
-    name = "postgres-secret"
-  }
-
-  data = {
-    postgresql-password          = sensitive(local.postgres_secret_json.password)
-    postgresql-postgres-password = sensitive(local.postgres_secret_json.password)
   }
 }

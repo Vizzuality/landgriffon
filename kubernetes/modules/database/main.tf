@@ -1,13 +1,23 @@
-data "aws_secretsmanager_secret" "postgres_secret" {
-  name = "landgriffon-postgresql-user-password"
-}
-
-data "aws_secretsmanager_secret_version" "postgres_secret_version" {
-  secret_id = data.aws_secretsmanager_secret.postgres_secret.id
-}
-
 locals {
-  postgres_secret_json = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.postgres_secret_version.secret_string))
+  postgres_secret_json = {
+    username = "postgres"
+    password = random_password.postgresql_admin_generator.result
+  }
+}
+
+resource "random_password" "postgresql_admin_generator" {
+  length  = 24
+  special = true
+}
+
+resource "aws_secretsmanager_secret" "postgresql_admin_secret" {
+  name = "postgresql-admin-credentials"
+  description = "Credentials for the admin user of the K8S PostgreSQL Server"
+}
+
+resource "aws_secretsmanager_secret_version" "postgresql_admin_secret_version" {
+  secret_id     = aws_secretsmanager_secret.postgresql_admin_secret.id
+  secret_string = jsonencode(local.postgres_secret_json)
 }
 
 resource "helm_release" "postgres" {
@@ -26,12 +36,23 @@ resource "helm_release" "postgres" {
   }
 
   set {
-    name  = "postgresqlDatabase"
-    value = "landgriffon"
+    name  = "postgresqlPostgresPassword"
+    value = sensitive(local.postgres_secret_json.password)
   }
 
   set {
     name  = "existingSecret"
     value = "postgres-secret"
+  }
+}
+
+resource "kubernetes_secret" "postgres-secret" {
+  metadata {
+    name = "postgres-secret"
+  }
+
+  data = {
+    postgresql-password          = sensitive(local.postgres_secret_json.password)
+    postgresql-postgres-password = sensitive(local.postgres_secret_json.password)
   }
 }

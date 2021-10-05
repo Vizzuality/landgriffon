@@ -2,6 +2,11 @@ data "aws_eks_cluster_auth" "cluster" {
   name = var.cluster_name
 }
 
+locals {
+  api_domain = "api.${var.domain_prefix != null ? ("${var.domain_prefix}.") : ""}landgriffon.com"
+  client_domain = "client.${var.domain_prefix != null ? ("${var.domain_prefix}.") : ""}landgriffon.com"
+}
+
 provider "kubernetes" {
   host                   = var.cluster_endpoint
   cluster_ca_certificate = base64decode(var.cluster_ca)
@@ -13,8 +18,8 @@ data "aws_route53_zone" "landgriffon-com" {
 }
 
 resource "aws_acm_certificate" "landgriffon_cert" {
-  domain_name               = "api.landgriffon.com"
-  subject_alternative_names = ["client.landgriffon.com"]
+  domain_name               = local.api_domain
+  subject_alternative_names = [local.client_domain]
   validation_method         = "DNS"
 }
 
@@ -37,7 +42,7 @@ resource "aws_route53_record" "landgriffon-com-record" {
 
 resource "aws_route53_record" "api-landgriffon-com" {
   zone_id = data.aws_route53_zone.landgriffon-com.zone_id
-  name    = "api.landgriffon.com"
+  name    = local.api_domain
   type    = "CNAME"
   ttl     = "300"
   records = [kubernetes_ingress.landgriffon.status[0].load_balancer[0].ingress[0].hostname]
@@ -45,7 +50,7 @@ resource "aws_route53_record" "api-landgriffon-com" {
 
 resource "aws_route53_record" "client-landgriffon-com" {
   zone_id = data.aws_route53_zone.landgriffon-com.zone_id
-  name    = "client.landgriffon.com"
+  name    = local.client_domain
   type    = "CNAME"
   ttl     = "300"
   records = [kubernetes_ingress.landgriffon.status[0].load_balancer[0].ingress[0].hostname]
@@ -61,6 +66,7 @@ resource "kubernetes_ingress" "landgriffon" {
 
   metadata {
     name = "landgriffon"
+    namespace = var.namespace
     annotations = {
       "kubernetes.io/ingress.class"                = "alb"
       "alb.ingress.kubernetes.io/scheme"           = "internet-facing"
@@ -73,8 +79,8 @@ resource "kubernetes_ingress" "landgriffon" {
   spec {
     tls {
       hosts = [
-        "api.landgriffon.com",
-        "client.landgriffon.com"
+        local.api_domain,
+        local.client_domain
       ]
       secret_name = "landgriffon-certificate"
     }
@@ -85,7 +91,7 @@ resource "kubernetes_ingress" "landgriffon" {
     }
 
     rule {
-      host = "api.landgriffon.com"
+      host = local.api_domain
       http {
         path {
           backend {
@@ -97,7 +103,7 @@ resource "kubernetes_ingress" "landgriffon" {
     }
 
     rule {
-      host = "client.landgriffon.com"
+      host = local.client_domain
       http {
         path {
           backend {

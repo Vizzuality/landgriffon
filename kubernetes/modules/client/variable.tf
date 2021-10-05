@@ -1,3 +1,8 @@
+variable "namespace" {
+  type = string
+  description = "The k8s namespace to use"
+}
+
 variable "cluster_endpoint" {
   type        = string
   description = "The k8s cluster endpoint. Must be accessible from localhost"

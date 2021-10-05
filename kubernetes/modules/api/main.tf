@@ -11,7 +11,7 @@ provider "kubernetes" {
 resource "kubernetes_service" "api_service" {
   metadata {
     name = kubernetes_deployment.api_deployment.metadata[0].name
-
+    namespace = var.namespace
   }
   spec {
     selector = {
@@ -27,7 +27,8 @@ resource "kubernetes_service" "api_service" {
 
 resource "kubernetes_deployment" "api_deployment" {
   metadata {
-    name = "api"
+    name = var.deployment_name
+    namespace = var.namespace
   }
 
   spec {
@@ -35,14 +36,14 @@ resource "kubernetes_deployment" "api_deployment" {
 
     selector {
       match_labels = {
-        name = "api"
+        name = var.deployment_name
       }
     }
 
     template {
       metadata {
         labels = {
-          name = "api"
+          name = var.deployment_name
         }
       }
 
@@ -52,9 +53,9 @@ resource "kubernetes_deployment" "api_deployment" {
         }
 
         container {
-          image             = "vizzuality/landgriffon-api:latest"
+          image             = var.image
           image_pull_policy = "Always"
-          name              = "api"
+          name              = var.deployment_name
 
           args = ["start:prod"]
 
@@ -90,6 +91,16 @@ resource "kubernetes_deployment" "api_deployment" {
           }
 
           env {
+            name = "DB_DATABASE"
+            value_from {
+              secret_key_ref {
+                name = "db"
+                key  = "DB_DATABASE"
+              }
+            }
+          }
+
+          env {
             name  = "PORT"
             value = 3000
           }
@@ -97,16 +108,6 @@ resource "kubernetes_deployment" "api_deployment" {
           env {
             name  = "DB_SYNCHRONIZE"
             value = "true"
-          }
-
-          env {
-            name = "DB_PASSWORD"
-            value_from {
-              secret_key_ref {
-                name = "db"
-                key  = "DB_PASSWORD"
-              }
-            }
           }
 
           env {

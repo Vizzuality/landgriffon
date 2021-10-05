@@ -3,6 +3,8 @@ import type { AppProps } from 'next/app';
 import { OverlayProvider } from '@react-aria/overlays';
 import { Provider as AuthenticationProvider } from 'next-auth/client';
 
+import { MediaContextProvider } from 'containers/media';
+
 import 'styles/tailwind.css';
 
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => (
@@ -13,9 +15,11 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => (
       keepAlive: 10 * 60, // Send keepAlive message every 10 minutes
     }}
   >
-    <OverlayProvider>
-      <Component {...pageProps} />
-    </OverlayProvider>
+    <MediaContextProvider>
+      <OverlayProvider>
+        <Component {...pageProps} />
+      </OverlayProvider>
+    </MediaContextProvider>
   </AuthenticationProvider>
 );
 

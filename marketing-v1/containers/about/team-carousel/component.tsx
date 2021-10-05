@@ -4,6 +4,8 @@ import Slider from 'react-slick';
 
 import Image from 'next/image';
 
+import { Media } from 'containers/media';
+
 import ARROW_PREVIOUS_SVG from 'svgs/arrow-left.svg';
 import ARROW_NEXT_SVG from 'svgs/arrow-right.svg';
 
@@ -98,10 +100,9 @@ export const TeamCarousel: React.FC = () => {
       <div className="absolute bottom-0 left-0 w-full bg-lightBlue h-4/6" />
       <div className="">
         <Slider {...settings}>
-          <Card
-            className="hidden lg:block lg:invisible"
-            photo="/images/about/team/susana-romao.jpg"
-          />
+          <Media greaterThanOrEqual="lg">
+            <Card photo="/images/about/team/susana-romao.jpg" />
+          </Media>
 
           {TEAM.map((t) => (
             <Card key={t.key} role={t.role} name={t.name} photo={t.img} />

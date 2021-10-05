@@ -15,12 +15,7 @@ const Analyze: React.FC = () => (
       <title>Analyze</title>
     </Head>
     <Header />
-    <motion.div
-      layout
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
+    <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       <Hero
         title="Analyze"
         subtitle="See sources of impact and risk and understand what you can do about them."

@@ -9,7 +9,7 @@ export interface ContentCardProps {
   title: string;
   hyperlink?: string;
   orientation: 'vertical' | 'horizontal';
-  reverse?: boolean,
+  reverse?: boolean;
 }
 
 export const ContentCard: React.FC<ContentCardProps> = ({
@@ -43,11 +43,9 @@ export const ContentCard: React.FC<ContentCardProps> = ({
       </div>
     )}
     {orientation === 'horizontal' && (
-
       <div className={reverse ? 'flex flex-row-reverse' : 'flex'}>
         <Image width="657px" height="351px" src={imageURL} />
         <div className="flex flex-col w-2/4 px-20 py-4 space-y-4">
-
           <h6 className="text-5xl font-sans-semibold">{title}</h6>
           <p>{description}</p>
           {hyperlink && (
@@ -66,7 +64,6 @@ export const ContentCard: React.FC<ContentCardProps> = ({
       </div>
     )}
   </>
-
 );
 
 export default ContentCard;

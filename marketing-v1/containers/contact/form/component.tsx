@@ -6,11 +6,9 @@ import Wrapper from 'containers/wrapper';
 
 import Button from 'components/button';
 
-
 export const ContactForm = () => (
   <section className="relative flex flex-col pt-24 font-sans">
     <Wrapper>
-
       <h3 className="text-7xl">Contact Us</h3>
 
       <Form
@@ -22,16 +20,13 @@ export const ContactForm = () => (
           message: '',
           agreement: false,
         }}
-        onSubmit={() => { }}
+        onSubmit={() => {}}
       >
         {({ form, values, handleSubmit }) => (
-          <form
-            onSubmit={handleSubmit}
-            className="list__filters-date-range--form"
-          >
+          <form onSubmit={handleSubmit} className="list__filters-date-range--form">
             <div className="flex pt-20 pb-48">
               <div className="flex flex-col w-3/5 space-y-10">
-                <div className='flex w-full space-x-5'>
+                <div className="flex w-full space-x-5">
                   <Field name="name" component="input">
                     {(fprops) => (
                       <label
@@ -141,7 +136,7 @@ export const ContactForm = () => (
                     )}
                   </Field>
                   <p>
-                    I agree with the Landgriffon’s {" "}
+                    I agree with the Landgriffon’s{' '}
                     <a
                       className="underline cursor-pointer"
                       href="https://landgriffon.com/privacy-policy"
@@ -154,7 +149,7 @@ export const ContactForm = () => (
                     theme="secondary"
                     size="s"
                     className="box-border flex-shrink-0 h-10 ml-5 w-28"
-                    onClick={() => console.info("Send", values)}
+                    onClick={() => console.info('Send', values)}
                   >
                     Send
                   </Button>
@@ -167,7 +162,8 @@ export const ContactForm = () => (
                 </div>
                 <div className="flex flex-col space-y-2">
                   <p className="font-sans-semibold">Our location</p>
-                  <p>Madrid,
+                  <p>
+                    Madrid,
                     <br />
                     Spain
                   </p>
@@ -178,7 +174,7 @@ export const ContactForm = () => (
         )}
       </Form>
     </Wrapper>
-  </section >
+  </section>
 );
 
 export default ContactForm;

@@ -43,10 +43,53 @@ export const TeamCarousel: React.FC = () => {
     dots: false,
     infinite: true,
     speed: 1000,
-    slidesToShow: 5,
+    slidesToShow: 8,
     slidesToScroll: 1,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
+    responsive: [
+      {
+        breakpoint: 1950,
+        settings: {
+          slidesToShow: 6,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 1700,
+        settings: {
+          slidesToShow: 5,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 1450,
+        settings: {
+          slidesToShow: 4,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 1025,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 2,
+        },
+      },
+      {
+        breakpoint: 800,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+        },
+      },
+      {
+        breakpoint: 500,
+        settings: {
+          slidesToShow: 1,
+        },
+      },
+    ],
   };
 
   return (
@@ -55,6 +98,11 @@ export const TeamCarousel: React.FC = () => {
       <div className="absolute bottom-0 left-0 w-full bg-lightBlue h-4/6" />
       <div className="">
         <Slider {...settings}>
+          <Card
+            className="hidden lg:block lg:invisible"
+            photo="/images/about/team/susana-romao.jpg"
+          />
+
           {TEAM.map((t) => (
             <Card key={t.key} role={t.role} name={t.name} photo={t.img} />
           ))}

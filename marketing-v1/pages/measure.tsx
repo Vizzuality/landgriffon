@@ -9,7 +9,6 @@ import Content from 'containers/measure/content';
 import MetaFooter from 'containers/meta-footer';
 import SubNav from 'containers/sub-nav';
 
-
 const Measure: React.FC = () => (
   <div>
     <Head>

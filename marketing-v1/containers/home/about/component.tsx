@@ -19,23 +19,15 @@ export const HomeAbout = () => (
         </div>
       </div>
       <div className="flex flex-col self-end w-4/5 px-32 py-16 space-y-16 bg-lightBlue">
-        <p className="w-3/4 text-black text-7xl">
-          Our future is a better future
-        </p>
-        <div className="grid grid-cols-2" >
+        <p className="w-3/4 text-black text-7xl">Our future is a better future</p>
+        <div className="grid grid-cols-2">
           <div />
           <div className="px-10">
             <p className="text-3xl">LandGriffon is built by:</p>
             <ul className="flex flex-col py-16 space-y-12 text-5xl font-sans-semibold">
-              <li>
-                Vizzuality
-              </li>
-              <li>
-                Satelligence
-              </li>
-              <li>
-                SEI
-              </li>
+              <li>Vizzuality</li>
+              <li>Satelligence</li>
+              <li>SEI</li>
             </ul>
             <Link href="https://landgriffon.com">
               <a

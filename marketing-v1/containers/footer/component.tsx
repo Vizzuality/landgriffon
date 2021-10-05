@@ -44,16 +44,10 @@ export const Footer = () => (
         </nav>
 
         <div className="flex items-center">
-          <Image
-            alt="UE Flag"
-            src="/images/footer/UE_flag.jpg"
-            height={43}
-            width={62}
-          />
+          <Image alt="UE Flag" src="/images/footer/UE_flag.jpg" height={43} width={62} />
           <p className="w-56 pl-3 font-medium text-xxs">
-            This project has received funding from the European Union&apos;s
-            Horizon 2020 research and innovation programme under grant agreement
-            No 101004174
+            This project has received funding from the European Union&apos;s Horizon 2020 research
+            and innovation programme under grant agreement No 101004174
           </p>
         </div>
       </div>

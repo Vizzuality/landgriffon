@@ -23,12 +23,7 @@ const Home: React.FC = () => {
       </Head>
       <Header />
 
-      <motion.div
-        layout
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      >
+      <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
         <Hero onSignUp={executeScroll} />
         <Services />
         <Works />

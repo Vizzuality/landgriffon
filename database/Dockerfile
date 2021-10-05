@@ -11,7 +11,3 @@ ARG PG_H3_VERSION=3.7.1
 ENV PG_H3_VERSION $PG_H3_VERSION
 
 RUN pgxn install "h3==${PG_H3_VERSION}"
-
-COPY entrypoint.sh /usr/local/bin/
-
-ENTRYPOINT ["entrypoint.sh"]

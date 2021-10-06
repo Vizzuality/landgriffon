@@ -10,14 +10,14 @@ import Button from 'components/button';
 import MENU_SVG from 'svgs/menu.svg';
 
 export const Header = () => (
-  <header className="flex justify-between flex-grow w-full h-full row-auto pt-4 pb-5 px-3.5 md:px-0 mx-auto lg:flex-col md:container">
-    <nav className="relative flex items-center mt-1 lg:flex-wrap lg:justify-between md:mt-0 navbar-expand-lg">
+  <header className="flex justify-between flex-grow w-full h-full row-auto pt-4 pb-5 px-3.5 md:px-0 mx-auto md:flex-col md:container">
+    <nav className="relative flex items-center mt-1 md:flex-wrap md:justify-between md:mt-0 navbar-expand-lg">
       <Link href="/">
         <h1 className="text-base tracking-widest cursor-pointer md:text-lg font-heading">
           LANDGRIFFON
         </h1>
       </Link>
-      <Media greaterThanOrEqual="lg">
+      <Media greaterThanOrEqual="md">
         <div className="flex items-center space-x-4 font-sans md:space-x-12">
           <Link href="/about-us">
             <div className="font-sans text-base cursor-pointer hover:font-sans-semibold">

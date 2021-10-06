@@ -31,7 +31,7 @@ export const Legend: React.FC<LegendProps> = ({
         type="button"
         aria-expanded={active}
         className={cx({
-          'relative shadow-sm bg-white border border-gray-200 rounded flex justify-space-between w-full px-4 py-2 space-x-2 text-sm text-black font-heading focus:outline-none':
+          'relative shadow-sm bg-white border border-gray-200 rounded flex justify-space-between w-full px-4 py-2 space-x-2 text-sm text-gray-900 font-heading focus:outline-none':
             !active,
           'absolute w-10 h-8 top-0 right-0 rounded-t-lg bg-gray-500 text-white flex items-center justify-center transform -translate-y-full':
             active,
@@ -42,7 +42,7 @@ export const Legend: React.FC<LegendProps> = ({
         <ArrowUpIcon
           className={cx({
             'w-4 h-4 transition-transform transform': true,
-            'absolute -translate-y-1/2 text-black top-1/2 right-5': !active,
+            'absolute -translate-y-1/2 top-1/2 right-5': !active,
             'rotate-180': active,
           })}
         />

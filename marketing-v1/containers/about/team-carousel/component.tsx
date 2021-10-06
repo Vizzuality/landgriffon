@@ -17,27 +17,57 @@ export interface ArrowProps {
 }
 
 const NextArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
-  <button
-    aria-label="Next"
-    className="absolute right-0 flex items-center text-4xl font-sans-semibold -bottom-48"
-    type="button"
-    onClick={onClick}
-  >
-    <p className="mr-6">Next</p>
-    <Image height="44px" width="84px" src={ARROW_NEXT_SVG} />
-  </button>
+  <>
+    <Media lessThan="md">
+      <button
+        aria-label="Next"
+        className="absolute right-3.5 flex items-center space-x-6 text-4xl font-sans-semibold -bottom-36"
+        type="button"
+        onClick={onClick}
+      >
+        <Image height="24px" width="48px" src={ARROW_NEXT_SVG} />
+      </button>
+    </Media>
+
+    <Media greaterThanOrEqual="md">
+      <button
+        aria-label="Next"
+        className="absolute right-0 flex items-center space-x-6 text-4xl font-sans-semibold -bottom-48"
+        type="button"
+        onClick={onClick}
+      >
+        <p className="mr-6">Next</p>
+        <Image height="44px" width="84px" src={ARROW_NEXT_SVG} />
+      </button>
+    </Media>
+  </>
 );
 
 const PrevArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
-  <button
-    aria-label="Previous"
-    className="container absolute left-0 flex items-center space-x-6 text-4xl font-sans-semibold -bottom-48"
-    type="button"
-    onClick={onClick}
-  >
-    <Image height="44px" width="84px" src={ARROW_PREVIOUS_SVG} />
-    <p>Previous</p>
-  </button>
+  <>
+    <Media lessThan="md">
+      <button
+        aria-label="Previous"
+        className="left-3.5 absolute left-0 text-4xl md:container font-sans-semibold -bottom-36"
+        type="button"
+        onClick={onClick}
+      >
+        <Image height="24px" width="48px" src={ARROW_PREVIOUS_SVG} />
+      </button>
+    </Media>
+
+    <Media greaterThanOrEqual="md">
+      <button
+        aria-label="Previous"
+        className="container absolute left-0 flex items-center text-4xl md:space-x-6 font-sans-semibold -bottom-48"
+        type="button"
+        onClick={onClick}
+      >
+        <Image height="44px" width="84px" src={ARROW_PREVIOUS_SVG} />
+        <p>Previous</p>
+      </button>
+    </Media>
+  </>
 );
 
 export const TeamCarousel: React.FC = () => {
@@ -95,19 +125,35 @@ export const TeamCarousel: React.FC = () => {
   };
 
   return (
-    <div className="relative pb-56">
-      <div className="absolute top-0 left-0 w-full bg-center bg-cover bg-bege h-2/6" />
-      <div className="absolute bottom-0 left-0 w-full bg-lightBlue h-4/6" />
-      <div className="">
-        <Slider {...settings}>
-          <Media greaterThanOrEqual="lg">
+    <div className="relative md:pb-96 pb-48  px-3.5 md:px-0">
+      <div
+        style={{ height: '45%' }}
+        className="absolute top-0 left-0 w-full pt-4 bg-center bg-cover md:pt-0 bg-bege "
+      >
+        <h3 className="px-3.5 md:px-0 font-sans text-5xl font-semibold md:text-center md:font-normal md:text-7xl">
+          Meet our team
+        </h3>
+      </div>
+      <div
+        style={{ height: '55%' }}
+        className="absolute bottom-0 left-0 w-full bg-bege md:bg-lightBlue"
+      />
+      <div className="pt-20 md:pt-40">
+        <Media lessThan="md">
+          <Slider {...settings}>
+            {TEAM.map((t) => (
+              <Card key={t.key} role={t.role} name={t.name} photo={t.img} />
+            ))}
+          </Slider>
+        </Media>
+        <Media greaterThanOrEqual="md">
+          <Slider {...settings}>
             <Card photo="/images/about/team/susana-romao.jpg" />
-          </Media>
-
-          {TEAM.map((t) => (
-            <Card key={t.key} role={t.role} name={t.name} photo={t.img} />
-          ))}
-        </Slider>
+            {TEAM.map((t) => (
+              <Card key={t.key} role={t.role} name={t.name} photo={t.img} />
+            ))}
+          </Slider>
+        </Media>
       </div>
     </div>
   );

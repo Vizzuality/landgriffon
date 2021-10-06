@@ -24,7 +24,7 @@ export const HomeWorks = () => (
     </div>
     <div className="py-28 bg-lightBlue">
       <Wrapper>
-        <ul className="flex flex-col items-center justify-between space-y-20 md:space-x-10 md:flex-row">
+        <ul className="flex flex-col items-center justify-between space-y-20 md:space-y-0 md:space-x-10 md:flex-row">
           {FEATURES.map((f) => (
             <li key={f.key} className="flex flex-col space-y-6 md:space-y-0">
               <div>

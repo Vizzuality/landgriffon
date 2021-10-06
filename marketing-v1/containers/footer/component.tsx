@@ -9,8 +9,8 @@ import SOCIAL_MEDIA from './constants';
 
 export const Footer = () => (
   <Wrapper>
-    <footer className="w-full row-auto pb-12 md:px-16 pt-28">
-      <nav className="relative flex flex-col flex-wrap justify-between mb-16 space-y-12 text-5xl cursor-pointer font-sans-semibold md:font-sans md:text-6xl md:space-y-14 items-left md:text-7xl md:mt-0 navbar-expand-lg">
+    <footer className="w-full row-auto py-10 md:pb-12 md:px-16 md:pt-28">
+      <nav className="relative flex flex-col flex-wrap justify-between space-y-12 text-5xl font-semibold cursor-pointer md:mb-16 md:font-normal md:font-sans md:text-6xl md:space-y-14 items-left md:text-7xl md:mt-0 navbar-expand-lg">
         <Link href="/about-us">
           <p className="hover:opacity-40">About Us</p>
         </Link>
@@ -26,7 +26,7 @@ export const Footer = () => (
         </Link>
       </nav>
 
-      <div className="items-center justify-between mt-24 space-y-10 md:space-y-0 md:flex">
+      <div className="items-center justify-between mt-10 space-y-10 md:mt-24 md:space-y-0 md:flex">
         <nav className="flex flex-row items-end h-8 space-x-11">
           {SOCIAL_MEDIA.map((sm) => (
             <Link href={sm.hyperlink}>

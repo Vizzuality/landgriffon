@@ -5,7 +5,7 @@ import Wrapper from 'containers/wrapper';
 
 export const MeasureContent = () => (
   <Wrapper>
-    <section className="flex flex-row justify-center px-16 py-20 space-x-64">
+    <section className="flex flex-col justify-center md:py-20 md:px-16 md:space-x-64 md:flex-row">
       <ContentCard
         orientation="vertical"
         hyperlink="/"

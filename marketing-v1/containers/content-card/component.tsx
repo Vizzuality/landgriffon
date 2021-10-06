@@ -24,9 +24,9 @@ export const ContentCard: React.FC<ContentCardProps> = ({
     {orientation === 'vertical' && (
       <div>
         <Image width="466px" height="575px" src={imageURL} />
-        <div className="flex flex-col py-8 space-y-4 w-96">
-          <h6 className="text-5xl font-sans-semibold">{title}</h6>
-          <p>{description}</p>
+        <div className="flex flex-col py-8 space-y-4 md:w-96">
+          <h6 className="text-xl md:text-5xl font-sans-semibold">{title}</h6>
+          <p className="text-base md:text-xl">{description}</p>
           {hyperlink && (
             <Link href={hyperlink}>
               <a
@@ -43,11 +43,11 @@ export const ContentCard: React.FC<ContentCardProps> = ({
       </div>
     )}
     {orientation === 'horizontal' && (
-      <div className={reverse ? 'flex flex-row-reverse' : 'flex'}>
+      <div className={reverse ? 'md:flex flex-row-reverse' : 'md:flex'}>
         <Image width="657px" height="351px" src={imageURL} />
-        <div className="flex flex-col w-2/4 px-20 py-4 space-y-4">
-          <h6 className="text-5xl font-sans-semibold">{title}</h6>
-          <p>{description}</p>
+        <div className="flex flex-col py-4 space-y-4 md:px-20 md:w-2/4">
+          <h6 className="text-xl md:text-5xl font-sans-semibold">{title}</h6>
+          <p className="text-base md:text-xl">{description}</p>
           {hyperlink && (
             <Link href={hyperlink}>
               <a

@@ -27,3 +27,15 @@ export const NAVIGATION_LEFT_HREF = {
   [Types.Measure]: '/forecast',
   [Types.Forecast]: '/analyze',
 };
+
+export const NAVIGATION_MOBILE_LEFT = {
+  [Types.Analyze]: '01',
+  [Types.Measure]: '03',
+  [Types.Forecast]: '02',
+};
+
+export const NAVIGATION_MOBILE_RIGHT = {
+  [Types.Analyze]: '03',
+  [Types.Measure]: '02',
+  [Types.Forecast]: '01',
+};

@@ -15,14 +15,14 @@ export const HomeAbout = () => (
           <h4 className="text-5xl font-semibold md:w-3/5 md:font-normal md:w-4/6 md:text-7xl">
             Supported by a team of experts
           </h4>
-          <p className="text-base md:text-xl md::w-2/5">
+          <p className="text-base md:text-xl md:w-2/5">
             Our team brings expertise in environmental science, user-centric design, and satellite
             monitoring to help you reach a more sustainable future.
           </p>
         </div>
       </div>
       <div className="relative flex flex-col px-4 py-8 md:py-16 md:w-4/5 md:px-32 md:self-end bg-lightBlue">
-        <p className="w-3/4 text-5xl font-semibold text-black pb-96 md:pb-0 md:text-7xl md:font-normal">
+        <p className="w-3/4 text-5xl font-semibold text-black pb-96 md:pb-16 md:text-7xl md:font-normal">
           Our future is a better future
         </p>
         <div className="md:grid md:grid-cols-2">
@@ -52,7 +52,7 @@ export const HomeAbout = () => (
           </div>
         </Media>
         <Media greaterThanOrEqual="md">
-          <div className="absolute bottom-24 left-28">
+          <div style={{ left: '-20%', top: '38%' }} className="absolute">
             <Image width="710px" height="661px" src="/images/home/home-4.jpg" />
           </div>
         </Media>

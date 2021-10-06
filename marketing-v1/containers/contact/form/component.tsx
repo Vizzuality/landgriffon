@@ -2,14 +2,15 @@ import React from 'react';
 
 import { Form, Field } from 'react-final-form';
 
+import { Media } from 'containers/media';
 import Wrapper from 'containers/wrapper';
 
 import Button from 'components/button';
 
 export const ContactForm = () => (
-  <section className="relative flex flex-col pt-24 font-sans">
+  <section className="relative flex flex-col pt-20 font-sans font-semibold md:font-normal md:pt-24">
     <Wrapper>
-      <h3 className="text-7xl">Contact Us</h3>
+      <h3 className="text-4xl md:text-7xl">Contact us</h3>
 
       <Form
         initialValues={{
@@ -20,17 +21,22 @@ export const ContactForm = () => (
           message: '',
           agreement: false,
         }}
-        onSubmit={() => {}}
+        onSubmit={() => {
+          console.info('onSubmit');
+        }}
       >
         {({ form, values, handleSubmit }) => (
-          <form onSubmit={handleSubmit} className="list__filters-date-range--form">
-            <div className="flex pt-20 pb-48">
-              <div className="flex flex-col w-3/5 space-y-10">
-                <div className="flex w-full space-x-5">
+          <form
+            onSubmit={values.agreement && handleSubmit}
+            className="list__filters-date-range--form"
+          >
+            <div className="flex pt-20 pb-20 md:pb-48">
+              <div className="flex flex-col space-y-10 md:w-3/5">
+                <div className="flex flex-col w-full space-y-10 md:space-y-0 md:space-x-5 md:flex-row">
                   <Field name="name" component="input">
                     {(fprops) => (
                       <label
-                        className="w-1/2 text-xs uppercase text-lightGray font-sans-semibold"
+                        className="text-xs uppercase md:w-1/2 text-lightGray font-sans-semibold"
                         htmlFor="name"
                       >
                         Name
@@ -49,7 +55,7 @@ export const ContactForm = () => (
                   <Field name="company" component="input">
                     {(fprops) => (
                       <label
-                        className="w-1/2 text-xs uppercase text-lightGray font-sans-semibold"
+                        className="text-xs uppercase md:w-1/2 text-lightGray font-sans-semibold"
                         htmlFor="company"
                       >
                         Company
@@ -69,7 +75,7 @@ export const ContactForm = () => (
                 <Field name="email" component="input">
                   {(fprops) => (
                     <label
-                      className="w-1/2 pr-3 text-xs uppercase text-lightGray font-sans-semibold"
+                      className="text-xs uppercase md:pr-3 md:w-1/2 text-lightGray font-sans-semibold"
                       htmlFor="email"
                     >
                       Email
@@ -88,7 +94,7 @@ export const ContactForm = () => (
                 <Field name="subject" component="input">
                   {(fprops) => (
                     <label
-                      className="w-1/2 pr-3 text-xs uppercase text-lightGray font-sans-semibold"
+                      className="text-xs uppercase md:pr-3 md:w-1/2 text-lightGray font-sans-semibold"
                       htmlFor="subject"
                     >
                       Subject
@@ -107,7 +113,7 @@ export const ContactForm = () => (
                 <Field name="message" component="input">
                   {(fprops) => (
                     <label
-                      className="w-1/2 pr-3 text-xs uppercase text-lightGray font-sans-semibold"
+                      className="text-xs uppercase md:pr-3 md:w-1/2 text-lightGray font-sans-semibold"
                       htmlFor="message"
                     >
                       Message
@@ -123,52 +129,55 @@ export const ContactForm = () => (
                   )}
                 </Field>
 
-                <div className="flex items-center pt-2">
-                  <Field name="agreement" component="input" type="radio">
-                    {(fprops) => (
-                      <input
-                        id="agree"
-                        name="agree"
-                        type="radio"
-                        className="mr-3 text-black bg-transparent cursor-pointer w-7 h-7 border-darkGray border-px"
-                        onChange={fprops.input.onChange}
-                      />
-                    )}
-                  </Field>
-                  <p>
-                    I agree with the Landgriffon’s{' '}
-                    <a
-                      className="underline cursor-pointer"
-                      href="https://landgriffon.com/privacy-policy"
-                    >
-                      Privacy statement.
-                    </a>
-                  </p>
-
+                <div className="flex flex-col items-center pt-2 space-y-10 md:flex-row md:space-y-0">
+                  <div className="flex flex-row items-center">
+                    <Field name="agreement" component="input" type="radio">
+                      {(fprops) => (
+                        <input
+                          id="agree"
+                          name="agree"
+                          type="radio"
+                          className="mr-3 text-black bg-transparent cursor-pointer w-7 h-7 border-darkGray border-px"
+                          onChange={fprops.input.onChange}
+                        />
+                      )}
+                    </Field>
+                    <p className="text-base">
+                      I agree with the Landgriffon’s{' '}
+                      <a
+                        className="underline cursor-pointer"
+                        href="https://landgriffon.com/privacy-policy"
+                      >
+                        Privacy statement.
+                      </a>
+                    </p>
+                  </div>
                   <Button
                     theme="secondary"
                     size="s"
-                    className="box-border flex-shrink-0 h-10 ml-5 w-28"
+                    className="box-border flex-shrink-0 h-10 text-base w-36 md:ml-5 md:w-28"
                     onClick={() => console.info('Send', values)}
                   >
                     Send
                   </Button>
                 </div>
               </div>
-              <div className="absolute right-0 flex flex-col w-2/5 px-12 space-y-12 text-xl flex-end bg-bege py-28">
-                <div className="flex flex-col space-y-2">
-                  <p className="font-sans-semibold">Email us</p>
-                  <p>hello@vizzuality.com</p>
+              <Media greaterThanOrEqual="md">
+                <div className="absolute right-0 flex flex-col w-2/5 px-12 space-y-12 text-xl flex-end bg-bege py-28">
+                  <div className="flex flex-col space-y-2">
+                    <p className="font-sans-semibold">Email us</p>
+                    <p>hello@vizzuality.com</p>
+                  </div>
+                  <div className="flex flex-col space-y-2">
+                    <p className="font-sans-semibold">Our location</p>
+                    <p>
+                      Madrid,
+                      <br />
+                      Spain
+                    </p>
+                  </div>
                 </div>
-                <div className="flex flex-col space-y-2">
-                  <p className="font-sans-semibold">Our location</p>
-                  <p>
-                    Madrid,
-                    <br />
-                    Spain
-                  </p>
-                </div>
-              </div>
+              </Media>
             </div>
           </form>
         )}

@@ -5,7 +5,7 @@ import Wrapper from 'containers/wrapper';
 
 export const AnalyzeContent = () => (
   <Wrapper>
-    <section className="flex flex-col justify-center px-16 py-36 space-y-36">
+    <section className="flex flex-col justify-center space-y-8 md:px-16 md:py-36 md:space-y-36">
       <ContentCard
         orientation="horizontal"
         reverse

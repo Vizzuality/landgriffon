@@ -23,22 +23,26 @@ export const Legend: React.FC<LegendProps> = ({
 
   return (
     <div
-      className={cx('bg-white rounded-lg flex flex-col flex-grow border border-gray-200', {
+      className={cx('flex flex-col flex-grow', {
         [className]: !!className,
       })}
     >
       <button
         type="button"
         aria-expanded={active}
-        className="relative flex justify-space-between w-full px-4 py-2 space-x-2 text-sm text-black font-heading focus:outline-none"
+        className={cx({
+          'relative shadow-sm bg-white border border-gray-200 rounded flex justify-space-between w-full px-4 py-2 space-x-2 text-sm text-black font-heading focus:outline-none':
+            !active,
+          'absolute w-10 h-8 top-0 right-0 rounded-t-lg bg-gray-500 text-white flex items-center justify-center transform -translate-y-full':
+            active,
+        })}
         onClick={onToggleActive}
       >
-        <span>Legend</span>
-
+        {!active && <span>Legend</span>}
         <ArrowUpIcon
           className={cx({
-            'absolute w-3 h-3 transition-transform transform -translate-y-1/2 text-black top-1/2 right-5':
-              true,
+            'w-4 h-4 transition-transform transform': true,
+            'absolute -translate-y-1/2 text-black top-1/2 right-5': !active,
             'rotate-180': active,
           })}
         />
@@ -46,7 +50,7 @@ export const Legend: React.FC<LegendProps> = ({
 
       {active && (
         <div
-          className="relative flex flex-col flex-grow overflow-hidden rounded-lg rounded-t-none"
+          className="relative flex flex-col flex-grow overflow-hidden rounded rounded-tr-none border border-gray-200 shadow-sm bg-white rounded"
           style={{
             maxHeight,
           }}

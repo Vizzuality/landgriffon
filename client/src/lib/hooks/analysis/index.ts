@@ -38,6 +38,7 @@ export function useAnalysisChart(options: AnalysisChartOptions) {
       placeholderData: {
         data: [],
       },
+      refetchOnWindowFocus: false,
     }
   );
 

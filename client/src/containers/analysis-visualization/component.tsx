@@ -25,7 +25,7 @@ const AnalysisVisualization: React.FC = () => {
       >
         <div className="flex gap-2 flex-wrap">
           <DatasetControl />
-          {/* <AnalysisFilters /> */}
+          <AnalysisFilters />
         </div>
         <div>
           <ModeControl />
@@ -41,12 +41,8 @@ const AnalysisVisualization: React.FC = () => {
       )}
 
       {visualizationMode === 'chart' && (
-        <div className="flex flex-col p-6 pl-12 mt-16 left-12 overflow-x-hidden">
-          <div className="-my-2 sm:-mx-6">
-            <div className="inline-block min-w-full py-2 align-middle">
-              <AnalysisChart />
-            </div>
-          </div>
+        <div className="flex flex-col pr-6 pl-12">
+          <AnalysisChart />
         </div>
       )}
     </section>

@@ -11,10 +11,10 @@ export const HomeWorks = () => (
   <section className="font-sans">
     <div className="pt-40 pb-20">
       <Wrapper>
-        <div className="px-16">
+        <div className="lg:px-16">
           <h2 className="pb-12 text-5xl font-sans-semibold text-green">How it works</h2>
           <div className="flex items-center justify-between">
-            <h4 className="text-6xl">
+            <h4 className="text-5xl lg:text-6xl">
               LandGriffon works anywhere where you are on your journey in managing your supply
               chain.
             </h4>
@@ -24,7 +24,7 @@ export const HomeWorks = () => (
     </div>
     <div className="py-28 bg-lightBlue">
       <Wrapper>
-        <ul className="flex items-center justify-between space-x-10">
+        <ul className="flex flex-col items-center justify-between lg:space-x-10 lg:flex-row">
           {FEATURES.map((f) => (
             <li key={f.key} className="flex flex-col">
               <div>
@@ -76,7 +76,9 @@ export const HomeWorks = () => (
           </p>
         </div>
         <div className="flex flex-col px-16 space-y-6 py-28 bg-blue">
-          <h3 className="w-3/4 text-white text-7xl">Learn how Landgriffon can work for you</h3>
+          <h3 className="text-6xl text-white lg:w-3/4 lg:text-7xl">
+            Learn how Landgriffon can work for you
+          </h3>
           <Link href="https://landgriffon.com">
             <a
               className="text-3xl text-white underline hover:no-underline"

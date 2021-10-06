@@ -10,7 +10,7 @@ export const HomeHero: React.FC<HomeHeroProps> = ({ onSignUp }: HomeHeroProps) =
   <section className="flex flex-col flex-grow w-full h-full row-auto pt-4 pb-5 mx-auto font-sans md:container">
     <div className="relative -mb-2">
       <Image alt="path in plantation" height="600px" width="1600px" src="/images/home/home-1.jpg" />
-      <h2 className="absolute w-4/5 text-white bottom-16 left-16 text-7xl">
+      <h2 className="absolute w-4/5 text-3xl text-white lg:bottom-16 bottom-6 left-6 lg:left-16 lg:text-7xl">
         Reach your supply chain sustainability targets
       </h2>
     </div>

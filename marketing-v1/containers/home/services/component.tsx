@@ -9,9 +9,11 @@ export const HomeServices = () => (
     <div className="pt-40 pb-20">
       <Wrapper>
         <h2 className="pb-12 text-5xl font-sans-semibold text-green">Services</h2>
-        <div className="flex items-center justify-between font-sans">
-          <h3 className="w-4/6 text-7xl">Measure and manage supply chain impacts.</h3>
-          <p className="w-2/6 text-xl">
+        <div className="flex flex-col items-center justify-between font-sans lg:flex-row">
+          <h3 className="text-6xl lg:w-4/6 lg:text-7xl">
+            Measure and manage supply chain impacts.
+          </h3>
+          <p className="text-xl lg:w-2/6">
             LandGriffon is a powerful modeling tool backed by a team of experts to empower you to
             change your business for the better.
           </p>
@@ -20,7 +22,7 @@ export const HomeServices = () => (
     </div>
     <div className="bg-bege">
       <Wrapper>
-        <div className="flex justify-between space-x-64 p-28">
+        <div className="flex justify-between lg:space-x-64 p-28">
           <Image
             alt="plantation from the sky"
             height="942px"

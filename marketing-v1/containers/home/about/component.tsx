@@ -10,18 +10,18 @@ export const HomeAbout = () => (
     <Wrapper>
       <div className="px-16">
         <h2 className="pb-12 text-5xl font-sans-semibold text-green">About us</h2>
-        <div className="flex items-center justify-between pb-24 space-x-24">
-          <h4 className="w-3/5 text-7xl">Supported by a team of experts </h4>
-          <p className="w-2/5 text-xl">
+        <div className="flex flex-col items-center justify-between pb-24 space-x-24 lg:flex-row">
+          <h4 className="text-6xl lg:w-3/5 lg:text-7xl">Supported by a team of experts </h4>
+          <p className="text-xl lg:w-2/5">
             Our team brings expertise in environmental science, user-centric design, and satellite
             monitoring to help you reach a more sustainable future.
           </p>
         </div>
       </div>
       <div className="flex flex-col self-end w-4/5 px-32 py-16 space-y-16 bg-lightBlue">
-        <p className="w-3/4 text-black text-7xl">Our future is a better future</p>
-        <div className="grid grid-cols-2">
-          <div />
+        <p className="text-6xl text-black lg:w-3/4 lg:text-7xl">Our future is a better future</p>
+        <div className="lg:grid lg:grid-cols-2">
+          <div className="invisible lg:visible" />
           <div className="px-10">
             <p className="text-3xl">LandGriffon is built by:</p>
             <ul className="flex flex-col py-16 space-y-12 text-5xl font-sans-semibold">

@@ -10,7 +10,7 @@ import Button from 'components/button';
 import MENU_SVG from 'svgs/menu.svg';
 
 export const Header = () => (
-  <header className="flex justify-between flex-grow w-full h-full row-auto pt-4 pb-5 mx-auto lg:flex-col md:container">
+  <header className="flex justify-between flex-grow w-full h-full row-auto pt-4 pb-5 px-3.5 md:px-0 mx-auto lg:flex-col md:container">
     <nav className="relative flex items-center mt-1 lg:flex-wrap lg:justify-between md:mt-0 navbar-expand-lg">
       <Link href="/">
         <h1 className="text-base tracking-widest cursor-pointer md:text-lg font-heading">
@@ -37,8 +37,8 @@ export const Header = () => (
         </div>
       </Media>
     </nav>
-    <Media lessThan="lg">
-      <button type="button" onClick={() => console.log('Open modal')}>
+    <Media lessThan="md">
+      <button type="button" onClick={() => console.info('Open menu')}>
         <Image height="30px" width="26px" src={MENU_SVG} />
       </button>
     </Media>

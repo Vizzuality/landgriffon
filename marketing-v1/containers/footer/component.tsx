@@ -10,7 +10,7 @@ import SOCIAL_MEDIA from './constants';
 export const Footer = () => (
   <Wrapper>
     <footer className="w-full row-auto pb-12 md:px-16 pt-28">
-      <nav className="relative flex flex-col flex-wrap justify-between mb-16 space-y-6 font-sans text-6xl cursor-pointer md:space-y-14 items-left md:text-7xl md:mt-0 navbar-expand-lg">
+      <nav className="relative flex flex-col flex-wrap justify-between mb-16 space-y-12 text-5xl cursor-pointer font-sans-semibold md:font-sans md:text-6xl md:space-y-14 items-left md:text-7xl md:mt-0 navbar-expand-lg">
         <Link href="/about-us">
           <p className="hover:opacity-40">About Us</p>
         </Link>
@@ -27,7 +27,7 @@ export const Footer = () => (
       </nav>
 
       <div className="items-center justify-between mt-24 space-y-10 md:space-y-0 md:flex">
-        <nav className="flex space-x-11">
+        <nav className="flex flex-row items-end h-8 space-x-11">
           {SOCIAL_MEDIA.map((sm) => (
             <Link href={sm.hyperlink}>
               <a href={sm.hyperlink} target="_blank" rel="noreferrer">
@@ -51,7 +51,7 @@ export const Footer = () => (
           </p>
         </div>
       </div>
-      <nav className="flex text-base mt-36 space-x-14">
+      <nav className="flex mt-8 space-x-6 text-xs md:text-base md:mt-36 md:space-x-14">
         <p>@LandGriffon 2021</p>
         <Link href="https://landgriffon.com/privacy-policy">
           <a

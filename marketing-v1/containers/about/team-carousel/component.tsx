@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 
 import Slider from 'react-slick';
 
@@ -71,6 +71,13 @@ const PrevArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
 );
 
 export const TeamCarousel: React.FC = () => {
+  const [currentFirstSlide, setcurrentFirstSlide] = useState(0);
+
+  const progressFill = useMemo(
+    () => 100 / TEAM.length - 1 + (100 / TEAM.length - 1) * currentFirstSlide,
+    [currentFirstSlide]
+  );
+
   const settings = {
     dots: false,
     infinite: true,
@@ -79,6 +86,7 @@ export const TeamCarousel: React.FC = () => {
     slidesToScroll: 1,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
+    afterChange: (current) => setcurrentFirstSlide(current),
     responsive: [
       {
         breakpoint: 1950,
@@ -128,7 +136,7 @@ export const TeamCarousel: React.FC = () => {
     <div className="relative md:pb-96 pb-48  px-3.5 md:px-0">
       <div
         style={{ height: '45%' }}
-        className="absolute top-0 left-0 w-full pt-4 bg-center bg-cover md:pt-0 bg-bege "
+        className="absolute top-0 left-0 w-full pt-4 bg-center bg-cover md:pt-0 bg-bege"
       >
         <h3 className="px-3.5 md:px-0 font-sans text-5xl font-semibold md:text-center md:font-normal md:text-7xl">
           Meet our team
@@ -137,7 +145,17 @@ export const TeamCarousel: React.FC = () => {
       <div
         style={{ height: '55%' }}
         className="absolute bottom-0 left-0 w-full bg-bege md:bg-lightBlue"
-      />
+      >
+        <div style={{ width: '90%', marginLeft: '5%' }} className="h-px mt-56 bg-lightGray" />
+        <div
+          style={{
+            width: `${progressFill}%`,
+            marginLeft: '5%',
+            marginTop: '-2px',
+          }}
+          className="h-1 bg-black"
+        />
+      </div>
       <div className="pt-20 md:pt-40">
         <Media lessThan="md">
           <Slider {...settings}>

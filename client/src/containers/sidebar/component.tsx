@@ -1,7 +1,13 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { Fragment, useCallback } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { ChartBarIcon, CollectionIcon, HomeIcon, XIcon } from '@heroicons/react/outline';
+import {
+  CollectionIcon,
+  CogIcon,
+  ChartSquareBarIcon,
+  XIcon,
+  QuestionMarkCircleIcon,
+} from '@heroicons/react/outline';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { ui, setMenuMobileOpen } from 'store/features/ui';
 import MobileNavigation from 'containers/navigation/mobile';
@@ -17,9 +23,10 @@ const user = {
 };
 
 const navigationItems: NavigationList = [
-  { name: 'Home', href: '/', icon: HomeIcon },
-  { name: 'Analysis', href: '/analysis', icon: ChartBarIcon },
-  { name: 'Admin', href: '#', icon: CollectionIcon },
+  { name: 'Overview', href: '/', icon: ChartSquareBarIcon },
+  { name: 'Analysis', href: '/analysis', icon: CollectionIcon },
+  { name: 'Admin', href: '#', icon: CogIcon },
+  { name: 'Help', href: '#', icon: QuestionMarkCircleIcon },
 ];
 
 const Sidebar = () => {

@@ -15,7 +15,7 @@ export type ModeControlProps = {
 };
 
 const ModeControl: React.FC<ModeControlProps> = ({ query, mode }: ModeControlProps) => (
-  <>
+  <div className="inline-flex shadow-sm rounded-md">
     <Link
       href={{
         pathname: '/analysis',
@@ -58,7 +58,7 @@ const ModeControl: React.FC<ModeControlProps> = ({ query, mode }: ModeControlPro
         <ChartPieIcon className="h-6 w-6" aria-hidden="true" />
       </a>
     </Link>
-  </>
+  </div>
 );
 
 export default ModeControl;

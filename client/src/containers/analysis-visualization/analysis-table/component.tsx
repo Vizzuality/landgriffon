@@ -76,16 +76,16 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
 
   const TABLE_COLUMNS = (tableInitialColumns as []).concat(tableYearColumns as []);
 
-  function onChange(pagination: any, sorter: any, extra: any) {
+  const onChange = (pagination: any, sorter: any, extra: any) => {
     console.info('params', pagination, sorter, extra);
-  }
+  };
 
   return (
     <>
-      <div className="flex justify-between my-6">
+      <div className="flex justify-between mb-6">
         <div className="flex items-center">
-          <InformationCircleIcon className="w-5 h-4 mr-2 text-black" />
           <p className="m-0">
+            <InformationCircleIcon className="inline w-5 h-4 mr-2 text-black" />
             Viewing absolute values for <b>Actual Data</b>
           </p>
         </div>
@@ -100,11 +100,7 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
         </Button>
       </div>
       <div className="relative">
-        <Loading
-          visible={!filteredDataIsFetched}
-          className="absolute z-10 flex items-center justify-center w-full h-full bg-white bg-opacity-75"
-          iconClassName="w-5 h-5 text-gray-500"
-        />
+        <Loading />
         {FILTERED_DATA && filteredDataIsFetched && (
           <Table columns={TABLE_COLUMNS} dataSource={FILTERED_DATA} onChange={onChange} />
         )}

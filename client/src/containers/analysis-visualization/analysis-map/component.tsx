@@ -114,7 +114,7 @@ const AnalysisMap: React.FC = () => {
         />
       </DeckGL>
       <Legend
-        className="absolute z-10 bottom-10 right-10 w-72"
+        className="absolute z-10 bottom-10 right-6 w-72"
         maxHeight={400}
         onChangeOrder={() => null}
       >

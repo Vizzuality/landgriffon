@@ -32,7 +32,7 @@ type FeatureState = RootState & { analysis: AnalysisState };
 // Define the initial state using that type
 const initialState: AnalysisState = {
   visualizationMode: 'map',
-  isSidebarCollapsed: false,
+  isSidebarCollapsed: true,
   isSubContentCollapsed: true,
   currentScenario: null,
   scenarioToCompare: null,

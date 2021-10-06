@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 * Migrated requests from containers to react hooks
+* By default analysis have the scenarios/interventions panel collapsed
 
 ## 0.2.0 - August 2021
 ### Added

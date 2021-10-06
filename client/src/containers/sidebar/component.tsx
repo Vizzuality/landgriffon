@@ -114,13 +114,14 @@ const Sidebar = () => {
         <div className="flex flex-col w-28 bg-green-700">
           <div className="flex flex-col h-0 flex-1 overflow-y-auto">
             <div className="flex-1 flex flex-col">
-              <div className="flex-shrink-0 py-4 flex items-center justify-center">
+              {/* Logo has been removed temporally */}
+              {/* <div className="flex-shrink-0 py-4 flex items-center justify-center">
                 <img
                   className="h-8 w-auto"
                   src="https://tailwindui.com/img/logos/workflow-mark.svg?color=white"
                   alt="Landgriffon"
                 />
-              </div>
+              </div> */}
               <DesktopNavigation items={navigationItems} />
             </div>
             <div className="flex-shrink-0 flex pb-5">

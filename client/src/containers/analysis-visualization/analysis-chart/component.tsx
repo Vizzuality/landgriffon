@@ -23,8 +23,8 @@ const AnalysisChart: React.FC<AnalysisChartProps> = () => {
   const isFetching = chartIsFetching || legendIsFetching;
 
   return (
-    <div className="relative">
-      {isFetching && !chartData && <Loading />}
+    <>
+      {isFetching && <Loading />}
 
       {!isFetching && chartData && (
         <AnimatePresence>
@@ -84,7 +84,7 @@ const AnalysisChart: React.FC<AnalysisChartProps> = () => {
           </motion.ul>
         </AnimatePresence>
       )}
-    </div>
+    </>
   );
 };
 

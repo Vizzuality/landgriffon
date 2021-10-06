@@ -11,7 +11,7 @@ export type WidgetProps = {
 const Widget: React.FC<WidgetProps> = ({ title, className, height, children }: WidgetProps) => (
   <div
     className={cx({
-      'flex flex-col p-5 bg-white border border-gray-300 rounded-2xl': true,
+      'flex flex-col p-5 bg-white rounded shadow-sm': true,
       [className]: !!className,
     })}
     style={{ height }}

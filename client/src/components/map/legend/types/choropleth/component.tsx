@@ -1,19 +1,21 @@
 import cx from 'classnames';
 
-export interface LegendTypeChoroplethProps {
+export type LegendTypeChoroplethProps = {
   className?: string;
+  min: number;
   items: Array<{
-    value: string;
+    value: number;
     color: string;
   }>;
-}
+};
 
 export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
   className = '',
+  min = 0,
   items,
 }: LegendTypeChoroplethProps) => (
   <div
-    className={cx({
+    className={cx('px-4', {
       [className]: !!className,
     })}
   >
@@ -21,7 +23,7 @@ export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
       {items.map(({ color }) => (
         <li
           key={`${color}`}
-          className="flex-shrink-0 h-2"
+          className="h-2"
           style={{
             width: `${100 / items.length}%`,
             backgroundColor: color,
@@ -30,16 +32,19 @@ export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
       ))}
     </ul>
 
-    <ul className="flex w-full mt-1">
+    <ul className="flex w-full m-0">
+      <li className="text-xs flex justify-start w-0">
+        <span className="transform -translate-x-1/2">{min}</span>
+      </li>
       {items.map(({ value }) => (
         <li
           key={`${value}`}
-          className="flex-shrink-0 text-xs text-center"
+          className="flex justify-end text-xs"
           style={{
             width: `${100 / items.length}%`,
           }}
         >
-          {value}
+          <span className="transform translate-x-1/2">{value}</span>
         </li>
       ))}
     </ul>

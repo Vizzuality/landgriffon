@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import axios from 'axios';
 import chroma from 'chroma-js';
@@ -16,6 +16,8 @@ import LegendItem from 'components/map/legend/item';
 import LegendTypeChoropleth from 'components/map/legend/types/choropleth';
 import Loading from 'components/loading';
 
+import { COLOR_RAMPS } from '../constants';
+
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
 const INITIAL_VIEW_STATE = {
   longitude: 0,
@@ -24,10 +26,6 @@ const INITIAL_VIEW_STATE = {
   pitch: 0,
   bearing: 0,
 };
-const BUCKETS = 6;
-const COLORS_RANGE = ['#fafa6e', '#2A4858'];
-const COLORS = chroma.scale(COLORS_RANGE).mode('lch').colors(BUCKETS, 'rgb');
-const COLORS_LEGEND = chroma.scale(COLORS_RANGE).mode('lch').colors(BUCKETS, 'hex');
 const NUMBER_FORMAT = format('.2f');
 const TEMP_H3_DATA = {
   impact:
@@ -39,14 +37,19 @@ const TEMP_H3_DATA = {
 
 const AnalysisMap: React.FC = () => {
   const { dataset } = useAppSelector(analysis);
+
+  const colors = useMemo(() => COLOR_RAMPS[dataset].map((color) => chroma(color).rgb()), [dataset]);
+
   const [layers, setLayers] = useState([]);
   const [legendItems, setLegendItems] = useState([]);
   const [isRendering, setIsRendering] = useState(false);
+
   const { data, isFetching } = useQuery(
     ['h3-data', dataset],
     () => axios.get(TEMP_H3_DATA[dataset]).then((response) => response.data),
     { placeholderData: [], refetchOnWindowFocus: false }
   );
+
   const handleAfterRender = useCallback(() => setIsRendering(false), []);
 
   useEffect(() => {
@@ -54,8 +57,10 @@ const AnalysisMap: React.FC = () => {
 
     if (data && !isFetching) {
       const { metadata, data: h3Data } = data;
-      const domainValues: number[] = Object.values(metadata.quantiles);
-      const scale = scaleThreshold().domain(domainValues).range(COLORS);
+      const { unit, quantiles } = metadata;
+      const { min, ...thresholdValues } = quantiles;
+      const domainValues: number[] = Object.values(thresholdValues);
+      const scale = scaleThreshold().domain(domainValues).range(colors);
       const h3DataWithColor = h3Data.map((d) => ({ ...d, c: scale(d.v) }));
 
       setLayers([
@@ -77,9 +82,12 @@ const AnalysisMap: React.FC = () => {
       setLegendItems([
         {
           id: 'h3-legend',
+          name: 'Impact of deforestation loss due to land use change', // TO-DO: change when metadata provides
+          unit,
+          min: NUMBER_FORMAT(min),
           items: domainValues.map((v, index) => ({
             value: NUMBER_FORMAT(v),
-            color: COLORS_LEGEND[index],
+            color: COLOR_RAMPS[dataset][index],
           })),
         },
       ]);
@@ -89,7 +97,7 @@ const AnalysisMap: React.FC = () => {
   return (
     <>
       {(isFetching || isRendering) && (
-        <div className="absolute w-full h-full bg-black bg-opacity-40 backdrop-blur-sm z-10 flex justify-center items-center">
+        <div className="absolute w-full h-full bg-black bg-opacity-40 backdrop-blur-sm z-20 flex justify-center items-center">
           <Loading className="relative w-10 h-10" />
         </div>
       )}
@@ -120,7 +128,7 @@ const AnalysisMap: React.FC = () => {
       >
         {legendItems.map((i) => (
           <LegendItem key={i.id} {...i}>
-            <LegendTypeChoropleth className="text-sm text-gray-300" items={i.items} />
+            <LegendTypeChoropleth className="text-sm text-gray-500" min={i.min} items={i.items} />
           </LegendItem>
         ))}
       </Legend>

@@ -1,36 +1,28 @@
-import cx from 'classnames';
-
-export interface LegendItemProps {
+export type LegendItemProps = {
   id: string;
   name: string;
+  unit: string;
   description?: string;
-  icon?: React.ReactNode;
   children?: React.ReactNode;
-}
+};
 
 export const LegendItem: React.FC<LegendItemProps> = ({
   id,
   name,
+  unit,
   description,
-  icon,
   children,
 }: LegendItemProps) => (
-  <div key={id} className="py-2.5 px-5">
-    <div className="flex">
-      <div
-        className={cx({
-          relative: true,
-          'pl-5': icon,
-        })}
-      >
-        {icon && <div className="absolute top-0 left-0">{icon}</div>}
-        <div className="text-sm text-black font-heading">{name}</div>
+  <div key={id} className="p-4">
+    {name && (
+      <div className="text-sm text-black font-heading mb-4">
+        {name} {unit && `(${unit})`}
       </div>
-    </div>
+    )}
 
-    <div className="text-sm text-gray-300">{description}</div>
+    {description && <div className="text-sm text-gray-300 mb-2">{description}</div>}
 
-    {children && <div className="mt-2.5">{children}</div>}
+    {children}
   </div>
 );
 

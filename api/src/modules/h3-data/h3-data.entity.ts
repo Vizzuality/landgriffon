@@ -24,10 +24,11 @@ export interface H3IndexValueData {
 
 export interface Quantiles {
   min: number;
-  percentilecont20: number;
-  percentilecont40: number;
-  percentilecont60: number;
-  percentilecont80: number;
+  percentilecont16: number;
+  percentilecont33: number;
+  percentilecont50: number;
+  percentilecont66: number;
+  percentilecont83: number;
   percentilecont1: number;
 }
 

@@ -114,11 +114,12 @@ export class H3DataRepository extends Repository<H3Data> {
         `select * from
                 (select min(${materialH3Data.h3columnName}) from ${materialH3Data.h3tableName} ) as min,
                     (select
-                        percentile_cont(0.2) within group(order by ${materialH3Data.h3columnName}) as percentile_cont_20,
-                        percentile_cont(0.40) within group(order by ${materialH3Data.h3columnName}) as percentile_cont_40,
-                        percentile_cont(0.60) within group(order by ${materialH3Data.h3columnName}) as percentile_cont_60,
-                        percentile_cont(0.80) within group(order by ${materialH3Data.h3columnName}) as percentile_cont_80,
-                        percentile_cont(1) within group(order by ${materialH3Data.h3columnName}) as percentile_cont_1
+                        percentile_cont(0.1667) within group(order by ${materialH3Data.h3columnName}) as per16,
+                        percentile_cont(0.3337) within group(order by ${materialH3Data.h3columnName}) as per33,
+                        percentile_cont(0.50) within group(order by ${materialH3Data.h3columnName}) as per50,
+                        percentile_cont(0.6667) within group(order by ${materialH3Data.h3columnName}) as per66,
+                        percentile_cont(0.8337) within group(order by ${materialH3Data.h3columnName}) as per83,
+                        percentile_cont(1) within group(order by ${materialH3Data.h3columnName}) as per100
                 from ${materialH3Data.h3tableName}
                 where ${materialH3Data.h3columnName} > 0) as quantiles`,
       );

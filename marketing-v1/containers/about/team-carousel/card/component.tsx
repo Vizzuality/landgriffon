@@ -11,7 +11,7 @@ export interface CardProps {
   photo?: string;
 }
 
-export const Card: React.FC<CardProps> = ({ role, name, photo, className }: CardProps) => (
+const Card: React.FC<CardProps> = ({ role, name, photo, className }: CardProps) => (
   <div
     className={cx({
       'flex flex-col justify-between bg-white font-sans-semibold w-72 h-max rounded-3xl': true,

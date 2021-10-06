@@ -3,7 +3,7 @@ import React from 'react';
 import ContentCard from 'containers/content-card';
 import Wrapper from 'containers/wrapper';
 
-export const MeasureContent = () => (
+const MeasureContent: React.FC = () => (
   <Wrapper>
     <section className="flex flex-col justify-center md:py-20 md:px-16 md:space-x-64 md:flex-row">
       <ContentCard

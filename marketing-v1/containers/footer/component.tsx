@@ -7,7 +7,7 @@ import Wrapper from 'containers/wrapper';
 
 import SOCIAL_MEDIA from './constants';
 
-export const Footer = () => (
+const Footer: React.FC = () => (
   <Wrapper>
     <footer className="w-full row-auto py-10 md:pb-12 md:px-16 md:pt-28">
       <nav className="relative flex flex-col flex-wrap justify-between space-y-12 text-5xl font-semibold cursor-pointer md:mb-16 md:font-normal md:font-sans md:text-6xl md:space-y-14 items-left md:text-7xl md:mt-0 navbar-expand-lg">

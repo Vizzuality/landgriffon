@@ -13,12 +13,7 @@ export interface HeroProps {
   title: string;
 }
 
-export const Hero: React.FC<HeroProps> = ({
-  description,
-  imageURL,
-  subtitle,
-  title,
-}: HeroProps) => (
+const Hero: React.FC<HeroProps> = ({ description, imageURL, subtitle, title }: HeroProps) => (
   <section className="w-full row-auto pt-24 font-sans md:pt-20 md:pb-5 md:pt-28">
     <Wrapper>
       <Media greaterThanOrEqual="md">

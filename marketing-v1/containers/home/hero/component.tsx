@@ -8,7 +8,7 @@ export interface HomeHeroProps {
   onSignUp: () => void;
 }
 
-export const HomeHero: React.FC<HomeHeroProps> = ({ onSignUp }: HomeHeroProps) => (
+const HomeHero: React.FC<HomeHeroProps> = ({ onSignUp }: HomeHeroProps) => (
   <section className="px-3.5 md:px-0 flex flex-col flex-grow w-full h-full row-auto pt-4 pb-5 mx-auto font-sans md:container">
     <div className="relative -mb-2">
       <Media lessThan="md">

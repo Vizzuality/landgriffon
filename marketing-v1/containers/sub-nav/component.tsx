@@ -21,7 +21,7 @@ export interface SubNavProps {
   type: string;
 }
 
-export const SubNav: React.FC<SubNavProps> = ({ type }: SubNavProps) => (
+const SubNav: React.FC<SubNavProps> = ({ type }: SubNavProps) => (
   <>
     <Media lessThan="md">
       <section className="flex justify-between flex-grow w-full h-full py-20 px-3.5 mx-auto text-xl bg-white font-sans font-semibold">

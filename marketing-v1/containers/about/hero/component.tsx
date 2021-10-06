@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Media } from 'containers/media';
 import Wrapper from 'containers/wrapper';
 
-export const AboutHero = () => (
+const AboutHero: React.FC = () => (
   <section className="relative w-full row-auto pb-5 pt-28">
     <div className="absolute top-0 left-0 w-full bg-white bg-center bg-cover h-4/6" />
     <div className="absolute bottom-0 left-0 w-full h-2/6 md:bg-bege" />

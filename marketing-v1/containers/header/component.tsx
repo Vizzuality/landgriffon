@@ -9,7 +9,7 @@ import Button from 'components/button';
 
 import MENU_SVG from 'svgs/menu.svg';
 
-export const Header = () => (
+const Header: React.FC = () => (
   <header className="flex justify-between flex-grow w-full h-full row-auto pt-4 pb-5 px-3.5 md:px-0 mx-auto md:flex-col md:container">
     <nav className="relative flex items-center mt-1 md:flex-wrap md:justify-between md:mt-0 navbar-expand-lg">
       <Link href="/">
@@ -30,7 +30,7 @@ export const Header = () => (
             className="flex-shrink-0 ml-5 w-36 h-11 md:w-44"
             onClick={() => console.info('Contact us')}
           >
-            <a target="_blank" href="/contact" rel="noreferrer">
+            <a href="/contact" rel="noreferrer">
               Contact us
             </a>
           </Button>

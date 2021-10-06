@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 * Area charts and widgets behavior for the chart mode [LANDGRIF-181](https://vizzuality.atlassian.net/browse/LANDGRIF-181)
 * In "More filters" the counter icon show how many filters are selected [LANDGRIF-273](https://vizzuality.atlassian.net/browse/LANDGRIF-273)
 * Added spinner when the map is loading and rendering an H3 layer
+* Home redirects to the analysis page
 
 ### Changed
 * Migrated requests from containers to react hooks

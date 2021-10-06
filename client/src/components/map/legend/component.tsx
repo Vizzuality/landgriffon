@@ -15,7 +15,7 @@ export const Legend: React.FC<LegendProps> = ({
   className = '',
   maxHeight,
 }: LegendProps) => {
-  const [active, setActive] = useState(true);
+  const [active, setActive] = useState(false);
 
   const onToggleActive = useCallback(() => {
     setActive(!active);

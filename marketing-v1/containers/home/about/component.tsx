@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Media } from 'containers/media';
 import Wrapper from 'containers/wrapper';
 
-export const HomeAbout = () => (
+const HomeAbout: React.FC = () => (
   <section className="flex flex-col flex-grow w-full h-full row-auto pt-4 mx-auto font-sans pb-26 md:pb-72 md:container">
     <Wrapper>
       <div className="md:px-16">

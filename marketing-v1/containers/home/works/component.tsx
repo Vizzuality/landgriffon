@@ -7,7 +7,7 @@ import Wrapper from 'containers/wrapper';
 
 import { FEATURES } from './constants';
 
-export const HomeWorks = () => (
+const HomeWorks: React.FC = () => (
   <section className="font-sans">
     <div className="pt-20 pb-20 md:pt-40">
       <Wrapper>

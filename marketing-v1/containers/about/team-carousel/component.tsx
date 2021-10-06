@@ -70,7 +70,7 @@ const PrevArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
   </>
 );
 
-export const TeamCarousel: React.FC = () => {
+const TeamCarousel: React.FC = () => {
   const [currentFirstSlide, setcurrentFirstSlide] = useState(0);
 
   const progressFill = useMemo(

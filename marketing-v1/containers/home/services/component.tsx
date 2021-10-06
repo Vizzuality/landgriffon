@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 import Wrapper from 'containers/wrapper';
 
-export const HomeServices = () => (
+const HomeServices: React.FC = () => (
   <section>
     <div className="pt-20 pb-20 md:pt-40">
       <Wrapper>

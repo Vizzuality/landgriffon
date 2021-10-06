@@ -6,7 +6,7 @@ import Wrapper from 'containers/wrapper';
 
 import { VALUES } from './constants';
 
-export const AboutValues = () => (
+const AboutValues: React.FC = () => (
   <section className="w-full bg-lightBlue py-28 md:pb-36 md:pt-28">
     <Wrapper>
       <div className="md:grid md:grid-cols-2">

@@ -12,7 +12,7 @@ export interface ContentCardProps {
   reverse?: boolean;
 }
 
-export const ContentCard: React.FC<ContentCardProps> = ({
+const ContentCard: React.FC<ContentCardProps> = ({
   description,
   imageURL,
   title,

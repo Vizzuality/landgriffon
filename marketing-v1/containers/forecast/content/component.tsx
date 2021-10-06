@@ -3,7 +3,7 @@ import React from 'react';
 import ContentCard from 'containers/content-card';
 import Wrapper from 'containers/wrapper';
 
-export const ForecastContent = () => (
+const ForecastContent: React.FC = () => (
   <Wrapper>
     <section className="flex flex-col justify-center space-y-8 md:px-16 md:py-36 md:space-y-36">
       <ContentCard

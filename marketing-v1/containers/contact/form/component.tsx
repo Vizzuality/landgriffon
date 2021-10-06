@@ -7,7 +7,7 @@ import Wrapper from 'containers/wrapper';
 
 import Button from 'components/button';
 
-export const ContactForm = () => (
+const ContactForm: React.FC = () => (
   <section className="relative flex flex-col pt-20 font-sans font-semibold md:font-normal md:pt-24">
     <Wrapper>
       <h3 className="text-4xl md:text-7xl">Contact us</h3>

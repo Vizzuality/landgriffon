@@ -9,8 +9,8 @@ import Button from 'components/button';
 const SignUp: React.FC = () => (
   <section className="w-full py-12 font-sans bg-orange">
     <Wrapper>
-      <div className="flex flex-col items-center justify-between space-y-6 md:px-16 md:flex-row">
-        <p className="text-3xl font-semibold md:w-2/5 md:font-normal">
+      <div className="flex flex-col items-center justify-between space-y-6 md:space-y-16 xl:px-16 xl:flex-row">
+        <p className="text-3xl font-semibold xl:w-2/5 xl:font-normal">
           Be the first to hear about new releases and updates.
         </p>
         <Form
@@ -25,7 +25,7 @@ const SignUp: React.FC = () => (
           {({ values, handleSubmit }) => (
             <form
               onSubmit={values.agreement && handleSubmit}
-              className="space-y-6 md:w-2/4 md:pl-44"
+              className="space-y-6 xl:w-2/4 xl:pl-44"
             >
               <div className="flex flex-col items-center justify-between space-y-6 md:space-y-0 md:flex-row">
                 <Field name="email" component="input">

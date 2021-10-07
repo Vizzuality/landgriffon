@@ -19,13 +19,13 @@ const ContactForm: React.FC = () => (
           email: '',
           subject: '',
           message: '',
-          agreement: false,
         }}
-        onSubmit={() => {
-          console.info('onSubmit');
+        onSubmit={(values) => {
+          const { agreement, ...rest } = values;
+          console.info('Form values with agreement', rest);
         }}
       >
-        {({ form, values, handleSubmit }) => (
+        {({ values, handleSubmit }) => (
           <form
             onSubmit={values.agreement && handleSubmit}
             className="list__filters-date-range--form"
@@ -156,7 +156,7 @@ const ContactForm: React.FC = () => (
                     theme="secondary"
                     size="s"
                     className="box-border flex-shrink-0 h-10 text-base w-36 md:ml-5 md:w-28"
-                    onClick={() => console.info('Send', values)}
+                    onClick={() => values.agreement && handleSubmit(values)}
                   >
                     Send
                   </Button>

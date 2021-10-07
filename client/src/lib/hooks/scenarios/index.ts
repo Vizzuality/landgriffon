@@ -12,13 +12,9 @@ const ACTUAL_DATA: Scenario = {
 };
 
 export function useScenarios(queryParams) {
-  const response = useQuery(
-    ['scenariosList', queryParams],
-    async () => getScenarios(queryParams),
-    {
-      retry: false,
-    }
-  );
+  const response = useQuery(['scenariosList', queryParams], async () => getScenarios(queryParams), {
+    retry: false,
+  });
   const data =
     response.isSuccess && response.data
       ? {

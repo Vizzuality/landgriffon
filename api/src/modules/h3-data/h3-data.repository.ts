@@ -1,9 +1,5 @@
 import { EntityRepository, Repository, getManager } from 'typeorm';
-import {
-  H3Data,
-  H3IndexValueData,
-  Quantiles,
-} from 'modules/h3-data/h3-data.entity';
+import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 import {
   Logger,
   NotFoundException,
@@ -96,8 +92,8 @@ export class H3DataRepository extends Repository<H3Data> {
       .from(materialH3Data.h3tableName, 'materialh3')
       .addFrom(indicatorH3Data.h3tableName, 'indicatorh3')
       .where(`indicatorh3.h3index = materialh3.h3index`)
-      .andWhere(`${materialH3Data.h3columnName} is not null`)
-      .andWhere(`${indicatorH3Data.h3columnName} is not null`)
+      .andWhere(`materialh3.${materialH3Data.h3columnName} is not null`)
+      .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
       .groupBy('"h"')
       .getRawMany();
     this.logger.log('Risk Map generated');
@@ -108,21 +104,21 @@ export class H3DataRepository extends Repository<H3Data> {
    * @debt: Refactor this to use queryBuilder. Even tho all values are previously validated, this isn't right, but
    * has been don for the time being to unblock FE. Check with Data if calculus is accurate
    */
-  async calculateQuantiles(materialH3Data: H3Data): Promise<Quantiles[]> {
+  async calculateQuantiles(materialH3Data: H3Data): Promise<number[]> {
     try {
-      return getManager().query(
-        `select * from
-                (select min(${materialH3Data.h3columnName}) from ${materialH3Data.h3tableName} ) as min,
-                    (select
-                        percentile_cont(0.1667) within group(order by ${materialH3Data.h3columnName}) as per16,
-                        percentile_cont(0.3337) within group(order by ${materialH3Data.h3columnName}) as per33,
-                        percentile_cont(0.50) within group(order by ${materialH3Data.h3columnName}) as per50,
-                        percentile_cont(0.6667) within group(order by ${materialH3Data.h3columnName}) as per66,
-                        percentile_cont(0.8337) within group(order by ${materialH3Data.h3columnName}) as per83,
-                        percentile_cont(1) within group(order by ${materialH3Data.h3columnName}) as per100
+      const resultArray: number[] = await getManager().query(
+        `select min(${materialH3Data.h3columnName}) as min,
+                percentile_cont(0.1667) within group(order by ${materialH3Data.h3columnName}) as per16,
+                percentile_cont(0.3337) within group(order by ${materialH3Data.h3columnName}) as per33,
+                percentile_cont(0.50) within group(order by ${materialH3Data.h3columnName}) as per50,
+                percentile_cont(0.6667) within group(order by ${materialH3Data.h3columnName}) as per66,
+                percentile_cont(0.8337) within group(order by ${materialH3Data.h3columnName}) as per83,
+                percentile_cont(1) within group(order by ${materialH3Data.h3columnName}) as max
                 from ${materialH3Data.h3tableName}
-                where ${materialH3Data.h3columnName} > 0) as quantiles`,
+                where ${materialH3Data.h3columnName} > 0`,
       );
+
+      return Object.values(resultArray[0]);
     } catch (err) {
       throw new Error(`Quantiles could not been calculated`);
     }

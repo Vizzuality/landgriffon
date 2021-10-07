@@ -32,6 +32,7 @@ const NextArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
     <Media greaterThanOrEqual="md">
       <button
         aria-label="Next"
+        style={{ right: '5%' }}
         className="absolute right-0 flex items-center space-x-6 text-4xl font-sans-semibold -bottom-48"
         type="button"
         onClick={onClick}
@@ -59,7 +60,8 @@ const PrevArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
     <Media greaterThanOrEqual="md">
       <button
         aria-label="Previous"
-        className="container absolute left-0 flex items-center text-4xl md:space-x-6 font-sans-semibold -bottom-48"
+        style={{ left: '5%' }}
+        className="container absolute flex items-center text-4xl md:space-x-6 font-sans-semibold -bottom-48"
         type="button"
         onClick={onClick}
       >
@@ -166,7 +168,7 @@ const TeamCarousel: React.FC = () => {
         </Media>
         <Media greaterThanOrEqual="md">
           <Slider {...settings}>
-            <Card photo="/images/about/team/susana-romao.jpg" />
+            <div className="w-40" />
             {TEAM.map((t) => (
               <Card key={t.key} role={t.role} name={t.name} photo={t.img} />
             ))}

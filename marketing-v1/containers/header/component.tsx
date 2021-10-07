@@ -86,7 +86,7 @@ const Header: React.FC = () => {
       </Media>
 
       <Media greaterThanOrEqual="md">
-        <header className="container flex flex-col justify-between flex-grow w-full h-full row-auto pt-4 pb-5 mx-auto">
+        <header className="container flex flex-col justify-between flex-grow w-full h-full row-auto pt-4 pb-5 mx-auto md:px-12 xl:px-0">
           <nav className="relative flex flex-wrap items-center justify-between mt-1 navbar-expand-lg">
             <Link href="/">
               <h1 className="text-lg tracking-widest cursor-pointer font-heading">LANDGRIFFON</h1>

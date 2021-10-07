@@ -27,12 +27,12 @@ const HomeHero: React.FC<HomeHeroProps> = ({ onSignUp }: HomeHeroProps) => (
           src="/images/home/home-1.jpg"
         />
       </Media>
-      <h2 className="absolute w-4/5 text-4xl font-semibold text-white md:font-normal md:bottom-16 bottom-6 left-3.5 md:left-16 md:text-6xl lg:text-7xl">
+      <h2 className="absolute w-4/5 text-4xl font-semibold text-white md:font-normal md:bottom-16 bottom-6 left-3.5 md:left-12 xl:left-16 md:text-6xl xl:text-7xl">
         Reach your supply chain sustainability targets
       </h2>
     </div>
-    <div className="px-3.5 md:px-16 md:py-12 py-7 text-base text-white md:text-3xl bg-green">
-      <div className="md:space-y-8 md:w-2/4">
+    <div className="px-3.5 md:px-12 xl:px-16 md:py-12 py-7 text-base text-white md:text-3xl bg-green">
+      <div className="md:space-y-8 xl:w-2/4">
         <p className="font-semibold md:font-normal">
           We help companies become sustainable by understanding and planning strategies to manage
           environmental impacts and risks in food supply chains.{' '}

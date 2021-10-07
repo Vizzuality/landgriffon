@@ -6,7 +6,7 @@ import Content from 'containers/analyze/content';
 import Footer from 'containers/footer';
 import Header from 'containers/header';
 import Hero from 'containers/hero';
-import MetaFooter from 'containers/meta-footer';
+import SignUp from 'containers/sign-up';
 import SubNav from 'containers/sub-nav';
 
 const Analyze: React.FC = () => (
@@ -25,7 +25,7 @@ const Analyze: React.FC = () => (
       <Content />
       <SubNav type="analyze" />
     </motion.div>
-    <MetaFooter />
+    <SignUp />
     <Footer />
   </div>
 );

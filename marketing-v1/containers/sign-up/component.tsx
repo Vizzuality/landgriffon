@@ -6,7 +6,7 @@ import Wrapper from 'containers/wrapper';
 
 import Button from 'components/button';
 
-const MetaFooter: React.FC = () => (
+const SignUp: React.FC = () => (
   <section className="w-full py-12 font-sans bg-orange">
     <Wrapper>
       <div className="flex flex-col items-center justify-between space-y-6 md:px-16 md:flex-row">
@@ -85,4 +85,4 @@ const MetaFooter: React.FC = () => (
   </section>
 );
 
-export default MetaFooter;
+export default SignUp;

@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 
 import Link from 'next/link';
 
-import { motion } from 'framer-motion';
-
 import { Media } from 'containers/media';
 
 import Button from 'components/button';
@@ -48,46 +46,43 @@ const Header: React.FC = () => {
             </div>
           </nav>
         </header>
-        <motion.nav transition={{ duration: 2 }} animate={{ opacity: menuIsOpen ? 1 : 2 }}>
-          {menuIsOpen && (
-            <nav className="shadow absolute top-0 z-10 flex flex-col items-center w-full px-3.5 pt-4 pb-8 space-y-10 bg-white">
-              <div className="flex items-center justify-between w-full">
-                <Link href="/">
-                  <h1 className="text-lg tracking-widest cursor-pointer font-heading">
-                    LANDGRIFFON
-                  </h1>
-                </Link>
-                <div style={canvasStyle}>
-                  <MenuButton
-                    isOpen={menuIsOpen}
-                    onClick={() => setMenuIsOpen(false)}
-                    strokeWidth="4"
-                    color="#000000"
-                    transition={{ ease: 'easeOut', duration: 0.2 }}
-                    width={40}
-                    height={30}
-                    style={menuButtonStyle}
-                  />
-                </div>
-              </div>
+
+        {menuIsOpen && (
+          <nav className="shadow absolute top-0 z-10 flex flex-col items-center w-full px-3.5 pt-4 pb-8 space-y-10 bg-white">
+            <div className="flex items-center justify-between w-full">
               <Link href="/">
-                <div className="font-sans text-base cursor-pointer hover:font-sans-semibold">
-                  <p>Services</p>
-                </div>
+                <h1 className="text-lg tracking-widest cursor-pointer font-heading">LANDGRIFFON</h1>
               </Link>
-              <Link href="/about-us">
-                <div className="font-sans text-base cursor-pointer hover:font-sans-semibold">
-                  <p>About Us</p>
-                </div>
-              </Link>
-              <Button theme="primary" size="l" className="flex-shrink-0 w-44 h-11">
-                <a href="/contact" rel="noreferrer">
-                  Contact us
-                </a>
-              </Button>
-            </nav>
-          )}
-        </motion.nav>
+              <div style={canvasStyle}>
+                <MenuButton
+                  isOpen={menuIsOpen}
+                  onClick={() => setMenuIsOpen(false)}
+                  strokeWidth="4"
+                  color="#000000"
+                  transition={{ ease: 'easeOut', duration: 0.2 }}
+                  width={40}
+                  height={30}
+                  style={menuButtonStyle}
+                />
+              </div>
+            </div>
+            <Link href="/">
+              <div className="font-sans text-base cursor-pointer hover:font-sans-semibold">
+                <p>Services</p>
+              </div>
+            </Link>
+            <Link href="/about-us">
+              <div className="font-sans text-base cursor-pointer hover:font-sans-semibold">
+                <p>About Us</p>
+              </div>
+            </Link>
+            <Button theme="primary" size="l" className="flex-shrink-0 w-44 h-11">
+              <a href="/contact" rel="noreferrer">
+                Contact us
+              </a>
+            </Button>
+          </nav>
+        )}
       </Media>
 
       <Media greaterThanOrEqual="md">

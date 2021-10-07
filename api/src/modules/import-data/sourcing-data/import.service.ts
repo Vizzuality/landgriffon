@@ -164,10 +164,10 @@ export class SourcingRecordsImportService {
   ): any {
     for (const sourcingLocation of sourcingData) {
       for (const supplier of suppliers) {
-        if (sourcingLocation.producerId === supplier.name) {
+        if (sourcingLocation.producerId === supplier.mpath) {
           sourcingLocation.producerId = supplier.id;
         }
-        if (sourcingLocation.t1SupplierId === supplier.name) {
+        if (sourcingLocation.t1SupplierId === supplier.mpath) {
           sourcingLocation.t1SupplierId = supplier.id;
         }
       }

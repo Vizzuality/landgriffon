@@ -13,6 +13,7 @@ import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.e
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
+import { IsOptional, IsString } from 'class-validator';
 
 export enum SUPPLIER_STATUS {
   ACTIVE = 'active',
@@ -42,6 +43,10 @@ export class Supplier extends TimestampedBaseEntity {
 
   @TreeParent()
   parent: Supplier;
+
+  @IsString()
+  @IsOptional()
+  mpath?: string;
 
   @Column({ nullable: true })
   @ApiPropertyOptional()

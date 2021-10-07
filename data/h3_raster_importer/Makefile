@@ -3,7 +3,7 @@ all: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_
 
 crop: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha
 
-indicators: h3_grid_wf_global h3_grid_bio_global
+indicators: h3_grid_wf_global h3_grid_bio_global h3_grid_carbon_global h3_grid_deforestation_global
 
 #######################################
 # MapSPAM crop production and harvest area
@@ -37,10 +37,10 @@ data/mapspam/spam2010v2r0_global_ha: data/mapspam/spam2010v2r0_global_harv_area.
 # Convert the tiffs in the folder to h3indexes at resolution 6
 # and import to a table called "h3_grid_spam2017v2r0_global_prod"
 h3_grid_spam2010v2r0_global_prod: data/mapspam/spam2010v2r0_global_prod
-	python tiff_folder_to_h3_table.py $< $@ production --h3-res=6
+	python tiff_folder_to_h3_table.py $< $@ production spam --h3-res=6
 
 h3_grid_spam2010v2r0_global_ha: data/mapspam/spam2010v2r0_global_ha
-	python tiff_folder_to_h3_table.py $< $@ harvest_area --h3-res=6
+	python tiff_folder_to_h3_table.py $< $@ harvest_area spam --h3-res=6
 
 
 #######################################
@@ -79,11 +79,11 @@ data/earthstat/earthstat2000_global_ha: data/earthstat/HarvestedAreaYield175Crop
 # Convert the tiffs in the folder to h3indexes at resolution 6
 # and import to a table called "h3_grid_earthstat2000_global_prod"
 h3_grid_earthstat2000_global_prod: data/earthstat/earthstat2000_global_prod
-	python tiff_folder_to_h3_table.py $< $@ production --h3-res=6
+	python tiff_folder_to_h3_table.py $< $@ production es --h3-res=6
 
 # and import to a table called "h3_grid_earthstat2000_global_ha"
 h3_grid_earthstat2000_global_ha: data/earthstat/earthstat2000_global_ha
-	python tiff_folder_to_h3_table.py $< $@ harvest_area --h3-res=6
+	python tiff_folder_to_h3_table.py $< $@ harvest_area es --h3-res=6
 
 #########################################
 # CONTEXTUAL DATASETS FOR INDICATORS
@@ -107,7 +107,7 @@ data/waterFootprint/generic_waterfootprint: data/waterFootprint/Report50-WF-of-p
 
 # Convert the wf tiffs in the folder to h3indexes at resolution 6
 h3_grid_wf_global: data/waterFootprint/generic_waterfootprint
-	python tiff_folder_to_h3_table.py data/waterFootprint/generic_waterfootprint h3_grid_wf_global indicator --h3-res=6
+	python tiff_folder_to_h3_table.py data/waterFootprint/generic_waterfootprint h3_grid_wf_global indicator UWU_T --h3-res=6
 
 # BIODIVERSITY
 #Download biodiversity datasets
@@ -151,44 +151,75 @@ data/biodiversity/6kcchn7e3u_official_teow/wwf_terr_ecos_m.shp: data/biodiversit
 
 # convert the biodiversity rasters to h3 tables
 h3_grid_bio_global: data/biodiversity/6kcchn7e3u_official_teow/lcia_psl_regional
-	python tiff_folder_to_h3_table.py $< $@ indicator --h3-res=6
-
+	python tiff_folder_to_h3_table.py $< $@ indicator BL_LUC_T --h3-res=6
 
 
 # DEFORESTATION
-# TODO
 #text: https://storage.googleapis.com/earthenginepartners-hansen/GFC-2020-v1.8/lossyear.txt
+data/hansen_loss/Hansen_GFC_2020_lossyear.txt:
+	mkdir -p data/hansen_loss
+	wget -O $@ "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2020-v1.8/lossyear.txt"
+
+data/hansen_loss/Hansen_GFC_2020_lossyear: data/hansen_loss/Hansen_GFC_2020_lossyear.txt
+	mkdir -p $@
+	for id in $$(cat $<); do \
+	table_name=`basename -s .tif "$$id" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
+	output_file="data/hansen_loss/$${table_name}.tif";\
+	wget -O "$$output_file" "$$id"; \
+	done
+
+data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles: data/hansen_loss/Hansen_GFC_2020_lossyear
+	for tiffile in data/hansen_loss/*.tif; do \
+		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
+		output_file="data/hansen_loss/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif";\
+		gdalwarp -s_srs EPSG:4326 -t_srs EPSG:4326 -r average -multi -of GTiff "$${tiffile}" "$${output_file}"; \
+		rm -f "$${tiffile}";\
+	done
+	mkdir -p $@
+	gdalbuildvrt data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.vrt data/hansen_loss/Hansen_GFC_2020_lossyear/*.tif
+	gdal_translate -of GTiff -co BIGTIFF=YES -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 \
+	data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.vrt data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.tif
+	#for tiffile in data/hansen_loss/Hansen_GFC_2020_lossyear/*.tif; do rm -f "$${tiffile}"; done
+
+h3_grid_deforestation_global: data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles
+	python tiff_folder_to_h3_table.py $< $@ indicator DF_LUC_T --h3-res=6
 
 
 # CARBON EMISSIONS
-#
 # Download net carbon flux:
 #https://services2.arcgis.com/g8WusZB13b9OegfU/arcgis/rest/services/Forest_greenhouse_gas_net_flux/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson
-# data/gfw_carbon/forest_greenhouse_gas_net_flux.csv:
-# 	mkdir -p data/gfw_carbon
-# 	wget -O $@ "https://opendata.arcgis.com/api/v3/datasets/66eafb4f16f9478c828c3225d26b4989_0/downloads/data?format=csv&spatialRefId=4326"
+data/gfw_carbon/forest_greenhouse_gas_net_flux.csv:
+	mkdir -p data/gfw_carbon
+	wget -O $@ "https://opendata.arcgis.com/api/v3/datasets/66eafb4f16f9478c828c3225d26b4989_0/downloads/data?format=csv&spatialRefId=4326"
 
 # # download individual data
-# data/gfw_carbon/forest_greenhouse_gas_net_flux_simp.txt: data/gfw_carbon/forest_greenhouse_gas_net_flux.csv
-# 	mkdir -p data/gfw_carbon
-# 	sed -i 1d $<
-# 	cut -d',' -f2 $< | head -271 > $@
-# 	for id in $$(cat $@); do \
-# 	table_name=`basename -s .tif "$$id" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
-# 	output_file="data/gfw_carbon/$${table_name}.tif";\
-# 	wget -O "$$output_file" "$$id"; \
-# 	done
+data/gfw_carbon/forest_greenhouse_gas_net_flux_simp.txt: data/gfw_carbon/forest_greenhouse_gas_net_flux.csv
+	mkdir -p data/gfw_carbon
+	sed -i 1d $<
+	cut -d',' -f2 $< | head -271 > $@
+	for id in $$(cat $@); do \
+	table_name=`basename -s .tif "$$id" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
+	output_file="data/gfw_carbon/$${table_name}.tif";\
+	wget -O "$$output_file" "$$id"; \
+	done
 
-# data/gfw_carbon/merged_tiles/forest_greenhouse_gas_net_flux_2001_2020_tCO2eq.tif:
-# 	mkdir -p data/gfw_carbon/merged_tiles
-# 	gdalbuildvrt data/gfw_carbon/forest_greenhouse_gas_net_flux_2001_2020_tCO2eq.vrt data/gfw_carbon/*.tif
-# 	gdal_translate -of GTiff -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 \
-# 	data/gfw_carbon/forest_greenhouse_gas_net_flux_2001_2020_tCO2eq.vrt $@
+# upsample downloaded data to 10km res
+data/gfw_carbon/merged_tiles: data/gfw_carbon/forest_greenhouse_gas_net_flux_simp.txt
+	mkdir -p data/gfw_carbon/merged_tiles
+	for tiffile in data/gfw_carbon/*.tif; do \
+		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
+		output_file="data/gfw_carbon/forest_greenhouse_gas_net_flux_$${table_name}_10km.tif";\
+		gdalwarp -s_srs EPSG:4326 -t_srs EPSG:4326 -r average -multi -of GTiff "$${tiffile}" "$${output_file}"; \
+		rm -f "$${tiffile}";\
+	done
+	gdalbuildvrt data/gfw_carbon/forest_greenhouse_gas_net_flux_2001_2020_tCO2eq.vrt data/gfw_carbon/*.tif
+	gdal_translate -of GTiff -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 \
+	data/gfw_carbon/forest_greenhouse_gas_net_flux_2001_2020_tCO2eq.vrt data/gfw_carbon/merged_tiles/forest_greenhouse_gas_net_flux_2001_2020_tCO2eq.tif
+	for tiffile in in data/gfw_carbon/*.tif; do rm -f "$${tiffile}"; done
 
-# h3_grid_bio_global: data/biodiversity/6kcchn7e3u_official_teow/lcia_psl_regional
-# 	python tiff_folder_to_h3_table.py $< $@ indicator --h3-res=6
+h3_grid_carbon_global: data/gfw_carbon/merged_tiles
+	python tiff_folder_to_h3_table.py $< $@ indicator GHG_LUC_T --h3-res=6
 
-#gdalwarp -r near -multi -of GTiff -co COMPRESS=JPEG -co JPEG_QUALITY=75 /home/elena/vizzuality/repos/landgriffon/data/data/seed/gfw_carbon/forest_greenhouse_gas_net_flux_2001_2020_tCO2eq.vrt /home/elena/personal/test/test_warp_v2.tif
 # ^^^
 #######################################
 

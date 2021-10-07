@@ -15,6 +15,7 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
  * and spread through typing
  */
 export interface SourcingData extends CreateSourcingLocationDto {
+  materialId: string;
   sourcingRecords: SourcingRecord[];
 }
 
@@ -36,6 +37,10 @@ const SOURCING_LOCATION_PROPERTIES: Array<string> = [
   'location_latitude_input',
   'location_longitude_input',
   'location_type',
+  'material.path',
+  'business_unit.path',
+  't1_supplier.name',
+  'producer.name',
 ];
 
 /**
@@ -104,8 +109,10 @@ export class SourcingRecordsDtoProcessorService {
      * Clean all hashmaps that are empty therefore useless
      */
     const nonEmptyData = customData.filter(
-      (row: WorkSheet) => row['material.path'] !== '',
+      (row: WorkSheet) =>
+        row['material.path'] !== '' && !Object.values(row).includes('#N/A'),
     );
+
     /**
      * Separate base properties common for each sourcing-location row
      * Separate metadata properties to metadata object common for each sourcing-location row
@@ -128,7 +135,9 @@ export class SourcingRecordsDtoProcessorService {
         } else if (!this.isSourcingLocationData(field)) {
           metadata[field] = eachRecordOfCustomData[field];
         } else {
-          baseProps[field] = eachRecordOfCustomData[field];
+          eachRecordOfCustomData[field] === ' '
+            ? (baseProps[field] = null)
+            : (baseProps[field] = eachRecordOfCustomData[field]);
         }
       }
       /**
@@ -352,7 +361,6 @@ export class SourcingRecordsDtoProcessorService {
       sourcingLocationData['t1_supplier.name'] === ''
         ? undefined
         : sourcingLocationData['t1_supplier.name'];
-
     return sourcingLocationDto;
   }
 

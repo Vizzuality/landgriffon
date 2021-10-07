@@ -31,9 +31,9 @@ jobs:
         with:
           github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
           workflow: testing-api.yml
+          commit: ${{ github.event.pull_request.head.sha || github.sha }}
           name: api-report
           path: ${{github.workspace}}/api/coverage
-          repo: ${{github.repository}}
 
       - name: Wait for Client tests to run
         uses: fountainhead/action-wait-for-check@v1.0.0
@@ -47,18 +47,18 @@ jobs:
         with:
           github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
           workflow: testing-client.yml
+          commit: ${{ github.event.pull_request.head.sha || github.sha }}
           name: client-report
           path: ${{github.workspace}}/client/coverage
-          repo: ${{github.repository}}
 
       - name: Download Client test generated dependencies
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
           workflow: testing-client.yml
+          commit: ${{ github.event.pull_request.head.sha || github.sha }}
           name: next-dependency
           path: ${{github.workspace}}/client/.next
-          repo: ${{github.repository}}
 
       - name: Format API Report
         run: ./cc-test-reporter format-coverage -p landgriffon -t lcov -o api-coverage.json api/coverage/lcov.info

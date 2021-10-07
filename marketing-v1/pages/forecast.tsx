@@ -6,7 +6,7 @@ import Footer from 'containers/footer';
 import Content from 'containers/forecast/content';
 import Header from 'containers/header';
 import Hero from 'containers/hero';
-import MetaFooter from 'containers/meta-footer';
+import SignUp from 'containers/sign-up';
 import SubNav from 'containers/sub-nav';
 
 const Forecast: React.FC = () => (
@@ -25,7 +25,7 @@ const Forecast: React.FC = () => (
       <Content />
       <SubNav type="forecast" />
     </motion.div>
-    <MetaFooter />
+    <SignUp />
     <Footer />
   </div>
 );

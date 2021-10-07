@@ -7,7 +7,7 @@ import Header from 'containers/header';
 import Hero from 'containers/hero';
 import Content from 'containers/measure/content';
 import { Media } from 'containers/media';
-import MetaFooter from 'containers/meta-footer';
+import SignUp from 'containers/sign-up';
 import SubNav from 'containers/sub-nav';
 
 const Measure: React.FC = () => (
@@ -36,7 +36,7 @@ const Measure: React.FC = () => (
       <Content />
       <SubNav type="measure" />
     </motion.div>
-    <MetaFooter />
+    <SignUp />
     <Footer />
   </div>
 );

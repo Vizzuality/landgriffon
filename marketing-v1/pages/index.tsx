@@ -10,7 +10,7 @@ import About from 'containers/home/about';
 import Hero from 'containers/home/hero';
 import Services from 'containers/home/services';
 import Works from 'containers/home/works';
-import MetaFooter from 'containers/meta-footer';
+import SignUp from 'containers/sign-up';
 
 const Home: React.FC = () => {
   const scrollToRef = useRef(null);
@@ -31,7 +31,7 @@ const Home: React.FC = () => {
       </motion.div>
 
       <div ref={scrollToRef}>
-        <MetaFooter />
+        <SignUp />
       </div>
       <Footer />
     </div>

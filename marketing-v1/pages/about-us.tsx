@@ -7,7 +7,7 @@ import TeamCarousel from 'containers/about/team-carousel';
 import Values from 'containers/about/values';
 import Footer from 'containers/footer';
 import Header from 'containers/header';
-import MetaFooter from 'containers/meta-footer';
+import SignUp from 'containers/sign-up';
 
 const AboutUs: React.FC = () => (
   <div>
@@ -20,7 +20,7 @@ const AboutUs: React.FC = () => (
       <TeamCarousel />
       <Values />
     </motion.div>
-    <MetaFooter />
+    <SignUp />
     <Footer />
   </div>
 );

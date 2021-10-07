@@ -60,13 +60,13 @@ export class H3DataService {
       resolution,
     );
 
-    const quantiles = await this.h3DataRepository.calculateQuantiles(
+    const quantiles: number[] = await this.h3DataRepository.calculateQuantiles(
       materialH3Data,
     );
 
     return {
       data: materialMap,
-      metadata: { quantiles: quantiles[0], unit: MATERIAL_UNIT },
+      metadata: { quantiles: quantiles, unit: MATERIAL_UNIT },
     };
   }
 
@@ -100,9 +100,21 @@ export class H3DataService {
       indicatorId,
     );
 
+    if (!unit) {
+      throw new NotFoundException(
+        `Indicator with ID ${indicatorId} has no unit`,
+      );
+    }
+
     const {
       factor,
     } = await this.unitConversionsService.getUnitConversionByUnitId(unit.id);
+
+    if (!factor) {
+      throw new NotFoundException(
+        `Conversion Unit with ID ${unit.id} has no 'factor' value`,
+      );
+    }
 
     const riskMap = await this.h3DataRepository.getRiskMapByResolution(
       indicatorH3Data,
@@ -111,13 +123,13 @@ export class H3DataService {
       resolution,
     );
 
-    const quantiles = await this.h3DataRepository.calculateQuantiles(
+    const quantiles: number[] = await this.h3DataRepository.calculateQuantiles(
       materialH3Data as H3Data,
     );
 
     return {
       data: riskMap,
-      metadata: { quantiles: quantiles[0], unit: unit.symbol },
+      metadata: { quantiles: quantiles, unit: unit.symbol },
     };
   }
 }

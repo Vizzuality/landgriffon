@@ -37,6 +37,7 @@ export class H3DataController {
       resolution,
     );
   }
+
   @ApiOperation({
     description:
       'Get a calculated H3 Risk-Map given a Material and a Indicator',

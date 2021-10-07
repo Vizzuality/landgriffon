@@ -4,7 +4,7 @@ import { H3Data } from 'modules/h3-data/h3-data.entity';
 export const createFakeH3Data = async (
   h3TableName: string,
   h3ColumnName: string,
-  aditionalH3Data?: any,
+  additionalH3Data?: any,
   indicatorId?: string,
 ): Promise<H3Data> => {
   await getManager().query(
@@ -12,10 +12,10 @@ export const createFakeH3Data = async (
       `INSERT INTO ${h3TableName} (h3index, ${h3ColumnName} ) VALUES ('861203a4fffffff', 1000);`,
   );
 
-  if (aditionalH3Data) {
+  if (additionalH3Data) {
     let query = `INSERT INTO ${h3TableName} (h3index,  ${h3ColumnName}) VALUES `;
     const queryArr = [];
-    for (const [key, value] of Object.entries(aditionalH3Data)) {
+    for (const [key, value] of Object.entries(additionalH3Data)) {
       queryArr.push(`('${key}', ${value})`);
     }
     query = query.concat(queryArr.join());
@@ -26,7 +26,9 @@ export const createFakeH3Data = async (
   h3data.h3tableName = h3TableName;
   h3data.h3columnName = h3ColumnName;
   h3data.h3resolution = 6;
-  if (indicatorId) h3data.indicatorId = indicatorId;
+  if (indicatorId) {
+    h3data.indicatorId = indicatorId;
+  }
 
   return h3data.save();
 };

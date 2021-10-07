@@ -156,15 +156,15 @@ describe('Sourcing Data import', () => {
     expect(materialsRoots).toHaveLength(30);
 
     const suppliers: Supplier[] = await supplierRepository.find();
-    expect(suppliers).toHaveLength(4);
+    expect(suppliers).toHaveLength(6);
     const suppliersRoots: Supplier[] = await supplierRepository.findRoots();
-    expect(suppliersRoots).toHaveLength(3);
+    expect(suppliersRoots).toHaveLength(5);
 
     const sourcingRecords: SourcingRecord[] = await sourcingRecordRepository.find();
-    expect(sourcingRecords).toHaveLength(440);
+    expect(sourcingRecords).toHaveLength(825);
 
     const sourcingLocations: SourcingLocation[] = await sourcingLocationRepository.find();
-    expect(sourcingLocations).toHaveLength(40);
+    expect(sourcingLocations).toHaveLength(75);
   });
 
   test('When a file is sent 2 times to the API, then imported data length should be equal, and database has been cleaned in between', async () => {
@@ -177,7 +177,7 @@ describe('Sourcing Data import', () => {
       .attach('file', __dirname + '/base-dataset.xlsx');
 
     const sourcingRecords: SourcingRecord[] = await sourcingRecordRepository.find();
-    expect(sourcingRecords.length).toEqual(440);
+    expect(sourcingRecords.length).toEqual(825);
   });
 
   test('When a file is sent to the API and gets processed, then a request to Sourcing-Records should return a existing Sourcing-Location ID', async () => {

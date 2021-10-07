@@ -9,13 +9,13 @@ Postgres connection params read from environment:
  - API_POSTGRES_DATABASE
 
 Usage:
-    tiff_folder_to_h3_table.py <folder> <table>  <data_type> [--h3-res=6]
+    tiff_folder_to_h3_table.py <folder> <table> <dataType> <dataset> [--h3-res=6]
 
 Arguments:
     <folder>          Folder containing GeoTiffs.
     <table>           Postgresql table to overwrite.
-    <data_type>       Type of the data imported
-
+    <dataType>        Type of the data imported
+    <dataset>         Dataset information for mapping commodities and indicators
 Options:
     -h                Show help
     --h3-res=<res>    h3 resolution to use [default: 6].
@@ -51,6 +51,9 @@ DTYPES_TO_PG = {
 BLOCKSIZE=512
 H3_TABLE_PREFIX = 'h3_grid'
 H3_MASTER_TABLE = 'h3_data'
+MATERIALS_TABLE = 'material'
+INDICATORS_SOURCE_TABLE = 'indicator_source'
+INDICATORS_TABLE = 'indicator'
 
 logging.basicConfig(level=logging.INFO)
 
@@ -102,7 +105,7 @@ def gen_raster_h3(raster_list, h3_res, geo=False):
         src.close()
 
 
-def load_raster_list_to_h3_table(raster_list, table, data_type, h3_res):
+def load_raster_list_to_h3_table(raster_list, table, dataType, dataset, h3_res):
     conn = psycopg2.connect(
         host=os.getenv('API_POSTGRES_HOST'),
         port=os.getenv('API_POSTGRES_PORT'),
@@ -110,6 +113,17 @@ def load_raster_list_to_h3_table(raster_list, table, data_type, h3_res):
         password=os.getenv('API_POSTGRES_PASSWORD')
     )
     cursor = conn.cursor()
+    #remove link from materials entity for droping h3 master table
+    if dataset == 'es':
+        if dataType == 'production':
+            cursor.execute(f"""update {MATERIALS_TABLE} set "producerId" = NULL where "datasetId" like 'es_%'""")
+        if dataType =='harvest_area':
+            cursor.execute(f"""update {MATERIALS_TABLE} set "harvestId" = NULL where "datasetId" like 'es_%'""")
+    if dataset == 'spam':
+        if dataType == 'production':
+            cursor.execute(f"""update {MATERIALS_TABLE} set "producerId" = NULL where "datasetId" like 'spam_%'""")
+        if dataType =='harvest_area':
+            cursor.execute(f"""update {MATERIALS_TABLE} set "harvestId" = NULL where "datasetId" like 'spam_%'""")
     cursor.execute(f"DROP TABLE IF EXISTS {table};")
     cursor.execute(f"""DELETE FROM {H3_MASTER_TABLE} WHERE "h3tableName" = '{table}';""")
 
@@ -132,22 +146,36 @@ def load_raster_list_to_h3_table(raster_list, table, data_type, h3_res):
     # add rows to master table for each column
     for column in block_df.columns:
         cursor.execute(f"""
-            INSERT INTO {H3_MASTER_TABLE} ("h3tableName", "h3columnName", "h3resolution", "data_type")
-            VALUES ('{table}', '{column}', {h3_res}, '{data_type}');
+            INSERT INTO {H3_MASTER_TABLE} ("h3tableName", "h3columnName", "h3resolution")
+            VALUES ('{table}', '{column}', {h3_res});
         """)
+        #inter id in material entity
+        if dataType == 'indicator':
+            cursor.execute(f"""select id from {INDICATORS_TABLE} where "nameCode" = '{dataset}'""")
+            indicator_data = cursor.fetchall()
+            cursor.execute(f"""update {H3_MASTER_TABLE}  set "indicatorId" = '{indicator_data[0][0]}' where  "h3columnName" = '{column}'""")
+        else:
+            cursor.execute(f"""select id from {H3_MASTER_TABLE} where "h3columnName" = '{column}'""")
+            data = cursor.fetchall()
+            materialId =  dataset + '_' + column.split('_')[-2]
+            if dataType == 'production':
+                cursor.execute(f""" update {MATERIALS_TABLE} set "producerId" = '{data[0][0]}' where "datasetId" = '{materialId}'""")
+            if dataType == 'harvest_area':
+                cursor.execute(f""" update {MATERIALS_TABLE} set "harvestId" = '{data[0][0]}' where "datasetId" = '{materialId}'""")
+
 
     conn.commit()
     cursor.close()
 
 
-def main(folder, table, data_type, h3_res):
+def main(folder, table, dataType, dataset, h3_res):
     tiffs = [
         os.path.join(folder, f)
         for f in os.listdir(folder)
         if os.path.splitext(f)[1] == '.tif'
     ]
     logging.info(f'Found {len(tiffs)} tiffs')
-    load_raster_list_to_h3_table(tiffs, table, data_type, h3_res)
+    load_raster_list_to_h3_table(tiffs, table, dataType, dataset, h3_res)
     logging.info('Done')
 
 
@@ -156,6 +184,7 @@ if __name__ == "__main__":
     main(
         args['<folder>'],
         args['<table>'],
-        args['<data_type>'],
+        args['<dataType>'],
+        args['<dataset>'],
         int(args['--h3-res'])
     )

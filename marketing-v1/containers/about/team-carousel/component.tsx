@@ -49,7 +49,7 @@ const PrevArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
     <Media lessThan="md">
       <button
         aria-label="Previous"
-        className="left-3.5 absolute left-0 text-4xl md:container font-sans-semibold -bottom-36"
+        className="left-3.5 absolute text-4xl md:container font-sans-semibold -bottom-36"
         type="button"
         onClick={onClick}
       >

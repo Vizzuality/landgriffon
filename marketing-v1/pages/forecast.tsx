@@ -6,8 +6,8 @@ import Footer from 'containers/footer';
 import Content from 'containers/forecast/content';
 import Header from 'containers/header';
 import Hero from 'containers/hero';
-import SignUp from 'containers/sign-up';
 import SubNav from 'containers/sub-nav';
+import Subscribe from 'containers/subscribe';
 
 const Forecast: React.FC = () => (
   <div>
@@ -15,6 +15,7 @@ const Forecast: React.FC = () => (
       <title>Forecast</title>
     </Head>
     <Header />
+
     <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       <Hero
         title="Forecast"
@@ -24,8 +25,9 @@ const Forecast: React.FC = () => (
       />
       <Content />
       <SubNav type="forecast" />
+      <Subscribe />
     </motion.div>
-    <SignUp />
+
     <Footer />
   </div>
 );

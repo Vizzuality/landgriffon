@@ -9,11 +9,7 @@ import Button from 'components/button';
 
 import MenuButton from '../../components/menu-button';
 
-export interface HeaderProps {
-  onServicesClick?: () => void;
-}
-
-const Header: React.FC<HeaderProps> = ({ onServicesClick }: HeaderProps) => {
+const Header: React.FC = () => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
 
   const canvasStyle = {
@@ -26,11 +22,6 @@ const Header: React.FC<HeaderProps> = ({ onServicesClick }: HeaderProps) => {
 
   const menuButtonStyle = {
     marginLeft: '2rem',
-  };
-
-  const handleServicesClick = () => {
-    onServicesClick();
-    setMenuIsOpen(false);
   };
 
   return (
@@ -76,11 +67,11 @@ const Header: React.FC<HeaderProps> = ({ onServicesClick }: HeaderProps) => {
                 />
               </div>
             </div>
-            <button type="button" onClick={handleServicesClick}>
+            <Link href="/#services">
               <div className="font-sans text-base cursor-pointer hover:font-sans-semibold">
                 <p>Services</p>
               </div>
-            </button>
+            </Link>
             <Link href="/about-us">
               <div className="font-sans text-base cursor-pointer hover:font-sans-semibold">
                 <p>About Us</p>
@@ -103,11 +94,11 @@ const Header: React.FC<HeaderProps> = ({ onServicesClick }: HeaderProps) => {
                 <h1 className="text-lg tracking-widest cursor-pointer font-heading">LANDGRIFFON</h1>
               </Link>
               <div className="flex items-center space-x-12 font-sans">
-                <button type="button" onClick={onServicesClick}>
+                <Link href="/#services">
                   <div className="font-sans text-base cursor-pointer hover:font-sans-semibold">
                     <p>Services</p>
                   </div>
-                </button>
+                </Link>
                 <Link href="/about-us">
                   <div className="font-sans text-base cursor-pointer hover:font-sans-semibold">
                     <p>About Us</p>

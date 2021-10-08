@@ -7,8 +7,8 @@ import Header from 'containers/header';
 import Hero from 'containers/hero';
 import Content from 'containers/measure/content';
 import { Media } from 'containers/media';
-import SignUp from 'containers/sign-up';
 import SubNav from 'containers/sub-nav';
+import Subscribe from 'containers/subscribe';
 
 const Measure: React.FC = () => (
   <div>
@@ -16,6 +16,7 @@ const Measure: React.FC = () => (
       <title>Measure</title>
     </Head>
     <Header />
+
     <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       <Media lessThan="md">
         <Hero
@@ -35,8 +36,9 @@ const Measure: React.FC = () => (
       </Media>
       <Content />
       <SubNav type="measure" />
+      <Subscribe />
     </motion.div>
-    <SignUp />
+
     <Footer />
   </div>
 );

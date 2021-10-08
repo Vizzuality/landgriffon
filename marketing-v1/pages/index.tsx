@@ -10,11 +10,10 @@ import About from 'containers/home/about';
 import Hero from 'containers/home/hero';
 import Services from 'containers/home/services';
 import Works from 'containers/home/works';
-import SignUp from 'containers/sign-up';
+import Subscribe from 'containers/subscribe';
 
 const Home: React.FC = () => {
   const subscribeScrollRef = useRef(null);
-  const servicesScrollRef = useRef(null);
 
   const scrollToSection = (ref) =>
     ref.current.scrollIntoView({ block: 'center', behavior: 'smooth' });
@@ -24,21 +23,18 @@ const Home: React.FC = () => {
       <Head>
         <title>Home</title>
       </Head>
-      <Header onServicesClick={() => scrollToSection(servicesScrollRef)} />
+      <Header />
 
       <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
         <Hero onSignUp={() => scrollToSection(subscribeScrollRef)} />
-
-        <div ref={servicesScrollRef}>
-          <Services />
-        </div>
+        <Services />
         <Works />
         <About />
+        <div ref={subscribeScrollRef}>
+          <Subscribe />
+        </div>
       </motion.div>
 
-      <div ref={subscribeScrollRef}>
-        <SignUp />
-      </div>
       <Footer />
     </div>
   );

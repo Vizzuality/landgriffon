@@ -35,7 +35,7 @@ const HomeHero: React.FC<HomeHeroProps> = ({ onSignUp }: HomeHeroProps) => (
       <div className="md:space-y-8 xl:w-2/4">
         <p className="font-semibold md:font-normal">
           We help companies become sustainable by understanding and planning strategies to manage
-          environmental impacts and risks in food supply chains.{' '}
+          environmental impacts and risks in supply chains.{' '}
         </p>
         <Media greaterThan="md">
           <button type="button" onClick={onSignUp}>

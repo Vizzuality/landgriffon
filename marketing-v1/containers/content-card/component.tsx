@@ -1,5 +1,7 @@
 import React from 'react';
 
+import cx from 'classnames';
+
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -43,9 +45,20 @@ const ContentCard: React.FC<ContentCardProps> = ({
       </div>
     )}
     {orientation === 'horizontal' && (
-      <div className={reverse ? 'md:flex flex-row-reverse' : 'md:flex'}>
+      <div
+        className={cx({
+          'lg:flex': true,
+          'lg:flex flex-row-reverse': reverse,
+          'lg:space-x-12 xl:space-x-0': !reverse,
+        })}
+      >
         <Image width="657px" height="351px" src={imageURL} />
-        <div className="flex flex-col py-4 space-y-4 md:px-20 md:w-2/4">
+        <div
+          className={cx({
+            'flex flex-col py-4 space-y-4 xl:px-20 lg:w-2/4': true,
+            'lg:mr-12 xl:mr-0': reverse,
+          })}
+        >
           <h6 className="text-xl md:text-5xl font-sans-semibold">{title}</h6>
           <p className="text-base md:text-xl">{description}</p>
           {hyperlink && (

@@ -23,8 +23,8 @@ export interface SubNavProps {
 
 const SubNav: React.FC<SubNavProps> = ({ type }: SubNavProps) => (
   <>
-    <Media lessThan="md">
-      <section className="flex justify-between flex-grow w-full h-full py-20 px-3.5 mx-auto text-xl bg-white font-sans font-semibold">
+    <Media lessThan="lg">
+      <section className="flex justify-between flex-grow w-full h-full py-20 px-3.5 mx-auto text-xl md:text-4xl md:px-12 bg-white font-sans font-semibold">
         <Link href={NAVIGATION_LEFT_HREF[type]}>
           <a className="flex items-center" href={NAVIGATION_LEFT_HREF[type]}>
             <Image height="32px" width="62px" src={ARROW_LEFT_SVG} />
@@ -40,8 +40,8 @@ const SubNav: React.FC<SubNavProps> = ({ type }: SubNavProps) => (
       </section>
     </Media>
 
-    <Media greaterThanOrEqual="md">
-      <section className="container flex justify-between flex-grow w-full h-full py-12 mx-auto text-4xl bg-white font-sans-semibold">
+    <Media greaterThanOrEqual="lg">
+      <section className="container flex justify-between flex-grow w-full h-full py-12 mx-auto text-4xl bg-white xl:px-0 lg:px-12 font-sans-semibold">
         <Link href={NAVIGATION_LEFT_HREF[type]}>
           <a className="flex items-center" href={NAVIGATION_LEFT_HREF[type]}>
             <Image height="50px" width="100px" src={ARROW_LEFT_SVG} />

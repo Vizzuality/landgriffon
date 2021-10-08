@@ -5,7 +5,7 @@ import Wrapper from 'containers/wrapper';
 
 const MeasureContent: React.FC = () => (
   <Wrapper>
-    <section className="flex flex-col justify-center md:py-20 md:px-16 md:space-x-64 md:flex-row">
+    <section className="flex flex-col items-center justify-center md:py-20 md:px-16 xl:space-x-64 xl:flex-row">
       <ContentCard
         orientation="vertical"
         hyperlink="/"

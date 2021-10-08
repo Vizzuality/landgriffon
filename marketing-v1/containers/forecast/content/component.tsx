@@ -5,7 +5,7 @@ import Wrapper from 'containers/wrapper';
 
 const ForecastContent: React.FC = () => (
   <Wrapper>
-    <section className="flex flex-col justify-center space-y-8 md:px-16 md:py-36 md:space-y-36">
+    <section className="flex flex-col justify-center space-y-8 xl:px-16 md:py-20 lg:py-36 md:space-y-36">
       <ContentCard
         orientation="horizontal"
         reverse

@@ -12,7 +12,7 @@ const HomeAbout: React.FC = () => (
       <div className="md:px-16">
         <h2 className="pb-12 text-xl md:text-5xl font-sans-semibold text-green">About us</h2>
         <div className="flex flex-col items-center justify-between pb-24 space-y-4 md:space-x-24 lg:flex-row">
-          <h4 className="text-5xl font-semibold md:w-3/5 md:font-normal md:w-4/6 md:text-7xl">
+          <h4 className="text-5xl font-semibold md:w-3/5 md:font-normal md:text-7xl">
             Supported by a team of experts
           </h4>
           <p className="text-base md:text-xl md:w-2/5">
@@ -52,8 +52,8 @@ const HomeAbout: React.FC = () => (
           </div>
         </Media>
         <Media greaterThanOrEqual="md">
-          <div style={{ left: '-20%', top: '38%' }} className="absolute">
-            <Image width="710px" height="661px" src="/images/home/home-4.jpg" />
+          <div style={{ left: '-17%', top: '38%' }} className="absolute">
+            <Image width="610px" height="565px" src="/images/home/home-4.jpg" />
           </div>
         </Media>
       </div>

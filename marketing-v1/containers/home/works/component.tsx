@@ -11,7 +11,7 @@ const HomeWorks: React.FC = () => (
   <section className="font-sans">
     <div className="pt-20 pb-20 md:pt-40">
       <Wrapper>
-        <div className="md:px-16">
+        <div className="">
           <h2 className="pb-12 text-xl md:text-5xl font-sans-semibold text-green">How it works</h2>
           <div className="flex items-center justify-between">
             <h4 className="text-5xl font-semibold md:text-6xl md:font-normal">
@@ -76,7 +76,7 @@ const HomeWorks: React.FC = () => (
           </p>
         </div>
         <div className="flex flex-col px-3.5 md:px-16 space-y-6 py-20 md:py-28 bg-blue">
-          <h3 className="text-5xl font-semibold text-white md:font-normal md:text-6xl md:w-3/4 md:text-7xl">
+          <h3 className="text-5xl font-semibold text-white md:font-normal md:w-3/4 md:text-7xl">
             Learn how Landgriffon can work for you
           </h3>
           <Link href="https://landgriffon.com">

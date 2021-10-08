@@ -54,6 +54,7 @@
     "react-aria": "^3.6.0",
     "react-dom": "17.0.2",
     "react-final-form": "^6.5.3",
+    "react-player": "^2.9.0",
     "react-popper": "^2.2.5",
     "react-slick": "^0.28.1",
     "slick-carousel": "^1.8.1",

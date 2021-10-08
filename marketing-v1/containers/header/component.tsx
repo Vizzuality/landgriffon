@@ -6,7 +6,7 @@ import { Media } from 'containers/media';
 
 import Button from 'components/button';
 
-import MenuButton from './menu-button';
+import MenuButton from '../../components/menu-button';
 
 const Header: React.FC = () => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);

@@ -163,18 +163,10 @@ const ContactForm: React.FC = () => (
                 </div>
               </div>
               <Media greaterThanOrEqual="md">
-                <div className="absolute right-0 flex flex-col w-2/5 px-12 space-y-12 text-xl flex-end bg-bege py-28">
+                <div className="absolute right-0 flex flex-col w-2/5 px-12 pt-24 space-y-12 text-xl pb-72 flex-end bg-bege">
                   <div className="flex flex-col space-y-2">
                     <p className="font-sans-semibold">Email us</p>
                     <p>hello@vizzuality.com</p>
-                  </div>
-                  <div className="flex flex-col space-y-2">
-                    <p className="font-sans-semibold">Our location</p>
-                    <p>
-                      Madrid,
-                      <br />
-                      Spain
-                    </p>
                   </div>
                 </div>
               </Media>

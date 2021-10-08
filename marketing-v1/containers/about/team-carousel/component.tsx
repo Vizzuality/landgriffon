@@ -162,7 +162,13 @@ const TeamCarousel: React.FC = () => {
         <Media lessThan="md">
           <Slider {...settings}>
             {TEAM.map((t) => (
-              <Card key={t.key} role={t.role} name={t.name} photo={t.img} />
+              <Card
+                key={t.key}
+                role={t.role}
+                name={t.name}
+                photo={t.img}
+                profileURL={t.profileURL}
+              />
             ))}
           </Slider>
         </Media>
@@ -170,7 +176,13 @@ const TeamCarousel: React.FC = () => {
           <Slider {...settings}>
             <div className="w-40" />
             {TEAM.map((t) => (
-              <Card key={t.key} role={t.role} name={t.name} photo={t.img} />
+              <Card
+                key={t.key}
+                role={t.role}
+                name={t.name}
+                photo={t.img}
+                profileURL={t.profileURL}
+              />
             ))}
           </Slider>
         </Media>

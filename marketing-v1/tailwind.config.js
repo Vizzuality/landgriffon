@@ -726,7 +726,7 @@ module.exports = {
       display: ['first', 'responsive'],
       fontFamily: ['hover'],
       fontWeight: ['hover'],
-      visibility: ['first'],
+      visibility: ['first', 'hover', 'group-hover'],
     },
   },
   plugins: [forms, lineClamp],

@@ -18,7 +18,7 @@ const Measure: React.FC = () => (
     <Header />
 
     <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-      <Media lessThan="md">
+      <Media lessThan="lg">
         <Hero
           title="Measure"
           subtitle="Map where your raw materials come from."
@@ -26,7 +26,7 @@ const Measure: React.FC = () => (
           imageURL="/images/measure/measure-map-mb.jpg"
         />
       </Media>
-      <Media greaterThanOrEqual="md">
+      <Media greaterThanOrEqual="lg">
         <Hero
           title="Measure"
           subtitle="Map where your raw materials come from."

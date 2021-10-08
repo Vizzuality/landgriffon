@@ -43,8 +43,7 @@ jobs:
         with:
           context: api
           push: true
-          tags: |
-            vizzuality/landgriffon-api:${{ github.ref != 'refs/heads/main' ? 'staging' : 'production' }}
+          tags: vizzuality/landgriffon-api:${{ github.ref != 'refs/heads/main' && 'staging' || 'production' }}
 
   push_client_to_registry:
     name: Push Client Docker image to Docker Hub
@@ -77,5 +76,4 @@ jobs:
         with:
           context: client
           push: true
-          tags: |
-            vizzuality/landgriffon-client:${{ github.ref != 'refs/heads/main' ? 'staging' : 'production' }}
+          tags: vizzuality/landgriffon-client:${{ github.ref != 'refs/heads/main' && 'staging' || 'production' }}

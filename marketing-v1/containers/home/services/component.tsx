@@ -8,7 +8,7 @@ import Wrapper from 'containers/wrapper';
 import VideoPlayer from 'components/video-player';
 
 const HomeServices: React.FC = () => (
-  <section>
+  <section id="services">
     <div className="pt-20 pb-20 xl:pt-40">
       <Wrapper>
         <h2 className="pb-12 text-xl md:text-5xl font-sans-semibold text-green">Services</h2>

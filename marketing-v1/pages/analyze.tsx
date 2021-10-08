@@ -6,8 +6,8 @@ import Content from 'containers/analyze/content';
 import Footer from 'containers/footer';
 import Header from 'containers/header';
 import Hero from 'containers/hero';
-import SignUp from 'containers/sign-up';
 import SubNav from 'containers/sub-nav';
+import Subscribe from 'containers/subscribe';
 
 const Analyze: React.FC = () => (
   <div>
@@ -15,6 +15,7 @@ const Analyze: React.FC = () => (
       <title>Analyze</title>
     </Head>
     <Header />
+
     <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       <Hero
         title="Analyze"
@@ -24,8 +25,9 @@ const Analyze: React.FC = () => (
       />
       <Content />
       <SubNav type="analyze" />
+      <Subscribe />
     </motion.div>
-    <SignUp />
+
     <Footer />
   </div>
 );

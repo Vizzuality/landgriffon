@@ -9,7 +9,7 @@ import Button from 'components/button';
 const Subscribe: React.FC = () => (
   <section className="w-full py-12 font-sans bg-orange" id="subscribe">
     <Wrapper>
-      <div className="flex flex-col items-center justify-between space-y-6 md:space-y-16 lg:space-y-0 xl:px-16 xl:flex-row">
+      <div className="flex flex-col items-center justify-between space-y-6 md:space-y-16 xl:px-16 xl:flex-row">
         <p className="text-3xl font-semibold xl:w-2/5">
           Be the first to hear about new releases and updates.
         </p>

@@ -32,7 +32,6 @@ const NextArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
     <Media greaterThanOrEqual="md">
       <button
         aria-label="Next"
-        style={{ right: '5%' }}
         className="absolute right-0 flex items-center space-x-6 text-4xl font-sans-semibold -bottom-48"
         type="button"
         onClick={onClick}
@@ -60,8 +59,7 @@ const PrevArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
     <Media greaterThanOrEqual="md">
       <button
         aria-label="Previous"
-        style={{ left: '5%' }}
-        className="container absolute flex items-center text-4xl md:space-x-6 font-sans-semibold -bottom-48"
+        className="container absolute z-50 flex items-center w-40 text-4xl md:w-56 lg:w-56 md:space-x-6 font-sans-semibold -bottom-48"
         type="button"
         onClick={onClick}
       >
@@ -135,7 +133,7 @@ const TeamCarousel: React.FC = () => {
   };
 
   return (
-    <div className="relative md:pb-96 pb-48  px-3.5 md:px-0">
+    <div className="relative md:pb-96 pb-48 px-3.5 md:px-0">
       <div
         style={{ height: '45%' }}
         className="absolute top-0 left-0 w-full pt-4 bg-center bg-cover md:pt-0 bg-bege"
@@ -146,7 +144,7 @@ const TeamCarousel: React.FC = () => {
       </div>
       <div
         style={{ height: '55%' }}
-        className="absolute bottom-0 left-0 w-full bg-bege md:bg-lightBlue"
+        className="absolute bottom-0 left-0 w-full -mb-1 bg-bege md:bg-lightBlue"
       >
         <div style={{ width: '90%', marginLeft: '5%' }} className="h-px mt-56 bg-lightGray" />
         <div
@@ -173,18 +171,20 @@ const TeamCarousel: React.FC = () => {
           </Slider>
         </Media>
         <Media greaterThanOrEqual="md">
-          <Slider {...settings}>
-            <div className="w-40" />
-            {TEAM.map((t) => (
-              <Card
-                key={t.key}
-                role={t.role}
-                name={t.name}
-                photo={t.img}
-                profileURL={t.profileURL}
-              />
-            ))}
-          </Slider>
+          <div className="px-12 lg:px-16 xl:px-24">
+            <Slider {...settings}>
+              <div className="xl:w-40" />
+              {TEAM.map((t) => (
+                <Card
+                  key={t.key}
+                  role={t.role}
+                  name={t.name}
+                  photo={t.img}
+                  profileURL={t.profileURL}
+                />
+              ))}
+            </Slider>
+          </div>
         </Media>
       </div>
     </div>

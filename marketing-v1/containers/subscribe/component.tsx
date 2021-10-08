@@ -17,6 +17,7 @@ const Subscribe: React.FC = () => (
         <Form
           initialValues={{
             email: '',
+            agreement: null,
           }}
           onSubmit={(values) => {
             const { email } = values;
@@ -56,15 +57,18 @@ const Subscribe: React.FC = () => (
                   {(fprops) => (
                     <label
                       htmlFor="agree"
-                      className="flex font-sans text-xs text-black md:text-base"
+                      className="relative flex font-sans text-xs text-black md:text-base"
                     >
                       <input
                         id="agree"
                         name="agree"
-                        type="radio"
-                        className="mr-3 text-black bg-transparent cursor-pointer w-7 h-7 border-darkGray border-px"
+                        type="checkbox"
+                        value={values.agreement}
+                        checked={values.agreement}
+                        className="mr-3 bg-transparent rounded-full cursor-pointer w-7 h-7 border-darkGray border-px"
                         onChange={fprops.input.onChange}
                       />
+                      <span className="checkbox-circle" />
                       <p>
                         By signing up here I agree to receive LandGriffon email newsletter.{' '}
                         <a

@@ -130,16 +130,24 @@ const ContactForm: React.FC = () => (
                 </Field>
 
                 <div className="flex flex-col items-center pt-2 space-y-10 md:flex-row md:space-y-0">
-                  <div className="flex flex-row items-center">
+                  <div className="flex flex-row items-center ">
                     <Field name="agreement" component="input" type="radio">
                       {(fprops) => (
-                        <input
-                          id="agree"
-                          name="agree"
-                          type="radio"
-                          className="mr-3 text-black bg-transparent cursor-pointer w-7 h-7 border-darkGray border-px"
-                          onChange={fprops.input.onChange}
-                        />
+                        <label
+                          htmlFor="agree"
+                          className="relative flex font-sans text-xs text-black md:text-base"
+                        >
+                          <input
+                            id="agree"
+                            name="agree"
+                            type="checkbox"
+                            value={values.agreement}
+                            checked={values.agreement}
+                            className="mr-3 bg-transparent rounded-full cursor-pointer w-7 h-7 border-darkGray border-px"
+                            onChange={fprops.input.onChange}
+                          />
+                          <span className="checkbox-circle" />
+                        </label>
                       )}
                     </Field>
                     <p className="text-base">

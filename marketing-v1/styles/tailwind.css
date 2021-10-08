@@ -17,6 +17,27 @@
     -webkit-appearance: none;
   }
 
+  .checkbox-circle {
+    background: black;
+    border-radius: 2rem;
+    height: 20px;
+    left: 4px;
+    position: absolute;
+    top: 4px;
+    visibility: hidden;
+    width: 20px;
+    z-index: 10;
+  }
+
+  input[type='checkbox']:checked {
+    background: transparent;
+    border: 1px solid black;
+  }
+
+  input[type='checkbox']:checked ~ .checkbox-circle {
+    visibility: visible;
+  }
+
   @font-face {
     font-family: "Public-Sans";
     src: url("/fonts/PublicSans-regular.woff") format("woff");

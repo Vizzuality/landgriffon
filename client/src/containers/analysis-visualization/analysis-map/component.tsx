@@ -40,13 +40,10 @@ const AnalysisMap: React.FC = () => {
     setIsRendering(true);
 
     if (h3MaterialData || h3RiskData) {
-      const { data, metadata } = h3MaterialData;
-      const { name, unit, quantiles } = metadata;
-
       setLayers([
         new H3HexagonLayer({
           id: 'h3-layer-material',
-          data,
+          data: h3MaterialData.data,
           pickable: true,
           wireframe: false,
           filled: true,
@@ -74,18 +71,36 @@ const AnalysisMap: React.FC = () => {
         }),
       ]);
 
-      setLegendItems([
-        {
-          id: 'h3-legend',
-          name,
-          unit,
-          min: NUMBER_FORMAT(quantiles[0]),
-          items: quantiles.slice(1).map((v, index) => ({
+      // TO-DO: improve this logic
+      const nextLegendItems = [];
+
+      if (dataset === 'material' && h3MaterialData.data.length) {
+        nextLegendItems.push({
+          id: 'h3-legend-material',
+          name: h3MaterialData.metadata.name,
+          unit: h3MaterialData.metadata.unit,
+          min: NUMBER_FORMAT(h3MaterialData.metadata.quantiles[0]),
+          items: h3MaterialData.metadata.quantiles.slice(1).map((v, index) => ({
             value: NUMBER_FORMAT(v),
             color: COLOR_RAMPS[dataset][index],
           })),
-        },
-      ]);
+        });
+      }
+
+      if (dataset === 'risk' && h3RiskData.data.length) {
+        nextLegendItems.push({
+          id: 'h3-legend-risk',
+          name: h3RiskData.metadata.name,
+          unit: h3RiskData.metadata.unit,
+          min: NUMBER_FORMAT(h3RiskData.metadata.quantiles[0]),
+          items: h3RiskData.metadata.quantiles.slice(1).map((v, index) => ({
+            value: NUMBER_FORMAT(v),
+            color: COLOR_RAMPS[dataset][index],
+          })),
+        });
+      }
+
+      setLegendItems(nextLegendItems);
     }
   }, [h3MaterialData, h3RiskData, dataset]);
 

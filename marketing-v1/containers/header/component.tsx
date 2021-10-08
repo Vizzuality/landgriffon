@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 
+import cx from 'classnames';
+
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import { Media } from 'containers/media';
 import Wrapper from 'containers/wrapper';
@@ -10,6 +13,7 @@ import Button from 'components/button';
 import MenuButton from '../../components/menu-button';
 
 const Header: React.FC = () => {
+  const router = useRouter();
   const [menuIsOpen, setMenuIsOpen] = useState(false);
 
   const canvasStyle = {
@@ -68,12 +72,22 @@ const Header: React.FC = () => {
               </div>
             </div>
             <Link href="/#services">
-              <div className="font-sans text-base cursor-pointer hover:font-sans-semibold">
+              <div
+                className={cx({
+                  'font-sans text-base cursor-pointer hover:font-sans-semibold': true,
+                  'font-sans-semibold': router.asPath === '/#services',
+                })}
+              >
                 <p>Services</p>
               </div>
             </Link>
             <Link href="/about-us">
-              <div className="font-sans text-base cursor-pointer hover:font-sans-semibold">
+              <div
+                className={cx({
+                  'font-sans text-base cursor-pointer hover:font-sans-semibold': true,
+                  'font-sans-semibold': router.asPath === '/about-us',
+                })}
+              >
                 <p>About Us</p>
               </div>
             </Link>
@@ -95,14 +109,26 @@ const Header: React.FC = () => {
               </Link>
               <div className="flex items-center space-x-12 font-sans">
                 <Link href="/#services">
-                  <div className="font-sans text-base cursor-pointer hover:font-sans-semibold">
+                  <a
+                    href="/#services"
+                    className={cx({
+                      'font-sans text-base cursor-pointer hover:font-sans-semibold': true,
+                      'font-sans-semibold': router.asPath === '/#services',
+                    })}
+                  >
                     <p>Services</p>
-                  </div>
+                  </a>
                 </Link>
                 <Link href="/about-us">
-                  <div className="font-sans text-base cursor-pointer hover:font-sans-semibold">
+                  <a
+                    href="/about-us"
+                    className={cx({
+                      'font-sans text-base cursor-pointer hover:font-sans-semibold': true,
+                      'font-sans-semibold': router.asPath === '/about-us',
+                    })}
+                  >
                     <p>About Us</p>
-                  </div>
+                  </a>
                 </Link>
                 <Button theme="primary" size="l" className="flex-shrink-0 ml-5 h-11 w-44">
                   <a href="/contact" rel="noreferrer">

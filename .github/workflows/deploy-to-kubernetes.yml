@@ -77,5 +77,5 @@ jobs:
 
       - name: Redeploy pods
         run: |
-          kubectl rollout restart deployment api
-          kubectl rollout restart deployment client
+          kubectl rollout restart deployment api -n ${{ github.ref != 'refs/heads/main' ? 'staging' : 'production' }}
+          kubectl rollout restart deployment client -n ${{ github.ref != 'refs/heads/main' ? 'staging' : 'production' }}

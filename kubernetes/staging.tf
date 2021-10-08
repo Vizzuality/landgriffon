@@ -13,8 +13,9 @@ module "k8s_client_staging" {
   cluster_endpoint = "${data.terraform_remote_state.core.outputs.eks_cluster.endpoint}:4433"
   cluster_ca       = data.terraform_remote_state.core.outputs.eks_cluster.certificate_authority.0.data
   cluster_name     = data.terraform_remote_state.core.outputs.eks_cluster.name
+  deployment_name  = "client"
+  image            = "vizzuality/landgriffon-client:latest"
   namespace          = "staging"
-
 }
 
 module "k8s_secrets_staging" {

@@ -13,8 +13,9 @@ module "k8s_client_prod" {
   cluster_endpoint = "${data.terraform_remote_state.core.outputs.eks_cluster.endpoint}:4433"
   cluster_ca       = data.terraform_remote_state.core.outputs.eks_cluster.certificate_authority.0.data
   cluster_name     = data.terraform_remote_state.core.outputs.eks_cluster.name
-  namespace          = "production"
-
+  deployment_name  = "client"
+  image            = "vizzuality/landgriffon-client:latest"
+  namespace        = "production"
 }
 
 module "k8s_secrets_prod" {

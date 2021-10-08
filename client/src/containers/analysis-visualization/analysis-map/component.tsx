@@ -1,9 +1,4 @@
-import { useCallback, useEffect, useState, useMemo } from 'react';
-import { useQuery } from 'react-query';
-import axios from 'axios';
-import chroma from 'chroma-js';
-import { scaleThreshold } from 'd3-scale';
-import { format } from 'd3-format';
+import { useCallback, useEffect, useState } from 'react';
 import DeckGL from '@deck.gl/react';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
 import { StaticMap } from 'react-map-gl';
@@ -16,7 +11,9 @@ import LegendItem from 'components/map/legend/item';
 import LegendTypeChoropleth from 'components/map/legend/types/choropleth';
 import Loading from 'components/loading';
 
-import { COLOR_RAMPS } from '../constants';
+import { useH3MaterialData, useH3RiskData } from 'lib/hooks/h3-data';
+
+import { COLOR_RAMPS, NUMBER_FORMAT } from '../constants';
 
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
 const INITIAL_VIEW_STATE = {
@@ -26,53 +23,51 @@ const INITIAL_VIEW_STATE = {
   pitch: 0,
   bearing: 0,
 };
-const NUMBER_FORMAT = format('.2f');
-const TEMP_H3_DATA = {
-  impact:
-    'https://api.landgriffon.com/api/v1/h3/material?materialId=bb5f553a-7056-4efa-995e-546bc7e458a6&resolution=4',
-  risk: 'https://api.landgriffon.com/api/v1/h3/risk-map?indicatorId=1224d1d9-c3ae-450f-acb6-67f4ed33b5f7&materialId=bb5f553a-7056-4efa-995e-546bc7e458a6&year=2000&resolution=4',
-  material:
-    'https://api.landgriffon.com/api/v1/h3/material?materialId=bb5f553a-7056-4efa-995e-546bc7e458a6&resolution=4',
-};
 
 const AnalysisMap: React.FC = () => {
   const { dataset } = useAppSelector(analysis);
-
-  const colors = useMemo(() => COLOR_RAMPS[dataset].map((color) => chroma(color).rgb()), [dataset]);
 
   const [layers, setLayers] = useState([]);
   const [legendItems, setLegendItems] = useState([]);
   const [isRendering, setIsRendering] = useState(false);
 
-  const { data, isFetching } = useQuery(
-    ['h3-data', dataset],
-    () => axios.get(TEMP_H3_DATA[dataset]).then((response) => response.data),
-    { placeholderData: [], refetchOnWindowFocus: false }
-  );
+  const { data: h3MaterialData, isFetching } = useH3MaterialData();
+  const { data: h3RiskData } = useH3RiskData();
 
   const handleAfterRender = useCallback(() => setIsRendering(false), []);
 
   useEffect(() => {
     setIsRendering(true);
 
-    if (data && !isFetching) {
-      const { metadata, data: h3Data } = data;
-      const { unit, quantiles } = metadata;
-      const { min, ...thresholdValues } = quantiles;
-      const domainValues: number[] = Object.values(thresholdValues);
-      const scale = scaleThreshold().domain(domainValues).range(colors);
-      const h3DataWithColor = h3Data.map((d) => ({ ...d, c: scale(d.v) }));
+    if (h3MaterialData || h3RiskData) {
+      const { data, metadata } = h3MaterialData;
+      const { name, unit, quantiles } = metadata;
 
       setLayers([
         new H3HexagonLayer({
-          id: 'h3-layer',
-          data: h3DataWithColor,
+          id: 'h3-layer-material',
+          data,
           pickable: true,
           wireframe: false,
           filled: true,
           extruded: true,
           elevationScale: 1,
           highPrecision: false,
+          visible: dataset === 'material',
+          getHexagon: (d) => d.h,
+          getFillColor: (d) => d.c,
+          getElevation: (d) => d.v,
+        }),
+        new H3HexagonLayer({
+          id: 'h3-layer-risk',
+          data: h3RiskData.data,
+          pickable: true,
+          wireframe: false,
+          filled: true,
+          extruded: true,
+          elevationScale: 1,
+          highPrecision: false,
+          visible: dataset === 'risk',
           getHexagon: (d) => d.h,
           getFillColor: (d) => d.c,
           getElevation: (d) => d.v,
@@ -82,17 +77,17 @@ const AnalysisMap: React.FC = () => {
       setLegendItems([
         {
           id: 'h3-legend',
-          name: 'Impact of deforestation loss due to land use change', // TO-DO: change when metadata provides
+          name,
           unit,
-          min: NUMBER_FORMAT(min),
-          items: domainValues.map((v, index) => ({
+          min: NUMBER_FORMAT(quantiles[0]),
+          items: quantiles.slice(1).map((v, index) => ({
             value: NUMBER_FORMAT(v),
             color: COLOR_RAMPS[dataset][index],
           })),
         },
       ]);
     }
-  }, [data, isFetching]);
+  }, [h3MaterialData, h3RiskData, dataset]);
 
   return (
     <>

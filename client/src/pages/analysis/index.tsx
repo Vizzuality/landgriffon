@@ -67,7 +67,7 @@ const AnalysisPage: React.FC = () => {
               </div>
               {analysisContent()}
             </Transition>
-            <div className="absolute top-5 right-0 transform translate-x-1/2 z-10">
+            <div className="absolute top-5 right-0 transform translate-x-1/2 z-30">
               <CollapseButton />
             </div>
           </section>

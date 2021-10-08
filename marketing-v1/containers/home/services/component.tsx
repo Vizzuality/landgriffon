@@ -9,11 +9,11 @@ import VideoPlayer from 'components/video-player';
 
 const HomeServices: React.FC = () => (
   <section id="services">
-    <div className="pt-20 pb-20 xl:pt-40">
+    <div className="pt-20 pb-20 xl:pt-40 xl:px-16 lg:px-10">
       <Wrapper>
         <h2 className="pb-12 text-xl md:text-5xl font-sans-semibold text-green">Services</h2>
         <div className="flex flex-col items-center justify-between space-y-4 font-sans md:items-baseline xl:flex-row xl:space-y-0">
-          <h3 className="text-5xl font-semibold xl:font-normal xl:w-4/6 lg:text-6xl xl:text-7xl">
+          <h3 className="text-5xl font-semibold md:text-6xl md:font-normal xl:w-4/6 lg:text-6xl xl:text-7xl">
             Measure and manage supply chain impacts.
           </h3>
           <p className="text-base md:text-lg xl:text-xl xl:w-2/6">

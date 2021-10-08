@@ -87,7 +87,7 @@ const Header: React.FC = () => {
       </Media>
 
       <Media greaterThanOrEqual="md">
-        <header className="fixed z-10 flex flex-col justify-between w-full pt-4 pb-5 bg-white md:flex-row md:px-12 xl:px-0">
+        <header className="fixed z-10 flex flex-col justify-between w-full pt-4 pb-5 bg-white md:flex-row md:px-0 xl:px-0">
           <Wrapper>
             <nav className="flex flex-wrap items-center justify-between w-full mt-1 navbar-expand-lg">
               <Link href="/">

@@ -728,6 +728,11 @@ module.exports = {
       fontWeight: ['hover'],
       visibility: ['first', 'hover', 'group-hover'],
     },
+    transitionProperty: {
+      height: 'height',
+      spacing: 'margin, padding',
+      visibility: 'visibility',
+    },
   },
   plugins: [forms, lineClamp],
 };

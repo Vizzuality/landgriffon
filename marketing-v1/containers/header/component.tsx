@@ -5,6 +5,8 @@ import cx from 'classnames';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
+import { motion, AnimatePresence } from 'framer-motion';
+
 import { Media } from 'containers/media';
 import Wrapper from 'containers/wrapper';
 
@@ -16,18 +18,6 @@ const Header: React.FC = () => {
   const router = useRouter();
   const [menuIsOpen, setMenuIsOpen] = useState(false);
 
-  const canvasStyle = {
-    display: 'flex',
-    width: '20vw',
-    height: '6vh',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  };
-
-  const menuButtonStyle = {
-    marginLeft: '2rem',
-  };
-
   return (
     <div className="bg-white h-18 md:h-16">
       <Media lessThan="md">
@@ -37,7 +27,7 @@ const Header: React.FC = () => {
               <h1 className="text-lg tracking-widest cursor-pointer font-heading">LANDGRIFFON</h1>
             </Link>
 
-            <div style={canvasStyle}>
+            <div className="flex items-center w-1/5 h-10 space-between mr-3.5">
               <MenuButton
                 isOpen={menuIsOpen}
                 onClick={() => setMenuIsOpen(true)}
@@ -46,58 +36,81 @@ const Header: React.FC = () => {
                 transition={{ ease: 'easeOut', duration: 0.2 }}
                 width={35}
                 height={25}
-                style={menuButtonStyle}
+                className="ml-8"
               />
             </div>
           </nav>
         </header>
-
-        {menuIsOpen && (
-          <nav className="shadow fixed top-0 z-10 flex flex-col items-center w-full px-3.5 pt-4 pb-8 space-y-10 bg-white">
-            <div className="flex items-center justify-between w-full">
-              <Link href="/">
-                <h1 className="text-lg tracking-widest cursor-pointer font-heading">LANDGRIFFON</h1>
+        <AnimatePresence>
+          {menuIsOpen && (
+            <motion.nav
+              className="fixed top-0 z-10 flex flex-col items-center w-full px-3.5 pt-4 pb-8 space-y-10 bg-white"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 0.97 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <div className="flex items-center justify-between w-full bg-white">
+                <Link href="/">
+                  <h1 className="text-lg tracking-widest cursor-pointer font-heading">
+                    LANDGRIFFON
+                  </h1>
+                </Link>
+                <div className="flex items-center w-1/5 h-10 space-between mr-3.5">
+                  <MenuButton
+                    isOpen={menuIsOpen}
+                    onClick={() => setMenuIsOpen(false)}
+                    strokeWidth="4"
+                    color="#000000"
+                    transition={{ ease: 'easeOut', duration: 0.2 }}
+                    width={40}
+                    height={30}
+                    className="ml-8"
+                  />
+                </div>
+              </div>
+              <Link href="/#services">
+                <a href="/#services" onClick={() => setMenuIsOpen(false)}>
+                  <motion.div
+                    className={cx({
+                      'font-sans text-base cursor-pointer hover:font-sans-semibold': true,
+                      'font-sans-semibold': router.asPath === '/#services',
+                    })}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <p>Services</p>
+                  </motion.div>
+                </a>
               </Link>
-              <div style={canvasStyle}>
-                <MenuButton
-                  isOpen={menuIsOpen}
-                  onClick={() => setMenuIsOpen(false)}
-                  strokeWidth="4"
-                  color="#000000"
-                  transition={{ ease: 'easeOut', duration: 0.2 }}
-                  width={40}
-                  height={30}
-                  style={menuButtonStyle}
-                />
-              </div>
-            </div>
-            <Link href="/#services">
-              <div
-                className={cx({
-                  'font-sans text-base cursor-pointer hover:font-sans-semibold': true,
-                  'font-sans-semibold': router.asPath === '/#services',
-                })}
+              <Link href="/about-us">
+                <motion.div
+                  className={cx({
+                    'font-sans text-base cursor-pointer hover:font-sans-semibold': true,
+                    'font-sans-semibold': router.asPath === '/about-us',
+                  })}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <p>About Us</p>
+                </motion.div>
+              </Link>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
               >
-                <p>Services</p>
-              </div>
-            </Link>
-            <Link href="/about-us">
-              <div
-                className={cx({
-                  'font-sans text-base cursor-pointer hover:font-sans-semibold': true,
-                  'font-sans-semibold': router.asPath === '/about-us',
-                })}
-              >
-                <p>About Us</p>
-              </div>
-            </Link>
-            <Button theme="primary" size="l" className="flex-shrink-0 w-44 h-11">
-              <a href="/contact" rel="noreferrer">
-                Contact us
-              </a>
-            </Button>
-          </nav>
-        )}
+                <Button theme="primary" size="l" className="flex-shrink-0 w-44 h-11">
+                  <a href="/contact" rel="noreferrer">
+                    Contact us
+                  </a>
+                </Button>
+              </motion.div>
+            </motion.nav>
+          )}
+        </AnimatePresence>
       </Media>
 
       <Media greaterThanOrEqual="md">
@@ -130,7 +143,11 @@ const Header: React.FC = () => {
                     <p>About Us</p>
                   </a>
                 </Link>
-                <Button theme="primary" size="l" className="flex-shrink-0 ml-5 h-11 w-44">
+                <Button
+                  theme="primary"
+                  size="l"
+                  className="flex-shrink-0 ml-5 transition duration-500 ease-in-out h-11 w-44"
+                >
                   <a href="/contact" rel="noreferrer">
                     Contact us
                   </a>

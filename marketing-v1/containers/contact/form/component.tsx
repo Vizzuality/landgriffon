@@ -26,12 +26,9 @@ const ContactForm: React.FC = () => (
         }}
       >
         {({ values, handleSubmit }) => (
-          <form
-            onSubmit={values.agreement && handleSubmit}
-            className="list__filters-date-range--form"
-          >
-            <div className="flex pt-20 pb-20 md:pb-48">
-              <div className="flex flex-col space-y-10 md:w-3/5">
+          <form onSubmit={values.agreement && handleSubmit}>
+            <div className="flex pt-20 pb-20 xl:pb-48">
+              <div className="flex flex-col space-y-10 lg:w-3/5">
                 <div className="flex flex-col w-full space-y-10 md:space-y-0 md:space-x-5 md:flex-row">
                   <Field name="name" component="input">
                     {(fprops) => (
@@ -129,8 +126,8 @@ const ContactForm: React.FC = () => (
                   )}
                 </Field>
 
-                <div className="flex flex-col items-center pt-2 space-y-10 md:flex-row md:space-y-0">
-                  <div className="flex flex-row items-center ">
+                <div className="flex flex-col items-center justify-start pt-2 space-y-10 md:justify-betweenlg: md:flex-row md:space-y-0">
+                  <div className="flex flex-row items-center">
                     <Field name="agreement" component="input" type="radio">
                       {(fprops) => (
                         <label
@@ -163,14 +160,14 @@ const ContactForm: React.FC = () => (
                   <Button
                     theme="secondary"
                     size="s"
-                    className="box-border flex-shrink-0 h-10 text-base w-36 md:ml-5 md:w-28"
+                    className="box-border flex-shrink-0 h-10 text-base transition duration-500 ease-in-out w-36 md:ml-5 md:w-28"
                     onClick={() => values.agreement && handleSubmit(values)}
                   >
                     Send
                   </Button>
                 </div>
               </div>
-              <Media greaterThanOrEqual="md">
+              <Media greaterThanOrEqual="lg">
                 <div className="absolute right-0 flex flex-col w-2/5 px-12 pt-24 space-y-12 text-xl pb-72 flex-end bg-bege">
                   <div className="flex flex-col space-y-2">
                     <p className="font-sans-semibold">Email us</p>

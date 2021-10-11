@@ -22,6 +22,7 @@ const Home: React.FC = () => {
     <div>
       <Head>
         <title>Home</title>
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header />
 

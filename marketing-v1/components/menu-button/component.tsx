@@ -10,7 +10,7 @@ export interface SVGMotionProps {
   lineProps?: Record<string, unknown>;
   height: number;
   width: number;
-  style: Record<string, unknown>;
+  className?: string;
   onClick: () => void;
 }
 
@@ -22,6 +22,7 @@ const MenuButton: React.FC<SVGMotionProps> = ({
   color,
   transition,
   lineProps,
+  className,
   ...props
 }: SVGMotionProps) => {
   const variant = isOpen ? 'opened' : 'closed';
@@ -73,6 +74,7 @@ const MenuButton: React.FC<SVGMotionProps> = ({
       preserveAspectRatio="none"
       width={width}
       height={height}
+      className={className}
       {...props}
     >
       <motion.line x1="0" x2={unitWidth} y1="0" y2="0" variants={top} {...newLineProps} />

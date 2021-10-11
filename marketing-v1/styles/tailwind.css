@@ -38,14 +38,6 @@
     visibility: visible;
   }
 
-  .slick-list {
-  
-  }
-
-  .slick-slider {
- 
-  }
-
   @font-face {
     font-family: "Public-Sans";
     src: url("/fonts/PublicSans-regular.woff") format("woff");

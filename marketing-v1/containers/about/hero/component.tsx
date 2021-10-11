@@ -12,12 +12,12 @@ const AboutHero: React.FC = () => (
 
     <Wrapper>
       <div className="relative">
-        <div className="flex justify-center pb-4 border-b border-black md:pb-10 md:pt-8 md:mx-16 border-b-px">
+        <div className="flex justify-center pb-4 border-b border-black md:pb-10 md:pt-8 lg:mx-16 border-b-px">
           <h1 className="font-sans text-5xl font-semibold md:font-normal md:font-sans-semibold md:text-7xl">
             Supported by a team of experts
           </h1>
         </div>
-        <div className="flex flex-col justify-between py-10 space-y-4 md:pb-24 md:space-y-0 md:pt-16 md:flex-row md:px-16">
+        <div className="flex flex-col justify-between py-10 space-y-4 md:pb-24 md:space-y-0 md:pt-16 md:flex-row lg:px-16">
           <h4 className="font-sans text-xl font-semibold md:text-5xl md:w-2/4 md:font-normal md:font-sans-semibold">
             Our purpose is the creation of a better future for our planet and society.
           </h4>
@@ -27,8 +27,9 @@ const AboutHero: React.FC = () => (
           </p>
         </div>
       </div>
-      <div className="flex flex-col space-y-2">
-        <Media lessThan="md">
+
+      <Media lessThan="md">
+        <div className="flex flex-col space-y-2">
           <div className="flex justify-between space-x-4">
             <div>
               <Image width="473px" height="330px" src="/images/about/about-1.jpg" />
@@ -38,8 +39,10 @@ const AboutHero: React.FC = () => (
             </div>
           </div>
           <Image width="768px" height="412px" src="/images/about/about-5.jpg" />
-        </Media>
-        <Media greaterThanOrEqual="md">
+        </div>
+      </Media>
+      <Media greaterThanOrEqual="md">
+        <div className="flex flex-col space-y-2">
           <div className="flex justify-between space-x-4">
             <div>
               <Image width="473px" height="330px" src="/images/about/about-1.jpg" />
@@ -59,15 +62,16 @@ const AboutHero: React.FC = () => (
               <Image width="720px" height="386px" src="/images/about/about-5.jpg" />
             </div>
           </div>
-        </Media>
-      </div>
+        </div>
+      </Media>
+
       <div className="relative w-full md:grid md:grid-cols-2">
         <div />
         <div className="flex flex-col py-10 space-y-4 md:pl-4 md:py-24 md:pr-16">
-          <h4 className="font-sans text-xl font-semibold md:text-5xl md:font-normal md:font-sans-semibold">
+          <h4 className="font-sans text-xl font-semibold lg:text-5xl md:font-normal md:font-sans-semibold">
             We are on a mission to make supply chains more sustainable.{' '}
           </h4>
-          <p className="font-sans text-base md:text-xl">
+          <p className="font-sans text-base lg:text-xl">
             The world is moving to a zero-carbon future and nature positive. We offer our expertise
             in environmental monitoring, designing user-centric scientific applications, and
             artificial intelligence based satellite monitoring to help companies reach this

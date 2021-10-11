@@ -29,7 +29,7 @@ const Footer: React.FC = () => (
       <div className="items-center justify-between mt-10 space-y-10 md:mt-24 md:space-y-0 md:flex">
         <nav className="flex flex-row items-end h-8 space-x-11">
           {SOCIAL_MEDIA.map((sm) => (
-            <Link href={sm.hyperlink}>
+            <Link key={sm.key} href={sm.hyperlink}>
               <a href={sm.hyperlink} target="_blank" rel="noreferrer">
                 <Image
                   alt={sm.key}

@@ -4,6 +4,8 @@ import Slider from 'react-slick';
 
 import Image from 'next/image';
 
+import { motion, AnimatePresence } from 'framer-motion';
+
 import { Media } from 'containers/media';
 
 import ARROW_PREVIOUS_SVG from 'svgs/arrow-left.svg';
@@ -74,71 +76,73 @@ const TeamCarousel: React.FC = () => {
   const [currentFirstSlide, setcurrentFirstSlide] = useState(0);
 
   const progressFill = useMemo(
-    () => 100 / TEAM.length - 1 + (100 / TEAM.length - 1) * currentFirstSlide,
+    () => currentFirstSlide < TEAM.length + 1 && (100 / TEAM.length) * currentFirstSlide,
     [currentFirstSlide]
   );
 
   const settings = {
-    dots: false,
     infinite: true,
+    centerMode: true,
     speed: 1000,
-    slidesToShow: 8,
+    slidesToShow: 1,
     slidesToScroll: 1,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
-    afterChange: (current) => setcurrentFirstSlide(current),
+    beforeChange: (current) => setcurrentFirstSlide(current + 2),
     responsive: [
       {
         breakpoint: 1950,
         settings: {
-          slidesToShow: 6,
+          slidesToShow: 5.2,
           slidesToScroll: 1,
         },
       },
       {
         breakpoint: 1700,
         settings: {
-          slidesToShow: 5,
+          slidesToShow: 4.4,
           slidesToScroll: 1,
         },
       },
       {
         breakpoint: 1450,
         settings: {
-          slidesToShow: 4,
+          slidesToShow: 3.6,
           slidesToScroll: 1,
         },
       },
       {
         breakpoint: 1025,
         settings: {
-          slidesToShow: 3,
-          slidesToScroll: 2,
+          slidesToShow: 2.5,
+          slidesToScroll: 1,
         },
       },
       {
         breakpoint: 800,
         settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2,
+          slidesToShow: 1.8,
+          slidesToScroll: 1,
         },
       },
       {
         breakpoint: 500,
         settings: {
-          slidesToShow: 1,
+          centerMode: false,
+          slidesToShow: 1.1,
+          slidesToScroll: 1,
         },
       },
     ],
   };
 
   return (
-    <div className="relative md:pb-96 pb-48 px-3.5 md:px-0">
+    <div className="relative lg:pb-96 md:pb-72 pb-48 px-3.5 md:px-0">
       <div
-        style={{ height: '45%' }}
+        style={{ height: '46%' }}
         className="absolute top-0 left-0 w-full pt-4 bg-center bg-cover md:pt-0 bg-bege"
       >
-        <h3 className="px-3.5 md:px-0 font-sans text-5xl font-semibold md:text-center md:font-normal md:text-7xl">
+        <h3 className="px-3.5 md:px-0 font-sans text-5xl font-semibold md:text-center md:font-normal md:text-6xl lg:text-7xl">
           Meet our team
         </h3>
       </div>
@@ -147,14 +151,20 @@ const TeamCarousel: React.FC = () => {
         className="absolute bottom-0 left-0 w-full -mb-1 bg-bege md:bg-lightBlue"
       >
         <div style={{ width: '90%', marginLeft: '5%' }} className="h-px mt-56 bg-lightGray" />
-        <div
-          style={{
-            width: `${progressFill}%`,
-            marginLeft: '5%',
-            marginTop: '-2px',
-          }}
-          className="h-1 bg-black"
-        />
+        <AnimatePresence>
+          <div style={{ marginLeft: '5%', marginRight: '5%' }}>
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${progressFill || 100 / TEAM.length}%` }}
+              transition={{ duration: 0.4 }}
+              style={{
+                marginTop: '-2px',
+                width: `${progressFill || 100 / TEAM.length}%`,
+              }}
+              className="h-1 bg-black"
+            />
+          </div>
+        </AnimatePresence>
       </div>
       <div className="pt-20 md:pt-40">
         <Media lessThan="md">
@@ -173,7 +183,6 @@ const TeamCarousel: React.FC = () => {
         <Media greaterThanOrEqual="md">
           <div className="px-12 lg:px-16 xl:px-24">
             <Slider {...settings}>
-              <div className="xl:w-40" />
               {TEAM.map((t) => (
                 <Card
                   key={t.key}

@@ -27,7 +27,7 @@ const Header: React.FC = () => {
               <h1 className="text-lg tracking-widest cursor-pointer font-heading">LANDGRIFFON</h1>
             </Link>
 
-            <div className="flex items-center w-1/5 h-10 space-between mr-3.5">
+            <div className="flex items-center w-1/5 h-10 mr-3.5 xs:mr-0 space-between">
               <MenuButton
                 isOpen={menuIsOpen}
                 onClick={() => setMenuIsOpen(true)}
@@ -56,15 +56,15 @@ const Header: React.FC = () => {
                     LANDGRIFFON
                   </h1>
                 </Link>
-                <div className="flex items-center w-1/5 h-10 space-between mr-3.5">
+                <div className="flex items-center w-1/5 h-10 space-between mr-3.5 xs:mr-0">
                   <MenuButton
                     isOpen={menuIsOpen}
                     onClick={() => setMenuIsOpen(false)}
                     strokeWidth="4"
                     color="#000000"
                     transition={{ ease: 'easeOut', duration: 0.2 }}
-                    width={40}
-                    height={30}
+                    width={35}
+                    height={25}
                     className="ml-8"
                   />
                 </div>

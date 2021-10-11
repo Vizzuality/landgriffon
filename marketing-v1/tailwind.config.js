@@ -11,7 +11,11 @@ module.exports = {
   },
   darkMode: false, // or 'media' or 'class'
   theme: {
-    extend: {},
+    extend: {
+      screens: {
+        xs: '360px',
+      },
+    },
     colors: {
       bege: '#F9F5F3',
       black: colors.black,

@@ -13,7 +13,7 @@ import Subscribe from 'containers/subscribe';
 const Measure: React.FC = () => (
   <div>
     <Head>
-      <title>Measure</title>
+      <title>Measure - Langriffon</title>
     </Head>
     <Header />
 

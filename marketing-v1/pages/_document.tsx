@@ -12,6 +12,7 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head>
+          <link rel="shortcut icon" href="/favicon.ico" />
           {/* Global site tag (gtag.js) - Google Analytics */}
           <script
             dangerouslySetInnerHTML={{

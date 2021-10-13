@@ -20,7 +20,7 @@ const Card: React.FC<CardProps> = ({ role, name, photo, profileURL, className }:
   return (
     <div
       className={cx({
-        'cursor-pointer relative flex flex-col justify-between bg-white font-sans-semibold w-72 h-max rounded-3xl':
+        'cursor-pointer relative flex flex-col justify-between bg-white font-semibold w-72 h-max rounded-3xl':
           true,
         [className]: !!className,
       })}
@@ -49,7 +49,7 @@ const Card: React.FC<CardProps> = ({ role, name, photo, profileURL, className }:
           >
             <Link href={profileURL}>
               <a
-                className="text-base text-black underline cursor-pointer font-sans-semibold"
+                className="text-base text-black underline cursor-pointer font-semibold"
                 target="_blank"
                 href={profileURL}
                 rel="noreferrer"

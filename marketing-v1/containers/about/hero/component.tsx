@@ -8,17 +8,17 @@ import Wrapper from 'containers/wrapper';
 const AboutHero: React.FC = () => (
   <section className="relative w-full row-auto pb-5 pt-28">
     <div className="absolute top-0 left-0 w-full bg-white bg-center bg-cover h-4/6" />
-    <div className="absolute bottom-0 left-0 w-full h-2/6 md:bg-bege" />
+    <div className="absolute bottom-0 left-0 w-full h-2/6 md:bg-beige" />
 
     <Wrapper>
       <div className="relative">
         <div className="flex justify-center pb-4 border-b border-black md:pb-10 md:pt-8 lg:mx-16 border-b-px">
-          <h1 className="font-sans text-5xl font-semibold md:font-normal md:font-sans-semibold md:text-7xl">
+          <h1 className="font-sans text-5xl font-semibold md:font-normal md:font-semibold md:text-7xl">
             Supported by a team of experts
           </h1>
         </div>
         <div className="flex flex-col justify-between py-10 space-y-4 md:pb-24 md:space-y-0 md:pt-16 md:flex-row lg:px-16">
-          <h4 className="font-sans text-xl font-semibold md:text-5xl md:w-2/4 md:font-normal md:font-sans-semibold">
+          <h4 className="font-sans text-xl font-semibold md:text-5xl md:w-2/4 md:font-normal md:font-semibold">
             Our purpose is the creation of a better future for our planet and society.
           </h4>
           <p className="font-sans text-xl md:w-2/4 xl:w-2/5">
@@ -68,7 +68,7 @@ const AboutHero: React.FC = () => (
       <div className="relative w-full md:grid md:grid-cols-2">
         <div />
         <div className="flex flex-col py-10 space-y-4 md:pl-4 md:py-24 md:pr-16">
-          <h4 className="font-sans text-xl font-semibold lg:text-5xl md:font-normal md:font-sans-semibold">
+          <h4 className="font-sans text-xl font-semibold lg:text-5xl md:font-normal md:font-semibold">
             We are on a mission to make supply chains more sustainable.{' '}
           </h4>
           <p className="font-sans text-base lg:text-xl">

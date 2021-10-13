@@ -23,7 +23,7 @@ const NextArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
     <Media lessThan="md">
       <button
         aria-label="Next"
-        className="absolute right-3.5 flex items-center space-x-6 text-4xl font-sans-semibold -bottom-36"
+        className="absolute right-3.5 flex items-center space-x-6 text-4xl font-semibold -bottom-36"
         type="button"
         onClick={onClick}
       >
@@ -34,7 +34,7 @@ const NextArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
     <Media greaterThanOrEqual="md">
       <button
         aria-label="Next"
-        className="absolute right-0 flex items-center space-x-6 text-4xl font-sans-semibold -bottom-48"
+        className="absolute right-0 flex items-center space-x-6 text-4xl font-semibold -bottom-48"
         type="button"
         onClick={onClick}
       >
@@ -50,7 +50,7 @@ const PrevArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
     <Media lessThan="md">
       <button
         aria-label="Previous"
-        className="left-3.5 absolute text-4xl md:container font-sans-semibold -bottom-36"
+        className="left-3.5 absolute text-4xl md:container font-semibold -bottom-36"
         type="button"
         onClick={onClick}
       >
@@ -61,7 +61,7 @@ const PrevArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
     <Media greaterThanOrEqual="md">
       <button
         aria-label="Previous"
-        className="container absolute z-50 flex items-center w-40 text-4xl md:w-56 lg:w-56 md:space-x-6 font-sans-semibold -bottom-48"
+        className="container absolute z-50 flex items-center w-40 text-4xl md:w-56 lg:w-56 md:space-x-6 font-semibold -bottom-48"
         type="button"
         onClick={onClick}
       >
@@ -140,7 +140,7 @@ const TeamCarousel: React.FC = () => {
     <div className="relative lg:pb-96 md:pb-72 pb-48 px-3.5 md:px-0">
       <div
         style={{ height: '46%' }}
-        className="absolute top-0 left-0 w-full pt-4 bg-center bg-cover md:pt-0 bg-bege"
+        className="absolute top-0 left-0 w-full pt-4 bg-center bg-cover md:pt-0 bg-beige"
       >
         <h3 className="px-3.5 md:px-0 font-sans text-5xl font-semibold md:text-center md:font-normal md:text-6xl lg:text-7xl">
           Meet our team
@@ -148,7 +148,7 @@ const TeamCarousel: React.FC = () => {
       </div>
       <div
         style={{ height: '55%' }}
-        className="absolute bottom-0 left-0 w-full -mb-1 bg-bege md:bg-lightBlue"
+        className="absolute bottom-0 left-0 w-full -mb-1 bg-beige md:bg-lightBlue"
       >
         <div style={{ width: '90%', marginLeft: '5%' }} className="h-px mt-56 bg-lightGray" />
         <AnimatePresence>

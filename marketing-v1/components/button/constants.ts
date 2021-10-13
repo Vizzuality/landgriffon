@@ -1,8 +1,8 @@
 export const THEME = {
   primary:
-    'text-white text-base font-sans-semibold bg-green hover:bg-white active:bg-white border border-green hover:border-green active:border-green hover:text-green active:text-green',
+    'text-white text-base font-semibold bg-green hover:bg-white active:bg-white border border-green hover:border-green active:border-green hover:text-green active:text-green',
   secondary:
-    'text-white bg-darkGray hover:bg-transparent border border-darkGray font-sans-semibold hover:text-darkGray',
+    'text-white bg-darkGray hover:bg-transparent border border-darkGray font-semibold hover:text-darkGray',
 };
 
 export const SIZE = {

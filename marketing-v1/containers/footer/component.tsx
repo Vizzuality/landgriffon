@@ -9,21 +9,24 @@ import SOCIAL_MEDIA from './constants';
 
 const Footer: React.FC = () => (
   <Wrapper>
-    <footer className="w-full row-auto py-10 md:pb-12 md:px-0 xl:px-16 md:pt-28">
-      <nav className="relative flex flex-col flex-wrap justify-between space-y-12 text-5xl font-semibold cursor-pointer md:mb-16 md:font-normal md:font-sans md:space-y-14 items-left md:text-7xl md:mt-0 navbar-expand-lg">
-        <Link href="/about-us">
-          <p className="hover:opacity-40">About Us</p>
-        </Link>
-        <Link href="https://landgriffon.com/">
-          <a
-            className="hover:opacity-40"
-            target="_blank"
-            href="https://landgriffon.com"
-            rel="noreferrer"
-          >
-            Contact Us
-          </a>
-        </Link>
+    <footer className="w-full row-auto py-10 md:pb-12 md:pt-28">
+      <nav className="relative flex-wrap justify-between space-y-12 text-5xl font-light md:font-sans md:space-y-14 items-left md:text-7xl md:mt-0 navbar-expand-lg">
+        <ul>
+          <li className="md:mb-16">
+            <Link href="/about-us">
+              <a className="hover:opacity-40" target="_blank" rel="noreferrer">
+                About Us
+              </a>
+            </Link>
+          </li>
+          <li className="md:mb-16">
+            <Link href="/contact">
+              <a className="hover:opacity-40" target="_blank" rel="noreferrer">
+                Contact Us
+              </a>
+            </Link>
+          </li>
+        </ul>
       </nav>
 
       <div className="items-center justify-between mt-10 space-y-10 md:mt-24 md:space-y-0 md:flex">
@@ -55,7 +58,7 @@ const Footer: React.FC = () => (
         <p>@LandGriffon 2021</p>
         <Link href="https://landgriffon.com/privacy-policy">
           <a
-            className="cursor-pointer hover:font-sans-semibold"
+            className="cursor-pointer hover:font-semibold"
             href="https://landgriffon.com/privacy-policy"
           >
             <p>Privacy policy</p>

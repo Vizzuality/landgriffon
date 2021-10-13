@@ -27,12 +27,12 @@ const ContentCard: React.FC<ContentCardProps> = ({
       <div>
         <Image width="466px" height="575px" src={imageURL} />
         <div className="flex flex-col py-8 space-y-4 md:w-96">
-          <h6 className="text-xl md:text-5xl font-sans-semibold">{title}</h6>
+          <h6 className="text-xl md:text-5xl font-semibold">{title}</h6>
           <p className="text-base md:text-xl">{description}</p>
           {hyperlink && (
             <Link href={hyperlink}>
               <a
-                className="text-2xl text-black underline font-sans-semibold hover:no-underline"
+                className="text-2xl text-black underline font-semibold hover:no-underline"
                 target="_blank"
                 href={hyperlink}
                 rel="noreferrer"
@@ -59,12 +59,12 @@ const ContentCard: React.FC<ContentCardProps> = ({
             'lg:mr-12 xl:mr-0': reverse,
           })}
         >
-          <h6 className="text-xl md:text-5xl font-sans-semibold">{title}</h6>
+          <h6 className="text-xl md:text-5xl font-semibold">{title}</h6>
           <p className="text-base md:text-xl">{description}</p>
           {hyperlink && (
             <Link href={hyperlink}>
               <a
-                className="text-2xl text-black underline font-sans-semibold hover:no-underline"
+                className="text-2xl text-black underline font-semibold hover:no-underline"
                 target="_blank"
                 href={hyperlink}
                 rel="noreferrer"

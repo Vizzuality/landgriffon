@@ -41,7 +41,7 @@ const SubNav: React.FC<SubNavProps> = ({ type }: SubNavProps) => (
     </Media>
 
     <Media greaterThanOrEqual="lg">
-      <section className="container flex justify-between flex-grow w-full h-full py-12 mx-auto text-4xl bg-white xl:px-0 lg:px-12 font-sans-semibold">
+      <section className="container flex justify-between flex-grow w-full h-full py-12 mx-auto text-4xl bg-white xl:px-0 lg:px-12 font-semibold">
         <Link href={NAVIGATION_LEFT_HREF[type]}>
           <a className="flex items-center" href={NAVIGATION_LEFT_HREF[type]}>
             <Image height="50px" width="100px" src={ARROW_LEFT_SVG} />

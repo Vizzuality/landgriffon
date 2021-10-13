@@ -33,7 +33,7 @@ const ContactForm: React.FC = () => (
                   <Field name="name" component="input">
                     {(fprops) => (
                       <label
-                        className="text-xs uppercase md:w-1/2 text-lightGray font-sans-semibold"
+                        className="text-xs uppercase md:w-1/2 text-lightGray font-semibold"
                         htmlFor="name"
                       >
                         Name
@@ -52,7 +52,7 @@ const ContactForm: React.FC = () => (
                   <Field name="company" component="input">
                     {(fprops) => (
                       <label
-                        className="text-xs uppercase md:w-1/2 text-lightGray font-sans-semibold"
+                        className="text-xs uppercase md:w-1/2 text-lightGray font-semibold"
                         htmlFor="company"
                       >
                         Company
@@ -72,7 +72,7 @@ const ContactForm: React.FC = () => (
                 <Field name="email" component="input">
                   {(fprops) => (
                     <label
-                      className="text-xs uppercase md:pr-3 md:w-1/2 text-lightGray font-sans-semibold"
+                      className="text-xs uppercase md:pr-3 md:w-1/2 text-lightGray font-semibold"
                       htmlFor="email"
                     >
                       Email
@@ -91,7 +91,7 @@ const ContactForm: React.FC = () => (
                 <Field name="subject" component="input">
                   {(fprops) => (
                     <label
-                      className="text-xs uppercase md:pr-3 md:w-1/2 text-lightGray font-sans-semibold"
+                      className="text-xs uppercase md:pr-3 md:w-1/2 text-lightGray font-semibold"
                       htmlFor="subject"
                     >
                       Subject
@@ -110,7 +110,7 @@ const ContactForm: React.FC = () => (
                 <Field name="message" component="input">
                   {(fprops) => (
                     <label
-                      className="text-xs uppercase md:pr-3 md:w-1/2 text-lightGray font-sans-semibold"
+                      className="text-xs uppercase md:pr-3 md:w-1/2 text-lightGray font-semibold"
                       htmlFor="message"
                     >
                       Message
@@ -168,9 +168,9 @@ const ContactForm: React.FC = () => (
                 </div>
               </div>
               <Media greaterThanOrEqual="lg">
-                <div className="absolute right-0 flex flex-col w-2/5 px-12 pt-24 space-y-12 text-xl pb-72 flex-end bg-bege">
+                <div className="absolute right-0 flex flex-col w-2/5 px-12 pt-24 space-y-12 text-xl pb-72 flex-end bg-beige">
                   <div className="flex flex-col space-y-2">
-                    <p className="font-sans-semibold">Email us</p>
+                    <p className="font-semibold">Email us</p>
                     <p>hello@vizzuality.com</p>
                   </div>
                 </div>

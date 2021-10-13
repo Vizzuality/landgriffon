@@ -36,6 +36,7 @@ module.exports = {
         exceptions: [''],
       },
     ],
+    'jsx-a11y/anchor-is-valid': 0,
     'import/no-named-as-default': 0,
     'import/extensions': [
       'error',

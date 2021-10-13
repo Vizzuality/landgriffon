@@ -8,9 +8,9 @@ import Button from 'components/button';
 
 const Subscribe: React.FC = () => (
   <section className="w-full py-12 font-sans xl:py-20 bg-orange" id="subscribe">
-    <Wrapper>
+    <Wrapper hasPadding={false}>
       <div className="flex flex-col items-center justify-between space-y-6 md:space-y-16 xl:px-16 xl:flex-row xl:space-y-0">
-        <p className="text-3xl font-semibold xl:w-2/5">
+        <p className="text-3xl font-light xl:w-2/5">
           Be the first to hear about new releases and updates.
         </p>
 
@@ -37,7 +37,7 @@ const Subscribe: React.FC = () => (
                       name="email"
                       type="input"
                       placeholder="Email address"
-                      className="w-full h-10 mx-3.5 md:mx-0 md:mr-3 text-xl text-black placeholder-black bg-transparent border-b cursor-pointer border-darkGray border-px"
+                      className="w-full h-10 mx-3.5 md:mx-0 md:mr-3 text-xl text-black placeholder-black bg-transparent border-b border-darkGray border-px"
                       onChange={fprops.input.onChange}
                     />
                   )}

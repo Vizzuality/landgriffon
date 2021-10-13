@@ -41,7 +41,7 @@ const AboutValues: React.FC = () => (
                 </div>
               </Media>
               <div className="space-y-4 md:space-y-8">
-                <h5 className="text-xl lg:text-5xl font-sans-semibold">{v.title}</h5>
+                <h5 className="text-xl lg:text-5xl font-semibold">{v.title}</h5>
                 <p className="font-sans text-base lg:text-xl">{v.description}</p>
               </div>
             </li>

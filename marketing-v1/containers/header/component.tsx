@@ -19,15 +19,15 @@ const Header: React.FC = () => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
 
   return (
-    <div className="bg-white h-18 md:h-16">
+    <div>
       <Media lessThan="md">
-        <header className="pt-4 pb-4 px-3.5 fixed bg-white w-full z-10 opacity-90">
+        <header className="top-0 p-4 fixed bg-white w-full z-10 bg-opacity-90">
           <nav className="flex items-center justify-between w-full">
             <Link href="/">
               <h1 className="text-lg tracking-widest cursor-pointer font-heading">LANDGRIFFON</h1>
             </Link>
 
-            <div className="flex items-center w-1/5 h-10 mr-3.5 xs:mr-0 space-between">
+            <div className="flex items-center w-1/5 h-10 space-between">
               <MenuButton
                 isOpen={menuIsOpen}
                 onClick={() => setMenuIsOpen(true)}
@@ -44,7 +44,7 @@ const Header: React.FC = () => {
         <AnimatePresence>
           {menuIsOpen && (
             <motion.nav
-              className="fixed top-0 z-10 flex flex-col items-center w-full px-3.5 pt-4 pb-8 space-y-10 bg-white"
+              className="fixed top-0 z-10 flex flex-col items-center w-full p-4 space-y-10 bg-white"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 0.97 }}
               exit={{ height: 0, opacity: 0 }}
@@ -69,32 +69,32 @@ const Header: React.FC = () => {
                   />
                 </div>
               </div>
-              <Link href="/#services">
-                <a href="/#services" onClick={() => setMenuIsOpen(false)}>
+              <Link href="/measure">
+                <a href="/measure" onClick={() => setMenuIsOpen(false)}>
                   <motion.div
                     className={cx({
-                      'font-sans text-base cursor-pointer hover:font-sans-semibold': true,
-                      'font-sans-semibold': router.asPath === '/#services',
+                      'font-semibold text-base cursor-pointer opacity-60 hover:opacity-100': true,
+                      'opacity-100': router.asPath === '/#services',
                     })}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.4 }}
                   >
-                    <p>Services</p>
+                    <span>Services</span>
                   </motion.div>
                 </a>
               </Link>
               <Link href="/about-us">
                 <motion.div
                   className={cx({
-                    'font-sans text-base cursor-pointer hover:font-sans-semibold': true,
-                    'font-sans-semibold': router.asPath === '/about-us',
+                    'font-semibold text-base cursor-pointer opacity-60 hover:opacity-100': true,
+                    'opacity-100': router.asPath === '/about-us',
                   })}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.4 }}
                 >
-                  <p>About Us</p>
+                  <span>About Us</span>
                 </motion.div>
               </Link>
               <motion.div
@@ -114,9 +114,9 @@ const Header: React.FC = () => {
       </Media>
 
       <Media greaterThanOrEqual="md">
-        <header className="fixed z-10 flex flex-col justify-between w-full pt-4 pb-5 bg-white md:flex-row md:px-0 xl:px-0">
-          <Wrapper>
-            <nav className="flex flex-wrap items-center justify-between w-full mt-1 navbar-expand-lg">
+        <header className="fixed top-0 z-10 w-full py-4 bg-white">
+          <Wrapper hasPadding={false}>
+            <nav className="flex flex-wrap items-center justify-between w-full navbar-expand-lg">
               <Link href="/">
                 <h1 className="text-lg tracking-widest cursor-pointer font-heading">LANDGRIFFON</h1>
               </Link>
@@ -125,8 +125,8 @@ const Header: React.FC = () => {
                   <a
                     href="/#services"
                     className={cx({
-                      'font-sans text-base cursor-pointer hover:font-sans-semibold': true,
-                      'font-sans-semibold': router.asPath === '/#services',
+                      'font-semibold text-base opacity-60 hover:opacity-100': true,
+                      'opacity-100': router.asPath === '/#services',
                     })}
                   >
                     <p>Services</p>
@@ -136,8 +136,8 @@ const Header: React.FC = () => {
                   <a
                     href="/about-us"
                     className={cx({
-                      'font-sans text-base cursor-pointer hover:font-sans-semibold': true,
-                      'font-sans-semibold': router.asPath === '/about-us',
+                      'font-semibold text-base opacity-60 hover:opacity-100': true,
+                      'opacity-100': router.asPath === '/about-us',
                     })}
                   >
                     <p>About Us</p>

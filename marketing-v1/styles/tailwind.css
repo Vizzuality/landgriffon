@@ -7,7 +7,20 @@
 
 @layer base {
   body {
+    @apply text-black bg-white;
     -webkit-font-smoothing: antialiased;
+  }
+
+  h1 {
+    @apply font-semibold;
+  }
+
+  h2 {
+    @apply font-semibold;
+  }
+
+  h2 {
+    @apply font-semibold;
   }
 
   input[type="search"]::-webkit-search-decoration,
@@ -36,29 +49,5 @@
 
   input[type='checkbox']:checked ~ .checkbox-circle {
     visibility: visible;
-  }
-
-  @font-face {
-    font-family: "Public-Sans";
-    src: url("/fonts/PublicSans-regular.woff") format("woff");
-    font-weight: 300;
-    font-style: normal;
-    font-display: swap;
-  }
-
-  @font-face {
-    font-family: "Public-Sans-SemiBold";
-    src: url("/fonts/PublicSans-semibold.woff") format("woff");
-    font-weight: 300;
-    font-style: normal;
-    font-display: swap;
-  }
-
-  @font-face {
-    font-family: "Montserrat";
-    src: url("/fonts/Montserrat.woff") format("woff");
-    font-weight: 600;
-    font-style: normal;
-    font-display: swap;
   }
 }

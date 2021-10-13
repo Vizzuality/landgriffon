@@ -9,11 +9,11 @@ import VideoPlayer from 'components/video-player';
 
 const HomeServices: React.FC = () => (
   <section id="services">
-    <div className="pt-20 pb-20 xl:pt-40 xl:px-16 lg:px-10">
+    <div className="py-28">
       <Wrapper>
-        <h2 className="pb-12 text-xl md:text-5xl font-sans-semibold text-green">Services</h2>
+        <h2 className="pb-12 text-xl md:text-5xl font-semibold text-green">Services</h2>
         <div className="flex flex-col items-center justify-between space-y-4 font-sans md:items-baseline xl:flex-row xl:space-y-0">
-          <h3 className="text-5xl font-semibold md:text-6xl md:font-normal xl:w-4/6 lg:text-6xl xl:text-7xl">
+          <h3 className="text-5xl font-light md:text-6xl xl:w-4/6 lg:text-6xl xl:text-7xl">
             Measure and manage supply chain impacts.
           </h3>
           <p className="text-base md:text-lg xl:text-xl xl:w-2/6">
@@ -23,9 +23,9 @@ const HomeServices: React.FC = () => (
         </div>
       </Wrapper>
     </div>
-    <div className="bg-bege">
+    <div className="bg-beige py-28">
       <Wrapper>
-        <div className="relative flex flex-col justify-between w-full py-20 md:space-x-16 lg:space-x-10 xl:space-x-20 md:flex-row xl:py-28">
+        <div className="relative flex flex-col justify-between w-full md:space-x-16 lg:space-x-10 xl:space-x-20 md:flex-row">
           <div className="w-full">
             <Media lessThan="md">
               <Image
@@ -106,7 +106,7 @@ const HomeServices: React.FC = () => (
           <nav className="flex flex-col self-center h-full space-y-10 pt-18 md:pt-0">
             <div className="border-b border-black">
               <a
-                className="text-xl underline xl:text-5xl font-sans-semibold hover:no-underline"
+                className="text-xl underline xl:text-5xl font-semibold hover:no-underline"
                 href="/measure"
               >
                 01 Measure
@@ -117,7 +117,7 @@ const HomeServices: React.FC = () => (
             </div>
             <div className="border-b border-black">
               <a
-                className="text-xl underline xl:text-5xl font-sans-semibold hover:no-underline"
+                className="text-xl underline xl:text-5xl font-semibold hover:no-underline"
                 href="/analyze"
               >
                 02 Analyze
@@ -128,7 +128,7 @@ const HomeServices: React.FC = () => (
             </div>
             <div className="border-b border-black">
               <a
-                className="text-xl underline xl:text-5xl font-sans-semibold hover:no-underline"
+                className="text-xl underline xl:text-5xl font-semibold hover:no-underline"
                 href="/forecast"
               >
                 03 Forecast

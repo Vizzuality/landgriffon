@@ -13,6 +13,13 @@ class MyDocument extends Document {
       <Html>
         <Head>
           <link rel="shortcut icon" href="/favicon.ico" />
+          {/* Fonts */}
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Montserrat&family=Public+Sans:wght@300;400;600&display=swap"
+            rel="stylesheet"
+          />
           {/* Global site tag (gtag.js) - Google Analytics */}
           <script
             dangerouslySetInnerHTML={{
@@ -27,7 +34,7 @@ class MyDocument extends Document {
             }}
           />
         </Head>
-        <body>
+        <body className="font-light">
           <Main />
           <NextScript />
         </body>

@@ -12,7 +12,7 @@ import Subscribe from 'containers/subscribe';
 const AboutUs: React.FC = () => (
   <div>
     <Head>
-      <title>About Us</title>
+      <title>About Us - Langriffon</title>
     </Head>
     <Header />
 

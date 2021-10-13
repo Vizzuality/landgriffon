@@ -1,5 +1,4 @@
 import type { AppProps } from 'next/app';
-import Head from 'next/head';
 
 import { OverlayProvider } from '@react-aria/overlays';
 import { Provider as AuthenticationProvider } from 'next-auth/client';
@@ -18,9 +17,6 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => (
   >
     <MediaContextProvider>
       <OverlayProvider>
-        <Head>
-          <link rel="shortcut icon" href="/favicon.ico" />
-        </Head>
         <Component {...pageProps} />
       </OverlayProvider>
     </MediaContextProvider>

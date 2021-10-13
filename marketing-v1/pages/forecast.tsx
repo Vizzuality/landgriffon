@@ -12,7 +12,7 @@ import Subscribe from 'containers/subscribe';
 const Forecast: React.FC = () => (
   <div>
     <Head>
-      <title>Forecast</title>
+      <title>Forecast - Langriffon</title>
     </Head>
     <Header />
 

@@ -4,7 +4,7 @@ module "k8s_api_prod" {
   cluster_ca       = data.terraform_remote_state.core.outputs.eks_cluster.certificate_authority.0.data
   cluster_name     = data.terraform_remote_state.core.outputs.eks_cluster.name
   deployment_name  = "api"
-  image            = "vizzuality/landgriffon-api:latest"
+  image            = "vizzuality/landgriffon-api:production"
   namespace        = "production"
 }
 
@@ -14,7 +14,7 @@ module "k8s_client_prod" {
   cluster_ca       = data.terraform_remote_state.core.outputs.eks_cluster.certificate_authority.0.data
   cluster_name     = data.terraform_remote_state.core.outputs.eks_cluster.name
   deployment_name  = "client"
-  image            = "vizzuality/landgriffon-client:latest"
+  image            = "vizzuality/landgriffon-client:production"
   namespace        = "production"
 }
 
@@ -27,6 +27,7 @@ module "k8s_secrets_prod" {
   aws_region         = var.aws_region
   allowed_account_id = var.allowed_account_id
   namespace          = "production"
+  gmaps_api_key      = var.gmaps_api_key
 }
 
 module "k8s_ingress_prod" {

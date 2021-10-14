@@ -32,3 +32,9 @@ variable "tf_state_bucket" {
   type        = string
   description = "The name of the S3 bucket where the state is stored"
 }
+
+variable "gmaps_api_key" {
+  type        = string
+  sensitive   = true
+  description = "The Google Maps API key used for access to the geocoding API"
+}

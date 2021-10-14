@@ -120,6 +120,16 @@ resource "kubernetes_deployment" "api_deployment" {
             }
           }
 
+          env {
+            name = "GMAPS_API_KEY"
+            value_from {
+              secret_key_ref {
+                name = "api"
+                key  = "GMAPS_API_KEY"
+              }
+            }
+          }
+
           resources {
             limits = {
               cpu    = "1"

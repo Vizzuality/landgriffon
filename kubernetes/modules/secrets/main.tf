@@ -8,6 +8,17 @@ provider "kubernetes" {
   token                  = data.aws_eks_cluster_auth.cluster.token
 }
 
+locals {
+  postgres_secret_json = {
+    username = "landgriffon-${var.namespace}"
+    password = random_password.postgresql_user_generator.result
+  }
+
+  api_secret_json = {
+    jwt_secret = random_password.jwt_secret_generator.result
+    gmaps_api_key = var.gmaps_api_key
+  }
+}
 
 # JWT
 resource "random_password" "jwt_secret_generator" {
@@ -15,10 +26,15 @@ resource "random_password" "jwt_secret_generator" {
   special = true
 }
 
-resource "aws_secretsmanager_secret" "jwt_secret" {
-  name = "jwt-secret-${var.namespace}"
-  description = "Credentials for the ${var.namespace} JWT token generation"
+resource "aws_secretsmanager_secret" "api_secret" {
+  name = "api-secret-${var.namespace}"
+  description = "Credentials for the ${var.namespace} API"
 
+}
+
+resource "aws_secretsmanager_secret_version" "api_secret_version" {
+  secret_id     = aws_secretsmanager_secret.api_secret.id
+  secret_string = jsonencode(local.api_secret_json)
 }
 
 resource "kubernetes_secret" "api_secret" {
@@ -28,10 +44,10 @@ resource "kubernetes_secret" "api_secret" {
   }
 
   data = {
-    JWT_SECRET = aws_secretsmanager_secret_version.jwt_secret_version.secret_string
+    JWT_SECRET = local.api_secret_json.jwt_secret
+    GMAPS_API_KEY = local.api_secret_json.gmaps_api_key
   }
 }
-
 
 #Postgres
 resource "random_password" "postgresql_user_generator" {
@@ -49,17 +65,6 @@ resource "aws_secretsmanager_secret_version" "postgres_user_secret_version" {
   secret_string = jsonencode(local.postgres_secret_json)
 }
 
-resource "aws_secretsmanager_secret_version" "jwt_secret_version" {
-  secret_id     = aws_secretsmanager_secret.jwt_secret.id
-  secret_string = random_password.jwt_secret_generator.result
-}
-
-locals {
-  postgres_secret_json = {
-    username = "landgriffon-${var.namespace}"
-    password = random_password.postgresql_user_generator.result
-  }
-}
 
 resource "kubernetes_secret" "db_secret" {
   metadata {

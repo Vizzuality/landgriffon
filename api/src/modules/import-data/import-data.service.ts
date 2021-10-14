@@ -15,8 +15,8 @@ export class ImportDataService<T extends Record<string, any[]>> {
     try {
       const workBook: WorkBook = XLSX.readFile(filePath);
       return this.parseSheets(workBook, sheetsMap);
-    } catch (error) {
-      throw new Error(`XLSX file could not been parsed: ${error.message}`);
+    } catch ({ message }) {
+      throw new Error(`XLSX file could not been parsed: ${message}`);
     }
   }
 

@@ -25,12 +25,18 @@ export class H3DataRepository extends Repository<H3Data> {
     h3ColumnName: string,
   ): Promise<H3IndexValueData[]> {
     try {
-      return await getManager()
+      const result:
+        | H3IndexValueData[]
+        | undefined = await getManager()
         .createQueryBuilder()
         .select('h3index', 'h')
         .addSelect(`${h3ColumnName}`, 'v')
         .from(`${h3TableName}`, 'h3')
         .getRawOne();
+
+      if (result === undefined) {
+        throw new Error();
+      }
     } catch (err) {}
     throw new NotFoundException(
       `H3 ${h3ColumnName} data in ${h3TableName} could not been found`,

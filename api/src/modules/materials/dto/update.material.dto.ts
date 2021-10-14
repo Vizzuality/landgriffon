@@ -9,9 +9,4 @@ export class UpdateMaterialDto extends PartialType(CreateMaterialDto) {
   @MaxLength(40)
   @ApiPropertyOptional()
   name?: string;
-
-  @IsString()
-  @IsOptional()
-  @ApiPropertyOptional()
-  layerId?: string;
 }

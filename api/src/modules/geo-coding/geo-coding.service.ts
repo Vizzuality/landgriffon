@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { AggregationPointGeocodingService } from 'modules/geo-coding/geocoding-strategies/aggregation-point.geocoding.service';
 import { PointOfProductionGeocodingService } from 'modules/geo-coding/geocoding-strategies/point-of-production.geocoding.service';
 import { CountryOfProductionService } from 'modules/geo-coding/geocoding-strategies/country-of-production.geocoding.service';
@@ -8,6 +8,8 @@ import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.ent
 
 @Injectable()
 export class GeoCodingService {
+  protected readonly logger: Logger = new Logger(GeoCodingService.name);
+
   constructor(
     protected readonly aggregationPoint: AggregationPointGeocodingService,
     protected readonly pointOfProduction: PointOfProductionGeocodingService,
@@ -18,6 +20,9 @@ export class GeoCodingService {
   async geoCodeLocations(
     sourcingData: SourcingData[],
   ): Promise<SourcingData[]> {
+    this.logger.log(
+      `Geocoding locations for ${sourcingData.length} sourcing record elements`,
+    );
     const geoCodedSourcingData: SourcingData[] = [];
     await Promise.all(
       sourcingData.map(async (sourcingData: SourcingData) => {

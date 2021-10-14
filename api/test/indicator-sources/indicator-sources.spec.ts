@@ -5,8 +5,7 @@ import { AppModule } from 'app.module';
 import { IndicatorSource } from 'modules/indicator-sources/indicator-source.entity';
 import { IndicatorSourcesModule } from 'modules/indicator-sources/indicator-sources.module';
 import { IndicatorSourceRepository } from 'modules/indicator-sources/indicator-source.repository';
-import { Layer } from '../../src/modules/layers/layer.entity';
-import { createIndicatorSource, createLayer } from '../entity-mocks';
+import { createIndicatorSource } from '../entity-mocks';
 
 /**
  * Tests for the IndicatorSourcesModule.
@@ -46,13 +45,10 @@ describe('IndicatorSourcesModule (e2e)', () => {
 
   describe('Indicator sources - Create', () => {
     test('Create a indicator source should be successful (happy case)', async () => {
-      const layer: Layer = await createLayer();
-
       const response = await request(app.getHttpServer())
         .post('/api/v1/indicator-sources')
         .send({
           title: 'test indicator source',
-          layerId: layer.id,
         })
         .expect(HttpStatus.CREATED);
 
@@ -78,7 +74,6 @@ describe('IndicatorSourcesModule (e2e)', () => {
       HttpStatus.BAD_REQUEST,
       'Bad Request Exception',
       [
-        'layerId must be a string',
         'title should not be empty',
         'title must be shorter than or equal to 40 characters',
         'title must be longer than or equal to 2 characters',

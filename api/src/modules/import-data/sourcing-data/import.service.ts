@@ -112,14 +112,14 @@ export class SourcingRecordsImportService {
   private async validateDTOs(
     dtoLists: SourcingRecordsDtos,
   ): Promise<void | Array<ErrorConstructor>> {
-    const validationErrorArray: Array<string> = [];
+    const validationErrorArray: Array<typeof Error> = [];
     for (const parsedSheet in dtoLists) {
       if (dtoLists.hasOwnProperty(parsedSheet)) {
         for (const dto of dtoLists[parsedSheet as keyof SourcingRecordsDtos]) {
           try {
             await validateOrReject(dto);
-          } catch ({ message }) {
-            validationErrorArray.push(message as string);
+          } catch (err) {
+            validationErrorArray.push(err);
           }
         }
       }
@@ -130,8 +130,7 @@ export class SourcingRecordsImportService {
      * in order to return the array containing errors in a more readable way
      * Or add a function per entity to validate
      */
-    if (validationErrorArray.length)
-      throw new Error(validationErrorArray.join('; '));
+    if (validationErrorArray.length) throw new Error(`${validationErrorArray}`);
   }
 
   /**

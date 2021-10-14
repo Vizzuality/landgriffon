@@ -37,10 +37,12 @@ export class H3DataRepository extends Repository<H3Data> {
       if (result === undefined) {
         throw new Error();
       }
-    } catch (err) {}
-    throw new NotFoundException(
-      `H3 ${h3ColumnName} data in ${h3TableName} could not been found`,
-    );
+      return result;
+    } catch (err) {
+      throw new NotFoundException(
+        `H3 ${h3ColumnName} data in ${h3TableName} could not been found`,
+      );
+    }
   }
 
   /** Retrieves single crop data by a given resolution

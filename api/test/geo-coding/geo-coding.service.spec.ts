@@ -54,8 +54,8 @@ describe('GeoCoding Service (Integration Testing)', () => {
       expect.assertions(1);
       try {
         await geoCodingService.geoCodeAggregationPoint(sourcingData);
-      } catch (err) {
-        expect(err.message).toEqual(
+      } catch ({ message }) {
+        expect(message).toEqual(
           expect.stringContaining(
             'Either and address or coordinates can be provided for a Aggregation Point Location Type',
           ),
@@ -93,8 +93,8 @@ describe('GeoCoding Service (Integration Testing)', () => {
       expect.assertions(1);
       try {
         await geoCodingService.geoCodeAggregationPoint(sourcingData);
-      } catch (err) {
-        expect(err.message).toEqual(
+      } catch ({ message }) {
+        expect(message).toEqual(
           expect.stringContaining(
             'is a Country, should be an address within a Country',
           ),
@@ -134,8 +134,8 @@ describe('GeoCoding Service (Integration Testing)', () => {
       expect.assertions(1);
       try {
         await geoCodingService.geoCodeCountryOfProduction(sourcingData);
-      } catch (err) {
-        expect(err.message).toEqual(
+      } catch ({ message }) {
+        expect(message).toEqual(
           'A country where material is received needs to be provided for Country of Production Location Types',
         );
       }
@@ -149,8 +149,8 @@ describe('GeoCoding Service (Integration Testing)', () => {
       expect.assertions(1);
       try {
         await geoCodingService.geoCodeCountryOfProduction(sourcingData);
-      } catch (err) {
-        expect(err.message).toEqual(
+      } catch ({ message }) {
+        expect(message).toEqual(
           'Country of Production Location type must include either an address or coordinates',
         );
       }
@@ -164,8 +164,8 @@ describe('GeoCoding Service (Integration Testing)', () => {
       expect.assertions(1);
       try {
         await geoCodingService.geoCodePointOfProduction(sourcingData);
-      } catch (err) {
-        expect(err.message).toEqual(
+      } catch ({ message }) {
+        expect(message).toEqual(
           'A country must be provided for Point of Production location type',
         );
       }
@@ -179,8 +179,8 @@ describe('GeoCoding Service (Integration Testing)', () => {
       expect.assertions(1);
       try {
         await geoCodingService.geoCodePointOfProduction(sourcingData);
-      } catch (err) {
-        expect(err.message).toEqual(
+      } catch ({ message }) {
+        expect(message).toEqual(
           `For ${sourcingData.locationCountryInput} coordenates ${sourcingData.locationLatitude} ,${sourcingData.locationLongitude} and address ${sourcingData.locationAddressInput} has been provided. Either and address or coordinates can be provided for a Point of Production Location Type`,
         );
       }

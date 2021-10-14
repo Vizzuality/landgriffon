@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
 import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
@@ -6,7 +6,6 @@ import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-reg
 import { SourcingRecordsSheets } from 'modules/import-data/sourcing-data/import.service';
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
-import { Layer } from 'modules/layers/layer.entity';
 import { WorkSheet } from 'xlsx';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 
@@ -53,12 +52,14 @@ const SOURCING_LOCATION_PROPERTIES: Array<string> = [
 
 @Injectable()
 export class SourcingRecordsDtoProcessorService {
-  private layerId: string;
-
+  protected readonly logger: Logger = new Logger(
+    SourcingRecordsDtoProcessorService.name,
+  );
   async createDTOsFromSourcingRecordsSheets(
     importData: SourcingRecordsSheets,
     sourcingLocationGroupId: string,
   ): Promise<SourcingRecordsDtos> {
+    this.logger.debug(`Creating DTOs from sourcing records sheets`);
     const materials: CreateMaterialDto[] = await this.createMaterialDtos(
       importData.materials,
     );
@@ -103,6 +104,8 @@ export class SourcingRecordsDtoProcessorService {
   private cleanCustomData(
     customData: WorkSheet[],
   ): { sourcingData: SourcingData[] } {
+    this.logger.debug(`Cleaning ${customData.length} custom data rows`);
+
     const sourcingData: SourcingData[] = [];
 
     /**
@@ -111,6 +114,10 @@ export class SourcingRecordsDtoProcessorService {
     const nonEmptyData = customData.filter(
       (row: WorkSheet) =>
         row['material.path'] !== '' && !Object.values(row).includes('#N/A'),
+    );
+
+    this.logger.debug(
+      `Found ${nonEmptyData.length} non-empty custom data rows`,
     );
 
     /**
@@ -171,19 +178,6 @@ export class SourcingRecordsDtoProcessorService {
   }
 
   /**
-   * @deprecated Temporary hack, to be removed soon
-   *
-   * @param additionalData
-   * @private
-   */
-  private async createLayer(
-    additionalData: Partial<Layer> = {},
-  ): Promise<Layer> {
-    const layer = Layer.merge(new Layer(), additionalData);
-    return layer.save();
-  }
-
-  /**
    * Creates an array of CreateMaterialDto objects from the JSON data processed from the XLSX file
    *
    * @param importData
@@ -192,16 +186,6 @@ export class SourcingRecordsDtoProcessorService {
   private async createMaterialDtos(
     importData: Record<string, any>[],
   ): Promise<CreateMaterialDto[]> {
-    /**
-     * @TODO
-     * @HARDCORE_COWBOY_STUFF_START
-     * Remove this as soon as Layer data is provided
-     * in the base dataset. Also remove the implementation
-     */
-    this.layerId = (await this.createLayer()).id;
-    /**
-     * @HARDCORE_COWBOY_STUFF_END
-     */
     const materialList: CreateMaterialDto[] = [];
     importData.forEach((importRow: Record<string, any>) => {
       materialList.push(this.createMaterialDTOFromData(importRow));
@@ -268,6 +252,10 @@ export class SourcingRecordsDtoProcessorService {
     importData: Record<string, any>[],
     sourcingLocationGroupId: string,
   ): Promise<SourcingData[]> {
+    this.logger.debug(
+      `Creating sourcing data DTOs from ${importData.length} data rows`,
+    );
+
     const sourcingLocationDtos: any[] = [];
     importData.forEach((importRow: Record<string, any>) => {
       const sourcingLocationDto = this.createSourcingLocationDTOFromData(
@@ -284,6 +272,11 @@ export class SourcingRecordsDtoProcessorService {
         sourcingRecords,
       });
     });
+
+    this.logger.debug(
+      `Created ${sourcingLocationDtos.length} sourcing location DTOs`,
+    );
+
     return sourcingLocationDtos;
   }
 
@@ -293,7 +286,6 @@ export class SourcingRecordsDtoProcessorService {
     materialDto.description = materialData.description;
     materialDto.hsCodeId = materialData.hs_2017_code;
     materialDto.mpath = materialData.path_id;
-    materialDto.layerId = this.layerId;
     materialDto.datasetId = materialData.datasetId;
     return materialDto;
   }

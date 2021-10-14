@@ -9,7 +9,6 @@ import {
   TreeChildren,
   TreeParent,
 } from 'typeorm';
-import { Layer } from 'modules/layers/layer.entity';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
@@ -29,12 +28,11 @@ export const materialResource: BaseServiceResource = {
     singular: 'material',
     plural: 'materials',
   },
-  entitiesAllowedAsIncludes: ['children', 'layer'],
+  entitiesAllowedAsIncludes: ['children'],
   columnsAllowedAsFilter: [
     'name',
     'description',
     'status',
-    'layerId',
     'hsCodeId',
     'earthstatId',
     'mapspamId',
@@ -103,17 +101,6 @@ export class Material extends TimestampedBaseEntity {
     (srcLoc: SourcingLocation) => srcLoc.material,
   )
   sourcingLocations: SourcingLocation[];
-
-  @ManyToOne(() => Layer, (layer: Layer) => layer.materials, {
-    eager: true,
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'layerId' })
-  layer: Layer;
-
-  @ApiProperty()
-  @Column()
-  layerId!: string;
 
   @Column({ type: 'text', nullable: true })
   datasetId: string;

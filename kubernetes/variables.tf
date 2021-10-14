@@ -29,3 +29,9 @@ variable "allowed_account_id" {
   type        = string
   description = "Allowed AWS Account ID"
 }
+
+variable "gmaps_api_key" {
+  type        = string
+  sensitive   = true
+  description = "The Google Maps API key used for access to the geocoding API"
+}

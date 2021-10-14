@@ -8,7 +8,6 @@ import { AllExceptionsFilter } from 'filters/all-exceptions.exception.filter';
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
 import { MaterialsModule } from 'modules/materials/materials.module';
-import { LayersModule } from 'modules/layers/layers.module';
 import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { GeoRegionsModule } from 'modules/geo-regions/geo-regions.module';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
@@ -39,7 +38,6 @@ import { H3DataModule } from 'modules/h3-data/h3-data.module';
     IndicatorsModule,
     IndicatorSourcesModule,
     IndicatorRecordsModule,
-    LayersModule,
     MaterialsModule,
     ScenariosModule,
     ScenarioInterventionsModule,

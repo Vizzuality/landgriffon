@@ -21,6 +21,7 @@ import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
 
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
+import { inspect } from 'util';
 
 /**
  * @note: Landgriffon Geocoding strategy doc:
@@ -39,17 +40,30 @@ export class GeoCodingBaseService {
     protected readonly sourcingLocationService: SourcingLocationsService,
   ) {
     this.client = new Client({});
+    if (this.apiKey === null) {
+      this.logger.warn(
+        `Google API key missing. You may experience issues geocoding data.`,
+      );
+    }
   }
 
   async geocode(geocodeRequest: GeocodeRequest): Promise<GeocodeResponseData> {
-    const res = await this.client.geocode(geocodeRequest);
-    if (!res.data) {
+    this.logger.debug('Geocoding');
+    let response;
+    try {
+      response = await this.client.geocode(geocodeRequest);
+    } catch (error) {
+      this.logger.error(JSON.stringify(inspect(error)));
       throw new UnprocessableEntityException(
-        "Google maps API doesn't work. Please, make sure," +
-          ' that a correct KEY is set in GMAPS_API_KEY',
+        `Google geocoding API request failed. Please make sure that a correct API key is provided`,
       );
     }
-    return res.data;
+    if (!response?.data) {
+      throw new UnprocessableEntityException(
+        `Google geocoding API request failed. Please make sure that a correct API key is provided`,
+      );
+    }
+    return response.data;
   }
 
   async reverseGeocode(coordinates: {
@@ -99,7 +113,7 @@ export class GeoCodingBaseService {
     return geocodeResponseData;
   }
 
-  isAddressAContry(locationTypes: string[]): boolean {
+  isAddressACountry(locationTypes: string[]): boolean {
     return locationTypes.includes('country');
   }
 

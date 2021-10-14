@@ -57,6 +57,7 @@ export class BusinessUnitsService extends AppBaseService<
   async createTree(
     importData: CreateBusinessUnitDto[],
   ): Promise<BusinessUnit[]> {
+    this.logger.log(`Creating Business tree with ${importData.length} nodes`);
     return this.businessUnitRepository.saveListToTree(importData, 'mpath');
   }
 

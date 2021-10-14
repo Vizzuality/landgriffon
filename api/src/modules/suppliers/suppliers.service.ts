@@ -77,6 +77,7 @@ export class SuppliersService extends AppBaseService<
   }
 
   async createTree(importData: CreateSupplierDto[]): Promise<Supplier[]> {
+    this.logger.log(`Creating Supplier tree with ${importData.length} nodes`);
     return this.supplierRepository.saveListToTree(importData, 'mpath');
   }
 

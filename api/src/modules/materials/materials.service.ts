@@ -34,8 +34,6 @@ export class MaterialsService extends AppBaseService<
         'name',
         'description',
         'status',
-        'layer',
-        'layerId',
         'hsCodeId',
         'earthstatId',
         'mapspamId',
@@ -50,6 +48,7 @@ export class MaterialsService extends AppBaseService<
   }
 
   async createTree(importData: CreateMaterialDto[]): Promise<Material[]> {
+    this.logger.log(`Creating Material tree with ${importData.length} nodes`);
     return this.materialRepository.saveListToTree(importData, 'mpath');
   }
 

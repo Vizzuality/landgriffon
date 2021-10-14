@@ -11,9 +11,4 @@ export class UpdateIndicatorSourceDto extends PartialType(
   @ApiPropertyOptional()
   @IsOptional()
   title?: string;
-
-  @IsString()
-  @ApiPropertyOptional()
-  @IsOptional()
-  layerId?: string;
 }

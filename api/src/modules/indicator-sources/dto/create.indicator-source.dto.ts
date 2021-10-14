@@ -27,8 +27,4 @@ export class CreateIndicatorSourceDto {
   @IsJSON()
   @ApiPropertyOptional()
   metadata?: string;
-
-  @IsString()
-  @ApiProperty()
-  layerId!: string;
 }

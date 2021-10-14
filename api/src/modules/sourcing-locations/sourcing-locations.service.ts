@@ -68,7 +68,18 @@ export class SourcingLocationsService extends AppBaseService<
    * @debt Add proper input type when defined. Current workaround
    * 'SourcingData' mess with Entity typing
    */
-  async save(sourcingLocation: any): Promise<SourcingLocation> {
-    return await this.sourcingLocationRepository.save(sourcingLocation);
+  async save(
+    sourcingLocationDtos: CreateSourcingLocationDto[],
+  ): Promise<SourcingLocation> {
+    this.logger.log(`Saving ${sourcingLocationDtos.length} nodes`);
+    const sourcingLocation: SourcingLocation[] = await Promise.all(
+      sourcingLocationDtos.map(
+        async (sourcingLocationDto: CreateSourcingLocationDto) => {
+          return await this.setDataCreate(sourcingLocationDto);
+        },
+      ),
+    );
+
+    return this.sourcingLocationRepository.save(sourcingLocation as any);
   }
 }

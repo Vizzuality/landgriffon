@@ -24,6 +24,7 @@
     "sizeLimit": 5e6,
     "storagePath": "/tmp/csv-uploads"
   },
-  "geolocation": {"gmapsApiKey":  "myVeryBadJWTSecretForTests"}
-
+  "geolocation": {
+    "gmapsApiKey": null
+  }
 }

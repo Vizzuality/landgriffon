@@ -2,12 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
-import { Layer } from 'modules/layers/layer.entity';
 import { MaterialsModule } from 'modules/materials/materials.module';
 import { MaterialRepository } from 'modules/materials/material.repository';
-import { createLayer, createMaterial } from '../entity-mocks';
+import { createMaterial } from '../entity-mocks';
 import { Material } from 'modules/materials/material.entity';
 import { expectedJSONAPIAttributes } from './config';
+import { v4 as uuidv4 } from 'uuid';
 
 describe('Materials - Create', () => {
   let app: INestApplication;
@@ -42,13 +42,10 @@ describe('Materials - Create', () => {
   });
 
   test('Create a material should be successful (happy case)', async () => {
-    const layer: Layer = await createLayer();
-
     const response = await request(app.getHttpServer())
       .post('/api/v1/materials')
       .send({
         name: 'test material',
-        layerId: layer.id,
       })
       .expect(HttpStatus.CREATED);
 
@@ -73,8 +70,6 @@ describe('Materials - Create', () => {
       HttpStatus.BAD_REQUEST,
       'Bad Request Exception',
       [
-        'layerId must be a string',
-        'layerId should not be empty',
         'name must be a string',
         'name must be longer than or equal to 2 characters',
         'name must be shorter than or equal to 300 characters',
@@ -85,13 +80,10 @@ describe('Materials - Create', () => {
 
   describe('Tree structure', () => {
     test('Create a material without a parent should be successful', async () => {
-      const layer: Layer = await createLayer();
-
       const response = await request(app.getHttpServer())
         .post('/api/v1/materials')
         .send({
           name: 'test material',
-          layerId: layer.id,
         })
         .expect(HttpStatus.CREATED);
 
@@ -99,32 +91,28 @@ describe('Materials - Create', () => {
     });
 
     test('Create a material with a parent id that does not exist should fail with a 400 error', async () => {
-      const layer: Layer = await createLayer();
-
+      const uuid = uuidv4();
       const response = await request(app.getHttpServer())
         .post('/api/v1/materials')
         .send({
           name: 'test material',
-          layerId: layer.id,
-          parentId: layer.id,
+          parentId: uuid,
         })
         .expect(HttpStatus.BAD_REQUEST);
 
       expect(response).toHaveErrorMessage(
         400,
-        `Parent material with ID "${layer.id}" not found`,
+        `Parent material with ID "${uuid}" not found`,
       );
     });
 
     test('Create a material with a parent id that exists should be successful and return the associated parent id', async () => {
-      const layer: Layer = await createLayer();
       const material: Material = await createMaterial();
 
       const response = await request(app.getHttpServer())
         .post('/api/v1/materials')
         .send({
           name: 'test material',
-          layerId: layer.id,
           parentId: material.id,
         })
         .expect(HttpStatus.CREATED);

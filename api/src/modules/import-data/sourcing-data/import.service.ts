@@ -60,6 +60,7 @@ export class SourcingRecordsImportService {
   ) {}
 
   async importSourcingRecords(filePath: string): Promise<any> {
+    this.logger.log(`Starting import process`);
     await this.fileService.isFilePresentInFs(filePath);
     try {
       const parsedXLSXDataset: SourcingRecordsSheets = await this.fileService.transformToJson(
@@ -77,8 +78,10 @@ export class SourcingRecordsImportService {
         sourcingLocationGroup.id,
       );
 
+      this.logger.log(`Validating DTOs`);
       await this.validateDTOs(dtoMatchedData);
       await this.cleanDataBeforeImport();
+
       const materials = await this.materialService.createTree(
         dtoMatchedData.materials,
       );
@@ -96,9 +99,10 @@ export class SourcingRecordsImportService {
         dtoMatchedData.sourcingData,
       );
 
-      const geoCodedSourcingData = await this.geoCodingService.geoCodeLocations(
+      const geoCodedSourcingData: SourcingData[] = await this.geoCodingService.geoCodeLocations(
         sourcingDataWithOrganizationalEntities,
       );
+
       await this.sourcingLocationService.save(geoCodedSourcingData);
     } finally {
       await this.fileService.deleteDataFromFS(filePath);
@@ -136,16 +140,16 @@ export class SourcingRecordsImportService {
    * The latter should be loaded as part of the data-pipeline importing GADM
    */
   private async cleanDataBeforeImport(): Promise<void> {
-    this.logger.log('Cleaning Database...');
+    this.logger.log('Cleaning database before import...');
     try {
       await this.materialService.clearTable();
       await this.businessUnitService.clearTable();
       await this.supplierService.clearTable();
       await this.sourcingLocationService.clearTable();
       await this.sourcingRecordService.clearTable();
-    } catch (err) {
+    } catch ({ message }) {
       throw new Error(
-        `Database could not been cleaned before loading new dataset: ${err.message}`,
+        `Database could not been cleaned before loading new dataset: ${message}`,
       );
     }
   }
@@ -162,6 +166,12 @@ export class SourcingRecordsImportService {
     materials: Record<string, any>[],
     sourcingData: SourcingData[],
   ): any {
+    this.logger.log(`Relating sourcing data with organizational entities`);
+    this.logger.log(`Supplier count: ${suppliers.length}`);
+    this.logger.log(`Business Units count: ${businessUnits.length}`);
+    this.logger.log(`Materials count: ${materials.length}`);
+    this.logger.log(`Sourcing Data count: ${sourcingData.length}`);
+
     for (const sourcingLocation of sourcingData) {
       for (const supplier of suppliers) {
         if (sourcingLocation.producerId === supplier.mpath) {

@@ -44,11 +44,6 @@ export class CreateMaterialDto {
   parent?: Material;
 
   @IsString()
-  @IsNotEmpty()
-  @ApiProperty()
-  layerId!: string;
-
-  @IsString()
   @IsOptional()
   @ApiPropertyOptional()
   hsCodeId?: string;

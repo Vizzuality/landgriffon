@@ -12,11 +12,11 @@ const HomeServices: React.FC = () => (
     <div className="py-28">
       <Wrapper>
         <h2 className="pb-12 text-xl md:text-5xl font-semibold text-green">Services</h2>
-        <div className="flex flex-col items-center justify-between space-y-4 font-sans md:items-baseline xl:flex-row xl:space-y-0">
-          <h3 className="text-5xl font-light md:text-6xl xl:w-4/6 lg:text-6xl xl:text-7xl">
+        <div className="grid md:grid-cols-3 gap-10">
+          <p className="text-5xl font-light md:text-6xl lg:text-6xl xl:text-7xl col-span-2">
             Measure and manage supply chain impacts.
-          </h3>
-          <p className="text-base md:text-lg xl:text-xl xl:w-2/6">
+          </p>
+          <p className="text-base md:text-lg xl:text-xl col-span-1 flex items-center">
             LandGriffon is a powerful modeling tool backed by a team of experts to empower you to
             change your business for the better.
           </p>
@@ -25,8 +25,8 @@ const HomeServices: React.FC = () => (
     </div>
     <div className="bg-beige py-28">
       <Wrapper>
-        <div className="relative flex flex-col justify-between w-full md:space-x-16 lg:space-x-10 xl:space-x-20 md:flex-row">
-          <div className="w-full">
+        <div className="relative grid md:grid-cols-3 gap-10">
+          <div className="col-span-2">
             <Media lessThan="md">
               <Image
                 alt="plantation from the sky"
@@ -103,36 +103,42 @@ const HomeServices: React.FC = () => (
             </Media>
           </div>
 
-          <nav className="flex flex-col self-center h-full space-y-10 pt-18 md:pt-0">
+          <nav className="self-center space-y-10">
             <div className="border-b border-black">
-              <a
-                className="text-xl underline xl:text-5xl font-semibold hover:no-underline"
-                href="/measure"
-              >
-                01 Measure
-              </a>
+              <h3>
+                <a
+                  className="text-xl underline xl:text-5xl font-semibold hover:no-underline"
+                  href="/measure"
+                >
+                  01 Measure
+                </a>
+              </h3>
               <p className="font-sans text-xl md:text-base lg:text-xl py-9 md:py-4 lg:py-9">
                 Turn procurement data into accurate estimates of environmental impacts.
               </p>
             </div>
             <div className="border-b border-black">
-              <a
-                className="text-xl underline xl:text-5xl font-semibold hover:no-underline"
-                href="/analyze"
-              >
-                02 Analyze
-              </a>
+              <h3>
+                <a
+                  className="text-xl underline xl:text-5xl font-semibold hover:no-underline"
+                  href="/analyze"
+                >
+                  02 Analyze
+                </a>
+              </h3>
               <p className="font-sans text-xl md:text-base lg:text-xl py-9 md:py-5 lg:py-9">
                 Identify where your supply chain impacts are and uncover the key drivers.{' '}
               </p>
             </div>
             <div className="border-b border-black">
-              <a
-                className="text-xl underline xl:text-5xl font-semibold hover:no-underline"
-                href="/forecast"
-              >
-                03 Forecast
-              </a>
+              <h3>
+                <a
+                  className="text-xl underline xl:text-5xl font-semibold hover:no-underline"
+                  href="/forecast"
+                >
+                  03 Forecast
+                </a>
+              </h3>
               <p className="font-sans text-xl md:text-base lg:text-xl py-9 md:py-5 lg:py-9">
                 Prioritize areas for change and plot a path to sustainability.
               </p>

@@ -14,13 +14,23 @@ const HomeHero: React.FC<HomeHeroProps> = ({ onSignUp }: HomeHeroProps) => (
     <Wrapper hasPadding={false}>
       <div className="relative">
         <Media lessThan="md">
-          <div style={{ height: 408 }}>
-            <Image alt="path in plantation" src="/images/home/home-mb-1.jpg" layout="fill" />
+          <div className="relative" style={{ height: 408 }}>
+            <Image
+              alt="path in plantation"
+              src="/images/home/home-mb-1.jpg"
+              layout="fill"
+              objectFit="cover"
+            />
           </div>
         </Media>
         <Media greaterThanOrEqual="md">
-          <div style={{ height: 600 }}>
-            <Image alt="path in plantation" src="/images/home/home-1.jpg" layout="fill" />
+          <div className="relative" style={{ height: 600 }}>
+            <Image
+              alt="path in plantation"
+              src="/images/home/home-1.jpg"
+              layout="fill"
+              objectFit="cover"
+            />
           </div>
         </Media>
         <h2 className="absolute w-4/5 text-4xl font-normal text-white md:font-light md:bottom-16 bottom-6 left-3.5 md:left-12 xl:left-16 md:text-6xl xl:text-7xl">

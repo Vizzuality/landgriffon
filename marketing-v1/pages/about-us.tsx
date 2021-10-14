@@ -15,14 +15,12 @@ const AboutUs: React.FC = () => (
       <title>About Us - Langriffon</title>
     </Head>
     <Header />
-
     <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       <Hero />
       <TeamCarousel />
       <Values />
       <Subscribe />
     </motion.div>
-
     <Footer />
   </div>
 );

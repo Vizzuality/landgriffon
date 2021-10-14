@@ -17,7 +17,7 @@ class MyDocument extends Document {
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
           <link
-            href="https://fonts.googleapis.com/css2?family=Montserrat&family=Public+Sans:wght@300;400;600&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Public+Sans:wght@300;400;600&display=swap"
             rel="stylesheet"
           />
           {/* Global site tag (gtag.js) - Google Analytics */}
@@ -34,7 +34,7 @@ class MyDocument extends Document {
             }}
           />
         </Head>
-        <body className="font-light">
+        <body>
           <Main />
           <NextScript />
         </body>

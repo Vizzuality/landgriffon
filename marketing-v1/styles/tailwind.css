@@ -7,20 +7,12 @@
 
 @layer base {
   body {
-    @apply text-black bg-white;
+    @apply text-base text-black bg-white font-light;
     -webkit-font-smoothing: antialiased;
   }
 
-  h1 {
-    @apply font-semibold;
-  }
-
-  h2 {
-    @apply font-semibold;
-  }
-
-  h2 {
-    @apply font-semibold;
+  h1, h2, h3 {
+    @apply font-normal md:font-light;
   }
 
   input[type="search"]::-webkit-search-decoration,

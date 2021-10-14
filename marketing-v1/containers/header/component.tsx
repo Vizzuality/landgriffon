@@ -24,7 +24,7 @@ const Header: React.FC = () => {
         <header className="top-0 p-4 fixed bg-white w-full z-10 bg-opacity-90">
           <nav className="flex items-center justify-between w-full">
             <Link href="/">
-              <h1 className="text-lg tracking-widest cursor-pointer font-heading">LANDGRIFFON</h1>
+              <a className="text-lg tracking-widest font-semibold font-heading">LANDGRIFFON</a>
             </Link>
 
             <div className="flex items-center w-1/5 h-10 space-between">
@@ -52,7 +52,7 @@ const Header: React.FC = () => {
             >
               <div className="flex items-center justify-between w-full bg-white">
                 <Link href="/">
-                  <h1 className="text-lg tracking-widest cursor-pointer font-heading">
+                  <h1 className="text-lg tracking-widest cursor-pointer font-heading font-semibold">
                     LANDGRIFFON
                   </h1>
                 </Link>

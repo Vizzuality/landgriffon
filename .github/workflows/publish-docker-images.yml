@@ -79,8 +79,8 @@ jobs:
           push: true
           tags: vizzuality/landgriffon-client:${{ github.ref != 'refs/heads/main' && 'staging' || 'production' }}
 
-  push_data_to_registry:
-    name: Push Data Docker image to Docker Hub
+  push_data_import_to_registry:
+    name: Push Data Import Docker image to Docker Hub
     runs-on: ubuntu-20.04
     steps:
       - name: Check out the repo
@@ -110,4 +110,4 @@ jobs:
         with:
           context: data
           push: true
-          tags: vizzuality/landgriffon-data:${{ github.ref != 'refs/heads/main' && 'staging' || 'production' }}
+          tags: vizzuality/landgriffon-data-import:${{ github.ref != 'refs/heads/main' && 'staging' || 'production' }}

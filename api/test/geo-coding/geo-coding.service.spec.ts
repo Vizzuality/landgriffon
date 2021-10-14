@@ -96,7 +96,7 @@ describe('GeoCoding Service (Integration Testing)', () => {
       } catch ({ message }) {
         expect(message).toEqual(
           expect.stringContaining(
-            'is a Country, should be an address within a Country',
+            'is a country, should be an address within a country',
           ),
         );
       }

@@ -1,6 +1,5 @@
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
 import { IndicatorSource } from 'modules/indicator-sources/indicator-source.entity';
-import { Layer } from 'modules/layers/layer.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { ScenarioIntervention } from '../src/modules/scenario-interventions/scenario-intervention.entity';
 import { Material } from '../src/modules/materials/material.entity';
@@ -98,20 +97,7 @@ async function createIndicatorSource(
     additionalData,
   );
 
-  if (!indicatorSource.layer) {
-    const layer: Layer = await createLayer();
-    indicatorSource.layer = layer;
-  }
-
   return indicatorSource.save();
-}
-
-async function createLayer(
-  additionalData: Partial<Layer> = {},
-): Promise<Layer> {
-  const layer = Layer.merge(new Layer(), additionalData);
-
-  return layer.save();
 }
 
 async function createSupplier(
@@ -138,11 +124,6 @@ async function createMaterial(
     },
     additionalData,
   );
-
-  if (!material.layerId) {
-    const layer: Layer = await createLayer();
-    material.layer = layer;
-  }
 
   return material.save();
 }
@@ -252,7 +233,6 @@ export {
   createIndicatorCoefficient,
   createIndicatorRecord,
   createIndicatorSource,
-  createLayer,
   createMaterial,
   createSupplier,
   createScenario,

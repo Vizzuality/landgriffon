@@ -75,7 +75,14 @@ jobs:
         run: |
           ssh -i ~/.ssh/bastion.key -o StrictHostKeyChecking=no -N -L 4433:${{ secrets.EKS_HOST }}:443 ${{ secrets.BASTION_USER }}@${{ secrets.BASTION_HOST }} -T &
 
-      - name: Redeploy pods
+      - name: Redeploy production pods
+        if: ${{ github.ref == 'refs/heads/main' }}
         run: |
-          kubectl rollout restart deployment api -n ${{ github.ref != 'refs/heads/main' ? 'staging' : 'production' }}
-          kubectl rollout restart deployment client -n ${{ github.ref != 'refs/heads/main' ? 'staging' : 'production' }}
+          kubectl rollout restart deployment api -n production
+          kubectl rollout restart deployment client -n production
+
+      - name: Redeploy staging pods
+        if: ${{ github.ref == 'refs/heads/staging' }}
+        run: |
+          kubectl rollout restart deployment api -n staging
+          kubectl rollout restart deployment client -n staging

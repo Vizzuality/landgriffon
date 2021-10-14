@@ -64,8 +64,7 @@ export function useH3MaterialData() {
       h3DataService
         .get('/material', {
           params: {
-            // TO-DO: replace with material ID
-            materialId: 'bb5f553a-7056-4efa-995e-546bc7e458a6',
+            materialId: materials[0],
             resolution: 4,
           },
         })
@@ -90,7 +89,7 @@ export function useH3MaterialData() {
 export function useH3RiskData() {
   const {
     dataset,
-    filters: { materials },
+    filters: { indicator, materials },
   } = useAppSelector(analysis);
 
   const colors = useColors();
@@ -101,10 +100,8 @@ export function useH3RiskData() {
       h3DataService
         .get('/risk-map', {
           params: {
-            // TO-DO: replace with indicator ID
-            indicatorId: '1224d1d9-c3ae-450f-acb6-67f4ed33b5f7',
-            // TO-DO: replace with material ID
-            materialId: 'bb5f553a-7056-4efa-995e-546bc7e458a6',
+            indicatorId: indicator,
+            materialId: materials[0],
             resolution: 4,
             year: 2000,
           },

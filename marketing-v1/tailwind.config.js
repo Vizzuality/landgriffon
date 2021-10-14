@@ -17,7 +17,7 @@ module.exports = {
       },
       fontFamily: {
         heading: 'Montserrat',
-        sans: 'Public Sans',
+        sans: 'Public Sans, sans-serif',
       },
       fontSize: {
         xxs: ['0.625rem', { lineHeight: '0.75rem' }], // 10px

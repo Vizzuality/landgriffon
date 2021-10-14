@@ -8,11 +8,9 @@ import Button from 'components/button';
 
 const Subscribe: React.FC = () => (
   <section className="w-full py-12 font-sans xl:py-20 bg-orange" id="subscribe">
-    <Wrapper hasPadding={false}>
-      <div className="flex flex-col items-center justify-between space-y-6 md:space-y-16 xl:px-16 xl:flex-row xl:space-y-0">
-        <p className="text-3xl font-light xl:w-2/5">
-          Be the first to hear about new releases and updates.
-        </p>
+    <Wrapper>
+      <div className="grid md:grid-cols-2 gap-10">
+        <p className="text-3xl font-light">Be the first to hear about new releases and updates.</p>
 
         <Form
           initialValues={{
@@ -25,11 +23,8 @@ const Subscribe: React.FC = () => (
           }}
         >
           {({ values, handleSubmit }) => (
-            <form
-              onSubmit={values.agreement && handleSubmit}
-              className="space-y-6 xl:w-3/5 xl:pl-44"
-            >
-              <div className="flex flex-col items-center justify-between space-y-6 md:space-y-0 md:flex-row">
+            <form onSubmit={values.agreement && handleSubmit} className="space-y-10">
+              <div className="flex items-center justify-between space-y-10 md:space-y-0 md:flex-row">
                 <Field name="email" component="input">
                   {(fprops) => (
                     <input

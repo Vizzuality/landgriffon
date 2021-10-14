@@ -18,9 +18,9 @@ variable "image" {
   description = "The dockerhub image reference to deploy"
 }
 
-variable "deployment_name" {
+variable "job_name" {
   type = string
-  description = "The k8s deployment name"
+  description = "The job name"
 }
 
 variable "namespace" {

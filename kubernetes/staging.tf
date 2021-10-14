@@ -18,6 +18,16 @@ module "k8s_client_staging" {
   namespace          = "staging"
 }
 
+module "k8s_data_import_staging" {
+  source           = "./modules/data_import"
+  cluster_endpoint = "${data.terraform_remote_state.core.outputs.eks_cluster.endpoint}:4433"
+  cluster_ca       = data.terraform_remote_state.core.outputs.eks_cluster.certificate_authority.0.data
+  cluster_name     = data.terraform_remote_state.core.outputs.eks_cluster.name
+  job_name         = "data-import"
+  image            = "vizzuality/landgriffon-data-import:staging"
+  namespace          = "staging"
+}
+
 module "k8s_secrets_staging" {
   source             = "./modules/secrets"
   cluster_endpoint   = "${data.terraform_remote_state.core.outputs.eks_cluster.endpoint}:4433"

@@ -52,9 +52,9 @@ const Header: React.FC = () => {
             >
               <div className="flex items-center justify-between w-full bg-white">
                 <Link href="/">
-                  <h1 className="text-lg tracking-widest cursor-pointer font-heading font-semibold">
+                  <a className="text-lg tracking-widest cursor-pointer font-heading font-semibold">
                     LANDGRIFFON
-                  </h1>
+                  </a>
                 </Link>
                 <div className="flex items-center w-1/5 h-10 space-between mr-3.5 xs:mr-0">
                   <MenuButton
@@ -74,7 +74,7 @@ const Header: React.FC = () => {
                   <motion.div
                     className={cx({
                       'font-semibold text-base cursor-pointer opacity-60 hover:opacity-100': true,
-                      'opacity-100': router.asPath === '/#services',
+                      'opacity-100': router.asPath === '/measure',
                     })}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -121,12 +121,11 @@ const Header: React.FC = () => {
                 <h1 className="text-lg tracking-widest cursor-pointer font-heading">LANDGRIFFON</h1>
               </Link>
               <div className="flex items-center space-x-12 font-sans">
-                <Link href="/#services">
+                <Link href="/measure">
                   <a
-                    href="/#services"
                     className={cx({
                       'font-semibold text-base opacity-60 hover:opacity-100': true,
-                      'opacity-100': router.asPath === '/#services',
+                      'opacity-100': router.asPath === '/measure',
                     })}
                   >
                     <p>Services</p>

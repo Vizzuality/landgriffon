@@ -19,9 +19,9 @@ const Header: React.FC = () => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
 
   return (
-    <div>
+    <header>
       <Media lessThan="md">
-        <header className="top-0 p-4 fixed bg-white w-full z-10 bg-opacity-90">
+        <div className="top-0 p-4 fixed bg-white w-full z-10 bg-opacity-90">
           <nav className="flex items-center justify-between w-full">
             <Link href="/">
               <a className="text-lg tracking-widest font-semibold font-heading">LANDGRIFFON</a>
@@ -40,7 +40,7 @@ const Header: React.FC = () => {
               />
             </div>
           </nav>
-        </header>
+        </div>
         <AnimatePresence>
           {menuIsOpen && (
             <motion.nav
@@ -157,7 +157,7 @@ const Header: React.FC = () => {
           </Wrapper>
         </header>
       </Media>
-    </div>
+    </header>
   );
 };
 

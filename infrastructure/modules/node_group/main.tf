@@ -36,7 +36,7 @@ resource "aws_eks_node_group" "eks-node-group" {
 
   lifecycle {
     ignore_changes        = [scaling_config[0].desired_size]
-    create_before_destroy = true
+    create_before_destroy = false
   }
 }
 

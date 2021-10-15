@@ -24,7 +24,7 @@ const Subscribe: React.FC = () => (
         >
           {({ values, handleSubmit }) => (
             <form onSubmit={values.agreement && handleSubmit} className="space-y-10">
-              <div className="flex items-center justify-between space-y-10 md:space-y-0 md:flex-row">
+              <div className="md:flex items-center justify-between space-y-10 md:space-y-0 md:flex-row">
                 <Field name="email" component="input">
                   {(fprops) => (
                     <input
@@ -32,7 +32,7 @@ const Subscribe: React.FC = () => (
                       name="email"
                       type="input"
                       placeholder="Email address"
-                      className="w-full h-10 mx-3.5 md:mx-0 md:mr-3 text-xl text-black placeholder-black bg-transparent border-b border-darkGray border-px"
+                      className="w-full h-10 mx-0 md:mr-3 text-xl text-black placeholder-black bg-transparent border-b border-darkGray border-px"
                       onChange={fprops.input.onChange}
                     />
                   )}

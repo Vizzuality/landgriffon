@@ -108,7 +108,7 @@ const HomeServices: React.FC = () => (
               <h3>
                 <a
                   className="text-xl underline xl:text-5xl font-semibold hover:no-underline"
-                  href="/measure"
+                  href="/services/measure"
                 >
                   01 Measure
                 </a>
@@ -121,7 +121,7 @@ const HomeServices: React.FC = () => (
               <h3>
                 <a
                   className="text-xl underline xl:text-5xl font-semibold hover:no-underline"
-                  href="/analyze"
+                  href="/services/analyze"
                 >
                   02 Analyze
                 </a>
@@ -134,7 +134,7 @@ const HomeServices: React.FC = () => (
               <h3>
                 <a
                   className="text-xl underline xl:text-5xl font-semibold hover:no-underline"
-                  href="/forecast"
+                  href="/services/forecast"
                 >
                   03 Forecast
                 </a>

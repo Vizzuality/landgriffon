@@ -12,6 +12,10 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head>
+          <meta
+            name="description"
+            content="Manage food and agriculture supply chain deforestation, climate, water risk and sustainability"
+          />
           <link rel="shortcut icon" href="/favicon.ico" />
           {/* Fonts */}
           <link rel="preconnect" href="https://fonts.googleapis.com" />

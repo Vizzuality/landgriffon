@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useState } from 'react';
 
 import cx from 'classnames';
@@ -69,8 +71,8 @@ const Header: React.FC = () => {
                   />
                 </div>
               </div>
-              <Link href="/measure">
-                <a href="/measure" onClick={() => setMenuIsOpen(false)}>
+              <Link href="/services/measure">
+                <a onClick={() => setMenuIsOpen(false)}>
                   <motion.div
                     className={cx({
                       'font-semibold text-base cursor-pointer opacity-60 hover:opacity-100': true,
@@ -121,7 +123,7 @@ const Header: React.FC = () => {
                 <h1 className="text-lg tracking-widest cursor-pointer font-heading">LANDGRIFFON</h1>
               </Link>
               <div className="flex items-center space-x-12 font-sans">
-                <Link href="/measure">
+                <Link href="/services/measure">
                   <a
                     className={cx({
                       'font-semibold text-base opacity-60 hover:opacity-100': true,
@@ -133,7 +135,6 @@ const Header: React.FC = () => {
                 </Link>
                 <Link href="/about-us">
                   <a
-                    href="/about-us"
                     className={cx({
                       'font-semibold text-base opacity-60 hover:opacity-100': true,
                       'opacity-100': router.asPath === '/about-us',

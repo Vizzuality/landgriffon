@@ -18,6 +18,16 @@ module "k8s_client_prod" {
   namespace        = "production"
 }
 
+module "k8s_data_import_prod" {
+  source           = "./modules/data_import"
+  cluster_endpoint = "${data.terraform_remote_state.core.outputs.eks_cluster.endpoint}:4433"
+  cluster_ca       = data.terraform_remote_state.core.outputs.eks_cluster.certificate_authority.0.data
+  cluster_name     = data.terraform_remote_state.core.outputs.eks_cluster.name
+  job_name         = "data-import"
+  image            = "vizzuality/landgriffon-data-import:production"
+  namespace          = "prod"
+}
+
 module "k8s_secrets_prod" {
   source             = "./modules/secrets"
   cluster_endpoint   = "${data.terraform_remote_state.core.outputs.eks_cluster.endpoint}:4433"

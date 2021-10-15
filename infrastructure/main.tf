@@ -93,6 +93,23 @@ module "data-node-group" {
   }
 }
 
+module "data-load-node-group" {
+  source          = "./modules/node_group"
+  cluster         = module.eks.cluster
+  cluster_name    = module.eks.cluster_name
+  node_group_name = "data-node-group"
+  instance_types  = var.data_load_node_group_instance_types
+  min_size        = var.data_load_node_group_min_size
+  max_size        = var.data_load_node_group_max_size
+  instance_disk_size = 100
+  desired_size    = var.data_load_node_group_desired_size
+  node_role_arn   = module.eks.node_role_arn
+  subnet_ids      = [module.vpc.private_subnets[0].id]
+  labels = {
+    type : "data-load"
+  }
+}
+
 module "s3_bucket" {
   source = "./modules/s3_bucket"
   bucket = "landgriffon-raw-data"

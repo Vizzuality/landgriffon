@@ -26,6 +26,20 @@ resource "kubernetes_job" "data_import" {
       }
 
       spec {
+        affinity {
+          node_affinity {
+            required_during_scheduling_ignored_during_execution {
+              node_selector_term {
+                match_expressions {
+                  key = "type"
+                  operator = "In"
+                  values = ["data-load"]
+                }
+              }
+            }
+          }
+        }
+
         image_pull_secrets {
           name = "regcred"
         }
@@ -45,6 +59,11 @@ resource "kubernetes_job" "data_import" {
                 key  = "DB_HOST"
               }
             }
+          }
+
+          env {
+            name = "API_POSTGRES_PORT"
+            value = "5432"
           }
 
           env {
@@ -79,11 +98,11 @@ resource "kubernetes_job" "data_import" {
 
           resources {
             limits = {
-              cpu    = "4"
-              memory = "16Gi"
+              cpu    = "2"
+              memory = "8Gi"
             }
             requests = {
-              cpu    = "2"
+              cpu    = "1"
               memory = "2Gi"
             }
           }

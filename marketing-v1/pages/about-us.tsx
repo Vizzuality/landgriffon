@@ -12,7 +12,7 @@ import Subscribe from 'containers/subscribe';
 const AboutUs: React.FC = () => (
   <div>
     <Head>
-      <title>About Us - Langriffon</title>
+      <title>About Us - Landgriffon</title>
     </Head>
     <Header />
     <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>

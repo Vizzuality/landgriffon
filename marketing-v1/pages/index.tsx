@@ -21,7 +21,7 @@ const Home: React.FC = () => {
   return (
     <div>
       <Head>
-        <title>Welcome - Langriffon</title>
+        <title>Welcome - Landgriffon</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header />

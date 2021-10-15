@@ -10,7 +10,7 @@ import Subscribe from 'containers/subscribe';
 const Contact: React.FC = () => (
   <div>
     <Head>
-      <title>Contact - Langriffon</title>
+      <title>Contact - Landgriffon</title>
     </Head>
     <Header />
 

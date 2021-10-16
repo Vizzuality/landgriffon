@@ -25,8 +25,8 @@ module "k8s_data_import_prod" {
   cluster_name     = data.terraform_remote_state.core.outputs.eks_cluster.name
   job_name         = "data-import"
   image            = "vizzuality/landgriffon-data-import:production"
-  namespace          = "prod"
-}
+  namespace        = "production"
+}git add
 
 module "k8s_secrets_prod" {
   source             = "./modules/secrets"

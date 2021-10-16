@@ -27,3 +27,10 @@ variable "namespace" {
   type = string
   description = "The k8s namespace to use"
 }
+
+
+variable "arguments" {
+  type = list(string)
+  default = []
+  description = "The k8s namespace to use"
+}

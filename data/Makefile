@@ -1,4 +1,4 @@
-.PHONY: seed-data
+.PHONY: do-nothing
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -9,6 +9,8 @@ BUCKET = [OPTIONAL] your-bucket-for-syncing-data (do not include 's3://')
 PROFILE = default
 PROJECT_NAME = data
 
+do-nothing:
+	@echo "Doing nothing... "
 
 # ## Make Dataset
 seed-data: seed-source-data seed-gadm seed-h3-tables
@@ -24,4 +26,3 @@ seed-gadm:
 seed-h3-tables:
 	@echo "Starting seeding h3 tables... "
 	cd /h3_raster_importer && make
-

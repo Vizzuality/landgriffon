@@ -51,6 +51,8 @@ resource "kubernetes_job" "data_import" {
           image_pull_policy = "Always"
           name              = var.job_name
 
+          args = var.arguments
+
           env {
             name = "API_POSTGRES_HOST"
             value_from {

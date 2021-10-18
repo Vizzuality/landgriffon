@@ -114,7 +114,7 @@ variable "data_node_group_desired_size" {
 
 variable "data_load_node_group_instance_types" {
   type    = string
-  default = "c5a.2xlarge"
+  default = "m5a.large"
 }
 
 variable "data_load_node_group_min_size" {

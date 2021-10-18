@@ -2,7 +2,9 @@
 CREATE EXTENSION IF NOT EXISTS ltree;
 
 -- 1. Upsert from gadm to geo_region converting geometry to H3
-INSERT INTO geo_region 
+TRUNCATE TABLE geo_region CASCADE;
+
+INSERT INTO geo_region
 ("name", "h3Compact", "theGeom")
 
 SELECT
@@ -21,14 +23,16 @@ ON CONFLICT (name) DO UPDATE SET
 -- 2. Insert into admin_region referencing geo_region
 BEGIN;
 
+TRUNCATE TABLE admin_region CASCADE;
+
 -- 2.1 Create the records
-INSERT INTO admin_region 
+INSERT INTO admin_region
     ("name", "gadmId", "geoRegionId", "isoA3")
-SELECT 
-    gadm_levels0_2.name, 
-    gadm_levels0_2.mpath, 
-    geo_region.id, 
-    CASE 
+SELECT
+    gadm_levels0_2.name,
+    gadm_levels0_2.mpath,
+    geo_region.id,
+    CASE
         WHEN gadm_levels0_2.GID_0 = gadm_levels0_2.mpath THEN gadm_levels0_2.GID_0
         ELSE null
     END
@@ -44,7 +48,7 @@ FROM admin_region parent
 WHERE subpath(child."gadmId"::ltree, 0, -1)::text = replace(parent."gadmId", '_1', '');
 -- for some reason GADM has "_1" appended to the end of some IDs
 
--- 2.3 Create the id-based materialized path as `parent.mpath`.`child.id` from 
+-- 2.3 Create the id-based materialized path as `parent.mpath`.`child.id` from
 -- the tree as this is usually created by TypeORM
 WITH RECURSIVE q(id, mpath) AS (
     SELECT id, id::text as mpath
@@ -65,13 +69,13 @@ COMMIT;
 -- 3. add alpha2 code
 BEGIN;
 
-CREATE TEMP TABLE tmp_countries 
+CREATE TEMP TABLE tmp_countries
 (alpha2 varchar, alpha3 varchar, name varchar, region varchar)
 ON COMMIT DROP;
 
 \copy tmp_countries FROM 'countriesregions.csv' WITH (FORMAT csv);
 
-UPDATE admin_region 
+UPDATE admin_region
 SET "isoA2" = tmp_countries.alpha2
 FROM tmp_countries
 WHERE admin_region."isoA3" = tmp_countries.alpha3;

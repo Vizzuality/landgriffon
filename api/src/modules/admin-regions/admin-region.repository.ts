@@ -18,7 +18,7 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
     FROM admin_region a RIGHT JOIN geo_region g on a."geoRegionId" = g.id
     WHERE ST_Intersects(
         st_setsrid('POINT(${coordinates.lng} ${coordinates.lat})'::geometry, 4326),
-        st_setsrid(g."theGeom"::geometry, 4326),
+        st_setsrid(g."theGeom"::geometry, 4326)
     )
     AND a."isoA2" IS NOT NULL;
     `);

@@ -181,7 +181,7 @@ describe('GeoCoding Service (Integration Testing)', () => {
         await geoCodingService.geoCodePointOfProduction(sourcingData);
       } catch ({ message }) {
         expect(message).toEqual(
-          `For ${sourcingData.locationCountryInput} coordenates ${sourcingData.locationLatitude} ,${sourcingData.locationLongitude} and address ${sourcingData.locationAddressInput} has been provided. Either and address or coordinates can be provided for a Point of Production Location Type`,
+          `For ${sourcingData.locationCountryInput} coordinates ${sourcingData.locationLatitude} ,${sourcingData.locationLongitude} and address ${sourcingData.locationAddressInput} has been provided. Either and address or coordinates can be provided for a Point of Production Location Type`,
         );
       }
     });

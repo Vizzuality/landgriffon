@@ -33,7 +33,7 @@ resource "kubernetes_job" "data_import" {
                 match_expressions {
                   key = "type"
                   operator = "In"
-                  values = ["data-load"]
+                  values = ["default"]
                 }
               }
             }

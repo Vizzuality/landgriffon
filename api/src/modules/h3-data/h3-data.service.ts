@@ -6,6 +6,7 @@ import { MaterialsService } from 'modules/materials/materials.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { UnitConversionsService } from 'modules/unit-conversions/unit-conversions.service';
 import { H3MapResponse } from 'modules/h3-data/dto/h3-map-response.dto';
+import { Indicator } from '../indicators/indicator.entity';
 
 /**
  * @debt: Check if we actually need extending nestjs-base-service over this module.
@@ -96,11 +97,11 @@ export class H3DataService {
     }
     const materialH3Data = await this.h3DataRepository.findOne(harvestId);
 
-    const { unit } = await this.indicatorService.getIndicatorAndUnitById(
+    const indicator: Indicator = await this.indicatorService.getIndicatorById(
       indicatorId,
     );
 
-    if (!unit) {
+    if (!indicator.unit) {
       throw new NotFoundException(
         `Indicator with ID ${indicatorId} has no unit`,
       );
@@ -108,20 +109,34 @@ export class H3DataService {
 
     const {
       factor,
-    } = await this.unitConversionsService.getUnitConversionByUnitId(unit.id);
+    } = await this.unitConversionsService.getUnitConversionByUnitId(
+      indicator.unit.id,
+    );
 
     if (!factor) {
       throw new NotFoundException(
-        `Conversion Unit with ID ${unit.id} has no 'factor' value`,
+        `Conversion Unit with ID ${indicator.unit.id} has no 'factor' value`,
       );
     }
 
-    const riskMap = await this.h3DataRepository.getRiskMapByResolution(
-      indicatorH3Data,
-      materialH3Data as H3Data,
-      factor as number,
-      resolution,
-    );
+    let riskMap: H3IndexValueData[];
+    switch (indicator.nameCode) {
+      case 'UWU_T':
+        riskMap = await this.h3DataRepository.getWaterRiskMapByResolution(
+          indicatorH3Data,
+          materialH3Data as H3Data,
+          factor as number,
+          resolution,
+        );
+        break;
+      case 'DF_LUC_T':
+      case 'GHG_LUC_T':
+      case 'BL_LUC_T':
+      default:
+        throw new NotFoundException(
+          `Risk map for indicator ${indicator.name} (indicator nameCode ${indicator.nameCode}) not currently supported`,
+        );
+    }
 
     const quantiles: number[] = await this.h3DataRepository.calculateQuantiles(
       materialH3Data as H3Data,
@@ -129,7 +144,7 @@ export class H3DataService {
 
     return {
       data: riskMap,
-      metadata: { quantiles: quantiles, unit: unit.symbol },
+      metadata: { quantiles: quantiles, unit: indicator.unit.symbol },
     };
   }
 }

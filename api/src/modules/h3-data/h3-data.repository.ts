@@ -77,14 +77,12 @@ export class H3DataRepository extends Repository<H3Data> {
   }
 
   /**
-   *
    * @param indicatorH3Data H3 format data of a Indicator
    * @param materialH3Data  H3 format data of a material
    * @param calculusFactor Integer value to perform calculus. Represents the factor
    * @param resolution Integer value that represent the resolution which the h3 response should be calculated
    */
-
-  async getRiskMapByResolution(
+  async getWaterRiskMapByResolution(
     indicatorH3Data: H3Data,
     materialH3Data: H3Data,
     calculusFactor: number,
@@ -102,9 +100,41 @@ export class H3DataRepository extends Repository<H3Data> {
       .where(`indicatorh3.h3index = materialh3.h3index`)
       .andWhere(`materialh3.${materialH3Data.h3columnName} is not null`)
       .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
-      .groupBy('"h"')
+      .groupBy('h')
       .getRawMany();
-    this.logger.log('Risk Map generated');
+    this.logger.log('Water Risk Map generated');
+    return riskMap;
+  }
+
+  /**
+   * @TODO: this is a copy of the water risk formula. It needs to be updated to the correct one.
+   *
+   * @param indicatorH3Data H3 format data of a Indicator
+   * @param materialH3Data  H3 format data of a material
+   * @param calculusFactor Integer value to perform calculus. Represents the factor
+   * @param resolution Integer value that represent the resolution which the h3 response should be calculated
+   */
+  async getBiodiversityLossRiskMapByResolution(
+    indicatorH3Data: H3Data,
+    materialH3Data: H3Data,
+    calculusFactor: number,
+    resolution: number,
+  ): Promise<H3IndexValueData[]> {
+    const riskMap = await getManager()
+      .createQueryBuilder()
+      .select(`h3_to_parent(materialh3.h3index, ${resolution})`, 'h')
+      .addSelect(
+        `sum(indicatorh3.${indicatorH3Data.h3columnName} * (materialh3.${materialH3Data.h3columnName}/(h3_hex_area(6)*100))/${calculusFactor})`,
+        'v',
+      )
+      .from(materialH3Data.h3tableName, 'materialh3')
+      .addFrom(indicatorH3Data.h3tableName, 'indicatorh3')
+      .where(`indicatorh3.h3index = materialh3.h3index`)
+      .andWhere(`materialh3.${materialH3Data.h3columnName} is not null`)
+      .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
+      .groupBy('h')
+      .getRawMany();
+    this.logger.log('Biodiversity Loss Map generated');
     return riskMap;
   }
 

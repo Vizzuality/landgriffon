@@ -5,7 +5,6 @@ import { AppModule } from 'app.module';
 import { H3DataRepository } from '../../src/modules/h3-data/h3-data.repository';
 import { H3DataModule } from '../../src/modules/h3-data/h3-data.module';
 import { createFakeH3Data, dropFakeH3Data } from './mocks/create-fake-h3-data';
-import { h3MaterialFixtures } from './mocks/h3-fixtures';
 import { createMaterial } from '../entity-mocks';
 import { MaterialRepository } from '../../src/modules/materials/material.repository';
 import { Indicator } from '../../src/modules/indicators/indicator.entity';
@@ -94,7 +93,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     );
   });
 
-  test('When I get a calculated H3 Risk Map without a year value, then I should get a proper error message', async () => {
+  test('When I get a calculated H3 Risk Map without a material id value, then I should get a proper error message', async () => {
     const indicator: Indicator = new Indicator();
     indicator.name = 'test indicator';
     await indicator.save();
@@ -129,7 +128,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     );
   });
 
-  test('When I get a calculated H3 Risk Map without a resolution value, then I should get a proper error message', async () => {
+  test('When I get a calculated H3 Water Risk Map with the necessary input values, then I should get the h3 data (happy case)', async () => {
     const unit: Unit = new Unit();
     unit.name = 'test unit';
     unit.symbol = 'tonnes';
@@ -143,6 +142,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     const indicator: Indicator = new Indicator();
     indicator.name = 'test indicator';
     indicator.unit = unit;
+    indicator.nameCode = 'UWU_T';
     await indicator.save();
 
     const h3Data = await createFakeH3Data(

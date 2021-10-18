@@ -11,7 +11,7 @@ export class PointOfProductionGeocodingService extends GeoCodingBaseService {
       );
     if (this.hasBothAddressAndCoordinates(sourcingData))
       throw new Error(
-        `For ${sourcingData.locationCountryInput} coordenates ${sourcingData.locationLatitude} ,${sourcingData.locationLongitude} and address ${sourcingData.locationAddressInput} has been provided. Either and address or coordinates can be provided for a Point of Production Location Type`,
+        `For ${sourcingData.locationCountryInput} coordinates ${sourcingData.locationLatitude} ,${sourcingData.locationLongitude} and address ${sourcingData.locationAddressInput} has been provided. Either and address or coordinates can be provided for a Point of Production Location Type`,
       );
 
     if (sourcingData.locationLongitude && sourcingData.locationLatitude) {
@@ -21,7 +21,7 @@ export class PointOfProductionGeocodingService extends GeoCodingBaseService {
       const {
         id: adminRegionId,
       } = await this.adminRegionService.getAdminAndGeoRegionIdByCountryIsoAlpha2(
-        this.getIsoA2Code(geoCodeResponseData) as string,
+        this.getIsoA2Code(geoCodeResponseData),
       );
       const geoRegionId = await this.geoRegionService.saveGeoRegionAsPoint({
         name: sourcingData.locationCountryInput,
@@ -43,7 +43,7 @@ export class PointOfProductionGeocodingService extends GeoCodingBaseService {
       const {
         id: adminRegionId,
       } = await this.adminRegionService.getAdminAndGeoRegionIdByCountryIsoAlpha2(
-        this.getIsoA2Code(geocodedResponseData) as string,
+        this.getIsoA2Code(geocodedResponseData),
       );
       const geoRegionId = await this.geoRegionService.saveGeoRegionAsPoint({
         name: sourcingData.locationCountryInput,

@@ -168,6 +168,7 @@ describe('Risk Map Test Suite (e2e)', () => {
     const indicator = await createIndicator({
       unit,
       name: 'Indicator Name',
+      nameCode: 'UWU_T',
     });
     const indicatorH3Data = await createFakeH3Data(
       INDICATOR_FAKE_H3_TABLE,

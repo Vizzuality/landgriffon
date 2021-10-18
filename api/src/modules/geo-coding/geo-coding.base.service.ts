@@ -121,13 +121,14 @@ export class GeoCodingBaseService {
     return locationTypes.includes('administrative_area_level_1');
   }
 
-  getIsoA2Code(geoCodedResponse: GeocodeResponseData): string | void {
+  getIsoA2Code(geoCodedResponse: GeocodeResponseData): string {
     const country:
       | AddressComponent
       | undefined = geoCodedResponse.results[0].address_components.find(
       (address: any) => address.types.includes('country'),
     );
     if (country) return country.short_name;
+    throw new Error(`Could not find ISO2 code`);
   }
 
   hasBothAddressAndCoordinates(sourcingData: SourcingData): boolean {

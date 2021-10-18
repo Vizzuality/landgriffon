@@ -1,6 +1,6 @@
 MAKEFLAGS += -j8
 
-all: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_wf_global h3_grid_bio_global
+all: h3_grid_carbon_global h3_grid_deforestation_global h3_grid_pasture #h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_wf_global h3_grid_bio_global
 
 crop: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha
 
@@ -178,9 +178,9 @@ data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles: data/hansen_loss/Hansen_
 	done
 	mkdir -p $@
 	gdalbuildvrt data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.vrt data/hansen_loss/Hansen_GFC_2020_lossyear/*.tif
+	for tifffile in data/hansen_loss/Hansen_GFC_2020_lossyear/*.tiff; do rm -f "$${tiffile}"; done
 	gdal_translate -of GTiff -co BIGTIFF=YES -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 \
 	data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.vrt data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.tif
-	#for tiffile in data/hansen_loss/Hansen_GFC_2020_lossyear/*.tif; do rm -f "$${tiffile}"; done
 
 h3_grid_deforestation_global: data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles
 	python tiff_folder_to_h3_table.py $< $@ indicator DF_LUC_T --h3-res=6
@@ -214,12 +214,32 @@ data/gfw_carbon/merged_tiles: data/gfw_carbon/forest_greenhouse_gas_net_flux_sim
 		rm -f "$${tiffile}";\
 	done
 	gdalbuildvrt data/gfw_carbon/forest_greenhouse_gas_net_flux_2001_2020_tCO2eq.vrt data/gfw_carbon/*.tif
+	for tifffile in data/gfw_carbon//*.tiff; do rm -f "$${tiffile}"; done
 	gdal_translate -of GTiff -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 \
 	data/gfw_carbon/forest_greenhouse_gas_net_flux_2001_2020_tCO2eq.vrt data/gfw_carbon/merged_tiles/forest_greenhouse_gas_net_flux_2001_2020_tCO2eq.tif
 	for tiffile in in data/gfw_carbon/*.tif; do rm -f "$${tiffile}"; done
 
 h3_grid_carbon_global: data/gfw_carbon/merged_tiles
 	python tiff_folder_to_h3_table.py $< $@ indicator GHG_LUC_T --h3-res=6
+
+## DOWNLOAD PASTURE AND CROPLAND DATASET
+#https://s3.us-east-2.amazonaws.com/earthstatdata/CroplandPastureArea2000_Geotiff.zip
+data/earthstat/CroplandPastureArea2000_Geotiff.zip:
+	mkdir -p data/earthstat
+	wget -q -O $@ https://s3.us-east-2.amazonaws.com/earthstatdata/CroplandPastureArea2000_Geotiff.zip
+
+#unzip
+data/earthstat/CroplandPastureArea2000_global_ha: data/earthstat/CroplandPastureArea2000_Geotiff.zip
+	mkdir -p $@
+	unzip -j -o -u $< */Pasture2000_5m.tif -d $@
+	gdal_translate -a_nodata 0 -of GTiff data/earthstat/CroplandPastureArea2000_global_ha/Pasture2000_5m.tif \
+	data/earthstat/CroplandPastureArea2000_global_ha/es_pasture_global.tif
+
+
+# and import to a table called "h3_grid_earthstat2000_global_ha"
+h3_grid_pasture: data/earthstat/CroplandPastureArea2000_global_ha
+	python tiff_folder_to_h3_table.py $< $@ harvest_area es --h3-res=6
+
 
 # ^^^
 #######################################

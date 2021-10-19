@@ -23,7 +23,7 @@ export enum INDICATOR_TYPES {
   BIODIVERSITY_LOSS = 'BL_LUC_T',
   UNSUSTAINABLE_WATER_USE = 'UWU_T',
   DEFORESTATION = 'DF_LUC_T',
-  GHG_LUC_T = 'GHG_LUC_T',
+  CARBON_EMISSIONS = 'GHG_LUC_T',
 }
 
 export const indicatorResource: BaseServiceResource = {

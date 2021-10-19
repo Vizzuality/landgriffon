@@ -1,6 +1,6 @@
 MAKEFLAGS += -j8
 
-all: h3_grid_carbon_global h3_grid_deforestation_global h3_grid_pasture #h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_wf_global h3_grid_bio_global
+all:  h3_grid_pasture h3_grid_carbon_global h3_grid_deforestation_global #h3_grid_spam2010v2r0_global_prod h3_grid_bio_global#h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_wf_global h3_grid_bio_global
 
 crop: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha
 
@@ -234,7 +234,7 @@ data/earthstat/CroplandPastureArea2000_global_ha: data/earthstat/CroplandPasture
 	unzip -j -o -u $< */Pasture2000_5m.tif -d $@
 	gdal_translate -a_nodata 0 -of GTiff data/earthstat/CroplandPastureArea2000_global_ha/Pasture2000_5m.tif \
 	data/earthstat/CroplandPastureArea2000_global_ha/es_pasture_global.tif
-
+	rm -f data/earthstat/CroplandPastureArea2000_global_ha/Pasture2000_5m.tif
 
 # and import to a table called "h3_grid_earthstat2000_global_ha"
 h3_grid_pasture: data/earthstat/CroplandPastureArea2000_global_ha

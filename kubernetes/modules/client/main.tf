@@ -59,6 +59,16 @@ resource "kubernetes_deployment" "client_deployment" {
 
           args = ["start:prod"]
 
+          env {
+            name = "NEXT_PUBLIC_API_URL"
+            value_from {
+              secret_key_ref {
+                name = "client"
+                key  = "NEXT_PUBLIC_API_URL"
+              }
+            }
+          }
+
           resources {
             limits = {
               cpu    = "1"

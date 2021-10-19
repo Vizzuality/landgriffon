@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
-  PaginationMeta,
 } from 'utils/app-base.service';
 import { Material, materialResource } from 'modules/materials/material.entity';
 import { AppInfoDTO } from 'dto/info.dto';
@@ -124,6 +123,10 @@ export class MaterialsService extends AppBaseService<
     }
 
     return found;
+  }
+
+  async getMaterialsById(ids: string[]): Promise<Material[]> {
+    return this.materialRepository.findByIds(ids);
   }
 
   async saveMany(entityArray: Material[]): Promise<void> {

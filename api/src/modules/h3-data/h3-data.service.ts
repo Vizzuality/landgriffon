@@ -17,6 +17,8 @@ import {
 } from 'modules/indicators/indicator.entity';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import { H3FilterYearsByLayerService } from 'modules/h3-data/services/h3-filter-years-by-layer.service';
+import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
+import { Material } from 'modules/materials/material.entity';
 
 /**
  * @debt: Check if we actually need extending nestjs-base-service over this module.
@@ -206,5 +208,79 @@ export class H3DataService {
       materialId,
       indicatorId,
     );
+  }
+
+  async getImpactMapByResolution(
+    getImpactMapDto: GetImpactMapDto,
+  ): Promise<H3MapResponse> {
+    const indicators: Indicator[] = await this.indicatorService.getIndicatorsById(
+      getImpactMapDto.indicators,
+    );
+    const materials: Material[] = await this.materialService.getMaterialsById(
+      getImpactMapDto.materials,
+    );
+
+    // if (!indicatorH3Data)
+    //   throw new NotFoundException(
+    //     `There is no H3 Data for Indicator with ID: ${indicatorId}`,
+    //   );
+    // const { harvestId } = await this.materialService.getById(materialId);
+    //
+    // if (!harvestId) {
+    //   throw new NotFoundException(
+    //     `There is no H3 Data for Material with ID: ${materialId}`,
+    //   );
+    // }
+    // const materialH3Data = await this.h3DataRepository.findOne(harvestId);
+    //
+    // const indicator: Indicator = await this.indicatorService.getIndicatorById(
+    //   indicatorId,
+    // );
+    //
+    // if (!indicator.unit) {
+    //   throw new NotFoundException(
+    //     `Indicator with ID ${indicatorId} has no unit`,
+    //   );
+    // }
+    //
+    // const {
+    //   factor,
+    // } = await this.unitConversionsService.getUnitConversionByUnitId(
+    //   indicator.unit.id,
+    // );
+    //
+    // if (!factor) {
+    //   throw new NotFoundException(
+    //     `Conversion Unit with ID ${indicator.unit.id} has no 'factor' value`,
+    //   );
+    // }
+    //
+    // let riskMap: H3IndexValueData[];
+    // switch (indicator.nameCode) {
+    //   case 'UWU_T':
+    //     riskMap = await this.h3DataRepository.getWaterRiskMapByResolution(
+    //       indicatorH3Data,
+    //       materialH3Data as H3Data,
+    //       factor as number,
+    //       resolution,
+    //     );
+    //     break;
+    //   case 'DF_LUC_T':
+    //   case 'GHG_LUC_T':
+    //   case 'BL_LUC_T':
+    //   default:
+    //     throw new NotFoundException(
+    //       `Risk map for indicator ${indicator.name} (indicator nameCode ${indicator.nameCode}) not currently supported`,
+    //     );
+    // }
+    //
+    // const quantiles: number[] = await this.h3DataRepository.calculateQuantiles(
+    //   materialH3Data as H3Data,
+    // );
+
+    return {
+      data: [],
+      metadata: { quantiles: [], unit: 'd' },
+    };
   }
 }

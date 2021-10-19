@@ -79,4 +79,8 @@ export class IndicatorsService extends AppBaseService<
       );
     return deforestationH3Data;
   }
+
+  async getIndicatorsById(ids: string[]): Promise<Indicator[]> {
+    return this.indicatorRepository.findByIds(ids);
+  }
 }

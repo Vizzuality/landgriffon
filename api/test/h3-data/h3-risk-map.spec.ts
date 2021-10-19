@@ -81,13 +81,37 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     return app.close();
   });
 
-  test('When I get a calculated H3 Risk Map without an indicator id, then I should get a proper error message', async () => {
+  test('When I get a calculated H3 Risk Map without any of the required parameters, then I should get a proper error message', async () => {
     const response = await request(app.getHttpServer()).get(
       `/api/v1/h3/risk-map`,
     );
-    expect(response.body.errors[0].meta.rawError.response.message[0]).toEqual(
+    expect(response.body.errors[0].meta.rawError.response.message).toEqual([
       'indicatorId should not be empty',
-    );
+      'indicatorId must be a UUID',
+      'year should not be empty',
+      'year must be a number conforming to the specified constraints',
+      'materialId must be a UUID',
+      'materialId should not be empty',
+      'Available resolutions: 1 to 6',
+      'resolution must be a number conforming to the specified constraints',
+      'resolution should not be empty',
+    ]);
+  });
+
+  test('When I get a calculated H3 Risk Map without an indicator id, then I should get a proper error message', async () => {
+    const material = await createMaterial();
+
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/h3/risk-map`)
+      .query({
+        materialId: material.id,
+        resolution: 1,
+        year: 2021,
+      });
+    expect(response.body.errors[0].meta.rawError.response.message).toEqual([
+      'indicatorId should not be empty',
+      'indicatorId must be a UUID',
+    ]);
   });
 
   test('When I get a calculated H3 Risk Map without a year value, then I should get a proper error message', async () => {
@@ -95,14 +119,20 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     indicator.name = 'test indicator';
     await indicator.save();
 
+    const material = await createMaterial();
+
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/risk-map`)
       .query({
         indicatorId: indicator.id,
+        materialId: material.id,
+        resolution: 1,
       });
-    expect(response.body.errors[0].meta.rawError.response.message[0]).toEqual(
+
+    expect(response.body.errors[0].meta.rawError.response.message).toEqual([
       'year should not be empty',
-    );
+      'year must be a number conforming to the specified constraints',
+    ]);
   });
 
   test('When I get a calculated H3 Risk Map without a material id value, then I should get a proper error message', async () => {
@@ -115,10 +145,12 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       .query({
         indicatorId: indicator.id,
         year: 2020,
+        resolution: 1,
       });
-    expect(response.body.errors[0].meta.rawError.response.message[0]).toEqual(
+    expect(response.body.errors[0].meta.rawError.response.message).toEqual([
       'materialId must be a UUID',
-    );
+      'materialId should not be empty',
+    ]);
   });
 
   test('When I get a calculated H3 Risk Map without a resolution value, then I should get a proper error message', async () => {
@@ -135,9 +167,11 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         year: 2020,
         materialId: material.id,
       });
-    expect(response.body.errors[0].meta.rawError.response.message[0]).toEqual(
+    expect(response.body.errors[0].meta.rawError.response.message).toEqual([
       'Available resolutions: 1 to 6',
-    );
+      'resolution must be a number conforming to the specified constraints',
+      'resolution should not be empty',
+    ]);
   });
 
   test('When I get a calculated H3 Water Risk Map with the necessary input values, then I should get the h3 data (happy case)', async () => {

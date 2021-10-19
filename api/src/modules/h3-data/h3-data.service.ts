@@ -6,7 +6,10 @@ import { MaterialsService } from 'modules/materials/materials.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { UnitConversionsService } from 'modules/unit-conversions/unit-conversions.service';
 import { H3MapResponse } from 'modules/h3-data/dto/h3-map-response.dto';
-import { Indicator } from '../indicators/indicator.entity';
+import {
+  Indicator,
+  INDICATOR_TYPES,
+} from 'modules/indicators/indicator.entity';
 
 /**
  * @debt: Check if we actually need extending nestjs-base-service over this module.
@@ -121,7 +124,7 @@ export class H3DataService {
 
     let riskMap: H3IndexValueData[];
     switch (indicator.nameCode) {
-      case 'UWU_T':
+      case INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE:
         riskMap = await this.h3DataRepository.getWaterRiskMapByResolution(
           indicatorH3Data,
           materialH3Data as H3Data,
@@ -129,9 +132,16 @@ export class H3DataService {
           resolution,
         );
         break;
-      case 'DF_LUC_T':
-      case 'GHG_LUC_T':
-      case 'BL_LUC_T':
+      case INDICATOR_TYPES.DEFORESTATION:
+      case INDICATOR_TYPES.GHG_LUC_T:
+      case INDICATOR_TYPES.BIODIVERSITY_LOSS:
+        riskMap = await this.h3DataRepository.getBiodiversityLossRiskMapByResolution(
+          indicatorH3Data,
+          materialH3Data as H3Data,
+          factor as number,
+          resolution,
+        );
+        break;
       default:
         throw new NotFoundException(
           `Risk map for indicator ${indicator.name} (indicator nameCode ${indicator.nameCode}) not currently supported`,

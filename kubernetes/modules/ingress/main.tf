@@ -3,7 +3,7 @@ data "aws_eks_cluster_auth" "cluster" {
 }
 
 locals {
-  api_domain = "api.${var.domain_prefix != null ? ("${var.domain_prefix}.") : ""}landgriffon.com"
+  api_domain    = "api.${var.domain_prefix != null ? ("${var.domain_prefix}.") : ""}landgriffon.com"
   client_domain = "client.${var.domain_prefix != null ? ("${var.domain_prefix}.") : ""}landgriffon.com"
 }
 
@@ -65,7 +65,7 @@ resource "kubernetes_ingress" "landgriffon" {
   wait_for_load_balancer = true
 
   metadata {
-    name = "landgriffon"
+    name      = "landgriffon"
     namespace = var.namespace
     annotations = {
       "kubernetes.io/ingress.class"                = "alb"

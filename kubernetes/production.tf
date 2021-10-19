@@ -16,6 +16,7 @@ module "k8s_client_prod" {
   deployment_name  = "client"
   image            = "vizzuality/landgriffon-client:production"
   namespace        = "production"
+  api_url          = module.k8s_ingress_prod.api_url
 }
 
 module "k8s_data_import_prod" {
@@ -26,7 +27,8 @@ module "k8s_data_import_prod" {
   job_name         = "data-import"
   image            = "vizzuality/landgriffon-data-import:production"
   namespace        = "production"
-}git add
+  load_data        = var.load_fresh_data_prod
+}
 
 module "k8s_secrets_prod" {
   source             = "./modules/secrets"

@@ -15,7 +15,7 @@ locals {
   }
 
   api_secret_json = {
-    jwt_secret = random_password.jwt_secret_generator.result
+    jwt_secret    = random_password.jwt_secret_generator.result
     gmaps_api_key = var.gmaps_api_key
   }
 }
@@ -27,7 +27,7 @@ resource "random_password" "jwt_secret_generator" {
 }
 
 resource "aws_secretsmanager_secret" "api_secret" {
-  name = "api-secret-${var.namespace}"
+  name        = "api-secret-${var.namespace}"
   description = "Credentials for the ${var.namespace} API"
 
 }
@@ -39,12 +39,12 @@ resource "aws_secretsmanager_secret_version" "api_secret_version" {
 
 resource "kubernetes_secret" "api_secret" {
   metadata {
-    name = "api"
+    name      = "api"
     namespace = var.namespace
   }
 
   data = {
-    JWT_SECRET = local.api_secret_json.jwt_secret
+    JWT_SECRET    = local.api_secret_json.jwt_secret
     GMAPS_API_KEY = local.api_secret_json.gmaps_api_key
   }
 }
@@ -56,19 +56,19 @@ resource "random_password" "postgresql_user_generator" {
 }
 
 resource "aws_secretsmanager_secret" "postgres_user_secret" {
-  name = "landgriffon-${var.namespace}-postgresql-user-password"
+  name        = "landgriffon-${var.namespace}-postgresql-user-password"
   description = "Credentials for the ${var.namespace} user of the K8S PostgreSQL Server"
 }
 
 resource "aws_secretsmanager_secret_version" "postgres_user_secret_version" {
-  secret_id = aws_secretsmanager_secret.postgres_user_secret.id
+  secret_id     = aws_secretsmanager_secret.postgres_user_secret.id
   secret_string = jsonencode(local.postgres_secret_json)
 }
 
 
 resource "kubernetes_secret" "db_secret" {
   metadata {
-    name = "db"
+    name      = "db"
     namespace = var.namespace
   }
 

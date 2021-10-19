@@ -35,3 +35,15 @@ variable "gmaps_api_key" {
   sensitive   = true
   description = "The Google Maps API key used for access to the geocoding API"
 }
+
+variable "load_fresh_data_staging" {
+  type        = bool
+  default     = false
+  description = "If a new data import should be triggered for the staging app. Clears the current database."
+}
+
+variable "load_fresh_data_prod" {
+  type        = bool
+  default     = false
+  description = "If a new data import should be triggered for the production app. Clears the current database."
+}

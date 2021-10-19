@@ -14,23 +14,28 @@ variable "cluster_name" {
 }
 
 variable "image" {
-  type = string
+  type        = string
   description = "The dockerhub image reference to deploy"
 }
 
 variable "job_name" {
-  type = string
+  type        = string
   description = "The job name"
 }
 
 variable "namespace" {
-  type = string
+  type        = string
   description = "The k8s namespace to use"
 }
 
-
 variable "arguments" {
-  type = list(string)
-  default = []
+  type        = list(string)
+  default     = []
   description = "The k8s namespace to use"
+}
+
+variable "load_data" {
+  type        = bool
+  default     = false
+  description = "If new data should be loaded when this terraform plan is applied. Clears the current database."
 }

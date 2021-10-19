@@ -10,7 +10,7 @@ provider "kubernetes" {
 
 resource "kubernetes_service" "api_service" {
   metadata {
-    name = kubernetes_deployment.api_deployment.metadata[0].name
+    name      = kubernetes_deployment.api_deployment.metadata[0].name
     namespace = var.namespace
   }
   spec {
@@ -27,7 +27,7 @@ resource "kubernetes_service" "api_service" {
 
 resource "kubernetes_deployment" "api_deployment" {
   metadata {
-    name = var.deployment_name
+    name      = var.deployment_name
     namespace = var.namespace
   }
 

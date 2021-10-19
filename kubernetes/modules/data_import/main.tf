@@ -9,8 +9,10 @@ provider "kubernetes" {
 }
 
 resource "kubernetes_job" "data_import" {
+  count = var.load_data ? 1 : 0
+
   metadata {
-    name = var.job_name
+    name      = var.job_name
     namespace = var.namespace
   }
 
@@ -31,9 +33,9 @@ resource "kubernetes_job" "data_import" {
             required_during_scheduling_ignored_during_execution {
               node_selector_term {
                 match_expressions {
-                  key = "type"
+                  key      = "type"
                   operator = "In"
-                  values = ["default"]
+                  values   = ["default"]
                 }
               }
             }
@@ -64,7 +66,7 @@ resource "kubernetes_job" "data_import" {
           }
 
           env {
-            name = "API_POSTGRES_PORT"
+            name  = "API_POSTGRES_PORT"
             value = "5432"
           }
 

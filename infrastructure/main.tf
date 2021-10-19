@@ -31,14 +31,14 @@ module "vpc" {
 }
 
 module "bastion" {
-  source             = "./modules/bastion"
-  bastion_ami        = data.aws_ami.latest-ubuntu-lts.id
-  project            = var.project_name
-  tags               = local.tags
-  region             = var.aws_region
-  subnet_id          = module.vpc.public_subnet_ids[0]
-  vpc                = module.vpc
-  user_data          = data.template_file.bastion_setup.rendered
+  source      = "./modules/bastion"
+  bastion_ami = data.aws_ami.latest-ubuntu-lts.id
+  project     = var.project_name
+  tags        = local.tags
+  region      = var.aws_region
+  subnet_id   = module.vpc.public_subnet_ids[0]
+  vpc         = module.vpc
+  user_data   = data.template_file.bastion_setup.rendered
 }
 
 module "dns" {

@@ -10,7 +10,7 @@ provider "kubernetes" {
 
 resource "kubernetes_service" "client_service" {
   metadata {
-    name = kubernetes_deployment.client_deployment.metadata[0].name
+    name      = kubernetes_deployment.client_deployment.metadata[0].name
     namespace = var.namespace
   }
   spec {
@@ -27,7 +27,7 @@ resource "kubernetes_service" "client_service" {
 
 resource "kubernetes_deployment" "client_deployment" {
   metadata {
-    name = "client"
+    name      = "client"
     namespace = var.namespace
   }
 
@@ -60,13 +60,8 @@ resource "kubernetes_deployment" "client_deployment" {
           args = ["start:prod"]
 
           env {
-            name = "NEXT_PUBLIC_API_URL"
-            value_from {
-              secret_key_ref {
-                name = "client"
-                key  = "NEXT_PUBLIC_API_URL"
-              }
-            }
+            name  = "NEXT_PUBLIC_API_URL"
+            value = var.api_url
           }
 
           resources {

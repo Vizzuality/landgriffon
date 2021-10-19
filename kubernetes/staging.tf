@@ -15,7 +15,8 @@ module "k8s_client_staging" {
   cluster_name     = data.terraform_remote_state.core.outputs.eks_cluster.name
   deployment_name  = "client"
   image            = "vizzuality/landgriffon-client:staging"
-  namespace          = "staging"
+  namespace        = "staging"
+  api_url          = module.k8s_ingress_staging.api_url
 }
 
 module "k8s_data_import_staging" {
@@ -25,7 +26,8 @@ module "k8s_data_import_staging" {
   cluster_name     = data.terraform_remote_state.core.outputs.eks_cluster.name
   job_name         = "data-import"
   image            = "vizzuality/landgriffon-data-import:staging"
-  namespace          = "staging"
+  namespace        = "staging"
+  load_data        = var.load_fresh_data_staging
 }
 
 module "k8s_secrets_staging" {

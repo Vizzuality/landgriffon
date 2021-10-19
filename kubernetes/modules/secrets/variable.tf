@@ -4,7 +4,7 @@ variable "allowed_account_id" {
 }
 
 variable "namespace" {
-  type = string
+  type        = string
   description = "The k8s namespace to use"
 }
 

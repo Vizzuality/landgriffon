@@ -11,7 +11,7 @@ resource "random_password" "postgresql_admin_generator" {
 }
 
 resource "aws_secretsmanager_secret" "postgresql_admin_secret" {
-  name = "postgresql-admin-credentials"
+  name        = "postgresql-admin-credentials"
   description = "Credentials for the admin user of the K8S PostgreSQL Server"
 }
 

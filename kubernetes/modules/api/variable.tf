@@ -14,16 +14,16 @@ variable "cluster_name" {
 }
 
 variable "image" {
-  type = string
+  type        = string
   description = "The dockerhub image reference to deploy"
 }
 
 variable "deployment_name" {
-  type = string
+  type        = string
   description = "The k8s deployment name"
 }
 
 variable "namespace" {
-  type = string
+  type        = string
   description = "The k8s namespace to use"
 }

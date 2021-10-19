@@ -27,9 +27,9 @@ module "k8s_infrastructure" {
 }
 
 module "k8s_namespaces" {
-  source           = "./modules/k8s_namespaces"
-  cluster_name     = data.terraform_remote_state.core.outputs.eks_cluster.name
-  namespaces       = ["production", "staging"]
+  source       = "./modules/k8s_namespaces"
+  cluster_name = data.terraform_remote_state.core.outputs.eks_cluster.name
+  namespaces   = ["production", "staging"]
 }
 
 module "k8s_database" {

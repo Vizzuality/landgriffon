@@ -1,10 +1,10 @@
 variable "namespace" {
-  type = string
+  type        = string
   description = "The k8s namespace to use"
 }
 
 variable "domain_prefix" {
-  type = string
+  type    = string
   default = null
 }
 

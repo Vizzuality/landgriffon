@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
@@ -86,6 +91,7 @@ export class H3DataService {
     const indicatorH3Data = await this.h3DataRepository.findOne({
       where: { indicatorId: indicatorId },
     });
+    console.log(indicatorH3Data, indicatorId);
 
     if (!indicatorH3Data)
       throw new NotFoundException(
@@ -133,7 +139,7 @@ export class H3DataService {
         );
         break;
       case INDICATOR_TYPES.DEFORESTATION:
-      case INDICATOR_TYPES.GHG_LUC_T:
+      case INDICATOR_TYPES.CARBON_EMISSIONS:
       case INDICATOR_TYPES.BIODIVERSITY_LOSS:
         riskMap = await this.h3DataRepository.getBiodiversityLossRiskMapByResolution(
           indicatorH3Data,
@@ -143,7 +149,7 @@ export class H3DataService {
         );
         break;
       default:
-        throw new NotFoundException(
+        throw new ServiceUnavailableException(
           `Risk map for indicator ${indicator.name} (indicator nameCode ${indicator.nameCode}) not currently supported`,
         );
     }

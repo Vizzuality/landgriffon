@@ -1,5 +1,10 @@
 import { getManager } from 'typeorm';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { Indicator } from '../../../src/modules/indicators/indicator.entity';
+import { Material } from '../../../src/modules/materials/material.entity';
+import { Unit } from '../../../src/modules/units/unit.entity';
+import { UnitConversion } from '../../../src/modules/unit-conversions/unit-conversion.entity';
+import { createMaterial } from '../../entity-mocks';
 
 export const createFakeH3Data = async (
   h3TableName: string,
@@ -37,4 +42,39 @@ export const dropFakeH3Data = async (h3TableNames: string[]): Promise<void> => {
   for (const h3tableName of h3TableNames) {
     await getManager().query(`DROP TABLE IF EXISTS ${h3tableName};`);
   }
+};
+
+export const createWorldForRiskMapGeneration = async (data: {
+  indicatorType: string;
+  fakeTable: string;
+  fakeColumn: string;
+}): Promise<{ indicator: Indicator; material: Material }> => {
+  const unit: Unit = new Unit();
+  unit.name = 'test unit';
+  unit.symbol = 'tonnes';
+  await unit.save();
+
+  const unitConversion: UnitConversion = new UnitConversion();
+  unitConversion.unit = unit;
+  unitConversion.factor = 1;
+  await unitConversion.save();
+
+  const indicator: Indicator = new Indicator();
+  indicator.name = 'test indicator';
+  indicator.unit = unit;
+  indicator.nameCode = data.indicatorType;
+  await indicator.save();
+
+  const h3Data = await createFakeH3Data(
+    data.fakeTable,
+    data.fakeColumn,
+    null,
+    indicator.id,
+  );
+
+  const material = await createMaterial({
+    name: 'Material with no H3',
+    harvestId: h3Data.id,
+  });
+  return { indicator, material };
 };

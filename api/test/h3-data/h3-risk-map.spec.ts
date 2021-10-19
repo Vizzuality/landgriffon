@@ -4,13 +4,17 @@ import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { H3DataRepository } from '../../src/modules/h3-data/h3-data.repository';
 import { H3DataModule } from '../../src/modules/h3-data/h3-data.module';
-import { createFakeH3Data, dropFakeH3Data } from './mocks/create-fake-h3-data';
+import {
+  dropFakeH3Data,
+  createWorldForRiskMapGeneration,
+} from './mocks/create-fake-h3-data';
 import { createMaterial } from '../entity-mocks';
 import { MaterialRepository } from '../../src/modules/materials/material.repository';
-import { Indicator } from '../../src/modules/indicators/indicator.entity';
+import {
+  Indicator,
+  INDICATOR_TYPES,
+} from '../../src/modules/indicators/indicator.entity';
 import { IndicatorRepository } from '../../src/modules/indicators/indicator.repository';
-import { Unit } from '../../src/modules/units/unit.entity';
-import { UnitConversion } from '../../src/modules/unit-conversions/unit-conversion.entity';
 import { UnitRepository } from '../../src/modules/units/unit.repository';
 import { UnitConversionRepository } from '../../src/modules/unit-conversions/unit-conversion.repository';
 
@@ -57,6 +61,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
   });
 
   afterEach(async () => {
+    jest.clearAllMocks();
     await dropFakeH3Data([fakeTable]);
     await materialRepository.delete({});
     await h3DataRepository.delete({});
@@ -129,33 +134,12 @@ describe('H3 Data Module (e2e) - Risk map', () => {
   });
 
   test('When I get a calculated H3 Water Risk Map with the necessary input values, then I should get the h3 data (happy case)', async () => {
-    const unit: Unit = new Unit();
-    unit.name = 'test unit';
-    unit.symbol = 'tonnes';
-    await unit.save();
-
-    const unitConversion: UnitConversion = new UnitConversion();
-    unitConversion.unit = unit;
-    unitConversion.factor = 1;
-    await unitConversion.save();
-
-    const indicator: Indicator = new Indicator();
-    indicator.name = 'test indicator';
-    indicator.unit = unit;
-    indicator.nameCode = 'UWU_T';
-    await indicator.save();
-
-    const h3Data = await createFakeH3Data(
+    const { material, indicator } = await createWorldForRiskMapGeneration({
+      indicatorType: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
       fakeTable,
       fakeColumn,
-      null,
-      indicator.id,
-    );
-
-    const material = await createMaterial({
-      name: 'Material with no H3',
-      harvestId: h3Data.id,
     });
+    jest.spyOn(h3DataRepository, 'getWaterRiskMapByResolution');
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/risk-map`)
@@ -166,6 +150,38 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         resolution: 6,
       });
 
+    expect(h3DataRepository.getWaterRiskMapByResolution).toHaveBeenCalled();
+    expect(response.body.data).toEqual([
+      {
+        h: '861203a4fffffff',
+        v: 276.78556227607197,
+      },
+    ]);
+    expect(response.body.metadata).toEqual({
+      quantiles: [1000, 1000, 1000, 1000, 1000, 1000, 1000],
+      unit: 'tonnes',
+    });
+  });
+  test('When I get a calculated H3 Biodiversity Loss Risk Map with the necessary input values, then I should get the h3 data (happy case)', async () => {
+    const { material, indicator } = await createWorldForRiskMapGeneration({
+      indicatorType: INDICATOR_TYPES.BIODIVERSITY_LOSS,
+      fakeTable,
+      fakeColumn,
+    });
+    jest.spyOn(h3DataRepository, 'getBiodiversityLossRiskMapByResolution');
+
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/h3/risk-map`)
+      .query({
+        indicatorId: indicator.id,
+        year: 2020,
+        materialId: material.id,
+        resolution: 6,
+      });
+
+    expect(
+      h3DataRepository.getBiodiversityLossRiskMapByResolution,
+    ).toHaveBeenCalled();
     expect(response.body.data).toEqual([
       {
         h: '861203a4fffffff',

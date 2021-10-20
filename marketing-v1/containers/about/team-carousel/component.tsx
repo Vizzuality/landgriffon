@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 
 import Slider from 'react-slick';
 
@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { Media } from 'containers/media';
+import Wrapper from 'containers/wrapper';
 
 import ARROW_PREVIOUS_SVG from 'svgs/arrow-left.svg';
 import ARROW_NEXT_SVG from 'svgs/arrow-right.svg';
@@ -18,12 +19,58 @@ export interface ArrowProps {
   onClick?: () => void;
 }
 
+type ResponsiveBreakPoint = {
+  breakpoint: number;
+  settings?: {
+    slidesToShow: number;
+    slidesToScroll: number;
+  };
+};
+
+const RESPONSIVE_BREAKPOINTS: ResponsiveBreakPoint[] = [
+  {
+    breakpoint: 1536,
+    settings: {
+      slidesToShow: 5,
+      slidesToScroll: 1,
+    },
+  },
+  {
+    breakpoint: 1280,
+    settings: {
+      slidesToShow: 4,
+      slidesToScroll: 1,
+    },
+  },
+  {
+    breakpoint: 1024,
+    settings: {
+      slidesToShow: 3,
+      slidesToScroll: 1,
+    },
+  },
+  {
+    breakpoint: 768,
+    settings: {
+      slidesToShow: 2,
+      slidesToScroll: 1,
+    },
+  },
+  {
+    breakpoint: 640,
+    settings: {
+      slidesToShow: 1,
+      slidesToScroll: 1,
+    },
+  },
+];
+
 const NextArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
   <>
     <Media lessThan="md">
       <button
         aria-label="Next"
-        className="absolute right-3.5 flex items-center space-x-6 text-4xl font-semibold -bottom-36"
+        className="right-5 absolute text-4xl -bottom-16 font-semibold focus:outline-none"
         type="button"
         onClick={onClick}
       >
@@ -34,7 +81,7 @@ const NextArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
     <Media greaterThanOrEqual="md">
       <button
         aria-label="Next"
-        className="absolute right-0 flex items-center space-x-6 text-4xl font-semibold -bottom-48"
+        className="absolute right-5 -bottom-56 my-10 font-semibold flex items-center space-x-6 focus:outline-none"
         type="button"
         onClick={onClick}
       >
@@ -50,7 +97,7 @@ const PrevArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
     <Media lessThan="md">
       <button
         aria-label="Previous"
-        className="left-3.5 absolute text-4xl md:container font-semibold -bottom-36"
+        className="left-5 absolute text-4xl -bottom-16 font-semibold focus:outline-none"
         type="button"
         onClick={onClick}
       >
@@ -61,141 +108,80 @@ const PrevArrow: React.FC<ArrowProps> = ({ onClick }: ArrowProps) => (
     <Media greaterThanOrEqual="md">
       <button
         aria-label="Previous"
-        className="container absolute z-50 flex items-center w-40 text-4xl md:w-56 lg:w-56 md:space-x-6 font-semibold -bottom-48"
+        className="absolute left-5 -bottom-56 my-10 font-semibold flex items-center space-x-6 focus:outline-none"
         type="button"
         onClick={onClick}
       >
         <Image height="44px" width="84px" src={ARROW_PREVIOUS_SVG} />
-        <p>Previous</p>
+        <span>Previous</span>
       </button>
     </Media>
   </>
 );
 
 const TeamCarousel: React.FC = () => {
-  const [currentFirstSlide, setcurrentFirstSlide] = useState(0);
+  const slickRef = useRef();
+  const [sliderIndex, setSliderIndex] = useState(0);
+  const [progress, setProgress] = useState(0);
 
-  const progressFill = useMemo(
-    () => currentFirstSlide < TEAM.length + 1 && (100 / TEAM.length) * currentFirstSlide,
-    [currentFirstSlide]
-  );
+  const handleProgress = useCallback(() => {
+    if (slickRef.current) {
+      const { state }: { state: ResponsiveBreakPoint } = slickRef.current;
+      const currentSettings = RESPONSIVE_BREAKPOINTS.find(
+        ({ breakpoint }) => breakpoint === state.breakpoint
+      );
+      if (currentSettings) {
+        const result = Math.ceil(
+          (100 / TEAM.length) * (currentSettings.settings.slidesToShow + sliderIndex)
+        );
+        setProgress(result);
+      } else {
+        setProgress(0);
+      }
+    }
+  }, [useRef, sliderIndex]);
 
   const settings = {
-    infinite: true,
-    centerMode: true,
-    speed: 1000,
-    slidesToShow: 1,
+    dots: false,
+    infinite: false,
+    slidesToShow: 6,
     slidesToScroll: 1,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
-    beforeChange: (current) => setcurrentFirstSlide(current + 2),
-    responsive: [
-      {
-        breakpoint: 1950,
-        settings: {
-          slidesToShow: 5.2,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 1700,
-        settings: {
-          slidesToShow: 4.4,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 1450,
-        settings: {
-          slidesToShow: 3.6,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 1025,
-        settings: {
-          slidesToShow: 2.5,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 800,
-        settings: {
-          slidesToShow: 1.8,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 500,
-        settings: {
-          centerMode: false,
-          slidesToShow: 1.1,
-          slidesToScroll: 1,
-        },
-      },
-    ],
+    onInit: handleProgress,
+    onReInit: handleProgress,
+    beforeChange: (current, next) => setSliderIndex(next),
+    responsive: RESPONSIVE_BREAKPOINTS,
   };
 
   return (
-    <div className="relative lg:pb-96 md:pb-72 pb-48 px-3.5 md:px-0">
-      <div
-        style={{ height: '46%' }}
-        className="absolute top-0 left-0 w-full pt-4 bg-center bg-cover md:pt-0 bg-beige"
-      >
-        <h3 className="px-3.5 md:px-0 font-sans text-5xl font-semibold md:text-center md:font-normal md:text-6xl lg:text-7xl">
-          Meet our team
-        </h3>
-      </div>
-      <div
-        style={{ height: '55%' }}
-        className="absolute bottom-0 left-0 w-full -mb-1 bg-beige md:bg-lightBlue"
-      >
-        <div style={{ width: '90%', marginLeft: '5%' }} className="h-px mt-56 bg-lightGray" />
-        <AnimatePresence>
-          <div style={{ marginLeft: '5%', marginRight: '5%' }}>
+    <div className="bg-beige pb-28">
+      <Wrapper hasPadding={false}>
+        <h2 className="text-center text-6xl xl:text-7xl mb-10">Meet our team</h2>
+        <div>
+          <Slider {...settings} ref={slickRef}>
+            {TEAM.map((t) => (
+              <div className="p-5" key={t.key}>
+                <Card role={t.role} name={t.name} photo={t.img} profileURL={t.profileURL} />
+              </div>
+            ))}
+          </Slider>
+        </div>
+        <div className="relative z-50 mx-5 mt:10 lg:mt-28">
+          <AnimatePresence>
             <motion.div
               initial={{ width: 0 }}
-              animate={{ width: `${progressFill || 100 / TEAM.length}%` }}
+              animate={{ width: `${progress}%` }}
               transition={{ duration: 0.4 }}
               style={{
                 marginTop: '-2px',
-                width: `${progressFill || 100 / TEAM.length}%`,
+                width: `${progress}%`,
               }}
               className="h-1 bg-black"
             />
-          </div>
-        </AnimatePresence>
-      </div>
-      <div className="pt-20 md:pt-40">
-        <Media lessThan="md">
-          <Slider {...settings}>
-            {TEAM.map((t) => (
-              <Card
-                key={t.key}
-                role={t.role}
-                name={t.name}
-                photo={t.img}
-                profileURL={t.profileURL}
-              />
-            ))}
-          </Slider>
-        </Media>
-        <Media greaterThanOrEqual="md">
-          <div className="px-12 lg:px-16 xl:px-24">
-            <Slider {...settings}>
-              {TEAM.map((t) => (
-                <Card
-                  key={t.key}
-                  role={t.role}
-                  name={t.name}
-                  photo={t.img}
-                  profileURL={t.profileURL}
-                />
-              ))}
-            </Slider>
-          </div>
-        </Media>
-      </div>
+          </AnimatePresence>
+        </div>
+      </Wrapper>
     </div>
   );
 };

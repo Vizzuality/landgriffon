@@ -17,15 +17,15 @@ export const NAVIGATION_RIGHT = {
 };
 
 export const NAVIGATION_RIGHT_HREF = {
-  [Types.Analyze]: '/forecast',
-  [Types.Measure]: '/analyze',
-  [Types.Forecast]: '/measure',
+  [Types.Analyze]: '/services/forecast',
+  [Types.Measure]: '/services/analyze',
+  [Types.Forecast]: '/services/measure',
 };
 
 export const NAVIGATION_LEFT_HREF = {
-  [Types.Analyze]: '/measure',
-  [Types.Measure]: '/forecast',
-  [Types.Forecast]: '/analyze',
+  [Types.Analyze]: '/services/measure',
+  [Types.Measure]: '/services/forecast',
+  [Types.Forecast]: '/services/analyze',
 };
 
 export const NAVIGATION_MOBILE_LEFT = {

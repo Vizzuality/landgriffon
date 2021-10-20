@@ -1,8 +1,8 @@
 MAKEFLAGS += -j8
 
-all: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_pasture h3_grid_wf_global h3_grid_bio_global h3_grid_carbon_global h3_grid_deforestation_global
+all:  h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_pasture h3_grid_wf_global h3_grid_bio_global h3_grid_carbon_global h3_grid_deforestation_global h3_grid_pasture_production h3_grid_pasture_ha
 
-crop: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_pasture
+crop: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_pasture_ha h3_grid_pasture_production
 
 indicators: h3_grid_wf_global h3_grid_bio_global h3_grid_carbon_global h3_grid_deforestation_global
 
@@ -243,10 +243,29 @@ data/earthstat/CroplandPastureArea2000_global_ha: data/earthstat/CroplandPasture
 	rm -f data/earthstat/CroplandPastureArea2000_global_ha/Pasture2000_5m.tif
 
 # and import to a table called "h3_grid_earthstat2000_global_ha"
-h3_grid_pasture: data/earthstat/CroplandPastureArea2000_global_ha
+h3_grid_pasture_ha: data/earthstat/CroplandPastureArea2000_global_ha
 	python tiff_folder_to_h3_table.py $< $@ harvest_area es --h3-res=6
 
+#PATURE PRODUCTION - value for 2010
+#merge with admin areas country level -join $< keys=NAME_0,Area
+data/earthstat/FAOSTATS/FAOSTAT_data.shp:
+	mapshaper ../data_download/gadm_3.6/data/gadm/gadm36_0.shp -simplify 10% planar keep-shapes \
+	-clean \
+	-each 'COUNT=this.area/100000000' \
+	-join ./FAOSTATS/FAOSTAT_cattle_production.csv keys=NAME_0,Area \
+	-o $@ force
 
+data/earthstat/FAOSTATS/FAOSTAT_pasture_production.tif: data/earthstat/FAOSTATS/FAOSTAT_data.shp
+	gdal_rasterize -l FAOSTAT_data -a Value -tr 0.083333 0.083333 -a_nodata -1.0 -te -180.0 -89.99928 179.99856 90.0 -ot Float32 -of GTiff $< data/earthstat/FAOSTATS/pasture_contry_production_t.tif
+	gdal_rasterize -l FAOSTAT_data -a COUNT -tr 0.083333 0.083333 -a_nodata -1.0 -te -180.0 -89.99928 179.99856 90.0 -ot Float32 -of GTiff $< data/earthstat/FAOSTATS/pasture_contry_count.tif
+	gdal_calc.py --calc "A/B" --format GTiff --type Float32 -A data/earthstat/FAOSTATS/pasture_contry_production_t.tif --A_band 1 -B data/earthstat/FAOSTATS/pasture_contry_count.tif --outfile $@
+	rm -f data/earthstat/FAOSTATS/pasture_contry_production_t.tif
+	rm -f data/earthstat/FAOSTATS/pasture_contry_count.tif
+
+h3_grid_pasture_production: data/earthstat/FAOSTATS/FAOSTAT_pasture_production.tif
+	python tiff_folder_to_h3_table.py data/earthstat/FAOSTATS $@ production es --h3-res=6
+
+#
 # ^^^
 #######################################
 

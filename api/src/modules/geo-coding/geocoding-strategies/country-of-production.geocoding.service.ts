@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { GeoCodingBaseService } from 'modules/geo-coding/geo-coding.base.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { GeocodeResponseData } from '@googlemaps/google-maps-services-js/dist/geocode/geocode';
 
 @Injectable()
 export class CountryOfProductionService extends GeoCodingBaseService {
@@ -23,7 +24,7 @@ export class CountryOfProductionService extends GeoCodingBaseService {
     // Geo-code country to get short_name property which matches isoA2 when location is a country
     // Find admin-region and geo-region ids via isoA2Alpha code
 
-    const geoCodedResponse = await this.geoCodeByCountry(
+    const geoCodedResponse: GeocodeResponseData = await this.geoCodeByCountry(
       sourcingData?.locationCountryInput,
     );
 

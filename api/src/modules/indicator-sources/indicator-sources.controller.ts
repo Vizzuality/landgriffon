@@ -31,6 +31,7 @@ import {
 } from 'modules/indicator-sources/indicator-source.entity';
 import { CreateIndicatorSourceDto } from 'modules/indicator-sources/dto/create.indicator-source.dto';
 import { UpdateIndicatorSourceDto } from 'modules/indicator-sources/dto/update.indicator-source.dto';
+import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/indicator-sources`)
 @ApiTags(indicatorSourceResource.className)
@@ -61,9 +62,10 @@ export class IndicatorSourcesController {
     })
     fetchSpecification: FetchSpecification,
   ): Promise<IndicatorSource> {
-    const results = await this.indicatorSourcesService.findAllPaginated(
-      fetchSpecification,
-    );
+    const results: {
+      data: (Partial<IndicatorSource> | undefined)[];
+      metadata: PaginationMeta | undefined;
+    } = await this.indicatorSourcesService.findAllPaginated(fetchSpecification);
     return this.indicatorSourcesService.serialize(
       results.data,
       results.metadata,

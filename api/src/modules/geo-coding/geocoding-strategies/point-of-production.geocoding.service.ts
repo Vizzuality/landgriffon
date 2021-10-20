@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { GeoCodingBaseService } from 'modules/geo-coding/geo-coding.base.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
+import { GeocodeResponseData } from '@googlemaps/google-maps-services-js/dist/geocode/geocode';
+import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 
 @Injectable()
 export class PointOfProductionGeocodingService extends GeoCodingBaseService {
@@ -15,7 +17,7 @@ export class PointOfProductionGeocodingService extends GeoCodingBaseService {
       );
 
     if (sourcingData.locationLongitude && sourcingData.locationLatitude) {
-      const geoCodeResponseData = await this.geoCodeByCountry(
+      const geoCodeResponseData: GeocodeResponseData = await this.geoCodeByCountry(
         sourcingData.locationCountryInput,
       );
       const {
@@ -23,7 +25,10 @@ export class PointOfProductionGeocodingService extends GeoCodingBaseService {
       } = await this.adminRegionService.getAdminAndGeoRegionIdByCountryIsoAlpha2(
         this.getIsoA2Code(geoCodeResponseData),
       );
-      const geoRegionId = await this.geoRegionService.saveGeoRegionAsPoint({
+      const geoRegionId: Pick<
+        GeoRegion,
+        'id'
+      > = await this.geoRegionService.saveGeoRegionAsPoint({
         name: sourcingData.locationCountryInput,
         coordinates: {
           lat: sourcingData.locationLatitude,
@@ -37,7 +42,7 @@ export class PointOfProductionGeocodingService extends GeoCodingBaseService {
       };
     }
     if (sourcingData.locationAddressInput) {
-      const geocodedResponseData = await this.geoCodeByAddress(
+      const geocodedResponseData: GeocodeResponseData = await this.geoCodeByAddress(
         sourcingData.locationAddressInput,
       );
       const {
@@ -45,7 +50,10 @@ export class PointOfProductionGeocodingService extends GeoCodingBaseService {
       } = await this.adminRegionService.getAdminAndGeoRegionIdByCountryIsoAlpha2(
         this.getIsoA2Code(geocodedResponseData),
       );
-      const geoRegionId = await this.geoRegionService.saveGeoRegionAsPoint({
+      const geoRegionId: Pick<
+        GeoRegion,
+        'id'
+      > = await this.geoRegionService.saveGeoRegionAsPoint({
         name: sourcingData.locationCountryInput,
         coordinates: {
           lat: geocodedResponseData.results[0].geometry.location.lat,

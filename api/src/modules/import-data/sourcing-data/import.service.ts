@@ -17,6 +17,7 @@ import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing
 import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { Material } from 'modules/materials/material.entity';
+import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -90,14 +91,14 @@ export class SourcingRecordsImportService {
         );
       }
 
-      const businessUnits = await this.businessUnitService.createTree(
+      const businessUnits: BusinessUnit[] = await this.businessUnitService.createTree(
         dtoMatchedData.businessUnits,
       );
 
-      const suppliers = await this.supplierService.createTree(
+      const suppliers: Supplier[] = await this.supplierService.createTree(
         dtoMatchedData.suppliers,
       );
-      const sourcingDataWithOrganizationalEntities = this.relateSourcingDataWithOrganizationalEntities(
+      const sourcingDataWithOrganizationalEntities: any = this.relateSourcingDataWithOrganizationalEntities(
         suppliers,
         businessUnits,
         materials,

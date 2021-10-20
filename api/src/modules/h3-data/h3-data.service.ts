@@ -58,12 +58,14 @@ export class H3DataService {
      * As all material-maps share the same unit, and we have no way no retrieve this unit from DB
      * as it does not exist, we hardcode it here and send it back as response
      */
-    const MATERIAL_UNIT = 'tonnes';
+    const MATERIAL_UNIT: string = 'tonnes';
     /**
      * @note To generate a Material Map, a producerId is required
      */
     const { producerId } = await this.materialService.getById(materialId);
-    const materialH3Data = await this.h3DataRepository.findOne(producerId);
+    const materialH3Data:
+      | H3Data
+      | undefined = await this.h3DataRepository.findOne(producerId);
 
     if (!materialH3Data)
       throw new NotFoundException(
@@ -96,7 +98,9 @@ export class H3DataService {
     /**
      * @note To generate a Risk Map, a harvestId and h3Data by indicatorId are required
      */
-    const indicatorH3Data = await this.h3DataRepository.findOne({
+    const indicatorH3Data:
+      | H3Data
+      | undefined = await this.h3DataRepository.findOne({
       where: { indicatorId: indicatorId },
     });
 
@@ -111,7 +115,9 @@ export class H3DataService {
         `There is no H3 Data for Material with ID: ${materialId}`,
       );
     }
-    const materialH3Data = await this.h3DataRepository.findOne(harvestId);
+    const materialH3Data:
+      | H3Data
+      | undefined = await this.h3DataRepository.findOne(harvestId);
 
     const indicator: Indicator = await this.indicatorService.getIndicatorById(
       indicatorId,
@@ -139,7 +145,10 @@ export class H3DataService {
     let tmpTableName: string = 'test';
     switch (indicator.nameCode) {
       case INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE:
-        const waterRiskmapResponse = await this.h3DataRepository.getWaterRiskMapByResolution(
+        const waterRiskmapResponse: {
+          riskMap: H3IndexValueData[];
+          tmpTableName: string;
+        } = await this.h3DataRepository.getWaterRiskMapByResolution(
           indicatorH3Data,
           materialH3Data as H3Data,
           factor as number,
@@ -149,7 +158,10 @@ export class H3DataService {
         tmpTableName = waterRiskmapResponse.tmpTableName;
         break;
       case INDICATOR_TYPES.DEFORESTATION:
-        const deforestationRiskmapResponse = await this.h3DataRepository.getDeforestationLossRiskMapByResolution(
+        const deforestationRiskmapResponse: {
+          riskMap: H3IndexValueData[];
+          tmpTableName: string;
+        } = await this.h3DataRepository.getDeforestationLossRiskMapByResolution(
           indicatorH3Data,
           materialH3Data as H3Data,
           resolution,
@@ -158,8 +170,11 @@ export class H3DataService {
         tmpTableName = deforestationRiskmapResponse.tmpTableName;
         break;
       case INDICATOR_TYPES.CARBON_EMISSIONS:
-        const deforestationH3DataForCarbonEmissions = await this.indicatorService.getDeforestationH3Data();
-        const carbonEmissionRiskmapResponse = await this.h3DataRepository.getCarbonEmissionsRiskMapByResolution(
+        const deforestationH3DataForCarbonEmissions: H3Data = await this.indicatorService.getDeforestationH3Data();
+        const carbonEmissionRiskmapResponse: {
+          riskMap: H3IndexValueData[];
+          tmpTableName: string;
+        } = await this.h3DataRepository.getCarbonEmissionsRiskMapByResolution(
           indicatorH3Data,
           materialH3Data as H3Data,
           deforestationH3DataForCarbonEmissions,
@@ -171,8 +186,11 @@ export class H3DataService {
 
         break;
       case INDICATOR_TYPES.BIODIVERSITY_LOSS:
-        const deforestationH3DataForBiodiversityLoss = await this.indicatorService.getDeforestationH3Data();
-        const biodiversityRiskmapResponse = await this.h3DataRepository.getBiodiversityLossRiskMapByResolution(
+        const deforestationH3DataForBiodiversityLoss: H3Data = await this.indicatorService.getDeforestationH3Data();
+        const biodiversityRiskmapResponse: {
+          riskMap: H3IndexValueData[];
+          tmpTableName: string;
+        } = await this.h3DataRepository.getBiodiversityLossRiskMapByResolution(
           indicatorH3Data,
           materialH3Data as H3Data,
           deforestationH3DataForBiodiversityLoss,
@@ -219,6 +237,23 @@ export class H3DataService {
     const materials: Material[] = await this.materialService.getMaterialsById(
       getImpactMapDto.materials,
     );
+
+    // const indicatorH3Data = await this.h3DataRepository.findOne({
+    //   where: { indicatorId: indicatorId },
+    // });
+    //
+    // if (!indicatorH3Data)
+    //   throw new NotFoundException(
+    //     `There is no H3 Data for Indicator with ID: ${indicatorId}`,
+    //   );
+    // const { harvestId } = await this.materialService.getById(materialId);
+    //
+    // if (!harvestId) {
+    //   throw new NotFoundException(
+    //     `There is no H3 Data for Material with ID: ${materialId}`,
+    //   );
+    // }
+    // const materialH3Data = await this.h3DataRepository.findOne(harvestId);
 
     // if (!indicatorH3Data)
     //   throw new NotFoundException(

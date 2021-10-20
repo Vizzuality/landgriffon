@@ -33,6 +33,7 @@ import { UpdateMaterialDto } from 'modules/materials/dto/update.material.dto';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
 import { ParseOptionalIntPipe } from 'pipes/parse-optional-int.pipe';
+import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/materials`)
 @ApiTags(materialResource.className)
@@ -65,9 +66,10 @@ export class MaterialsController {
     })
     fetchSpecification: FetchSpecification,
   ): Promise<Material> {
-    const results = await this.materialsService.findAllPaginated(
-      fetchSpecification,
-    );
+    const results: {
+      data: (Partial<Material> | undefined)[];
+      metadata: PaginationMeta | undefined;
+    } = await this.materialsService.findAllPaginated(fetchSpecification);
     return this.materialsService.serialize(results.data, results.metadata);
   }
 
@@ -90,9 +92,11 @@ export class MaterialsController {
   async getTrees(
     @Query('depth', ParseOptionalIntPipe) depth?: number,
   ): Promise<Material> {
-    const results = await this.materialsService.findTreesWithOptions({
-      depth,
-    });
+    const results: Material[] = await this.materialsService.findTreesWithOptions(
+      {
+        depth,
+      },
+    );
     return this.materialsService.serialize(results);
   }
 

@@ -39,7 +39,9 @@ export class BusinessUnitsService extends AppBaseService<
   }
 
   async getBusinessUnitById(id: number): Promise<BusinessUnit> {
-    const found = await this.businessUnitRepository.findOne(id);
+    const found:
+      | BusinessUnit
+      | undefined = await this.businessUnitRepository.findOne(id);
 
     if (!found) {
       throw new NotFoundException(`Business Unit with ID "${id}" not found`);

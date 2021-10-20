@@ -31,6 +31,7 @@ import {
 } from 'modules/indicator-coefficients/indicator-coefficient.entity';
 import { CreateIndicatorCoefficientDto } from 'modules/indicator-coefficients/dto/create.indicator-coefficient.dto';
 import { UpdateIndicatorCoefficientDto } from 'modules/indicator-coefficients/dto/update.indicator-coefficient.dto';
+import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/indicator-coefficients`)
 @ApiTags(indicatorCoefficientResource.className)
@@ -61,7 +62,10 @@ export class IndicatorCoefficientsController {
     })
     fetchSpecification: FetchSpecification,
   ): Promise<IndicatorCoefficient> {
-    const results = await this.indicatorCoefficientsService.findAllPaginated(
+    const results: {
+      data: (Partial<IndicatorCoefficient> | undefined)[];
+      metadata: PaginationMeta | undefined;
+    } = await this.indicatorCoefficientsService.findAllPaginated(
       fetchSpecification,
     );
     return this.indicatorCoefficientsService.serialize(

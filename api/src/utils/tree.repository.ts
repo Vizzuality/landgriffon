@@ -21,9 +21,11 @@ export class ExtendedTreeRepository<
       return super.findTrees();
     }
 
-    const roots = await this.findRoots();
+    const roots: Entity[] = await this.findRoots();
     roots.forEach((root: Entity) => {
-      const rootEntityId = this.metadata.primaryColumns[0].getEntityValue(root);
+      const rootEntityId: string = this.metadata.primaryColumns[0].getEntityValue(
+        root,
+      );
       this.depthHack[rootEntityId] = args.depth as number;
     });
     await Promise.all(
@@ -41,8 +43,9 @@ export class ExtendedTreeRepository<
     entities: any[],
     relationMaps: { id: any; parentId: any }[],
   ): void {
-    const childProperty = this.metadata.treeChildrenRelation!.propertyName;
-    const parentEntityId = this.metadata.primaryColumns[0].getEntityValue(
+    const childProperty: string = this.metadata.treeChildrenRelation!
+      .propertyName;
+    const parentEntityId: string = this.metadata.primaryColumns[0].getEntityValue(
       entity,
     );
     const parentEntityDepth: number =
@@ -52,11 +55,11 @@ export class ExtendedTreeRepository<
       return;
     }
 
-    const childRelationMaps = relationMaps.filter(
+    const childRelationMaps: { id: any; parentId: any }[] = relationMaps.filter(
       (relationMap: { id: any; parentId: any }) =>
         relationMap.parentId === parentEntityId,
     );
-    const childIds = new Set(
+    const childIds: Set<{ id: any; parentId: any }> = new Set(
       childRelationMaps.map(
         (relationMap: { id: any; parentId: any }) => relationMap.id,
       ),
@@ -65,7 +68,7 @@ export class ExtendedTreeRepository<
       childIds.has(this.metadata.primaryColumns[0].getEntityValue(entity)),
     );
     entity[childProperty].forEach((childEntity: any) => {
-      const childEntityId = this.metadata.primaryColumns[0].getEntityValue(
+      const childEntityId: string = this.metadata.primaryColumns[0].getEntityValue(
         childEntity,
       );
       if (parentEntityDepth !== 0) {
@@ -96,10 +99,13 @@ export class ExtendedTreeRepository<
       },
     );
     let matches: (Entity & WithExplodedPath)[] = [];
-    let depth = 0;
+    let depth: number = 0;
 
     while (rest.length > 0) {
-      const response = this.splitByPathDepth(rest, depth);
+      const response: {
+        matches: (CreateDto & WithExplodedPath)[];
+        rest: (CreateDto & WithExplodedPath)[];
+      } = this.splitByPathDepth(rest, depth);
       if (
         response.rest.length > 0 &&
         response.matches.length === 0 &&

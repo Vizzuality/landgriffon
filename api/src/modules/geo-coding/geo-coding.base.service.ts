@@ -11,7 +11,10 @@ import {
   GeocodeRequest,
 } from '@googlemaps/google-maps-services-js';
 
-import { GeocodeResponseData } from '@googlemaps/google-maps-services-js/dist/geocode/geocode';
+import {
+  GeocodeResponse,
+  GeocodeResponseData,
+} from '@googlemaps/google-maps-services-js/dist/geocode/geocode';
 import * as config from 'config';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 
@@ -47,7 +50,7 @@ export class GeoCodingBaseService {
 
   async geocode(geocodeRequest: GeocodeRequest): Promise<GeocodeResponseData> {
     this.logger.debug('Geocoding');
-    let response;
+    let response: GeocodeResponse;
     try {
       response = await this.client.geocode(geocodeRequest);
     } catch (error) {

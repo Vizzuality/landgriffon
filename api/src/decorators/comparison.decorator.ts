@@ -18,7 +18,7 @@ export function IsGreaterOrEqualThan(
       validator: {
         validate(value: any, args: ValidationArguments) {
           const [relatedPropertyName] = args.constraints;
-          const relatedValue = (args.object as any)[relatedPropertyName];
+          const relatedValue: any = (args.object as any)[relatedPropertyName];
           if (
             typeof value === 'undefined' &&
             typeof relatedValue === 'undefined'
@@ -33,7 +33,7 @@ export function IsGreaterOrEqualThan(
         },
         defaultMessage(args: ValidationArguments) {
           const [relatedPropertyName] = args.constraints;
-          const relatedValue = (args.object as any)[relatedPropertyName];
+          const relatedValue: any = (args.object as any)[relatedPropertyName];
           return `Value ${args.property} (${args.value}) must be greater or equal than the value of ${relatedPropertyName} (${relatedValue})`;
         },
       },
@@ -55,7 +55,7 @@ export function IsSmallerOrEqualThan(
       validator: {
         validate(value: any, args: ValidationArguments) {
           const [relatedPropertyName] = args.constraints;
-          const relatedValue = (args.object as any)[relatedPropertyName];
+          const relatedValue: any = (args.object as any)[relatedPropertyName];
           if (
             typeof value === 'undefined' &&
             typeof relatedValue === 'undefined'
@@ -70,7 +70,7 @@ export function IsSmallerOrEqualThan(
         },
         defaultMessage(args: ValidationArguments) {
           const [relatedPropertyName] = args.constraints;
-          const relatedValue = (args.object as any)[relatedPropertyName];
+          const relatedValue: any = (args.object as any)[relatedPropertyName];
           return `Value ${args.property} (${args.value}) must be smaller or equal than the value of ${relatedPropertyName} (${relatedValue})`;
         },
       },

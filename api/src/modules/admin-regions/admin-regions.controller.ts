@@ -31,6 +31,7 @@ import {
 } from 'modules/admin-regions/admin-region.entity';
 import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-region.dto';
 import { UpdateAdminRegionDto } from 'modules/admin-regions/dto/update.admin-region.dto';
+import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/admin-regions`)
 @ApiTags(adminRegionResource.className)
@@ -59,9 +60,10 @@ export class AdminRegionsController {
     })
     fetchSpecification: FetchSpecification,
   ): Promise<AdminRegion> {
-    const results = await this.adminRegionsService.findAllPaginated(
-      fetchSpecification,
-    );
+    const results: {
+      data: (Partial<AdminRegion> | undefined)[];
+      metadata: PaginationMeta | undefined;
+    } = await this.adminRegionsService.findAllPaginated(fetchSpecification);
     return this.adminRegionsService.serialize(results.data, results.metadata);
   }
 

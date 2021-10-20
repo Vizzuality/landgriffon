@@ -134,7 +134,7 @@ export class UsersService extends AppBaseService<
     userId: string,
     currentAndNewPasswords: UpdateUserPasswordDTO,
   ): Promise<void> {
-    const user = await this.getById(userId);
+    const user: User = await this.getById(userId);
     if (
       user &&
       (await compare(

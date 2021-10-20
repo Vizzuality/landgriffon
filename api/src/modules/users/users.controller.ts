@@ -29,6 +29,7 @@ import {
 } from 'nestjs-base-service';
 import { UpdateUserDTO } from 'modules/users/dto/update.user.dto';
 import { UpdateUserPasswordDTO } from 'modules/users/dto/update.user-password';
+import { PaginationMeta } from 'utils/app-base.service';
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
@@ -60,7 +61,10 @@ export class UsersController {
     })
     fetchSpecification: FetchSpecification,
   ): Promise<User[]> {
-    const results = await this.service.findAllPaginated(fetchSpecification);
+    const results: {
+      data: (Partial<User> | undefined)[];
+      metadata: PaginationMeta | undefined;
+    } = await this.service.findAllPaginated(fetchSpecification);
     return this.service.serialize(results.data, results.metadata);
   }
 

@@ -116,7 +116,9 @@ export class MaterialsService extends AppBaseService<
   }
 
   async getMaterialById(id: string): Promise<Material> {
-    const found = await this.materialRepository.findOne(id);
+    const found: Material | undefined = await this.materialRepository.findOne(
+      id,
+    );
 
     if (!found) {
       throw new NotFoundException(`Material with ID "${id}" not found`);

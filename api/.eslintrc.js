@@ -28,6 +28,10 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-inferrable-types': 'off',
+    // '@typescript-eslint/no-inferrable-types': [
+    //   'error',
+    //   { ignoreParameters: true, ignoreProperties: true },
+    // ],
     '@typescript-eslint/typedef': [
       'error',
       {
@@ -37,7 +41,7 @@ module.exports = {
         objectDestructuring: false,
         parameter: true,
         propertyDeclaration: true,
-        variableDeclaration: false,
+        variableDeclaration: true,
         variableDeclarationIgnoreFunction: true,
       },
     ],
@@ -46,7 +50,22 @@ module.exports = {
     {
       files: ['test/**/*.ts'],
       rules: {
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-inferrable-types': 'off',
         'no-restricted-imports': 'off',
+        '@typescript-eslint/typedef': [
+          'error',
+          {
+            arrayDestructuring: false,
+            arrowParameter: true,
+            memberVariableDeclaration: true,
+            objectDestructuring: false,
+            parameter: true,
+            propertyDeclaration: true,
+            variableDeclaration: false,
+            variableDeclarationIgnoreFunction: true,
+          },
+        ],
       },
     },
   ],

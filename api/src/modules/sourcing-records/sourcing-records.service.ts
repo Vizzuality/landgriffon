@@ -47,7 +47,9 @@ export class SourcingRecordsService extends AppBaseService<
   }
 
   async getSourcingRecordById(id: number): Promise<SourcingRecord> {
-    const found = await this.sourcingRecordRepository.findOne(id);
+    const found:
+      | SourcingRecord
+      | undefined = await this.sourcingRecordRepository.findOne(id);
 
     if (!found) {
       throw new NotFoundException(`Sourcing Record with ID "${id}" not found`);

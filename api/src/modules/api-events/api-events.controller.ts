@@ -36,6 +36,7 @@ import {
 } from 'modules/api-events/api-event.entity';
 import { ApiEventsService } from 'modules/api-events/api-events.service';
 import { CreateApiEventDTO } from 'modules/api-events/dto/create.api-event.dto';
+import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/api-events`)
 @UseGuards(AuthGuard('jwt'))
@@ -57,7 +58,10 @@ export class ApiEventsController {
   async findAll(
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
   ): Promise<ApiEventResult> {
-    const results = await this.service.findAllPaginated(fetchSpecification);
+    const results: {
+      data: (Partial<ApiEvent> | undefined)[];
+      metadata: PaginationMeta | undefined;
+    } = await this.service.findAllPaginated(fetchSpecification);
     return this.service.serialize(results.data, results.metadata);
   }
 

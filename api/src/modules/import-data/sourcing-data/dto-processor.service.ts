@@ -110,7 +110,7 @@ export class SourcingRecordsDtoProcessorService {
     /**
      * Clean all hashmaps that are empty therefore useless
      */
-    const nonEmptyData = customData.filter(
+    const nonEmptyData: WorkSheet[] = customData.filter(
       (row: WorkSheet) =>
         row['material.hsCode'] && row['material.hsCode'] !== '',
     );
@@ -161,7 +161,11 @@ export class SourcingRecordsDtoProcessorService {
        * of their relationship
        */
 
-      const sourcingLocationWithSourcingRecords = {
+      const sourcingLocationWithSourcingRecords: {
+        [p: string]: any;
+        metadata: Record<string, any>;
+        sourcingRecords: Record<string, any>[];
+      } = {
         ...sourcingLocation,
         sourcingRecords,
         metadata,
@@ -253,7 +257,7 @@ export class SourcingRecordsDtoProcessorService {
 
     const sourcingLocationDtos: any[] = [];
     importData.forEach((importRow: Record<string, any>) => {
-      const sourcingLocationDto = this.createSourcingLocationDTOFromData(
+      const sourcingLocationDto: CreateSourcingLocationDto = this.createSourcingLocationDTOFromData(
         importRow,
         sourcingLocationGroupId,
       );
@@ -276,7 +280,7 @@ export class SourcingRecordsDtoProcessorService {
   }
 
   private createMaterialDTOFromData(materialData: Record<string, any>): any {
-    const materialDto = new CreateMaterialDto();
+    const materialDto: CreateMaterialDto = new CreateMaterialDto();
     materialDto.name = materialData.name;
     materialDto.description = materialData.description;
     materialDto.hsCodeId = materialData.hs_2017_code;
@@ -288,7 +292,7 @@ export class SourcingRecordsDtoProcessorService {
   private createBusinessUnitDTOFromData(
     businessUnitData: Record<string, any>,
   ): CreateBusinessUnitDto {
-    const businessUnitDto = new CreateBusinessUnitDto();
+    const businessUnitDto: CreateBusinessUnitDto = new CreateBusinessUnitDto();
     businessUnitDto.name = businessUnitData.name;
     businessUnitDto.description = businessUnitData.description;
     businessUnitDto.mpath = businessUnitData.path_id;
@@ -298,7 +302,7 @@ export class SourcingRecordsDtoProcessorService {
   private crateSuppliersDTOFromData(
     supplierData: Record<string, any>,
   ): CreateSupplierDto {
-    const suppliersDto = new CreateSupplierDto();
+    const suppliersDto: CreateSupplierDto = new CreateSupplierDto();
     suppliersDto.name = supplierData.name;
     suppliersDto.description = supplierData.description;
     suppliersDto.mpath = supplierData.path_id;
@@ -308,7 +312,7 @@ export class SourcingRecordsDtoProcessorService {
   private createAdminRegionDTOFromData(
     adminRegionData: Record<string, any>,
   ): CreateAdminRegionDto {
-    const adminRegionDto = new CreateAdminRegionDto();
+    const adminRegionDto: CreateAdminRegionDto = new CreateAdminRegionDto();
     adminRegionDto.name = adminRegionData.name;
     adminRegionDto.isoA3 = adminRegionData.iso_a3;
     adminRegionDto.isoA2 = adminRegionData.iso_a2;
@@ -319,7 +323,7 @@ export class SourcingRecordsDtoProcessorService {
     sourcingLocationData: Record<string, any>,
     sourcingLocationGroupId: string,
   ): CreateSourcingLocationDto {
-    const sourcingLocationDto = new CreateSourcingLocationDto();
+    const sourcingLocationDto: CreateSourcingLocationDto = new CreateSourcingLocationDto();
     sourcingLocationDto.locationType = sourcingLocationData.location_type;
     sourcingLocationDto.locationCountryInput =
       sourcingLocationData.location_country_input;
@@ -354,7 +358,7 @@ export class SourcingRecordsDtoProcessorService {
   private createSourcingRecordDTOFromData(
     sourcingRecordData: Record<string, any>,
   ): CreateSourcingRecordDto {
-    const sourcingRecordDto = new CreateSourcingRecordDto();
+    const sourcingRecordDto: CreateSourcingRecordDto = new CreateSourcingRecordDto();
     sourcingRecordDto.tonnage = sourcingRecordData.tonnage;
     sourcingRecordDto.year = sourcingRecordData.year;
     return sourcingRecordDto;

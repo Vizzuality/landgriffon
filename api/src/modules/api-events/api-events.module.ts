@@ -9,7 +9,7 @@ import {
 import { ApiEventsController } from 'modules/api-events/api-events.controller';
 import { ApiEventsService } from 'modules/api-events/api-events.service';
 
-export const logger = new Logger('ApiEvents');
+export const logger: Logger = new Logger('ApiEvents');
 
 @Module({
   imports: [

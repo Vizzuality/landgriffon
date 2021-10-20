@@ -15,9 +15,9 @@ const Wrapper: React.FC<WrapperProps> = ({
 }: WrapperProps) => (
   <div
     className={cx(
-      'md:container px-3.5 md:px-0 mx-auto w-full h-full',
+      'md:container px-3.5 xl:px-0 mx-auto w-full h-full',
       {
-        'md:px-16': hasPadding,
+        'md:px-16 xl:px-16': hasPadding,
       },
       className
     )}

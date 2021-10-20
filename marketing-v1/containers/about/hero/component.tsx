@@ -44,7 +44,7 @@ const AboutHero: React.FC = () => (
               <Image objectFit="cover" layout="fill" src="/images/about/about-5.jpg" />
             </div>
             <div className="md:col-start-4 md:col-span-3">
-              <h2 className="text-xl font-semibold lg:text-5xl mt-28">
+              <h2 className="text-xl font-semibold lg:text-5xl mt-28 mb-10">
                 We are on a mission to make supply chains more sustainable.
               </h2>
               <p className="lg:text-xl">

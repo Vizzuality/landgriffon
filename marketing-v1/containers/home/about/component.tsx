@@ -41,6 +41,9 @@ const HomeAbout: React.FC = () => (
                 <ul className="flex flex-col space-y-10 md:my-16 md:space-y-16 text-lg lg:text-5xl font-semibold">
                   <li>Vizzuality</li>
                   <li>Satelligence</li>
+                </ul>
+                <p className="md:text-4xl mb-10 md:mb-16">Advised by: </p>
+                <ul className="flex flex-col space-y-10 md:my-16 md:space-y-16 text-lg lg:text-5xl font-semibold">
                   <li>SEI</li>
                 </ul>
                 <Link href="/about">

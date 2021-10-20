@@ -31,14 +31,8 @@ const TEAM = [
     key: 4,
     role: 'Sustainable Business & Supply Chain - Vizzuality',
     name: 'Maria Ricart',
-    img: '/images/about/team/susana-romao.jpg',
+    img: '/images/about/team/maria-ricart.jpg',
     profileURL: 'https://www.vizzuality.com/about/maria-ricart',
-  },
-  {
-    key: 5,
-    role: 'Project Manager - SEI',
-    name: 'Toby Gardner',
-    img: '/images/about/team/toby-gardner.jpg',
   },
   {
     key: 6,

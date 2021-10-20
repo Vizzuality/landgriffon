@@ -18,38 +18,30 @@ export interface CardProps {
 const Card: React.FC<CardProps> = ({ role, name, photo, profileURL, className }: CardProps) => {
   const [isHovered, setHovered] = useState(false);
   return (
-    <div
-      className={cx({
-        'cursor-pointer relative flex flex-col justify-between bg-white font-semibold w-72 h-max rounded-3xl':
-          true,
+    <figure
+      className={cx('relative bg-white rounded-3xl overflow-hidden', {
         [className]: !!className,
       })}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className="flex flex-col px-5 pt-5 h-28">
-        <p style={{ fontSize: '12px', lineHeight: '1.4rem' }} className="text-green">
-          {role}
-        </p>
-        <p className="text-xl text-black">{name}</p>
+      <figcaption className="p-5">
+        <h4 className="font-semibold text-green text-xs mb-2">{role}</h4>
+        <h3 className="font-semibold text-lg">{name}</h3>
+      </figcaption>
+      <div className="relative" style={{ height: 266 }}>
+        <Image alt={name} src={photo} layout="fill" objectFit="cover" />
       </div>
-      <Image
-        className="rounded-b-3xl"
-        alt="Susana Romão"
-        src={photo}
-        height="288px"
-        width="266px"
-      />
       <AnimatePresence>
         {profileURL && (
           <motion.div
-            className="absolute z-50 w-full p-5 bg-white -bottom-1 rounded-b-3xl"
+            className="absolute w-full p-5 z-1 bottom-0 left-0 bg-white"
             initial={false}
             animate={{ opacity: isHovered ? 1 : 0 }}
           >
             <Link href={profileURL}>
               <a
-                className="text-base text-black underline cursor-pointer font-semibold"
+                className="hover:cursor-pointer font-semibold hover:underline"
                 target="_blank"
                 href={profileURL}
                 rel="noreferrer"
@@ -60,7 +52,7 @@ const Card: React.FC<CardProps> = ({ role, name, photo, profileURL, className }:
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </figure>
   );
 };
 

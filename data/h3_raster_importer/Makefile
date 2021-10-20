@@ -1,8 +1,8 @@
 MAKEFLAGS += -j8
 
-all:  h3_grid_pasture h3_grid_carbon_global h3_grid_deforestation_global #h3_grid_spam2010v2r0_global_prod h3_grid_bio_global#h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_wf_global h3_grid_bio_global
+all:    h3_grid_earthstat2000_global_ha h3_grid_pasture #h3_grid_carbon_global h3_grid_pasture h3_grid_spam2010v2r0_global_prod h3_grid_bio_global#h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_wf_global h3_grid_bio_global
 
-crop: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha
+crop: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_pasture
 
 indicators: h3_grid_wf_global h3_grid_bio_global h3_grid_carbon_global h3_grid_deforestation_global
 
@@ -17,9 +17,9 @@ data/mapspam/spam2010v2r0_global_prod.geotiff.zip:
 	wget -q -O $@ https://s3.amazonaws.com/mapspam/2010/v2.0/geotiff/spam2010v2r0_global_prod.geotiff.zip
 
 #Download MapSPAM crop harvest area
-data/mapspam/spam2010v2r0_global_harv_area.geotiff.zip:
+data/mapspam/spam2010v2r0_global_phys_area.geotiff.zip:
 	mkdir -p data/mapspam
-	wget -q -O $@ https://s3.amazonaws.com/mapspam/2010/v2.0/geotiff/spam2010v2r0_global_harv_area.geotiff.zip
+	wget -q -O $@ https://s3.amazonaws.com/mapspam/2010/v2.0/geotiff/spam2010v2r0_global_phys_area.geotiff.zip
 
 #EXTRACT DATASETS:
 # <tiff_folder>: <zipfile>
@@ -29,9 +29,13 @@ data/mapspam/spam2010v2r0_global_prod: data/mapspam/spam2010v2r0_global_prod.geo
 	mkdir -p $@
 	unzip -u $< *_A.tif -d $@
 
-data/mapspam/spam2010v2r0_global_ha: data/mapspam/spam2010v2r0_global_harv_area.geotiff.zip
+data/mapspam/spam2010v2r0_global_ha: data/mapspam/spam2010v2r0_global_phys_area.geotiff.zip
 	mkdir -p $@
 	unzip -u $< *_A.tif -d $@
+	for tiffile in data/mapspam/spam2010v2r0_global_ha/*.tif; do \
+		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
+		output_file="data/earthstat/earthstat2000_global_prod/earthstat2000_global_$${table_name}.tif";\
+		gdal_calc.py --calc "A*(21825.6580549941209*21825.6580549941209*0.0001" --format GTiff --type Float32 -A /home/elena/personal/test/reprojected_spam.tif --A_band 1 --outfile /tmp/processing_cdTIXe/02e887d7db8c4e008ff9f0bc1b76bea2/OUTPUT.tif
 
 #CONVERT DATASETS:
 # <table>: <tiff_folder>
@@ -68,7 +72,7 @@ data/earthstat/earthstat2000_global_prod: data/earthstat/HarvestedAreaYield175Cr
 # Only extract the files that contain harvest area fraction. Set the no data to 0 as the mapspam datasets.
 data/earthstat/earthstat2000_global_ha: data/earthstat/HarvestedAreaYield175Crops_Geotiff.zip
 	mkdir -p $@
-	unzip -j -o -u $< *_HarvestedAreaHectares.tif -d data/earthstat/earthstat2000_global_ha
+	unzip -j -o -u $< *_HarvestedAreaFraction.tif -d data/earthstat/earthstat2000_global_ha
 	for tiffile in data/earthstat/earthstat2000_global_ha/*.tif; do \
 		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
 		output_file="data/earthstat/earthstat2000_global_ha/earthstat2000_global_$${table_name}.tif";\

@@ -1,24 +1,36 @@
 import React from 'react';
 
-import ContentCard from 'containers/content-card';
+import Image from 'next/image';
+
 import Wrapper from 'containers/wrapper';
 
 const ForecastContent: React.FC = () => (
-  <Wrapper>
-    <section className="flex flex-col justify-center space-y-8 xl:px-16 md:py-20 lg:py-36 md:space-y-36">
-      <ContentCard
-        orientation="horizontal"
-        reverse
-        imageURL="/images/forecast/forecast-2.jpg"
-        title="Explore sourcing options to find the best path forward."
-        description="See how buying from different suppliers, changing product formulas, or partnering with others can improve supply chain performance. Analyze the trade offs between different approaches to build an argument for change."
-      />
-      <ContentCard
-        orientation="horizontal"
-        imageURL="/images/forecast/forecast-3.jpg"
-        title="Plot a path to sustainability."
-        description="Draw out a plan for how your company will reach its targets. Illustrate and communicate how your company can and must evolve to be successful in tomorrow’s world."
-      />
+  <Wrapper hasPadding={false}>
+    <section className="grid md:grid-cols-12 gap-x-10 gap-y-28 mb-28">
+      <div className="md:col-span-5 space-y-10 self-items-center">
+        <h3 className="text-xl md:text-5xl font-semibold mt-10">
+          Explore sourcing options to find the best path forward.
+        </h3>
+        <p>
+          See how buying from different suppliers, changing product formulas, or partnering with
+          others can improve supply chain performance. Analyze the trade offs between different
+          approaches to build an argument for change.
+        </p>
+      </div>
+      <div className="md:col-span-7 flex justify-end">
+        <Image width="657px" height="351px" src="/images/forecast/forecast-2.jpg" />
+      </div>
+
+      <div className="md:col-span-7">
+        <Image width="657px" height="351px" src="/images/forecast/forecast-3.jpg" />
+      </div>
+      <div className="md:col-span-5 space-y-10 self-items-center">
+        <h3 className="text-xl md:text-5xl font-semibold mt-10">Plot a path to sustainability.</h3>
+        <p>
+          Draw out a plan for how your company will reach its targets. Illustrate and communicate
+          how your company can and must evolve to be successful in tomorrow’s world.
+        </p>
+      </div>
     </section>
   </Wrapper>
 );

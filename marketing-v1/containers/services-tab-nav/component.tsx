@@ -19,7 +19,7 @@ const ServicesTabNav: React.FC<ServicesTabNavProps> = ({
   subtitle,
   title,
 }: ServicesTabNavProps) => (
-  <section className="mt-20 py-28">
+  <section className="mt-20 md:py-28">
     <Wrapper>
       <Media greaterThanOrEqual="md">
         <nav className="relative flex flex-wrap items-center justify-between px-24 mt-1 text-2xl md:px-16 lg:px-40 xl:px-64 lg:text-5xl md:mt-0 navbar-expand-lg">
@@ -47,19 +47,6 @@ const ServicesTabNav: React.FC<ServicesTabNavProps> = ({
         <h2 className="text-xl md:text-5xl font-semibold md:col-span-2">{subtitle}</h2>
         <p className="text-xl">{description}</p>
       </div>
-
-      {/* <div className="flex justify-center pb-4 border-b border-black md:pt-8 md:pb-10 md:mx-0 xl:mx-16 border-b-px">
-        <h1 className="font-sans text-4xl font-semibold md:font-normal md:font-semibold md:text-8xl">
-          {title}
-        </h1>
-      </div>
-      <div className="flex flex-col justify-between pt-10 pb-20 space-y-4 lg:space-x-10 md:space-x-10 md:py-16 xl:px-16 md:flex-row md:space-y-0">
-        <h2 className="text-xl md:text-5xl md:w-2/4 font-semibold">{subtitle}</h2>
-        <Media lessThan="md">
-          <Image alt="Forecast" height="369px" width="768px" src={imageURL} />
-        </Media>
-        <p className="text-xl md:w-2/4 xl:w-2/5">{description}</p>
-      </div> */}
     </Wrapper>
     <Wrapper hasPadding={false}>
       <Media greaterThanOrEqual="md">

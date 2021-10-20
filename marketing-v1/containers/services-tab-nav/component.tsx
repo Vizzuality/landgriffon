@@ -43,9 +43,11 @@ const ServicesTabNav: React.FC<ServicesTabNavProps> = ({
       <h1 className="text-5xl text-center font-semibold md:text-7xl border-b border-black pb-28 my-28 border-b-px">
         {title}
       </h1>
-      <div className="grid md:grid-cols-3 gap-10 my-28">
-        <h2 className="text-xl md:text-5xl font-semibold md:col-span-2">{subtitle}</h2>
-        <p className="text-xl">{description}</p>
+      <div className="grid md:grid-cols-12 gap-10 my-28">
+        <h2 className="text-xl md:text-5xl font-semibold md:col-span-6 xl:col-span-8">
+          {subtitle}
+        </h2>
+        <p className="text-xl md:col-span-6 xl:col-span-4">{description}</p>
       </div>
     </Wrapper>
     <Wrapper hasPadding={false}>

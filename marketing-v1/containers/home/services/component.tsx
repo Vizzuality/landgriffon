@@ -13,10 +13,10 @@ const HomeServices: React.FC = () => (
       <Wrapper>
         <h2 className="pb-12 text-xl md:text-5xl font-semibold text-green">Services</h2>
         <div className="grid md:grid-cols-3 gap-10">
-          <p className="text-5xl font-light md:text-6xl lg:text-6xl xl:text-7xl col-span-2">
+          <p className="text-5xl font-light xl:text-6xl col-span-2">
             Measure and manage supply chain impacts.
           </p>
-          <p className="text-base md:text-lg xl:text-xl col-span-1 flex items-center">
+          <p className="xl:text-lg col-span-1 flex items-center">
             LandGriffon is a powerful modeling tool backed by a team of experts to empower you to
             change your business for the better.
           </p>

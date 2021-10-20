@@ -14,7 +14,8 @@ const HomeWorks: React.FC = () => (
       <Wrapper>
         <h2 className="mb-12 text-xl md:text-5xl font-semibold text-green">How it works</h2>
         <p className="text-5xl font-light md:text-6xl">
-          LandGriffon works anywhere where you are on your journey in managing your supply chain.
+          LandGriffon works with you wherever you are on your journey to sustainable supply chain
+          management.
         </p>
       </Wrapper>
     </div>

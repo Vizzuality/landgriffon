@@ -31,6 +31,7 @@ import {
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
 import { UpdateScenarioInterventionDto } from 'modules/scenario-interventions/dto/update.scenario-intervention.dto';
+import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/scenario-interventions`)
 @ApiTags(scenarioResource.className)
@@ -50,9 +51,10 @@ export class ScenarioInterventionsController {
   async findAll(
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
   ): Promise<ScenarioIntervention> {
-    const results = await this.scenariosService.findAllPaginated(
-      fetchSpecification,
-    );
+    const results: {
+      data: (Partial<ScenarioIntervention> | undefined)[];
+      metadata: PaginationMeta | undefined;
+    } = await this.scenariosService.findAllPaginated(fetchSpecification);
     return this.scenariosService.serialize(results.data, results.metadata);
   }
 

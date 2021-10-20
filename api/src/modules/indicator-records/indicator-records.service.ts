@@ -46,7 +46,9 @@ export class IndicatorRecordsService extends AppBaseService<
     };
   }
   async getIndicatorRecordById(id: number): Promise<IndicatorRecord> {
-    const found = await this.indicatorRecordRepository.findOne(id);
+    const found:
+      | IndicatorRecord
+      | undefined = await this.indicatorRecordRepository.findOne(id);
     if (!found) {
       throw new NotFoundException(`Indicator Record with ID "${id}" not found`);
     }

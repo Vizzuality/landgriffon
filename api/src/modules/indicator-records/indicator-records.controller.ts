@@ -31,6 +31,7 @@ import {
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 import { CreateIndicatorRecordDto } from 'modules/indicator-records/dto/create.indicator-record.dto';
 import { UpdateIndicatorRecordDto } from 'modules/indicator-records/dto/update.indicator-record.dto';
+import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/indicator-records`)
 @ApiTags(indicatorRecordResource.className)
@@ -61,9 +62,10 @@ export class IndicatorRecordsController {
     })
     fetchSpecification: FetchSpecification,
   ): Promise<IndicatorRecord> {
-    const results = await this.indicatorRecordService.findAllPaginated(
-      fetchSpecification,
-    );
+    const results: {
+      data: (Partial<IndicatorRecord> | undefined)[];
+      metadata: PaginationMeta | undefined;
+    } = await this.indicatorRecordService.findAllPaginated(fetchSpecification);
     return this.indicatorRecordService.serialize(
       results.data,
       results.metadata,

@@ -4,7 +4,7 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 @EntityRepository(SourcingRecord)
 export class SourcingRecordRepository extends Repository<SourcingRecord> {
   async getYears(): Promise<number[]> {
-    const sourcingRecordsYears = await this.createQueryBuilder(
+    const sourcingRecordsYears: any[] = await this.createQueryBuilder(
       'sourcingRecords',
     )
       .select('year')

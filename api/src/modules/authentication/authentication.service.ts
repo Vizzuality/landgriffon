@@ -23,6 +23,7 @@ import { UserRepository } from 'modules/users/user.repository';
 import * as config from 'config';
 import { ApiProperty } from '@nestjs/swagger';
 import ms = require('ms');
+import { ApiEventByTopicAndKind } from 'modules/api-events/api-event.topic+kind.entity';
 
 /**
  * Access token for the app: key user data and access token
@@ -95,8 +96,10 @@ export class AuthenticationService {
     email: string;
     password: string;
   }): Promise<User | null> {
-    const user = await this.userRepository.findByEmail(email);
-    const isUserActive = user && user.isActive && !user.isDeleted;
+    const user: User | undefined = await this.userRepository.findByEmail(email);
+    const isUserActive: boolean = (user &&
+      user.isActive &&
+      !user.isDeleted) as boolean;
 
     if (
       user &&
@@ -118,13 +121,16 @@ export class AuthenticationService {
    * @todo Implement email verification.
    */
   async createUser(signupDto: SignUpDto): Promise<Partial<User>> {
-    const user = new User();
+    const user: User = new User();
     user.displayName = signupDto.displayName;
     user.salt = await genSalt();
     user.password = await hash(signupDto.password, user.salt);
     user.email = signupDto.email;
     user.isActive = !config.get('auth.requireUserAccountActivation');
-    const newUser = UsersService.getSanitizedUserMetadata(
+    const newUser: Omit<
+      User,
+      'password' | 'salt' | 'isActive' | 'isDeleted'
+    > = UsersService.getSanitizedUserMetadata(
       await this.userRepository.save(user),
     );
     if (!newUser) {
@@ -134,7 +140,7 @@ export class AuthenticationService {
       topic: newUser.id,
       kind: API_EVENT_KINDS.user__signedUp__v1alpha1,
     });
-    const validationToken = v4();
+    const validationToken: string = v4();
     await this.apiEventsService.create({
       topic: newUser.id,
       kind: API_EVENT_KINDS.user__accountActivationTokenGenerated__v1alpha1,
@@ -171,16 +177,18 @@ export class AuthenticationService {
       'validationToken' | 'sub'
     >,
   ): Promise<true | never> {
-    const invalidOrExpiredActivationTokenMessage =
+    const invalidOrExpiredActivationTokenMessage: string =
       'Invalid or expired activation token.';
-    const event = await this.apiEventsService.getLatestEventForTopic({
+    const event:
+      | ApiEventByTopicAndKind
+      | undefined = await this.apiEventsService.getLatestEventForTopic({
       topic: token.sub,
       kind: API_EVENT_KINDS.user__accountActivationTokenGenerated__v1alpha1,
     });
     if (!event) {
       throw new BadRequestException(invalidOrExpiredActivationTokenMessage);
     }
-    const exp = new Date(event?.data?.exp as number);
+    const exp: Date = new Date(event?.data?.exp as number);
     if (
       new Date() < exp &&
       event?.topic === token.sub &&
@@ -225,12 +233,12 @@ export class AuthenticationService {
       );
     }
 
-    const tokenExpiresAt = Date.now() + ms(tokenExpiresIn);
+    const tokenExpiresAt: any = Date.now() + ms(tokenExpiresIn);
 
     /**
      * Here we actually log the (imminent) issuance of the token.
      */
-    const issuedTokenModel = new IssuedAuthnToken();
+    const issuedTokenModel: IssuedAuthnToken = new IssuedAuthnToken();
     issuedTokenModel.exp = new Date(tokenExpiresAt);
     issuedTokenModel.userId = user.id as string;
 

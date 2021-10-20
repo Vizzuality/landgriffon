@@ -38,41 +38,65 @@ const filterQueryParam = (fetchConfiguration?: {
     required: false,
   });
 
-const fieldsQueryParam = ApiQuery({
+const fieldsQueryParam: <T>(
+  target: Record<string, any>,
+  propertyKey: string | symbol,
+  descriptor: TypedPropertyDescriptor<T>,
+) => TypedPropertyDescriptor<T> | void = ApiQuery({
   name: 'fields',
   description:
     'A comma-separated list that refers to the name(s) of the fields to be returned. An empty value indicates that all fields will be returned (less any fields specified as `omitFields`).',
   type: String,
   required: false,
 });
-const omitFieldsQueryParam = ApiQuery({
+const omitFieldsQueryParam: <T>(
+  target: Record<string, any>,
+  propertyKey: string | symbol,
+  descriptor: TypedPropertyDescriptor<T>,
+) => TypedPropertyDescriptor<T> | void = ApiQuery({
   name: 'omitFields',
   description:
     'A comma-separated list that refers to the name(s) of fields to be omitted from the results. This could be useful as a shortcut when a specific field such as large geometry fields should be omitted, but it is not practical or not desirable to explicitly whitelist fields individually. An empty value indicates that no fields will be omitted (although they may still not be present in the result if an explicit choice of fields was provided via `fields`).',
   type: String,
   required: false,
 });
-const sortQueryParam = ApiQuery({
+const sortQueryParam: <T>(
+  target: Record<string, any>,
+  propertyKey: string | symbol,
+  descriptor: TypedPropertyDescriptor<T>,
+) => TypedPropertyDescriptor<T> | void = ApiQuery({
   name: 'sort',
   description:
     'A comma-separated list of fields of the primary data according to which the results should be sorted. Sort order is ascending unless the field name is prefixed with a minus (for descending order).',
   type: String,
   required: false,
 });
-const pageSizeQueryParam = ApiQuery({
+const pageSizeQueryParam: <T>(
+  target: Record<string, any>,
+  propertyKey: string | symbol,
+  descriptor: TypedPropertyDescriptor<T>,
+) => TypedPropertyDescriptor<T> | void = ApiQuery({
   name: 'page[size]',
   description: `Page size for pagination. If not supplied, pagination with default page size of ${DEFAULT_PAGINATION.pageSize} elements will be applied.`,
   type: Number,
   required: false,
 });
-const pageNumberQueryParam = ApiQuery({
+const pageNumberQueryParam: <T>(
+  target: Record<string, any>,
+  propertyKey: string | symbol,
+  descriptor: TypedPropertyDescriptor<T>,
+) => TypedPropertyDescriptor<T> | void = ApiQuery({
   name: 'page[number]',
   description:
     'Page number for pagination. If not supplied, the first page of results will be returned.',
   type: Number,
   required: false,
 });
-const disablePaginationQueryParam = ApiQuery({
+const disablePaginationQueryParam: <T>(
+  target: Record<string, any>,
+  propertyKey: string | symbol,
+  descriptor: TypedPropertyDescriptor<T>,
+) => TypedPropertyDescriptor<T> | void = ApiQuery({
   name: 'disablePagination',
   description: `If set to \`true\`, pagination will be disabled. This overrides any other pagination query parameters, if supplied.`,
   type: Boolean,

@@ -7,6 +7,7 @@ import {
 import * as JSONAPISerializer from 'jsonapi-serializer';
 import { Repository } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Serializer } from 'jsonapi-serializer';
 
 export class PaginationMeta {
   totalPages: number;
@@ -84,11 +85,14 @@ export abstract class AppBaseService<
     entities: Partial<Entity> | (Partial<Entity> | undefined)[],
     paginationMeta?: PaginationMeta,
   ): Promise<any> {
-    const serializer = new JSONAPISerializer.Serializer(this.pluralAlias, {
-      ...this.serializerConfig,
-      // @ts-expect-error Custom pagination info passed to the serializer
-      paginationMeta,
-    });
+    const serializer: Serializer = new JSONAPISerializer.Serializer(
+      this.pluralAlias,
+      {
+        ...this.serializerConfig,
+        // @ts-expect-error Custom pagination info passed to the serializer
+        paginationMeta,
+      },
+    );
 
     return serializer.serialize(entities);
   }
@@ -104,7 +108,10 @@ export abstract class AppBaseService<
     data: (Partial<Entity> | undefined)[];
     metadata: PaginationMeta | undefined;
   }> {
-    const entitiesAndCount = await this.findAllRaw(fetchSpecification, info);
+    const entitiesAndCount: [Partial<Entity>[], number] = await this.findAllRaw(
+      fetchSpecification,
+      info,
+    );
     return this._paginate(entitiesAndCount, fetchSpecification);
   }
 
@@ -115,7 +122,10 @@ export abstract class AppBaseService<
     data: (Partial<Entity> | undefined)[];
     metadata: PaginationMeta | undefined;
   }> {
-    const entitiesAndCount = await this.findAll(fetchSpecification, info);
+    const entitiesAndCount: [Partial<Entity>[], number] = await this.findAll(
+      fetchSpecification,
+      info,
+    );
     return this._paginate(entitiesAndCount, fetchSpecification);
   }
 
@@ -126,14 +136,15 @@ export abstract class AppBaseService<
     data: (Partial<Entity> | undefined)[];
     metadata: PaginationMeta | undefined;
   } {
-    const totalItems = entitiesAndCount[1];
-    const entities = entitiesAndCount[0];
-    const pageSize =
+    const totalItems: number = entitiesAndCount[1];
+    const entities: Partial<Entity>[] = entitiesAndCount[0];
+    const pageSize: number =
       fetchSpecification?.pageSize ?? DEFAULT_PAGINATION.pageSize ?? 25;
-    const page =
+    const page: number =
       fetchSpecification?.pageNumber ?? DEFAULT_PAGINATION.pageNumber ?? 1;
-    const disablePagination = fetchSpecification?.disablePagination;
-    const meta = disablePagination
+    const disablePagination: boolean | undefined =
+      fetchSpecification?.disablePagination;
+    const meta: PaginationMeta | undefined = disablePagination
       ? undefined
       : new PaginationMeta({
           totalPages: Math.ceil(totalItems / pageSize),

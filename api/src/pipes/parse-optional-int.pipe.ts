@@ -1,8 +1,8 @@
-import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
+import { Injectable, PipeTransform } from '@nestjs/common';
 
 @Injectable()
 export class ParseOptionalIntPipe implements PipeTransform {
-  transform(value: any, metadata: ArgumentMetadata): any {
+  transform(value: any): any {
     return value === null ? null : parseInt(value, 10);
   }
 }

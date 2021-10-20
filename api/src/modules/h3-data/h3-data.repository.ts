@@ -1,4 +1,9 @@
-import { EntityRepository, getManager, Repository } from 'typeorm';
+import {
+  EntityRepository,
+  getManager,
+  Repository,
+  SelectQueryBuilder,
+} from 'typeorm';
 import {
   H3Data,
   H3IndexValueData,
@@ -63,9 +68,9 @@ export class H3DataRepository extends Repository<H3Data> {
     materialH3Data: H3Data,
     resolution: number,
   ): Promise<{ materialMap: H3IndexValueData[]; tmpTableName: string }> {
-    const tmpTableName = 'material_map';
+    const tmpTableName: string = 'material_map';
     try {
-      const query = getManager()
+      const query: string = getManager()
         .createQueryBuilder()
         .select(`h3_to_parent(h3index, ${resolution})`, 'h')
         .addSelect(`sum(${materialH3Data.h3columnName})`, 'v')
@@ -79,7 +84,7 @@ export class H3DataRepository extends Repository<H3Data> {
       await getManager().query(
         `CREATE TEMPORARY TABLE ${tmpTableName} AS (${query});`,
       );
-      const materialMap = await getManager().query(
+      const materialMap: any = await getManager().query(
         `SELECT * FROM ${tmpTableName};`,
       );
       return { materialMap, tmpTableName };
@@ -102,8 +107,8 @@ export class H3DataRepository extends Repository<H3Data> {
     calculusFactor: number,
     resolution: number,
   ): Promise<{ riskMap: H3IndexValueData[]; tmpTableName: string }> {
-    const tmpTableName = 'unsustainable_water_use_riskmap';
-    const query = getManager()
+    const tmpTableName: string = 'unsustainable_water_use_riskmap';
+    const query: string = getManager()
       .createQueryBuilder()
       .select(`h3_to_parent(indicatorh3.h3index, ${resolution})`, 'h')
       .addSelect(
@@ -124,7 +129,9 @@ export class H3DataRepository extends Repository<H3Data> {
     await getManager().query(
       `CREATE TEMPORARY TABLE ${tmpTableName} AS (${query});`,
     );
-    const riskMap = await getManager().query(`SELECT * FROM ${tmpTableName};`);
+    const riskMap: any = await getManager().query(
+      `SELECT * FROM ${tmpTableName};`,
+    );
     this.logger.log('Water Risk Map generated');
 
     return { riskMap, tmpTableName };
@@ -145,8 +152,8 @@ export class H3DataRepository extends Repository<H3Data> {
     calculusFactor: number,
     resolution: number,
   ): Promise<{ riskMap: H3IndexValueData[]; tmpTableName: string }> {
-    const tmpTableName = 'biodiversity_loss_riskmap';
-    const query = getManager()
+    const tmpTableName: string = 'biodiversity_loss_riskmap';
+    const query: string = getManager()
       .createQueryBuilder()
       .select(`h3_to_parent(deforestationh3.h3index, ${resolution})`, 'h')
       .addSelect(
@@ -172,7 +179,9 @@ export class H3DataRepository extends Repository<H3Data> {
     await getManager().query(
       `CREATE TEMPORARY TABLE ${tmpTableName} AS (${query});`,
     );
-    const riskMap = await getManager().query(`SELECT * FROM ${tmpTableName};`);
+    const riskMap: any = await getManager().query(
+      `SELECT * FROM ${tmpTableName};`,
+    );
     this.logger.log('Biodiversity Loss Map generated');
 
     return { riskMap, tmpTableName };
@@ -183,8 +192,8 @@ export class H3DataRepository extends Repository<H3Data> {
     materialH3Data: H3Data,
     resolution: number,
   ): Promise<{ riskMap: H3IndexValueData[]; tmpTableName: string }> {
-    const tmpTableName = 'deforestation_loss_riskmap';
-    const query = getManager()
+    const tmpTableName: string = 'deforestation_loss_riskmap';
+    const query: string = getManager()
       .createQueryBuilder()
       .select(`h3_to_parent(indicatorh3.h3index, ${resolution})`, 'h')
       .addSelect(
@@ -207,7 +216,9 @@ export class H3DataRepository extends Repository<H3Data> {
     await getManager().query(
       `CREATE TEMPORARY TABLE ${tmpTableName} AS (${query});`,
     );
-    const riskMap = await getManager().query(`SELECT * FROM ${tmpTableName};`);
+    const riskMap: any = await getManager().query(
+      `SELECT * FROM ${tmpTableName};`,
+    );
     this.logger.log('Deforestation Loss Map generated');
 
     return { riskMap, tmpTableName };
@@ -220,8 +231,8 @@ export class H3DataRepository extends Repository<H3Data> {
     calculusFactor: number,
     resolution: number,
   ): Promise<{ riskMap: H3IndexValueData[]; tmpTableName: string }> {
-    const tmpTableName = 'carbon_emissions_riskmap';
-    const query = getManager()
+    const tmpTableName: string = 'carbon_emissions_riskmap';
+    const query: string = getManager()
       .createQueryBuilder()
       .select(`h3_to_parent(deforestationh3.h3index, ${resolution})`, 'h')
       .addSelect(
@@ -247,7 +258,9 @@ export class H3DataRepository extends Repository<H3Data> {
     await getManager().query(
       `CREATE TEMPORARY TABLE ${tmpTableName} AS (${query});`,
     );
-    const riskMap = await getManager().query(`SELECT * FROM ${tmpTableName};`);
+    const riskMap: any = await getManager().query(
+      `SELECT * FROM ${tmpTableName};`,
+    );
 
     this.logger.log('Carbon Emissions Map generated');
 
@@ -284,7 +297,9 @@ export class H3DataRepository extends Repository<H3Data> {
     producerId?: string;
     indicatorId?: string;
   }): Promise<number[]> {
-    const queryBuilder = this.createQueryBuilder('h')
+    const queryBuilder: SelectQueryBuilder<H3Data> = this.createQueryBuilder(
+      'h',
+    )
       .select('year')
       .distinct(true)
       .where('year is not null')
@@ -312,7 +327,7 @@ export class H3DataRepository extends Repository<H3Data> {
     } else {
       queryBuilder.andWhere(`"indicatorId" is not null`);
     }
-    const availableYears = await queryBuilder.getRawMany();
+    const availableYears: any[] = await queryBuilder.getRawMany();
     return availableYears.map((elem: { year: number }) => elem.year);
   }
 }

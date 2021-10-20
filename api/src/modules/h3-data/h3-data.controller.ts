@@ -19,7 +19,7 @@ export class H3DataController {
     @Param('h3TableName') h3TableName: string,
     @Param('h3ColumnName') h3ColumnName: string,
   ): Promise<{ data: H3IndexValueData[] }> {
-    const h3Data = await this.h3DataService.findH3ByName(
+    const h3Data: H3IndexValueData[] = await this.h3DataService.findH3ByName(
       h3TableName,
       h3ColumnName,
     );

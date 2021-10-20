@@ -32,7 +32,7 @@ export class UnitsService extends AppBaseService<
   }
 
   async getUnitById(id: number): Promise<Unit> {
-    const found = await this.UnitRepository.findOne(id);
+    const found: Unit | undefined = await this.UnitRepository.findOne(id);
 
     if (!found) {
       throw new NotFoundException(` Unit with ID "${id}" not found`);

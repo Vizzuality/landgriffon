@@ -39,7 +39,9 @@ export class AdminRegionsService extends AppBaseService<
   }
 
   async getAdminRegionById(id: number): Promise<AdminRegion> {
-    const found = await this.adminRegionRepository.findOne(id);
+    const found:
+      | AdminRegion
+      | undefined = await this.adminRegionRepository.findOne(id);
 
     if (!found) {
       throw new NotFoundException(`Admin region with ID "${id}" not found`);
@@ -56,7 +58,7 @@ export class AdminRegionsService extends AppBaseService<
   async getAdminAndGeoRegionIdByCountryIsoAlpha2(
     countryIsoAlpha2Code: string,
   ): Promise<{ id: string; geoRegionId: string }> {
-    const adminAndGeoRegionId = await this.adminRegionRepository
+    const adminAndGeoRegionId: any = await this.adminRegionRepository
       .createQueryBuilder('ar')
       .select('id')
       .addSelect('"geoRegionId"')
@@ -72,7 +74,9 @@ export class AdminRegionsService extends AppBaseService<
   }
 
   async getAdminRegionByName(adminRegionName: string): Promise<AdminRegion> {
-    const adminRegion = await this.adminRegionRepository.findOne({
+    const adminRegion:
+      | AdminRegion
+      | undefined = await this.adminRegionRepository.findOne({
       where: { name: adminRegionName },
     });
 

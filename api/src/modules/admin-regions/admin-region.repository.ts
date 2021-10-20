@@ -13,7 +13,7 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
     lng: number;
     lat: number;
   }): Promise<{ adminRegionId: string; geoRegionId: string }> {
-    const res = await this.query(`
+    const res: any = await this.query(`
     SELECT a.id  AS "adminRegionId", g.id AS "geoRegionId"
     FROM admin_region a RIGHT JOIN geo_region g on a."geoRegionId" = g.id
     WHERE ST_Intersects(

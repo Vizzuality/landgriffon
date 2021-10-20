@@ -9,7 +9,8 @@ import {
 import * as config from 'config';
 
 import * as JSONAPISerializer from 'jsonapi-serializer';
-import { JSONAPIErrorOptions } from 'jsonapi-serializer';
+import { JSONAPIError, JSONAPIErrorOptions } from 'jsonapi-serializer';
+import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 
 /**
  * Catch-all exception filter. Output error data to logs, and send it as
@@ -21,9 +22,9 @@ import { JSONAPIErrorOptions } from 'jsonapi-serializer';
 @Catch(Error)
 export class AllExceptionsFilter implements ExceptionFilter {
   catch(exception: Error, host: ArgumentsHost): void {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse();
-    const request = ctx.getRequest();
+    const ctx: HttpArgumentsHost = host.switchToHttp();
+    const response: any = ctx.getResponse();
+    const request: any = ctx.getRequest();
 
     const status: number =
       exception instanceof HttpException
@@ -59,7 +60,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
      * these should help frontend devs and other API users report bugs or other
      * issues without having to look at logs.
      */
-    const errorDataForResponse = new JSONAPISerializer.Error(errorData);
+    const errorDataForResponse: JSONAPIError = new JSONAPISerializer.Error(
+      errorData,
+    );
 
     response.status(status).json(errorDataForResponse);
   }

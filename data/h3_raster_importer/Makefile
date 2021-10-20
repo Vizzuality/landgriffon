@@ -1,6 +1,6 @@
 MAKEFLAGS += -j8
 
-all:    h3_grid_earthstat2000_global_ha h3_grid_pasture #h3_grid_carbon_global h3_grid_pasture h3_grid_spam2010v2r0_global_prod h3_grid_bio_global#h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_wf_global h3_grid_bio_global
+all: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_pasture h3_grid_wf_global h3_grid_bio_global h3_grid_carbon_global h3_grid_deforestation_global
 
 crop: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_pasture
 
@@ -34,8 +34,10 @@ data/mapspam/spam2010v2r0_global_ha: data/mapspam/spam2010v2r0_global_phys_area.
 	unzip -u $< *_A.tif -d $@
 	for tiffile in data/mapspam/spam2010v2r0_global_ha/*.tif; do \
 		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
-		output_file="data/earthstat/earthstat2000_global_prod/earthstat2000_global_$${table_name}.tif";\
-		gdal_calc.py --calc "A*(21825.6580549941209*21825.6580549941209*0.0001" --format GTiff --type Float32 -A /home/elena/personal/test/reprojected_spam.tif --A_band 1 --outfile /tmp/processing_cdTIXe/02e887d7db8c4e008ff9f0bc1b76bea2/OUTPUT.tif
+		output_file="data/mapspam/spam2010v2r0_global_ha/spam2010_global_$${table_name}.tif";\
+		gdal_calc.py --calc "A/10000" --format GTiff --type Float32 -A "$${tiffile}" --A_band 1 --outfile "$${output_file}"; \
+		rm -f "$${tiffile}";\
+	done
 
 #CONVERT DATASETS:
 # <table>: <tiff_folder>

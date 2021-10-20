@@ -21,55 +21,40 @@ const HomeAbout: React.FC = () => (
         </p>
       </div>
     </Wrapper>
-    <Wrapper className="flex justify-end">
-      <div className="relative flex flex-col px-16 py-8 lg:py-16 xl:w-4/5 md:px-18 xl:self-end bg-lightBlue">
-        <p className="w-3/4 text-5xl font-semibold text-black pb-96 lg:pb-16 md:text-6xl md:font-normal">
-          Our future is a better future
-        </p>
-        <div className="md:grid md:grid-cols-2 md:gap-10">
-          <div className="invisible md:visible" />
-          <div className="lg:px-10">
-            <p className="text-base md:pt-64 md:text-2xl xl:pt-0 lg:text-4xl">
-              LandGriffon is built by:
-            </p>
-            <ul className="flex flex-col py-6 space-y-6 text-lg lg:py-16 xl:space-y-12 lg:text-5xl font-semibold">
-              <li>Vizzuality</li>
-              <li>Satelligence</li>
-              <li>SEI</li>
-            </ul>
-            <Link href="https://landgriffon.com">
-              <a
-                className="text-lg text-black underline lg:text-5xl font-semibold hover:no-underline"
-                target="_blank"
-                href="https://landgriffon.com"
-                rel="noreferrer"
-              >
-                Learn more
-              </a>
-            </Link>
+
+    <Wrapper hasPadding={false}>
+      <div className="grid md:grid-cols-12 gap-x-10 mb-28">
+        <div className="md:col-span-9 md:col-start-4">
+          <div className="bg-lightBlue px-6 py-10 md:px-16 md:py-16">
+            <div className="grid md:grid-cols-2 gap-10">
+              <h3 className="text-5xl md:text-7xl col-span-2">
+                Our future is
+                <br />a better future.
+              </h3>
+              <Media lessThan="md" className="col-span-2">
+                <div className="relative" style={{ height: 250 }}>
+                  <Image layout="fill" objectFit="cover" src="/images/home/home-4.jpg" />
+                </div>
+              </Media>
+              <div className="md:col-span-1 md:col-start-2">
+                <p className="md:text-4xl mb-10 md:mb-16">LandGriffon is built by: </p>
+                <ul className="flex flex-col space-y-10 md:my-16 md:space-y-16 text-lg lg:text-5xl font-semibold">
+                  <li>Vizzuality</li>
+                  <li>Satelligence</li>
+                  <li>SEI</li>
+                </ul>
+                <Link href="/about">
+                  <a className="block mt-10 md:mt-16 text-lg text-black underline lg:text-5xl font-semibold hover:no-underline">
+                    Learn more
+                  </a>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
-        <Media lessThan="md">
-          <div style={{ top: '18%' }} className="absolute mr-6 -left-4">
-            <Image width="710px" height="661px" src="/images/home/home-4.jpg" />
-          </div>
-        </Media>
-
-        <Media at="md">
-          <div style={{ top: '20%' }} className="absolute mr-6 -left-4">
-            <Image width="610px" height="561px" src="/images/home/home-4.jpg" />
-          </div>
-        </Media>
-
-        <Media at="lg">
-          <div style={{ top: '26%' }} className="absolute mr-6 -left-16">
-            <Image width="510px" height="461px" src="/images/home/home-4.jpg" />
-          </div>
-        </Media>
-
-        <Media greaterThanOrEqual="xl">
-          <div style={{ top: '30%' }} className="absolute -left-1/4 ml-16">
-            <Image width="610px" height="565px" src="/images/home/home-4.jpg" />
+        <Media greaterThanOrEqual="md" className="relative md:col-span-7">
+          <div className="relative md:col-span-7" style={{ height: 661, marginTop: -515 }}>
+            <Image layout="fill" objectFit="cover" src="/images/home/home-4.jpg" />
           </div>
         </Media>
       </div>

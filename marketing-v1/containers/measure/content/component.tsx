@@ -11,13 +11,23 @@ const MeasureContent: React.FC = () => (
         <div className="relative" style={{ height: 575 }}>
           <Image layout="fill" objectFit="cover" src="/images/measure/measure-2.jpg" />
         </div>
-        <h3 className="text-xl md:text-5xl font-semibold mt-10">
-          Track and anticipate deforestation risk with Satelligence AI.
-        </h3>
-        <p>
-          Be the first to know about deforestation risk in your supply chain and identify
-          responsible parties to get ahead of grievances.
-        </p>
+        <div className="space-y-10">
+          <h3 className="text-xl md:text-5xl font-semibold mt-10">
+            Track and anticipate deforestation risk with Satelligence AI.
+          </h3>
+          <p>
+            Be the first to know about deforestation risk in your supply chain and identify
+            responsible parties to get ahead of grievances.
+          </p>
+          <p>
+            <a
+              href="https://satelligence.com/solutions"
+              className="font-semibold underline hover:no-underline"
+            >
+              Learn more
+            </a>
+          </p>
+        </div>
       </div>
       <div className="md:col-span-5 md:col-start-8">
         <div className="relative" style={{ height: 575 }}>

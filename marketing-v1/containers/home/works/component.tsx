@@ -36,9 +36,9 @@ const HomeWorks: React.FC = () => (
         <h3 className="text-5xl text-center md:text-7xl">
           We are committed
           <br />
-          to enabling change
+          to enabling change.
         </h3>
-        <p className="text-center md:text-xl md:w-2/4 mx-auto py-5">
+        <p className="text-center md:text-xl md:w-2/4 mx-auto mt-10">
           We help you to reach your commitments to become more sustainable.
         </p>
       </Wrapper>
@@ -81,7 +81,7 @@ const HomeWorks: React.FC = () => (
           Designed to fit your <br />
           business needs.
         </h2>
-        <p className="text-center md:text-xl md:w-2/4 mx-auto py-5">
+        <p className="text-center md:text-xl md:w-2/4 mx-auto mt-10">
           From Single Sign On to custom enterprise integrations, LandGriffon is built to adapt to
           your IT requirements and sustainability objectives.
         </p>
@@ -90,7 +90,7 @@ const HomeWorks: React.FC = () => (
     <div>
       <Wrapper className="bg-blue py-28">
         <h2 className="text-5xl font-light text-white md:w-3/4 md:text-6xl lg:text-7xl">
-          Learn how Landgriffon can work for you
+          Learn how Landgriffon can work for you.
         </h2>
         <Link href="/contact">
           <a

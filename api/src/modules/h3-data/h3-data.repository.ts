@@ -107,7 +107,6 @@ export class H3DataRepository extends Repository<H3Data> {
   }
 
   /**
-   * @TODO: this is a copy of the water risk formula. It needs to be updated to the correct one.
    *
    * @param indicatorH3Data H3 format data of a Indicator
    * @param materialH3Data  H3 format data of a material
@@ -124,7 +123,7 @@ export class H3DataRepository extends Repository<H3Data> {
       .createQueryBuilder()
       .select(`h3_to_parent(materialh3.h3index, ${resolution})`, 'h')
       .addSelect(
-        `sum(indicatorh3.${indicatorH3Data.h3columnName} * (materialh3.${materialH3Data.h3columnName}/(h3_hex_area(6)*100))/${calculusFactor})`,
+        `sum(indicatorh3.${indicatorH3Data.h3columnName} * (materialh3.${materialH3Data.h3columnName} * (1/${calculusFactor})))`,
         'v',
       )
       .from(materialH3Data.h3tableName, 'materialh3')

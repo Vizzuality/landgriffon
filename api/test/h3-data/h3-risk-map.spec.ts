@@ -185,7 +185,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     expect(response.body.data).toEqual([
       {
         h: '861203a4fffffff',
-        v: 276.78556227607197,
+        v: 1000000,
       },
     ]);
     expect(response.body.metadata).toEqual({

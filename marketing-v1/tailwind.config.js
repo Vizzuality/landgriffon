@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const forms = require('@tailwindcss/forms');
 const colors = require('tailwindcss/colors');
+const typography = require('@tailwindcss/typography');
 
 const lineClamp = require('./lib/tailwind/line-clamp');
 
@@ -65,5 +66,5 @@ module.exports = {
       visibility: 'visibility',
     },
   },
-  plugins: [forms, lineClamp],
+  plugins: [forms, typography, lineClamp],
 };

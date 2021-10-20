@@ -13,7 +13,7 @@ const HomeAbout: React.FC = () => (
       <div className="grid md:grid-cols-3 gap-10">
         <h4 className="text-5xl font-light col-span-2 md:text-6xl lg:text-7xl">
           Supported by
-          <br /> a team of experts
+          <br /> a team of experts.
         </h4>
         <p className="text-base md:text-xl flex items-center">
           Our team brings expertise in environmental science, user-centric design, and satellite

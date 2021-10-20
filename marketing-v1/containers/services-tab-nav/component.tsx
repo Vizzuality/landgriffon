@@ -24,17 +24,17 @@ const ServicesTabNav: React.FC<ServicesTabNavProps> = ({
       <Media greaterThanOrEqual="md">
         <nav className="relative flex flex-wrap items-center justify-between px-24 mt-1 text-2xl md:px-16 lg:px-40 xl:px-64 lg:text-5xl md:mt-0 navbar-expand-lg">
           <Link href="/services/measure">
-            <h3 className="pb-px border-b-2 border-transparent opacity-50 cursor-pointer hover:opacity-100 hover:border-black hover:font-semibold">
+            <h3 className="font-semibold pb-px border-b-2 border-transparent opacity-50 cursor-pointer hover:opacity-100 hover:border-black">
               01 Measure
             </h3>
           </Link>
           <Link href="/services/analyze">
-            <h3 className="pb-px border-b-2 border-transparent opacity-50 cursor-pointer hover:opacity-100 hover:font-semibold hover:border-black">
+            <h3 className="font-semibold pb-px border-b-2 border-transparent opacity-50 cursor-pointer hover:opacity-100 hover:border-black">
               02 Analyze
             </h3>
           </Link>
           <Link href="/services/forecast">
-            <h3 className="pb-px border-b-2 border-transparent opacity-50 cursor-pointer hover:opacity-100 hover:border-black hover:font-semibold">
+            <h3 className="font-semibold pb-px border-b-2 border-transparent opacity-50 cursor-pointer hover:opacity-100 hover:border-black">
               03 Forecast
             </h3>
           </Link>

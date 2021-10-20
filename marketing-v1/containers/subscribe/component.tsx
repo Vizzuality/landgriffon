@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Form, Field } from 'react-final-form';
 
+import Link from 'next/link';
+
 import Wrapper from 'containers/wrapper';
 
 import Button from 'components/button';
@@ -66,12 +68,9 @@ const Subscribe: React.FC = () => (
                       <span className="checkbox-circle" />
                       <p>
                         By signing up here I agree to receive LandGriffon email newsletter.{' '}
-                        <a
-                          className="underline cursor-pointer"
-                          href="https://landgriffon.com/privacy-policy"
-                        >
-                          Privacy statement.
-                        </a>
+                        <Link href="/privacy-policy">
+                          <a className="underline cursor-pointer">Privacy statement.</a>
+                        </Link>
                       </p>
                     </label>
                   )}

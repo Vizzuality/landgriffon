@@ -13,16 +13,12 @@ const Footer: React.FC = () => (
           <ul className="space-y-10 md:space-y-16">
             <li>
               <Link href="/about-us">
-                <a className="hover:opacity-40" target="_blank" rel="noreferrer">
-                  About Us
-                </a>
+                <a className="hover:opacity-40">About Us</a>
               </Link>
             </li>
             <li>
               <Link href="/contact">
-                <a className="hover:opacity-40" target="_blank" rel="noreferrer">
-                  Contact Us
-                </a>
+                <a className="hover:opacity-40">Contact Us</a>
               </Link>
             </li>
           </ul>
@@ -33,11 +29,8 @@ const Footer: React.FC = () => (
       <div className="py-10 md:flex md:justify-between">
         <nav className="flex items-center mb-10 md:my-0 space-x-6 text-xs md:text-base md:space-x-14">
           <p>@LandGriffon 2021</p>
-          <Link href="https://landgriffon.com/privacy-policy">
-            <a
-              className="cursor-pointer hover:font-semibold"
-              href="https://landgriffon.com/privacy-policy"
-            >
+          <Link href="/privacy-policy">
+            <a className="cursor-pointer hover:font-semibold">
               <p>Privacy policy</p>
             </a>
           </Link>

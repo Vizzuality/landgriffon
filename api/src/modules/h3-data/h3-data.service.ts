@@ -91,7 +91,6 @@ export class H3DataService {
     const indicatorH3Data = await this.h3DataRepository.findOne({
       where: { indicatorId: indicatorId },
     });
-    console.log(indicatorH3Data, indicatorId);
 
     if (!indicatorH3Data)
       throw new NotFoundException(

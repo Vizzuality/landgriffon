@@ -10,17 +10,6 @@ import h3DataService from 'services/h3-data';
 
 import { COLOR_RAMPS } from 'containers/analysis-visualization/constants';
 
-// Mock Metadata
-// TO-DO: replace with metadata from API
-const metadata = {
-  unit: 'tonnes',
-  name: 'Impact of deforestation loss due to land use change',
-  quantiles: [
-    1.04898646e-7, 80.596923828125, 0.0198405459523201, 0.0635268658399582, 0.289023560285568,
-    0.6117558717727662, 10000,
-  ].sort((a, b) => a - b),
-};
-
 const DEFAULT_QUERY_OPTIONS = {
   placeholderData: {
     data: [],
@@ -36,7 +25,7 @@ const DEFAULT_QUERY_OPTIONS = {
 };
 
 const responseParser = (response, colors) => {
-  const { data } = response.data;
+  const { data, metadata } = response.data;
   const { quantiles } = metadata;
   const threshold = quantiles.slice(1, -1);
   const scale = scaleThreshold().domain(threshold).range(colors);

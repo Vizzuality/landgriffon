@@ -30,7 +30,6 @@ variable "namespace" {
 
 variable "arguments" {
   type        = list(string)
-  default     = []
   description = "The k8s namespace to use"
 }
 

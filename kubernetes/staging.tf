@@ -28,6 +28,7 @@ module "k8s_data_import_staging" {
   image            = "vizzuality/landgriffon-data-import:staging"
   namespace        = "staging"
   load_data        = var.load_fresh_data_staging
+  arguments        = var.data_import_arguments_staging
 }
 
 module "k8s_secrets_staging" {

@@ -28,6 +28,7 @@ module "k8s_data_import_prod" {
   image            = "vizzuality/landgriffon-data-import:production"
   namespace        = "production"
   load_data        = var.load_fresh_data_prod
+  arguments        = var.data_import_arguments_prod
 }
 
 module "k8s_secrets_prod" {

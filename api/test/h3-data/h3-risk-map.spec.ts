@@ -163,7 +163,12 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     });
   });
   test('When I get a calculated H3 Biodiversity Loss Risk Map with the necessary input values, then I should get the h3 data (happy case)', async () => {
-    const { material, indicator } = await createWorldForRiskMapGeneration({
+    const {
+      material,
+      indicator,
+      h3Data,
+      unitConversion,
+    } = await createWorldForRiskMapGeneration({
       indicatorType: INDICATOR_TYPES.BIODIVERSITY_LOSS,
       fakeTable,
       fakeColumn,
@@ -181,7 +186,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
     expect(
       h3DataRepository.getBiodiversityLossRiskMapByResolution,
-    ).toHaveBeenCalled();
+    ).toHaveBeenCalledWith(h3Data, h3Data, unitConversion.factor, 6);
     expect(response.body.data).toEqual([
       {
         h: '861203a4fffffff',

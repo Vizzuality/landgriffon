@@ -15,6 +15,8 @@ import {
   Indicator,
   INDICATOR_TYPES,
 } from 'modules/indicators/indicator.entity';
+import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
+import { H3FilterYearsByLayerService } from 'modules/h3-data/services/h3-filter-years-by-layer.service';
 
 /**
  * @debt: Check if we actually need extending nestjs-base-service over this module.
@@ -31,6 +33,8 @@ export class H3DataService {
     protected readonly materialService: MaterialsService,
     private readonly indicatorService: IndicatorsService,
     private readonly unitConversionsService: UnitConversionsService,
+    private readonly sourcingRecordService: SourcingRecordsService,
+    private readonly filterYearsByLayerService: H3FilterYearsByLayerService,
   ) {}
 
   /**
@@ -161,5 +165,17 @@ export class H3DataService {
       data: riskMap,
       metadata: { quantiles: quantiles, unit: indicator.unit.symbol },
     };
+  }
+
+  async getYearsByLayerAndMaterial(
+    layerType: string,
+    materialId?: string,
+    indicatorId?: string,
+  ): Promise<number[]> {
+    return this.filterYearsByLayerService.getYearsByLayer(
+      layerType,
+      materialId,
+      indicatorId,
+    );
   }
 }

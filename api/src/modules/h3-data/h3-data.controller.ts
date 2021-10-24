@@ -5,6 +5,7 @@ import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 import { GetMaterialH3ByResolutionDto } from 'modules/h3-data/dto/get-material-h3-by-resolution.dto';
 import { GetRiskMapH3Dto } from 'modules/h3-data/dto/get-risk-map-h3.dto';
 import { H3MapResponse } from 'modules/h3-data/dto/h3-map-response.dto';
+import { GetYearsByLayerAndMaterialDto } from 'modules/h3-data/dto/get-years-by-layer-and-material.dto';
 
 @Controller('/api/v1/h3')
 @ApiTags(H3Data.name)
@@ -22,6 +23,21 @@ export class H3DataController {
       h3ColumnName,
     );
     return { data: h3Data };
+  }
+  @ApiOperation({
+    description: 'Retrieve years for which there is data, by layer',
+  })
+  @Get('years')
+  async getYearsByLayer(
+    @Query(ValidationPipe) queryParams: GetYearsByLayerAndMaterialDto,
+  ): Promise<{ data: number[] }> {
+    const { materialId, indicatorId, layer } = queryParams;
+    const availableYears: number[] = await this.h3DataService.getYearsByLayerAndMaterial(
+      layer,
+      materialId as string,
+      indicatorId,
+    );
+    return { data: availableYears };
   }
 
   @ApiOperation({ description: 'Get h3 indexes by ID in a given resolution' })

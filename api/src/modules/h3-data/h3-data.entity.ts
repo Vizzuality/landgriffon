@@ -29,6 +29,12 @@ export enum H3_DATA_TYPES {
   INDICATOR = 'indicator',
 }
 
+export enum LAYER_TYPES {
+  RISK = 'risk',
+  IMPACT = 'impact',
+  MATERIAL = 'material',
+}
+
 @Entity('h3_data')
 @Index(['h3tableName', 'h3columnName'], { unique: true })
 export class H3Data extends BaseEntity {
@@ -40,6 +46,10 @@ export class H3Data extends BaseEntity {
 
   @Column({ type: 'varchar' })
   h3columnName!: string;
+
+  //TODO: Set this as required and non-nullable as soons as this column's data is provided as part of initial seed process
+  @Column({ type: 'int', nullable: true })
+  year!: number;
 
   @Column({ type: 'int' })
   h3resolution: number;

@@ -1,5 +1,10 @@
-import { EntityRepository, Repository, getManager } from 'typeorm';
-import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
+import { EntityRepository, getManager, Repository } from 'typeorm';
+import {
+  H3_DATA_TYPES,
+  H3Data,
+  H3IndexValueData,
+  LAYER_TYPES,
+} from 'modules/h3-data/h3-data.entity';
 import {
   Logger,
   NotFoundException,
@@ -134,6 +139,7 @@ export class H3DataRepository extends Repository<H3Data> {
       .groupBy('h')
       .getRawMany();
     this.logger.log('Biodiversity Loss Map generated');
+
     return riskMap;
   }
 
@@ -159,5 +165,42 @@ export class H3DataRepository extends Repository<H3Data> {
     } catch (err) {
       throw new Error(`Quantiles could not been calculated`);
     }
+  }
+
+  async getYears(yearsRequestParams: {
+    layerType: LAYER_TYPES;
+    harvestId?: string;
+    producerId?: string;
+    indicatorId?: string;
+  }): Promise<number[]> {
+    const queryBuilder = this.createQueryBuilder('h')
+      .select('year')
+      .distinct(true)
+      .orderBy('year', 'ASC');
+    // If a indicatorId is provided, filter results by it
+    if (yearsRequestParams.indicatorId) {
+      queryBuilder.where('"indicatorId" = :indicatorId', {
+        indicatorId: yearsRequestParams.indicatorId,
+      });
+    }
+    // If a producerId or harvestId is provided, filter by them.
+    if (yearsRequestParams.producerId) {
+      queryBuilder.where(`h.id=:id`, {
+        id: yearsRequestParams.producerId,
+      });
+    }
+    if (yearsRequestParams.harvestId) {
+      queryBuilder.where(`h.id=:id`, {
+        id: yearsRequestParams.harvestId,
+      });
+    }
+    // Filter by data type
+    if (yearsRequestParams.layerType != LAYER_TYPES.RISK) {
+      queryBuilder.andWhere(`"dataType" != '${H3_DATA_TYPES.INDICATOR}'`);
+    } else {
+      queryBuilder.andWhere(`"dataType" = '${H3_DATA_TYPES.INDICATOR}'`);
+    }
+    const availableYears = await queryBuilder.getRawMany();
+    return availableYears.map((elem: { year: number }) => elem.year).sort();
   }
 }

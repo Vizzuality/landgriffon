@@ -84,3 +84,6 @@ export const createWorldForRiskMapGeneration = async (data: {
   });
   return { indicator, material, h3Data, unit, unitConversion };
 };
+
+export const createRandomNamesForH3TableAndColumns = (): string =>
+  (Math.random() + 1).toString(36).substring(2);

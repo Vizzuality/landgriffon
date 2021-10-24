@@ -48,7 +48,13 @@ export const createWorldForRiskMapGeneration = async (data: {
   indicatorType: string;
   fakeTable: string;
   fakeColumn: string;
-}): Promise<{ indicator: Indicator; material: Material }> => {
+}): Promise<{
+  indicator: Indicator;
+  material: Material;
+  h3Data: H3Data;
+  unit: Unit;
+  unitConversion: UnitConversion;
+}> => {
   const unit: Unit = new Unit();
   unit.name = 'test unit';
   unit.symbol = 'tonnes';
@@ -76,5 +82,5 @@ export const createWorldForRiskMapGeneration = async (data: {
     name: 'Material with no H3',
     harvestId: h3Data.id,
   });
-  return { indicator, material };
+  return { indicator, material, h3Data, unit, unitConversion };
 };

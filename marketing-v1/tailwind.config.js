@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const forms = require('@tailwindcss/forms');
-const colors = require('tailwindcss/colors');
 const typography = require('@tailwindcss/typography');
+const colors = require('tailwindcss/colors');
 
 const lineClamp = require('./lib/tailwind/line-clamp');
 

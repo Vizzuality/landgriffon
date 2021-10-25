@@ -1,12 +1,8 @@
 import React from 'react';
 
-import Image from 'next/image';
-
-import { Media } from 'containers/media';
 import Wrapper from 'containers/wrapper';
 
 import AnimationPlayer from 'components/animation-player';
-// import VideoPlayer from 'components/video-player';
 
 import animationData from './animation.json';
 

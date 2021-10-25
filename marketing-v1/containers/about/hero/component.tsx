@@ -48,7 +48,7 @@ const AboutHero: React.FC = () => (
                 We are on a mission to make supply chains more sustainable.
               </h2>
               <p className="lg:text-xl">
-                The world is moving to a zero-carbon future and nature positive. We offer our
+                The world is moving to a zero-carbon and nature positive future. We offer our
                 expertise in environmental monitoring, designing user-centric scientific
                 applications, and artificial intelligence based satellite monitoring to help
                 companies reach this tomorrow.

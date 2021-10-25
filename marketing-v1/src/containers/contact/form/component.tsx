@@ -2,13 +2,26 @@ import React from 'react';
 
 import { Form, Field } from 'react-final-form';
 
+import classNames from 'classnames';
+
+import axios from 'axios';
+import validate from 'validate.js';
+
 import Wrapper from 'containers/wrapper';
 
 import Button from 'components/button';
 
-const labelClassName = 'block text-xs uppercase text-lightGray font-semibold';
+const validationConstraints = {
+  name: { presence: { allowEmpty: false } },
+  email: { presence: { allowEmpty: false }, email: true },
+  subject: { presence: { allowEmpty: false } },
+  message: { presence: { allowEmpty: false } },
+  agreement: { presence: true, inclusion: { within: [true], message: 'is required' } },
+};
+
+const labelClassName = 'block text-sm font-semibold text-lightGray';
 const inputClassName =
-  'w-full h-10 mr-3 font-sans text-lg text-black placeholder-black bg-transparent border-b cursor-pointer border-darkGray border-px';
+  'focus:ring-indigo-500 focus:border-indigo-500 block w-full text-md lg:text-lg border-t-0 border-l-0 border-r-0 border-b border-b-darkGray placeholder-lightGray';
 
 const ContactForm: React.FC = () => (
   <section className="mt-20 py-28">
@@ -18,138 +31,200 @@ const ContactForm: React.FC = () => (
       <div className="grid md:grid-cols-3 gap-10">
         <Form
           initialValues={{
-            name: '',
-            company: '',
-            email: '',
-            subject: '',
-            message: '',
+            name: null,
+            company: null,
+            email: null,
+            subject: null,
+            message: null,
+            agreement: false,
           }}
           onSubmit={(values) => {
-            const { agreement, ...rest } = values;
-            console.info('Form values with agreement', rest);
+            const { name, company, email, subject, message } = values;
+
+            const msg = {
+              to: [{ email: 'david.inga@vizzuality.com' }],
+              from: { email },
+              subject: `Landgriffon contact: ${subject}`,
+              content: {
+                type: 'text/plain',
+                value: `Received a new contact from Landgriffon:\n
+                  ${name}, ${company}\n
+                  ${message}`,
+              },
+            };
+
+            axios
+              .post(
+                'https://api.sendgrid.com/v3/mail/send',
+                { personalizations: msg },
+                {
+                  headers: {
+                    Authorization: `Bearer ${process.env.NEXT_PUBLIC_SENDGRID_API_KEY}`,
+                  },
+                }
+              )
+              .then((response) => {
+                console.log(response);
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          }}
+          validate={(values) => {
+            const validationResult = validate(values, validationConstraints);
+            return validationResult;
           }}
         >
-          {({ values, handleSubmit }) => (
-            <form onSubmit={values.agreement && handleSubmit} className="md:col-span-2">
+          {({ handleSubmit }) => (
+            <form onSubmit={handleSubmit} className="md:col-span-2">
               <div className="grid md:grid-cols-2 gap-10">
-                <div className="space-y-10">
+                <div className="space-y-5">
                   <Field name="name" component="input">
-                    {(fprops) => (
-                      <label className={labelClassName} htmlFor="name">
-                        Name
-                        <input
-                          id="name"
-                          name="name"
-                          type="input"
-                          placeholder="John"
-                          className={inputClassName}
-                          onChange={fprops.input.onChange}
-                        />
-                      </label>
+                    {({ input, meta }) => (
+                      <div>
+                        <label className={labelClassName} htmlFor={input.name}>
+                          Name
+                        </label>
+                        <div className="mt-1 relative">
+                          <input
+                            {...input}
+                            type="text"
+                            placeholder="First and last name"
+                            className={inputClassName}
+                          />
+                        </div>
+                        {meta.error && meta.touched && (
+                          <p className="mt-2 text-sm text-red-600">{meta.error.join('. ')}</p>
+                        )}
+                      </div>
                     )}
                   </Field>
 
                   <Field name="email" component="input">
-                    {(fprops) => (
-                      <label className={labelClassName} htmlFor="email">
-                        Email
-                        <input
-                          id="email"
-                          name="email"
-                          type="input"
-                          placeholder="email@email.com"
-                          className={inputClassName}
-                          onChange={fprops.input.onChange}
-                        />
-                      </label>
+                    {({ input, meta }) => (
+                      <div>
+                        <label className={labelClassName} htmlFor={input.name}>
+                          Email address
+                        </label>
+                        <div className="mt-1 relative">
+                          <input
+                            {...input}
+                            type="email"
+                            placeholder="Email address"
+                            className={inputClassName}
+                          />
+                        </div>
+                        {meta.error && meta.touched && (
+                          <p className="mt-2 text-sm text-red-600">{meta.error.join('. ')}</p>
+                        )}
+                      </div>
                     )}
                   </Field>
 
                   <Field name="subject" component="input">
-                    {(fprops) => (
-                      <label className={labelClassName} htmlFor="subject">
-                        Subject
-                        <input
-                          id="subject"
-                          name="subject"
-                          type="input"
-                          placeholder="Message subject"
-                          className={inputClassName}
-                          onChange={fprops.input.onChange}
-                        />
-                      </label>
+                    {({ input, meta }) => (
+                      <div>
+                        <label className={labelClassName} htmlFor={input.name}>
+                          Name
+                        </label>
+                        <div className="mt-1 relative">
+                          <input
+                            {...input}
+                            type="text"
+                            placeholder="Subject"
+                            className={inputClassName}
+                          />
+                        </div>
+                        {meta.error && meta.touched && (
+                          <p className="mt-2 text-sm text-red-600">{meta.error.join('. ')}</p>
+                        )}
+                      </div>
                     )}
                   </Field>
 
-                  <Field name="message" component="input">
-                    {(fprops) => (
-                      <label className={labelClassName} htmlFor="message">
-                        Message
-                        <input
-                          id="message"
-                          name="message"
-                          type="input"
-                          placeholder="My message"
-                          className={inputClassName}
-                          onChange={fprops.input.onChange}
-                        />
-                      </label>
+                  <Field name="message" component="textarea">
+                    {({ input, meta }) => (
+                      <div>
+                        <label className={labelClassName} htmlFor={input.name}>
+                          Message
+                        </label>
+                        <div className="mt-1 relative">
+                          <textarea
+                            {...input}
+                            placeholder="Your message here"
+                            className={inputClassName}
+                          />
+                        </div>
+                        {meta.error && meta.touched && (
+                          <p className="mt-2 text-sm text-red-600">{meta.error.join('. ')}</p>
+                        )}
+                      </div>
                     )}
                   </Field>
                 </div>
 
                 <div className="space-y-10">
                   <Field name="company" component="input">
-                    {(fprops) => (
-                      <label className={labelClassName} htmlFor="company">
-                        Company
-                        <input
-                          id="company"
-                          name="company"
-                          type="input"
-                          placeholder="Super company"
-                          className={inputClassName}
-                          onChange={fprops.input.onChange}
-                        />
-                      </label>
+                    {({ input, meta }) => (
+                      <div>
+                        <label className={labelClassName} htmlFor={input.name}>
+                          Name
+                        </label>
+                        <div className="mt-1 relative">
+                          <input
+                            {...input}
+                            type="text"
+                            placeholder="Company"
+                            className={inputClassName}
+                          />
+                        </div>
+                        {meta.error && meta.touched && (
+                          <p className="mt-2 text-sm text-red-600">{meta.error.join('. ')}</p>
+                        )}
+                      </div>
                     )}
                   </Field>
                 </div>
 
                 <div className="md:col-span-2">
                   <div className="space-y-10 md:space-y-0 md:flex justify-between">
-                    <div className="flex items-center">
-                      <Field name="agreement" component="input" type="radio">
-                        {(fprops) => (
-                          <label htmlFor="agree" className={labelClassName}>
-                            <input
-                              id="agree"
-                              name="agree"
-                              type="checkbox"
-                              value={values.agreement}
-                              checked={values.agreement}
-                              className="mr-3 bg-transparent rounded-full cursor-pointer w-7 h-7 border-darkGray border-px"
-                              onChange={fprops.input.onChange}
-                            />
-                            <span className="checkbox-circle" />
+                    <Field name="agreement" component="input" type="checkbox">
+                      {({ input, meta }) => (
+                        <div>
+                          <label
+                            htmlFor={input.name}
+                            className={classNames(labelClassName, 'flex items-center')}
+                          >
+                            <div className="relative">
+                              <input
+                                {...input}
+                                id={input.name}
+                                type="checkbox"
+                                className="mr-3 bg-transparent rounded-full cursor-pointer w-7 h-7 border-darkGray border-px"
+                              />
+                              <span className="checkbox-circle mt-0.5 pointer-events-none" />
+                            </div>
+                            <span>
+                              I agree with the Landgriffon’s{' '}
+                              <a
+                                className="underline cursor-pointer"
+                                href="https://landgriffon.com/privacy-policy"
+                              >
+                                Privacy statement.
+                              </a>
+                            </span>
                           </label>
-                        )}
-                      </Field>
-                      <p className="text-base">
-                        I agree with the Landgriffon’s{' '}
-                        <a
-                          className="underline cursor-pointer"
-                          href="https://landgriffon.com/privacy-policy"
-                        >
-                          Privacy statement.
-                        </a>
-                      </p>
-                    </div>
+                          {meta.error && (
+                            <p className="mt-2 text-sm text-red-600">{meta.error.join('. ')}</p>
+                          )}
+                        </div>
+                      )}
+                    </Field>
                     <Button
                       theme="secondary"
                       size="s"
+                      type="submit"
                       className="box-border flex-shrink-0 h-10 text-base transition duration-500 ease-in-out w-36 md:ml-5 md:w-28"
-                      onClick={() => values.agreement && handleSubmit(values)}
                     >
                       Send
                     </Button>
@@ -162,7 +237,9 @@ const ContactForm: React.FC = () => (
         <div className="bg-beige py-28 px-10 space-y-10">
           <div className="space-y-2">
             <p className="text-lg font-semibold">Email us</p>
-            <p className="text-lg ">hello@vizzuality.com</p>
+            <p className="text-lg ">
+              <a href="mailto:hello@vizzuality.com">hello@vizzuality.com</a>
+            </p>
           </div>
           <div className="space-y-2">
             <p className="text-lg font-semibold">Our location</p>

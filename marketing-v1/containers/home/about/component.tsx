@@ -39,14 +39,26 @@ const HomeAbout: React.FC = () => (
               <div className="md:col-span-1 md:col-start-2">
                 <p className="md:text-4xl mb-10 md:mb-16">LandGriffon is built by: </p>
                 <ul className="flex flex-col space-y-10 md:my-16 md:space-y-16 text-lg lg:text-5xl font-semibold">
-                  <li>Vizzuality</li>
-                  <li>Satelligence</li>
+                  <li>
+                    <a href="https://vizzuality.com" className="hover:underline">
+                      Vizzuality
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://satelligence.com/" className="hover:underline">
+                      Satelligence
+                    </a>
+                  </li>
                 </ul>
-                <p className="md:text-4xl mb-10 md:mb-16">Advised by: </p>
+                <p className="md:text-4xl mb-10 md:mb-16">and advised by: </p>
                 <ul className="flex flex-col space-y-10 md:my-16 md:space-y-16 text-lg lg:text-5xl font-semibold">
-                  <li>SEI</li>
+                  <li>
+                    <a href="https://www.sei.org/" className="hover:underline">
+                      SEI
+                    </a>
+                  </li>
                 </ul>
-                <Link href="/about">
+                <Link href="/about-us">
                   <a className="block mt-10 md:mt-16 text-lg text-black underline lg:text-5xl font-semibold hover:no-underline">
                     Learn more
                   </a>

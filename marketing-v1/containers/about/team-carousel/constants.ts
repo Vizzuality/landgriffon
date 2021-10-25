@@ -8,7 +8,7 @@ const TEAM = [
   },
   {
     key: 1,
-    role: 'Technical project Manager - Vizzuality',
+    role: 'Technical Project Manager - Vizzuality',
     name: 'Miguel Mendoza',
     img: '/images/about/team/miguel-mendoza.jpg',
     profileURL: 'https://www.vizzuality.com/about/miguel-mendoza',

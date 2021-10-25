@@ -4,7 +4,6 @@ import { Form, Field } from 'react-final-form';
 
 import classNames from 'classnames';
 
-import axios from 'axios';
 import validate from 'validate.js';
 
 import Wrapper from 'containers/wrapper';
@@ -39,36 +38,7 @@ const ContactForm: React.FC = () => (
             agreement: false,
           }}
           onSubmit={(values) => {
-            const { name, company, email, subject, message } = values;
-
-            const msg = {
-              to: [{ email: 'david.inga@vizzuality.com' }],
-              from: { email },
-              subject: `Landgriffon contact: ${subject}`,
-              content: {
-                type: 'text/plain',
-                value: `Received a new contact from Landgriffon:\n
-                  ${name}, ${company}\n
-                  ${message}`,
-              },
-            };
-
-            axios
-              .post(
-                'https://api.sendgrid.com/v3/mail/send',
-                { personalizations: msg },
-                {
-                  headers: {
-                    Authorization: `Bearer ${process.env.NEXT_PUBLIC_SENDGRID_API_KEY}`,
-                  },
-                }
-              )
-              .then((response) => {
-                console.log(response);
-              })
-              .catch((error) => {
-                console.log(error);
-              });
+            console.info('contact values', values);
           }}
           validate={(values) => {
             const validationResult = validate(values, validationConstraints);

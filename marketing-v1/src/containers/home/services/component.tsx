@@ -5,7 +5,10 @@ import Image from 'next/image';
 import { Media } from 'containers/media';
 import Wrapper from 'containers/wrapper';
 
-import VideoPlayer from 'components/video-player';
+import AnimationPlayer from 'components/animation-player';
+// import VideoPlayer from 'components/video-player';
+
+import animationData from './animation.json';
 
 const HomeServices: React.FC = () => (
   <section id="services">
@@ -25,85 +28,14 @@ const HomeServices: React.FC = () => (
     </div>
     <div className="bg-beige py-28">
       <Wrapper>
-        <div className="relative grid md:grid-cols-3 gap-10">
-          <div className="col-span-2">
-            <Media lessThan="md">
-              <Image
-                alt="plantation from the sky"
-                height="381px"
-                width="285px"
-                src="/images/home/home-2.jpg"
-              />
-              <div
-                style={{ height: 'auto', width: '85%', top: '13%' }}
-                className="absolute right-0 overflow-hidden rounded-xl"
-              >
-                <VideoPlayer url="video/servicesLG.mp4" />
-              </div>
-            </Media>
-
-            <Media at="md">
-              <Image
-                alt="plantation from the sky"
-                height="812px"
-                width="588px"
-                src="/images/home/home-2.jpg"
-              />
-              <div
-                style={{ height: '251px', width: '320px', top: '30%' }}
-                className="absolute overflow-hidden left-10 rounded-xl"
-              >
-                <VideoPlayer url="video/servicesLG.mp4" />
-              </div>
-            </Media>
-
-            <Media between={['lg', 'xl']}>
-              <Image
-                alt="plantation from the sky"
-                height="942px"
-                width="588px"
-                src="/images/home/home-2.jpg"
-              />
-              <div
-                style={{ height: '330px', width: '320px', top: '27%' }}
-                className="absolute overflow-hidden left-10 lg:rounded-2xl xl:rounded-3xl"
-              >
-                <VideoPlayer url="video/servicesLG.mp4" />
-              </div>
-            </Media>
-
-            <Media at="xl">
-              <Image
-                alt="plantation from the sky"
-                height="942px"
-                width="588px"
-                src="/images/home/home-2.jpg"
-              />
-              <div
-                style={{ borderRadius: '1.8rem', height: '504px', width: '640px', top: '25%' }}
-                className="absolute overflow-hidden left-18"
-              >
-                <VideoPlayer url="video/servicesLG.mp4" />
-              </div>
-            </Media>
-
-            <Media greaterThanOrEqual="2xl">
-              <Image
-                alt="plantation from the sky"
-                height="942px"
-                width="588px"
-                src="/images/home/home-2.jpg"
-              />
-              <div
-                style={{ borderRadius: '2rem', height: '581px', width: '740px', top: '25%' }}
-                className="absolute overflow-hidden left-18"
-              >
-                <VideoPlayer url="video/servicesLG.mp4" />
-              </div>
-            </Media>
+        <div className="relative grid md:grid-cols-12 gap-10">
+          <div className="md:col-span-7">
+            <div>
+              <AnimationPlayer animationData={animationData} loop />
+            </div>
           </div>
 
-          <nav className="self-center space-y-10">
+          <nav className="md:col-span-4 md:col-start-9 self-center space-y-10">
             <div className="border-b border-black">
               <h3>
                 <a

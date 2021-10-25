@@ -39,6 +39,7 @@ const TEAM = [
     role: 'Project Manager - Satelligence',
     name: 'Nanne Tolsma',
     img: '/images/about/team/nanne-tolsma.jpg',
+    profileURL: 'https://satelligence.com/nanne',
   },
 ];
 

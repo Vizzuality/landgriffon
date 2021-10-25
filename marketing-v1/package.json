@@ -22,6 +22,7 @@
     "final-form": "^4.20.2",
     "framer-motion": "^4.1.17",
     "lodash": "^4.17.21",
+    "lottie-web": "^5.7.14",
     "next": "11.1.2",
     "postcss": "^8.2.15",
     "react": "17.0.2",

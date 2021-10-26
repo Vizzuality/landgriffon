@@ -67,10 +67,10 @@ const HomeWorks: React.FC = () => (
               />
             </div>
           </Media>
-          <figcaption className="w-full px-3.5 md:px-16 py-10 bg-orange">
-            <p className="my-5 font-heading-4 font-semibold">
-              We have an enormous opportunity —and <br />
-              responsibility— to shape the future of our planet.
+          <figcaption className="grid lg:grid-cols-12 w-full px-3.5 md:px-16 py-10 bg-orange">
+            <p className="lg:col-span-7 my-5 font-heading-4 font-semibold">
+              We have an enormous opportunity —and responsibility— to shape the future of our
+              planet.
             </p>
           </figcaption>
         </figure>

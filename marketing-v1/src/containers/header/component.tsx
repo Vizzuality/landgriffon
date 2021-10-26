@@ -58,7 +58,7 @@ const Header: React.FC = () => {
                     LANDGRIFFON
                   </a>
                 </Link>
-                <div className="flex items-center w-1/5 h-10 space-between mr-3.5 xs:mr-0">
+                <div className="flex items-center w-1/5 h-10 space-between">
                   <MenuButton
                     isOpen={menuIsOpen}
                     onClick={() => setMenuIsOpen(false)}

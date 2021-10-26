@@ -9,14 +9,14 @@ const AboutHero: React.FC = () => (
   <section className="mt-20">
     <div className="py-28">
       <Wrapper>
-        <h1 className="text-5xl text-center font-semibold md:text-7xl border-b border-black pb-28 mb-28 border-b-px">
+        <h1 className="font-heading-1 text-center border-b border-black pb-28 mb-28 border-b-px">
           Supported by a team of experts
         </h1>
         <div className="grid md:grid-cols-2 gap-10">
-          <h2 className="text-xl font-semibold md:text-5xl md:font-normal md:font-semibold">
+          <h2 className="font-heading-4 font-semibold">
             Our purpose is the creation of a better future for our planet and society.
           </h2>
-          <p className="text-xl">
+          <p>
             We work closely with many of the organizations that are leading corporate sustainability
             standards, and can help you understand industry best practices.
           </p>
@@ -44,10 +44,10 @@ const AboutHero: React.FC = () => (
               <Image objectFit="cover" layout="fill" src="/images/about/about-5.jpg" />
             </div>
             <div className="md:col-start-4 md:col-span-3">
-              <h2 className="text-xl font-semibold lg:text-5xl mt-28 mb-10">
+              <h2 className="font-heading-4 font-semibold mt-28 mb-10">
                 We are on a mission to make supply chains more sustainable.
               </h2>
-              <p className="lg:text-xl">
+              <p>
                 The world is moving to a zero-carbon and nature positive future. We offer our
                 expertise in environmental monitoring, designing user-centric scientific
                 applications, and artificial intelligence based satellite monitoring to help

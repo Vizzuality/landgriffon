@@ -31,6 +31,7 @@ module.exports = {
       sans: ['Public Sans', 'sans-serif'],
     },
     fontSize: {
+      xs: ['0.625rem', { lineHeight: '0.75rem' }], // 12px
       sm: ['0.875rem', { lineHeight: '1.25rem' }], // 14px
       base: ['1rem', { lineHeight: '1.5rem' }], // 16px
       lg: ['1.125rem', { lineHeight: '1.5' }], // 18px

@@ -25,7 +25,7 @@ const inputClassName =
 const ContactForm: React.FC = () => (
   <section className="mt-20 py-28">
     <Wrapper>
-      <h3 className="text-4xl md:text-7xl mb-28">Contact us</h3>
+      <h3 className="font-heading-1 mb-28">Contact us</h3>
 
       <div className="grid md:grid-cols-3 gap-10">
         <Form

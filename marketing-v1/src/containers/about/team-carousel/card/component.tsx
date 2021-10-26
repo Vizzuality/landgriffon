@@ -27,7 +27,7 @@ const Card: React.FC<CardProps> = ({ role, name, photo, profileURL, className }:
     >
       <figcaption className="p-5">
         <h4 className="font-semibold text-green text-xs mb-2">{role}</h4>
-        <h3 className="font-semibold text-lg">{name}</h3>
+        <h3 className="font-semibold text-base">{name}</h3>
       </figcaption>
       <div className="relative" style={{ height: 266 }}>
         <Image alt={name} src={photo} layout="fill" objectFit="cover" />
@@ -41,7 +41,7 @@ const Card: React.FC<CardProps> = ({ role, name, photo, profileURL, className }:
           >
             <Link href={profileURL}>
               <a
-                className="hover:cursor-pointer font-semibold hover:underline"
+                className="hover:cursor-pointer font-semibold text-base hover:underline"
                 target="_blank"
                 href={profileURL}
                 rel="noreferrer"

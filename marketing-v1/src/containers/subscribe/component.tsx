@@ -12,7 +12,7 @@ const Subscribe: React.FC = () => (
   <section className="w-full py-12 font-sans xl:py-20 bg-orange" id="subscribe">
     <Wrapper>
       <div className="grid md:grid-cols-2 gap-10">
-        <p className="text-3xl font-light">Be the first to hear about new releases and updates.</p>
+        <p className="font-heading-4">Be the first to hear about new releases and updates.</p>
 
         <Form
           initialValues={{

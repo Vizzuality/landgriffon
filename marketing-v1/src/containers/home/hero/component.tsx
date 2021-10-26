@@ -17,7 +17,7 @@ const HomeHero: React.FC<HomeHeroProps> = ({ onSignUp }: HomeHeroProps) => (
           <div className="relative" style={{ height: 408 }}>
             <Image
               alt="path in plantation"
-              src="/images/home/home-mb-1.jpg"
+              src="/images/home/home-1.jpg"
               layout="fill"
               objectFit="cover"
             />
@@ -33,21 +33,21 @@ const HomeHero: React.FC<HomeHeroProps> = ({ onSignUp }: HomeHeroProps) => (
             />
           </div>
         </Media>
-        <h2 className="absolute w-4/5 text-4xl font-normal text-white md:font-light md:bottom-16 bottom-6 left-3.5 md:left-12 xl:left-16 md:text-6xl xl:text-7xl">
+        <h1 className="absolute w-4/5 font-heading-2 font-normal text-white md:font-light md:bottom-16 bottom-6 left-3.5 md:left-12 xl:left-16">
           Reach your supply chain sustainability targets.
-        </h2>
+        </h1>
       </div>
-      <div className="px-3.5 md:px-12 xl:px-16 md:py-12 py-7 text-base text-white md:text-3xl bg-green">
+      <div className="px-3.5 md:px-12 xl:px-16 md:py-12 py-7 text-white bg-green">
         <div className="md:space-y-8 xl:w-2/4">
-          <p className="font-light">
+          <p>
             We help companies become sustainable by understanding and planning strategies to manage
-            environmental impacts and risks in supply chains.{' '}
+            environmental impacts and risks in supply chains.
           </p>
           <Media greaterThan="md">
             <button type="button" onClick={onSignUp}>
-              <h3 className="underline cursor-pointer font-semibold hover:no-underline">
+              <span className="underline cursor-pointer font-semibold hover:no-underline">
                 Sign up to know more about LandGriffon
-              </h3>
+              </span>
             </button>
           </Media>
         </div>

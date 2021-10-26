@@ -7,12 +7,24 @@
 
 @layer base {
   body {
-    @apply text-base text-black bg-white font-light;
-    -webkit-font-smoothing: antialiased;
+    @apply text-base lg:text-xl font-light text-black bg-white antialiased;
   }
 
   h1, h2, h3 {
-    @apply font-normal md:font-light;
+    @apply font-light;
+  }
+
+  .font-heading-1 {
+    @apply text-4xl xl:text-7xl font-semibold;
+  }
+  .font-heading-2 {
+    @apply text-3xl xl:text-6xl font-light;
+  }
+  .font-heading-3 {
+    @apply text-2xl xl:text-5xl font-light;
+  }
+  .font-heading-4 {
+    @apply text-xl xl:text-3xl font-light;
   }
 
   input[type="search"]::-webkit-search-decoration,

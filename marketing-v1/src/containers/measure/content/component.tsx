@@ -12,7 +12,7 @@ const MeasureContent: React.FC = () => (
           <Image layout="fill" objectFit="cover" src="/images/measure/measure-2.jpg" />
         </div>
         <div className="space-y-10">
-          <h3 className="text-xl md:text-5xl font-semibold mt-10">
+          <h3 className="font-heading-4 font-semibold mt-10">
             Track and anticipate deforestation risk with Satelligence AI.
           </h3>
           <p>
@@ -33,14 +33,16 @@ const MeasureContent: React.FC = () => (
         <div className="relative" style={{ height: 575 }}>
           <Image layout="fill" objectFit="cover" src="/images/measure/measure-3.jpg" />
         </div>
-        <h3 className="text-xl md:text-5xl font-semibold mt-10">
-          Calculate impacts with our catalog of trusted data.
-        </h3>
-        <p>
-          Generate accurate estimates of carbon emissions, water risk, and more based on trusted
-          data from leading scientific and NGO sources. Add custom indicators and targets to track
-          risks or progress over time.
-        </p>
+        <div className="space-y-10">
+          <h3 className="font-heading-4 font-semibold mt-10">
+            Calculate impacts with our catalog of trusted data.
+          </h3>
+          <p>
+            Generate accurate estimates of carbon emissions, water risk, and more based on trusted
+            data from leading scientific and NGO sources. Add custom indicators and targets to track
+            risks or progress over time.
+          </p>
+        </div>
       </div>
     </section>
   </Wrapper>

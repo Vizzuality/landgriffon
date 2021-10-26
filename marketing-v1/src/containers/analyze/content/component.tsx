@@ -9,7 +9,7 @@ const AnalyzeContent: React.FC = () => (
   <Wrapper hasPadding={false}>
     <section className="grid md:grid-cols-12 gap-x-10 gap-y-28 mb-28">
       <div className="md:col-span-5 space-y-10 self-items-center">
-        <h3 className="text-xl md:text-5xl font-semibold mt-10">
+        <h3 className="font-heading-4 font-semibold mt-10">
           See your whole supply chain sourcing area on one map.
         </h3>
         <p>
@@ -26,7 +26,7 @@ const AnalyzeContent: React.FC = () => (
         <Image width="657px" height="351px" src="/images/analyze/analyze-3.jpg" />
       </div>
       <div className="md:col-span-5 space-y-10 self-items-center">
-        <h3 className="text-xl md:text-5xl font-semibold mt-10">
+        <h3 className="font-heading-4 font-semibold mt-10">
           Customized tools to meet the needs of your organization.
         </h3>
         <p>

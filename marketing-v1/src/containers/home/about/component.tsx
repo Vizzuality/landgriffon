@@ -9,7 +9,7 @@ import Wrapper from 'containers/wrapper';
 const HomeAbout: React.FC = () => (
   <section>
     <Wrapper className="py-28">
-      <h2 className="mb-12 font-heading-4 text-green">About us</h2>
+      <h2 className="mb-12 font-heading-4 font-semibold text-green">About us</h2>
       <div className="grid md:grid-cols-3 gap-10">
         <h4 className="font-heading-2 col-span-2">
           Supported by
@@ -37,8 +37,8 @@ const HomeAbout: React.FC = () => (
                 </div>
               </Media>
               <div className="md:col-span-1 md:col-start-2">
-                <p className="mb-10 md:mb-16 font-heading-4">LandGriffon is built by: </p>
-                <ul className="flex flex-col space-y-10 md:my-16 md:space-y-16 font-heading-4 font-semibold">
+                <p className="mb-10 lg:mb-16 font-heading-4">LandGriffon is built by: </p>
+                <ul className="flex flex-col space-y-10 lg:my-16 lg:space-y-16 font-heading-4 font-semibold">
                   <li>
                     <a href="https://vizzuality.com" className="hover:underline">
                       Vizzuality
@@ -50,8 +50,8 @@ const HomeAbout: React.FC = () => (
                     </a>
                   </li>
                 </ul>
-                <p className="font-heading-4 mb-10 md:mb-16">and advised by: </p>
-                <ul className="flex flex-col space-y-10 md:my-16 md:space-y-16 font-heading-4 font-semibold">
+                <p className="font-heading-4 my-10 lg:mb-16">and advised by: </p>
+                <ul className="flex flex-col space-y-10 lg:my-16 md:space-y-16 font-heading-4 font-semibold">
                   <li>
                     <a href="https://www.sei.org/" className="hover:underline">
                       SEI
@@ -59,7 +59,7 @@ const HomeAbout: React.FC = () => (
                   </li>
                 </ul>
                 <Link href="/about-us">
-                  <a className="block mt-10 md:mt-16 underline hover:no-underline">Learn more</a>
+                  <a className="block mt-10 lg:mt-16 underline hover:no-underline">Learn more</a>
                 </Link>
               </div>
             </div>

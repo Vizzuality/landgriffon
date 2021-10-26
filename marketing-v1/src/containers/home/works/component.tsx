@@ -12,7 +12,7 @@ const HomeWorks: React.FC = () => (
   <section>
     <div className="py-28">
       <Wrapper>
-        <h2 className="mb-12 font-heading-4 text-green">How it works</h2>
+        <h2 className="mb-12 font-heading-4 font-semibold text-green">How it works</h2>
         <p className="font-heading-2">
           LandGriffon works with you wherever you are on your journey to sustainable supply chain
           management.
@@ -47,7 +47,7 @@ const HomeWorks: React.FC = () => (
     <div>
       <Wrapper hasPadding={false}>
         <figure>
-          <Media lessThan="md">
+          <Media lessThan="lg">
             <div className="relative" style={{ height: 408 }}>
               <Image
                 alt="woman in plantation"
@@ -57,7 +57,7 @@ const HomeWorks: React.FC = () => (
               />
             </div>
           </Media>
-          <Media greaterThanOrEqual="md">
+          <Media greaterThanOrEqual="lg">
             <div className="relative" style={{ height: 823 }}>
               <Image
                 alt="woman in plantation"

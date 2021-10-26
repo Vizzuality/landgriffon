@@ -157,7 +157,7 @@ const TeamCarousel: React.FC = () => {
   return (
     <div className="bg-beige pb-28">
       <Wrapper hasPadding={false}>
-        <h2 className="text-center text-6xl xl:text-7xl mb-10">Meet our team</h2>
+        <h2 className="text-center font-heading-2 mb-10">Meet our team</h2>
         <div>
           <Slider {...settings} ref={slickRef}>
             {TEAM.map((t) => (

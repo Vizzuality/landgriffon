@@ -22,7 +22,7 @@ const ServicesTabNav: React.FC<ServicesTabNavProps> = ({
   <section className="mt-20 md:py-28">
     <Wrapper>
       <Media greaterThanOrEqual="md">
-        <nav className="relative flex flex-wrap items-center justify-between px-24 mt-1 text-2xl md:px-16 lg:px-40 xl:px-64 lg:text-5xl md:mt-0 navbar-expand-lg">
+        <nav className="relative flex flex-wrap items-center justify-between px-24 mt-1 md:px-16 lg:px-40 xl:px-64 md:mt-0 navbar-expand-lg">
           <Link href="/services/measure">
             <h3 className="font-semibold pb-px border-b-2 border-transparent opacity-50 cursor-pointer hover:opacity-100 hover:border-black">
               01 Measure
@@ -40,14 +40,12 @@ const ServicesTabNav: React.FC<ServicesTabNavProps> = ({
           </Link>
         </nav>
       </Media>
-      <h1 className="text-5xl text-center font-semibold md:text-7xl border-b border-black pb-28 my-28 border-b-px">
+      <h1 className="font-heading-1 text-center border-b border-black pb-28 my-28 border-b-px">
         {title}
       </h1>
       <div className="grid md:grid-cols-12 gap-10 my-28">
-        <h2 className="text-xl md:text-5xl font-semibold md:col-span-6 xl:col-span-8">
-          {subtitle}
-        </h2>
-        <p className="text-xl md:col-span-6 xl:col-span-4">{description}</p>
+        <h2 className="font-heading-4 font-semibold col-span-6">{subtitle}</h2>
+        <p className="col-start-8 col-span-5">{description}</p>
       </div>
     </Wrapper>
     <Wrapper hasPadding={false}>

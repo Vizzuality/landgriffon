@@ -12,7 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Media } from 'containers/media';
 import Wrapper from 'containers/wrapper';
 
-import Button from 'components/button';
+import LinkButton from 'components/button';
 
 import MenuButton from '../../components/menu-button';
 
@@ -104,11 +104,15 @@ const Header: React.FC = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <Button theme="primary" size="l" className="flex-shrink-0 w-44 h-11">
-                  <a href="/contact" rel="noreferrer">
-                    Contact us
-                  </a>
-                </Button>
+                <LinkButton
+                  href="/contact"
+                  rel="noreferrer"
+                  theme="primary"
+                  size="l"
+                  className="flex-shrink-0 w-44 h-11"
+                >
+                  Contact us
+                </LinkButton>
               </motion.div>
             </motion.nav>
           )}
@@ -143,15 +147,15 @@ const Header: React.FC = () => {
                     <p>About Us</p>
                   </a>
                 </Link>
-                <Button
+                <LinkButton
+                  href="/contact"
+                  rel="noreferrer"
                   theme="primary"
                   size="l"
                   className="flex-shrink-0 ml-5 transition duration-500 ease-in-out h-11 w-44"
                 >
-                  <a href="/contact" rel="noreferrer">
-                    Contact us
-                  </a>
-                </Button>
+                  Contact us
+                </LinkButton>
               </div>
             </nav>
           </Wrapper>

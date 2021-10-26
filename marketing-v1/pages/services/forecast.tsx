@@ -20,7 +20,7 @@ const Forecast: React.FC = () => (
       <ServicesTabNav
         title="Forecast"
         subtitle="Make informed decisions on buying raw materials."
-        description="Simulate scenarios of of how your company’s procurement will change over time. Evaluate options for improvement and prioritize areas for intervention."
+        description="Simulate scenarios of how your company’s procurement will change over time. Evaluate options for improvement and prioritize areas for intervention."
         imageURL="/images/forecast/forecast-1.jpg"
       />
       <Content />

@@ -1,6 +1,10 @@
 MAKEFLAGS += -j8
 
+<<<<<<< HEAD
 all:  h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_pasture h3_grid_wf_global h3_grid_bio_global h3_grid_carbon_global h3_grid_deforestation_global h3_grid_pasture_production h3_grid_pasture_ha
+=======
+all: h3_grid_pasture_production#h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_pasture h3_grid_wf_global h3_grid_bio_global h3_grid_carbon_global h3_grid_deforestation_global h3_grid_pasture_production h3_grid_pasture_ha
+>>>>>>> 460787f... add nerge with gadm
 
 crop: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_pasture_ha h3_grid_pasture_production
 
@@ -246,10 +250,19 @@ data/earthstat/CroplandPastureArea2000_global_ha: data/earthstat/CroplandPasture
 h3_grid_pasture_ha: data/earthstat/CroplandPastureArea2000_global_ha
 	python tiff_folder_to_h3_table.py $< $@ harvest_area es --h3-res=6
 
+
+#download gadm data
+data/gadm/gadm36_levels_shp.zip:
+	mkdir -p data/gadm
+	wget -q -O $@ https://data.biogeo.ucdavis.edu/data/gadm3.6/gadm36_levels_shp.zip
+
+data/gadm/gadm36_0.shp: data/gadm/gadm36_levels_shp.zip
+	unzip -u $< gadm36_0* -d data/gadm
+
 #PATURE PRODUCTION - value for 2010
 #merge with admin areas country level -join $< keys=NAME_0,Area
-data/earthstat/FAOSTATS/FAOSTAT_data.shp:
-	mapshaper ../data_download/gadm_3.6/data/gadm/gadm36_0.shp -simplify 10% planar keep-shapes \
+data/earthstat/FAOSTATS/FAOSTAT_data.shp: data/gadm/gadm36_0.shp
+	mapshaper data/gadm/gadm36_0.shp -simplify 10% planar keep-shapes \
 	-clean \
 	-each 'COUNT=this.area/100000000' \
 	-join ./FAOSTATS/FAOSTAT_cattle_production.csv keys=NAME_0,Area \

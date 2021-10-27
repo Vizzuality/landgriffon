@@ -167,12 +167,12 @@ export class H3DataService {
     };
   }
 
-  async getYearsByLayerAndMaterial(
+  async getYearsByLayerType(
     layerType: string,
     materialId?: string,
     indicatorId?: string,
   ): Promise<number[]> {
-    return this.filterYearsByLayerService.getYearsByLayer(
+    return this.filterYearsByLayerService.getYearsByLayerType(
       layerType,
       materialId,
       indicatorId,

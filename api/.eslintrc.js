@@ -16,6 +16,7 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js'],
   rules: {
+    'eqeqeq': 'error',
     'no-restricted-imports': [
       'error',
       {

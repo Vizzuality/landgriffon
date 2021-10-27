@@ -40,12 +40,22 @@ const HomeAbout: React.FC = () => (
                 <p className="mb-10 lg:mb-16 font-heading-4">LandGriffon is built by: </p>
                 <ul className="flex flex-col space-y-10 lg:my-16 lg:space-y-16 font-heading-4 font-semibold">
                   <li>
-                    <a href="https://vizzuality.com" className="hover:underline">
+                    <a
+                      href="https://vizzuality.com"
+                      className="hover:underline"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       Vizzuality
                     </a>
                   </li>
                   <li>
-                    <a href="https://satelligence.com/" className="hover:underline">
+                    <a
+                      href="https://satelligence.com/"
+                      className="hover:underline"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       Satelligence
                     </a>
                   </li>
@@ -53,7 +63,12 @@ const HomeAbout: React.FC = () => (
                 <p className="font-heading-4 my-10 lg:mb-16">and advised by: </p>
                 <ul className="flex flex-col space-y-10 lg:my-16 md:space-y-16 font-heading-4 font-semibold">
                   <li>
-                    <a href="https://www.sei.org/" className="hover:underline">
+                    <a
+                      href="https://www.sei.org/"
+                      className="hover:underline"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       SEI
                     </a>
                   </li>

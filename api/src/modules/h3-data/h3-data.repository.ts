@@ -143,6 +143,57 @@ export class H3DataRepository extends Repository<H3Data> {
     return riskMap;
   }
 
+  async getDeforestationLossRiskMapByResolution(
+    indicatorH3Data: H3Data,
+    materialH3Data: H3Data,
+    resolution: number,
+  ): Promise<H3IndexValueData[]> {
+    // TODO: Check with Data if calculus if accurate
+    const riskMap = await getManager()
+      .createQueryBuilder()
+      .select(`h3_to_parent(materialh3.h3index, ${resolution})`, 'h')
+      .addSelect(
+        `sum(indicatorh3.${indicatorH3Data.h3columnName} * materialh3.${materialH3Data.h3columnName})`,
+        'v',
+      )
+      .from(materialH3Data.h3tableName, 'materialh3')
+      .addFrom(indicatorH3Data.h3tableName, 'indicatorh3')
+      .where(`indicatorh3.h3index = materialh3.h3index`)
+      .andWhere(`materialh3.${materialH3Data.h3columnName} is not null`)
+      .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
+      .groupBy('h')
+      .getRawMany();
+    this.logger.log('Deforestation Loss Map generated');
+
+    return riskMap;
+  }
+
+  async getCarbonEmissionsRiskMapByResolution(
+    indicatorH3Data: H3Data,
+    materialH3Data: H3Data,
+    calculusFactor: number,
+    resolution: number,
+  ): Promise<H3IndexValueData[]> {
+    // TODO: Check with Data if calculus if accurate
+    const riskMap = await getManager()
+      .createQueryBuilder()
+      .select(`h3_to_parent(materialh3.h3index, ${resolution})`, 'h')
+      .addSelect(
+        `sum(indicatorh3.${indicatorH3Data.h3columnName} * (materialh3.${materialH3Data.h3columnName} * (${calculusFactor}/19)))`,
+        'v',
+      )
+      .from(materialH3Data.h3tableName, 'materialh3')
+      .addFrom(indicatorH3Data.h3tableName, 'indicatorh3')
+      .where(`indicatorh3.h3index = materialh3.h3index`)
+      .andWhere(`materialh3.${materialH3Data.h3columnName} is not null`)
+      .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
+      .groupBy('h')
+      .getRawMany();
+    this.logger.log('Carbon Emissions Map generated');
+
+    return riskMap;
+  }
+
   /**
    * @debt: Refactor this to use queryBuilder. Even tho all values are previously validated, this isn't right, but
    * has been don for the time being to unblock FE. Check with Data if calculus is accurate

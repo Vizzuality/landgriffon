@@ -91,7 +91,6 @@ export class H3DataService {
     /**
      * @note To generate a Risk Map, a harvestId and h3Data by indicatorId are required
      */
-
     const indicatorH3Data = await this.h3DataRepository.findOne({
       where: { indicatorId: indicatorId },
     });
@@ -142,7 +141,20 @@ export class H3DataService {
         );
         break;
       case INDICATOR_TYPES.DEFORESTATION:
+        riskMap = await this.h3DataRepository.getDeforestationLossRiskMapByResolution(
+          indicatorH3Data,
+          materialH3Data as H3Data,
+          resolution,
+        );
+        break;
       case INDICATOR_TYPES.CARBON_EMISSIONS:
+        riskMap = await this.h3DataRepository.getCarbonEmissionsRiskMapByResolution(
+          indicatorH3Data,
+          materialH3Data as H3Data,
+          factor as number,
+          resolution,
+        );
+        break;
       case INDICATOR_TYPES.BIODIVERSITY_LOSS:
         riskMap = await this.h3DataRepository.getBiodiversityLossRiskMapByResolution(
           indicatorH3Data,

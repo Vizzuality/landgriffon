@@ -21,7 +21,7 @@ export class H3FilterYearsByLayerService {
     private readonly indicatorService: IndicatorsService,
     private readonly sourcingRecordService: SourcingRecordsService,
   ) {}
-  async getYearsByLayer(
+  async getYearsByLayerType(
     layerType: string,
     materialId?: string,
     indicatorId?: string,
@@ -35,6 +35,7 @@ export class H3FilterYearsByLayerService {
      */
     switch (layerType) {
       case LAYER_TYPES.IMPACT:
+        //TODO: Clarify with Data why Impact year range can be retrieved from sourcing-record available years
         return this.getAvailableYearsForImpactLayer();
       case LAYER_TYPES.MATERIAL:
         return this.getAvailableYearsForMaterialLayer(layerType, materialId);
@@ -53,7 +54,7 @@ export class H3FilterYearsByLayerService {
   ): Promise<number[]> {
     if (materialId) {
       const { harvestId, producerId } = await this.materialService.getById(
-        materialId as string,
+        materialId,
       );
       return this.h3DataRepository.getYears({
         layerType,

@@ -28,13 +28,13 @@ export class H3DataController {
     description: 'Retrieve years for which there is data, by layer',
   })
   @Get('years')
-  async getYearsByLayer(
+  async getYearsByLayerType(
     @Query(ValidationPipe) queryParams: GetYearsByLayerAndMaterialDto,
   ): Promise<{ data: number[] }> {
     const { materialId, indicatorId, layer } = queryParams;
-    const availableYears: number[] = await this.h3DataService.getYearsByLayerAndMaterial(
+    const availableYears: number[] = await this.h3DataService.getYearsByLayerType(
       layer,
-      materialId as string,
+      materialId,
       indicatorId,
     );
     return { data: availableYears };

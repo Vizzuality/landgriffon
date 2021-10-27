@@ -47,3 +47,15 @@ variable "load_fresh_data_prod" {
   default     = false
   description = "If a new data import should be triggered for the production app. Clears the current database."
 }
+
+variable "data_import_arguments_prod" {
+  type        = list(string)
+  default     = []
+  description = "Arguments to pass to the initial data import process for the production cluster"
+}
+
+variable "data_import_arguments_staging" {
+  type        = list(string)
+  default     = []
+  description = "Arguments to pass to the initial data import process for the staging cluster"
+}

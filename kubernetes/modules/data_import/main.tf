@@ -20,6 +20,8 @@ resource "kubernetes_job" "data_import" {
     parallelism = 1
     completions = 1
 
+    ttl_seconds_after_finished = "86400"
+
     template {
       metadata {
         labels = {

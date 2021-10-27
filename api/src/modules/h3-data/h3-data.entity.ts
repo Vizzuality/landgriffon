@@ -47,8 +47,7 @@ export class H3Data extends BaseEntity {
   @Column({ type: 'varchar' })
   h3columnName!: string;
 
-  //TODO: Set this as required and non-nullable as soons as this column's data is provided as part of initial seed process
-  @Column({ type: 'int', nullable: true })
+  @Column({ type: 'int' })
   year!: number;
 
   @Column({ type: 'int' })

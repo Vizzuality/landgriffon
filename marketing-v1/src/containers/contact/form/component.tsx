@@ -208,7 +208,7 @@ const ContactForm: React.FC = () => (
           <div className="space-y-2">
             <p className="text-lg font-semibold">Email us</p>
             <p className="text-lg ">
-              <a href="mailto:hello@vizzuality.com">hello@vizzuality.com</a>
+              <a href="mailto:hello@landgriffon.com">hello@landgriffon.com</a>
             </p>
           </div>
           <div className="space-y-2">

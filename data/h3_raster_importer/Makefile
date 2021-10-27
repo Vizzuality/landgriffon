@@ -1,8 +1,9 @@
 MAKEFLAGS += -j8
 
-all: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_wf_global h3_grid_bio_global
 
-crop: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha
+all: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_pasture h3_grid_wf_global h3_grid_bio_global h3_grid_carbon_global h3_grid_deforestation_global h3_grid_pasture_production h3_grid_pasture_ha
+
+crop: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_pasture_ha h3_grid_pasture_production
 
 indicators: h3_grid_wf_global h3_grid_bio_global h3_grid_carbon_global h3_grid_deforestation_global
 
@@ -17,9 +18,9 @@ data/mapspam/spam2010v2r0_global_prod.geotiff.zip:
 	wget -q -O $@ https://s3.amazonaws.com/mapspam/2010/v2.0/geotiff/spam2010v2r0_global_prod.geotiff.zip
 
 #Download MapSPAM crop harvest area
-data/mapspam/spam2010v2r0_global_harv_area.geotiff.zip:
+data/mapspam/spam2010v2r0_global_phys_area.geotiff.zip:
 	mkdir -p data/mapspam
-	wget -q -O $@ https://s3.amazonaws.com/mapspam/2010/v2.0/geotiff/spam2010v2r0_global_harv_area.geotiff.zip
+	wget -q -O $@ https://s3.amazonaws.com/mapspam/2010/v2.0/geotiff/spam2010v2r0_global_phys_area.geotiff.zip
 
 #EXTRACT DATASETS:
 # <tiff_folder>: <zipfile>
@@ -29,9 +30,15 @@ data/mapspam/spam2010v2r0_global_prod: data/mapspam/spam2010v2r0_global_prod.geo
 	mkdir -p $@
 	unzip -u $< *_A.tif -d $@
 
-data/mapspam/spam2010v2r0_global_ha: data/mapspam/spam2010v2r0_global_harv_area.geotiff.zip
+data/mapspam/spam2010v2r0_global_ha: data/mapspam/spam2010v2r0_global_phys_area.geotiff.zip
 	mkdir -p $@
 	unzip -u $< *_A.tif -d $@
+	for tiffile in data/mapspam/spam2010v2r0_global_ha/*.tif; do \
+		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
+		output_file="data/mapspam/spam2010v2r0_global_ha/spam2010_global_$${table_name}.tif";\
+		gdal_calc.py --calc "A/10000" --format GTiff --type Float32 -A "$${tiffile}" --A_band 1 --outfile "$${output_file}"; \
+		rm -f "$${tiffile}";\
+	done
 
 #CONVERT DATASETS:
 # <table>: <tiff_folder>
@@ -68,7 +75,7 @@ data/earthstat/earthstat2000_global_prod: data/earthstat/HarvestedAreaYield175Cr
 # Only extract the files that contain harvest area fraction. Set the no data to 0 as the mapspam datasets.
 data/earthstat/earthstat2000_global_ha: data/earthstat/HarvestedAreaYield175Crops_Geotiff.zip
 	mkdir -p $@
-	unzip -j -o -u $< *_HarvestedAreaHectares.tif -d data/earthstat/earthstat2000_global_ha
+	unzip -j -o -u $< *_HarvestedAreaFraction.tif -d data/earthstat/earthstat2000_global_ha
 	for tiffile in data/earthstat/earthstat2000_global_ha/*.tif; do \
 		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
 		output_file="data/earthstat/earthstat2000_global_ha/earthstat2000_global_$${table_name}.tif";\
@@ -178,9 +185,9 @@ data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles: data/hansen_loss/Hansen_
 	done
 	mkdir -p $@
 	gdalbuildvrt data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.vrt data/hansen_loss/Hansen_GFC_2020_lossyear/*.tif
+	for tifffile in data/hansen_loss/Hansen_GFC_2020_lossyear/*.tiff; do rm -f "$${tiffile}"; done
 	gdal_translate -of GTiff -co BIGTIFF=YES -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 \
 	data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.vrt data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.tif
-	#for tiffile in data/hansen_loss/Hansen_GFC_2020_lossyear/*.tif; do rm -f "$${tiffile}"; done
 
 h3_grid_deforestation_global: data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles
 	python tiff_folder_to_h3_table.py $< $@ indicator DF_LUC_T --h3-res=6
@@ -214,6 +221,7 @@ data/gfw_carbon/merged_tiles: data/gfw_carbon/forest_greenhouse_gas_net_flux_sim
 		rm -f "$${tiffile}";\
 	done
 	gdalbuildvrt data/gfw_carbon/forest_greenhouse_gas_net_flux_2001_2020_tCO2eq.vrt data/gfw_carbon/*.tif
+	for tifffile in data/gfw_carbon//*.tiff; do rm -f "$${tiffile}"; done
 	gdal_translate -of GTiff -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 \
 	data/gfw_carbon/forest_greenhouse_gas_net_flux_2001_2020_tCO2eq.vrt data/gfw_carbon/merged_tiles/forest_greenhouse_gas_net_flux_2001_2020_tCO2eq.tif
 	for tiffile in in data/gfw_carbon/*.tif; do rm -f "$${tiffile}"; done
@@ -221,6 +229,53 @@ data/gfw_carbon/merged_tiles: data/gfw_carbon/forest_greenhouse_gas_net_flux_sim
 h3_grid_carbon_global: data/gfw_carbon/merged_tiles
 	python tiff_folder_to_h3_table.py $< $@ indicator GHG_LUC_T --h3-res=6
 
+## DOWNLOAD PASTURE AND CROPLAND DATASET
+#https://s3.us-east-2.amazonaws.com/earthstatdata/CroplandPastureArea2000_Geotiff.zip
+data/earthstat/CroplandPastureArea2000_Geotiff.zip:
+	mkdir -p data/earthstat
+	wget -q -O $@ https://s3.us-east-2.amazonaws.com/earthstatdata/CroplandPastureArea2000_Geotiff.zip
+
+#unzip
+data/earthstat/CroplandPastureArea2000_global_ha: data/earthstat/CroplandPastureArea2000_Geotiff.zip
+	mkdir -p $@
+	unzip -j -o -u $< */Pasture2000_5m.tif -d $@
+	gdal_translate -a_nodata 0 -of GTiff data/earthstat/CroplandPastureArea2000_global_ha/Pasture2000_5m.tif \
+	data/earthstat/CroplandPastureArea2000_global_ha/es_pasture_global.tif
+	rm -f data/earthstat/CroplandPastureArea2000_global_ha/Pasture2000_5m.tif
+
+# and import to a table called "h3_grid_earthstat2000_global_ha"
+h3_grid_pasture_ha: data/earthstat/CroplandPastureArea2000_global_ha
+	python tiff_folder_to_h3_table.py $< $@ harvest_area es --h3-res=6
+
+
+#download gadm data
+data/gadm/gadm36_levels_shp.zip:
+	mkdir -p data/gadm
+	wget -q -O $@ https://data.biogeo.ucdavis.edu/data/gadm3.6/gadm36_levels_shp.zip
+
+data/gadm/gadm36_0.shp: data/gadm/gadm36_levels_shp.zip
+	unzip -u $< gadm36_0* -d data/gadm
+
+#PATURE PRODUCTION - value for 2010
+#merge with admin areas country level -join $< keys=NAME_0,Area
+data/earthstat/FAOSTATS/FAOSTAT_data.shp: data/gadm/gadm36_0.shp
+	mapshaper data/gadm/gadm36_0.shp -simplify 10% planar keep-shapes \
+	-clean \
+	-each 'COUNT=this.area/100000000' \
+	-join ./FAOSTATS/FAOSTAT_cattle_production.csv keys=NAME_0,Area \
+	-o $@ force
+
+data/earthstat/FAOSTATS/FAOSTAT_pasture_production.tif: data/earthstat/FAOSTATS/FAOSTAT_data.shp
+	gdal_rasterize -l FAOSTAT_data -a Value -tr 0.083333 0.083333 -a_nodata -1.0 -te -180.0 -89.99928 179.99856 90.0 -ot Float32 -of GTiff $< data/earthstat/FAOSTATS/pasture_contry_production_t.tif
+	gdal_rasterize -l FAOSTAT_data -a COUNT -tr 0.083333 0.083333 -a_nodata -1.0 -te -180.0 -89.99928 179.99856 90.0 -ot Float32 -of GTiff $< data/earthstat/FAOSTATS/pasture_contry_count.tif
+	gdal_calc.py --calc "A/B" --format GTiff --type Float32 -A data/earthstat/FAOSTATS/pasture_contry_production_t.tif --A_band 1 -B data/earthstat/FAOSTATS/pasture_contry_count.tif --outfile $@
+	rm -f data/earthstat/FAOSTATS/pasture_contry_production_t.tif
+	rm -f data/earthstat/FAOSTATS/pasture_contry_count.tif
+
+h3_grid_pasture_production: data/earthstat/FAOSTATS/FAOSTAT_pasture_production.tif
+	python tiff_folder_to_h3_table.py data/earthstat/FAOSTATS $@ production es --h3-res=6
+
+#
 # ^^^
 #######################################
 

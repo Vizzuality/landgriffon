@@ -28,7 +28,7 @@ const Footer: React.FC = () => (
     <Wrapper>
       <div className="py-10 md:flex md:justify-between">
         <nav className="flex items-center mb-10 md:my-0 space-x-6 text-sm xl:text-base md:space-x-14">
-          <p>@LandGriffon 2021</p>
+          <span>&copy; LandGriffon 2021</span>
           <Link href="/privacy-policy">
             <a className="cursor-pointer hover:font-semibold">
               <p>Privacy policy</p>
@@ -37,10 +37,10 @@ const Footer: React.FC = () => (
         </nav>
         <div className="flex items-center">
           <Image alt="UE Flag" src="/images/footer/UE_flag.jpg" height={43} width={62} />
-          <p className="w-56 pl-3 font-medium text-ue">
+          <span className="w-56 pl-3 font-medium text-ue">
             This project has received funding from the European Union&apos;s Horizon 2020 research
             and innovation programme under grant agreement No 101004174
-          </p>
+          </span>
         </div>
       </div>
     </Wrapper>

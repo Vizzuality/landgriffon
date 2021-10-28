@@ -195,7 +195,7 @@ export class H3DataRepository extends Repository<H3Data> {
       });
     }
     // Filter by data type
-    if (yearsRequestParams.layerType != LAYER_TYPES.RISK) {
+    if (yearsRequestParams.layerType !== LAYER_TYPES.RISK) {
       queryBuilder.andWhere(`"dataType" != '${H3_DATA_TYPES.INDICATOR}'`);
     } else {
       queryBuilder.andWhere(`"dataType" = '${H3_DATA_TYPES.INDICATOR}'`);

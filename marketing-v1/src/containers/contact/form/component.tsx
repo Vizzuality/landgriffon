@@ -79,7 +79,7 @@ const ContactForm: React.FC = () => {
               {({ handleSubmit }) => (
                 <form onSubmit={handleSubmit} className="md:col-span-2">
                   {contactSubmission.status === 'error' && (
-                    <div className="text-sm text-red-600">
+                    <div className="text-sm text-red-600 space-y-5 mb-10">
                       {contactSubmission.message?.errors.map(({ message }) => (
                         <p>{message}</p>
                       ))}

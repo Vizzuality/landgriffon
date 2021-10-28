@@ -78,6 +78,11 @@ jobs:
           context: client
           push: true
           tags: vizzuality/landgriffon-client:${{ github.ref != 'refs/heads/main' && 'staging' || 'production' }}
+          build-args: |
+            "NEXT_PUBLIC_MAPBOX_API_TOKEN=${{ secrets.NEXT_PUBLIC_MAPBOX_API_TOKEN }}"
+            "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}"
+            "NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}"
+
 
   push_data_import_to_registry:
     name: Push Data Import Docker image to Docker Hub

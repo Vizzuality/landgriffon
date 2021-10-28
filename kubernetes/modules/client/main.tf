@@ -60,8 +60,8 @@ resource "kubernetes_deployment" "client_deployment" {
           args = ["start:prod"]
 
           env {
-            name  = "NEXT_PUBLIC_API_URL"
-            value = var.api_url
+            name  = "NEXTAUTH_URL"
+            value = var.site_url
           }
 
           resources {

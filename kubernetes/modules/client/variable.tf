@@ -28,7 +28,7 @@ variable "namespace" {
   description = "The k8s namespace to use"
 }
 
-variable "api_url" {
+variable "site_url" {
   type        = string
-  description = "API URL to use"
+  description = "Site URL to use"
 }

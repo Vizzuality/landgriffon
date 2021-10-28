@@ -16,7 +16,7 @@ module "k8s_client_staging" {
   deployment_name  = "client"
   image            = "vizzuality/landgriffon-client:staging"
   namespace        = "staging"
-  api_url          = module.k8s_ingress_staging.api_url
+  site_url         = module.k8s_ingress_staging.client_url
 }
 
 module "k8s_data_import_staging" {

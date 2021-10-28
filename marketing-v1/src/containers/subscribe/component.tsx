@@ -12,8 +12,8 @@ import Wrapper from 'containers/wrapper';
 import Button from 'components/button';
 
 const validationConstraints = {
-  email: { presence: { allowEmpty: false }, email: true },
-  agreement: { presence: true, inclusion: { within: [true], message: 'is required' } },
+  subEmail: { presence: { allowEmpty: false }, email: true },
+  subAgreement: { presence: true, inclusion: { within: [true], message: 'is required' } },
 };
 
 const Subscribe: React.FC = () => {
@@ -23,12 +23,12 @@ const Subscribe: React.FC = () => {
   });
 
   const handleOnSubmit = useCallback((values) => {
-    const { email } = values;
+    const { subEmail } = values;
     const data = {
       list_ids: ['1b704de4-643f-4531-b6cb-63fea0e6ad2a'],
       contacts: [
         {
-          email,
+          email: subEmail,
         },
       ],
     };
@@ -65,8 +65,8 @@ const Subscribe: React.FC = () => {
           {subscription.status !== 'success' && (
             <Form
               initialValues={{
-                email: null,
-                agreement: null,
+                subEmail: null,
+                subAgreement: null,
               }}
               onSubmit={handleOnSubmit}
               validate={(values) => {
@@ -82,7 +82,7 @@ const Subscribe: React.FC = () => {
                     </div>
                   )}
                   <div className="md:flex justify-between space-y-10 md:space-y-0 md:flex-row">
-                    <Field name="email" component="input">
+                    <Field name="subEmail" component="input">
                       {({ input, meta }) => (
                         <div className="flex-1">
                           <input
@@ -108,7 +108,7 @@ const Subscribe: React.FC = () => {
                     </Button>
                   </div>
                   <div className="flex items-center">
-                    <Field name="agreement" component="input" type="checkbox">
+                    <Field name="subAgreement" component="input" type="checkbox">
                       {({ input, meta }) => (
                         <div>
                           <label

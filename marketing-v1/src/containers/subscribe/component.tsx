@@ -1,87 +1,151 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { Form, Field } from 'react-final-form';
 
 import Link from 'next/link';
 
+import axios from 'axios';
+import validate from 'validate.js';
+
 import Wrapper from 'containers/wrapper';
 
 import Button from 'components/button';
 
-const Subscribe: React.FC = () => (
-  <section className="w-full py-12 font-sans xl:py-20 bg-orange" id="subscribe">
-    <Wrapper>
-      <div className="grid md:grid-cols-2 gap-10">
-        <p className="font-heading-4">Be the first to hear about new releases and updates.</p>
+const validationConstraints = {
+  email: { presence: { allowEmpty: false }, email: true },
+  agreement: { presence: true, inclusion: { within: [true], message: 'is required' } },
+};
 
-        <Form
-          initialValues={{
-            email: '',
-            agreement: null,
-          }}
-          onSubmit={(values) => {
-            const { email } = values;
-            console.info('Email to sign up', email);
-          }}
-        >
-          {({ values, handleSubmit }) => (
-            <form onSubmit={values.agreement && handleSubmit} className="space-y-10">
-              <div className="md:flex items-center justify-between space-y-10 md:space-y-0 md:flex-row">
-                <Field name="email" component="input">
-                  {(fprops) => (
-                    <input
-                      id="email"
-                      name="email"
-                      type="input"
-                      placeholder="Email address"
-                      className="w-full h-10 mx-0 md:mr-3 text-xl text-black placeholder-black bg-transparent border-b border-darkGray border-px"
-                      onChange={fprops.input.onChange}
-                    />
-                  )}
-                </Field>
+const Subscribe: React.FC = () => {
+  const [subscription, setSubscription] = useState({
+    status: null,
+    message: null,
+  });
 
-                <Button
-                  theme="secondary"
-                  size="s"
-                  className="box-border flex-shrink-0 w-full h-10 transition duration-500 ease-in-out md:ml-5 md:w-28"
-                  onClick={() => values.agreement && handleSubmit(values)}
-                >
-                  Subscribe
-                </Button>
-              </div>
-              <div className="flex items-center">
-                <Field name="agreement" component="input" type="radio">
-                  {(fprops) => (
-                    <label
-                      htmlFor="agree"
-                      className="relative flex font-sans text-xs text-black md:text-base"
-                    >
-                      <input
-                        id="agree"
-                        name="agree"
-                        type="checkbox"
-                        value={values.agreement}
-                        checked={values.agreement}
-                        className="mr-3 bg-transparent rounded-full cursor-pointer w-7 h-7 border-darkGray border-px"
-                        onChange={fprops.input.onChange}
-                      />
-                      <span className="checkbox-circle" />
-                      <p>
-                        By signing up here I agree to receive LandGriffon email newsletter.{' '}
-                        <Link href="/privacy-policy">
-                          <a className="underline cursor-pointer">Privacy statement.</a>
-                        </Link>
-                      </p>
-                    </label>
-                  )}
-                </Field>
-              </div>
-            </form>
+  const handleOnSubmit = useCallback((values) => {
+    const { email } = values;
+    const data = {
+      list_ids: ['1b704de4-643f-4531-b6cb-63fea0e6ad2a'],
+      contacts: [
+        {
+          email,
+        },
+      ],
+    };
+    axios
+      .put('https://api.sendgrid.com/v3/marketing/contacts', data, {
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_SENDGRID_API_KEY}`,
+        },
+      })
+      .then(() => {
+        setSubscription({
+          status: 'success',
+          message: 'Thank you. Your subscription has been processed successfully.',
+        });
+      })
+      .catch((error) => {
+        setSubscription({
+          status: 'error',
+          message: error.message,
+        });
+      });
+  }, []);
+
+  return (
+    <section className="w-full py-12 font-sans xl:py-20 bg-orange" id="subscribe">
+      <Wrapper>
+        <div className="grid md:grid-cols-2 gap-10">
+          <p className="font-heading-4">Be the first to hear about new releases and updates.</p>
+          {subscription.status === 'success' && (
+            <div>
+              <p>{subscription.message}</p>
+            </div>
           )}
-        </Form>
-      </div>
-    </Wrapper>
-  </section>
-);
+          {subscription.status !== 'success' && (
+            <Form
+              initialValues={{
+                email: null,
+                agreement: null,
+              }}
+              onSubmit={handleOnSubmit}
+              validate={(values) => {
+                const validationResult = validate(values, validationConstraints);
+                return validationResult;
+              }}
+            >
+              {({ values, handleSubmit }) => (
+                <form onSubmit={values.agreement && handleSubmit} className="space-y-10">
+                  {subscription.status === 'error' && (
+                    <div className="text-sm text-red-600">
+                      <p>{subscription.message}</p>
+                    </div>
+                  )}
+                  <div className="md:flex justify-between space-y-10 md:space-y-0 md:flex-row">
+                    <Field name="email" component="input">
+                      {({ input, meta }) => (
+                        <div className="flex-1">
+                          <input
+                            {...input}
+                            type="email"
+                            placeholder="Email address"
+                            className="bg-orange focus:ring-indigo-500 focus:border-black block w-full text-md lg:text-lg border-t-0 border-l-0 border-r-0 border-b border-black placeholder-darkGray"
+                          />
+                          {meta.error && meta.touched && (
+                            <p className="mt-2 text-sm text-red-600">{meta.error.join('. ')}</p>
+                          )}
+                        </div>
+                      )}
+                    </Field>
+
+                    <Button
+                      theme="secondary"
+                      size="s"
+                      className="box-border flex-shrink-0 w-full h-10 transition duration-500 ease-in-out md:ml-5 md:w-28"
+                      onClick={() => values.agreement && handleSubmit(values)}
+                    >
+                      Subscribe
+                    </Button>
+                  </div>
+                  <div className="flex items-center">
+                    <Field name="agreement" component="input" type="checkbox">
+                      {({ input, meta }) => (
+                        <div>
+                          <label
+                            htmlFor={input.name}
+                            className="relative flex font-sans text-xs text-black md:text-base"
+                          >
+                            <div className="relative">
+                              <input
+                                {...input}
+                                id={input.name}
+                                type="checkbox"
+                                className="mr-3 bg-transparent rounded-full cursor-pointer w-7 h-7 border-darkGray border-px"
+                              />
+                              <span className="checkbox-circle mt-0 pointer-events-none" />
+                            </div>
+                            <span>
+                              By signing up here I agree to receive LandGriffon email newsletter.{' '}
+                              <Link href="/privacy-policy">
+                                <a className="underline cursor-pointer">Privacy statement.</a>
+                              </Link>
+                            </span>
+                          </label>
+                          {meta.error && meta.touched && (
+                            <p className="mt-2 text-sm text-red-600">{meta.error.join('. ')}</p>
+                          )}
+                        </div>
+                      )}
+                    </Field>
+                  </div>
+                </form>
+              )}
+            </Form>
+          )}
+        </div>
+      </Wrapper>
+    </section>
+  );
+};
 
 export default Subscribe;

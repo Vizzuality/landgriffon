@@ -74,8 +74,8 @@ const Subscribe: React.FC = () => {
                 return validationResult;
               }}
             >
-              {({ values, handleSubmit }) => (
-                <form onSubmit={values.agreement && handleSubmit} className="space-y-10">
+              {({ handleSubmit }) => (
+                <form onSubmit={handleSubmit} className="space-y-10">
                   {subscription.status === 'error' && (
                     <div className="text-sm text-red-600">
                       <p>{subscription.message}</p>

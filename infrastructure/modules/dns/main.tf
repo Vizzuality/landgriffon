@@ -24,7 +24,7 @@ resource "aws_route53_record" "homepage-www" {
   name    = "www.${var.domain}"
   type    = "CNAME"
   ttl     = "300"
-  records = ["vizzuality.github.io"]
+  records = ["cname.vercel-dns.com."]
 }
 
 resource "aws_route53_record" "bastion" {

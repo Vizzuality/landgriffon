@@ -45,10 +45,7 @@ module "dns" {
   source = "./modules/dns"
   domain = var.domain
   site_server_ip_list = [
-    "185.199.108.153",
-    "185.199.109.153",
-    "185.199.110.153",
-    "185.199.111.153"
+    "76.76.21.21"
   ]
   bastion_hostname = module.bastion.bastion_hostname
 }

@@ -35,7 +35,7 @@ const Subscribe: React.FC = () => {
     axios
       .put('https://api.sendgrid.com/v3/marketing/contacts', data, {
         headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_SENDGRID_API_KEY}`,
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_SENDGRID_API_KEY_SUBSCRIPTION}`,
         },
       })
       .then(() => {

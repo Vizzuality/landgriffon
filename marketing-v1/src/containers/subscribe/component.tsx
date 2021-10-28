@@ -102,7 +102,7 @@ const Subscribe: React.FC = () => {
                       theme="secondary"
                       size="s"
                       className="box-border flex-shrink-0 w-full h-10 transition duration-500 ease-in-out md:ml-5 md:w-28"
-                      onClick={() => values.agreement && handleSubmit(values)}
+                      type="submit"
                     >
                       Subscribe
                     </Button>

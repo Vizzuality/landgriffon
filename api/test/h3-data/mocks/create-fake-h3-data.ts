@@ -11,6 +11,7 @@ export const createFakeH3Data = async (
   h3ColumnName: string,
   additionalH3Data?: any,
   indicatorId?: string,
+  year: number = 2000,
 ): Promise<H3Data> => {
   await getManager().query(
     `CREATE TABLE ${h3TableName} (h3index h3index, ${h3ColumnName} float4);` +
@@ -31,6 +32,7 @@ export const createFakeH3Data = async (
   h3data.h3tableName = h3TableName;
   h3data.h3columnName = h3ColumnName;
   h3data.h3resolution = 6;
+  h3data.year = year;
   if (indicatorId) {
     h3data.indicatorId = indicatorId;
   }

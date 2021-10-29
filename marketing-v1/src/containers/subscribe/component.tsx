@@ -111,10 +111,7 @@ const Subscribe: React.FC = () => {
                     <Field name="subAgreement" component="input" type="checkbox">
                       {({ input, meta }) => (
                         <div>
-                          <label
-                            htmlFor={input.name}
-                            className="relative flex font-sans text-xs text-black md:text-base"
-                          >
+                          <label htmlFor={input.name} className="relative flex">
                             <div className="relative">
                               <input
                                 {...input}

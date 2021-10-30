@@ -56,3 +56,9 @@ resource "kubernetes_secret" "postgres-secret" {
     postgresql-postgres-password = sensitive(local.postgres_secret_json.password)
   }
 }
+
+data "kubernetes_service" "postgresql" {
+  metadata {
+    name = "postgres-postgresql"
+  }
+}

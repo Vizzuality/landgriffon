@@ -21,7 +21,7 @@ seed-source-data:
 
 seed-gadm:
 	@echo "Importing GADM data... "
-	cd /data_download && make
+	cd /data_download && make -j 4
 
 seed-h3-tables:
 	@echo "Starting seeding h3 tables... "

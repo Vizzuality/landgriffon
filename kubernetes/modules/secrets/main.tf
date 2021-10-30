@@ -12,6 +12,7 @@ locals {
   postgres_secret_json = {
     username = "landgriffon-${var.namespace}"
     password = random_password.postgresql_user_generator.result
+    database = "landgriffon-${var.namespace}"
   }
 
   api_secret_json = {
@@ -76,7 +77,7 @@ resource "kubernetes_secret" "db_secret" {
     DB_HOST        = "postgres-postgresql.default.svc.cluster.local"
     DB_USERNAME    = sensitive(local.postgres_secret_json.username)
     DB_PASSWORD    = sensitive(local.postgres_secret_json.password)
-    DB_DATABASE    = "landgriffon-${var.namespace}"
+    DB_DATABASE    = sensitive(local.postgres_secret_json.database)
     DB_SYNCHRONIZE = "true"
   }
 }

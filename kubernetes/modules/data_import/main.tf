@@ -20,7 +20,7 @@ resource "kubernetes_job" "data_import" {
     parallelism = 1
     completions = 1
 
-    ttl_seconds_after_finished = "86400"
+#    ttl_seconds_after_finished = "86400"
 
     template {
       metadata {
@@ -37,7 +37,7 @@ resource "kubernetes_job" "data_import" {
                 match_expressions {
                   key      = "type"
                   operator = "In"
-                  values   = ["default"]
+                  values   = ["data-import"]
                 }
               }
             }
@@ -104,12 +104,12 @@ resource "kubernetes_job" "data_import" {
 
           resources {
             limits = {
-              cpu    = "2"
-              memory = "8Gi"
+              cpu    = "18"
+              memory = "30Gi"
             }
             requests = {
-              cpu    = "1"
-              memory = "2Gi"
+              cpu    = "12"
+              memory = "16Gi"
             }
           }
         }

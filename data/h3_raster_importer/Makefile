@@ -1,11 +1,30 @@
-MAKEFLAGS += -j8
+#########################
+# About this var
+# This is a rough controller of how many parallel system threads you'll have
+# It does not necessarily represent a max thread count, but it's probably similar to that
+# Lower if you are having issues. Increase at your own risk
+#########################
+PARALLELIZATION_FACTOR=12
 
+WORKDIR_GADM=data/gadm
+WORKDIR_MAPSPAM=data/mapspam
+WORKDIR_EARTHSTAT=data/earthstat
+WORKDIR_WATER_FOOTPRINT=data/waterFootprint
+WORKDIR_BIODIVERSITY=data/biodiversity
+WORKDIR_CARBON=data/gfw_carbon
+WORKDIR_DEFORESTATION=data/hansen_loss
 
-all: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_wf_global h3_grid_bio_global h3_grid_carbon_global h3_grid_deforestation_global h3_grid_pasture_production h3_grid_pasture_ha
+all:
+	make -j 2 crop indicators
 
-crop: h3_grid_spam2010v2r0_global_prod h3_grid_earthstat2000_global_prod h3_grid_earthstat2000_global_ha h3_grid_spam2010v2r0_global_ha h3_grid_pasture_ha h3_grid_pasture_production
+crop:
+	make -j $(( $(PARALLELIZATION_FACTOR) / 2 )) convert-mapspam-crop-production convert-earthstat-crop-production convert-earthstat-crop-harvest convert-mapspam-crop-harvest convert-cropland convert-pasture
 
-indicators: h3_grid_wf_global h3_grid_bio_global h3_grid_carbon_global h3_grid_deforestation_global
+indicators:
+	make -j $(( $(PARALLELIZATION_FACTOR) / 2 )) convert-water-footprint convert-biodiversity convert-carbon
+	# Processing deforestation data is quite intensive, so we do it separately, so we can allocate all threads to it
+	# There is probably a better way to do this, that future me will learn about - in the future.
+	make convert-deforestation
 
 #######################################
 # MapSPAM crop production and harvest area
@@ -13,29 +32,29 @@ indicators: h3_grid_wf_global h3_grid_bio_global h3_grid_carbon_global h3_grid_d
 # DOWNLOAD DATASETS
 # <zipfile>:
 # Download MapSPAM crop production
-data/mapspam/spam2010v2r0_global_prod.geotiff.zip:
-	mkdir -p data/mapspam
-	wget -q -O $@ https://s3.amazonaws.com/mapspam/2010/v2.0/geotiff/spam2010v2r0_global_prod.geotiff.zip
+download-mapspam-crop-production:
+	mkdir -p $(WORKDIR_MAPSPAM)
+	wget -q -O $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod.geotiff.zip https://s3.amazonaws.com/mapspam/2010/v2.0/geotiff/spam2010v2r0_global_prod.geotiff.zip
 
 #Download MapSPAM crop harvest area
-data/mapspam/spam2010v2r0_global_phys_area.geotiff.zip:
-	mkdir -p data/mapspam
-	wget -q -O $@ https://s3.amazonaws.com/mapspam/2010/v2.0/geotiff/spam2010v2r0_global_phys_area.geotiff.zip
+download-mapspam-crop-harvest:
+	mkdir -p $(WORKDIR_MAPSPAM)
+	wget -q -O $(WORKDIR_MAPSPAM)/spam2010v2r0_global_phys_area.geotiff.zip https://s3.amazonaws.com/mapspam/2010/v2.0/geotiff/spam2010v2r0_global_phys_area.geotiff.zip
 
 #EXTRACT DATASETS:
 # <tiff_folder>: <zipfile>
 # Unzip to folder
 # Only extract the files ending in *_A.tif (all agricultural technology types together)
-data/mapspam/spam2010v2r0_global_prod: data/mapspam/spam2010v2r0_global_prod.geotiff.zip
-	mkdir -p $@
-	unzip -u $< *_A.tif -d $@
+extract-mapspam-crop-production: download-mapspam-crop-production
+	mkdir -p $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod
+	unzip -u $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod.geotiff.zip *_A.tif -d $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod
 
-data/mapspam/spam2010v2r0_global_ha: data/mapspam/spam2010v2r0_global_phys_area.geotiff.zip
-	mkdir -p $@
-	unzip -u $< *_A.tif -d $@
-	for tiffile in data/mapspam/spam2010v2r0_global_ha/*.tif; do \
+extract-mapspam-crop-harvest: download-mapspam-crop-harvest
+	mkdir -p $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha
+	unzip -u $(WORKDIR_MAPSPAM)/spam2010v2r0_global_phys_area.geotiff.zip *_A.tif -d $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha
+	for tiffile in $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/*.tif; do \
 		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
-		output_file="data/mapspam/spam2010v2r0_global_ha/spam2010_global_$${table_name}.tif";\
+		output_file="$(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010_global_$${table_name}.tif";\
 		gdal_calc.py --calc "A/10000" --format GTiff --type Float32 -A "$${tiffile}" --A_band 1 --outfile "$${output_file}"; \
 		rm -f "$${tiffile}";\
 	done
@@ -44,41 +63,41 @@ data/mapspam/spam2010v2r0_global_ha: data/mapspam/spam2010v2r0_global_phys_area.
 # <table>: <tiff_folder>
 # Convert the tiffs in the folder to h3indexes at resolution 6
 # and import to a table called "h3_grid_spam2017v2r0_global_prod"
-h3_grid_spam2010v2r0_global_prod: data/mapspam/spam2010v2r0_global_prod
-	python tiff_folder_to_h3_table.py $< $@ production spam 2010 --h3-res=6
+convert-mapspam-crop-production: extract-mapspam-crop-production
+	python tiff_folder_to_h3_table.py $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod h3_grid_spam2010v2r0_global_prod production spam 2010 --h3-res=6
 
-h3_grid_spam2010v2r0_global_ha: data/mapspam/spam2010v2r0_global_ha
-	python tiff_folder_to_h3_table.py $< $@ harvest_area spam 2010 --h3-res=6
+convert-mapspam-crop-harvest: extract-mapspam-crop-harvest
+	python tiff_folder_to_h3_table.py $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha h3_grid_spam2010v2r0_global_ha harvest_area spam 2010 --h3-res=6
 
 
 #######################################
 # Earthstat crop production and harvest area
 
 # Download earthstat crop production
-data/earthstat/HarvestedAreaYield175Crops_Geotiff.zip:
-	mkdir -p data/earthstat
-	wget -q -O $@ https://s3.us-east-2.amazonaws.com/earthstatdata/HarvestedAreaYield175Crops_Geotiff.zip
+download-earthstat-crop-production:
+	mkdir -p $(WORKDIR_EARTHSTAT)
+	wget -q -O $(WORKDIR_EARTHSTAT)/HarvestedAreaYield175Crops_Geotiff.zip https://s3.us-east-2.amazonaws.com/earthstatdata/HarvestedAreaYield175Crops_Geotiff.zip
 
 # Unzip to folder
 # Only extract the files that contain production. Set the no data to 0 as the mapspam datasets.
-data/earthstat/earthstat2000_global_prod: data/earthstat/HarvestedAreaYield175Crops_Geotiff.zip
-	mkdir -p $@
-	unzip -j -o -u $< *_Production.tif -d data/earthstat/earthstat2000_global_prod
-	for tiffile in data/earthstat/earthstat2000_global_prod/*.tif; do \
+extract-earthstat-crop-production: download-earthstat-crop-production
+	mkdir -p $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod
+	unzip -j -o -u $(WORKDIR_EARTHSTAT)/HarvestedAreaYield175Crops_Geotiff.zip *_Production.tif -d $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod
+	for tiffile in $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/*.tif; do \
 		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
-		output_file="data/earthstat/earthstat2000_global_prod/earthstat2000_global_$${table_name}.tif";\
+		output_file="$(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/earthstat2000_global_$${table_name}.tif";\
 		gdal_translate -a_nodata 0 -of GTiff "$${tiffile}" "$${output_file}";\
 		rm -f "$${tiffile}";\
 	done
 
 # Unzip to folder
 # Only extract the files that contain harvest area fraction. Set the no data to 0 as the mapspam datasets.
-data/earthstat/earthstat2000_global_ha: data/earthstat/HarvestedAreaYield175Crops_Geotiff.zip
-	mkdir -p $@
-	unzip -j -o -u $< *_HarvestedAreaFraction.tif -d data/earthstat/earthstat2000_global_ha
-	for tiffile in data/earthstat/earthstat2000_global_ha/*.tif; do \
+extract-earthstat-crop-harvest: download-earthstat-crop-production
+	mkdir -p $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha
+	unzip -j -o -u $(WORKDIR_EARTHSTAT)/HarvestedAreaYield175Crops_Geotiff.zip *_HarvestedAreaFraction.tif -d $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha
+	for tiffile in $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/*.tif; do \
 		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
-		output_file="data/earthstat/earthstat2000_global_ha/earthstat2000_global_$${table_name}.tif";\
+		output_file="$(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/earthstat2000_global_$${table_name}.tif";\
 		gdal_translate -a_nodata 0 -of GTiff "$${tiffile}" "$${output_file}";\
 		rm -f "$${tiffile}";\
 	done
@@ -86,111 +105,106 @@ data/earthstat/earthstat2000_global_ha: data/earthstat/HarvestedAreaYield175Crop
 # <table>: <tiff_folder>
 # Convert the tiffs in the folder to h3indexes at resolution 6
 # and import to a table called "h3_grid_earthstat2000_global_prod"
-h3_grid_earthstat2000_global_prod: data/earthstat/earthstat2000_global_prod
-	python tiff_folder_to_h3_table.py $< $@ production es 2000 --h3-res=6
+convert-earthstat-crop-production: extract-earthstat-crop-production
+	python tiff_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod h3_grid_earthstat2000_global_prod production es 2000 --h3-res=6
 
 # and import to a table called "h3_grid_earthstat2000_global_ha"
-h3_grid_earthstat2000_global_ha: data/earthstat/earthstat2000_global_ha
-	python tiff_folder_to_h3_table.py $< $@ harvest_area es 2000 --h3-res=6
+convert-earthstat-crop-harvest: extract-earthstat-crop-harvest
+	python tiff_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha h3_grid_earthstat2000_global_ha harvest_area es 2000 --h3-res=6
 
 #########################################
 # CONTEXTUAL DATASETS FOR INDICATORS
 # WATER FOOTPRINT
 # Download generic blue water footprint dataset: https://data.4tu.nl/articles/dataset/The_green_blue_grey_and_total_water_footprint_related_to_production/12675440
-data/waterFootprint/Report50-WF-of-production-RasterFiles.zip:
-	mkdir -p data/waterFootprint
-	wget -q -O $@ https://data.4tu.nl/ndownloader/files/23992634
+download-water-footprint:
+	mkdir -p $(WORKDIR_WATER_FOOTPRINT)
+	wget -q -O $(WORKDIR_WATER_FOOTPRINT)/Report50-WF-of-production-RasterFiles.zip https://data.4tu.nl/ndownloader/files/23992634
 
 # # Download crop specific water footprint
-# data/waterFootprint/Report47-App-IV-CropWaterFootprints-RasterMaps.zip:
-# 	mkdir -p data/waterFootprint
+# $(WORKDIR_WATER_FOOTPRINT)/Report47-App-IV-CropWaterFootprints-RasterMaps.zip:
+# 	mkdir -p $(WORKDIR_WATER_FOOTPRINT)
 # 	wget -q -O $@ https://waterfootprint.org/media/downloads/Report47-App-IV-CropWaterFootprints-RasterMaps.zip
 
 #extract generic wf data
-data/waterFootprint/generic_waterfootprint: data/waterFootprint/Report50-WF-of-production-RasterFiles.zip
-	mkdir -p $@
-	unzip -jn -o -u $< -d $@
-	unzip -j -o -u data/waterFootprint/generic_waterfootprint/Report50-WF-of-production-RasterFiles.zip */wf_bltot_mmyr/* -d $@
-	gdal_translate -of GTiff data/waterFootprint/generic_waterfootprint/hdr.adf data/waterFootprint/generic_waterfootprint/wf_bltot_mmyr.tif
+extract-water-footprint: download-water-footprint
+	mkdir -p $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint
+	unzip -jn -o -u $(WORKDIR_WATER_FOOTPRINT)/Report50-WF-of-production-RasterFiles.zip -d $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint
+	unzip -j -o -u $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/Report50-WF-of-production-RasterFiles.zip */wf_bltot_mmyr/* -d $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint
+	gdal_translate -of GTiff $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/hdr.adf $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr.tif
 
 # Convert the wf tiffs in the folder to h3indexes at resolution 6
-h3_grid_wf_global: data/waterFootprint/generic_waterfootprint
-	python tiff_folder_to_h3_table.py data/waterFootprint/generic_waterfootprint h3_grid_wf_global indicator UWU_T 2005 --h3-res=6
+convert-water-footprint: extract-water-footprint
+	python tiff_folder_to_h3_table.py $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint h3_grid_wf_global indicator UWU_T 2005 --h3-res=6
 
 # BIODIVERSITY
 #Download biodiversity datasets
-data/biodiversity/6kcchn7e3u_official_teow.zip:
-	mkdir -p data/biodiversity
-	wget -q -O $@ https://files.worldwildlife.org/wwfcmsprod/files/Publication/file/6kcchn7e3u_official_teow.zip?_ga=2.147270832.688271325.1631720232-1851544340.1631720232
+download-biodiversity:
+	mkdir -p $(WORKDIR_BIODIVERSITY)
+	wget -q -O $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow.zip https://files.worldwildlife.org/wwfcmsprod/files/Publication/file/6kcchn7e3u_official_teow.zip?_ga=2.147270832.688271325.1631720232-1851544340.1631720232
 
 #extract wwf ecoregions and merge with lcia biodiversity indicators
-data/biodiversity/6kcchn7e3u_official_teow: data/biodiversity/6kcchn7e3u_official_teow.zip
-	mkdir -p $@
-	unzip -jn -o -u $< -d $@
+extract-biodiversity: download-biodiversity
+	mkdir -p $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow
+	unzip -jn -o -u $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow.zip -d $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow
 
 # join attributes of csv and ecoregions to get the biodiversity risk values
-data/biodiversity/6kcchn7e3u_official_teow/wwf_terr_ecos_m.shp: data/biodiversity/6kcchn7e3u_official_teow
-	mapshaper data/biodiversity/6kcchn7e3u_official_teow/wwf_terr_ecos.shp -simplify 10% planar keep-shapes \
+preprocess-biodiversity: extract-biodiversity
+	mapshaper $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow/wwf_terr_ecos.shp -simplify 10% planar keep-shapes \
 	-clean \
 	-join ./LCIA_UNEP_SETAC/Ch6_PSL_regional_ecoregions_v01.csv keys=eco_code,eco_code \
-	-o $@ force
+	-o $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow/wwf_terr_ecos_m.shp force
 
 # rasterize biodiversity dataset
- data/biodiversity/6kcchn7e3u_official_teow/lcia_psl_regional: data/biodiversity/6kcchn7e3u_official_teow/wwf_terr_ecos_m.shp
-	mkdir -p $@
-	gdal_rasterize -l wwf_terr_ecos_m -a Annual_cro -tr 0.0833333333333286 0.0833333333333286 -a_nodata 0.0 \
-	-te -180.0 -90.0 180.0 90.0 -ot Float32 \
-	-of GTiff $< data/biodiversity/6kcchn7e3u_official_teow/lcia_psl_regional/lcia_psl_r_annual_crops.tif; \
-	gdal_rasterize -l wwf_terr_ecos_m -a Permanent_ -tr 0.0833333333333286 0.0833333333333286 -a_nodata 0.0 \
-	-te -180.0 -90.0 180.0 90.0 -ot Float32 \
-	-of GTiff $< data/biodiversity/6kcchn7e3u_official_teow/lcia_psl_regional/lcia_psl_r_permanent_crops.tif; \
-	gdal_rasterize -l wwf_terr_ecos_m -a Pasture -tr 0.0833333333333286 0.0833333333333286 -a_nodata 0.0 \
-	-te -180.0 -90.0 180.0 90.0 -ot Float32 \
-	-of GTiff $< data/biodiversity/6kcchn7e3u_official_teow/lcia_psl_regional/lcia_psl_r_pasture.tif; \
-	gdal_rasterize -l wwf_terr_ecos_m -a Urban -tr 0.0833333333333286 0.0833333333333286 -a_nodata 0.0 \
-	-te -180.0 -90.0 180.0 90.0 -ot Float32 \
-	-of GTiff $< data/biodiversity/6kcchn7e3u_official_teow/lcia_psl_regional/lcia_psl_r_urban.tif; \
-	gdal_rasterize -l wwf_terr_ecos_m -a Extensive_ -tr 0.0833333333333286 0.0833333333333286 -a_nodata 0.0 \
-	-te -180.0 -90.0 180.0 90.0 -ot Float32 \
-	-of GTiff $< data/biodiversity/6kcchn7e3u_official_teow/lcia_psl_regional/lcia_psl_r_extensive_forestry.tif; \
-	gdal_rasterize -l wwf_terr_ecos_m -a Intensive_ -tr 0.0833333333333286 0.0833333333333286 -a_nodata 0.0 \
-	-te -180.0 -90.0 180.0 90.0 -ot Float32 \
-	-of GTiff $< data/biodiversity/6kcchn7e3u_official_teow/lcia_psl_regional/lcia_psl_r_intensive_forestry.tif;
+rasterize-biodiversity: preprocess-biodiversity
+	mkdir -p $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow/lcia_psl_regional
+	make rasterize-biodiversity-file ATTRIBUTE_NAME=Annual_cro TIF=lcia_psl_r_annual_crops.tif & \
+	make rasterize-biodiversity-file ATTRIBUTE_NAME=Permanent_ TIF=lcia_psl_r_permanent_crops.tif & \
+	make rasterize-biodiversity-file ATTRIBUTE_NAME=Pasture TIF=lcia_psl_r_pasture.tif & \
+	make rasterize-biodiversity-file ATTRIBUTE_NAME=Urban TIF=lcia_psl_r_urban.tif & \
+	make rasterize-biodiversity-file ATTRIBUTE_NAME=Extensive_ TIF=lcia_psl_r_extensive_forestry.tif & \
+	make rasterize-biodiversity-file ATTRIBUTE_NAME=Intensive_ TIF=lcia_psl_r_intensive_forestry.tif & \
+	wait
+
+rasterize-biodiversity-file:
+	gdal_rasterize -l wwf_terr_ecos_m -a $(ATTRIBUTE_NAME) -tr 0.0833333333333286 0.0833333333333286 -a_nodata 0.0 \
+    	-te -180.0 -90.0 180.0 90.0 -ot Float32 \
+    	-of GTiff $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow/wwf_terr_ecos_m.shp $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow/lcia_psl_regional/$(TIF)
 
 # convert the biodiversity rasters to h3 tables
-h3_grid_bio_global: data/biodiversity/6kcchn7e3u_official_teow/lcia_psl_regional
-	python tiff_folder_to_h3_table.py $< $@ indicator BL_LUC_T 2015 --h3-res=6
+convert-biodiversity: rasterize-biodiversity
+	python tiff_folder_to_h3_table.py $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow/lcia_psl_regional h3_grid_bio_global indicator BL_LUC_T 2015 --h3-res=6
 
 
 # DEFORESTATION
 #text: https://storage.googleapis.com/earthenginepartners-hansen/GFC-2020-v1.8/lossyear.txt
-data/hansen_loss/Hansen_GFC_2020_lossyear.txt:
-	mkdir -p data/hansen_loss
-	wget -O $@ "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2020-v1.8/lossyear.txt"
+download-deforestation-list:
+	@echo "Downloading deforestation file list... "
+	mkdir -p $(WORKDIR_DEFORESTATION)
+	wget -q -O $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear.txt "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2020-v1.8/lossyear.txt"
 
-data/hansen_loss/Hansen_GFC_2020_lossyear: data/hansen_loss/Hansen_GFC_2020_lossyear.txt
-	mkdir -p $@
-	for id in $$(cat $<); do \
-	table_name=`basename -s .tif "$$id" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
-	output_file="data/hansen_loss/$${table_name}.tif";\
-	wget -O "$$output_file" "$$id"; \
-	done
+download-deforestation: download-deforestation-list
+	@echo "Iterating deforestation files... "
+	mkdir -p $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear
+	cat $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear.txt | xargs -P $(PARALLELIZATION_FACTOR) -I {} /bin/bash -c 'make transform-deforestation-file FILE={}'
 
-data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles: data/hansen_loss/Hansen_GFC_2020_lossyear
-	for tiffile in data/hansen_loss/*.tif; do \
-		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
-		output_file="data/hansen_loss/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif";\
-		gdalwarp -s_srs EPSG:4326 -t_srs EPSG:4326 -r average -multi -of GTiff "$${tiffile}" "$${output_file}"; \
-		rm -f "$${tiffile}";\
-	done
-	mkdir -p $@
-	gdalbuildvrt data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.vrt data/hansen_loss/Hansen_GFC_2020_lossyear/*.tif
-	for tifffile in data/hansen_loss/Hansen_GFC_2020_lossyear/*.tiff; do rm -f "$${tiffile}"; done
+transform-deforestation-file:
+	@echo "Transforming deforestation file $(FILE) ... "
+	table_name=`basename -s .tif $(FILE) | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
+	wget -q -O "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" $(FILE) ; \
+	gdalwarp -s_srs EPSG:4326 -t_srs EPSG:4326 -r average -multi -of GTiff "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
+	rm -f "$(WORKDIR_DEFORESTATION)/$${table_name}.tif"
+
+preprocess-deforestation: download-deforestation
+	@echo "Preprocessing deforestation data... "
+	mkdir -p $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles
+	gdalbuildvrt $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.vrt $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/*.tif
+	for tifffile in $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/*.tiff; do rm -f "$${tiffile}"; done
 	gdal_translate -of GTiff -co BIGTIFF=YES -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 \
-	data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.vrt data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.tif
+	$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.vrt $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.tif
 
-h3_grid_deforestation_global: data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles
-	python tiff_folder_to_h3_table.py $< $@ indicator DF_LUC_T 2020 --h3-res=6
+convert-deforestation: preprocess-deforestation
+	@echo "Converting deforestation data... "
+	python tiff_folder_to_h3_table.py data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles h3_grid_deforestation_global indicator DF_LUC_T 2020 --h3-res=6
 
 
 # CARBON EMISSIONS
@@ -198,74 +212,70 @@ h3_grid_deforestation_global: data/hansen_loss/Hansen_GFC_2020_lossyear/merged_t
 # @todo update with net flux from gfw - issues accessing the raw data in terms of permissions
 #https://services2.arcgis.com/g8WusZB13b9OegfU/arcgis/rest/services/Forest_greenhouse_gas_net_flux/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson
 #"https://opendata.arcgis.com/api/v3/datasets/d33587b6aee248faa2f388aaac96f92c_0/downloads?spatialRefId=4326&formats=csv"
-data/gfw_carbon/GHGEmissions_Geotiff.zip:
-	mkdir -p data/gfw_carbon
-	wget -O $@ https://s3.us-east-2.amazonaws.com/earthstatdata/GHGEmissions_Geotiff.zip
+download-carbon:
+	mkdir -p $(WORKDIR_CARBON)
+	wget -O $(WORKDIR_CARBON)/GHGEmissions_Geotiff.zip https://s3.us-east-2.amazonaws.com/earthstatdata/GHGEmissions_Geotiff.zip
 
 #unzip to folder
-data/gfw_carbon/GHGEmissions: data/gfw_carbon/GHGEmissions_Geotiff.zip
-	mkdir -p $@
-	unzip -j -o -u $< */hectare_emissions.tif -d $@
-	for tiffile in data/gfw_carbon/GHGEmissions/*.tif; do \
+preprocess-carbon: download-carbon
+	mkdir -p $(WORKDIR_CARBON)/GHGEmissions
+	unzip -j -o -u $(WORKDIR_CARBON)/GHGEmissions_Geotiff.zip */hectare_emissions.tif -d $(WORKDIR_CARBON)/GHGEmissions
+	for tiffile in $(WORKDIR_CARBON)/GHGEmissions/*.tif; do \
 		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
-		output_file="data/gfw_carbon/GHGEmissions/earthstat2000_global_$${table_name}.tif";\
+		output_file="$(WORKDIR_CARBON)/GHGEmissions/earthstat2000_global_$${table_name}.tif";\
 		gdal_translate -a_nodata 0 -of GTiff "$${tiffile}" "$${output_file}";\
 		rm -f "$${tiffile}";\
 	done
 
 # translate to h3 and import
-h3_grid_carbon_global: data/gfw_carbon/GHGEmissions
-	python tiff_folder_to_h3_table.py $< $@ indicator GHG_LUC_T 2000 --h3-res=6
+convert-carbon: preprocess-carbon
+	python tiff_folder_to_h3_table.py $(WORKDIR_CARBON)/GHGEmissions h3_grid_carbon_global indicator GHG_LUC_T 2000 --h3-res=6
 
 ## DOWNLOAD PASTURE AND CROPLAND DATASET
 #https://s3.us-east-2.amazonaws.com/earthstatdata/CroplandPastureArea2000_Geotiff.zip
-data/earthstat/CroplandPastureArea2000_Geotiff.zip:
-	mkdir -p data/earthstat
-	wget -q -O $@ https://s3.us-east-2.amazonaws.com/earthstatdata/CroplandPastureArea2000_Geotiff.zip
+download-cropland:
+	mkdir -p $(WORKDIR_EARTHSTAT)
+	wget -q -O $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_Geotiff.zip https://s3.us-east-2.amazonaws.com/earthstatdata/CroplandPastureArea2000_Geotiff.zip
 
 #unzip
-data/earthstat/CroplandPastureArea2000_global_ha: data/earthstat/CroplandPastureArea2000_Geotiff.zip
-	mkdir -p $@
-	unzip -j -o -u $< */Pasture2000_5m.tif -d $@
-	gdal_translate -a_nodata 0 -of GTiff data/earthstat/CroplandPastureArea2000_global_ha/Pasture2000_5m.tif \
-	data/earthstat/CroplandPastureArea2000_global_ha/es_pasture_global.tif
-	rm -f data/earthstat/CroplandPastureArea2000_global_ha/Pasture2000_5m.tif
+extract-cropland: download-cropland
+	mkdir -p $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha
+	unzip -j -o -u $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_Geotiff.zip */Pasture2000_5m.tif -d $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha
+	gdal_translate -a_nodata 0 -of GTiff $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/Pasture2000_5m.tif \
+	$(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/es_pasture_global.tif
+	rm -f $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/Pasture2000_5m.tif
 
 # and import to a table called "h3_grid_earthstat2000_global_ha"
-h3_grid_pasture_ha: data/earthstat/CroplandPastureArea2000_global_ha
-	python tiff_folder_to_h3_table.py $< $@ harvest_area es 2000 --h3-res=6
+convert-cropland: extract-cropland
+	python tiff_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha h3_grid_pasture_ha harvest_area es 2000 --h3-res=6
 
 
 #download gadm data
-data/gadm/gadm36_levels_shp.zip:
-	mkdir -p data/gadm
-	wget -q -O $@ https://data.biogeo.ucdavis.edu/data/gadm3.6/gadm36_levels_shp.zip
+download-gadm:
+	mkdir -p $(WORKDIR_GADM)
+	wget -q -O $(WORKDIR_GADM)/gadm36_levels_shp.zip https://data.biogeo.ucdavis.edu/data/gadm3.6/gadm36_levels_shp.zip
 
-data/gadm/gadm36_0.shp: data/gadm/gadm36_levels_shp.zip
-	unzip -u $< gadm36_0* -d data/gadm
+extract-gadm: download-gadm
+	unzip -u $(WORKDIR_GADM)/gadm36_levels_shp.zip gadm36_0* -d $(WORKDIR_GADM)
 
-#PATURE PRODUCTION - value for 2010
+#PASTURE PRODUCTION - value for 2010
 #merge with admin areas country level -join $< keys=NAME_0,Area
-data/earthstat/FAOSTATS/FAOSTAT_data.shp: data/gadm/gadm36_0.shp
-	mapshaper data/gadm/gadm36_0.shp -simplify 10% planar keep-shapes \
+preprocess-pasture: extract-gadm
+	mapshaper $(WORKDIR_GADM)/gadm36_0.shp -simplify 10% planar keep-shapes \
 	-clean \
 	-each 'COUNT=this.area/100000000' \
 	-join ./FAOSTATS/FAOSTAT_cattle_production.csv keys=NAME_0,Area \
-	-o $@ force
+	-o $(WORKDIR_EARTHSTAT)/FAOSTATS/FAOSTAT_data.shp force
 
-data/earthstat/FAOSTATS/FAOSTAT_pasture_production.tif: data/earthstat/FAOSTATS/FAOSTAT_data.shp
-	gdal_rasterize -l FAOSTAT_data -a Value -tr 0.083333 0.083333 -a_nodata -1.0 -te -180.0 -89.99928 179.99856 90.0 -ot Float32 -of GTiff $< data/earthstat/FAOSTATS/pasture_contry_production_t.tif
-	gdal_rasterize -l FAOSTAT_data -a COUNT -tr 0.083333 0.083333 -a_nodata -1.0 -te -180.0 -89.99928 179.99856 90.0 -ot Float32 -of GTiff $< data/earthstat/FAOSTATS/pasture_contry_count.tif
-	gdal_calc.py --calc "A/B" --format GTiff --type Float32 -A data/earthstat/FAOSTATS/pasture_contry_production_t.tif --A_band 1 -B data/earthstat/FAOSTATS/pasture_contry_count.tif --outfile $@
-	rm -f data/earthstat/FAOSTATS/pasture_contry_production_t.tif
-	rm -f data/earthstat/FAOSTATS/pasture_contry_count.tif
+rasterize-pasture: preprocess-pasture
+	gdal_rasterize -l FAOSTAT_data -a Value -tr 0.083333 0.083333 -a_nodata -1.0 -te -180.0 -89.99928 179.99856 90.0 -ot Float32 -of GTiff $(WORKDIR_EARTHSTAT)/FAOSTATS/FAOSTAT_data.shp $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_production_t.tif
+	gdal_rasterize -l FAOSTAT_data -a COUNT -tr 0.083333 0.083333 -a_nodata -1.0 -te -180.0 -89.99928 179.99856 90.0 -ot Float32 -of GTiff $(WORKDIR_EARTHSTAT)/FAOSTATS/FAOSTAT_data.shp $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_count.tif
+	gdal_calc.py --calc "A/B" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_production_t.tif --A_band 1 -B $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_count.tif --outfile $@
+	rm -f $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_production_t.tif
+	rm -f $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_count.tif
 
-h3_grid_pasture_production: data/earthstat/FAOSTATS/FAOSTAT_pasture_production.tif
-	python tiff_folder_to_h3_table.py data/earthstat/FAOSTATS $@ production es 2000 --h3-res=6
-
-#
-# ^^^
-#######################################
+convert-pasture: rasterize-pasture
+	python tiff_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/FAOSTATS h3_grid_pasture_production production es 2000 --h3-res=6
 
 clean:
 	rm -rf data/*

@@ -17,7 +17,7 @@ seed-data: seed-source-data seed-gadm seed-h3-tables
 
 seed-source-data:
 	@echo "Importing source data... "
-	cd /base_data_importer && make
+	cd /base_data_importer && make -j 4
 
 seed-gadm:
 	@echo "Importing GADM data... "

@@ -53,8 +53,8 @@ module "k8s_ingress_prod" {
   namespace          = "production"
 }
 
-module "data_import" {
-  source = "./modules/fargate"
-  namespace        = "production"
-  postgresql_port = module.k8s_database.postgresql_service_port
-}
+#module "data_import" {
+#  source = "./modules/fargate"
+#  namespace        = "production"
+#  postgresql_port = module.k8s_database.postgresql_service_port
+#}

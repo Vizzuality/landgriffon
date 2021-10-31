@@ -191,7 +191,7 @@ transform-deforestation-file:
 	@echo "Transforming deforestation file $(FILE) ... "
 	table_name=`basename -s .tif $(FILE) | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
 	wget -q -O "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" $(FILE) ; \
-	gdalwarp -s_srs EPSG:4326 -t_srs EPSG:4326 -r average -multi -of GTiff "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
+	gdalwarp -s_srs EPSG:4326 -t_srs EPSG:4326 -r average -multi -of GTiff -wo NUM_THREADS=ALL_CPUS "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
 	rm -f "$(WORKDIR_DEFORESTATION)/$${table_name}.tif"
 
 preprocess-deforestation: download-deforestation
@@ -199,7 +199,7 @@ preprocess-deforestation: download-deforestation
 	mkdir -p $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles
 	gdalbuildvrt $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.vrt $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/*.tif
 	for tifffile in $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/*.tiff; do rm -f "$${tiffile}"; done
-	gdal_translate -of GTiff -co BIGTIFF=YES -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 \
+	gdal_translate --debug ON -of GTiff -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 \
 	$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.vrt $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.tif
 
 convert-deforestation: preprocess-deforestation

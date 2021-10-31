@@ -53,10 +53,10 @@ extract-mapspam-crop-harvest: download-mapspam-crop-harvest
 	mkdir -p $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha
 	unzip -u $(WORKDIR_MAPSPAM)/spam2010v2r0_global_phys_area.geotiff.zip *_A.tif -d $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha
 	for tiffile in $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/*.tif; do \
-		table_name=`basename -s .tif "$(tiffile)" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
-		output_file="$(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010_global_$(table_name).tif";\
-		gdal_calc.py --calc "A/10000" --format GTiff --type Float32 -A "$(tiffile)" --A_band 1 --outfile "$(output_file)"; \
-		rm -f "$(tiffile)";\
+		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
+		output_file="$(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010_global_$${table_name}.tif";\
+		gdal_calc.py --calc "A/10000" --format GTiff --type Float32 -A "$${tiffile}" --A_band 1 --outfile "$${output_file}"; \
+		rm -f "$${tiffile}";\
 	done
 
 #CONVERT DATASETS:
@@ -84,23 +84,22 @@ extract-earthstat-crop-production: download-earthstat-crop-production
 	mkdir -p $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod
 	unzip -j -o -u $(WORKDIR_EARTHSTAT)/HarvestedAreaYield175Crops_Geotiff.zip *_Production.tif -d $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod
 	for tiffile in $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/*.tif; do \
-		table_name=`basename -s .tif "$(tiffile)" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
-		output_file="$(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/earthstat2000_global_$(table_name).tif";\
-		gdal_translate -a_nodata 0 -of GTiff "$(tiffile)" "$(output_file)";\
-		rm -f "$(tiffile)";\
+		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
+		output_file="$(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/earthstat2000_global_$${table_name}.tif";\
+		gdal_translate -a_nodata 0 -of GTiff "$${tiffile}" "$${output_file}";\
+		rm -f "$${tiffile}";\
 	done
 
 # Unzip to folder
 # Only extract the files that contain harvest area fraction. Set the no data to 0 as the mapspam datasets.
 extract-earthstat-crop-harvest: download-earthstat-crop-production
-
 	mkdir -p $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha
 	unzip -j -o -u $(WORKDIR_EARTHSTAT)/HarvestedAreaYield175Crops_Geotiff.zip *_HarvestedAreaFraction.tif -d $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha
 	for tiffile in $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/*.tif; do \
-		table_name=`basename -s .tif "$(tiffile)" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
-		output_file="$(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/earthstat2000_global_$(table_name).tif";\
-		gdal_translate -a_nodata 0 -of GTiff "$(tiffile)" "$(output_file)";\
-		rm -f "$(tiffile)";\
+		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
+		output_file="$(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/earthstat2000_global_$${table_name}.tif";\
+		gdal_translate -a_nodata 0 -of GTiff "$${tiffile}" "$${output_file}";\
+		rm -f "$${tiffile}";\
 	done
 
 # <table>: <tiff_folder>
@@ -191,15 +190,15 @@ download-deforestation: download-deforestation-list
 transform-deforestation-file:
 	@echo "Transforming deforestation file $(FILE) ... "
 	table_name=`basename -s .tif $(FILE) | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
-	wget -q -O "$(WORKDIR_DEFORESTATION)/$(table_name).tif" $(FILE) ; \
-	gdalwarp -s_srs EPSG:4326 -t_srs EPSG:4326 -r average -multi -of GTiff -wo NUM_THREADS=ALL_CPUS "$(WORKDIR_DEFORESTATION)/$(table_name).tif" "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$(table_name)_10km.tif"; \
-	rm -f "$(WORKDIR_DEFORESTATION)/$(table_name).tif"
+	wget -q -O "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" $(FILE) ; \
+	gdalwarp -s_srs EPSG:4326 -t_srs EPSG:4326 -r average -multi -of GTiff -wo NUM_THREADS=ALL_CPUS "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
+	rm -f "$(WORKDIR_DEFORESTATION)/$${table_name}.tif"
 
 preprocess-deforestation: download-deforestation
 	@echo "Preprocessing deforestation data... "
 	mkdir -p $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles
 	gdalbuildvrt $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.vrt $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/*.tif
-	for tifffile in $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/*.tiff; do rm -f "$(tiffile)"; done
+	for tifffile in $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/*.tiff; do rm -f "$${tiffile}"; done
 	gdal_translate --debug ON -of GTiff -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 \
 	$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.vrt $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.tif
 
@@ -219,14 +218,13 @@ download-carbon:
 
 #unzip to folder
 preprocess-carbon: download-carbon
-	@echo "Preprocessing carbon data... "
 	mkdir -p $(WORKDIR_CARBON)/GHGEmissions
 	unzip -j -o -u $(WORKDIR_CARBON)/GHGEmissions_Geotiff.zip */hectare_emissions.tif -d $(WORKDIR_CARBON)/GHGEmissions
 	for tiffile in $(WORKDIR_CARBON)/GHGEmissions/*.tif; do \
-		table_name=`basename -s .tif "$(tiffile)" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
-		output_file="$(WORKDIR_CARBON)/GHGEmissions/earthstat2000_global_$(table_name).tif";\
-		gdal_translate -a_nodata 0 -of GTiff "$(tiffile)" "$(output_file)";\
-		rm -f "$(tiffile)";\
+		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
+		output_file="$(WORKDIR_CARBON)/GHGEmissions/earthstat2000_global_$${table_name}.tif";\
+		gdal_translate -a_nodata 0 -of GTiff "$${tiffile}" "$${output_file}";\
+		rm -f "$${tiffile}";\
 	done
 
 # translate to h3 and import
@@ -241,7 +239,6 @@ download-cropland:
 
 #unzip
 extract-cropland: download-cropland
-	@echo "Extracting cropland data... "
 	mkdir -p $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha
 	unzip -j -o -u $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_Geotiff.zip */Pasture2000_5m.tif -d $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha
 	gdal_translate -a_nodata 0 -of GTiff $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/Pasture2000_5m.tif \
@@ -271,7 +268,6 @@ preprocess-pasture: extract-gadm
 	-o $(WORKDIR_EARTHSTAT)/FAOSTATS/FAOSTAT_data.shp force
 
 rasterize-pasture: preprocess-pasture
-	@echo "Raterizing pasture data... "
 	gdal_rasterize -l FAOSTAT_data -a Value -tr 0.083333 0.083333 -a_nodata -1.0 -te -180.0 -89.99928 179.99856 90.0 -ot Float32 -of GTiff $(WORKDIR_EARTHSTAT)/FAOSTATS/FAOSTAT_data.shp $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_production_t.tif
 	gdal_rasterize -l FAOSTAT_data -a COUNT -tr 0.083333 0.083333 -a_nodata -1.0 -te -180.0 -89.99928 179.99856 90.0 -ot Float32 -of GTiff $(WORKDIR_EARTHSTAT)/FAOSTATS/FAOSTAT_data.shp $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_count.tif
 	gdal_calc.py --calc "A/B" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_production_t.tif --A_band 1 -B $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_count.tif --outfile $@

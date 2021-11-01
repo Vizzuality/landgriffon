@@ -96,7 +96,7 @@ module "data-import-group" {
   cluster_name    = module.eks.cluster_name
   node_group_name = "data-import-node-group"
   instance_types  = "c5a.4xlarge"
-  instance_disk_size = 500
+  instance_disk_size = 750
   min_size        = 1
   max_size        = 1
   desired_size    = 1

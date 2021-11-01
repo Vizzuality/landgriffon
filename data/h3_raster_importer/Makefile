@@ -274,7 +274,7 @@ rasterize-pasture: preprocess-pasture
 	rm -f $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_production_t.tif
 	rm -f $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_count.tif
 
-convert-pasture:
+convert-pasture: rasterize-pasture
 	python tiff_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/FAOSTATS h3_grid_pasture_production production es 2000 --h3-res=6 --thread-count=$$(( $(PARALLELIZATION_FACTOR) * 4 ))
 
 clean:

@@ -159,6 +159,7 @@ def write_data_to_database_table(table, data):
         buffer.seek(0)
         cursor.copy_from(buffer, table, sep=',', null="NULL")
 
+    conn.commit()
     logging.info(f"{len(data)} rows written to db")
     postgres_thread_pool.putconn(conn, close=True)
 

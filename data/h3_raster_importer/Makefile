@@ -18,10 +18,10 @@ all:
 	make -j 2 crop indicators
 
 crop:
-	make -j $(( $(PARALLELIZATION_FACTOR) / 2 )) convert-mapspam-crop-production convert-earthstat-crop-production convert-earthstat-crop-harvest convert-mapspam-crop-harvest convert-cropland convert-pasture
+	make -j $$(( $(PARALLELIZATION_FACTOR) / 2 )) convert-mapspam-crop-production convert-earthstat-crop-production convert-earthstat-crop-harvest convert-mapspam-crop-harvest convert-cropland convert-pasture
 
 indicators:
-	make -j $(( $(PARALLELIZATION_FACTOR) / 2 )) convert-water-footprint convert-biodiversity convert-carbon
+	make -j $$(( $(PARALLELIZATION_FACTOR) / 2 )) convert-water-footprint convert-biodiversity convert-carbon
 	# Processing deforestation data is quite intensive, so we do it separately, so we can allocate all threads to it
 	# There is probably a better way to do this, that future me will learn about - in the future.
 	make convert-deforestation
@@ -64,10 +64,10 @@ extract-mapspam-crop-harvest: download-mapspam-crop-harvest
 # Convert the tiffs in the folder to h3indexes at resolution 6
 # and import to a table called "h3_grid_spam2017v2r0_global_prod"
 convert-mapspam-crop-production: extract-mapspam-crop-production
-	python tiff_folder_to_h3_table.py $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod h3_grid_spam2010v2r0_global_prod production spam 2010 --h3-res=6
+	python tiff_folder_to_h3_table.py $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod h3_grid_spam2010v2r0_global_prod production spam 2010 --h3-res=6 --thread-count=$$(( $(PARALLELIZATION_FACTOR) * 4 ))
 
 convert-mapspam-crop-harvest: extract-mapspam-crop-harvest
-	python tiff_folder_to_h3_table.py $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha h3_grid_spam2010v2r0_global_ha harvest_area spam 2010 --h3-res=6
+	python tiff_folder_to_h3_table.py $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha h3_grid_spam2010v2r0_global_ha harvest_area spam 2010 --h3-res=6 --thread-count=$$(( $(PARALLELIZATION_FACTOR) * 4 ))
 
 
 #######################################
@@ -106,11 +106,11 @@ extract-earthstat-crop-harvest: download-earthstat-crop-production
 # Convert the tiffs in the folder to h3indexes at resolution 6
 # and import to a table called "h3_grid_earthstat2000_global_prod"
 convert-earthstat-crop-production: extract-earthstat-crop-production
-	python tiff_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod h3_grid_earthstat2000_global_prod production es 2000 --h3-res=6
+	python tiff_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod h3_grid_earthstat2000_global_prod production es 2000 --h3-res=6 --thread-count=$$(( $(PARALLELIZATION_FACTOR) * 4 ))
 
 # and import to a table called "h3_grid_earthstat2000_global_ha"
 convert-earthstat-crop-harvest: extract-earthstat-crop-harvest
-	python tiff_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha h3_grid_earthstat2000_global_ha harvest_area es 2000 --h3-res=6
+	python tiff_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha h3_grid_earthstat2000_global_ha harvest_area es 2000 --h3-res=6 --thread-count=$$(( $(PARALLELIZATION_FACTOR) * 4 ))
 
 #########################################
 # CONTEXTUAL DATASETS FOR INDICATORS
@@ -134,7 +134,7 @@ extract-water-footprint: download-water-footprint
 
 # Convert the wf tiffs in the folder to h3indexes at resolution 6
 convert-water-footprint: extract-water-footprint
-	python tiff_folder_to_h3_table.py $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint h3_grid_wf_global indicator UWU_T 2005 --h3-res=6
+	python tiff_folder_to_h3_table.py $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint h3_grid_wf_global indicator UWU_T 2005 --h3-res=6 --thread-count=$$(( $(PARALLELIZATION_FACTOR) * 4 ))
 
 # BIODIVERSITY
 #Download biodiversity datasets
@@ -172,7 +172,7 @@ rasterize-biodiversity-file:
 
 # convert the biodiversity rasters to h3 tables
 convert-biodiversity: rasterize-biodiversity
-	python tiff_folder_to_h3_table.py $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow/lcia_psl_regional h3_grid_bio_global indicator BL_LUC_T 2015 --h3-res=6
+	python tiff_folder_to_h3_table.py $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow/lcia_psl_regional h3_grid_bio_global indicator BL_LUC_T 2015 --h3-res=6 --thread-count=$$(( $(PARALLELIZATION_FACTOR) * 4 ))
 
 
 # DEFORESTATION
@@ -198,13 +198,13 @@ preprocess-deforestation: download-deforestation
 	@echo "Preprocessing deforestation data... "
 	mkdir -p $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles
 	gdalbuildvrt $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.vrt $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/*.tif
-	for tifffile in $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/*.tiff; do rm -f "$${tiffile}"; done
+	#for tifffile in $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/*.tiff; do rm -f "$${tiffile}"; done
 	gdal_translate --debug ON -of GTiff -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 \
 	$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.vrt $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.tif
 
 convert-deforestation: preprocess-deforestation
 	@echo "Converting deforestation data... "
-	python tiff_folder_to_h3_table.py data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles h3_grid_deforestation_global indicator DF_LUC_T 2020 --h3-res=6
+	python tiff_folder_to_h3_table.py data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles h3_grid_deforestation_global indicator DF_LUC_T 2020 --h3-res=6 --thread-count=$$(( $(PARALLELIZATION_FACTOR) * 4 ))
 
 
 # CARBON EMISSIONS
@@ -229,7 +229,7 @@ preprocess-carbon: download-carbon
 
 # translate to h3 and import
 convert-carbon: preprocess-carbon
-	python tiff_folder_to_h3_table.py $(WORKDIR_CARBON)/GHGEmissions h3_grid_carbon_global indicator GHG_LUC_T 2000 --h3-res=6
+	python tiff_folder_to_h3_table.py $(WORKDIR_CARBON)/GHGEmissions h3_grid_carbon_global indicator GHG_LUC_T 2000 --h3-res=6 --thread-count=$$(( $(PARALLELIZATION_FACTOR) * 4 ))
 
 ## DOWNLOAD PASTURE AND CROPLAND DATASET
 #https://s3.us-east-2.amazonaws.com/earthstatdata/CroplandPastureArea2000_Geotiff.zip
@@ -247,7 +247,7 @@ extract-cropland: download-cropland
 
 # and import to a table called "h3_grid_earthstat2000_global_ha"
 convert-cropland: extract-cropland
-	python tiff_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha h3_grid_pasture_ha harvest_area es 2000 --h3-res=6
+	python tiff_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha h3_grid_pasture_ha harvest_area es 2000 --h3-res=6 --thread-count=$$(( $(PARALLELIZATION_FACTOR) * 4 ))
 
 
 #download gadm data
@@ -270,12 +270,12 @@ preprocess-pasture: extract-gadm
 rasterize-pasture: preprocess-pasture
 	gdal_rasterize -l FAOSTAT_data -a Value -tr 0.083333 0.083333 -a_nodata -1.0 -te -180.0 -89.99928 179.99856 90.0 -ot Float32 -of GTiff $(WORKDIR_EARTHSTAT)/FAOSTATS/FAOSTAT_data.shp $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_production_t.tif
 	gdal_rasterize -l FAOSTAT_data -a COUNT -tr 0.083333 0.083333 -a_nodata -1.0 -te -180.0 -89.99928 179.99856 90.0 -ot Float32 -of GTiff $(WORKDIR_EARTHSTAT)/FAOSTATS/FAOSTAT_data.shp $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_count.tif
-	gdal_calc.py --calc "A/B" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_production_t.tif --A_band 1 -B $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_count.tif --outfile $@
+	gdal_calc.py --calc "A/B" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_production_t.tif --A_band 1 -B $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_count.tif --outfile $(WORKDIR_EARTHSTAT)/FAOSTATS/FAOSTAT_pasture_production.tif
 	rm -f $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_production_t.tif
 	rm -f $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_count.tif
 
-convert-pasture: rasterize-pasture
-	python tiff_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/FAOSTATS h3_grid_pasture_production production es 2000 --h3-res=6
+convert-pasture:
+	python tiff_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/FAOSTATS h3_grid_pasture_production production es 2000 --h3-res=6 --thread-count=$$(( $(PARALLELIZATION_FACTOR) * 4 ))
 
 clean:
 	rm -rf data/*

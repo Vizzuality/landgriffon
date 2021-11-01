@@ -133,11 +133,19 @@ def create_table(h3_res, raster_list, table):
     conn = postgres_thread_pool.getconn()
     cursor = conn.cursor()
 
-    logging.info(f"Loading first row to build table {table}")
+    base = rio.open(raster_list[0])
+
+    logging.info(f"Loading first rows to build table {table}")
     names = [slugify(os.path.splitext(os.path.basename(r))[0]) for r in raster_list]
 
-    column_data = gen_raster_h3_for_coords(0, names, raster_list,
-                                           h3_res, table, False, 0);
+    found_columns = False
+    while not found_columns:
+        for i in range(ceil(base.width / BLOCKSIZE)):
+            column_data = gen_raster_h3_for_coords(0, names, raster_list,
+                                           h3_res, table, False, i)
+            if column_data is not None:
+                found_columns = True
+                break
 
     cols = zip(column_data.columns, column_data.dtypes)
     schema = ', '.join([f"{col} {DTYPES_TO_PG[str(dtype)]}" for col, dtype in cols])

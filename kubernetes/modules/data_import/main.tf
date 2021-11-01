@@ -103,10 +103,6 @@ resource "kubernetes_job" "data_import" {
           }
 
           resources {
-            limits = {
-              cpu    = "18"
-              memory = "30Gi"
-            }
             requests = {
               cpu    = "12"
               memory = "16Gi"

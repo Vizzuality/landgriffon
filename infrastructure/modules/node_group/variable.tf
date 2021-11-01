@@ -48,7 +48,6 @@ variable "labels" {
 
 variable "instance_types" {
   type        = string
-  default     = "t3.medium"
   description = "Name of the EC2 instance type to use"
 }
 

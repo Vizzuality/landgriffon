@@ -1,6 +1,5 @@
 import { EntityRepository, getManager, Repository } from 'typeorm';
 import {
-  H3_DATA_TYPES,
   H3Data,
   H3IndexValueData,
   LAYER_TYPES,
@@ -227,6 +226,7 @@ export class H3DataRepository extends Repository<H3Data> {
     const queryBuilder = this.createQueryBuilder('h')
       .select('year')
       .distinct(true)
+      .where('year is not null')
       .orderBy('year', 'ASC');
     // If a indicatorId is provided, filter results by it
     if (yearsRequestParams.indicatorId) {
@@ -247,11 +247,11 @@ export class H3DataRepository extends Repository<H3Data> {
     }
     // Filter by data type
     if (yearsRequestParams.layerType !== LAYER_TYPES.RISK) {
-      queryBuilder.andWhere(`"dataType" != '${H3_DATA_TYPES.INDICATOR}'`);
+      queryBuilder.andWhere(`"indicatorId" is null`);
     } else {
-      queryBuilder.andWhere(`"dataType" = '${H3_DATA_TYPES.INDICATOR}'`);
+      queryBuilder.andWhere(`"indicatorId" is not null`);
     }
     const availableYears = await queryBuilder.getRawMany();
-    return availableYears.map((elem: { year: number }) => elem.year).sort();
+    return availableYears.map((elem: { year: number }) => elem.year);
   }
 }

@@ -15,10 +15,7 @@ import {
   createMaterial,
   createSourcingRecord,
 } from '../entity-mocks';
-import {
-  H3_DATA_TYPES,
-  H3Data,
-} from '../../src/modules/h3-data/h3-data.entity';
+import { H3Data } from '../../src/modules/h3-data/h3-data.entity';
 import { Material } from '../../src/modules/materials/material.entity';
 import { Indicator } from '../../src/modules/indicators/indicator.entity';
 
@@ -107,7 +104,6 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
         h3columnName: createRandomNamesForH3TableAndColumns(),
         h3resolution: 6,
         year,
-        dataType: H3_DATA_TYPES.PRODUCTION,
       });
       await h3DataRepository.save(fakeH3MasterData);
     }
@@ -127,7 +123,6 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
         h3columnName: createRandomNamesForH3TableAndColumns(),
         h3resolution: 6,
         year,
-        dataType: H3_DATA_TYPES.PRODUCTION,
       });
       const savedH3DataRows: H3Data[] = await h3DataRepository.save(
         fakeH3MasterData,
@@ -161,7 +156,6 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
         h3resolution: 6,
         year,
         indicatorId: id,
-        dataType: H3_DATA_TYPES.INDICATOR,
       });
     }
     await h3DataRepository.save(fakeH3MasterData);
@@ -183,7 +177,6 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
         h3resolution: 6,
         year,
         indicatorId: savedIndicator.id,
-        dataType: H3_DATA_TYPES.INDICATOR,
       });
     }
     await h3DataRepository.save(fakeH3MasterData);

@@ -81,7 +81,8 @@ def gen_raster_h3_for_row_and_column(row, column, names, readers, h3_res):
         if src.transform != base.transform:
             raise ValueError("Transforms do not match")
         arr = src.read(1, window=window)
-        _df = h3ronpy.raster.raster_to_dataframe(arr, w_transform, h3_res, nodata_value=src.profile['nodata'],
+        _df = h3ronpy.raster.raster_to_dataframe(arr, w_transform, h3_res,
+                                                 nodata_value=int(src.profile['nodata']) if src.profile['nodata'] is not None else src.profile['nodata'],
                                                  compacted=False, geo=False)
         dfs.append(_df.set_index('h3index')['value'])
     df = pd.concat(dfs, axis=1)
@@ -142,7 +143,8 @@ def gen_raster_h3(raster_list, h3_res, table_name):
     logging.info(f"Generating h3 data from raster with {height} x {width}")
 
     partial_gen_raster_h3_for_row = partial(gen_raster_h3_for_row, raster_list, h3_res, table_name)
-    row_progress_bar = tqdm(pool.imap_unordered(func=partial_gen_raster_h3_for_row, iterable=range(height)), total=height)
+    row_progress_bar = tqdm(pool.imap_unordered(func=partial_gen_raster_h3_for_row, iterable=range(height)),
+                            total=height)
     result_list_tqdm = []
     row_progress_bar.set_description("Processed %s rows of %s " % (len(result_list_tqdm), height))
     for row in row_progress_bar:

@@ -15,6 +15,7 @@ WORKDIR_CARBON=data/gfw_carbon
 WORKDIR_DEFORESTATION=data/hansen_loss
 
 all:
+	make clean
 	make -j 2 crop indicators
 
 crop:
@@ -191,21 +192,24 @@ transform-deforestation-file:
 	@echo "Transforming deforestation file $(FILE) ... "
 	table_name=`basename -s .tif $(FILE) | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
 	wget -q -O "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" $(FILE) ; \
-	gdalwarp -s_srs EPSG:4326 -t_srs EPSG:4326 -r average -multi -of GTiff -wo NUM_THREADS=ALL_CPUS "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
+	rm -f "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
+	gdalwarp -s_srs EPSG:4326 -t_srs EPSG:4326 -r max -tr 0.0833333333333286 0.0833333333333286 -multi -of GTiff -wo NUM_THREADS=ALL_CPUS \
+	"$(WORKDIR_DEFORESTATION)/$${table_name}.tif" "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
 	rm -f "$(WORKDIR_DEFORESTATION)/$${table_name}.tif"
 
 preprocess-deforestation: download-deforestation
 	@echo "Preprocessing deforestation data... "
 	mkdir -p $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles
 	gdalbuildvrt $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.vrt $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/*.tif
-	#for tifffile in $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/*.tiff; do rm -f "$${tiffile}"; done
-	gdal_translate --debug ON -of GTiff -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 \
+	gdal_translate -of GTiff -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 \
 	$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.vrt $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.tif
+	gdal_calc.py --calc "(A>18)" --format GTiff --type Byte -A $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.tif --A_band 1 --outfile $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2019.tif
+	rm -f $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/merged_tiles/hansen_loss_2020_ha.tif
 
 convert-deforestation: preprocess-deforestation
 	@echo "Converting deforestation data... "
-	python tiff_folder_to_h3_table.py data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles h3_grid_deforestation_global indicator DF_LUC_T 2020 --h3-res=6 --thread-count=$$(( $(PARALLELIZATION_FACTOR) * 2 ))
-
+	python tiff_folder_to_h3_table.py data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles h3_grid_deforestation_global \
+	indicator DF_LUC_T 2019 --h3-res=6 --thread-count=$$(( $(PARALLELIZATION_FACTOR) * 2 ))
 
 # CARBON EMISSIONS
 # Download net carbon flux:
@@ -219,6 +223,7 @@ download-carbon:
 #unzip to folder
 preprocess-carbon: download-carbon
 	mkdir -p $(WORKDIR_CARBON)/GHGEmissions
+	rm -rf $(WORKDIR_CARBON)/GHGEmissions/*
 	unzip -j -o -u $(WORKDIR_CARBON)/GHGEmissions_Geotiff.zip */hectare_emissions.tif -d $(WORKDIR_CARBON)/GHGEmissions
 	for tiffile in $(WORKDIR_CARBON)/GHGEmissions/*.tif; do \
 		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \

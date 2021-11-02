@@ -19,6 +19,7 @@ import {
 @EntityRepository(H3Data)
 export class H3DataRepository extends Repository<H3Data> {
   logger: Logger = new Logger(H3DataRepository.name);
+
   /** Retrieves data from dynamically generated H3 data
    *
    * @param h3ColumnName: Name of the column inside the dynamically generated table
@@ -136,6 +137,7 @@ export class H3DataRepository extends Repository<H3Data> {
       .where(`indicatorh3.h3index = materialh3.h3index`)
       .andWhere(`materialh3.${materialH3Data.h3columnName} is not null`)
       .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
+      .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} <> 0`)
       .groupBy('h')
       .getRawMany();
     this.logger.log('Biodiversity Loss Map generated');
@@ -150,15 +152,15 @@ export class H3DataRepository extends Repository<H3Data> {
   async calculateQuantiles(materialH3Data: H3Data): Promise<number[]> {
     try {
       const resultArray: number[] = await getManager().query(
-        `select min(${materialH3Data.h3columnName}) as min,
-                percentile_cont(0.1667) within group(order by ${materialH3Data.h3columnName}) as per16,
-                percentile_cont(0.3337) within group(order by ${materialH3Data.h3columnName}) as per33,
-                percentile_cont(0.50) within group(order by ${materialH3Data.h3columnName}) as per50,
-                percentile_cont(0.6667) within group(order by ${materialH3Data.h3columnName}) as per66,
-                percentile_cont(0.8337) within group(order by ${materialH3Data.h3columnName}) as per83,
-                percentile_cont(1) within group(order by ${materialH3Data.h3columnName}) as max
-                from ${materialH3Data.h3tableName}
-                where ${materialH3Data.h3columnName} > 0`,
+        `select min(${materialH3Data.h3columnName})                                            as min,
+                percentile_cont(0.1667) within group (order by ${materialH3Data.h3columnName}) as per16,
+                percentile_cont(0.3337) within group (order by ${materialH3Data.h3columnName}) as per33,
+                percentile_cont(0.50) within group (order by ${materialH3Data.h3columnName})   as per50,
+                percentile_cont(0.6667) within group (order by ${materialH3Data.h3columnName}) as per66,
+                percentile_cont(0.8337) within group (order by ${materialH3Data.h3columnName}) as per83,
+                percentile_cont(1) within group (order by ${materialH3Data.h3columnName})      as max
+         from ${materialH3Data.h3tableName}
+         where ${materialH3Data.h3columnName} > 0`,
       );
 
       return Object.values(resultArray[0]);

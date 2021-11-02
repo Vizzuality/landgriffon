@@ -35,6 +35,7 @@ import logging
 from docopt import docopt
 from multiprocessing.pool import ThreadPool
 from functools import partial
+from tqdm import tqdm
 
 DTYPES_TO_PG = {
     'boolean': 'bool',
@@ -70,12 +71,10 @@ def slugify(s):
     return re.sub("[^0-9a-z_]+", "_", s.lower())
 
 
-def gen_raster_h3_for_coords(j, names, raster_list, h3_res, table_name, write_to_database, i):
-    readers = [rio.open(r) for r in raster_list]
-
+def gen_raster_h3_for_row_and_column(row, column, names, readers, h3_res):
     base = readers[0]
 
-    window = rio.windows.Window(i * BLOCKSIZE, j * BLOCKSIZE, BLOCKSIZE, BLOCKSIZE)
+    window = rio.windows.Window(column * BLOCKSIZE, row * BLOCKSIZE, BLOCKSIZE, BLOCKSIZE)
     w_transform = rio.windows.transform(window, base.transform)
     dfs = []
     for src in readers:
@@ -85,17 +84,35 @@ def gen_raster_h3_for_coords(j, names, raster_list, h3_res, table_name, write_to
         _df = h3ronpy.raster.raster_to_dataframe(arr, w_transform, h3_res, nodata_value=src.profile['nodata'],
                                                  compacted=False, geo=False)
         dfs.append(_df.set_index('h3index')['value'])
-        src.close()
     df = pd.concat(dfs, axis=1)
-    logging.info(f'Reading block {j}, {i}: h3index count {len(df)}')
+    logging.debug(f'Reading block {row}, {column}: h3index count {len(df)}')
     if len(df):
         df.columns = names
         df.index = pd.Series(df.index).apply(lambda x: hex(x)[2:])
-        # cast h3index from int64 to hex string
-
-        if write_to_database:
-            write_data_to_database_table(table_name, df)
         return df
+
+
+def gen_raster_h3_for_row(raster_list, h3_res, table_name, row):
+    readers = [rio.open(r) for r in raster_list]
+
+    names = [slugify(os.path.splitext(os.path.basename(r))[0]) for r in raster_list]
+    base = rio.open(raster_list[0])
+    results = []
+
+    logging.debug(f'Starting iterating over row {row}')
+
+    column_range = range(ceil(base.width / BLOCKSIZE))
+    progress_bar = tqdm(column_range)
+    for column in progress_bar:
+        results.append(gen_raster_h3_for_row_and_column(row, column, names, readers, h3_res))
+        progress_bar.set_description("Processing column %s for row %s " % (column, row))
+
+    logging.debug(f'Done iterating over row {row}')
+
+    write_data_to_database_table(table_name, results)
+
+    for reader in readers:
+        reader.close()
 
 
 def gen_raster_h3(raster_list, h3_res, table_name):
@@ -115,16 +132,22 @@ def gen_raster_h3(raster_list, h3_res, table_name):
         A Pandas dataframe for each raster block (usu. 512x512) with an
         h3index and one column for each raster's value.
     """
-    names = [slugify(os.path.splitext(os.path.basename(r))[0]) for r in raster_list]
     base = rio.open(raster_list[0])
 
-    for j in range(ceil(base.height / BLOCKSIZE)):
-        pool = ThreadPool(20)
+    pool = ThreadPool(20)
 
-        partial_gen_raster_h3_for_coords = partial(gen_raster_h3_for_coords, j, names, raster_list,
-                                                   h3_res, table_name,
-                                                   True)  # prod_x has only one argument x (y is fixed to 10)
-        yield from pool.map(partial_gen_raster_h3_for_coords, range(ceil(base.width / BLOCKSIZE)))
+    height = ceil(base.height / BLOCKSIZE)
+    width = ceil(base.width / BLOCKSIZE)
+
+    logging.info(f"Generating h3 data from raster with {height} x {width}")
+
+    partial_gen_raster_h3_for_row = partial(gen_raster_h3_for_row, raster_list, h3_res, table_name)
+    row_progress_bar = tqdm(pool.imap_unordered(func=partial_gen_raster_h3_for_row, iterable=range(height)), total=height)
+    result_list_tqdm = []
+    row_progress_bar.set_description("Processed %s rows of %s " % (len(result_list_tqdm), height))
+    for row in row_progress_bar:
+        result_list_tqdm.append(row)
+        row_progress_bar.set_description("Processed %s rows of %s " % (len(result_list_tqdm), height))
 
     base.close()
 
@@ -135,40 +158,45 @@ def create_table(h3_res, raster_list, table):
 
     base = rio.open(raster_list[0])
 
-    logging.info(f"Loading first rows to build table {table}")
+    logging.debug(f"Loading first rows to build table {table}")
     names = [slugify(os.path.splitext(os.path.basename(r))[0]) for r in raster_list]
+    readers = [rio.open(r) for r in raster_list]
 
     found_columns = False
     while not found_columns:
-        for i in range(ceil(base.width / BLOCKSIZE)):
-            column_data = gen_raster_h3_for_coords(0, names, raster_list,
-                                           h3_res, table, False, i)
+        for row in range(ceil(base.width / BLOCKSIZE)):
+            column_data = gen_raster_h3_for_row_and_column(row, 0, names, readers, h3_res)
             if column_data is not None:
                 found_columns = True
                 break
+    for reader in readers:
+        reader.close()
 
     cols = zip(column_data.columns, column_data.dtypes)
     schema = ', '.join([f"{col} {DTYPES_TO_PG[str(dtype)]}" for col, dtype in cols])
     cursor.execute(f"CREATE TABLE {table} (h3index h3index PRIMARY KEY, {schema});")
-    logging.info(f"Created table {table} with columns {', '.join(column_data.columns)}")
+    logging.debug(f"Created table {table} with columns {', '.join(column_data.columns)}")
     conn.commit()
     postgres_thread_pool.putconn(conn, close=True)
     return column_data
 
 
-def write_data_to_database_table(table, data):
+def write_data_to_database_table(table, results):
     conn = postgres_thread_pool.getconn()
 
     cursor = conn.cursor()
+    counter = 0
 
-    logging.info(f"Writing {len(data)} rows to db...")
     with StringIO() as buffer:
-        data.to_csv(buffer, na_rep="NULL", header=False)
+        for data in results:
+            if data is not None:
+                counter += len(data);
+                data.to_csv(buffer, na_rep="NULL", header=False)
         buffer.seek(0)
         cursor.copy_from(buffer, table, sep=',', null="NULL")
 
+    logging.debug(f"Writing {counter} rows to db...")
     conn.commit()
-    logging.info(f"{len(data)} rows written to db")
     postgres_thread_pool.putconn(conn, close=True)
 
 
@@ -187,6 +215,7 @@ def load_raster_list_to_h3_table(raster_list, table, dataType, dataset, year, h3
             cursor.execute(f"""update {MATERIALS_TABLE} set "producerId" = NULL where "datasetId" like 'spam_%'""")
         if dataType == 'harvest_area':
             cursor.execute(f"""update {MATERIALS_TABLE} set "harvestId" = NULL where "datasetId" like 'spam_%'""")
+    logging.info(f"Dropping table {table}...")
     cursor.execute(f"DROP TABLE IF EXISTS {table};")
     cursor.execute(f"""DELETE FROM {H3_MASTER_TABLE} WHERE "h3tableName" = '{table}';""")
     conn.commit()
@@ -195,8 +224,7 @@ def load_raster_list_to_h3_table(raster_list, table, dataType, dataset, year, h3
 
     column_data = create_table(h3_res, raster_list, table)
 
-    for row in gen_raster_h3(raster_list, h3_res, table):
-        pass
+    gen_raster_h3(raster_list, h3_res, table)
 
     conn = postgres_thread_pool.getconn()
     cursor = conn.cursor()

@@ -34,7 +34,15 @@ async function createAdminRegion(
 async function createH3Data(
   additionalData: Partial<H3Data> = {},
 ): Promise<H3Data> {
-  const h3Data = H3Data.merge(new H3Data(), additionalData);
+  const h3Data = H3Data.merge(
+    new H3Data(),
+    {
+      h3tableName: 'h3tableName',
+      h3columnName: 'h3columnName',
+      h3resolution: 6,
+    },
+    additionalData,
+  );
 
   return h3Data.save();
 }

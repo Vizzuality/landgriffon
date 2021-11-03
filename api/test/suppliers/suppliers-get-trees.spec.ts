@@ -162,7 +162,7 @@ describe('Suppliers - Get trees', () => {
 
     rootSupplierFromResponse.attributes.children.forEach(
       (childSupplier: Record<string, any>) => {
-        expect(childSupplier.children).toEqual(undefined);
+        expect(childSupplier.children).toEqual([]);
       },
     );
   });

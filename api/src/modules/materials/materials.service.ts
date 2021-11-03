@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
+  PaginationMeta,
 } from 'utils/app-base.service';
 import { Material, materialResource } from 'modules/materials/material.entity';
 import { AppInfoDTO } from 'dto/info.dto';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { UpdateMaterialDto } from 'modules/materials/dto/update.material.dto';
+import { FindTreesWithOptionsArgs } from 'utils/tree.repository';
 
 @Injectable()
 export class MaterialsService extends AppBaseService<
@@ -50,6 +52,50 @@ export class MaterialsService extends AppBaseService<
   async createTree(importData: CreateMaterialDto[]): Promise<Material[]> {
     this.logger.log(`Creating Material tree with ${importData.length} nodes`);
     return this.materialRepository.saveListToTree(importData, 'mpath');
+  }
+
+  /**
+   * Remove from tree all materials that don't have h3 data associated with them
+   *
+   * @param root
+   */
+  static filterMaterialTree(root: Material): Material[] {
+    let result: Material[] = [];
+    if (root.producerId === null && root.harvestId === null) {
+      if (root.children) {
+        root.children.forEach((child: Material) => {
+          result = result.concat(this.filterMaterialTree(child));
+        });
+      }
+      return result;
+    } else {
+      if (root.children) {
+        root.children.forEach((child: Material) => {
+          const foo: Material[] = this.filterMaterialTree(child);
+          result = result.concat(foo);
+        });
+        root.children = result;
+      }
+      root.parent = root.parent ? root.parent.parent : null;
+      return [root];
+    }
+  }
+
+  async findTreesWithOptions(
+    args?: FindTreesWithOptionsArgs,
+  ): Promise<Material[]> {
+    const materialTree: Material[] = await this.materialRepository.findTreesWithOptions(
+      args,
+    );
+
+    let filteredMaterialTree: Material[] = [];
+    materialTree.forEach((child: Material) => {
+      filteredMaterialTree = filteredMaterialTree.concat(
+        MaterialsService.filterMaterialTree(child),
+      );
+    });
+
+    return filteredMaterialTree;
   }
 
   async create(createModel: CreateMaterialDto): Promise<Material> {

@@ -47,21 +47,6 @@ module.exports = {
       fontSize: {
         ue: ['0.625rem', { lineHeight: '0.75rem' }], // UE logo text
       },
-      // fontSize: {
-      //   xxs: ['0.625rem', { lineHeight: '0.75rem' }], // 10px
-      //   xs: ['0.75rem', { lineHeight: '1rem' }], // 12px
-      //   sm: ['0.75rem', { lineHeight: '1.875rem' }],
-      //   base: ['1rem', { lineHeight: '1.625rem' }], // 16px
-      //   lg: ['1.25rem', { lineHeight: '1.5rem' }], // 20px
-      //   xl: ['1.25rem', { lineHeight: '1.875rem' }],
-      //   '2xl': ['1.25rem', { lineHeight: '2.188rem' }],
-      //   '3xl': ['1.563rem', { lineHeight: '2.188rem' }], // 25px
-      //   '4xl': ['1.875rem', { lineHeight: '2.188rem' }], // 30px
-      //   '5xl': ['1.875rem', { lineHeight: '2.5rem' }],
-      //   '6xl': ['3.438rem', { lineHeight: '4.438rem' }], // 55px
-      //   '7xl': ['4.688rem', { lineHeight: '5.313rem' }], // 75px
-      //   '8xl': ['6rem', { lineHeight: '9.375rem' }], // 150px
-      // },
     },
   },
   variants: {

@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import Footer from 'containers/footer';
 import Header from 'containers/header';
 import About from 'containers/home/about';
+import BlogArticles from 'containers/home/blog-articles';
 import Hero from 'containers/home/hero';
 import Services from 'containers/home/services';
 import Works from 'containers/home/works';
@@ -31,6 +32,7 @@ const Home: React.FC = () => {
         <Services />
         <Works />
         <About />
+        <BlogArticles />
         <div ref={subscribeScrollRef}>
           <Subscribe />
         </div>

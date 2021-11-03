@@ -61,13 +61,6 @@ export class H3Data extends BaseEntity {
   @Column({ nullable: true })
   indicatorId: string;
 
-  @Column({
-    type: 'enum',
-    enum: H3_DATA_TYPES,
-    nullable: true,
-  })
-  dataType: H3_DATA_TYPES;
-
   @Column({ type: 'json', nullable: true })
   metadata?: JSON;
 }

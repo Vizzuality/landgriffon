@@ -22,6 +22,10 @@ import { UnitConversionRepository } from '../../src/modules/unit-conversions/uni
  * Tests for the H3DataModule.
  */
 
+/**
+ * @debt: Add more elaborated fixtures and more accurate assertions with Data to check that the calculus of all risk-maps are correct (Smoke Tests)
+ */
+
 describe('H3 Data Module (e2e) - Risk map', () => {
   let app: INestApplication;
   let h3DataRepository: H3DataRepository;
@@ -187,6 +191,79 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     expect(
       h3DataRepository.getBiodiversityLossRiskMapByResolution,
     ).toHaveBeenCalledWith(h3Data, h3Data, unitConversion.factor, 6);
+    expect(response.body.data).toEqual([
+      {
+        h: '861203a4fffffff',
+        v: 1000000,
+      },
+    ]);
+    expect(response.body.metadata).toEqual({
+      quantiles: [1000, 1000, 1000, 1000, 1000, 1000, 1000],
+      unit: 'tonnes',
+    });
+  });
+  // TODO: Update assertion as soon as actual calculus is validated
+  test('When I get a calculated H3 Carbon Emission Risk Map with the necessary input values, then I should get the h3 data (happy case)', async () => {
+    const {
+      material,
+      indicator,
+      h3Data,
+      unitConversion,
+    } = await createWorldForRiskMapGeneration({
+      indicatorType: INDICATOR_TYPES.CARBON_EMISSIONS,
+      fakeTable,
+      fakeColumn,
+    });
+    jest.spyOn(h3DataRepository, 'getCarbonEmissionsRiskMapByResolution');
+
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/h3/risk-map`)
+      .query({
+        indicatorId: indicator.id,
+        year: 2020,
+        materialId: material.id,
+        resolution: 6,
+      });
+
+    expect(
+      h3DataRepository.getCarbonEmissionsRiskMapByResolution,
+    ).toHaveBeenCalledWith(h3Data, h3Data, unitConversion.factor, 6);
+    expect(response.body.data).toEqual([
+      {
+        h: '861203a4fffffff',
+        v: 0,
+      },
+    ]);
+    expect(response.body.metadata).toEqual({
+      quantiles: [1000, 1000, 1000, 1000, 1000, 1000, 1000],
+      unit: 'tonnes',
+    });
+  });
+  // TODO: Update assertion as soon as actual calculus is validated
+  test('When I get a calculated H3 Deforestation Loss Risk Map with the necessary input values, then I should get the h3 data (happy case)', async () => {
+    const {
+      material,
+      indicator,
+      h3Data,
+    } = await createWorldForRiskMapGeneration({
+      indicatorType: INDICATOR_TYPES.DEFORESTATION,
+      fakeTable,
+      fakeColumn,
+    });
+    jest.spyOn(h3DataRepository, 'getDeforestationLossRiskMapByResolution');
+
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/h3/risk-map`)
+      .query({
+        indicatorId: indicator.id,
+        year: 2020,
+        materialId: material.id,
+        resolution: 6,
+      });
+
+    expect(
+      h3DataRepository.getDeforestationLossRiskMapByResolution,
+    ).toHaveBeenCalledWith(h3Data, h3Data, 6);
     expect(response.body.data).toEqual([
       {
         h: '861203a4fffffff',

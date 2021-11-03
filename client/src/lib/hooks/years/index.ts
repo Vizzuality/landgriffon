@@ -1,15 +1,14 @@
-import { useMemo } from 'react';
 import { useQuery } from 'react-query';
 import yearsService from 'services/years';
 
 export function useYears() {
   // const [session] = useSession();
 
-  const query = useQuery(
+  const result = useQuery(
     ['years'],
     async () =>
       yearsService
-        .request({
+        .request<number[]>({
           method: 'GET',
           url: `/`,
           headers: {
@@ -23,12 +22,8 @@ export function useYears() {
     }
   );
 
-  const { data } = query;
-
-  return useMemo(() => {
-    return {
-      ...query,
-      data,
-    };
-  }, [query, data]);
+  return {
+    ...result,
+    data: result.data,
+  };
 }

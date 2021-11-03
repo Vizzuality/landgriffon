@@ -2,7 +2,7 @@ import { useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
 import classNames from 'classnames';
 
-import DatasetControl from './dataset-control';
+import LayerControl from './layer-control';
 import ModeControl from './mode-control';
 import AnalysisChart from './analysis-chart';
 import AnalysisMap from './analysis-map';
@@ -24,7 +24,7 @@ const AnalysisVisualization: React.FC = () => {
         )}
       >
         <div className="flex gap-2 flex-wrap">
-          <DatasetControl />
+          <LayerControl />
           <AnalysisFilters />
         </div>
         <div>

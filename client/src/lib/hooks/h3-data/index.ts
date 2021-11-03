@@ -34,21 +34,21 @@ const responseParser = (response, colors) => {
 };
 
 export function useColors() {
-  const { dataset } = useAppSelector(analysis);
-  const colors = useMemo(() => COLOR_RAMPS[dataset].map((color) => chroma(color).rgb()), [dataset]);
+  const { layer } = useAppSelector(analysis);
+  const colors = useMemo(() => COLOR_RAMPS[layer].map((color) => chroma(color).rgb()), [layer]);
   return colors;
 }
 
 export function useH3MaterialData() {
   const {
-    dataset,
+    layer,
     filters: { materials },
   } = useAppSelector(analysis);
 
   const colors = useColors();
 
   const query = useQuery(
-    ['h3-data-material', dataset, JSON.stringify(materials)],
+    ['h3-data-material', layer, JSON.stringify(materials)],
     async () =>
       h3DataService
         .get('/material', {
@@ -61,7 +61,7 @@ export function useH3MaterialData() {
         .then((response) => responseParser(response, colors)),
     {
       ...DEFAULT_QUERY_OPTIONS,
-      enabled: dataset === 'material' && materials.length > 0,
+      enabled: layer === 'material' && materials.length > 0,
     }
   );
 
@@ -77,14 +77,14 @@ export function useH3MaterialData() {
 
 export function useH3RiskData() {
   const {
-    dataset,
+    layer,
     filters: { indicator, materials },
   } = useAppSelector(analysis);
 
   const colors = useColors();
 
   const query = useQuery(
-    ['h3-data-risk', dataset, JSON.stringify(materials)],
+    ['h3-data-risk', layer, JSON.stringify(materials)],
     async () =>
       h3DataService
         .get('/risk-map', {
@@ -99,7 +99,7 @@ export function useH3RiskData() {
         .then((response) => responseParser(response, colors)),
     {
       ...DEFAULT_QUERY_OPTIONS,
-      enabled: dataset === 'risk' && materials.length > 0,
+      enabled: layer === 'risk' && materials.length > 0,
     }
   );
 

@@ -48,6 +48,7 @@ const MaterialsFilter: React.FC<SuppliersFilterProps> = (props: SuppliersFilterP
       removeIcon={<XIcon />}
       maxTagCount={5}
       maxTagPlaceholder={(e) => `${e.length} more...`}
+      showSearch
       {...props}
     >
       {options}

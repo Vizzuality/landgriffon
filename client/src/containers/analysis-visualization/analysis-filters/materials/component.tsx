@@ -46,6 +46,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = (props: MaterialsFilterP
       removeIcon={<XIcon />}
       maxTagCount={5}
       maxTagPlaceholder={(e) => `${e.length} more...`}
+      showSearch
       {...props}
     >
       {data && data.map((material) => renderTreeNode(material))}

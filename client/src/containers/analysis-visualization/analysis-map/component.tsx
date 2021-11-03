@@ -25,7 +25,7 @@ const INITIAL_VIEW_STATE = {
 };
 
 const AnalysisMap: React.FC = () => {
-  const { dataset } = useAppSelector(analysis);
+  const { layer } = useAppSelector(analysis);
 
   const [layers, setLayers] = useState([]);
   const [legendItems, setLegendItems] = useState([]);
@@ -50,7 +50,7 @@ const AnalysisMap: React.FC = () => {
           extruded: true,
           elevationScale: 1,
           highPrecision: false,
-          visible: dataset === 'material',
+          visible: layer === 'material',
           getHexagon: (d) => d.h,
           getFillColor: (d) => d.c,
           getElevation: (d) => d.v,
@@ -64,7 +64,7 @@ const AnalysisMap: React.FC = () => {
           extruded: true,
           elevationScale: 1,
           highPrecision: false,
-          visible: dataset === 'risk',
+          visible: layer === 'risk',
           getHexagon: (d) => d.h,
           getFillColor: (d) => d.c,
           getElevation: (d) => d.v,
@@ -74,7 +74,7 @@ const AnalysisMap: React.FC = () => {
       // TO-DO: improve this logic
       const nextLegendItems = [];
 
-      if (dataset === 'material' && h3MaterialData.data.length) {
+      if (layer === 'material' && h3MaterialData.data.length) {
         nextLegendItems.push({
           id: 'h3-legend-material',
           name: h3MaterialData.metadata.name,
@@ -82,12 +82,12 @@ const AnalysisMap: React.FC = () => {
           min: NUMBER_FORMAT(h3MaterialData.metadata.quantiles[0]),
           items: h3MaterialData.metadata.quantiles.slice(1).map((v, index) => ({
             value: NUMBER_FORMAT(v),
-            color: COLOR_RAMPS[dataset][index],
+            color: COLOR_RAMPS[layer][index],
           })),
         });
       }
 
-      if (dataset === 'risk' && h3RiskData.data.length) {
+      if (layer === 'risk' && h3RiskData.data.length) {
         nextLegendItems.push({
           id: 'h3-legend-risk',
           name: h3RiskData.metadata.name,
@@ -95,14 +95,14 @@ const AnalysisMap: React.FC = () => {
           min: NUMBER_FORMAT(h3RiskData.metadata.quantiles[0]),
           items: h3RiskData.metadata.quantiles.slice(1).map((v, index) => ({
             value: NUMBER_FORMAT(v),
-            color: COLOR_RAMPS[dataset][index],
+            color: COLOR_RAMPS[layer][index],
           })),
         });
       }
 
       setLegendItems(nextLegendItems);
     }
-  }, [h3MaterialData, h3RiskData, dataset]);
+  }, [h3MaterialData, h3RiskData, layer]);
 
   return (
     <>

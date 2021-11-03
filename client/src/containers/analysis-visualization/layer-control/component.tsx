@@ -4,54 +4,54 @@ import { ChevronDownIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { analysis, setDataset } from 'store/features/analysis';
+import { analysis, setLayer } from 'store/features/analysis';
 
 import type { AnalysisState } from 'store/features/analysis';
 
-type DatasetOption = {
+type LayerOption = {
   id: string;
   name: string;
 };
 
-const DATASETS_OPTIONS: DatasetOption[] = [
+const LAYERS_OPTIONS: LayerOption[] = [
   {
-    id: 'impact',
-    name: 'Impact',
+    id: 'material',
+    name: 'Material production',
   },
   {
     id: 'risk',
     name: 'Risk',
   },
   {
-    id: 'material',
-    name: 'Material production',
+    id: 'impact',
+    name: 'Impact',
   },
 ];
 
-const DatasetControl: React.FC = () => {
-  const { dataset, visualizationMode } = useAppSelector(analysis);
+const LayerControl: React.FC = () => {
+  const { layer, visualizationMode } = useAppSelector(analysis);
   const dispatch = useAppDispatch();
 
   const handleChange = useCallback((value) => {
-    dispatch(setDataset(value));
+    dispatch(setLayer(value));
   }, []);
 
   useEffect(() => {
     if (visualizationMode !== 'map') {
-      dispatch(setDataset(DATASETS_OPTIONS[0].id as AnalysisState['dataset']));
+      dispatch(setLayer(LAYERS_OPTIONS[0].id as AnalysisState['layer']));
     }
   }, [visualizationMode]);
 
   return (
     <div className={classNames({ hidden: visualizationMode !== 'map' })}>
       <Select
-        value={dataset}
+        value={layer}
         onChange={handleChange}
         className="w-36"
         optionLabelProp="label"
         suffixIcon={<ChevronDownIcon />}
       >
-        {DATASETS_OPTIONS.map((option) => (
+        {LAYERS_OPTIONS.map((option) => (
           <Select.Option key={option.id} value={option.id} label={option.name}>
             {option.name}
           </Select.Option>
@@ -61,4 +61,4 @@ const DatasetControl: React.FC = () => {
   );
 };
 
-export default DatasetControl;
+export default LayerControl;

@@ -1,27 +1,24 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { useQuery } from 'react-query';
 import { TreeSelect, TreeSelectProps } from 'antd';
 import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
 
 import { getMaterialsTrees } from 'services/materials';
 
+import { useAppDispatch } from 'store/hooks';
+import { setFilter } from 'store/features/analysis';
+
 const { TreeNode } = TreeSelect;
 
-type MaterialsFilterProps = TreeSelectProps<{}> & {
-  onChange: (value) => void;
-};
+type MaterialsFilterProps = TreeSelectProps<{}>;
 
 const MaterialsFilter: React.FC<MaterialsFilterProps> = (props: MaterialsFilterProps) => {
-  const { multiple, onChange } = props;
-  const [value, setValue] = useState(multiple ? [] : undefined);
+  const dispatch = useAppDispatch();
   const { data, isLoading, error } = useQuery('materialsTreesList', getMaterialsTrees);
 
   const handleChange = useCallback(
-    (currentValue) => {
-      setValue(currentValue);
-      if (onChange) onChange(currentValue);
-    },
-    [onChange]
+    (selected) => dispatch(setFilter({ id: 'materials', value: [selected] })),
+    []
   );
 
   const renderTreeNode = (material) => (
@@ -41,7 +38,6 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = (props: MaterialsFilterP
       showArrow
       treeDefaultExpandAll
       treeCheckable={false}
-      value={value}
       disabled={!!error}
       treeNodeFilterProp="title"
       suffixIcon={<ChevronDownIcon />}

@@ -7,7 +7,7 @@ const yearsService = axios.create({
   transformResponse: (response) => {
     try {
       const parsedData = JSON.parse(response);
-      return parsedData;
+      return parsedData.data;
     } catch (error) {
       return response;
     }

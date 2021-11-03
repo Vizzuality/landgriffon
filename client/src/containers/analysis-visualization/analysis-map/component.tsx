@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import DeckGL from '@deck.gl/react';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
 import { StaticMap } from 'react-map-gl';
@@ -25,7 +25,7 @@ const INITIAL_VIEW_STATE = {
 };
 
 const AnalysisMap: React.FC = () => {
-  const { layer } = useAppSelector(analysis);
+  const { layer, filters } = useAppSelector(analysis);
 
   const [layers, setLayers] = useState([]);
   const [legendItems, setLegendItems] = useState([]);
@@ -35,6 +35,13 @@ const AnalysisMap: React.FC = () => {
   const { data: h3RiskData } = useH3RiskData();
 
   const handleAfterRender = useCallback(() => setIsRendering(false), []);
+
+  const legendName = useMemo(() => {
+    if (layer === 'material' && filters.materials?.length > 0) {
+      return filters.materials[0].label;
+    }
+    return null;
+  }, [layer, filters]);
 
   useEffect(() => {
     setIsRendering(true);
@@ -77,7 +84,7 @@ const AnalysisMap: React.FC = () => {
       if (layer === 'material' && h3MaterialData.data.length) {
         nextLegendItems.push({
           id: 'h3-legend-material',
-          name: h3MaterialData.metadata.name,
+          name: legendName,
           unit: h3MaterialData.metadata.unit,
           min: NUMBER_FORMAT(h3MaterialData.metadata.quantiles[0]),
           items: h3MaterialData.metadata.quantiles.slice(1).map((v, index) => ({
@@ -90,7 +97,7 @@ const AnalysisMap: React.FC = () => {
       if (layer === 'risk' && h3RiskData.data.length) {
         nextLegendItems.push({
           id: 'h3-legend-risk',
-          name: h3RiskData.metadata.name,
+          name: legendName,
           unit: h3RiskData.metadata.unit,
           min: NUMBER_FORMAT(h3RiskData.metadata.quantiles[0]),
           items: h3RiskData.metadata.quantiles.slice(1).map((v, index) => ({

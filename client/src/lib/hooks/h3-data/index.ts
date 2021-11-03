@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { useQuery } from 'react-query';
 import chroma from 'chroma-js';
 import { scaleThreshold } from 'd3-scale';
-
 import { useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
 
@@ -53,7 +52,7 @@ export function useH3MaterialData() {
       h3DataService
         .get('/material', {
           params: {
-            materialId: materials[0],
+            materialId: materials[0].value,
             resolution: 4,
           },
         })

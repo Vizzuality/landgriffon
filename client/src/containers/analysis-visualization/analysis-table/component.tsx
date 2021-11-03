@@ -33,7 +33,7 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
       return null;
     }, []);
 
-  const FILTERED_DATA = filters.indicator === 'all' ? tableData : indicatorTableData;
+  const FILTERED_DATA = filters.indicator?.value === 'all' ? tableData : indicatorTableData;
 
   const filteredDataIsFetched = tableDataIsFetched || indicatorTableDataIsFetched;
 

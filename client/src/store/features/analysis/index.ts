@@ -17,7 +17,7 @@ export type AnalysisState = {
   comparisonMode: 'percentage' | 'absolute' | 'both';
   layer: 'impact' | 'risk' | 'material';
   filters: {
-    indicator: string;
+    indicator: Option;
     by: string;
     startYear: number;
     endYear: number;

@@ -36,17 +36,17 @@ const ImpactIndicatorsFilter: React.FC<ImpactIndicatorsFilterProps> = () => {
       dispatch(
         setFilter({
           id: 'indicator',
-          value: options[0].value,
+          value: options[0],
         })
       );
     }
   }, [options, isFetched]);
 
-  const handleChange = useCallback((currentValue) => {
+  const handleChange = useCallback((currentValue, currentOption) => {
     dispatch(
       setFilter({
         id: 'indicator',
-        value: currentValue,
+        value: currentOption,
       })
     );
   }, []);
@@ -57,7 +57,7 @@ const ImpactIndicatorsFilter: React.FC<ImpactIndicatorsFilterProps> = () => {
       className="w-60"
       loading={isFetching}
       options={options}
-      value={filters.indicator}
+      value={filters.indicator?.value}
       placeholder={error ? 'Something went wrong' : 'Select Impact Indicator'}
       disabled={!!error}
       suffixIcon={<ChevronDownIcon />}

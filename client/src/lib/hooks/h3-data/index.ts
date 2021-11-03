@@ -64,12 +64,12 @@ export function useH3MaterialData() {
     }
   );
 
-  const { data } = query;
+  const { data, isError } = query;
 
   return useMemo(() => {
     return {
       ...query,
-      data,
+      data: isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data,
     };
   }, [query, data]);
 }
@@ -102,12 +102,12 @@ export function useH3RiskData() {
     }
   );
 
-  const { data } = query;
+  const { data, isError } = query;
 
   return useMemo(() => {
     return {
       ...query,
-      data,
+      data: isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data,
     };
   }, [query, data]);
 }

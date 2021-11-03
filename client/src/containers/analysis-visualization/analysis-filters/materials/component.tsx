@@ -13,6 +13,7 @@ const { TreeNode } = TreeSelect;
 type MaterialsFilterProps = TreeSelectProps<{}>;
 
 const MaterialsFilter: React.FC<MaterialsFilterProps> = (props: MaterialsFilterProps) => {
+  const { multiple } = props;
   const dispatch = useAppDispatch();
   const { filters } = useAppSelector(analysis);
   const { data, isLoading, error } = useQuery('materialsTreesList', getMaterialsTrees);
@@ -35,7 +36,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = (props: MaterialsFilterP
       className="w-40"
       loading={isLoading}
       placeholder={error ? 'Something went wrong' : 'Select materials'}
-      value={filters.materials}
+      value={multiple ? filters.materials : filters.materials[0]}
       multiple={false}
       showArrow
       treeDefaultExpandAll

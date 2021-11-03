@@ -53,6 +53,7 @@ const ImpactIndicatorsFilter: React.FC<ImpactIndicatorsFilterProps> = () => {
 
   return (
     <Select
+      defaultActiveFirstOption
       onChange={handleChange}
       className="w-60"
       loading={isFetching}

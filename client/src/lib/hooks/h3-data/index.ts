@@ -88,8 +88,8 @@ export function useH3RiskData() {
       h3DataService
         .get('/risk-map', {
           params: {
-            indicatorId: indicator,
-            materialId: materials[0],
+            indicatorId: indicator.value,
+            materialId: materials[0].value,
             resolution: 4,
             year: 2000,
           },

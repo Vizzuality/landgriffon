@@ -5,8 +5,8 @@ import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
 
 import { getMaterialsTrees } from 'services/materials';
 
-import { useAppDispatch } from 'store/hooks';
-import { setFilter } from 'store/features/analysis';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { analysis, setFilter } from 'store/features/analysis';
 
 const { TreeNode } = TreeSelect;
 
@@ -14,6 +14,7 @@ type MaterialsFilterProps = TreeSelectProps<{}>;
 
 const MaterialsFilter: React.FC<MaterialsFilterProps> = (props: MaterialsFilterProps) => {
   const dispatch = useAppDispatch();
+  const { filters } = useAppSelector(analysis);
   const { data, isLoading, error } = useQuery('materialsTreesList', getMaterialsTrees);
 
   const handleChange = useCallback(
@@ -34,6 +35,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = (props: MaterialsFilterP
       className="w-40"
       loading={isLoading}
       placeholder={error ? 'Something went wrong' : 'Select materials'}
+      value={filters.materials}
       multiple={false}
       showArrow
       treeDefaultExpandAll

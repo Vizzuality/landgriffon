@@ -1,9 +1,11 @@
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { TreeSelect, TreeSelectProps } from 'antd';
 import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
 import { useQuery } from 'react-query';
 
 import { getSuppliersTrees } from 'services/suppliers';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { analysis, setFilter } from 'store/features/analysis';
 
 const { TreeNode } = TreeSelect;
 
@@ -12,12 +14,14 @@ type SuppliersFilterProps = TreeSelectProps<{}> & {
 };
 
 const MaterialsFilter: React.FC<SuppliersFilterProps> = (props: SuppliersFilterProps) => {
-  const [value, setValue] = useState([]);
+  const dispatch = useAppDispatch();
+  const { filters } = useAppSelector(analysis);
   const { data, isLoading, error } = useQuery('suppliersTreesList', getSuppliersTrees);
 
-  const handleChange = useCallback((currentValue) => {
-    setValue(currentValue);
-  }, []);
+  const handleChange = useCallback(
+    (selected) => dispatch(setFilter({ id: 'suppliers', value: [selected] })),
+    []
+  );
 
   const renderTreeNode = (supplier) => (
     <TreeNode key={supplier.id} value={supplier.id} title={supplier.name}>
@@ -34,9 +38,9 @@ const MaterialsFilter: React.FC<SuppliersFilterProps> = (props: SuppliersFilterP
       loading={isLoading}
       placeholder={error ? 'Something went wrong' : 'Select suppliers'}
       multiple={false}
+      value={filters.suppliers}
       showArrow
       suffixIcon={<ChevronDownIcon />}
-      value={value}
       treeDefaultExpandAll
       treeCheckable
       disabled={!!error}

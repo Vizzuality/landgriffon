@@ -38,7 +38,10 @@ const AnalysisMap: React.FC = () => {
 
   const legendName = useMemo(() => {
     if (layer === 'material' && filters.materials?.length > 0) {
-      return filters.materials[0].label;
+      return `${filters.materials[0].label} in the year 2010`;
+    }
+    if (layer === 'risk' && filters.materials?.length > 0) {
+      return `${filters.indicator.label} for the material ${filters.materials[0].label} in the year 2010`;
     }
     return null;
   }, [layer, filters]);

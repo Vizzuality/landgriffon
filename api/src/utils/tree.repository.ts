@@ -16,6 +16,7 @@ export class ExtendedTreeRepository<
   async findTreesWithOptions(
     args?: FindTreesWithOptionsArgs,
   ): Promise<Entity[]> {
+    this.depthHack = {};
     if (!args?.depth && args?.depth !== 0) {
       return super.findTrees();
     }
@@ -67,7 +68,7 @@ export class ExtendedTreeRepository<
       const childEntityId = this.metadata.primaryColumns[0].getEntityValue(
         childEntity,
       );
-      if (parentEntityDepth > 1) {
+      if (parentEntityDepth !== 0) {
         this.depthHack[childEntityId] = parentEntityDepth - 1;
         this.buildChildrenEntityTree(childEntity, entities, relationMaps);
       }

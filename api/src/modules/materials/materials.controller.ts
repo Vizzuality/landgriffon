@@ -90,7 +90,7 @@ export class MaterialsController {
   async getTrees(
     @Query('depth', ParseOptionalIntPipe) depth?: number,
   ): Promise<Material> {
-    const results = await this.materialsRepository.findTreesWithOptions({
+    const results = await this.materialsService.findTreesWithOptions({
       depth,
     });
     return this.materialsService.serialize(results);

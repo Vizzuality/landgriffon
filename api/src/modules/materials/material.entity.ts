@@ -52,7 +52,7 @@ export class Material extends TimestampedBaseEntity {
   children: Material[];
 
   @TreeParent()
-  parent: Material;
+  parent: Material | null;
 
   @Column({ nullable: true })
   @ApiPropertyOptional()

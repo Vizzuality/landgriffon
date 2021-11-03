@@ -95,10 +95,10 @@ module "data-import-group" {
   cluster         = module.eks.cluster
   cluster_name    = module.eks.cluster_name
   node_group_name = "data-import-node-group"
-  instance_types  = "c5a.4xlarge"
+  instance_types  = "r5a.4xlarge"
   instance_disk_size = 750
   min_size        = 1
-  max_size        = 1
+  max_size        = 2
   desired_size    = 1
   node_role_arn   = module.eks.node_role_arn
   subnet_ids      = [module.vpc.private_subnets[0].id]

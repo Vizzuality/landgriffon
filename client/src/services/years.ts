@@ -2,7 +2,7 @@ import axios from 'axios';
 import { signOut } from 'next-auth/client';
 
 const yearsService = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/sourcing-records/years`,
+  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/h3/years`,
   headers: { 'Content-Type': 'application/json' },
   transformResponse: (response) => {
     try {

@@ -13,10 +13,11 @@ const YearsFilter: React.FC<YearsFilterProps> = () => {
   const dispatch = useAppDispatch();
   const {
     visualizationMode,
-    filters: { startYear, endYear },
+    filters: { startYear, endYear, materials, indicator },
+    layer,
   } = useAppSelector(analysis);
 
-  const { data, isLoading } = useYears();
+  const { data, isLoading } = useYears(layer, materials, indicator);
 
   const onChangeStartYear = useCallback(
     (newValue: number) => {
@@ -44,13 +45,14 @@ const YearsFilter: React.FC<YearsFilterProps> = () => {
 
   useEffect(() => {
     if (!isLoading && data) {
-      onChangeStartYear(startYear ?? data[0]);
-
-      if (data.length > 1) {
-        onChangeEndYear(endYear ?? data[data.length - 1]);
-      }
+      onChangeStartYear(startYear ? data.find((year) => year === startYear) ?? data[0] : data[0]);
+      onChangeEndYear(
+        endYear
+          ? data.find((year) => year === endYear) ?? data?.[data.length - 1]
+          : data?.[data.length - 1]
+      );
     }
-  }, [data, isLoading, onChangeStartYear, onChangeEndYear]);
+  }, [data, isLoading, layer, materials, indicator, onChangeStartYear, onChangeEndYear]);
 
   if (visualizationMode === 'map') {
     return <SingleYearFilter data={data ?? []} value={endYear} onChange={onChangeEndYear} />;

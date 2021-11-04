@@ -87,4 +87,8 @@ export class MaterialsService extends AppBaseService<
   async clearTable(): Promise<void> {
     await this.materialRepository.delete({});
   }
+
+  async findAllUnpaginated(): Promise<Material[]> {
+    return this.materialRepository.find();
+  }
 }

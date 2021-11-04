@@ -1,12 +1,9 @@
 import { useCallback } from 'react';
 import cx from 'classnames';
 
-import Icon from 'components/icon';
+import { MinusIcon, PlusIcon } from '@heroicons/react/solid';
 
 import type { ViewportProps } from 'react-map-gl';
-
-import ZOOM_IN_SVG from 'assets/map/zoom-in.svg?sprite';
-import ZOOM_OUT_SVG from 'assets/map/zoom-out.svg?sprite';
 
 export interface ZoomControlProps {
   viewport: Partial<ViewportProps>;
@@ -61,7 +58,7 @@ export const ZoomControl: React.FC<ZoomControlProps> = ({
         disabled={zoom === maxZoom}
         onClick={increaseZoom}
       >
-        <Icon icon={ZOOM_IN_SVG} />
+        <PlusIcon className="w-5 h-5" />
       </button>
       <button
         className={cx({
@@ -74,7 +71,7 @@ export const ZoomControl: React.FC<ZoomControlProps> = ({
         disabled={zoom === minZoom}
         onClick={decreaseZoom}
       >
-        <Icon icon={ZOOM_OUT_SVG} />
+        <MinusIcon className="w-5 h-5" />
       </button>
     </div>
   );

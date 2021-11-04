@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Story } from '@storybook/react';
 
 import ZoomControl from 'components/map/controls/zoom';
-import FitBoundsControl from 'components/map/controls/fit-bounds';
 
 import Controls, { ControlsProps } from './component';
 
@@ -29,21 +28,6 @@ const Template: Story<ControlsProps> = (args) => {
               ...viewport,
               zoom,
             });
-          }}
-        />
-
-        <FitBoundsControl
-          bounds={{
-            bbox: [10.5194091796875, 43.6499881760459, 10.9588623046875, 44.01257086123085],
-            options: {
-              padding: 50,
-            },
-            viewportOptions: {
-              transitionDuration: 1500,
-            },
-          }}
-          onFitBoundsChange={(bounds) => {
-            console.info(bounds);
           }}
         />
       </Controls>

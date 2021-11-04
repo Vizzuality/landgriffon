@@ -29,8 +29,8 @@ describe('Sourcing Data import', () => {
   const geoCodingServiceMock = {
     geoCodeLocations: async (sourcingData: any): Promise<any> => {
       return sourcingData.filter(
-        // @ts-ignore
-        (each: SourcingData) => each.locationType != '#N/A',
+        (each: SourcingData | { locationType: '#N/A' }) =>
+          each.locationType !== '#N/A',
       );
     },
   };

@@ -41,7 +41,7 @@ export function useColors() {
 export function useH3MaterialData() {
   const {
     layer,
-    filters: { materials },
+    filters: { startYear, materials },
   } = useAppSelector(analysis);
 
   const colors = useColors();
@@ -54,6 +54,7 @@ export function useH3MaterialData() {
           params: {
             materialId: materials[0].value,
             resolution: 4,
+            year: startYear,
           },
         })
         // Adding color to the response
@@ -77,7 +78,7 @@ export function useH3MaterialData() {
 export function useH3RiskData() {
   const {
     layer,
-    filters: { indicator, materials },
+    filters: { startYear, indicator, materials },
   } = useAppSelector(analysis);
 
   const colors = useColors();
@@ -91,7 +92,7 @@ export function useH3RiskData() {
             indicatorId: indicator.value,
             materialId: materials[0].value,
             resolution: 4,
-            year: 2000,
+            year: startYear,
           },
         })
         // Adding color to the response

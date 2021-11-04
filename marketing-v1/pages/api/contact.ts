@@ -15,6 +15,7 @@ const Contact = (req: NextApiRequest, res: NextApiResponse): void => {
       Message: ${req.body.message}`,
       html: `<p>A new message has been received from the Marketing site.</p>
         <p><strong>Name</strong>: ${req.body.name}</p>
+        <p><strong>Email</strong>: ${req.body.email}</p>
         <p><strong>Company</strong>: ${req.body.company}</p>
         <p><strong>Message</strong>: ${req.body.message}</p>`,
     };

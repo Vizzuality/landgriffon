@@ -33,7 +33,7 @@ const ScenariosFilters = () => {
           sortBy: selected.value,
         },
       }),
-    []
+    [],
   );
   const handleSearchByTerm = useCallback((event) => setTerm(event.currentTarget.value), []);
 

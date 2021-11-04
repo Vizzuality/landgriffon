@@ -70,7 +70,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                 <span
                   className={classNames(
                     checked ? 'bg-green-700 border-transparent' : 'bg-white border-gray-200',
-                    'h-4 w-4 mt-0.5 cursor-pointer rounded-full border flex items-center justify-center'
+                    'h-4 w-4 mt-0.5 cursor-pointer rounded-full border flex items-center justify-center',
                   )}
                   aria-hidden="true"
                 >
@@ -128,7 +128,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                               type="button"
                               className={classNames(
                                 active ? DROPDOWN_ITEM_ACTIVE_CLASSNAME : 'text-gray-700',
-                                DROPDOWN_ITEM_CLASSNAME
+                                DROPDOWN_ITEM_CLASSNAME,
                               )}
                               onClick={handleEdit}
                             >
@@ -142,7 +142,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                               type="button"
                               className={classNames(
                                 active ? DROPDOWN_ITEM_ACTIVE_CLASSNAME : 'text-gray-700',
-                                DROPDOWN_ITEM_CLASSNAME
+                                DROPDOWN_ITEM_CLASSNAME,
                               )}
                               onClick={handleDelete}
                             >
@@ -177,14 +177,14 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                 aria-hidden="true"
                 className={classNames(
                   isComparisonEnabled ? 'bg-green-700' : 'bg-gray-200',
-                  'pointer-events-none absolute h-3 w-7 mx-auto rounded-full transition-colors ease-in-out duration-100'
+                  'pointer-events-none absolute h-3 w-7 mx-auto rounded-full transition-colors ease-in-out duration-100',
                 )}
               />
               <span
                 aria-hidden="true"
                 className={classNames(
                   isComparisonEnabled ? 'translate-x-4' : 'translate-x-0',
-                  'pointer-events-none absolute left-0 inline-block h-4 w-4 border border-gray-200 rounded-full bg-white shadow transform ring-0 transition-transform ease-in-out duration-100'
+                  'pointer-events-none absolute left-0 inline-block h-4 w-4 border border-gray-200 rounded-full bg-white shadow transform ring-0 transition-transform ease-in-out duration-100',
                 )}
               />
             </Switch>

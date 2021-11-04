@@ -36,7 +36,7 @@ const MoreFilters: React.FC = () => {
         materials: moreFilters.materials || INITIAL_FILTERS.materials,
         origins: moreFilters.origins || INITIAL_FILTERS.origins,
         suppliers: moreFilters.suppliers || INITIAL_FILTERS.suppliers,
-      } as AnalysisState['filters'])
+      } as AnalysisState['filters']),
     );
     setOpen(false);
   }, [moreFilters]);
@@ -53,7 +53,7 @@ const MoreFilters: React.FC = () => {
         [key]: values,
       } as AnalysisState['filters']);
     },
-    [moreFilters]
+    [moreFilters],
   );
 
   useEffect(() => {

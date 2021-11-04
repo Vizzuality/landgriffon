@@ -8,7 +8,7 @@ const SuppliersContainer: React.FC = (props) => {
   const dispatch = useAppDispatch();
   const handleChange = useCallback(
     ({ value }) => dispatch(setFilter({ id: 'origin', value: [value] })),
-    []
+    [],
   );
 
   return <Component onChange={handleChange} {...props} />;

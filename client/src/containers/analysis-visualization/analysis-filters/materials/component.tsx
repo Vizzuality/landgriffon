@@ -20,7 +20,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = (props: MaterialsFilterP
 
   const handleChange = useCallback(
     (selected) => dispatch(setFilter({ id: 'materials', value: [selected] })),
-    []
+    [],
   );
 
   const renderTreeNode = (material) => (

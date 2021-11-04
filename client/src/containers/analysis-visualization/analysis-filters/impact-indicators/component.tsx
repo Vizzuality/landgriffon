@@ -37,7 +37,7 @@ const ImpactIndicatorsFilter: React.FC<ImpactIndicatorsFilterProps> = () => {
         setFilter({
           id: 'indicator',
           value: options[0],
-        })
+        }),
       );
     }
   }, [options, isFetched]);
@@ -47,7 +47,7 @@ const ImpactIndicatorsFilter: React.FC<ImpactIndicatorsFilterProps> = () => {
       setFilter({
         id: 'indicator',
         value: currentOption,
-      })
+      }),
     );
   }, []);
 

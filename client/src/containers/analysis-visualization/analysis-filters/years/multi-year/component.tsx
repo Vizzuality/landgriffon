@@ -26,7 +26,7 @@ const MultiYearFilter: React.FC<MultiYearFilterProps> = ({
         setAdditionalYear(toNumber(searchTerm));
       }
     },
-    [data]
+    [data],
   );
 
   return (

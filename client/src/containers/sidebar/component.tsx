@@ -17,8 +17,7 @@ import type { NavigationList } from 'containers/navigation/types';
 
 const user = {
   name: 'Emily Selman',
-  imageUrl:
-    'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+  imageUrl: '/images/emily-selman.jpeg',
 };
 
 const navigationItems: NavigationList = [

@@ -10,7 +10,7 @@ type OriginRegionsFilterProps = SelectProps<{}> & {
 };
 
 const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = (
-  props: OriginRegionsFilterProps
+  props: OriginRegionsFilterProps,
 ) => {
   const [value, setValue] = useState([]);
   const { data, isLoading, error } = useQuery('originRegionsList', getOriginRegions);
@@ -22,7 +22,7 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = (
   const options = useMemo(
     () =>
       data && data.map((originRegion) => ({ label: originRegion.name, value: originRegion.id })),
-    [data]
+    [data],
   );
 
   return (

@@ -25,10 +25,10 @@ const YearsFilter: React.FC<YearsFilterProps> = () => {
         setFilter({
           id: 'startYear',
           value: newValue,
-        })
+        }),
       );
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onChangeEndYear = useCallback(
@@ -37,10 +37,10 @@ const YearsFilter: React.FC<YearsFilterProps> = () => {
         setFilter({
           id: 'endYear',
           value: newValue,
-        })
+        }),
       );
     },
-    [dispatch]
+    [dispatch],
   );
 
   useEffect(() => {
@@ -49,7 +49,7 @@ const YearsFilter: React.FC<YearsFilterProps> = () => {
       onChangeEndYear(
         endYear
           ? data.find((year) => year === endYear) ?? data?.[data.length - 1]
-          : data?.[data.length - 1]
+          : data?.[data.length - 1],
       );
     }
   }, [data, isLoading, layer, materials, indicator, onChangeStartYear, onChangeEndYear]);

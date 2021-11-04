@@ -104,6 +104,7 @@ const AnalysisMap: React.FC = () => {
       elevationScale: 1,
       highPrecision: false,
       visible: layer === 'material',
+      opacity: 0.8,
       getHexagon: (d) => d.h,
       getFillColor: (d) => d.c,
       getElevation: (d) => d.v,

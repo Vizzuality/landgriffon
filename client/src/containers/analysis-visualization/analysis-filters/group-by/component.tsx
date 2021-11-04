@@ -37,7 +37,7 @@ const GroupByFilter: React.FC<GroupByFilterProps> = () => {
       setFilter({
         id: 'by',
         value,
-      })
+      }),
     );
   }, []);
 

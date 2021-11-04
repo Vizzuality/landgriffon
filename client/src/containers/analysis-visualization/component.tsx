@@ -20,7 +20,7 @@ const AnalysisVisualization: React.FC = () => {
             'absolute top-6 left-6 xl:left-12 right-6 z-10': visualizationMode === 'map',
             'm-6 xl:ml-12': visualizationMode !== 'map',
           },
-          'flex gap-2 flex-wrap justify-between'
+          'flex gap-2 flex-wrap justify-between',
         )}
       >
         <div className="flex gap-2 flex-wrap">

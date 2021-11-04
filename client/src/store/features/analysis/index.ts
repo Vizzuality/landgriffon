@@ -63,7 +63,7 @@ export const analysisSlice = createSlice({
     }),
     setSubContentCollapsed: (
       state,
-      action: PayloadAction<AnalysisState['isSubContentCollapsed']>
+      action: PayloadAction<AnalysisState['isSubContentCollapsed']>,
     ) => ({
       ...state,
       isSubContentCollapsed: action.payload,

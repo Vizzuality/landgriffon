@@ -20,7 +20,7 @@ const MaterialsFilter: React.FC<SuppliersFilterProps> = (props: SuppliersFilterP
 
   const handleChange = useCallback(
     (selected) => dispatch(setFilter({ id: 'suppliers', value: [selected] })),
-    []
+    [],
   );
 
   const renderTreeNode = (supplier) => (

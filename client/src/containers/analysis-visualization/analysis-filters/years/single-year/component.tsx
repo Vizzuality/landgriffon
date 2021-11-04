@@ -24,7 +24,7 @@ const SingleYearFilter: React.FC<SingleYearFilterProps> = ({
         setAdditionalYear(toNumber(searchTerm));
       }
     },
-    [data]
+    [data],
   );
 
   return (

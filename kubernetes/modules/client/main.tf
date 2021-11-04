@@ -53,7 +53,7 @@ resource "kubernetes_deployment" "client_deployment" {
         }
 
         container {
-          image             = "vizzuality/landgriffon-client:latest"
+          image             = var.image
           image_pull_policy = "Always"
           name              = "client"
 
@@ -62,6 +62,11 @@ resource "kubernetes_deployment" "client_deployment" {
           env {
             name  = "NEXTAUTH_URL"
             value = var.site_url
+          }
+
+          env {
+            name  = "NEXT_PUBLIC_API_URL"
+            value = var.api_url
           }
 
           resources {

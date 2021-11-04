@@ -32,3 +32,8 @@ variable "site_url" {
   type        = string
   description = "Site URL to use"
 }
+
+variable "api_url" {
+  type        = string
+  description = "API URL to use"
+}

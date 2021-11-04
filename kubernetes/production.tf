@@ -17,6 +17,7 @@ module "k8s_client_prod" {
   image            = "vizzuality/landgriffon-client:production"
   namespace        = "production"
   site_url         = module.k8s_ingress_prod.client_url
+  api_url          = module.k8s_ingress_prod.api_url
 }
 
 module "k8s_data_import_prod" {

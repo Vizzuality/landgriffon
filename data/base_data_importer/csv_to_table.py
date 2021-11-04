@@ -1,7 +1,5 @@
-"""Reads a folder of .tif, converts to h3 and loads into a PG table
+"""Reads a folder of .csv, imports them to a PostgreSQL database
 
-All GeoTiffs in the folder must have identical projection, transform, etc.
-The resulting table will contain a column for each GeoTiff.
 Postgres connection params read from environment:
  - API_POSTGRES_HOST
  - API_POSTGRES_USER
@@ -9,16 +7,12 @@ Postgres connection params read from environment:
  - API_POSTGRES_DATABASE
 
 Usage:
-    csv_to_table.py <folder>
+    csv_to_table.py <folder> [--table=<table>]
 
 Arguments:
-    <folder>          Folder containing GeoTiffs.
-    <table>           Postgresql table to overwrite.
-    <dataType>        Type of the data imported
-    <dataset>         Dataset information for mapping commodities and indicators
+    <folder>          Folder containing csvs.
 Options:
-    -h                Show help
-    --h3-res=<res>    h3 resolution to use [default: 6].
+    --table=<table>   If provided, only import the csv for this table
 """
 
 import os
@@ -28,6 +22,7 @@ from docopt import docopt
 import logging
 
 logging.basicConfig(level=logging.INFO)
+
 
 def load_csvs_into_tables(csv_file_list):
     conn = psycopg2.connect(
@@ -48,7 +43,8 @@ def load_csvs_into_tables(csv_file_list):
                     if not cols:
                         cols = ['"{}"'.format(cell) for cell in row]
                         psycopg_marks = ','.join(['%s' for s in cols])
-                        insert_statement = "INSERT INTO \"public\".\"%s\" (%s) VALUES (%s)" % (csv_file["table"], ','.join(cols), psycopg_marks)
+                        insert_statement = "INSERT INTO \"public\".\"%s\" (%s) VALUES (%s)" % (
+                        csv_file["table"], ','.join(cols), psycopg_marks)
                         # print(insert_statement)
                     else:
                         # print(row)
@@ -60,7 +56,7 @@ def load_csvs_into_tables(csv_file_list):
     cursor.close()
 
 
-def main(folder):
+def main(folder, table):
     csvs = [
         {
             "path": os.path.join(folder, f),
@@ -68,7 +64,7 @@ def main(folder):
             "table": f.split('.')[1],
         }
         for f in sorted(os.listdir(folder))
-        if os.path.splitext(f)[1] == '.csv'
+        if os.path.splitext(f)[1] == '.csv' and (table is None or f.split('.')[1] == table)
     ]
     logging.info(f'Found {len(csvs)} CSVs')
     load_csvs_into_tables(csvs)
@@ -79,4 +75,5 @@ if __name__ == "__main__":
     args = docopt(__doc__)
     main(
         args['<folder>'],
+        args['--table'],
     )

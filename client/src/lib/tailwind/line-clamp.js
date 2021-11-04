@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const plugin = require('tailwindcss/plugin');
 
 module.exports = plugin(
@@ -23,5 +22,5 @@ module.exports = plugin(
         3: 3,
       },
     },
-  }
+  },
 );

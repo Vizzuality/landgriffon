@@ -62,7 +62,7 @@ export function useH3MaterialData() {
     {
       ...DEFAULT_QUERY_OPTIONS,
       enabled: layer === 'material' && materials.length > 0,
-    }
+    },
   );
 
   const { data, isError } = query;
@@ -100,7 +100,7 @@ export function useH3RiskData() {
     {
       ...DEFAULT_QUERY_OPTIONS,
       enabled: layer === 'risk' && materials.length > 0,
-    }
+    },
   );
 
   const { data, isError } = query;

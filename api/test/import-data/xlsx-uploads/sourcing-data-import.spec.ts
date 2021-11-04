@@ -6,7 +6,6 @@ import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records
 import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { MaterialRepository } from 'modules/materials/material.repository';
-import { Material } from 'modules/materials/material.entity';
 import { readdir } from 'fs/promises';
 import * as config from 'config';
 import { Supplier } from 'modules/suppliers/supplier.entity';
@@ -19,6 +18,7 @@ import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.e
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
+import { createMaterial } from '../../entity-mocks';
 
 describe('Sourcing Data import', () => {
   /**
@@ -131,8 +131,20 @@ describe('Sourcing Data import', () => {
     );
   });
 
+  test('When a file is sent to the API and there are no materials in the database, an error should be displayed', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/import/sourcing-data')
+      .attach('file', __dirname + '/base-dataset.xlsx')
+      .expect(HttpStatus.BAD_REQUEST);
+    expect(response.body.errors[0].title).toEqual(
+      'No Materials found present in the DB. Please check the LandGriffon installation manual',
+    );
+  });
+
   test('When a file is sent to the API and its size is allowed then it should return a 201 code and the storage folder should be empty', async () => {
-    const res = await request(app.getHttpServer())
+    await createMaterial();
+
+    await request(app.getHttpServer())
       .post('/api/v1/import/sourcing-data')
       .attach('file', __dirname + '/base-dataset.xlsx')
       .expect(HttpStatus.CREATED);
@@ -141,6 +153,37 @@ describe('Sourcing Data import', () => {
   });
 
   test('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (happy case)', async () => {
+    const material08 = await createMaterial({
+      hsCodeId: '08',
+    });
+    const material09 = await createMaterial({
+      hsCodeId: '09',
+    });
+    const material10 = await createMaterial({
+      hsCodeId: '10',
+    });
+    await createMaterial({
+      parent: material08,
+      hsCodeId: '0803',
+    });
+    await createMaterial({
+      parent: material09,
+      hsCodeId: '901',
+    });
+    await createMaterial({
+      parent: material10,
+      hsCodeId: '1005',
+    });
+    await createMaterial({
+      hsCodeId: '40',
+    });
+    await createMaterial({
+      hsCodeId: '52',
+    });
+    await createMaterial({
+      hsCodeId: '41',
+    });
+
     const response = await request(app.getHttpServer())
       .post('/api/v1/import/sourcing-data')
       .attach('file', __dirname + '/base-dataset.xlsx')
@@ -151,24 +194,24 @@ describe('Sourcing Data import', () => {
     const businessUnitsRoots: BusinessUnit[] = await businessUnitRepository.findRoots();
     expect(businessUnitsRoots).toHaveLength(1);
 
-    const materials: Material[] = await materialRepository.find();
-    expect(materials).toHaveLength(305);
-    const materialsRoots: Material[] = await materialRepository.findRoots();
-    expect(materialsRoots).toHaveLength(30);
-
     const suppliers: Supplier[] = await supplierRepository.find();
-    expect(suppliers).toHaveLength(6);
+    expect(suppliers).toHaveLength(5);
     const suppliersRoots: Supplier[] = await supplierRepository.findRoots();
-    expect(suppliersRoots).toHaveLength(5);
+    expect(suppliersRoots).toHaveLength(4);
 
     const sourcingRecords: SourcingRecord[] = await sourcingRecordRepository.find();
-    expect(sourcingRecords).toHaveLength(825);
+    expect(sourcingRecords).toHaveLength(495);
 
     const sourcingLocations: SourcingLocation[] = await sourcingLocationRepository.find();
-    expect(sourcingLocations).toHaveLength(75);
+    expect(sourcingLocations).toHaveLength(45);
+    sourcingLocations.forEach((sourcingLocation: SourcingLocation) => {
+      expect(sourcingLocation.materialId).not.toEqual(null);
+    });
   });
 
   test('When a file is sent 2 times to the API, then imported data length should be equal, and database has been cleaned in between', async () => {
+    await createMaterial();
+
     await request(app.getHttpServer())
       .post('/api/v1/import/sourcing-data')
       .attach('file', __dirname + '/base-dataset.xlsx');
@@ -178,10 +221,12 @@ describe('Sourcing Data import', () => {
       .attach('file', __dirname + '/base-dataset.xlsx');
 
     const sourcingRecords: SourcingRecord[] = await sourcingRecordRepository.find();
-    expect(sourcingRecords.length).toEqual(825);
+    expect(sourcingRecords.length).toEqual(495);
   });
 
   test('When a file is sent to the API and gets processed, then a request to Sourcing-Records should return a existing Sourcing-Location ID', async () => {
+    await createMaterial();
+
     await request(app.getHttpServer())
       .post('/api/v1/import/sourcing-data')
       .attach('file', __dirname + '/base-dataset.xlsx');

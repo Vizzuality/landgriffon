@@ -14,7 +14,7 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
  * and spread through typing
  */
 export interface SourcingData extends CreateSourcingLocationDto {
-  materialId: string;
+  materialId?: string;
   sourcingRecords: SourcingRecord[];
 }
 
@@ -27,7 +27,7 @@ export interface SourcingRecordsDtos {
 }
 
 const SOURCING_LOCATION_PROPERTIES: Array<string> = [
-  'material.path',
+  'material.hsCode',
   'business_unit.path',
   't1_supplier.name',
   'producer.name',
@@ -105,7 +105,6 @@ export class SourcingRecordsDtoProcessorService {
     customData: WorkSheet[],
   ): { sourcingData: SourcingData[] } {
     this.logger.debug(`Cleaning ${customData.length} custom data rows`);
-
     const sourcingData: SourcingData[] = [];
 
     /**
@@ -113,13 +112,9 @@ export class SourcingRecordsDtoProcessorService {
      */
     const nonEmptyData = customData.filter(
       (row: WorkSheet) =>
-        row['material.path'] !== '' && !Object.values(row).includes('#N/A'),
+        row['material.hsCode'] && row['material.hsCode'] !== '',
     );
-
-    this.logger.debug(
-      `Found ${nonEmptyData.length} non-empty custom data rows`,
-    );
-
+    this.logger.debug(`Found ${customData.length} non-empty custom data rows`);
     /**
      * Separate base properties common for each sourcing-location row
      * Separate metadata properties to metadata object common for each sourcing-location row
@@ -344,7 +339,7 @@ export class SourcingRecordsDtoProcessorService {
     sourcingLocationDto.sourcingLocationGroupId = sourcingLocationGroupId;
     sourcingLocationDto.businessUnitId =
       sourcingLocationData['business_unit.path'];
-    sourcingLocationDto.materialId = sourcingLocationData['material.path'];
+    sourcingLocationDto.materialId = sourcingLocationData['material.hsCode'];
     sourcingLocationDto.producerId =
       sourcingLocationData['producer.name'] === ''
         ? undefined

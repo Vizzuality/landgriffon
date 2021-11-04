@@ -16,6 +16,7 @@ import { validateOrReject } from 'class-validator';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 import { Supplier } from 'modules/suppliers/supplier.entity';
+import { Material } from 'modules/materials/material.entity';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -82,9 +83,13 @@ export class SourcingRecordsImportService {
       await this.validateDTOs(dtoMatchedData);
       await this.cleanDataBeforeImport();
 
-      const materials = await this.materialService.createTree(
-        dtoMatchedData.materials,
-      );
+      const materials: Material[] = await this.materialService.findAllUnpaginated();
+      if (!materials.length) {
+        throw new Error(
+          'No Materials found present in the DB. Please check the LandGriffon installation manual',
+        );
+      }
+
       const businessUnits = await this.businessUnitService.createTree(
         dtoMatchedData.businessUnits,
       );
@@ -112,14 +117,14 @@ export class SourcingRecordsImportService {
   private async validateDTOs(
     dtoLists: SourcingRecordsDtos,
   ): Promise<void | Array<ErrorConstructor>> {
-    const validationErrorArray: Array<typeof Error> = [];
+    const validationErrorArray: Error[] = [];
     for (const parsedSheet in dtoLists) {
       if (dtoLists.hasOwnProperty(parsedSheet)) {
         for (const dto of dtoLists[parsedSheet as keyof SourcingRecordsDtos]) {
           try {
             await validateOrReject(dto);
           } catch (err) {
-            validationErrorArray.push(err);
+            validationErrorArray.push(err as Error);
           }
         }
       }
@@ -162,7 +167,7 @@ export class SourcingRecordsImportService {
   relateSourcingDataWithOrganizationalEntities(
     suppliers: Supplier[],
     businessUnits: Record<string, any>[],
-    materials: Record<string, any>[],
+    materials: Material[],
     sourcingData: SourcingData[],
   ): any {
     this.logger.log(`Relating sourcing data with organizational entities`);
@@ -170,6 +175,14 @@ export class SourcingRecordsImportService {
     this.logger.log(`Business Units count: ${businessUnits.length}`);
     this.logger.log(`Materials count: ${materials.length}`);
     this.logger.log(`Sourcing Data count: ${sourcingData.length}`);
+
+    const materialMap: Record<number, string> = {};
+    materials.forEach((material: Material) => {
+      if (!material.hsCodeId) {
+        return;
+      }
+      materialMap[parseInt(material.hsCodeId)] = material.id;
+    });
 
     for (const sourcingLocation of sourcingData) {
       for (const supplier of suppliers) {
@@ -185,11 +198,15 @@ export class SourcingRecordsImportService {
           sourcingLocation.businessUnitId = businessUnit.id;
         }
       }
-      for (const material of materials) {
-        if (sourcingLocation.materialId === material.mpath) {
-          sourcingLocation.materialId = material.id;
-        }
+      if (typeof sourcingLocation.materialId === 'undefined') {
+        return;
       }
+      const sourcingLocationMaterialId: number = parseInt(
+        sourcingLocation.materialId,
+      );
+      sourcingLocation.materialId = materialMap[sourcingLocationMaterialId]
+        ? materialMap[sourcingLocationMaterialId]
+        : undefined;
     }
     return sourcingData;
   }

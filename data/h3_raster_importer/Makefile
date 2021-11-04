@@ -4,7 +4,7 @@
 # It does not necessarily represent a max thread count, but it's probably similar to that
 # Lower if you are having issues. Increase at your own risk
 #########################
-PARALLELIZATION_FACTOR=12
+PARALLELIZATION_FACTOR=10
 
 WORKDIR_GADM=data/gadm
 WORKDIR_MAPSPAM=data/mapspam
@@ -19,10 +19,10 @@ all:
 	make -j 2 crop indicators
 
 crop:
-	make -j $$(( $(PARALLELIZATION_FACTOR) / 2 )) convert-mapspam-crop-production convert-earthstat-crop-production convert-earthstat-crop-harvest convert-mapspam-crop-harvest convert-cropland convert-pasture
+	make -j 2 convert-mapspam-crop-production convert-earthstat-crop-production convert-earthstat-crop-harvest convert-mapspam-crop-harvest convert-cropland convert-pasture
 
 indicators:
-	make -j $$(( $(PARALLELIZATION_FACTOR) / 2 )) convert-water-footprint convert-biodiversity convert-carbon
+	make -j 2 convert-water-footprint convert-biodiversity convert-carbon
 	# Processing deforestation data is quite intensive, so we do it separately, so we can allocate all threads to it
 	# There is probably a better way to do this, that future me will learn about - in the future.
 	make convert-deforestation

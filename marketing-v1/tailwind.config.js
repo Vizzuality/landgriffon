@@ -3,8 +3,6 @@ const forms = require('@tailwindcss/forms');
 const typography = require('@tailwindcss/typography');
 const colors = require('tailwindcss/colors');
 
-const lineClamp = require('./lib/tailwind/line-clamp');
-
 module.exports = {
   purge: {
     enabled: process.env.NODE_ENV !== 'development',
@@ -65,5 +63,5 @@ module.exports = {
       visibility: 'visibility',
     },
   },
-  plugins: [forms, typography, lineClamp],
+  plugins: [forms, typography],
 };

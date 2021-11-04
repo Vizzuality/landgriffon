@@ -90,7 +90,7 @@ export const AnchorLink = forwardRef<HTMLAnchorElement, AnchorProps>(
       href,
       ...restProps
     }: AnchorProps,
-    ref
+    ref,
   ) => {
     // Anchor element doesn't support disabled attribute
     // https://www.w3.org/TR/2014/REC-html5-20141028/disabled-elements.html
@@ -116,8 +116,10 @@ export const AnchorLink = forwardRef<HTMLAnchorElement, AnchorProps>(
         {children}
       </a>
     );
-  }
+  },
 );
+
+AnchorLink.displayName = 'AnchorLink';
 
 export const Button: React.FC<ButtonProps> = ({
   children,

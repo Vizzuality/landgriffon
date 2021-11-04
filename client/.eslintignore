@@ -1,4 +1,6 @@
-/.next
-/node_modules
-/cypress
-/public
+.next
+.vercel
+docs
+node_modules
+cypress
+public

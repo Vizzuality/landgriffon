@@ -23,7 +23,6 @@ const AnalysisPage: React.FC = () => {
   const { isSidebarCollapsed, isSubContentCollapsed } = useAppSelector(analysis);
   const dispatch = useAppDispatch();
   const { query } = useRouter();
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   const { new_scenario, edit_scenario } = query;
 
   const analysisContent = () => {

@@ -56,7 +56,7 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
                     className={({ active }) =>
                       classNames(
                         active ? 'text-white bg-green-700' : 'text-gray-900',
-                        'cursor-default select-none relative py-2 pl-3 pr-9'
+                        'cursor-default select-none relative py-2 pl-3 pr-9',
                       )
                     }
                     value={option}
@@ -66,7 +66,7 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
                         <span
                           className={classNames(
                             selected ? 'font-semibold' : 'font-normal',
-                            'block truncate'
+                            'block truncate',
                           )}
                         >
                           {option.label}
@@ -76,7 +76,7 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
                           <span
                             className={classNames(
                               active ? 'text-white' : 'text-green-700',
-                              'absolute inset-y-0 right-0 flex items-center pr-4'
+                              'absolute inset-y-0 right-0 flex items-center pr-4',
                             )}
                           >
                             <CheckIcon className="h-5 w-5" aria-hidden="true" />

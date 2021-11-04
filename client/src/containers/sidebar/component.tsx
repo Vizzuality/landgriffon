@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import { Fragment, useCallback } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import {

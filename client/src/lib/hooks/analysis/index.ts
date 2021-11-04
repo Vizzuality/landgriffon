@@ -39,7 +39,7 @@ export function useAnalysisChart(options: AnalysisChartOptions) {
         data: [],
       },
       refetchOnWindowFocus: false,
-    }
+    },
   );
 
   const { data } = query;
@@ -52,8 +52,8 @@ export function useAnalysisChart(options: AnalysisChartOptions) {
         flatten(
           children.map((c) => {
             return c.values.map((v) => v.year);
-          })
-        )
+          }),
+        ),
       );
 
       const keys = uniq(flatten(children.map((c) => c.id)));
@@ -88,7 +88,7 @@ export function useAnalysisChart(options: AnalysisChartOptions) {
           ...acc,
           [k]: colorScale[i],
         }),
-        {}
+        {},
       );
 
       return {
@@ -130,7 +130,7 @@ export function useAnalysisLegend(options: AnalysisChartOptions) {
           'filter[indicator]': indicator,
         },
       })
-      .then((response) => response.data)
+      .then((response) => response.data),
   );
 
   const { data } = query;
@@ -177,7 +177,7 @@ export function useAnalysisTable(options: AnalysisTableOptions) {
       placeholderData: {
         data: [],
       },
-    }
+    },
   );
 
   const { data } = query;
@@ -234,7 +234,7 @@ export function useIndicatorAnalysisTable(options: AnalysisTableOptions) {
       placeholderData: {
         data: [],
       },
-    }
+    },
   );
 
   const { data } = query;

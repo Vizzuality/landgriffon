@@ -60,8 +60,6 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
     target: false,
   },
 }: AreaStackedProps) => {
-  if (!width || !height) return null;
-
   const { showTooltip, hideTooltip, tooltipData, tooltipTop, tooltipLeft } = useTooltip();
 
   const lastCurrentIndex = useMemo(() => {
@@ -102,8 +100,8 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
           return acc + d[k];
         }
         return 0;
-      }, 0)
-    )
+      }, 0),
+    ),
   );
 
   // Y: scale
@@ -139,8 +137,10 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
         tooltipTop: yScale(y),
       });
     },
-    [showTooltip, xScale, yScale, keys]
+    [showTooltip, xScale, yScale, keys],
   );
+
+  if (!width || !height) return null;
 
   return (
     <div className="relative">

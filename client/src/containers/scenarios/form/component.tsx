@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 const ScenarioForm = () => (
   <form action="#" method="POST">
     <div className="col-span-6 sm:col-span-3">

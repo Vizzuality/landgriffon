@@ -20,7 +20,7 @@ export function useIndicators() {
     {
       keepPreviousData: true,
       placeholderData: [],
-    }
+    },
   );
 
   const { data } = query;
@@ -30,7 +30,7 @@ export function useIndicators() {
       ...query,
       data,
     }),
-    [query, data]
+    [query, data],
   );
 }
 

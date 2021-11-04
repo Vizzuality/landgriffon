@@ -11,7 +11,7 @@ export function useUsers(session) {
       headers: {
         Authorization: `Bearer ${session.accessToken}`,
       },
-    }).then((response) => response.data)
+    }).then((response) => response.data),
   );
 
   return useMemo(() => {

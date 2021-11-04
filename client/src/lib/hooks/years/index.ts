@@ -6,7 +6,7 @@ import { AnalysisState } from 'store/features/analysis';
 export function useYears(
   layer: AnalysisState['layer'],
   materials: AnalysisState['filters']['materials'],
-  indicator: AnalysisState['filters']['indicator']
+  indicator: AnalysisState['filters']['indicator'],
 ) {
   // const [session] = useSession();
 
@@ -33,7 +33,7 @@ export function useYears(
     {
       keepPreviousData: true,
       placeholderData: [],
-    }
+    },
   );
 
   return {

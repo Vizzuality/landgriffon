@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { Table as TableAntd } from 'antd';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline';
 

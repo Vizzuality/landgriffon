@@ -105,7 +105,7 @@ resource "kubernetes_job" "data_import" {
           resources {
             requests = {
               cpu    = "12"
-              memory = "16Gi"
+              memory = "120Gi"
             }
           }
         }

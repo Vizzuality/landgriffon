@@ -153,6 +153,7 @@ const AnalysisMap: React.FC = () => {
       getHexagon: (d) => d.h,
       getFillColor: (d) => d.c,
       getElevation: (d) => d.v,
+      onHover: handleHover,
     }),
   ];
 

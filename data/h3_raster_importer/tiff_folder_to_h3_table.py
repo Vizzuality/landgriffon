@@ -110,13 +110,13 @@ def gen_raster_h3_for_row(raster_list, h3_res, table_name, row):
 
     logging.debug(f'Done iterating over row {row}')
 
-    write_data_to_database_table(table_name, results)
+    write_data_to_database_table(table_name, results, row)
 
     for reader in readers:
         reader.close()
 
 
-def gen_raster_h3(raster_list, h3_res, table_name):
+def gen_raster_h3(raster_list, h3_res, table_name, thread_count):
     """Convert a list of identically formatted rasters to H3
 
     A function for efficiently turning a set of rasters into an H3 table.
@@ -135,7 +135,7 @@ def gen_raster_h3(raster_list, h3_res, table_name):
     """
     base = rio.open(raster_list[0])
 
-    pool = ThreadPool(20)
+    pool = ThreadPool(thread_count)
 
     height = ceil(base.height / BLOCKSIZE)
     width = ceil(base.width / BLOCKSIZE)
@@ -183,26 +183,28 @@ def create_table(h3_res, raster_list, table):
     return column_data
 
 
-def write_data_to_database_table(table, results):
+def write_data_to_database_table(table, results, row):
     conn = postgres_thread_pool.getconn()
 
     cursor = conn.cursor()
     counter = 0
 
-    with StringIO() as buffer:
-        for data in results:
-            if data is not None:
+    logging.info(f"Preparing row {row} buffer...")
+
+    for data in results:
+        if data is not None:
+            with StringIO() as buffer:
                 counter += len(data);
                 data.to_csv(buffer, na_rep="NULL", header=False)
-        buffer.seek(0)
-        cursor.copy_from(buffer, table, sep=',', null="NULL")
+                buffer.seek(0)
+                cursor.copy_from(buffer, table, sep=',', null="NULL")
 
-    logging.debug(f"Writing {counter} rows to db...")
     conn.commit()
+    logging.info(f"{counter} values for row {row} written to database, ending row iteration")
     postgres_thread_pool.putconn(conn, close=True)
 
 
-def load_raster_list_to_h3_table(raster_list, table, dataType, dataset, year, h3_res):
+def load_raster_list_to_h3_table(raster_list, table, dataType, dataset, year, h3_res, thread_count):
     conn = postgres_thread_pool.getconn()
 
     cursor = conn.cursor()
@@ -226,7 +228,7 @@ def load_raster_list_to_h3_table(raster_list, table, dataType, dataset, year, h3
 
     column_data = create_table(h3_res, raster_list, table)
 
-    gen_raster_h3(raster_list, h3_res, table)
+    gen_raster_h3(raster_list, h3_res, table, thread_count)
 
     conn = postgres_thread_pool.getconn()
     cursor = conn.cursor()
@@ -257,7 +259,7 @@ def load_raster_list_to_h3_table(raster_list, table, dataType, dataset, year, h3
     cursor.close()
 
 
-def main(folder, table, dataType, dataset, year, h3_res, thread_count):
+def main(folder, table, data_type, dataset, year, h3_res, thread_count):
     tiffs = [
         os.path.join(folder, f)
         for f in os.listdir(folder)
@@ -265,7 +267,7 @@ def main(folder, table, dataType, dataset, year, h3_res, thread_count):
     ]
     logging.info(f'Starting h3 import with {thread_count} threads')
     logging.info(f'Found {len(tiffs)} tiffs')
-    load_raster_list_to_h3_table(tiffs, table, dataType, dataset, year, h3_res)
+    load_raster_list_to_h3_table(tiffs, table, data_type, dataset, year, h3_res, thread_count)
     logging.info('Done')
 
 

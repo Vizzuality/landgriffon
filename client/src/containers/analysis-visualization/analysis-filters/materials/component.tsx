@@ -1,7 +1,8 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { TreeSelect, TreeSelectProps } from 'antd';
 import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
+import sortBy from 'lodash.sortby';
 
 import { getMaterialsTrees } from 'services/materials';
 
@@ -20,26 +21,35 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = (props: MaterialsFilterP
 
   const handleChange = useCallback(
     (selected) => dispatch(setFilter({ id: 'materials', value: [selected] })),
-    [],
+    [dispatch],
   );
 
-  const renderTreeNode = (material) => (
-    <TreeNode key={material.id} value={material.id} title={material.name}>
-      {material.children && material.children.map((childMaterial) => renderTreeNode(childMaterial))}
-    </TreeNode>
+  const treeData = useMemo(
+    () =>
+      sortBy(
+        data?.map(({ name, id, children }) => ({
+          label: name,
+          key: id,
+          children: children?.map(({ name, id }) => ({ label: name, key: id })),
+        })),
+        'label',
+      ),
+    [data],
   );
 
   return (
     <TreeSelect
       onChange={handleChange}
       labelInValue
-      className="w-40"
+      className="w-64"
       loading={isLoading}
       placeholder={error ? 'Something went wrong' : 'Select materials'}
       value={multiple ? filters.materials : filters.materials[0]}
       multiple={false}
+      treeData={treeData}
       showArrow
-      treeDefaultExpandAll
+      showCheckedStrategy={TreeSelect.SHOW_PARENT}
+      treeDefaultExpandAll={false}
       treeCheckable={false}
       disabled={!!error}
       treeNodeFilterProp="title"
@@ -49,9 +59,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = (props: MaterialsFilterP
       maxTagPlaceholder={(e) => `${e.length} more...`}
       showSearch
       {...props}
-    >
-      {data && data.map((material) => renderTreeNode(material))}
-    </TreeSelect>
+    />
   );
 };
 

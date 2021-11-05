@@ -1,3 +1,4 @@
+import type { PopUpProps } from 'components/map/popup/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import DeckGL from '@deck.gl/react';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
@@ -7,6 +8,7 @@ import { XCircleIcon } from '@heroicons/react/solid';
 import { useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
 
+import PopUp from 'components/map/popup';
 import Legend from 'components/map/legend';
 import LegendItem from 'components/map/legend/item';
 import LegendTypeChoropleth from 'components/map/legend/types/choropleth';
@@ -25,10 +27,21 @@ const INITIAL_VIEW_STATE = {
   bearing: 0,
 };
 
+type PopUpInfoProps = {
+  object?: {
+    v: number;
+  } | null;
+  x: number;
+  y: number;
+  viewport?: {
+    width: number;
+    height: number;
+  };
+};
+
 const AnalysisMap: React.FC = () => {
   const { layer, filters } = useAppSelector(analysis);
-
-  // const [layers, setLayers] = useState([]);
+  const [popUpInfo, setPopUpInfo] = useState<PopUpInfoProps>(null);
   const [legendItems, setLegendItems] = useState([]);
   const [isRendering, setIsRendering] = useState(false);
 
@@ -46,6 +59,24 @@ const AnalysisMap: React.FC = () => {
   const isFetching = isH3MaterialFetching || isH3RiskFetching;
 
   const handleAfterRender = useCallback(() => setIsRendering(false), []);
+  const handleHover = useCallback(
+    ({ object, x, y, viewport }) =>
+      setPopUpInfo({
+        object: object ? { v: object.v } : null,
+        x,
+        y,
+        viewport: viewport ? { width: viewport.width, height: viewport.height } : null,
+      }),
+    [],
+  );
+
+  const unit = useMemo(() => {
+    const unitMap = {
+      material: h3MaterialData.metadata.unit,
+      risk: h3RiskData.metadata.unit,
+    };
+    return unitMap[layer];
+  }, [h3MaterialData, h3RiskData, layer]);
 
   const legendName = useMemo(() => {
     if (layer === 'material' && filters.materials?.length > 0) {
@@ -58,8 +89,6 @@ const AnalysisMap: React.FC = () => {
   }, [layer, filters]);
 
   useEffect(() => {
-    // setIsRendering(true);
-
     if (h3MaterialData?.data.length || h3RiskData?.data.length) {
       const nextLegendItems = [];
 
@@ -67,7 +96,7 @@ const AnalysisMap: React.FC = () => {
         nextLegendItems.push({
           id: 'h3-legend-material',
           name: legendName,
-          unit: h3MaterialData.metadata.unit,
+          unit,
           min: NUMBER_FORMAT(h3MaterialData.metadata.quantiles[0]),
           items: h3MaterialData.metadata.quantiles.slice(1).map((v, index) => ({
             value: NUMBER_FORMAT(v),
@@ -80,7 +109,7 @@ const AnalysisMap: React.FC = () => {
         nextLegendItems.push({
           id: 'h3-legend-risk',
           name: legendName,
-          unit: h3RiskData.metadata.unit,
+          unit,
           min: NUMBER_FORMAT(h3RiskData.metadata.quantiles[0]),
           items: h3RiskData.metadata.quantiles.slice(1).map((v, index) => ({
             value: NUMBER_FORMAT(v),
@@ -91,7 +120,7 @@ const AnalysisMap: React.FC = () => {
 
       setLegendItems(nextLegendItems);
     }
-  }, [h3MaterialData, h3RiskData, layer, filters]);
+  }, [h3MaterialData, h3RiskData, layer, filters, legendName, unit]);
 
   const layers = [
     new H3HexagonLayer({
@@ -108,6 +137,7 @@ const AnalysisMap: React.FC = () => {
       getHexagon: (d) => d.h,
       getFillColor: (d) => d.c,
       getElevation: (d) => d.v,
+      onHover: handleHover,
     }),
     new H3HexagonLayer({
       id: 'h3-layer-risk',
@@ -119,6 +149,7 @@ const AnalysisMap: React.FC = () => {
       elevationScale: 1,
       highPrecision: false,
       visible: layer === 'risk',
+      opacity: 0.8,
       getHexagon: (d) => d.h,
       getFillColor: (d) => d.c,
       getElevation: (d) => d.v,
@@ -137,20 +168,31 @@ const AnalysisMap: React.FC = () => {
         controller
         layers={layers}
         onAfterRender={handleAfterRender}
-        getTooltip={({ object }) =>
-          object && {
-            html: `<div>${object.v}</div>`,
-            style: {
-              backgroundColor: '#222',
-              fontSize: '0.8em',
-            },
-          }
-        }
       >
         <StaticMap
           mapStyle="mapbox://styles/landgriffon/ckmdaj5gy08yx17me92nudkjd"
           mapboxApiAccessToken={MAPBOX_API_TOKEN}
         />
+        {popUpInfo?.object && (
+          <PopUp
+            position={
+              {
+                ...popUpInfo.viewport,
+                x: popUpInfo.x,
+                y: popUpInfo.y,
+              } as PopUpProps['position']
+            }
+          >
+            <div className="p-4 bg-white shadow-sm rounded-sm">
+              <h2 className="text-sm font-semibold whitespace-nowrap">
+                {filters.materials[0].label}
+              </h2>
+              <div className="whitespace-nowrap">
+                {NUMBER_FORMAT(popUpInfo.object.v)} ({unit})
+              </div>
+            </div>
+          </PopUp>
+        )}
       </DeckGL>
       {isError && (
         <div className="absolute z-10 top-20 left-12 p-4 rounded-md bg-red-50 p-4">

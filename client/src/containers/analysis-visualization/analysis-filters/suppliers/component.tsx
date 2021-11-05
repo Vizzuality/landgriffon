@@ -2,12 +2,11 @@ import { useCallback, useMemo } from 'react';
 import { TreeSelect, TreeSelectProps } from 'antd';
 import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
 import { useQuery } from 'react-query';
+import sortBy from 'lodash.sortby';
 
 import { getSuppliersTrees } from 'services/suppliers';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis, setFilter } from 'store/features/analysis';
-
-const { TreeNode } = TreeSelect;
 
 type SuppliersFilterProps = TreeSelectProps<{}> & {
   onChange: (value) => void;
@@ -20,16 +19,21 @@ const MaterialsFilter: React.FC<SuppliersFilterProps> = (props: SuppliersFilterP
 
   const handleChange = useCallback(
     (selected) => dispatch(setFilter({ id: 'suppliers', value: [selected] })),
-    [],
+    [dispatch],
   );
 
-  const renderTreeNode = (supplier) => (
-    <TreeNode key={supplier.id} value={supplier.id} title={supplier.name}>
-      {supplier.children && supplier.children.map((childSupplier) => renderTreeNode(childSupplier))}
-    </TreeNode>
+  const treeData = useMemo(
+    () =>
+      sortBy(
+        data?.map(({ name, id, children }) => ({
+          label: name,
+          key: id,
+          children: children?.map(({ name, id }) => ({ label: name, key: id })),
+        })),
+        'label',
+      ),
+    [data],
   );
-
-  const options = useMemo(() => data && data.map((supplier) => renderTreeNode(supplier)), [data]);
 
   return (
     <TreeSelect
@@ -40,8 +44,9 @@ const MaterialsFilter: React.FC<SuppliersFilterProps> = (props: SuppliersFilterP
       multiple={false}
       value={filters.suppliers}
       showArrow
+      showCheckedStrategy={TreeSelect.SHOW_PARENT}
       suffixIcon={<ChevronDownIcon />}
-      treeDefaultExpandAll
+      treeDefaultExpandAll={false}
       treeCheckable
       disabled={!!error}
       treeNodeFilterProp="title"
@@ -50,9 +55,8 @@ const MaterialsFilter: React.FC<SuppliersFilterProps> = (props: SuppliersFilterP
       maxTagPlaceholder={(e) => `${e.length} more...`}
       showSearch
       {...props}
-    >
-      {options}
-    </TreeSelect>
+      treeData={treeData}
+    />
   );
 };
 

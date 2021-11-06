@@ -90,7 +90,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
     );
   });
 
-  test('When I query H3 data at minimal resolution, then I should get 8 h3indexes', async () => {
+  test('When I query H3 data at minimal resolution, then I should 2 h3indexes and no 0 as value', async () => {
     const h3Data = await createFakeH3Data(
       fakeTable,
       fakeColumn,
@@ -103,13 +103,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
 
     expect(response.body.data).toEqual([
       { h: '81123ffffffffff', v: 1000 },
-      { h: '8112fffffffffff', v: 0 },
-      { h: '8128bffffffffff', v: 0 },
-      { h: '8127bffffffffff', v: 0 },
-      { h: '8112bffffffffff', v: 0 },
-      { h: '81273ffffffffff', v: 0 },
-      { h: '8128fffffffffff', v: 0 },
-      { h: '81127ffffffffff', v: 0 },
+      { h: '8112fffffffffff', v: 1000 },
     ]);
 
     expect(response.body.metadata).toEqual({

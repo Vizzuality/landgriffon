@@ -69,6 +69,7 @@ export class H3DataRepository extends Repository<H3Data> {
         .addSelect(`sum(${materialH3Data.h3columnName})`, 'v')
         .from(`${materialH3Data.h3tableName}`, 'h3table')
         .where(`${materialH3Data.h3columnName} is not null`)
+        .andWhere(`${materialH3Data.h3columnName} <> 0`)
         .groupBy('h')
         .getRawMany();
 
@@ -95,19 +96,24 @@ export class H3DataRepository extends Repository<H3Data> {
   ): Promise<H3IndexValueData[]> {
     const riskMap = await getManager()
       .createQueryBuilder()
-      .select(`h3_to_parent(materialh3.h3index, ${resolution})`, 'h')
+      .select(`h3_to_parent(indicatorh3.h3index, ${resolution})`, 'h')
       .addSelect(
-        `sum(indicatorh3.${indicatorH3Data.h3columnName} * (materialh3.${materialH3Data.h3columnName}/(h3_hex_area(6)*100))/${calculusFactor})`,
+        `sum(indicatorh3.${indicatorH3Data.h3columnName} * (materialh3.${materialH3Data.h3columnName} * (1/${calculusFactor})))`,
         'v',
       )
       .from(materialH3Data.h3tableName, 'materialh3')
-      .addFrom(indicatorH3Data.h3tableName, 'indicatorh3')
+      .innerJoin(
+        indicatorH3Data.h3tableName,
+        'indicatorh3',
+        `indicatorh3.h3index = materialh3.h3index`,
+      )
       .where(`indicatorh3.h3index = materialh3.h3index`)
       .andWhere(`materialh3.${materialH3Data.h3columnName} is not null`)
       .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
       .groupBy('h')
       .getRawMany();
     this.logger.log('Water Risk Map generated');
+
     return riskMap;
   }
 
@@ -115,28 +121,38 @@ export class H3DataRepository extends Repository<H3Data> {
    *
    * @param indicatorH3Data H3 format data of a Indicator
    * @param materialH3Data  H3 format data of a material
+   * @param deforestationH3Data Fixed Indicator's H3 Data required to query Biodiversity Loss Risk-Map
    * @param calculusFactor Integer value to perform calculus. Represents the factor
    * @param resolution Integer value that represent the resolution which the h3 response should be calculated
    */
   async getBiodiversityLossRiskMapByResolution(
     indicatorH3Data: H3Data,
     materialH3Data: H3Data,
+    deforestationH3Data: H3Data,
     calculusFactor: number,
     resolution: number,
   ): Promise<H3IndexValueData[]> {
     const riskMap = await getManager()
       .createQueryBuilder()
-      .select(`h3_to_parent(materialh3.h3index, ${resolution})`, 'h')
+      .select(`h3_to_parent(deforestationh3.h3index, ${resolution})`, 'h')
       .addSelect(
-        `sum(indicatorh3.${indicatorH3Data.h3columnName} * (materialh3.${materialH3Data.h3columnName} * (1/${calculusFactor})))`,
+        `sum(deforestationh3.${deforestationH3Data.h3columnName} * (materialh3.${materialH3Data.h3columnName}*h3_hex_area(6)*100) * indicatorh3.${indicatorH3Data.h3columnName}*(1/${calculusFactor}))`,
         'v',
       )
-      .from(materialH3Data.h3tableName, 'materialh3')
-      .addFrom(indicatorH3Data.h3tableName, 'indicatorh3')
-      .where(`indicatorh3.h3index = materialh3.h3index`)
-      .andWhere(`materialh3.${materialH3Data.h3columnName} is not null`)
+      .from(deforestationH3Data.h3tableName, 'deforestationh3')
+      .leftJoin(
+        indicatorH3Data.h3tableName,
+        'indicatorh3',
+        'indicatorh3.h3index = deforestationh3.h3index',
+      )
+      .leftJoin(
+        materialH3Data.h3tableName,
+        'materialh3',
+        'materialh3.h3index = deforestationh3.h3index',
+      )
+      .where(`deforestationh3.${deforestationH3Data.h3columnName} > 0`)
+      .andWhere(`materialh3.${materialH3Data.h3columnName} > 0`)
       .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
-      .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} <> 0`)
       .groupBy('h')
       .getRawMany();
     this.logger.log('Biodiversity Loss Map generated');
@@ -149,19 +165,24 @@ export class H3DataRepository extends Repository<H3Data> {
     materialH3Data: H3Data,
     resolution: number,
   ): Promise<H3IndexValueData[]> {
-    // TODO: Check with Data if calculus if accurate
     const riskMap = await getManager()
       .createQueryBuilder()
-      .select(`h3_to_parent(materialh3.h3index, ${resolution})`, 'h')
+      .select(`h3_to_parent(indicatorh3.h3index, ${resolution})`, 'h')
       .addSelect(
-        `sum(indicatorh3.${indicatorH3Data.h3columnName} * materialh3.${materialH3Data.h3columnName})`,
+        `sum(indicatorh3.${indicatorH3Data.h3columnName} * (materialh3.${materialH3Data.h3columnName})*h3_hex_area(6)*100)`,
         'v',
       )
       .from(materialH3Data.h3tableName, 'materialh3')
-      .addFrom(indicatorH3Data.h3tableName, 'indicatorh3')
+      .innerJoin(
+        indicatorH3Data.h3tableName,
+        'indicatorh3',
+        `indicatorh3.h3index = materialh3.h3index`,
+      )
       .where(`indicatorh3.h3index = materialh3.h3index`)
       .andWhere(`materialh3.${materialH3Data.h3columnName} is not null`)
       .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
+      .andWhere(`materialh3.${materialH3Data.h3columnName} <> 0`)
+      .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} <> 0 `)
       .groupBy('h')
       .getRawMany();
     this.logger.log('Deforestation Loss Map generated');
@@ -172,21 +193,30 @@ export class H3DataRepository extends Repository<H3Data> {
   async getCarbonEmissionsRiskMapByResolution(
     indicatorH3Data: H3Data,
     materialH3Data: H3Data,
+    deforestationH3Data: H3Data,
     calculusFactor: number,
     resolution: number,
   ): Promise<H3IndexValueData[]> {
-    // TODO: Check with Data if calculus if accurate
     const riskMap = await getManager()
       .createQueryBuilder()
-      .select(`h3_to_parent(materialh3.h3index, ${resolution})`, 'h')
+      .select(`h3_to_parent(deforestationh3.h3index, ${resolution})`, 'h')
       .addSelect(
-        `sum(indicatorh3.${indicatorH3Data.h3columnName} * (materialh3.${materialH3Data.h3columnName} * (${calculusFactor}/19)))`,
+        `sum(deforestationh3.${deforestationH3Data.h3columnName} * (materialh3.${materialH3Data.h3columnName}*h3_hex_area(6)*100) * indicatorh3.${indicatorH3Data.h3columnName})`,
         'v',
       )
-      .from(materialH3Data.h3tableName, 'materialh3')
-      .addFrom(indicatorH3Data.h3tableName, 'indicatorh3')
-      .where(`indicatorh3.h3index = materialh3.h3index`)
-      .andWhere(`materialh3.${materialH3Data.h3columnName} is not null`)
+      .from(deforestationH3Data.h3tableName, 'deforestationh3')
+      .leftJoin(
+        indicatorH3Data.h3tableName,
+        'indicatorh3',
+        'indicatorh3.h3index = deforestationh3.h3index',
+      )
+      .leftJoin(
+        materialH3Data.h3tableName,
+        'materialh3',
+        'materialh3.h3index = deforestationh3.h3index',
+      )
+      .where(`deforestationh3.${deforestationH3Data.h3columnName} > 0`)
+      .andWhere(`materialh3.${materialH3Data.h3columnName} > 0`)
       .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
       .groupBy('h')
       .getRawMany();
@@ -202,7 +232,7 @@ export class H3DataRepository extends Repository<H3Data> {
   async calculateQuantiles(materialH3Data: H3Data): Promise<number[]> {
     try {
       const resultArray: number[] = await getManager().query(
-        `select min(${materialH3Data.h3columnName})                                            as min,
+        `select min(${materialH3Data.h3columnName})                                      as min,
                 percentile_cont(0.1667) within group (order by ${materialH3Data.h3columnName}) as per16,
                 percentile_cont(0.3337) within group (order by ${materialH3Data.h3columnName}) as per33,
                 percentile_cont(0.50) within group (order by ${materialH3Data.h3columnName})   as per50,
@@ -212,7 +242,6 @@ export class H3DataRepository extends Repository<H3Data> {
          from ${materialH3Data.h3tableName}
          where ${materialH3Data.h3columnName} > 0`,
       );
-
       return Object.values(resultArray[0]);
     } catch (err) {
       throw new Error(`Quantiles could not been calculated`);

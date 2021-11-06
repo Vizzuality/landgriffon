@@ -148,17 +148,21 @@ export class H3DataService {
         );
         break;
       case INDICATOR_TYPES.CARBON_EMISSIONS:
+        const deforestationH3DataForCarbonEmissions = await this.indicatorService.getDeforestationH3Data();
         riskMap = await this.h3DataRepository.getCarbonEmissionsRiskMapByResolution(
           indicatorH3Data,
           materialH3Data as H3Data,
+          deforestationH3DataForCarbonEmissions,
           factor as number,
           resolution,
         );
         break;
       case INDICATOR_TYPES.BIODIVERSITY_LOSS:
+        const deforestationH3DataForBiodiversityLoss = await this.indicatorService.getDeforestationH3Data();
         riskMap = await this.h3DataRepository.getBiodiversityLossRiskMapByResolution(
           indicatorH3Data,
           materialH3Data as H3Data,
+          deforestationH3DataForBiodiversityLoss,
           factor as number,
           resolution,
         );

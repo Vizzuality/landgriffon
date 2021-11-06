@@ -26,13 +26,6 @@ export class H3FilterYearsByLayerService {
     materialId?: string,
     indicatorId?: string,
   ): Promise<number[]> {
-    /**
-     * @debt: If layerType equals to 'impact', we can retrieve available years in sourcing-records entity
-     * For the rest of layer types, we currently send a hardcoded value since there is nothing yet filling this data
-     * and it will always return an empty array
-     * H3Data table updated to store years, implement the real thing as soons as data-import process can provide said data
-     *
-     */
     switch (layerType) {
       case LAYER_TYPES.IMPACT:
         //TODO: Clarify with Data why Impact year range can be retrieved from sourcing-record available years

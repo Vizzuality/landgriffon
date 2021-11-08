@@ -112,3 +112,42 @@ export function useH3RiskData() {
     };
   }, [query, isError, data]);
 }
+
+export function useH3ImpactData() {
+  const {
+    layer,
+    filters: { startYear, indicator, materials, by },
+  } = useAppSelector(analysis);
+
+  const colors = useColors();
+
+  const query = useQuery(
+    ['h3-data-impact', layer, JSON.stringify(materials)],
+    async () =>
+      h3DataService
+        .get('/impact-map', {
+          params: {
+            indicatorId: indicator.value,
+            materialId: materials[0].value,
+            resolution: 4,
+            groupBy: by,
+            year: startYear,
+          },
+        })
+        // Adding color to the response
+        .then((response) => responseParser(response, colors)),
+    {
+      ...DEFAULT_QUERY_OPTIONS,
+      enabled: layer === 'impact' && materials.length > 0,
+    },
+  );
+
+  const { data, isError } = query;
+
+  return useMemo(() => {
+    return {
+      ...query,
+      data: isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data,
+    };
+  }, [query, isError, data]);
+}

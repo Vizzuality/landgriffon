@@ -16,6 +16,7 @@ import {
 } from '../src/modules/admin-regions/admin-region.entity';
 import { UnitConversion } from '../src/modules/unit-conversions/unit-conversion.entity';
 import { H3Data } from '../src/modules/h3-data/h3-data.entity';
+import { GeoRegion } from '../src/modules/geo-regions/geo-region.entity';
 
 async function createAdminRegion(
   additionalData: Partial<AdminRegion> = {},
@@ -136,6 +137,14 @@ async function createMaterial(
   return material.save();
 }
 
+async function createGeoRegion(
+  additionalData: Partial<GeoRegion> = {},
+): Promise<GeoRegion> {
+  const material = GeoRegion.merge(new GeoRegion(), additionalData);
+
+  return material.save();
+}
+
 async function createScenario(
   additionalData: Partial<Scenario> = {},
 ): Promise<Scenario> {
@@ -250,4 +259,5 @@ export {
   createSourcingRecord,
   createUnit,
   createUnitConversion,
+  createGeoRegion,
 };

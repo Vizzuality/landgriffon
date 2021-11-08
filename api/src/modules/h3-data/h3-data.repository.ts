@@ -15,6 +15,14 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 
+interface SourcingRecordH3Struct {
+  sr_id: string;
+  harvest_table: string;
+  harvest_column: string;
+  production_table: string;
+  production_column: string;
+}
+
 /**
  * @note: Column aliases are marked as 'h' and 'v' so that DB returns data in the format the consumer needs to be
  * So we avoid doing transformations within the API and let the DB handle the heavy job
@@ -138,7 +146,96 @@ export class H3DataRepository extends Repository<H3Data> {
   }
 
   /**
-   *
+   * @param indicatorH3Data H3 format data of a Indicator
+   * @param calculusFactor Integer value to perform calculus. Represents the factor
+   * @param resolution Integer value that represent the resolution which the h3 response should be calculated
+   * @param groupBy
+   */
+  async getWaterImpactMapByResolution(
+    indicatorH3Data: H3Data,
+    calculusFactor: number,
+    resolution: number,
+    groupBy: string,
+  ): Promise<H3IndexValueData[]> {
+    const areaTable: string = `h3_grid_spam2010v2r0_global_ha`; // h3_data.tableName based on Material's harvestId
+    const areaColumn: string = `spam2010v2r0_global_h_ocer_a`; // h3_data.columnName based on Material's harvestId
+    const productionTable: string = `h3_grid_spam2010v2r0_global_prod`; // h3_data.tableName based on Material's producerId
+    const productionColumn: string = `spam2010v2r0_global_p_ocer_a`; // h3_data.columnName based on Material's producerId
+
+    const sourcingRecordData: SourcingRecordH3Struct[] = await getManager()
+      .query(`
+        select sr.id                        sr_id,
+               hd_harvest."h3tableName"     harvest_table,
+               hd_harvest."h3columnName"    harvest_column,
+               hd_production."h3tableName"  production_table,
+               hd_production."h3columnName" production_column
+        from sourcing_records sr
+               left join sourcing_location sl on sl.id = sr."sourcingLocationId"
+               left join geo_region gr on gr.id = sl."geoRegionId"
+               left join material m on m.id = sl."materialId"
+               left join h3_data hd_production on hd_production.id = m."producerId"
+               left join h3_data hd_harvest on hd_harvest.id = m."harvestId"
+        where m."producerId" is not null
+          and m."harvestId" is not null
+      `);
+
+    const riskMap: Record<string, number> = {};
+
+    for (const sourcingRecordDataElement of sourcingRecordData) {
+      const query: string = `
+        select impact.h3index, sum(impact.prob_sourc) sum_impact
+        from -- sum impact for all the admin regions
+             (select locations.id,
+                     materials.h3index,
+                     ((locations.tonnage * power(materials.haf, 2)) /
+                      (materials.prod * sum(materials.haf * 3612.9052100000004) over (partition by locations.id))) *
+                     materials.wf * materials.haf prob_sourc
+              from -- probability sourcing area * risk (in this case water)
+                   (select sr.id,
+                           sr.tonnage,
+                           h3_uncompact(gr."h3Compact"::h3index[], 6) h3index --ha.spam2010_global_spaprob aream2010v2r0_global_a_sugc_a haf_ha
+                    from sourcing_records sr
+                           left join sourcing_location sl
+                                     on sl.id = sr."sourcingLocationId" -- join sourcing records with sourcing locations
+                           left join geo_region gr on gr.id = sl."geoRegionId" -- get the georegion and the h3 compact data associated
+                    where sr.id = '${sourcingRecordDataElement.sr_id}'
+                   ) locations
+                     inner join
+                   (select harvert_table.h3index,
+                           harvert_table.${sourcingRecordDataElement.harvest_column}       haf,
+                           production_table.${sourcingRecordDataElement.production_column} prod,
+                           indicator_table.${indicatorH3Data.h3columnName}                 wf--select h3index, production and harvest area based on sourcing location material Id (producerid and harvestId) and indicator
+                    from ${sourcingRecordDataElement.harvest_table} harvert_table
+                           left join ${sourcingRecordDataElement.production_table} production_table
+                                     on production_table.h3index = harvert_table.h3index --join with h3 production data
+                           left join ${indicatorH3Data.h3tableName} indicator_table
+                                     on indicator_table.h3index = harvert_table.h3index --select the indicator that we want
+                    where harvert_table.${sourcingRecordDataElement.harvest_column} > 0
+                      and indicator_table.${indicatorH3Data.h3columnName} > 0
+                      and production_table.${sourcingRecordDataElement.production_column} > 0--filter all the harvest area values below 0
+                   ) materials
+                   on materials.h3index = locations.h3index) impact
+        group by impact.h3index
+      `;
+      const result: {
+        h3index: string;
+        sum_impact: number;
+      }[] = await getManager().query(query);
+      result.forEach((element: { h3index: string; sum_impact: number }) => {
+        if (riskMap[element.h3index]) {
+          riskMap[element.h3index] += element.sum_impact;
+        } else {
+          riskMap[element.h3index] = element.sum_impact;
+        }
+      });
+    }
+    this.logger.log('Water Risk impact map generated');
+    return Object.entries(riskMap).map((elem: [string, number]) => {
+      return { h: elem[0], v: elem[1] };
+    });
+  }
+
+  /**
    * @param indicatorH3Data H3 format data of a Indicator
    * @param materialH3Data  H3 format data of a material
    * @param deforestationH3Data Fixed Indicator's H3 Data required to query Biodiversity Loss Risk-Map

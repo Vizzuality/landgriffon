@@ -2,17 +2,26 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
-import { H3DataRepository } from '../../src/modules/h3-data/h3-data.repository';
-import { H3DataModule } from '../../src/modules/h3-data/h3-data.module';
+import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
+import { H3DataModule } from 'modules/h3-data/h3-data.module';
 import { createFakeH3Data, dropFakeH3Data } from './mocks/create-fake-h3-data';
-import { createMaterial } from '../entity-mocks';
-import { MaterialRepository } from '../../src/modules/materials/material.repository';
-import { Indicator } from '../../src/modules/indicators/indicator.entity';
-import { IndicatorRepository } from '../../src/modules/indicators/indicator.repository';
-import { Unit } from '../../src/modules/units/unit.entity';
-import { UnitConversion } from '../../src/modules/unit-conversions/unit-conversion.entity';
-import { UnitRepository } from '../../src/modules/units/unit.repository';
-import { UnitConversionRepository } from '../../src/modules/unit-conversions/unit-conversion.repository';
+import {
+  createMaterial,
+  createGeoRegion,
+  createSourcingLocation,
+  createSourcingRecord,
+} from '../entity-mocks';
+import { MaterialRepository } from 'modules/materials/material.repository';
+import { Indicator } from 'modules/indicators/indicator.entity';
+import { IndicatorRepository } from 'modules/indicators/indicator.repository';
+import { Unit } from 'modules/units/unit.entity';
+import { UnitConversion } from 'modules/unit-conversions/unit-conversion.entity';
+import { UnitRepository } from 'modules/units/unit.repository';
+import { UnitConversionRepository } from 'modules/unit-conversions/unit-conversion.repository';
+import { Material } from 'modules/materials/material.entity';
+import { GeoRegion } from '../../src/modules/geo-regions/geo-region.entity';
+import { SourcingLocation } from '../../src/modules/sourcing-locations/sourcing-location.entity';
+import { SourcingRecord } from '../../src/modules/sourcing-records/sourcing-record.entity';
 
 /**
  * Tests for the H3DataModule.
@@ -26,7 +35,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
   let unitRepository: UnitRepository;
   let unitConversionRepository: UnitConversionRepository;
   const fakeTable = 'faketable';
-  const fakeColumn = 'fakecolumn';
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -74,39 +82,22 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       `/api/v1/h3/impact-map`,
     );
     expect(response.body.errors[0].meta.rawError.response.message).toEqual([
-      'indicators should not be empty',
-      'each value in indicators must be a string',
-      'materials should not be empty',
-      'each value in materials must be a string',
-      'startYear should not be empty',
-      'startYear must be a number conforming to the specified constraints',
-      'endYear should not be empty',
-      'endYear must be a number conforming to the specified constraints',
+      'indicator should not be empty',
+      'indicator must be a string',
+      'year should not be empty',
+      'year must be a number conforming to the specified constraints',
+      'groupBy must be a valid enum value',
+      'groupBy should not be empty',
+      'groupBy must be a string',
+      'Available resolutions: 1 to 6',
+      'resolution must not be greater than 6',
+      'resolution must not be less than 1',
+      'resolution must be a number conforming to the specified constraints',
+      'resolution should not be empty',
     ]);
   });
 
-  test('When I get a calculated H3 Impact Map without a start and end year values, then I should get a proper error message', async () => {
-    const indicator: Indicator = new Indicator();
-    indicator.name = 'test indicator';
-    await indicator.save();
-
-    const material = await createMaterial();
-
-    const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/impact-map`)
-      .query({
-        indicators: [indicator.id],
-        materials: [material.id],
-      });
-    expect(response.body.errors[0].meta.rawError.response.message).toEqual([
-      'startYear should not be empty',
-      'startYear must be a number conforming to the specified constraints',
-      'endYear should not be empty',
-      'endYear must be a number conforming to the specified constraints',
-    ]);
-  });
-
-  test('When I get a calculated H3 Impact Map without a material id value, then I should get a proper error message', async () => {
+  test('When I get a calculated H3 Impact Map without a year value, then I should get a proper error message', async () => {
     const indicator: Indicator = new Indicator();
     indicator.name = 'test indicator';
     await indicator.save();
@@ -114,60 +105,70 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/impact-map`)
       .query({
-        indicators: [indicator.id],
-        startYear: 2020,
-        endYear: 2020,
+        indicators: indicator.id,
       });
     expect(response.body.errors[0].meta.rawError.response.message).toEqual([
-      'materials should not be empty',
-      'each value in materials must be a string',
+      'property indicators should not exist',
+      'indicator should not be empty',
+      'indicator must be a string',
+      'year should not be empty',
+      'year must be a number conforming to the specified constraints',
+      'groupBy must be a valid enum value',
+      'groupBy should not be empty',
+      'groupBy must be a string',
+      'Available resolutions: 1 to 6',
+      'resolution must not be greater than 6',
+      'resolution must not be less than 1',
+      'resolution must be a number conforming to the specified constraints',
+      'resolution should not be empty',
     ]);
   });
 
-  test('When I get a calculated H3 Impact Map without a start year value, then I should get a proper error message', async () => {
+  test('When I get a calculated H3 Impact Map without a group by value, then I should get a proper error message', async () => {
     const indicator: Indicator = new Indicator();
     indicator.name = 'test indicator';
     await indicator.save();
 
-    const material = await createMaterial();
-
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/impact-map`)
       .query({
-        indicators: [indicator.id],
-        materials: [material.id],
-        endYear: 2020,
+        indicator: indicator.id,
+        year: 2020,
       });
     expect(response.body.errors[0].meta.rawError.response.message).toEqual([
-      'Value startYear (undefined) must be smaller or equal than the value of endYear (2020)',
-      'startYear should not be empty',
-      'startYear must be a number conforming to the specified constraints',
-      'Value endYear (2020) must be greater or equal than the value of startYear (undefined)',
+      'groupBy must be a valid enum value',
+      'groupBy should not be empty',
+      'groupBy must be a string',
+      'Available resolutions: 1 to 6',
+      'resolution must not be greater than 6',
+      'resolution must not be less than 1',
+      'resolution must be a number conforming to the specified constraints',
+      'resolution should not be empty',
     ]);
   });
 
-  test('When I get a calculated H3 Impact Map start year greater than end year, then I should get a proper error message', async () => {
+  test('When I get a calculated H3 Impact Map without a resolution value, then I should get a proper error message', async () => {
     const indicator: Indicator = new Indicator();
     indicator.name = 'test indicator';
     await indicator.save();
 
-    const material = await createMaterial();
-
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/impact-map`)
       .query({
-        indicators: [indicator.id],
-        materials: [material.id],
-        endYear: 2020,
-        startYear: 2021,
+        indicator: indicator.id,
+        year: 2020,
+        groupBy: 'material',
       });
     expect(response.body.errors[0].meta.rawError.response.message).toEqual([
-      'Value startYear (2021) must be smaller or equal than the value of endYear (2020)',
-      'Value endYear (2020) must be greater or equal than the value of startYear (2021)',
+      'Available resolutions: 1 to 6',
+      'resolution must not be greater than 6',
+      'resolution must not be less than 1',
+      'resolution must be a number conforming to the specified constraints',
+      'resolution should not be empty',
     ]);
   });
 
-  test.skip('When I get a calculated H3 Water Impact Map with the necessary input values, then I should get the h3 data (happy case)', async () => {
+  test('When I get a calculated H3 Water Impact Map with the necessary input values, then I should get the h3 data (happy case)', async () => {
     const unit: Unit = new Unit();
     unit.name = 'test unit';
     unit.symbol = 'tonnes';
@@ -184,35 +185,56 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     indicator.nameCode = 'UWU_T';
     await indicator.save();
 
-    const h3Data = await createFakeH3Data(
-      fakeTable,
-      fakeColumn,
+    const harvestH3Data = await createFakeH3Data(
+      'harvestTable',
+      'harvestColumn',
       null,
       indicator.id,
     );
 
-    const material = await createMaterial({
+    const productionH3Data = await createFakeH3Data(
+      'productionTable',
+      'productionColumn',
+      null,
+      indicator.id,
+    );
+
+    const material: Material = await createMaterial({
       name: 'Material with no H3',
-      harvestId: h3Data.id,
+      producerId: productionH3Data.id,
+      harvestId: harvestH3Data.id,
+    });
+
+    const geoRegion: GeoRegion = await createGeoRegion({
+      h3Compact: ['861203a4fffffff'],
+    });
+
+    const sourcingLocation: SourcingLocation = await createSourcingLocation({
+      geoRegion,
+      material,
+    });
+
+    const sourcingRecord: SourcingRecord = await createSourcingRecord({
+      sourcingLocation,
     });
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/impact-map`)
       .query({
-        indicators: [indicator.id],
-        materials: [material.id],
-        endYear: 2020,
-        startYear: 2020,
+        indicator: indicator.id,
+        year: 2020,
+        groupBy: 'material',
+        resolution: 6,
       });
 
     expect(response.body.data).toEqual([
       {
         h: '861203a4fffffff',
-        v: 276.78556227607197,
+        v: 277494.1333154987,
       },
     ]);
     expect(response.body.metadata).toEqual({
-      quantiles: [1000, 1000, 1000, 1000, 1000, 1000, 1000],
+      quantiles: [],
       unit: 'tonnes',
     });
   });

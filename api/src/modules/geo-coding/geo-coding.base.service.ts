@@ -7,11 +7,9 @@ import {
   AddressComponent,
   Client,
   ReverseGeocodeRequest,
-} from '@googlemaps/google-maps-services-js';
-import {
   Client as ClientType,
   GeocodeRequest,
-} from '@googlemaps/google-maps-services-js/dist/client';
+} from '@googlemaps/google-maps-services-js';
 
 import { GeocodeResponseData } from '@googlemaps/google-maps-services-js/dist/geocode/geocode';
 import * as config from 'config';

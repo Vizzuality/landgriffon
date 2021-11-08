@@ -1,7 +1,7 @@
 import type { Story } from '@storybook/react';
 import Breadcrumb, { BreadcrumbProps } from './component';
 
-export default {
+const StorybookModule = {
   title: 'Components/Breadcrumb',
   component: Breadcrumb,
   argTypes: {},
@@ -32,3 +32,5 @@ Default.args = {
     },
   ],
 };
+
+export default StorybookModule;

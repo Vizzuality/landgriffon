@@ -72,7 +72,7 @@ export function useH3MaterialData() {
       ...query,
       data: isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data,
     };
-  }, [query, data]);
+  }, [query, isError, data]);
 }
 
 export function useH3RiskData() {
@@ -110,5 +110,5 @@ export function useH3RiskData() {
       ...query,
       data: isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data,
     };
-  }, [query, data]);
+  }, [query, isError, data]);
 }

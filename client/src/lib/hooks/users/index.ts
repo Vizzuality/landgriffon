@@ -18,5 +18,5 @@ export function useUsers(session) {
     return {
       queryClient,
     };
-  }, [session, queryClient]);
+  }, [queryClient]);
 }

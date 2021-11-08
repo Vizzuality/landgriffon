@@ -5,7 +5,7 @@ import ZoomControl from 'components/map/controls/zoom';
 
 import Controls, { ControlsProps } from './component';
 
-export default {
+const StorybookModule = {
   title: 'Components/Map/Controls',
   component: Controls,
 };
@@ -38,3 +38,5 @@ export const Default = Template.bind({});
 Default.args = {
   className: 'w-10 absolute bottom-0 left-0',
 };
+
+export default StorybookModule;

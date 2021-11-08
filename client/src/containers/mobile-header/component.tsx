@@ -1,6 +1,7 @@
 import { MenuIcon } from '@heroicons/react/outline';
 import { useAppDispatch } from 'store/hooks';
 import { setMenuMobileOpen } from 'store/features/ui';
+import LandgriffonLogo from 'containers/logo/component';
 
 const HeaderMobile = () => {
   const dispatch = useAppDispatch();
@@ -9,11 +10,7 @@ const HeaderMobile = () => {
     <div className="lg:hidden">
       <div className="bg-green-700 py-2 px-4 flex items-center justify-between sm:px-6 lg:px-8">
         <div>
-          <img
-            className="h-8 w-auto"
-            src="https://tailwindui.com/img/logos/workflow-mark.svg?color=white"
-            alt="Workflow"
-          />
+          <LandgriffonLogo />
         </div>
         <div>
           <button

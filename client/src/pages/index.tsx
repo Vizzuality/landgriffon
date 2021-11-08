@@ -13,7 +13,7 @@ const Home: React.FC = () => (
 export async function getServerSideProps() {
   return {
     redirect: {
-      destination: '/analysis',
+      destination: '/auth/sign-in',
       permanent: false,
     },
   };

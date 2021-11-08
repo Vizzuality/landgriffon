@@ -6,7 +6,7 @@ import Widget, { WidgetProps } from './component';
 
 import MOCK from './mock';
 
-export default {
+const StorybookModule = {
   title: 'Components/Widget',
   component: Widget,
   argTypes: {},
@@ -37,3 +37,5 @@ export const Default = Template.bind({});
 Default.args = {
   title: 'Carbon emissions (CO2e)',
 };
+
+export default StorybookModule;

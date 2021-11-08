@@ -1,7 +1,7 @@
 import type { Story } from '@storybook/react';
 import Avatar, { AvatarProps } from './component';
 
-export default {
+const StorybookModule = {
   title: 'Components/Avatar',
   component: Avatar,
   argTypes: {},
@@ -14,3 +14,5 @@ export const Default = Template.bind({});
 Default.args = {
   src: '/images/avatar.png',
 };
+
+export default StorybookModule;

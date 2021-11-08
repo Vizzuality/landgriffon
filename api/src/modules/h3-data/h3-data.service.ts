@@ -231,91 +231,65 @@ export class H3DataService {
   async getImpactMapByResolution(
     getImpactMapDto: GetImpactMapDto,
   ): Promise<H3MapResponse> {
-    const indicators: Indicator[] = await this.indicatorService.getIndicatorsById(
-      getImpactMapDto.indicators,
-    );
-    const materials: Material[] = await this.materialService.getMaterialsById(
-      getImpactMapDto.materials,
+    const indicatorH3Data:
+      | H3Data
+      | undefined = await this.h3DataRepository.findOne({
+      where: { indicatorId: getImpactMapDto.indicator },
+    });
+
+    if (!indicatorH3Data)
+      throw new NotFoundException(
+        `There is no H3 Data for Indicator with ID: ${getImpactMapDto.indicator}`,
+      );
+
+    const indicator: Indicator = await this.indicatorService.getIndicatorById(
+      getImpactMapDto.indicator,
     );
 
-    // const indicatorH3Data = await this.h3DataRepository.findOne({
-    //   where: { indicatorId: indicatorId },
-    // });
-    //
-    // if (!indicatorH3Data)
-    //   throw new NotFoundException(
-    //     `There is no H3 Data for Indicator with ID: ${indicatorId}`,
-    //   );
-    // const { harvestId } = await this.materialService.getById(materialId);
-    //
-    // if (!harvestId) {
-    //   throw new NotFoundException(
-    //     `There is no H3 Data for Material with ID: ${materialId}`,
-    //   );
-    // }
-    // const materialH3Data = await this.h3DataRepository.findOne(harvestId);
+    if (!indicator.unit) {
+      throw new NotFoundException(
+        `Indicator with ID ${getImpactMapDto.indicator} has no unit`,
+      );
+    }
 
-    // if (!indicatorH3Data)
-    //   throw new NotFoundException(
-    //     `There is no H3 Data for Indicator with ID: ${indicatorId}`,
-    //   );
-    // const { harvestId } = await this.materialService.getById(materialId);
-    //
-    // if (!harvestId) {
-    //   throw new NotFoundException(
-    //     `There is no H3 Data for Material with ID: ${materialId}`,
-    //   );
-    // }
-    // const materialH3Data = await this.h3DataRepository.findOne(harvestId);
-    //
-    // const indicator: Indicator = await this.indicatorService.getIndicatorById(
-    //   indicatorId,
-    // );
-    //
-    // if (!indicator.unit) {
-    //   throw new NotFoundException(
-    //     `Indicator with ID ${indicatorId} has no unit`,
-    //   );
-    // }
-    //
-    // const {
-    //   factor,
-    // } = await this.unitConversionsService.getUnitConversionByUnitId(
-    //   indicator.unit.id,
-    // );
-    //
-    // if (!factor) {
-    //   throw new NotFoundException(
-    //     `Conversion Unit with ID ${indicator.unit.id} has no 'factor' value`,
-    //   );
-    // }
-    //
-    // let riskMap: H3IndexValueData[];
-    // switch (indicator.nameCode) {
-    //   case 'UWU_T':
-    //     riskMap = await this.h3DataRepository.getWaterRiskMapByResolution(
-    //       indicatorH3Data,
-    //       materialH3Data as H3Data,
-    //       factor as number,
-    //       resolution,
-    //     );
-    //     break;
-    //   case 'DF_LUC_T':
-    //   case 'GHG_LUC_T':
-    //   case 'BL_LUC_T':
-    //   default:
-    //     throw new NotFoundException(
-    //       `Risk map for indicator ${indicator.name} (indicator nameCode ${indicator.nameCode}) not currently supported`,
-    //     );
-    // }
-    //
+    const {
+      factor,
+    } = await this.unitConversionsService.getUnitConversionByUnitId(
+      indicator.unit.id,
+    );
+
+    if (!factor) {
+      throw new NotFoundException(
+        `Conversion Unit with ID ${indicator.unit.id} has no 'factor' value`,
+      );
+    }
+
+    let impactMap: H3IndexValueData[];
+    switch (indicator.nameCode) {
+      case 'UWU_T':
+        impactMap = await this.h3DataRepository.getWaterImpactMapByResolution(
+          indicatorH3Data,
+          factor as number,
+          getImpactMapDto.resolution,
+          getImpactMapDto.groupBy,
+        );
+        break;
+      case 'DF_LUC_T':
+      case 'GHG_LUC_T':
+      case 'BL_LUC_T':
+      default:
+        throw new NotFoundException(
+          `Risk map for indicator ${indicator.name} (indicator nameCode ${indicator.nameCode}) not currently supported`,
+        );
+    }
+
     // const quantiles: number[] = await this.h3DataRepository.calculateQuantiles(
     //   materialH3Data as H3Data,
     // );
 
     return {
-      data: [],
-      metadata: { quantiles: [], unit: 'd' },
+      data: impactMap,
+      metadata: { quantiles: [], unit: indicator.unit.symbol },
     };
   }
 }

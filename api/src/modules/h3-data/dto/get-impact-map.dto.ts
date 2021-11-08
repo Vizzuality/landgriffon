@@ -1,37 +1,57 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  IsGreaterOrEqualThan,
-  IsSmallerOrEqualThan,
-} from 'decorators/comparison.decorator';
+import { AvailableResolutions } from 'modules/h3-data/dto/get-material-h3-by-resolution.dto';
+
+export enum GROUP_BY_VALUES {
+  MATERIAL = 'material',
+  BUSINESS_UNIT = 'business-unit',
+  REGION = 'region',
+  SUPPLIER = 'supplier',
+}
 
 export class GetImpactMapDto {
   @ApiProperty()
-  @IsString({ each: true })
+  @IsString()
   @IsNotEmpty()
   @Type(() => String)
-  indicators!: string[];
-
-  @ApiProperty()
-  @IsString({ each: true })
-  @IsNotEmpty()
-  @Type(() => String)
-  materials!: string[];
+  indicator: string;
 
   @ApiProperty()
   @Type(() => Number)
   @IsNumber()
   @IsNotEmpty()
-  @IsSmallerOrEqualThan('endYear')
-  startYear!: number;
+  year!: number;
 
   @ApiProperty()
+  @Type(() => String)
+  @IsString()
+  @IsNotEmpty()
+  @IsEnum(GROUP_BY_VALUES)
+  groupBy!: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
   @Type(() => Number)
   @IsNumber()
-  @IsNotEmpty()
-  @IsGreaterOrEqualThan('startYear')
-  endYear!: number;
+  @Min(1)
+  @Max(6)
+  @IsEnum(AvailableResolutions, { message: 'Available resolutions: 1 to 6' })
+  resolution!: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString({ each: true })
+  @Type(() => String)
+  materials?: string[];
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -44,10 +64,4 @@ export class GetImpactMapDto {
   @IsString({ each: true })
   @Type(() => String)
   suppliers?: string[];
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @Type(() => String)
-  groupBy?: string;
 }

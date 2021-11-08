@@ -41,7 +41,7 @@ const AnalysisPage: React.FC = () => {
     // Close and cancel interventions creation
     // when user goes to scenarios list
     if (!new_scenario && !edit_scenario) dispatch(setSubContentCollapsed(true));
-  }, [new_scenario, edit_scenario]);
+  }, [new_scenario, edit_scenario, dispatch]);
 
   return (
     <ApplicationLayout>

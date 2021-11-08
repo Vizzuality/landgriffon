@@ -1,5 +1,5 @@
 import Sidebar from 'containers/sidebar';
-import HeaderMobile from 'containers/header/mobile';
+import HeaderMobile from 'containers/mobile-header';
 
 type ApplicationLayoutProps = {
   children: React.ReactNode;

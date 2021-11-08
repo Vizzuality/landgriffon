@@ -109,7 +109,7 @@ export function useAnalysisChart(options: AnalysisChartOptions) {
       ...query,
       data: parsedData,
     };
-  }, [query, data?.data]);
+  }, [query, filters, indicator]);
 }
 
 export function useAnalysisLegend(options: AnalysisChartOptions) {
@@ -154,7 +154,7 @@ export function useAnalysisLegend(options: AnalysisChartOptions) {
       ...query,
       data: parsedData,
     };
-  }, [query, data?.data]);
+  }, [query]);
 }
 
 export function useAnalysisTable(options: AnalysisTableOptions) {
@@ -209,7 +209,7 @@ export function useAnalysisTable(options: AnalysisTableOptions) {
       ...query,
       data: parsedData,
     };
-  }, [query, data?.data]);
+  }, [query, filters, indicator]);
 }
 
 export function useIndicatorAnalysisTable(options: AnalysisTableOptions) {
@@ -268,5 +268,5 @@ export function useIndicatorAnalysisTable(options: AnalysisTableOptions) {
       ...query,
       data: parsedData,
     };
-  }, [query, data?.data]);
+  }, [query, filters, indicator]);
 }

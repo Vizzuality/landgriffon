@@ -5,7 +5,7 @@ import AreaStacked from './area-stacked';
 
 import MOCK from './mock';
 
-export default {
+const StorybookModule = {
   title: 'Components/Chart',
   component: Chart,
   argTypes: {},
@@ -70,3 +70,5 @@ AreaStackedChartWithTarget.args = {
     target: true,
   },
 };
+
+export default StorybookModule;

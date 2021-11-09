@@ -47,14 +47,17 @@ export class H3Data extends BaseEntity {
   @Column({ type: 'varchar' })
   h3columnName!: string;
 
-  //TODO: Set this as required and non-nullable as soons as this column's data is provided as part of initial seed process
+  //TODO: Set this as required and non-nullable as soon as this column's data is provided as part of initial seed process
   @Column({ type: 'int', nullable: true })
   year!: number;
 
   @Column({ type: 'int' })
   h3resolution: number;
 
-  @ManyToOne(() => Indicator, (indicator: Indicator) => indicator.id)
+  @ManyToOne(() => Indicator, (indicator: Indicator) => indicator.id, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'indicatorId' })
   indicators: Indicator[];
 

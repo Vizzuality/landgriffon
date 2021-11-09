@@ -71,17 +71,17 @@ export class SourcingLocationsService extends AppBaseService<
    * 'SourcingData' mess with Entity typing
    */
   async save(
-    sourcingLocationDtos: CreateSourcingLocationDto[],
-  ): Promise<SourcingLocation> {
-    this.logger.log(`Saving ${sourcingLocationDtos.length} nodes`);
+    sourcingLocationDTOs: CreateSourcingLocationDto[],
+  ): Promise<SourcingLocation[]> {
+    this.logger.log(`Saving ${sourcingLocationDTOs.length} nodes`);
     const sourcingLocation: SourcingLocation[] = await Promise.all(
-      sourcingLocationDtos.map(
+      sourcingLocationDTOs.map(
         async (sourcingLocationDto: CreateSourcingLocationDto) => {
           return await this.setDataCreate(sourcingLocationDto);
         },
       ),
     );
 
-    return this.sourcingLocationRepository.save(sourcingLocation as any);
+    return await this.sourcingLocationRepository.save(sourcingLocation as any);
   }
 }

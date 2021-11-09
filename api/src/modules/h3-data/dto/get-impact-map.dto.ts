@@ -23,7 +23,7 @@ export class GetImpactMapDto {
   @IsString()
   @IsNotEmpty()
   @Type(() => String)
-  indicator: string;
+  indicatorId: string;
 
   @ApiProperty()
   @Type(() => Number)

@@ -5,6 +5,8 @@ import { AppModule } from 'app.module';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
+import { createMaterial, createSourcingLocation } from '../entity-mocks';
+import { Material } from '../../src/modules/materials/material.entity';
 
 /**
  * Tests for the SourcingLocationsModule.
@@ -44,12 +46,14 @@ describe('SourcingLocationsModule (e2e)', () => {
 
   describe('Sourcing locations - Create', () => {
     test('Create a sourcing location should be successful (happy case)', async () => {
+      const material: Material = await createMaterial();
       const response = await request(app.getHttpServer())
         .post('/api/v1/sourcing-locations')
         .send({
           title: 'test sourcing location',
           locationAddressInput: 'pqrst',
           locationCountryInput: 'uvwxy',
+          materialId: material.id,
         })
         .expect(HttpStatus.CREATED);
 
@@ -88,9 +92,9 @@ describe('SourcingLocationsModule (e2e)', () => {
 
   describe('Sourcing locations - Update', () => {
     test('Update a sourcing location should be successful (happy case)', async () => {
-      const sourcingLocation: SourcingLocation = new SourcingLocation();
-      sourcingLocation.title = 'test sourcing location';
-      await sourcingLocation.save();
+      const sourcingLocation: SourcingLocation = await createSourcingLocation({
+        title: 'test sourcing location',
+      });
 
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/sourcing-locations/${sourcingLocation.id}`)
@@ -107,9 +111,7 @@ describe('SourcingLocationsModule (e2e)', () => {
 
   describe('Sourcing locations - Delete', () => {
     test('Delete a sourcing location should be successful (happy case)', async () => {
-      const sourcingLocation: SourcingLocation = new SourcingLocation();
-      sourcingLocation.title = 'test sourcing location';
-      await sourcingLocation.save();
+      const sourcingLocation: SourcingLocation = await createSourcingLocation();
 
       await request(app.getHttpServer())
         .delete(`/api/v1/sourcing-locations/${sourcingLocation.id}`)
@@ -124,9 +126,7 @@ describe('SourcingLocationsModule (e2e)', () => {
 
   describe('Sourcing locations - Get all', () => {
     test('Get all sourcing locations should be successful (happy case)', async () => {
-      const sourcingLocation: SourcingLocation = new SourcingLocation();
-      sourcingLocation.title = 'test sourcing location';
-      await sourcingLocation.save();
+      const sourcingLocation: SourcingLocation = await createSourcingLocation();
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/sourcing-locations`)
@@ -139,9 +139,7 @@ describe('SourcingLocationsModule (e2e)', () => {
 
   describe('Sourcing locations - Get by id', () => {
     test('Get a sourcing location by id should be successful (happy case)', async () => {
-      const sourcingLocation: SourcingLocation = new SourcingLocation();
-      sourcingLocation.title = 'test sourcing location';
-      await sourcingLocation.save();
+      const sourcingLocation: SourcingLocation = await createSourcingLocation();
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/sourcing-locations/${sourcingLocation.id}`)

@@ -91,7 +91,7 @@ export class SourcingLocation extends TimestampedBaseEntity {
   @ManyToOne(
     () => GeoRegion,
     (geoRegion: GeoRegion) => geoRegion.sourcingLocations,
-    { eager: false },
+    { eager: true },
   )
   geoRegion: GeoRegion;
 
@@ -116,14 +116,14 @@ export class SourcingLocation extends TimestampedBaseEntity {
   updatedById: string;
 
   @ManyToOne(() => Material, (mat: Material) => mat.sourcingLocations, {
-    eager: false,
+    eager: true,
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'materialId' })
   material: Material;
 
   @ApiPropertyOptional()
-  @Column({ nullable: true })
+  @Column()
   materialId: string;
 
   @ManyToOne(() => AdminRegion, (aR: AdminRegion) => aR.sourcingLocations, {

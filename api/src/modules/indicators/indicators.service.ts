@@ -60,14 +60,16 @@ export class IndicatorsService extends AppBaseService<
      * in the client's request
      */
 
-    const deforestationIndicator = await this.indicatorRepository.findOne({
+    const deforestationIndicator:
+      | Indicator
+      | undefined = await this.indicatorRepository.findOne({
       nameCode: INDICATOR_TYPES.DEFORESTATION,
     });
     if (!deforestationIndicator)
       throw new NotFoundException(
         'No Deforestation Indicator data found in database',
       );
-    const deforestationH3Data = await getManager()
+    const deforestationH3Data: any = await getManager()
       .createQueryBuilder()
       .select()
       .from('h3_data', 'h3_data')
@@ -84,5 +86,9 @@ export class IndicatorsService extends AppBaseService<
 
   async getIndicatorsById(ids: string[]): Promise<Indicator[]> {
     return this.indicatorRepository.findByIds(ids);
+  }
+
+  async findAllUnpaginated(): Promise<Indicator[]> {
+    return this.indicatorRepository.find();
   }
 }

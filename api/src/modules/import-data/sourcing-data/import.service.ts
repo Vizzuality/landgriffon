@@ -18,6 +18,8 @@ import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { Material } from 'modules/materials/material.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
+import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -59,6 +61,7 @@ export class SourcingRecordsImportService {
     protected readonly fileService: ImportDataService<SourcingRecordsSheets>,
     protected readonly dtoProcessor: SourcingRecordsDtoProcessorService,
     protected readonly geoCodingService: GeoCodingService,
+    protected readonly indicatorRecordsService: IndicatorRecordsService,
   ) {}
 
   async importSourcingRecords(filePath: string): Promise<any> {
@@ -110,6 +113,21 @@ export class SourcingRecordsImportService {
       );
 
       await this.sourcingLocationService.save(geoCodedSourcingData);
+
+      const sourcingRecords: SourcingRecord[] = await this.sourcingRecordService.findAllUnpaginated();
+      this.logger.log(
+        `Generating indicator records for ${sourcingRecords.length} sourcing records`,
+      );
+
+      await Promise.all(
+        sourcingRecords.map(async (sourcingRecord: SourcingRecord) => {
+          await this.indicatorRecordsService.calculateImpactValue(
+            sourcingRecord,
+          );
+        }),
+      );
+
+      this.logger.log('Indicator records generated');
     } finally {
       await this.fileService.deleteDataFromFS(filePath);
     }
@@ -148,6 +166,7 @@ export class SourcingRecordsImportService {
   private async cleanDataBeforeImport(): Promise<void> {
     this.logger.log('Cleaning database before import...');
     try {
+      await this.indicatorRecordsService.clearTable();
       await this.businessUnitService.clearTable();
       await this.supplierService.clearTable();
       await this.sourcingLocationService.clearTable();
@@ -205,9 +224,13 @@ export class SourcingRecordsImportService {
       const sourcingLocationMaterialId: number = parseInt(
         sourcingLocation.materialId,
       );
-      sourcingLocation.materialId = materialMap[sourcingLocationMaterialId]
-        ? materialMap[sourcingLocationMaterialId]
-        : undefined;
+
+      if (!(sourcingLocationMaterialId in materialMap)) {
+        throw new Error(
+          `Could not import sourcing location - material code ${sourcingLocationMaterialId} not found`,
+        );
+      }
+      sourcingLocation.materialId = materialMap[sourcingLocationMaterialId];
     }
     return sourcingData;
   }

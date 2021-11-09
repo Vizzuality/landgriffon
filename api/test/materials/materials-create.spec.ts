@@ -46,6 +46,7 @@ describe('Materials - Create', () => {
       .post('/api/v1/materials')
       .send({
         name: 'test material',
+        hsCodeId: 'test',
       })
       .expect(HttpStatus.CREATED);
 
@@ -74,6 +75,7 @@ describe('Materials - Create', () => {
         'name must be longer than or equal to 2 characters',
         'name must be shorter than or equal to 300 characters',
         'name should not be empty',
+        'hsCodeId must be a string',
       ],
     );
   });
@@ -84,6 +86,7 @@ describe('Materials - Create', () => {
         .post('/api/v1/materials')
         .send({
           name: 'test material',
+          hsCodeId: 'testCode',
         })
         .expect(HttpStatus.CREATED);
 
@@ -96,6 +99,7 @@ describe('Materials - Create', () => {
         .post('/api/v1/materials')
         .send({
           name: 'test material',
+          hsCodeId: 'testCode',
           parentId: uuid,
         })
         .expect(HttpStatus.BAD_REQUEST);
@@ -113,6 +117,7 @@ describe('Materials - Create', () => {
         .post('/api/v1/materials')
         .send({
           name: 'test material',
+          hsCodeId: 'testCode',
           parentId: material.id,
         })
         .expect(HttpStatus.CREATED);

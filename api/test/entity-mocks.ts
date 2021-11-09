@@ -84,10 +84,12 @@ async function createIndicator(
 async function createIndicatorRecord(
   additionalData: Partial<IndicatorRecord> = {},
 ): Promise<IndicatorRecord> {
+  const sourcingRecord: SourcingRecord = await createSourcingRecord();
   const indicatorRecord = IndicatorRecord.merge(
     new IndicatorRecord(),
     {
       value: 2000,
+      sourcingRecordId: sourcingRecord.id,
     },
     additionalData,
   );
@@ -130,6 +132,7 @@ async function createMaterial(
     new Material(),
     {
       name: 'Material name',
+      hsCodeId: '1',
     },
     additionalData,
   );
@@ -140,9 +143,23 @@ async function createMaterial(
 async function createGeoRegion(
   additionalData: Partial<GeoRegion> = {},
 ): Promise<GeoRegion> {
-  const material = GeoRegion.merge(new GeoRegion(), additionalData);
+  const geoRegion = GeoRegion.merge(
+    new GeoRegion(),
+    {
+      h3Compact: [
+        '8667737afffffff',
+        '8667737a7ffffff',
+        '86677378fffffff',
+        '866773637ffffff',
+        '86677362fffffff',
+        '866773607ffffff',
+      ],
+      name: 'ABC',
+    },
+    additionalData,
+  );
 
-  return material.save();
+  return geoRegion.save();
 }
 
 async function createScenario(
@@ -176,12 +193,14 @@ async function createScenarioIntervention(
 async function createSourcingLocation(
   additionalData: Partial<SourcingLocation> = {},
 ): Promise<SourcingLocation> {
+  const material: Material = await createMaterial();
   const sourcingLocation = SourcingLocation.merge(
     new SourcingLocation(),
     {
       title: 'test sourcing location',
       locationAddressInput: 'pqrst',
       locationCountryInput: 'uvwxy',
+      materialId: material.id,
     },
     additionalData,
   );

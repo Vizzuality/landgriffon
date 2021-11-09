@@ -18,6 +18,7 @@ import {
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import { H3FilterYearsByLayerService } from 'modules/h3-data/services/h3-filter-years-by-layer.service';
 import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
+import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { Material } from 'modules/materials/material.entity';
 
 /**
@@ -47,6 +48,80 @@ export class H3DataService {
     h3ColumnName: string,
   ): Promise<H3IndexValueData[]> {
     return await this.h3DataRepository.findH3ByName(h3TableName, h3ColumnName);
+  }
+
+  /**
+   * Find H3 table data by its indicator id
+   */
+  async findH3ByIndicatorId(indicatorId: string): Promise<H3Data | undefined> {
+    return await this.h3DataRepository.findOne({ indicatorId });
+  }
+
+  async getHarvestForGeoRegion(
+    geoRegion: GeoRegion,
+    material: Material,
+    year?: number,
+  ): Promise<number> {
+    const h3Data: H3Data | undefined = await this.h3DataRepository.findOne(
+      material.harvestId,
+    );
+    if (h3Data === undefined) {
+      throw new Error(
+        'Cannot find H3 data to calculate harvest volume for region',
+      );
+    }
+
+    const harvestTotal: number = await this.h3DataRepository.getH3SumForGeoRegion(
+      h3Data.h3tableName,
+      h3Data.h3columnName,
+      geoRegion.id,
+    );
+
+    return harvestTotal;
+  }
+
+  async getProductionForGeoRegion(
+    geoRegion: GeoRegion,
+    material: Material,
+    year?: number,
+  ): Promise<number> {
+    const h3Data: H3Data | undefined = await this.h3DataRepository.findOne(
+      material.producerId,
+    );
+    if (h3Data === undefined) {
+      throw new Error(
+        `Cannot find H3 data to calculate production volume for region '${geoRegion.name}' and material '${material.name}'`,
+      );
+    }
+
+    const productionTotal: number = await this.h3DataRepository.getH3SumForGeoRegion(
+      h3Data.h3tableName,
+      h3Data.h3columnName,
+      geoRegion.id,
+    );
+
+    return productionTotal;
+  }
+
+  async getImpactForGeoRegion(
+    geoRegion: GeoRegion,
+    indicator: Indicator,
+    year?: number,
+  ): Promise<number> {
+    const h3Data: H3Data | undefined = await this.h3DataRepository.findOne({
+      indicatorId: indicator.id,
+    });
+    if (h3Data === undefined) {
+      throw new Error('Cannot find H3 data to calculate impact for region');
+    }
+
+    const impactTotal: number = await this.h3DataRepository.getH3SumForGeoRegion(
+      h3Data.h3tableName,
+      h3Data.h3columnName,
+      geoRegion.id,
+    );
+
+    return impactTotal;
   }
 
   async getMaterialMapByResolution(
@@ -234,21 +309,21 @@ export class H3DataService {
     const indicatorH3Data:
       | H3Data
       | undefined = await this.h3DataRepository.findOne({
-      where: { indicatorId: getImpactMapDto.indicator },
+      where: { indicatorId: getImpactMapDto.indicatorId },
     });
 
     if (!indicatorH3Data)
       throw new NotFoundException(
-        `There is no H3 Data for Indicator with ID: ${getImpactMapDto.indicator}`,
+        `There is no H3 Data for Indicator with ID: ${getImpactMapDto.indicatorId}`,
       );
 
     const indicator: Indicator = await this.indicatorService.getIndicatorById(
-      getImpactMapDto.indicator,
+      getImpactMapDto.indicatorId,
     );
 
     if (!indicator.unit) {
       throw new NotFoundException(
-        `Indicator with ID ${getImpactMapDto.indicator} has no unit`,
+        `Indicator with ID ${getImpactMapDto.indicatorId} has no unit`,
       );
     }
 

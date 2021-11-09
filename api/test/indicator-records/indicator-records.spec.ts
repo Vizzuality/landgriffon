@@ -2,11 +2,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
-import { createIndicator, createIndicatorRecord } from '../entity-mocks';
+import {
+  createIndicator,
+  createIndicatorRecord,
+  createSourcingRecord,
+} from '../entity-mocks';
 import { IndicatorRecordsModule } from '../../src/modules/indicator-records/indicator-records.module';
 import { IndicatorRecordRepository } from '../../src/modules/indicator-records/indicator-record.repository';
 import { IndicatorRecord } from '../../src/modules/indicator-records/indicator-record.entity';
 import { Indicator } from '../../src/modules/indicators/indicator.entity';
+import { SourcingRecord } from '../../src/modules/sourcing-records/sourcing-record.entity';
 
 /**
  * Tests for the IndicatorRecordsModule.
@@ -46,12 +51,14 @@ describe('IndicatorRecordsModule (e2e)', () => {
 
   describe('Indicator record - Create', () => {
     test('Create an indicator record should be successful (happy case)', async () => {
+      const sourcingRecord: SourcingRecord = await createSourcingRecord();
       const indicator: Indicator = await createIndicator();
       const response = await request(app.getHttpServer())
         .post('/api/v1/indicator-records')
         .send({
           value: 2000,
           indicatorId: indicator.id,
+          sourcingRecordId: sourcingRecord.id,
         })
         .expect(HttpStatus.CREATED);
 

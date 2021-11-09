@@ -82,8 +82,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       `/api/v1/h3/impact-map`,
     );
     expect(response.body.errors[0].meta.rawError.response.message).toEqual([
-      'indicator should not be empty',
-      'indicator must be a string',
+      'indicatorId should not be empty',
+      'indicatorId must be a string',
       'year should not be empty',
       'year must be a number conforming to the specified constraints',
       'groupBy must be a valid enum value',
@@ -109,8 +109,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       });
     expect(response.body.errors[0].meta.rawError.response.message).toEqual([
       'property indicators should not exist',
-      'indicator should not be empty',
-      'indicator must be a string',
+      'indicatorId should not be empty',
+      'indicatorId must be a string',
       'year should not be empty',
       'year must be a number conforming to the specified constraints',
       'groupBy must be a valid enum value',
@@ -132,7 +132,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/impact-map`)
       .query({
-        indicator: indicator.id,
+        indicatorId: indicator.id,
         year: 2020,
       });
     expect(response.body.errors[0].meta.rawError.response.message).toEqual([
@@ -155,7 +155,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/impact-map`)
       .query({
-        indicator: indicator.id,
+        indicatorId: indicator.id,
         year: 2020,
         groupBy: 'material',
       });
@@ -221,7 +221,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/impact-map`)
       .query({
-        indicator: indicator.id,
+        indicatorId: indicator.id,
         year: 2020,
         groupBy: 'material',
         resolution: 6,

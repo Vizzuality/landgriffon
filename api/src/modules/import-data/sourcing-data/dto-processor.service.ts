@@ -14,7 +14,6 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
  * and spread through typing
  */
 export interface SourcingData extends CreateSourcingLocationDto {
-  materialId?: string;
   sourcingRecords: SourcingRecord[];
 }
 
@@ -55,6 +54,7 @@ export class SourcingRecordsDtoProcessorService {
   protected readonly logger: Logger = new Logger(
     SourcingRecordsDtoProcessorService.name,
   );
+
   async createDTOsFromSourcingRecordsSheets(
     importData: SourcingRecordsSheets,
     sourcingLocationGroupId: string,
@@ -91,6 +91,7 @@ export class SourcingRecordsDtoProcessorService {
       sourcingData,
     };
   }
+
   private isSourcingLocationData(field: string): boolean {
     return SOURCING_LOCATION_PROPERTIES.includes(field);
   }

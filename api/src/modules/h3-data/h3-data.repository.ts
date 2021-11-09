@@ -103,6 +103,27 @@ export class H3DataRepository extends Repository<H3Data> {
     }
   }
 
+  async getH3SumForGeoRegion(
+    h3TableName: string,
+    h3ColumnName: string,
+    geoRegionId: string,
+  ): Promise<number> {
+    // TODO: escape h3TableName and h3ColumnName
+    // TODO: try to use queryBuilder
+    const sum: { sum: number }[] = await getManager().query(
+      `
+        select sum(h3table.${h3ColumnName})
+        from ${h3TableName} h3table
+               left join (
+                   SELECT h3_uncompact(gr."h3Compact"::h3index[], 6) h3index from geo_region gr WHERE gr.id = $1
+            ) geoRegionH3 ON h3table.h3index = geoRegionH3.h3index
+      `,
+      [geoRegionId],
+    );
+
+    return sum[0].sum;
+  }
+
   /**
    * @param indicatorH3Data H3 format data of a Indicator
    * @param materialH3Data  H3 format data of a material

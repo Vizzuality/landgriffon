@@ -30,11 +30,10 @@ export class CreateSourcingLocationDto {
   businessUnitId?: string;
 
   @IsString()
-  @IsOptional()
   @MinLength(2)
   @MaxLength(40)
-  @ApiPropertyOptional()
-  materialId?: string;
+  @ApiProperty()
+  materialId!: string;
 
   @IsString()
   @IsOptional()

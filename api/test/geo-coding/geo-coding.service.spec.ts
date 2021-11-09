@@ -68,7 +68,7 @@ describe('GeoCoding Service (Integration Testing)', () => {
       } as AdminRegion);
       jest
         .spyOn(sourcingLocationService, 'save')
-        .mockResolvedValue((null as unknown) as SourcingLocation);
+        .mockResolvedValue(([] as unknown) as SourcingLocation[]);
       const sourcingData = ({
         locationLongitude: 78.96288,
         locationLatitude: 20.593684,

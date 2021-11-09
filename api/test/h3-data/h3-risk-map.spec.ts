@@ -165,7 +165,15 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       },
     ]);
     expect(response.body.metadata).toEqual({
-      quantiles: [1000, 1000, 1000, 1000, 1000, 1000, 1000],
+      quantiles: [
+        1000000,
+        1000000,
+        1000000,
+        1000000,
+        1000000,
+        1000000,
+        1000000,
+      ],
       unit: 'tonnes',
     });
   });
@@ -217,7 +225,15 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       },
     ]);
     expect(response.body.metadata).toEqual({
-      quantiles: [1000, 1000, 1000, 1000, 1000, 1000, 1000],
+      quantiles: [
+        3612905210000,
+        3612905210000,
+        3612905210000,
+        3612905210000,
+        3612905210000,
+        3612905210000,
+        3612905210000,
+      ],
       unit: 'tonnes',
     });
   });
@@ -268,7 +284,15 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       },
     ]);
     expect(response.body.metadata).toEqual({
-      quantiles: [1000, 1000, 1000, 1000, 1000, 1000, 1000],
+      quantiles: [
+        3612905210000,
+        3612905210000,
+        3612905210000,
+        3612905210000,
+        3612905210000,
+        3612905210000,
+        3612905210000,
+      ],
       unit: 'tonnes',
     });
   });
@@ -304,7 +328,15 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       },
     ]);
     expect(response.body.metadata).toEqual({
-      quantiles: [1000, 1000, 1000, 1000, 1000, 1000, 1000],
+      quantiles: [
+        3612905210,
+        3612905210,
+        3612905210,
+        3612905210,
+        3612905210,
+        3612905210,
+        3612905210,
+      ],
       unit: 'tonnes',
     });
   });

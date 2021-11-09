@@ -15,6 +15,7 @@ import {
  * So we avoid doing transformations within the API and let the DB handle the heavy job
  */
 
+// TODO: Check this thread for percentile calc: 3612905210000,https://stackoverflow.com/questions/39683330/percentile-calculation-with-a-window-function
 @EntityRepository(H3Data)
 export class H3DataRepository extends Repository<H3Data> {
   logger: Logger = new Logger(H3DataRepository.name);
@@ -61,9 +62,10 @@ export class H3DataRepository extends Repository<H3Data> {
   async getMaterialMapByResolution(
     materialH3Data: H3Data,
     resolution: number,
-  ): Promise<H3IndexValueData[]> {
+  ): Promise<{ materialMap: H3IndexValueData[]; tmpTableName: string }> {
+    const tmpTableName = 'material_map';
     try {
-      const materialMap = await getManager()
+      const query = getManager()
         .createQueryBuilder()
         .select(`h3_to_parent(h3index, ${resolution})`, 'h')
         .addSelect(`sum(${materialH3Data.h3columnName})`, 'v')
@@ -71,10 +73,16 @@ export class H3DataRepository extends Repository<H3Data> {
         .where(`${materialH3Data.h3columnName} is not null`)
         .andWhere(`${materialH3Data.h3columnName} <> 0`)
         .groupBy('h')
-        .getRawMany();
+        .getSql();
 
       this.logger.log('Material Map generated');
-      return materialMap;
+      await getManager().query(
+        `CREATE TEMPORARY TABLE ${tmpTableName} AS (${query});`,
+      );
+      const materialMap = await getManager().query(
+        `SELECT * FROM ${tmpTableName};`,
+      );
+      return { materialMap, tmpTableName };
     } catch (err) {
       throw new ServiceUnavailableException(
         'Material Map could not been generated',
@@ -93,8 +101,9 @@ export class H3DataRepository extends Repository<H3Data> {
     materialH3Data: H3Data,
     calculusFactor: number,
     resolution: number,
-  ): Promise<H3IndexValueData[]> {
-    const riskMap = await getManager()
+  ): Promise<{ riskMap: H3IndexValueData[]; tmpTableName: string }> {
+    const tmpTableName = 'unsustainable_water_use_riskmap';
+    const query = getManager()
       .createQueryBuilder()
       .select(`h3_to_parent(indicatorh3.h3index, ${resolution})`, 'h')
       .addSelect(
@@ -111,10 +120,14 @@ export class H3DataRepository extends Repository<H3Data> {
       .andWhere(`materialh3.${materialH3Data.h3columnName} is not null`)
       .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
       .groupBy('h')
-      .getRawMany();
+      .getSql();
+    await getManager().query(
+      `CREATE TEMPORARY TABLE ${tmpTableName} AS (${query});`,
+    );
+    const riskMap = await getManager().query(`SELECT * FROM ${tmpTableName};`);
     this.logger.log('Water Risk Map generated');
 
-    return riskMap;
+    return { riskMap, tmpTableName };
   }
 
   /**
@@ -131,8 +144,9 @@ export class H3DataRepository extends Repository<H3Data> {
     deforestationH3Data: H3Data,
     calculusFactor: number,
     resolution: number,
-  ): Promise<H3IndexValueData[]> {
-    const riskMap = await getManager()
+  ): Promise<{ riskMap: H3IndexValueData[]; tmpTableName: string }> {
+    const tmpTableName = 'biodiversity_loss_riskmap';
+    const query = getManager()
       .createQueryBuilder()
       .select(`h3_to_parent(deforestationh3.h3index, ${resolution})`, 'h')
       .addSelect(
@@ -154,18 +168,23 @@ export class H3DataRepository extends Repository<H3Data> {
       .andWhere(`materialh3.${materialH3Data.h3columnName} > 0`)
       .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
       .groupBy('h')
-      .getRawMany();
+      .getSql();
+    await getManager().query(
+      `CREATE TEMPORARY TABLE ${tmpTableName} AS (${query});`,
+    );
+    const riskMap = await getManager().query(`SELECT * FROM ${tmpTableName};`);
     this.logger.log('Biodiversity Loss Map generated');
 
-    return riskMap;
+    return { riskMap, tmpTableName };
   }
 
   async getDeforestationLossRiskMapByResolution(
     indicatorH3Data: H3Data,
     materialH3Data: H3Data,
     resolution: number,
-  ): Promise<H3IndexValueData[]> {
-    const riskMap = await getManager()
+  ): Promise<{ riskMap: H3IndexValueData[]; tmpTableName: string }> {
+    const tmpTableName = 'deforestation_loss_riskmap';
+    const query = getManager()
       .createQueryBuilder()
       .select(`h3_to_parent(indicatorh3.h3index, ${resolution})`, 'h')
       .addSelect(
@@ -184,10 +203,14 @@ export class H3DataRepository extends Repository<H3Data> {
       .andWhere(`materialh3.${materialH3Data.h3columnName} <> 0`)
       .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} <> 0 `)
       .groupBy('h')
-      .getRawMany();
+      .getSql();
+    await getManager().query(
+      `CREATE TEMPORARY TABLE ${tmpTableName} AS (${query});`,
+    );
+    const riskMap = await getManager().query(`SELECT * FROM ${tmpTableName};`);
     this.logger.log('Deforestation Loss Map generated');
 
-    return riskMap;
+    return { riskMap, tmpTableName };
   }
 
   async getCarbonEmissionsRiskMapByResolution(
@@ -196,8 +219,9 @@ export class H3DataRepository extends Repository<H3Data> {
     deforestationH3Data: H3Data,
     calculusFactor: number,
     resolution: number,
-  ): Promise<H3IndexValueData[]> {
-    const riskMap = await getManager()
+  ): Promise<{ riskMap: H3IndexValueData[]; tmpTableName: string }> {
+    const tmpTableName = 'carbon_emissions_riskmap';
+    const query = getManager()
       .createQueryBuilder()
       .select(`h3_to_parent(deforestationh3.h3index, ${resolution})`, 'h')
       .addSelect(
@@ -219,31 +243,37 @@ export class H3DataRepository extends Repository<H3Data> {
       .andWhere(`materialh3.${materialH3Data.h3columnName} > 0`)
       .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
       .groupBy('h')
-      .getRawMany();
+      .getSql();
+    await getManager().query(
+      `CREATE TEMPORARY TABLE ${tmpTableName} AS (${query});`,
+    );
+    const riskMap = await getManager().query(`SELECT * FROM ${tmpTableName};`);
+
     this.logger.log('Carbon Emissions Map generated');
 
-    return riskMap;
+    return { riskMap, tmpTableName };
   }
 
   /**
    * @debt: Refactor this to use queryBuilder. Even tho all values are previously validated, this isn't right, but
    * has been don for the time being to unblock FE. Check with Data if calculus is accurate
    */
-  async calculateQuantiles(materialH3Data: H3Data): Promise<number[]> {
+  async calculateQuantiles(tmpTableName: string): Promise<number[]> {
     try {
       const resultArray: number[] = await getManager().query(
-        `select min(${materialH3Data.h3columnName})                                      as min,
-                percentile_cont(0.1667) within group (order by ${materialH3Data.h3columnName}) as per16,
-                percentile_cont(0.3337) within group (order by ${materialH3Data.h3columnName}) as per33,
-                percentile_cont(0.50) within group (order by ${materialH3Data.h3columnName})   as per50,
-                percentile_cont(0.6667) within group (order by ${materialH3Data.h3columnName}) as per66,
-                percentile_cont(0.8337) within group (order by ${materialH3Data.h3columnName}) as per83,
-                percentile_cont(1) within group (order by ${materialH3Data.h3columnName})      as max
-         from ${materialH3Data.h3tableName}
-         where ${materialH3Data.h3columnName} > 0`,
+        `select min(v)                                      as min,
+                percentile_cont(0.1667) within group (order by v) as per16,
+                percentile_cont(0.3337) within group (order by v) as per33,
+                percentile_cont(0.50) within group (order by v)   as per50,
+                percentile_cont(0.6667) within group (order by v) as per66,
+                percentile_cont(0.8337) within group (order by v) as per83,
+                percentile_cont(1) within group (order by v)      as max
+         from ${tmpTableName}
+         where v > 0`,
       );
       return Object.values(resultArray[0]);
     } catch (err) {
+      this.logger.error(err);
       throw new Error(`Quantiles could not been calculated`);
     }
   }

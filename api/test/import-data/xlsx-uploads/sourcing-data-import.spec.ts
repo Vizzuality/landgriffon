@@ -302,7 +302,7 @@ describe('Sourcing Data import', () => {
 
     const sourcingRecords: SourcingRecord[] = await sourcingRecordRepository.find();
     expect(sourcingRecords.length).toEqual(495);
-  });
+  }, 100000);
 
   test('When a file is sent to the API and gets processed, then a request to Sourcing-Records should return an existing Sourcing-Location ID', async () => {
     const geoRegion: GeoRegion = await createGeoRegion();

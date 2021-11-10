@@ -40,7 +40,7 @@ download-mapspam-crop-production:
 #Download MapSPAM crop harvest area
 download-mapspam-crop-harvest:
 	mkdir -p $(WORKDIR_MAPSPAM)
-	wget -q -O $(WORKDIR_MAPSPAM)/spam2010v2r0_global_phys_area.geotiff.zip https://s3.amazonaws.com/mapspam/2010/v2.0/geotiff/spam2010v2r0_global_phys_area.geotiff.zip
+	wget -q -O $(WORKDIR_MAPSPAM)/spam2010v2r0_global_harv_area.geotiff.zip https://s3.amazonaws.com/mapspam/2010/v2.0/geotiff/spam2010v2r0_global_harv_area.geotiff.zip
 
 #EXTRACT DATASETS:
 # <tiff_folder>: <zipfile>
@@ -52,13 +52,7 @@ extract-mapspam-crop-production: download-mapspam-crop-production
 
 extract-mapspam-crop-harvest: download-mapspam-crop-harvest
 	mkdir -p $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha
-	unzip -u $(WORKDIR_MAPSPAM)/spam2010v2r0_global_phys_area.geotiff.zip *_A.tif -d $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha
-	for tiffile in $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/*.tif; do \
-		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
-		output_file="$(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010_global_$${table_name}.tif";\
-		gdal_calc.py --calc "A/10000" --format GTiff --type Float32 -A "$${tiffile}" --A_band 1 --outfile "$${output_file}"; \
-		rm -f "$${tiffile}";\
-	done
+	unzip -u $(WORKDIR_MAPSPAM)/spam2010v2r0_global_harv_area.geotiff.zip *_A.tif -d $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha
 
 #CONVERT DATASETS:
 # <table>: <tiff_folder>
@@ -95,7 +89,7 @@ extract-earthstat-crop-production: download-earthstat-crop-production
 # Only extract the files that contain harvest area fraction. Set the no data to 0 as the mapspam datasets.
 extract-earthstat-crop-harvest: download-earthstat-crop-production
 	mkdir -p $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha
-	unzip -j -o -u $(WORKDIR_EARTHSTAT)/HarvestedAreaYield175Crops_Geotiff.zip *_HarvestedAreaFraction.tif -d $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha
+	unzip -j -o -u $(WORKDIR_EARTHSTAT)/HarvestedAreaYield175Crops_Geotiff.zip *_HarvestedArea.tif -d $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha
 	for tiffile in $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/*.tif; do \
 		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
 		output_file="$(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/earthstat2000_global_$${table_name}.tif";\
@@ -158,12 +152,7 @@ preprocess-biodiversity: extract-biodiversity
 # rasterize biodiversity dataset
 rasterize-biodiversity: preprocess-biodiversity
 	mkdir -p $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow/lcia_psl_regional
-	make rasterize-biodiversity-file ATTRIBUTE_NAME=Annual_cro TIF=lcia_psl_r_annual_crops.tif & \
 	make rasterize-biodiversity-file ATTRIBUTE_NAME=Permanent_ TIF=lcia_psl_r_permanent_crops.tif & \
-	make rasterize-biodiversity-file ATTRIBUTE_NAME=Pasture TIF=lcia_psl_r_pasture.tif & \
-	make rasterize-biodiversity-file ATTRIBUTE_NAME=Urban TIF=lcia_psl_r_urban.tif & \
-	make rasterize-biodiversity-file ATTRIBUTE_NAME=Extensive_ TIF=lcia_psl_r_extensive_forestry.tif & \
-	make rasterize-biodiversity-file ATTRIBUTE_NAME=Intensive_ TIF=lcia_psl_r_intensive_forestry.tif & \
 	wait
 
 rasterize-biodiversity-file:
@@ -249,6 +238,9 @@ extract-cropland: download-cropland
 	gdal_translate -a_nodata 0 -of GTiff $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/Pasture2000_5m.tif \
 	$(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/es_pasture_global.tif
 	rm -f $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/Pasture2000_5m.tif
+	gdal_calc.py --calc "A*10000*(A>0)" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/es_pasture_global.tif \
+	 --A_band 1 --outfile $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/Pasture2000_5m_ha.tif;
+	rm -f $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/es_pasture_global.tif
 
 # and import to a table called "h3_grid_earthstat2000_global_ha"
 convert-cropland: extract-cropland

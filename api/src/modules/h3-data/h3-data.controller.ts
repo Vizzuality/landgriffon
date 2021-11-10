@@ -3,9 +3,10 @@ import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { H3DataService } from 'modules/h3-data/h3-data.service';
 import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 import { GetMaterialH3ByResolutionDto } from 'modules/h3-data/dto/get-material-h3-by-resolution.dto';
-import { GetRiskMapH3Dto } from 'modules/h3-data/dto/get-risk-map-h3.dto';
+import { GetRiskMapH3Dto } from 'modules/h3-data/dto/get-risk-map.dto';
 import { H3MapResponse } from 'modules/h3-data/dto/h3-map-response.dto';
 import { GetYearsByLayerAndMaterialDto } from 'modules/h3-data/dto/get-years-by-layer-and-material.dto';
+import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
 
 @Controller('/api/v1/h3')
 @ApiTags(H3Data.name)
@@ -18,7 +19,7 @@ export class H3DataController {
     @Param('h3TableName') h3TableName: string,
     @Param('h3ColumnName') h3ColumnName: string,
   ): Promise<{ data: H3IndexValueData[] }> {
-    const h3Data = await this.h3DataService.findH3ByName(
+    const h3Data: H3IndexValueData[] = await this.h3DataService.findH3ByName(
       h3TableName,
       h3ColumnName,
     );
@@ -56,7 +57,7 @@ export class H3DataController {
 
   @ApiOperation({
     description:
-      'Get a calculated H3 Risk-Map given a Material and a Indicator',
+      'Get a calculated H3 risk map given a Material and a Indicator',
   })
   @Get('risk-map')
   async getRiskMap(
@@ -68,5 +69,20 @@ export class H3DataController {
       indicatorId,
       resolution,
     );
+  }
+
+  /**
+   * TODO: complete docs
+   *
+   * @param getImpactMapDto
+   */
+  @ApiOperation({
+    description: 'Get a calculated H3 impact map given ...',
+  })
+  @Get('impact-map')
+  async getImpactMap(
+    @Query(ValidationPipe) getImpactMapDto: GetImpactMapDto,
+  ): Promise<H3MapResponse> {
+    return this.h3DataService.getImpactMapByResolution(getImpactMapDto);
   }
 }

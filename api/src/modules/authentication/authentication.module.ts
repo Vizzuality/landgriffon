@@ -11,7 +11,7 @@ import { LocalStrategy } from 'modules/authentication/strategies/local.strategy'
 import { ApiEventsModule } from 'modules/api-events/api-events.module';
 import { UserRepository } from 'modules/users/user.repository';
 
-export const logger = new Logger('Authentication');
+export const logger: Logger = new Logger('Authentication');
 
 @Module({
   imports: [

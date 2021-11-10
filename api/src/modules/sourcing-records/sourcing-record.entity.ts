@@ -3,6 +3,7 @@ import {
   Entity,
   JoinTable,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from 'modules/users/user.entity';
@@ -10,6 +11,7 @@ import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.e
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
+import { IndicatorRecord } from '../indicator-records/indicator-record.entity';
 
 export const sourcingRecordResource: BaseServiceResource = {
   className: 'SourcingRecord',
@@ -38,10 +40,19 @@ export class SourcingRecord extends TimestampedBaseEntity {
   @ManyToOne(
     () => SourcingLocation,
     (sourcingLocation: SourcingLocation) => sourcingLocation.id,
-    { onDelete: 'CASCADE' },
+    { onDelete: 'CASCADE', eager: true },
   )
   @JoinTable()
   sourcingLocation: SourcingLocation;
+  @Column({ nullable: true })
+  sourcingLocationId: string;
+
+  @OneToMany(
+    () => IndicatorRecord,
+    (indicatorRecord: IndicatorRecord) => indicatorRecord.sourcingRecord,
+    { cascade: true },
+  )
+  indicatorRecords: IndicatorRecord[];
 
   @Column({ type: 'jsonb', nullable: true })
   @ApiPropertyOptional()

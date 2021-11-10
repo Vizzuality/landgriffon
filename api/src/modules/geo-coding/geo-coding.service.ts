@@ -11,10 +11,10 @@ export class GeoCodingService {
   protected readonly logger: Logger = new Logger(GeoCodingService.name);
 
   constructor(
-    protected readonly aggregationPoint: AggregationPointGeocodingService,
-    protected readonly pointOfProduction: PointOfProductionGeocodingService,
-    protected readonly countryOfProduction: CountryOfProductionService,
-    protected readonly unknownLocation: UnknownLocationService,
+    protected readonly aggregationPointGeocodingService: AggregationPointGeocodingService,
+    protected readonly pointOfProductionGeocodingService: PointOfProductionGeocodingService,
+    protected readonly countryOfProductionService: CountryOfProductionService,
+    protected readonly unknownLocationService: UnknownLocationService,
   ) {}
 
   async geoCodeLocations(
@@ -57,19 +57,23 @@ export class GeoCodingService {
   async geoCodeAggregationPoint(
     sourcingData: SourcingData,
   ): Promise<SourcingData> {
-    return await this.aggregationPoint.geoCodeAggregationPoint(sourcingData);
+    return await this.aggregationPointGeocodingService.geoCodeAggregationPoint(
+      sourcingData,
+    );
   }
 
   async geoCodePointOfProduction(
     sourcingData: SourcingData,
   ): Promise<SourcingData> {
-    return await this.pointOfProduction.geoCodePointOfProduction(sourcingData);
+    return await this.pointOfProductionGeocodingService.geoCodePointOfProduction(
+      sourcingData,
+    );
   }
 
   async geoCodeCountryOfProduction(
     sourcingData: SourcingData,
   ): Promise<SourcingData> {
-    return await this.countryOfProduction.geoCodeCountryOfProduction(
+    return await this.countryOfProductionService.geoCodeCountryOfProduction(
       sourcingData,
     );
   }
@@ -77,6 +81,8 @@ export class GeoCodingService {
   async geoCodeUnknownLocationType(
     sourcingData: SourcingData,
   ): Promise<SourcingData> {
-    return await this.unknownLocation.geoCodeUnknownLocationType(sourcingData);
+    return await this.unknownLocationService.geoCodeUnknownLocationType(
+      sourcingData,
+    );
   }
 }

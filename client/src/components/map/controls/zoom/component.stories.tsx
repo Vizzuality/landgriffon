@@ -3,7 +3,7 @@ import { Story } from '@storybook/react';
 import ZoomControl from './component';
 import type { ZoomControlProps } from './component';
 
-export default {
+const StorybookModule = {
   title: 'Components/Map/Controls/Zoom',
   component: ZoomControl,
 };
@@ -41,3 +41,5 @@ Default.args = {
     console.info(zoom);
   },
 };
+
+export default StorybookModule;

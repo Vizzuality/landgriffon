@@ -1,21 +1,24 @@
 import { NestFactory } from '@nestjs/core';
-import { Logger } from '@nestjs/common';
+import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from 'app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import * as config from 'config';
 import * as helmet from 'helmet';
 import * as compression from 'compression';
 
 async function bootstrap(): Promise<void> {
-  const logger = new Logger('bootstrap');
-  const app = await NestFactory.create(AppModule);
+  const logger: Logger = new Logger('bootstrap');
+  const app: INestApplication = await NestFactory.create(AppModule);
   const serverConfig: any = config.get('server');
 
   app.use(helmet());
   app.enableCors();
   app.use(compression());
 
-  const swaggerOptions = new DocumentBuilder()
+  const swaggerOptions: Omit<
+    OpenAPIObject,
+    'components' | 'paths'
+  > = new DocumentBuilder()
     .setTitle('LandGriffon API')
     .setDescription('LandGriffon is a conservation planning platform.')
     .setVersion(process.env.npm_package_version || 'development')
@@ -25,12 +28,23 @@ async function bootstrap(): Promise<void> {
       name: 'Authorization',
     })
     .build();
-  const swaggerDocument = SwaggerModule.createDocument(app, swaggerOptions);
+  const swaggerDocument: OpenAPIObject = SwaggerModule.createDocument(
+    app,
+    swaggerOptions,
+  );
   SwaggerModule.setup('/swagger', app, swaggerDocument);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      forbidUnknownValues: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
   app.enableShutdownHooks();
 
-  const port = process.env.PORT || serverConfig.port;
+  const port: number = process.env.PORT || serverConfig.port;
   await app.listen(port);
   logger.log(`Application listening on port ${port}`);
 }

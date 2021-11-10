@@ -16,6 +16,7 @@ import {
 } from '../src/modules/admin-regions/admin-region.entity';
 import { UnitConversion } from '../src/modules/unit-conversions/unit-conversion.entity';
 import { H3Data } from '../src/modules/h3-data/h3-data.entity';
+import { GeoRegion } from '../src/modules/geo-regions/geo-region.entity';
 
 async function createAdminRegion(
   additionalData: Partial<AdminRegion> = {},
@@ -83,10 +84,12 @@ async function createIndicator(
 async function createIndicatorRecord(
   additionalData: Partial<IndicatorRecord> = {},
 ): Promise<IndicatorRecord> {
+  const sourcingRecord: SourcingRecord = await createSourcingRecord();
   const indicatorRecord = IndicatorRecord.merge(
     new IndicatorRecord(),
     {
       value: 2000,
+      sourcingRecordId: sourcingRecord.id,
     },
     additionalData,
   );
@@ -129,11 +132,35 @@ async function createMaterial(
     new Material(),
     {
       name: 'Material name',
+      hsCodeId: '1',
     },
     additionalData,
   );
 
   return material.save();
+}
+
+async function createGeoRegion(
+  additionalData: Partial<GeoRegion> = {},
+): Promise<GeoRegion> {
+  const geoRegion = GeoRegion.merge(
+    new GeoRegion(),
+    {
+      h3Compact: [
+        '8667737afffffff',
+        '8667737a7ffffff',
+        '86677378fffffff',
+        '866773637ffffff',
+        '86677362fffffff',
+        '866773607ffffff',
+        '861203a4fffffff',
+      ],
+      name: 'ABC',
+    },
+    additionalData,
+  );
+
+  return geoRegion.save();
 }
 
 async function createScenario(
@@ -167,12 +194,14 @@ async function createScenarioIntervention(
 async function createSourcingLocation(
   additionalData: Partial<SourcingLocation> = {},
 ): Promise<SourcingLocation> {
+  const material: Material = await createMaterial();
   const sourcingLocation = SourcingLocation.merge(
     new SourcingLocation(),
     {
       title: 'test sourcing location',
       locationAddressInput: 'pqrst',
       locationCountryInput: 'uvwxy',
+      materialId: material.id,
     },
     additionalData,
   );
@@ -250,4 +279,5 @@ export {
   createSourcingRecord,
   createUnit,
   createUnitConversion,
+  createGeoRegion,
 };

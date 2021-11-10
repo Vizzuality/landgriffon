@@ -18,7 +18,7 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
   async saveGeoRegionAsRadius(
     newGeoRegionValues: LocationGeoRegionDto,
   ): Promise<GeoRegion> {
-    const res = await this.query(
+    const res: any = await this.query(
       `WITH
         points AS (SELECT ST_BUFFER(ST_SetSRID(ST_POINT(${newGeoRegionValues.coordinates.lng},${newGeoRegionValues.coordinates.lat}),4326)::geometry, 0.5) as radius)
       INSERT INTO geo_region (name, "theGeom", "h3Compact")
@@ -45,7 +45,7 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
   async saveGeoRegionAsPoint(
     newGeoRegionValues: LocationGeoRegionDto,
   ): Promise<Pick<GeoRegion, 'id'>> {
-    const res = await this.query(`
+    const res: any = await this.query(`
     INSERT INTO geo_region (name, "theGeom", "h3Compact")
             VALUES(
               hashtext('Point of Production - ${newGeoRegionValues.coordinates.lng}-${newGeoRegionValues.coordinates.lat}'),

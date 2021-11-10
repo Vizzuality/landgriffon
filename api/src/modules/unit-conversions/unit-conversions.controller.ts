@@ -31,6 +31,7 @@ import {
 } from 'modules/unit-conversions/unit-conversion.entity';
 import { CreateUnitConversionDto } from 'modules/unit-conversions/dto/create.unit-conversion.dto';
 import { UpdateUnitConversionDto } from 'modules/unit-conversions/dto/update.unit-conversion.dto';
+import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/unit-conversions`)
 @ApiTags(unitConversionResource.className)
@@ -59,9 +60,10 @@ export class UnitConversionsController {
     })
     fetchSpecification: FetchSpecification,
   ): Promise<UnitConversion> {
-    const results = await this.unitConversionsService.findAllPaginated(
-      fetchSpecification,
-    );
+    const results: {
+      data: (Partial<UnitConversion> | undefined)[];
+      metadata: PaginationMeta | undefined;
+    } = await this.unitConversionsService.findAllPaginated(fetchSpecification);
     return this.unitConversionsService.serialize(
       results.data,
       results.metadata,

@@ -1,7 +1,7 @@
 import type { Story } from '@storybook/react';
 import Select, { SelectProps } from './component';
 
-export default {
+const StorybookModule = {
   title: 'Components/Form/Select',
   component: Select,
   argTypes: {},
@@ -27,3 +27,5 @@ Default.args = {
     },
   ],
 };
+
+export default StorybookModule;

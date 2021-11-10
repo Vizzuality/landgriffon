@@ -31,6 +31,7 @@ import {
 } from 'modules/geo-regions/geo-region.entity';
 import { CreateGeoRegionDto } from 'modules/geo-regions/dto/create.geo-region.dto';
 import { UpdateGeoRegionDto } from 'modules/geo-regions/dto/update.geo-region.dto';
+import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/geo-regions`)
 @ApiTags(geoRegionResource.className)
@@ -59,9 +60,10 @@ export class GeoRegionsController {
     })
     fetchSpecification: FetchSpecification,
   ): Promise<GeoRegion> {
-    const results = await this.geoRegionsService.findAllPaginated(
-      fetchSpecification,
-    );
+    const results: {
+      data: (Partial<GeoRegion> | undefined)[];
+      metadata: PaginationMeta | undefined;
+    } = await this.geoRegionsService.findAllPaginated(fetchSpecification);
     return this.geoRegionsService.serialize(results.data, results.metadata);
   }
 

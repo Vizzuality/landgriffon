@@ -31,6 +31,7 @@ import {
 } from 'modules/business-units/business-unit.entity';
 import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
 import { UpdateBusinessUnitDto } from 'modules/business-units/dto/update.business-unit.dto';
+import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/business-units`)
 @ApiTags(businessUnitResource.className)
@@ -59,9 +60,10 @@ export class BusinessUnitsController {
     })
     fetchSpecification: FetchSpecification,
   ): Promise<BusinessUnit> {
-    const results = await this.businessUnitsService.findAllPaginated(
-      fetchSpecification,
-    );
+    const results: {
+      data: (Partial<BusinessUnit> | undefined)[];
+      metadata: PaginationMeta | undefined;
+    } = await this.businessUnitsService.findAllPaginated(fetchSpecification);
     return this.businessUnitsService.serialize(results.data, results.metadata);
   }
 

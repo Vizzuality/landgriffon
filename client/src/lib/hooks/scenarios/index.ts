@@ -15,18 +15,18 @@ export function useScenarios(queryParams) {
   const response = useQuery(['scenariosList', queryParams], async () => getScenarios(queryParams), {
     retry: false,
   });
-  const data =
-    response.isSuccess && response.data
-      ? {
-          ...response,
-          // injecting actual data
-          data: [ACTUAL_DATA, ...response.data],
-        }
-      : response;
 
   return useMemo(() => {
+    const data =
+      response.isSuccess && response.data
+        ? {
+            ...response,
+            // injecting actual data
+            data: [ACTUAL_DATA, ...response.data],
+          }
+        : response;
     return {
       data,
     };
-  }, [response, data, queryParams]);
+  }, [response]);
 }

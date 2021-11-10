@@ -1,5 +1,5 @@
 export const h3MaterialFixtures = {
-  '8612e1a2fffffff': 0,
+  '8612e1a2fffffff': 1000,
   '86125d767ffffff': 0,
   '86278455fffffff': 0,
   '86124a0f7ffffff': 0,

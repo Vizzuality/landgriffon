@@ -63,7 +63,7 @@ export class SuppliersService extends AppBaseService<
   }
 
   async getSupplierById(id: string): Promise<Supplier> {
-    const found = await this.repository.findOne(id);
+    const found: Supplier | undefined = await this.repository.findOne(id);
 
     if (!found) {
       throw new NotFoundException(`Supplier with ID "${id}" not found`);

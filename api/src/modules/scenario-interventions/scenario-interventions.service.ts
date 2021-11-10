@@ -46,7 +46,9 @@ export class ScenarioInterventionsService extends AppBaseService<
   }
 
   async getScenarioInterventionById(id: number): Promise<ScenarioIntervention> {
-    const found = await this.scenarioInterventionRepository.findOne(id);
+    const found:
+      | ScenarioIntervention
+      | undefined = await this.scenarioInterventionRepository.findOne(id);
 
     if (!found) {
       throw new NotFoundException(

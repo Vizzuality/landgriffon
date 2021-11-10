@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsNotEmpty, IsNumber, IsUUID } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsUUID,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 /**
@@ -14,9 +20,7 @@ export enum AvailableResolutions {
   FIVE = 5,
   SIX = 6,
 }
-/**
- * @debt: Add some bypass to exception filter to return validation errors on a more readable way
- */
+
 export class GetMaterialH3ByResolutionDto {
   @ApiProperty()
   @IsNotEmpty()

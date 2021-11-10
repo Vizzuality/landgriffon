@@ -12,6 +12,7 @@ import { AppInfoDTO } from 'dto/info.dto';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sourcing-record.dto';
+import { Material } from '../materials/material.entity';
 
 @Injectable()
 export class SourcingRecordsService extends AppBaseService<
@@ -47,7 +48,9 @@ export class SourcingRecordsService extends AppBaseService<
   }
 
   async getSourcingRecordById(id: number): Promise<SourcingRecord> {
-    const found = await this.sourcingRecordRepository.findOne(id);
+    const found:
+      | SourcingRecord
+      | undefined = await this.sourcingRecordRepository.findOne(id);
 
     if (!found) {
       throw new NotFoundException(`Sourcing Record with ID "${id}" not found`);
@@ -58,6 +61,9 @@ export class SourcingRecordsService extends AppBaseService<
 
   async clearTable(): Promise<void> {
     await this.sourcingRecordRepository.delete({});
+  }
+  async findAllUnpaginated(): Promise<SourcingRecord[]> {
+    return this.sourcingRecordRepository.find();
   }
   async save(entityArray: any[]): Promise<void> {
     await this.sourcingRecordRepository.save(entityArray);

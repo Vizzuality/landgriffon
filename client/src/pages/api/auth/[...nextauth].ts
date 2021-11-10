@@ -152,4 +152,7 @@ const options: NextAuthOptions = {
   },
 };
 
-export default (req: NextApiRequest, res: NextApiResponse): unknown => NextAuth(req, res, options);
+const response = (req: NextApiRequest, res: NextApiResponse): unknown =>
+  NextAuth(req, res, options);
+
+export default response;

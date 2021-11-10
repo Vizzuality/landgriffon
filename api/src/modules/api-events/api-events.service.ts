@@ -56,7 +56,9 @@ export class ApiEventsService extends AppBaseService<
   public async getLatestEventForTopic(
     qualifiedTopic: QualifiedEventTopic,
   ): Promise<ApiEventByTopicAndKind | undefined> {
-    const result = await this.latestEventByTopicAndKindRepo.findOne({
+    const result:
+      | LatestApiEventByTopicAndKind
+      | undefined = await this.latestEventByTopicAndKindRepo.findOne({
       topic: qualifiedTopic.topic,
       kind: qualifiedTopic.kind,
     });

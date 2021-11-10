@@ -41,7 +41,7 @@ export class IndicatorRecord extends TimestampedBaseEntity {
   id!: string;
 
   @ApiProperty()
-  @Column({ type: 'int', nullable: true })
+  @Column({ type: 'float', nullable: true })
   value!: number;
 
   @ApiProperty()
@@ -64,16 +64,20 @@ export class IndicatorRecord extends TimestampedBaseEntity {
   @ManyToOne(
     () => SourcingRecord,
     (sourcingRecord: SourcingRecord) => sourcingRecord.id,
-    { eager: false },
+    { eager: false, onDelete: 'CASCADE' },
   )
   @JoinColumn({ name: 'sourcingRecordId' })
-  sourcingRecordId: SourcingRecord;
+  sourcingRecord: SourcingRecord;
+  @Column()
+  sourcingRecordId: string;
 
   @ManyToOne(() => Indicator, (indicator: Indicator) => indicator.id, {
     eager: false,
   })
   @JoinColumn({ name: 'indicatorId' })
-  indicatorId!: Indicator;
+  indicator!: Indicator;
+  @Column({ nullable: true })
+  indicatorId: string;
 
   @ManyToOne(
     () => IndicatorCoefficient,

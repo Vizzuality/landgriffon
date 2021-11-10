@@ -28,6 +28,7 @@ import {
 import { Unit, unitResource } from 'modules/units/unit.entity';
 import { CreateUnitDto } from 'modules/units/dto/create.unit.dto';
 import { UpdateUnitDto } from 'modules/units/dto/update.unit.dto';
+import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/units`)
 @ApiTags(unitResource.className)
@@ -56,9 +57,10 @@ export class UnitsController {
     })
     fetchSpecification: FetchSpecification,
   ): Promise<Unit> {
-    const results = await this.unitsService.findAllPaginated(
-      fetchSpecification,
-    );
+    const results: {
+      data: (Partial<Unit> | undefined)[];
+      metadata: PaginationMeta | undefined;
+    } = await this.unitsService.findAllPaginated(fetchSpecification);
     return this.unitsService.serialize(results.data, results.metadata);
   }
 

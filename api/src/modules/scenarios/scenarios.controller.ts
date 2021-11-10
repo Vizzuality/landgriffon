@@ -27,6 +27,7 @@ import {
 import { Scenario, scenarioResource } from 'modules/scenarios/scenario.entity';
 import { CreateScenarioDto } from 'modules/scenarios/dto/create.scenario.dto';
 import { UpdateScenarioDto } from 'modules/scenarios/dto/update.scenario.dto';
+import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/scenarios`)
 @ApiTags(scenarioResource.className)
@@ -55,9 +56,10 @@ export class ScenariosController {
     })
     fetchSpecification: FetchSpecification,
   ): Promise<Scenario> {
-    const results = await this.scenariosService.findAllPaginated(
-      fetchSpecification,
-    );
+    const results: {
+      data: (Partial<Scenario> | undefined)[];
+      metadata: PaginationMeta | undefined;
+    } = await this.scenariosService.findAllPaginated(fetchSpecification);
     return this.scenariosService.serialize(results.data, results.metadata);
   }
 

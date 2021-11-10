@@ -39,7 +39,9 @@ export class UnitConversionsService extends AppBaseService<
   }
 
   async getUnitConversionById(id: number): Promise<UnitConversion> {
-    const found = await this.unitConversionRepository.findOne(id);
+    const found:
+      | UnitConversion
+      | undefined = await this.unitConversionRepository.findOne(id);
 
     if (!found) {
       throw new NotFoundException(`Conversion unit with ID "${id}" not found`);
@@ -49,7 +51,9 @@ export class UnitConversionsService extends AppBaseService<
   }
 
   async getUnitConversionByUnitId(unitId: string): Promise<UnitConversion> {
-    const unitConversion = await this.unitConversionRepository.findOne({
+    const unitConversion:
+      | UnitConversion
+      | undefined = await this.unitConversionRepository.findOne({
       where: { unit: unitId },
     });
     if (!unitConversion) {

@@ -33,6 +33,7 @@ import { UpdateSupplierDto } from 'modules/suppliers/dto/update.supplier.dto';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { ParseOptionalIntPipe } from 'pipes/parse-optional-int.pipe';
+import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/suppliers`)
 @ApiTags(supplierResource.className)
@@ -64,9 +65,10 @@ export class SuppliersController {
     })
     fetchSpecification: FetchSpecification,
   ): Promise<Supplier> {
-    const results = await this.suppliersService.findAllPaginated(
-      fetchSpecification,
-    );
+    const results: {
+      data: (Partial<Supplier> | undefined)[];
+      metadata: PaginationMeta | undefined;
+    } = await this.suppliersService.findAllPaginated(fetchSpecification);
     return this.suppliersService.serialize(results.data, results.metadata);
   }
 
@@ -89,9 +91,11 @@ export class SuppliersController {
   async getTrees(
     @Query('depth', ParseOptionalIntPipe) depth?: number,
   ): Promise<Supplier> {
-    const results = await this.suppliersRepository.findTreesWithOptions({
-      depth,
-    });
+    const results: Supplier[] = await this.suppliersRepository.findTreesWithOptions(
+      {
+        depth,
+      },
+    );
     return this.suppliersService.serialize(results);
   }
 

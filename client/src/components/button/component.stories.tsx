@@ -1,7 +1,7 @@
 import type { Story } from '@storybook/react';
 import Button, { ButtonProps } from './component';
 
-export default {
+const StorybookModule = {
   title: 'Components/Button',
   component: Button,
   argTypes: {
@@ -36,3 +36,5 @@ FullWidth.args = {
   disabled: false,
   className: 'w-full',
 };
+
+export default StorybookModule;

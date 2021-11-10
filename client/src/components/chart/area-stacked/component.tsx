@@ -137,7 +137,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
         tooltipTop: yScale(y),
       });
     },
-    [showTooltip, xScale, yScale, keys],
+    [xScale, data, keys, showTooltip, yScale],
   );
 
   if (!width || !height) return null;

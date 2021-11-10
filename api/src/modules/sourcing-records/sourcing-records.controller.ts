@@ -31,6 +31,7 @@ import {
 } from 'modules/sourcing-records/sourcing-record.entity';
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sourcing-record.dto';
+import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/sourcing-records`)
 @ApiTags(sourcingRecordResource.className)
@@ -59,9 +60,10 @@ export class SourcingRecordsController {
     })
     fetchSpecification: FetchSpecification,
   ): Promise<SourcingRecord> {
-    const results = await this.sourcingRecordsService.findAllPaginated(
-      fetchSpecification,
-    );
+    const results: {
+      data: (Partial<SourcingRecord> | undefined)[];
+      metadata: PaginationMeta | undefined;
+    } = await this.sourcingRecordsService.findAllPaginated(fetchSpecification);
     return this.sourcingRecordsService.serialize(
       results.data,
       results.metadata,

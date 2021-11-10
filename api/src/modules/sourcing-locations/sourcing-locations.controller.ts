@@ -31,6 +31,7 @@ import {
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update.sourcing-location.dto';
+import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/sourcing-locations`)
 @ApiTags(sourcingLocationResource.className)
@@ -63,7 +64,10 @@ export class SourcingLocationsController {
     })
     fetchSpecification: FetchSpecification,
   ): Promise<SourcingLocation> {
-    const results = await this.sourcingLocationsService.findAllPaginated(
+    const results: {
+      data: (Partial<SourcingLocation> | undefined)[];
+      metadata: PaginationMeta | undefined;
+    } = await this.sourcingLocationsService.findAllPaginated(
       fetchSpecification,
     );
     return this.sourcingLocationsService.serialize(

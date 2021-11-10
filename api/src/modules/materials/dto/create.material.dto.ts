@@ -44,9 +44,8 @@ export class CreateMaterialDto {
   parent?: Material;
 
   @IsString()
-  @IsOptional()
-  @ApiPropertyOptional()
-  hsCodeId?: string;
+  @ApiProperty()
+  hsCodeId!: string;
 
   @IsString()
   @IsOptional()

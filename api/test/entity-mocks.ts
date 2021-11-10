@@ -153,6 +153,7 @@ async function createGeoRegion(
         '866773637ffffff',
         '86677362fffffff',
         '866773607ffffff',
+        '861203a4fffffff',
       ],
       name: 'ABC',
     },

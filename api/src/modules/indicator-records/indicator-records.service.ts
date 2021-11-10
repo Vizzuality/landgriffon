@@ -97,12 +97,19 @@ export class IndicatorRecordsService extends AppBaseService<
             indicator,
           );
 
-          return IndicatorRecord.merge(new IndicatorRecord(), {
-            value: (impactValue * sourcingRecord.tonnage) / productionValue,
-            indicatorId: indicator.id,
-            status: INDICATOR_RECORD_STATUS.SUCCESS,
-            sourcingRecordId: sourcingRecord.id,
-          });
+          const indicatorRecord: IndicatorRecord = IndicatorRecord.merge(
+            new IndicatorRecord(),
+            {
+              value: (impactValue * sourcingRecord.tonnage) / productionValue,
+              indicatorId: indicator.id,
+              status: INDICATOR_RECORD_STATUS.SUCCESS,
+              sourcingRecordId: sourcingRecord.id,
+            },
+          );
+
+          await this.indicatorRecordRepository.insert(indicatorRecord);
+
+          return indicatorRecord;
         },
       ),
     );
@@ -110,7 +117,7 @@ export class IndicatorRecordsService extends AppBaseService<
     this.logger.log(
       `Impact value for sourcing record ${sourcingRecord.id} saved.`,
     );
-    return this.indicatorRecordRepository.save(indicatorRecords);
+    return indicatorRecords;
   }
 
   async clearTable(): Promise<void> {

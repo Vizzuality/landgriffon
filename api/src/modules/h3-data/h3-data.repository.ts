@@ -14,6 +14,7 @@ import {
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
+import { GeoRegion } from '../geo-regions/geo-region.entity';
 
 interface SourcingRecordH3Struct {
   sr_id: string;
@@ -108,20 +109,24 @@ export class H3DataRepository extends Repository<H3Data> {
     h3ColumnName: string,
     geoRegionId: string,
   ): Promise<number> {
-    // TODO: escape h3TableName and h3ColumnName
-    // TODO: try to use queryBuilder
-    const sum: { sum: number }[] = await getManager().query(
-      `
-        select sum(h3table.${h3ColumnName})
-        from ${h3TableName} h3table
-               left join (
-                   SELECT h3_uncompact(gr."h3Compact"::h3index[], 6) h3index from geo_region gr WHERE gr.id = $1
-            ) geoRegionH3 ON h3table.h3index = geoRegionH3.h3index
-      `,
-      [geoRegionId],
-    );
+    const sum: any = await getManager()
+      .createQueryBuilder()
+      .select(`sum(h3table.${h3ColumnName})`, 'sum')
+      .from(h3TableName.toLowerCase(), 'h3table')
+      .innerJoin(
+        (subQuery: SelectQueryBuilder<any>) => {
+          return subQuery
+            .select('h3_uncompact(gr."h3Compact"::h3index[], 6)', 'h3index')
+            .from(GeoRegion, 'gr')
+            .where('gr.id = :geoRegionId');
+        },
+        'georegionh3',
+        'h3table.h3index = georegionh3.h3index',
+      )
+      .setParameter('geoRegionId', geoRegionId)
+      .getRawOne();
 
-    return sum[0].sum;
+    return sum.sum;
   }
 
   /**

@@ -8,7 +8,7 @@ import { getSuppliersTrees } from 'services/suppliers';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis, setFilter } from 'store/features/analysis';
 
-type SuppliersFilterProps = TreeSelectProps<{}> & {
+type SuppliersFilterProps = TreeSelectProps<unknown> & {
   onChange: (value) => void;
 };
 

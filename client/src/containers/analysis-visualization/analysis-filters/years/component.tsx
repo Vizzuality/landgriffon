@@ -3,13 +3,12 @@ import React, { useCallback, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis, setFilter } from 'store/features/analysis';
 
-import { useYears } from 'lib/hooks/years';
+import { useYears } from 'hooks/years';
 
-import { YearsFilterProps } from './types';
 import SingleYearFilter from './single-year';
 import MultiYearFilter from './multi-year';
 
-const YearsFilter: React.FC<YearsFilterProps> = () => {
+const YearsFilter: React.FC = () => {
   const dispatch = useAppDispatch();
   const {
     visualizationMode,

@@ -2,14 +2,14 @@ import { Table as TableAntd } from 'antd';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline';
 
 export interface TableProps {
-  columns: Array<object>;
+  columns: Record<string, unknown>[];
   dataSource: Array<{
     key: string;
     indicator: string;
     children?: React.ReactNode;
     [key: number]: number;
   }>;
-  onChange: (pagination: any, filters: any, sorter: any, extra: any) => void;
+  onChange: (pagination: unknown, filters: unknown, sorter: unknown, extra: unknown) => void;
 }
 
 export const Table: React.FC<TableProps> = ({ columns, dataSource, onChange }: TableProps) => (

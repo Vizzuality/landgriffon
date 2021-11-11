@@ -1,6 +1,6 @@
 import type { NextPageContext } from 'next';
 import { getSession } from 'next-auth/client';
-import { useUsers } from 'lib/hooks/users';
+import { useUsers } from 'hooks/users';
 import { dehydrate } from 'react-query/hydration';
 
 type AuthProps = {

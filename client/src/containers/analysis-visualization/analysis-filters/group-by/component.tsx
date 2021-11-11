@@ -26,9 +26,7 @@ const ALL_GROUPS: Group[] = [
   },
 ];
 
-type GroupByFilterProps = {};
-
-const GroupByFilter: React.FC<GroupByFilterProps> = () => {
+const GroupByFilter: React.FC = () => {
   const { filters } = useAppSelector(analysis);
   const dispatch = useAppDispatch();
 

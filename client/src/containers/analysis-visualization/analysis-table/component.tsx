@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { useAnalysisTable, useIndicatorAnalysisTable } from 'lib/hooks/analysis';
+import { useAnalysisTable, useIndicatorAnalysisTable } from 'hooks/analysis';
 
 import { useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
@@ -14,9 +14,7 @@ import Loading from 'components/loading';
 import Table from 'containers/analysis-visualization/analysis-table/table';
 import TableTitle from 'containers/analysis-visualization/analysis-table/table-title';
 
-export type AnalysisTableProps = {};
-
-const AnalysisTable: React.FC<AnalysisTableProps> = () => {
+const AnalysisTable: React.FC = () => {
   const { filters } = useAppSelector(analysis);
 
   const { data: tableData, isFetched: tableDataIsFetched } = useAnalysisTable({ filters });
@@ -24,14 +22,13 @@ const AnalysisTable: React.FC<AnalysisTableProps> = () => {
   const { data: indicatorTableData, isFetched: indicatorTableDataIsFetched } =
     useIndicatorAnalysisTable({ filters });
 
-  const getValueByYear = (columnYear, record) =>
-    useMemo(() => {
-      if (record && record.values) {
-        const dataIndex = record.values.find((el) => el.year === columnYear)?.value;
-        return dataIndex;
-      }
-      return null;
-    }, []);
+  const getValueByYear = (columnYear, record) => () => {
+    if (record && record.values) {
+      const dataIndex = record.values.find((el) => el.year === columnYear)?.value;
+      return dataIndex;
+    }
+    return null;
+  };
 
   const FILTERED_DATA = filters.indicator?.value === 'all' ? tableData : indicatorTableData;
 

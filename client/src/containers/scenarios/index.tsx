@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useScenarios } from 'lib/hooks/scenarios';
+import { useScenarios } from 'hooks/scenarios';
 import Component from './component';
 
 const ScenariosContainer: React.FC = () => {

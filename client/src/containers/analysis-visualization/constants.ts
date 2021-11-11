@@ -1,6 +1,5 @@
 import { format } from 'd3-format';
-
-type ColorRamps = Record<string, string[]>;
+import type { ColorRamps } from 'types';
 
 export const COLOR_RAMPS: ColorRamps = {
   impact: ['#FFC300', '#F1920E', '#E3611C', '#C70039', '#900C3F', '#5A1846'],

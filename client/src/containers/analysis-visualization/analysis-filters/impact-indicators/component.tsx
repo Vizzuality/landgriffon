@@ -6,11 +6,9 @@ import { analysis, setFilter } from 'store/features/analysis';
 import { Select } from 'antd';
 import { ChevronDownIcon } from '@heroicons/react/solid';
 
-import { useIndicators } from 'lib/hooks/indicators';
+import { useIndicators } from 'hooks/indicators';
 
-type ImpactIndicatorsFilterProps = {};
-
-const ImpactIndicatorsFilter: React.FC<ImpactIndicatorsFilterProps> = () => {
+const ImpactIndicatorsFilter: React.FC = () => {
   const { visualizationMode, filters } = useAppSelector(analysis);
   const dispatch = useAppDispatch();
 

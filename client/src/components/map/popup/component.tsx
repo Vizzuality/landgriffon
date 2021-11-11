@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import type { PopUpProps } from './types';
 
 const PADDING_SIZE = 100;
+const OFFSET = 10;
 
 const PopUp: React.FC<PopUpProps> = ({
   children,
@@ -9,6 +10,7 @@ const PopUp: React.FC<PopUpProps> = ({
 }: PopUpProps) => {
   const withinXLimit = width - PADDING_SIZE > x;
   const withinYLimit = height - (height - y) < PADDING_SIZE;
+
   return (
     <div
       className={classNames('absolute z-10 pointer-events-none transform', {
@@ -16,9 +18,9 @@ const PopUp: React.FC<PopUpProps> = ({
         '-translate-x-full': !withinXLimit,
       })}
       style={{
-        top: y,
-        left: withinXLimit ? x : 'auto',
-        right: withinXLimit ? 'auto' : width - x - PADDING_SIZE,
+        top: y - OFFSET,
+        left: withinXLimit ? x + OFFSET : 'auto',
+        right: withinXLimit ? 'auto' : width - x - PADDING_SIZE + OFFSET,
       }}
     >
       {children}

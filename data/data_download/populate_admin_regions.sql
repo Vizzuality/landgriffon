@@ -5,10 +5,13 @@ CREATE EXTENSION IF NOT EXISTS ltree;
 TRUNCATE TABLE geo_region CASCADE;
 
 INSERT INTO geo_region
-("name", "h3Compact", "theGeom")
+("name", "h3Flat", "h3Compact", "theGeom")
 
 SELECT
 mpath,
+array(
+    SELECT h3_polyfill(wkb_geometry, 6)
+) AS "h3Flat",
 array(
     SELECT h3_compact(array(
         SELECT h3_polyfill(wkb_geometry, 6)

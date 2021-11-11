@@ -27,7 +27,13 @@ const Home: React.FC = () => {
               <LandgriffonLogo />
               <h2 className="text-3xl font-bold mt-4 mb-10">Sign in to your account</h2>
             </div>
-            <form className="space-y-6" action="#" method="POST" onSubmit={fakeLogin}>
+            <form
+              className="space-y-6"
+              action="#"
+              method="POST"
+              onSubmit={fakeLogin}
+              id="signInForm"
+            >
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                   Email address

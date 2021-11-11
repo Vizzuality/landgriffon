@@ -14,10 +14,11 @@ import LegendItem from 'components/map/legend/item';
 import LegendTypeChoropleth from 'components/map/legend/types/choropleth';
 import Loading from 'components/loading';
 
-import { useH3MaterialData, useH3RiskData } from 'lib/hooks/h3-data';
+import { useH3MaterialData, useH3RiskData, useH3ImpactData } from 'hooks/h3-data';
 
 import { COLOR_RAMPS, NUMBER_FORMAT } from '../constants';
 
+const HEXAGON_HIGHLIGHT_COLOR = [0, 0, 0];
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
 const INITIAL_VIEW_STATE = {
   longitude: 0,
@@ -41,6 +42,7 @@ type PopUpInfoProps = {
 
 const AnalysisMap: React.FC = () => {
   const { layer, filters } = useAppSelector(analysis);
+  const [hoveredHexagon, setHoveredHexagon] = useState(null);
   const [popUpInfo, setPopUpInfo] = useState<PopUpInfoProps>(null);
   const [legendItems, setLegendItems] = useState([]);
   const [isRendering, setIsRendering] = useState(false);
@@ -55,28 +57,33 @@ const AnalysisMap: React.FC = () => {
     isFetching: isH3RiskFetching,
     isError: isH3RiskError,
   } = useH3RiskData();
-  const isError = isH3MaterialError || isH3RiskError;
-  const isFetching = isH3MaterialFetching || isH3RiskFetching;
+  const {
+    data: h3ImpactData,
+    isFetching: isH3ImpactFetching,
+    isError: isH3ImpactError,
+  } = useH3ImpactData();
+  const isError = isH3MaterialError || isH3RiskError || isH3ImpactError;
+  const isFetching = isH3MaterialFetching || isH3RiskFetching || isH3ImpactFetching;
 
   const handleAfterRender = useCallback(() => setIsRendering(false), []);
-  const handleHover = useCallback(
-    ({ object, x, y, viewport }) =>
-      setPopUpInfo({
-        object: object ? { v: object.v } : null,
-        x,
-        y,
-        viewport: viewport ? { width: viewport.width, height: viewport.height } : null,
-      }),
-    [],
-  );
+  const handleHover = useCallback(({ object, x, y, viewport }) => {
+    setPopUpInfo({
+      object: object ? { v: object.v } : null,
+      x,
+      y,
+      viewport: viewport ? { width: viewport.width, height: viewport.height } : null,
+    });
+    setHoveredHexagon(object ? object.h : null);
+  }, []);
 
   const unit = useMemo(() => {
     const unitMap = {
       material: h3MaterialData.metadata.unit,
       risk: h3RiskData.metadata.unit,
+      impact: h3ImpactData.metadata.unit,
     };
     return unitMap[layer];
-  }, [h3MaterialData, h3RiskData, layer]);
+  }, [h3MaterialData, h3RiskData, h3ImpactData, layer]);
 
   const legendName = useMemo(() => {
     if (layer === 'material' && filters.materials?.length > 0) {
@@ -118,9 +125,22 @@ const AnalysisMap: React.FC = () => {
         });
       }
 
+      if (layer === 'impact') {
+        nextLegendItems.push({
+          id: 'h3-legend-impact',
+          name: legendName,
+          unit,
+          min: NUMBER_FORMAT(h3ImpactData.metadata.quantiles[0]),
+          items: h3ImpactData.metadata.quantiles.slice(1).map((v, index) => ({
+            value: NUMBER_FORMAT(v),
+            color: COLOR_RAMPS[layer][index],
+          })),
+        });
+      }
+
       setLegendItems(nextLegendItems);
     }
-  }, [h3MaterialData, h3RiskData, layer, filters, legendName, unit]);
+  }, [h3MaterialData, h3RiskData, h3ImpactData, layer, filters, legendName, unit]);
 
   const layers = [
     new H3HexagonLayer({
@@ -129,15 +149,21 @@ const AnalysisMap: React.FC = () => {
       pickable: true,
       wireframe: false,
       filled: true,
-      extruded: true,
-      elevationScale: 1,
-      highPrecision: false,
+      stroked: true,
+      extruded: false,
+      highPrecision: 'auto',
       visible: layer === 'material',
       opacity: 0.8,
+      coverage: 0.9,
+      lineWidthMinPixels: 2,
       getHexagon: (d) => d.h,
       getFillColor: (d) => d.c,
       getElevation: (d) => d.v,
+      getLineColor: (d) => (d.h === hoveredHexagon ? HEXAGON_HIGHLIGHT_COLOR : d.c),
       onHover: handleHover,
+      updateTriggers: {
+        getLineColor: hoveredHexagon,
+      },
     }),
     new H3HexagonLayer({
       id: 'h3-layer-risk',
@@ -145,15 +171,42 @@ const AnalysisMap: React.FC = () => {
       pickable: true,
       wireframe: false,
       filled: true,
-      extruded: true,
-      elevationScale: 1,
+      extruded: false,
       highPrecision: false,
       visible: layer === 'risk',
       opacity: 0.8,
+      coverage: 0.9,
+      lineWidthMinPixels: 2,
       getHexagon: (d) => d.h,
       getFillColor: (d) => d.c,
       getElevation: (d) => d.v,
+      getLineColor: (d) => (d.h === hoveredHexagon ? HEXAGON_HIGHLIGHT_COLOR : d.c),
       onHover: handleHover,
+      updateTriggers: {
+        getLineColor: hoveredHexagon,
+      },
+    }),
+    new H3HexagonLayer({
+      id: 'h3-impact-risk',
+      data: h3ImpactData.data,
+      pickable: true,
+      wireframe: false,
+      filled: true,
+      extruded: false,
+      elevationScale: 1,
+      highPrecision: false,
+      visible: layer === 'impact',
+      opacity: 0.8,
+      coverage: 0.9,
+      lineWidthMinPixels: 2,
+      getHexagon: (d) => d.h,
+      getFillColor: (d) => d.c,
+      getElevation: (d) => d.v,
+      getLineColor: (d) => (d.h === hoveredHexagon ? HEXAGON_HIGHLIGHT_COLOR : d.c),
+      onHover: handleHover,
+      updateTriggers: {
+        getLineColor: hoveredHexagon,
+      },
     }),
   ];
 

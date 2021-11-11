@@ -3,7 +3,7 @@ import cx from 'classnames';
 import { useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
 
-import { useAnalysisChart, useAnalysisLegend } from 'lib/hooks/analysis';
+import { useAnalysisChart, useAnalysisLegend } from 'hooks/analysis';
 
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -12,9 +12,7 @@ import Chart from 'components/chart';
 import AreaStacked from 'components/chart/area-stacked';
 import Widget from 'components/widget';
 
-export type AnalysisChartProps = {};
-
-const AnalysisChart: React.FC<AnalysisChartProps> = () => {
+const AnalysisChart: React.FC = () => {
   const { filters } = useAppSelector(analysis);
 
   const { data: chartData, isFetching: chartIsFetching } = useAnalysisChart({ filters });

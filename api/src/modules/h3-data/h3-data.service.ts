@@ -327,44 +327,25 @@ export class H3DataService {
       );
     }
 
-    const {
-      factor,
-    } = await this.unitConversionsService.getUnitConversionByUnitId(
-      indicator.unit.id,
+    this.logger.log(`Generating impact map for indicator ${indicator.name}...`);
+
+    const impactMap: {
+      riskMap: H3IndexValueData[];
+      quantiles: number[];
+    } = await this.h3DataRepository.getImpactMap(
+      indicator,
+      getImpactMapDto.resolution,
+      getImpactMapDto.groupBy,
+      getImpactMapDto.year,
+      getImpactMapDto.materialIds,
     );
 
-    if (!factor) {
-      throw new NotFoundException(
-        `Conversion Unit with ID ${indicator.unit.id} has no 'factor' value`,
-      );
-    }
-
-    let impactMap: H3IndexValueData[];
-    switch (indicator.nameCode) {
-      case 'UWU_T':
-        impactMap = await this.h3DataRepository.getWaterImpactMapByResolution(
-          indicatorH3Data,
-          factor as number,
-          getImpactMapDto.resolution,
-          getImpactMapDto.groupBy,
-        );
-        break;
-      case 'DF_LUC_T':
-      case 'GHG_LUC_T':
-      case 'BL_LUC_T':
-      default:
-        throw new NotFoundException(
-          `Risk map for indicator ${indicator.name} (indicator nameCode ${indicator.nameCode}) not currently supported`,
-        );
-    }
-
-    // const quantiles: number[] = await this.h3DataRepository.calculateQuantiles(
-    //   materialH3Data as H3Data,
-    // );
-
     return {
-      data: impactMap,
-      metadata: { quantiles: [], unit: indicator.unit.symbol },
+      data: impactMap.riskMap,
+      metadata: {
+        quantiles: impactMap.quantiles,
+        unit: indicator.unit.symbol,
+      },
     };
   }
 }

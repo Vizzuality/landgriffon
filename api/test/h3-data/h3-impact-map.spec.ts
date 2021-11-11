@@ -10,6 +10,7 @@ import {
   createGeoRegion,
   createSourcingLocation,
   createSourcingRecord,
+  createIndicatorRecord,
 } from '../entity-mocks';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { Indicator } from 'modules/indicators/indicator.entity';
@@ -19,9 +20,10 @@ import { UnitConversion } from 'modules/unit-conversions/unit-conversion.entity'
 import { UnitRepository } from 'modules/units/unit.repository';
 import { UnitConversionRepository } from 'modules/unit-conversions/unit-conversion.repository';
 import { Material } from 'modules/materials/material.entity';
-import { GeoRegion } from '../../src/modules/geo-regions/geo-region.entity';
-import { SourcingLocation } from '../../src/modules/sourcing-locations/sourcing-location.entity';
-import { SourcingRecord } from '../../src/modules/sourcing-records/sourcing-record.entity';
+import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 
 /**
  * Tests for the H3DataModule.
@@ -205,17 +207,43 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       harvestId: harvestH3Data.id,
     });
 
-    const geoRegion: GeoRegion = await createGeoRegion({
-      h3Compact: ['861203a4fffffff'],
+    const geoRegionOne: GeoRegion = await createGeoRegion({
+      h3Compact: ['861203a4fffffff', '861203a5fffffff'],
     });
 
-    const sourcingLocation: SourcingLocation = await createSourcingLocation({
-      geoRegion,
+    const sourcingLocationOne: SourcingLocation = await createSourcingLocation({
+      geoRegion: geoRegionOne,
       material,
     });
 
-    const sourcingRecord: SourcingRecord = await createSourcingRecord({
-      sourcingLocation,
+    const sourcingRecordOne: SourcingRecord = await createSourcingRecord({
+      sourcingLocation: sourcingLocationOne,
+    });
+
+    const indicatorRecordOne: IndicatorRecord = await createIndicatorRecord({
+      sourcingRecordId: sourcingRecordOne.id,
+      indicatorId: indicator.id,
+      value: 1234,
+    });
+
+    const geoRegionTwo: GeoRegion = await createGeoRegion({
+      h3Compact: ['861203a4fffffff', '861203a6fffffff'],
+      name: 'DEF',
+    });
+
+    const sourcingLocationTwo: SourcingLocation = await createSourcingLocation({
+      geoRegion: geoRegionTwo,
+      material,
+    });
+
+    const sourcingRecordTwo: SourcingRecord = await createSourcingRecord({
+      sourcingLocation: sourcingLocationTwo,
+    });
+
+    const indicatorRecordTwo: IndicatorRecord = await createIndicatorRecord({
+      sourcingRecordId: sourcingRecordTwo.id,
+      indicatorId: indicator.id,
+      value: 1000,
     });
 
     const response = await request(app.getHttpServer())
@@ -229,12 +257,28 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
     expect(response.body.data).toEqual([
       {
+        h: '861203a6fffffff',
+        v: 500,
+      },
+      {
         h: '861203a4fffffff',
-        v: 277494.1333154987,
+        v: 1117,
+      },
+      {
+        h: '861203a5fffffff',
+        v: 617,
       },
     ]);
     expect(response.body.metadata).toEqual({
-      quantiles: [],
+      quantiles: [
+        500,
+        539.0078,
+        578.0858000000001,
+        617,
+        783.6999999999999,
+        950.7,
+        1117,
+      ],
       unit: 'tonnes',
     });
   });

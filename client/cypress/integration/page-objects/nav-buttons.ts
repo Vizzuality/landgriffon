@@ -3,5 +3,5 @@
  */
 
 export const buttons = {
-    analysis: `.flex-1 > [href="/analysis"]`
+  analysis: '.flex-1 > [href="/analysis"]'
 }

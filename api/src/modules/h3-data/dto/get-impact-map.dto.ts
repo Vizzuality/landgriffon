@@ -51,17 +51,17 @@ export class GetImpactMapDto {
   @IsOptional()
   @IsString({ each: true })
   @Type(() => String)
-  materials?: string[];
+  materialIds?: string[];
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString({ each: true })
   @Type(() => String)
-  origins?: string[];
+  originIds?: string[];
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString({ each: true })
   @Type(() => String)
-  suppliers?: string[];
+  supplierIds?: string[];
 }

@@ -17,12 +17,12 @@ seed-data: seed-source-data seed-gadm seed-h3-tables
 
 seed-source-data:
 	@echo "Importing source data... "
-	cd /base_data_importer && make -j 4
+	cd ./base_data_importer && make -j 4
 
 seed-gadm:
 	@echo "Importing GADM data... "
-	cd /data_download && make -j 4
+	cd ./data_download && make -j 4
 
 seed-h3-tables:
 	@echo "Starting seeding h3 tables... "
-	cd /h3_raster_importer && make
+	cd ./h3_raster_importer && make

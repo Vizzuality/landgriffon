@@ -18,9 +18,6 @@ import { useH3MaterialData, useH3RiskData, useH3ImpactData } from 'hooks/h3-data
 
 import { COLOR_RAMPS, NUMBER_FORMAT } from '../constants';
 
-import type { RGBColor, H3APIResponse, H3Item, H3Data } from 'types';
-import type { UseQueryResult } from 'react-query';
-
 const HEXAGON_HIGHLIGHT_COLOR = [0, 0, 0];
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
 const INITIAL_VIEW_STATE = {

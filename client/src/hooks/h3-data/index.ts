@@ -64,7 +64,7 @@ export function useH3MaterialData(): H3DataResponse {
           params: {
             materialId: materialIds[0],
             resolution: 4,
-            year: year,
+            year,
           },
         })
         // Adding color to the response
@@ -88,30 +88,29 @@ export function useH3MaterialData(): H3DataResponse {
 }
 
 export function useH3RiskData(): H3DataResponse {
-  const {
-    layer,
-    filters: { startYear, indicator, materials },
-  } = useAppSelector(analysis);
+  const { layer } = useAppSelector(analysis);
+  const filters = filtersForAPI(store.getState());
+  const { indicatorId, materialIds, year } = filters;
 
   const colors = useColors();
 
   const query = useQuery(
-    ['h3-data-risk', layer, JSON.stringify(materials)],
+    ['h3-data-risk', layer, JSON.stringify(materialIds)],
     async () =>
       h3DataService
         .get('/risk-map', {
           params: {
-            indicatorId: indicator.value,
-            materialId: materials[0].value,
+            indicatorId,
+            materialId: materialIds[0],
             resolution: 4,
-            year: startYear,
+            year,
           },
         })
         // Adding color to the response
         .then((response) => responseParser(response, colors)),
     {
       ...DEFAULT_QUERY_OPTIONS,
-      enabled: layer === 'risk' && materials.length > 0,
+      enabled: layer === 'risk' && materialIds.length > 0,
     },
   );
 
@@ -128,31 +127,30 @@ export function useH3RiskData(): H3DataResponse {
 }
 
 export function useH3ImpactData(): H3DataResponse {
-  const {
-    layer,
-    filters: { startYear, indicator, materials, by },
-  } = useAppSelector(analysis);
+  const { layer } = useAppSelector(analysis);
+  const filters = filtersForAPI(store.getState());
+  const { indicatorId, materialIds, groupBy, year } = filters;
 
   const colors = useColors();
 
   const query = useQuery(
-    ['h3-data-impact', layer, JSON.stringify(materials)],
+    ['h3-data-impact', layer, JSON.stringify(materialIds)],
     async () =>
       h3DataService
         .get('/impact-map', {
           params: {
-            indicatorId: indicator.value,
-            materialIds: [materials[0].value],
+            indicatorId,
+            materialId: materialIds[0],
             resolution: 4,
-            groupBy: by,
-            year: startYear,
+            groupBy,
+            year,
           },
         })
         // Adding color to the response
         .then((response) => responseParser(response, colors)),
     {
       ...DEFAULT_QUERY_OPTIONS,
-      enabled: layer === 'impact' && materials.length > 0,
+      enabled: layer === 'impact' && materialIds.length > 0,
     },
   );
 

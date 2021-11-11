@@ -11,7 +11,7 @@ import { analysis, setFilter } from 'store/features/analysis';
 
 const { TreeNode } = TreeSelect;
 
-type MaterialsFilterProps = TreeSelectProps<{}>;
+type MaterialsFilterProps = TreeSelectProps<unknown>;
 
 const MaterialsFilter: React.FC<MaterialsFilterProps> = (props: MaterialsFilterProps) => {
   const { multiple } = props;

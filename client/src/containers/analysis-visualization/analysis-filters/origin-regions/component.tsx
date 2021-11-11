@@ -5,7 +5,7 @@ import { useQuery } from 'react-query';
 
 import { getOriginRegions } from 'services/origin-regions';
 
-type OriginRegionsFilterProps = SelectProps<{}> & {
+type OriginRegionsFilterProps = SelectProps<unknown> & {
   onChange: (value) => void;
 };
 

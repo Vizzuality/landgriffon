@@ -1,6 +1,6 @@
 import type { Step } from './types';
 
-type StepsProps = React.HTMLAttributes<{}> & {
+type StepsProps = React.HTMLAttributes<unknown> & {
   steps: Step[];
 };
 

@@ -128,7 +128,7 @@ export function useH3ImpactData() {
         .get('/impact-map', {
           params: {
             indicatorId: indicator.value,
-            materialId: materials[0].value,
+            materialIds: [materials[0].value],
             resolution: 4,
             groupBy: by,
             year: startYear,

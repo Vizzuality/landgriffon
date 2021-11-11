@@ -2,14 +2,12 @@ import React, { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { TreeSelect, TreeSelectProps } from 'antd';
 import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
-import sortBy from 'lodash.sortby';
+import { sortBy } from 'lodash';
 
 import { getMaterialsTrees } from 'services/materials';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis, setFilter } from 'store/features/analysis';
-
-const { TreeNode } = TreeSelect;
 
 type MaterialsFilterProps = TreeSelectProps<unknown>;
 

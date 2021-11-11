@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { TreeSelect, TreeSelectProps } from 'antd';
 import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
 import { useQuery } from 'react-query';
-import sortBy from 'lodash.sortby';
+import { sortBy } from 'lodash';
 
 import { getSuppliersTrees } from 'services/suppliers';
 import { useAppDispatch, useAppSelector } from 'store/hooks';

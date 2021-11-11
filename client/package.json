@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint --fix && yarn check-types",
+    "lint": "next lint",
     "check-types": "tsc --noemit -p tsconfig.json",
     "prettier": "prettier --config .prettierrc.json --check --write \"./src/**/*.{tsx,jsx,ts,js}\"",
     "test": "start-server-and-test 'yarn dev' 3000 'yarn cypress:run'",

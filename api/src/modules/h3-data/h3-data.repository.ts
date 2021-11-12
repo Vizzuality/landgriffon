@@ -185,29 +185,22 @@ export class H3DataRepository extends Repository<H3Data> {
     year: number,
     materialIds?: string[],
   ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
-    const subQuery: SelectQueryBuilder<any> = getManager()
+    const query: SelectQueryBuilder<any> = getManager()
       .createQueryBuilder()
-      .subQuery()
-      .select('h3_uncompact(gr."h3Compact"::h3index[], 6)', 'h3index')
-      .addSelect('(ir.value/cardinality(gr."h3Compact"))', 'value')
+      .select('unnest(gr."h3Flat")', 'h')
+      .addSelect('sum(ir.value/gr."h3FlatLength")', 'v')
       .from(SourcingLocation, 'sl')
       .innerJoin('sourcing_records', 'sr', 'sl.id = sr.sourcingLocationId')
       .innerJoin('indicator_record', 'ir', 'sr.id = ir.sourcingRecordId')
       .innerJoin('geo_region', 'gr', 'sl.geoRegionId = gr.id')
       .where('ir.indicatorId = :indicatorId', { indicatorId: indicator.id })
-      .andWhere('sr.year = :year', { year });
+      .andWhere('sr.year = :year', { year })
+      .andWhere('gr."h3FlatLength" > 0')
+      .groupBy('h');
 
     if (materialIds) {
-      subQuery.andWhere('sl.material IN (:...materialIds)', { materialIds });
+      query.andWhere('sl.material IN (:...materialIds)', { materialIds });
     }
-
-    const query: SelectQueryBuilder<any> = getManager()
-      .createQueryBuilder()
-      .select('hx.h3index', 'h')
-      .addSelect('sum(hx.value)', 'v')
-      .from(subQuery.getQuery(), 'hx')
-      .groupBy('hx.h3index')
-      .setParameters(subQuery.getParameters());
 
     const tmpTableName: string = H3DataRepository.generateRandomTableName();
 

@@ -6,6 +6,7 @@ import { Hydrate } from 'react-query/hydration';
 import { Provider as AuthenticationProvider } from 'next-auth/client';
 import store from 'store';
 
+import 'styles/rc-tree-select.css';
 import 'styles/globals.css';
 
 const queryClient = new QueryClient();

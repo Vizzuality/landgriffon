@@ -49,7 +49,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = (props: MaterialsFilterP
       treeCheckable={false}
       disabled={!!error}
       treeNodeFilterProp="title"
-      suffixIcon={<ChevronDownIcon />}
+      inputIcon={<ChevronDownIcon />}
       removeIcon={<XIcon />}
       maxTagCount={5}
       maxTagPlaceholder={(e) => `${e.length} more...`}

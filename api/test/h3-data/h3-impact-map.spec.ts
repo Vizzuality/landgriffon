@@ -209,6 +209,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
     const geoRegionOne: GeoRegion = await createGeoRegion({
       h3Compact: ['861203a4fffffff', '861203a5fffffff'],
+      h3Flat: ['861203a4fffffff', '861203a5fffffff'],
+      h3FlatLength: 2,
     });
 
     const sourcingLocationOne: SourcingLocation = await createSourcingLocation({
@@ -228,6 +230,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
     const geoRegionTwo: GeoRegion = await createGeoRegion({
       h3Compact: ['861203a4fffffff', '861203a6fffffff'],
+      h3Flat: ['861203a4fffffff', '861203a6fffffff'],
+      h3FlatLength: 2,
       name: 'DEF',
     });
 
@@ -255,20 +259,22 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         resolution: 6,
       });
 
-    expect(response.body.data).toEqual([
-      {
-        h: '861203a6fffffff',
-        v: 500,
-      },
-      {
-        h: '861203a4fffffff',
-        v: 1117,
-      },
-      {
-        h: '861203a5fffffff',
-        v: 617,
-      },
-    ]);
+    expect(response.body.data).toEqual(
+      expect.arrayContaining([
+        {
+          h: '861203a6fffffff',
+          v: 500,
+        },
+        {
+          h: '861203a4fffffff',
+          v: 1117,
+        },
+        {
+          h: '861203a5fffffff',
+          v: 617,
+        },
+      ]),
+    );
     expect(response.body.metadata).toEqual({
       quantiles: [
         500,

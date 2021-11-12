@@ -33,6 +33,9 @@ export class GeoRegion extends BaseEntity {
   @Column({ type: 'text', array: true, nullable: true })
   h3Flat?: string[];
 
+  @Column({ type: 'int', nullable: true })
+  h3FlatLength?: number;
+
   @Column({ type: 'text', unique: true, nullable: true })
   @ApiPropertyOptional()
   name?: string;

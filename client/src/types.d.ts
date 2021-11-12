@@ -20,6 +20,37 @@ export type H3APIResponse = {
   };
 };
 
+export type CommonH3APIParams = {
+  year: number;
+  resolution: number;
+};
+
+export type MaterialH3APIParams = CommonH3APIParams & {
+  materialId: string;
+};
+
+export type RiskH3APIParams = MaterialH3APIParams & {
+  indicatorId: string;
+};
+
+export type ImpactH3APIParams = CommonH3APIParams & {
+  indicatorId: string;
+  groupBy: string;
+  materialIds?: string[];
+  originIds?: string[];
+  supplierIds?: string[];
+};
+
+export type ImpactTabularAPIParams = {
+  groupBy: string;
+  startYear: number;
+  endYear: number;
+  // indicatorIds: string[];
+  materialIds?: string[];
+  originIds?: string[];
+  supplierIds?: string[];
+};
+
 export type Indicator = {
   id: string;
   name: string;

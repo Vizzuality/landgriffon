@@ -133,11 +133,11 @@ resource "kubernetes_deployment" "api_deployment" {
           resources {
             limits = {
               cpu    = "1"
-              memory = "1Gi"
+              memory = "2Gi"
             }
             requests = {
               cpu    = "500m"
-              memory = "512Mi"
+              memory = "2Gi"
             }
           }
 

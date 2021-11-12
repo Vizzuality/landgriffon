@@ -10,7 +10,7 @@
     "start": "nest start",
     "start:watch": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "NODE_PATH=dist/src node dist/src/main",
+    "start:prod": "NODE_OPTIONS=\"--max-old-space-size=1024\" NODE_PATH=dist/src node dist/src/main",
     "build": "rm -rf dist && tsc",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest --config test/jest-config.json -i",
@@ -19,7 +19,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --config test/jest-config.json --runInBand"
   },
   "engines": {
-    "node": "^14.17"
+    "node": "^16.13"
   },
   "dependencies": {
     "@googlemaps/google-maps-services-js": "^3.1.16",

@@ -6,16 +6,7 @@ const withAntdLess = require('next-plugin-antd-less');
 const nextConfig = {
   reactStrictMode: true,
   eslint: {
-    dirs: [
-      'src/components',
-      'src/containers',
-      'src/hooks',
-      'src/layouts',
-      'src/lib',
-      'src/pages',
-      'src/services',
-      'src/store',
-    ],
+    dirs: ['src'],
   },
   webpack: (config) => {
     config.node = {

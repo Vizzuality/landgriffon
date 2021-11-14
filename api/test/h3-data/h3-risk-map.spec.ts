@@ -195,19 +195,11 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     expect(response.body.data).toEqual([
       {
         h: '861203a4fffffff',
-        v: 1000000,
+        v: 103,
       },
     ]);
     expect(response.body.metadata).toEqual({
-      quantiles: [
-        1000000,
-        1000000,
-        1000000,
-        1000000,
-        1000000,
-        1000000,
-        1000000,
-      ],
+      quantiles: [103, 103, 103, 103, 103, 103, 103],
       unit: 'tonnes',
     });
   });
@@ -242,9 +234,11 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         materialId: material.id,
         resolution: 6,
       });
+
     expect(
       h3DataRepository.getBiodiversityLossRiskMapByResolution,
     ).toHaveBeenCalledWith(
+      h3Data,
       h3Data,
       h3Data,
       deforestationH3Data,
@@ -255,18 +249,18 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     expect(response.body.data).toEqual([
       {
         h: '861203a4fffffff',
-        v: 3612905210000,
+        v: 10000000000,
       },
     ]);
     expect(response.body.metadata).toEqual({
       quantiles: [
-        3612905210000,
-        3612905210000,
-        3612905210000,
-        3612905210000,
-        3612905210000,
-        3612905210000,
-        3612905210000,
+        10000000000,
+        10000000000,
+        10000000000,
+        10000000000,
+        10000000000,
+        10000000000,
+        10000000000,
       ],
       unit: 'tonnes',
     });
@@ -307,25 +301,27 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     ).toHaveBeenCalledWith(
       h3Data,
       h3Data,
+      h3Data,
       deforestationH3Data,
       unitConversion.factor,
       6,
     );
+
     expect(response.body.data).toEqual([
       {
         h: '861203a4fffffff',
-        v: 3612905210000,
+        v: 1000000,
       },
     ]);
     expect(response.body.metadata).toEqual({
       quantiles: [
-        3612905210000,
-        3612905210000,
-        3612905210000,
-        3612905210000,
-        3612905210000,
-        3612905210000,
-        3612905210000,
+        1000000,
+        1000000,
+        1000000,
+        1000000,
+        1000000,
+        1000000,
+        1000000,
       ],
       unit: 'tonnes',
     });
@@ -354,23 +350,15 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
     expect(
       h3DataRepository.getDeforestationLossRiskMapByResolution,
-    ).toHaveBeenCalledWith(h3Data, h3Data, 6);
+    ).toHaveBeenCalledWith(h3Data, h3Data, h3Data, 6);
     expect(response.body.data).toEqual([
       {
         h: '861203a4fffffff',
-        v: 3612905210,
+        v: 1000,
       },
     ]);
     expect(response.body.metadata).toEqual({
-      quantiles: [
-        3612905210,
-        3612905210,
-        3612905210,
-        3612905210,
-        3612905210,
-        3612905210,
-        3612905210,
-      ],
+      quantiles: [1000, 1000, 1000, 1000, 1000, 1000, 1000],
       unit: 'tonnes',
     });
   });

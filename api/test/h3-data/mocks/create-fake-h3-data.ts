@@ -83,6 +83,7 @@ export const createWorldForRiskMapGeneration = async (data: {
   const material = await createMaterial({
     name: 'Material with no H3',
     harvestId: h3Data.id,
+    producerId: h3Data.id,
   });
   return { indicator, material, h3Data, unit, unitConversion };
 };

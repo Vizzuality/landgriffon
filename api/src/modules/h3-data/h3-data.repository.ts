@@ -74,8 +74,8 @@ export class H3DataRepository extends Repository<H3Data> {
   async getMaterialMapByResolution(
     materialH3Data: H3Data,
     resolution: number,
-  ): Promise<{ materialMap: H3IndexValueData[]; tmpTableName: string }> {
-    const tmpTableName: string = 'material_map';
+  ): Promise<{ materialMap: H3IndexValueData[]; quantiles: number[] }> {
+    const tmpTableName: string = 'test1';
     try {
       const query: string = getManager()
         .createQueryBuilder()
@@ -95,8 +95,11 @@ export class H3DataRepository extends Repository<H3Data> {
         `SELECT *
          FROM ${tmpTableName};`,
       );
-      return { materialMap, tmpTableName };
+      const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
+      // await getManager().query(`DROP TABLE ${tmpTableName};`);
+      return { materialMap, quantiles };
     } catch (err) {
+      this.logger.error(err);
       throw new ServiceUnavailableException(
         'Material Map could not been generated',
       );
@@ -139,36 +142,41 @@ export class H3DataRepository extends Repository<H3Data> {
     materialH3Data: H3Data,
     calculusFactor: number,
     resolution: number,
-  ): Promise<{ riskMap: H3IndexValueData[]; tmpTableName: string }> {
-    const tmpTableName: string = 'unsustainable_water_use_riskmap';
+  ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
+    const tmpTableName: string = 'test2';
     const query: string = getManager()
       .createQueryBuilder()
-      .select(`h3_to_parent(indicatorh3.h3index, ${resolution})`, 'h')
-      .addSelect(
-        `sum(indicatorh3.${indicatorH3Data.h3columnName} * (materialh3.${materialH3Data.h3columnName} * (1/${calculusFactor})))`,
-        'v',
-      )
-      .from(materialH3Data.h3tableName, 'materialh3')
-      .innerJoin(
-        indicatorH3Data.h3tableName,
-        'indicatorh3',
-        `indicatorh3.h3index = materialh3.h3index`,
-      )
-      .where(`indicatorh3.h3index = materialh3.h3index`)
-      .andWhere(`materialh3.${materialH3Data.h3columnName} is not null`)
-      .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
+      .select(`h3_to_parent(risk_calc.h3index, ${resolution})`, 'h')
+      .addSelect(`sum(risk_calc.water_risk)`, 'v')
+      .from((subQuery: SelectQueryBuilder<any>) => {
+        return subQuery
+          .select(`indicatorh3.h3index `)
+          .addSelect(
+            `indicatorh3.${indicatorH3Data.h3columnName}* 103 / sum(materialh3.${materialH3Data.h3columnName}) over() water_risk`,
+          )
+          .from(materialH3Data.h3tableName, 'materialh3')
+          .innerJoin(
+            indicatorH3Data.h3tableName,
+            'indicatorh3',
+            'indicatorh3.h3index = materialh3.h3index',
+          )
+          .where(`materialh3.${materialH3Data.h3columnName} is not null`)
+          .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`);
+      }, 'risk_calc')
       .groupBy('h')
       .getSql();
+
     await getManager().query(
-      `CREATE TEMPORARY TABLE ${tmpTableName} AS (${query});`,
+      `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${query});`,
     );
     const riskMap: any = await getManager().query(
-      `SELECT *
-       FROM ${tmpTableName};`,
+      `SELECT * FROM ${tmpTableName};`,
     );
+    const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
+    // await getManager().query(`DROP TABLE "${tmpTableName}";`);
     this.logger.log('Water Risk Map generated');
 
-    return { riskMap, tmpTableName };
+    return { riskMap, quantiles };
   }
 
   /**
@@ -203,7 +211,6 @@ export class H3DataRepository extends Repository<H3Data> {
     }
 
     const tmpTableName: string = H3DataRepository.generateRandomTableName();
-
     const [queryString, params] = query.getQueryAndParameters();
     await getManager().query(
       `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${queryString});`,
@@ -214,14 +221,10 @@ export class H3DataRepository extends Repository<H3Data> {
        FROM "${tmpTableName}";`,
     );
     this.logger.log('Impact Map generated');
-
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
-
     await getManager().query(`DROP TABLE "${tmpTableName}";`);
-
     return { riskMap, quantiles };
   }
-
   /**
    * @param indicatorH3Data H3 format data of a Indicator
    * @param materialH3Data  H3 format data of a material
@@ -231,33 +234,47 @@ export class H3DataRepository extends Repository<H3Data> {
    */
   async getBiodiversityLossRiskMapByResolution(
     indicatorH3Data: H3Data,
-    materialH3Data: H3Data,
+    producerMaterialH3Data: H3Data,
+    harvestMaterialH3Data: H3Data,
     deforestationH3Data: H3Data,
     calculusFactor: number,
     resolution: number,
-  ): Promise<{ riskMap: H3IndexValueData[]; tmpTableName: string }> {
-    const tmpTableName: string = 'biodiversity_loss_riskmap';
+  ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
+    const tmpTableName: string = 'test3';
     const query: string = getManager()
       .createQueryBuilder()
-      .select(`h3_to_parent(deforestationh3.h3index, ${resolution})`, 'h')
-      .addSelect(
-        `sum(deforestationh3.${deforestationH3Data.h3columnName} * (materialh3.${materialH3Data.h3columnName}*h3_hex_area(6)*100) * indicatorh3.${indicatorH3Data.h3columnName}*(1/${calculusFactor}))`,
-        'v',
-      )
-      .from(deforestationH3Data.h3tableName, 'deforestationh3')
-      .leftJoin(
-        indicatorH3Data.h3tableName,
-        'indicatorh3',
-        'indicatorh3.h3index = deforestationh3.h3index',
-      )
-      .leftJoin(
-        materialH3Data.h3tableName,
-        'materialh3',
-        'materialh3.h3index = deforestationh3.h3index',
-      )
-      .where(`deforestationh3.${deforestationH3Data.h3columnName} > 0`)
-      .andWhere(`materialh3.${materialH3Data.h3columnName} > 0`)
-      .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
+      .select(` h3_to_parent(risk_calc.h3index, ${resolution})`, 'h')
+      .addSelect('sum(risk_calc.bio_risk)', 'v')
+      .from((subQuery: SelectQueryBuilder<any>) => {
+        return subQuery
+          .select(`deforestationh3.h3index`)
+          .addSelect(
+            `indicatorh3.${indicatorH3Data.h3columnName} * (${calculusFactor}/0.0001) * ((deforestationh3.${deforestationH3Data.h3columnName} * harvesth3.${harvestMaterialH3Data.h3columnName}) / (sum(materialh3.${producerMaterialH3Data.h3columnName}) over())) bio_risk`,
+          )
+          .from(producerMaterialH3Data.h3tableName, 'materialh3')
+          .innerJoin(
+            indicatorH3Data.h3tableName,
+            'indicatorh3',
+            `indicatorh3.h3index = materialh3.h3index`,
+          )
+          .innerJoin(
+            deforestationH3Data.h3tableName,
+            'deforestationh3',
+            'deforestationh3.h3index = materialh3.h3index',
+          )
+          .innerJoin(
+            harvestMaterialH3Data.h3tableName,
+            'harvesth3',
+            'harvesth3.h3index = materialh3.h3index',
+          )
+          .andWhere(
+            `materialh3.${producerMaterialH3Data.h3columnName} is not null`,
+          )
+          .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
+          .andWhere(`materialh3.${producerMaterialH3Data.h3columnName} > 0`)
+          .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} > 0 `)
+          .andWhere(`deforestationh3.${deforestationH3Data.h3columnName} > 0`);
+      }, 'risk_calc')
       .groupBy('h')
       .getSql();
     await getManager().query(
@@ -267,35 +284,49 @@ export class H3DataRepository extends Repository<H3Data> {
       `SELECT *
        FROM ${tmpTableName};`,
     );
-    this.logger.log('Biodiversity Loss Map generated');
-
-    return { riskMap, tmpTableName };
+    const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
+    // await getManager().query(`DROP TABLE "${tmpTableName}";`);
+    this.logger.log('Biodiversity Map generated');
+    return { riskMap, quantiles };
   }
 
+  // TODO
   async getDeforestationLossRiskMapByResolution(
     indicatorH3Data: H3Data,
-    materialH3Data: H3Data,
+    producerMaterialH3Data: H3Data,
+    harvestMaterialH3Data: H3Data,
     resolution: number,
-  ): Promise<{ riskMap: H3IndexValueData[]; tmpTableName: string }> {
-    const tmpTableName: string = 'deforestation_loss_riskmap';
+  ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
+    const tmpTableName: string = 'test4';
     const query: string = getManager()
       .createQueryBuilder()
-      .select(`h3_to_parent(indicatorh3.h3index, ${resolution})`, 'h')
-      .addSelect(
-        `sum(indicatorh3.${indicatorH3Data.h3columnName} * (materialh3.${materialH3Data.h3columnName})*h3_hex_area(6)*100)`,
-        'v',
-      )
-      .from(materialH3Data.h3tableName, 'materialh3')
-      .innerJoin(
-        indicatorH3Data.h3tableName,
-        'indicatorh3',
-        `indicatorh3.h3index = materialh3.h3index`,
-      )
-      .where(`indicatorh3.h3index = materialh3.h3index`)
-      .andWhere(`materialh3.${materialH3Data.h3columnName} is not null`)
-      .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
-      .andWhere(`materialh3.${materialH3Data.h3columnName} <> 0`)
-      .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} <> 0 `)
+      .select(`h3_to_parent(risk_calc.h3index,${resolution})`, 'h')
+      .addSelect(`sum(risk_calc.def_risk)`, 'v')
+      .from((subQuery: SelectQueryBuilder<any>) => {
+        return subQuery
+          .select(`indicatorh3.h3index `)
+          .addSelect(
+            `(indicatorh3.${indicatorH3Data.h3columnName} * harvesth3.${harvestMaterialH3Data.h3columnName}) / sum(materialh3.${producerMaterialH3Data.h3columnName}) over() def_risk`,
+          )
+          .from(producerMaterialH3Data.h3tableName, 'materialh3')
+          .innerJoin(
+            indicatorH3Data.h3tableName,
+            'indicatorh3',
+            `indicatorh3.h3index = materialh3.h3index`,
+          )
+          .innerJoin(
+            harvestMaterialH3Data.h3tableName,
+            'harvesth3',
+            'harvesth3.h3index = materialh3.h3index',
+          )
+          .where(
+            `materialh3.${producerMaterialH3Data.h3columnName} is not null`,
+          )
+          .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
+          .andWhere(`materialh3.${producerMaterialH3Data.h3columnName} <> 0`)
+          .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} <> 0 `)
+          .andWhere(`harvesth3.${harvestMaterialH3Data.h3columnName} > 0`);
+      }, 'risk_calc')
       .groupBy('h')
       .getSql();
     await getManager().query(
@@ -305,42 +336,61 @@ export class H3DataRepository extends Repository<H3Data> {
       `SELECT *
        FROM ${tmpTableName};`,
     );
+    const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
+    //await getManager().query(`DROP TABLE "${tmpTableName}";`);
     this.logger.log('Deforestation Loss Map generated');
 
-    return { riskMap, tmpTableName };
+    return { riskMap, quantiles };
   }
 
   async getCarbonEmissionsRiskMapByResolution(
     indicatorH3Data: H3Data,
-    materialH3Data: H3Data,
+    producerMaterialH3Data: H3Data,
+    harvestMaterialH3Data: H3Data,
     deforestationH3Data: H3Data,
     calculusFactor: number,
     resolution: number,
-  ): Promise<{ riskMap: H3IndexValueData[]; tmpTableName: string }> {
-    const tmpTableName: string = 'carbon_emissions_riskmap';
+  ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
+    const tmpTableName: string = 'test5';
     const query: string = getManager()
       .createQueryBuilder()
-      .select(`h3_to_parent(deforestationh3.h3index, ${resolution})`, 'h')
-      .addSelect(
-        `sum(deforestationh3.${deforestationH3Data.h3columnName} * (materialh3.${materialH3Data.h3columnName}*h3_hex_area(6)*100) * indicatorh3.${indicatorH3Data.h3columnName})`,
-        'v',
-      )
-      .from(deforestationH3Data.h3tableName, 'deforestationh3')
-      .leftJoin(
-        indicatorH3Data.h3tableName,
-        'indicatorh3',
-        'indicatorh3.h3index = deforestationh3.h3index',
-      )
-      .leftJoin(
-        materialH3Data.h3tableName,
-        'materialh3',
-        'materialh3.h3index = deforestationh3.h3index',
-      )
-      .where(`deforestationh3.${deforestationH3Data.h3columnName} > 0`)
-      .andWhere(`materialh3.${materialH3Data.h3columnName} > 0`)
-      .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
+      .select(`h3_to_parent(risk_calc.h3index, ${resolution})`, 'h')
+      .addSelect(`sum(risk_calc.carbon_risk)`, 'v')
+      .from((subQuery: SelectQueryBuilder<any>) => {
+        return subQuery
+          .select(`deforestationh3.h3index`)
+          .addSelect(
+            `indicatorh3.${indicatorH3Data.h3columnName} * ((deforestationh3.${deforestationH3Data.h3columnName} * harvesth3.${harvestMaterialH3Data.h3columnName}) / sum(materialh3.${producerMaterialH3Data.h3columnName}) over()) carbon_risk`,
+          )
+          .from(producerMaterialH3Data.h3tableName, 'materialh3')
+          .innerJoin(
+            deforestationH3Data.h3tableName,
+            'deforestationh3',
+            'deforestationh3.h3index = materialh3.h3index',
+          )
+          .innerJoin(
+            harvestMaterialH3Data.h3tableName,
+            'harvesth3',
+            'harvesth3.h3index = materialh3.h3index',
+          )
+          .innerJoin(
+            indicatorH3Data.h3tableName,
+            'indicatorh3',
+            'indicatorh3.h3index = materialh3.h3index',
+          )
+          .where(
+            `materialh3.${producerMaterialH3Data.h3columnName} is not null`,
+          )
+          .andWhere(
+            `deforestationh3.${deforestationH3Data.h3columnName} is not null`,
+          )
+          .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
+          .andWhere(`deforestationh3.${deforestationH3Data.h3columnName} <> 0`)
+          .andWhere(`harvesth3.${harvestMaterialH3Data.h3columnName} > 0`);
+      }, 'risk_calc')
       .groupBy('h')
       .getSql();
+
     await getManager().query(
       `CREATE TEMPORARY TABLE ${tmpTableName} AS (${query});`,
     );
@@ -348,10 +398,10 @@ export class H3DataRepository extends Repository<H3Data> {
       `SELECT *
        FROM ${tmpTableName};`,
     );
-
+    const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
+    // await getManager().query(`DROP TABLE "${tmpTableName}";`);
     this.logger.log('Carbon Emissions Map generated');
-
-    return { riskMap, tmpTableName };
+    return { riskMap, quantiles };
   }
 
   /**
@@ -361,7 +411,7 @@ export class H3DataRepository extends Repository<H3Data> {
   async calculateQuantiles(tmpTableName: string): Promise<number[]> {
     try {
       const resultArray: number[] = await getManager().query(
-        `select min(v)                                            as min,
+        `select min(v)                                      as min,
                 percentile_cont(0.1667) within group (order by v) as per16,
                 percentile_cont(0.3337) within group (order by v) as per33,
                 percentile_cont(0.50) within group (order by v)   as per50,

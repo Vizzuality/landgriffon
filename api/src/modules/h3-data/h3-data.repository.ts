@@ -92,7 +92,7 @@ export class H3DataRepository extends Repository<H3Data> {
       );
       const materialMap: any = await getManager().query(
         `SELECT *
-         FROM ${tmpTableName};`,
+         FROM "${tmpTableName}";`,
       );
       await getManager().query(`DROP TABLE "${tmpTableName}"`);
       const quantiles: number[] = await this.calculateQuantiles(tmpTableName);

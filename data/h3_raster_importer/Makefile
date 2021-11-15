@@ -89,7 +89,7 @@ extract-earthstat-crop-production: download-earthstat-crop-production
 # Only extract the files that contain harvest area fraction. Set the no data to 0 as the mapspam datasets.
 extract-earthstat-crop-harvest: download-earthstat-crop-production
 	mkdir -p $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha
-	unzip -j -o -u $(WORKDIR_EARTHSTAT)/HarvestedAreaYield175Crops_Geotiff.zip *_HarvestedArea.tif -d $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha
+	unzip -j -o -u $(WORKDIR_EARTHSTAT)/HarvestedAreaYield175Crops_Geotiff.zip *_HarvestedAreaHectares.tif -d $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha
 	for tiffile in $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/*.tif; do \
 		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
 		output_file="$(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/earthstat2000_global_$${table_name}.tif";\

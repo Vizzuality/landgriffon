@@ -87,7 +87,6 @@ export class H3DataRepository extends Repository<H3Data> {
         .groupBy('h')
         .getSql();
 
-      this.logger.log('Material Map generated');
       await getManager().query(
         `CREATE TEMPORARY TABLE ${tmpTableName} AS (${query});`,
       );
@@ -95,7 +94,9 @@ export class H3DataRepository extends Repository<H3Data> {
         `SELECT *
          FROM ${tmpTableName};`,
       );
+      await getManager().query(`DROP TABLE ${tmpTableName}`);
       const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
+      this.logger.log('Material Map generated');
       return { materialMap, quantiles };
     } catch (err) {
       this.logger.error(err);

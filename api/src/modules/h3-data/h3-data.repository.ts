@@ -145,7 +145,7 @@ export class H3DataRepository extends Repository<H3Data> {
     calculusFactor: number,
     resolution: number,
   ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
-    const tmpTableName: string = 'water_risk_map';
+    const tmpTableName: string = H3DataRepository.generateRandomTableName();
     const query: string = getManager()
       .createQueryBuilder()
       .select(`h3_to_parent(risk_calc.h3index, ${resolution})`, 'h')
@@ -175,6 +175,7 @@ export class H3DataRepository extends Repository<H3Data> {
       `SELECT * FROM ${tmpTableName};`,
     );
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
+    await getManager().query(`DROP TABLE "${tmpTableName}"`);
     this.logger.log('Water Risk Map generated');
 
     return { riskMap, quantiles };
@@ -218,8 +219,7 @@ export class H3DataRepository extends Repository<H3Data> {
       params,
     );
     const riskMap: any = await getManager().query(
-      `SELECT *
-       FROM "${tmpTableName}";`,
+      `SELECT * FROM "${tmpTableName}";`,
     );
     this.logger.log('Impact Map generated');
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
@@ -241,7 +241,7 @@ export class H3DataRepository extends Repository<H3Data> {
     calculusFactor: number,
     resolution: number,
   ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
-    const tmpTableName: string = 'biodiversity_risk_map';
+    const tmpTableName: string = H3DataRepository.generateRandomTableName();
     const query: string = getManager()
       .createQueryBuilder()
       .select(` h3_to_parent(risk_calc.h3index, ${resolution})`, 'h')
@@ -279,13 +279,14 @@ export class H3DataRepository extends Repository<H3Data> {
       .groupBy('h')
       .getSql();
     await getManager().query(
-      `CREATE TEMPORARY TABLE ${tmpTableName} AS (${query});`,
+      `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${query});`,
     );
     const riskMap: any = await getManager().query(
-      `SELECT *
-       FROM ${tmpTableName};`,
+      `SELECT * FROM "${tmpTableName}";`,
     );
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
+
+    await getManager().query(`DROP TABLE "${tmpTableName}"`);
     this.logger.log('Biodiversity Map generated');
     return { riskMap, quantiles };
   }
@@ -297,7 +298,7 @@ export class H3DataRepository extends Repository<H3Data> {
     harvestMaterialH3Data: H3Data,
     resolution: number,
   ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
-    const tmpTableName: string = 'deforestation_risk_map';
+    const tmpTableName: string = H3DataRepository.generateRandomTableName();
     const query: string = getManager()
       .createQueryBuilder()
       .select(`h3_to_parent(risk_calc.h3index,${resolution})`, 'h')
@@ -330,13 +331,14 @@ export class H3DataRepository extends Repository<H3Data> {
       .groupBy('h')
       .getSql();
     await getManager().query(
-      `CREATE TEMPORARY TABLE ${tmpTableName} AS (${query});`,
+      `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${query});`,
     );
     const riskMap: any = await getManager().query(
-      `SELECT *
-       FROM ${tmpTableName};`,
+      `SELECT * FROM "${tmpTableName}";`,
     );
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
+
+    await getManager().query(`DROP TABLE "${tmpTableName}"`);
     this.logger.log('Deforestation Loss Map generated');
 
     return { riskMap, quantiles };
@@ -350,7 +352,7 @@ export class H3DataRepository extends Repository<H3Data> {
     calculusFactor: number,
     resolution: number,
   ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
-    const tmpTableName: string = 'carbon_risk_map';
+    const tmpTableName: string = H3DataRepository.generateRandomTableName();
     const query: string = getManager()
       .createQueryBuilder()
       .select(`h3_to_parent(risk_calc.h3index, ${resolution})`, 'h')
@@ -391,13 +393,13 @@ export class H3DataRepository extends Repository<H3Data> {
       .getSql();
 
     await getManager().query(
-      `CREATE TEMPORARY TABLE ${tmpTableName} AS (${query});`,
+      `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${query});`,
     );
     const riskMap: any = await getManager().query(
-      `SELECT *
-       FROM ${tmpTableName};`,
+      `SELECT *  FROM "${tmpTableName}";`,
     );
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
+    await getManager().query(`DROP TABLE "${tmpTableName}"`);
     this.logger.log('Carbon Emissions Map generated');
     return { riskMap, quantiles };
   }

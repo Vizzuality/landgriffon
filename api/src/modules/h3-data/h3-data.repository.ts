@@ -75,7 +75,7 @@ export class H3DataRepository extends Repository<H3Data> {
     materialH3Data: H3Data,
     resolution: number,
   ): Promise<{ materialMap: H3IndexValueData[]; quantiles: number[] }> {
-    const tmpTableName: string = 'test1';
+    const tmpTableName: string = 'material_map';
     try {
       const query: string = getManager()
         .createQueryBuilder()
@@ -96,7 +96,6 @@ export class H3DataRepository extends Repository<H3Data> {
          FROM ${tmpTableName};`,
       );
       const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
-      // await getManager().query(`DROP TABLE ${tmpTableName};`);
       return { materialMap, quantiles };
     } catch (err) {
       this.logger.error(err);
@@ -143,7 +142,7 @@ export class H3DataRepository extends Repository<H3Data> {
     calculusFactor: number,
     resolution: number,
   ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
-    const tmpTableName: string = 'test2';
+    const tmpTableName: string = 'water_risk_map';
     const query: string = getManager()
       .createQueryBuilder()
       .select(`h3_to_parent(risk_calc.h3index, ${resolution})`, 'h')
@@ -173,7 +172,6 @@ export class H3DataRepository extends Repository<H3Data> {
       `SELECT * FROM ${tmpTableName};`,
     );
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
-    // await getManager().query(`DROP TABLE "${tmpTableName}";`);
     this.logger.log('Water Risk Map generated');
 
     return { riskMap, quantiles };
@@ -240,7 +238,7 @@ export class H3DataRepository extends Repository<H3Data> {
     calculusFactor: number,
     resolution: number,
   ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
-    const tmpTableName: string = 'test3';
+    const tmpTableName: string = 'biodiversity_risk_map';
     const query: string = getManager()
       .createQueryBuilder()
       .select(` h3_to_parent(risk_calc.h3index, ${resolution})`, 'h')
@@ -285,7 +283,6 @@ export class H3DataRepository extends Repository<H3Data> {
        FROM ${tmpTableName};`,
     );
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
-    // await getManager().query(`DROP TABLE "${tmpTableName}";`);
     this.logger.log('Biodiversity Map generated');
     return { riskMap, quantiles };
   }
@@ -297,7 +294,7 @@ export class H3DataRepository extends Repository<H3Data> {
     harvestMaterialH3Data: H3Data,
     resolution: number,
   ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
-    const tmpTableName: string = 'test4';
+    const tmpTableName: string = 'deforestation_risk_map';
     const query: string = getManager()
       .createQueryBuilder()
       .select(`h3_to_parent(risk_calc.h3index,${resolution})`, 'h')
@@ -337,7 +334,6 @@ export class H3DataRepository extends Repository<H3Data> {
        FROM ${tmpTableName};`,
     );
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
-    //await getManager().query(`DROP TABLE "${tmpTableName}";`);
     this.logger.log('Deforestation Loss Map generated');
 
     return { riskMap, quantiles };
@@ -351,7 +347,7 @@ export class H3DataRepository extends Repository<H3Data> {
     calculusFactor: number,
     resolution: number,
   ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
-    const tmpTableName: string = 'test5';
+    const tmpTableName: string = 'carbon_risk_map';
     const query: string = getManager()
       .createQueryBuilder()
       .select(`h3_to_parent(risk_calc.h3index, ${resolution})`, 'h')
@@ -399,7 +395,6 @@ export class H3DataRepository extends Repository<H3Data> {
        FROM ${tmpTableName};`,
     );
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
-    // await getManager().query(`DROP TABLE "${tmpTableName}";`);
     this.logger.log('Carbon Emissions Map generated');
     return { riskMap, quantiles };
   }

@@ -75,7 +75,7 @@ export class H3DataRepository extends Repository<H3Data> {
     materialH3Data: H3Data,
     resolution: number,
   ): Promise<{ materialMap: H3IndexValueData[]; quantiles: number[] }> {
-    const tmpTableName: string = 'material_map';
+    const tmpTableName: string = H3DataRepository.generateRandomTableName();
     try {
       const query: string = getManager()
         .createQueryBuilder()
@@ -88,13 +88,13 @@ export class H3DataRepository extends Repository<H3Data> {
         .getSql();
 
       await getManager().query(
-        `CREATE TEMPORARY TABLE ${tmpTableName} AS (${query});`,
+        `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${query});`,
       );
       const materialMap: any = await getManager().query(
         `SELECT *
          FROM ${tmpTableName};`,
       );
-      await getManager().query(`DROP TABLE ${tmpTableName}`);
+      await getManager().query(`DROP TABLE "${tmpTableName}"`);
       const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
       this.logger.log('Material Map generated');
       return { materialMap, quantiles };

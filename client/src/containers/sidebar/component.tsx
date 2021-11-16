@@ -27,12 +27,12 @@ const navigationItems: NavigationList = [
   { name: 'Help', href: '#', icon: QuestionMarkCircleIcon },
 ];
 
-const Sidebar = () => {
+const Sidebar: React.FC = () => {
   const { isMenuMobileOpen } = useAppSelector(ui);
   const dispatch = useAppDispatch();
   const handleOnClose = useCallback(() => {
     dispatch(setMenuMobileOpen(false));
-  }, []);
+  }, [dispatch]);
 
   return (
     <>

@@ -38,16 +38,19 @@ const ImpactIndicatorsFilter: React.FC = () => {
         }),
       );
     }
-  }, [options, isFetched]);
+  }, [options, isFetched, dispatch]);
 
-  const handleChange = useCallback((currentValue, currentOption) => {
-    dispatch(
-      setFilter({
-        id: 'indicator',
-        value: currentOption,
-      }),
-    );
-  }, []);
+  const handleChange = useCallback(
+    (currentValue, currentOption) => {
+      dispatch(
+        setFilter({
+          id: 'indicator',
+          value: currentOption,
+        }),
+      );
+    },
+    [dispatch],
+  );
 
   return (
     <Select

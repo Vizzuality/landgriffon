@@ -210,10 +210,15 @@ def load_raster_list_to_h3_table(raster_list, table, dataType, dataset, year, h3
     cursor = conn.cursor()
     # remove link from materials entity for dropping h3 master table
     if dataset == 'es':
-        if dataType == 'production':
+        if dataType == 'production' and table != 'h3_grid_pasture_production':
             cursor.execute(f"""update {MATERIALS_TABLE} set "producerId" = NULL where "datasetId" like 'es_%'""")
-        if dataType == 'harvest_area':
+        if dataType == 'harvest_area' and table != 'h3_grid_pasture_ha':
             cursor.execute(f"""update {MATERIALS_TABLE} set "harvestId" = NULL where "datasetId" like 'es_%'""")
+        if dataType == 'production' and table == 'h3_grid_pasture_production':
+            cursor.execute(f"""update {MATERIALS_TABLE} set "producerId" = NULL where "datasetId" = 'es_pasture'""")
+        if dataType == 'harvest_area' and table == 'h3_grid_pasture_ha':
+            cursor.execute(f"""update {MATERIALS_TABLE} set "harvestId" = NULL where "datasetId" = 'es_pasture'""")
+
     if dataset == 'spam':
         if dataType == 'production':
             cursor.execute(f"""update {MATERIALS_TABLE} set "producerId" = NULL where "datasetId" like 'spam_%'""")

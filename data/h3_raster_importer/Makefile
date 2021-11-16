@@ -239,7 +239,7 @@ extract-cropland: download-cropland
 	$(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/es_pasture_global.tif
 	rm -f $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/Pasture2000_5m.tif
 	gdal_calc.py --calc "A*10000*(A>0)" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/es_pasture_global.tif \
-	 --A_band 1 --outfile $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/Pasture2000_5m_ha.tif;
+	 --A_band 1 --outfile $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/global2000_pasture_ha.tif;
 	rm -f $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/es_pasture_global.tif
 
 # and import to a table called "h3_grid_earthstat2000_global_ha"

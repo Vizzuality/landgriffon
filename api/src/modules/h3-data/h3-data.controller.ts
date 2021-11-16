@@ -5,13 +5,17 @@ import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 import { GetMaterialH3ByResolutionDto } from 'modules/h3-data/dto/get-material-h3-by-resolution.dto';
 import { GetRiskMapH3Dto } from 'modules/h3-data/dto/get-risk-map.dto';
 import { H3MapResponse } from 'modules/h3-data/dto/h3-map-response.dto';
-import { GetYearsByLayerAndMaterialDto } from 'modules/h3-data/dto/get-years-by-layer-and-material.dto';
+import { GetYearsByLayerAndMaterialsDto } from 'modules/h3-data/dto/get-years-by-layer-and-materials.dto';
 import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
+
 
 @Controller('/api/v1/h3')
 @ApiTags(H3Data.name)
 export class H3DataController {
-  constructor(protected readonly h3DataService: H3DataService) {}
+  constructor(
+    protected readonly h3DataService: H3DataService,
+
+  ) {}
 
   @ApiOperation({ description: 'Retrieve H3 data providing its name' })
   @Get('data/:h3TableName/:h3ColumnName')
@@ -30,15 +34,14 @@ export class H3DataController {
   })
   @Get('years')
   async getYearsByLayerType(
-    @Query(ValidationPipe) queryParams: GetYearsByLayerAndMaterialDto,
+    @Query(ValidationPipe) queryParams: GetYearsByLayerAndMaterialsDto,
   ): Promise<{ data: number[] }> {
-    const { materialId, indicatorId, layer } = queryParams;
-    const availableYears: number[] =
-      await this.h3DataService.getYearsByLayerType(
-        layer,
-        materialId,
-        indicatorId,
-      );
+    const { materialIds, indicatorId, layer } = queryParams;
+    const availableYears: number[] = await this.h3DataService.getYearsByLayerType(
+      layer,
+      materialIds,
+      indicatorId,
+    );
     return { data: availableYears };
   }
 

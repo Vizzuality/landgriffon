@@ -66,7 +66,7 @@ export class SourcingRecordsService extends AppBaseService<
   async save(entityArray: any[]): Promise<void> {
     await this.sourcingRecordRepository.save(entityArray);
   }
-  async getYears(): Promise<number[]> {
-    return this.sourcingRecordRepository.getYears();
+  async getYears(materialIds?: string[]): Promise<number[]> {
+    return this.sourcingRecordRepository.getYears(materialIds);
   }
 }

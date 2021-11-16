@@ -11,13 +11,15 @@ import {
 } from './mocks/create-fake-h3-data';
 import { MaterialRepository } from '../../src/modules/materials/material.repository';
 import {
+  createH3Data,
   createIndicator,
-  createMaterial,
-  createSourcingRecord,
-} from '../entity-mocks';
+  createMaterial, createSourcingLocation,
+  createSourcingRecord
+} from "../entity-mocks";
 import { H3Data } from '../../src/modules/h3-data/h3-data.entity';
 import { Material } from '../../src/modules/materials/material.entity';
 import { Indicator } from '../../src/modules/indicators/indicator.entity';
+import { fake } from "faker";
 
 /**
  * Tests for the H3DataModule.
@@ -94,6 +96,66 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
     expect(response.body.data).toEqual([...new Set(years)]);
   });
 
+  test('Given sourcing records exist in DB, When I query available years for a Impact layer filtering by one material, then I should get said data in a array of numbers', async () => {
+    const fakeH3 = await createH3Data()
+    const material = await createMaterial({ producerId: fakeH3.id})
+    const material2 = await createMaterial({ producerId: fakeH3.id})
+    const sourcingLocation = await createSourcingLocation({materialId: material.id})
+    const sourcingLocation2 = await createSourcingLocation({materialId: material2.id})
+
+    const years = [2001, 2001, 2002, 2003, 2007];
+    for await (const year of years) {
+      await createSourcingRecord({ year, sourcingLocationId: sourcingLocation.id });
+    }
+    const years2 = [2010, 2011, 2012]
+      for await (const year of years2) {
+        await createSourcingRecord({ year, sourcingLocationId: sourcingLocation2.id });
+
+    }
+
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/h3/years?layer=impact&materialIds[]=${material.id}`)
+      .expect(HttpStatus.OK);
+
+    expect(response.body.data).toEqual([...new Set(years)]);
+  });
+
+  test('Given sourcing records exist in DB, When I query available years for a Impact layer filtering by materials, then I should get said data in a array of numbers', async () => {
+    const fakeH3 = await createH3Data()
+    const material = await createMaterial({ producerId: fakeH3.id})
+    const material2 = await createMaterial({ producerId: fakeH3.id})
+    const sourcingLocation = await createSourcingLocation({materialId: material.id})
+    const sourcingLocation2 = await createSourcingLocation({materialId: material2.id})
+
+    const years = [2001, 2001, 2002, 2003, 2007];
+    for await (const year of years) {
+      await createSourcingRecord({ year, sourcingLocationId: sourcingLocation.id });
+    }
+    const years2 = [2010, 2011, 2012, 2010, 2011]
+    for await (const year of years2) {
+      await createSourcingRecord({ year, sourcingLocationId: sourcingLocation2.id });
+
+    }
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/h3/years')
+      .query({ layer: 'impact', materialIds: [material.id, material2.id] })
+      .expect(HttpStatus.OK);
+
+    expect(response.body.data).toEqual([...new Set(years), ...new Set(years2)]);
+  });
+
+  test(' When I query available years for a Material layer filtering by more than one Material, then I should get a proper erros message', async () => {
+    const material = await createMaterial()
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/h3/years')
+      .query({ layer: 'material', materialIds: [material.id, material.id] })
+      .expect(HttpStatus.BAD_REQUEST)
+
+    expect(response.body.errors[0].title).toEqual('Only one Material ID can be requested to filter for available years for a Material Layer type')
+  });
+
   test('Given there is material H3 data, When I query available years for a Material layer, then I should get all available years that are not indicator type', async () => {
     const years = [2001, 2001, 2002, 2003, 2007];
     const fakeH3MasterData: Array<Partial<H3Data>> = [];
@@ -132,8 +194,8 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
       }
 
       const response = await request(app.getHttpServer())
-        .get('/api/v1/h3/years')
-        .query({ layer: 'material', materialId: savedMaterials[0].id });
+        .get(`/api/v1/h3/years?layer=material&materialIds[]=${savedMaterials[0].id}`)
+
       const materialH3Data: H3Data[] = await h3DataRepository.find({
         id: savedMaterials[0].harvestId,
       });

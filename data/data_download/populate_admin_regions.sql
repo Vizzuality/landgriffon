@@ -23,6 +23,8 @@ ON CONFLICT (name) DO UPDATE SET
 "h3Compact" = EXCLUDED."h3Compact",
 "theGeom" = EXCLUDED."theGeom";
 
+UPDATE geo_region set "h3FlatLength" = cardinality("h3Flat");
+
 -- 2. Insert into admin_region referencing geo_region
 BEGIN;
 

@@ -12,7 +12,14 @@ import h3DataService from 'services/h3-data';
 import { COLOR_RAMPS } from 'containers/analysis-visualization/constants';
 
 import type { AxiosResponse } from 'axios';
-import type { RGBColor, H3APIResponse, H3Item, MaterialH3APIParams, RiskH3APIParams } from 'types';
+import type {
+  RGBColor,
+  H3APIResponse,
+  H3Item,
+  MaterialH3APIParams,
+  RiskH3APIParams,
+  ImpactH3APIParams,
+} from 'types';
 
 type H3DataResponse = UseQueryResult<H3APIResponse, unknown>;
 
@@ -52,12 +59,12 @@ export function useColors(): RGBColor[] {
 export function useH3MaterialData(): H3DataResponse {
   const { layer } = useAppSelector(analysis);
   const filters = filtersForH3API(store.getState()) as MaterialH3APIParams;
-  const areFilters = !!filters.materialId;
+  const isEnable = !!filters.materialId;
 
   const colors = useColors();
 
   const query = useQuery(
-    ['h3-data-material', layer, JSON.stringify(filters)],
+    ['h3-data-material', layer, JSON.stringify({ layer, ...filters })],
     async () =>
       h3DataService
         .get('/material', {
@@ -70,7 +77,7 @@ export function useH3MaterialData(): H3DataResponse {
         .then((response) => responseParser(response, colors)),
     {
       ...DEFAULT_QUERY_OPTIONS,
-      enabled: layer === 'material' && areFilters,
+      enabled: layer === 'material' && isEnable,
     },
   );
 
@@ -89,12 +96,12 @@ export function useH3MaterialData(): H3DataResponse {
 export function useH3RiskData(): H3DataResponse {
   const { layer } = useAppSelector(analysis);
   const filters = filtersForH3API(store.getState()) as RiskH3APIParams;
-  const areFilters = !!filters.materialId;
+  const isEnable = !!filters.materialId && !!filters.indicatorId;
 
   const colors = useColors();
 
   const query = useQuery(
-    ['h3-data-risk', layer, JSON.stringify(filters)],
+    ['h3-data-risk', layer, JSON.stringify({ layer, ...filters })],
     async () =>
       h3DataService
         .get('/risk-map', {
@@ -107,7 +114,7 @@ export function useH3RiskData(): H3DataResponse {
         .then((response) => responseParser(response, colors)),
     {
       ...DEFAULT_QUERY_OPTIONS,
-      enabled: layer === 'risk' && areFilters,
+      enabled: layer === 'risk' && isEnable,
     },
   );
 
@@ -125,12 +132,13 @@ export function useH3RiskData(): H3DataResponse {
 
 export function useH3ImpactData(): H3DataResponse {
   const { layer } = useAppSelector(analysis);
-  const filters = filtersForH3API(store.getState());
+  const filters = filtersForH3API(store.getState()) as ImpactH3APIParams;
+  const isEnable = !!filters.indicatorId;
 
   const colors = useColors();
 
   const query = useQuery(
-    ['h3-data-impact', layer, JSON.stringify(filters)],
+    ['h3-data-impact', layer, JSON.stringify({ layer, ...filters })],
     async () =>
       h3DataService
         .get('/impact-map', {
@@ -143,7 +151,7 @@ export function useH3ImpactData(): H3DataResponse {
         .then((response) => responseParser(response, colors)),
     {
       ...DEFAULT_QUERY_OPTIONS,
-      enabled: layer === 'impact',
+      enabled: layer === 'impact' && isEnable,
     },
   );
 

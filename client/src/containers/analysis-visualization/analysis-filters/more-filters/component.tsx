@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useState, useMemo } from 'react';
 import { Popover, Transition } from '@headlessui/react';
 import { FilterIcon } from '@heroicons/react/solid';
 
@@ -24,7 +24,10 @@ const MoreFilters: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const { materials, origins, suppliers } = filters;
-  const selectedFilters = { materials, origins, suppliers };
+  const selectedFilters = useMemo(
+    () => ({ materials, origins, suppliers }),
+    [materials, origins, suppliers],
+  );
 
   const [open, setOpen] = useState(false);
   const [moreFilters, setMoreFilters] = useState(selectedFilters);
@@ -39,7 +42,7 @@ const MoreFilters: React.FC = () => {
       } as AnalysisState['filters']),
     );
     setOpen(false);
-  }, [moreFilters]);
+  }, [dispatch, moreFilters.materials, moreFilters.origins, moreFilters.suppliers]);
 
   const handleClearFilters = useCallback(() => {
     setMoreFilters(INITIAL_FILTERS as AnalysisState['filters']); // reset filters
@@ -68,9 +71,11 @@ const MoreFilters: React.FC = () => {
         <span className="block h-5 truncate">
           <FilterIcon className="w-5 h-5 text-gray-900" aria-hidden="true" />
         </span>
-        <span className="flex items-center justify-center w-5 h-5 ml-1 text-xs font-semibold text-white bg-green-700 rounded-full">
-          {counter}
-        </span>
+        {counter !== 0 && (
+          <span className="flex items-center justify-center w-5 h-5 ml-1 text-xs font-semibold text-white bg-green-700 rounded-full">
+            {counter}
+          </span>
+        )}
       </Button>
 
       <Transition

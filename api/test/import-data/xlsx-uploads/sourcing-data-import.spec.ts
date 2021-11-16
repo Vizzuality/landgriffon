@@ -17,11 +17,7 @@ import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-reco
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
-import {
-  createAdminRegion,
-  createGeoRegion,
-  createMaterial,
-} from '../../entity-mocks';
+import { createAdminRegion, createGeoRegion } from '../../entity-mocks';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { UnknownLocationService } from '../../../src/modules/geo-coding/geocoding-strategies/unknown-location.geocoding.service';
 import { AdminRegion } from '../../../src/modules/admin-regions/admin-region.entity';
@@ -31,7 +27,10 @@ import {
   createMaterialTreeForXLSXImport,
   createIndicatorsForXLSXImport,
 } from './import-mocks';
-import { dropFakeH3Data } from '../../h3-data/mocks/create-fake-h3-data';
+import {
+  createFakeH3Data,
+  dropFakeH3Data,
+} from '../../h3-data/mocks/create-fake-h3-data';
 import { IndicatorRecord } from '../../../src/modules/indicator-records/indicator-record.entity';
 import { IndicatorRecordRepository } from '../../../src/modules/indicator-records/indicator-record.repository';
 import { IndicatorRepository } from '../../../src/modules/indicators/indicator.repository';
@@ -248,9 +247,11 @@ describe('Sourcing Data import', () => {
       isoA2: 'ABC',
       geoRegion,
     });
+    await createFakeH3Data('h3_grid_deforestation_global', 'hansen_loss_2019');
     tablesToDrop = [
       ...(await createMaterialTreeForXLSXImport()),
       ...(await createIndicatorsForXLSXImport()),
+      'h3_grid_deforestation_global',
     ];
 
     const response = await request(app.getHttpServer())

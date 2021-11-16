@@ -12,7 +12,6 @@ import { AppInfoDTO } from 'dto/info.dto';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sourcing-record.dto';
-import { Material } from '../materials/material.entity';
 
 @Injectable()
 export class SourcingRecordsService extends AppBaseService<

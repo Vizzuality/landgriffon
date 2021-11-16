@@ -8,6 +8,7 @@ import { IndicatorsModule } from 'modules/indicators/indicators.module';
 import { UnitConversionsModule } from 'modules/unit-conversions/unit-conversions.module';
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { H3FilterYearsByLayerService } from 'modules/h3-data/services/h3-filter-years-by-layer.service';
+import { ImpactTableService } from 'modules/h3-data/services/impact-table.service';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { H3FilterYearsByLayerService } from 'modules/h3-data/services/h3-filter-
     SourcingRecordsModule,
   ],
   controllers: [H3DataController],
-  providers: [H3DataService, H3FilterYearsByLayerService],
+  providers: [H3DataService, H3FilterYearsByLayerService, ImpactTableService],
   exports: [H3DataService],
 })
 export class H3DataModule {}

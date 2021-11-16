@@ -7,11 +7,16 @@ import { GetRiskMapH3Dto } from 'modules/h3-data/dto/get-risk-map.dto';
 import { H3MapResponse } from 'modules/h3-data/dto/h3-map-response.dto';
 import { GetYearsByLayerAndMaterialDto } from 'modules/h3-data/dto/get-years-by-layer-and-material.dto';
 import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
+import { GetImpactTableDto } from 'modules/h3-data/dto/get-impact-table.dto';
+import { ImpactTableService } from 'modules/h3-data/services/impact-table.service';
 
 @Controller('/api/v1/h3')
 @ApiTags(H3Data.name)
 export class H3DataController {
-  constructor(protected readonly h3DataService: H3DataService) {}
+  constructor(
+    protected readonly h3DataService: H3DataService,
+    protected readonly impactTableService: ImpactTableService,
+  ) {}
 
   @ApiOperation({ description: 'Retrieve H3 data providing its name' })
   @Get('data/:h3TableName/:h3ColumnName')
@@ -84,5 +89,15 @@ export class H3DataController {
     @Query(ValidationPipe) getImpactMapDto: GetImpactMapDto,
   ): Promise<H3MapResponse> {
     return this.h3DataService.getImpactMapByResolution(getImpactMapDto);
+  }
+
+  @ApiOperation({
+    description: 'Get a calculated H3 impact map given ...',
+  })
+  @Get('impact-table')
+  async getImpactTable(
+    @Query(ValidationPipe) getImpactTableDto: GetImpactTableDto,
+  ): Promise<H3MapResponse> {
+    return this.impactTableService.getImpactTable(getImpactTableDto);
   }
 }

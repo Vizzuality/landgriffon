@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
-import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
 import { GetImpactTableDto } from 'modules/h3-data/dto/get-impact-table.dto';
-import { SelectQueryBuilder } from 'typeorm';
+import { getManager, SelectQueryBuilder } from 'typeorm';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 
 @Injectable()
 export class ImpactTableService {
@@ -13,17 +13,17 @@ export class ImpactTableService {
   ) {}
 
   async getImpactTable(getImpactTableDto: GetImpactTableDto): Promise<any> {
-    const queryBuilder: SelectQueryBuilder<SourcingRecordRepository> = await this.h3DataRepository
+    const queryBuilder: SelectQueryBuilder<SourcingRecord> = await getManager()
       .createQueryBuilder()
       .select('year')
       .addSelect('sum(ir.value)')
       .addSelect('ir."indicatorId"')
-      .addSelect('ir."shortName"')
-      .from(SourcingRecordRepository, 'sr')
+      .addSelect('i."shortName"')
+      .from(SourcingRecord, 'sr')
       .leftJoin('indicator_record', 'ir', 'ir."sourcingRecordId" = sr.id')
-      .leftJoin('sourcing_location', 'sr', 'sl.id = sr."sourcingLocationId"')
+      .leftJoin('sourcing_location', 'sl', 'sl.id = sr."sourcingLocationId"')
       .leftJoin('indicator', 'i', 'i.id = ir."indicatorId"')
-      .where('sr.year = :year', { year: getImpactTableDto.startYear });
+      .where('sr.year >= :year', { year: getImpactTableDto.startYear });
     if (getImpactTableDto.materialIds?.length) {
       queryBuilder.andWhere('sl.material IN (:...materialIds)', {
         materialIds: getImpactTableDto.materialIds,
@@ -44,7 +44,7 @@ export class ImpactTableService {
         supplierIds: getImpactTableDto.supplierIds,
       });
     }
-    queryBuilder.groupBy(getImpactTableDto.groupBy);
+    queryBuilder.groupBy(`sr.year, ir."indicatorId", i."shortName"`);
     const response: any = await queryBuilder.getMany();
     console.log('responseeee', response);
     return response;

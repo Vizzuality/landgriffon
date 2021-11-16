@@ -98,6 +98,7 @@ export class H3DataController {
   async getImpactTable(
     @Query(ValidationPipe) getImpactTableDto: GetImpactTableDto,
   ): Promise<H3MapResponse> {
+    console.log(getImpactTableDto);
     return this.impactTableService.getImpactTable(getImpactTableDto);
   }
 }

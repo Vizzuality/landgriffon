@@ -20,6 +20,7 @@ import { Material } from 'modules/materials/material.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -121,9 +122,18 @@ export class SourcingRecordsImportService {
 
       await Promise.all(
         sourcingRecords.map(async (sourcingRecord: SourcingRecord) => {
-          await this.indicatorRecordsService.calculateImpactValue(
-            sourcingRecord,
-          );
+          try {
+            return await this.indicatorRecordsService.calculateImpactValue(
+              sourcingRecord,
+            );
+          } catch (error) {
+            // TODO: once we have complete data, this try/catch block can be removed, as we should aim to not have missing h3 data.
+            if (error instanceof MissingH3DataError) {
+              this.logger.log(error.toString());
+              return [];
+            }
+            throw error;
+          }
         }),
       );
 

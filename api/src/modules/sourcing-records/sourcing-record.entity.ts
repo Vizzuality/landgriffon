@@ -11,7 +11,7 @@ import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.e
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
-import { IndicatorRecord } from '../indicator-records/indicator-record.entity';
+import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 
 export const sourcingRecordResource: BaseServiceResource = {
   className: 'SourcingRecord',

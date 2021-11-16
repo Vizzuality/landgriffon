@@ -17,6 +17,8 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { H3DataService } from 'modules/h3-data/h3-data.service';
+import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 
 @Injectable()
 export class IndicatorRecordsService extends AppBaseService<
@@ -78,29 +80,100 @@ export class IndicatorRecordsService extends AppBaseService<
         'Cannot calculate impact for sourcing record - missing geoRegion (through sourcingLocation)',
       );
     }
-
     if (!sourcingRecord.sourcingLocation.material) {
       throw new Error(
         'Cannot calculate impact for sourcing record - missing material (through sourcingLocation)',
       );
     }
-    const productionValue: number = await this.h3DataService.getProductionForGeoRegion(
-      sourcingRecord.sourcingLocation.geoRegion,
-      sourcingRecord.sourcingLocation.material,
+
+    const producerH3Table:
+      | H3Data
+      | undefined = await this.h3DataService.getById(
+      sourcingRecord.sourcingLocation.material.producerId,
     );
 
-    const indicatorRecords: IndicatorRecord[] = await Promise.all(
+    if (!producerH3Table) {
+      throw new MissingH3DataError(
+        `Cannot calculate impact for sourcing record - missing production h3 data for material "${sourcingRecord.sourcingLocation.material.name}"`,
+      );
+    }
+
+    const harvestH3Table: H3Data | undefined = await this.h3DataService.getById(
+      sourcingRecord.sourcingLocation.material.harvestId,
+    );
+
+    if (!harvestH3Table) {
+      throw new MissingH3DataError(
+        `Cannot calculate impact for sourcing record - missing harvest h3 data for material "${sourcingRecord.sourcingLocation.material.name}"`,
+      );
+    }
+    const indicatorRecords: IndicatorRecord[] = [];
+
+    await Promise.all(
       indicators.map(
-        async (indicator: Indicator): Promise<IndicatorRecord> => {
-          const impactValue: number = await this.h3DataService.getImpactForGeoRegion(
-            sourcingRecord.sourcingLocation.geoRegion,
-            indicator,
+        async (indicator: Indicator): Promise<void> => {
+          const indicatorH3Table:
+            | H3Data
+            | undefined = await this.h3DataService.findH3ByIndicatorId(
+            indicator.id,
           );
+
+          if (!indicatorH3Table) {
+            throw new Error(
+              'Cannot calculate impact for sourcing record - missing indicator h3 data',
+            );
+          }
+
+          let impactValue: number | null = null;
+
+          switch (indicator.nameCode) {
+            case 'UWU_T':
+              impactValue = await this.h3DataService.getWaterRiskIndicatorRecordValue(
+                producerH3Table,
+                harvestH3Table,
+                indicatorH3Table,
+                sourcingRecord.id,
+              );
+              break;
+            case 'DF_LUC_T':
+              impactValue = await this.h3DataService.getDeforestationLossIndicatorRecordValue(
+                producerH3Table,
+                harvestH3Table,
+                indicatorH3Table,
+                sourcingRecord.id,
+              );
+              break;
+            case 'BL_LUC_T':
+              impactValue = await this.h3DataService.getBiodiversityLossIndicatorRecordValue(
+                producerH3Table,
+                harvestH3Table,
+                indicatorH3Table,
+                sourcingRecord.id,
+              );
+              break;
+            case 'GHG_LUC_T':
+              impactValue = await this.h3DataService.getCarbonIndicatorRecordValue(
+                producerH3Table,
+                harvestH3Table,
+                indicatorH3Table,
+                sourcingRecord.id,
+              );
+              break;
+
+            default:
+              this.logger.log(
+                `Indicator Record calculation for indicator '${indicator.name}' not supported;`,
+              );
+          }
+
+          if (impactValue === null) {
+            return;
+          }
 
           const indicatorRecord: IndicatorRecord = IndicatorRecord.merge(
             new IndicatorRecord(),
             {
-              value: (impactValue * sourcingRecord.tonnage) / productionValue,
+              value: impactValue,
               indicatorId: indicator.id,
               status: INDICATOR_RECORD_STATUS.SUCCESS,
               sourcingRecordId: sourcingRecord.id,
@@ -108,8 +181,7 @@ export class IndicatorRecordsService extends AppBaseService<
           );
 
           await this.indicatorRecordRepository.insert(indicatorRecord);
-
-          return indicatorRecord;
+          indicatorRecords.push(indicatorRecord);
         },
       ),
     );

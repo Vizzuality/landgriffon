@@ -28,6 +28,7 @@ async function createIndicatorsForXLSXImport(): Promise<string[]> {
   for (const spec of indicatorSpec) {
     const indicator: Indicator = await createIndicator({
       name: spec.name,
+      nameCode: spec.nameCode,
     });
 
     await createFakeH3Data(

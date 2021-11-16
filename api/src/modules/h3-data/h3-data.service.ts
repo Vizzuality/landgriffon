@@ -18,8 +18,6 @@ import {
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import { H3FilterYearsByLayerService } from 'modules/h3-data/services/h3-filter-years-by-layer.service';
 import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
-import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
-import { Material } from 'modules/materials/material.entity';
 
 /**
  * @debt: Check if we actually need extending nestjs-base-service over this module.
@@ -50,78 +48,68 @@ export class H3DataService {
     return await this.h3DataRepository.findH3ByName(h3TableName, h3ColumnName);
   }
 
-  /**
-   * Find H3 table data by its indicator id
-   */
+  async getById(id: string): Promise<H3Data | undefined> {
+    return await this.h3DataRepository.findOne({ id });
+  }
+
   async findH3ByIndicatorId(indicatorId: string): Promise<H3Data | undefined> {
     return await this.h3DataRepository.findOne({ indicatorId });
   }
 
-  async getHarvestForGeoRegion(
-    geoRegion: GeoRegion,
-    material: Material,
-    year?: number,
-  ): Promise<number> {
-    const h3Data: H3Data | undefined = await this.h3DataRepository.findOne(
-      material.harvestId,
+  async getWaterRiskIndicatorRecordValue(
+    producerH3Table: H3Data,
+    harvestH3Table: H3Data,
+    indicatorH3Table: H3Data,
+    sourcingRecordId: string,
+  ): Promise<number | null> {
+    return this.h3DataRepository.getWaterRiskIndicatorRecordValue(
+      producerH3Table,
+      harvestH3Table,
+      indicatorH3Table,
+      sourcingRecordId,
     );
-    if (h3Data === undefined) {
-      throw new Error(
-        'Cannot find H3 data to calculate harvest volume for region',
-      );
-    }
-
-    const harvestTotal: number = await this.h3DataRepository.getH3SumForGeoRegion(
-      h3Data.h3tableName,
-      h3Data.h3columnName,
-      geoRegion.id,
-    );
-
-    return harvestTotal;
   }
 
-  async getProductionForGeoRegion(
-    geoRegion: GeoRegion,
-    material: Material,
-    year?: number,
-  ): Promise<number> {
-    const h3Data: H3Data | undefined = await this.h3DataRepository.findOne(
-      material.producerId,
+  async getDeforestationLossIndicatorRecordValue(
+    producerH3Table: H3Data,
+    harvestH3Table: H3Data,
+    indicatorH3Table: H3Data,
+    sourcingRecordId: string,
+  ): Promise<number | null> {
+    return this.h3DataRepository.getDeforestationLossIndicatorRecordValue(
+      producerH3Table,
+      harvestH3Table,
+      indicatorH3Table,
+      sourcingRecordId,
     );
-    if (h3Data === undefined) {
-      throw new Error(
-        `Cannot find H3 data to calculate production volume for region '${geoRegion.name}' and material '${material.name}'`,
-      );
-    }
-
-    const productionTotal: number = await this.h3DataRepository.getH3SumForGeoRegion(
-      h3Data.h3tableName,
-      h3Data.h3columnName,
-      geoRegion.id,
-    );
-
-    return productionTotal;
   }
 
-  async getImpactForGeoRegion(
-    geoRegion: GeoRegion,
-    indicator: Indicator,
-    year?: number,
-  ): Promise<number> {
-    const h3Data: H3Data | undefined = await this.h3DataRepository.findOne({
-      indicatorId: indicator.id,
-    });
-    if (h3Data === undefined) {
-      throw new Error('Cannot find H3 data to calculate impact for region');
-    }
-
-    const impactTotal: number = await this.h3DataRepository.getH3SumForGeoRegion(
-      h3Data.h3tableName,
-      h3Data.h3columnName,
-      geoRegion.id,
+  async getBiodiversityLossIndicatorRecordValue(
+    producerH3Table: H3Data,
+    harvestH3Table: H3Data,
+    indicatorH3Table: H3Data,
+    sourcingRecordId: string,
+  ): Promise<number | null> {
+    return this.h3DataRepository.getBiodiversityLossIndicatorRecordValue(
+      producerH3Table,
+      harvestH3Table,
+      indicatorH3Table,
+      sourcingRecordId,
     );
+  }
 
-    return impactTotal;
+  async getCarbonIndicatorRecordValue(
+    producerH3Table: H3Data,
+    harvestH3Table: H3Data,
+    indicatorH3Table: H3Data,
+    sourcingRecordId: string,
+  ): Promise<number | null> {
+    return this.h3DataRepository.getCarbonIndicatorRecordValue(
+      producerH3Table,
+      harvestH3Table,
+      indicatorH3Table,
+      sourcingRecordId,
+    );
   }
 
   async getMaterialMapByResolution(

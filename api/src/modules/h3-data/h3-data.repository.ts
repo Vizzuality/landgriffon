@@ -14,7 +14,6 @@ import {
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 
@@ -108,29 +107,236 @@ export class H3DataRepository extends Repository<H3Data> {
     }
   }
 
-  async getH3SumForGeoRegion(
-    h3TableName: string,
-    h3ColumnName: string,
-    geoRegionId: string,
-  ): Promise<number> {
-    const sum: any = await getManager()
-      .createQueryBuilder()
-      .select(`sum(h3table.${h3ColumnName})`, 'sum')
-      .from(h3TableName.toLowerCase(), 'h3table')
-      .innerJoin(
-        (subQuery: SelectQueryBuilder<any>) => {
-          return subQuery
-            .select('h3_uncompact(gr."h3Compact"::h3index[], 6)', 'h3index')
-            .from(GeoRegion, 'gr')
-            .where('gr.id = :geoRegionId');
-        },
-        'georegionh3',
-        'h3table.h3index = georegionh3.h3index',
-      )
-      .setParameter('geoRegionId', geoRegionId)
-      .getRawOne();
+  async getWaterRiskIndicatorRecordValue(
+    producerH3Table: H3Data,
+    harvestH3Table: H3Data,
+    indicatorH3Table: H3Data,
+    sourcingRecordId: string,
+  ): Promise<number | null> {
+    // const sum: any = await getManager()
+    //   .createQueryBuilder()
+    //   .select(`sum(h3table.${h3ColumnName})`, 'sum')
+    //   .from(h3TableName.toLowerCase(), 'h3table')
+    //   .innerJoin(
+    //     (subQuery: SelectQueryBuilder<any>) => {
+    //       return subQuery
+    //         .select('h3_uncompact(gr."h3Compact"::h3index[], 6)', 'h3index')
+    //         .from(GeoRegion, 'gr')
+    //         .where('gr.id = :geoRegionId');
+    //     },
+    //     'georegionh3',
+    //     'h3table.h3index = georegionh3.h3index',
+    //   )
+    //   .setParameter('geoRegionId', geoRegionId)
+    //   .getRawOne();
+    // TODO: Refactor this using the query builder
+    const query: string = `
+      SELECT locations.tonnage * sum(materials.water_risk_m3_t) AS value
+      FROM (SELECT sr.id,
+                   sr.tonnage,
+                   unnest(gr."h3Flat"::h3index[]) AS h3index
+            FROM sourcing_records sr
+                   LEFT JOIN sourcing_location sl on sl.id = sr."sourcingLocationId"
+                   LEFT JOIN geo_region gr on gr.id = sl."geoRegionId"
+            WHERE sr.id = '${sourcingRecordId}'
+           ) locations
+             JOIN
+           (SELECT prod.h3index,
+                   (ind.${indicatorH3Table.h3columnName} * 103) /
+                   (sum(prod.${producerH3Table.h3columnName}) over ()) water_risk_m3_t
+            FROM ${producerH3Table.h3tableName} prod
+                   LEFT JOIN ${indicatorH3Table.h3tableName} ind on ind.h3index = prod.h3index
+            WHERE prod.${producerH3Table.h3columnName} > 0) materials
+           ON materials.h3index = locations.h3index
+      GROUP BY locations.id, locations.tonnage
+    `;
 
-    return sum.sum;
+    const result: { value: number }[] = await getManager().query(query);
+
+    if (result.length === 0) {
+      this.logger.log(
+        `0 rows returned when calculating water risk impact for sourcing record ${sourcingRecordId}`,
+      );
+      return null;
+    }
+
+    return result[0].value;
+  }
+
+  async getDeforestationLossIndicatorRecordValue(
+    producerH3Table: H3Data,
+    harvestH3Table: H3Data,
+    indicatorH3Table: H3Data,
+    sourcingRecordId: string,
+  ): Promise<number | null> {
+    // const sum: any = await getManager()
+    //   .createQueryBuilder()
+    //   .select(`sum(h3table.${h3ColumnName})`, 'sum')
+    //   .from(h3TableName.toLowerCase(), 'h3table')
+    //   .innerJoin(
+    //     (subQuery: SelectQueryBuilder<any>) => {
+    //       return subQuery
+    //         .select('h3_uncompact(gr."h3Compact"::h3index[], 6)', 'h3index')
+    //         .from(GeoRegion, 'gr')
+    //         .where('gr.id = :geoRegionId');
+    //     },
+    //     'georegionh3',
+    //     'h3table.h3index = georegionh3.h3index',
+    //   )
+    //   .setParameter('geoRegionId', geoRegionId)
+    //   .getRawOne();
+    // TODO: Refactor this using the query builder
+    const query: string = `
+      SELECT locations.tonnage * sum(materials.def_risk_ha_t) AS value
+      FROM (
+             SELECT sr.id, sr.tonnage, unnest(gr."h3Flat"::h3index[]) h3index
+             FROM sourcing_records sr
+                    LEFT JOIN sourcing_location sl ON sl.id = sr."sourcingLocationId"
+                    LEFT JOIN geo_region gr ON gr.id = sl."geoRegionId"
+             WHERE sr.id = '${sourcingRecordId}') locations --filter by material id
+             JOIN
+           (SELECT ha.h3index,
+                   (ind.${indicatorH3Table.h3columnName} * ha.${harvestH3Table.h3columnName}) / (sum(prod.${producerH3Table.h3columnName}) over ()) def_risk_ha_t
+            FROM ${harvestH3Table.h3tableName} ha
+                   LEFT JOIN ${producerH3Table.h3tableName} prod ON prod.h3index = ha.h3index
+                   LEFT JOIN ${indicatorH3Table.h3tableName} ind on ind.h3index = ha.h3index
+            WHERE prod.${producerH3Table.h3columnName} > 0
+              AND ha.${harvestH3Table.h3columnName} > 0
+              AND ind.${indicatorH3Table.h3columnName} > 0) materials
+           ON materials.h3index = locations.h3index
+      GROUP BY locations.tonnage
+    `;
+
+    const result: { value: number }[] = await getManager().query(query);
+
+    if (result.length === 0) {
+      this.logger.log(
+        `0 rows returned when calculating deforestation impact for sourcing record ${sourcingRecordId}`,
+      );
+      return null;
+    }
+
+    return result[0].value;
+  }
+
+  async getCarbonIndicatorRecordValue(
+    producerH3Table: H3Data,
+    harvestH3Table: H3Data,
+    indicatorH3Table: H3Data,
+    sourcingRecordId: string,
+  ): Promise<number | null> {
+    // const sum: any = await getManager()
+    //   .createQueryBuilder()
+    //   .select(`sum(h3table.${h3ColumnName})`, 'sum')
+    //   .from(h3TableName.toLowerCase(), 'h3table')
+    //   .innerJoin(
+    //     (subQuery: SelectQueryBuilder<any>) => {
+    //       return subQuery
+    //         .select('h3_uncompact(gr."h3Compact"::h3index[], 6)', 'h3index')
+    //         .from(GeoRegion, 'gr')
+    //         .where('gr.id = :geoRegionId');
+    //     },
+    //     'georegionh3',
+    //     'h3table.h3index = georegionh3.h3index',
+    //   )
+    //   .setParameter('geoRegionId', geoRegionId)
+    //   .getRawOne();
+    // TODO: Refactor this using the query builder
+    const query: string = `
+      SELECT locations.tonnage * sum(materials.carb_risk_CO2e_t) AS value
+      FROM (SELECT sr.id, sr.tonnage, unnest(gr."h3Compact"::h3index[]) h3index
+            FROM sourcing_records sr
+                   LEFT JOIN sourcing_location sl ON sl.id = sr."sourcingLocationId"
+                   LEFT JOIN geo_region gr ON gr.id = sl."geoRegionId"
+            WHERE sr.id = '${sourcingRecordId}') locations
+             JOIN
+           (SELECT ha.h3index,
+                   ind.${indicatorH3Table.h3columnName} *
+                   ((def.hansen_loss_2019 * ha.${harvestH3Table.h3columnName}) / (sum(prod.${producerH3Table.h3columnName}) over ())) carb_risk_CO2e_t
+            FROM ${harvestH3Table.h3tableName} ha
+                   LEFT JOIN ${producerH3Table.h3tableName} prod
+                             ON prod.h3index = ha.h3index
+                   LEFT JOIN h3_grid_deforestation_global def
+                             on def.h3index = ha.h3index --replace by deforestation table
+                   LEFT JOIN ${indicatorH3Table.h3tableName} ind ON ind.h3index = ha.h3index
+            WHERE prod.${producerH3Table.h3columnName} > 0
+              AND ha.${harvestH3Table.h3columnName} > 0
+              AND def.hansen_loss_2019 > 0
+              AND ind.${indicatorH3Table.h3columnName} > 0) materials --replace by ind column name
+           ON materials.h3index = locations.h3index
+      GROUP BY locations.tonnage
+    `;
+
+    const result: { value: number }[] = await getManager().query(query);
+
+    if (result.length === 0) {
+      this.logger.log(
+        `0 rows returned when calculating carbon impact for sourcing record ${sourcingRecordId}`,
+      );
+      return null;
+    }
+
+    return result[0].value;
+  }
+
+  async getBiodiversityLossIndicatorRecordValue(
+    producerH3Table: H3Data,
+    harvestH3Table: H3Data,
+    indicatorH3Table: H3Data,
+    sourcingRecordId: string,
+  ): Promise<number | null> {
+    // const sum: any = await getManager()
+    //   .createQueryBuilder()
+    //   .select(`sum(h3table.${h3ColumnName})`, 'sum')
+    //   .from(h3TableName.toLowerCase(), 'h3table')
+    //   .innerJoin(
+    //     (subQuery: SelectQueryBuilder<any>) => {
+    //       return subQuery
+    //         .select('h3_uncompact(gr."h3Compact"::h3index[], 6)', 'h3index')
+    //         .from(GeoRegion, 'gr')
+    //         .where('gr.id = :geoRegionId');
+    //     },
+    //     'georegionh3',
+    //     'h3table.h3index = georegionh3.h3index',
+    //   )
+    //   .setParameter('geoRegionId', geoRegionId)
+    //   .getRawOne();
+    // TODO: Refactor this using the query builder
+    const query: string = `
+      SELECT locations.tonnage * sum(materials.bio_risk_PDF_t) AS value
+      FROM (SELECT sr.id, sr.tonnage, unnest(gr."h3Compact"::h3index[]) h3index
+            FROM sourcing_records sr
+                   LEFT JOIN sourcing_location sl ON sl.id = sr."sourcingLocationId"
+                   LEFT JOIN geo_region gr ON gr.id = sl."geoRegionId"
+            WHERE sr.id = '${sourcingRecordId}') locations
+             JOIN
+           (SELECT ha.h3index,
+                   ind.${indicatorH3Table.h3columnName} *
+                   ((def.hansen_loss_2019 * ha.${harvestH3Table.h3columnName}) / (sum(prod.${producerH3Table.h3columnName}) over ())) bio_risk_PDF_t
+            FROM ${harvestH3Table.h3tableName} ha
+                   LEFT JOIN ${producerH3Table.h3tableName} prod
+                             ON prod.h3index = ha.h3index
+                   LEFT JOIN h3_grid_deforestation_global def
+                             on def.h3index = ha.h3index --replace by deforestation table
+                   LEFT JOIN ${indicatorH3Table.h3tableName} ind ON ind.h3index = ha.h3index
+            WHERE prod.${producerH3Table.h3columnName} > 0
+              AND ha.${harvestH3Table.h3columnName} > 0
+              AND def.hansen_loss_2019 > 0
+              AND ind.${indicatorH3Table.h3columnName} > 0) materials --replace by ind column name
+           ON materials.h3index = locations.h3index
+      GROUP BY locations.id, locations.tonnage
+    `;
+
+    const result: { value: number }[] = await getManager().query(query);
+
+    if (result.length === 0) {
+      this.logger.log(
+        `0 rows returned when calculating biodiversity loss impact for sourcing record ${sourcingRecordId}`,
+      );
+      return null;
+    }
+
+    return result[0].value;
   }
 
   /**
@@ -172,7 +378,8 @@ export class H3DataRepository extends Repository<H3Data> {
       `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${query});`,
     );
     const riskMap: any = await getManager().query(
-      `SELECT * FROM ${tmpTableName};`,
+      `SELECT *
+       FROM "${tmpTableName}";`,
     );
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
     await getManager().query(`DROP TABLE "${tmpTableName}"`);
@@ -219,13 +426,15 @@ export class H3DataRepository extends Repository<H3Data> {
       params,
     );
     const riskMap: any = await getManager().query(
-      `SELECT * FROM "${tmpTableName}";`,
+      `SELECT *
+       FROM "${tmpTableName}";`,
     );
     this.logger.log('Impact Map generated');
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
     await getManager().query(`DROP TABLE "${tmpTableName}";`);
     return { riskMap, quantiles };
   }
+
   /**
    * @param indicatorH3Data H3 format data of a Indicator
    * @param materialH3Data  H3 format data of a material
@@ -282,7 +491,8 @@ export class H3DataRepository extends Repository<H3Data> {
       `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${query});`,
     );
     const riskMap: any = await getManager().query(
-      `SELECT * FROM "${tmpTableName}";`,
+      `SELECT *
+       FROM "${tmpTableName}";`,
     );
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
 
@@ -334,7 +544,8 @@ export class H3DataRepository extends Repository<H3Data> {
       `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${query});`,
     );
     const riskMap: any = await getManager().query(
-      `SELECT * FROM "${tmpTableName}";`,
+      `SELECT *
+       FROM "${tmpTableName}";`,
     );
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
 
@@ -396,7 +607,8 @@ export class H3DataRepository extends Repository<H3Data> {
       `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${query});`,
     );
     const riskMap: any = await getManager().query(
-      `SELECT *  FROM "${tmpTableName}";`,
+      `SELECT *
+       FROM "${tmpTableName}";`,
     );
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
     await getManager().query(`DROP TABLE "${tmpTableName}"`);
@@ -411,7 +623,7 @@ export class H3DataRepository extends Repository<H3Data> {
   async calculateQuantiles(tmpTableName: string): Promise<number[]> {
     try {
       const resultArray: number[] = await getManager().query(
-        `select min(v)                                      as min,
+        `select min(v)                                            as min,
                 percentile_cont(0.1667) within group (order by v) as per16,
                 percentile_cont(0.3337) within group (order by v) as per33,
                 percentile_cont(0.50) within group (order by v)   as per50,

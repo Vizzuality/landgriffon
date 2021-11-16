@@ -4,7 +4,7 @@
  *
  */
 
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { LAYER_TYPES } from 'modules/h3-data/h3-data.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
@@ -23,15 +23,14 @@ export class H3FilterYearsByLayerService {
   ) {}
   async getYearsByLayerType(
     layerType: string,
-    materialId?: string,
+    materialIds?: string[],
     indicatorId?: string,
   ): Promise<number[]> {
     switch (layerType) {
       case LAYER_TYPES.IMPACT:
-        //TODO: Clarify with Data why Impact year range can be retrieved from sourcing-record available years
-        return this.getAvailableYearsForImpactLayer();
+        return this.getAvailableYearsForImpactLayer(materialIds);
       case LAYER_TYPES.MATERIAL:
-        return this.getAvailableYearsForMaterialLayer(layerType, materialId);
+        return this.getAvailableYearsForMaterialLayer(layerType, materialIds);
       case LAYER_TYPES.RISK:
         return this.getAvailableYearsForRiskLayer(layerType, indicatorId);
       default:
@@ -43,11 +42,16 @@ export class H3FilterYearsByLayerService {
 
   async getAvailableYearsForMaterialLayer(
     layerType: LAYER_TYPES,
-    materialId?: string,
+    materialIds?: string[],
   ): Promise<number[]> {
-    if (materialId) {
+    if (materialIds && materialIds.length > 1) {
+      throw new BadRequestException(
+        'Only one Material ID can be requested to filter for available years for a Material Layer type',
+      );
+    }
+    if (materialIds?.length) {
       const { harvestId, producerId } = await this.materialService.getById(
-        materialId,
+        materialIds[0],
       );
       return this.h3DataRepository.getYears({
         layerType,
@@ -73,7 +77,9 @@ export class H3FilterYearsByLayerService {
   /**
    * Return all available years in Sourcing-Locations, which represent available years for Impact Layer
    */
-  async getAvailableYearsForImpactLayer(): Promise<number[]> {
-    return this.sourcingRecordService.getYears();
+  async getAvailableYearsForImpactLayer(
+    materialIds?: string[],
+  ): Promise<number[]> {
+    return this.sourcingRecordService.getYears(materialIds);
   }
 }

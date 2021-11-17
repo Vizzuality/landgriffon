@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { Transition } from '@headlessui/react';
 import dynamic from 'next/dynamic';
+import Head from 'next/head';
 
 import ApplicationLayout from 'layouts/application';
 import Breadcrumb from 'components/breadcrumb';
@@ -45,6 +46,9 @@ const AnalysisPage: React.FC = () => {
 
   return (
     <ApplicationLayout>
+      <Head>
+        <title>Analysis - Landgriffon</title>
+      </Head>
       <main className="flex-1 flex">
         <div className="flex-1 flex h-screen-minus-header lg:h-screen">
           <AnalysisVisualizationNoSSR />

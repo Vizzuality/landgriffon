@@ -30,10 +30,4 @@ const onResponseError = (error) => {
 
 suppliersService.interceptors.response.use(onResponseSuccess, onResponseError);
 
-export const getSuppliers = (params) =>
-  suppliersService.get('/', { params }).then(({ data }) => data);
-
-export const getSuppliersTrees = (params) =>
-  suppliersService.get('/trees', { params }).then(({ data }) => data);
-
 export default suppliersService;

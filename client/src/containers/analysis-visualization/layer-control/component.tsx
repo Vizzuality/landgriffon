@@ -32,15 +32,19 @@ const LayerControl: React.FC = () => {
   const { layer, visualizationMode } = useAppSelector(analysis);
   const dispatch = useAppDispatch();
 
-  const handleChange = useCallback((value) => {
-    dispatch(setLayer(value));
-  }, []);
+  const handleChange = useCallback(
+    (value) => {
+      dispatch(setLayer(value));
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     if (visualizationMode !== 'map') {
-      dispatch(setLayer(LAYERS_OPTIONS[0].id as AnalysisState['layer']));
+      // set impact when visualization mode is not map
+      dispatch(setLayer(LAYERS_OPTIONS[2].id as AnalysisState['layer']));
     }
-  }, [visualizationMode]);
+  }, [dispatch, visualizationMode]);
 
   return (
     <div className={classNames({ hidden: visualizationMode !== 'map' })}>

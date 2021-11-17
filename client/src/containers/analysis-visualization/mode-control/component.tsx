@@ -25,9 +25,9 @@ const ModeControl: React.FC = () => {
       const selectedMode = mode as AnalysisState['visualizationMode'];
       dispatch(setVisualizationMode(selectedMode));
     }
-  }, [mode]);
+  }, [dispatch, mode]);
 
-  if (layer !== 'impact') return null;
+  if (layer !== 'impact' && mode === 'map') return null;
 
   return (
     <div className="inline-flex shadow-sm rounded-md">

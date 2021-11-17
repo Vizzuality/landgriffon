@@ -30,9 +30,4 @@ const onResponseError = (error) => {
 
 materialsService.interceptors.response.use(onResponseSuccess, onResponseError);
 
-export const getMaterials = (params) =>
-  materialsService.get('/', { params }).then(({ data }) => data);
-export const getMaterialsTrees = (params) =>
-  materialsService.get('/trees', { params }).then(({ data }) => data);
-
 export default materialsService;

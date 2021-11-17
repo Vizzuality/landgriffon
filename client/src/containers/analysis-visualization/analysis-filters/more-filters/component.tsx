@@ -100,7 +100,6 @@ const MoreFilters: React.FC = () => {
                   <Materials
                     className="w-full"
                     multiple
-                    treeCheckable
                     value={moreFilters.materials}
                     maxTagCount={MAX_TAG_COUNT}
                     onChange={(values) => handleChangeFilter('materials', values)}
@@ -120,7 +119,6 @@ const MoreFilters: React.FC = () => {
                   <Suppliers
                     className="w-full"
                     multiple
-                    treeCheckable
                     value={moreFilters.suppliers}
                     maxTagCount={MAX_TAG_COUNT}
                     onChange={(values) => handleChangeFilter('suppliers', values)}

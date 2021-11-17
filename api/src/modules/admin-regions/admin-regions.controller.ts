@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -14,6 +15,7 @@ import {
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -32,6 +34,8 @@ import {
 import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-region.dto';
 import { UpdateAdminRegionDto } from 'modules/admin-regions/dto/update.admin-region.dto';
 import { PaginationMeta } from 'utils/app-base.service';
+import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
+import { ParseOptionalIntPipe } from 'pipes/parse-optional-int.pipe';
 
 @Controller(`/api/v1/admin-regions`)
 @ApiTags(adminRegionResource.className)
@@ -65,6 +69,33 @@ export class AdminRegionsController {
       metadata: PaginationMeta | undefined;
     } = await this.adminRegionsService.findAllPaginated(fetchSpecification);
     return this.adminRegionsService.serialize(results.data, results.metadata);
+  }
+
+  @ApiOperation({
+    description:
+      'Find all admin regions and return them in a tree format. Data in the "children" will recursively extend for the full depth of the tree',
+  })
+  @ApiOkTreeResponse({
+    treeNodeType: AdminRegion,
+  })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @Get('/trees')
+  @ApiQuery({
+    name: 'depth',
+    required: false,
+    description:
+      'A non-negative integer value. If specified, limits the depth of the tree crawling. 0 will return only the tree roots',
+  })
+  async getTrees(
+    @Query('depth', ParseOptionalIntPipe) depth?: number,
+  ): Promise<AdminRegion> {
+    const results: AdminRegion[] = await this.adminRegionsService.findTreesWithOptions(
+      {
+        depth,
+      },
+    );
+    return this.adminRegionsService.serialize(results);
   }
 
   @ApiOperation({ description: 'Find admin region by id' })

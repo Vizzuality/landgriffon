@@ -48,6 +48,7 @@ export const filtersForH3API = createSelector([analysis], (analysisState: Analys
       : {}),
     resolution: 4,
   };
+
   return result;
 });
 

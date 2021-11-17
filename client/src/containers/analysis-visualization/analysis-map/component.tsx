@@ -92,6 +92,22 @@ const AnalysisMap: React.FC = () => {
     if (layer === 'risk' && filters.indicator && filters.materials?.length > 0) {
       return `${filters.indicator.label}, for ${filters.materials[0].label} in ${filters.startYear}`;
     }
+    if (layer === 'impact' && filters.indicator) {
+      return `${filters.indicator.label}, ${filters.startYear}`;
+    }
+    return null;
+  }, [layer, filters]);
+
+  const tooltipName = useMemo(() => {
+    if (layer === 'material' && filters.materials?.length > 0) {
+      return `${filters.materials[0].label}`;
+    }
+    if (layer === 'risk' && filters.indicator && filters.materials?.length > 0) {
+      return `${filters.indicator.label}, for ${filters.materials[0].label}`;
+    }
+    if (layer === 'impact' && filters.indicator) {
+      return filters.indicator.label;
+    }
     return null;
   }, [layer, filters]);
 
@@ -238,9 +254,7 @@ const AnalysisMap: React.FC = () => {
             }
           >
             <div className="p-4 bg-white shadow-sm rounded-sm">
-              <h2 className="text-sm font-semibold whitespace-nowrap">
-                {filters.materials[0].label}
-              </h2>
+              <h2 className="text-sm font-semibold whitespace-nowrap">{tooltipName}</h2>
               <div className="whitespace-nowrap">
                 {NUMBER_FORMAT(popUpInfo.object.v)} ({unit})
               </div>

@@ -1,12 +1,9 @@
-import { useMemo } from 'react';
-
-import { useAnalysisTable, useIndicatorAnalysisTable } from 'hooks/analysis';
-
-import { useAppSelector } from 'store/hooks';
-import { analysis } from 'store/features/analysis';
-
 import { DownloadIcon } from '@heroicons/react/outline';
 import { InformationCircleIcon } from '@heroicons/react/solid';
+
+import { useAnalysisTable, useIndicatorAnalysisTable } from 'hooks/analysis';
+import { useAppSelector } from 'store/hooks';
+import { analysis } from 'store/features/analysis';
 
 import Button from 'components/button';
 import Loading from 'components/loading';
@@ -17,12 +14,12 @@ import TableTitle from 'containers/analysis-visualization/analysis-table/table-t
 const AnalysisTable: React.FC = () => {
   const { filters } = useAppSelector(analysis);
 
-  const { data: tableData, isFetched: tableDataIsFetched } = useAnalysisTable({ filters });
+  const { data: tableData, isFetched: tableDataIsFetched } = useAnalysisTable();
 
   const { data: indicatorTableData, isFetched: indicatorTableDataIsFetched } =
-    useIndicatorAnalysisTable({ filters });
+    useIndicatorAnalysisTable();
 
-  const getValueByYear = (columnYear, record) => () => {
+  const getValueByYear = (columnYear, record) => {
     if (record && record.values) {
       const dataIndex = record.values.find((el) => el.year === columnYear)?.value;
       return dataIndex;

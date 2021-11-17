@@ -27,7 +27,7 @@ const ModeControl: React.FC = () => {
     }
   }, [dispatch, mode]);
 
-  if (layer !== 'impact' && mode === 'map') return null;
+  if (layer !== 'impact' && mode !== 'map') return null;
 
   return (
     <div className="inline-flex shadow-sm rounded-md">

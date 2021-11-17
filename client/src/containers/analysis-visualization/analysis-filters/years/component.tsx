@@ -51,7 +51,17 @@ const YearsFilter: React.FC = () => {
           : data?.[data.length - 1],
       );
     }
-  }, [data, isLoading, layer, materials, indicator, onChangeStartYear, onChangeEndYear]);
+  }, [
+    data,
+    isLoading,
+    layer,
+    materials,
+    indicator,
+    onChangeStartYear,
+    onChangeEndYear,
+    startYear,
+    endYear,
+  ]);
 
   if (visualizationMode === 'map') {
     return <SingleYearFilter data={data ?? []} value={endYear} onChange={onChangeEndYear} />;

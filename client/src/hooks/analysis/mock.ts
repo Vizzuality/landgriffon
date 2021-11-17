@@ -263,7 +263,7 @@ export const DATA = [
           { year: 2020, value: 30, calculated: false },
           { year: 2021, value: 87, calculated: false },
           { year: 2022, value: 78, calculated: true },
-          { year: 2023, value: 50., calculated: true },
+          { year: 2023, value: 50, calculated: true },
           { year: 2024, value: 150, calculated: true }, // data projected for non-existing years
         ],
       },

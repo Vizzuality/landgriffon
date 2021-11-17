@@ -1,7 +1,7 @@
 export const DATA = [
   {
     id: 'bd0cf013-05e1-4230-912a-aae592f96c30',
-    indicator: 'Carbon emissions',
+    indicator: 'Carbon emissions due to land use change',
     values: [
       { year: 2020, value: 300, calculated: false },
       { year: 2021, value: 200, calculated: false },
@@ -91,7 +91,7 @@ export const DATA = [
   },
   {
     id: '457116a8-90f6-4b0b-8517-9965e880b6a8',
-    indicator: 'Deforestation',
+    indicator: 'Deforestation loss due to land use change',
     values: [
       { year: 2020, value: 150, calculated: false },
       { year: 2021, value: 200, calculated: false },
@@ -181,7 +181,7 @@ export const DATA = [
   },
   {
     id: '1224d1d9-c3ae-450f-acb6-67f4ed33b5f7',
-    indicator: 'Unsustainable water use (M3)',
+    indicator: 'Unsustainable water use',
     values: [
       { year: 2020, value: 70, calculated: false },
       { year: 2021, value: 200, calculated: false },
@@ -271,7 +271,7 @@ export const DATA = [
   },
   {
     id: '73f95f81-eb4b-4a1b-a148-1ff9f67db07f',
-    indicator: 'Biodiversity (X)',
+    indicator: 'Biodiversity loss due to land use change',
     values: [
       { year: 2020, value: 50, calculated: false },
       { year: 2021, value: 200, calculated: false },

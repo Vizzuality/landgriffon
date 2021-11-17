@@ -1,8 +1,18 @@
 import { useMemo } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery, UseQueryResult, UseQueryOptions } from 'react-query';
 import indicatorsService from 'services/indicators';
+import type { Indicator } from 'types';
 
-export function useIndicators() {
+const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
+  placeholderData: [],
+  retry: false,
+  keepPreviousData: true,
+  refetchOnWindowFocus: false,
+};
+
+type ResponseData = UseQueryResult<Indicator[]>;
+
+export function useIndicators(): ResponseData {
   // const [session] = useSession();
 
   const query = useQuery(
@@ -18,19 +28,19 @@ export function useIndicators() {
         })
         .then((response) => response.data),
     {
-      keepPreviousData: true,
-      placeholderData: [],
+      ...DEFAULT_QUERY_OPTIONS,
     },
   );
 
-  const { data } = query;
+  const { data, isError } = query;
 
-  return useMemo(
-    () => ({
-      ...query,
-      data,
-    }),
-    [query, data],
+  return useMemo<ResponseData>(
+    () =>
+      ({
+        ...query,
+        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as ResponseData,
+      } as ResponseData),
+    [query, isError, data],
   );
 }
 

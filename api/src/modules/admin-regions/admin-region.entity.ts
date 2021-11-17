@@ -28,7 +28,7 @@ export const adminRegionResource: BaseServiceResource = {
     singular: 'adminRegion',
     plural: 'adminRegions',
   },
-  entitiesAllowedAsIncludes: ['geoRegion'],
+  entitiesAllowedAsIncludes: ['geoRegion', 'children'],
   columnsAllowedAsFilter: ['name', 'description', 'status'],
 };
 

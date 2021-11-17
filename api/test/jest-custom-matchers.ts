@@ -145,7 +145,7 @@ expect.extend({
     } catch (e) {
       return {
         pass: false,
-        message: (): string => e.message,
+        message: (): string => (e as Error).message,
       };
     }
 

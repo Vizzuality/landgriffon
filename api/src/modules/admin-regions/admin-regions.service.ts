@@ -12,6 +12,7 @@ import { AppInfoDTO } from 'dto/info.dto';
 import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
 import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-region.dto';
 import { UpdateAdminRegionDto } from 'modules/admin-regions/dto/update.admin-region.dto';
+import { FindTreesWithOptionsArgs } from 'utils/tree.repository';
 
 @Injectable()
 export class AdminRegionsService extends AppBaseService<
@@ -33,7 +34,14 @@ export class AdminRegionsService extends AppBaseService<
 
   get serializerConfig(): JSONAPISerializerConfig<AdminRegion> {
     return {
-      attributes: ['name', 'description', 'status', 'geoRegionId', 'geoRegion'],
+      attributes: [
+        'name',
+        'description',
+        'status',
+        'geoRegionId',
+        'geoRegion',
+        'children',
+      ],
       keyForAttribute: 'camelCase',
     };
   }
@@ -48,6 +56,12 @@ export class AdminRegionsService extends AppBaseService<
     }
 
     return found;
+  }
+
+  async findTreesWithOptions(
+    args?: FindTreesWithOptionsArgs,
+  ): Promise<AdminRegion[]> {
+    return this.adminRegionRepository.findTreesWithOptions(args);
   }
 
   async createTree(importData: CreateAdminRegionDto[]): Promise<AdminRegion[]> {

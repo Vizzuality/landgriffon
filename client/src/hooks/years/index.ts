@@ -31,11 +31,12 @@ export function useYears(
           },
           params: {
             layer,
-            materialId:
-              materials.length > 0
-                ? materials.map((material) => material.value).join(',')
-                : undefined,
-            indicatorId: indicator?.value ?? undefined,
+            ...(materials && materials.length
+              ? { materialId: materials.map((material) => material.value).join(',') }
+              : {}),
+            ...(indicator && indicator.value && indicator.value !== 'all'
+              ? { indicatorId: indicator.value }
+              : {}),
           },
         })
         .then((response) => response.data),

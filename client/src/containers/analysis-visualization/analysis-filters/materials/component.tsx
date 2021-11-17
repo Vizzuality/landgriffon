@@ -1,13 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
-import { useQuery } from 'react-query';
 import { TreeSelect, TreeSelectProps } from 'antd';
 import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
 import { sortBy } from 'lodash';
 
-import { getMaterialsTrees } from 'services/materials';
-
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis, setFilter } from 'store/features/analysis';
+import { useMaterialsTrees } from 'hooks/materials';
 
 type MaterialsFilterProps = TreeSelectProps<unknown>;
 
@@ -15,7 +13,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = (props: MaterialsFilterP
   const { multiple } = props;
   const dispatch = useAppDispatch();
   const { filters } = useAppSelector(analysis);
-  const { data, isLoading, error } = useQuery('materialsTreesList', getMaterialsTrees);
+  const { data, isLoading, error } = useMaterialsTrees({ depth: 1 });
 
   const handleChange = useCallback(
     (selected) => dispatch(setFilter({ id: 'materials', value: [selected] })),

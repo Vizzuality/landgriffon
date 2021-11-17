@@ -1,12 +1,11 @@
 import { useCallback, useMemo } from 'react';
 import { TreeSelect, TreeSelectProps } from 'antd';
 import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
-import { useQuery } from 'react-query';
 import { sortBy } from 'lodash';
 
-import { getSuppliersTrees } from 'services/suppliers';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis, setFilter } from 'store/features/analysis';
+import { useSuppliersTrees } from 'hooks/suppliers';
 
 type SuppliersFilterProps = TreeSelectProps<unknown> & {
   onChange: (value) => void;
@@ -15,7 +14,7 @@ type SuppliersFilterProps = TreeSelectProps<unknown> & {
 const MaterialsFilter: React.FC<SuppliersFilterProps> = (props: SuppliersFilterProps) => {
   const dispatch = useAppDispatch();
   const { filters } = useAppSelector(analysis);
-  const { data, isLoading, error } = useQuery('suppliersTreesList', getSuppliersTrees);
+  const { data, isLoading, error } = useSuppliersTrees({ depth: 1 });
 
   const handleChange = useCallback(
     (selected) => dispatch(setFilter({ id: 'suppliers', value: [selected] })),
@@ -47,7 +46,7 @@ const MaterialsFilter: React.FC<SuppliersFilterProps> = (props: SuppliersFilterP
       showCheckedStrategy={TreeSelect.SHOW_PARENT}
       suffixIcon={<ChevronDownIcon />}
       treeDefaultExpandAll={false}
-      treeCheckable
+      treeCheckable={false}
       disabled={!!error}
       treeNodeFilterProp="title"
       removeIcon={<XIcon />}

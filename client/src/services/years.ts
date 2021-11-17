@@ -27,6 +27,4 @@ const onResponseError = (error) => {
 
 yearsService.interceptors.response.use(onResponseSuccess, onResponseError);
 
-export const getYears = (params) => yearsService.get('/', { params }).then(({ data }) => data);
-
 export default yearsService;

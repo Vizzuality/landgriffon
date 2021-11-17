@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { useQuery } from 'react-query';
+import { useMemo } from 'react';
+// import { useQuery, UseQueryResult } from 'react-query';
 
 import flatten from 'lodash/flatten';
 import uniq from 'lodash/uniq';
@@ -7,17 +7,15 @@ import uniqBy from 'lodash/uniqBy';
 
 import chroma from 'chroma-js';
 
-import analysisService from 'services/analysis';
+// import analysisService from 'services/analysis';
 import { useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
-
-import type { AnalysisChartOptions, AnalysisTableOptions } from './types';
 
 import { DATA } from './mock';
 
 const COLOR_SCALE = chroma.scale(['#8DD3C7', '#BEBADA', '#FDB462']);
 
-export function useAnalysisChart(options: AnalysisChartOptions) {
+export function useAnalysisChart() {
   // const [session] = useSession();
   const { filters } = useAppSelector(analysis);
   const { indicator } = filters;
@@ -105,7 +103,6 @@ export function useAnalysisChart(options: AnalysisChartOptions) {
       };
     }).filter((d) => {
       // Remove this for API filters
-      console.log(indicator);
       if (typeof indicator !== undefined && indicator && indicator.label !== 'All indicators') {
         return indicator.label === d.indicator;
       }
@@ -120,7 +117,7 @@ export function useAnalysisChart(options: AnalysisChartOptions) {
   }, [filters, indicator]);
 }
 
-export function useAnalysisLegend(options: AnalysisChartOptions) {
+export function useAnalysisLegend() {
   // const [session] = useSession();
   // const { filters } = useAppSelector(analysis);
 
@@ -165,7 +162,7 @@ export function useAnalysisLegend(options: AnalysisChartOptions) {
   }, []);
 }
 
-export function useAnalysisTable(options: AnalysisTableOptions) {
+export function useAnalysisTable() {
   const { filters } = useAppSelector(analysis);
   const { indicator } = filters;
 
@@ -196,7 +193,7 @@ export function useAnalysisTable(options: AnalysisTableOptions) {
 
       const parsedChildren = children.map((ch) => ({
         indicator: ch.name,
-        key: ch.id,
+        key: d.id + ch.id,
         values: ch.values,
       }));
 
@@ -209,8 +206,8 @@ export function useAnalysisTable(options: AnalysisTableOptions) {
       };
     }).filter((d) => {
       // Remove this for API filters
-      if (typeof indicator !== undefined && indicator.value !== 'all') {
-        return indicator.value === d.key;
+      if (typeof indicator !== undefined && indicator && indicator.label !== 'All indicators') {
+        return indicator.label === d.indicator;
       }
       return true;
     });
@@ -218,56 +215,60 @@ export function useAnalysisTable(options: AnalysisTableOptions) {
     return {
       // ...query,
       isFetching: false,
+      isFetched: true,
       data: parsedData,
     };
   }, [filters, indicator]);
 }
 
-export function useIndicatorAnalysisTable(options: AnalysisTableOptions) {
-  const { filters } = options;
+export function useIndicatorAnalysisTable() {
+  const { filters } = useAppSelector(analysis);
   const { indicator } = filters;
 
-  const query = useQuery(
-    ['analysis-table-indicator', JSON.stringify(options)],
-    async () =>
-      analysisService
-        .request({
-          method: 'GET',
-          url: `/`,
-          headers: {},
-          params: {
-            'filter[indicator]': indicator,
-          },
-        })
-        .then((response) => response.data),
-    {
-      keepPreviousData: true,
-      placeholderData: {
-        data: [],
-      },
-    },
-  );
+  // const query = useQuery(
+  //   ['analysis-table-indicator', JSON.stringify(filters)],
+  //   async () =>
+  //     analysisService
+  //       .request({
+  //         method: 'GET',
+  //         url: `/`,
+  //         headers: {},
+  //         params: {
+  //           'filter[indicator]': indicator,
+  //         },
+  //       })
+  //       .then((response) => response.data),
+  //   {
+  //     keepPreviousData: true,
+  //     placeholderData: {
+  //       data: [],
+  //     },
+  //   },
+  // );
 
-  const { data } = query;
+  // const { data } = query;
 
   return useMemo(() => {
     const parsedData = DATA.map((d) => {
-      const { id, children } = d;
+      const { id, children, indicator } = d;
 
       return {
         key: id,
+        indicator,
         children,
         filters,
       };
     })
       .filter((d) => {
         // Remove this for API filters
-        if (typeof indicator !== undefined && indicator !== 'all') return indicator === d.key;
+        if (typeof indicator !== undefined && indicator && indicator.label !== 'All indicators') {
+          return indicator.label === d.indicator;
+        }
         return true;
       })
       .map((item) => {
         const nestedParsedData = item.children.map((ch) => ({
-          key: ch.id,
+          key: item.key + ch.id,
           indicator: ch.name,
           values: ch.values,
         }));
@@ -276,8 +277,10 @@ export function useIndicatorAnalysisTable(options: AnalysisTableOptions) {
       .flat(1);
 
     return {
-      ...query,
+      // ...query,
+      isFetching: false,
+      isFetched: true,
       data: parsedData,
     };
-  }, [query, filters, indicator]);
+  }, [filters, indicator]);
 }

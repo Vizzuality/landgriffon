@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { GetImpactTableDto } from 'modules/h3-data/dto/get-impact-table.dto';
@@ -7,6 +7,7 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 
 @Injectable()
 export class ImpactTableService {
+  logger: Logger = new Logger(ImpactTableService.name);
   constructor(
     @InjectRepository(H3DataRepository)
     protected readonly h3DataRepository: H3DataRepository,
@@ -16,7 +17,7 @@ export class ImpactTableService {
     const queryBuilder: SelectQueryBuilder<SourcingRecord> = await getManager()
       .createQueryBuilder()
       .select('year')
-      .addSelect('sum(ir.value)')
+      .addSelect('sum(ir.value)', 'value')
       .addSelect('ir."indicatorId"')
       .addSelect('i."shortName"')
       .from(SourcingRecord, 'sr')
@@ -30,8 +31,8 @@ export class ImpactTableService {
       });
     }
     if (getImpactTableDto.indicatorIds?.length) {
-      queryBuilder.andWhere('sl.indicator IN (:...indicatorIds)', {
-        materialIds: getImpactTableDto.indicatorIds,
+      queryBuilder.andWhere('ir."indicatorId" IN (:...indicatorIds)', {
+        indicatorIds: getImpactTableDto.indicatorIds,
       });
     }
     if (getImpactTableDto.originIds?.length) {
@@ -45,8 +46,11 @@ export class ImpactTableService {
       });
     }
     queryBuilder.groupBy(`sr.year, ir."indicatorId", i."shortName"`);
-    const response: any = await queryBuilder.getMany();
-    console.log('responseeee', response);
+    const response: any = await queryBuilder.getRawMany();
+
+    this.logger.log('Impact table generated');
     return response;
   }
+
+  private cleanImpactTable(impactTable: any): any {}
 }

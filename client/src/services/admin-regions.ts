@@ -4,7 +4,7 @@ import { signOut } from 'next-auth/client';
 
 const dataFormatter = new Jsona();
 
-const originRegionsService = axios.create({
+const adminRegionsService = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/admin-regions`,
   headers: { 'Content-Type': 'application/json' },
   transformResponse: (response) => {
@@ -28,9 +28,6 @@ const onResponseError = (error) => {
   return Promise.reject(error);
 };
 
-originRegionsService.interceptors.response.use(onResponseSuccess, onResponseError);
+adminRegionsService.interceptors.response.use(onResponseSuccess, onResponseError);
 
-export const getOriginRegions = (params) =>
-  originRegionsService.get('/', { params }).then(({ data }) => data);
-
-export default originRegionsService;
+export default adminRegionsService;

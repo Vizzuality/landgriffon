@@ -76,4 +76,5 @@ export type Supplier = {
 export type OriginRegion = {
   id: string;
   name: string;
+  children: OriginRegion[];
 };

@@ -1,13 +1,17 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
-import analysisService from 'services/analysis';
 
 import flatten from 'lodash/flatten';
 import uniq from 'lodash/uniq';
 import uniqBy from 'lodash/uniqBy';
 
 import chroma from 'chroma-js';
-import { AnalysisChartOptions, AnalysisTableOptions } from './types';
+
+import analysisService from 'services/analysis';
+import { useAppSelector } from 'store/hooks';
+import { analysis } from 'store/features/analysis';
+
+import type { AnalysisChartOptions, AnalysisTableOptions } from './types';
 
 import { DATA } from './mock';
 
@@ -15,34 +19,34 @@ const COLOR_SCALE = chroma.scale(['#8DD3C7', '#BEBADA', '#FDB462']);
 
 export function useAnalysisChart(options: AnalysisChartOptions) {
   // const [session] = useSession();
-  const { filters } = options;
+  const { filters } = useAppSelector(analysis);
   const { indicator } = filters;
 
-  const query = useQuery(
-    ['analysis-chart', JSON.stringify(options)],
-    async () =>
-      analysisService
-        .request({
-          method: 'GET',
-          url: `/`,
-          headers: {
-            // Authorization: `Bearer ${session.accessToken}`,
-          },
-          params: {
-            // include: 'scenarios,users',
-          },
-        })
-        .then((response) => response.data),
-    {
-      keepPreviousData: true,
-      placeholderData: {
-        data: [],
-      },
-      refetchOnWindowFocus: false,
-    },
-  );
+  // const query = useQuery(
+  //   ['analysis-chart', JSON.stringify(options)],
+  //   async () =>
+  //     analysisService
+  //       .request({
+  //         method: 'GET',
+  //         url: `/`,
+  //         headers: {
+  //           // Authorization: `Bearer ${session.accessToken}`,
+  //         },
+  //         params: {
+  //           // include: 'scenarios,users',
+  //         },
+  //       })
+  //       .then((response) => response.data),
+  //   {
+  //     keepPreviousData: true,
+  //     placeholderData: {
+  //       data: [],
+  //     },
+  //     refetchOnWindowFocus: false,
+  //   },
+  // );
 
-  const { data } = query;
+  // const { data } = query;
 
   return useMemo(() => {
     const parsedData = DATA.map((d) => {
@@ -101,39 +105,42 @@ export function useAnalysisChart(options: AnalysisChartOptions) {
       };
     }).filter((d) => {
       // Remove this for API filters
-      if (typeof indicator !== undefined && indicator !== 'all') return indicator === d.id;
+      console.log(indicator);
+      if (typeof indicator !== undefined && indicator && indicator.label !== 'All indicators') {
+        return indicator.label === d.indicator;
+      }
       return true;
     });
 
     return {
-      ...query,
+      // ...query,
+      isFetching: false,
       data: parsedData,
     };
-  }, [query, filters, indicator]);
+  }, [filters, indicator]);
 }
 
 export function useAnalysisLegend(options: AnalysisChartOptions) {
   // const [session] = useSession();
-  const { filters } = options;
-  const { indicator } = filters;
+  // const { filters } = useAppSelector(analysis);
 
-  const query = useQuery(['analysis-chart', JSON.stringify(options)], async () =>
-    analysisService
-      .request({
-        method: 'GET',
-        url: `/`,
-        headers: {
-          // Authorization: `Bearer ${session.accessToken}`,
-        },
-        params: {
-          // include: 'scenarios,users',
-          'filter[indicator]': indicator,
-        },
-      })
-      .then((response) => response.data),
-  );
+  // const query = useQuery(['analysis-chart', JSON.stringify(options)], async () =>
+  //   analysisService
+  //     .request({
+  //       method: 'GET',
+  //       url: `/`,
+  //       headers: {
+  //         // Authorization: `Bearer ${session.accessToken}`,
+  //       },
+  //       params: {
+  //         // include: 'scenarios,users',
+  //         'filter[indicator]': indicator,
+  //       },
+  //     })
+  //     .then((response) => response.data),
+  // );
 
-  const { data } = query;
+  // const { data } = query;
 
   return useMemo(() => {
     const parsedData = DATA.reduce((acc, d) => {
@@ -151,36 +158,37 @@ export function useAnalysisLegend(options: AnalysisChartOptions) {
     }, []);
 
     return {
-      ...query,
+      // ...query,
+      isFetching: false,
       data: parsedData,
     };
-  }, [query]);
+  }, []);
 }
 
 export function useAnalysisTable(options: AnalysisTableOptions) {
-  const { filters } = options;
+  const { filters } = useAppSelector(analysis);
   const { indicator } = filters;
 
-  const query = useQuery(
-    ['analysis-table', JSON.stringify(options)],
-    async () =>
-      analysisService
-        .request({
-          method: 'GET',
-          url: `/`,
-          headers: {},
-          params: {},
-        })
-        .then((response) => response.data),
-    {
-      keepPreviousData: true,
-      placeholderData: {
-        data: [],
-      },
-    },
-  );
+  // const query = useQuery(
+  //   ['analysis-table', JSON.stringify(options)],
+  //   async () =>
+  //     analysisService
+  //       .request({
+  //         method: 'GET',
+  //         url: `/`,
+  //         headers: {},
+  //         params: {},
+  //       })
+  //       .then((response) => response.data),
+  //   {
+  //     keepPreviousData: true,
+  //     placeholderData: {
+  //       data: [],
+  //     },
+  //   },
+  // );
 
-  const { data } = query;
+  // const { data } = query;
 
   return useMemo(() => {
     const parsedData = DATA.map((d) => {
@@ -201,15 +209,18 @@ export function useAnalysisTable(options: AnalysisTableOptions) {
       };
     }).filter((d) => {
       // Remove this for API filters
-      if (typeof indicator !== undefined && indicator !== 'all') return indicator === d.key;
+      if (typeof indicator !== undefined && indicator.value !== 'all') {
+        return indicator.value === d.key;
+      }
       return true;
     });
 
     return {
-      ...query,
+      // ...query,
+      isFetching: false,
       data: parsedData,
     };
-  }, [query, filters, indicator]);
+  }, [filters, indicator]);
 }
 
 export function useIndicatorAnalysisTable(options: AnalysisTableOptions) {

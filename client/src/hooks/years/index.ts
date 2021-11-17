@@ -1,13 +1,22 @@
-import { useQuery } from 'react-query';
+import { useQuery, UseQueryResult, UseQueryOptions } from 'react-query';
 
 import yearsService from 'services/years';
 import { AnalysisState } from 'store/features/analysis';
+
+const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
+  placeholderData: [],
+  retry: false,
+  keepPreviousData: true,
+  refetchOnWindowFocus: false,
+};
+
+type YearResponse = UseQueryResult<number[]>;
 
 export function useYears(
   layer: AnalysisState['layer'],
   materials: AnalysisState['filters']['materials'],
   indicator: AnalysisState['filters']['indicator'],
-) {
+): YearResponse {
   // const [session] = useSession();
 
   const result = useQuery(
@@ -30,14 +39,8 @@ export function useYears(
           },
         })
         .then((response) => response.data),
-    {
-      keepPreviousData: true,
-      placeholderData: [],
-    },
+    DEFAULT_QUERY_OPTIONS,
   );
 
-  return {
-    ...result,
-    data: result.data,
-  };
+  return result as YearResponse;
 }

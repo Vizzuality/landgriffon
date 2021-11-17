@@ -5,7 +5,7 @@ import { signOut } from 'next-auth/client';
 const dataFormatter = new Jsona();
 
 const originRegionsService = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/geo-regions`,
+  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/admin-regions`,
   headers: { 'Content-Type': 'application/json' },
   transformResponse: (response) => {
     try {

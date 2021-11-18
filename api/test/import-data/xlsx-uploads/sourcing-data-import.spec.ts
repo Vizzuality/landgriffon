@@ -333,5 +333,5 @@ describe('Sourcing Data import', () => {
 
     expect(sourcingRecords[0]).toMatchObject(new SourcingRecord());
     expect(sourcingLocation).toMatchObject(new SourcingLocation());
-  });
+  }, 100000);
 });

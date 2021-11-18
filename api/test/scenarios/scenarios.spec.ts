@@ -25,9 +25,8 @@ describe('ScenariosModule (e2e)', () => {
       imports: [AppModule, ScenariosModule],
     }).compile();
 
-    scenarioRepository = moduleFixture.get<ScenarioRepository>(
-      ScenarioRepository,
-    );
+    scenarioRepository =
+      moduleFixture.get<ScenarioRepository>(ScenarioRepository);
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(

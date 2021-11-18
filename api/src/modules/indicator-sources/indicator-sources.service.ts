@@ -39,9 +39,8 @@ export class IndicatorSourcesService extends AppBaseService<
   }
 
   async getIndicatorSourceById(id: number): Promise<IndicatorSource> {
-    const found:
-      | IndicatorSource
-      | undefined = await this.indicatorSourceRepository.findOne(id);
+    const found: IndicatorSource | undefined =
+      await this.indicatorSourceRepository.findOne(id);
 
     if (!found) {
       throw new NotFoundException(`indicator source with ID "${id}" not found`);

@@ -57,9 +57,8 @@ export class IndicatorRecordsService extends AppBaseService<
   }
 
   async getIndicatorRecordById(id: number): Promise<IndicatorRecord> {
-    const found:
-      | IndicatorRecord
-      | undefined = await this.indicatorRecordRepository.findOne(id);
+    const found: IndicatorRecord | undefined =
+      await this.indicatorRecordRepository.findOne(id);
     if (!found) {
       throw new NotFoundException(`Indicator Record with ID "${id}" not found`);
     }
@@ -73,7 +72,8 @@ export class IndicatorRecordsService extends AppBaseService<
     this.logger.log(
       `Calculating impact value for sourcing record ${sourcingRecord.id}`,
     );
-    const indicators: Indicator[] = await this.indicatorService.findAllUnpaginated();
+    const indicators: Indicator[] =
+      await this.indicatorService.findAllUnpaginated();
 
     if (!sourcingRecord.sourcingLocation.geoRegion) {
       throw new Error(
@@ -86,11 +86,10 @@ export class IndicatorRecordsService extends AppBaseService<
       );
     }
 
-    const producerH3Table:
-      | H3Data
-      | undefined = await this.h3DataService.getById(
-      sourcingRecord.sourcingLocation.material.producerId,
-    );
+    const producerH3Table: H3Data | undefined =
+      await this.h3DataService.getById(
+        sourcingRecord.sourcingLocation.material.producerId,
+      );
 
     if (!producerH3Table) {
       throw new MissingH3DataError(
@@ -110,80 +109,79 @@ export class IndicatorRecordsService extends AppBaseService<
     const indicatorRecords: IndicatorRecord[] = [];
 
     await Promise.all(
-      indicators.map(
-        async (indicator: Indicator): Promise<void> => {
-          const indicatorH3Table:
-            | H3Data
-            | undefined = await this.h3DataService.findH3ByIndicatorId(
-            indicator.id,
-          );
+      indicators.map(async (indicator: Indicator): Promise<void> => {
+        const indicatorH3Table: H3Data | undefined =
+          await this.h3DataService.findH3ByIndicatorId(indicator.id);
 
-          if (!indicatorH3Table) {
-            throw new Error(
-              'Cannot calculate impact for sourcing record - missing indicator h3 data',
+        if (!indicatorH3Table) {
+          throw new Error(
+            'Cannot calculate impact for sourcing record - missing indicator h3 data',
+          );
+        }
+
+        let impactValue: number | null = null;
+
+        switch (indicator.nameCode) {
+          case 'UWU_T':
+            impactValue =
+              await this.h3DataService.getWaterRiskIndicatorRecordValue(
+                producerH3Table,
+                harvestH3Table,
+                indicatorH3Table,
+                sourcingRecord.id,
+              );
+            break;
+          case 'DF_LUC_T':
+            impactValue =
+              await this.h3DataService.getDeforestationLossIndicatorRecordValue(
+                producerH3Table,
+                harvestH3Table,
+                indicatorH3Table,
+                sourcingRecord.id,
+              );
+            break;
+          case 'BL_LUC_T':
+            impactValue =
+              await this.h3DataService.getBiodiversityLossIndicatorRecordValue(
+                producerH3Table,
+                harvestH3Table,
+                indicatorH3Table,
+                sourcingRecord.id,
+              );
+            break;
+          case 'GHG_LUC_T':
+            impactValue =
+              await this.h3DataService.getCarbonIndicatorRecordValue(
+                producerH3Table,
+                harvestH3Table,
+                indicatorH3Table,
+                sourcingRecord.id,
+              );
+            break;
+
+          default:
+            this.logger.log(
+              `Indicator Record calculation for indicator '${indicator.name}' not supported;`,
             );
-          }
+        }
 
-          let impactValue: number | null = null;
+        if (impactValue === null) {
+          return;
+        }
 
-          switch (indicator.nameCode) {
-            case 'UWU_T':
-              impactValue = await this.h3DataService.getWaterRiskIndicatorRecordValue(
-                producerH3Table,
-                harvestH3Table,
-                indicatorH3Table,
-                sourcingRecord.id,
-              );
-              break;
-            case 'DF_LUC_T':
-              impactValue = await this.h3DataService.getDeforestationLossIndicatorRecordValue(
-                producerH3Table,
-                harvestH3Table,
-                indicatorH3Table,
-                sourcingRecord.id,
-              );
-              break;
-            case 'BL_LUC_T':
-              impactValue = await this.h3DataService.getBiodiversityLossIndicatorRecordValue(
-                producerH3Table,
-                harvestH3Table,
-                indicatorH3Table,
-                sourcingRecord.id,
-              );
-              break;
-            case 'GHG_LUC_T':
-              impactValue = await this.h3DataService.getCarbonIndicatorRecordValue(
-                producerH3Table,
-                harvestH3Table,
-                indicatorH3Table,
-                sourcingRecord.id,
-              );
-              break;
+        const indicatorRecord: IndicatorRecord = IndicatorRecord.merge(
+          new IndicatorRecord(),
+          {
+            value: impactValue,
+            indicatorId: indicator.id,
+            status: INDICATOR_RECORD_STATUS.SUCCESS,
+            sourcingRecordId: sourcingRecord.id,
+          },
+        );
 
-            default:
-              this.logger.log(
-                `Indicator Record calculation for indicator '${indicator.name}' not supported;`,
-              );
-          }
-
-          if (impactValue === null) {
-            return;
-          }
-
-          const indicatorRecord: IndicatorRecord = IndicatorRecord.merge(
-            new IndicatorRecord(),
-            {
-              value: impactValue,
-              indicatorId: indicator.id,
-              status: INDICATOR_RECORD_STATUS.SUCCESS,
-              sourcingRecordId: sourcingRecord.id,
-            },
-          );
-
-          await this.indicatorRecordRepository.insert(indicatorRecord);
-          indicatorRecords.push(indicatorRecord);
-        },
-      ),
+        await this.indicatorRecordRepository.insert(indicatorRecord);
+        indicatorRecords.push(indicatorRecord);
+      }),
     );
 
     this.logger.log(

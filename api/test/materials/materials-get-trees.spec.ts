@@ -21,9 +21,8 @@ describe('Materials - Get trees', () => {
       imports: [AppModule, MaterialsModule],
     }).compile();
 
-    materialRepository = moduleFixture.get<MaterialRepository>(
-      MaterialRepository,
-    );
+    materialRepository =
+      moduleFixture.get<MaterialRepository>(MaterialRepository);
 
     h3dataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
 

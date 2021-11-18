@@ -19,9 +19,8 @@ describe('GeoRegionsModule (e2e)', () => {
       imports: [AppModule, GeoRegionsModule],
     }).compile();
 
-    geoRegionRepository = moduleFixture.get<GeoRegionRepository>(
-      GeoRegionRepository,
-    );
+    geoRegionRepository =
+      moduleFixture.get<GeoRegionRepository>(GeoRegionRepository);
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(

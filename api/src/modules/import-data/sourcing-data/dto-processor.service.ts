@@ -63,15 +63,13 @@ export class SourcingRecordsDtoProcessorService {
     const materials: CreateMaterialDto[] = await this.createMaterialDtos(
       importData.materials,
     );
-    const businessUnits: CreateBusinessUnitDto[] = await this.createBusinessUnitDtos(
-      importData.businessUnits,
-    );
+    const businessUnits: CreateBusinessUnitDto[] =
+      await this.createBusinessUnitDtos(importData.businessUnits);
     const suppliers: CreateSupplierDto[] = await this.createSupplierDtos(
       importData.suppliers,
     );
-    const adminRegions: CreateAdminRegionDto[] = await this.createAdminRegionDtos(
-      importData.countries,
-    );
+    const adminRegions: CreateAdminRegionDto[] =
+      await this.createAdminRegionDtos(importData.countries);
 
     const processedSourcingData: Record<string, any> = this.cleanCustomData(
       importData.sourcingData,
@@ -102,9 +100,9 @@ export class SourcingRecordsDtoProcessorService {
     return regexMatch ? parseInt(regexMatch[0]) : null;
   }
 
-  private cleanCustomData(
-    customData: WorkSheet[],
-  ): { sourcingData: SourcingData[] } {
+  private cleanCustomData(customData: WorkSheet[]): {
+    sourcingData: SourcingData[];
+  } {
     this.logger.debug(`Cleaning ${customData.length} custom data rows`);
     const sourcingData: SourcingData[] = [];
 
@@ -258,15 +256,17 @@ export class SourcingRecordsDtoProcessorService {
 
     const sourcingLocationDtos: any[] = [];
     importData.forEach((importRow: Record<string, any>) => {
-      const sourcingLocationDto: CreateSourcingLocationDto = this.createSourcingLocationDTOFromData(
-        importRow,
-        sourcingLocationGroupId,
-      );
-      const sourcingRecords: CreateSourcingRecordDto[] = importRow.sourcingRecords.map(
-        (sourcingRecord: CreateSourcingRecordDto) => {
-          return this.createSourcingRecordDTOFromData(sourcingRecord);
-        },
-      );
+      const sourcingLocationDto: CreateSourcingLocationDto =
+        this.createSourcingLocationDTOFromData(
+          importRow,
+          sourcingLocationGroupId,
+        );
+      const sourcingRecords: CreateSourcingRecordDto[] =
+        importRow.sourcingRecords.map(
+          (sourcingRecord: CreateSourcingRecordDto) => {
+            return this.createSourcingRecordDTOFromData(sourcingRecord);
+          },
+        );
       sourcingLocationDtos.push({
         ...sourcingLocationDto,
         sourcingRecords,
@@ -324,7 +324,8 @@ export class SourcingRecordsDtoProcessorService {
     sourcingLocationData: Record<string, any>,
     sourcingLocationGroupId: string,
   ): CreateSourcingLocationDto {
-    const sourcingLocationDto: CreateSourcingLocationDto = new CreateSourcingLocationDto();
+    const sourcingLocationDto: CreateSourcingLocationDto =
+      new CreateSourcingLocationDto();
     sourcingLocationDto.locationType = sourcingLocationData.location_type;
     sourcingLocationDto.locationCountryInput =
       sourcingLocationData.location_country_input;
@@ -359,7 +360,8 @@ export class SourcingRecordsDtoProcessorService {
   private createSourcingRecordDTOFromData(
     sourcingRecordData: Record<string, any>,
   ): CreateSourcingRecordDto {
-    const sourcingRecordDto: CreateSourcingRecordDto = new CreateSourcingRecordDto();
+    const sourcingRecordDto: CreateSourcingRecordDto =
+      new CreateSourcingRecordDto();
     sourcingRecordDto.tonnage = sourcingRecordData.tonnage;
     sourcingRecordDto.year = sourcingRecordData.year;
     return sourcingRecordDto;

@@ -47,12 +47,10 @@ describe('Risk Map Test Suite (e2e)', () => {
       imports: [AppModule, H3DataModule],
     }).compile();
 
-    materialRepository = moduleFixture.get<MaterialRepository>(
-      MaterialRepository,
-    );
-    indicatorRepository = moduleFixture.get<IndicatorRepository>(
-      IndicatorRepository,
-    );
+    materialRepository =
+      moduleFixture.get<MaterialRepository>(MaterialRepository);
+    indicatorRepository =
+      moduleFixture.get<IndicatorRepository>(IndicatorRepository);
     unitRepository = moduleFixture.get<UnitRepository>(UnitRepository);
     h3DataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
     unitConversionRepository = moduleFixture.get<UnitConversionRepository>(

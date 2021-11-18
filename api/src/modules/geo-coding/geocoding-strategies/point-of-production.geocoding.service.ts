@@ -17,24 +17,20 @@ export class PointOfProductionGeocodingService extends GeoCodingBaseService {
       );
 
     if (sourcingData.locationLongitude && sourcingData.locationLatitude) {
-      const geoCodeResponseData: GeocodeResponseData = await this.geoCodeByCountry(
-        sourcingData.locationCountryInput,
-      );
-      const {
-        id: adminRegionId,
-      } = await this.adminRegionService.getAdminAndGeoRegionIdByCountryIsoAlpha2(
-        this.getIsoA2Code(geoCodeResponseData),
-      );
-      const geoRegionId: Pick<
-        GeoRegion,
-        'id'
-      > = await this.geoRegionService.saveGeoRegionAsPoint({
-        name: sourcingData.locationCountryInput,
-        coordinates: {
-          lat: sourcingData.locationLatitude,
-          lng: sourcingData.locationLongitude,
-        },
-      });
+      const geoCodeResponseData: GeocodeResponseData =
+        await this.geoCodeByCountry(sourcingData.locationCountryInput);
+      const { id: adminRegionId } =
+        await this.adminRegionService.getAdminAndGeoRegionIdByCountryIsoAlpha2(
+          this.getIsoA2Code(geoCodeResponseData),
+        );
+      const geoRegionId: Pick<GeoRegion, 'id'> =
+        await this.geoRegionService.saveGeoRegionAsPoint({
+          name: sourcingData.locationCountryInput,
+          coordinates: {
+            lat: sourcingData.locationLatitude,
+            lng: sourcingData.locationLongitude,
+          },
+        });
       return {
         ...sourcingData,
         adminRegionId,
@@ -42,24 +38,20 @@ export class PointOfProductionGeocodingService extends GeoCodingBaseService {
       };
     }
     if (sourcingData.locationAddressInput) {
-      const geocodedResponseData: GeocodeResponseData = await this.geoCodeByAddress(
-        sourcingData.locationAddressInput,
-      );
-      const {
-        id: adminRegionId,
-      } = await this.adminRegionService.getAdminAndGeoRegionIdByCountryIsoAlpha2(
-        this.getIsoA2Code(geocodedResponseData),
-      );
-      const geoRegionId: Pick<
-        GeoRegion,
-        'id'
-      > = await this.geoRegionService.saveGeoRegionAsPoint({
-        name: sourcingData.locationCountryInput,
-        coordinates: {
-          lat: geocodedResponseData.results[0].geometry.location.lat,
-          lng: geocodedResponseData.results[0].geometry.location.lng,
-        },
-      });
+      const geocodedResponseData: GeocodeResponseData =
+        await this.geoCodeByAddress(sourcingData.locationAddressInput);
+      const { id: adminRegionId } =
+        await this.adminRegionService.getAdminAndGeoRegionIdByCountryIsoAlpha2(
+          this.getIsoA2Code(geocodedResponseData),
+        );
+      const geoRegionId: Pick<GeoRegion, 'id'> =
+        await this.geoRegionService.saveGeoRegionAsPoint({
+          name: sourcingData.locationCountryInput,
+          coordinates: {
+            lat: geocodedResponseData.results[0].geometry.location.lat,
+            lng: geocodedResponseData.results[0].geometry.location.lng,
+          },
+        });
       return {
         ...sourcingData,
         adminRegionId,

@@ -48,9 +48,8 @@ export class SourcingLocationsService extends AppBaseService<
   }
 
   async getSourcingLocationById(id: number): Promise<SourcingLocation> {
-    const found:
-      | SourcingLocation
-      | undefined = await this.sourcingLocationRepository.findOne(id);
+    const found: SourcingLocation | undefined =
+      await this.sourcingLocationRepository.findOne(id);
 
     if (!found) {
       throw new NotFoundException(

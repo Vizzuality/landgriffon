@@ -46,19 +46,17 @@ describe('Sourcing Data import', () => {
    */
   const geoCodingServiceMock = {
     geoCodeLocations: async (sourcingData: any): Promise<any> => {
-      const geoRegion:
-        | GeoRegion
-        | undefined = await geoRegionRepository.findOne({
-        name: 'ABC',
-      });
+      const geoRegion: GeoRegion | undefined =
+        await geoRegionRepository.findOne({
+          name: 'ABC',
+        });
       if (geoRegion === undefined) {
         throw new Error('Could not find expected mock GeoRegion with name=ABC');
       }
-      const adminRegion:
-        | AdminRegion
-        | undefined = await adminRegionRepository.findOne({
-        geoRegionId: geoRegion.id,
-      });
+      const adminRegion: AdminRegion | undefined =
+        await adminRegionRepository.findOne({
+          geoRegionId: geoRegion.id,
+        });
       if (adminRegion === undefined) {
         throw new Error(
           'Could not find expected mock AdminRegion for GeoRegion with name=ABC',
@@ -121,12 +119,10 @@ describe('Sourcing Data import', () => {
     businessUnitRepository = moduleFixture.get<BusinessUnitRepository>(
       BusinessUnitRepository,
     );
-    materialRepository = moduleFixture.get<MaterialRepository>(
-      MaterialRepository,
-    );
-    supplierRepository = moduleFixture.get<SupplierRepository>(
-      SupplierRepository,
-    );
+    materialRepository =
+      moduleFixture.get<MaterialRepository>(MaterialRepository);
+    supplierRepository =
+      moduleFixture.get<SupplierRepository>(SupplierRepository);
     adminRegionRepository = moduleFixture.get<AdminRegionRepository>(
       AdminRegionRepository,
     );
@@ -136,18 +132,17 @@ describe('Sourcing Data import', () => {
     sourcingRecordRepository = moduleFixture.get<SourcingRecordRepository>(
       SourcingRecordRepository,
     );
-    sourcingLocationGroupRepository = moduleFixture.get<SourcingLocationGroupRepository>(
-      SourcingLocationGroupRepository,
-    );
-    geoRegionRepository = moduleFixture.get<GeoRegionRepository>(
-      GeoRegionRepository,
-    );
+    sourcingLocationGroupRepository =
+      moduleFixture.get<SourcingLocationGroupRepository>(
+        SourcingLocationGroupRepository,
+      );
+    geoRegionRepository =
+      moduleFixture.get<GeoRegionRepository>(GeoRegionRepository);
     indicatorRecordRepository = moduleFixture.get<IndicatorRecordRepository>(
       IndicatorRecordRepository,
     );
-    indicatorRepository = moduleFixture.get<IndicatorRepository>(
-      IndicatorRepository,
-    );
+    indicatorRepository =
+      moduleFixture.get<IndicatorRepository>(IndicatorRepository);
     h3DataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
 
     app = moduleFixture.createNestApplication();
@@ -261,7 +256,8 @@ describe('Sourcing Data import', () => {
 
     const businessUnits: BusinessUnit[] = await businessUnitRepository.find();
     expect(businessUnits).toHaveLength(5);
-    const businessUnitsRoots: BusinessUnit[] = await businessUnitRepository.findRoots();
+    const businessUnitsRoots: BusinessUnit[] =
+      await businessUnitRepository.findRoots();
     expect(businessUnitsRoots).toHaveLength(1);
 
     const suppliers: Supplier[] = await supplierRepository.find();
@@ -269,13 +265,16 @@ describe('Sourcing Data import', () => {
     const suppliersRoots: Supplier[] = await supplierRepository.findRoots();
     expect(suppliersRoots).toHaveLength(4);
 
-    const sourcingRecords: SourcingRecord[] = await sourcingRecordRepository.find();
+    const sourcingRecords: SourcingRecord[] =
+      await sourcingRecordRepository.find();
     expect(sourcingRecords).toHaveLength(495);
 
-    const indicatorRecords: IndicatorRecord[] = await indicatorRecordRepository.find();
+    const indicatorRecords: IndicatorRecord[] =
+      await indicatorRecordRepository.find();
     expect(indicatorRecords).toHaveLength(495 * 4);
 
-    const sourcingLocations: SourcingLocation[] = await sourcingLocationRepository.find();
+    const sourcingLocations: SourcingLocation[] =
+      await sourcingLocationRepository.find();
     expect(sourcingLocations).toHaveLength(45);
     sourcingLocations.forEach((sourcingLocation: SourcingLocation) => {
       expect(sourcingLocation.materialId).not.toEqual(null);
@@ -301,7 +300,8 @@ describe('Sourcing Data import', () => {
       .post('/api/v1/import/sourcing-data')
       .attach('file', __dirname + '/base-dataset.xlsx');
 
-    const sourcingRecords: SourcingRecord[] = await sourcingRecordRepository.find();
+    const sourcingRecords: SourcingRecord[] =
+      await sourcingRecordRepository.find();
     expect(sourcingRecords.length).toEqual(495);
   }, 100000);
 
@@ -320,12 +320,12 @@ describe('Sourcing Data import', () => {
       .post('/api/v1/import/sourcing-data')
       .attach('file', __dirname + '/base-dataset.xlsx');
 
-    const sourcingRecords: SourcingRecord[] = await sourcingRecordRepository.find();
-    const sourcingLocation:
-      | SourcingLocation
-      | undefined = await sourcingLocationRepository.findOne(
-      sourcingRecords[0].sourcingLocationId,
-    );
+    const sourcingRecords: SourcingRecord[] =
+      await sourcingRecordRepository.find();
+    const sourcingLocation: SourcingLocation | undefined =
+      await sourcingLocationRepository.findOne(
+        sourcingRecords[0].sourcingLocationId,
+      );
 
     expect(sourcingRecords[0]).toMatchObject(new SourcingRecord());
     expect(sourcingLocation).toMatchObject(new SourcingLocation());

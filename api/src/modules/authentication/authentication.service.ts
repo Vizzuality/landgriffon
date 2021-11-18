@@ -127,12 +127,10 @@ export class AuthenticationService {
     user.password = await hash(signupDto.password, user.salt);
     user.email = signupDto.email;
     user.isActive = !config.get('auth.requireUserAccountActivation');
-    const newUser: Omit<
-      User,
-      'password' | 'salt' | 'isActive' | 'isDeleted'
-    > = UsersService.getSanitizedUserMetadata(
-      await this.userRepository.save(user),
-    );
+    const newUser: Omit<User, 'password' | 'salt' | 'isActive' | 'isDeleted'> =
+      UsersService.getSanitizedUserMetadata(
+        await this.userRepository.save(user),
+      );
     if (!newUser) {
       throw new InternalServerErrorException('Error while creating a new user');
     }
@@ -179,12 +177,11 @@ export class AuthenticationService {
   ): Promise<true | never> {
     const invalidOrExpiredActivationTokenMessage: string =
       'Invalid or expired activation token.';
-    const event:
-      | ApiEventByTopicAndKind
-      | undefined = await this.apiEventsService.getLatestEventForTopic({
-      topic: token.sub,
-      kind: API_EVENT_KINDS.user__accountActivationTokenGenerated__v1alpha1,
-    });
+    const event: ApiEventByTopicAndKind | undefined =
+      await this.apiEventsService.getLatestEventForTopic({
+        topic: token.sub,
+        kind: API_EVENT_KINDS.user__accountActivationTokenGenerated__v1alpha1,
+      });
     if (!event) {
       throw new BadRequestException(invalidOrExpiredActivationTokenMessage);
     }

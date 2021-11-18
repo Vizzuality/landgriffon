@@ -69,53 +69,54 @@ export class SourcingRecordsImportService {
     this.logger.log(`Starting import process`);
     await this.fileService.isFilePresentInFs(filePath);
     try {
-      const parsedXLSXDataset: SourcingRecordsSheets = await this.fileService.transformToJson(
-        filePath,
-        SHEETS_MAP,
-      );
+      const parsedXLSXDataset: SourcingRecordsSheets =
+        await this.fileService.transformToJson(filePath, SHEETS_MAP);
 
-      const sourcingLocationGroup: SourcingLocationGroup = await this.sourcingLocationGroupService.create(
-        {
+      const sourcingLocationGroup: SourcingLocationGroup =
+        await this.sourcingLocationGroupService.create({
           title: 'Sourcing Records import from XLSX file',
-        },
-      );
-      const dtoMatchedData: SourcingRecordsDtos = await this.dtoProcessor.createDTOsFromSourcingRecordsSheets(
-        parsedXLSXDataset,
-        sourcingLocationGroup.id,
-      );
+        });
+      const dtoMatchedData: SourcingRecordsDtos =
+        await this.dtoProcessor.createDTOsFromSourcingRecordsSheets(
+          parsedXLSXDataset,
+          sourcingLocationGroup.id,
+        );
 
       this.logger.log(`Validating DTOs`);
       await this.validateDTOs(dtoMatchedData);
       await this.cleanDataBeforeImport();
 
-      const materials: Material[] = await this.materialService.findAllUnpaginated();
+      const materials: Material[] =
+        await this.materialService.findAllUnpaginated();
       if (!materials.length) {
         throw new Error(
           'No Materials found present in the DB. Please check the LandGriffon installation manual',
         );
       }
 
-      const businessUnits: BusinessUnit[] = await this.businessUnitService.createTree(
-        dtoMatchedData.businessUnits,
-      );
+      const businessUnits: BusinessUnit[] =
+        await this.businessUnitService.createTree(dtoMatchedData.businessUnits);
 
       const suppliers: Supplier[] = await this.supplierService.createTree(
         dtoMatchedData.suppliers,
       );
-      const sourcingDataWithOrganizationalEntities: any = this.relateSourcingDataWithOrganizationalEntities(
-        suppliers,
-        businessUnits,
-        materials,
-        dtoMatchedData.sourcingData,
-      );
+      const sourcingDataWithOrganizationalEntities: any =
+        this.relateSourcingDataWithOrganizationalEntities(
+          suppliers,
+          businessUnits,
+          materials,
+          dtoMatchedData.sourcingData,
+        );
 
-      const geoCodedSourcingData: SourcingData[] = await this.geoCodingService.geoCodeLocations(
-        sourcingDataWithOrganizationalEntities,
-      );
+      const geoCodedSourcingData: SourcingData[] =
+        await this.geoCodingService.geoCodeLocations(
+          sourcingDataWithOrganizationalEntities,
+        );
 
       await this.sourcingLocationService.save(geoCodedSourcingData);
 
-      const sourcingRecords: SourcingRecord[] = await this.sourcingRecordService.findAllUnpaginated();
+      const sourcingRecords: SourcingRecord[] =
+        await this.sourcingRecordService.findAllUnpaginated();
       this.logger.log(
         `Generating indicator records for ${sourcingRecords.length} sourcing records`,
       );

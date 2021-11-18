@@ -17,9 +17,8 @@ describe('Materials - Update', () => {
       imports: [AppModule, MaterialsModule],
     }).compile();
 
-    materialRepository = moduleFixture.get<MaterialRepository>(
-      MaterialRepository,
-    );
+    materialRepository =
+      moduleFixture.get<MaterialRepository>(MaterialRepository);
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(

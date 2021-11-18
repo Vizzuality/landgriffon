@@ -17,9 +17,8 @@ describe('Suppliers - Update', () => {
       imports: [AppModule, SuppliersModule],
     }).compile();
 
-    supplierRepository = moduleFixture.get<SupplierRepository>(
-      SupplierRepository,
-    );
+    supplierRepository =
+      moduleFixture.get<SupplierRepository>(SupplierRepository);
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(

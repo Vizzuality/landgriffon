@@ -90,11 +90,10 @@ export class AdminRegionsController {
   async getTrees(
     @Query('depth', ParseOptionalIntPipe) depth?: number,
   ): Promise<AdminRegion> {
-    const results: AdminRegion[] = await this.adminRegionsService.findTreesWithOptions(
-      {
+    const results: AdminRegion[] =
+      await this.adminRegionsService.findTreesWithOptions({
         depth,
-      },
-    );
+      });
     return this.adminRegionsService.serialize(results);
   }
 

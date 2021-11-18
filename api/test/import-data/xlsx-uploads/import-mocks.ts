@@ -69,8 +69,7 @@ async function createMaterialTreeForXLSXImport(): Promise<string[]> {
       parentHsCodeId: '08',
     },
     {
-      name:
-        'Coffee, whether or not roasted or decaffeinated; husks and skins; coffee substitutes containing coffee in any proportion',
+      name: 'Coffee, whether or not roasted or decaffeinated; husks and skins; coffee substitutes containing coffee in any proportion',
       hsCodeId: '901',
       parentHsCodeId: '09',
     },
@@ -80,8 +79,7 @@ async function createMaterialTreeForXLSXImport(): Promise<string[]> {
       parentHsCodeId: '10',
     },
     {
-      name:
-        "Dairy produce; birds' eggs; natural honey; edible products of animal origin, not elsewhere specified or included",
+      name: "Dairy produce; birds' eggs; natural honey; edible products of animal origin, not elsewhere specified or included",
       hsCodeId: '40',
       parentHsCodeId: null,
     },

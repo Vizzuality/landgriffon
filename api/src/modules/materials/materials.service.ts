@@ -83,9 +83,8 @@ export class MaterialsService extends AppBaseService<
   async findTreesWithOptions(
     args?: FindTreesWithOptionsArgs,
   ): Promise<Material[]> {
-    const materialTree: Material[] = await this.materialRepository.findTreesWithOptions(
-      args,
-    );
+    const materialTree: Material[] =
+      await this.materialRepository.findTreesWithOptions(args);
 
     let filteredMaterialTree: Material[] = [];
     materialTree.forEach((child: Material) => {

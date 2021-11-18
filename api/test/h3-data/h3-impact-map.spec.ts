@@ -44,12 +44,10 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     }).compile();
 
     h3DataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
-    materialRepository = moduleFixture.get<MaterialRepository>(
-      MaterialRepository,
-    );
-    indicatorRepository = moduleFixture.get<IndicatorRepository>(
-      IndicatorRepository,
-    );
+    materialRepository =
+      moduleFixture.get<MaterialRepository>(MaterialRepository);
+    indicatorRepository =
+      moduleFixture.get<IndicatorRepository>(IndicatorRepository);
     unitRepository = moduleFixture.get<UnitRepository>(UnitRepository);
     unitConversionRepository = moduleFixture.get<UnitConversionRepository>(
       UnitConversionRepository,
@@ -277,13 +275,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     );
     expect(response.body.metadata).toEqual({
       quantiles: [
-        500,
-        539.0078,
-        578.0858000000001,
-        617,
-        783.6999999999999,
-        950.7,
-        1117,
+        500, 539.0078, 578.0858000000001, 617, 783.6999999999999, 950.7, 1117,
       ],
       unit: 'tonnes',
     });

@@ -28,12 +28,10 @@ export class CountryOfProductionService extends GeoCodingBaseService {
       sourcingData?.locationCountryInput,
     );
 
-    const {
-      id: adminRegionId,
-      geoRegionId,
-    } = await this.adminRegionService.getAdminAndGeoRegionIdByCountryIsoAlpha2(
-      geoCodedResponse.results[0]?.address_components?.[0]?.short_name,
-    );
+    const { id: adminRegionId, geoRegionId } =
+      await this.adminRegionService.getAdminAndGeoRegionIdByCountryIsoAlpha2(
+        geoCodedResponse.results[0]?.address_components?.[0]?.short_name,
+      );
     return {
       ...sourcingData,
       adminRegionId,

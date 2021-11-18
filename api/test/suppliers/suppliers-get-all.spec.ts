@@ -17,9 +17,8 @@ describe('Suppliers - Get all', () => {
       imports: [AppModule, SuppliersModule],
     }).compile();
 
-    supplierRepository = moduleFixture.get<SupplierRepository>(
-      SupplierRepository,
-    );
+    supplierRepository =
+      moduleFixture.get<SupplierRepository>(SupplierRepository);
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(
@@ -144,12 +143,10 @@ describe('Suppliers - Get all', () => {
       'children',
     ]);
 
-    const rootSupplierFromResponse: Record<
-      string,
-      any
-    > = response.body.data.find(
-      (elem: Record<string, any>) => elem.id === rootSupplier.id,
-    );
+    const rootSupplierFromResponse: Record<string, any> =
+      response.body.data.find(
+        (elem: Record<string, any>) => elem.id === rootSupplier.id,
+      );
 
     expect(rootSupplierFromResponse.attributes.children).toHaveLength(2);
     expect(

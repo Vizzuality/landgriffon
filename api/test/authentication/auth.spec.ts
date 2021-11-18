@@ -36,22 +36,20 @@ describe('AppController (e2e)', () => {
   });
 
   describe('Authentication', () => {
-    beforeAll(
-      async (): Promise<User> => {
-        const user: User = new User();
-        user.email = E2E_CONFIG.users.basic.aa.username;
-        user.fname = 'a';
-        user.lname = 'a';
-        user.displayName = 'User A A';
-        user.salt = await bcrypt.genSalt();
-        user.password = await bcrypt.hash(
-          E2E_CONFIG.users.basic.aa.password,
-          user.salt,
-        );
-        user.isActive = true;
-        return user.save();
-      },
-    );
+    beforeAll(async (): Promise<User> => {
+      const user: User = new User();
+      user.email = E2E_CONFIG.users.basic.aa.username;
+      user.fname = 'a';
+      user.lname = 'a';
+      user.displayName = 'User A A';
+      user.salt = await bcrypt.genSalt();
+      user.password = await bcrypt.hash(
+        E2E_CONFIG.users.basic.aa.password,
+        user.salt,
+      );
+      user.isActive = true;
+      return user.save();
+    });
 
     it('Retrieves a JWT token when authenticating with valid credentials', async () => {
       await request(app.getHttpServer())

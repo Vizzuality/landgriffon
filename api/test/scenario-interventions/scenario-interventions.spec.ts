@@ -28,9 +28,10 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       imports: [AppModule, ScenarioInterventionsModule],
     }).compile();
 
-    scenarioInterventionRepository = moduleFixture.get<ScenarioInterventionRepository>(
-      ScenarioInterventionRepository,
-    );
+    scenarioInterventionRepository =
+      moduleFixture.get<ScenarioInterventionRepository>(
+        ScenarioInterventionRepository,
+      );
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(
@@ -60,9 +61,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdScenarioIntervention = await scenarioInterventionRepository.findOne(
-        response.body.data.id,
-      );
+      const createdScenarioIntervention =
+        await scenarioInterventionRepository.findOne(response.body.data.id);
 
       if (!createdScenarioIntervention) {
         throw new Error('Error loading created Scenario intervention');
@@ -96,7 +96,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
   describe('Scenario interventions - Update', () => {
     test('Update a scenario intervention should be successful (happy case)', async () => {
-      const scenarioIntervention: ScenarioIntervention = await createScenarioIntervention();
+      const scenarioIntervention: ScenarioIntervention =
+        await createScenarioIntervention();
 
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/scenario-interventions/${scenarioIntervention.id}`)
@@ -115,7 +116,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
   describe('Scenario interventions - Delete', () => {
     test('Delete a scenario intervention should be successful (happy case)', async () => {
-      const scenarioIntervention: ScenarioIntervention = await createScenarioIntervention();
+      const scenarioIntervention: ScenarioIntervention =
+        await createScenarioIntervention();
 
       await request(app.getHttpServer())
         .delete(`/api/v1/scenario-interventions/${scenarioIntervention.id}`)
@@ -130,7 +132,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
   describe('Scenario interventions - Get all', () => {
     test('Get all scenario interventions should be successful (happy case)', async () => {
-      const scenarioIntervention: ScenarioIntervention = await createScenarioIntervention();
+      const scenarioIntervention: ScenarioIntervention =
+        await createScenarioIntervention();
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/scenario-interventions`)
@@ -176,18 +179,16 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     });
 
     test('Get scenario interventions filtered by some criteria should only return the scenario interventions that match said criteria', async () => {
-      const scenarioInterventionOne: ScenarioIntervention = await createScenarioIntervention(
-        {
+      const scenarioInterventionOne: ScenarioIntervention =
+        await createScenarioIntervention({
           title: 'scenario intervention one',
           status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
-        },
-      );
-      const scenarioInterventionTwo: ScenarioIntervention = await createScenarioIntervention(
-        {
+        });
+      const scenarioInterventionTwo: ScenarioIntervention =
+        await createScenarioIntervention({
           title: 'scenario intervention two',
           status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
-        },
-      );
+        });
       await createScenarioIntervention({
         title: 'scenario intervention three',
         status: SCENARIO_INTERVENTION_STATUS.DELETED,
@@ -214,7 +215,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
   describe('Scenario interventions - Get by id', () => {
     test('Get a scenario intervention by id should be successful (happy case)', async () => {
-      const scenarioIntervention: ScenarioIntervention = await createScenarioIntervention();
+      const scenarioIntervention: ScenarioIntervention =
+        await createScenarioIntervention();
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/scenario-interventions/${scenarioIntervention.id}`)

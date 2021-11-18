@@ -17,9 +17,8 @@ describe('Materials - Get all', () => {
       imports: [AppModule, MaterialsModule],
     }).compile();
 
-    materialRepository = moduleFixture.get<MaterialRepository>(
-      MaterialRepository,
-    );
+    materialRepository =
+      moduleFixture.get<MaterialRepository>(MaterialRepository);
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(
@@ -144,12 +143,10 @@ describe('Materials - Get all', () => {
       'children',
     ]);
 
-    const rootMaterialFromResponse: Record<
-      string,
-      any
-    > = response.body.data.find(
-      (elem: Record<string, any>) => elem.id === rootMaterial.id,
-    );
+    const rootMaterialFromResponse: Record<string, any> =
+      response.body.data.find(
+        (elem: Record<string, any>) => elem.id === rootMaterial.id,
+      );
 
     expect(rootMaterialFromResponse.attributes.children).toHaveLength(2);
     expect(

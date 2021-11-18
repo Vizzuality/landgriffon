@@ -38,7 +38,7 @@ export class PaginationMeta {
  * accidental mistakes (configuring the entity's own serializable properties).
  */
 export interface JSONAPISerializerAttributesConfig<Entity> {
-  attributes: Array<keyof Entity>;
+  attributes: string[];
   /**
    * Approximate typing from jsonapi-serializer's documentation
    * (https://github.com/SeyZ/jsonapi-serializer#available-serialization-option-opts-argument),
@@ -56,16 +56,15 @@ export interface JSONAPISerializerAttributesConfig<Entity> {
     | 'CamelCase';
 }
 
-export type JSONAPISerializerConfig<
-  Entity
-> = JSONAPISerializerAttributesConfig<Entity> & Record<string, unknown>;
+export type JSONAPISerializerConfig<Entity> =
+  JSONAPISerializerAttributesConfig<Entity> & Record<string, unknown>;
 
 export abstract class AppBaseService<
   // eslint-disable-next-line @typescript-eslint/ban-types
   Entity extends object,
   CreateModel,
   UpdateModel,
-  Info
+  Info,
 > extends BaseService<Entity, CreateModel, UpdateModel, Info> {
   constructor(
     protected readonly repository: Repository<Entity>,
@@ -89,7 +88,6 @@ export abstract class AppBaseService<
       this.pluralAlias,
       {
         ...this.serializerConfig,
-        // @ts-expect-error Custom pagination info passed to the serializer
         paginationMeta,
       },
     );

@@ -45,7 +45,8 @@ describe('SourcingLocationsModule (e2e)', () => {
 
   describe('Sourcing locations - Filters', () => {
     test('When I fetch a sourcing-locationd and I include its relation sourcing-record-group in the query, I should receive said sourcing-location and its related sourcing-record-group', async () => {
-      const sourcingLocationGroup: SourcingLocationGroup = await createSourcingLocationGroup();
+      const sourcingLocationGroup: SourcingLocationGroup =
+        await createSourcingLocationGroup();
       const sourcingLocation: SourcingLocation = await createSourcingLocation({
         sourcingLocationGroupId: sourcingLocationGroup.id,
       });

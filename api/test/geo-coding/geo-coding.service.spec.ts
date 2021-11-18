@@ -47,10 +47,10 @@ describe('GeoCoding Service (Integration Testing)', () => {
 
   describe('Unknown Location Types Tests', () => {
     test('When a location is sent to the service, and has both address and coordinates, then an error should be shown ', async () => {
-      const sourcingData = ({
+      const sourcingData = {
         locationAddressInput: true,
         locationLatitude: true,
-      } as unknown) as SourcingData;
+      } as unknown as SourcingData;
       expect.assertions(1);
       try {
         await geoCodingService.geoCodeAggregationPoint(sourcingData);
@@ -68,11 +68,11 @@ describe('GeoCoding Service (Integration Testing)', () => {
       } as AdminRegion);
       jest
         .spyOn(sourcingLocationService, 'save')
-        .mockResolvedValue(([] as unknown) as SourcingLocation[]);
-      const sourcingData = ({
+        .mockResolvedValue([] as unknown as SourcingLocation[]);
+      const sourcingData = {
         locationLongitude: 78.96288,
         locationLatitude: 20.593684,
-      } as unknown) as SourcingData;
+      } as unknown as SourcingData;
       const res: any = await geoCodingService.geoCodeAggregationPoint(
         sourcingData,
       );
@@ -87,9 +87,9 @@ describe('GeoCoding Service (Integration Testing)', () => {
       jest
         .spyOn(aggregationPointService, 'geoCodeByAddress')
         .mockResolvedValue(geocodeResponses[2] as GeocodeResponseData);
-      const sourcingData = ({
+      const sourcingData = {
         locationAddressInput: true,
-      } as unknown) as SourcingData;
+      } as unknown as SourcingData;
       expect.assertions(1);
       try {
         await geoCodingService.geoCodeAggregationPoint(sourcingData);
@@ -113,9 +113,9 @@ describe('GeoCoding Service (Integration Testing)', () => {
         .spyOn(adminRegionService, 'getAdminRegionIdByCoordinates')
         .mockResolvedValue(fakeIds);
 
-      const sourcingData = ({
+      const sourcingData = {
         locationAddressInput: true,
-      } as unknown) as SourcingData;
+      } as unknown as SourcingData;
       const res: any = await geoCodingService.geoCodeAggregationPoint(
         sourcingData,
       );
@@ -128,9 +128,9 @@ describe('GeoCoding Service (Integration Testing)', () => {
   });
   describe('Country of Production Location Types', () => {
     test('When I send a location and it has no country, then a error should be shown', async () => {
-      const sourcingData = ({
+      const sourcingData = {
         locationCountryInput: null,
-      } as unknown) as SourcingData;
+      } as unknown as SourcingData;
       expect.assertions(1);
       try {
         await geoCodingService.geoCodeCountryOfProduction(sourcingData);
@@ -141,11 +141,11 @@ describe('GeoCoding Service (Integration Testing)', () => {
       }
     });
     test('When I send a location and it has both address and coordinates, then a error should be shown', async () => {
-      const sourcingData = ({
+      const sourcingData = {
         locationCountryInput: true,
         locationAddressInput: true,
         locationLatitude: true,
-      } as unknown) as SourcingData;
+      } as unknown as SourcingData;
       expect.assertions(1);
       try {
         await geoCodingService.geoCodeCountryOfProduction(sourcingData);
@@ -158,9 +158,9 @@ describe('GeoCoding Service (Integration Testing)', () => {
   });
   describe('Point of Production Location Types', () => {
     test('When I send a location and it has no country, then a error should be shown', async () => {
-      const sourcingData = ({
+      const sourcingData = {
         locationCountryInput: null,
-      } as unknown) as SourcingData;
+      } as unknown as SourcingData;
       expect.assertions(1);
       try {
         await geoCodingService.geoCodePointOfProduction(sourcingData);
@@ -171,11 +171,11 @@ describe('GeoCoding Service (Integration Testing)', () => {
       }
     });
     test('When I send a location and it has both address and coordinates, then a error should be shown', async () => {
-      const sourcingData = ({
+      const sourcingData = {
         locationCountryInput: true,
         locationAddressInput: true,
         locationLatitude: true,
-      } as unknown) as SourcingData;
+      } as unknown as SourcingData;
       expect.assertions(1);
       try {
         await geoCodingService.geoCodePointOfProduction(sourcingData);
@@ -194,15 +194,14 @@ describe('GeoCoding Service (Integration Testing)', () => {
       jest
         .spyOn(pointOfProductionService, 'geoCodeByCountry')
         .mockResolvedValue(geocodeResponses[3] as GeocodeResponseData);
-      const sourcingData = ({
+      const sourcingData = {
         locationCountryInput: true,
         locationLongitude: 78.96288,
         locationLatitude: 20.593684,
-      } as unknown) as SourcingData;
+      } as unknown as SourcingData;
 
-      const sourcingLocation: any = await geoCodingService.geoCodePointOfProduction(
-        sourcingData,
-      );
+      const sourcingLocation: any =
+        await geoCodingService.geoCodePointOfProduction(sourcingData);
       const geoRegion = await geoRegionRepository.find({});
       expect(sourcingLocation.geoRegionId).toEqual(geoRegion[0].id);
       expect(sourcingLocation.adminRegionId).toEqual(

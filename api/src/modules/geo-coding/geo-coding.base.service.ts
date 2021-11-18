@@ -123,11 +123,10 @@ export class GeoCodingBaseService {
   }
 
   getIsoA2Code(geoCodedResponse: GeocodeResponseData): string {
-    const country:
-      | AddressComponent
-      | undefined = geoCodedResponse.results[0].address_components.find(
-      (address: any) => address.types.includes('country'),
-    );
+    const country: AddressComponent | undefined =
+      geoCodedResponse.results[0].address_components.find((address: any) =>
+        address.types.includes('country'),
+      );
     if (country) return country.short_name;
     throw new Error(`Could not find ISO2 code`);
   }

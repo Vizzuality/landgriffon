@@ -11,7 +11,7 @@ export interface FindTreesWithOptionsArgs {
 
 export class ExtendedTreeRepository<
   Entity,
-  CreateDto extends { parent?: Entity }
+  CreateDto extends { parent?: Entity },
 > extends TreeRepository<Entity> {
   async findTreesWithOptions(
     args?: FindTreesWithOptionsArgs,
@@ -23,9 +23,8 @@ export class ExtendedTreeRepository<
 
     const roots: Entity[] = await this.findRoots();
     roots.forEach((root: Entity) => {
-      const rootEntityId: string = this.metadata.primaryColumns[0].getEntityValue(
-        root,
-      );
+      const rootEntityId: string =
+        this.metadata.primaryColumns[0].getEntityValue(root);
       this.depthHack[rootEntityId] = args.depth as number;
     });
     await Promise.all(
@@ -43,11 +42,10 @@ export class ExtendedTreeRepository<
     entities: any[],
     relationMaps: { id: any; parentId: any }[],
   ): void {
-    const childProperty: string = this.metadata.treeChildrenRelation!
-      .propertyName;
-    const parentEntityId: string = this.metadata.primaryColumns[0].getEntityValue(
-      entity,
-    );
+    const childProperty: string =
+      this.metadata.treeChildrenRelation!.propertyName;
+    const parentEntityId: string =
+      this.metadata.primaryColumns[0].getEntityValue(entity);
     const parentEntityDepth: number =
       parentEntityId in this.depthHack ? this.depthHack[parentEntityId] : -1;
     if (parentEntityDepth === 0) {
@@ -68,9 +66,8 @@ export class ExtendedTreeRepository<
       childIds.has(this.metadata.primaryColumns[0].getEntityValue(entity)),
     );
     entity[childProperty].forEach((childEntity: any) => {
-      const childEntityId: string = this.metadata.primaryColumns[0].getEntityValue(
-        childEntity,
-      );
+      const childEntityId: string =
+        this.metadata.primaryColumns[0].getEntityValue(childEntity);
       if (parentEntityDepth !== 0) {
         this.depthHack[childEntityId] = parentEntityDepth - 1;
         this.buildChildrenEntityTree(childEntity, entities, relationMaps);
@@ -91,7 +88,7 @@ export class ExtendedTreeRepository<
   ): Promise<Entity[]> {
     let rest: (CreateDto & WithExplodedPath)[] = importData.map(
       (importElem: CreateDto) => {
-        const path: string = (importElem[pathKey] as unknown) as string;
+        const path: string = importElem[pathKey] as unknown as string;
         return {
           ...importElem,
           explodedPath: path?.split('.') ?? [],
@@ -124,9 +121,9 @@ export class ExtendedTreeRepository<
             async (
               elem: CreateDto & WithExplodedPath,
             ): Promise<Entity & WithExplodedPath> => {
-              const Entity: Entity & WithExplodedPath = ((await this.save(
+              const Entity: Entity & WithExplodedPath = (await this.save(
                 this.entityFromCreateDto(elem),
-              )) as unknown) as Entity & WithExplodedPath;
+              )) as unknown as Entity & WithExplodedPath;
               Entity.explodedPath = elem.explodedPath;
               return Entity;
             },
@@ -135,16 +132,13 @@ export class ExtendedTreeRepository<
       } else {
         await Promise.all(
           response.matches.map(async (match: CreateDto & WithExplodedPath) => {
-            const parent:
-              | (Entity & WithExplodedPath)
-              | undefined = matches.find(
-              (parent: Entity & WithExplodedPath) => {
+            const parent: (Entity & WithExplodedPath) | undefined =
+              matches.find((parent: Entity & WithExplodedPath) => {
                 return isEqual(
                   match.explodedPath.slice(0, -1),
                   parent.explodedPath,
                 );
-              },
-            );
+              });
 
             if (parent === undefined) {
               throw new Error(
@@ -158,9 +152,9 @@ export class ExtendedTreeRepository<
 
             match.parent = parent;
 
-            const entity: Entity & WithExplodedPath = (await this.save(
+            const entity: Awaited<Entity> & WithExplodedPath = (await this.save(
               this.entityFromCreateDto(match),
-            )) as Entity & WithExplodedPath;
+            )) as Awaited<Entity> & WithExplodedPath;
             entity.explodedPath = match.explodedPath;
             matches.push(entity);
           }),

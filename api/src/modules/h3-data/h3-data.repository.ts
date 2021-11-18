@@ -42,9 +42,7 @@ export class H3DataRepository extends Repository<H3Data> {
     h3ColumnName: string,
   ): Promise<H3IndexValueData[]> {
     try {
-      const result:
-        | H3IndexValueData[]
-        | undefined = await getManager()
+      const result: H3IndexValueData[] | undefined = await getManager()
         .createQueryBuilder()
         .select('h3index', 'h')
         .addSelect(`${h3ColumnName}`, 'v')

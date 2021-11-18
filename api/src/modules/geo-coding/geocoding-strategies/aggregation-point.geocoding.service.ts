@@ -20,21 +20,21 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
      * If coordinates, create a new geo-region: a 50KM radius around the given point
      */
     if (sourcingData.locationLatitude && sourcingData.locationLongitude) {
-      const geoRegionId: GeoRegion = await this.geoRegionService.saveGeoRegionAsRadius(
-        {
+      const geoRegionId: GeoRegion =
+        await this.geoRegionService.saveGeoRegionAsRadius({
           name: sourcingData.locationCountryInput,
           coordinates: {
             lat: sourcingData.locationLatitude,
             lng: sourcingData.locationLongitude,
           },
-        },
-      );
+        });
       /**
        *  We just know the country so get the admin-region by its name
        */
-      const adminRegion: AdminRegion = await this.adminRegionService.getAdminRegionByName(
-        sourcingData.locationCountryInput as string,
-      );
+      const adminRegion: AdminRegion =
+        await this.adminRegionService.getAdminRegionByName(
+          sourcingData.locationCountryInput as string,
+        );
       return {
         ...sourcingData,
         adminRegionId: adminRegion.id,
@@ -45,9 +45,8 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
      * if address, geocode the address
      */
     if (sourcingData.locationAddressInput) {
-      const geocodedResponseData: GeocodeResponseData = await this.geoCodeByAddress(
-        sourcingData.locationAddressInput,
-      );
+      const geocodedResponseData: GeocodeResponseData =
+        await this.geoCodeByAddress(sourcingData.locationAddressInput);
       /**
        * if given address is country type, raise and exception. it should be an address within a country
        */
@@ -59,13 +58,11 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
        * if address is a level 1 admin-area, intersect the geocoding resultant coordinates to confirm which admin-area belongs to
        */
       if (this.isAddressAdminLevel1(geocodedResponseData.results[0].types)) {
-        const {
-          adminRegionId,
-          geoRegionId,
-        } = await this.adminRegionService.getAdminRegionIdByCoordinates({
-          lng: geocodedResponseData?.results[0]?.geometry.location.lng,
-          lat: geocodedResponseData?.results[0]?.geometry.location.lat,
-        });
+        const { adminRegionId, geoRegionId } =
+          await this.adminRegionService.getAdminRegionIdByCoordinates({
+            lng: geocodedResponseData?.results[0]?.geometry.location.lng,
+            lat: geocodedResponseData?.results[0]?.geometry.location.lat,
+          });
         return {
           ...sourcingData,
           adminRegionId,
@@ -75,18 +72,18 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
         /**
          * Else, follow the same logics as coordinates
          */
-        const geoRegionId: GeoRegion = await this.geoRegionService.saveGeoRegionAsRadius(
-          {
+        const geoRegionId: GeoRegion =
+          await this.geoRegionService.saveGeoRegionAsRadius({
             name: sourcingData.locationCountryInput,
             coordinates: {
               lat: geocodedResponseData.results[0].geometry.location.lat,
               lng: geocodedResponseData.results[0].geometry.location.lng,
             },
-          },
-        );
-        const adminRegion: AdminRegion = await this.adminRegionService.getAdminRegionByName(
-          sourcingData.locationCountryInput as string,
-        );
+          });
+        const adminRegion: AdminRegion =
+          await this.adminRegionService.getAdminRegionByName(
+            sourcingData.locationCountryInput as string,
+          );
         return {
           ...sourcingData,
           adminRegionId: adminRegion.id,

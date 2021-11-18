@@ -19,9 +19,8 @@ describe('IndicatorsModule (e2e)', () => {
       imports: [AppModule, IndicatorsModule],
     }).compile();
 
-    indicatorRepository = moduleFixture.get<IndicatorRepository>(
-      IndicatorRepository,
-    );
+    indicatorRepository =
+      moduleFixture.get<IndicatorRepository>(IndicatorRepository);
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(

@@ -33,11 +33,12 @@ export class H3DataController {
     @Query(ValidationPipe) queryParams: GetYearsByLayerAndMaterialDto,
   ): Promise<{ data: number[] }> {
     const { materialId, indicatorId, layer } = queryParams;
-    const availableYears: number[] = await this.h3DataService.getYearsByLayerType(
-      layer,
-      materialId,
-      indicatorId,
-    );
+    const availableYears: number[] =
+      await this.h3DataService.getYearsByLayerType(
+        layer,
+        materialId,
+        indicatorId,
+      );
     return { data: availableYears };
   }
 

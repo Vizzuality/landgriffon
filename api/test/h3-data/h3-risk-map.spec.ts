@@ -45,12 +45,10 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     }).compile();
 
     h3DataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
-    materialRepository = moduleFixture.get<MaterialRepository>(
-      MaterialRepository,
-    );
-    indicatorRepository = moduleFixture.get<IndicatorRepository>(
-      IndicatorRepository,
-    );
+    materialRepository =
+      moduleFixture.get<MaterialRepository>(MaterialRepository);
+    indicatorRepository =
+      moduleFixture.get<IndicatorRepository>(IndicatorRepository);
     unitRepository = moduleFixture.get<UnitRepository>(UnitRepository);
     unitConversionRepository = moduleFixture.get<UnitConversionRepository>(
       UnitConversionRepository,
@@ -214,16 +212,12 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       null,
       deforestationIndicator.id,
     );
-    const {
-      material,
-      indicator,
-      h3Data,
-      unitConversion,
-    } = await createWorldForRiskMapGeneration({
-      indicatorType: INDICATOR_TYPES.BIODIVERSITY_LOSS,
-      fakeTable,
-      fakeColumn,
-    });
+    const { material, indicator, h3Data, unitConversion } =
+      await createWorldForRiskMapGeneration({
+        indicatorType: INDICATOR_TYPES.BIODIVERSITY_LOSS,
+        fakeTable,
+        fakeColumn,
+      });
     jest.spyOn(h3DataRepository, 'getBiodiversityLossRiskMapByResolution');
 
     const response = await request(app.getHttpServer())
@@ -254,13 +248,8 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     ]);
     expect(response.body.metadata).toEqual({
       quantiles: [
-        10000000000,
-        10000000000,
-        10000000000,
-        10000000000,
-        10000000000,
-        10000000000,
-        10000000000,
+        10000000000, 10000000000, 10000000000, 10000000000, 10000000000,
+        10000000000, 10000000000,
       ],
       unit: 'tonnes',
     });
@@ -276,16 +265,12 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       null,
       deforestationIndicator.id,
     );
-    const {
-      material,
-      indicator,
-      h3Data,
-      unitConversion,
-    } = await createWorldForRiskMapGeneration({
-      indicatorType: INDICATOR_TYPES.CARBON_EMISSIONS,
-      fakeTable,
-      fakeColumn,
-    });
+    const { material, indicator, h3Data, unitConversion } =
+      await createWorldForRiskMapGeneration({
+        indicatorType: INDICATOR_TYPES.CARBON_EMISSIONS,
+        fakeTable,
+        fakeColumn,
+      });
     jest.spyOn(h3DataRepository, 'getCarbonEmissionsRiskMapByResolution');
 
     const response = await request(app.getHttpServer())
@@ -315,28 +300,19 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     ]);
     expect(response.body.metadata).toEqual({
       quantiles: [
-        1000000,
-        1000000,
-        1000000,
-        1000000,
-        1000000,
-        1000000,
-        1000000,
+        1000000, 1000000, 1000000, 1000000, 1000000, 1000000, 1000000,
       ],
       unit: 'tonnes',
     });
   });
   // TODO: Update assertion as soon as actual calculus is validated
   test('When I get a calculated H3 Deforestation Loss Risk Map with the necessary input values, then I should get the h3 data (happy case)', async () => {
-    const {
-      material,
-      indicator,
-      h3Data,
-    } = await createWorldForRiskMapGeneration({
-      indicatorType: INDICATOR_TYPES.DEFORESTATION,
-      fakeTable,
-      fakeColumn,
-    });
+    const { material, indicator, h3Data } =
+      await createWorldForRiskMapGeneration({
+        indicatorType: INDICATOR_TYPES.DEFORESTATION,
+        fakeTable,
+        fakeColumn,
+      });
     jest.spyOn(h3DataRepository, 'getDeforestationLossRiskMapByResolution');
 
     const response = await request(app.getHttpServer())

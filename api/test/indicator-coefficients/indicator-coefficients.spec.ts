@@ -24,9 +24,10 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
       imports: [AppModule, IndicatorCoefficientsModule],
     }).compile();
 
-    indicatorCoefficientRepository = moduleFixture.get<IndicatorCoefficientRepository>(
-      IndicatorCoefficientRepository,
-    );
+    indicatorCoefficientRepository =
+      moduleFixture.get<IndicatorCoefficientRepository>(
+        IndicatorCoefficientRepository,
+      );
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(
@@ -59,9 +60,8 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdIndicatorCoefficient = await indicatorCoefficientRepository.findOne(
-        response.body.data.id,
-      );
+      const createdIndicatorCoefficient =
+        await indicatorCoefficientRepository.findOne(response.body.data.id);
 
       if (!createdIndicatorCoefficient) {
         throw new Error('Error loading created Indicator Coefficient');
@@ -89,7 +89,8 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
 
   describe('Indicator coefficients - Update', () => {
     test('Update a indicator coefficient should be successful (happy case)', async () => {
-      const indicatorCoefficient: IndicatorCoefficient = await createIndicatorCoefficient();
+      const indicatorCoefficient: IndicatorCoefficient =
+        await createIndicatorCoefficient();
 
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/indicator-coefficients/${indicatorCoefficient.id}`)
@@ -104,7 +105,8 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
 
   describe('Indicator coefficients - Delete', () => {
     test('Delete a indicator coefficient should be successful (happy case)', async () => {
-      const indicatorCoefficient: IndicatorCoefficient = await createIndicatorCoefficient();
+      const indicatorCoefficient: IndicatorCoefficient =
+        await createIndicatorCoefficient();
 
       await request(app.getHttpServer())
         .delete(`/api/v1/indicator-coefficients/${indicatorCoefficient.id}`)
@@ -119,7 +121,8 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
 
   describe('Indicator coefficients - Get all', () => {
     test('Get all indicator coefficients should be successful (happy case)', async () => {
-      const indicatorCoefficient: IndicatorCoefficient = await createIndicatorCoefficient();
+      const indicatorCoefficient: IndicatorCoefficient =
+        await createIndicatorCoefficient();
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/indicator-coefficients`)
@@ -132,7 +135,8 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
 
   describe('Indicator coefficients - Get by id', () => {
     test('Get a indicator coefficient by id should be successful (happy case)', async () => {
-      const indicatorCoefficient: IndicatorCoefficient = await createIndicatorCoefficient();
+      const indicatorCoefficient: IndicatorCoefficient =
+        await createIndicatorCoefficient();
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/indicator-coefficients/${indicatorCoefficient.id}`)

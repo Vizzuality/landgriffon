@@ -126,22 +126,19 @@ export class H3DataService {
      * @note To generate a Material Map, a producerId is required
      */
     const { producerId } = await this.materialService.getById(materialId);
-    const materialH3Data:
-      | H3Data
-      | undefined = await this.h3DataRepository.findOne(producerId);
+    const materialH3Data: H3Data | undefined =
+      await this.h3DataRepository.findOne(producerId);
 
     if (!materialH3Data)
       throw new NotFoundException(
         `There is no H3 Data for Material with ID: ${materialId}`,
       );
 
-    const {
-      materialMap,
-      quantiles,
-    } = await this.h3DataRepository.getMaterialMapByResolution(
-      materialH3Data,
-      resolution,
-    );
+    const { materialMap, quantiles } =
+      await this.h3DataRepository.getMaterialMapByResolution(
+        materialH3Data,
+        resolution,
+      );
 
     return {
       data: materialMap,
@@ -157,11 +154,10 @@ export class H3DataService {
     /**
      * @note To generate a Risk Map, a harvestId and h3Data by indicatorId are required
      */
-    const indicatorH3Data:
-      | H3Data
-      | undefined = await this.h3DataRepository.findOne({
-      where: { indicatorId: indicatorId },
-    });
+    const indicatorH3Data: H3Data | undefined =
+      await this.h3DataRepository.findOne({
+        where: { indicatorId: indicatorId },
+      });
 
     if (!indicatorH3Data)
       throw new NotFoundException(
@@ -176,13 +172,11 @@ export class H3DataService {
         `There is no H3 Data for Material with ID: ${materialId}`,
       );
     }
-    const harvestMaterialH3Data:
-      | H3Data
-      | undefined = await this.h3DataRepository.findOne(harvestId);
+    const harvestMaterialH3Data: H3Data | undefined =
+      await this.h3DataRepository.findOne(harvestId);
 
-    const producerMaterialH3Data:
-      | H3Data
-      | undefined = await this.h3DataRepository.findOne(producerId);
+    const producerMaterialH3Data: H3Data | undefined =
+      await this.h3DataRepository.findOne(producerId);
 
     const indicator: Indicator = await this.indicatorService.getIndicatorById(
       indicatorId,
@@ -194,11 +188,10 @@ export class H3DataService {
       );
     }
 
-    const {
-      factor,
-    } = await this.unitConversionsService.getUnitConversionByUnitId(
-      indicator.unit.id,
-    );
+    const { factor } =
+      await this.unitConversionsService.getUnitConversionByUnitId(
+        indicator.unit.id,
+      );
 
     if (!factor) {
       throw new NotFoundException(
@@ -236,7 +229,8 @@ export class H3DataService {
         quantiles = deforestationRiskmapResponse.quantiles;
         break;
       case INDICATOR_TYPES.CARBON_EMISSIONS:
-        const deforestationH3DataForCarbonEmissions: H3Data = await this.indicatorService.getDeforestationH3Data();
+        const deforestationH3DataForCarbonEmissions: H3Data =
+          await this.indicatorService.getDeforestationH3Data();
         const carbonEmissionRiskmapResponse: {
           riskMap: H3IndexValueData[];
           quantiles: number[];
@@ -253,7 +247,8 @@ export class H3DataService {
 
         break;
       case INDICATOR_TYPES.BIODIVERSITY_LOSS:
-        const deforestationH3DataForBiodiversityLoss: H3Data = await this.indicatorService.getDeforestationH3Data();
+        const deforestationH3DataForBiodiversityLoss: H3Data =
+          await this.indicatorService.getDeforestationH3Data();
         const biodiversityRiskmapResponse: {
           riskMap: H3IndexValueData[];
           quantiles: number[];
@@ -296,11 +291,10 @@ export class H3DataService {
   async getImpactMapByResolution(
     getImpactMapDto: GetImpactMapDto,
   ): Promise<H3MapResponse> {
-    const indicatorH3Data:
-      | H3Data
-      | undefined = await this.h3DataRepository.findOne({
-      where: { indicatorId: getImpactMapDto.indicatorId },
-    });
+    const indicatorH3Data: H3Data | undefined =
+      await this.h3DataRepository.findOne({
+        where: { indicatorId: getImpactMapDto.indicatorId },
+      });
 
     if (!indicatorH3Data)
       throw new NotFoundException(

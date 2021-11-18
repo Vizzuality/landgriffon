@@ -15,19 +15,17 @@ async function bootstrap(): Promise<void> {
   app.enableCors();
   app.use(compression());
 
-  const swaggerOptions: Omit<
-    OpenAPIObject,
-    'components' | 'paths'
-  > = new DocumentBuilder()
-    .setTitle('LandGriffon API')
-    .setDescription('LandGriffon is a conservation planning platform.')
-    .setVersion(process.env.npm_package_version || 'development')
-    .addBearerAuth({
-      type: 'apiKey',
-      in: 'header',
-      name: 'Authorization',
-    })
-    .build();
+  const swaggerOptions: Omit<OpenAPIObject, 'components' | 'paths'> =
+    new DocumentBuilder()
+      .setTitle('LandGriffon API')
+      .setDescription('LandGriffon is a conservation planning platform.')
+      .setVersion(process.env.npm_package_version || 'development')
+      .addBearerAuth({
+        type: 'apiKey',
+        in: 'header',
+        name: 'Authorization',
+      })
+      .build();
   const swaggerDocument: OpenAPIObject = SwaggerModule.createDocument(
     app,
     swaggerOptions,

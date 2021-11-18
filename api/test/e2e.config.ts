@@ -5,7 +5,7 @@ import { UpdateUserDTO } from 'modules/users/dto/update.user.dto';
 export const E2E_CONFIG: {
   users: {
     basic: {
-      aa: Partial<CreateUserDTO> & { username: string };
+      aa: Partial<CreateUserDTO> & { username: string; password: string };
       bb: Partial<CreateUserDTO> & { username: string };
     };
     updated: {

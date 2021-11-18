@@ -60,11 +60,10 @@ export class IndicatorsService extends AppBaseService<
      * in the client's request
      */
 
-    const deforestationIndicator:
-      | Indicator
-      | undefined = await this.indicatorRepository.findOne({
-      nameCode: INDICATOR_TYPES.DEFORESTATION,
-    });
+    const deforestationIndicator: Indicator | undefined =
+      await this.indicatorRepository.findOne({
+        nameCode: INDICATOR_TYPES.DEFORESTATION,
+      });
     if (!deforestationIndicator)
       throw new NotFoundException(
         'No Deforestation Indicator data found in database',

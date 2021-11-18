@@ -27,9 +27,8 @@ describe('H3 Data Module (e2e) - Material map', () => {
     }).compile();
 
     h3DataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
-    materialRepository = moduleFixture.get<MaterialRepository>(
-      MaterialRepository,
-    );
+    materialRepository =
+      moduleFixture.get<MaterialRepository>(MaterialRepository);
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(

@@ -19,9 +19,10 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
       imports: [AppModule, SourcingLocationGroupsModule],
     }).compile();
 
-    sourcingRecordGroupRepository = moduleFixture.get<SourcingLocationGroupRepository>(
-      SourcingLocationGroupRepository,
-    );
+    sourcingRecordGroupRepository =
+      moduleFixture.get<SourcingLocationGroupRepository>(
+        SourcingLocationGroupRepository,
+      );
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(
@@ -51,9 +52,8 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdSourcingRecordGroup = await sourcingRecordGroupRepository.findOne(
-        response.body.data.id,
-      );
+      const createdSourcingRecordGroup =
+        await sourcingRecordGroupRepository.findOne(response.body.data.id);
 
       if (!createdSourcingRecordGroup) {
         throw new Error('Error loading created Sourcing location group');
@@ -85,7 +85,8 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
 
   describe('Sourcing location location - Update', () => {
     test('Update a sourcing location group should be successful (happy case)', async () => {
-      const sourcingRecordGroup: SourcingLocationGroup = new SourcingLocationGroup();
+      const sourcingRecordGroup: SourcingLocationGroup =
+        new SourcingLocationGroup();
       sourcingRecordGroup.title = 'sourcing location group test name';
       await sourcingRecordGroup.save();
 
@@ -104,7 +105,8 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
 
   describe('Sourcing location groups - Delete', () => {
     test('Delete a sourcing location group should be successful (happy case)', async () => {
-      const sourcingRecordGroup: SourcingLocationGroup = new SourcingLocationGroup();
+      const sourcingRecordGroup: SourcingLocationGroup =
+        new SourcingLocationGroup();
       sourcingRecordGroup.title = 'sourcing location group test name';
       await sourcingRecordGroup.save();
 
@@ -121,7 +123,8 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
 
   describe('Sourcing location groups - Get all', () => {
     test('Get all sourcing location groups should be successful (happy case)', async () => {
-      const sourcingRecordGroup: SourcingLocationGroup = new SourcingLocationGroup();
+      const sourcingRecordGroup: SourcingLocationGroup =
+        new SourcingLocationGroup();
       sourcingRecordGroup.title = 'sourcing location group test name';
       await sourcingRecordGroup.save();
 
@@ -136,7 +139,8 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
 
   describe('Sourcing location groups - Get by id', () => {
     test('Get a sourcing location group by id should be successful (happy case)', async () => {
-      const sourcingRecordGroup: SourcingLocationGroup = new SourcingLocationGroup();
+      const sourcingRecordGroup: SourcingLocationGroup =
+        new SourcingLocationGroup();
       sourcingRecordGroup.title = 'sourcing location group test name';
       await sourcingRecordGroup.save();
 

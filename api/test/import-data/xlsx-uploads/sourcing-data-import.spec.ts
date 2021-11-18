@@ -279,7 +279,7 @@ describe('Sourcing Data import', () => {
     sourcingLocations.forEach((sourcingLocation: SourcingLocation) => {
       expect(sourcingLocation.materialId).not.toEqual(null);
     });
-  });
+  }, 100000);
 
   test('When a file is sent 2 times to the API, then imported data length should be equal, and database has been cleaned in between', async () => {
     const geoRegion: GeoRegion = await createGeoRegion();

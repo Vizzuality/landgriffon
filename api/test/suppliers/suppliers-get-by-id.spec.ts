@@ -35,7 +35,7 @@ describe('Suppliers - Get by id', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   describe('Suppliers - Get by id', () => {

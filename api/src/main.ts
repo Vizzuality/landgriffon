@@ -8,8 +8,10 @@ import * as compression from 'compression';
 
 async function bootstrap(): Promise<void> {
   const logger: Logger = new Logger('bootstrap');
-  const app: INestApplication = await NestFactory.create(AppModule);
   const serverConfig: any = config.get('server');
+  const app: INestApplication = await NestFactory.create(AppModule, {
+    logger: serverConfig.loggerLevel,
+  });
 
   app.use(helmet());
   app.enableCors();

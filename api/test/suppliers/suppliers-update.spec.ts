@@ -36,7 +36,7 @@ describe('Suppliers - Update', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   test('Update a supplier should be successful (happy case)', async () => {

@@ -69,7 +69,7 @@ export class IndicatorRecordsService extends AppBaseService<
   async calculateImpactValue(
     sourcingRecord: SourcingRecord,
   ): Promise<IndicatorRecord[]> {
-    this.logger.log(
+    this.logger.debug(
       `Calculating impact value for sourcing record ${sourcingRecord.id}`,
     );
     const indicators: Indicator[] =
@@ -160,7 +160,7 @@ export class IndicatorRecordsService extends AppBaseService<
             break;
 
           default:
-            this.logger.log(
+            this.logger.debug(
               `Indicator Record calculation for indicator '${indicator.name}' not supported;`,
             );
         }
@@ -184,7 +184,7 @@ export class IndicatorRecordsService extends AppBaseService<
       }),
     );
 
-    this.logger.log(
+    this.logger.debug(
       `Impact value for sourcing record ${sourcingRecord.id} saved.`,
     );
     return indicatorRecords;

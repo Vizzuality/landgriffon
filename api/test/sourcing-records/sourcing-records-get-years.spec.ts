@@ -35,7 +35,7 @@ describe('Sourcing records - Get years', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   test('Get years from sourcing records should be successful and return the years present in the sourcing records (no duplicates)', async () => {

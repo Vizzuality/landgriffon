@@ -37,7 +37,7 @@ describe('UnitsModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   describe('Units - Create', () => {

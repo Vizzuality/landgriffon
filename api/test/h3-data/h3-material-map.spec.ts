@@ -48,7 +48,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   test('When I query a material H3 with a non available resolution, then I should get a proper error message', async () => {

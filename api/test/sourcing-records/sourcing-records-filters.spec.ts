@@ -42,7 +42,7 @@ describe('Sourcing records -Filters', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   /**

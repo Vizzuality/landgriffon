@@ -40,7 +40,7 @@ describe('IndicatorSourcesModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   describe('Indicator sources - Create', () => {

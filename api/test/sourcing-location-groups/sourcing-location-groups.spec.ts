@@ -40,7 +40,7 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   describe('Sourcing location groups - Create', () => {

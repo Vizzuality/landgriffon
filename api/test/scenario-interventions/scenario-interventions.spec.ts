@@ -49,7 +49,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   describe('Scenario interventions - Create', () => {

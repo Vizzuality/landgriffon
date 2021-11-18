@@ -176,7 +176,7 @@ describe('Sourcing Data import', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
     jest.clearAllTimers();
   });
 
@@ -287,9 +287,11 @@ describe('Sourcing Data import', () => {
       isoA2: 'ABC',
       geoRegion,
     });
+    await createFakeH3Data('h3_grid_deforestation_global', 'hansen_loss_2019');
     tablesToDrop = [
       ...(await createMaterialTreeForXLSXImport()),
       ...(await createIndicatorsForXLSXImport()),
+      'h3_grid_deforestation_global',
     ];
 
     await request(app.getHttpServer())
@@ -311,9 +313,11 @@ describe('Sourcing Data import', () => {
       isoA2: 'ABC',
       geoRegion,
     });
+    await createFakeH3Data('h3_grid_deforestation_global', 'hansen_loss_2019');
     tablesToDrop = [
       ...(await createMaterialTreeForXLSXImport()),
       ...(await createIndicatorsForXLSXImport()),
+      'h3_grid_deforestation_global',
     ];
 
     await request(app.getHttpServer())

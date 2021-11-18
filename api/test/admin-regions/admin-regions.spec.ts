@@ -39,7 +39,7 @@ describe('AdminRegionsModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   describe('Admin regions - Create', () => {

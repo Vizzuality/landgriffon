@@ -36,7 +36,7 @@ describe('Suppliers - Get trees', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   test('Get trees of suppliers should be successful (happy case)', async () => {

@@ -44,7 +44,7 @@ describe('ScenariosModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   describe('Scenarios - Create', () => {

@@ -24,7 +24,7 @@ describe('JSON API Specs (e2e)', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   it('should return a response shaped as JSON:API Error spec, including ', async () => {

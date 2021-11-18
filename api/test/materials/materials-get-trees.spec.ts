@@ -46,7 +46,7 @@ describe('Materials - Get trees', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   test('Get trees of materials should be successful (happy case)', async () => {

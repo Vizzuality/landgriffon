@@ -78,7 +78,7 @@ describe('UsersModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   describe('Users - sign up and validation', () => {

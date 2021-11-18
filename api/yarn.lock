@@ -652,20 +652,10 @@
     webpack "5.58.2"
     webpack-node-externals "3.0.0"
 
-"@nestjs/common@8.1.2":
-  version "8.1.2"
-  resolved "https://registry.yarnpkg.com/@nestjs/common/-/common-8.1.2.tgz#8f27440454260174786c1a561fdb32ede4455d94"
-  integrity sha512-5k9iFRj0HkAe1gn6Ozx5UWzbRyT8xCgZ663FWsVc5Cf6BJ+OYhQC8Y5cuVx8gsbSnzc0AUpcknPP5rYh2TkLOQ==
-  dependencies:
-    axios "0.23.0"
-    iterare "1.2.1"
-    tslib "2.3.1"
-    uuid "8.3.2"
-
 "@nestjs/common@^8.2.1":
-  version "8.2.1"
-  resolved "https://registry.yarnpkg.com/@nestjs/common/-/common-8.2.1.tgz#2067d7dda6d1741f0dbffbef7a771851704fd2eb"
-  integrity sha512-xtcvRm46hyLVacMEfGJq4byFVkkP/xo255Em1T6BISyqJe2Cf2eCHSVOwxElDCIlonpGwrJhWosGgyOUgWk1iw==
+  version "8.2.2"
+  resolved "https://registry.yarnpkg.com/@nestjs/common/-/common-8.2.2.tgz#44bbdd85ce7918083b04b00e2e88204cb655587a"
+  integrity sha512-Qy8GUFwV34YCw34fbFkyBi9bhDPPBacVhZMUxVUmnoqBL8GEdSpPDzW6epbl+IF1Q6TACK5L8WvTkd5V3/Eifw==
   dependencies:
     axios "0.24.0"
     iterare "1.2.1"
@@ -4400,12 +4390,11 @@ neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-nestjs-base-service@^0.8.1:
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/nestjs-base-service/-/nestjs-base-service-0.8.1.tgz#915b8aeff259f26d8dd5eea3b50141213d81934d"
-  integrity sha512-Ekvo/8zDoQZdETwstcXa78MDqTD3Pbmawitpa34qGuJEYQle2e7Iz84Bgc1xRewjMr9WTVPbvq/YIvP3wHynmw==
+nestjs-base-service@^0.8.2:
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/nestjs-base-service/-/nestjs-base-service-0.8.2.tgz#2ae6cb318cd438221158f65e7f4d83097d5ca1f5"
+  integrity sha512-B4AdWV58h1kq2wHg0dGrJnbz14TrkWcKybkjfmCWgKg+oo7RMWUKnHetG7hSGPyXJE4AzfiLeg8HK5eCDsTcjQ==
   dependencies:
-    "@nestjs/common" "8.1.2"
     class-validator "0.13.1"
     express "4.17.1"
     lodash "4.17.21"

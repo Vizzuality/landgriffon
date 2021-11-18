@@ -78,7 +78,7 @@ describe('Risk Map Test Suite (e2e)', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   test('When I try to GET a Risk-Map but the query parameters are not valid, then I should get a proper error message', async () => {

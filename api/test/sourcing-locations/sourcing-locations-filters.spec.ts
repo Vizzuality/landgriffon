@@ -40,7 +40,7 @@ describe('SourcingLocationsModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   describe('Sourcing locations - Filters', () => {

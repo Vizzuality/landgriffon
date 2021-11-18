@@ -42,6 +42,7 @@ describe('XLSX Upload Feature Tests (e2e)', () => {
 
   afterAll(async () => {
     jest.clearAllMocks();
+    await app.close();
   });
 
   test('When a file is sent to the API and its size is too large then it should return a 413 "Payload Too Large" error', async () => {

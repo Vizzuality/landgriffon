@@ -38,7 +38,7 @@ describe('GeoRegionsModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   describe('Geo regions - Create', () => {

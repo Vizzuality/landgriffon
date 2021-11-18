@@ -32,7 +32,7 @@ describe('AppController (e2e)', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   describe('Authentication', () => {
@@ -79,8 +79,8 @@ describe('AppController (e2e)', () => {
       expect(response.body.accessToken).not.toBeDefined();
     });
 
-    afterAll(() => {
-      userRepository.delete({});
+    afterAll(async () => {
+      return userRepository.delete({});
     });
   });
 });

@@ -36,7 +36,7 @@ describe('Sourcing records - Update', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   test('Update a sourcing record should be successful (happy case)', async () => {

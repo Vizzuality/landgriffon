@@ -36,7 +36,7 @@ describe('Materials - Get all', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   test('Get all materials should be successful (happy case)', async () => {

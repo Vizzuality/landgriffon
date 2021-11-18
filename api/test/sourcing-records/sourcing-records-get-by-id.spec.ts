@@ -42,7 +42,7 @@ describe('Sourcing records - Get by id', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   test('Get a sourcing record by id should be successful (happy case)', async () => {

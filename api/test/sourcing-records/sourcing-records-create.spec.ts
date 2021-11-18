@@ -33,7 +33,7 @@ describe('Sourcing records - Create', () => {
     await sourcingRecordRepository.delete({});
   });
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   test('Create a sourcing record should be successful (happy case)', async () => {

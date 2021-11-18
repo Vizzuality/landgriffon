@@ -35,7 +35,7 @@ describe('Materials - Delete', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   test('Delete a material should be successful (happy case)', async () => {

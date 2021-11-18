@@ -36,7 +36,7 @@ describe('Sourcing records - Delete', () => {
   });
 
   afterAll(async () => {
-    await Promise.all([app.close()]);
+    await app.close();
   });
 
   test('Delete a sourcing record should be successful (happy case)', async () => {

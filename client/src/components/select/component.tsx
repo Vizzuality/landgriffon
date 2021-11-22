@@ -63,14 +63,15 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
             >
               <Listbox.Options
                 static
-                className="absolute z-10 mt-1 w-48 bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none text-sm"
+                className="absolute z-20 mt-1 min-w-min w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none text-sm"
               >
                 {options.map((option) => (
                   <Listbox.Option
                     key={option.value}
-                    className={({ active }) =>
+                    className={({ active, selected }) =>
                       classNames(
-                        active ? 'text-white bg-green-700' : 'text-gray-900',
+                        active ? 'bg-green-50 text-green-700' : 'text-gray-900',
+                        selected && 'bg-green-50 text-green-700',
                         'cursor-pointer select-none relative py-2 pl-3 pr-9',
                       )
                     }
@@ -90,7 +91,7 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
                         {selected ? (
                           <span
                             className={classNames(
-                              active ? 'text-white' : 'text-green-700',
+                              active && 'text-green-700',
                               'absolute inset-y-0 right-0 flex items-center pr-4',
                             )}
                           >

@@ -54,16 +54,11 @@ const IndicatorsFilter: React.FC = () => {
 
   return (
     <Select
-      // defaultActiveFirstOption
       onChange={handleChange}
-      // className="w-60"
       loading={isFetching}
       options={options}
       current={filters.indicator}
-      // value={filters.indicator?.value}
-      // placeholder={error ? 'Something went wrong' : 'Select Impact Indicator'}
-      // disabled={!!error}
-      // suffixIcon={<ChevronDownIcon />}
+      disabled={!!error}
     />
   );
 };

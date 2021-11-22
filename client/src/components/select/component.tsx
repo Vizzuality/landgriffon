@@ -8,7 +8,14 @@ import Loading from 'components/loading';
 import type { SelectProps } from './types';
 
 const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
-  const { label, options, current = options[0], loading = false, onChange } = props;
+  const {
+    disabled = false,
+    label,
+    options,
+    current = options[0],
+    loading = false,
+    onChange,
+  } = props;
   const [selected, setSelected] = useState(current);
 
   useEffect(() => {
@@ -20,7 +27,7 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
   }, [options, selected]);
 
   return (
-    <Listbox value={selected} onChange={setSelected}>
+    <Listbox value={selected} onChange={setSelected} disabled={disabled}>
       {({ open }) => (
         <>
           <div className="mt-1 relative">

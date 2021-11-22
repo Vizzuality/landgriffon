@@ -16,7 +16,7 @@ const AnalysisFilters: React.FC = () => {
       {layer !== 'impact' && <Materials />}
       {layer === 'impact' && visualizationMode !== 'map' && <GroupByFilter />}
       <YearsFilter />
-      {layer === 'impact' && <MoreFilters />}
+      {/* {layer === 'impact' && <MoreFilters />} */}
     </div>
   );
 };

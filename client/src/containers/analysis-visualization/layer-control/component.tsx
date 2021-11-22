@@ -1,30 +1,26 @@
-import { useCallback, useEffect } from 'react';
-import { Select } from 'antd';
-import { ChevronDownIcon } from '@heroicons/react/solid';
+import { useCallback, useEffect, useMemo } from 'react';
 import classNames from 'classnames';
+
+import Select from 'components/select';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis, setLayer } from 'store/features/analysis';
 
 import type { AnalysisState } from 'store/features/analysis';
+import type { SelectOptions } from 'components/select/types';
 
-type LayerOption = {
-  id: string;
-  name: string;
-};
-
-const LAYERS_OPTIONS: LayerOption[] = [
+const LAYERS_OPTIONS: SelectOptions = [
   {
-    id: 'material',
-    name: 'Material production',
+    value: 'material',
+    label: 'Material production',
   },
   {
-    id: 'risk',
-    name: 'Risk',
+    value: 'risk',
+    label: 'Risk',
   },
   {
-    id: 'impact',
-    name: 'Impact',
+    value: 'impact',
+    label: 'Impact',
   },
 ];
 
@@ -32,35 +28,20 @@ const LayerControl: React.FC = () => {
   const { layer, visualizationMode } = useAppSelector(analysis);
   const dispatch = useAppDispatch();
 
-  const handleChange = useCallback(
-    (value) => {
-      dispatch(setLayer(value));
-    },
-    [dispatch],
-  );
+  const handleChange = useCallback((selected) => dispatch(setLayer(selected.value)), [dispatch]);
 
   useEffect(() => {
     if (visualizationMode !== 'map') {
       // set impact when visualization mode is not map
-      dispatch(setLayer(LAYERS_OPTIONS[2].id as AnalysisState['layer']));
+      dispatch(setLayer(LAYERS_OPTIONS[2].value as AnalysisState['layer']));
     }
   }, [dispatch, visualizationMode]);
 
+  const current = useMemo(() => LAYERS_OPTIONS.find(({ value }) => value === layer), [layer]);
+
   return (
     <div className={classNames({ hidden: visualizationMode !== 'map' })}>
-      <Select
-        value={layer}
-        onChange={handleChange}
-        className="w-36"
-        optionLabelProp="label"
-        suffixIcon={<ChevronDownIcon />}
-      >
-        {LAYERS_OPTIONS.map((option) => (
-          <Select.Option key={option.id} value={option.id} label={option.name}>
-            {option.name}
-          </Select.Option>
-        ))}
-      </Select>
+      <Select current={current} onChange={handleChange} options={LAYERS_OPTIONS} />
     </div>
   );
 };

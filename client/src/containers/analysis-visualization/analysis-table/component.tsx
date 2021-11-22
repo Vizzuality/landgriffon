@@ -95,9 +95,9 @@ const AnalysisTable: React.FC = () => {
       </div>
       <div className="relative">
         <Loading />
-        {FILTERED_DATA && filteredDataIsFetched && (
+        {/* {FILTERED_DATA && filteredDataIsFetched && (
           <Table columns={TABLE_COLUMNS} dataSource={FILTERED_DATA} onChange={onChange} />
-        )}
+        )} */}
       </div>
     </>
   );

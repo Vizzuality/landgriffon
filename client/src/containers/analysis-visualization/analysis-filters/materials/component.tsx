@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { TreeSelect, TreeSelectProps } from 'antd';
+import TreeSelect, { TreeSelectProps } from 'rc-tree-select';
 import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
 import { sortBy } from 'lodash';
 

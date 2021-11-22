@@ -1,9 +1,9 @@
-import cx from 'classnames';
+import classNames from 'classnames';
 import type { LoadingProps } from './types';
 
 export const Loading: React.FC<LoadingProps> = ({ className = 'absolute' }: LoadingProps) => (
   <svg
-    className={cx('animate-spin -ml-1 mr-3 h-5 w-5 text-white', className)}
+    className={classNames('animate-spin -ml-1 mr-3 h-5 w-5 stroke-none', className)}
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
     viewBox="0 0 24 24"

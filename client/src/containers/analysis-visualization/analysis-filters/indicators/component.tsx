@@ -8,7 +8,7 @@ import Select from 'components/select';
 
 import { useIndicators } from 'hooks/indicators';
 
-const ImpactIndicatorsFilter: React.FC = () => {
+const IndicatorsFilter: React.FC = () => {
   const { visualizationMode, filters } = useAppSelector(analysis);
   const dispatch = useAppDispatch();
 
@@ -41,11 +41,11 @@ const ImpactIndicatorsFilter: React.FC = () => {
   }, [options, isFetched, dispatch]);
 
   const handleChange = useCallback(
-    (currentValue, currentOption) => {
+    (selected) => {
       dispatch(
         setFilter({
           id: 'indicator',
-          value: currentOption,
+          value: selected,
         }),
       );
     },
@@ -55,10 +55,11 @@ const ImpactIndicatorsFilter: React.FC = () => {
   return (
     <Select
       // defaultActiveFirstOption
-      // onChange={handleChange}
+      onChange={handleChange}
       // className="w-60"
-      // loading={isFetching}
+      loading={isFetching}
       options={options}
+      current={filters.indicator}
       // value={filters.indicator?.value}
       // placeholder={error ? 'Something went wrong' : 'Select Impact Indicator'}
       // disabled={!!error}
@@ -67,4 +68,4 @@ const ImpactIndicatorsFilter: React.FC = () => {
   );
 };
 
-export default ImpactIndicatorsFilter;
+export default IndicatorsFilter;

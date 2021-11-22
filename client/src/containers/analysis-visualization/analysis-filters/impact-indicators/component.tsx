@@ -3,8 +3,8 @@ import { useCallback, useMemo, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis, setFilter } from 'store/features/analysis';
 
-import { Select } from 'antd';
-import { ChevronDownIcon } from '@heroicons/react/solid';
+import Select from 'components/select';
+// import { ChevronDownIcon } from '@heroicons/react/solid';
 
 import { useIndicators } from 'hooks/indicators';
 
@@ -54,15 +54,15 @@ const ImpactIndicatorsFilter: React.FC = () => {
 
   return (
     <Select
-      defaultActiveFirstOption
-      onChange={handleChange}
-      className="w-60"
-      loading={isFetching}
+      // defaultActiveFirstOption
+      // onChange={handleChange}
+      // className="w-60"
+      // loading={isFetching}
       options={options}
-      value={filters.indicator?.value}
-      placeholder={error ? 'Something went wrong' : 'Select Impact Indicator'}
-      disabled={!!error}
-      suffixIcon={<ChevronDownIcon />}
+      // value={filters.indicator?.value}
+      // placeholder={error ? 'Something went wrong' : 'Select Impact Indicator'}
+      // disabled={!!error}
+      // suffixIcon={<ChevronDownIcon />}
     />
   );
 };

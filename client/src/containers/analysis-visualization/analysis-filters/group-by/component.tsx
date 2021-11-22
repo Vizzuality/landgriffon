@@ -2,12 +2,12 @@ import { useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis, setFilter } from 'store/features/analysis';
 
-import { Select } from 'antd';
-import { ChevronDownIcon } from '@heroicons/react/solid';
+import Select from 'components/select';
+// import { ChevronDownIcon } from '@heroicons/react/solid';
 
 import type { Group } from 'types';
 
-const ALL_GROUPS: Group[] = [
+const GROUP_BY_OPTIONS: Group[] = [
   {
     id: 'material',
     name: 'Material',
@@ -30,37 +30,34 @@ const GroupByFilter: React.FC = () => {
   const { filters } = useAppSelector(analysis);
   const dispatch = useAppDispatch();
 
-  const handleChange = useCallback((value) => {
-    dispatch(
-      setFilter({
-        id: 'by',
-        value,
-      }),
-    );
-  }, []);
+  const handleChange = useCallback(
+    (value) => {
+      dispatch(
+        setFilter({
+          id: 'by',
+          value,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+  const options = GROUP_BY_OPTIONS.map(({ id, name }) => ({
+    label: name,
+    value: id,
+  }));
+  const currentValue = options.find((group) => group.value === filters.by);
 
   return (
     <Select
-      value={filters.by}
+      label="by"
+      current={currentValue}
+      options={options}
       onChange={handleChange}
-      className="w-40"
-      optionLabelProp="label"
-      suffixIcon={<ChevronDownIcon />}
-    >
-      {ALL_GROUPS.map((group) => (
-        <Select.Option
-          key={group.id}
-          value={group.id}
-          label={
-            <>
-              <span className="text-gray-500">by</span> {group.name}
-            </>
-          }
-        >
-          {group.name}
-        </Select.Option>
-      ))}
-    </Select>
+      // className="w-40"
+      // optionLabelProp="label"
+      // suffixIcon={<ChevronDownIcon />}
+    />
   );
 };
 

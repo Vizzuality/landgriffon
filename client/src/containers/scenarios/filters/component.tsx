@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { SearchIcon, XIcon } from '@heroicons/react/solid';
 import { useDebounce } from '@react-hook/debounce';
 import classNames from 'classnames';
-import Select from 'components/forms/select';
+import Select from 'components/select';
 
 const SORT_OPTIONS = [
   {

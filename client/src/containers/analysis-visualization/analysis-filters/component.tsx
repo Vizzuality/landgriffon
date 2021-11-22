@@ -1,7 +1,7 @@
 import { useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
 
-import ImpactIndicatorsFilter from './impact-indicators';
+import IndicatorsFilter from './indicators';
 import GroupByFilter from './group-by';
 import YearsFilter from './years';
 import Materials from './materials';
@@ -12,7 +12,7 @@ const AnalysisFilters: React.FC = () => {
 
   return (
     <div className="inline-flex gap-2 flex-wrap">
-      {layer !== 'material' && <ImpactIndicatorsFilter />}
+      {layer !== 'material' && <IndicatorsFilter />}
       {layer !== 'impact' && <Materials />}
       {layer === 'impact' && visualizationMode !== 'map' && <GroupByFilter />}
       <YearsFilter />

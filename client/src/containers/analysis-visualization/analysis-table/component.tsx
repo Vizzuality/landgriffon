@@ -94,7 +94,7 @@ const AnalysisTable: React.FC = () => {
         </Button>
       </div>
       <div className="relative">
-        <Loading />
+        <Loading className="text-white" />
         {/* {FILTERED_DATA && filteredDataIsFetched && (
           <Table columns={TABLE_COLUMNS} dataSource={FILTERED_DATA} onChange={onChange} />
         )} */}

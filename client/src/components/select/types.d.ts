@@ -6,6 +6,7 @@ export type SelectOption = {
 export type SelectOptions = SelectOption[];
 
 export type SelectProps = {
+  loading?: boolean;
   label?: string;
   options: SelectOption[];
   current: SelectOption;

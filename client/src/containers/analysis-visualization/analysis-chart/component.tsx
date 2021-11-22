@@ -22,7 +22,7 @@ const AnalysisChart: React.FC = () => {
 
   return (
     <>
-      {isFetching && <Loading />}
+      {isFetching && <Loading className="text-white" />}
 
       {!isFetching && chartData && (
         <AnimatePresence>

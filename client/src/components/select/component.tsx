@@ -1,6 +1,6 @@
 import { Fragment, useCallback, useEffect, useState, useMemo } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
-import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
 import Fuse from 'fuse.js';
 
@@ -44,6 +44,10 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
   useEffect(() => {
     if (!selected) setSelected(options[0]);
   }, [options, selected]);
+
+  useEffect(() => {
+    if (current) setSelected(current);
+  }, [current]);
 
   const optionsResult = useMemo(() => {
     if (searchQuery) {
@@ -112,33 +116,20 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
                       classNames(
                         active ? 'bg-green-50 text-green-700' : 'text-gray-900',
                         selected && 'bg-green-50 text-green-700',
-                        'cursor-pointer select-none relative py-2 pl-3 pr-9',
+                        'cursor-pointer select-none relative py-2 pl-4 pr-4',
                       )
                     }
                     value={option}
                   >
-                    {({ selected, active }) => (
-                      <>
-                        <span
-                          className={classNames(
-                            selected ? 'font-semibold' : 'font-normal',
-                            'block text-sm truncate',
-                          )}
-                        >
-                          {option.label}
-                        </span>
-
-                        {selected ? (
-                          <span
-                            className={classNames(
-                              active && 'text-green-700',
-                              'absolute inset-y-0 right-0 flex items-center pr-4',
-                            )}
-                          >
-                            <CheckIcon className="h-4 w-4" aria-hidden="true" />
-                          </span>
-                        ) : null}
-                      </>
+                    {({ selected }) => (
+                      <span
+                        className={classNames(
+                          selected ? 'font-semibold' : 'font-normal',
+                          'block text-sm truncate',
+                        )}
+                      >
+                        {option.label}
+                      </span>
                     )}
                   </Listbox.Option>
                 ))}

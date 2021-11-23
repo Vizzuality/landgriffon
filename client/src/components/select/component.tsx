@@ -60,7 +60,7 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
     <Listbox value={selected} onChange={setSelected} disabled={disabled}>
       {({ open }) => (
         <>
-          <div className="mt-1 relative">
+          <div className="relative">
             <Listbox.Button
               className="bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default
               focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer"
@@ -87,14 +87,17 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
             <Transition
               show={open}
               as={Fragment}
-              leave="transition ease-in duration-100"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
+              enter="transition ease-out duration-200"
+              enterFrom="opacity-0 translate-y-1"
+              enterTo="opacity-100 translate-y-0"
+              leave="transition ease-in duration-150"
+              leaveFrom="opacity-100 translate-y-0"
+              leaveTo="opacity-0 translate-y-1"
             >
               <Listbox.Options
                 static
                 className={classNames(
-                  'absolute z-20 mt-1 min-w-min w-full bg-white shadow-lg max-h-60 rounded-md text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none text-sm',
+                  'absolute z-20 mt-1 min-w-min w-full bg-white shadow-lg max-h-60 rounded-md ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none text-sm',
                   {
                     'py-1': !showSearch,
                     'py-0': showSearch,

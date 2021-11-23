@@ -4,9 +4,10 @@ import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis, setFilter } from 'store/features/analysis';
 
 import Select from 'components/select';
-// import { ChevronDownIcon } from '@heroicons/react/solid';
 
 import { useIndicators } from 'hooks/indicators';
+
+import { SelectProps } from 'components/select/types';
 
 const IndicatorsFilter: React.FC = () => {
   const { visualizationMode, filters } = useAppSelector(analysis);
@@ -14,7 +15,7 @@ const IndicatorsFilter: React.FC = () => {
 
   const { data, isFetching, isFetched, error } = useIndicators();
 
-  const options = useMemo(() => {
+  const options: SelectProps['options'] = useMemo(() => {
     const ALL = {
       id: 'all',
       name: 'All indicators',
@@ -40,7 +41,7 @@ const IndicatorsFilter: React.FC = () => {
     }
   }, [options, isFetched, dispatch]);
 
-  const handleChange = useCallback(
+  const handleChange: SelectProps['onChange'] = useCallback(
     (selected) => {
       dispatch(
         setFilter({

@@ -46,6 +46,8 @@ const SingleYearFilter: React.FC<SingleYearFilterProps> = ({
     [options, value],
   );
 
+  console.log(value, currentValue);
+
   return (
     <Select
       current={currentValue}

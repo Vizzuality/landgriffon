@@ -17,7 +17,7 @@ const AnalysisVisualization: React.FC = () => {
       <div
         className={classNames(
           {
-            'absolute top-6 left-6 xl:left-12 right-6 z-10': visualizationMode === 'map',
+            'absolute top-6 left-6 xl:left-12 right-6 z-20': visualizationMode === 'map',
             'm-6 xl:ml-12': visualizationMode !== 'map',
           },
           'flex gap-2 flex-wrap justify-between',

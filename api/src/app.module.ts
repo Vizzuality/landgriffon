@@ -27,11 +27,21 @@ import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-reco
 import { GeoCodingModule } from 'modules/geo-coding/geo-coding.module';
 import { H3DataModule } from 'modules/h3-data/h3-data.module';
 import { HttpModule } from '@nestjs/axios';
+import { BullModule } from '@nestjs/bull';
+import * as config from 'config';
+
+const redisConfig: any = config.get('redis');
 
 @Module({
   imports: [
     HttpModule,
     TypeOrmModule.forRoot(typeOrmConfig),
+    BullModule.forRoot({
+      redis: {
+        host: redisConfig.host,
+        port: redisConfig.port,
+      },
+    }),
     AdminRegionsModule,
     AuthenticationModule,
     BusinessUnitsModule,

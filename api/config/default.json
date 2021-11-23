@@ -13,6 +13,10 @@
       "secret": null
     }
   },
+  "redis": {
+    "host": "localhost",
+    "port": 6379
+  },
   "db": {
     "type": "postgres",
     "host": "localhost",

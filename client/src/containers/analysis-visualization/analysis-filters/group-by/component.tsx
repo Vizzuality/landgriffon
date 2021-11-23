@@ -42,7 +42,7 @@ const GroupByFilter: React.FC = () => {
     [dispatch],
   );
 
-  const options = useMemo(
+  const options: SelectProps['options'] = useMemo(
     () =>
       GROUP_BY_OPTIONS.map(({ id, name }) => ({
         label: name,
@@ -51,7 +51,7 @@ const GroupByFilter: React.FC = () => {
     [],
   );
 
-  const currentValue = useMemo(
+  const currentValue: SelectProps['current'] = useMemo(
     () => options.find((group) => group.value === filters.by),
     [filters.by, options],
   );

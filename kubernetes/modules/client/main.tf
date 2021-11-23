@@ -48,6 +48,20 @@ resource "kubernetes_deployment" "client_deployment" {
       }
 
       spec {
+        affinity {
+          node_affinity {
+            required_during_scheduling_ignored_during_execution {
+              node_selector_term {
+                match_expressions {
+                  key      = "type"
+                  operator = "In"
+                  values   = ["default"]
+                }
+              }
+            }
+          }
+        }
+
         image_pull_secrets {
           name = "regcred"
         }

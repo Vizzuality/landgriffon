@@ -65,8 +65,8 @@ resource "aws_ecs_task_definition" "data-import" {
   family                   = "data-import"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 2048
-  memory                   = 8192
+  cpu                      = 4096
+  memory                   = 65536
   execution_role_arn = aws_iam_role.data-import-role.arn
   ephemeral_storage {
     size_in_gib = 200

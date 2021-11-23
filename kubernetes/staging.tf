@@ -54,3 +54,9 @@ module "k8s_ingress_staging" {
   namespace          = "staging"
   domain_prefix      = "staging"
 }
+
+#module "data_import" {
+#  source = "./modules/fargate"
+#  namespace        = "staging"
+#  postgresql_port = module.k8s_database.postgresql_service_port
+#}

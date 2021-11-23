@@ -26,9 +26,11 @@ import { ImportDataModule } from 'modules/import-data/import-data.module';
 import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
 import { GeoCodingModule } from 'modules/geo-coding/geo-coding.module';
 import { H3DataModule } from 'modules/h3-data/h3-data.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
+    HttpModule,
     TypeOrmModule.forRoot(typeOrmConfig),
     AdminRegionsModule,
     AuthenticationModule,

@@ -9,6 +9,10 @@
       "secret": "JWT_SECRET"
     }
   },
+  "redis": {
+    "host": "REDIS_HOST",
+    "port": "REDIS_PORT"
+  },
   "db": {
     "host": "DB_HOST",
     "port": "DB_PORT",

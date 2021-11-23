@@ -38,3 +38,10 @@ module "k8s_database" {
   cluster_ca       = data.terraform_remote_state.core.outputs.eks_cluster.certificate_authority.0.data
   cluster_name     = data.terraform_remote_state.core.outputs.eks_cluster.name
 }
+
+module "k8s_redis" {
+  source           = "./modules/redis"
+  cluster_endpoint = "${data.terraform_remote_state.core.outputs.eks_cluster.endpoint}:4433"
+  cluster_ca       = data.terraform_remote_state.core.outputs.eks_cluster.certificate_authority.0.data
+  cluster_name     = data.terraform_remote_state.core.outputs.eks_cluster.name
+}

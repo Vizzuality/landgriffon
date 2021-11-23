@@ -1,22 +1,41 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useCallback, useEffect, useState, useMemo } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
+import Fuse from 'fuse.js';
 
 import Loading from 'components/loading';
 
 import type { SelectProps } from './types';
 
+const SEARCH_OPTIONS = {
+  includeScore: false,
+  keys: ['label'],
+  threshold: 0.8,
+};
+
 const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
   const {
+    showSearch = false,
     disabled = false,
     label,
-    options,
+    options = [],
     current = options[0],
     loading = false,
     onChange,
+    onSearch,
   } = props;
   const [selected, setSelected] = useState(current);
+  const [searchQuery, setSearchQuery] = useState(null);
+
+  const handleSearch = useCallback(
+    (e) => {
+      setSearchQuery(e.currentTarget.value);
+      if (onSearch) onSearch(e.currentTarget.value);
+    },
+    [onSearch],
+  );
+  const fuse = useMemo(() => new Fuse(options, SEARCH_OPTIONS), [options]);
 
   useEffect(() => {
     if (selected && onChange) onChange(selected);
@@ -25,6 +44,13 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
   useEffect(() => {
     if (!selected) setSelected(options[0]);
   }, [options, selected]);
+
+  const optionsResult = useMemo(() => {
+    if (searchQuery) {
+      return fuse.search(searchQuery).map(({ item }) => item);
+    }
+    return options;
+  }, [fuse, options, searchQuery]);
 
   return (
     <Listbox value={selected} onChange={setSelected} disabled={disabled}>
@@ -63,9 +89,23 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
             >
               <Listbox.Options
                 static
-                className="absolute z-20 mt-1 min-w-min w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none text-sm"
+                className={classNames(
+                  'absolute z-20 mt-1 min-w-min w-full bg-white shadow-lg max-h-60 rounded-md text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none text-sm',
+                  {
+                    'py-1': !showSearch,
+                    'py-0': showSearch,
+                  },
+                )}
               >
-                {options.map((option) => (
+                {showSearch && (
+                  <input
+                    type="search"
+                    placeholder="Search"
+                    className="w-full focus:ring-0 focus:border-green-700 block text-sm border-0 border-b border-gray-300 rounded-t-md"
+                    onChange={handleSearch}
+                  />
+                )}
+                {optionsResult.map((option) => (
                   <Listbox.Option
                     key={option.value}
                     className={({ active, selected }) =>

@@ -1,10 +1,12 @@
 import React, { Fragment, useState, useCallback } from 'react';
 import { Popover, Transition } from '@headlessui/react';
-import { Select, SelectProps } from 'antd';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
 import { toNumber, isFinite } from 'lodash';
 
-import { MultiYearFilterProps } from './types';
+import Select from 'components/select';
+
+import type { SelectProps } from 'components/select/types';
+import type { MultiYearFilterProps } from './types';
 
 const MultiYearFilter: React.FC<MultiYearFilterProps> = ({
   data,

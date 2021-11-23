@@ -57,6 +57,7 @@
     "d3-time": "^3.0.0",
     "date-fns": "^2.22.1",
     "framer-motion": "^4.1.17",
+    "fuse.js": "^6.4.6",
     "gl-matrix": "^3.0.0",
     "jsona": "^1.9.2",
     "jsonwebtoken": "^8.5.1",

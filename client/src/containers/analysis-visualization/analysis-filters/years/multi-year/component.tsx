@@ -1,11 +1,11 @@
-import React, { Fragment, useState, useCallback } from 'react';
+import React, { Fragment, useState, useCallback, useMemo } from 'react';
 import { Popover, Transition } from '@headlessui/react';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
 import { toNumber, isFinite } from 'lodash';
 
 import Select from 'components/select';
 
-import type { SelectProps } from 'components/select/types';
+import type { SelectOption, SelectOptions, SelectProps } from 'components/select/types';
 import type { MultiYearFilterProps } from './types';
 
 const MultiYearFilter: React.FC<MultiYearFilterProps> = ({
@@ -14,22 +14,49 @@ const MultiYearFilter: React.FC<MultiYearFilterProps> = ({
   endValue,
   onChangeStartValue,
   onChangeEndValue,
+  onSearch,
 }: MultiYearFilterProps) => {
-  const [additionalYear, setAdditionalYear] = useState<number>(null);
 
-  const onSearch: SelectProps<number>['onSearch'] = useCallback(
-    (searchTerm) => {
-      if (!isFinite(toNumber(searchTerm)) || toNumber(searchTerm) <= data[0]) {
-        return;
-      }
+  const handleStartYearChange: SelectProps['onChange'] = useCallback(
+    (selected) => onChangeStartValue(selected.value as number),
+    [onChangeStartValue],
+  );
 
-      const existsMatch = data.some((year) => `${year}`.includes(searchTerm));
-      if (!existsMatch) {
-        setAdditionalYear(toNumber(searchTerm));
-      }
-    },
+  const handleEndYearChange: SelectProps['onChange'] = useCallback(
+    (selected) => onChangeEndValue(selected.value as number),
+    [onChangeEndValue],
+  );
+
+  const optionsStartYear: SelectOptions = useMemo(
+    () =>
+      data.map((year) => ({
+        label: year.toString(),
+        value: year,
+      })),
     [data],
   );
+
+  const optionsEndYear: SelectOptions = useMemo(() => {
+    const result = [...data];
+    if (additionalYear) result.push(additionalYear);
+    return result.map((year) => ({
+      label: year.toString(),
+      value: year,
+    }));
+  }, [data, additionalYear]);
+
+  const currentStartYearValue: SelectOption = useMemo(
+    () => optionsStartYear.find((option) => option.value === startValue),
+    [optionsStartYear, startValue],
+  );
+
+  const currentEndYearValue: SelectOption = useMemo(
+    () => optionsEndYear.find((option) => option.value === endValue),
+    [optionsEndYear, endValue],
+  );
+
+  console.log('endValue', endValue);
+  console.log('currentEndYearValue', currentEndYearValue);
 
   return (
     <Popover className="relative">
@@ -52,9 +79,12 @@ const MultiYearFilter: React.FC<MultiYearFilterProps> = ({
           </Popover.Button>
           <Transition
             as={Fragment}
-            leave="transition ease-in duration-100"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
+            enter="transition ease-out duration-200"
+            enterFrom="opacity-0 translate-y-1"
+            enterTo="opacity-100 translate-y-0"
+            leave="transition ease-in duration-150"
+            leaveFrom="opacity-100 translate-y-0"
+            leaveTo="opacity-0 translate-y-1"
           >
             <Popover.Panel className="absolute z-20 mt-1 w-60">
               <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
@@ -62,42 +92,19 @@ const MultiYearFilter: React.FC<MultiYearFilterProps> = ({
                   <div className="grid grid-cols-1 gap-2">
                     <div>From</div>
                     <Select
-                      value={startValue}
-                      dropdownStyle={{ minWidth: 'min-content' }}
-                      suffixIcon={<ChevronDownIcon />}
-                      showSearch
-                      getPopupContainer={(triggerNode) => triggerNode.parentNode}
-                      onChange={onChangeStartValue}
-                    >
-                      {data.map((year) => (
-                        <Select.Option key={year} value={year} disabled={year >= endValue}>
-                          <span>{year}</span>
-                        </Select.Option>
-                      ))}
-                    </Select>
+                      current={currentStartYearValue}
+                      showSearch={false}
+                      options={optionsStartYear}
+                      onChange={handleStartYearChange}
+                    />
                     <div>To</div>
                     <Select
-                      value={endValue}
-                      suffixIcon={<ChevronDownIcon />}
+                      current={currentEndYearValue}
+                      options={optionsEndYear}
                       showSearch
-                      getPopupContainer={(triggerNode) => triggerNode.parentNode}
                       onSearch={onSearch}
-                      onChange={onChangeEndValue}
-                    >
-                      {data.map((year) => (
-                        <Select.Option key={year} value={year} disabled={year <= startValue}>
-                          {year}
-                        </Select.Option>
-                      ))}
-                      {additionalYear && (
-                        <Select.Option
-                          key={`additional-year-${additionalYear}`}
-                          value={additionalYear}
-                        >
-                          {additionalYear}
-                        </Select.Option>
-                      )}
-                    </Select>
+                      onChange={handleEndYearChange}
+                    />
                   </div>
                 </div>
               </div>

@@ -84,7 +84,7 @@ export const analysisSlice = createSlice({
       ...state,
       layer: action.payload,
     }),
-    setFilter: (state, action: PayloadAction<{ id: string; value: any }>) => ({
+    setFilter: (state, action: PayloadAction<{ id: string; value: unknown }>) => ({
       ...state,
       filters: {
         ...state.filters,

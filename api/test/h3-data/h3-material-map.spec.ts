@@ -53,7 +53,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
 
   test('When I query a material H3 with a non available resolution, then I should get a proper error message', async () => {
     const response = await request(app.getHttpServer()).get(
-      `/api/v1/h3/material?materialId=${FAKE_UUID}&resolution=0`,
+      `/api/v1/h3/map/material?materialId=${FAKE_UUID}&resolution=0`,
     );
     expect(response.body.errors[0].meta.rawError.response.message[0]).toEqual(
       'Available resolutions: 1 to 6',
@@ -62,7 +62,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
 
   test('When I query a material H3 data with a resolution value that is not a number, then I should get a proper error message', async () => {
     const response = await request(app.getHttpServer()).get(
-      `/api/v1/h3/material?materialId=${FAKE_UUID}&resolution=definitelyNotANumber`,
+      `/api/v1/h3/map/material?materialId=${FAKE_UUID}&resolution=definitelyNotANumber`,
     );
     expect(response.body.errors[0].meta.rawError.response.message[1]).toEqual(
       'resolution must be a number conforming to the specified constraints',
@@ -72,7 +72,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
   test('When I query a material H3 data but it has no H3 data available, then I should get a proper error message', async () => {
     const material = await createMaterial({ name: 'Material with no H3' });
     const response = await request(app.getHttpServer()).get(
-      `/api/v1/h3/material?materialId=${material.id}&resolution=1`,
+      `/api/v1/h3/map/material?materialId=${material.id}&resolution=1`,
     );
     expect(response.body.errors[0].title).toEqual(
       `There is no H3 Data for Material with ID: ${material.id}`,
@@ -82,7 +82,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
   test('When I query a material H3 data with no resolution provided, then I should get a proper error message', async () => {
     const material = await createMaterial();
     const response = await request(app.getHttpServer()).get(
-      `/api/v1/h3/material?materialId=${material.id}`,
+      `/api/v1/h3/map/material?materialId=${material.id}`,
     );
     expect(response.body.errors[0].meta.rawError.response.message[2]).toEqual(
       'resolution should not be empty',

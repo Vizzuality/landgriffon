@@ -78,7 +78,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
   test('When I get a calculated H3 Impact Map without any of the required parameters, then I should get a proper error message', async () => {
     const response = await request(app.getHttpServer()).get(
-      `/api/v1/h3/impact-map`,
+      `/api/v1/h3/map/impact`,
     );
     expect(response.body.errors[0].meta.rawError.response.message).toEqual([
       'indicatorId should not be empty',
@@ -102,7 +102,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     await indicator.save();
 
     const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/impact-map`)
+      .get(`/api/v1/h3/map/impact`)
       .query({
         indicators: indicator.id,
       });
@@ -129,7 +129,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     await indicator.save();
 
     const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/impact-map`)
+      .get(`/api/v1/h3/map/impact`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -152,7 +152,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     await indicator.save();
 
     const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/impact-map`)
+      .get(`/api/v1/h3/map/impact`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -248,7 +248,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     });
 
     const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/impact-map`)
+      .get(`/api/v1/h3/map/impact`)
       .query({
         indicatorId: indicator.id,
         year: 2020,

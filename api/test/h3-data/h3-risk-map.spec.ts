@@ -81,7 +81,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
   test('When I get a calculated H3 Risk Map without any of the required parameters, then I should get a proper error message', async () => {
     const response = await request(app.getHttpServer()).get(
-      `/api/v1/h3/risk-map`,
+      `/api/v1/h3/map/risk`,
     );
     expect(response.body.errors[0].meta.rawError.response.message).toEqual([
       'indicatorId should not be empty',
@@ -100,7 +100,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     const material = await createMaterial();
 
     const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/risk-map`)
+      .get(`/api/v1/h3/map/risk`)
       .query({
         materialId: material.id,
         resolution: 1,
@@ -120,7 +120,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     const material = await createMaterial();
 
     const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/risk-map`)
+      .get(`/api/v1/h3/map/risk`)
       .query({
         indicatorId: indicator.id,
         materialId: material.id,
@@ -139,7 +139,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     await indicator.save();
 
     const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/risk-map`)
+      .get(`/api/v1/h3/map/risk`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -159,7 +159,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     const material = await createMaterial({ name: 'Material with no H3' });
 
     const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/risk-map`)
+      .get(`/api/v1/h3/map/risk`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -181,7 +181,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     jest.spyOn(h3DataRepository, 'getWaterRiskMapByResolution');
 
     const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/risk-map`)
+      .get(`/api/v1/h3/map/risk`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -221,7 +221,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     jest.spyOn(h3DataRepository, 'getBiodiversityLossRiskMapByResolution');
 
     const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/risk-map`)
+      .get(`/api/v1/h3/map/risk`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -274,7 +274,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     jest.spyOn(h3DataRepository, 'getCarbonEmissionsRiskMapByResolution');
 
     const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/risk-map`)
+      .get(`/api/v1/h3/map/risk`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -316,7 +316,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     jest.spyOn(h3DataRepository, 'getDeforestationLossRiskMapByResolution');
 
     const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/risk-map`)
+      .get(`/api/v1/h3/map/risk`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -347,7 +347,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     });
 
     const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/risk-map`)
+      .get(`/api/v1/h3/map/risk`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -371,7 +371,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     });
 
     const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/risk-map`)
+      .get(`/api/v1/h3/map/risk`)
       .query({
         indicatorId: indicator.id,
         year: 2020,

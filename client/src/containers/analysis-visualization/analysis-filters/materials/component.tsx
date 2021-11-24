@@ -13,7 +13,7 @@ const MaterialsFilter: React.FC<{ multiple?: boolean }> = (props) => {
   const { multiple = false } = props;
   const dispatch = useAppDispatch();
   const { filters } = useAppSelector(analysis);
-  const { data, isLoading, error } = useMaterialsTrees({ depth: 1 });
+  const { data, isLoading } = useMaterialsTrees({ depth: 1 });
 
   const handleChange = useCallback(
     (selected) => dispatch(setFilter({ id: 'materials', value: [selected] })),
@@ -42,24 +42,6 @@ const MaterialsFilter: React.FC<{ multiple?: boolean }> = (props) => {
       placeholder="Materials"
       onChange={handleChange}
       current={filters.materials}
-      // disabled={!!error}
-      // labelInValue
-      // className="w-64"
-      // loading={isLoading}
-      // placeholder={error ? 'Something went wrong' : 'Select materials'}
-      // value={multiple ? filters.materials : filters.materials[0]}
-      // treeData={treeData}
-      // showArrow
-      // showCheckedStrategy={TreeSelect.SHOW_PARENT}
-      // treeDefaultExpandAll={false}
-      // treeCheckable={false}
-      // treeNodeFilterProp="title"
-      // inputIcon={<ChevronDownIcon />}
-      // removeIcon={<XIcon />}
-      // maxTagCount={5}
-      // maxTagPlaceholder={(e) => `${e.length} more...`}
-      // showSearch
-      // {...props}
     />
   );
 };

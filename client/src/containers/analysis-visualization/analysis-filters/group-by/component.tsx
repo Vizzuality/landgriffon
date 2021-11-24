@@ -31,7 +31,7 @@ const GroupByFilter: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const handleChange: SelectProps['onChange'] = useCallback(
-    (value) => {
+    ({ value }) => {
       dispatch(
         setFilter({
           id: 'by',

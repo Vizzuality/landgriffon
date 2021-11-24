@@ -97,7 +97,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
     );
     const material = await createMaterial({ producer: h3Data });
     const response = await request(app.getHttpServer()).get(
-      `/api/v1/h3/material?materialId=${material.id}&resolution=1`,
+      `/api/v1/h3/map/material?materialId=${material.id}&resolution=1`,
     );
 
     expect(response.body.data).toEqual([

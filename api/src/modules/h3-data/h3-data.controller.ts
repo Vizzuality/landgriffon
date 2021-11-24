@@ -60,7 +60,7 @@ export class H3DataController {
     description:
       'Get a calculated H3 risk map given a Material and a Indicator',
   })
-  @Get('/map/risk')
+  @Get('map/risk')
   async getRiskMap(
     @Query(ValidationPipe) queryParams: GetRiskMapH3Dto,
   ): Promise<H3MapResponse> {

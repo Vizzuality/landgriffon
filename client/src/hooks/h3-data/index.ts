@@ -67,7 +67,7 @@ export function useH3MaterialData(): H3DataResponse {
     ['h3-data-material', layer, JSON.stringify({ layer, ...filters })],
     async () =>
       h3DataService
-        .get('/material', {
+        .get('/map/material', {
           params: {
             ...filters,
             resolution: 4,
@@ -104,7 +104,7 @@ export function useH3RiskData(): H3DataResponse {
     ['h3-data-risk', layer, JSON.stringify({ layer, ...filters })],
     async () =>
       h3DataService
-        .get('/risk-map', {
+        .get('/map/risk', {
           params: {
             ...filters,
             resolution: 4,
@@ -141,7 +141,7 @@ export function useH3ImpactData(): H3DataResponse {
     ['h3-data-impact', layer, JSON.stringify({ layer, ...filters })],
     async () =>
       h3DataService
-        .get('/impact-map', {
+        .get('/map/impact', {
           params: {
             ...filters,
             resolution: 4,

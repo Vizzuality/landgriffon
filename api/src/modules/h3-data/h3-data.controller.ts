@@ -44,7 +44,7 @@ export class H3DataController {
 
   @ApiOperation({ description: 'Get h3 indexes by ID in a given resolution' })
   @ApiQuery({ type: GetMaterialH3ByResolutionDto })
-  @Get('material')
+  @Get('map/material')
   async getH3ByIdAndResolution(
     @Query(ValidationPipe)
     queryParams: GetMaterialH3ByResolutionDto,
@@ -60,7 +60,7 @@ export class H3DataController {
     description:
       'Get a calculated H3 risk map given a Material and a Indicator',
   })
-  @Get('risk-map')
+  @Get('/map/risk')
   async getRiskMap(
     @Query(ValidationPipe) queryParams: GetRiskMapH3Dto,
   ): Promise<H3MapResponse> {
@@ -80,10 +80,11 @@ export class H3DataController {
   @ApiOperation({
     description: 'Get a calculated H3 impact map given ...',
   })
-  @Get('impact-map')
+  @Get('map/impact')
   async getImpactMap(
     @Query(ValidationPipe) getImpactMapDto: GetImpactMapDto,
   ): Promise<H3MapResponse> {
     return this.h3DataService.getImpactMapByResolution(getImpactMapDto);
   }
+
 }

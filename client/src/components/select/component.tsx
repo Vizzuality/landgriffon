@@ -1,6 +1,6 @@
 import { Fragment, useCallback, useEffect, useState, useMemo } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
+import { ChevronDownIcon, ChevronUpIcon, XIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
 import Fuse from 'fuse.js';
 
@@ -11,7 +11,7 @@ import type { SelectProps } from './types';
 const SEARCH_OPTIONS = {
   includeScore: false,
   keys: ['label'],
-  threshold: 0.8,
+  threshold: 0.4,
 };
 
 const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
@@ -25,17 +25,8 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
     onChange,
     onSearch,
   } = props;
-  const [selected, setSelected] = useState(current);
-  const [searchQuery, setSearchQuery] = useState(null);
-
-  const handleSearch = useCallback(
-    (e) => {
-      setSearchQuery(e.currentTarget.value);
-      if (onSearch) onSearch(e.currentTarget.value);
-    },
-    [onSearch],
-  );
-  const fuse = useMemo(() => new Fuse(options, SEARCH_OPTIONS), [options]);
+  const [selected, setSelected] = useState<SelectProps['current']>(current);
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   useEffect(() => {
     if (selected && onChange) onChange(selected);
@@ -49,12 +40,22 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
     if (current) setSelected(current);
   }, [current]);
 
-  const optionsResult = useMemo(() => {
-    if (searchQuery) {
-      return fuse.search(searchQuery).map(({ item }) => item);
+  // Search capability
+  const fuse = useMemo(() => new Fuse(options, SEARCH_OPTIONS), [options]);
+  const handleSearch = useCallback(
+    (e) => {
+      setSearchTerm(e.currentTarget.value);
+      if (onSearch) onSearch(e.currentTarget.value);
+    },
+    [onSearch],
+  );
+  const resetSearch = useCallback(() => setSearchTerm(''), []);
+  const optionsResult: SelectProps['options'] = useMemo(() => {
+    if (searchTerm && searchTerm !== '') {
+      return fuse.search(searchTerm).map(({ item }) => item);
     }
     return options;
-  }, [fuse, options, searchQuery]);
+  }, [fuse, options, searchTerm]);
 
   return (
     <Listbox value={selected} onChange={setSelected} disabled={disabled}>
@@ -105,12 +106,22 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
                 )}
               >
                 {showSearch && (
-                  <input
-                    type="search"
-                    placeholder="Search"
-                    className="w-full focus:ring-0 focus:border-green-700 block text-sm border-0 border-b border-gray-300 rounded-t-md"
-                    onChange={handleSearch}
-                  />
+                  <div className="relative">
+                    <input
+                      type="search"
+                      value={searchTerm}
+                      placeholder="Search"
+                      className="min-w-full w-24 focus:ring-0 focus:border-green-700 block text-sm border-0 border-b border-gray-300 rounded-t-md pr-8"
+                      onChange={handleSearch}
+                    />
+                    <button
+                      type="button"
+                      onClick={resetSearch}
+                      className="absolute right-0 transform -translate-y-1/2 top-1/2 px-2 py-1"
+                    >
+                      <XIcon className="h-4 w-4 text-gray-300" />
+                    </button>
+                  </div>
                 )}
                 {optionsResult.map((option) => (
                   <Listbox.Option

@@ -1,6 +1,4 @@
 import React, { useCallback, useMemo } from 'react';
-// import TreeSelect, { TreeSelectProps } from 'rc-tree-select';
-import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
 import { sortBy } from 'lodash';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
@@ -9,11 +7,10 @@ import { useMaterialsTrees } from 'hooks/materials';
 
 import TreeSelect from 'components/tree-select';
 
-// type MaterialsFilterProps = TreeSelectProps<unknown>;
+import type { TreeSelectProps } from 'components/tree-select/types';
 
-const MaterialsFilter: React.FC = (props) => {
-  console.log(props);
-  const { multiple } = props;
+const MaterialsFilter: React.FC<{ multiple?: boolean }> = (props) => {
+  const { multiple = false } = props;
   const dispatch = useAppDispatch();
   const { filters } = useAppSelector(analysis);
   const { data, isLoading, error } = useMaterialsTrees({ depth: 1 });
@@ -23,37 +20,39 @@ const MaterialsFilter: React.FC = (props) => {
     [dispatch],
   );
 
-  const treeData = useMemo(
+  const treeOptions: TreeSelectProps['options'] = useMemo(
     () =>
       sortBy(
         data?.map(({ name, id, children }) => ({
-          title: name,
-          key: id,
-          children: children?.map(({ name, id }) => ({ title: name, key: id })),
+          label: name,
+          value: id,
+          children: children?.map(({ name, id }) => ({ label: name, value: id })),
         })),
-        'title',
+        'label',
       ),
     [data],
   );
 
-  console.log(treeData);
-
   return (
     <TreeSelect
-      data={treeData}
-      // onChange={handleChange}
+      multiple={multiple}
+      showSearch
+      loading={isLoading}
+      options={treeOptions}
+      placeholder="Materials"
+      onChange={handleChange}
+      current={filters.materials}
+      // disabled={!!error}
       // labelInValue
       // className="w-64"
       // loading={isLoading}
       // placeholder={error ? 'Something went wrong' : 'Select materials'}
       // value={multiple ? filters.materials : filters.materials[0]}
-      // multiple={false}
       // treeData={treeData}
       // showArrow
       // showCheckedStrategy={TreeSelect.SHOW_PARENT}
       // treeDefaultExpandAll={false}
       // treeCheckable={false}
-      // disabled={!!error}
       // treeNodeFilterProp="title"
       // inputIcon={<ChevronDownIcon />}
       // removeIcon={<XIcon />}

@@ -8,6 +8,7 @@ import type { SingleYearFilterProps } from './types';
 
 const SingleYearFilter: React.FC<SingleYearFilterProps> = ({
   data,
+  loading,
   value,
   onChange,
 }: SingleYearFilterProps) => {
@@ -46,10 +47,9 @@ const SingleYearFilter: React.FC<SingleYearFilterProps> = ({
     [options, value],
   );
 
-  console.log(value, currentValue);
-
   return (
     <Select
+      loading={loading}
       current={currentValue}
       options={options}
       showSearch

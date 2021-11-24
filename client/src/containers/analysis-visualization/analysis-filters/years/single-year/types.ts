@@ -1,4 +1,5 @@
 export interface SingleYearFilterProps {
+  loading: boolean;
   /** Current value of the filter */
   value: number;
   /** Available years */

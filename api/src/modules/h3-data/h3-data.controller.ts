@@ -1,5 +1,11 @@
 import { Controller, Get, Param, Query, ValidationPipe } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+  ApiOkResponse,
+  ApiBadRequestResponse,
+} from '@nestjs/swagger';
 import { H3DataService } from 'modules/h3-data/h3-data.service';
 import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 import { GetMaterialH3ByResolutionDto } from 'modules/h3-data/dto/get-material-h3-by-resolution.dto';
@@ -7,6 +13,7 @@ import { GetRiskMapH3Dto } from 'modules/h3-data/dto/get-risk-map.dto';
 import { H3MapResponse } from 'modules/h3-data/dto/h3-map-response.dto';
 import { GetYearsByLayerAndMaterialsDto } from 'modules/h3-data/dto/get-years-by-layer-and-materials.dto';
 import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
+import { H3YearsResponse } from './dto/h3-years-response.dto';
 
 @Controller('/api/v1/h3')
 @ApiTags(H3Data.name)
@@ -14,6 +21,10 @@ export class H3DataController {
   constructor(protected readonly h3DataService: H3DataService) {}
 
   @ApiOperation({ description: 'Retrieve H3 data providing its name' })
+  @ApiOkResponse({ type: H3DataResponse })
+  @ApiBadRequestResponse({
+    description: 'Bad Request. Incorrect or missing parameters',
+  })
   @Get('data/:h3TableName/:h3ColumnName')
   async findOneByName(
     @Param('h3TableName') h3TableName: string,
@@ -27,6 +38,10 @@ export class H3DataController {
   }
   @ApiOperation({
     description: 'Retrieve years for which there is data, by layer',
+  })
+  @ApiOkResponse({ type: H3YearsResponse })
+  @ApiBadRequestResponse({
+    description: 'Bad Request. Incorrect or missing parameters',
   })
   @Get('years')
   async getYearsByLayerType(
@@ -44,6 +59,12 @@ export class H3DataController {
 
   @ApiOperation({ description: 'Get h3 indexes by ID in a given resolution' })
   @ApiQuery({ type: GetMaterialH3ByResolutionDto })
+  @ApiOkResponse({
+    type: H3MapResponse,
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad Request. Incorrect or missing parameters',
+  })
   @Get('map/material')
   async getH3ByIdAndResolution(
     @Query(ValidationPipe)
@@ -60,6 +81,12 @@ export class H3DataController {
     description:
       'Get a calculated H3 risk map given a Material and a Indicator',
   })
+  @ApiOkResponse({
+    type: H3MapResponse,
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad Request. Incorrect or missing parameters',
+  })
   @Get('map/risk')
   async getRiskMap(
     @Query(ValidationPipe) queryParams: GetRiskMapH3Dto,
@@ -72,13 +99,15 @@ export class H3DataController {
     );
   }
 
-  /**
-   * TODO: complete docs
-   *
-   * @param getImpactMapDto
-   */
   @ApiOperation({
-    description: 'Get a calculated H3 impact map given ...',
+    description:
+      'Get a calculated H3 impact map given an Indicator, Year and Resolution',
+  })
+  @ApiOkResponse({
+    type: H3MapResponse,
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad Request. Incorrect or missing parameters',
   })
   @Get('map/impact')
   async getImpactMap(
@@ -86,5 +115,4 @@ export class H3DataController {
   ): Promise<H3MapResponse> {
     return this.h3DataService.getImpactMapByResolution(getImpactMapDto);
   }
-
 }

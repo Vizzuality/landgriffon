@@ -5,6 +5,7 @@ import { Material } from '../../../src/modules/materials/material.entity';
 import { Unit } from '../../../src/modules/units/unit.entity';
 import { UnitConversion } from '../../../src/modules/unit-conversions/unit-conversion.entity';
 import { createMaterial } from '../../entity-mocks';
+import { snakeCase, camelCase } from 'typeorm/util/StringUtils';
 
 export const createFakeH3Data = async (
   h3TableName: string,
@@ -13,13 +14,16 @@ export const createFakeH3Data = async (
   indicatorId?: string,
   year: number = 2000,
 ): Promise<H3Data> => {
+  const formattedTableName: string = snakeCase(h3TableName);
+  const formattedColumnName: string = camelCase(h3ColumnName);
+
   await getManager().query(
-    `CREATE TABLE ${h3TableName} (h3index h3index, ${h3ColumnName} float4);` +
-      `INSERT INTO ${h3TableName} (h3index, ${h3ColumnName} ) VALUES ('861203a4fffffff', 1000);`,
+    `CREATE TABLE ${formattedTableName} (h3index h3index, ${formattedColumnName} float4);` +
+      `INSERT INTO ${formattedTableName} (h3index, ${formattedColumnName} ) VALUES ('861203a4fffffff', 1000);`,
   );
 
   if (additionalH3Data) {
-    let query = `INSERT INTO ${h3TableName} (h3index,  ${h3ColumnName}) VALUES `;
+    let query = `INSERT INTO ${formattedTableName} (h3index,  ${formattedColumnName}) VALUES `;
     const queryArr = [];
     for (const [key, value] of Object.entries(additionalH3Data)) {
       queryArr.push(`('${key}', ${value})`);
@@ -29,8 +33,8 @@ export const createFakeH3Data = async (
   }
 
   const h3data = new H3Data();
-  h3data.h3tableName = h3TableName;
-  h3data.h3columnName = h3ColumnName;
+  h3data.h3tableName = formattedTableName;
+  h3data.h3columnName = formattedColumnName;
   h3data.h3resolution = 6;
   h3data.year = year;
   if (indicatorId) {
@@ -41,8 +45,8 @@ export const createFakeH3Data = async (
 };
 
 export const dropFakeH3Data = async (h3TableNames: string[]): Promise<void> => {
-  for (const h3tableName of h3TableNames) {
-    await getManager().query(`DROP TABLE IF EXISTS ${h3tableName};`);
+  for (const h3TableName of h3TableNames) {
+    await getManager().query(`DROP TABLE IF EXISTS ${snakeCase(h3TableName)};`);
   }
 };
 

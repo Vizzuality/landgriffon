@@ -2,6 +2,7 @@ import { createIndicator, createMaterial } from '../../entity-mocks';
 import { createFakeH3Data } from '../../h3-data/mocks/create-fake-h3-data';
 import { Material } from '../../../src/modules/materials/material.entity';
 import { Indicator } from '../../../src/modules/indicators/indicator.entity';
+import { snakeCase } from 'typeorm/util/StringUtils';
 
 async function createIndicatorsForXLSXImport(): Promise<string[]> {
   const indicatorSpec = [
@@ -109,10 +110,16 @@ async function createMaterialTreeForXLSXImport(): Promise<string[]> {
     );
 
     tableList.push(
-      `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}HarvestTable`,
+      snakeCase(
+        `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}HarvestTable`,
+      ),
     );
     tableList.push(
-      `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}ProductionTable`,
+      snakeCase(
+        `${spec.name
+          .replace(/[^a-zA-Z]/g, '')
+          .substring(0, 10)}ProductionTable`,
+      ),
     );
 
     const material = await createMaterial({

@@ -24,7 +24,7 @@ Options:
 
 import os
 from io import StringIO
-import re
+from re import sub
 from math import ceil
 
 from psycopg2.pool import ThreadedConnectionPool
@@ -68,7 +68,12 @@ postgres_thread_pool = ThreadedConnectionPool(1, 50,
 
 
 def slugify(s):
-    return re.sub("[^0-9a-z_]+", "_", s.lower())
+    s = sub(r"(_|-)+", " ", s).title().replace(" ", "")
+    return ''.join([s[0].lower(), s[1:]])
+
+
+def snakify(s):
+    return sub(r'(?<!^)(?=[A-Z])', '_', s).lower()
 
 
 def gen_raster_h3_for_row_and_column(row, column, names, readers, h3_res):
@@ -82,7 +87,9 @@ def gen_raster_h3_for_row_and_column(row, column, names, readers, h3_res):
             raise ValueError("Transforms do not match")
         arr = src.read(1, window=window)
         _df = h3ronpy.raster.raster_to_dataframe(arr, w_transform, h3_res,
-                                                 nodata_value=int(src.profile['nodata']) if src.profile['nodata'] is not None else src.profile['nodata'],
+                                                 nodata_value=int(src.profile['nodata']) if src.profile[
+                                                                                                'nodata'] is not None else
+                                                 src.profile['nodata'],
                                                  compacted=False, geo=False)
         dfs.append(_df.set_index('h3index')['value'])
     df = pd.concat(dfs, axis=1)
@@ -175,7 +182,7 @@ def create_table(h3_res, raster_list, table):
         reader.close()
 
     cols = zip(column_data.columns, column_data.dtypes)
-    schema = ', '.join([f"{col} {DTYPES_TO_PG[str(dtype)]}" for col, dtype in cols])
+    schema = ', '.join([f"\"{col}\" {DTYPES_TO_PG[str(dtype)]}" for col, dtype in cols])
     cursor.execute(f"CREATE TABLE {table} (h3index h3index PRIMARY KEY, {schema});")
     logging.debug(f"Created table {table} with columns {', '.join(column_data.columns)}")
     conn.commit()
@@ -252,7 +259,7 @@ def load_raster_list_to_h3_table(raster_list, table, dataType, dataset, year, h3
         else:
             cursor.execute(f"""select id from {H3_MASTER_TABLE} where "h3columnName" = '{column}'""")
             data = cursor.fetchall()
-            materialId = dataset + '_' + column.split('_')[-2]
+            materialId = dataset + '_' + snakify(column).split('_')[-2]
             if dataType == 'production':
                 cursor.execute(
                     f""" update {MATERIALS_TABLE} set "producerId" = '{data[0][0]}' where "datasetId" = '{materialId}'""")

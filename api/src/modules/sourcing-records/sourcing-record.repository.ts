@@ -5,11 +5,8 @@ import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.e
 @EntityRepository(SourcingRecord)
 export class SourcingRecordRepository extends Repository<SourcingRecord> {
   async getYears(materialIds?: string[]): Promise<number[]> {
-    const queryBuilder: SelectQueryBuilder<SourcingRecord> = this.createQueryBuilder(
-      'sr',
-    )
-      .select('year')
-      .distinct(true);
+    const queryBuilder: SelectQueryBuilder<SourcingRecord> =
+      this.createQueryBuilder('sr').select('year').distinct(true);
 
     if (materialIds) {
       queryBuilder.leftJoin(
@@ -21,7 +18,8 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
         materialIds,
       });
     }
-    const sourcingRecordsYears: SourcingRecord[] = await queryBuilder.getRawMany();
+    const sourcingRecordsYears: SourcingRecord[] =
+      await queryBuilder.getRawMany();
     return [
       ...new Set(
         sourcingRecordsYears.map((elem: { year: number }) => elem.year).sort(),

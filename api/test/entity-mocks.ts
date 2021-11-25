@@ -41,6 +41,7 @@ async function createH3Data(
       h3tableName: 'h3tableName',
       h3columnName: 'h3columnName',
       h3resolution: 6,
+      year: 2020,
     },
     additionalData,
   );

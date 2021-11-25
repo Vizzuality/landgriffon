@@ -22,10 +22,10 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
   ): Promise<GeoRegion> {
     const res: any = await this.query(
       `WITH
-        points AS (SELECT ST_BUFFER(ST_SetSRID(ST_POINT(${newGeoRegionValues.coordinates.lng},${newGeoRegionValues.coordinates.lat}),4326)::geometry, 0.5) as radius)
+        points AS (SELECT ST_BUFFER(ST_SetSRID(ST_POINT($1,$2),4326)::geometry, 0.5) as radius)
       INSERT INTO geo_region (name, "theGeom", "h3Compact")
       SELECT
-        hashtext('${newGeoRegionValues.coordinates.lng}-${newGeoRegionValues.coordinates.lng}') ,
+        hashtext($3) ,
         points.radius,
         array(
           SELECT h3_compact(array(SELECT h3_polyfill(points.radius,6)))
@@ -34,6 +34,11 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
         ON CONFLICT (name) DO UPDATE
           SET "theGeom" = excluded."theGeom", "h3Compact" = excluded."h3Compact"
         RETURNING id`,
+      [
+        newGeoRegionValues.coordinates.lng,
+        newGeoRegionValues.coordinates.lat,
+        `${newGeoRegionValues.coordinates.lng}-${newGeoRegionValues.coordinates.lat}`,
+      ],
     );
 
     return res[0].id;
@@ -47,16 +52,22 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
   async saveGeoRegionAsPoint(
     newGeoRegionValues: LocationGeoRegionDto,
   ): Promise<Pick<GeoRegion, 'id'>> {
-    const res: any = await this.query(`
+    const res: any = await this.query(
+      `
     INSERT INTO geo_region (name, "theGeom", "h3Compact")
             VALUES(
-              hashtext('Point of Production - ${newGeoRegionValues.coordinates.lng}-${newGeoRegionValues.coordinates.lat}'),
-              ST_GeomFromText('POINT(${newGeoRegionValues.coordinates.lng} ${newGeoRegionValues.coordinates.lat})', 4326),
-              array( SELECT (h3_compact(array(SELECT h3_geo_to_h3(ST_GeomFromText('POINT(${newGeoRegionValues.coordinates.lng} ${newGeoRegionValues.coordinates.lat})'), 6)))))
+              hashtext($1),
+              ST_GeomFromText($2, 4326),
+              array( SELECT (h3_compact(array(SELECT h3_geo_to_h3(ST_GeomFromText($2), 6)))))
             )
             ON CONFLICT (name) DO UPDATE
                 SET "theGeom" = excluded."theGeom", "h3Compact" = excluded."h3Compact"
-            RETURNING id`);
+            RETURNING id`,
+      [
+        `Point of Production - ${newGeoRegionValues.coordinates.lng}-${newGeoRegionValues.coordinates.lat}`,
+        `POINT(${newGeoRegionValues.coordinates.lng} ${newGeoRegionValues.coordinates.lat})`,
+      ],
+    );
 
     return res[0].id;
   }

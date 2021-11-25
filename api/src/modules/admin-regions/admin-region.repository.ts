@@ -13,15 +13,19 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
     lng: number;
     lat: number;
   }): Promise<{ adminRegionId: string; geoRegionId: string }> {
-    const res: any = await this.query(`
-    SELECT a.id  AS "adminRegionId", g.id AS "geoRegionId"
-    FROM admin_region a RIGHT JOIN geo_region g on a."geoRegionId" = g.id
-    WHERE ST_Intersects(
-        st_setsrid('POINT(${coordinates.lng} ${coordinates.lat})'::geometry, 4326),
-        st_setsrid(g."theGeom"::geometry, 4326)
-    )
-    AND a."isoA2" IS NOT NULL;
-    `);
+    const res: any = await this.query(
+      `
+        SELECT a.id AS "adminRegionId", g.id AS "geoRegionId"
+        FROM admin_region a
+               RIGHT JOIN geo_region g on a."geoRegionId" = g.id
+        WHERE ST_Intersects(
+          st_setsrid($1::geometry, 4326),
+          st_setsrid(g."theGeom"::geometry, 4326)
+          )
+          AND a."isoA2" IS NOT NULL;
+      `,
+      [`POINT(${coordinates.lng} ${coordinates.lat})`],
+    );
 
     if (res.length === 0) {
       throw new NotFoundException(

@@ -7,12 +7,10 @@ import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
 import { createSourcingLocation, createSourcingRecord } from '../entity-mocks';
 import { SourcingLocation } from '../../src/modules/sourcing-locations/sourcing-location.entity';
-import { SourcingLocationRepository } from '../../src/modules/sourcing-locations/sourcing-location.repository';
 
 describe('Sourcing records - Get by id', () => {
   let app: INestApplication;
   let sourcingRecordRepository: SourcingRecordRepository;
-  let sourcingLocationRepository: SourcingLocationRepository;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -21,9 +19,6 @@ describe('Sourcing records - Get by id', () => {
 
     sourcingRecordRepository = moduleFixture.get<SourcingRecordRepository>(
       SourcingRecordRepository,
-    );
-    sourcingLocationRepository = moduleFixture.get<SourcingLocationRepository>(
-      SourcingLocationRepository,
     );
 
     app = moduleFixture.createNestApplication();

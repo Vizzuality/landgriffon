@@ -77,7 +77,7 @@ describe('Sourcing Data import', () => {
   };
 
   class UnknownLocationServiceMock extends UnknownLocationService {
-    async geoCodeByCountry(country: string): Promise<any> {
+    async geoCodeByCountry(): Promise<any> {
       return {
         results: [
           {
@@ -249,7 +249,7 @@ describe('Sourcing Data import', () => {
       'h3_grid_deforestation_global',
     ];
 
-    const response = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post('/api/v1/import/sourcing-data')
       .attach('file', __dirname + '/base-dataset.xlsx')
       .expect(HttpStatus.CREATED);

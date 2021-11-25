@@ -23,7 +23,6 @@ import { Material } from 'modules/materials/material.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
-import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 
 /**
  * Tests for the H3DataModule.
@@ -220,7 +219,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       sourcingLocation: sourcingLocationOne,
     });
 
-    const indicatorRecordOne: IndicatorRecord = await createIndicatorRecord({
+    await createIndicatorRecord({
       sourcingRecordId: sourcingRecordOne.id,
       indicatorId: indicator.id,
       value: 1234,
@@ -242,7 +241,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       sourcingLocation: sourcingLocationTwo,
     });
 
-    const indicatorRecordTwo: IndicatorRecord = await createIndicatorRecord({
+    await createIndicatorRecord({
       sourcingRecordId: sourcingRecordTwo.id,
       indicatorId: indicator.id,
       value: 1000,

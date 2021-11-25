@@ -60,7 +60,7 @@ export class AdminRegionsService extends AppBaseService<
   async findTreesWithOptions(
     args?: FindTreesWithOptionsArgs,
   ): Promise<AdminRegion[]> {
-    return this.adminRegionRepository.findTreesWithOptions(args);
+    return this.adminRegionRepository.findTrees(args);
   }
 
   async createTree(importData: CreateAdminRegionDto[]): Promise<AdminRegion[]> {

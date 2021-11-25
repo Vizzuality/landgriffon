@@ -19,9 +19,9 @@ export class UnitsService extends AppBaseService<
 > {
   constructor(
     @InjectRepository(UnitRepository)
-    protected readonly UnitRepository: UnitRepository,
+    protected readonly unitRepository: UnitRepository,
   ) {
-    super(UnitRepository, unitResource.name.singular, unitResource.name.plural);
+    super(unitRepository, unitResource.name.singular, unitResource.name.plural);
   }
 
   get serializerConfig(): JSONAPISerializerConfig<Unit> {
@@ -32,7 +32,7 @@ export class UnitsService extends AppBaseService<
   }
 
   async getUnitById(id: number): Promise<Unit> {
-    const found: Unit | undefined = await this.UnitRepository.findOne(id);
+    const found: Unit | undefined = await this.unitRepository.findOne(id);
 
     if (!found) {
       throw new NotFoundException(` Unit with ID "${id}" not found`);

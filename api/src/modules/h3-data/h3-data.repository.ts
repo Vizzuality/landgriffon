@@ -241,7 +241,7 @@ export class H3DataRepository extends Repository<H3Data> {
     //   .getRawOne();
     // TODO: Refactor this using the query builder
     const query: string = `
-      SELECT locations.tonnage * sum(materials.carb_risk_CO2e_t) AS value
+      SELECT locations.tonnage * sum(materials.carb_risk_co2e_t) AS value
       FROM (SELECT sr.id, sr.tonnage, unnest(gr."h3Compact"::h3index[]) h3index
             FROM sourcing_records sr
                    LEFT JOIN sourcing_location sl ON sl.id = sr."sourcingLocationId"
@@ -250,7 +250,7 @@ export class H3DataRepository extends Repository<H3Data> {
              JOIN
            (SELECT ha.h3index,
                    ind.${indicatorH3Table.h3columnName} *
-                   ((def.hansen_loss_2019 * ha.${harvestH3Table.h3columnName}) / (sum(prod.${producerH3Table.h3columnName}) over ())) carb_risk_CO2e_t
+                   ((def.hansenLoss2019 * ha.${harvestH3Table.h3columnName}) / (sum(prod.${producerH3Table.h3columnName}) over ())) carb_risk_co2e_t
             FROM ${harvestH3Table.h3tableName} ha
                    LEFT JOIN ${producerH3Table.h3tableName} prod
                              ON prod.h3index = ha.h3index
@@ -259,7 +259,7 @@ export class H3DataRepository extends Repository<H3Data> {
                    LEFT JOIN ${indicatorH3Table.h3tableName} ind ON ind.h3index = ha.h3index
             WHERE prod.${producerH3Table.h3columnName} > 0
               AND ha.${harvestH3Table.h3columnName} > 0
-              AND def.hansen_loss_2019 > 0
+              AND def.hansenLoss2019 > 0
               AND ind.${indicatorH3Table.h3columnName} > 0) materials --replace by ind column name
            ON materials.h3index = locations.h3index
       GROUP BY locations.tonnage
@@ -301,7 +301,7 @@ export class H3DataRepository extends Repository<H3Data> {
     //   .getRawOne();
     // TODO: Refactor this using the query builder
     const query: string = `
-      SELECT locations.tonnage * sum(materials.bio_risk_PDF_t) AS value
+      SELECT locations.tonnage * sum(materials.bio_risk_pdf_t) AS value
       FROM (SELECT sr.id, sr.tonnage, unnest(gr."h3Compact"::h3index[]) h3index
             FROM sourcing_records sr
                    LEFT JOIN sourcing_location sl ON sl.id = sr."sourcingLocationId"
@@ -310,7 +310,7 @@ export class H3DataRepository extends Repository<H3Data> {
              JOIN
            (SELECT ha.h3index,
                    ind.${indicatorH3Table.h3columnName} *
-                   ((def.hansen_loss_2019 * ha.${harvestH3Table.h3columnName}) / (sum(prod.${producerH3Table.h3columnName}) over ())) bio_risk_PDF_t
+                   ((def.hansenLoss2019 * ha.${harvestH3Table.h3columnName}) / (sum(prod.${producerH3Table.h3columnName}) over ())) bio_risk_pdf_t
             FROM ${harvestH3Table.h3tableName} ha
                    LEFT JOIN ${producerH3Table.h3tableName} prod
                              ON prod.h3index = ha.h3index
@@ -319,7 +319,7 @@ export class H3DataRepository extends Repository<H3Data> {
                    LEFT JOIN ${indicatorH3Table.h3tableName} ind ON ind.h3index = ha.h3index
             WHERE prod.${producerH3Table.h3columnName} > 0
               AND ha.${harvestH3Table.h3columnName} > 0
-              AND def.hansen_loss_2019 > 0
+              AND def.hansenLoss2019 > 0
               AND ind.${indicatorH3Table.h3columnName} > 0) materials --replace by ind column name
            ON materials.h3index = locations.h3index
       GROUP BY locations.id, locations.tonnage

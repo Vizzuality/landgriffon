@@ -12,7 +12,9 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
    */
 
   /**
-   * TODO: Against all documentation and whats happening in mars, the correct value to generate a 50KM radius around a given point is 0.5
+   * TODO: QueryBuilder doesn't seem to work with WITH clauses, but we still need to escape the variables we're injecting into the query.
+   *
+   * NOTE: Against all documentation and whats happening in mars, the correct value to generate a 50KM radius around a given point is 0.5
    * instead of 50000 (which should be the correct value)
    */
   async saveGeoRegionAsRadius(

@@ -41,23 +41,19 @@ export class H3DataRepository extends Repository<H3Data> {
     h3TableName: string,
     h3ColumnName: string,
   ): Promise<H3IndexValueData[]> {
-    try {
-      const result: H3IndexValueData[] | undefined = await getManager()
-        .createQueryBuilder()
-        .select('h3index', 'h')
-        .addSelect(`${h3ColumnName}`, 'v')
-        .from(`${h3TableName}`, 'h3')
-        .getRawOne();
+    const result: H3IndexValueData[] | undefined = await getManager()
+      .createQueryBuilder()
+      .select('h3index', 'h')
+      .addSelect(`${h3ColumnName}`, 'v')
+      .from(`${h3TableName}`, 'h3')
+      .getRawOne();
 
-      if (result === undefined) {
-        throw new Error();
-      }
-      return result;
-    } catch (err) {
+    if (result === undefined) {
       throw new NotFoundException(
         `H3 ${h3ColumnName} data in ${h3TableName} could not been found`,
       );
     }
+    return result;
   }
 
   /** Retrieves single crop data by a given resolution
@@ -127,7 +123,7 @@ export class H3DataRepository extends Repository<H3Data> {
           )
           .leftJoin('geo_region', 'gr', 'gr.id = sl."geoRegionId"')
           .where(`sr.id = :sourcingRecordId`, {
-            sourcingRecordId: sourcingRecordId,
+            sourcingRecordId,
           });
       }, 'locations')
       .innerJoin(
@@ -184,7 +180,7 @@ export class H3DataRepository extends Repository<H3Data> {
           )
           .leftJoin('geo_region', 'gr', 'gr.id = sl."geoRegionId"')
           .where(`sr.id = :sourcingRecordId`, {
-            sourcingRecordId: sourcingRecordId,
+            sourcingRecordId,
           });
       }, 'locations')
       .innerJoin(
@@ -247,7 +243,7 @@ export class H3DataRepository extends Repository<H3Data> {
           )
           .leftJoin('geo_region', 'gr', 'gr.id = sl."geoRegionId"')
           .where(`sr.id = :sourcingRecordId`, {
-            sourcingRecordId: sourcingRecordId,
+            sourcingRecordId,
           });
       }, 'locations')
       .innerJoin(
@@ -317,7 +313,7 @@ export class H3DataRepository extends Repository<H3Data> {
           )
           .leftJoin('geo_region', 'gr', 'gr.id = sl."geoRegionId"')
           .where(`sr.id = :sourcingRecordId`, {
-            sourcingRecordId: sourcingRecordId,
+            sourcingRecordId,
           });
       }, 'locations')
       .innerJoin(
@@ -464,7 +460,8 @@ export class H3DataRepository extends Repository<H3Data> {
 
   /**
    * @param indicatorH3Data H3 format data of a Indicator
-   * @param materialH3Data  H3 format data of a material
+   * @param producerMaterialH3Data
+   * @param harvestMaterialH3Data
    * @param deforestationH3Data Fixed Indicator's H3 Data required to query Biodiversity Loss Risk-Map
    * @param calculusFactor Integer value to perform calculus. Represents the factor
    * @param resolution Integer value that represent the resolution which the h3 response should be calculated

@@ -160,7 +160,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
       .query({ layer: 'impact', materialIds: [material.id, material2.id] })
       .expect(HttpStatus.OK);
 
-    expect(response.body.data).toEqual([...new Set(years), ...new Set(years2)]);
+    expect(response.body.data).toEqual([...new Set([...years, ...years2])]);
   });
 
   test(' When I query available years for a Material layer filtering by more than one Material, then I should get a proper erros message', async () => {

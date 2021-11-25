@@ -6,7 +6,10 @@ import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.e
 export class SourcingRecordRepository extends Repository<SourcingRecord> {
   async getYears(materialIds?: string[]): Promise<number[]> {
     const queryBuilder: SelectQueryBuilder<SourcingRecord> =
-      this.createQueryBuilder('sr').select('year').distinct(true);
+      this.createQueryBuilder('sr')
+        .select('year')
+        .distinct(true)
+        .orderBy('year', 'ASC');
 
     if (materialIds) {
       queryBuilder.leftJoin(
@@ -20,10 +23,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
     }
     const sourcingRecordsYears: SourcingRecord[] =
       await queryBuilder.getRawMany();
-    return [
-      ...new Set(
-        sourcingRecordsYears.map((elem: { year: number }) => elem.year).sort(),
-      ),
-    ];
+
+    return sourcingRecordsYears.map((elem: { year: number }) => elem.year);
   }
 }

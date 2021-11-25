@@ -13,68 +13,6 @@ export class ExtendedTreeRepository<
   Entity,
   CreateDto extends { parent?: Entity },
 > extends TreeRepository<Entity> {
-  async findTreesWithOptions(
-    args?: FindTreesWithOptionsArgs,
-  ): Promise<Entity[]> {
-    this.depthHack = {};
-    if (!args?.depth && args?.depth !== 0) {
-      return super.findTrees();
-    }
-
-    const roots: Entity[] = await this.findRoots();
-    roots.forEach((root: Entity) => {
-      const rootEntityId: string =
-        this.metadata.primaryColumns[0].getEntityValue(root);
-      this.depthHack[rootEntityId] = args.depth as number;
-    });
-    await Promise.all(
-      roots.map((root: Entity) => this.findDescendantsTree(root)),
-    );
-    return roots;
-  }
-
-  /**
-   * @TODO: If and when https://github.com/typeorm/typeorm/pull/7926 is merged, update typeorm and drop this
-   */
-  depthHack: Record<string, number> = {};
-  protected buildChildrenEntityTree(
-    entity: any,
-    entities: any[],
-    relationMaps: { id: any; parentId: any }[],
-  ): void {
-    const childProperty: string =
-      this.metadata.treeChildrenRelation!.propertyName;
-    const parentEntityId: string =
-      this.metadata.primaryColumns[0].getEntityValue(entity);
-    const parentEntityDepth: number =
-      parentEntityId in this.depthHack ? this.depthHack[parentEntityId] : -1;
-    if (parentEntityDepth === 0) {
-      entity[childProperty] = [];
-      return;
-    }
-
-    const childRelationMaps: { id: any; parentId: any }[] = relationMaps.filter(
-      (relationMap: { id: any; parentId: any }) =>
-        relationMap.parentId === parentEntityId,
-    );
-    const childIds: Set<{ id: any; parentId: any }> = new Set(
-      childRelationMaps.map(
-        (relationMap: { id: any; parentId: any }) => relationMap.id,
-      ),
-    );
-    entity[childProperty] = entities.filter((entity: Entity) =>
-      childIds.has(this.metadata.primaryColumns[0].getEntityValue(entity)),
-    );
-    entity[childProperty].forEach((childEntity: any) => {
-      const childEntityId: string =
-        this.metadata.primaryColumns[0].getEntityValue(childEntity);
-      if (parentEntityDepth !== 0) {
-        this.depthHack[childEntityId] = parentEntityDepth - 1;
-        this.buildChildrenEntityTree(childEntity, entities, relationMaps);
-      }
-    });
-  }
-
   /**
    * Takes a list of DTO objects and saves them as a tree
    * It uses importData[pathKey]:string as a fully realized materialized path

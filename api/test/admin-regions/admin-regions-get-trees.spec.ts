@@ -6,7 +6,6 @@ import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
 import { createH3Data, createAdminRegion } from '../entity-mocks';
-import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { H3DataRepository } from '../../src/modules/h3-data/h3-data.repository';
 import { expectedJSONAPIAttributes } from './config';
 
@@ -51,7 +50,7 @@ describe('AdminRegions - Get trees', () => {
   });
 
   test('Get trees of admin regions should be successful (happy case)', async () => {
-    const h3Data: H3Data = await createH3Data();
+    await createH3Data();
 
     const rootAdminRegion: AdminRegion = await createAdminRegion({
       name: 'root admin region',
@@ -86,7 +85,7 @@ describe('AdminRegions - Get trees', () => {
   });
 
   test('Get trees of admin regions should return multiple trees in parallel if they exist', async () => {
-    const h3Data: H3Data = await createH3Data();
+    await createH3Data();
 
     const rootOneAdminRegion: AdminRegion = await createAdminRegion({});
     const rootTwoAdminRegion: AdminRegion = await createAdminRegion({});
@@ -123,7 +122,7 @@ describe('AdminRegions - Get trees', () => {
   });
 
   test('Get trees of admin regions filtered by depth should return trees up to the defined level of depth', async () => {
-    const h3Data: H3Data = await createH3Data();
+    await createH3Data();
 
     const rootAdminRegion: AdminRegion = await createAdminRegion({
       name: 'root admin region',

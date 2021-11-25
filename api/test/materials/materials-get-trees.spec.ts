@@ -104,7 +104,7 @@ describe('Materials - Get trees', () => {
       harvestId: h3Data.id,
       parent: rootMaterial,
     });
-    const childThreeMaterial: Material = await createMaterial({
+    await createMaterial({
       name: 'leaf three material',
       parent: rootMaterial,
     });

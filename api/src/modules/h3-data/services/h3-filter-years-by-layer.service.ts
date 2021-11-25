@@ -4,7 +4,7 @@
  *
  */
 
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { LAYER_TYPES } from 'modules/h3-data/h3-data.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';

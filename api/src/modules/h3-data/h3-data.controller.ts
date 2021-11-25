@@ -8,14 +8,10 @@ import { H3MapResponse } from 'modules/h3-data/dto/h3-map-response.dto';
 import { GetYearsByLayerAndMaterialsDto } from 'modules/h3-data/dto/get-years-by-layer-and-materials.dto';
 import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
 
-
 @Controller('/api/v1/h3')
 @ApiTags(H3Data.name)
 export class H3DataController {
-  constructor(
-    protected readonly h3DataService: H3DataService,
-
-  ) {}
+  constructor(protected readonly h3DataService: H3DataService) {}
 
   @ApiOperation({ description: 'Retrieve H3 data providing its name' })
   @Get('data/:h3TableName/:h3ColumnName')
@@ -37,11 +33,12 @@ export class H3DataController {
     @Query(ValidationPipe) queryParams: GetYearsByLayerAndMaterialsDto,
   ): Promise<{ data: number[] }> {
     const { materialIds, indicatorId, layer } = queryParams;
-    const availableYears: number[] = await this.h3DataService.getYearsByLayerType(
-      layer,
-      materialIds,
-      indicatorId,
-    );
+    const availableYears: number[] =
+      await this.h3DataService.getYearsByLayerType(
+        layer,
+        materialIds,
+        indicatorId,
+      );
     return { data: availableYears };
   }
 

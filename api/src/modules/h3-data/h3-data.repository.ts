@@ -77,10 +77,10 @@ export class H3DataRepository extends Repository<H3Data> {
       const query: string = getManager()
         .createQueryBuilder()
         .select(`h3_to_parent(h3index, ${resolution})`, 'h')
-        .addSelect(`sum(${materialH3Data.h3columnName})`, 'v')
-        .from(`${materialH3Data.h3tableName}`, 'h3table')
-        .where(`${materialH3Data.h3columnName} is not null`)
-        .andWhere(`${materialH3Data.h3columnName} <> 0`)
+        .addSelect(`sum("${materialH3Data.h3columnName}")`, 'v')
+        .from(materialH3Data.h3tableName, 'h3table')
+        .where(`"h3table"."${materialH3Data.h3columnName}" is not null`)
+        .andWhere(`"${materialH3Data.h3columnName}" <> 0`)
         .groupBy('h')
         .getSql();
 
@@ -135,7 +135,7 @@ export class H3DataRepository extends Repository<H3Data> {
           return subQuery
             .select(`prod.h3index`)
             .addSelect(
-              `(ind.${indicatorH3Table.h3columnName} * 103) / (sum(prod.${producerH3Table.h3columnName}) over ()) water_risk_m3_t`,
+              `(ind."${indicatorH3Table.h3columnName}" * 103) / (sum(prod."${producerH3Table.h3columnName}") over ()) water_risk_m3_t`,
             )
             .from(producerH3Table.h3tableName, 'prod')
             .leftJoin(
@@ -143,7 +143,7 @@ export class H3DataRepository extends Repository<H3Data> {
               'ind',
               'ind.h3index = prod.h3index',
             )
-            .where(`prod.${producerH3Table.h3columnName} > 0`);
+            .where(`prod."${producerH3Table.h3columnName}" > 0`);
         },
         'materials',
         'materials.h3index = locations.h3index',
@@ -192,7 +192,7 @@ export class H3DataRepository extends Repository<H3Data> {
           return subQuery
             .select(`ha.h3index`)
             .addSelect(
-              `(ind.${indicatorH3Table.h3columnName} * ha.${harvestH3Table.h3columnName}) / (sum(prod.${producerH3Table.h3columnName}) over ()) def_risk_ha_t`,
+              `(ind."${indicatorH3Table.h3columnName}" * ha."${harvestH3Table.h3columnName}") / (sum(prod."${producerH3Table.h3columnName}") over ()) def_risk_ha_t`,
             )
             .from(harvestH3Table.h3tableName, 'ha')
             .leftJoin(
@@ -205,9 +205,9 @@ export class H3DataRepository extends Repository<H3Data> {
               'ind',
               'ind.h3index = ha.h3index',
             )
-            .where(`prod.${producerH3Table.h3columnName} > 0`)
-            .andWhere(`ha.${harvestH3Table.h3columnName} > 0`)
-            .andWhere(`ind.${indicatorH3Table.h3columnName} > 0`);
+            .where(`prod."${producerH3Table.h3columnName}" > 0`)
+            .andWhere(`ha."${harvestH3Table.h3columnName}" > 0`)
+            .andWhere(`ind."${indicatorH3Table.h3columnName}" > 0`);
         },
         'materials',
         'materials.h3index = locations.h3index',
@@ -255,8 +255,8 @@ export class H3DataRepository extends Repository<H3Data> {
           return subQuery
             .select(`ha.h3index`)
             .addSelect(
-              `ind.${indicatorH3Table.h3columnName} *
-            ((def.hansenLoss2019 * ha.${harvestH3Table.h3columnName}) / (sum(prod.${producerH3Table.h3columnName}) over ())) carb_risk_co2e_t`,
+              `ind."${indicatorH3Table.h3columnName}" *
+            ((def."hansenLoss2019" * ha."${harvestH3Table.h3columnName}") / (sum(prod."${producerH3Table.h3columnName}") over ())) carb_risk_co2e_t`,
             )
             .from(harvestH3Table.h3tableName, 'ha')
             .leftJoin(
@@ -274,10 +274,10 @@ export class H3DataRepository extends Repository<H3Data> {
               'ind',
               'ind.h3index = ha.h3index',
             )
-            .where(`prod.${producerH3Table.h3columnName} > 0`)
-            .andWhere(`ha.${harvestH3Table.h3columnName} > 0`)
-            .andWhere(`def.hansenLoss2019 > 0`)
-            .andWhere(`ind.${indicatorH3Table.h3columnName} > 0`);
+            .where(`prod."${producerH3Table.h3columnName}" > 0`)
+            .andWhere(`ha."${harvestH3Table.h3columnName}" > 0`)
+            .andWhere(`def."hansenLoss2019" > 0`)
+            .andWhere(`ind."${indicatorH3Table.h3columnName}" > 0`);
         },
         'materials',
         'materials.h3index = locations.h3index',
@@ -325,8 +325,8 @@ export class H3DataRepository extends Repository<H3Data> {
           return subQuery
             .select(`ha.h3index`)
             .addSelect(
-              `ind.${indicatorH3Table.h3columnName} *
-            ((def.hansenLoss2019 * ha.${harvestH3Table.h3columnName}) / (sum(prod.${producerH3Table.h3columnName}) over ())) bio_risk_pdf_t`,
+              `ind."${indicatorH3Table.h3columnName}" *
+            ((def."hansenLoss2019" * ha."${harvestH3Table.h3columnName}") / (sum(prod."${producerH3Table.h3columnName}") over ())) bio_risk_pdf_t`,
             )
             .from(harvestH3Table.h3tableName, 'ha')
             .leftJoin(
@@ -344,10 +344,10 @@ export class H3DataRepository extends Repository<H3Data> {
               'ind',
               'ind.h3index = ha.h3index',
             )
-            .where(`prod.${producerH3Table.h3columnName} > 0`)
-            .andWhere(`ha.${harvestH3Table.h3columnName} > 0`)
-            .andWhere(`def.hansenLoss2019 > 0`)
-            .andWhere(`ind.${indicatorH3Table.h3columnName} > 0`);
+            .where(`prod."${producerH3Table.h3columnName}" > 0`)
+            .andWhere(`ha."${harvestH3Table.h3columnName}" > 0`)
+            .andWhere(`def."hansenLoss2019" > 0`)
+            .andWhere(`ind."${indicatorH3Table.h3columnName}" > 0`);
         },
         'materials',
         'materials.h3index = locations.h3index',
@@ -387,7 +387,7 @@ export class H3DataRepository extends Repository<H3Data> {
         return subQuery
           .select(`indicatorh3.h3index `)
           .addSelect(
-            `indicatorh3.${indicatorH3Data.h3columnName}* 103 / sum(materialh3.${materialH3Data.h3columnName}) over() water_risk`,
+            `indicatorh3."${indicatorH3Data.h3columnName}" * 103 / sum(materialh3."${materialH3Data.h3columnName}") over() water_risk`,
           )
           .from(materialH3Data.h3tableName, 'materialh3')
           .innerJoin(
@@ -395,8 +395,10 @@ export class H3DataRepository extends Repository<H3Data> {
             'indicatorh3',
             'indicatorh3.h3index = materialh3.h3index',
           )
-          .where(`materialh3.${materialH3Data.h3columnName} is not null`)
-          .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`);
+          .where(`materialh3."${materialH3Data.h3columnName}" is not null`)
+          .andWhere(
+            `indicatorh3."${indicatorH3Data.h3columnName}" is not null`,
+          );
       }, 'risk_calc')
       .groupBy('h')
       .getSql();
@@ -487,7 +489,7 @@ export class H3DataRepository extends Repository<H3Data> {
         return subQuery
           .select(`deforestationh3.h3index`)
           .addSelect(
-            `indicatorh3.${indicatorH3Data.h3columnName} * (${calculusFactor}/0.0001) * ((deforestationh3.${deforestationH3Data.h3columnName} * harvesth3.${harvestMaterialH3Data.h3columnName}) / (sum(materialh3.${producerMaterialH3Data.h3columnName}) over())) bio_risk`,
+            `indicatorh3."${indicatorH3Data.h3columnName}" * (${calculusFactor}/0.0001) * ((deforestationh3."${deforestationH3Data.h3columnName}" * harvesth3."${harvestMaterialH3Data.h3columnName}") / (sum(materialh3."${producerMaterialH3Data.h3columnName}") over())) bio_risk`,
           )
           .from(producerMaterialH3Data.h3tableName, 'materialh3')
           .innerJoin(
@@ -506,12 +508,14 @@ export class H3DataRepository extends Repository<H3Data> {
             'harvesth3.h3index = materialh3.h3index',
           )
           .andWhere(
-            `materialh3.${producerMaterialH3Data.h3columnName} is not null`,
+            `materialh3."${producerMaterialH3Data.h3columnName}" is not null`,
           )
-          .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
-          .andWhere(`materialh3.${producerMaterialH3Data.h3columnName} > 0`)
-          .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} > 0 `)
-          .andWhere(`deforestationh3.${deforestationH3Data.h3columnName} > 0`);
+          .andWhere(`indicatorh3."${indicatorH3Data.h3columnName}" is not null`)
+          .andWhere(`materialh3."${producerMaterialH3Data.h3columnName}" > 0`)
+          .andWhere(`indicatorh3."${indicatorH3Data.h3columnName}" > 0 `)
+          .andWhere(
+            `deforestationh3."${deforestationH3Data.h3columnName}" > 0`,
+          );
       }, 'risk_calc')
       .groupBy('h')
       .getSql();
@@ -545,7 +549,7 @@ export class H3DataRepository extends Repository<H3Data> {
         return subQuery
           .select(`indicatorh3.h3index `)
           .addSelect(
-            `(indicatorh3.${indicatorH3Data.h3columnName} * harvesth3.${harvestMaterialH3Data.h3columnName}) / sum(materialh3.${producerMaterialH3Data.h3columnName}) over() def_risk`,
+            `(indicatorh3."${indicatorH3Data.h3columnName}" * harvesth3."${harvestMaterialH3Data.h3columnName}") / sum(materialh3."${producerMaterialH3Data.h3columnName}") over() def_risk`,
           )
           .from(producerMaterialH3Data.h3tableName, 'materialh3')
           .innerJoin(
@@ -559,12 +563,12 @@ export class H3DataRepository extends Repository<H3Data> {
             'harvesth3.h3index = materialh3.h3index',
           )
           .where(
-            `materialh3.${producerMaterialH3Data.h3columnName} is not null`,
+            `materialh3."${producerMaterialH3Data.h3columnName}" is not null`,
           )
-          .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
-          .andWhere(`materialh3.${producerMaterialH3Data.h3columnName} <> 0`)
-          .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} <> 0 `)
-          .andWhere(`harvesth3.${harvestMaterialH3Data.h3columnName} > 0`);
+          .andWhere(`indicatorh3."${indicatorH3Data.h3columnName}" is not null`)
+          .andWhere(`materialh3."${producerMaterialH3Data.h3columnName}" <> 0`)
+          .andWhere(`indicatorh3."${indicatorH3Data.h3columnName}" <> 0 `)
+          .andWhere(`harvesth3."${harvestMaterialH3Data.h3columnName}" > 0`);
       }, 'risk_calc')
       .groupBy('h')
       .getSql();
@@ -600,7 +604,7 @@ export class H3DataRepository extends Repository<H3Data> {
         return subQuery
           .select(`deforestationh3.h3index`)
           .addSelect(
-            `indicatorh3.${indicatorH3Data.h3columnName} * ((deforestationh3.${deforestationH3Data.h3columnName} * harvesth3.${harvestMaterialH3Data.h3columnName}) / sum(materialh3.${producerMaterialH3Data.h3columnName}) over()) carbon_risk`,
+            `indicatorh3."${indicatorH3Data.h3columnName}" * ((deforestationh3."${deforestationH3Data.h3columnName}" * harvesth3."${harvestMaterialH3Data.h3columnName}") / sum(materialh3."${producerMaterialH3Data.h3columnName}") over()) carbon_risk`,
           )
           .from(producerMaterialH3Data.h3tableName, 'materialh3')
           .innerJoin(
@@ -619,14 +623,16 @@ export class H3DataRepository extends Repository<H3Data> {
             'indicatorh3.h3index = materialh3.h3index',
           )
           .where(
-            `materialh3.${producerMaterialH3Data.h3columnName} is not null`,
+            `materialh3."${producerMaterialH3Data.h3columnName}" is not null`,
           )
           .andWhere(
-            `deforestationh3.${deforestationH3Data.h3columnName} is not null`,
+            `deforestationh3."${deforestationH3Data.h3columnName}" is not null`,
           )
-          .andWhere(`indicatorh3.${indicatorH3Data.h3columnName} is not null`)
-          .andWhere(`deforestationh3.${deforestationH3Data.h3columnName} <> 0`)
-          .andWhere(`harvesth3.${harvestMaterialH3Data.h3columnName} > 0`);
+          .andWhere(`indicatorh3."${indicatorH3Data.h3columnName}" is not null`)
+          .andWhere(
+            `deforestationh3."${deforestationH3Data.h3columnName}" <> 0`,
+          )
+          .andWhere(`harvesth3."${harvestMaterialH3Data.h3columnName}" > 0`);
       }, 'risk_calc')
       .groupBy('h')
       .getSql();

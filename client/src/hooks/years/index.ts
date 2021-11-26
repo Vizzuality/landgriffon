@@ -32,7 +32,7 @@ export function useYears(
           params: {
             layer,
             ...(materials && materials.length
-              ? { materialId: materials.map((material) => material.value).join(',') }
+              ? { materialIds: materials.map((material) => material.value) }
               : {}),
             ...(indicator && indicator.value && indicator.value !== 'all'
               ? { indicatorId: indicator.value }

@@ -11,7 +11,9 @@ import {
 } from '@nestjs/common';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import {
+  ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -69,6 +71,7 @@ export class IndicatorsController {
 
   @ApiOperation({ description: 'Find indicator by id' })
   @ApiOkResponse({ type: Indicator })
+  @ApiNotFoundResponse({ description: 'Indicator not found' })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
   async findOne(
@@ -85,6 +88,9 @@ export class IndicatorsController {
 
   @ApiOperation({ description: 'Create a indicator' })
   @ApiOkResponse({ type: Indicator })
+  @ApiBadRequestResponse({
+    description: 'Bad Request. Incorrect or missing parameters',
+  })
   @Post()
   @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateIndicatorDto): Promise<Indicator> {
@@ -95,6 +101,7 @@ export class IndicatorsController {
 
   @ApiOperation({ description: 'Updates a indicator' })
   @ApiOkResponse({ type: Indicator })
+  @ApiNotFoundResponse({ description: 'Indicator not found' })
   @UsePipes(ValidationPipe)
   @Patch(':id')
   async update(
@@ -107,6 +114,7 @@ export class IndicatorsController {
   }
 
   @ApiOperation({ description: 'Deletes a indicator' })
+  @ApiNotFoundResponse({ description: 'Indicator not found' })
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {

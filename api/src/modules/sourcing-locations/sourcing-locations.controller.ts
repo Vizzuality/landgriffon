@@ -11,7 +11,9 @@ import {
 } from '@nestjs/common';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import {
+  ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -78,6 +80,7 @@ export class SourcingLocationsController {
 
   @ApiOperation({ description: 'Find sourcing location by id' })
   @ApiOkResponse({ type: SourcingLocation })
+  @ApiNotFoundResponse({ description: 'Sourcing location not found' })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
   async findOne(
@@ -94,6 +97,9 @@ export class SourcingLocationsController {
 
   @ApiOperation({ description: 'Create a sourcing location' })
   @ApiOkResponse({ type: SourcingLocation })
+  @ApiBadRequestResponse({
+    description: 'Bad Request. Incorrect or missing parameters',
+  })
   @Post()
   @UsePipes(new ValidationPipe())
   async create(
@@ -106,6 +112,7 @@ export class SourcingLocationsController {
 
   @ApiOperation({ description: 'Updates a sourcing location' })
   @ApiOkResponse({ type: SourcingLocation })
+  @ApiNotFoundResponse({ description: 'Sourcing location not found' })
   @Patch(':id')
   async update(
     @Body(new ValidationPipe()) dto: UpdateSourcingLocationDto,
@@ -118,6 +125,7 @@ export class SourcingLocationsController {
 
   @ApiOperation({ description: 'Deletes a sourcing location' })
   @ApiOkResponse()
+  @ApiNotFoundResponse({ description: 'Sourcing location not found' })
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     return await this.sourcingLocationsService.remove(id);

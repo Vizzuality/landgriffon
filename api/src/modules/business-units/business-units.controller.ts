@@ -11,7 +11,9 @@ import {
 } from '@nestjs/common';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import {
+  ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -69,6 +71,7 @@ export class BusinessUnitsController {
 
   @ApiOperation({ description: 'Find business unit by id' })
   @ApiOkResponse({ type: BusinessUnit })
+  @ApiNotFoundResponse({ description: 'Business unit not found' })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<BusinessUnit> {
@@ -79,6 +82,9 @@ export class BusinessUnitsController {
 
   @ApiOperation({ description: 'Create a business unit' })
   @ApiOkResponse({ type: BusinessUnit })
+  @ApiBadRequestResponse({
+    description: 'Bad Request. Incorrect or missing parameters',
+  })
   @Post()
   @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateBusinessUnitDto): Promise<BusinessUnit> {
@@ -88,6 +94,7 @@ export class BusinessUnitsController {
   }
 
   @ApiOperation({ description: 'Updates a business unit' })
+  @ApiNotFoundResponse({ description: 'Business unit not found' })
   @ApiOkResponse({ type: BusinessUnit })
   @Patch(':id')
   async update(
@@ -100,6 +107,7 @@ export class BusinessUnitsController {
   }
 
   @ApiOperation({ description: 'Deletes a business unit' })
+  @ApiNotFoundResponse({ description: 'Business unit not found' })
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {

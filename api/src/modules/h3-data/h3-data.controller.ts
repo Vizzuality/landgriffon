@@ -13,7 +13,6 @@ import { GetRiskMapH3Dto } from 'modules/h3-data/dto/get-risk-map.dto';
 import { H3MapResponse } from 'modules/h3-data/dto/h3-map-response.dto';
 import { GetYearsByLayerAndMaterialsDto } from 'modules/h3-data/dto/get-years-by-layer-and-materials.dto';
 import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
-import { H3YearsResponse } from './dto/h3-years-response.dto';
 
 @Controller('/api/v1/h3')
 @ApiTags(H3Data.name)
@@ -21,7 +20,7 @@ export class H3DataController {
   constructor(protected readonly h3DataService: H3DataService) {}
 
   @ApiOperation({ description: 'Retrieve H3 data providing its name' })
-  @ApiOkResponse({ type: H3DataResponse })
+  @ApiOkResponse()
   @ApiBadRequestResponse({
     description: 'Bad Request. Incorrect or missing parameters',
   })
@@ -39,10 +38,24 @@ export class H3DataController {
   @ApiOperation({
     description: 'Retrieve years for which there is data, by layer',
   })
-  @ApiOkResponse({ type: H3YearsResponse })
   @ApiBadRequestResponse({
     description: 'Bad Request. Incorrect or missing parameters',
   })
+  @ApiOkResponse({
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'array',
+          items: {
+            type: 'integer',
+            example: 2021,
+          },
+        },
+      },
+    },
+  })
+  @ApiBadRequestResponse({ description: 'Bad Request. Incorrect or missing parameters'})
   @Get('years')
   async getYearsByLayerType(
     @Query(ValidationPipe) queryParams: GetYearsByLayerAndMaterialsDto,

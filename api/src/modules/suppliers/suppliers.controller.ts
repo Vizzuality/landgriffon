@@ -12,7 +12,9 @@ import {
 } from '@nestjs/common';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import {
+  ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
@@ -99,6 +101,7 @@ export class SuppliersController {
 
   @ApiOperation({ description: 'Find supplier by id' })
   @ApiOkResponse({ type: Supplier })
+  @ApiNotFoundResponse({ description: 'Supplier not found'})
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Supplier> {
@@ -109,6 +112,9 @@ export class SuppliersController {
 
   @ApiOperation({ description: 'Create a supplier' })
   @ApiOkResponse({ type: Supplier })
+  @ApiBadRequestResponse({
+    description: 'Bad Request. Incorrect or missing parameters',
+  })
   @Post()
   @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateSupplierDto): Promise<Supplier> {
@@ -119,6 +125,7 @@ export class SuppliersController {
 
   @ApiOperation({ description: 'Updates a supplier' })
   @ApiOkResponse({ type: Supplier })
+  @ApiNotFoundResponse({ description: 'Supplier not found'})
   @Patch(':id')
   async update(
     @Body(new ValidationPipe()) dto: UpdateSupplierDto,
@@ -131,6 +138,7 @@ export class SuppliersController {
 
   @ApiOperation({ description: 'Deletes a supplier' })
   @ApiOkResponse()
+  @ApiNotFoundResponse({ description: 'Supplier not found'})
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     return await this.suppliersService.remove(id);

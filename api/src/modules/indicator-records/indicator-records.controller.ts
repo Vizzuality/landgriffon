@@ -10,7 +10,9 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -74,6 +76,7 @@ export class IndicatorRecordsController {
 
   @ApiOperation({ description: 'Find indicator record by id' })
   @ApiOkResponse({ type: IndicatorRecord })
+  @ApiNotFoundResponse({ description: 'Indicator record not found' })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<IndicatorRecord> {
@@ -84,6 +87,9 @@ export class IndicatorRecordsController {
 
   @ApiOperation({ description: 'Create a indicator record' })
   @ApiOkResponse({ type: IndicatorRecord })
+  @ApiBadRequestResponse({
+    description: 'Bad Request. Incorrect or missing parameters',
+  })
   @Post()
   @UsePipes(ValidationPipe)
   async create(
@@ -95,6 +101,7 @@ export class IndicatorRecordsController {
   }
 
   @ApiOperation({ description: 'Updates a indicator record' })
+  @ApiNotFoundResponse({ description: 'Indicator record not found' })
   @ApiOkResponse({ type: IndicatorRecord })
   @Patch(':id')
   async update(
@@ -107,6 +114,7 @@ export class IndicatorRecordsController {
   }
 
   @ApiOperation({ description: 'Deletes a indicator record' })
+  @ApiNotFoundResponse({ description: 'Indicator record not found' })
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {

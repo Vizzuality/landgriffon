@@ -11,7 +11,9 @@ import {
 } from '@nestjs/common';
 import { SourcingLocationGroupsService } from 'modules/sourcing-location-groups/sourcing-location-groups.service';
 import {
+  ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -76,6 +78,7 @@ export class SourcingLocationGroupsController {
 
   @ApiOperation({ description: 'Find sourcing location group by id' })
   @ApiOkResponse({ type: SourcingLocationGroup })
+  @ApiNotFoundResponse({ description: 'Sourcing location group not found' })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<SourcingLocationGroup> {
@@ -86,6 +89,9 @@ export class SourcingLocationGroupsController {
 
   @ApiOperation({ description: 'Create a sourcing location group' })
   @ApiOkResponse({ type: SourcingLocationGroup })
+  @ApiBadRequestResponse({
+    description: 'Bad Request. Incorrect or missing parameters',
+  })
   @Post()
   @UsePipes(ValidationPipe)
   async create(
@@ -98,6 +104,7 @@ export class SourcingLocationGroupsController {
 
   @ApiOperation({ description: 'Updates a sourcing location group' })
   @ApiOkResponse({ type: SourcingLocationGroup })
+  @ApiNotFoundResponse({ description: 'Sourcing location group not found' })
   @Patch(':id')
   async update(
     @Body(new ValidationPipe()) dto: UpdateSourcingLocationGroupDto,
@@ -110,6 +117,7 @@ export class SourcingLocationGroupsController {
 
   @ApiOperation({ description: 'Deletes a sourcing location group' })
   @ApiOkResponse()
+  @ApiNotFoundResponse({ description: 'Sourcing location group not found' })
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     return await this.sourcingLocationsService.remove(id);

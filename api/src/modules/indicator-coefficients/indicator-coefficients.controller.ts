@@ -11,7 +11,9 @@ import {
 } from '@nestjs/common';
 import { IndicatorCoefficientsService } from 'modules/indicator-coefficients/indicator-coefficients.service';
 import {
+  ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -76,6 +78,7 @@ export class IndicatorCoefficientsController {
 
   @ApiOperation({ description: 'Find indicator coefficient by id' })
   @ApiOkResponse({ type: IndicatorCoefficient })
+  @ApiNotFoundResponse({ description: 'Indicator coefficient not found' })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<IndicatorCoefficient> {
@@ -86,6 +89,9 @@ export class IndicatorCoefficientsController {
 
   @ApiOperation({ description: 'Create a indicator coefficient' })
   @ApiOkResponse({ type: IndicatorCoefficient })
+  @ApiBadRequestResponse({
+    description: 'Bad Request. Incorrect or missing parameters',
+  })
   @Post()
   @UsePipes(ValidationPipe)
   async create(
@@ -97,6 +103,7 @@ export class IndicatorCoefficientsController {
   }
 
   @ApiOperation({ description: 'Updates a indicator coefficient' })
+  @ApiNotFoundResponse({ description: 'Indicator coefficient not found' })
   @ApiOkResponse({ type: IndicatorCoefficient })
   @Patch(':id')
   async update(
@@ -109,6 +116,7 @@ export class IndicatorCoefficientsController {
   }
 
   @ApiOperation({ description: 'Deletes a indicator coefficient' })
+  @ApiNotFoundResponse({ description: 'Indicator coefficient not found' })
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {

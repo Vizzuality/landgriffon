@@ -11,7 +11,9 @@ import {
 } from '@nestjs/common';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import {
+  ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -82,7 +84,7 @@ export class SourcingRecordsController {
           type: 'array',
           items: {
             type: 'integer',
-            example: [2021, 2020, 2018],
+            example: 2021,
           },
         },
       },
@@ -96,6 +98,7 @@ export class SourcingRecordsController {
 
   @ApiOperation({ description: 'Find sourcing record by id' })
   @ApiOkResponse({ type: SourcingRecord })
+  @ApiNotFoundResponse({ description: 'Sourcing record not found' })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
   async findOne(
@@ -112,6 +115,9 @@ export class SourcingRecordsController {
 
   @ApiOperation({ description: 'Create a sourcing record' })
   @ApiOkResponse({ type: SourcingRecord })
+  @ApiBadRequestResponse({
+    description: 'Bad Request. Incorrect or missing parameters',
+  })
   @Post()
   @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateSourcingRecordDto): Promise<SourcingRecord> {
@@ -122,6 +128,7 @@ export class SourcingRecordsController {
 
   @ApiOperation({ description: 'Updates a sourcing record' })
   @ApiOkResponse({ type: SourcingRecord })
+  @ApiNotFoundResponse({ description: 'Sourcing record not found'})
   @Patch(':id')
   async update(
     @Body(new ValidationPipe()) dto: UpdateSourcingRecordDto,
@@ -134,6 +141,7 @@ export class SourcingRecordsController {
 
   @ApiOperation({ description: 'Deletes a sourcing record' })
   @ApiOkResponse()
+  @ApiNotFoundResponse({ description: 'Sourcing record not found'})
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     return await this.sourcingRecordsService.remove(id);

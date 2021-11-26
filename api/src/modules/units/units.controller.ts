@@ -11,7 +11,9 @@ import {
 } from '@nestjs/common';
 import { UnitsService } from 'modules/units/units.service';
 import {
+  ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -66,6 +68,7 @@ export class UnitsController {
 
   @ApiOperation({ description: 'Find unit by id' })
   @ApiOkResponse({ type: Unit })
+  @ApiNotFoundResponse({ description: 'Unit not found'})
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Unit> {
@@ -76,6 +79,7 @@ export class UnitsController {
 
   @ApiOperation({ description: 'Create a unit' })
   @ApiOkResponse({ type: Unit })
+  @ApiBadRequestResponse({ description: 'Bad Request. Incorrect or missing parameters'})
   @Post()
   @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateUnitDto): Promise<Unit> {
@@ -86,6 +90,7 @@ export class UnitsController {
 
   @ApiOperation({ description: 'Updates a unit' })
   @ApiOkResponse({ type: Unit })
+  @ApiNotFoundResponse({ description: 'Unit not found'})
   @Patch(':id')
   async update(
     @Body(new ValidationPipe()) dto: UpdateUnitDto,
@@ -98,6 +103,7 @@ export class UnitsController {
 
   @ApiOperation({ description: 'Deletes a unit' })
   @ApiOkResponse()
+  @ApiNotFoundResponse({ description: 'Unit not found'})
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     return await this.unitsService.remove(id);

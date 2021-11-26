@@ -11,7 +11,9 @@ import {
 } from '@nestjs/common';
 import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
 import {
+  ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -60,6 +62,7 @@ export class ScenarioInterventionsController {
 
   @ApiOperation({ description: 'Find scenario intervention by id' })
   @ApiOkResponse({ type: ScenarioIntervention })
+  @ApiNotFoundResponse({ description: 'Scenario intervention not found' })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<ScenarioIntervention> {
@@ -70,6 +73,9 @@ export class ScenarioInterventionsController {
 
   @ApiOperation({ description: 'Create a scenario intervention' })
   @ApiOkResponse({ type: ScenarioIntervention })
+  @ApiBadRequestResponse({
+    description: 'Bad Request. Incorrect or missing parameters',
+  })
   @UsePipes(ValidationPipe)
   @Post()
   async create(
@@ -82,6 +88,7 @@ export class ScenarioInterventionsController {
 
   @ApiOperation({ description: 'Update a scenario intervention' })
   @ApiOkResponse({ type: ScenarioIntervention })
+  @ApiNotFoundResponse({ description: 'Scenario intervention not found' })
   @UsePipes(ValidationPipe)
   @Patch(':id')
   async update(
@@ -95,6 +102,7 @@ export class ScenarioInterventionsController {
 
   @ApiOperation({ description: 'Delete a scenario intervention' })
   @ApiOkResponse()
+  @ApiNotFoundResponse({ description: 'Scenario intervention not found' })
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     return await this.scenariosService.remove(id);

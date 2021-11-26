@@ -12,6 +12,7 @@ import {
 import { UnitConversionsService } from 'modules/unit-conversions/unit-conversions.service';
 import {
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -72,6 +73,7 @@ export class UnitConversionsController {
 
   @ApiOperation({ description: 'Find conversion unit by id' })
   @ApiOkResponse({ type: UnitConversion })
+  @ApiNotFoundResponse({ description: 'Conversion unit not found'})
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<UnitConversion> {
@@ -92,6 +94,7 @@ export class UnitConversionsController {
 
   @ApiOperation({ description: 'Updates a conversion unit' })
   @ApiOkResponse({ type: UnitConversion })
+  @ApiNotFoundResponse({ description: 'Conversion unit not found'})
   @Patch(':id')
   async update(
     @Body(new ValidationPipe()) dto: UpdateUnitConversionDto,
@@ -104,6 +107,7 @@ export class UnitConversionsController {
 
   @ApiOperation({ description: 'Deletes a conversion unit' })
   @ApiOkResponse()
+  @ApiNotFoundResponse({ description: 'Conversion unit not found'})
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     return await this.unitConversionsService.remove(id);

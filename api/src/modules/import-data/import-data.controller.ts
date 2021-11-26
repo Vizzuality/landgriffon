@@ -5,7 +5,7 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiTags } from '@nestjs/swagger';
 import { ApiConsumesXLSX } from 'decorators/xlsx-upload.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { fileUploadInterceptor } from 'modules/import-data/file-upload.interceptor';
@@ -20,6 +20,9 @@ export class ImportDataController {
   ) {}
 
   @ApiConsumesXLSX()
+  @ApiBadRequestResponse({
+    description: 'Bad Request. A .XLSX file not provided as payload or contains missing or incorrect data',
+  })
   @UseInterceptors(
     FileInterceptor(
       'file',

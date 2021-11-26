@@ -12,7 +12,9 @@ import {
 } from '@nestjs/common';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import {
+  ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
@@ -99,6 +101,7 @@ export class AdminRegionsController {
 
   @ApiOperation({ description: 'Find admin region by id' })
   @ApiOkResponse({ type: AdminRegion })
+  @ApiNotFoundResponse({ description: 'Admin region not found' })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<AdminRegion> {
@@ -109,6 +112,9 @@ export class AdminRegionsController {
 
   @ApiOperation({ description: 'Create a admin region' })
   @ApiOkResponse({ type: AdminRegion })
+  @ApiBadRequestResponse({
+    description: 'Bad Request. Incorrect or missing parameters',
+  })
   @Post()
   @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateAdminRegionDto): Promise<AdminRegion> {
@@ -118,6 +124,7 @@ export class AdminRegionsController {
   }
 
   @ApiOperation({ description: 'Updates a admin region' })
+  @ApiNotFoundResponse({ description: 'Admin region not found' })
   @ApiOkResponse({ type: AdminRegion })
   @Patch(':id')
   async update(
@@ -130,6 +137,7 @@ export class AdminRegionsController {
   }
 
   @ApiOperation({ description: 'Deletes a admin region' })
+  @ApiNotFoundResponse({ description: 'Admin region not found' })
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {

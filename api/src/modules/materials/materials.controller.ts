@@ -12,7 +12,9 @@ import {
 } from '@nestjs/common';
 import { MaterialsService } from 'modules/materials/materials.service';
 import {
+  ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
@@ -100,6 +102,7 @@ export class MaterialsController {
   }
 
   @ApiOperation({ description: 'Find material by id' })
+  @ApiNotFoundResponse({ description: 'Material not found' })
   @ApiOkResponse({ type: Material })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
@@ -117,6 +120,9 @@ export class MaterialsController {
 
   @ApiOperation({ description: 'Create a material' })
   @ApiOkResponse({ type: Material })
+  @ApiBadRequestResponse({
+    description: 'Bad Request. Incorrect or missing parameters',
+  })
   @Post()
   @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateMaterialDto): Promise<Material> {
@@ -126,6 +132,7 @@ export class MaterialsController {
   }
 
   @ApiOperation({ description: 'Updates a material' })
+  @ApiNotFoundResponse({ description: 'Material not found' })
   @ApiOkResponse({ type: Material })
   @Patch(':id')
   async update(
@@ -138,6 +145,7 @@ export class MaterialsController {
   }
 
   @ApiOperation({ description: 'Deletes a material' })
+  @ApiNotFoundResponse({ description: 'Material not found' })
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {

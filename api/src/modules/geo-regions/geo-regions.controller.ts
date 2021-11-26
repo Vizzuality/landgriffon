@@ -11,7 +11,9 @@ import {
 } from '@nestjs/common';
 import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
 import {
+  ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -69,6 +71,7 @@ export class GeoRegionsController {
 
   @ApiOperation({ description: 'Find geo region by id' })
   @ApiOkResponse({ type: GeoRegion })
+  @ApiNotFoundResponse({ description: 'Geo region not found' })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<GeoRegion> {
@@ -79,6 +82,9 @@ export class GeoRegionsController {
 
   @ApiOperation({ description: 'Create a geo region' })
   @ApiOkResponse({ type: GeoRegion })
+  @ApiBadRequestResponse({
+    description: 'Bad Request. Incorrect or missing parameters',
+  })
   @Post()
   @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateGeoRegionDto): Promise<GeoRegion> {
@@ -88,6 +94,7 @@ export class GeoRegionsController {
   }
 
   @ApiOperation({ description: 'Updates a geo region' })
+  @ApiNotFoundResponse({ description: 'Geo region not found' })
   @ApiOkResponse({ type: GeoRegion })
   @Patch(':id')
   async update(
@@ -100,6 +107,7 @@ export class GeoRegionsController {
   }
 
   @ApiOperation({ description: 'Deletes a geo region' })
+  @ApiNotFoundResponse({ description: 'Geo region not found' })
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {

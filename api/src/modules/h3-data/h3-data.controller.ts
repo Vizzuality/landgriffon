@@ -10,7 +10,7 @@ import { H3DataService } from 'modules/h3-data/h3-data.service';
 import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 import { GetMaterialH3ByResolutionDto } from 'modules/h3-data/dto/get-material-h3-by-resolution.dto';
 import { GetRiskMapH3Dto } from 'modules/h3-data/dto/get-risk-map.dto';
-import { H3MapResponse } from 'modules/h3-data/dto/h3-map-response.dto';
+import { H3MapResponse, H3DataResponse } from 'modules/h3-data/dto/h3-map-response.dto';
 import { GetYearsByLayerAndMaterialsDto } from 'modules/h3-data/dto/get-years-by-layer-and-materials.dto';
 import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
 
@@ -20,7 +20,7 @@ export class H3DataController {
   constructor(protected readonly h3DataService: H3DataService) {}
 
   @ApiOperation({ description: 'Retrieve H3 data providing its name' })
-  @ApiOkResponse()
+  @ApiOkResponse({ type: H3DataResponse })
   @ApiBadRequestResponse({
     description: 'Bad Request. Incorrect or missing parameters',
   })
@@ -38,6 +38,7 @@ export class H3DataController {
   @ApiOperation({
     description: 'Retrieve years for which there is data, by layer',
   })
+
   @ApiBadRequestResponse({
     description: 'Bad Request. Incorrect or missing parameters',
   })

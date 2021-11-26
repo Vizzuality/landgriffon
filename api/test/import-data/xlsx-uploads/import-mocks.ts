@@ -33,14 +33,14 @@ async function createIndicatorsForXLSXImport(): Promise<string[]> {
     });
 
     await createFakeH3Data(
-      `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}IndicatorTable`,
+      `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}_indicator_table`,
       `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}IndicatorColumn`,
       null,
       indicator.id,
     );
 
     tableList.push(
-      `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}IndicatorTable`,
+      `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}_indicator_table`,
     );
   }
 

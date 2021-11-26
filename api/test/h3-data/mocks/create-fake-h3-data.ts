@@ -18,12 +18,12 @@ export const createFakeH3Data = async (
   const formattedColumnName: string = camelCase(h3ColumnName);
 
   await getManager().query(
-    `CREATE TABLE ${formattedTableName} (h3index h3index, ${formattedColumnName} float4);` +
-      `INSERT INTO ${formattedTableName} (h3index, ${formattedColumnName} ) VALUES ('861203a4fffffff', 1000);`,
+    `CREATE TABLE ${formattedTableName} (h3index h3index, "${formattedColumnName}" float4);` +
+      `INSERT INTO ${formattedTableName} (h3index, "${formattedColumnName}" ) VALUES ('861203a4fffffff', 1000);`,
   );
 
   if (additionalH3Data) {
-    let query = `INSERT INTO ${formattedTableName} (h3index,  ${formattedColumnName}) VALUES `;
+    let query = `INSERT INTO ${formattedTableName} (h3index, "${formattedColumnName}") VALUES `;
     const queryArr = [];
     for (const [key, value] of Object.entries(additionalH3Data)) {
       queryArr.push(`('${key}', ${value})`);

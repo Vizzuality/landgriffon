@@ -1,5 +1,5 @@
 import { createIndicator, createMaterial } from '../../entity-mocks';
-import { createFakeH3Data } from '../../h3-data/mocks/create-fake-h3-data';
+import { h3DataMock } from '../../h3-data/mocks/h3-data.mock';
 import { Material } from '../../../src/modules/materials/material.entity';
 import {
   Indicator,
@@ -35,7 +35,7 @@ async function createIndicatorsForXLSXImport(): Promise<string[]> {
       nameCode: spec.nameCode,
     });
 
-    await createFakeH3Data(
+    await h3DataMock(
       `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}_indicator_table`,
       `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}IndicatorColumn`,
       null,
@@ -103,11 +103,11 @@ async function createMaterialTreeForXLSXImport(): Promise<string[]> {
   const tableList: string[] = [];
 
   for (const spec of materialSpec) {
-    const materialHarvestH3Table = await createFakeH3Data(
+    const materialHarvestH3Table = await h3DataMock(
       `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}HarvestTable`,
       `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}HarvestColumn`,
     );
-    const materialProductionH3Table = await createFakeH3Data(
+    const materialProductionH3Table = await h3DataMock(
       `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}ProductionTable`,
       `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}ProductionColumn`,
     );

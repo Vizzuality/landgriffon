@@ -27,10 +27,7 @@ import {
   createMaterialTreeForXLSXImport,
   createIndicatorsForXLSXImport,
 } from './import-mocks';
-import {
-  createFakeH3Data,
-  dropFakeH3Data,
-} from '../../h3-data/mocks/create-fake-h3-data';
+import { h3DataMock, dropH3DataMock } from '../../h3-data/mocks/h3-data.mock';
 import { IndicatorRecord } from '../../../src/modules/indicator-records/indicator-record.entity';
 import { IndicatorRecordRepository } from '../../../src/modules/indicator-records/indicator-record.repository';
 import { IndicatorRepository } from '../../../src/modules/indicators/indicator.repository';
@@ -170,7 +167,7 @@ describe('Sourcing Data import', () => {
     await h3DataRepository.delete({});
 
     if (tablesToDrop.length > 0) {
-      await dropFakeH3Data(tablesToDrop);
+      await dropH3DataMock(tablesToDrop);
       tablesToDrop = [];
     }
   });
@@ -242,7 +239,7 @@ describe('Sourcing Data import', () => {
       isoA2: 'ABC',
       geoRegion,
     });
-    await createFakeH3Data('h3_grid_deforestation_global', 'hansen_loss_2019');
+    await h3DataMock('h3_grid_deforestation_global', 'hansen_loss_2019');
     tablesToDrop = [
       ...(await createMaterialTreeForXLSXImport()),
       ...(await createIndicatorsForXLSXImport()),
@@ -287,7 +284,7 @@ describe('Sourcing Data import', () => {
       isoA2: 'ABC',
       geoRegion,
     });
-    await createFakeH3Data('h3_grid_deforestation_global', 'hansen_loss_2019');
+    await h3DataMock('h3_grid_deforestation_global', 'hansen_loss_2019');
     tablesToDrop = [
       ...(await createMaterialTreeForXLSXImport()),
       ...(await createIndicatorsForXLSXImport()),
@@ -313,7 +310,7 @@ describe('Sourcing Data import', () => {
       isoA2: 'ABC',
       geoRegion,
     });
-    await createFakeH3Data('h3_grid_deforestation_global', 'hansen_loss_2019');
+    await h3DataMock('h3_grid_deforestation_global', 'hansen_loss_2019');
     tablesToDrop = [
       ...(await createMaterialTreeForXLSXImport()),
       ...(await createIndicatorsForXLSXImport()),

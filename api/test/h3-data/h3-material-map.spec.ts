@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { H3DataRepository } from '../../src/modules/h3-data/h3-data.repository';
 import { H3DataModule } from '../../src/modules/h3-data/h3-data.module';
-import { createFakeH3Data, dropFakeH3Data } from './mocks/create-fake-h3-data';
+import { h3DataMock, dropH3DataMock } from './mocks/h3-data.mock';
 import { h3MaterialFixtures } from './mocks/h3-fixtures';
 import { createMaterial } from '../entity-mocks';
 import { MaterialRepository } from '../../src/modules/materials/material.repository';
@@ -44,7 +44,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
   afterEach(async () => {
     await materialRepository.delete({});
     await h3DataRepository.delete({});
-    await dropFakeH3Data([fakeTable]);
+    await dropH3DataMock([fakeTable]);
   });
 
   afterAll(async () => {
@@ -90,11 +90,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
   });
 
   test('When I query H3 data at minimal resolution, then I should 2 h3indexes and no 0 as value', async () => {
-    const h3Data = await createFakeH3Data(
-      fakeTable,
-      fakeColumn,
-      h3MaterialFixtures,
-    );
+    const h3Data = await h3DataMock(fakeTable, fakeColumn, h3MaterialFixtures);
     const material = await createMaterial({ producer: h3Data });
     const response = await request(app.getHttpServer()).get(
       `/api/v1/h3/map/material?materialId=${material.id}&resolution=1`,

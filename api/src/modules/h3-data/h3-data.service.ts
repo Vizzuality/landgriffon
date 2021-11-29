@@ -322,6 +322,8 @@ export class H3DataService {
       getImpactMapDto.groupBy,
       getImpactMapDto.year,
       getImpactMapDto.materialIds,
+      getImpactMapDto.originIds,
+      getImpactMapDto.supplierIds,
     );
 
     return {

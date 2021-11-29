@@ -1,8 +1,10 @@
 import {
+  Brackets,
   EntityRepository,
   getManager,
   Repository,
   SelectQueryBuilder,
+  WhereExpressionBuilder,
 } from 'typeorm';
 import {
   H3Data,
@@ -16,6 +18,10 @@ import {
 } from '@nestjs/common';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { SourcingRecord } from '../sourcing-records/sourcing-record.entity';
+import { IndicatorRecord } from '../indicator-records/indicator-record.entity';
+import { GeoRegion } from '../geo-regions/geo-region.entity';
+import { AdminRegion } from '../admin-regions/admin-region.entity';
 
 /**
  * @note: Column aliases are marked as 'h' and 'v' so that DB returns data in the format the consumer needs to be
@@ -430,15 +436,17 @@ export class H3DataRepository extends Repository<H3Data> {
     groupBy: string,
     year: number,
     materialIds?: string[],
+    originIds?: string[],
+    supplierIds?: string[],
   ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
     const query: SelectQueryBuilder<any> = getManager()
       .createQueryBuilder()
       .select('unnest(gr."h3Flat")', 'h')
       .addSelect('sum(ir.value/gr."h3FlatLength")', 'v')
       .from(SourcingLocation, 'sl')
-      .innerJoin('sourcing_records', 'sr', 'sl.id = sr.sourcingLocationId')
-      .innerJoin('indicator_record', 'ir', 'sr.id = ir.sourcingRecordId')
-      .innerJoin('geo_region', 'gr', 'sl.geoRegionId = gr.id')
+      .innerJoin(SourcingRecord, 'sr', 'sl.id = sr.sourcingLocationId')
+      .innerJoin(IndicatorRecord, 'ir', 'sr.id = ir.sourcingRecordId')
+      .innerJoin(GeoRegion, 'gr', 'sl.geoRegionId = gr.id')
       .where('ir.indicatorId = :indicatorId', { indicatorId: indicator.id })
       .andWhere('sr.year = :year', { year })
       .andWhere('gr."h3FlatLength" > 0')
@@ -446,6 +454,20 @@ export class H3DataRepository extends Repository<H3Data> {
 
     if (materialIds) {
       query.andWhere('sl.material IN (:...materialIds)', { materialIds });
+    }
+
+    if (supplierIds) {
+      query.andWhere(
+        new Brackets((qb: WhereExpressionBuilder) => {
+          qb.where('sl.t1SupplierId IN (:...supplierIds)', {
+            supplierIds,
+          }).orWhere('sl.producerId IN (:...supplierIds)', { supplierIds });
+        }),
+      );
+    }
+
+    if (originIds) {
+      query.andWhere('sl.adminRegionId IN (:...originIds)', { originIds });
     }
 
     const tmpTableName: string = H3DataRepository.generateRandomTableName();

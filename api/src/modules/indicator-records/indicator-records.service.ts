@@ -15,7 +15,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
-import { Indicator } from 'modules/indicators/indicator.entity';
+import {
+  Indicator,
+  INDICATOR_TYPES,
+} from 'modules/indicators/indicator.entity';
 import { H3DataService } from 'modules/h3-data/h3-data.service';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
@@ -122,7 +125,7 @@ export class IndicatorRecordsService extends AppBaseService<
         let impactValue: number | null = null;
 
         switch (indicator.nameCode) {
-          case 'UWU_T':
+          case INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE:
             impactValue =
               await this.h3DataService.getWaterRiskIndicatorRecordValue(
                 producerH3Table,
@@ -131,7 +134,7 @@ export class IndicatorRecordsService extends AppBaseService<
                 sourcingRecord.id,
               );
             break;
-          case 'DF_LUC_T':
+          case INDICATOR_TYPES.DEFORESTATION:
             impactValue =
               await this.h3DataService.getDeforestationLossIndicatorRecordValue(
                 producerH3Table,
@@ -140,7 +143,7 @@ export class IndicatorRecordsService extends AppBaseService<
                 sourcingRecord.id,
               );
             break;
-          case 'BL_LUC_T':
+          case INDICATOR_TYPES.BIODIVERSITY_LOSS:
             impactValue =
               await this.h3DataService.getBiodiversityLossIndicatorRecordValue(
                 producerH3Table,
@@ -149,7 +152,7 @@ export class IndicatorRecordsService extends AppBaseService<
                 sourcingRecord.id,
               );
             break;
-          case 'GHG_LUC_T':
+          case INDICATOR_TYPES.CARBON_EMISSIONS:
             impactValue =
               await this.h3DataService.getCarbonIndicatorRecordValue(
                 producerH3Table,

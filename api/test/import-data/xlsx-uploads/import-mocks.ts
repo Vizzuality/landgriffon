@@ -1,26 +1,29 @@
 import { createIndicator, createMaterial } from '../../entity-mocks';
 import { createFakeH3Data } from '../../h3-data/mocks/create-fake-h3-data';
 import { Material } from '../../../src/modules/materials/material.entity';
-import { Indicator } from '../../../src/modules/indicators/indicator.entity';
+import {
+  Indicator,
+  INDICATOR_TYPES,
+} from '../../../src/modules/indicators/indicator.entity';
 import { snakeCase } from 'typeorm/util/StringUtils';
 
 async function createIndicatorsForXLSXImport(): Promise<string[]> {
   const indicatorSpec = [
     {
       name: 'Deforestation loss due to land use change',
-      nameCode: 'DF_LUC_T',
+      nameCode: INDICATOR_TYPES.DEFORESTATION,
     },
     {
       name: 'Carbon emissions due to land use change',
-      nameCode: 'GHG_LUC_T',
+      nameCode: INDICATOR_TYPES.CARBON_EMISSIONS,
     },
     {
       name: 'Biodiversity loss due to land use change',
-      nameCode: 'BL_LUC_T',
+      nameCode: INDICATOR_TYPES.BIODIVERSITY_LOSS,
     },
     {
       name: 'Unsustainable water use',
-      nameCode: 'UWU_T',
+      nameCode: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
     },
   ];
 

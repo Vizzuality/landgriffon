@@ -13,7 +13,10 @@ import {
   createIndicatorRecord,
 } from '../entity-mocks';
 import { MaterialRepository } from 'modules/materials/material.repository';
-import { Indicator } from 'modules/indicators/indicator.entity';
+import {
+  Indicator,
+  INDICATOR_TYPES,
+} from 'modules/indicators/indicator.entity';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { Unit } from 'modules/units/unit.entity';
 import { UnitConversion } from 'modules/unit-conversions/unit-conversion.entity';
@@ -181,7 +184,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     const indicator: Indicator = new Indicator();
     indicator.name = 'test indicator';
     indicator.unit = unit;
-    indicator.nameCode = 'UWU_T';
+    indicator.nameCode = INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE;
     await indicator.save();
 
     const harvestH3Data = await createFakeH3Data(

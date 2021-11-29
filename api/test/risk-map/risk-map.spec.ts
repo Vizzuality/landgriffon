@@ -23,6 +23,7 @@ import {
 import { H3DataRepository } from '../../src/modules/h3-data/h3-data.repository';
 import { UnitConversionRepository } from '../../src/modules/unit-conversions/unit-conversion.repository';
 import { H3DataModule } from '../../src/modules/h3-data/h3-data.module';
+import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
 
 /**
  * Tests for the Risk Map module.
@@ -166,7 +167,7 @@ describe('Risk Map Test Suite (e2e)', () => {
     const indicator = await createIndicator({
       unit,
       name: 'Indicator Name',
-      nameCode: 'UWU_T',
+      nameCode: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
     });
     await createFakeH3Data(
       INDICATOR_FAKE_H3_TABLE,

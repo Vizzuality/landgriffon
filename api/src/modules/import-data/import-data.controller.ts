@@ -21,7 +21,8 @@ export class ImportDataController {
 
   @ApiConsumesXLSX()
   @ApiBadRequestResponse({
-    description: 'Bad Request. A .XLSX file not provided as payload or contains missing or incorrect data',
+    description:
+      'Bad Request. A .XLSX file not provided as payload or contains missing or incorrect data',
   })
   @UseInterceptors(
     FileInterceptor(

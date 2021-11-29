@@ -128,7 +128,7 @@ export class SourcingRecordsController {
 
   @ApiOperation({ description: 'Updates a sourcing record' })
   @ApiOkResponse({ type: SourcingRecord })
-  @ApiNotFoundResponse({ description: 'Sourcing record not found'})
+  @ApiNotFoundResponse({ description: 'Sourcing record not found' })
   @Patch(':id')
   async update(
     @Body(new ValidationPipe()) dto: UpdateSourcingRecordDto,
@@ -141,7 +141,7 @@ export class SourcingRecordsController {
 
   @ApiOperation({ description: 'Deletes a sourcing record' })
   @ApiOkResponse()
-  @ApiNotFoundResponse({ description: 'Sourcing record not found'})
+  @ApiNotFoundResponse({ description: 'Sourcing record not found' })
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     return await this.sourcingRecordsService.remove(id);

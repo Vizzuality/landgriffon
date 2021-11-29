@@ -5,10 +5,10 @@ import { AppModule } from 'app.module';
 import { H3DataRepository } from '../../src/modules/h3-data/h3-data.repository';
 import { H3DataModule } from '../../src/modules/h3-data/h3-data.module';
 import {
-  createFakeH3Data,
+  h3DataMock,
   createRandomNamesForH3TableAndColumns,
-  dropFakeH3Data,
-} from './mocks/create-fake-h3-data';
+  dropH3DataMock,
+} from './mocks/h3-data.mock';
 import { MaterialRepository } from '../../src/modules/materials/material.repository';
 import {
   createH3Data,
@@ -55,7 +55,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
   afterEach(async () => {
     await materialRepository.delete({});
     await h3DataRepository.delete({});
-    await dropFakeH3Data([fakeTable]);
+    await dropH3DataMock([fakeTable]);
   });
 
   afterAll(async () => {
@@ -73,7 +73,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
   });
 
   test('Given the H3 Data table is populated, when I query the API, then I should get its data in with h3index as key, and column values as value', async () => {
-    await createFakeH3Data(fakeTable, fakeColumn);
+    await h3DataMock(fakeTable, fakeColumn);
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/data/${fakeTable}/${fakeColumn}`)

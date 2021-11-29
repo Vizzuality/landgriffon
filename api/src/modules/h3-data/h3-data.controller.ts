@@ -83,7 +83,7 @@ export class H3DataController {
   @ApiBadRequestResponse({
     description: 'Bad Request. Incorrect or missing parameters',
   })
-  @Get('map/material')
+  @Get('/map/material')
   async getH3ByIdAndResolution(
     @Query(ValidationPipe)
     queryParams: GetMaterialH3ByResolutionDto,
@@ -105,7 +105,7 @@ export class H3DataController {
   @ApiBadRequestResponse({
     description: 'Bad Request. Incorrect or missing parameters',
   })
-  @Get('map/risk')
+  @Get('/map/risk')
   async getRiskMap(
     @Query(ValidationPipe) queryParams: GetRiskMapH3Dto,
   ): Promise<H3MapResponse> {
@@ -127,7 +127,7 @@ export class H3DataController {
   @ApiBadRequestResponse({
     description: 'Bad Request. Incorrect or missing parameters',
   })
-  @Get('map/impact')
+  @Get('/map/impact')
   async getImpactMap(
     @Query(ValidationPipe) getImpactMapDto: GetImpactMapDto,
   ): Promise<H3MapResponse> {

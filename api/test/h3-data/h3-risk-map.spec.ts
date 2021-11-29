@@ -4,11 +4,7 @@ import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { H3DataRepository } from '../../src/modules/h3-data/h3-data.repository';
 import { H3DataModule } from '../../src/modules/h3-data/h3-data.module';
-import {
-  dropFakeH3Data,
-  createWorldForRiskMapGeneration,
-  createFakeH3Data,
-} from './mocks/create-fake-h3-data';
+import { dropH3DataMock, h3DataMock } from './mocks/h3-data.mock';
 import { createIndicator, createMaterial } from '../entity-mocks';
 import { MaterialRepository } from '../../src/modules/materials/material.repository';
 import {
@@ -18,6 +14,7 @@ import {
 import { IndicatorRepository } from '../../src/modules/indicators/indicator.repository';
 import { UnitRepository } from '../../src/modules/units/unit.repository';
 import { UnitConversionRepository } from '../../src/modules/unit-conversions/unit-conversion.repository';
+import { createWorldForRiskMapGeneration } from './mocks/h3-risk-map.mock';
 
 /**
  * Tests for the H3DataModule.
@@ -67,7 +64,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
   afterEach(async () => {
     jest.clearAllMocks();
-    await dropFakeH3Data([fakeTable, fakeTable2]);
+    await dropH3DataMock([fakeTable, fakeTable2]);
     await materialRepository.delete({});
     await h3DataRepository.delete({});
     await indicatorRepository.delete({});
@@ -206,7 +203,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       name: 'another indicator',
       nameCode: INDICATOR_TYPES.DEFORESTATION,
     });
-    const deforestationH3Data = await createFakeH3Data(
+    const deforestationH3Data = await h3DataMock(
       'fake2',
       'fake3',
       null,
@@ -259,7 +256,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       name: 'another indicator',
       nameCode: INDICATOR_TYPES.DEFORESTATION,
     });
-    const deforestationH3Data = await createFakeH3Data(
+    const deforestationH3Data = await h3DataMock(
       fakeTable2,
       fakeColumn2,
       null,

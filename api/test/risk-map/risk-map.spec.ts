@@ -12,10 +12,7 @@ import { MaterialRepository } from '../../src/modules/materials/material.reposit
 import { IndicatorRepository } from '../../src/modules/indicators/indicator.repository';
 import { UnitRepository } from '../../src/modules/units/unit.repository';
 
-import {
-  createFakeH3Data,
-  dropFakeH3Data,
-} from '../h3-data/mocks/create-fake-h3-data';
+import { h3DataMock, dropH3DataMock } from '../h3-data/mocks/h3-data.mock';
 import {
   h3IndicatorFixtures,
   h3MaterialFixtures,
@@ -75,7 +72,7 @@ describe('Risk Map Test Suite (e2e)', () => {
     await indicatorRepository.delete({});
     await unitConversionRepository.delete({});
     await unitRepository.delete({});
-    await dropFakeH3Data([INDICATOR_FAKE_H3_TABLE, MATERIAL_FAKE_H3_TABLE]);
+    await dropH3DataMock([INDICATOR_FAKE_H3_TABLE, MATERIAL_FAKE_H3_TABLE]);
   });
 
   afterAll(async () => {
@@ -126,7 +123,7 @@ describe('Risk Map Test Suite (e2e)', () => {
       unit,
       name: 'Indicator Name',
     });
-    await createFakeH3Data(
+    await h3DataMock(
       INDICATOR_FAKE_H3_TABLE,
       INDICATOR_FAKE_H3_COLUMN,
       false,
@@ -151,7 +148,7 @@ describe('Risk Map Test Suite (e2e)', () => {
   });
 
   test('Given there is H3 Data available, When I try to GET a Risk-Map with proper query parameters, then I should get a calculated Risk-Map', async () => {
-    const materialH3Data = await createFakeH3Data(
+    const materialH3Data = await h3DataMock(
       MATERIAL_FAKE_H3_TABLE,
       MATERIAL_FAKE_H3_COLUMN,
       h3MaterialFixtures,
@@ -169,7 +166,7 @@ describe('Risk Map Test Suite (e2e)', () => {
       name: 'Indicator Name',
       nameCode: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
     });
-    await createFakeH3Data(
+    await h3DataMock(
       INDICATOR_FAKE_H3_TABLE,
       INDICATOR_FAKE_H3_COLUMN,
       h3IndicatorFixtures,

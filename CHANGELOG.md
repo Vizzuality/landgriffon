@@ -1,5 +1,7 @@
 # Changelog
 
+- Add optional filters to the impact map API endpoint (`originIds`, `supplierIds` and `materialIds`).
+- Add optional resolution parameter to impact map API endpoint.
 - Add Redis infrastructure and basic BullMQ config
 
 ## v0.1.0

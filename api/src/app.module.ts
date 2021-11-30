@@ -28,6 +28,7 @@ import { GeoCodingModule } from 'modules/geo-coding/geo-coding.module';
 import { H3DataModule } from 'modules/h3-data/h3-data.module';
 import { HttpModule } from '@nestjs/axios';
 import { BullModule } from '@nestjs/bull';
+import { ImpactModule } from 'modules/impact/impact.module';
 import * as config from 'config';
 
 const redisConfig: any = config.get('redis');
@@ -64,6 +65,7 @@ const redisConfig: any = config.get('redis');
     ImportDataModule,
     H3DataModule,
     GeoCodingModule,
+    ImpactModule,
   ],
   providers: [
     {

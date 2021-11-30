@@ -21,6 +21,7 @@ import {
   MATERIAL_TO_H3_TYPE,
   MaterialToH3,
 } from '../src/modules/materials/material-to-h3.entity';
+import { BusinessUnit } from '../src/modules/business-units/business-unit.entity';
 
 async function createAdminRegion(
   additionalData: Partial<AdminRegion> = {},
@@ -36,6 +37,18 @@ async function createAdminRegion(
   return adminRegion.save();
 }
 
+async function createBusinessUnit(
+  additionalData: Partial<BusinessUnit> = {},
+): Promise<BusinessUnit> {
+  const businessUnit = BusinessUnit.merge(
+    new BusinessUnit(),
+    {
+      name: 'Fake BusinessUnit',
+    },
+    additionalData,
+  );
+  return businessUnit.save();
+}
 async function createH3Data(
   additionalData: Partial<H3Data> = {},
 ): Promise<H3Data> {
@@ -294,6 +307,7 @@ async function createUnitConversion(
 
 export {
   createAdminRegion,
+  createBusinessUnit,
   createH3Data,
   createIndicator,
   createIndicatorCoefficient,

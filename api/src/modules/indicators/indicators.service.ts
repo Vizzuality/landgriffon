@@ -84,7 +84,15 @@ export class IndicatorsService extends AppBaseService<
   }
 
   async getIndicatorsById(ids: string[]): Promise<Indicator[]> {
-    return this.indicatorRepository.findByIds(ids);
+    const indicators: Indicator[] = await this.indicatorRepository.findByIds(
+      ids,
+    );
+    if (!indicators.length) {
+      throw new NotFoundException(
+        'No Indicator has been found with provided IDs',
+      );
+    }
+    return indicators;
   }
 
   async findAllUnpaginated(): Promise<Indicator[]> {

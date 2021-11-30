@@ -12,6 +12,7 @@ import { AppInfoDTO } from 'dto/info.dto';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sourcing-record.dto';
+import { GetImpactTableDto } from '../impact/dto/get-impact-table.dto';
 
 @Injectable()
 export class SourcingRecordsService extends AppBaseService<
@@ -68,5 +69,13 @@ export class SourcingRecordsService extends AppBaseService<
   }
   async getYears(materialIds?: string[]): Promise<number[]> {
     return this.sourcingRecordRepository.getYears(materialIds);
+  }
+
+  async getDataForImpactTable(
+    getImpactTableDto: GetImpactTableDto,
+  ): Promise<any> {
+    return this.sourcingRecordRepository.getDataForImpactTable(
+      getImpactTableDto,
+    );
   }
 }

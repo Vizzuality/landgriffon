@@ -466,7 +466,6 @@ export class H3DataRepository extends Repository<H3Data> {
         }),
       );
     }
-
     if (originIds) {
       query.andWhere('sl.adminRegionId IN (:...originIds)', { originIds });
     }
@@ -556,7 +555,6 @@ export class H3DataRepository extends Repository<H3Data> {
     return { riskMap, quantiles };
   }
 
-  // TODO
   async getDeforestationLossRiskMapByResolution(
     indicatorH3Data: H3Data,
     producerMaterialH3Data: H3Data,

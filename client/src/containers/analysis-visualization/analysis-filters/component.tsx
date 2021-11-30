@@ -14,7 +14,6 @@ const AnalysisFilters: React.FC = () => {
     <div className="inline-flex gap-2 flex-wrap">
       {layer !== 'material' && <ImpactIndicatorsFilter />}
       {layer !== 'impact' && <Materials />}
-      {layer === 'impact' && <GroupByFilter />}
       <YearsFilter />
       {layer === 'impact' && <MoreFilters />}
     </div>

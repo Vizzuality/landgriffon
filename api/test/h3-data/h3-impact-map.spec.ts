@@ -74,9 +74,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         'indicatorId must be a string',
         'year should not be empty',
         'year must be a number conforming to the specified constraints',
-        'groupBy must be a valid enum value',
-        'groupBy should not be empty',
-        'groupBy must be a string',
         'Available resolutions: 1 to 6',
         'resolution must not be greater than 6',
         'resolution must not be less than 1',
@@ -97,28 +94,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         'indicatorId must be a string',
         'year should not be empty',
         'year must be a number conforming to the specified constraints',
-        'groupBy must be a valid enum value',
-        'groupBy should not be empty',
-        'groupBy must be a string',
-        'Available resolutions: 1 to 6',
-        'resolution must not be greater than 6',
-        'resolution must not be less than 1',
-        'resolution must be a number conforming to the specified constraints',
-        'resolution should not be empty',
-      ]);
-    });
-
-    test('When I get a calculated H3 Impact Map without a group by value, then I should get a proper error message', async () => {
-      const response = await request(app.getHttpServer())
-        .get(`/api/v1/h3/map/impact`)
-        .query({
-          indicatorId: impactMapMockData.indicatorId,
-          year: 2020,
-        });
-      expect(response.body.errors[0].meta.rawError.response.message).toEqual([
-        'groupBy must be a valid enum value',
-        'groupBy should not be empty',
-        'groupBy must be a string',
         'Available resolutions: 1 to 6',
         'resolution must not be greater than 6',
         'resolution must not be less than 1',
@@ -133,7 +108,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         .query({
           indicatorId: impactMapMockData.indicatorId,
           year: 2020,
-          groupBy: 'material',
         });
       expect(response.body.errors[0].meta.rawError.response.message).toEqual([
         'Available resolutions: 1 to 6',
@@ -151,7 +125,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       .query({
         indicatorId: impactMapMockData.indicatorId,
         year: 2020,
-        groupBy: 'material',
         resolution: 6,
       });
 
@@ -187,7 +160,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
           indicatorId: impactMapMockData.indicatorId,
           'materialIds[]': [impactMapMockData.materialOneId],
           year: 2020,
-          groupBy: 'material',
           resolution: 6,
         });
 
@@ -216,7 +188,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
           indicatorId: impactMapMockData.indicatorId,
           'originIds[]': [impactMapMockData.adminRegionOneId],
           year: 2020,
-          groupBy: 'material',
           resolution: 6,
         });
 
@@ -245,7 +216,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
           indicatorId: impactMapMockData.indicatorId,
           'supplierIds[]': [impactMapMockData.t1SupplierOneId],
           year: 2020,
-          groupBy: 'material',
           resolution: 6,
         });
 
@@ -274,7 +244,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
           indicatorId: impactMapMockData.indicatorId,
           'supplierIds[]': [impactMapMockData.producerOneId],
           year: 2020,
-          groupBy: 'material',
           resolution: 6,
         });
 

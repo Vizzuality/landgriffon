@@ -433,7 +433,6 @@ export class H3DataRepository extends Repository<H3Data> {
   async getImpactMap(
     indicator: Indicator,
     resolution: number,
-    groupBy: string,
     year: number,
     materialIds?: string[],
     originIds?: string[],

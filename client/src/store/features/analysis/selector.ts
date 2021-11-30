@@ -36,7 +36,6 @@ export const filtersForH3API = createSelector([analysis], (analysisState: Analys
   const result: ImpactH3APIParams = {
     year: filters.startYear,
     indicatorId: filters.indicator?.value,
-    groupBy: filters.by,
     ...(filters.materials && filters.materials.length
       ? { materialIds: filters.materials?.map(({ value }) => value) }
       : {}),

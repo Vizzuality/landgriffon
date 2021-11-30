@@ -152,6 +152,87 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     });
   });
 
+  describe('Zoom levels', () => {
+    test('When I get a calculated H3 Water Impact Map different zoom levels, then I should get the projected h3 data (zoom 2)', async () => {
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/h3/map/impact`)
+        .query({
+          indicatorId: impactMapMockData.indicatorId,
+          year: 2020,
+          resolution: 2,
+        });
+
+      expect(response.body.data).toEqual(
+        expect.arrayContaining([
+          {
+            h: '821207fffffffff',
+            v: 2234,
+          },
+        ]),
+      );
+      expect(response.body.metadata).toEqual({
+        quantiles: [2234, 2234, 2234, 2234, 2234, 2234, 2234],
+        unit: 'tonnes',
+      });
+    });
+
+    test('When I get a calculated H3 Water Impact Map different zoom levels, then I should get the projected h3 data (zoom 4)', async () => {
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/h3/map/impact`)
+        .query({
+          indicatorId: impactMapMockData.indicatorId,
+          year: 2020,
+          resolution: 4,
+        });
+
+      expect(response.body.data).toEqual(
+        expect.arrayContaining([
+          {
+            h: '841203bffffffff',
+            v: 2234,
+          },
+        ]),
+      );
+      expect(response.body.metadata).toEqual({
+        quantiles: [2234, 2234, 2234, 2234, 2234, 2234, 2234],
+        unit: 'tonnes',
+      });
+    });
+
+    test('When I get a calculated H3 Water Impact Map different zoom levels, then I should get the projected h3 data (zoom 6)', async () => {
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/h3/map/impact`)
+        .query({
+          indicatorId: impactMapMockData.indicatorId,
+          year: 2020,
+          resolution: 6,
+        });
+
+      expect(response.body.data).toEqual(
+        expect.arrayContaining([
+          {
+            h: '861203a6fffffff',
+            v: 500,
+          },
+          {
+            h: '861203a4fffffff',
+            v: 1117,
+          },
+          {
+            h: '861203a5fffffff',
+            v: 617,
+          },
+        ]),
+      );
+      expect(response.body.metadata).toEqual({
+        quantiles: [
+          500, 539.0078, 578.0858000000001, 617, 783.6999999999999, 950.7, 1117,
+        ],
+        unit: 'tonnes',
+      });
+    });
+  });
+
   describe('Optional query parameters', () => {
     test('When I get a calculated H3 Water Impact Map with the necessary input values and materials filter, then I should get the correct h3 data', async () => {
       const response = await request(app.getHttpServer())

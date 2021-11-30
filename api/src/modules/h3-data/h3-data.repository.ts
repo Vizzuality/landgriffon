@@ -440,7 +440,10 @@ export class H3DataRepository extends Repository<H3Data> {
   ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
     const query: SelectQueryBuilder<any> = getManager()
       .createQueryBuilder()
-      .select('unnest(gr."h3Flat")', 'h')
+      .select(
+        `h3_to_parent(unnest(gr."h3Flat"::h3index[]), ${resolution})`,
+        'h',
+      )
       .addSelect('sum(ir.value/gr."h3FlatLength")', 'v')
       .from(SourcingLocation, 'sl')
       .innerJoin(SourcingRecord, 'sr', 'sl.id = sr.sourcingLocationId')

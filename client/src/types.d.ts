@@ -35,7 +35,6 @@ export type RiskH3APIParams = MaterialH3APIParams & {
 
 export type ImpactH3APIParams = CommonH3APIParams & {
   indicatorId: string;
-  groupBy: string;
   materialIds?: string[];
   originIds?: string[];
   supplierIds?: string[];

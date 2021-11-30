@@ -32,13 +32,6 @@ export class GetImpactMapDto {
   year!: number;
 
   @ApiProperty()
-  @Type(() => String)
-  @IsString()
-  @IsNotEmpty()
-  @IsEnum(GROUP_BY_VALUES)
-  groupBy!: string;
-
-  @ApiProperty()
   @IsNotEmpty()
   @Type(() => Number)
   @IsNumber()

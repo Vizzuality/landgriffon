@@ -319,7 +319,6 @@ export class H3DataService {
     } = await this.h3DataRepository.getImpactMap(
       indicator,
       getImpactMapDto.resolution,
-      getImpactMapDto.groupBy,
       getImpactMapDto.year,
       getImpactMapDto.materialIds,
       getImpactMapDto.originIds,

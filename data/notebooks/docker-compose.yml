@@ -7,7 +7,6 @@ services:
       volumes:
         - ../data:/home/jovyan/work/datasets
         - ./:/home/jovyan/work/notebooks
-        - /opt/ssl-certs/jupyter:/etc/ssl/notebook
       ports:
         - 8888:8888
       container_name: lgd_jupyter_notebook

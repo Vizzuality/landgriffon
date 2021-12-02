@@ -7,7 +7,7 @@ import { analysis, setFilters } from 'store/features/analysis';
 import type { AnalysisState } from 'store/features/analysis';
 import Button from 'components/button';
 
-import Materials from '../materials/component';
+import Materials from '../materials';
 import OriginRegions from '../origin-regions/component';
 import Suppliers from '../suppliers/component';
 
@@ -98,31 +98,31 @@ const MoreFilters: React.FC = () => {
                 <div>
                   <div className="mb-1">Material</div>
                   <Materials
-                    className="w-full"
                     multiple
-                    value={moreFilters.materials}
-                    maxTagCount={MAX_TAG_COUNT}
-                    onChange={(values) => handleChangeFilter('materials', values)}
+                    // multiple
+                    // current={moreFilters.materials}
+                    // maxTagCount={MAX_TAG_COUNT}
+                    // onChange={(values) => handleChangeFilter('materials', values)}
                   />
                 </div>
                 <div>
                   <div className="mb-1">Origins</div>
-                  <OriginRegions
+                  {/* <OriginRegions
                     className="w-full"
                     value={moreFilters.origins}
                     maxTagCount={MAX_TAG_COUNT}
                     onChange={(values) => handleChangeFilter('origins', values)}
-                  />
+                  /> */}
                 </div>
                 <div>
                   <div className="mb-1">Suppliers</div>
-                  <Suppliers
+                  {/* <Suppliers
                     className="w-full"
                     multiple
                     value={moreFilters.suppliers}
                     maxTagCount={MAX_TAG_COUNT}
                     onChange={(values) => handleChangeFilter('suppliers', values)}
-                  />
+                  /> */}
                 </div>
               </div>
               <div className="flex gap-2 mt-4">

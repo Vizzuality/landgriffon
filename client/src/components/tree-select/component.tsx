@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useState, useMemo } from 'react';
+import { Fragment, useCallback, useState, useMemo, useEffect } from 'react';
 import classNames from 'classnames';
 import { Transition } from '@headlessui/react';
 import { ChevronDownIcon, ChevronUpIcon, ChevronRightIcon, XIcon } from '@heroicons/react/solid';
@@ -17,6 +17,7 @@ const SEARCH_OPTIONS = {
 };
 
 const TreeSelect: React.FC<TreeSelectProps> = ({
+  multiple = false,
   options = [],
   placeholder,
   showSearch = false,
@@ -28,6 +29,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   const [selected, setSelected] = useState<TreeSelectOption>(null);
   const [selectedKeys, setSelectedKeys] = useState<TreeProps['defaultSelectedKeys']>([]);
   const [expandedKeys, setExpandedKeys] = useState<TreeProps['defaultExpandedKeys']>([]);
+  const [checkedKeys, setCheckedKeys] = useState<TreeProps['defaultCheckedKeys']>([]);
 
   const renderTreeNodes = useMemo(
     () =>
@@ -75,10 +77,12 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
       setSelectedKeys(keys);
       setSelected(currentSelection);
       if (onChange) onChange(currentSelection);
-      setIsOpen(false);
+      if (!multiple) setIsOpen(false);
     },
-    [onChange],
+    [multiple, onChange],
   );
+
+  const handleCheck: TreeProps['onCheck'] = useCallback((a, b) => console.log(a, b), []);
 
   // Search capability
   const fuse = useMemo(() => new Fuse(options, SEARCH_OPTIONS), [options]);
@@ -106,23 +110,51 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     return options;
   }, [fuse, options, searchTerm]);
 
+  useEffect(() => {
+    console.log(options);
+    const currentSelection = options.filter(({ value }) => selectedKeys.includes(value));
+    console.log('currentSelection', currentSelection);
+    // if (onChange) onChange(currentSelection);
+  }, [options, selectedKeys]);
+
+  const Icon = () => (
+    <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+      {isOpen ? (
+        <ChevronUpIcon className="h-4 w-4 text-gray-900" aria-hidden="true" />
+      ) : (
+        <ChevronDownIcon className="h-4 w-4 text-gray-900" aria-hidden="true" />
+      )}
+    </span>
+  );
+
+  console.log(selected);
+
   return (
     <div className="relative">
-      <button
-        type="button"
-        className="bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default
-        focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer"
-        onClick={handleToggleOpen}
-      >
-        <span className="inline-block truncate">{selected ? selected.label : placeholder}</span>
-        <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-          {isOpen ? (
-            <ChevronUpIcon className="h-4 w-4 text-gray-900" aria-hidden="true" />
-          ) : (
-            <ChevronDownIcon className="h-4 w-4 text-gray-900" aria-hidden="true" />
-          )}
-        </span>
-      </button>
+      {multiple ? (
+        <div
+          className="flex align-center bg-white relative border border-gray-300 rounded-md shadow-sm py-2 pr-10 pl-3 cursor-pointer"
+          onClick={handleToggleOpen}
+        >
+          {/* <input onClick={(e) => e.stopPropagation()} className="py-2 -my-2 focus:outline-none" /> */}
+          <span className="inline-block truncate">
+            {placeholder && <span className="text-gray-300">{placeholder}</span>}
+          </span>
+          <Icon />
+        </div>
+      ) : (
+        <button
+          type="button"
+          className="bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left
+          focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer"
+          onClick={handleToggleOpen}
+        >
+          <span className="inline-block truncate">
+            {selected ? selected.label : <span className="text-gray-300">{placeholder}</span>}
+          </span>
+          <Icon />
+        </button>
+      )}
       <Transition
         show={isOpen}
         as={Fragment}
@@ -155,13 +187,16 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           <div className="p-4">
             <Tree
               autoExpandParent
-              checkable={false}
-              selectable
+              checkable={multiple}
+              selectable={!multiple}
+              multiple={multiple}
               defaultSelectedKeys={selectedKeys}
               defaultExpandedKeys={expandedKeys}
+              defaultCheckedKeys={checkedKeys}
               switcherIcon={customSwitcherIcon}
               onExpand={handleExpand}
               onSelect={handleSelect}
+              onCheck={handleCheck}
             >
               {renderTreeNodes(optionsResult)}
             </Tree>

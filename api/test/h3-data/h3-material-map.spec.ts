@@ -4,12 +4,17 @@ import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { H3DataRepository } from '../../src/modules/h3-data/h3-data.repository';
 import { H3DataModule } from '../../src/modules/h3-data/h3-data.module';
-import { h3DataMock, dropH3DataMock } from './mocks/h3-data.mock';
+import {
+  h3DataMock,
+  dropH3DataMock,
+  h3AlternativeDataMock,
+} from './mocks/h3-data.mock';
 import { h3MaterialFixtures } from './mocks/h3-fixtures';
 import { createMaterial, createMaterialToH3 } from '../entity-mocks';
 import { MaterialRepository } from '../../src/modules/materials/material.repository';
 import { MATERIAL_TO_H3_TYPE } from '../../src/modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from '../../src/modules/materials/materials-to-h3s.service';
+import { h3AlternativeFixture } from './mocks/h3-alternative-fixture';
 
 /**
  * Tests for the H3DataModule.
@@ -145,6 +150,33 @@ describe('H3 Data Module (e2e) - Material map', () => {
 
     expect(response.body.metadata).toEqual({
       quantiles: [1000, 1000, 1000, 1000, 1000, 1000, 1000],
+      unit: 'tonnes',
+    });
+  });
+
+  test('When I query H3 data at minimal resolution, then I should get 4 h3indexes with expected values and no 0 as value', async () => {
+    const h3Data = await h3AlternativeDataMock(
+      fakeTable,
+      fakeColumn,
+      h3AlternativeFixture,
+    );
+    const material = await createMaterial({ producer: h3Data });
+    const response = await request(app.getHttpServer()).get(
+      `/api/v1/h3/map/material?materialId=${material.id}&resolution=1`,
+    );
+
+    expect(response.body.data).toEqual([
+      { h: '8110bffffffffff', v: 1610 },
+      { h: '81743ffffffffff', v: 825 },
+      { h: '818c3ffffffffff', v: 430 },
+      { h: '812cbffffffffff', v: 800 },
+    ]);
+
+    expect(response.body.metadata).toEqual({
+      quantiles: [
+        430, 615.037, 800.0275, 812.5, 825.0784999999998, 1218.3635000000002,
+        1610,
+      ],
       unit: 'tonnes',
     });
   });

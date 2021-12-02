@@ -41,6 +41,43 @@ export const h3DataMock = async (h3DataMockParams: {
   return h3data.save();
 };
 
+// Same as h3DataMock but without inserting 1000 value at table creation. Can probably replace h3DataMock
+export const h3AlternativeDataMock = async (
+  h3TableName: string,
+  h3ColumnName: string,
+  materialH3Data?: { [key: string]: number | null },
+  indicatorId?: string,
+  year: number = 2010,
+): Promise<H3Data> => {
+  const formattedTableName: string = snakeCase(h3TableName);
+  const formattedColumnName: string = camelCase(h3ColumnName);
+
+  await getManager().query(
+    `CREATE TABLE ${formattedTableName} (h3index h3index, "${formattedColumnName}" float4);`,
+  );
+
+  if (materialH3Data) {
+    let query = `INSERT INTO ${formattedTableName} (h3index, "${formattedColumnName}") VALUES `;
+    const queryArr = [];
+    for (const [key, value] of Object.entries(materialH3Data)) {
+      queryArr.push(`('${key}', ${value})`);
+    }
+    query = query.concat(queryArr.join());
+    await getManager().query(query);
+  }
+
+  const h3data = new H3Data();
+  h3data.h3tableName = formattedTableName;
+  h3data.h3columnName = formattedColumnName;
+  h3data.h3resolution = 6;
+  h3data.year = year;
+  if (indicatorId) {
+    h3data.indicatorId = indicatorId;
+  }
+
+  return h3data.save();
+};
+
 export const dropH3DataMock = async (h3TableNames: string[]): Promise<void> => {
   for (const h3TableName of h3TableNames) {
     await getManager().query(`DROP TABLE IF EXISTS ${snakeCase(h3TableName)};`);

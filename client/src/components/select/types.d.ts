@@ -12,6 +12,8 @@ export type SelectProps = {
   label?: string;
   options: SelectOption[];
   current: SelectOption;
+  placeholder?: string;
+  searchPlaceholder?: string;
   onChange?: (selected: SelectOption) => unknown;
   onSearch?: (query: string) => unknown;
 };

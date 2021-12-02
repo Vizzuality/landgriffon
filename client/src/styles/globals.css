@@ -48,4 +48,12 @@
       backdrop-filter: blur(4px);
     }
   }
+
+  .rc-tree-checkbox {
+    @apply h-4 w-4 border border-gray-900;
+  }
+
+  .rc-tree-checkbox.rc-tree-checkbox-checked {
+    @apply bg-green-400;
+  }
 }

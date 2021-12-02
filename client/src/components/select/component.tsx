@@ -22,6 +22,8 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
     options = [],
     current = options[0],
     loading = false,
+    placeholder = null,
+    searchPlaceholder,
     onChange,
     onSearch,
   } = props;
@@ -63,7 +65,7 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
         <>
           <div className="relative">
             <Listbox.Button
-              className="bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default
+              className="bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left
               focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer"
             >
               {loading ? (
@@ -73,7 +75,10 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
                   {label && (
                     <span className="inline-block truncate mr-1 text-gray-400">{label}</span>
                   )}
-                  <span className="inline-block truncate">{selected?.label}</span>
+                  {placeholder && !selected?.label && (
+                    <span className="text-gray-300 truncate">{placeholder}</span>
+                  )}
+                  {selected && <span className="inline-block truncate">{selected?.label}</span>}
                   <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                     {open ? (
                       <ChevronUpIcon className="h-4 w-4 text-gray-900" aria-hidden="true" />
@@ -110,7 +115,7 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
                     <input
                       type="search"
                       value={searchTerm}
-                      placeholder="Search"
+                      placeholder={searchPlaceholder || 'Search'}
                       className="min-w-full w-24 focus:ring-0 focus:border-green-700 block text-sm border-0 border-b border-gray-300 rounded-t-md pr-8"
                       onChange={handleSearch}
                     />

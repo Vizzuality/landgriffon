@@ -1,9 +1,9 @@
-const Badge = () => (
-  <span className="inline-flex items-center py-0.5 pl-2 pr-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">
-    Small
+const Badge: React.FC = ({ children }) => (
+  <span className="inline-flex items-center py-0.5 pl-2 pr-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+    <span className="truncate">{children}</span>
     <button
       type="button"
-      className="flex-shrink-0 ml-0.5 h-4 w-4 rounded-full inline-flex items-center justify-center text-indigo-400 hover:bg-indigo-200 hover:text-indigo-500 focus:outline-none focus:bg-indigo-500 focus:text-white"
+      className="flex-shrink-0 ml-0.5 h-4 w-4 rounded-full inline-flex items-center justify-center text-green-400 hover:bg-green-200 hover:text-green-500 focus:outline-none focus:bg-green-500 focus:text-white"
     >
       <span className="sr-only">Remove small option</span>
       <svg className="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">

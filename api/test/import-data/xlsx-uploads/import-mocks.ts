@@ -12,6 +12,7 @@ import {
 import { snakeCase } from 'typeorm/util/StringUtils';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { range } from 'lodash';
+import { h3BasicFixture } from '../../h3-data/mocks/h3-fixtures';
 
 async function createIndicatorsForXLSXImport(): Promise<string[]> {
   const indicatorSpec = [

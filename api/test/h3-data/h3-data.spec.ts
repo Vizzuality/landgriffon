@@ -22,6 +22,7 @@ import { H3Data } from '../../src/modules/h3-data/h3-data.entity';
 import { Indicator } from '../../src/modules/indicators/indicator.entity';
 import { MATERIAL_TO_H3_TYPE } from '../../src/modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from '../../src/modules/materials/materials-to-h3s.service';
+import { h3BasicFixture } from './mocks/h3-fixtures';
 
 /**
  * Tests for the H3DataModule.

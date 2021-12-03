@@ -24,6 +24,7 @@ import {
   MATERIAL_TO_H3_TYPE,
   MaterialToH3,
 } from 'modules/materials/material-to-h3.entity';
+import { h3BasicFixture } from './h3-fixtures';
 
 export interface ImpactMapMockData {
   indicatorId: string;

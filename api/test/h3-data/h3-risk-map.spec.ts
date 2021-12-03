@@ -16,6 +16,7 @@ import { UnitRepository } from '../../src/modules/units/unit.repository';
 import { UnitConversionRepository } from '../../src/modules/unit-conversions/unit-conversion.repository';
 import { createWorldForRiskMapGeneration } from './mocks/h3-risk-map.mock';
 import { MaterialsToH3sService } from '../../src/modules/materials/materials-to-h3s.service';
+import { h3BasicFixture } from './mocks/h3-fixtures';
 
 /**
  * Tests for the H3DataModule.

@@ -1,4 +1,9 @@
+export const h3BasicFixture = {
+  '861203a4fffffff': 1000,
+};
+
 export const h3MaterialFixtures = {
+  '861203a4fffffff': 1000,
   '8612e1a2fffffff': 1000,
   '86125d767ffffff': 0,
   '86278455fffffff': 0,
@@ -401,6 +406,7 @@ export const h3MaterialFixtures = {
 };
 
 export const h3IndicatorFixtures = {
+  '861203a4fffffff': 1000,
   '8612e1a2fffffff': 0,
   '86125d767ffffff': 0,
   '86278455fffffff': 0,

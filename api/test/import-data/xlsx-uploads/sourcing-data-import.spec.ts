@@ -33,6 +33,7 @@ import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-r
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
+import { h3BasicFixture } from '../../h3-data/mocks/h3-fixtures';
 
 let tablesToDrop: string[] = [];
 

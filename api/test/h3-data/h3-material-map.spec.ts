@@ -4,11 +4,7 @@ import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { H3DataRepository } from '../../src/modules/h3-data/h3-data.repository';
 import { H3DataModule } from '../../src/modules/h3-data/h3-data.module';
-import {
-  h3DataMock,
-  dropH3DataMock,
-  h3AlternativeDataMock,
-} from './mocks/h3-data.mock';
+import { h3DataMock, dropH3DataMock } from './mocks/h3-data.mock';
 import { h3MaterialFixtures } from './mocks/h3-fixtures';
 import { createMaterial, createMaterialToH3 } from '../entity-mocks';
 import { MaterialRepository } from '../../src/modules/materials/material.repository';
@@ -154,28 +150,59 @@ describe('H3 Data Module (e2e) - Material map', () => {
     });
   });
 
-  test('When I query H3 data at minimal resolution, then I should get 4 h3indexes with expected values and no 0 as value', async () => {
-    const h3Data = await h3AlternativeDataMock(
+  test('When I query same H3 data at different resolutions I expect 4 indexes at resolution 1 and 7 indexes at resolution 3, 0 and null values ignored', async () => {
+    const h3Data = await h3DataMock(
       fakeTable,
       fakeColumn,
       h3AlternativeFixture,
     );
     const material = await createMaterial({ producer: h3Data });
-    const response = await request(app.getHttpServer()).get(
-      `/api/v1/h3/map/material?materialId=${material.id}&resolution=1`,
+    const responseRes1 = await request(app.getHttpServer())
+      .get(`/api/v1/h3/map/material`)
+      .query({
+        materialId: material.id,
+        resolution: 1,
+      });
+
+    const responseRes3 = await request(app.getHttpServer())
+      .get(`/api/v1/h3/map/material`)
+      .query({
+        materialId: material.id,
+        resolution: 3,
+      });
+
+    expect(responseRes1.body.data).toEqual(
+      expect.arrayContaining([
+        { h: '8110bffffffffff', v: 1610 },
+        { h: '81743ffffffffff', v: 825 },
+        { h: '818c3ffffffffff', v: 430 },
+        { h: '812cbffffffffff', v: 800 },
+      ]),
     );
 
-    expect(response.body.data).toEqual([
-      { h: '8110bffffffffff', v: 1610 },
-      { h: '81743ffffffffff', v: 825 },
-      { h: '818c3ffffffffff', v: 430 },
-      { h: '812cbffffffffff', v: 800 },
-    ]);
-
-    expect(response.body.metadata).toEqual({
+    expect(responseRes1.body.metadata).toEqual({
       quantiles: [
         430, 615.037, 800.0275, 812.5, 825.0784999999998, 1218.3635000000002,
         1610,
+      ],
+      unit: 'tonnes',
+    });
+
+    expect(responseRes3.body.data).toEqual(
+      expect.arrayContaining([
+        { h: '831080fffffffff', v: 860 },
+        { h: '8310b6fffffffff', v: 750 },
+        { h: '837400fffffffff', v: 735 },
+        { h: '837436fffffffff', v: 90 },
+        { h: '838c00fffffffff', v: 230 },
+        { h: '838c36fffffffff', v: 200 },
+        { h: '832c80fffffffff', v: 800 },
+      ]),
+    );
+
+    expect(responseRes3.body.metadata).toEqual({
+      quantiles: [
+        90, 200.006, 231.1110000000001, 735, 750.01, 800.1320000000001, 860,
       ],
       unit: 'tonnes',
     });

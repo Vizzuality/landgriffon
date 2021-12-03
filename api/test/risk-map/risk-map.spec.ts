@@ -15,6 +15,7 @@ import { UnitRepository } from '../../src/modules/units/unit.repository';
 
 import { h3DataMock, dropH3DataMock } from '../h3-data/mocks/h3-data.mock';
 import {
+  h3BasicFixture,
   h3IndicatorFixtures,
   h3MaterialFixtures,
 } from '../h3-data/mocks/h3-fixtures';

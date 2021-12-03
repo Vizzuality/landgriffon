@@ -5,6 +5,8 @@ import { ChevronDownIcon, ChevronUpIcon, ChevronRightIcon, XIcon } from '@heroic
 import Tree, { TreeNode, TreeProps } from 'rc-tree';
 import Fuse from 'fuse.js';
 
+import Badge from 'components/badge';
+
 import type { TreeSelectProps, TreeSelectOption } from './types';
 
 const TREE_NODE_CLASSNAMES =
@@ -27,9 +29,10 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selected, setSelected] = useState<TreeSelectOption>(null);
+  const [checked, setChecked] = useState<TreeSelectOption[]>(null);
   const [selectedKeys, setSelectedKeys] = useState<TreeProps['defaultSelectedKeys']>([]);
   const [expandedKeys, setExpandedKeys] = useState<TreeProps['defaultExpandedKeys']>([]);
-  const [checkedKeys, setCheckedKeys] = useState<TreeProps['defaultCheckedKeys']>([]);
+  const [checkedKeys, setCheckedKeys] = useState<TreeProps['checkedKeys']>([]);
 
   const renderTreeNodes = useMemo(
     () =>
@@ -71,6 +74,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
 
   const handleExpand: TreeProps['onExpand'] = useCallback((keys) => setExpandedKeys(keys), []);
 
+  // Selection for non-multiple
   const handleSelect: TreeProps['onSelect'] = useCallback(
     (keys, { node }) => {
       const currentSelection = { label: node.title as string, value: node.key };
@@ -82,7 +86,26 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     [multiple, onChange],
   );
 
-  const handleCheck: TreeProps['onCheck'] = useCallback((a, b) => console.log(a, b), []);
+  // Selection for multiple
+  const handleCheck = useCallback((checkedKeys, info) => {
+    const { checkedNodes } = info;
+    // 1. Extracting parents selected
+    const parentsWithChildren = checkedNodes.filter((node) => !!node?.children);
+    // 2. Extracting children ids from parents selected above
+    const childrenWithParents = [];
+    if (parentsWithChildren && parentsWithChildren.length) {
+      parentsWithChildren.forEach(({ children }) =>
+        children.forEach(({ key }) => childrenWithParents.push(key)),
+      );
+    }
+    // 3. Filtering checkedKeys with children ids to not send unnecessary values
+    const filteredValues =
+      childrenWithParents && childrenWithParents.length
+        ? checkedKeys.filter((key) => !childrenWithParents.includes(key))
+        : checkedKeys;
+
+    setCheckedKeys(filteredValues);
+  }, []);
 
   // Search capability
   const fuse = useMemo(() => new Fuse(options, SEARCH_OPTIONS), [options]);
@@ -110,12 +133,30 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     return options;
   }, [fuse, options, searchTerm]);
 
-  useEffect(() => {
-    console.log(options);
-    const currentSelection = options.filter(({ value }) => selectedKeys.includes(value));
-    console.log('currentSelection', currentSelection);
-    // if (onChange) onChange(currentSelection);
-  }, [options, selectedKeys]);
+  // useEffect(() => {
+  //   const currentSelection = options.filter(({ value }) => selectedKeys.includes(value));
+  //   console.log('currentSelection', currentSelection);
+  //   // if (onChange) onChange(currentSelection);
+  // }, [options, selectedKeys]);
+
+  // Only for multiple, find options depending on checked keys
+  const currentOptions = useMemo<TreeSelectOption[]>(() => {
+    const checkedOptions = [];
+    if (checkedKeys) {
+      (checkedKeys as string[]).forEach((key) => {
+        const recursiveSearch = (arr) => {
+          arr.forEach((opt) => {
+            if (opt.value === key) checkedOptions.push(opt);
+            if (opt.children) recursiveSearch(opt.children);
+          });
+        };
+        recursiveSearch(options);
+      });
+    }
+    return checkedOptions;
+  }, [checkedKeys, options]);
+
+  console.log('currentOptions', currentOptions);
 
   const Icon = () => (
     <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
@@ -127,8 +168,6 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     </span>
   );
 
-  console.log(selected);
-
   return (
     <div className="relative">
       {multiple ? (
@@ -136,10 +175,17 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           className="flex align-center bg-white relative border border-gray-300 rounded-md shadow-sm py-2 pr-10 pl-3 cursor-pointer"
           onClick={handleToggleOpen}
         >
-          {/* <input onClick={(e) => e.stopPropagation()} className="py-2 -my-2 focus:outline-none" /> */}
-          <span className="inline-block truncate">
-            {placeholder && <span className="text-gray-300">{placeholder}</span>}
-          </span>
+          {currentOptions && currentOptions.length > 2 && (
+            <Badge>{currentOptions.length} selected</Badge>
+          )}
+          {currentOptions &&
+            currentOptions.length >= 2 &&
+            currentOptions.map(({ value, label }) => <Badge key={value}>{label}</Badge>)}
+          {(!currentOptions || currentOptions.length === 0) && (
+            <span className="inline-block truncate">
+              {placeholder && <span className="text-gray-300">{placeholder}</span>}
+            </span>
+          )}
           <Icon />
         </div>
       ) : (
@@ -186,16 +232,16 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           )}
           <div className="p-4">
             <Tree
-              autoExpandParent
+              // autoExpandParent
               checkable={multiple}
-              selectable={!multiple}
-              multiple={multiple}
-              defaultSelectedKeys={selectedKeys}
-              defaultExpandedKeys={expandedKeys}
-              defaultCheckedKeys={checkedKeys}
+              // selectable={!multiple}
+              // multiple={multiple}
+              // defaultSelectedKeys={selectedKeys}
+              // defaultExpandedKeys={expandedKeys}
+              checkedKeys={checkedKeys}
               switcherIcon={customSwitcherIcon}
-              onExpand={handleExpand}
-              onSelect={handleSelect}
+              // onExpand={handleExpand}
+              // onSelect={handleSelect}
               onCheck={handleCheck}
             >
               {renderTreeNodes(optionsResult)}

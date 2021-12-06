@@ -1,11 +1,17 @@
-import { createIndicator, createMaterial } from '../../entity-mocks';
 import { h3DataMock } from '../../h3-data/mocks/h3-data.mock';
-import { Material } from '../../../src/modules/materials/material.entity';
+import {
+  createIndicator,
+  createMaterial,
+  createMaterialToH3,
+} from '../../entity-mocks';
+import { Material } from 'modules/materials/material.entity';
 import {
   Indicator,
   INDICATOR_TYPES,
-} from '../../../src/modules/indicators/indicator.entity';
+} from 'modules/indicators/indicator.entity';
 import { snakeCase } from 'typeorm/util/StringUtils';
+import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
+import { range } from 'lodash';
 
 async function createIndicatorsForXLSXImport(): Promise<string[]> {
   const indicatorSpec = [
@@ -35,16 +41,24 @@ async function createIndicatorsForXLSXImport(): Promise<string[]> {
       nameCode: spec.nameCode,
     });
 
-    await h3DataMock(
-      `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}_indicator_table`,
-      `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}IndicatorColumn`,
-      null,
-      indicator.id,
-    );
+    for (const year of range(2010, 2020)) {
+      await h3DataMock({
+        h3TableName: `${spec.name
+          .replace(/[^a-zA-Z]/g, '')
+          .substring(0, 10)}_indicator_table_${year}`,
+        h3ColumnName: `${spec.name
+          .replace(/[^a-zA-Z]/g, '')
+          .substring(0, 10)}IndicatorColumn`,
+        indicatorId: indicator.id,
+        year,
+      });
 
-    tableList.push(
-      `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}_indicator_table`,
-    );
+      tableList.push(
+        `${spec.name
+          .replace(/[^a-zA-Z]/g, '')
+          .substring(0, 10)}_indicator_table_${year}`,
+      );
+    }
   }
 
   return tableList;
@@ -103,14 +117,24 @@ async function createMaterialTreeForXLSXImport(): Promise<string[]> {
   const tableList: string[] = [];
 
   for (const spec of materialSpec) {
-    const materialHarvestH3Table = await h3DataMock(
-      `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}HarvestTable`,
-      `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}HarvestColumn`,
-    );
-    const materialProductionH3Table = await h3DataMock(
-      `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}ProductionTable`,
-      `${spec.name.replace(/[^a-zA-Z]/g, '').substring(0, 10)}ProductionColumn`,
-    );
+    await h3DataMock({
+      h3TableName: `${spec.name
+        .replace(/[^a-zA-Z]/g, '')
+        .substring(0, 10)}HarvestTable`,
+      h3ColumnName: `${spec.name
+        .replace(/[^a-zA-Z]/g, '')
+        .substring(0, 10)}HarvestColumn`,
+      year: 2020,
+    });
+    await h3DataMock({
+      h3TableName: `${spec.name
+        .replace(/[^a-zA-Z]/g, '')
+        .substring(0, 10)}ProductionTable`,
+      h3ColumnName: `${spec.name
+        .replace(/[^a-zA-Z]/g, '')
+        .substring(0, 10)}ProductionColumn`,
+      year: 2020,
+    });
 
     tableList.push(
       snakeCase(
@@ -126,16 +150,63 @@ async function createMaterialTreeForXLSXImport(): Promise<string[]> {
     );
 
     const material = await createMaterial({
+      name: spec.name,
       hsCodeId: spec.hsCodeId,
       parent:
         spec.parentHsCodeId && spec.parentHsCodeId in materialMap
           ? materialMap[spec.parentHsCodeId]
           : null,
-      producerId: materialProductionH3Table.id,
-      harvestId: materialHarvestH3Table.id,
     });
 
-    materialMap[spec.hsCodeId] = material;
+    for (const year of range(2010, 2021)) {
+      const materialHarvestH3Table = await h3DataMock({
+        h3TableName: `${spec.name
+          .replace(/[^a-zA-Z]/g, '')
+          .substring(0, 10)}HarvestTable_${year}`,
+        h3ColumnName: `${spec.name
+          .replace(/[^a-zA-Z]/g, '')
+          .substring(0, 10)}HarvestColumn`,
+        year,
+      });
+      const materialProductionH3Table = await h3DataMock({
+        h3TableName: `${spec.name
+          .replace(/[^a-zA-Z]/g, '')
+          .substring(0, 10)}ProductionTable_${year}`,
+        h3ColumnName: `${spec.name
+          .replace(/[^a-zA-Z]/g, '')
+          .substring(0, 10)}ProductionColumn`,
+        year,
+      });
+
+      tableList.push(
+        snakeCase(
+          `${spec.name
+            .replace(/[^a-zA-Z]/g, '')
+            .substring(0, 10)}HarvestTable_${year}`,
+        ),
+      );
+      tableList.push(
+        snakeCase(
+          `${spec.name
+            .replace(/[^a-zA-Z]/g, '')
+            .substring(0, 10)}ProductionTable_${year}`,
+        ),
+      );
+
+      await createMaterialToH3(
+        material.id,
+        materialProductionH3Table.id,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
+
+      await createMaterialToH3(
+        material.id,
+        materialHarvestH3Table.id,
+        MATERIAL_TO_H3_TYPE.HARVEST,
+      );
+
+      materialMap[spec.hsCodeId] = material;
+    }
   }
 
   return tableList;

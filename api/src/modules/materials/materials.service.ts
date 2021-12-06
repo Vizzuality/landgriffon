@@ -60,7 +60,7 @@ export class MaterialsService extends AppBaseService<
    */
   static filterMaterialTree(root: Material): Material[] {
     let result: Material[] = [];
-    if (root.producerId === null && root.harvestId === null) {
+    if (!root.materialToH3s || root.materialToH3s.length === 0) {
       if (root.children) {
         root.children.forEach((child: Material) => {
           result = result.concat(this.filterMaterialTree(child));
@@ -83,9 +83,10 @@ export class MaterialsService extends AppBaseService<
   async findTreesWithOptions(
     args?: FindTreesWithOptionsArgs,
   ): Promise<Material[]> {
-    const materialTree: Material[] = await this.materialRepository.findTrees(
-      args,
-    );
+    const materialTree: Material[] = await this.materialRepository.findTrees({
+      ...args,
+      relations: ['materialToH3s'],
+    });
 
     let filteredMaterialTree: Material[] = [];
     materialTree.forEach((child: Material) => {

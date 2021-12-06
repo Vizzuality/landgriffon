@@ -11,6 +11,8 @@ import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
+import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
+import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
 
 @Injectable()
 export class H3FilterYearsByLayerService {
@@ -18,9 +20,11 @@ export class H3FilterYearsByLayerService {
     @InjectRepository(H3DataRepository)
     protected readonly h3DataRepository: H3DataRepository,
     protected readonly materialService: MaterialsService,
+    protected readonly materialToH3Service: MaterialsToH3sService,
     private readonly indicatorService: IndicatorsService,
     private readonly sourcingRecordService: SourcingRecordsService,
   ) {}
+
   async getYearsByLayerType(
     layerType: string,
     materialIds?: string[],
@@ -30,9 +34,9 @@ export class H3FilterYearsByLayerService {
       case LAYER_TYPES.IMPACT:
         return this.getAvailableYearsForImpactLayer(materialIds);
       case LAYER_TYPES.MATERIAL:
-        return this.getAvailableYearsForMaterialLayer(layerType, materialIds);
+        return this.getAvailableYearsForMaterialLayer(materialIds);
       case LAYER_TYPES.RISK:
-        return this.getAvailableYearsForRiskLayer(layerType, indicatorId);
+        return this.getAvailableYearsForRiskLayer(indicatorId);
       default:
         throw new Error(
           `Available years for Layer: ${layerType} could not been retrieved`,
@@ -41,7 +45,6 @@ export class H3FilterYearsByLayerService {
   }
 
   async getAvailableYearsForMaterialLayer(
-    layerType: LAYER_TYPES,
     materialIds?: string[],
   ): Promise<number[]> {
     if (materialIds && materialIds.length > 1) {
@@ -49,29 +52,33 @@ export class H3FilterYearsByLayerService {
         'Only one Material ID can be requested to filter for available years for a Material Layer type',
       );
     }
+
     if (materialIds?.length) {
-      const { harvestId, producerId } = await this.materialService.getById(
-        materialIds[0],
-      );
+      const materialsToH3s: MaterialToH3[] =
+        await this.materialToH3Service.find({
+          where: {
+            materialId: materialIds[0],
+          },
+        });
+
       return this.h3DataRepository.getYears({
-        layerType,
-        harvestId,
-        producerId,
+        layerType: LAYER_TYPES.MATERIAL,
+        h3DataIds: materialsToH3s.map(
+          (materialToH3: MaterialToH3) => materialToH3.h3DataId,
+        ),
       });
     } else {
-      return this.h3DataRepository.getYears({ layerType });
+      return this.h3DataRepository.getYears({
+        layerType: LAYER_TYPES.MATERIAL,
+      });
     }
   }
 
-  async getAvailableYearsForRiskLayer(
-    layerType: LAYER_TYPES,
-    indicatorId?: string,
-  ): Promise<number[]> {
-    if (indicatorId) {
-      return this.h3DataRepository.getYears({ layerType, indicatorId });
-    } else {
-      return this.h3DataRepository.getYears({ layerType });
-    }
+  async getAvailableYearsForRiskLayer(indicatorId?: string): Promise<number[]> {
+    return this.h3DataRepository.getYears({
+      layerType: LAYER_TYPES.RISK,
+      indicatorId,
+    });
   }
 
   /**

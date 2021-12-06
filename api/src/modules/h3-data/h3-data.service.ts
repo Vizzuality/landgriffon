@@ -18,6 +18,8 @@ import {
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import { H3FilterYearsByLayerService } from 'modules/h3-data/services/h3-filter-years-by-layer.service';
 import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
+import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
+import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 
 /**
  * @debt: Check if we actually need extending nestjs-base-service over this module.
@@ -32,6 +34,7 @@ export class H3DataService {
     @InjectRepository(H3DataRepository)
     protected readonly h3DataRepository: H3DataRepository,
     protected readonly materialService: MaterialsService,
+    protected readonly materialToH3Service: MaterialsToH3sService,
     private readonly indicatorService: IndicatorsService,
     private readonly unitConversionsService: UnitConversionsService,
     private readonly sourcingRecordService: SourcingRecordsService,
@@ -115,6 +118,7 @@ export class H3DataService {
   async getMaterialMapByResolution(
     materialId: string,
     resolution: number,
+    year: number,
   ): Promise<H3MapResponse> {
     /**
      * @note Currently we need to retrieve a unit to be shown on client, for a material
@@ -125,9 +129,12 @@ export class H3DataService {
     /**
      * @note To generate a Material Map, a producerId is required
      */
-    const { producerId } = await this.materialService.getById(materialId);
     const materialH3Data: H3Data | undefined =
-      await this.h3DataRepository.findOne(producerId);
+      await this.materialToH3Service.findH3DataForMaterialAndYear(
+        materialId,
+        year,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
 
     if (!materialH3Data)
       throw new NotFoundException(
@@ -150,9 +157,10 @@ export class H3DataService {
     materialId: string,
     indicatorId: string,
     resolution: number,
+    year: number,
   ): Promise<H3MapResponse> {
     /**
-     * @note To generate a Risk Map, a harvestId and h3Data by indicatorId are required
+     * @note To generate a Risk Map, harvest data and h3Data by indicatorId are required
      */
     const indicatorH3Data: H3Data | undefined =
       await this.h3DataRepository.findOne({
@@ -163,20 +171,30 @@ export class H3DataService {
       throw new NotFoundException(
         `There is no H3 Data for Indicator with ID: ${indicatorId}`,
       );
-    const { harvestId, producerId } = await this.materialService.getById(
-      materialId,
-    );
 
-    if (!harvestId) {
+    const harvestMaterialH3Data: H3Data | undefined =
+      await this.materialToH3Service.findH3DataForMaterialAndYear(
+        materialId,
+        year,
+        MATERIAL_TO_H3_TYPE.HARVEST,
+      );
+    if (!harvestMaterialH3Data) {
       throw new NotFoundException(
-        `There is no H3 Data for Material with ID: ${materialId}`,
+        `There is no H3 harvest data for Material with ID: ${materialId}`,
       );
     }
-    const harvestMaterialH3Data: H3Data | undefined =
-      await this.h3DataRepository.findOne(harvestId);
 
     const producerMaterialH3Data: H3Data | undefined =
-      await this.h3DataRepository.findOne(producerId);
+      await this.materialToH3Service.findH3DataForMaterialAndYear(
+        materialId,
+        year,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
+    if (!producerMaterialH3Data) {
+      throw new NotFoundException(
+        `There is no H3 producer data for Material with ID: ${materialId}`,
+      );
+    }
 
     const indicator: Indicator = await this.indicatorService.getIndicatorById(
       indicatorId,

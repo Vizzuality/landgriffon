@@ -27,4 +27,10 @@ export class GetMaterialH3ByResolutionDto {
   @IsNumber()
   @IsEnum(AvailableResolutions, { message: 'Available resolutions: 1 to 6' })
   resolution!: number;
+
+  @ApiProperty()
+  @Type(() => Number)
+  @IsNumber()
+  @IsNotEmpty()
+  year!: number;
 }

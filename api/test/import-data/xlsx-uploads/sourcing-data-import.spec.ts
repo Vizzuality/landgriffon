@@ -19,19 +19,20 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { createAdminRegion, createGeoRegion } from '../../entity-mocks';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
-import { UnknownLocationService } from '../../../src/modules/geo-coding/geocoding-strategies/unknown-location.geocoding.service';
-import { AdminRegion } from '../../../src/modules/admin-regions/admin-region.entity';
-import { GeoRegionRepository } from '../../../src/modules/geo-regions/geo-region.repository';
-import { GeoCodingService } from '../../../src/modules/geo-coding/geo-coding.service';
+import { UnknownLocationService } from 'modules/geo-coding/geocoding-strategies/unknown-location.geocoding.service';
+import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
+import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
+import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 import {
   createMaterialTreeForXLSXImport,
   createIndicatorsForXLSXImport,
 } from './import-mocks';
 import { h3DataMock, dropH3DataMock } from '../../h3-data/mocks/h3-data.mock';
-import { IndicatorRecord } from '../../../src/modules/indicator-records/indicator-record.entity';
-import { IndicatorRecordRepository } from '../../../src/modules/indicator-records/indicator-record.repository';
-import { IndicatorRepository } from '../../../src/modules/indicators/indicator.repository';
-import { H3DataRepository } from '../../../src/modules/h3-data/h3-data.repository';
+import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
+import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
+import { IndicatorRepository } from 'modules/indicators/indicator.repository';
+import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
+import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 
 let tablesToDrop: string[] = [];
 
@@ -92,6 +93,7 @@ describe('Sourcing Data import', () => {
   let app: INestApplication;
   let businessUnitRepository: BusinessUnitRepository;
   let materialRepository: MaterialRepository;
+  let materialToH3Service: MaterialsToH3sService;
   let supplierRepository: SupplierRepository;
   let adminRegionRepository: AdminRegionRepository;
   let geoRegionRepository: GeoRegionRepository;
@@ -118,6 +120,9 @@ describe('Sourcing Data import', () => {
     );
     materialRepository =
       moduleFixture.get<MaterialRepository>(MaterialRepository);
+    materialToH3Service = moduleFixture.get<MaterialsToH3sService>(
+      MaterialsToH3sService,
+    );
     supplierRepository =
       moduleFixture.get<SupplierRepository>(SupplierRepository);
     adminRegionRepository = moduleFixture.get<AdminRegionRepository>(
@@ -154,6 +159,7 @@ describe('Sourcing Data import', () => {
   });
 
   afterEach(async () => {
+    await materialToH3Service.delete({});
     await materialRepository.delete({});
     await indicatorRepository.delete({});
     await businessUnitRepository.delete({});
@@ -231,7 +237,7 @@ describe('Sourcing Data import', () => {
       .expect(HttpStatus.CREATED);
     const folderContent = await readdir(config.get('fileUploads.storagePath'));
     expect(folderContent.length).toEqual(0);
-  });
+  }, 10000);
 
   test('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (happy case)', async () => {
     const geoRegion: GeoRegion = await createGeoRegion();
@@ -239,7 +245,11 @@ describe('Sourcing Data import', () => {
       isoA2: 'ABC',
       geoRegion,
     });
-    await h3DataMock('h3_grid_deforestation_global', 'hansen_loss_2019');
+    await h3DataMock({
+      h3TableName: 'h3_grid_deforestation_global',
+      h3ColumnName: 'hansen_loss_2019',
+      year: 2019,
+    });
     tablesToDrop = [
       ...(await createMaterialTreeForXLSXImport()),
       ...(await createIndicatorsForXLSXImport()),
@@ -284,7 +294,11 @@ describe('Sourcing Data import', () => {
       isoA2: 'ABC',
       geoRegion,
     });
-    await h3DataMock('h3_grid_deforestation_global', 'hansen_loss_2019');
+    await h3DataMock({
+      h3TableName: 'h3_grid_deforestation_global',
+      h3ColumnName: 'hansen_loss_2019',
+      year: 2019,
+    });
     tablesToDrop = [
       ...(await createMaterialTreeForXLSXImport()),
       ...(await createIndicatorsForXLSXImport()),
@@ -310,7 +324,11 @@ describe('Sourcing Data import', () => {
       isoA2: 'ABC',
       geoRegion,
     });
-    await h3DataMock('h3_grid_deforestation_global', 'hansen_loss_2019');
+    await h3DataMock({
+      h3TableName: 'h3_grid_deforestation_global',
+      h3ColumnName: 'hansen_loss_2019',
+      year: 2019,
+    });
     tablesToDrop = [
       ...(await createMaterialTreeForXLSXImport()),
       ...(await createIndicatorsForXLSXImport()),

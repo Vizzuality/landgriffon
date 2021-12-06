@@ -5,6 +5,7 @@ import { AppModule } from 'app.module';
 import {
   createIndicator,
   createMaterial,
+  createMaterialToH3,
   createUnit,
   createUnitConversion,
 } from '../entity-mocks';
@@ -21,6 +22,8 @@ import { H3DataRepository } from '../../src/modules/h3-data/h3-data.repository';
 import { UnitConversionRepository } from '../../src/modules/unit-conversions/unit-conversion.repository';
 import { H3DataModule } from '../../src/modules/h3-data/h3-data.module';
 import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
+import { MATERIAL_TO_H3_TYPE } from '../../src/modules/materials/material-to-h3.entity';
+import { MaterialsToH3sService } from '../../src/modules/materials/materials-to-h3s.service';
 
 /**
  * Tests for the Risk Map module.
@@ -35,6 +38,7 @@ describe('Risk Map Test Suite (e2e)', () => {
 
   let app: INestApplication;
   let materialRepository: MaterialRepository;
+  let materialToH3Service: MaterialsToH3sService;
   let indicatorRepository: IndicatorRepository;
   let unitRepository: UnitRepository;
   let h3DataRepository: H3DataRepository;
@@ -45,6 +49,9 @@ describe('Risk Map Test Suite (e2e)', () => {
       imports: [AppModule, H3DataModule],
     }).compile();
 
+    materialToH3Service = moduleFixture.get<MaterialsToH3sService>(
+      MaterialsToH3sService,
+    );
     materialRepository =
       moduleFixture.get<MaterialRepository>(MaterialRepository);
     indicatorRepository =
@@ -67,6 +74,7 @@ describe('Risk Map Test Suite (e2e)', () => {
   });
 
   afterEach(async () => {
+    await materialToH3Service.delete({});
     await materialRepository.delete({});
     await h3DataRepository.delete({});
     await indicatorRepository.delete({});
@@ -123,12 +131,12 @@ describe('Risk Map Test Suite (e2e)', () => {
       unit,
       name: 'Indicator Name',
     });
-    await h3DataMock(
-      INDICATOR_FAKE_H3_TABLE,
-      INDICATOR_FAKE_H3_COLUMN,
-      false,
-      indicator.id,
-    );
+    await h3DataMock({
+      h3TableName: INDICATOR_FAKE_H3_TABLE,
+      h3ColumnName: INDICATOR_FAKE_H3_COLUMN,
+      indicatorId: indicator.id,
+      year: 2020,
+    });
     const material = await createMaterial({
       name: 'Material Name',
     });
@@ -143,21 +151,31 @@ describe('Risk Map Test Suite (e2e)', () => {
       });
 
     expect(response.body.errors[0].title).toEqual(
-      `There is no H3 Data for Material with ID: ${material.id}`,
+      `There is no H3 harvest data for Material with ID: ${material.id}`,
     );
   });
 
   test('Given there is H3 Data available, When I try to GET a Risk-Map with proper query parameters, then I should get a calculated Risk-Map', async () => {
-    const materialH3Data = await h3DataMock(
-      MATERIAL_FAKE_H3_TABLE,
-      MATERIAL_FAKE_H3_COLUMN,
-      h3MaterialFixtures,
-    );
+    const materialH3Data = await h3DataMock({
+      h3TableName: MATERIAL_FAKE_H3_TABLE,
+      h3ColumnName: MATERIAL_FAKE_H3_COLUMN,
+      additionalH3Data: h3MaterialFixtures,
+      year: 2020,
+    });
 
     const material = await createMaterial({
       name: 'Material Name',
-      harvest: materialH3Data,
     });
+    await createMaterialToH3(
+      material.id,
+      materialH3Data.id,
+      MATERIAL_TO_H3_TYPE.HARVEST,
+    );
+    await createMaterialToH3(
+      material.id,
+      materialH3Data.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
 
     const unit = await createUnit();
     await createUnitConversion({ unit });
@@ -166,12 +184,13 @@ describe('Risk Map Test Suite (e2e)', () => {
       name: 'Indicator Name',
       nameCode: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
     });
-    await h3DataMock(
-      INDICATOR_FAKE_H3_TABLE,
-      INDICATOR_FAKE_H3_COLUMN,
-      h3IndicatorFixtures,
-      indicator.id,
-    );
+    await h3DataMock({
+      h3TableName: INDICATOR_FAKE_H3_TABLE,
+      h3ColumnName: INDICATOR_FAKE_H3_COLUMN,
+      additionalH3Data: h3IndicatorFixtures,
+      indicatorId: indicator.id,
+      year: 2020,
+    });
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)

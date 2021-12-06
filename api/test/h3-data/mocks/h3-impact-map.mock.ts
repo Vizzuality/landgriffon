@@ -1,24 +1,29 @@
-import { Unit } from '../../../src/modules/units/unit.entity';
-import { UnitConversion } from '../../../src/modules/unit-conversions/unit-conversion.entity';
-import { Indicator } from '../../../src/modules/indicators/indicator.entity';
+import { Unit } from 'modules/units/unit.entity';
+import { UnitConversion } from 'modules/unit-conversions/unit-conversion.entity';
+import { Indicator } from 'modules/indicators/indicator.entity';
 import { h3DataMock } from './h3-data.mock';
-import { Material } from '../../../src/modules/materials/material.entity';
+import { Material } from 'modules/materials/material.entity';
 import {
   createAdminRegion,
   createGeoRegion,
   createIndicatorRecord,
   createMaterial,
+  createMaterialToH3,
   createSourcingLocation,
   createSourcingRecord,
   createSupplier,
 } from '../../entity-mocks';
-import { GeoRegion } from '../../../src/modules/geo-regions/geo-region.entity';
-import { SourcingLocation } from '../../../src/modules/sourcing-locations/sourcing-location.entity';
-import { SourcingRecord } from '../../../src/modules/sourcing-records/sourcing-record.entity';
+import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { getManager } from 'typeorm';
-import { H3Data } from '../../../src/modules/h3-data/h3-data.entity';
-import { AdminRegion } from '../../../src/modules/admin-regions/admin-region.entity';
-import { Supplier } from '../../../src/modules/suppliers/supplier.entity';
+import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
+import { Supplier } from 'modules/suppliers/supplier.entity';
+import {
+  MATERIAL_TO_H3_TYPE,
+  MaterialToH3,
+} from 'modules/materials/material-to-h3.entity';
 
 export interface ImpactMapMockData {
   indicatorId: string;
@@ -49,25 +54,33 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
   indicator.nameCode = 'UWU_T';
   await indicator.save();
 
-  const harvestH3Data = await h3DataMock(
-    'harvestTable',
-    'harvestColumn',
-    null,
-    indicator.id,
-  );
+  const harvestH3Data = await h3DataMock({
+    h3TableName: 'harvestTable',
+    h3ColumnName: 'harvestColumn',
+    indicatorId: indicator.id,
+    year: 2020,
+  });
 
-  const productionH3Data = await h3DataMock(
-    'productionTable',
-    'productionColumn',
-    null,
-    indicator.id,
-  );
+  const productionH3Data = await h3DataMock({
+    h3TableName: 'productionTable',
+    h3ColumnName: 'productionColumn',
+    indicatorId: indicator.id,
+    year: 2020,
+  });
 
   const materialOne: Material = await createMaterial({
     name: 'MaterialOne',
-    producerId: productionH3Data.id,
-    harvestId: harvestH3Data.id,
   });
+  await createMaterialToH3(
+    materialOne.id,
+    productionH3Data.id,
+    MATERIAL_TO_H3_TYPE.PRODUCER,
+  );
+  await createMaterialToH3(
+    materialOne.id,
+    harvestH3Data.id,
+    MATERIAL_TO_H3_TYPE.HARVEST,
+  );
 
   const geoRegionOne: GeoRegion = await createGeoRegion({
     h3Compact: ['861203a4fffffff', '861203a5fffffff'],
@@ -107,9 +120,17 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
 
   const materialTwo: Material = await createMaterial({
     name: 'MaterialTwo',
-    producerId: productionH3Data.id,
-    harvestId: harvestH3Data.id,
   });
+  await createMaterialToH3(
+    materialTwo.id,
+    productionH3Data.id,
+    MATERIAL_TO_H3_TYPE.PRODUCER,
+  );
+  await createMaterialToH3(
+    materialTwo.id,
+    harvestH3Data.id,
+    MATERIAL_TO_H3_TYPE.HARVEST,
+  );
 
   const geoRegionTwo: GeoRegion = await createGeoRegion({
     h3Compact: ['861203a4fffffff', '861203a6fffffff'],
@@ -162,6 +183,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
 };
 
 export const deleteImpactMapMockData = async (): Promise<void> => {
+  await getManager().delete(MaterialToH3, {});
   await getManager().delete(Material, {});
   await getManager().delete(H3Data, {});
   await getManager().delete(Indicator, {});

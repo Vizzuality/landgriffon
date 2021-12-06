@@ -88,10 +88,11 @@ export class H3DataController {
     @Query(ValidationPipe)
     queryParams: GetMaterialH3ByResolutionDto,
   ): Promise<H3MapResponse> {
-    const { materialId, resolution } = queryParams;
+    const { materialId, resolution, year } = queryParams;
     return await this.h3DataService.getMaterialMapByResolution(
       materialId,
       resolution,
+      year,
     );
   }
 
@@ -109,11 +110,12 @@ export class H3DataController {
   async getRiskMap(
     @Query(ValidationPipe) queryParams: GetRiskMapH3Dto,
   ): Promise<H3MapResponse> {
-    const { materialId, indicatorId, resolution } = queryParams;
+    const { materialId, indicatorId, resolution, year } = queryParams;
     return await this.h3DataService.getRiskMapByResolution(
       materialId,
       indicatorId,
       resolution,
+      year,
     );
   }
 

@@ -6,8 +6,10 @@ import { H3DataRepository } from '../../src/modules/h3-data/h3-data.repository';
 import { H3DataModule } from '../../src/modules/h3-data/h3-data.module';
 import { h3DataMock, dropH3DataMock } from './mocks/h3-data.mock';
 import { h3MaterialFixtures } from './mocks/h3-fixtures';
-import { createMaterial } from '../entity-mocks';
+import { createMaterial, createMaterialToH3 } from '../entity-mocks';
 import { MaterialRepository } from '../../src/modules/materials/material.repository';
+import { MATERIAL_TO_H3_TYPE } from '../../src/modules/materials/material-to-h3.entity';
+import { MaterialsToH3sService } from '../../src/modules/materials/materials-to-h3s.service';
 
 /**
  * Tests for the H3DataModule.
@@ -17,6 +19,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
   let app: INestApplication;
   let h3DataRepository: H3DataRepository;
   let materialRepository: MaterialRepository;
+  let materialToH3Service: MaterialsToH3sService;
   const FAKE_UUID = '959dc56e-a782-441a-be36-1aaa617ed843';
   const fakeTable = 'faketable';
   const fakeColumn = 'fakecolumn';
@@ -26,6 +29,9 @@ describe('H3 Data Module (e2e) - Material map', () => {
       imports: [AppModule, H3DataModule],
     }).compile();
 
+    materialToH3Service = moduleFixture.get<MaterialsToH3sService>(
+      MaterialsToH3sService,
+    );
     h3DataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
     materialRepository =
       moduleFixture.get<MaterialRepository>(MaterialRepository);
@@ -42,6 +48,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
   });
 
   afterEach(async () => {
+    await materialToH3Service.delete({});
     await materialRepository.delete({});
     await h3DataRepository.delete({});
     await dropH3DataMock([fakeTable]);
@@ -69,11 +76,31 @@ describe('H3 Data Module (e2e) - Material map', () => {
     );
   });
 
+  test('When I query a material H3 data but it has no year value, then I should get a proper error message', async () => {
+    const material = await createMaterial({ name: 'Material with no H3' });
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/h3/map/material`)
+      .query({
+        materialId: material.id,
+        resolution: 1,
+      });
+
+    expect(response.body.errors[0].meta.rawError.response.message).toEqual([
+      'year should not be empty',
+      'year must be a number conforming to the specified constraints',
+    ]);
+  });
+
   test('When I query a material H3 data but it has no H3 data available, then I should get a proper error message', async () => {
     const material = await createMaterial({ name: 'Material with no H3' });
-    const response = await request(app.getHttpServer()).get(
-      `/api/v1/h3/map/material?materialId=${material.id}&resolution=1`,
-    );
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/h3/map/material`)
+      .query({
+        materialId: material.id,
+        resolution: 1,
+        year: 2020,
+      });
+
     expect(response.body.errors[0].title).toEqual(
       `There is no H3 Data for Material with ID: ${material.id}`,
     );
@@ -90,11 +117,26 @@ describe('H3 Data Module (e2e) - Material map', () => {
   });
 
   test('When I query H3 data at minimal resolution, then I should 2 h3indexes and no 0 as value', async () => {
-    const h3Data = await h3DataMock(fakeTable, fakeColumn, h3MaterialFixtures);
-    const material = await createMaterial({ producer: h3Data });
-    const response = await request(app.getHttpServer()).get(
-      `/api/v1/h3/map/material?materialId=${material.id}&resolution=1`,
+    const h3Data = await h3DataMock({
+      h3TableName: fakeTable,
+      h3ColumnName: fakeColumn,
+      additionalH3Data: h3MaterialFixtures,
+      year: 2020,
+    });
+    const material = await createMaterial();
+    await createMaterialToH3(
+      material.id,
+      h3Data.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
     );
+
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/h3/map/material`)
+      .query({
+        resolution: 1,
+        materialId: material.id,
+        year: 2020,
+      });
 
     expect(response.body.data).toEqual([
       { h: '81123ffffffffff', v: 1000 },

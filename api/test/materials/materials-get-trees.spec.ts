@@ -5,22 +5,31 @@ import { AppModule } from 'app.module';
 import { Material } from 'modules/materials/material.entity';
 import { MaterialsModule } from 'modules/materials/materials.module';
 import { MaterialRepository } from 'modules/materials/material.repository';
-import { createH3Data, createMaterial } from '../entity-mocks';
+import {
+  createH3Data,
+  createMaterial,
+  createMaterialToH3,
+} from '../entity-mocks';
 import { expectedJSONAPIAttributes } from './config';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { H3DataRepository } from '../../src/modules/h3-data/h3-data.repository';
+import { MATERIAL_TO_H3_TYPE } from '../../src/modules/materials/material-to-h3.entity';
+import { MaterialsToH3sService } from '../../src/modules/materials/materials-to-h3s.service';
 
 //TODO: Allow these tests when feature fix is merged
 describe('Materials - Get trees', () => {
   let app: INestApplication;
   let materialRepository: MaterialRepository;
+  let materialToH3Service: MaterialsToH3sService;
   let h3dataRepository: H3DataRepository;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule, MaterialsModule],
     }).compile();
-
+    materialToH3Service = moduleFixture.get<MaterialsToH3sService>(
+      MaterialsToH3sService,
+    );
     materialRepository =
       moduleFixture.get<MaterialRepository>(MaterialRepository);
 
@@ -36,11 +45,13 @@ describe('Materials - Get trees', () => {
     );
     await app.init();
 
+    await materialToH3Service.delete({});
     await materialRepository.delete({});
     await h3dataRepository.delete({});
   });
 
   afterEach(async () => {
+    await materialToH3Service.delete({});
     await materialRepository.delete({});
     await h3dataRepository.delete({});
   });
@@ -54,18 +65,30 @@ describe('Materials - Get trees', () => {
 
     const rootMaterial: Material = await createMaterial({
       name: 'root material',
-      producerId: h3Data.id,
     });
+    await createMaterialToH3(
+      rootMaterial.id,
+      h3Data.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
     const childOneMaterial: Material = await createMaterial({
       name: 'leaf one material',
-      producerId: h3Data.id,
       parent: rootMaterial,
     });
+    await createMaterialToH3(
+      childOneMaterial.id,
+      h3Data.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
     const childTwoMaterial: Material = await createMaterial({
       name: 'leaf two material',
-      producerId: h3Data.id,
       parent: rootMaterial,
     });
+    await createMaterialToH3(
+      childTwoMaterial.id,
+      h3Data.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/materials/trees`)
@@ -87,23 +110,35 @@ describe('Materials - Get trees', () => {
     ).toEqual([childTwoMaterial.id, childOneMaterial.id].sort());
   });
 
-  test('Get trees of materials should filter out materials without producerId or harvestId - leaf nodes', async () => {
+  test('Get trees of materials should filter out materials without producer or harvest data - leaf nodes', async () => {
     const h3Data: H3Data = await createH3Data();
 
     const rootMaterial: Material = await createMaterial({
       name: 'root material',
-      producerId: h3Data.id,
     });
+    await createMaterialToH3(
+      rootMaterial.id,
+      h3Data.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
     const childOneMaterial: Material = await createMaterial({
       name: 'leaf one material',
-      producerId: h3Data.id,
       parent: rootMaterial,
     });
+    await createMaterialToH3(
+      childOneMaterial.id,
+      h3Data.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
     const childTwoMaterial: Material = await createMaterial({
       name: 'leaf two material',
-      harvestId: h3Data.id,
       parent: rootMaterial,
     });
+    await createMaterialToH3(
+      childTwoMaterial.id,
+      h3Data.id,
+      MATERIAL_TO_H3_TYPE.HARVEST,
+    );
     await createMaterial({
       name: 'leaf three material',
       parent: rootMaterial,
@@ -129,27 +164,39 @@ describe('Materials - Get trees', () => {
     ).toEqual([childTwoMaterial.id, childOneMaterial.id].sort());
   });
 
-  test('Get trees of materials should filter out materials without producerId or harvestId - branch nodes', async () => {
+  test('Get trees of materials should filter out materials without producer or harvest data - branch nodes', async () => {
     const h3Data: H3Data = await createH3Data();
 
     const rootMaterial: Material = await createMaterial({
       name: 'root material',
-      producerId: h3Data.id,
     });
+    await createMaterialToH3(
+      rootMaterial.id,
+      h3Data.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
     const childOneMaterial: Material = await createMaterial({
       name: 'branch one material',
       parent: rootMaterial,
     });
     const childTwoMaterial: Material = await createMaterial({
       name: 'branch two material',
-      harvestId: h3Data.id,
       parent: rootMaterial,
     });
+    await createMaterialToH3(
+      childTwoMaterial.id,
+      h3Data.id,
+      MATERIAL_TO_H3_TYPE.HARVEST,
+    );
     const childThreeMaterial: Material = await createMaterial({
       name: 'leaf three material',
-      harvestId: h3Data.id,
       parent: childOneMaterial,
     });
+    await createMaterialToH3(
+      childThreeMaterial.id,
+      h3Data.id,
+      MATERIAL_TO_H3_TYPE.HARVEST,
+    );
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/materials/trees`)
@@ -174,20 +221,34 @@ describe('Materials - Get trees', () => {
   test('Get trees of materials should return multiple trees in parallel if they exist', async () => {
     const h3Data: H3Data = await createH3Data();
 
-    const rootOneMaterial: Material = await createMaterial({
-      producerId: h3Data.id,
-    });
-    const rootTwoMaterial: Material = await createMaterial({
-      producerId: h3Data.id,
-    });
+    const rootOneMaterial: Material = await createMaterial({});
+    await createMaterialToH3(
+      rootOneMaterial.id,
+      h3Data.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
+    const rootTwoMaterial: Material = await createMaterial({});
+    await createMaterialToH3(
+      rootTwoMaterial.id,
+      h3Data.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
     const childOneMaterial: Material = await createMaterial({
-      producerId: h3Data.id,
       parent: rootOneMaterial,
     });
+    await createMaterialToH3(
+      childOneMaterial.id,
+      h3Data.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
     const childTwoMaterial: Material = await createMaterial({
-      producerId: h3Data.id,
       parent: rootOneMaterial,
     });
+    await createMaterialToH3(
+      childTwoMaterial.id,
+      h3Data.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/materials/trees`)
@@ -218,29 +279,49 @@ describe('Materials - Get trees', () => {
     const h3Data: H3Data = await createH3Data();
 
     const rootMaterial: Material = await createMaterial({
-      producerId: h3Data.id,
       name: 'root material',
     });
+    await createMaterialToH3(
+      rootMaterial.id,
+      h3Data.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
     const branchOneMaterial: Material = await createMaterial({
-      producerId: h3Data.id,
       name: 'branch one material',
       parent: rootMaterial,
     });
+    await createMaterialToH3(
+      branchOneMaterial.id,
+      h3Data.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
     const branchTwoMaterial: Material = await createMaterial({
-      producerId: h3Data.id,
       name: 'branch two material',
       parent: rootMaterial,
     });
-    await createMaterial({
-      producerId: h3Data.id,
+    await createMaterialToH3(
+      branchTwoMaterial.id,
+      h3Data.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
+    const leafOneMaterial: Material = await createMaterial({
       name: 'leaf one material',
       parent: branchOneMaterial,
     });
-    await createMaterial({
-      producerId: h3Data.id,
+    await createMaterialToH3(
+      leafOneMaterial.id,
+      h3Data.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
+    const leafTwoMaterial: Material = await createMaterial({
       name: 'leaf two material',
       parent: branchTwoMaterial,
     });
+    await createMaterialToH3(
+      leafTwoMaterial.id,
+      h3Data.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
 
     const responseDepthZero = await request(app.getHttpServer())
       .get(`/api/v1/materials/trees`)

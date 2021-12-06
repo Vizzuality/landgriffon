@@ -1,8 +1,6 @@
 import {
   Column,
   Entity,
-  JoinColumn,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   Tree,
@@ -14,7 +12,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
-import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
 
 export enum MATERIALS_STATUS {
   ACTIVE = 'active',
@@ -105,21 +103,9 @@ export class Material extends TimestampedBaseEntity {
   @Column({ type: 'text', nullable: true })
   datasetId: string;
 
-  @ManyToOne(() => H3Data, (h3grid: H3Data) => h3grid.id, {
-    nullable: true,
-    eager: true,
-  })
-  @JoinColumn()
-  producer: H3Data;
-  @Column({ nullable: true, unique: false })
-  producerId: string;
-
-  @ManyToOne(() => H3Data, (h3grid: H3Data) => h3grid.id, {
-    nullable: true,
-    eager: true,
-  })
-  @JoinColumn()
-  harvest: H3Data;
-  @Column({ nullable: true, unique: false })
-  harvestId: string;
+  @OneToMany(
+    () => MaterialToH3,
+    (materialToH3: MaterialToH3) => materialToH3.material,
+  )
+  materialToH3s: MaterialToH3[];
 }

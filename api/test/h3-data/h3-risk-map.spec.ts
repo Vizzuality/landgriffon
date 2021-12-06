@@ -15,6 +15,7 @@ import { IndicatorRepository } from '../../src/modules/indicators/indicator.repo
 import { UnitRepository } from '../../src/modules/units/unit.repository';
 import { UnitConversionRepository } from '../../src/modules/unit-conversions/unit-conversion.repository';
 import { createWorldForRiskMapGeneration } from './mocks/h3-risk-map.mock';
+import { MaterialsToH3sService } from '../../src/modules/materials/materials-to-h3s.service';
 
 /**
  * Tests for the H3DataModule.
@@ -28,6 +29,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
   let app: INestApplication;
   let h3DataRepository: H3DataRepository;
   let materialRepository: MaterialRepository;
+  let materialToH3Service: MaterialsToH3sService;
   let indicatorRepository: IndicatorRepository;
   let unitRepository: UnitRepository;
   let unitConversionRepository: UnitConversionRepository;
@@ -44,6 +46,9 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     h3DataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
     materialRepository =
       moduleFixture.get<MaterialRepository>(MaterialRepository);
+    materialToH3Service = moduleFixture.get<MaterialsToH3sService>(
+      MaterialsToH3sService,
+    );
     indicatorRepository =
       moduleFixture.get<IndicatorRepository>(IndicatorRepository);
     unitRepository = moduleFixture.get<UnitRepository>(UnitRepository);
@@ -65,6 +70,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
   afterEach(async () => {
     jest.clearAllMocks();
     await dropH3DataMock([fakeTable, fakeTable2]);
+    await materialToH3Service.delete({});
     await materialRepository.delete({});
     await h3DataRepository.delete({});
     await indicatorRepository.delete({});
@@ -174,6 +180,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       indicatorType: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
       fakeTable,
       fakeColumn,
+      year: 2020,
     });
     jest.spyOn(h3DataRepository, 'getWaterRiskMapByResolution');
 
@@ -198,22 +205,24 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       unit: 'tonnes',
     });
   });
+
   test('When I get a calculated H3 Biodiversity Loss Risk Map with the necessary input values, then I should get the h3 data (happy case)', async () => {
     const deforestationIndicator = await createIndicator({
       name: 'another indicator',
       nameCode: INDICATOR_TYPES.DEFORESTATION,
     });
-    const deforestationH3Data = await h3DataMock(
-      'fake2',
-      'fake3',
-      null,
-      deforestationIndicator.id,
-    );
+    const deforestationH3Data = await h3DataMock({
+      h3TableName: 'fake2',
+      h3ColumnName: 'fake3',
+      indicatorId: deforestationIndicator.id,
+      year: 2020,
+    });
     const { material, indicator, h3Data, unitConversion } =
       await createWorldForRiskMapGeneration({
         indicatorType: INDICATOR_TYPES.BIODIVERSITY_LOSS,
         fakeTable,
         fakeColumn,
+        year: 2020,
       });
     jest.spyOn(h3DataRepository, 'getBiodiversityLossRiskMapByResolution');
 
@@ -251,22 +260,24 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       unit: 'tonnes',
     });
   });
+
   test('When I get a calculated H3 Carbon Emission Risk Map with the necessary input values, then I should get the h3 data (happy case)', async () => {
     const deforestationIndicator = await createIndicator({
       name: 'another indicator',
       nameCode: INDICATOR_TYPES.DEFORESTATION,
     });
-    const deforestationH3Data = await h3DataMock(
-      fakeTable2,
-      fakeColumn2,
-      null,
-      deforestationIndicator.id,
-    );
+    const deforestationH3Data = await h3DataMock({
+      h3TableName: fakeTable2,
+      h3ColumnName: fakeColumn2,
+      indicatorId: deforestationIndicator.id,
+      year: 2020,
+    });
     const { material, indicator, h3Data, unitConversion } =
       await createWorldForRiskMapGeneration({
         indicatorType: INDICATOR_TYPES.CARBON_EMISSIONS,
         fakeTable,
         fakeColumn,
+        year: 2020,
       });
     jest.spyOn(h3DataRepository, 'getCarbonEmissionsRiskMapByResolution');
 
@@ -302,6 +313,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       unit: 'tonnes',
     });
   });
+
   // TODO: Update assertion as soon as actual calculus is validated
   test('When I get a calculated H3 Deforestation Loss Risk Map with the necessary input values, then I should get the h3 data (happy case)', async () => {
     const { material, indicator, h3Data } =
@@ -309,6 +321,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         indicatorType: INDICATOR_TYPES.DEFORESTATION,
         fakeTable,
         fakeColumn,
+        year: 2020,
       });
     jest.spyOn(h3DataRepository, 'getDeforestationLossRiskMapByResolution');
 
@@ -341,6 +354,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       indicatorType: INDICATOR_TYPES.BIODIVERSITY_LOSS,
       fakeTable,
       fakeColumn,
+      year: 2020,
     });
 
     const response = await request(app.getHttpServer())
@@ -365,6 +379,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       indicatorType: INDICATOR_TYPES.BIODIVERSITY_LOSS,
       fakeTable,
       fakeColumn,
+      year: 2020,
     });
 
     const response = await request(app.getHttpServer())

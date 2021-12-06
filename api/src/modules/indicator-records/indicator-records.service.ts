@@ -22,6 +22,8 @@ import {
 import { H3DataService } from 'modules/h3-data/h3-data.service';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
+import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
+import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 
 @Injectable()
 export class IndicatorRecordsService extends AppBaseService<
@@ -35,6 +37,7 @@ export class IndicatorRecordsService extends AppBaseService<
     protected readonly indicatorRecordRepository: IndicatorRecordRepository,
     private readonly indicatorService: IndicatorsService,
     private readonly h3DataService: H3DataService,
+    private readonly materialsToH3sService: MaterialsToH3sService,
   ) {
     super(
       indicatorRecordRepository,
@@ -90,8 +93,10 @@ export class IndicatorRecordsService extends AppBaseService<
     }
 
     const producerH3Table: H3Data | undefined =
-      await this.h3DataService.getById(
-        sourcingRecord.sourcingLocation.material.producerId,
+      await this.materialsToH3sService.findH3DataForMaterialAndYear(
+        sourcingRecord.sourcingLocation.material.id,
+        sourcingRecord.year,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
       );
 
     if (!producerH3Table) {
@@ -100,9 +105,12 @@ export class IndicatorRecordsService extends AppBaseService<
       );
     }
 
-    const harvestH3Table: H3Data | undefined = await this.h3DataService.getById(
-      sourcingRecord.sourcingLocation.material.harvestId,
-    );
+    const harvestH3Table: H3Data | undefined =
+      await this.materialsToH3sService.findH3DataForMaterialAndYear(
+        sourcingRecord.sourcingLocation.material.id,
+        sourcingRecord.year,
+        MATERIAL_TO_H3_TYPE.HARVEST,
+      );
 
     if (!harvestH3Table) {
       throw new MissingH3DataError(

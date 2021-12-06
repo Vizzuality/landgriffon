@@ -14,12 +14,14 @@ import {
   createH3Data,
   createIndicator,
   createMaterial,
+  createMaterialToH3,
   createSourcingLocation,
   createSourcingRecord,
 } from '../entity-mocks';
 import { H3Data } from '../../src/modules/h3-data/h3-data.entity';
-import { Material } from '../../src/modules/materials/material.entity';
 import { Indicator } from '../../src/modules/indicators/indicator.entity';
+import { MATERIAL_TO_H3_TYPE } from '../../src/modules/materials/material-to-h3.entity';
+import { MaterialsToH3sService } from '../../src/modules/materials/materials-to-h3s.service';
 
 /**
  * Tests for the H3DataModule.
@@ -29,6 +31,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
   let app: INestApplication;
   let h3DataRepository: H3DataRepository;
   let materialRepository: MaterialRepository;
+  let materialToH3Service: MaterialsToH3sService;
   const fakeTable = 'faketable';
   const fakeColumn = 'fakecolumn';
 
@@ -38,6 +41,9 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
     }).compile();
 
     h3DataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
+    materialToH3Service = moduleFixture.get<MaterialsToH3sService>(
+      MaterialsToH3sService,
+    );
     materialRepository =
       moduleFixture.get<MaterialRepository>(MaterialRepository);
 
@@ -53,6 +59,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
   });
 
   afterEach(async () => {
+    await materialToH3Service.delete({});
     await materialRepository.delete({});
     await h3DataRepository.delete({});
     await dropH3DataMock([fakeTable]);
@@ -73,7 +80,11 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
   });
 
   test('Given the H3 Data table is populated, when I query the API, then I should get its data in with h3index as key, and column values as value', async () => {
-    await h3DataMock(fakeTable, fakeColumn);
+    await h3DataMock({
+      h3TableName: fakeTable,
+      h3ColumnName: fakeColumn,
+      year: 2020,
+    });
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/data/${fakeTable}/${fakeColumn}`)
@@ -98,13 +109,24 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
 
   test('Given sourcing records exist in DB, When I query available years for a Impact layer filtering by one material, then I should get said data in a array of numbers', async () => {
     const fakeH3 = await createH3Data();
-    const material = await createMaterial({ producerId: fakeH3.id });
-    const material2 = await createMaterial({ producerId: fakeH3.id });
+    const materialOne = await createMaterial();
+    const materialTwo = await createMaterial();
+
+    await createMaterialToH3(
+      materialOne.id,
+      fakeH3.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
+    await createMaterialToH3(
+      materialTwo.id,
+      fakeH3.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
     const sourcingLocation = await createSourcingLocation({
-      materialId: material.id,
+      materialId: materialOne.id,
     });
     const sourcingLocation2 = await createSourcingLocation({
-      materialId: material2.id,
+      materialId: materialTwo.id,
     });
 
     const years = [2001, 2001, 2002, 2003, 2007];
@@ -123,7 +145,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
     }
 
     const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/years?layer=impact&materialIds[]=${material.id}`)
+      .get(`/api/v1/h3/years?layer=impact&materialIds[]=${materialOne.id}`)
       .expect(HttpStatus.OK);
 
     expect(response.body.data).toEqual([...new Set(years)]);
@@ -131,13 +153,25 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
 
   test('Given sourcing records exist in DB, When I query available years for a Impact layer filtering by materials, then I should get said data in a array of numbers', async () => {
     const fakeH3 = await createH3Data();
-    const material = await createMaterial({ producerId: fakeH3.id });
-    const material2 = await createMaterial({ producerId: fakeH3.id });
+    const materialOne = await createMaterial();
+    const materialTwo = await createMaterial();
+
+    await createMaterialToH3(
+      materialOne.id,
+      fakeH3.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
+    await createMaterialToH3(
+      materialTwo.id,
+      fakeH3.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
+
     const sourcingLocation = await createSourcingLocation({
-      materialId: material.id,
+      materialId: materialOne.id,
     });
     const sourcingLocation2 = await createSourcingLocation({
-      materialId: material2.id,
+      materialId: materialTwo.id,
     });
 
     const years = [2001, 2001, 2002, 2003, 2007];
@@ -157,7 +191,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
 
     const response = await request(app.getHttpServer())
       .get('/api/v1/h3/years')
-      .query({ layer: 'impact', materialIds: [material.id, material2.id] })
+      .query({ layer: 'impact', materialIds: [materialOne.id, materialTwo.id] })
       .expect(HttpStatus.OK);
 
     expect(response.body.data).toEqual([...new Set([...years, ...years2])]);
@@ -195,36 +229,52 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
     expect(response.body.data).toEqual([...new Set(years)]);
   });
 
-  test('Given there is material H3 data, When I query available years providing a material id, then I should get all available years for that material', async () => {
-    const years = [2001, 2001, 2002, 2003, 2007];
-    const fakeH3MasterData: Array<Partial<H3Data>> = [];
-    for await (const year of years) {
-      fakeH3MasterData.push({
-        h3tableName: createRandomNamesForH3TableAndColumns(),
-        h3columnName: createRandomNamesForH3TableAndColumns(),
-        h3resolution: 6,
+  test('Given there is material H3 data, when I query available years providing a material id, then I should get all available years for that material', async () => {
+    const yearsOne = [2001, 2001, 2003, 2018];
+    const yearsTwo = [2002, 2002, 2003, 2007];
+
+    const materialOne = await createMaterial();
+    const materialTwo = await createMaterial();
+
+    for await (const year of yearsOne) {
+      const h3Data: H3Data = await h3DataMock({
+        h3TableName: createRandomNamesForH3TableAndColumns(),
+        h3ColumnName: createRandomNamesForH3TableAndColumns(),
         year,
       });
-      const savedH3DataRows: H3Data[] = await h3DataRepository.save(
-        fakeH3MasterData,
-      );
-      const savedMaterials: Material[] = [];
-      for await (const h3row of savedH3DataRows) {
-        savedMaterials.push(await createMaterial({ harvestId: h3row.id }));
-      }
 
-      const response = await request(app.getHttpServer()).get(
-        `/api/v1/h3/years?layer=material&materialIds[]=${savedMaterials[0].id}`,
+      await createMaterialToH3(
+        materialOne.id,
+        h3Data.id,
+        MATERIAL_TO_H3_TYPE.HARVEST,
       );
+    }
 
-      const materialH3Data: H3Data[] = await h3DataRepository.find({
-        id: savedMaterials[0].harvestId,
+    for await (const year of yearsTwo) {
+      const h3Data: H3Data = await h3DataMock({
+        h3TableName: createRandomNamesForH3TableAndColumns(),
+        h3ColumnName: createRandomNamesForH3TableAndColumns(),
+        year,
       });
 
-      expect(materialH3Data[0].id).toEqual(savedMaterials[0].harvestId);
-      expect(response.body.data).toEqual([2001]);
+      await createMaterialToH3(
+        materialTwo.id,
+        h3Data.id,
+        MATERIAL_TO_H3_TYPE.HARVEST,
+      );
     }
+
+    const responseOne = await request(app.getHttpServer()).get(
+      `/api/v1/h3/years?layer=material&materialIds[]=${materialOne.id}`,
+    );
+    expect(responseOne.body.data).toEqual([...new Set(yearsOne)]);
+
+    const responseTwo = await request(app.getHttpServer()).get(
+      `/api/v1/h3/years?layer=material&materialIds[]=${materialTwo.id}`,
+    );
+    expect(responseTwo.body.data).toEqual([...new Set(yearsTwo)]);
   });
+
   test('Given there is Indicator H3 data, When I query the API for Risk layer, then I should get all available years that are indicator type', async () => {
     const years = [2001, 2001, 2002, 2003, 2007];
     const fakeH3MasterData: Array<Partial<H3Data>> = [];

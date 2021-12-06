@@ -1,5 +1,6 @@
 # Changelog
 
+- Refactor relationship between `material` and `h3Data`
 - Add optional filters to the impact map API endpoint (`originIds`, `supplierIds` and `materialIds`).
 - Add optional resolution parameter to impact map API endpoint.
 - Add Redis infrastructure and basic BullMQ config

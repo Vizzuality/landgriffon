@@ -2,25 +2,27 @@ import { getManager } from 'typeorm';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { snakeCase, camelCase } from 'typeorm/util/StringUtils';
 
-export const h3DataMock = async (
-  h3TableName: string,
-  h3ColumnName: string,
-  additionalH3Data?: any,
-  indicatorId?: string,
-  year: number = 2000,
-): Promise<H3Data> => {
-  const formattedTableName: string = snakeCase(h3TableName);
-  const formattedColumnName: string = camelCase(h3ColumnName);
+export const h3DataMock = async (h3DataMockParams: {
+  h3TableName: string;
+  h3ColumnName: string;
+  additionalH3Data?: Record<string, any> | null;
+  indicatorId?: string | null;
+  year: number;
+}): Promise<H3Data> => {
+  const formattedTableName: string = snakeCase(h3DataMockParams.h3TableName);
+  const formattedColumnName: string = camelCase(h3DataMockParams.h3ColumnName);
 
   await getManager().query(
-    `CREATE TABLE ${formattedTableName} (h3index h3index, "${formattedColumnName}" float4);` +
-      `INSERT INTO ${formattedTableName} (h3index, "${formattedColumnName}" ) VALUES ('861203a4fffffff', 1000);`,
+    `CREATE TABLE "${formattedTableName}" (h3index h3index, "${formattedColumnName}" float4);` +
+      `INSERT INTO "${formattedTableName}" (h3index, "${formattedColumnName}" ) VALUES ('861203a4fffffff', 1000);`,
   );
 
-  if (additionalH3Data) {
-    let query = `INSERT INTO ${formattedTableName} (h3index, "${formattedColumnName}") VALUES `;
+  if (h3DataMockParams.additionalH3Data) {
+    let query = `INSERT INTO "${formattedTableName}" (h3index, "${formattedColumnName}") VALUES `;
     const queryArr = [];
-    for (const [key, value] of Object.entries(additionalH3Data)) {
+    for (const [key, value] of Object.entries(
+      h3DataMockParams.additionalH3Data,
+    )) {
       queryArr.push(`('${key}', ${value})`);
     }
     query = query.concat(queryArr.join());
@@ -31,9 +33,9 @@ export const h3DataMock = async (
   h3data.h3tableName = formattedTableName;
   h3data.h3columnName = formattedColumnName;
   h3data.h3resolution = 6;
-  h3data.year = year;
-  if (indicatorId) {
-    h3data.indicatorId = indicatorId;
+  h3data.year = h3DataMockParams.year;
+  if (h3DataMockParams.indicatorId) {
+    h3data.indicatorId = h3DataMockParams.indicatorId;
   }
 
   return h3data.save();

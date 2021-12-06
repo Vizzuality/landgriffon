@@ -18,10 +18,9 @@ import {
 } from '@nestjs/common';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { SourcingRecord } from '../sourcing-records/sourcing-record.entity';
-import { IndicatorRecord } from '../indicator-records/indicator-record.entity';
-import { GeoRegion } from '../geo-regions/geo-region.entity';
-import { AdminRegion } from '../admin-regions/admin-region.entity';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
+import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 
 /**
  * @note: Column aliases are marked as 'h' and 'v' so that DB returns data in the format the consumer needs to be
@@ -700,34 +699,33 @@ export class H3DataRepository extends Repository<H3Data> {
 
   async getYears(yearsRequestParams: {
     layerType: LAYER_TYPES;
-    harvestId?: string;
-    producerId?: string;
+    h3DataIds?: string[] | null;
     indicatorId?: string;
   }): Promise<number[]> {
     const queryBuilder: SelectQueryBuilder<H3Data> = this.createQueryBuilder(
-      'h',
+      'h3data',
     )
       .select('year')
       .distinct(true)
       .where('year is not null')
       .orderBy('year', 'ASC');
+
     // If a indicatorId is provided, filter results by it
     if (yearsRequestParams.indicatorId) {
       queryBuilder.where('"indicatorId" = :indicatorId', {
         indicatorId: yearsRequestParams.indicatorId,
       });
     }
-    // If a producerId or harvestId is provided, filter by them.
-    if (yearsRequestParams.producerId) {
-      queryBuilder.where(`h.id=:id`, {
-        id: yearsRequestParams.producerId,
+
+    if (
+      yearsRequestParams.h3DataIds &&
+      yearsRequestParams.h3DataIds.length > 0
+    ) {
+      queryBuilder.where(`h3data.id  IN (:...h3DataIds)`, {
+        h3DataIds: yearsRequestParams.h3DataIds,
       });
     }
-    if (yearsRequestParams.harvestId) {
-      queryBuilder.where(`h.id=:id`, {
-        id: yearsRequestParams.harvestId,
-      });
-    }
+
     // Filter by data type
     if (yearsRequestParams.layerType !== LAYER_TYPES.RISK) {
       queryBuilder.andWhere(`"indicatorId" is null`);

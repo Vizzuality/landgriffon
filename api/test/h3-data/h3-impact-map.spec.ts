@@ -2,13 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
-import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { H3DataModule } from 'modules/h3-data/h3-data.module';
 import { dropH3DataMock } from './mocks/h3-data.mock';
-import { MaterialRepository } from 'modules/materials/material.repository';
-import { IndicatorRepository } from 'modules/indicators/indicator.repository';
-import { UnitRepository } from 'modules/units/unit.repository';
-import { UnitConversionRepository } from 'modules/unit-conversions/unit-conversion.repository';
 import {
   createImpactMapMockData,
   deleteImpactMapMockData,
@@ -21,11 +16,6 @@ import {
 
 describe('H3 Data Module (e2e) - Impact map', () => {
   let app: INestApplication;
-  let h3DataRepository: H3DataRepository;
-  let materialRepository: MaterialRepository;
-  let indicatorRepository: IndicatorRepository;
-  let unitRepository: UnitRepository;
-  let unitConversionRepository: UnitConversionRepository;
   let impactMapMockData: ImpactMapMockData;
 
   const fakeTable = 'faketable';
@@ -34,16 +24,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule, H3DataModule],
     }).compile();
-
-    h3DataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
-    materialRepository =
-      moduleFixture.get<MaterialRepository>(MaterialRepository);
-    indicatorRepository =
-      moduleFixture.get<IndicatorRepository>(IndicatorRepository);
-    unitRepository = moduleFixture.get<UnitRepository>(UnitRepository);
-    unitConversionRepository = moduleFixture.get<UnitConversionRepository>(
-      UnitConversionRepository,
-    );
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(

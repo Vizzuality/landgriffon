@@ -17,6 +17,10 @@ import {
 import { UnitConversion } from '../src/modules/unit-conversions/unit-conversion.entity';
 import { H3Data } from '../src/modules/h3-data/h3-data.entity';
 import { GeoRegion } from '../src/modules/geo-regions/geo-region.entity';
+import {
+  MATERIAL_TO_H3_TYPE,
+  MaterialToH3,
+} from '../src/modules/materials/material-to-h3.entity';
 
 async function createAdminRegion(
   additionalData: Partial<AdminRegion> = {},
@@ -124,6 +128,20 @@ async function createSupplier(
   );
 
   return supplier.save();
+}
+
+async function createMaterialToH3(
+  materialId: string,
+  h3DataId: string,
+  type: MATERIAL_TO_H3_TYPE,
+): Promise<MaterialToH3> {
+  const materialToH3 = MaterialToH3.merge(new MaterialToH3(), {
+    materialId,
+    h3DataId,
+    type,
+  });
+
+  return materialToH3.save();
 }
 
 async function createMaterial(
@@ -282,6 +300,7 @@ export {
   createIndicatorRecord,
   createIndicatorSource,
   createMaterial,
+  createMaterialToH3,
   createSupplier,
   createScenario,
   createScenarioIntervention,

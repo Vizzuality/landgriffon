@@ -5,9 +5,11 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Indicator } from 'modules/indicators/indicator.entity';
+import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
 
 /**
  * @note: Interface props are marked as 'h' and 'v' because that is what the DB returns when querying a h3 maps
@@ -65,4 +67,10 @@ export class H3Data extends BaseEntity {
 
   @Column({ type: 'json', nullable: true })
   metadata?: JSON;
+
+  @OneToMany(
+    () => MaterialToH3,
+    (materialToH3: MaterialToH3) => materialToH3.h3Data,
+  )
+  materialToH3s: MaterialToH3[];
 }

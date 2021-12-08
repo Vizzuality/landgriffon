@@ -50,12 +50,7 @@ DTYPES_TO_PG = {
     'float32': 'real',
     'float64': 'double precision'
 }
-BLOCKSIZE = 512
-H3_TABLE_PREFIX = 'h3_grid'
-H3_MASTER_TABLE = 'h3_data'
-MATERIALS_TABLE = 'material'
-INDICATORS_SOURCE_TABLE = 'indicator_source'
-INDICATORS_TABLE = 'indicator'
+BLOCK_SIZE = 512
 
 logging.basicConfig(level=logging.INFO)
 
@@ -68,7 +63,7 @@ postgres_thread_pool = ThreadedConnectionPool(1, 50,
 
 
 def slugify(s):
-    s = sub(r"(_|-)+", " ", s).title().replace(" ", "")
+    s = sub(r"[_-]+", " ", s).title().replace(" ", "")
     return ''.join([s[0].lower(), s[1:]])
 
 
@@ -79,7 +74,7 @@ def snakify(s):
 def gen_raster_h3_for_row_and_column(row, column, names, readers, h3_res):
     base = readers[0]
 
-    window = rio.windows.Window(column * BLOCKSIZE, row * BLOCKSIZE, BLOCKSIZE, BLOCKSIZE)
+    window = rio.windows.Window(column * BLOCK_SIZE, row * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
     w_transform = rio.windows.transform(window, base.transform)
     dfs = []
     for src in readers:
@@ -109,7 +104,7 @@ def gen_raster_h3_for_row(raster_list, h3_res, table_name, row):
 
     logging.debug(f'Starting iterating over row {row}')
 
-    column_range = range(ceil(base.width / BLOCKSIZE))
+    column_range = range(ceil(base.width / BLOCK_SIZE))
     progress_bar = tqdm(column_range)
     for column in progress_bar:
         results.append(gen_raster_h3_for_row_and_column(row, column, names, readers, h3_res))
@@ -130,22 +125,24 @@ def gen_raster_h3(raster_list, h3_res, table_name, thread_count):
 
     Takes a list of 1-band rasters with identical projection/transform.
     Reads each raster in blocks, and converts to h3 (nearest to centroid).
-    Yields a dataframe with an h3index and one column for each raster's value.
+    Yields a dataframe with a h3index and one column for each raster's value.
 
     Args:
-        raster_list: list of paths to rasters
-        h3_res: h3 resolution to use for resampling
+        :param raster_list: list of paths to rasters
+        :param h3_res: h3 resolution to use for resampling
+        :param table_name:
+        :param thread_count:
 
     Yields:
-        A Pandas dataframe for each raster block (usu. 512x512) with an
+        A Pandas dataframe for each raster block (usu. 512x512) with a
         h3index and one column for each raster's value.
     """
     base = rio.open(raster_list[0])
 
     pool = ThreadPool(thread_count)
 
-    height = ceil(base.height / BLOCKSIZE)
-    width = ceil(base.width / BLOCKSIZE)
+    height = ceil(base.height / BLOCK_SIZE)
+    width = ceil(base.width / BLOCK_SIZE)
 
     logging.info(f"Generating h3 data from raster with {height} x {width}")
 
@@ -173,7 +170,7 @@ def create_table(h3_res, raster_list, table):
 
     found_columns = False
     while not found_columns:
-        for row in range(ceil(base.width / BLOCKSIZE)):
+        for row in range(ceil(base.width / BLOCK_SIZE)):
             column_data = gen_raster_h3_for_row_and_column(row, 0, names, readers, h3_res)
             if column_data is not None:
                 found_columns = True
@@ -201,7 +198,7 @@ def write_data_to_database_table(table, results, row):
     for data in results:
         if data is not None:
             with StringIO() as buffer:
-                counter += len(data);
+                counter += len(data)
                 data.to_csv(buffer, na_rep="NULL", header=False)
                 buffer.seek(0)
                 cursor.copy_from(buffer, table, sep=',', null="NULL")
@@ -211,29 +208,15 @@ def write_data_to_database_table(table, results, row):
     postgres_thread_pool.putconn(conn, close=True)
 
 
-def load_raster_list_to_h3_table(raster_list, table, dataType, dataset, year, h3_res, thread_count):
+def load_raster_list_to_h3_table(raster_list, table, data_type, dataset, year, h3_res, thread_count):
     conn = postgres_thread_pool.getconn()
 
     cursor = conn.cursor()
-    # remove link from materials entity for dropping h3 master table
-    if dataset == 'es':
-        if dataType == 'production' and table != 'h3_grid_pasture_production':
-            cursor.execute(f"""update {MATERIALS_TABLE} set "producerId" = NULL where "datasetId" like 'es_%'""")
-        if dataType == 'harvest_area' and table != 'h3_grid_pasture_ha':
-            cursor.execute(f"""update {MATERIALS_TABLE} set "harvestId" = NULL where "datasetId" like 'es_%'""")
-        if dataType == 'production' and table == 'h3_grid_pasture_production':
-            cursor.execute(f"""update {MATERIALS_TABLE} set "producerId" = NULL where "datasetId" = 'es_pasture'""")
-        if dataType == 'harvest_area' and table == 'h3_grid_pasture_ha':
-            cursor.execute(f"""update {MATERIALS_TABLE} set "harvestId" = NULL where "datasetId" = 'es_pasture'""")
-
-    if dataset == 'spam':
-        if dataType == 'production':
-            cursor.execute(f"""update {MATERIALS_TABLE} set "producerId" = NULL where "datasetId" like 'spam_%'""")
-        if dataType == 'harvest_area':
-            cursor.execute(f"""update {MATERIALS_TABLE} set "harvestId" = NULL where "datasetId" like 'spam_%'""")
     logging.info(f"Dropping table {table}...")
     cursor.execute(f"DROP TABLE IF EXISTS {table};")
-    cursor.execute(f"""DELETE FROM {H3_MASTER_TABLE} WHERE "h3tableName" = '{table}';""")
+    cursor.execute(
+        f"""DELETE FROM "material_to_h3" WHERE "h3DataId" IN (SELECT id FROM "h3_data" WHERE "h3tableName" = '{table}');""")
+    cursor.execute(f"""DELETE FROM "h3_data" WHERE "h3tableName" = '{table}';""")
     conn.commit()
 
     postgres_thread_pool.putconn(conn)
@@ -247,25 +230,32 @@ def load_raster_list_to_h3_table(raster_list, table, dataType, dataset, year, h3
     # add rows to master table for each column
     for column in column_data:
         cursor.execute(f"""
-            INSERT INTO {H3_MASTER_TABLE} ("h3tableName", "h3columnName", "h3resolution", "year")
+            INSERT INTO "h3_data" ("h3tableName", "h3columnName", "h3resolution", "year")
             VALUES ('{table}', '{column}', {h3_res}, {year});
         """)
         # inter id in material entity
-        if dataType == 'indicator':
-            cursor.execute(f"""select id from {INDICATORS_TABLE} where "nameCode" = '{dataset}'""")
+        if data_type == 'indicator':
+            cursor.execute(f"""select id from "indicator" where "nameCode" = '{dataset}'""")
             indicator_data = cursor.fetchall()
             cursor.execute(
-                f"""update {H3_MASTER_TABLE}  set "indicatorId" = '{indicator_data[0][0]}' where  "h3columnName" = '{column}'""")
+                f"""update "h3_data"  set "indicatorId" = '{indicator_data[0][0]}' where  "h3columnName" = '{column}'""")
         else:
-            cursor.execute(f"""select id from {H3_MASTER_TABLE} where "h3columnName" = '{column}'""")
-            data = cursor.fetchall()
-            materialId = dataset + '_' + snakify(column).split('_')[-2]
-            if dataType == 'production':
-                cursor.execute(
-                    f""" update {MATERIALS_TABLE} set "producerId" = '{data[0][0]}' where "datasetId" = '{materialId}'""")
-            if dataType == 'harvest_area':
-                cursor.execute(
-                    f""" update {MATERIALS_TABLE} set "harvestId" = '{data[0][0]}' where "datasetId" = '{materialId}'""")
+            cursor.execute(f"""select id from "h3_data" where "h3columnName" = '{column}'""")
+            h3_data = cursor.fetchall()
+            dataset_id = dataset + '_' + snakify(column).split('_')[-2]
+            cursor.execute(f"""select id from "material" where "datasetId" = '{dataset_id}'""")
+            material_data = cursor.fetchall()
+            for material_id in material_data:
+                if data_type == 'production':
+                    cursor.execute(
+                        f"""DELETE FROM "material_to_h3" WHERE "materialId" = '{material_id[0]}' AND "type" = 'producer'""")
+                    cursor.execute(
+                        f"""INSERT INTO "material_to_h3" ("materialId", "h3DataId", "type") VALUES ('{material_id[0]}', '{h3_data[0][0]}', 'producer')""")
+                if data_type == 'harvest_area':
+                    cursor.execute(
+                        f"""DELETE FROM "material_to_h3" WHERE "materialId" = '{material_id[0]}' AND "type" = 'harvest'""")
+                    cursor.execute(
+                        f"""INSERT INTO "material_to_h3" ("materialId", "h3DataId", "type") VALUES ('{material_id[0]}', '{h3_data[0][0]}', 'harvest')""")
 
     conn.commit()
     cursor.close()

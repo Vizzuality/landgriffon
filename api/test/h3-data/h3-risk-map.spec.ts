@@ -5,7 +5,7 @@ import { AppModule } from 'app.module';
 import { H3DataRepository } from '../../src/modules/h3-data/h3-data.repository';
 import { H3DataModule } from '../../src/modules/h3-data/h3-data.module';
 import { dropH3DataMock, h3DataMock } from './mocks/h3-data.mock';
-import { createIndicator, createMaterial } from '../entity-mocks';
+import { createIndicator, createMaterial, createUnit } from '../entity-mocks';
 import { MaterialRepository } from '../../src/modules/materials/material.repository';
 import {
   Indicator,
@@ -17,6 +17,28 @@ import { UnitConversionRepository } from '../../src/modules/unit-conversions/uni
 import { createWorldForRiskMapGeneration } from './mocks/h3-risk-map.mock';
 import { MaterialsToH3sService } from '../../src/modules/materials/materials-to-h3s.service';
 import { h3BasicFixture } from './mocks/h3-fixtures';
+import {
+  h3AlternativeDeforestationFixture,
+  h3AlternativeIndicatorFixture,
+} from './mocks/h3-alternative-fixture';
+import {
+  expectedBiodiversityLossRes3Data,
+  expectedBiodiversityLossRes3Metadata,
+  expectedBiodiversityLossRes6Data,
+  expectedBiodiversityLossRes6Metadata,
+  expectedCarbonEmissionsRes3Data,
+  expectedCarbonEmissionsRes3Metadata,
+  expectedCarbonEmissionsRes6Data,
+  expectedCarbonEmissionsRes6Metadata,
+  expectedDeforestationRes3Data,
+  expectedDeforestationRes3Metadata,
+  expectedDeforestationRes6Data,
+  expectedDeforestationRes6Metadata,
+  expectedWaterRiskRes3Data,
+  expectedWaterRiskRes3Metadata,
+  expectedWaterRiskRes6Data,
+  expectedWaterRiskRes6Metadata,
+} from './expected-responses/risk-map-expected';
 
 /**
  * Tests for the H3DataModule.
@@ -36,8 +58,10 @@ describe('H3 Data Module (e2e) - Risk map', () => {
   let unitConversionRepository: UnitConversionRepository;
   const fakeTable = 'faketable';
   const fakeTable2 = 'faketable2';
+  const fakeTable3 = 'faketable3';
   const fakeColumn = 'fakecolumn';
   const fakeColumn2 = 'fakecolumn2';
+  const fakeColumn3 = 'fakecolumn3';
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -70,8 +94,8 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
   afterEach(async () => {
     jest.clearAllMocks();
-    await dropH3DataMock([fakeTable, fakeTable2]);
     await materialToH3Service.delete({});
+    await dropH3DataMock([fakeTable, fakeTable2, fakeTable3]);
     await materialRepository.delete({});
     await h3DataRepository.delete({});
     await indicatorRepository.delete({});
@@ -176,16 +200,74 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     ]);
   });
 
-  test('When I get a calculated H3 Water Risk Map with the necessary input values, then I should get the h3 data (happy case)', async () => {
+  test('When I try to GET a Risk-Map with correct queries, but there is no H3 Data available for requested Indicator, then I should get a proper error message', async () => {
     const { material, indicator } = await createWorldForRiskMapGeneration({
       indicatorType: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
       fakeTable,
       fakeColumn,
       year: 2020,
     });
-    jest.spyOn(h3DataRepository, 'getWaterRiskMapByResolution');
 
     const response = await request(app.getHttpServer())
+      .get(`/api/v1/h3/map/risk`)
+      .query({
+        indicatorId: indicator.id,
+        resolution: 1,
+        year: 2020,
+        materialId: material.id,
+      });
+    expect(response.body.errors[0].title).toEqual(
+      `There is no H3 Data for Indicator with ID: ${indicator.id}`,
+    );
+  });
+
+  test('When I try to GET a Risk-Map with correct queries, but there is no H3 Data available for requested Material, then I should get a proper error message', async () => {
+    const unit = await createUnit();
+    const indicator = await createIndicator({
+      unit,
+      name: 'Indicator Name',
+    });
+    await h3DataMock(
+      fakeTable2,
+      fakeColumn2,
+      h3AlternativeIndicatorFixture,
+      indicator.id,
+    );
+    const material = await createMaterial({
+      name: 'Material Name',
+    });
+
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/h3/map/risk`)
+      .query({
+        materialId: material.id,
+        indicatorId: indicator.id,
+        resolution: 1,
+        year: 2020,
+      });
+
+    expect(response.body.errors[0].title).toEqual(
+      `There is no H3 Data for Material with ID: ${material.id}`,
+    );
+  });
+
+  test('When I get a calculated H3 Water Risk Map with the necessary input values, then I should get the h3 data (happy case). Different results for different resolutions expected', async () => {
+    const { material, indicator } = await createWorldForRiskMapGeneration({
+      indicatorType: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+      fakeTable,
+      fakeColumn,
+    });
+
+    await h3DataMock(
+      fakeTable2,
+      fakeColumn2,
+      h3AlternativeIndicatorFixture,
+      indicator.id,
+    );
+
+    jest.spyOn(h3DataRepository, 'getWaterRiskMapByResolution');
+
+    const responseRes6 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
       .query({
         indicatorId: indicator.id,
@@ -194,20 +276,30 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         resolution: 6,
       });
 
-    expect(h3DataRepository.getWaterRiskMapByResolution).toHaveBeenCalled();
-    expect(response.body.data).toEqual([
-      {
-        h: '861203a4fffffff',
-        v: 103,
-      },
-    ]);
-    expect(response.body.metadata).toEqual({
-      quantiles: [103, 103, 103, 103, 103, 103, 103],
-      unit: 'tonnes',
-    });
+    const responseRes3 = await request(app.getHttpServer())
+      .get(`/api/v1/h3/map/risk`)
+      .query({
+        indicatorId: indicator.id,
+        year: 2020,
+        materialId: material.id,
+        resolution: 3,
+      });
+
+    expect(h3DataRepository.getWaterRiskMapByResolution).toHaveBeenCalledTimes(
+      2,
+    );
+
+    expect(responseRes6.body.data).toEqual(
+      expect.arrayContaining(expectedWaterRiskRes6Data),
+    );
+    expect(responseRes6.body.metadata).toEqual(expectedWaterRiskRes6Metadata);
+    expect(responseRes3.body.data).toEqual(
+      expect.arrayContaining(expectedWaterRiskRes3Data),
+    );
+    expect(responseRes3.body.metadata).toEqual(expectedWaterRiskRes3Metadata);
   });
 
-  test('When I get a calculated H3 Biodiversity Loss Risk Map with the necessary input values, then I should get the h3 data (happy case)', async () => {
+  test('When I get a calculated H3 Biodiversity Loss Risk Map with the necessary input values, then I should get the h3 data (happy case). Different results for different resolutions expected', async () => {
     const deforestationIndicator = await createIndicator({
       name: 'another indicator',
       nameCode: INDICATOR_TYPES.DEFORESTATION,
@@ -225,9 +317,16 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         fakeColumn,
         year: 2020,
       });
+
+    const indicatorH3Data = await h3DataMock(
+      fakeTable2,
+      fakeColumn2,
+      h3AlternativeIndicatorFixture,
+      indicator.id,
+    );
     jest.spyOn(h3DataRepository, 'getBiodiversityLossRiskMapByResolution');
 
-    const response = await request(app.getHttpServer())
+    const responseRes6 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
       .query({
         indicatorId: indicator.id,
@@ -236,33 +335,50 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         resolution: 6,
       });
 
+    const responseRes3 = await request(app.getHttpServer())
+      .get(`/api/v1/h3/map/risk`)
+      .query({
+        indicatorId: indicator.id,
+        year: 2020,
+        materialId: material.id,
+        resolution: 3,
+      });
+
     expect(
       h3DataRepository.getBiodiversityLossRiskMapByResolution,
     ).toHaveBeenCalledWith(
-      h3Data,
+      indicatorH3Data,
       h3Data,
       h3Data,
       deforestationH3Data,
       unitConversion.factor,
       6,
     );
+    expect(
+      h3DataRepository.getBiodiversityLossRiskMapByResolution,
+    ).toHaveBeenCalledWith(
+      indicatorH3Data,
+      h3Data,
+      h3Data,
+      deforestationH3Data,
+      unitConversion.factor,
+      3,
+    );
 
-    expect(response.body.data).toEqual([
-      {
-        h: '861203a4fffffff',
-        v: 10000000000,
-      },
-    ]);
-    expect(response.body.metadata).toEqual({
-      quantiles: [
-        10000000000, 10000000000, 10000000000, 10000000000, 10000000000,
-        10000000000, 10000000000,
-      ],
-      unit: 'tonnes',
-    });
+    expect(responseRes6.body.data).toEqual(
+      expect.arrayContaining(expectedBiodiversityLossRes6Data),
+    );
+    expect(responseRes6.body.metadata).toEqual(
+      expectedBiodiversityLossRes6Metadata,
+    );
+    expect(responseRes3.body.data).toEqual(
+      expect.arrayContaining(expectedBiodiversityLossRes3Data),
+    );
+    expect(responseRes3.body.metadata).toEqual(
+      expectedBiodiversityLossRes3Metadata,
+    );
   });
-
-  test('When I get a calculated H3 Carbon Emission Risk Map with the necessary input values, then I should get the h3 data (happy case)', async () => {
+  test('When I get a calculated H3 Carbon Emission Risk Map with the necessary input values, then I should get the h3 data (happy case). Different results for different resolutions expected', async () => {
     const deforestationIndicator = await createIndicator({
       name: 'another indicator',
       nameCode: INDICATOR_TYPES.DEFORESTATION,
@@ -280,9 +396,16 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         fakeColumn,
         year: 2020,
       });
+
+    const indicatorH3Data = await h3DataMock(
+      fakeTable2,
+      fakeColumn2,
+      h3AlternativeIndicatorFixture,
+      indicator.id,
+    );
     jest.spyOn(h3DataRepository, 'getCarbonEmissionsRiskMapByResolution');
 
-    const response = await request(app.getHttpServer())
+    const responseRes6 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
       .query({
         indicatorId: indicator.id,
@@ -290,33 +413,52 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         materialId: material.id,
         resolution: 6,
       });
+
+    const responseRes3 = await request(app.getHttpServer())
+      .get(`/api/v1/h3/map/risk`)
+      .query({
+        indicatorId: indicator.id,
+        year: 2020,
+        materialId: material.id,
+        resolution: 3,
+      });
+
     expect(
       h3DataRepository.getCarbonEmissionsRiskMapByResolution,
     ).toHaveBeenCalledWith(
-      h3Data,
+      indicatorH3Data,
       h3Data,
       h3Data,
       deforestationH3Data,
       unitConversion.factor,
       6,
     );
-
-    expect(response.body.data).toEqual([
-      {
-        h: '861203a4fffffff',
-        v: 1000000,
-      },
-    ]);
-    expect(response.body.metadata).toEqual({
-      quantiles: [
-        1000000, 1000000, 1000000, 1000000, 1000000, 1000000, 1000000,
-      ],
-      unit: 'tonnes',
-    });
+    expect(
+      h3DataRepository.getCarbonEmissionsRiskMapByResolution,
+    ).toHaveBeenCalledWith(
+      indicatorH3Data,
+      h3Data,
+      h3Data,
+      deforestationH3Data,
+      unitConversion.factor,
+      3,
+    );
+    expect(responseRes6.body.data).toEqual(
+      expect.arrayContaining(expectedCarbonEmissionsRes6Data),
+    );
+    expect(responseRes6.body.metadata).toEqual(
+      expectedCarbonEmissionsRes6Metadata,
+    );
+    expect(responseRes3.body.data).toEqual(
+      expect.arrayContaining(expectedCarbonEmissionsRes3Data),
+    );
+    expect(responseRes3.body.metadata).toEqual(
+      expectedCarbonEmissionsRes3Metadata,
+    );
   });
 
   // TODO: Update assertion as soon as actual calculus is validated
-  test('When I get a calculated H3 Deforestation Loss Risk Map with the necessary input values, then I should get the h3 data (happy case)', async () => {
+  test('When I get a calculated H3 Deforestation Loss Risk Map with the necessary input values, then I should get the h3 data (happy case). Different results for different resolutions expected', async () => {
     const { material, indicator, h3Data } =
       await createWorldForRiskMapGeneration({
         indicatorType: INDICATOR_TYPES.DEFORESTATION,
@@ -324,9 +466,15 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         fakeColumn,
         year: 2020,
       });
+    const indicatorH3Data = await h3DataMock(
+      fakeTable2,
+      fakeColumn2,
+      h3AlternativeIndicatorFixture,
+      indicator.id,
+    );
     jest.spyOn(h3DataRepository, 'getDeforestationLossRiskMapByResolution');
 
-    const response = await request(app.getHttpServer())
+    const responseRes6 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
       .query({
         indicatorId: indicator.id,
@@ -335,19 +483,35 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         resolution: 6,
       });
 
+    const responseRes3 = await request(app.getHttpServer())
+      .get(`/api/v1/h3/map/risk`)
+      .query({
+        indicatorId: indicator.id,
+        year: 2020,
+        materialId: material.id,
+        resolution: 3,
+      });
+
     expect(
       h3DataRepository.getDeforestationLossRiskMapByResolution,
-    ).toHaveBeenCalledWith(h3Data, h3Data, h3Data, 6);
-    expect(response.body.data).toEqual([
-      {
-        h: '861203a4fffffff',
-        v: 1000,
-      },
-    ]);
-    expect(response.body.metadata).toEqual({
-      quantiles: [1000, 1000, 1000, 1000, 1000, 1000, 1000],
-      unit: 'tonnes',
-    });
+    ).toHaveBeenCalledWith(indicatorH3Data, h3Data, h3Data, 6);
+    expect(
+      h3DataRepository.getDeforestationLossRiskMapByResolution,
+    ).toHaveBeenCalledWith(indicatorH3Data, h3Data, h3Data, 3);
+
+    expect(responseRes6.body.data).toEqual(
+      expect.arrayContaining(expectedDeforestationRes6Data),
+    );
+    expect(responseRes6.body.metadata).toEqual(
+      expectedDeforestationRes6Metadata,
+    );
+
+    expect(responseRes3.body.data).toEqual(
+      expect.arrayContaining(expectedDeforestationRes3Data),
+    );
+    expect(responseRes3.body.metadata).toEqual(
+      expectedDeforestationRes3Metadata,
+    );
   });
 
   test('When I query a Biodiversity Risk-Map, but there is no previous Deforestation indicator present in DB which is required for calculate the map, then I should get a proper error message', async () => {
@@ -357,6 +521,13 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       fakeColumn,
       year: 2020,
     });
+
+    const indicatorH3Data = await h3DataMock(
+      fakeTable2,
+      fakeColumn2,
+      h3AlternativeIndicatorFixture,
+      indicator.id,
+    );
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
@@ -382,6 +553,13 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       fakeColumn,
       year: 2020,
     });
+
+    const indicatorH3Data = await h3DataMock(
+      fakeTable2,
+      fakeColumn2,
+      h3AlternativeIndicatorFixture,
+      indicator.id,
+    );
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)

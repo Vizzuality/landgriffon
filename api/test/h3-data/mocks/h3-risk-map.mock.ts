@@ -6,6 +6,7 @@ import { Material } from 'modules/materials/material.entity';
 import { createMaterial, createMaterialToH3 } from '../../entity-mocks';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
+import { h3AlternativeFixture } from './h3-alternative-fixture';
 
 export const createWorldForRiskMapGeneration = async (data: {
   indicatorType: string;

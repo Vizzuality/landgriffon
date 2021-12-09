@@ -249,6 +249,7 @@ describe('Sourcing Data import', () => {
     await h3DataMock({
       h3TableName: 'h3_grid_deforestation_global',
       h3ColumnName: 'hansen_loss_2019',
+      additionalH3Data: h3BasicFixture,
       year: 2019,
     });
     tablesToDrop = [
@@ -298,6 +299,7 @@ describe('Sourcing Data import', () => {
     await h3DataMock({
       h3TableName: 'h3_grid_deforestation_global',
       h3ColumnName: 'hansen_loss_2019',
+      additionalH3Data: h3BasicFixture,
       year: 2019,
     });
     tablesToDrop = [
@@ -328,6 +330,7 @@ describe('Sourcing Data import', () => {
     await h3DataMock({
       h3TableName: 'h3_grid_deforestation_global',
       h3ColumnName: 'hansen_loss_2019',
+      additionalH3Data: h3BasicFixture,
       year: 2019,
     });
     tablesToDrop = [

@@ -6,7 +6,7 @@ import { Material } from 'modules/materials/material.entity';
 import { createMaterial, createMaterialToH3 } from '../../entity-mocks';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
-import { h3AlternativeFixture } from './h3-alternative-fixture';
+import { h3MaterialExampleDataFixture } from './h3-fixtures';
 
 export const createWorldForRiskMapGeneration = async (data: {
   indicatorType: string;
@@ -39,7 +39,7 @@ export const createWorldForRiskMapGeneration = async (data: {
   const h3Data = await h3DataMock({
     h3TableName: data.fakeTable,
     h3ColumnName: data.fakeColumn,
-    indicatorId: indicator.id,
+    additionalH3Data: h3MaterialExampleDataFixture,
     year: data.year,
   });
 

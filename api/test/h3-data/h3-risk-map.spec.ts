@@ -93,192 +93,195 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     return app.close();
   });
 
-  test('When I get a calculated H3 Risk Map without any of the required parameters, then I should get a proper error message', async () => {
-    const response = await request(app.getHttpServer()).get(
-      `/api/v1/h3/map/risk`,
-    );
-    expect(response.body.errors[0].meta.rawError.response.message).toEqual([
-      'indicatorId should not be empty',
-      'indicatorId must be a UUID',
-      'year should not be empty',
-      'year must be a number conforming to the specified constraints',
-      'materialId must be a UUID',
-      'materialId should not be empty',
-      'Available resolutions: 1 to 6',
-      'resolution must be a number conforming to the specified constraints',
-      'resolution should not be empty',
-    ]);
-  });
-
-  test('When I get a calculated H3 Risk Map without an indicator id, then I should get a proper error message', async () => {
-    const material = await createMaterial();
-
-    const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/map/risk`)
-      .query({
-        materialId: material.id,
-        resolution: 1,
-        year: 2021,
-      });
-    expect(response.body.errors[0].meta.rawError.response.message).toEqual([
-      'indicatorId should not be empty',
-      'indicatorId must be a UUID',
-    ]);
-  });
-
-  test('When I get a calculated H3 Risk Map without a year value, then I should get a proper error message', async () => {
-    const indicator: Indicator = new Indicator();
-    indicator.name = 'test indicator';
-    await indicator.save();
-
-    const material = await createMaterial();
-
-    const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/map/risk`)
-      .query({
-        indicatorId: indicator.id,
-        materialId: material.id,
-        resolution: 1,
-      });
-
-    expect(response.body.errors[0].meta.rawError.response.message).toEqual([
-      'year should not be empty',
-      'year must be a number conforming to the specified constraints',
-    ]);
-  });
-
-  test('When I get a calculated H3 Risk Map without a material id value, then I should get a proper error message', async () => {
-    const indicator: Indicator = new Indicator();
-    indicator.name = 'test indicator';
-    await indicator.save();
-
-    const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/map/risk`)
-      .query({
-        indicatorId: indicator.id,
-        year: 2020,
-        resolution: 1,
-      });
-    expect(response.body.errors[0].meta.rawError.response.message).toEqual([
-      'materialId must be a UUID',
-      'materialId should not be empty',
-    ]);
-  });
-
-  test('When I get a calculated H3 Risk Map without a resolution value, then I should get a proper error message', async () => {
-    const indicator: Indicator = new Indicator();
-    indicator.name = 'test indicator';
-    await indicator.save();
-
-    const material = await createMaterial({ name: 'Material with no H3' });
-
-    const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/map/risk`)
-      .query({
-        indicatorId: indicator.id,
-        year: 2020,
-        materialId: material.id,
-      });
-    expect(response.body.errors[0].meta.rawError.response.message).toEqual([
-      'Available resolutions: 1 to 6',
-      'resolution must be a number conforming to the specified constraints',
-      'resolution should not be empty',
-    ]);
-  });
-
-  test('When I try to GET a Risk-Map with correct queries, but there is no H3 Data available for requested Indicator, then I should get a proper error message', async () => {
-    const { material, indicator } = await createWorldForRiskMapGeneration({
-      indicatorType: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
-      fakeTable: 'fakeMaterialTable',
-      fakeColumn: 'fakeMaterialColumn',
-      year: 2020,
+  describe('Missing input values', () => {
+    test('When I get a calculated H3 Risk Map without any of the required parameters, then I should get a proper error message', async () => {
+      const response = await request(app.getHttpServer()).get(
+        `/api/v1/h3/map/risk`,
+      );
+      expect(response.body.errors[0].meta.rawError.response.message).toEqual([
+        'indicatorId should not be empty',
+        'indicatorId must be a UUID',
+        'year should not be empty',
+        'year must be a number conforming to the specified constraints',
+        'materialId must be a UUID',
+        'materialId should not be empty',
+        'Available resolutions: 1 to 6',
+        'resolution must be a number conforming to the specified constraints',
+        'resolution should not be empty',
+      ]);
     });
 
-    const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/map/risk`)
-      .query({
-        indicatorId: indicator.id,
-        resolution: 1,
-        year: 2020,
-        materialId: material.id,
-      });
-    expect(response.body.errors[0].title).toEqual(
-      `There is no H3 Data for Indicator with ID: ${indicator.id}`,
-    );
+    test('When I get a calculated H3 Risk Map without an indicator id, then I should get a proper error message', async () => {
+      const material = await createMaterial();
+
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/h3/map/risk`)
+        .query({
+          materialId: material.id,
+          resolution: 1,
+          year: 2021,
+        });
+      expect(response.body.errors[0].meta.rawError.response.message).toEqual([
+        'indicatorId should not be empty',
+        'indicatorId must be a UUID',
+      ]);
+    });
+
+    test('When I get a calculated H3 Risk Map without a year value, then I should get a proper error message', async () => {
+      const indicator: Indicator = new Indicator();
+      indicator.name = 'test indicator';
+      await indicator.save();
+
+      const material = await createMaterial();
+
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/h3/map/risk`)
+        .query({
+          indicatorId: indicator.id,
+          materialId: material.id,
+          resolution: 1,
+        });
+
+      expect(response.body.errors[0].meta.rawError.response.message).toEqual([
+        'year should not be empty',
+        'year must be a number conforming to the specified constraints',
+      ]);
+    });
+
+    test('When I get a calculated H3 Risk Map without a material id value, then I should get a proper error message', async () => {
+      const indicator: Indicator = new Indicator();
+      indicator.name = 'test indicator';
+      await indicator.save();
+
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/h3/map/risk`)
+        .query({
+          indicatorId: indicator.id,
+          year: 2020,
+          resolution: 1,
+        });
+      expect(response.body.errors[0].meta.rawError.response.message).toEqual([
+        'materialId must be a UUID',
+        'materialId should not be empty',
+      ]);
+    });
+
+    test('When I get a calculated H3 Risk Map without a resolution value, then I should get a proper error message', async () => {
+      const indicator: Indicator = new Indicator();
+      indicator.name = 'test indicator';
+      await indicator.save();
+
+      const material = await createMaterial({ name: 'Material with no H3' });
+
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/h3/map/risk`)
+        .query({
+          indicatorId: indicator.id,
+          year: 2020,
+          materialId: material.id,
+        });
+      expect(response.body.errors[0].meta.rawError.response.message).toEqual([
+        'Available resolutions: 1 to 6',
+        'resolution must be a number conforming to the specified constraints',
+        'resolution should not be empty',
+      ]);
+    });
   });
 
-  test('When I try to GET a Risk-Map with correct queries, but there is no H3 harvest data available for requested Material, then I should get a proper error message', async () => {
-    const unit = await createUnit();
-    const indicator = await createIndicator({
-      unit,
-      name: 'Indicator Name',
-    });
-    const h3Data = await h3DataMock({
-      h3TableName: 'fakeIndicatorTable',
-      h3ColumnName: 'fakeIndicatorColumn',
-      additionalH3Data: h3IndicatorExampleDataFixture,
-      indicatorId: indicator.id,
-      year: 2020,
-    });
-    const material = await createMaterial({
-      name: 'Material Name',
-    });
-
-    await createMaterialToH3(
-      material.id,
-      h3Data.id,
-      MATERIAL_TO_H3_TYPE.PRODUCER,
-    );
-
-    const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/map/risk`)
-      .query({
-        materialId: material.id,
-        indicatorId: indicator.id,
-        resolution: 1,
+  describe('Missing data', () => {
+    test('When I try to GET a Risk-Map with correct queries, but there is no H3 Data available for requested Indicator, then I should get a proper error message', async () => {
+      const { material, indicator } = await createWorldForRiskMapGeneration({
+        indicatorType: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+        fakeTable: 'fakeMaterialTable',
+        fakeColumn: 'fakeMaterialColumn',
         year: 2020,
       });
-
-    expect(response.body.errors[0].title).toEqual(
-      `There is no H3 harvest data for Material with ID: ${material.id}`,
-    );
-  });
-
-  test('When I try to GET a Risk-Map with correct queries, but there is no H3 producer data available for requested Material, then I should get a proper error message', async () => {
-    const unit = await createUnit();
-    const indicator = await createIndicator({
-      unit,
-      name: 'Indicator Name',
-    });
-    const h3Data = await h3DataMock({
-      h3TableName: 'fakeIndicatorTable',
-      h3ColumnName: 'fakeIndicatorColumn',
-      additionalH3Data: h3IndicatorExampleDataFixture,
-      indicatorId: indicator.id,
-      year: 2020,
-    });
-    const material = await createMaterial({
-      name: 'Material Name',
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/h3/map/risk`)
+        .query({
+          indicatorId: indicator.id,
+          resolution: 1,
+          year: 2020,
+          materialId: material.id,
+        });
+      expect(response.body.errors[0].title).toEqual(
+        `There is no H3 Data for Indicator with ID: ${indicator.id}`,
+      );
     });
 
-    await createMaterialToH3(
-      material.id,
-      h3Data.id,
-      MATERIAL_TO_H3_TYPE.HARVEST,
-    );
-
-    const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/map/risk`)
-      .query({
-        materialId: material.id,
+    test('When I try to GET a Risk-Map with correct queries, but there is no H3 harvest data available for requested Material, then I should get a proper error message', async () => {
+      const unit = await createUnit();
+      const indicator = await createIndicator({
+        unit,
+        name: 'Indicator Name',
+      });
+      const h3Data = await h3DataMock({
+        h3TableName: 'fakeIndicatorTable',
+        h3ColumnName: 'fakeIndicatorColumn',
+        additionalH3Data: h3IndicatorExampleDataFixture,
         indicatorId: indicator.id,
-        resolution: 1,
         year: 2020,
       });
+      const material = await createMaterial({
+        name: 'Material Name',
+      });
 
-    expect(response.body.errors[0].title).toEqual(
-      `There is no H3 producer data for Material with ID: ${material.id}`,
-    );
+      await createMaterialToH3(
+        material.id,
+        h3Data.id,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
+
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/h3/map/risk`)
+        .query({
+          materialId: material.id,
+          indicatorId: indicator.id,
+          resolution: 1,
+          year: 2020,
+        });
+
+      expect(response.body.errors[0].title).toEqual(
+        `There is no H3 harvest data for Material with ID: ${material.id}`,
+      );
+    });
+
+    test('When I try to GET a Risk-Map with correct queries, but there is no H3 producer data available for requested Material, then I should get a proper error message', async () => {
+      const unit = await createUnit();
+      const indicator = await createIndicator({
+        unit,
+        name: 'Indicator Name',
+      });
+      const h3Data = await h3DataMock({
+        h3TableName: 'fakeIndicatorTable',
+        h3ColumnName: 'fakeIndicatorColumn',
+        additionalH3Data: h3IndicatorExampleDataFixture,
+        indicatorId: indicator.id,
+        year: 2020,
+      });
+      const material = await createMaterial({
+        name: 'Material Name',
+      });
+
+      await createMaterialToH3(
+        material.id,
+        h3Data.id,
+        MATERIAL_TO_H3_TYPE.HARVEST,
+      );
+
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/h3/map/risk`)
+        .query({
+          materialId: material.id,
+          indicatorId: indicator.id,
+          resolution: 1,
+          year: 2020,
+        });
+
+      expect(response.body.errors[0].title).toEqual(
+        `There is no H3 producer data for Material with ID: ${material.id}`,
+      );
+    });
   });
 
   test('When I get a calculated H3 Water Risk Map with the necessary input values, then I should get the h3 data (happy case). Different results for different resolutions expected', async () => {
@@ -394,6 +397,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       riskMapCalculationResults.biodiversityLossRes3Quantiles,
     );
   });
+
   test('When I get a calculated H3 Carbon Emission Risk Map with the necessary input values, then I should get the h3 data (happy case). Different results for different resolutions expected', async () => {
     const deforestationIndicator = await createIndicator({
       name: 'another indicator',
@@ -537,6 +541,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       'No Deforestation Indicator data found in database',
     );
   });
+
   test('When I query a Biodiversity Risk-Map, but there is no H3 data associated to a existing Deforestation indicator present in DB which is required for calculate the map, then I should get a proper error message', async () => {
     await createIndicator({
       name: 'another indicator',

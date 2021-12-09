@@ -5,12 +5,11 @@ import { AppModule } from 'app.module';
 import { H3DataRepository } from '../../src/modules/h3-data/h3-data.repository';
 import { H3DataModule } from '../../src/modules/h3-data/h3-data.module';
 import { h3DataMock, dropH3DataMock } from './mocks/h3-data.mock';
-import { h3MaterialFixtures } from './mocks/h3-fixtures';
 import { createMaterial, createMaterialToH3 } from '../entity-mocks';
 import { MaterialRepository } from '../../src/modules/materials/material.repository';
 import { MATERIAL_TO_H3_TYPE } from '../../src/modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from '../../src/modules/materials/materials-to-h3s.service';
-import { h3AlternativeFixture } from './mocks/h3-alternative-fixture';
+import { h3MaterialExampleDataFixture } from './mocks/h3-fixtures';
 
 /**
  * Tests for the H3DataModule.
@@ -117,11 +116,11 @@ describe('H3 Data Module (e2e) - Material map', () => {
     );
   });
 
-  test('When I query H3 data at minimal resolution, then I should 2 h3indexes and no 0 as value', async () => {
+  test('When I query same H3 data at different resolutions I expect 4 indexes at resolution 1 and 7 indexes at resolution 3, 0 and null values ignored', async () => {
     const h3Data = await h3DataMock({
       h3TableName: fakeTable,
       h3ColumnName: fakeColumn,
-      additionalH3Data: h3MaterialFixtures,
+      additionalH3Data: h3MaterialExampleDataFixture,
       year: 2020,
     });
     const material = await createMaterial();
@@ -130,38 +129,12 @@ describe('H3 Data Module (e2e) - Material map', () => {
       h3Data.id,
       MATERIAL_TO_H3_TYPE.PRODUCER,
     );
-
-    const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/map/material`)
-      .query({
-        resolution: 1,
-        materialId: material.id,
-        year: 2020,
-      });
-
-    expect(response.body.data).toEqual([
-      { h: '81123ffffffffff', v: 1000 },
-      { h: '8112fffffffffff', v: 1000 },
-    ]);
-
-    expect(response.body.metadata).toEqual({
-      quantiles: [1000, 1000, 1000, 1000, 1000, 1000, 1000],
-      unit: 'tonnes',
-    });
-  });
-
-  test('When I query same H3 data at different resolutions I expect 4 indexes at resolution 1 and 7 indexes at resolution 3, 0 and null values ignored', async () => {
-    const h3Data = await h3DataMock(
-      fakeTable,
-      fakeColumn,
-      h3AlternativeFixture,
-    );
-    const material = await createMaterial({ producer: h3Data });
     const responseRes1 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/material`)
       .query({
         materialId: material.id,
         resolution: 1,
+        year: 2020,
       });
 
     const responseRes3 = await request(app.getHttpServer())
@@ -169,6 +142,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
       .query({
         materialId: material.id,
         resolution: 3,
+        year: 2020,
       });
 
     expect(responseRes1.body.data).toEqual(

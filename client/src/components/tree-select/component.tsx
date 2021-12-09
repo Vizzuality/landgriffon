@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useState, useMemo, useEffect } from 'react';
+import { Fragment, useCallback, useState, useMemo } from 'react';
 import classNames from 'classnames';
 import { Transition } from '@headlessui/react';
 import { ChevronDownIcon, ChevronUpIcon, ChevronRightIcon, XIcon } from '@heroicons/react/solid';
@@ -19,6 +19,7 @@ const SEARCH_OPTIONS = {
 };
 
 const TreeSelect: React.FC<TreeSelectProps> = ({
+  maxBadges = 5,
   multiple = false,
   options = [],
   placeholder,
@@ -29,9 +30,8 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selected, setSelected] = useState<TreeSelectOption>(null);
-  const [checked, setChecked] = useState<TreeSelectOption[]>(null);
   const [selectedKeys, setSelectedKeys] = useState<TreeProps['defaultSelectedKeys']>([]);
-  const [expandedKeys, setExpandedKeys] = useState<TreeProps['defaultExpandedKeys']>([]);
+  // const [expandedKeys, setExpandedKeys] = useState<TreeProps['defaultExpandedKeys']>([]);
   const [checkedKeys, setCheckedKeys] = useState<TreeProps['checkedKeys']>([]);
 
   const renderTreeNodes = useMemo(
@@ -72,7 +72,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
 
   const handleToggleOpen = useCallback(() => setIsOpen(!isOpen), [isOpen]);
 
-  const handleExpand: TreeProps['onExpand'] = useCallback((keys) => setExpandedKeys(keys), []);
+  // const handleExpand: TreeProps['onExpand'] = useCallback((keys) => setExpandedKeys(keys), []);
 
   // Selection for non-multiple
   const handleSelect: TreeProps['onSelect'] = useCallback(
@@ -156,7 +156,13 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     return checkedOptions;
   }, [checkedKeys, options]);
 
-  console.log('currentOptions', currentOptions);
+  const handleRemoveBadget = useCallback(
+    (option) => {
+      const filteredKeys = (checkedKeys as string[]).filter((key) => option.value !== key);
+      setCheckedKeys(filteredKeys);
+    },
+    [checkedKeys],
+  );
 
   const Icon = () => (
     <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
@@ -175,17 +181,31 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           className="flex align-center bg-white relative border border-gray-300 rounded-md shadow-sm py-2 pr-10 pl-3 cursor-pointer"
           onClick={handleToggleOpen}
         >
-          {currentOptions && currentOptions.length > 2 && (
-            <Badge>{currentOptions.length} selected</Badge>
-          )}
-          {currentOptions &&
-            currentOptions.length >= 2 &&
-            currentOptions.map(({ value, label }) => <Badge key={value}>{label}</Badge>)}
-          {(!currentOptions || currentOptions.length === 0) && (
-            <span className="inline-block truncate">
-              {placeholder && <span className="text-gray-300">{placeholder}</span>}
-            </span>
-          )}
+          <div className="flex flex-wrap">
+            {currentOptions &&
+              !!currentOptions.length &&
+              currentOptions.slice(0, maxBadges).map((option) => (
+                <Badge
+                  key={option.value}
+                  className="text-sm m-0.5"
+                  data={option}
+                  onClick={handleRemoveBadget}
+                  removable
+                >
+                  {option.label}
+                </Badge>
+              ))}
+            {currentOptions && currentOptions.length > maxBadges && (
+              <Badge className="text-sm m-0.5">
+                {currentOptions.length - maxBadges} more selected
+              </Badge>
+            )}
+            {(!currentOptions || currentOptions.length === 0) && (
+              <span className="inline-block truncate">
+                {placeholder && <span className="text-gray-300 text-sm">{placeholder}</span>}
+              </span>
+            )}
+          </div>
           <Icon />
         </div>
       ) : (
@@ -234,14 +254,14 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
             <Tree
               // autoExpandParent
               checkable={multiple}
-              // selectable={!multiple}
-              // multiple={multiple}
-              // defaultSelectedKeys={selectedKeys}
+              selectable={!multiple}
+              multiple={multiple}
+              selectedKeys={selectedKeys}
               // defaultExpandedKeys={expandedKeys}
               checkedKeys={checkedKeys}
               switcherIcon={customSwitcherIcon}
               // onExpand={handleExpand}
-              // onSelect={handleSelect}
+              onSelect={handleSelect}
               onCheck={handleCheck}
             >
               {renderTreeNodes(optionsResult)}

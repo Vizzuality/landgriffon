@@ -7,6 +7,7 @@ export type TreeSelectOption = {
 export type TreeSelectOptions = TreeSelectOption[];
 
 export type TreeSelectProps = {
+  maxBadges?: number;
   placeholder?: string;
   showSearch?: boolean;
   multiple?: boolean;

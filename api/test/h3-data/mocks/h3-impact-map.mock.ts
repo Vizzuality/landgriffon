@@ -58,6 +58,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
   const harvestH3Data = await h3DataMock({
     h3TableName: 'harvestTable',
     h3ColumnName: 'harvestColumn',
+    additionalH3Data: h3BasicFixture,
     indicatorId: indicator.id,
     year: 2020,
   });
@@ -65,6 +66,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
   const productionH3Data = await h3DataMock({
     h3TableName: 'productionTable',
     h3ColumnName: 'productionColumn',
+    additionalH3Data: h3BasicFixture,
     indicatorId: indicator.id,
     year: 2020,
   });

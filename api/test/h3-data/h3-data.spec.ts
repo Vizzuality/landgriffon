@@ -84,6 +84,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
     await h3DataMock({
       h3TableName: fakeTable,
       h3ColumnName: fakeColumn,
+      additionalH3Data: h3BasicFixture,
       year: 2020,
     });
 
@@ -241,6 +242,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
       const h3Data: H3Data = await h3DataMock({
         h3TableName: createRandomNamesForH3TableAndColumns(),
         h3ColumnName: createRandomNamesForH3TableAndColumns(),
+        additionalH3Data: h3BasicFixture,
         year,
       });
 
@@ -255,6 +257,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
       const h3Data: H3Data = await h3DataMock({
         h3TableName: createRandomNamesForH3TableAndColumns(),
         h3ColumnName: createRandomNamesForH3TableAndColumns(),
+        additionalH3Data: h3BasicFixture,
         year,
       });
 

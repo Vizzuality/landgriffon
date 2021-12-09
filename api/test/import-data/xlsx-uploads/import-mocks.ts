@@ -50,6 +50,7 @@ async function createIndicatorsForXLSXImport(): Promise<string[]> {
         h3ColumnName: `${spec.name
           .replace(/[^a-zA-Z]/g, '')
           .substring(0, 10)}IndicatorColumn`,
+        additionalH3Data: h3BasicFixture,
         indicatorId: indicator.id,
         year,
       });
@@ -125,6 +126,7 @@ async function createMaterialTreeForXLSXImport(): Promise<string[]> {
       h3ColumnName: `${spec.name
         .replace(/[^a-zA-Z]/g, '')
         .substring(0, 10)}HarvestColumn`,
+      additionalH3Data: h3BasicFixture,
       year: 2020,
     });
     await h3DataMock({
@@ -134,6 +136,7 @@ async function createMaterialTreeForXLSXImport(): Promise<string[]> {
       h3ColumnName: `${spec.name
         .replace(/[^a-zA-Z]/g, '')
         .substring(0, 10)}ProductionColumn`,
+      additionalH3Data: h3BasicFixture,
       year: 2020,
     });
 
@@ -167,6 +170,7 @@ async function createMaterialTreeForXLSXImport(): Promise<string[]> {
         h3ColumnName: `${spec.name
           .replace(/[^a-zA-Z]/g, '')
           .substring(0, 10)}HarvestColumn`,
+        additionalH3Data: h3BasicFixture,
         year,
       });
       const materialProductionH3Table = await h3DataMock({
@@ -176,6 +180,7 @@ async function createMaterialTreeForXLSXImport(): Promise<string[]> {
         h3ColumnName: `${spec.name
           .replace(/[^a-zA-Z]/g, '')
           .substring(0, 10)}ProductionColumn`,
+        additionalH3Data: h3BasicFixture,
         year,
       });
 

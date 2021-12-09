@@ -13,7 +13,7 @@ export const h3DataMock = async (h3DataMockParams: {
   const formattedColumnName: string = camelCase(h3DataMockParams.h3ColumnName);
 
   await getManager().query(
-    `CREATE TABLE ${formattedTableName} (h3index h3index, "${formattedColumnName}" float4);`,
+    `CREATE TABLE "${formattedTableName}" (h3index h3index, "${formattedColumnName}" float4);`,
   );
 
   if (h3DataMockParams.additionalH3Data) {

@@ -77,6 +77,7 @@ download-earthstat-crop-production:
 # Only extract the files that contain production. Set the no data to 0 as the mapspam datasets.
 extract-earthstat-crop-production: download-earthstat-crop-production
 	mkdir -p $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod
+	rm -rf $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/*
 	unzip -j -o -u $(WORKDIR_EARTHSTAT)/HarvestedAreaYield175Crops_Geotiff.zip *_Production.tif -d $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod
 	gdal_calc.py --calc "A+B" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/papaya_Production.tif --A_band 1 -B $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/watermelon_Production.tif --outfile $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/melonpapaya_Production.tif
 	gdal_calc.py --calc "A+B+C+D+E+F+G+H" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/almond_Production.tif --A_band 1 \
@@ -106,6 +107,7 @@ extract-earthstat-crop-production: download-earthstat-crop-production
 # Only extract the files that contain harvest area fraction. Set the no data to 0 as the mapspam datasets.
 extract-earthstat-crop-harvest: download-earthstat-crop-production
 	mkdir -p $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha
+	rm -rf $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/*
 	unzip -j -o -u $(WORKDIR_EARTHSTAT)/HarvestedAreaYield175Crops_Geotiff.zip *_HarvestedAreaHectares.tif -d $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha
 	gdal_calc.py --calc "A+B" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/papaya_HarvestedAreaHectares.tif --A_band 1 -B $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/watermelon_HarvestedAreaHectares.tif --outfile $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/melonpapaya_HarvestedAreaHectares.tif
 	gdal_calc.py --calc "A+B+C+D+E+F+G+H" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/almond_HarvestedAreaHectares.tif --A_band 1 \

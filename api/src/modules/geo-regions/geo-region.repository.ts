@@ -63,9 +63,7 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
       .into('geo_region')
       .values({
         name: () => `hashtext(:arg1)`,
-
         theGeom: () => `ST_GeomFromText(:arg2, 4326)`,
-
         h3Compact: () =>
           `array( SELECT (h3_compact(array(SELECT h3_geo_to_h3(ST_GeomFromText(:arg2), 6)))))`,
       })

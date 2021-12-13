@@ -66,7 +66,15 @@ async function createIndicatorsForXLSXImport(): Promise<string[]> {
   return tableList;
 }
 
-async function createMaterialTreeForXLSXImport(): Promise<string[]> {
+async function createMaterialTreeForXLSXImport(args?: {
+  startYear?: number;
+  endYear?: number;
+}): Promise<string[]> {
+  const argsWithDefaults: Record<string, any> = {
+    startYear: 2010,
+    endYear: 2022,
+    ...args,
+  };
   const materialSpec = [
     {
       name: 'Fruits, berries and nuts',
@@ -162,7 +170,10 @@ async function createMaterialTreeForXLSXImport(): Promise<string[]> {
           : null,
     });
 
-    for (const year of range(2010, 2021)) {
+    for (const year of range(
+      argsWithDefaults.startYear,
+      argsWithDefaults.endYear,
+    )) {
       const materialHarvestH3Table = await h3DataMock({
         h3TableName: `${spec.name
           .replace(/[^a-zA-Z]/g, '')

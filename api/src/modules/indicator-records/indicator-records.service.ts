@@ -24,6 +24,7 @@ import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
+import * as config from 'config';
 
 @Injectable()
 export class IndicatorRecordsService extends AppBaseService<
@@ -62,6 +63,56 @@ export class IndicatorRecordsService extends AppBaseService<
     };
   }
 
+  private async getH3DataForSourcingRecord(
+    sourcingRecord: SourcingRecord,
+    type: MATERIAL_TO_H3_TYPE,
+  ): Promise<H3Data | null> {
+    let h3Table: H3Data | undefined =
+      await this.materialsToH3sService.findH3DataForMaterial({
+        materialId: sourcingRecord.sourcingLocation.material.id,
+        year: sourcingRecord.year,
+        type,
+      });
+
+    if (h3Table) {
+      return h3Table;
+    }
+
+    switch (config.get('import.missingDataFallbackStrategy')) {
+      case 'ignore':
+        this.logger.log(
+          `Cannot calculate impact for sourcing record - missing ${type} h3 data for material "${sourcingRecord.sourcingLocation.material.name}" and year "${sourcingRecord.year}". Ignoring souring record`,
+        );
+        return null;
+        break;
+      case 'fallback':
+        this.logger.debug(
+          `Missing ${type} h3 data for material "${sourcingRecord.sourcingLocation.material.name}" and year "${sourcingRecord.year}". Falling back to different year`,
+        );
+        h3Table = await this.materialsToH3sService.findH3DataForMaterial({
+          materialId: sourcingRecord.sourcingLocation.material.id,
+          type,
+        });
+        if (!h3Table) {
+          throw new MissingH3DataError(
+            `Cannot calculate impact for sourcing record - missing ${type} h3 data for material "${sourcingRecord.sourcingLocation.material.name}" with year fallback strategy`,
+          );
+        }
+        return h3Table;
+        break;
+      case 'error':
+        throw new MissingH3DataError(
+          `Cannot calculate impact for sourcing record - missing ${type} h3 data for material "${sourcingRecord.sourcingLocation.material.name}" and year "${sourcingRecord.year}"`,
+        );
+      default:
+        throw new Error(
+          `Invalid missingDataFallbackStrategy strategy "${config.get(
+            'import.missingDataFallbackStrategy',
+          )}"`,
+        );
+    }
+  }
+
   async getIndicatorRecordById(id: number): Promise<IndicatorRecord> {
     const found: IndicatorRecord | undefined =
       await this.indicatorRecordRepository.findOne(id);
@@ -92,31 +143,25 @@ export class IndicatorRecordsService extends AppBaseService<
       );
     }
 
-    const producerH3Table: H3Data | undefined =
-      await this.materialsToH3sService.findH3DataForMaterialAndYear(
-        sourcingRecord.sourcingLocation.material.id,
-        sourcingRecord.year,
+    const producerH3Table: H3Data | null =
+      await this.getH3DataForSourcingRecord(
+        sourcingRecord,
         MATERIAL_TO_H3_TYPE.PRODUCER,
       );
 
     if (!producerH3Table) {
-      throw new MissingH3DataError(
-        `Cannot calculate impact for sourcing record - missing production h3 data for material "${sourcingRecord.sourcingLocation.material.name}"`,
-      );
+      return [];
     }
 
-    const harvestH3Table: H3Data | undefined =
-      await this.materialsToH3sService.findH3DataForMaterialAndYear(
-        sourcingRecord.sourcingLocation.material.id,
-        sourcingRecord.year,
-        MATERIAL_TO_H3_TYPE.HARVEST,
-      );
+    const harvestH3Table: H3Data | null = await this.getH3DataForSourcingRecord(
+      sourcingRecord,
+      MATERIAL_TO_H3_TYPE.HARVEST,
+    );
 
     if (!harvestH3Table) {
-      throw new MissingH3DataError(
-        `Cannot calculate impact for sourcing record - missing harvest h3 data for material "${sourcingRecord.sourcingLocation.material.name}"`,
-      );
+      return [];
     }
+
     const indicatorRecords: IndicatorRecord[] = [];
 
     await Promise.all(

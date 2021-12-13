@@ -50,3 +50,10 @@ You should now be able to reach the API on the configured port on your server
 By default, the database for a new application has structure but no seed data. However, the application requires seed data for many of its operations. You need to import this data before using the API.
 
 This seed data is managed inside the `/data` folder at the root of the project. Refer to its documentation for more info on how to import said data. 
+
+## Configuration
+
+- `IMPORT_MISSING_DATA_FALLBACK_STRATEGY`: When calculating impact data as part of a spreadsheet import, how to handle scenarios where a given material does not have impact data for a given year:
+  - `error`: Fail the import process.
+  - `fallback`: Use the impact data for the same material and most recent year.
+  - `ignore`:  Do not calculate impact values for these material/year pairs.

@@ -13,6 +13,9 @@
       "secret": null
     }
   },
+  "import": {
+    "missingDataFallbackStrategy": "fallback"
+  },
   "redis": {
     "host": "localhost",
     "port": 6379

@@ -37,6 +37,24 @@ import { h3BasicFixture } from '../../h3-data/mocks/h3-fixtures';
 
 let tablesToDrop: string[] = [];
 
+let missingDataFallbackPolicy: string = 'error';
+
+jest.mock('config', () => {
+  const config = jest.requireActual('config');
+
+  const configGet = config.get;
+
+  config.get = function (key: string): any {
+    switch (key) {
+      case 'import.missingDataFallbackStrategy':
+        return missingDataFallbackPolicy;
+      default:
+        return configGet.call(config, key);
+    }
+  };
+  return config;
+});
+
 describe('Sourcing Data import', () => {
   /**
    * @note: We are currently ignoring '#N/A' location type values in production code
@@ -353,4 +371,148 @@ describe('Sourcing Data import', () => {
     expect(sourcingRecords[0]).toMatchObject(new SourcingRecord());
     expect(sourcingLocation).toMatchObject(new SourcingLocation());
   }, 100000);
+
+  describe('Additional config values for missing data fallback strategy and incomplete material h3 data', () => {
+    test('When a valid file is sent to the API it should return a 400 bad request code, and an error should be displayed (error strategy)', async () => {
+      missingDataFallbackPolicy = 'error';
+
+      const geoRegion: GeoRegion = await createGeoRegion();
+      await createAdminRegion({
+        isoA2: 'ABC',
+        geoRegion,
+      });
+      await h3DataMock({
+        h3TableName: 'h3_grid_deforestation_global',
+        h3ColumnName: 'hansen_loss_2019',
+        year: 2019,
+        additionalH3Data: h3BasicFixture,
+      });
+      tablesToDrop = [
+        ...(await createMaterialTreeForXLSXImport({ startYear: 2020 })),
+        ...(await createIndicatorsForXLSXImport()),
+        'h3_grid_deforestation_global',
+      ];
+
+      const response: request.Response = await request(app.getHttpServer())
+        .post('/api/v1/import/sourcing-data')
+        .attach('file', __dirname + '/base-dataset.xlsx');
+
+      expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
+
+      expect(response.body.errors[0].title).toEqual(
+        'Cannot calculate impact for sourcing record - missing producer h3 data for material "Maize (corn)" and year "2010"',
+      );
+    }, 100000);
+
+    test('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (ignore strategy)', async () => {
+      missingDataFallbackPolicy = 'ignore';
+
+      const geoRegion: GeoRegion = await createGeoRegion();
+      await createAdminRegion({
+        isoA2: 'ABC',
+        geoRegion,
+      });
+      await h3DataMock({
+        h3TableName: 'h3_grid_deforestation_global',
+        h3ColumnName: 'hansen_loss_2019',
+        year: 2019,
+        additionalH3Data: h3BasicFixture,
+      });
+      tablesToDrop = [
+        ...(await createMaterialTreeForXLSXImport({ startYear: 2020 })),
+        ...(await createIndicatorsForXLSXImport()),
+        'h3_grid_deforestation_global',
+      ];
+
+      const response: request.Response = await request(app.getHttpServer())
+        .post('/api/v1/import/sourcing-data')
+        .attach('file', __dirname + '/base-dataset.xlsx');
+
+      expect(response.statusCode).toEqual(HttpStatus.CREATED);
+
+      const businessUnits: BusinessUnit[] = await businessUnitRepository.find();
+      expect(businessUnits).toHaveLength(5);
+      const businessUnitsRoots: BusinessUnit[] =
+        await businessUnitRepository.findRoots();
+      expect(businessUnitsRoots).toHaveLength(1);
+
+      const suppliers: Supplier[] = await supplierRepository.find();
+      expect(suppliers).toHaveLength(5);
+      const suppliersRoots: Supplier[] = await supplierRepository.findRoots();
+      expect(suppliersRoots).toHaveLength(4);
+
+      const sourcingRecords: SourcingRecord[] =
+        await sourcingRecordRepository.find();
+      expect(sourcingRecords).toHaveLength(11 * 45); //11 year, 45 rows
+
+      const indicatorRecords: IndicatorRecord[] =
+        await indicatorRecordRepository.find();
+      expect(indicatorRecords).toHaveLength(45 * 4); //1 year, 45 rows, 4 indicators
+
+      const sourcingLocations: SourcingLocation[] =
+        await sourcingLocationRepository.find();
+      expect(sourcingLocations).toHaveLength(45);
+      sourcingLocations.forEach((sourcingLocation: SourcingLocation) => {
+        expect(sourcingLocation.materialId).not.toEqual(null);
+      });
+    }, 100000);
+
+    test('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (fallback strategy)', async () => {
+      missingDataFallbackPolicy = 'fallback';
+
+      const geoRegion: GeoRegion = await createGeoRegion();
+      await createAdminRegion({
+        isoA2: 'ABC',
+        geoRegion,
+      });
+      await h3DataMock({
+        h3TableName: 'h3_grid_deforestation_global',
+        h3ColumnName: 'hansen_loss_2019',
+        year: 2019,
+        additionalH3Data: h3BasicFixture,
+      });
+      tablesToDrop = [
+        ...(await createMaterialTreeForXLSXImport({ startYear: 2020 })),
+        ...(await createIndicatorsForXLSXImport()),
+        'h3_grid_deforestation_global',
+      ];
+
+      const response: request.Response = await request(app.getHttpServer())
+        .post('/api/v1/import/sourcing-data')
+        .attach('file', __dirname + '/base-dataset.xlsx');
+
+      expect(response.statusCode).toEqual(HttpStatus.CREATED);
+
+      const businessUnits: BusinessUnit[] = await businessUnitRepository.find();
+      expect(businessUnits).toHaveLength(5);
+      const businessUnitsRoots: BusinessUnit[] =
+        await businessUnitRepository.findRoots();
+      expect(businessUnitsRoots).toHaveLength(1);
+
+      const suppliers: Supplier[] = await supplierRepository.find();
+      expect(suppliers).toHaveLength(5);
+      const suppliersRoots: Supplier[] = await supplierRepository.findRoots();
+      expect(suppliersRoots).toHaveLength(4);
+
+      const sourcingRecords: SourcingRecord[] =
+        await sourcingRecordRepository.find();
+      expect(sourcingRecords).toHaveLength(45 * 11); //11 year, 45 rows
+      expect(
+        sourcingRecords.map(
+          (sourcingRecord: SourcingRecord) => sourcingRecord.year,
+        ),
+      );
+
+      const indicatorRecords: IndicatorRecord[] =
+        await indicatorRecordRepository.find();
+      expect(indicatorRecords).toHaveLength(45 * 11 * 4); //11 year, 45 rows, 4 indicators
+
+      const sourcingLocations: SourcingLocation[] =
+        await sourcingLocationRepository.find();
+      expect(sourcingLocations).toHaveLength(45);
+      sourcingLocations.forEach((sourcingLocation: SourcingLocation) => {
+        expect(sourcingLocation.materialId).not.toEqual(null);
+      });
+    }, 100000);
+  });
 });

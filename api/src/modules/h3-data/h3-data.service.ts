@@ -30,6 +30,7 @@ import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 @Injectable()
 export class H3DataService {
   logger: Logger = new Logger(H3DataService.name);
+
   constructor(
     @InjectRepository(H3DataRepository)
     protected readonly h3DataRepository: H3DataRepository,
@@ -130,11 +131,11 @@ export class H3DataService {
      * @note To generate a Material Map, a producerId is required
      */
     const materialH3Data: H3Data | undefined =
-      await this.materialToH3Service.findH3DataForMaterialAndYear(
+      await this.materialToH3Service.findH3DataForMaterial({
         materialId,
         year,
-        MATERIAL_TO_H3_TYPE.PRODUCER,
-      );
+        type: MATERIAL_TO_H3_TYPE.PRODUCER,
+      });
 
     if (!materialH3Data)
       throw new NotFoundException(
@@ -173,11 +174,11 @@ export class H3DataService {
       );
 
     const harvestMaterialH3Data: H3Data | undefined =
-      await this.materialToH3Service.findH3DataForMaterialAndYear(
+      await this.materialToH3Service.findH3DataForMaterial({
         materialId,
         year,
-        MATERIAL_TO_H3_TYPE.HARVEST,
-      );
+        type: MATERIAL_TO_H3_TYPE.HARVEST,
+      });
     if (!harvestMaterialH3Data) {
       throw new NotFoundException(
         `There is no H3 harvest data for Material with ID: ${materialId}`,
@@ -185,11 +186,11 @@ export class H3DataService {
     }
 
     const producerMaterialH3Data: H3Data | undefined =
-      await this.materialToH3Service.findH3DataForMaterialAndYear(
+      await this.materialToH3Service.findH3DataForMaterial({
         materialId,
         year,
-        MATERIAL_TO_H3_TYPE.PRODUCER,
-      );
+        type: MATERIAL_TO_H3_TYPE.PRODUCER,
+      });
     if (!producerMaterialH3Data) {
       throw new NotFoundException(
         `There is no H3 producer data for Material with ID: ${materialId}`,

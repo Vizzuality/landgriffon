@@ -9,6 +9,9 @@
       "secret": "JWT_SECRET"
     }
   },
+  "import": {
+    "missingDataFallbackStrategy": "IMPORT_MISSING_DATA_FALLBACK_STRATEGY"
+  },
   "redis": {
     "host": "REDIS_HOST",
     "port": "REDIS_PORT"

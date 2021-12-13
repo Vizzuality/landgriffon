@@ -1,6 +1,6 @@
 import { Fragment, useCallback, useEffect, useState, useMemo } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
-import { ChevronDownIcon, ChevronUpIcon, XIcon } from '@heroicons/react/solid';
+import { ChevronDownIcon, ChevronUpIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
 import Fuse from 'fuse.js';
 
@@ -23,7 +23,7 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
     current = options[0],
     loading = false,
     placeholder = null,
-    searchPlaceholder,
+    searchPlaceholder = 'Search',
     onChange,
     onSearch,
   } = props;
@@ -66,7 +66,7 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
           <div className="relative">
             <Listbox.Button
               className="bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left
-              focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer"
+              focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer font-medium"
             >
               {loading ? (
                 <Loading className="text-green-700" />
@@ -111,21 +111,22 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
                 )}
               >
                 {showSearch && (
-                  <div className="relative">
+                  <div className="relative flex items-center border-b border-b-gray-400">
+                    <div className="pl-2 py-1">
+                      <SearchIcon className="block h-4 w-4 text-gray-400" />
+                    </div>
                     <input
                       type="search"
                       value={searchTerm}
-                      placeholder={searchPlaceholder || 'Search'}
-                      className="min-w-full w-24 focus:ring-0 focus:border-green-700 block text-sm border-0 border-b border-gray-300 rounded-t-md pr-8"
+                      placeholder={searchPlaceholder}
+                      className="block w-24 text-sm border-0 rounded-t-md focus:ring-0 focus:border-green-700 flex-1"
                       onChange={handleSearch}
                     />
-                    <button
-                      type="button"
-                      onClick={resetSearch}
-                      className="absolute right-0 transform -translate-y-1/2 top-1/2 px-2 py-1"
-                    >
-                      <XIcon className="h-4 w-4 text-gray-300" />
-                    </button>
+                    {searchTerm && (
+                      <button type="button" onClick={resetSearch} className="px-2 py-1">
+                        <XIcon className="h-4 w-4 text-gray-400" />
+                      </button>
+                    )}
                   </div>
                 )}
                 {optionsResult.map((option) => (
@@ -152,6 +153,9 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
                     )}
                   </Listbox.Option>
                 ))}
+                {optionsResult.length === 0 && searchTerm && (
+                  <div className="p-2 text-sm">No results</div>
+                )}
               </Listbox.Options>
             </Transition>
           </div>

@@ -1,7 +1,13 @@
-import { Fragment, useCallback, useState, useMemo } from 'react';
+import { Fragment, useCallback, useState, useMemo, useEffect } from 'react';
 import classNames from 'classnames';
 import { Transition } from '@headlessui/react';
-import { ChevronDownIcon, ChevronUpIcon, ChevronRightIcon, XIcon } from '@heroicons/react/solid';
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  ChevronRightIcon,
+  XIcon,
+  SearchIcon,
+} from '@heroicons/react/solid';
 import Tree, { TreeNode, TreeProps } from 'rc-tree';
 import Fuse from 'fuse.js';
 
@@ -10,7 +16,7 @@ import Badge from 'components/badge';
 import type { TreeSelectProps, TreeSelectOption } from './types';
 
 const TREE_NODE_CLASSNAMES =
-  'flex items-center space-x-2 p-1 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700';
+  'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700';
 
 const SEARCH_OPTIONS = {
   includeScore: false,
@@ -19,10 +25,12 @@ const SEARCH_OPTIONS = {
 };
 
 const TreeSelect: React.FC<TreeSelectProps> = ({
+  current,
   maxBadges = 5,
   multiple = false,
   options = [],
   placeholder,
+  searchPlaceholder = 'Search',
   showSearch = false,
   onChange,
   onSearch,
@@ -30,8 +38,8 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selected, setSelected] = useState<TreeSelectOption>(null);
-  const [selectedKeys, setSelectedKeys] = useState<TreeProps['defaultSelectedKeys']>([]);
-  // const [expandedKeys, setExpandedKeys] = useState<TreeProps['defaultExpandedKeys']>([]);
+  const [selectedKeys, setSelectedKeys] = useState<TreeProps['selectedKeys']>([]);
+  const [expandedKeys, setExpandedKeys] = useState<TreeProps['expandedKeys']>([]);
   const [checkedKeys, setCheckedKeys] = useState<TreeProps['checkedKeys']>([]);
 
   const renderTreeNodes = useMemo(
@@ -72,7 +80,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
 
   const handleToggleOpen = useCallback(() => setIsOpen(!isOpen), [isOpen]);
 
-  // const handleExpand: TreeProps['onExpand'] = useCallback((keys) => setExpandedKeys(keys), []);
+  const handleExpand: TreeProps['onExpand'] = useCallback((keys) => setExpandedKeys(keys), []);
 
   // Selection for non-multiple
   const handleSelect: TreeProps['onSelect'] = useCallback(
@@ -133,12 +141,6 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     return options;
   }, [fuse, options, searchTerm]);
 
-  // useEffect(() => {
-  //   const currentSelection = options.filter(({ value }) => selectedKeys.includes(value));
-  //   console.log('currentSelection', currentSelection);
-  //   // if (onChange) onChange(currentSelection);
-  // }, [options, selectedKeys]);
-
   // Only for multiple, find options depending on checked keys
   const currentOptions = useMemo<TreeSelectOption[]>(() => {
     const checkedOptions = [];
@@ -173,6 +175,16 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
       )}
     </span>
   );
+
+  // Current selection
+  useEffect(() => {
+    if (current && current.length) {
+      const currentKeys = current.map(({ value }) => value);
+      setSelected(current[0]);
+      setSelectedKeys(currentKeys);
+      setCheckedKeys(currentKeys);
+    }
+  }, [current]);
 
   return (
     <div className="relative">
@@ -216,7 +228,11 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           onClick={handleToggleOpen}
         >
           <span className="inline-block truncate">
-            {selected ? selected.label : <span className="text-gray-300">{placeholder}</span>}
+            {selected ? (
+              <span className="font-medium">{selected.label}</span>
+            ) : (
+              <span className="text-gray-300">{placeholder}</span>
+            )}
           </span>
           <Icon />
         </button>
@@ -231,42 +247,46 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
         leaveFrom="opacity-100 translate-y-0"
         leaveTo="opacity-0 translate-y-1"
       >
-        <div className="absolute z-20 max-w-min max-w-xl max-h-96 bg-white shadow-lg rounded-md mt-1 ring-1 ring-black ring-opacity-5 overflow-auto">
+        <div className="absolute z-20 max-w-xl max-h-96 bg-white shadow-lg rounded-md mt-1 ring-1 ring-black ring-opacity-5 overflow-y-auto">
           {showSearch && (
-            <div className="relative">
+            <div className="relative flex items-center border-b border-b-gray-400">
+              <div className="pl-2 py-1">
+                <SearchIcon className="block h-4 w-4 text-gray-400" />
+              </div>
               <input
                 type="search"
                 value={searchTerm}
-                placeholder="Search"
-                className="min-w-full w-24 focus:ring-0 focus:border-green-700 block text-sm border-0 border-b border-gray-300 rounded-t-md pr-8"
+                placeholder={searchPlaceholder}
+                className="block w-24 text-sm border-0 rounded-t-md focus:ring-0 focus:border-green-700 flex-1"
                 onChange={handleSearch}
               />
-              <button
-                type="button"
-                onClick={resetSearch}
-                className="absolute right-0 transform -translate-y-1/2 top-1/2 px-2 py-1"
-              >
-                <XIcon className="h-4 w-4 text-gray-300" />
-              </button>
+              {searchTerm && (
+                <button type="button" onClick={resetSearch} className="px-2 py-1">
+                  <XIcon className="h-4 w-4 text-gray-400" />
+                </button>
+              )}
             </div>
           )}
-          <div className="p-4">
+          <div>
             <Tree
-              // autoExpandParent
+              autoExpandParent
               checkable={multiple}
               selectable={!multiple}
               multiple={multiple}
               selectedKeys={selectedKeys}
-              // defaultExpandedKeys={expandedKeys}
+              expandedKeys={expandedKeys}
               checkedKeys={checkedKeys}
               switcherIcon={customSwitcherIcon}
-              // onExpand={handleExpand}
+              onExpand={handleExpand}
               onSelect={handleSelect}
               onCheck={handleCheck}
             >
               {renderTreeNodes(optionsResult)}
             </Tree>
           </div>
+          {optionsResult.length === 0 && searchTerm && (
+            <div className="p-2 text-sm">No results</div>
+          )}
         </div>
       </Transition>
     </div>

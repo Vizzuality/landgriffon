@@ -22,7 +22,7 @@ const YearsFilter: React.FC = () => {
   const { data, isLoading } = useYears(layer, materials, indicator);
 
   const dataWithAdditionalYear: number[] = useMemo(() => {
-    const result = [...data];
+    const result = [...(data || [])];
     if (additionalYear) result.push(additionalYear);
     return result;
   }, [data, additionalYear]);
@@ -75,7 +75,7 @@ const YearsFilter: React.FC = () => {
   );
 
   const optionsEndYear: SelectOptions = useMemo(() => {
-    const result = [...data];
+    const result = [...(data || [])];
     if (additionalYear) result.push(additionalYear);
     return result.map((year) => ({
       label: year.toString(),
@@ -84,12 +84,12 @@ const YearsFilter: React.FC = () => {
   }, [data, additionalYear]);
 
   const currentStartYearValue: SelectOption = useMemo(
-    () => optionsStartYear.find((option) => option.value === startYear),
+    () => optionsStartYear?.find((option) => option.value === startYear),
     [optionsStartYear, startYear],
   );
 
   const currentEndYearValue: SelectOption = useMemo(
-    () => optionsEndYear.find((option) => option.value === endYear),
+    () => optionsEndYear?.find((option) => option.value === endYear),
     [endYear, optionsEndYear],
   );
 
@@ -127,6 +127,7 @@ const YearsFilter: React.FC = () => {
         loading={isLoading}
         current={currentEndYearValue}
         options={optionsEndYear}
+        placeholder="Year"
         showSearch
         onChange={onChangeEndYear}
         onSearch={handleAdditionalYear}

@@ -10,6 +10,7 @@ const Home: React.FC = () => {
   const fakeLogin = useCallback(
     (e) => {
       e.preventDefault();
+      e.stopPropagation();
       router.push('/analysis');
     },
     [router],
@@ -29,7 +30,7 @@ const Home: React.FC = () => {
             </div>
             <form
               className="space-y-6"
-              action="#"
+              action="/analysis"
               method="POST"
               onSubmit={fakeLogin}
               id="signInForm"

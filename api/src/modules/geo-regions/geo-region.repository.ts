@@ -1,9 +1,4 @@
-import {
-  EntityRepository,
-  getManager,
-  Repository,
-  SelectQueryBuilder,
-} from 'typeorm';
+import { EntityRepository, getManager, Repository } from 'typeorm';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { LocationGeoRegionDto } from 'modules/geo-regions/dto/location.geo-region.dto';
 
@@ -37,8 +32,7 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
       .from('points', 'points');
 
     const res: any = await this.query(
-      `
-      WITH
+      `WITH
         points AS (SELECT ST_BUFFER(ST_SetSRID(ST_POINT($1,$2),4326)::geometry, 0.5) as radius)
       INSERT INTO geo_region (name, "theGeom", "h3Compact")
       ${selectQuery.getSql()}

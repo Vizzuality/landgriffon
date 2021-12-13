@@ -1,4 +1,9 @@
-import { EntityRepository, Repository } from 'typeorm';
+import {
+  EntityRepository,
+  getManager,
+  Repository,
+  SelectQueryBuilder,
+} from 'typeorm';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { LocationGeoRegionDto } from 'modules/geo-regions/dto/location.geo-region.dto';
 
@@ -20,18 +25,24 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
   async saveGeoRegionAsRadius(
     newGeoRegionValues: LocationGeoRegionDto,
   ): Promise<GeoRegion> {
+    const selectQuery: any = getManager()
+      .createQueryBuilder()
+      .select(`hashtext($3)`)
+      .addSelect(`points.radius`)
+      .addSelect(
+        `array(
+        SELECT h3_compact(array(SELECT h3_polyfill(points.radius,6)))
+      )`,
+      )
+      .from('points', 'points');
+
     const res: any = await this.query(
-      `WITH
+      `
+      WITH
         points AS (SELECT ST_BUFFER(ST_SetSRID(ST_POINT($1,$2),4326)::geometry, 0.5) as radius)
       INSERT INTO geo_region (name, "theGeom", "h3Compact")
-      SELECT
-        hashtext($3) ,
-        points.radius,
-        array(
-          SELECT h3_compact(array(SELECT h3_polyfill(points.radius,6)))
-        )
-      FROM points
-        ON CONFLICT (name) DO UPDATE
+      ${selectQuery.getSql()}
+      ON CONFLICT (name) DO UPDATE
           SET "theGeom" = excluded."theGeom", "h3Compact" = excluded."h3Compact"
         RETURNING id`,
       [
@@ -52,23 +63,30 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
   async saveGeoRegionAsPoint(
     newGeoRegionValues: LocationGeoRegionDto,
   ): Promise<Pick<GeoRegion, 'id'>> {
-    const res: any = await this.query(
-      `
-    INSERT INTO geo_region (name, "theGeom", "h3Compact")
-            VALUES(
-              hashtext($1),
-              ST_GeomFromText($2, 4326),
-              array( SELECT (h3_compact(array(SELECT h3_geo_to_h3(ST_GeomFromText($2), 6)))))
-            )
-            ON CONFLICT (name) DO UPDATE
-                SET "theGeom" = excluded."theGeom", "h3Compact" = excluded."h3Compact"
-            RETURNING id`,
-      [
-        `Point of Production - ${newGeoRegionValues.coordinates.lng}-${newGeoRegionValues.coordinates.lat}`,
-        `POINT(${newGeoRegionValues.coordinates.lng} ${newGeoRegionValues.coordinates.lat})`,
-      ],
-    );
+    const res: any = await getManager()
+      .createQueryBuilder()
+      .insert()
+      .into('geo_region')
+      .values({
+        name: () => `hashtext(:arg1)`,
 
-    return res[0].id;
+        theGeom: () => `ST_GeomFromText(:arg2, 4326)`,
+
+        h3Compact: () =>
+          `array( SELECT (h3_compact(array(SELECT h3_geo_to_h3(ST_GeomFromText(:arg2), 6)))))`,
+      })
+      .setParameter(
+        'arg1',
+        `Point of Production - ${newGeoRegionValues.coordinates.lng}-${newGeoRegionValues.coordinates.lat}`,
+      )
+      .setParameter(
+        'arg2',
+        `POINT(${newGeoRegionValues.coordinates.lng} ${newGeoRegionValues.coordinates.lat})`,
+      )
+      .orUpdate(['theGeom', 'h3Compact'], ['name'])
+      .returning('id')
+      .execute();
+
+    return res.raw[0].id;
   }
 }

@@ -12,6 +12,7 @@ import Tree, { TreeNode, TreeProps } from 'rc-tree';
 import Fuse from 'fuse.js';
 
 import Badge from 'components/badge';
+import Loading from 'components/loading';
 
 import type { TreeSelectProps, TreeSelectOption } from './types';
 
@@ -26,6 +27,7 @@ const SEARCH_OPTIONS = {
 
 const TreeSelect: React.FC<TreeSelectProps> = ({
   current,
+  loading,
   maxBadges = 5,
   multiple = false,
   options = [],
@@ -247,9 +249,10 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
         leaveFrom="opacity-100 translate-y-0"
         leaveTo="opacity-0 translate-y-1"
       >
-        <div className="absolute z-20 max-w-xl max-h-96 bg-white shadow-lg rounded-md mt-1 ring-1 ring-black ring-opacity-5 overflow-y-auto">
-          {showSearch && (
-            <div className="relative flex items-center border-b border-b-gray-400">
+        <div className="absolute z-20 min-w-full max-w-xl max-h-96 bg-white shadow-lg rounded-md mt-1 ring-1 ring-black ring-opacity-5 overflow-y-auto overflow-x-hidden">
+          {loading && <Loading className="text-green-700" />}
+          {!loading && showSearch && (
+            <div className="flex items-center border-b border-b-gray-400">
               <div className="pl-2 py-1">
                 <SearchIcon className="block h-4 w-4 text-gray-400" />
               </div>
@@ -257,7 +260,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                 type="search"
                 value={searchTerm}
                 placeholder={searchPlaceholder}
-                className="block w-24 text-sm border-0 rounded-t-md focus:ring-0 focus:border-green-700 flex-1"
+                className="block text-sm border-0 rounded-t-md focus:ring-0 focus:border-green-700 flex-1"
                 onChange={handleSearch}
               />
               {searchTerm && (
@@ -267,7 +270,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
               )}
             </div>
           )}
-          <div>
+          {!loading && (
             <Tree
               autoExpandParent
               checkable={multiple}
@@ -283,7 +286,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
             >
               {renderTreeNodes(optionsResult)}
             </Tree>
-          </div>
+          )}
           {optionsResult.length === 0 && searchTerm && (
             <div className="p-2 text-sm">No results</div>
           )}

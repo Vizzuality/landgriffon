@@ -97,32 +97,15 @@ const MoreFilters: React.FC = () => {
               <div className="flex flex-col gap-3">
                 <div>
                   <div className="mb-1">Material</div>
-                  <Materials
-                    multiple
-                    // multiple
-                    // current={moreFilters.materials}
-                    // maxTagCount={MAX_TAG_COUNT}
-                    // onChange={(values) => handleChangeFilter('materials', values)}
-                  />
+                  <Materials multiple />
                 </div>
                 <div>
                   <div className="mb-1">Origins</div>
-                  {/* <OriginRegions
-                    className="w-full"
-                    value={moreFilters.origins}
-                    maxTagCount={MAX_TAG_COUNT}
-                    onChange={(values) => handleChangeFilter('origins', values)}
-                  /> */}
+                  <OriginRegions multiple />
                 </div>
                 <div>
                   <div className="mb-1">Suppliers</div>
-                  {/* <Suppliers
-                    className="w-full"
-                    multiple
-                    value={moreFilters.suppliers}
-                    maxTagCount={MAX_TAG_COUNT}
-                    onChange={(values) => handleChangeFilter('suppliers', values)}
-                  /> */}
+                  <Suppliers multiple />
                 </div>
               </div>
               <div className="flex gap-2 mt-4">

@@ -103,7 +103,7 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
               <Listbox.Options
                 static
                 className={classNames(
-                  'absolute z-20 mt-1 min-w-min w-full bg-white shadow-lg max-h-60 rounded-md ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none text-sm',
+                  'absolute z-20 mt-1 min-w-min w-full bg-white shadow-lg max-h-60 rounded-md ring-1 ring-black ring-opacity-5 overflow-y-auto overflow-x-hidden focus:outline-none text-sm',
                   {
                     'py-1': !showSearch,
                     'py-0': showSearch,

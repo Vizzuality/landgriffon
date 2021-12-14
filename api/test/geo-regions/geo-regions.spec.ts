@@ -59,6 +59,7 @@ describe('GeoRegionsModule (e2e)', () => {
       }
 
       expect(createdGeoRegion.name).toEqual('test geo region');
+      expect(createdGeoRegion.isCreatedByUser).toEqual(true);
     });
   });
 

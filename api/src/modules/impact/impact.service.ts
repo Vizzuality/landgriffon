@@ -117,7 +117,6 @@ export class ImpactService {
               value: dataForYear.impact,
               isProjected: false,
             });
-            ++rowValuesIndex;
             // If the year requested does no exist in the raw data, project its value getting the latest value (previous year which comes in ascendant order)
           } else {
             const lastYearsValue: number =
@@ -130,8 +129,8 @@ export class ImpactService {
               value: lastYearsValue + (lastYearsValue * this.growthRate) / 100,
               isProjected: true,
             });
-            ++rowValuesIndex;
           }
+          ++rowValuesIndex;
         }
       }
       // Once we have all data, projected or not, append the total sum of impact by year and indicator
@@ -153,13 +152,13 @@ export class ImpactService {
       });
     });
     const purchasedTonnes: ImpactTablePurchasedTonnes[] =
-      this.addTotalPurchasedVolumeByYear(rangeOfYears, dataForImpactTable);
+      this.getTotalPurchasedVolumeByYear(rangeOfYears, dataForImpactTable);
     this.logger.log('Impact Table built');
 
     return { impactTable, purchasedTonnes };
   }
 
-  private addTotalPurchasedVolumeByYear(
+  private getTotalPurchasedVolumeByYear(
     rangeOfYears: number[],
     dataForImpactTable: ImpactTableData[],
   ): ImpactTablePurchasedTonnes[] {
@@ -167,7 +166,7 @@ export class ImpactService {
     rangeOfYears.forEach((year: number) => {
       const valueOfPurchasedTonnesByYear: number = dataForImpactTable.reduce(
         (accumulator: number, currentValue: ImpactTableData): number => {
-          if (+currentValue.year === year) {
+          if (currentValue.year === year) {
             accumulator += +currentValue.impact;
           }
           return accumulator;
@@ -181,7 +180,7 @@ export class ImpactService {
           value: valueOfPurchasedTonnesByYear,
           isProjected: false,
         });
-        // If it does not exist, get the previous value
+        // If it does not exist, get the previous value and project it
       } else {
         const tonnesToProject: number =
           dataForImpactTable[dataForImpactTable.length - 1].impact;

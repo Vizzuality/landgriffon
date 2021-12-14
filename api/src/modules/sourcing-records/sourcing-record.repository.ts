@@ -12,7 +12,7 @@ import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 
 export class ImpactTableData {
-  year: string;
+  year: number;
   indicatorId: string;
   indicatorShortName: string;
   name: string;

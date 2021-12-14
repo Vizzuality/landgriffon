@@ -32,7 +32,7 @@ COPY --chown=$USER:$USER cypress ./cypress
 # NextJS config files
 COPY --chown=$USER:$USER next.config.js next-env.d.ts local.d.ts \
 	postcss.config.js tailwind.config.js cypress.json entrypoint.sh \
-	tsconfig.json .babelrc .browserlistrc ./
+	tsconfig.json .browserlistrc ./
 
 RUN yarn build
 

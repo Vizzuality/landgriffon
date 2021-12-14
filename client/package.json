@@ -11,7 +11,7 @@
     "prettier": "prettier --config .prettierrc.json --check --write \"./src/**/*.{tsx,jsx,ts,js}\"",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run --headless --browser chrome",
-    "test": "start-server-and-test 'yarn build && yarn start' 3000 cypress:run"
+    "test": "start-server-and-test 'yarn build && yarn start' 3000 'nyc --reporter nyc-report-lcov-absolute yarn cypress:run cypress:run'"
   },
   "dependencies": {
     "@deck.gl/core": "8.5.8",

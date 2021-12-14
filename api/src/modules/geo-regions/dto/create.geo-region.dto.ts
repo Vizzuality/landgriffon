@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsArray,
+  IsBoolean,
   IsJSON,
   IsNotEmpty,
   IsOptional,
@@ -27,4 +28,8 @@ export class CreateGeoRegionDto {
   @IsJSON()
   @ApiPropertyOptional()
   theGeom?: string;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  isCreatedByUser: boolean;
 }

@@ -1,4 +1,11 @@
-import { EntityRepository, getManager, Repository } from 'typeorm';
+import {
+  EntityRepository,
+  getManager,
+  InsertResult,
+  QueryResult,
+  Repository,
+  SelectQueryBuilder,
+} from 'typeorm';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { LocationGeoRegionDto } from 'modules/geo-regions/dto/location.geo-region.dto';
 
@@ -20,7 +27,7 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
   async saveGeoRegionAsRadius(
     newGeoRegionValues: LocationGeoRegionDto,
   ): Promise<GeoRegion> {
-    const selectQuery: any = getManager()
+    const selectQuery: SelectQueryBuilder<any> = getManager()
       .createQueryBuilder()
       .select(`hashtext($3)`)
       .addSelect(`points.radius`)
@@ -57,10 +64,8 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
   async saveGeoRegionAsPoint(
     newGeoRegionValues: LocationGeoRegionDto,
   ): Promise<Pick<GeoRegion, 'id'>> {
-    const res: any = await getManager()
-      .createQueryBuilder()
+    const res: InsertResult = await this.createQueryBuilder()
       .insert()
-      .into('geo_region')
       .values({
         name: () => `hashtext(:arg1)`,
         theGeom: () => `ST_GeomFromText(:arg2, 4326)`,

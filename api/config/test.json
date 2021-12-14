@@ -5,7 +5,7 @@
     "port": 5432,
     "username": "landgriffon",
     "password": "",
-    "database": "landgriffon",
+    "database": "landgriffon_test",
     "synchronize": true,
     "migrationsRun": false,
     "dropSchema": true,

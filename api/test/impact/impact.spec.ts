@@ -135,7 +135,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
   });
 
   test('When I query the API for a Impact Table with correct params but there are not indicators to retrieve in the DB, then I should get a proper erros message ', async () => {
-    const indicatorRecord: IndicatorRecord = await createIndicatorRecord();
+    await createIndicatorRecord();
     const response = await request(app.getHttpServer())
       .get('/api/v1/impact/table')
       .query({

@@ -7,7 +7,7 @@ import { Indicator } from 'modules/indicators/indicator.entity';
 import { Material } from 'modules/materials/material.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
-import { Logger, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 
@@ -47,7 +47,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
 
   async getDataForImpactTable(
     getImpactTaleDto: GetImpactTableDto,
-  ): Promise<any> {
+  ): Promise<ImpactTableData[]> {
     const {
       startYear,
       endYear,
@@ -131,25 +131,28 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
         });
     }
     //GROUPING BY
-    if (groupBy === GROUP_BY_VALUES.MATERIAL) {
-      impactDataQueryBuilder
-        .addSelect('material.name', 'name')
-        .groupBy('material.name');
-    }
-    if (groupBy === GROUP_BY_VALUES.REGION) {
-      impactDataQueryBuilder
-        .addSelect('adminRegion.name', 'name')
-        .groupBy('adminRegion.name');
-    }
-    if (groupBy === GROUP_BY_VALUES.SUPPLIER) {
-      impactDataQueryBuilder
-        .addSelect('supplier.name', 'name')
-        .groupBy('supplier.name');
-    }
-    if (groupBy === GROUP_BY_VALUES.BUSINESS_UNIT) {
-      impactDataQueryBuilder
-        .addSelect('businessUnit.name', 'name')
-        .groupBy('businessUnit.name');
+    switch (groupBy) {
+      case GROUP_BY_VALUES.MATERIAL:
+        impactDataQueryBuilder
+          .addSelect('material.name', 'name')
+          .groupBy('material.name');
+        break;
+      case GROUP_BY_VALUES.REGION:
+        impactDataQueryBuilder
+          .addSelect('adminRegion.name', 'name')
+          .groupBy('adminRegion.name');
+        break;
+      case GROUP_BY_VALUES.SUPPLIER:
+        impactDataQueryBuilder
+          .addSelect('supplier.name', 'name')
+          .groupBy('supplier.name');
+        break;
+      case GROUP_BY_VALUES.BUSINESS_UNIT:
+        impactDataQueryBuilder
+          .addSelect('businessUnit.name', 'name')
+          .groupBy('businessUnit.name');
+        break;
+      default:
     }
     impactDataQueryBuilder
       .addGroupBy(`sourcingRecords.year, sourcingRecords.id, indicator.id`)

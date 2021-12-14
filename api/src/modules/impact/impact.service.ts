@@ -98,7 +98,7 @@ export class ImpactService {
       ];
 
       for (const [index, name] of namesByIndicator.entries()) {
-        impactTable[i].rows.push({ name: name, values: [] });
+        impactTable[i].rows.push({ name, values: [] });
         let rowIndex: number = 0;
         for (const year of rangeOfYears) {
           const dataForYear: ImpactTableData | undefined = dataByIndicator.find(
@@ -138,7 +138,7 @@ export class ImpactService {
     });
     const purchasedTonnes: ImpactTablePurchasedTonnes[] = [];
     rangeOfYears.forEach((year: number) => {
-      const purchasedTonessValue: number = dataForImpactTable.reduce(
+      const valueOfPurchasedTonnesByYear: number = dataForImpactTable.reduce(
         (acc: number, cur: ImpactTableData): number => {
           if (+cur.year === year) {
             acc += +cur.impact;
@@ -147,10 +147,10 @@ export class ImpactService {
         },
         0,
       );
-      if (purchasedTonessValue) {
+      if (valueOfPurchasedTonnesByYear) {
         purchasedTonnes.push({
           year,
-          value: purchasedTonessValue,
+          value: valueOfPurchasedTonnesByYear,
           isProjected: false,
         });
       } else {

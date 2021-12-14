@@ -11,7 +11,7 @@ import { Type } from 'class-transformer';
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 
 export class GetImpactTableDto {
-  @ApiPropertyOptional()
+  @ApiProperty()
   @IsString({ each: true })
   @Type(() => String)
   indicatorIds!: string[];

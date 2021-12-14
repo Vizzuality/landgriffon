@@ -81,7 +81,7 @@ export class ImpactService {
     const { groupBy, startYear, endYear } = queryDto;
     const impactTable: ImpactTableDataByIndicator[] = [];
     const rangeOfYears: number[] = range(startYear, endYear + 1);
-    indicators.forEach((indicator: Indicator, i: number) => {
+    indicators.forEach((indicator: Indicator, indicatorValuesIndex: number) => {
       impactTable.push({
         indicatorShortName: indicator.shortName as string,
         indicatorId: indicator.id,
@@ -97,53 +97,62 @@ export class ImpactService {
         ...new Set(dataByIndicator.map((el: ImpactTableData) => el.name)),
       ];
 
-      for (const [index, name] of namesByIndicator.entries()) {
-        impactTable[i].rows.push({ name, values: [] });
-        let rowIndex: number = 0;
+      for (const [namesByIndicatorIndex, name] of namesByIndicator.entries()) {
+        impactTable[indicatorValuesIndex].rows.push({ name, values: [] });
+        let rowValuesIndex: number = 0;
         for (const year of rangeOfYears) {
           const dataForYear: ImpactTableData | undefined = dataByIndicator.find(
-            (data: ImpactTableData) => {
-              return (data.year as unknown as number) === year;
-            },
+            (data: ImpactTableData) => +data.year === year,
           );
           if (dataForYear) {
-            impactTable[i].rows[index].values.push({
-              year: parseInt(dataForYear.year),
+            impactTable[indicatorValuesIndex].rows[
+              namesByIndicatorIndex
+            ].values.push({
+              year: +dataForYear.year,
               value: dataForYear.impact,
               isProjected: false,
             });
-            ++rowIndex;
+            ++rowValuesIndex;
           } else {
             const lastYearsValue: number =
-              impactTable[i].rows[index].values[rowIndex - 1].value;
-            impactTable[i].rows[index].values.push({
+              impactTable[indicatorValuesIndex].rows[namesByIndicatorIndex]
+                .values[rowValuesIndex - 1].value;
+            impactTable[indicatorValuesIndex].rows[
+              namesByIndicatorIndex
+            ].values.push({
               year: year,
               value: lastYearsValue + (lastYearsValue * this.growthRate) / 100,
               isProjected: true,
             });
-            ++rowIndex;
+            ++rowValuesIndex;
           }
         }
       }
-      rangeOfYears.forEach((year: number, index: number) => {
-        const totalSumByYear: number = impactTable[i].rows.reduce(
-          (acc: number, cur: ImpactTableRows): number => {
-            if (cur.values[index].year === year) acc += cur.values[index].value;
-            return acc;
+      rangeOfYears.forEach((year: number, indexOfYear: number) => {
+        const totalSumByYear: number = impactTable[
+          indicatorValuesIndex
+        ].rows.reduce(
+          (accumulator: number, currentValue: ImpactTableRows): number => {
+            if (currentValue.values[indexOfYear].year === year)
+              accumulator += currentValue.values[indexOfYear].value;
+            return accumulator;
           },
           0,
         );
-        impactTable[i].yearSum.push({ year, value: totalSumByYear });
+        impactTable[indicatorValuesIndex].yearSum.push({
+          year,
+          value: totalSumByYear,
+        });
       });
     });
     const purchasedTonnes: ImpactTablePurchasedTonnes[] = [];
     rangeOfYears.forEach((year: number) => {
       const valueOfPurchasedTonnesByYear: number = dataForImpactTable.reduce(
-        (acc: number, cur: ImpactTableData): number => {
-          if (+cur.year === year) {
-            acc += +cur.impact;
+        (accumulator: number, currentValue: ImpactTableData): number => {
+          if (+currentValue.year === year) {
+            accumulator += +currentValue.impact;
           }
-          return acc;
+          return accumulator;
         },
         0,
       );

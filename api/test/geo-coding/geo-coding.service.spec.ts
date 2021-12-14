@@ -79,6 +79,7 @@ describe('GeoCoding Service (Integration Testing)', () => {
       const geoRegion = await geoRegionRepository.find({});
       expect(geoRegion[0].h3Compact).toBeDefined();
       expect(geoRegion[0].theGeom).toBeDefined();
+      expect(geoRegion[0].isCreatedByUser).toEqual(true);
       expect(res.geoRegionId).toEqual(geoRegion[0].id);
       expect(res.adminRegionId).toEqual('ddb17f37-4e6a-4494-95c8-26ed830317df');
     });
@@ -211,6 +212,7 @@ describe('GeoCoding Service (Integration Testing)', () => {
         coordinates: [78.96288, 20.593684],
         type: 'Point',
       });
+      expect(geoRegion[0].isCreatedByUser).toEqual(true);
     });
   });
 });

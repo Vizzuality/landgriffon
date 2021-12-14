@@ -5,7 +5,7 @@ CREATE EXTENSION IF NOT EXISTS ltree;
 TRUNCATE TABLE geo_region CASCADE;
 
 INSERT INTO geo_region
-("name", "h3Flat", "h3Compact", "theGeom")
+("name", "h3Flat", "h3Compact", "theGeom", "isCreatedByUser")
 
 SELECT
 mpath,
@@ -17,7 +17,8 @@ array(
         SELECT h3_polyfill(wkb_geometry, 6)
     ))
 ) AS "h3Compact",
-wkb_geometry
+wkb_geometry,
+false
 FROM gadm_levels0_2
 ON CONFLICT (name) DO UPDATE SET
 "h3Compact" = EXCLUDED."h3Compact",

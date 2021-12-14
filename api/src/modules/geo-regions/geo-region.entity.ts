@@ -49,6 +49,9 @@ export class GeoRegion extends BaseEntity {
   @ApiPropertyOptional()
   theGeom?: JSON;
 
+  @Column({ type: 'boolean', default: true })
+  isCreatedByUser: boolean;
+
   @ApiPropertyOptional()
   @OneToMany(() => AdminRegion, (adminReg: AdminRegion) => adminReg.geoRegion)
   adminRegions?: AdminRegion[];

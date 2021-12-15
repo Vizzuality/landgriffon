@@ -1,23 +1,22 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import TreeSelect from 'components/tree-select';
 import { sortBy } from 'lodash';
 
-import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { analysis, setFilter } from 'store/features/analysis';
 import { useAdminRegionsTrees } from 'hooks/admin-regions';
-
 import type { TreeSelectProps } from 'components/tree-select/types';
 
-const OriginRegionsFilter: React.FC<{ multiple?: boolean }> = (props) => {
-  const { multiple } = props;
-  const dispatch = useAppDispatch();
-  const { filters } = useAppSelector(analysis);
-  const { data, isLoading } = useAdminRegionsTrees({ depth: 1 });
+type OriginRegionsFilterProps = {
+  current: TreeSelectProps['current'];
+  multiple?: TreeSelectProps['multiple'];
+  onChange?: TreeSelectProps['onChange'];
+};
 
-  const handleChange = useCallback(
-    (selected) => dispatch(setFilter({ id: 'origins', value: [selected] })),
-    [dispatch],
-  );
+const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
+  multiple,
+  current,
+  onChange,
+}) => {
+  const { data, isFetching } = useAdminRegionsTrees({ depth: 1 });
 
   const treeOptions: TreeSelectProps['options'] = useMemo(
     () =>
@@ -36,11 +35,11 @@ const OriginRegionsFilter: React.FC<{ multiple?: boolean }> = (props) => {
     <TreeSelect
       multiple={multiple}
       showSearch
-      loading={isLoading}
+      loading={isFetching}
       options={treeOptions}
       placeholder="Materials"
-      onChange={handleChange}
-      current={filters.materials}
+      onChange={onChange}
+      current={current}
     />
   );
 };

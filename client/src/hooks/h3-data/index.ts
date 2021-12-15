@@ -144,7 +144,7 @@ export function useH3ImpactData(): H3DataResponse {
         .get('/map/impact', {
           params: {
             ...filters,
-            resolution: 4,
+            resolution: filters.originIds && filters.originIds.length ? 6 : 4,
           },
         })
         // Adding color to the response

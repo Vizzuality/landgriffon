@@ -97,25 +97,43 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   );
 
   // Selection for multiple
-  const handleCheck = useCallback((checkedKeys, info) => {
-    const { checkedNodes } = info;
-    // 1. Extracting parents selected
-    const parentsWithChildren = checkedNodes.filter((node) => !!node?.children);
-    // 2. Extracting children ids from parents selected above
-    const childrenWithParents = [];
-    if (parentsWithChildren && parentsWithChildren.length) {
-      parentsWithChildren.forEach(({ children }) =>
-        children.forEach(({ key }) => childrenWithParents.push(key)),
-      );
-    }
-    // 3. Filtering checkedKeys with children ids to not send unnecessary values
-    const filteredValues =
-      childrenWithParents && childrenWithParents.length
-        ? checkedKeys.filter((key) => !childrenWithParents.includes(key))
-        : checkedKeys;
+  const handleCheck = useCallback(
+    (checkedKeys, info) => {
+      const { checkedNodes } = info;
+      // 1. Extracting parents selected
+      const parentsWithChildren = checkedNodes.filter((node) => !!node?.children);
+      // 2. Extracting children ids from parents selected above
+      const childrenWithParents = [];
+      if (parentsWithChildren && parentsWithChildren.length) {
+        parentsWithChildren.forEach(({ children }) =>
+          children.forEach(({ key }) => childrenWithParents.push(key)),
+        );
+      }
+      // 3. Filtering checkedKeys with children ids to not send unnecessary values
+      const filteredValues =
+        childrenWithParents && childrenWithParents.length
+          ? checkedKeys.filter((key) => !childrenWithParents.includes(key))
+          : checkedKeys;
 
-    setCheckedKeys(filteredValues);
-  }, []);
+      // TO-DO: this function is repeated
+      const checkedOptions = [];
+      if (filteredValues) {
+        (filteredValues as string[]).forEach((key) => {
+          const recursiveSearch = (arr) => {
+            arr.forEach((opt) => {
+              if (opt.value === key) checkedOptions.push(opt);
+              if (opt.children) recursiveSearch(opt.children);
+            });
+          };
+          recursiveSearch(options);
+        });
+      }
+
+      if (onChange) onChange(checkedOptions);
+      setCheckedKeys(filteredValues);
+    },
+    [onChange, options],
+  );
 
   // Search capability
   const fuse = useMemo(() => new Fuse(options, SEARCH_OPTIONS), [options]);
@@ -163,9 +181,24 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   const handleRemoveBadget = useCallback(
     (option) => {
       const filteredKeys = (checkedKeys as string[]).filter((key) => option.value !== key);
+      // TO-DO: this function is repeated
+      const checkedOptions = [];
+      if (filteredKeys) {
+        (filteredKeys as string[]).forEach((key) => {
+          const recursiveSearch = (arr) => {
+            arr.forEach((opt) => {
+              if (opt.value === key) checkedOptions.push(opt);
+              if (opt.children) recursiveSearch(opt.children);
+            });
+          };
+          recursiveSearch(options);
+        });
+      }
+
+      if (onChange) onChange(checkedOptions);
       setCheckedKeys(filteredKeys);
     },
-    [checkedKeys],
+    [checkedKeys, onChange, options],
   );
 
   const Icon = () => (
@@ -250,7 +283,11 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
         leaveTo="opacity-0 translate-y-1"
       >
         <div className="absolute z-20 min-w-full max-w-xl max-h-96 bg-white shadow-lg rounded-md mt-1 ring-1 ring-black ring-opacity-5 overflow-y-auto overflow-x-hidden">
-          {loading && <Loading className="text-green-700" />}
+          {loading && (
+            <div className="p-4">
+              <Loading className="text-green-700" />
+            </div>
+          )}
           {!loading && showSearch && (
             <div className="flex items-center border-b border-b-gray-400">
               <div className="pl-2 py-1">

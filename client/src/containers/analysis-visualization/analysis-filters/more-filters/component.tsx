@@ -7,7 +7,7 @@ import { analysis, setFilters } from 'store/features/analysis';
 import type { AnalysisState } from 'store/features/analysis';
 import Button from 'components/button';
 
-import Materials from '../materials';
+import Materials from '../materials/component';
 import OriginRegions from '../origin-regions/component';
 import Suppliers from '../suppliers/component';
 
@@ -16,8 +16,6 @@ const INITIAL_FILTERS: Partial<AnalysisState['filters']> = {
   origins: [],
   suppliers: [],
 };
-
-const MAX_TAG_COUNT = 4;
 
 const MoreFilters: React.FC = () => {
   const { filters } = useAppSelector(analysis);
@@ -97,15 +95,19 @@ const MoreFilters: React.FC = () => {
               <div className="flex flex-col gap-3">
                 <div>
                   <div className="mb-1">Material</div>
-                  <Materials multiple />
+                  <Materials multiple current={filters.materials} />
                 </div>
                 <div>
                   <div className="mb-1">Origins</div>
-                  <OriginRegions multiple />
+                  <OriginRegions
+                    multiple
+                    current={filters.origins}
+                    onChange={(values) => handleChangeFilter('origins', values)}
+                  />
                 </div>
                 <div>
                   <div className="mb-1">Suppliers</div>
-                  <Suppliers multiple />
+                  <Suppliers multiple current={filters.suppliers} />
                 </div>
               </div>
               <div className="flex gap-2 mt-4">

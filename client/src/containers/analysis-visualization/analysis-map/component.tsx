@@ -230,7 +230,7 @@ const AnalysisMap: React.FC = () => {
     <>
       {(isFetching || isRendering) && (
         <div className="absolute w-full h-full bg-black bg-opacity-40 backdrop-blur-sm z-20 flex justify-center items-center">
-          <Loading className="relative w-10 h-10" />
+          <Loading className="w-10 h-10" />
         </div>
       )}
       <DeckGL
@@ -263,7 +263,7 @@ const AnalysisMap: React.FC = () => {
         )}
       </DeckGL>
       {isError && (
-        <div className="absolute z-10 top-20 left-12 p-4 rounded-md bg-red-50 p-4">
+        <div className="absolute z-10 top-20 left-12 rounded-md bg-red-50 p-4">
           <div className="flex">
             <XCircleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />
             <p className="text-red-600 text-sm ml-3 mb-0">

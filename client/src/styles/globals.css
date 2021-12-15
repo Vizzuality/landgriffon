@@ -32,25 +32,12 @@
   h2 {
     @apply text-lg font-medium;
   }
-
-  /* RC Tree checkbox override */
-  .rc-tree-checkbox {
-    @apply h-4 w-4 border border-gray-900;
-  }
-
-  .rc-tree-checkbox.rc-tree-checkbox-checked {
-    @apply bg-green-400;
-  }
-
-  .rc-tree-checkbox.rc-tree-checkbox-indeterminate {
-    @apply bg-green-200;
-  }
 }
 
 @layer utilities {
   /* We want a blur effect without having a high opacity background, but we still want the
   background to be visible for the browsers that don't support backdrop-filter, so we double the
-  background opacity. This can be tested on Firefox. */
+  background opacity. This can be tested on Firefox. */ta
   .bg-blur {
     @apply bg-opacity-40;
   }
@@ -61,4 +48,17 @@
       backdrop-filter: blur(4px);
     }
   }
+}
+
+/* RC Tree checkbox override */
+.rc-tree-checkbox {
+  @apply h-4 w-4 border border-gray-900;
+}
+
+.rc-tree-checkbox.rc-tree-checkbox-checked {
+  @apply bg-green-400;
+}
+
+.rc-tree-checkbox.rc-tree-checkbox-indeterminate {
+  @apply bg-green-200;
 }

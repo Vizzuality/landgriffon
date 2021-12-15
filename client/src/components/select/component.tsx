@@ -69,7 +69,9 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
               focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer font-medium"
             >
               {loading ? (
-                <Loading className="text-green-700" />
+                <div className="p-4">
+                  <Loading className="text-green-700" />
+                </div>
               ) : (
                 <>
                   {label && (

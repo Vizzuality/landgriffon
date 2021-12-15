@@ -1,24 +1,20 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { sortBy } from 'lodash';
 
-import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { analysis, setFilter } from 'store/features/analysis';
 import { useMaterialsTrees } from 'hooks/materials';
 
 import TreeSelect from 'components/tree-select';
 
 import type { TreeSelectProps } from 'components/tree-select/types';
 
-const MaterialsFilter: React.FC<{ multiple?: boolean }> = (props) => {
-  const { multiple = false } = props;
-  const dispatch = useAppDispatch();
-  const { filters } = useAppSelector(analysis);
-  const { data, isLoading } = useMaterialsTrees({ depth: 1 });
+type MaterialsFilterProps = {
+  current: TreeSelectProps['current'];
+  multiple?: TreeSelectProps['multiple'];
+  onChange?: TreeSelectProps['onChange'];
+};
 
-  const handleChange = useCallback(
-    (selected) => dispatch(setFilter({ id: 'materials', value: [selected] })),
-    [dispatch],
-  );
+const MaterialsFilter: React.FC<MaterialsFilterProps> = ({ multiple, current, onChange }) => {
+  const { data, isFetching } = useMaterialsTrees({ depth: 1 });
 
   const treeOptions: TreeSelectProps['options'] = useMemo(
     () =>
@@ -37,11 +33,11 @@ const MaterialsFilter: React.FC<{ multiple?: boolean }> = (props) => {
     <TreeSelect
       multiple={multiple}
       showSearch
-      loading={isLoading}
+      loading={isFetching}
       options={treeOptions}
       placeholder="Materials"
-      onChange={handleChange}
-      current={filters.materials}
+      onChange={onChange}
+      current={current}
     />
   );
 };

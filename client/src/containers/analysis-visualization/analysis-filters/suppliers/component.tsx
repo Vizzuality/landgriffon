@@ -1,22 +1,19 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import TreeSelect from 'components/tree-select';
 import { sortBy } from 'lodash';
 
-import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { analysis, setFilter } from 'store/features/analysis';
 import { useSuppliersTrees } from 'hooks/suppliers';
 
 import type { TreeSelectProps } from 'components/tree-select/types';
 
-const SuppliersFilter: React.FC<{ multiple?: boolean }> = ({ multiple }) => {
-  const dispatch = useAppDispatch();
-  const { filters } = useAppSelector(analysis);
-  const { data, isLoading } = useSuppliersTrees({ depth: 1 });
+type SuppliersFilterProps = {
+  current: TreeSelectProps['current'];
+  multiple?: TreeSelectProps['multiple'];
+  onChange?: TreeSelectProps['onChange'];
+};
 
-  const handleChange = useCallback(
-    (selected) => dispatch(setFilter({ id: 'suppliers', value: [selected] })),
-    [dispatch],
-  );
+const SuppliersFilter: React.FC<SuppliersFilterProps> = ({ multiple, current, onChange }) => {
+  const { data, isFetching } = useSuppliersTrees({ depth: 1 });
 
   const treeOptions: TreeSelectProps['options'] = useMemo(
     () =>
@@ -35,11 +32,11 @@ const SuppliersFilter: React.FC<{ multiple?: boolean }> = ({ multiple }) => {
     <TreeSelect
       multiple={multiple}
       showSearch
-      loading={isLoading}
+      loading={isFetching}
       options={treeOptions}
       placeholder="Materials"
-      onChange={handleChange}
-      current={filters.materials}
+      onChange={onChange}
+      current={current}
     />
   );
 };

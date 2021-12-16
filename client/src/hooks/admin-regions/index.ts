@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useQuery, UseQueryResult, UseQueryOptions } from 'react-query';
-import adminRegionsService from 'services/admin-regions';
+import apiService from 'services/api';
 import type { OriginRegion } from 'types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
@@ -21,10 +21,10 @@ export function useAdminRegions(): ResponseData {
   const query = useQuery(
     ['admin-regions'],
     async () =>
-      adminRegionsService
+      apiService
         .request({
           method: 'GET',
-          url: `/`,
+          url: `/admin-regions/`,
           headers: {
             // Authorization: `Bearer ${session.accessToken}`,
           },
@@ -56,10 +56,10 @@ export function useAdminRegionsTrees(params: TreeParams): ResponseData {
   const query = useQuery(
     ['admin-regions-trees'],
     async () =>
-      adminRegionsService
+      apiService
         .request({
           method: 'GET',
-          url: `/trees`,
+          url: `/admin-regions/trees`,
           params,
           headers: {
             // Authorization: `Bearer ${session.accessToken}`,

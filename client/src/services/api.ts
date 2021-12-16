@@ -4,8 +4,8 @@ import { signOut } from 'next-auth/client';
 
 const dataFormatter = new Jsona();
 
-const analysisService = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/indicators`,
+const apiService = axios.create({
+  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api/v1`,
   headers: { 'Content-Type': 'application/json' },
   transformResponse: (response) => {
     try {
@@ -28,6 +28,6 @@ const onResponseError = (error) => {
   return Promise.reject(error);
 };
 
-analysisService.interceptors.response.use(onResponseSuccess, onResponseError);
+apiService.interceptors.response.use(onResponseSuccess, onResponseError);
 
-export default analysisService;
+export default apiService;

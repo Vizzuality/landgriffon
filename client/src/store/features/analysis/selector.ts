@@ -51,21 +51,24 @@ export const filtersForH3API = createSelector([analysis], (analysisState: Analys
   return result;
 });
 
-export const filtersForTabularAPI = createSelector([analysis], (analysisState: AnalysisState) => {
-  const { layer, filters } = analysisState;
+export const filtersForTabularAPI = createSelector(
+  [analysis],
+  (analysisState: AnalysisState): ImpactTabularAPIParams => {
+    const { layer, filters } = analysisState;
 
-  if (layer === 'impact') {
-    const result: ImpactTabularAPIParams = {
-      startYear: filters.startYear,
-      endYear: filters.endYear,
-      groupBy: filters.by,
-      // indicatorIds: filters.indicators?.map(({ value }) => value),
-      materialIds: filters.materials?.map(({ value }) => value),
-      supplierIds: filters.suppliers?.map(({ value }) => value),
-      originIds: filters.origins?.map(({ value }) => value),
-    };
-    return result;
-  }
+    if (layer === 'impact') {
+      const result: ImpactTabularAPIParams = {
+        startYear: filters.startYear,
+        endYear: filters.endYear,
+        groupBy: filters.by,
+        indicatorId: filters.indicator?.value,
+        materialIds: filters.materials?.map(({ value }) => value),
+        supplierIds: filters.suppliers?.map(({ value }) => value),
+        originIds: filters.origins?.map(({ value }) => value),
+      };
+      return result;
+    }
 
-  return {};
-});
+    return null;
+  },
+);

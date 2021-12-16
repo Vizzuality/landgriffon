@@ -35,10 +35,7 @@ export function useAdminRegions(): ResponseData {
     },
   );
 
-  const { data, isLoading, isError } = query;
-
-  console.log('query', query);
-  console.log('isLoading', isLoading);
+  const { data, isError } = query;
 
   return useMemo<ResponseData>(
     () =>

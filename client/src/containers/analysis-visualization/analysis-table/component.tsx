@@ -1,7 +1,9 @@
 import { DownloadIcon } from '@heroicons/react/outline';
 import { InformationCircleIcon } from '@heroicons/react/solid';
 
-import { useAnalysisTable, useIndicatorAnalysisTable } from 'hooks/analysis';
+import { useIndicators } from 'hooks/indicators';
+import { useImpactData } from 'hooks/impact';
+import { useAnalysisData, useIndicatorAnalysisTable } from 'hooks/analysis';
 import { useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
 
@@ -14,7 +16,8 @@ import TableTitle from 'containers/analysis-visualization/analysis-table/table-t
 const AnalysisTable: React.FC = () => {
   const { filters } = useAppSelector(analysis);
 
-  const { data: tableData, isFetched: tableDataIsFetched } = useAnalysisTable();
+  const { data: tableData, isFetched: tableDataIsFetched } = useImpactData();
+  console.log('data', tableData);
 
   const { data: indicatorTableData, isFetched: indicatorTableDataIsFetched } =
     useIndicatorAnalysisTable();

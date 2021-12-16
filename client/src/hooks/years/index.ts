@@ -1,6 +1,6 @@
 import { useQuery, UseQueryResult, UseQueryOptions } from 'react-query';
 
-import apiService from 'services/api';
+import { apiRawService } from 'services/api';
 import { AnalysisState } from 'store/features/analysis';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
@@ -10,22 +10,23 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   refetchOnWindowFocus: false,
 };
 
-type YearResponse = UseQueryResult<number[]>;
+type YearsData = number[];
+type YearsResponse = UseQueryResult<YearsData>;
 
 export function useYears(
   layer: AnalysisState['layer'],
   materials: AnalysisState['filters']['materials'],
   indicator: AnalysisState['filters']['indicator'],
-): YearResponse {
+): YearsResponse {
   // const [session] = useSession();
 
   const result = useQuery(
     ['years', layer, materials, indicator],
     async () =>
-      apiService
-        .request<number[]>({
+      apiRawService
+        .request<YearsData>({
           method: 'GET',
-          url: '/years',
+          url: '/h3/years',
           headers: {
             // Authorization: `Bearer ${session.accessToken}`,
           },
@@ -38,10 +39,18 @@ export function useYears(
               ? { indicatorId: indicator.value }
               : {}),
           },
+          transformResponse: (response) => {
+            try {
+              const parsedData = JSON.parse(response);
+              return parsedData.data;
+            } catch (error) {
+              return response;
+            }
+          },
         })
         .then((response) => response.data),
     DEFAULT_QUERY_OPTIONS,
   );
 
-  return result as YearResponse;
+  return result as YearsResponse;
 }

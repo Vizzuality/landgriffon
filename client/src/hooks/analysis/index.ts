@@ -60,7 +60,6 @@ export function useAnalysisData(): AnalysisDataResponse {
         })
         // Adding color to the response
         .then((response) => {
-          console.log(response);
           return response;
         }),
     {

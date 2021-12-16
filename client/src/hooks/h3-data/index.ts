@@ -7,7 +7,7 @@ import { useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
 import { filtersForH3API } from 'store/features/analysis/selector';
 
-import h3DataService from 'services/h3-data';
+import { apiRawService } from 'services/api';
 
 import { COLOR_RAMPS } from 'containers/analysis-visualization/constants';
 
@@ -66,7 +66,7 @@ export function useH3MaterialData(): H3DataResponse {
   const query = useQuery(
     ['h3-data-material', layer, JSON.stringify({ layer, ...filters })],
     async () =>
-      h3DataService
+      apiRawService
         .get('/map/material', {
           params: {
             ...filters,
@@ -103,7 +103,7 @@ export function useH3RiskData(): H3DataResponse {
   const query = useQuery(
     ['h3-data-risk', layer, JSON.stringify({ layer, ...filters })],
     async () =>
-      h3DataService
+      apiRawService
         .get('/map/risk', {
           params: {
             ...filters,
@@ -140,7 +140,7 @@ export function useH3ImpactData(): H3DataResponse {
   const query = useQuery(
     ['h3-data-impact', layer, JSON.stringify({ layer, ...filters })],
     async () =>
-      h3DataService
+      apiRawService
         .get('/map/impact', {
           params: {
             ...filters,

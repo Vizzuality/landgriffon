@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useQuery, UseQueryResult, UseQueryOptions } from 'react-query';
-import adminRegionsService from 'services/suppliers';
+import apiService from 'services/api';
 import type { Supplier } from 'types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
@@ -21,10 +21,10 @@ export function useSuppliers(): ResponseData {
   const query = useQuery(
     ['suppliers'],
     async () =>
-      adminRegionsService
+      apiService
         .request({
           method: 'GET',
-          url: `/`,
+          url: '/suppliers',
           headers: {
             // Authorization: `Bearer ${session.accessToken}`,
           },
@@ -53,10 +53,10 @@ export function useSuppliersTrees(params: TreeParams): ResponseData {
   const query = useQuery(
     ['suppliers-trees'],
     async () =>
-      adminRegionsService
+      apiService
         .request({
           method: 'GET',
-          url: `/trees`,
+          url: '/suppliers/trees',
           params,
           headers: {
             // Authorization: `Bearer ${session.accessToken}`,

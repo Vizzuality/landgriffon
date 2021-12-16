@@ -1,6 +1,6 @@
 import { useQuery, UseQueryResult, UseQueryOptions } from 'react-query';
 
-import yearsService from 'services/years';
+import apiService from 'services/api';
 import { AnalysisState } from 'store/features/analysis';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
@@ -22,10 +22,10 @@ export function useYears(
   const result = useQuery(
     ['years', layer, materials, indicator],
     async () =>
-      yearsService
+      apiService
         .request<number[]>({
           method: 'GET',
-          url: `/`,
+          url: '/years',
           headers: {
             // Authorization: `Bearer ${session.accessToken}`,
           },

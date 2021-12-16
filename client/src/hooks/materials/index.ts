@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useQuery, UseQueryResult, UseQueryOptions } from 'react-query';
-import materialsService from 'services/materials';
+import apiService from 'services/api';
 import type { Material } from 'types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
@@ -21,10 +21,10 @@ export function useMaterials(): ResponseData {
   const query = useQuery(
     ['materials'],
     async () =>
-      materialsService
+      apiService
         .request({
           method: 'GET',
-          url: `/`,
+          url: '/materials',
           headers: {
             // Authorization: `Bearer ${session.accessToken}`,
           },
@@ -53,10 +53,10 @@ export function useMaterialsTrees(params: TreeParams): ResponseData {
   const query = useQuery(
     ['materials-trees'],
     async () =>
-      materialsService
+      apiService
         .request({
           method: 'GET',
-          url: `/trees`,
+          url: '/materials/trees',
           params,
           headers: {
             // Authorization: `Bearer ${session.accessToken}`,

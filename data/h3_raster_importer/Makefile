@@ -24,7 +24,7 @@ crop:
 indicators:
 	make -j 2 convert-water-footprint convert-biodiversity convert-carbon
 	# Processing deforestation data is quite intensive, so we do it separately, so we can allocate all threads to it
-	# There is probably a better way to do this, that future me will learn about - in the future.
+		# There is probably a better way to do this, that future me will learn about - in the future.
 	make convert-deforestation
 
 #######################################
@@ -161,8 +161,10 @@ extract-water-footprint: download-water-footprint
 	mkdir -p $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint
 	unzip -jn -o -u $(WORKDIR_WATER_FOOTPRINT)/Report50-WF-of-production-RasterFiles.zip -d $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint
 	unzip -j -o -u $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/Report50-WF-of-production-RasterFiles.zip */wf_bltot_mmyr/* -d $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint
-	gdal_translate -of GTiff $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/hdr.adf $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr.tif
-
+	gdal_translate -of GTiff $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/hdr.adf $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr_m2.tif
+	gdal_calc.py --calc "A*10000*10000" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr_m2.tif \
+	 --A_band 1 --outfile $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr.tif;
+	rm -f $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr_m2.tif
 # Convert the wf tiffs in the folder to h3indexes at resolution 6
 convert-water-footprint: extract-water-footprint
 	python tiff_folder_to_h3_table.py $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint h3_grid_wf_global indicator UWU_T 2005 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)

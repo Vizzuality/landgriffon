@@ -44,7 +44,7 @@ export type ImpactTabularAPIParams = {
   groupBy: string;
   startYear: number;
   endYear: number;
-  // indicatorIds: string[];
+  indicatorId: string;
   materialIds?: string[];
   originIds?: string[];
   supplierIds?: string[];

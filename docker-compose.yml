@@ -35,8 +35,34 @@ services:
       - DB_SYNCHRONIZE=${API_DB_SYNCHRONIZE}
       - JWT_SECRET=${API_AUTH_JWT_SECRET}
       - GMAPS_API_KEY=${GMAPS_API_KEY}
+      - API_REDIS_SERVICE_PORT=${API_REDIS_SERVICE_PORT}
     depends_on:
       - postgresql
+      - redis
+
+  redis:
+    build:
+      context: ./redis
+      dockerfile: Dockerfile
+    hostname: redis
+    container_name: landgriffon-redis
+    command: [ "redis-server" ]
+    ports:
+      - "${API_REDIS_SERVICE_PORT}:6379"
+    restart: on-failure
+
+    # Admin gui for redis
+  redis-commander:
+    image: rediscommander/redis-commander
+    hostname: redis-commander
+    container_name: landgriffon-redis-commander
+    restart: always
+    environment:
+      - REDIS_HOSTS=local:landgriffon-redis:6379
+    ports:
+      - '${REDIS_COMMANDER_PORT}:8081'
+    depends_on:
+      - redis
 
   postgresql:
     build:

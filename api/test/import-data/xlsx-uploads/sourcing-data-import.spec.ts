@@ -34,10 +34,15 @@ import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { h3BasicFixture } from '../../h3-data/mocks/h3-fixtures';
+import { ImportDataModule } from '../../../src/modules/import-data/import-data.module';
 
 let tablesToDrop: string[] = [];
 
 let missingDataFallbackPolicy: string = 'error';
+
+async function sleep(ms: number): Promise<any> {
+  return new Promise((resolve: any) => setTimeout(resolve, ms));
+}
 
 jest.mock('config', () => {
   const config = jest.requireActual('config');
@@ -124,9 +129,8 @@ describe('Sourcing Data import', () => {
   let h3DataRepository: H3DataRepository;
 
   beforeAll(async () => {
-    jest.setTimeout(10000);
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, SourcingRecordsModule],
+      imports: [AppModule, ImportDataModule, SourcingRecordsModule],
     })
       .overrideProvider(GeoCodingService)
       .useValue(geoCodingServiceMock)
@@ -202,7 +206,7 @@ describe('Sourcing Data import', () => {
     jest.clearAllTimers();
   });
 
-  test('When a file is not sent to the API then it should return a 400 code and the storage folder should be empty', async () => {
+  test.only('When a file is not sent to the API then it should return a 400 code and the storage folder should be empty', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/import/sourcing-data')
       .expect(HttpStatus.BAD_REQUEST);
@@ -211,7 +215,7 @@ describe('Sourcing Data import', () => {
     );
   });
 
-  test('When an empty file is sent to the API then it should return a 400 code and a error message', async () => {
+  test.skip('When an empty file is sent to the API then it should return a 400 code and a error message', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/import/sourcing-data')
       .attach('file', __dirname + '/empty.xlsx')
@@ -221,7 +225,7 @@ describe('Sourcing Data import', () => {
     );
   });
 
-  test('When a file is sent to the API and some data does not comply with data validation rules, it should return a 400 code and a error message', async () => {
+  test.skip('When a file is sent to the API and some data does not comply with data validation rules, it should return a 400 code and a error message', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/import/sourcing-data')
       .attach('file', __dirname + '/business-unit-name-length.xlsx')
@@ -232,7 +236,7 @@ describe('Sourcing Data import', () => {
     );
   });
 
-  test('When a file is sent to the API and there are no materials in the database, an error should be displayed', async () => {
+  test.skip('When a file is sent to the API and there are no materials in the database, an error should be displayed', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/import/sourcing-data')
       .attach('file', __dirname + '/base-dataset.xlsx')
@@ -242,7 +246,7 @@ describe('Sourcing Data import', () => {
     );
   });
 
-  test('When a file is sent to the API and its size is allowed then it should return a 201 code and the storage folder should be empty', async () => {
+  test.skip('When a file is sent to the API and its size is allowed then it should return a 201 code and the storage folder should be empty', async () => {
     const geoRegion: GeoRegion = await createGeoRegion();
     await createAdminRegion({
       isoA2: 'ABC',
@@ -258,7 +262,7 @@ describe('Sourcing Data import', () => {
     expect(folderContent.length).toEqual(0);
   }, 10000);
 
-  test('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (happy case)', async () => {
+  test.only('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (happy case)', async () => {
     const geoRegion: GeoRegion = await createGeoRegion();
     await createAdminRegion({
       isoA2: 'ABC',
@@ -280,6 +284,8 @@ describe('Sourcing Data import', () => {
       .post('/api/v1/import/sourcing-data')
       .attach('file', __dirname + '/base-dataset.xlsx')
       .expect(HttpStatus.CREATED);
+
+    await sleep(50000);
 
     const businessUnits: BusinessUnit[] = await businessUnitRepository.find();
     expect(businessUnits).toHaveLength(5);
@@ -308,7 +314,7 @@ describe('Sourcing Data import', () => {
     });
   }, 100000);
 
-  test('When a file is sent 2 times to the API, then imported data length should be equal, and database has been cleaned in between', async () => {
+  test.skip('When a file is sent 2 times to the API, then imported data length should be equal, and database has been cleaned in between', async () => {
     const geoRegion: GeoRegion = await createGeoRegion();
     await createAdminRegion({
       isoA2: 'ABC',
@@ -356,6 +362,7 @@ describe('Sourcing Data import', () => {
       ...(await createIndicatorsForXLSXImport()),
       'h3_grid_deforestation_global',
     ];
+    await sleep(50000);
 
     await request(app.getHttpServer())
       .post('/api/v1/import/sourcing-data')
@@ -373,7 +380,7 @@ describe('Sourcing Data import', () => {
   }, 100000);
 
   describe('Additional config values for missing data fallback strategy and incomplete material h3 data', () => {
-    test('When a valid file is sent to the API it should return a 400 bad request code, and an error should be displayed (error strategy)', async () => {
+    test.skip('When a valid file is sent to the API it should return a 400 bad request code, and an error should be displayed (error strategy)', async () => {
       missingDataFallbackPolicy = 'error';
 
       const geoRegion: GeoRegion = await createGeoRegion();
@@ -404,7 +411,7 @@ describe('Sourcing Data import', () => {
       );
     }, 100000);
 
-    test('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (ignore strategy)', async () => {
+    test.only('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (ignore strategy)', async () => {
       missingDataFallbackPolicy = 'ignore';
 
       const geoRegion: GeoRegion = await createGeoRegion();
@@ -427,6 +434,8 @@ describe('Sourcing Data import', () => {
       const response: request.Response = await request(app.getHttpServer())
         .post('/api/v1/import/sourcing-data')
         .attach('file', __dirname + '/base-dataset.xlsx');
+
+      await sleep(50000);
 
       expect(response.statusCode).toEqual(HttpStatus.CREATED);
 
@@ -457,7 +466,7 @@ describe('Sourcing Data import', () => {
       });
     }, 100000);
 
-    test('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (fallback strategy)', async () => {
+    test.skip('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (fallback strategy)', async () => {
       missingDataFallbackPolicy = 'fallback';
 
       const geoRegion: GeoRegion = await createGeoRegion();

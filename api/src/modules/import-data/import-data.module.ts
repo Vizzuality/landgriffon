@@ -7,15 +7,22 @@ import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { SourcingLocationGroupsModule } from 'modules/sourcing-location-groups/sourcing-location-groups.module';
-import { ImportDataService } from 'modules/import-data/import-data.service';
-import { SourcingRecordsImportService } from 'modules/import-data/sourcing-data/import.service';
+import { FileService } from 'modules/import-data/file-service.service';
+import { SourcingDataImportService } from 'modules/import-data/sourcing-data/sourcing-data-import.service';
 import { SourcingRecordsDtoProcessorService } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { GeoCodingModule } from 'modules/geo-coding/geo-coding.module';
 import { GeoRegionsModule } from 'modules/geo-regions/geo-regions.module';
 import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
+import { BullModule } from '@nestjs/bull';
+import { ImportDataProducer } from 'modules/import-data/workers/import-data.producer';
+import { ImportDataConsumer } from 'modules/import-data/workers/import-data.consumer';
+import { ImportDataService } from 'modules/import-data/import-data.service';
 
 @Module({
   imports: [
+    BullModule.registerQueue({
+      name: 'excel-import',
+    }),
     MaterialsModule,
     BusinessUnitsModule,
     SuppliersModule,
@@ -28,10 +35,14 @@ import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-reco
     IndicatorRecordsModule,
   ],
   providers: [
-    SourcingRecordsImportService,
-    ImportDataService,
+    SourcingDataImportService,
+    FileService,
     SourcingRecordsDtoProcessorService,
+    ImportDataProducer,
+    ImportDataConsumer,
+    ImportDataService,
   ],
   controllers: [ImportDataController],
+  exports: [ImportDataProducer],
 })
 export class ImportDataModule {}

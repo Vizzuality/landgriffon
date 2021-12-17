@@ -1,10 +1,14 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
-import { ImportDataService } from 'modules/import-data/import-data.service';
+import { FileService } from 'modules/import-data/file-service.service';
 import {
   SourcingData,
   SourcingRecordsDtoProcessorService,
@@ -46,9 +50,9 @@ const SHEETS_MAP: Record<string, keyof SourcingRecordsSheets> = {
 };
 
 @Injectable()
-export class SourcingRecordsImportService {
+export class SourcingDataImportService {
   protected readonly logger: Logger = new Logger(
-    SourcingRecordsImportService.name,
+    SourcingDataImportService.name,
   );
 
   constructor(
@@ -59,7 +63,7 @@ export class SourcingRecordsImportService {
     protected readonly sourcingLocationService: SourcingLocationsService,
     protected readonly sourcingRecordService: SourcingRecordsService,
     protected readonly sourcingLocationGroupService: SourcingLocationGroupsService,
-    protected readonly fileService: ImportDataService<SourcingRecordsSheets>,
+    protected readonly fileService: FileService<SourcingRecordsSheets>,
     protected readonly dtoProcessor: SourcingRecordsDtoProcessorService,
     protected readonly geoCodingService: GeoCodingService,
     protected readonly indicatorRecordsService: IndicatorRecordsService,
@@ -136,6 +140,9 @@ export class SourcingRecordsImportService {
       }
 
       this.logger.log('Indicator records generated');
+    } catch ({ message }) {
+      this.logger.error(`XLSX Import Failed:  ${message}`);
+      throw new InternalServerErrorException(message);
     } finally {
       await this.fileService.deleteDataFromFS(filePath);
     }
@@ -197,7 +204,7 @@ export class SourcingRecordsImportService {
     businessUnits: Record<string, any>[],
     materials: Material[],
     sourcingData: SourcingData[],
-  ): any {
+  ): SourcingData[] | void {
     this.logger.log(`Relating sourcing data with organizational entities`);
     this.logger.log(`Supplier count: ${suppliers.length}`);
     this.logger.log(`Business Units count: ${businessUnits.length}`);

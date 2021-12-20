@@ -205,7 +205,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
           materialId: material.id,
         });
       expect(response.body.errors[0].title).toEqual(
-        `There is no H3 Data for Indicator with ID: ${indicator.id}`,
+        `There is no H3 Data for Indicator with ID: ${indicator.id} for the requested year`,
       );
     });
 

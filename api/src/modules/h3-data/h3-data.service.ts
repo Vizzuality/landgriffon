@@ -170,7 +170,7 @@ export class H3DataService {
 
     if (!indicatorH3Data)
       throw new NotFoundException(
-        `There is no H3 Data for Indicator with ID: ${indicatorId}`,
+        `There is no H3 Data for Indicator with ID: ${indicatorId} for the requested year`,
       );
 
     const harvestMaterialH3Data: H3Data | undefined =

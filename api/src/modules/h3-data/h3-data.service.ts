@@ -181,7 +181,7 @@ export class H3DataService {
       });
     if (!harvestMaterialH3Data) {
       throw new NotFoundException(
-        `There is no H3 harvest data for Material with ID: ${materialId}`,
+        `There is no H3 harvest data for Material with ID: ${materialId} for the requested year`,
       );
     }
 
@@ -193,7 +193,7 @@ export class H3DataService {
       });
     if (!producerMaterialH3Data) {
       throw new NotFoundException(
-        `There is no H3 producer data for Material with ID: ${materialId}`,
+        `There is no H3 producer data for Material with ID: ${materialId} for the requested year`,
       );
     }
 

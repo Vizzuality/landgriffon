@@ -4,7 +4,7 @@ import {
   MATERIAL_TO_H3_TYPE,
   MaterialToH3,
 } from 'modules/materials/material-to-h3.entity';
-import { EntityRepository, SelectQueryBuilder } from 'typeorm';
+import { EntityRepository, getManager, SelectQueryBuilder } from 'typeorm';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 
 @Injectable()
@@ -15,10 +15,15 @@ export class MaterialsToH3sService extends Repository<MaterialToH3> {
     year?: number;
     type: MATERIAL_TO_H3_TYPE;
   }): Promise<H3Data | undefined> {
-    const queryBuilder: SelectQueryBuilder<H3Data> = this.createQueryBuilder()
-      .select('h3Data')
-      .from(H3Data, 'h3Data')
-      .leftJoin('h3Data.materialToH3s', 'materialsToH3s')
+    const queryBuilder: SelectQueryBuilder<H3Data> = getManager()
+      .createQueryBuilder()
+      .select()
+      .from(H3Data, 'h3data')
+      .leftJoin(
+        'material_to_h3',
+        'materialsToH3s',
+        'materialsToH3s.h3DataId = h3data.id',
+      )
       .where('materialsToH3s.materialId = :materialId', {
         materialId: args.materialId,
       })
@@ -26,10 +31,10 @@ export class MaterialsToH3sService extends Repository<MaterialToH3> {
 
     if (args.year) {
       queryBuilder
-        .andWhere('h3Data.year = :year', { year: args.year })
+        .andWhere('h3data.year = :year', { year: args.year })
         .orderBy('year', 'ASC');
     }
 
-    return queryBuilder.getOne();
+    return queryBuilder.getRawOne();
   }
 }

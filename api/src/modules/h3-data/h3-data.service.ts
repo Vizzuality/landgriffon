@@ -181,7 +181,7 @@ export class H3DataService {
       });
     if (!harvestMaterialH3Data) {
       throw new NotFoundException(
-        `There is no H3 harvest data for Material with ID: ${materialId} for the requested year`,
+        `There is no H3 harvest data for Material with ID ${materialId} and year ${year}`,
       );
     }
 

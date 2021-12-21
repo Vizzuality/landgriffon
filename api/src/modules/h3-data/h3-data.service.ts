@@ -193,7 +193,7 @@ export class H3DataService {
       });
     if (!producerMaterialH3Data) {
       throw new NotFoundException(
-        `There is no H3 producer data for Material with ID: ${materialId} for the requested year`,
+        `There is no H3 producer data for Material with ID ${materialId} and year ${year}`,
       );
     }
 

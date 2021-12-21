@@ -206,14 +206,14 @@ describe('Sourcing Data import', () => {
     jest.clearAllTimers();
   });
 
-  test.only('When a file is not sent to the API then it should return a 400 code and the storage folder should be empty', async () => {
+  test('When a file is not sent to the API then it should return a 400 code and the storage folder should be empty', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/import/sourcing-data')
       .expect(HttpStatus.BAD_REQUEST);
     expect(response.body.errors[0].title).toEqual(
       'A .XLSX file must be provided as payload',
     );
-  });
+  }, 100000);
 
   test.skip('When an empty file is sent to the API then it should return a 400 code and a error message', async () => {
     const response = await request(app.getHttpServer())
@@ -262,7 +262,7 @@ describe('Sourcing Data import', () => {
     expect(folderContent.length).toEqual(0);
   }, 10000);
 
-  test.only('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (happy case)', async () => {
+  test('When a valid file is sent to the API it should return a 201 code and the data in it should be queued for import (happy case)', async () => {
     const geoRegion: GeoRegion = await createGeoRegion();
     await createAdminRegion({
       isoA2: 'ABC',
@@ -285,35 +285,52 @@ describe('Sourcing Data import', () => {
       .attach('file', __dirname + '/base-dataset.xlsx')
       .expect(HttpStatus.CREATED);
 
-    await sleep(50000);
+    /**
+     * Validate that this endpoint queues a message with the correct content
+     * TODO:
+     * - Somehow disable the standard consumer for these messages
+     * - Have this test method return a new Promise()
+     * - In that promise, add a queue consumer that replaces the default consumer
+     * - In that consumer, validate the content of the message
+     * - If the validations are ok, resolve() otherwise reject()
+     *
+     * See also: https://github.com/resource-watch/doc-orchestrator/blob/dev/app/test/e2e/queue-status-import-confirmed.spec.js#L163
+     */
 
-    const businessUnits: BusinessUnit[] = await businessUnitRepository.find();
-    expect(businessUnits).toHaveLength(5);
-    const businessUnitsRoots: BusinessUnit[] =
-      await businessUnitRepository.findRoots();
-    expect(businessUnitsRoots).toHaveLength(1);
-
-    const suppliers: Supplier[] = await supplierRepository.find();
-    expect(suppliers).toHaveLength(5);
-    const suppliersRoots: Supplier[] = await supplierRepository.findRoots();
-    expect(suppliersRoots).toHaveLength(4);
-
-    const sourcingRecords: SourcingRecord[] =
-      await sourcingRecordRepository.find();
-    expect(sourcingRecords).toHaveLength(495);
-
-    const indicatorRecords: IndicatorRecord[] =
-      await indicatorRecordRepository.find();
-    expect(indicatorRecords).toHaveLength(495 * 4);
-
-    const sourcingLocations: SourcingLocation[] =
-      await sourcingLocationRepository.find();
-    expect(sourcingLocations).toHaveLength(45);
-    sourcingLocations.forEach((sourcingLocation: SourcingLocation) => {
-      expect(sourcingLocation.materialId).not.toEqual(null);
-    });
+    // await sleep(50000);
+    //
+    // const businessUnits: BusinessUnit[] = await businessUnitRepository.find();
+    // expect(businessUnits).toHaveLength(5);
+    // const businessUnitsRoots: BusinessUnit[] =
+    //   await businessUnitRepository.findRoots();
+    // expect(businessUnitsRoots).toHaveLength(1);
+    //
+    // const suppliers: Supplier[] = await supplierRepository.find();
+    // expect(suppliers).toHaveLength(5);
+    // const suppliersRoots: Supplier[] = await supplierRepository.findRoots();
+    // expect(suppliersRoots).toHaveLength(4);
+    //
+    // const sourcingRecords: SourcingRecord[] =
+    //   await sourcingRecordRepository.find();
+    // expect(sourcingRecords).toHaveLength(495);
+    //
+    // const indicatorRecords: IndicatorRecord[] =
+    //   await indicatorRecordRepository.find();
+    // expect(indicatorRecords).toHaveLength(495 * 4);
+    //
+    // const sourcingLocations: SourcingLocation[] =
+    //   await sourcingLocationRepository.find();
+    // expect(sourcingLocations).toHaveLength(45);
+    // sourcingLocations.forEach((sourcingLocation: SourcingLocation) => {
+    //   expect(sourcingLocation.materialId).not.toEqual(null);
+    // });
   }, 100000);
 
+  /**
+   * TODO: implement a way to handle multiple import requests
+   * Basic case would be to issue a 4XX if a user uploads an excel while an import is pending.
+   * In the future, we could use a more complex solution.
+   */
   test.skip('When a file is sent 2 times to the API, then imported data length should be equal, and database has been cleaned in between', async () => {
     const geoRegion: GeoRegion = await createGeoRegion();
     await createAdminRegion({
@@ -345,7 +362,10 @@ describe('Sourcing Data import', () => {
     expect(sourcingRecords.length).toEqual(495);
   }, 100000);
 
-  test('When a file is sent to the API and gets processed, then a request to Sourcing-Records should return an existing Sourcing-Location ID', async () => {
+  /**************
+   * From this point on, it's probably part of the consumer tests, so perhaps remove from this file
+   **************/
+  test.skip('When a file is sent to the API and gets processed, then a request to Sourcing-Records should return an existing Sourcing-Location ID', async () => {
     const geoRegion: GeoRegion = await createGeoRegion();
     await createAdminRegion({
       isoA2: 'ABC',
@@ -379,8 +399,8 @@ describe('Sourcing Data import', () => {
     expect(sourcingLocation).toMatchObject(new SourcingLocation());
   }, 100000);
 
-  describe('Additional config values for missing data fallback strategy and incomplete material h3 data', () => {
-    test.skip('When a valid file is sent to the API it should return a 400 bad request code, and an error should be displayed (error strategy)', async () => {
+  describe.skip('Additional config values for missing data fallback strategy and incomplete material h3 data', () => {
+    test('When a valid file is sent to the API it should return a 400 bad request code, and an error should be displayed (error strategy)', async () => {
       missingDataFallbackPolicy = 'error';
 
       const geoRegion: GeoRegion = await createGeoRegion();
@@ -411,7 +431,7 @@ describe('Sourcing Data import', () => {
       );
     }, 100000);
 
-    test.only('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (ignore strategy)', async () => {
+    test('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (ignore strategy)', async () => {
       missingDataFallbackPolicy = 'ignore';
 
       const geoRegion: GeoRegion = await createGeoRegion();
@@ -466,7 +486,7 @@ describe('Sourcing Data import', () => {
       });
     }, 100000);
 
-    test.skip('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (fallback strategy)', async () => {
+    test('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (fallback strategy)', async () => {
       missingDataFallbackPolicy = 'fallback';
 
       const geoRegion: GeoRegion = await createGeoRegion();

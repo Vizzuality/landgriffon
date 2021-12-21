@@ -16,7 +16,7 @@
     "test": "jest --config test/jest-config.json -i",
     "test:watch": "jest --config test/jest-config.json --watch",
     "test:cov": "jest --config test/jest-config.json --coverage",
-    "test:ci": "jest --config test/jest-config.json --coverage --runInBand",
+    "test:ci": "jest --config test/jest-config.json --coverage --testTimeout=20000",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --config test/jest-config.json --runInBand"
   },
   "engines": {

@@ -205,7 +205,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
           materialId: material.id,
         });
       expect(response.body.errors[0].title).toEqual(
-        `There is no H3 Data for Indicator with ID: ${indicator.id} for the requested year`,
+        `There is no H3 Data for Indicator with ID ${indicator.id} and year 2020`,
       );
     });
 
@@ -242,7 +242,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         });
 
       expect(response.body.errors[0].title).toEqual(
-        `There is no H3 harvest data for Material with ID: ${material.id} for the requested year`,
+        `There is no H3 harvest data for Material with ID ${material.id} and year 2020`,
       );
     });
 
@@ -279,7 +279,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         });
 
       expect(response.body.errors[0].title).toEqual(
-        `There is no H3 producer data for Material with ID: ${material.id} for the requested year`,
+        `There is no H3 producer data for Material with ID ${material.id} and year 2020`,
       );
     });
   });

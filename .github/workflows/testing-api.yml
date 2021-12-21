@@ -44,7 +44,7 @@ jobs:
 
       - name: Run API tests + coverage
         working-directory: api
-        run: yarn test:cov
+        run: yarn test:ci
 
       - name: Generate API coverage artifact
         uses: actions/upload-artifact@v2

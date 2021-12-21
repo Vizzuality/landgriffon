@@ -29,6 +29,9 @@ jobs:
           POSTGRES_PASSWORD: landgriffon
           POSTGRES_DB: landgriffon
 
+      redis:
+        image: redis
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -44,7 +47,7 @@ jobs:
 
       - name: Run API tests + coverage
         working-directory: api
-        run: yarn test:ci
+        run: yarn test:cov
 
       - name: Generate API coverage artifact
         uses: actions/upload-artifact@v2

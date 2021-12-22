@@ -6,42 +6,12 @@ import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-lo
 import { ImpactTableData } from 'modules/sourcing-records/sourcing-record.repository';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { range } from 'lodash';
-
-export class ImpactTable {
-  impactTable: ImpactTableDataByIndicator[];
-  purchasedTonnes: ImpactTablePurchasedTonnes[];
-}
-
-export class ImpactTableDataByIndicator {
-  indicatorShortName: string;
-  indicatorId: string;
-  groupBy: string;
-  rows: ImpactTableRows[];
-  yearSum: YearSumData[];
-  metadata: { unit: string };
-  values?: ImpactTableRowsValues[];
-}
-
-export class ImpactTablePurchasedTonnes {
-  year: number;
-  value: number;
-  isProjected: boolean;
-}
-export class ImpactTableRows {
-  name: string;
-  values: ImpactTableRowsValues[];
-}
-
-export class YearSumData {
-  year: number;
-  value: number;
-}
-
-export class ImpactTableRowsValues {
-  year: number;
-  value: number;
-  isProjected: boolean;
-}
+import {
+  ImpactTable,
+  ImpactTableDataByIndicator,
+  ImpactTablePurchasedTonnes,
+  ImpactTableRows,
+} from 'modules/impact/dto/response-impact-table.dto';
 
 @Injectable()
 export class ImpactService {

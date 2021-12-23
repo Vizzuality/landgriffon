@@ -11,6 +11,8 @@ env:
   DB_USERNAME: landgriffon
   DB_PASSWORD: landgriffon
   DB_DATABASE: landgriffon
+  API_REDIS_SERVICE_PORT: 6379
+  API_REDIS_SERVICE_HOST: localhost
   GMAPS_API_KEY: secretApiKey
 
 jobs:

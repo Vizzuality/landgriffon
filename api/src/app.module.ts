@@ -37,12 +37,12 @@ const redisConfig: any = config.get('redis');
   imports: [
     HttpModule,
     TypeOrmModule.forRoot(typeOrmConfig),
-    // BullModule.forRoot({
-    //   redis: {
-    //     host: redisConfig.host,
-    //     port: redisConfig.port,
-    //   },
-    // }),
+    BullModule.forRoot({
+      redis: {
+        host: redisConfig.host,
+        port: redisConfig.port,
+      },
+    }),
     AdminRegionsModule,
     AuthenticationModule,
     BusinessUnitsModule,

@@ -36,6 +36,8 @@ services:
       - JWT_SECRET=${API_AUTH_JWT_SECRET}
       - GMAPS_API_KEY=${GMAPS_API_KEY}
       - API_REDIS_SERVICE_PORT=${API_REDIS_SERVICE_PORT}
+      - API_REDIS_SERVICE_HOST=${API_REDIS_SERVICE_HOST}
+      -
     depends_on:
       - postgresql
       - redis

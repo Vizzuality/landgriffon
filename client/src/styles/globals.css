@@ -1,3 +1,5 @@
+@import "ka-table/style.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

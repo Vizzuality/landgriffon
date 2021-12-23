@@ -6195,6 +6195,11 @@ jws@^3.2.2:
     jwa "^1.4.1"
     safe-buffer "^5.0.1"
 
+ka-table@^7.3.0:
+  version "7.3.0"
+  resolved "https://registry.yarnpkg.com/ka-table/-/ka-table-7.3.0.tgz#a76564de2fbc709b29cb9d2b23a3e67b604e75d5"
+  integrity sha512-cDIsZSDI8B2W9sJQl5hgtoCQsJvUSlxj2LTk8SaSYGdMse3ToRC8LoC27QqbRzy7x4n92yV4/wzrTesGguNlqA==
+
 kdbush@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/kdbush/-/kdbush-3.0.0.tgz#f8484794d47004cc2d85ed3a79353dbe0abc2bf0"

@@ -2,7 +2,6 @@ import {
   EntityRepository,
   getManager,
   InsertResult,
-  QueryResult,
   Repository,
   SelectQueryBuilder,
 } from 'typeorm';
@@ -49,7 +48,7 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
       [
         newGeoRegionValues.coordinates.lng,
         newGeoRegionValues.coordinates.lat,
-        `${newGeoRegionValues.coordinates.lng}-${newGeoRegionValues.coordinates.lat}`,
+        `concat('${newGeoRegionValues.coordinates.lng}-${newGeoRegionValues.coordinates.lat}', ', radius - ', points.radius)`,
       ],
     );
 

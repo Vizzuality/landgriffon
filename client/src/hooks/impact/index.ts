@@ -8,12 +8,16 @@ import { filtersForTabularAPI } from 'store/features/analysis/selector';
 import { apiRawService } from 'services/api';
 import { useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
+import { useIndicators } from 'hooks/indicators';
 
 import type { RGBColor } from 'types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   placeholderData: {
-    data: [],
+    data: {
+      impactTable: [],
+      purchasedTonnes: [],
+    },
     metadata: {
       unit: null,
     },
@@ -30,28 +34,48 @@ export function useColors(): RGBColor[] {
   return colors;
 }
 
-type ImpactDataResponse = UseQueryResult<unknown, unknown>;
+type ImpactData = {
+  data: {
+    impactTable: {
+      groupBy: string;
+      indicatorId: string;
+      indicatorShortName: string;
+      metadata: Record<string, unknown>;
+      rows: {
+        name: string;
+        values: Record<string, number | string | boolean>[];
+      }[];
+      yearSum: {
+        year: number;
+        value: number;
+      }[];
+    }[];
+  };
+  metadata: Record<string, unknown>;
+};
+
+type ImpactDataResponse = UseQueryResult<ImpactData, unknown>;
 
 export function useImpactData(): ImpactDataResponse {
+  const { data: indicators } = useIndicators();
   const { layer } = useAppSelector(analysis);
   const filters = filtersForTabularAPI(store.getState());
-  const isEnable = !!filters?.indicatorId;
+  const isEnable = !!filters?.indicatorId && !!indicators?.length;
 
-  // const colors = useColors();
+  const indicatorIds = indicators.map(({ id }) => id);
 
   const query = useQuery(
-    ['impact-data', layer, JSON.stringify({ layer, ...filters })],
+    ['impact-data', layer, JSON.stringify({ layer, ...filters, indicatorIds })],
     async () =>
       apiRawService
         .get('/impact/table', {
           params: {
-            indicatorIds: [filters.indicatorId],
+            indicatorIds: filters.indicatorId === 'all' ? indicatorIds : [filters.indicatorId],
             startYear: filters.startYear,
             endYear: filters.endYear,
             groupBy: filters.groupBy,
           },
         })
-        // Adding color to the response
         .then((response) => response.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
@@ -61,12 +85,12 @@ export function useImpactData(): ImpactDataResponse {
 
   const { data, isError } = query;
 
-  return useMemo(
+  return useMemo<ImpactDataResponse>(
     () =>
       ({
         ...query,
-        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data),
-    }),
+        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as ImpactData,
+      } as ImpactDataResponse),
     [query, isError, data],
   );
 }

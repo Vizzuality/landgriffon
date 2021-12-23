@@ -4,7 +4,7 @@
     "host": "localhost",
     "port": 5432,
     "username": "landgriffon",
-    "password": "",
+    "password": "landgriffon",
     "database": "landgriffon_test",
     "synchronize": true,
     "migrationsRun": false,

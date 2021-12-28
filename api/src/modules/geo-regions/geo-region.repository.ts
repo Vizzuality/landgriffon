@@ -28,7 +28,7 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
   ): Promise<GeoRegion> {
     const selectQuery: SelectQueryBuilder<any> = getManager()
       .createQueryBuilder()
-      .select(`hashtext($3)`)
+      .select(`hashtext(concat($3::text, points.radius))`)
       .addSelect(`points.radius`)
       .addSelect(
         `array(
@@ -48,7 +48,7 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
       [
         newGeoRegionValues.coordinates.lng,
         newGeoRegionValues.coordinates.lat,
-        `concat('${newGeoRegionValues.coordinates.lng}-${newGeoRegionValues.coordinates.lat}', ', radius - ', points.radius)`,
+        `${newGeoRegionValues.coordinates.lng}-${newGeoRegionValues.coordinates.lat}, radius - `,
       ],
     );
 

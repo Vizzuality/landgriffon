@@ -24,6 +24,7 @@ import { MaterialsToH3sService } from '../../src/modules/materials/materials-to-
 import {
   h3DeforestationExampleDataFixture,
   h3IndicatorExampleDataFixture,
+  h3MaterialExampleDataFixture,
 } from './mocks/h3-fixtures';
 import { riskMapCalculationResults } from './mocks/h3-risk-map-calculation-results';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
@@ -78,7 +79,9 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     jest.clearAllMocks();
     await dropH3DataMock([
       'fakeMaterialTable',
+      'fakeMaterialTable2002',
       'fakeIndicatorTable',
+      'fakeIndicatorTable2003',
       'fakeDeforestationTable',
     ]);
     await materialToH3Service.delete({});
@@ -194,7 +197,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         indicatorType: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
         fakeTable: 'fakeMaterialTable',
         fakeColumn: 'fakeMaterialColumn',
-        year: 2020,
+        year: 2010,
       });
       const response = await request(app.getHttpServer())
         .get(`/api/v1/h3/map/risk`)
@@ -205,7 +208,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
           materialId: material.id,
         });
       expect(response.body.errors[0].title).toEqual(
-        `There is no H3 Data for Indicator with ID ${indicator.id} and year 2020`,
+        `There is no H3 Data registered for Indicator with ID ${indicator.id} for the year 2020 or any year before 2020`,
       );
     });
 
@@ -215,22 +218,16 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         unit,
         name: 'Indicator Name',
       });
-      const h3Data = await h3DataMock({
+      await h3DataMock({
         h3TableName: 'fakeIndicatorTable',
         h3ColumnName: 'fakeIndicatorColumn',
         additionalH3Data: h3IndicatorExampleDataFixture,
         indicatorId: indicator.id,
-        year: 2020,
+        year: 2005,
       });
       const material = await createMaterial({
         name: 'Material Name',
       });
-
-      await createMaterialToH3(
-        material.id,
-        h3Data.id,
-        MATERIAL_TO_H3_TYPE.PRODUCER,
-      );
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/h3/map/risk`)
@@ -242,7 +239,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         });
 
       expect(response.body.errors[0].title).toEqual(
-        `There is no H3 harvest data for Material with ID ${material.id} and year 2020`,
+        `There is no H3 Harvest data registered for Material with ID ${material.id} for the year 2020 or any year before 2020`,
       );
     });
 
@@ -252,13 +249,21 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         unit,
         name: 'Indicator Name',
       });
-      const h3Data = await h3DataMock({
+      await h3DataMock({
         h3TableName: 'fakeIndicatorTable',
         h3ColumnName: 'fakeIndicatorColumn',
         additionalH3Data: h3IndicatorExampleDataFixture,
         indicatorId: indicator.id,
         year: 2020,
       });
+
+      const h3Data = await h3DataMock({
+        h3TableName: 'fakeMaterialTable',
+        h3ColumnName: 'fakeMaterialColumn',
+        additionalH3Data: h3MaterialExampleDataFixture,
+        year: 2010,
+      });
+
       const material = await createMaterial({
         name: 'Material Name',
       });
@@ -279,17 +284,17 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         });
 
       expect(response.body.errors[0].title).toEqual(
-        `There is no H3 producer data for Material with ID ${material.id} and year 2020`,
+        `There is no H3 Producer data registered for Material with ID ${material.id} for the year 2020 or any year before 2020`,
       );
     });
   });
 
-  test('When I get a calculated H3 Water Risk Map with the necessary input values, then I should get the h3 data (happy case). Different results for different resolutions expected', async () => {
+  test('When I get a calculated H3 Water Risk Map with the necessary input values and there is H3 data, but only for the years after the requested one, I should get a proper error message', async () => {
     const { material, indicator } = await createWorldForRiskMapGeneration({
       indicatorType: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
       fakeTable: 'fakeMaterialTable',
       fakeColumn: 'fakeMaterialColumn',
-      year: 2020,
+      year: 2010,
     });
 
     await h3DataMock({
@@ -297,8 +302,118 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       h3ColumnName: 'fakeIndicatorColumn',
       additionalH3Data: h3IndicatorExampleDataFixture,
       indicatorId: indicator.id,
-      year: 2020,
+      year: 2005,
     });
+
+    jest.spyOn(h3DataRepository, 'getWaterRiskMapByResolution');
+
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/h3/map/risk`)
+      .query({
+        indicatorId: indicator.id,
+        year: 1999,
+        materialId: material.id,
+        resolution: 6,
+      });
+
+    expect(response.body.errors[0].title).toEqual(
+      `There is no H3 Data registered for Indicator with ID ${indicator.id} for the year 1999 or any year before 1999`,
+    );
+  });
+
+  test('When I get a calculated H3 Water Risk Map with the necessary input values, then I should get the h3 data (happy case). Different results for different resolutions expected', async () => {
+    const { material, indicator } = await createWorldForRiskMapGeneration({
+      indicatorType: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+      fakeTable: 'fakeMaterialTable',
+      fakeColumn: 'fakeMaterialColumn',
+      year: 2010,
+    });
+
+    await h3DataMock({
+      h3TableName: 'fakeIndicatorTable',
+      h3ColumnName: 'fakeIndicatorColumn',
+      additionalH3Data: h3IndicatorExampleDataFixture,
+      indicatorId: indicator.id,
+      year: 2005,
+    });
+
+    jest.spyOn(h3DataRepository, 'getWaterRiskMapByResolution');
+
+    const responseRes6 = await request(app.getHttpServer())
+      .get(`/api/v1/h3/map/risk`)
+      .query({
+        indicatorId: indicator.id,
+        year: 2020,
+        materialId: material.id,
+        resolution: 6,
+      });
+
+    const responseRes3 = await request(app.getHttpServer())
+      .get(`/api/v1/h3/map/risk`)
+      .query({
+        indicatorId: indicator.id,
+        year: 2020,
+        materialId: material.id,
+        resolution: 3,
+      });
+
+    expect(responseRes6.body.data).toEqual(
+      expect.arrayContaining(riskMapCalculationResults.waterRiskRes6Values),
+    );
+    expect(responseRes6.body.metadata).toEqual(
+      riskMapCalculationResults.waterRiskRes6Quantiles,
+    );
+    expect(responseRes3.body.data).toEqual(
+      expect.arrayContaining(riskMapCalculationResults.waterRiskRes3Values),
+    );
+    expect(responseRes3.body.metadata).toEqual(
+      riskMapCalculationResults.waterRiskRes3Quantiles,
+    );
+  });
+
+  test('When I get a calculated H3 Water Risk Map with the necessary input values and there is h3 data available for multiple years before the requested one, the data for the nearest lower year is taken for calculations. Different results for different resolutions expected', async () => {
+    const { material, indicator } = await createWorldForRiskMapGeneration({
+      indicatorType: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+      fakeTable: 'fakeMaterialTable',
+      fakeColumn: 'fakeMaterialColumn',
+      year: 2010,
+    });
+
+    await h3DataMock({
+      h3TableName: 'fakeIndicatorTable',
+      h3ColumnName: 'fakeIndicatorColumn',
+      additionalH3Data: h3IndicatorExampleDataFixture,
+      indicatorId: indicator.id,
+      year: 2005,
+    });
+
+    // Creating extra fake h3 tables for earlier years
+
+    await h3DataMock({
+      h3TableName: 'fakeIndicatorTable2003',
+      h3ColumnName: 'fakeIndicatorColumn2003',
+      additionalH3Data: h3IndicatorExampleDataFixture,
+      indicatorId: indicator.id,
+      year: 2003,
+    });
+
+    const earlierH3MaterialData = await h3DataMock({
+      h3TableName: 'fakeMaterialTable2002',
+      h3ColumnName: 'fakeMaterialColiumn2002',
+      additionalH3Data: h3MaterialExampleDataFixture,
+      year: 2002,
+    });
+
+    await createMaterialToH3(
+      material.id,
+      earlierH3MaterialData.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
+    await createMaterialToH3(
+      material.id,
+      earlierH3MaterialData.id,
+      MATERIAL_TO_H3_TYPE.HARVEST,
+    );
 
     jest.spyOn(h3DataRepository, 'getWaterRiskMapByResolution');
 
@@ -344,13 +459,13 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       h3ColumnName: 'fakeDeforestationColumn',
       additionalH3Data: h3DeforestationExampleDataFixture,
       indicatorId: deforestationIndicator.id,
-      year: 2020,
+      year: 2005,
     });
     const { material, indicator } = await createWorldForRiskMapGeneration({
       indicatorType: INDICATOR_TYPES.BIODIVERSITY_LOSS,
       fakeTable: 'fakeMaterialTable',
       fakeColumn: 'fakeMaterialColumn',
-      year: 2020,
+      year: 2010,
     });
 
     await h3DataMock({
@@ -358,7 +473,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       h3ColumnName: 'fakeIndicatorColumn',
       additionalH3Data: h3IndicatorExampleDataFixture,
       indicatorId: indicator.id,
-      year: 2020,
+      year: 2005,
     });
     jest.spyOn(h3DataRepository, 'getBiodiversityLossRiskMapByResolution');
 
@@ -408,13 +523,13 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       h3ColumnName: 'fakeDeforestationColumn',
       additionalH3Data: h3DeforestationExampleDataFixture,
       indicatorId: deforestationIndicator.id,
-      year: 2020,
+      year: 2005,
     });
     const { material, indicator } = await createWorldForRiskMapGeneration({
       indicatorType: INDICATOR_TYPES.CARBON_EMISSIONS,
       fakeTable: 'fakeMaterialTable',
       fakeColumn: 'fakeMaterialColumn',
-      year: 2020,
+      year: 2010,
     });
 
     await h3DataMock({
@@ -422,7 +537,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       h3ColumnName: 'fakeIndicatorColumn',
       additionalH3Data: h3IndicatorExampleDataFixture,
       indicatorId: indicator.id,
-      year: 2020,
+      year: 2005,
     });
     jest.spyOn(h3DataRepository, 'getCarbonEmissionsRiskMapByResolution');
 
@@ -468,14 +583,14 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         indicatorType: INDICATOR_TYPES.DEFORESTATION,
         fakeTable: 'fakeMaterialTable',
         fakeColumn: 'fakeMaterialColumn',
-        year: 2020,
+        year: 2010,
       });
     await h3DataMock({
       h3TableName: 'fakeIndicatorTable',
       h3ColumnName: 'fakeIndicatorColumn',
       additionalH3Data: h3IndicatorExampleDataFixture,
       indicatorId: indicator.id,
-      year: 2020,
+      year: 2005,
     });
     jest.spyOn(h3DataRepository, 'getDeforestationLossRiskMapByResolution');
 
@@ -517,7 +632,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       indicatorType: INDICATOR_TYPES.BIODIVERSITY_LOSS,
       fakeTable: 'fakeMaterialTable',
       fakeColumn: 'fakeMaterialColumn',
-      year: 2020,
+      year: 2010,
     });
 
     await h3DataMock({
@@ -525,7 +640,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       h3ColumnName: 'fakeIndicatorColumn',
       additionalH3Data: h3IndicatorExampleDataFixture,
       indicatorId: indicator.id,
-      year: 2020,
+      year: 2005,
     });
 
     const response = await request(app.getHttpServer())
@@ -551,7 +666,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       indicatorType: INDICATOR_TYPES.BIODIVERSITY_LOSS,
       fakeTable: 'fakeMaterialTable',
       fakeColumn: 'fakeMaterialColumn',
-      year: 2020,
+      year: 2010,
     });
 
     await h3DataMock({
@@ -559,7 +674,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       h3ColumnName: 'fakeIndicatorColumn',
       additionalH3Data: h3IndicatorExampleDataFixture,
       indicatorId: indicator.id,
-      year: 2020,
+      year: 2005,
     });
 
     const response = await request(app.getHttpServer())

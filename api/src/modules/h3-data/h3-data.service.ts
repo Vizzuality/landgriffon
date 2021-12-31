@@ -6,7 +6,11 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
-import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
+import {
+  H3Data,
+  H3IndexValueData,
+  LAYER_TYPES,
+} from 'modules/h3-data/h3-data.entity';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { UnitConversionsService } from 'modules/unit-conversions/unit-conversions.service';
@@ -20,6 +24,7 @@ import { H3FilterYearsByLayerService } from 'modules/h3-data/services/h3-filter-
 import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
+import { getManager } from 'typeorm';
 
 /**
  * @debt: Check if we actually need extending nestjs-base-service over this module.
@@ -163,9 +168,22 @@ export class H3DataService {
     /**
      * @note To generate a Risk Map, harvest data and h3Data by indicatorId are required
      */
+
+    const availableIndicatorYears: number[] =
+      await this.getAvailableYearsForH3IndicatorData(indicatorId);
+
+    const indicatorDataYear: number | undefined =
+      availableIndicatorYears.includes(year)
+        ? year
+        : availableIndicatorYears.find((el) => el < year);
+
+    if (!indicatorDataYear)
+      throw new NotFoundException(
+        `There is no H3 Data registered for Indicator with ID ${indicatorId} for the year ${year} or any year before ${year}`,
+      );
     const indicatorH3Data: H3Data | undefined =
       await this.h3DataRepository.findOne({
-        where: { indicatorId: indicatorId, year: year },
+        where: { indicatorId: indicatorId, year: indicatorDataYear },
       });
 
     if (!indicatorH3Data)
@@ -173,10 +191,26 @@ export class H3DataService {
         `There is no H3 Data for Indicator with ID ${indicatorId} and year ${year}`,
       );
 
+    const availableHarvestDataYears: number[] =
+      await this.getAvailableYearsForH3MaterialData(
+        materialId,
+        MATERIAL_TO_H3_TYPE.HARVEST,
+      );
+
+    const harvestDataYear: number | undefined =
+      availableHarvestDataYears.includes(year)
+        ? year
+        : availableHarvestDataYears.find((el) => el < year);
+
+    if (!harvestDataYear)
+      throw new NotFoundException(
+        `There is no H3 Harvest data registered for Material with ID ${materialId} for the year ${year} or any year before ${year}`,
+      );
+
     const harvestMaterialH3Data: H3Data | undefined =
       await this.materialToH3Service.findH3DataForMaterial({
         materialId,
-        year,
+        year: harvestDataYear,
         type: MATERIAL_TO_H3_TYPE.HARVEST,
       });
     if (!harvestMaterialH3Data) {
@@ -185,10 +219,26 @@ export class H3DataService {
       );
     }
 
+    const availableProducerDataYears: number[] =
+      await this.getAvailableYearsForH3MaterialData(
+        materialId,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
+
+    const producerDataYear: number | undefined =
+      availableProducerDataYears.includes(year)
+        ? year
+        : availableProducerDataYears.find((el) => el < year);
+
+    if (!producerDataYear)
+      throw new NotFoundException(
+        `There is no H3 Producer data registered for Material with ID ${materialId} for the year ${year} or any year before ${year}`,
+      );
+
     const producerMaterialH3Data: H3Data | undefined =
       await this.materialToH3Service.findH3DataForMaterial({
         materialId,
-        year,
+        year: producerDataYear,
         type: MATERIAL_TO_H3_TYPE.PRODUCER,
       });
     if (!producerMaterialH3Data) {
@@ -291,7 +341,13 @@ export class H3DataService {
 
     return {
       data: riskMap,
-      metadata: { quantiles: quantiles, unit: indicator.unit.symbol },
+      metadata: {
+        quantiles: quantiles,
+        unit: indicator.unit.symbol,
+        indicatorDataYear,
+        harvestDataYear,
+        producerDataYear,
+      },
     };
   }
 
@@ -351,5 +407,23 @@ export class H3DataService {
         unit: indicator.unit.symbol,
       },
     };
+  }
+
+  async getAvailableYearsForH3MaterialData(
+    materialId: string,
+    materialType: MATERIAL_TO_H3_TYPE,
+  ): Promise<number[]> {
+    return await this.h3DataRepository.getAvailableYearsForH3MaterialData(
+      materialId,
+      materialType,
+    );
+  }
+
+  async getAvailableYearsForH3IndicatorData(
+    indicatorId: string,
+  ): Promise<number[]> {
+    return await this.h3DataRepository.getAvailableYearsForH3IndicatorData(
+      indicatorId,
+    );
   }
 }

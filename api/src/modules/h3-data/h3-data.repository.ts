@@ -21,6 +21,7 @@ import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.e
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 
 /**
  * @note: Column aliases are marked as 'h' and 'v' so that DB returns data in the format the consumer needs to be
@@ -732,5 +733,31 @@ export class H3DataRepository extends Repository<H3Data> {
     }
     const availableYears: any[] = await queryBuilder.getRawMany();
     return availableYears.map((elem: { year: number }) => elem.year);
+  }
+
+  async getAvailableYearsForH3MaterialData(
+    materialId: string,
+    materialType: MATERIAL_TO_H3_TYPE,
+  ): Promise<number[]> {
+    const years: { year: number }[] = await this.createQueryBuilder('h3data')
+      .select('year')
+      .leftJoin('material_to_h3', 'mth', 'h3data.id = mth.h3DataId')
+      .where('mth.materialId = :materialId', { materialId })
+      .andWhere('mth.type = :materialType', { materialType })
+      .orderBy('year', 'DESC')
+      .getRawMany();
+    return years.map((elem: { year: number }) => elem.year);
+  }
+
+  async getAvailableYearsForH3IndicatorData(
+    indicatorId: string,
+  ): Promise<number[]> {
+    const years: { year: number }[] = await this.createQueryBuilder('h3data')
+      .select('year')
+      .leftJoin('indicator', 'i', 'h3data.indicatorId = i.id')
+      .where('h3data.indicatorId = :indicatorId', { indicatorId })
+      .orderBy('year', 'DESC')
+      .getRawMany();
+    return years.map((elem: { year: number }) => elem.year);
   }
 }

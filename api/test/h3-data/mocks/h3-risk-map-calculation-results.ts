@@ -46,6 +46,9 @@ export const riskMapCalculationResults = {
       8.431105047748977,
     ],
     unit: 'tonnes',
+    harvestDataYear: 2010,
+    indicatorDataYear: 2005,
+    producerDataYear: 2010,
   },
 
   waterRiskRes3Values: [
@@ -90,6 +93,9 @@ export const riskMapCalculationResults = {
       22.48294679399727,
     ],
     unit: 'tonnes',
+    harvestDataYear: 2010,
+    indicatorDataYear: 2005,
+    producerDataYear: 2010,
   },
 
   biodiversityLossRes6Values: [
@@ -133,6 +139,9 @@ export const riskMapCalculationResults = {
       101.70282532278931, 118.42534601795609, 169.49152573943138,
     ],
     unit: 'tonnes',
+    harvestDataYear: 2010,
+    indicatorDataYear: 2005,
+    producerDataYear: 2010,
   },
 
   biodiversityLossRes3Values: [
@@ -165,6 +174,9 @@ export const riskMapCalculationResults = {
       169.49152573943138,
     ],
     unit: 'tonnes',
+    harvestDataYear: 2010,
+    indicatorDataYear: 2005,
+    producerDataYear: 2010,
   },
 
   carbonEmissionsRes6Values: [
@@ -209,6 +221,9 @@ export const riskMapCalculationResults = {
       0.016949152573943138,
     ],
     unit: 'tonnes',
+    harvestDataYear: 2010,
+    indicatorDataYear: 2005,
+    producerDataYear: 2010,
   },
 
   carbonEmissionsRes3Values: [
@@ -226,6 +241,9 @@ export const riskMapCalculationResults = {
       0.016949152573943138,
     ],
     unit: 'tonnes',
+    harvestDataYear: 2010,
+    indicatorDataYear: 2005,
+    producerDataYear: 2010,
   },
 
   deforestationRes6Values: [
@@ -357,6 +375,9 @@ export const riskMapCalculationResults = {
       25.245441436767578,
     ],
     unit: 'tonnes',
+    harvestDataYear: 2010,
+    indicatorDataYear: 2005,
+    producerDataYear: 2010,
   },
 
   deforestationRes3Quantiles: {
@@ -366,5 +387,8 @@ export const riskMapCalculationResults = {
       46.28330993652344,
     ],
     unit: 'tonnes',
+    harvestDataYear: 2010,
+    indicatorDataYear: 2005,
+    producerDataYear: 2010,
   },
 };

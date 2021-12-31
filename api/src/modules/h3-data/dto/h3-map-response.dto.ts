@@ -33,9 +33,24 @@ export class H3MapResponse {
           type: 'number',
         },
       },
+      indicatorDataYear: {
+        type: 'number',
+      },
+      harvestDataYear: {
+        type: 'number',
+      },
+      producerDataYear: {
+        type: 'number',
+      },
     },
   })
-  metadata: { unit: string; quantiles: number[] };
+  metadata: {
+    unit: string;
+    quantiles: number[];
+    indicatorDataYear?: number;
+    harvestDataYear?: number;
+    producerDataYear?: number;
+  };
 }
 
 export class H3DataResponse extends PickType(H3MapResponse, [

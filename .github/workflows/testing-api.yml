@@ -29,6 +29,9 @@ jobs:
           POSTGRES_PASSWORD: landgriffon
           POSTGRES_DB: landgriffon
 
+      redis:
+        image: redis
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2

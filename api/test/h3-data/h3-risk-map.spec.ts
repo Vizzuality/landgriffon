@@ -305,8 +305,6 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       year: 2005,
     });
 
-    jest.spyOn(h3DataRepository, 'getWaterRiskMapByResolution');
-
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
       .query({
@@ -321,7 +319,49 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     );
   });
 
-  test('When I get a calculated H3 Water Risk Map with the necessary input values, then I should get the h3 data (happy case). Different results for different resolutions expected', async () => {
+  test('When I get a calculated H3 Water Risk Map with the necessary input values, then I should get the h3 data (happy case). H3 data for the requested year is available, calculations are based on that data', async () => {
+    const { material, indicator } = await createWorldForRiskMapGeneration({
+      indicatorType: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+      fakeTable: 'fakeMaterialTable',
+      fakeColumn: 'fakeMaterialColumn',
+      year: 2020,
+    });
+
+    await h3DataMock({
+      h3TableName: 'fakeIndicatorTable',
+      h3ColumnName: 'fakeIndicatorColumn',
+      additionalH3Data: h3IndicatorExampleDataFixture,
+      indicatorId: indicator.id,
+      year: 2020,
+    });
+
+    const responseRes6 = await request(app.getHttpServer())
+      .get(`/api/v1/h3/map/risk`)
+      .query({
+        indicatorId: indicator.id,
+        year: 2020,
+        materialId: material.id,
+        resolution: 6,
+      });
+
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/h3/map/risk`)
+      .query({
+        indicatorId: indicator.id,
+        year: 2020,
+        materialId: material.id,
+        resolution: 6,
+      });
+
+    expect(response.body.data).toEqual(
+      expect.arrayContaining(riskMapCalculationResults.waterRiskRes6Values),
+    );
+    expect(response.body.metadata).toEqual(
+      riskMapCalculationResults.waterRiskRes6Quantiles2020,
+    );
+  });
+
+  test('When I get a calculated H3 Water Risk Map with the necessary input values, then I should get the h3 data (happy case). Material and indicator h3 data not available for requested year - data for the next available lower year is used. Different results for different resolutions expected', async () => {
     const { material, indicator } = await createWorldForRiskMapGeneration({
       indicatorType: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
       fakeTable: 'fakeMaterialTable',
@@ -336,8 +376,6 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       indicatorId: indicator.id,
       year: 2005,
     });
-
-    jest.spyOn(h3DataRepository, 'getWaterRiskMapByResolution');
 
     const responseRes6 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
@@ -399,7 +437,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
     const earlierH3MaterialData = await h3DataMock({
       h3TableName: 'fakeMaterialTable2002',
-      h3ColumnName: 'fakeMaterialColiumn2002',
+      h3ColumnName: 'fakeMaterialColumn2002',
       additionalH3Data: h3MaterialExampleDataFixture,
       year: 2002,
     });
@@ -414,8 +452,6 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       earlierH3MaterialData.id,
       MATERIAL_TO_H3_TYPE.HARVEST,
     );
-
-    jest.spyOn(h3DataRepository, 'getWaterRiskMapByResolution');
 
     const responseRes6 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
@@ -475,7 +511,6 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       indicatorId: indicator.id,
       year: 2005,
     });
-    jest.spyOn(h3DataRepository, 'getBiodiversityLossRiskMapByResolution');
 
     const responseRes6 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
@@ -539,7 +574,6 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       indicatorId: indicator.id,
       year: 2005,
     });
-    jest.spyOn(h3DataRepository, 'getCarbonEmissionsRiskMapByResolution');
 
     const responseRes6 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
@@ -592,7 +626,6 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       indicatorId: indicator.id,
       year: 2005,
     });
-    jest.spyOn(h3DataRepository, 'getDeforestationLossRiskMapByResolution');
 
     const responseRes6 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)

@@ -45,9 +45,7 @@ services:
     build:
       context: ./redis
       dockerfile: Dockerfile
-    hostname: redis
     container_name: landgriffon-redis
-    command: [ "redis-server" ]
     ports:
       - "${API_REDIS_SERVICE_PORT}:6379"
     restart: on-failure

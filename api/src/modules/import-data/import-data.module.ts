@@ -20,6 +20,7 @@ import {
 } from 'modules/import-data/workers/import-data.producer';
 import { ImportDataConsumer } from 'modules/import-data/workers/import-data.consumer';
 import { ImportDataService } from 'modules/import-data/import-data.service';
+import { JobEventsModule } from 'modules/job-events/job-events.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { ImportDataService } from 'modules/import-data/import-data.service';
     GeoCodingModule,
     GeoRegionsModule,
     IndicatorRecordsModule,
+    JobEventsModule,
   ],
   providers: [
     SourcingDataImportService,

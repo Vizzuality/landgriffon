@@ -9,6 +9,7 @@ import {
 } from 'modules/import-data/workers/import-data.producer';
 import { Job } from 'bull';
 import { SourcingDataImportService } from 'modules/import-data/sourcing-data/sourcing-data-import.service';
+import { JobEventsService } from 'modules/job-events/job-events.service';
 
 @Injectable()
 export class ImportDataService {
@@ -16,6 +17,7 @@ export class ImportDataService {
   constructor(
     private readonly importDataProducer: ImportDataProducer,
     private readonly sourcingDataImportService: SourcingDataImportService,
+    private readonly jobEvents: JobEventsService,
   ) {}
 
   async loadXlsxFile(

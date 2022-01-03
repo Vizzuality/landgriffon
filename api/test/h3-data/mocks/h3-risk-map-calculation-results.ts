@@ -51,6 +51,18 @@ export const riskMapCalculationResults = {
     producerDataYear: 2010,
   },
 
+  waterRiskRes6Quantiles2020: {
+    quantiles: [
+      0.0011241473145732126, 0.002812616685840312, 0.005620736782254821,
+      0.007025920873124147, 0.008433353677316378, 1.417549795361529,
+      8.431105047748977,
+    ],
+    unit: 'tonnes',
+    harvestDataYear: 2020,
+    indicatorDataYear: 2020,
+    producerDataYear: 2020,
+  },
+
   waterRiskRes3Values: [
     {
       h: '831080fffffffff',

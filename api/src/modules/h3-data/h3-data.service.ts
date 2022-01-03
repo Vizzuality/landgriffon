@@ -183,7 +183,7 @@ export class H3DataService {
       );
     const indicatorH3Data: H3Data | undefined =
       await this.h3DataRepository.findOne({
-        where: { indicatorId: indicatorId, year: indicatorDataYear },
+        where: { indicatorId, year: indicatorDataYear },
       });
 
     if (!indicatorH3Data)

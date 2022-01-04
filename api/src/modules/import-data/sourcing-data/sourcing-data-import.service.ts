@@ -65,7 +65,7 @@ export class SourcingDataImportService {
     protected readonly indicatorRecordsService: IndicatorRecordsService,
   ) {}
 
-  async importSourcingRecords(filePath: string): Promise<any> {
+  async importSourcingData(filePath: string): Promise<any> {
     this.logger.log(`Starting import process`);
     await this.fileService.isFilePresentInFs(filePath);
     try {

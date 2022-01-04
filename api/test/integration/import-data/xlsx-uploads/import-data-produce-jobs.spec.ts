@@ -37,7 +37,7 @@ describe('XLSX Upload Feature Job Producer Tests', () => {
     await importDataService.loadXlsxFile(userId, fileData);
 
     expect(queue.add).toHaveBeenCalledWith('excel-import-job', {
-      xlsxFilePath: fileData.path,
+      fileData,
       userId,
     });
   });

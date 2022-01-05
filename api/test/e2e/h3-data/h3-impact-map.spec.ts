@@ -41,7 +41,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
   afterAll(async () => {
     await dropH3DataMock([fakeTable]);
     await deleteImpactMapMockData();
-    return app.close();
+    await app.close();
   });
 
   describe('Missing required parameters', () => {

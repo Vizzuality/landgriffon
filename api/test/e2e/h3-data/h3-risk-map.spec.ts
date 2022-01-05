@@ -93,7 +93,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
   });
 
   afterAll(async () => {
-    return app.close();
+    await app.close();
   });
 
   describe('Missing input values', () => {

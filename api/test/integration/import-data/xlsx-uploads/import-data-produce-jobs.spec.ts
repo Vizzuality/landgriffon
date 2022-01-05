@@ -1,10 +1,10 @@
 import { Queue } from 'bull';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../../../../src/app.module';
-import { ImportDataModule } from '../../../../src/modules/import-data/import-data.module';
+import { AppModule } from 'app.module';
+import { ImportDataModule } from 'modules/import-data/import-data.module';
 import { getQueueToken } from '@nestjs/bull';
-import { importQueueName } from '../../../../src/modules/import-data/workers/import-data.producer';
-import { ImportDataService } from '../../../../src/modules/import-data/import-data.service';
+import { importQueueName } from 'modules/import-data/workers/import-data.producer';
+import { ImportDataService } from 'modules/import-data/import-data.service';
 
 describe('XLSX Upload Feature Job Producer Tests', () => {
   const importQueue: any = { add: jest.fn() };

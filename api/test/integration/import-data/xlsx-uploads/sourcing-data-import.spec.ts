@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
@@ -37,6 +37,8 @@ import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { h3BasicFixture } from '../../../e2e/h3-data/mocks/h3-fixtures';
+import { ImportDataService } from '../../../../src/modules/import-data/import-data.service';
+import { SourcingDataImportService } from '../../../../src/modules/import-data/sourcing-data/sourcing-data-import.service';
 
 let tablesToDrop: string[] = [];
 
@@ -58,10 +60,7 @@ jest.mock('config', () => {
   return config;
 });
 
-/**
- * @todo: Tests skipped to be restored once the first version of the queue flow is completed
- */
-describe.skip('Sourcing Data import', () => {
+describe('Sourcing Data import', () => {
   /**
    * @note: We are currently ignoring '#N/A' location type values in production code
    * so this mock filters them to avoid DB constraint errors for not be one of the allowed
@@ -98,7 +97,6 @@ describe.skip('Sourcing Data import', () => {
         }));
     },
   };
-
   class UnknownLocationServiceMock extends UnknownLocationService {
     async geoCodeByCountry(): Promise<any> {
       return {
@@ -128,12 +126,21 @@ describe.skip('Sourcing Data import', () => {
   let indicatorRepository: IndicatorRepository;
   let sourcingLocationGroupRepository: SourcingLocationGroupRepository;
   let h3DataRepository: H3DataRepository;
+  let xlsxFileData: Express.Multer.File;
+  let sourcingDataImportService: SourcingDataImportService;
+  const mockService: any = {
+    loadXlsxFile: jest.fn((id: string, fileData: Express.Multer.File) => {
+      xlsxFileData = fileData;
+    }),
+  };
 
   beforeAll(async () => {
     jest.setTimeout(10000);
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule, SourcingRecordsModule],
     })
+      .overrideProvider(ImportDataService)
+      .useValue(mockService)
       .overrideProvider(GeoCodingService)
       .useValue(geoCodingServiceMock)
       .overrideProvider(UnknownLocationService)
@@ -171,6 +178,9 @@ describe.skip('Sourcing Data import', () => {
     indicatorRepository =
       moduleFixture.get<IndicatorRepository>(IndicatorRepository);
     h3DataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
+    sourcingDataImportService = moduleFixture.get<SourcingDataImportService>(
+      SourcingDataImportService,
+    );
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(
@@ -181,6 +191,15 @@ describe.skip('Sourcing Data import', () => {
       }),
     );
     await app.init();
+  });
+
+  beforeEach(async () => {
+    /**
+     * Inject file to API for the test subject in this suite
+     */
+    await request(app.getHttpServer())
+      .post('/api/v1/import/sourcing-data')
+      .attach('file', __dirname + '/base-dataset.xlsx');
   });
 
   afterEach(async () => {
@@ -208,35 +227,15 @@ describe.skip('Sourcing Data import', () => {
     await app.close();
   });
 
-  test('When an empty file is sent to the API then it should return a 400 code and a error message', async () => {
-    const response = await request(app.getHttpServer())
-      .post('/api/v1/import/sourcing-data')
-      .attach('file', __dirname + '/empty.xlsx')
-      .expect(HttpStatus.BAD_REQUEST);
-    expect(response.body.errors[0].title).toEqual(
-      'XLSX file could not been parsed: Spreadsheet is missing requires sheets: materials, business units, suppliers, countries, for upload',
-    );
-  });
-
-  test('When a file is sent to the API and some data does not comply with data validation rules, it should return a 400 code and a error message', async () => {
-    const response = await request(app.getHttpServer())
-      .post('/api/v1/import/sourcing-data')
-      .attach('file', __dirname + '/business-unit-name-length.xlsx')
-      .expect(HttpStatus.BAD_REQUEST);
-    expect(response.body.errors[0].title).toEqual(
-      'An instance of CreateBusinessUnitDto has failed the validation:\n' +
-        ' - property name has failed the following constraints: maxLength \n',
-    );
-  });
-
-  test('When a file is sent to the API and there are no materials in the database, an error should be displayed', async () => {
-    const response = await request(app.getHttpServer())
-      .post('/api/v1/import/sourcing-data')
-      .attach('file', __dirname + '/base-dataset.xlsx')
-      .expect(HttpStatus.BAD_REQUEST);
-    expect(response.body.errors[0].title).toEqual(
-      'No Materials found present in the DB. Please check the LandGriffon installation manual',
-    );
+  test('When a file is processed by the API and there are no materials in the database, an error should be displayed', async () => {
+    expect.assertions(1);
+    try {
+      await sourcingDataImportService.importSourcingData(xlsxFileData.path);
+    } catch (err: any) {
+      expect(err.message).toEqual(
+        'No Materials found present in the DB. Please check the LandGriffon installation manual',
+      );
+    }
   });
 
   test('When a file is sent to the API and its size is allowed then it should return a 201 code and the storage folder should be empty', async () => {
@@ -247,10 +246,8 @@ describe.skip('Sourcing Data import', () => {
     });
     tablesToDrop = await createMaterialTreeForXLSXImport();
 
-    await request(app.getHttpServer())
-      .post('/api/v1/import/sourcing-data')
-      .attach('file', __dirname + '/base-dataset.xlsx')
-      .expect(HttpStatus.CREATED);
+    await sourcingDataImportService.importSourcingData(xlsxFileData.path);
+
     const folderContent = await readdir(config.get('fileUploads.storagePath'));
     expect(folderContent.length).toEqual(0);
   }, 10000);
@@ -261,6 +258,7 @@ describe.skip('Sourcing Data import', () => {
       isoA2: 'ABC',
       geoRegion,
     });
+
     await h3DataMock({
       h3TableName: 'h3_grid_deforestation_global',
       h3ColumnName: 'hansen_loss_2019',
@@ -273,10 +271,7 @@ describe.skip('Sourcing Data import', () => {
       'h3_grid_deforestation_global',
     ];
 
-    await request(app.getHttpServer())
-      .post('/api/v1/import/sourcing-data')
-      .attach('file', __dirname + '/base-dataset.xlsx')
-      .expect(HttpStatus.CREATED);
+    await sourcingDataImportService.importSourcingData(xlsxFileData.path);
 
     const businessUnits: BusinessUnit[] = await businessUnitRepository.find();
     expect(businessUnits).toHaveLength(5);
@@ -305,37 +300,6 @@ describe.skip('Sourcing Data import', () => {
     });
   }, 100000);
 
-  test('When a file is sent 2 times to the API, then imported data length should be equal, and database has been cleaned in between', async () => {
-    const geoRegion: GeoRegion = await createGeoRegion();
-    await createAdminRegion({
-      isoA2: 'ABC',
-      geoRegion,
-    });
-    await h3DataMock({
-      h3TableName: 'h3_grid_deforestation_global',
-      h3ColumnName: 'hansen_loss_2019',
-      additionalH3Data: h3BasicFixture,
-      year: 2019,
-    });
-    tablesToDrop = [
-      ...(await createMaterialTreeForXLSXImport()),
-      ...(await createIndicatorsForXLSXImport()),
-      'h3_grid_deforestation_global',
-    ];
-
-    await request(app.getHttpServer())
-      .post('/api/v1/import/sourcing-data')
-      .attach('file', __dirname + '/base-dataset.xlsx');
-
-    await request(app.getHttpServer())
-      .post('/api/v1/import/sourcing-data')
-      .attach('file', __dirname + '/base-dataset.xlsx');
-
-    const sourcingRecords: SourcingRecord[] =
-      await sourcingRecordRepository.find();
-    expect(sourcingRecords.length).toEqual(495);
-  }, 100000);
-
   test('When a file is sent to the API and gets processed, then a request to Sourcing-Records should return an existing Sourcing-Location ID', async () => {
     const geoRegion: GeoRegion = await createGeoRegion();
     await createAdminRegion({
@@ -354,9 +318,7 @@ describe.skip('Sourcing Data import', () => {
       'h3_grid_deforestation_global',
     ];
 
-    await request(app.getHttpServer())
-      .post('/api/v1/import/sourcing-data')
-      .attach('file', __dirname + '/base-dataset.xlsx');
+    await sourcingDataImportService.importSourcingData(xlsxFileData.path);
 
     const sourcingRecords: SourcingRecord[] =
       await sourcingRecordRepository.find();
@@ -390,15 +352,13 @@ describe.skip('Sourcing Data import', () => {
         'h3_grid_deforestation_global',
       ];
 
-      const response: request.Response = await request(app.getHttpServer())
-        .post('/api/v1/import/sourcing-data')
-        .attach('file', __dirname + '/base-dataset.xlsx');
-
-      expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
-
-      expect(response.body.errors[0].title).toEqual(
-        'Cannot calculate impact for sourcing record - missing producer h3 data for material "Maize (corn)" and year "2010"',
-      );
+      try {
+        await sourcingDataImportService.importSourcingData(xlsxFileData.path);
+      } catch (err: any) {
+        expect(err.message).toEqual(
+          'Cannot calculate impact for sourcing record - missing producer h3 data for material "Maize (corn)" and year "2010"',
+        );
+      }
     }, 100000);
 
     test('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (ignore strategy)', async () => {
@@ -421,11 +381,7 @@ describe.skip('Sourcing Data import', () => {
         'h3_grid_deforestation_global',
       ];
 
-      const response: request.Response = await request(app.getHttpServer())
-        .post('/api/v1/import/sourcing-data')
-        .attach('file', __dirname + '/base-dataset.xlsx');
-
-      expect(response.statusCode).toEqual(HttpStatus.CREATED);
+      await sourcingDataImportService.importSourcingData(xlsxFileData.path);
 
       const businessUnits: BusinessUnit[] = await businessUnitRepository.find();
       expect(businessUnits).toHaveLength(5);
@@ -474,11 +430,7 @@ describe.skip('Sourcing Data import', () => {
         'h3_grid_deforestation_global',
       ];
 
-      const response: request.Response = await request(app.getHttpServer())
-        .post('/api/v1/import/sourcing-data')
-        .attach('file', __dirname + '/base-dataset.xlsx');
-
-      expect(response.statusCode).toEqual(HttpStatus.CREATED);
+      await sourcingDataImportService.importSourcingData(xlsxFileData.path);
 
       const businessUnits: BusinessUnit[] = await businessUnitRepository.find();
       expect(businessUnits).toHaveLength(5);

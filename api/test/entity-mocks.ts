@@ -1,27 +1,27 @@
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
 import { IndicatorSource } from 'modules/indicator-sources/indicator-source.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
-import { ScenarioIntervention } from '../src/modules/scenario-interventions/scenario-intervention.entity';
-import { Material } from '../src/modules/materials/material.entity';
-import { Supplier } from '../src/modules/suppliers/supplier.entity';
-import { SourcingRecord } from '../src/modules/sourcing-records/sourcing-record.entity';
-import { IndicatorRecord } from '../src/modules/indicator-records/indicator-record.entity';
-import { Indicator } from '../src/modules/indicators/indicator.entity';
-import { SourcingLocation } from '../src/modules/sourcing-locations/sourcing-location.entity';
-import { SourcingLocationGroup } from '../src/modules/sourcing-location-groups/sourcing-location-group.entity';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { Material } from 'modules/materials/material.entity';
+import { Supplier } from 'modules/suppliers/supplier.entity';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
+import { Indicator } from 'modules/indicators/indicator.entity';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { Unit } from 'modules/units/unit.entity';
 import {
   ADMIN_REGIONS_STATUS,
   AdminRegion,
-} from '../src/modules/admin-regions/admin-region.entity';
-import { UnitConversion } from '../src/modules/unit-conversions/unit-conversion.entity';
-import { H3Data } from '../src/modules/h3-data/h3-data.entity';
-import { GeoRegion } from '../src/modules/geo-regions/geo-region.entity';
+} from 'modules/admin-regions/admin-region.entity';
+import { UnitConversion } from 'modules/unit-conversions/unit-conversion.entity';
+import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import {
   MATERIAL_TO_H3_TYPE,
   MaterialToH3,
-} from '../src/modules/materials/material-to-h3.entity';
-import { BusinessUnit } from '../src/modules/business-units/business-unit.entity';
+} from 'modules/materials/material-to-h3.entity';
+import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 
 async function createAdminRegion(
   additionalData: Partial<AdminRegion> = {},

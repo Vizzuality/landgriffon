@@ -12,9 +12,9 @@ import {
 } from '../../entity-mocks';
 import { expectedJSONAPIAttributes } from './config';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
-import { H3DataRepository } from '../../../src/modules/h3-data/h3-data.repository';
-import { MATERIAL_TO_H3_TYPE } from '../../../src/modules/materials/material-to-h3.entity';
-import { MaterialsToH3sService } from '../../../src/modules/materials/materials-to-h3s.service';
+import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
+import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
+import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 
 //TODO: Allow these tests when feature fix is merged
 describe('Materials - Get trees', () => {

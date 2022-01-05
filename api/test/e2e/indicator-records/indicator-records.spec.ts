@@ -7,11 +7,11 @@ import {
   createIndicatorRecord,
   createSourcingRecord,
 } from '../../entity-mocks';
-import { IndicatorRecordsModule } from '../../../src/modules/indicator-records/indicator-records.module';
-import { IndicatorRecordRepository } from '../../../src/modules/indicator-records/indicator-record.repository';
-import { IndicatorRecord } from '../../../src/modules/indicator-records/indicator-record.entity';
-import { Indicator } from '../../../src/modules/indicators/indicator.entity';
-import { SourcingRecord } from '../../../src/modules/sourcing-records/sourcing-record.entity';
+import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
+import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
+import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
+import { Indicator } from 'modules/indicators/indicator.entity';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 
 /**
  * Tests for the IndicatorRecordsModule.

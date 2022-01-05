@@ -12,7 +12,7 @@ services:
     user: "5000:5000"
     volumes:
       - ./client:/opt/landgriffon-client/
-    env_file: .env
+    env_file: ${ENVFILE}
 
   api:
     build:
@@ -26,7 +26,7 @@ services:
     volumes:
       - ./api/src:/opt/landgriffon-api/src
       - ./api/test:/opt/landgriffon-api/test
-    env_file: .env
+    env_file: ${ENVFILE}
     environment:
       - DB_HOST=postgresql
       - DB_USERNAME=${API_POSTGRES_USERNAME}
@@ -34,18 +34,12 @@ services:
       - DB_DATABASE=${API_POSTGRES_DATABASE}
       - DB_SYNCHRONIZE=${API_DB_SYNCHRONIZE}
       - JWT_SECRET=${API_AUTH_JWT_SECRET}
-      - GMAPS_API_KEY=${GMAPS_API_KEY}
-      - API_REDIS_SERVICE_PORT=${API_REDIS_SERVICE_PORT}
-      - API_REDIS_SERVICE_HOST=${API_REDIS_SERVICE_HOST}
     depends_on:
       - postgresql
       - redis
 
   redis:
-    build:
-      context: ./redis
-      dockerfile: Dockerfile
-    container_name: landgriffon-redis
+    image: redis:6.0.9-alpine3.12
     ports:
       - "${API_REDIS_SERVICE_PORT}:6379"
     restart: on-failure
@@ -57,7 +51,7 @@ services:
     container_name: landgriffon-redis-commander
     restart: always
     environment:
-      - REDIS_HOSTS=local:landgriffon-redis:6379
+      - REDIS_HOSTS=local:redis:6379
     ports:
       - '${REDIS_COMMANDER_PORT}:8081'
     depends_on:
@@ -69,7 +63,7 @@ services:
       args:
         - PG_H3_VERSION=3.7.1
     container_name: landgriffon-postgresql
-    env_file: .env
+    env_file: ${ENVFILE}
     ports:
       - ${API_POSTGRES_PORT}:5432
     volumes:

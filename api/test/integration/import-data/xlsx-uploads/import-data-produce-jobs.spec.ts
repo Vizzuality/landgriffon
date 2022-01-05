@@ -6,6 +6,7 @@ import { getQueueToken } from '@nestjs/bull';
 import { importQueueName } from 'modules/import-data/workers/import-data.producer';
 import { ImportDataService } from 'modules/import-data/import-data.service';
 
+// TODO: Update tests below once auth is done
 describe('XLSX Upload Feature Job Producer Tests', () => {
   const importQueue: any = { add: jest.fn() };
   const importQueueFail: any = { add: jest.fn().mockRejectedValue('test') };
@@ -32,13 +33,13 @@ describe('XLSX Upload Feature Job Producer Tests', () => {
 
   test('When loadXlsxFile is called with required file data and a userId, Then a job should be pushed to the queue', async () => {
     await bootstrapTestingApp(importQueue);
-    const fileData = { path: 'filepath' } as Express.Multer.File;
+    const xlsxFileData = { path: 'filepath' } as Express.Multer.File;
     const userId = '29b47625-9ffa-45a9-bfce-7a75abeb820e';
-    await importDataService.loadXlsxFile(userId, fileData);
+    await importDataService.loadXlsxFile(userId, xlsxFileData);
 
     expect(queue.add).toHaveBeenCalledWith('excel-import-job', {
-      fileData,
       userId,
+      xlsxFileData,
     });
   });
   test('When loadXlsxFile is called with required file data and a userId, but the Job can not be added to the queue, a error should be displayed', async () => {

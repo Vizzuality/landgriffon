@@ -22,9 +22,9 @@ export class ImportDataConsumer {
 
   @OnQueueActive()
   async onJobStarted(job: Job<ExcelImportJob>): Promise<void> {
-    await this.jobEvents.updateImportJobEvent({
+    await this.jobEvents.createImportJobEvent({
+      userId: job.data.userId,
       redisJobId: job.id,
-      newStatus: JOB_STATUS.PROCESSING,
     });
   }
 

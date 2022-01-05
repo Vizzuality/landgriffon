@@ -48,5 +48,6 @@ import { JobEventsModule } from 'modules/job-events/job-events.module';
     ImportDataService,
   ],
   controllers: [ImportDataController],
+  exports: [ImportDataService],
 })
 export class ImportDataModule {}

@@ -4,28 +4,16 @@
 # If using the same variables in recipes that need to use a dotenv file other
 # than .env, remember to check that no values from .env are being used
 # inadvertently.
-ENVFILE := $(if $(environment), .env-test-e2e, .env)
-CIENV := $(if $(filter $(environment), ci), -f docker-compose-test-e2e.ci.yml , -f docker-compose-test-e2e.local.yml)
-API_DB_INSTANCE := $(if $(environment), test-e2e-postgresql-api, postgresql)
-API_POSTGRES_USER := $(if $(filter $(environment), ci),${API_POSTGRES_USER},$(shell grep -e API_POSTGRES_USER ${ENVFILE} | sed 's/^.*=//'))
-API_POSTGRES_DATABASE := $(if $(filter $(environment), ci),${API_POSTGRES_DATABASE},$(shell grep -e API_POSTGRES_DATABASE ${ENVFILE} | sed 's/^.*=//'))
-
-DOCKER_COMPOSE_FILE := $(if $(environment), -f docker-compose-test-e2e.yml $(CIENV), -f docker-compose.yml )
+ENVFILE := $(if $(environment),.env.$(environment),.env)
+ifneq (,$(wildcard $(ENVFILE)))
+    include $(ENVFILE)
+    export
+endif
 COMPOSE_PROJECT_NAME := "landgriffon"
 
 ## some color to give live to the outputs
 RED :=\033[1;32m
 NC :=\033[0m # No Color
-# Start only API and Geoprocessing services
-#
-# Useful when developing on API components only, to avoid spinning up services
-# which may not be needed.
-test-commands:
-	@echo $(ENVFILE)
-	@echo $(DOCKER_COMPOSE_FILE)
-	@echo $(CIENV)
-	@echo $(API_POSTGRES_DATABASE)
-	@echo $(GEO_POSTGRES_USER)
 
 # Starts the API application
 start-api:

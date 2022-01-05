@@ -41,7 +41,7 @@ describe('IndicatorSourcesModule (e2e)', () => {
 
   afterAll(async () => {
     await app.close();
-  }, 10000);
+  });
 
   describe('Indicator sources - Create', () => {
     test('Create a indicator source should be successful (happy case)', async () => {

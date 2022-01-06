@@ -58,7 +58,7 @@ jest.mock('config', () => {
   return config;
 });
 
-describe('Sourcing Data import', () => {
+describe.skip('Sourcing Data import', () => {
   /**
    * @note: We are currently ignoring '#N/A' location type values in production code
    * so this mock filters them to avoid DB constraint errors for not be one of the allowed
@@ -201,17 +201,8 @@ describe('Sourcing Data import', () => {
   });
 
   afterAll(async () => {
-    await app.close();
     jest.clearAllTimers();
-  });
-
-  test('When a file is not sent to the API then it should return a 400 code and the storage folder should be empty', async () => {
-    const response = await request(app.getHttpServer())
-      .post('/api/v1/import/sourcing-data')
-      .expect(HttpStatus.BAD_REQUEST);
-    expect(response.body.errors[0].title).toEqual(
-      'A .XLSX file must be provided as payload',
-    );
+    await app.close();
   });
 
   test('When an empty file is sent to the API then it should return a 400 code and a error message', async () => {

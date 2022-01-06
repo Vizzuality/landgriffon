@@ -393,7 +393,7 @@ export class H3DataRepository extends Repository<H3Data> {
         return subQuery
           .select(`indicatorh3.h3index `)
           .addSelect(
-            `indicatorh3."${indicatorH3Data.h3columnName}" * 103 / sum(materialh3."${materialH3Data.h3columnName}") over() water_risk`,
+            `indicatorh3."${indicatorH3Data.h3columnName}" * ${calculusFactor} / sum(materialh3."${materialH3Data.h3columnName}") over() water_risk`,
           )
           .from(materialH3Data.h3tableName, 'materialh3')
           .innerJoin(

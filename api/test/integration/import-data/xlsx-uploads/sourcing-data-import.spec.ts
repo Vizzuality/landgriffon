@@ -238,7 +238,7 @@ describe('Sourcing Data import', () => {
     }
   });
 
-  test('When a file is sent to the API and its size is allowed then it should return a 201 code and the storage folder should be empty', async () => {
+  test('When a file is processed by the API and its size is allowed then it should return a 201 code and the storage folder should be empty', async () => {
     const geoRegion: GeoRegion = await createGeoRegion();
     await createAdminRegion({
       isoA2: 'ABC',
@@ -250,7 +250,7 @@ describe('Sourcing Data import', () => {
 
     const folderContent = await readdir(config.get('fileUploads.storagePath'));
     expect(folderContent.length).toEqual(0);
-  }, 10000);
+  }, 15000);
 
   test('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (happy case)', async () => {
     const geoRegion: GeoRegion = await createGeoRegion();
@@ -300,7 +300,7 @@ describe('Sourcing Data import', () => {
     });
   }, 100000);
 
-  test('When a file is sent to the API and gets processed, then a request to Sourcing-Records should return an existing Sourcing-Location ID', async () => {
+  test('When a file is processed by the API and gets processed, then a request to Sourcing-Records should return an existing Sourcing-Location ID', async () => {
     const geoRegion: GeoRegion = await createGeoRegion();
     await createAdminRegion({
       isoA2: 'ABC',

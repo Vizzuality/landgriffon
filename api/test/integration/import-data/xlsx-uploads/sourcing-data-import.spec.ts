@@ -58,6 +58,9 @@ jest.mock('config', () => {
   return config;
 });
 
+/**
+ * @todo: Tests skipped to be restored once the first version of the queue flow is completed
+ */
 describe.skip('Sourcing Data import', () => {
   /**
    * @note: We are currently ignoring '#N/A' location type values in production code

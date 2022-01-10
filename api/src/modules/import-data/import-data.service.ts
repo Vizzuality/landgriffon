@@ -37,13 +37,10 @@ export class ImportDataService {
           xlsxFileData.filename
         } sent by user: ${userId} could not been added to queue: ${error.toString()}`,
       );
-      /**
-       * @note: This error would be sent back to the consumer in case the job hasn't been pushed to queue.
-       * What would we want to add as message?
-       */
+
       await this.tasksService.remove(task.id);
       throw new ServiceUnavailableException(
-        `File: ${xlsxFileData.filename} could not have been loaded`,
+        `File: ${xlsxFileData.filename} could not have been loaded. Please try again later or contact the administrator`,
       );
     }
   }

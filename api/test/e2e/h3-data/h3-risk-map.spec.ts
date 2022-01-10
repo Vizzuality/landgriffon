@@ -612,13 +612,12 @@ describe('H3 Data Module (e2e) - Risk map', () => {
   });
 
   test('When I get a calculated H3 Deforestation Loss Risk Map with the necessary input values, then I should get the h3 data (happy case). Different results for different resolutions expected', async () => {
-    const { material, indicator, h3Data } =
-      await createWorldForRiskMapGeneration({
-        indicatorType: INDICATOR_TYPES.DEFORESTATION,
-        fakeTable: 'fakeMaterialTable',
-        fakeColumn: 'fakeMaterialColumn',
-        year: 2010,
-      });
+    const { material, indicator } = await createWorldForRiskMapGeneration({
+      indicatorType: INDICATOR_TYPES.DEFORESTATION,
+      fakeTable: 'fakeMaterialTable',
+      fakeColumn: 'fakeMaterialColumn',
+      year: 2010,
+    });
     await h3DataMock({
       h3TableName: 'fakeIndicatorTable',
       h3ColumnName: 'fakeIndicatorColumn',

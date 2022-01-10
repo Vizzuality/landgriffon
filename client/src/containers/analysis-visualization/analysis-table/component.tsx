@@ -1,63 +1,23 @@
 import { useMemo } from 'react';
 import { DownloadIcon } from '@heroicons/react/outline';
 import { InformationCircleIcon } from '@heroicons/react/solid';
-import { ITableProps } from 'ka-table';
-import { DataType } from 'ka-table/enums';
 
 import { useImpactData } from 'hooks/impact';
 
 import Button from 'components/button';
 import Loading from 'components/loading';
-import Table from 'components/table';
-import { ISummaryRowProps } from 'ka-table/props';
-import { DATA_NUMBER_FORMAT } from '../constants';
-
-type ITableData = ITableProps & {
-  key?: string;
-  yearSum: {
-    year: number;
-    value: number;
-  }[];
-};
-
-type CustomSummaryRow = ISummaryRowProps & {
-  yearSum: {
-    year: number;
-    value: number;
-  }[];
-};
+import IndicatorTable from './indicator-table';
 
 const AnalysisTable: React.FC = () => {
   const { data: impactData, isLoading } = useImpactData();
 
   // initial value of the *props
-  const tableData: ITableData[] = useMemo(() => {
+  const tableData = useMemo(() => {
     const {
       data: { impactTable },
     } = impactData;
 
-    return impactTable.map(
-      ({ indicatorId, yearSum, rows }): ITableData => ({
-        key: indicatorId,
-        rowKeyField: 'id',
-        columns: [
-          { key: 'material', title: 'Material', dataType: DataType.String },
-          ...yearSum.map(({ year }) => ({
-            key: year.toString(),
-            title: year.toString(),
-            DataType: DataType.Number,
-          })),
-        ],
-        data: rows.map((row, rowIndex) => ({
-          id: `${indicatorId}-${rowIndex}`,
-          material: row.name,
-          ...row.values
-            .map(({ year, value }) => ({ [year as string]: DATA_NUMBER_FORMAT(value as number) }))
-            .reduce((a, b) => ({ ...a, ...b })),
-        })),
-        yearSum,
-      }),
-    );
+    return impactTable;
   }, [impactData]);
 
   return (
@@ -81,39 +41,18 @@ const AnalysisTable: React.FC = () => {
       </div>
       <div className="relative">
         {isLoading && <Loading className="text-green-700" />}
-        {impactData &&
-          !isLoading &&
-          tableData.map(({ key, ...tableProps }) => (
-            <div key={key} className="my-4">
-              <Table
-                tablePropsInit={tableProps}
-                childComponents={{
-                  summaryRow: {
-                    content: (props: CustomSummaryRow) =>
-                      props.columns.map((column) => {
-                        if (column.key === 'material') {
-                          return (
-                            <td key={column.key} className="ka-cell">
-                              <div className="ka-cell-text">Total</div>
-                            </td>
-                          );
-                        }
-                        const totalCell = props.yearSum.find(
-                          (d) => d.year.toString() === column.key,
-                        );
-                        return (
-                          <td key={column.key} className="ka-cell">
-                            <div className="ka-cell-text">
-                              {totalCell && DATA_NUMBER_FORMAT(totalCell.value)}
-                            </div>
-                          </td>
-                        );
-                      }),
-                  },
-                }}
-              />
+
+        {/* Multiple indicators table */}
+        {tableData &&
+          tableData.length > 1 &&
+          tableData.map((data) => (
+            <div key={data.indicatorId} className="my-4">
+              <IndicatorTable data={data} />
             </div>
           ))}
+
+        {/* Single indicator table */}
+        {tableData && tableData.length === 1 && <IndicatorTable data={tableData[0]} />}
       </div>
     </>
   );

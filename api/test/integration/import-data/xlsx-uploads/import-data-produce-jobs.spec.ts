@@ -5,8 +5,8 @@ import { ImportDataModule } from 'modules/import-data/import-data.module';
 import { getQueueToken } from '@nestjs/bull';
 import { importQueueName } from 'modules/import-data/workers/import-data.producer';
 import { ImportDataService } from 'modules/import-data/import-data.service';
-import { TasksRepository } from '../../../../src/modules/tasks/tasks.repository';
-import { Task } from '../../../../src/modules/tasks/task.entity';
+import { TasksRepository } from 'modules/tasks/tasks.repository';
+import { Task } from 'modules/tasks/task.entity';
 
 // TODO: Update tests below once auth is done
 describe('XLSX Upload Feature Job Producer Tests', () => {
@@ -62,7 +62,9 @@ describe('XLSX Upload Feature Job Producer Tests', () => {
       await importDataService.loadXlsxFile(userId, fileData);
     } catch ({ message }) {
       const tasks: Task[] | undefined = await taskRepository.find();
-      expect(message).toEqual('File: filename could not have been loaded');
+      expect(message).toEqual(
+        'File: filename could not have been loaded. Please try again later or contact the administrator',
+      );
       expect(tasks).toEqual([]);
     }
   });

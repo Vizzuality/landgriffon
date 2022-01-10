@@ -66,27 +66,29 @@ export class TasksService extends AppBaseService<
     taskId: string;
     newStatus: TASK_STATUS;
     newData?: Record<string, any>;
-    newErrors?: Record<string, any>;
+    newErrors?: Error;
   }): Promise<Task> {
     /**
      * @debt
      * TypeORM does not provide a friendly API to handle json fields on a UPDATE statement
      * For now we are retrieving the event, update data withing the API and save it back
-     * Investigate how we could improve this
+     *
+     * @todo: Make this work nicely in distributed systems.
+     *
      */
     const { taskId, newStatus, newData, newErrors } = updateTask;
     const task: Task | undefined = await this.taskRepository.findOne(taskId);
     if (!task) {
       throw new NotFoundException(`Could not found Task with ID: ${taskId}`);
     }
-    const { data, errors } = task;
+    const { data } = task;
 
     if (newData) {
       task.data = { ...data, ...newData };
     }
 
     if (newErrors) {
-      task.errors = { ...errors, ...newErrors };
+      task.errors?.push({ [newErrors.name]: newErrors.message });
     }
 
     task.status = newStatus;

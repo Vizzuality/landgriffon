@@ -25,7 +25,7 @@ export class ImportDataConsumer {
       {
         taskId: job.data.taskId,
         newStatus: TASK_STATUS.FAILED,
-        newErrors: { [err.name]: err.message },
+        newErrors: err,
       },
     );
     this.logger.error(

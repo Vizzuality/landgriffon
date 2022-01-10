@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiOkResponse,
@@ -55,12 +56,13 @@ export class AuthenticationController {
   @ApiOperation({ description: 'Sign up for an user account.' })
   @ApiCreatedResponse({ description: 'User registered successfully' })
   @ApiBadRequestResponse()
+  @ApiConflictResponse({ description: 'Email already exists.' })
   @ApiForbiddenResponse()
   async signUp(
     @Request() _req: Request,
-    @Body(ValidationPipe) signupDto: SignUpDto,
+    @Body(ValidationPipe) signUpDto: SignUpDto,
   ): Promise<void> {
-    await this.authenticationService.createUser(signupDto);
+    await this.authenticationService.createUser(signUpDto);
   }
 
   @Get('validate-account/:sub/:validationToken')

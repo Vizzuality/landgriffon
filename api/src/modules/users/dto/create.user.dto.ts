@@ -1,8 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, MaxLength } from 'class-validator';
+import { IsEmail, IsOptional, MaxLength, Validate } from 'class-validator';
+import { PasswordValidation } from '../../../decorators/password-validator.decorator';
 
 export class CreateUserDTO {
   @ApiProperty()
+  @IsEmail()
   email!: string;
 
   @ApiPropertyOptional()
@@ -29,6 +31,7 @@ export class CreateUserDTO {
    * byte count of the chosen passphrase is at most 72.
    */
   @MaxLength(18)
+  @Validate(PasswordValidation)
   password!: string;
 
   @ApiPropertyOptional()

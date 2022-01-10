@@ -5,6 +5,7 @@ import { AppModule } from 'app.module';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
+import { E2E_CONFIG } from '../../e2e.config';
 
 /**
  * Tests for the AdminRegionsModule.
@@ -13,6 +14,7 @@ import { AdminRegionRepository } from 'modules/admin-regions/admin-region.reposi
 describe('AdminRegionsModule (e2e)', () => {
   let app: INestApplication;
   let adminRegionRepository: AdminRegionRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -32,6 +34,16 @@ describe('AdminRegionsModule (e2e)', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -46,6 +58,7 @@ describe('AdminRegionsModule (e2e)', () => {
     test('Create a admin region should be successful (happy case)', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/admin-regions')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           name: 'test admin region',
         })
@@ -66,6 +79,7 @@ describe('AdminRegionsModule (e2e)', () => {
   test('Create a admin region without the required fields should fail with a 400 error', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/admin-regions')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.BAD_REQUEST);
 
@@ -89,6 +103,7 @@ describe('AdminRegionsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/admin-regions/${adminRegion.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           name: 'updated test admin region',
         })
@@ -108,6 +123,7 @@ describe('AdminRegionsModule (e2e)', () => {
 
       await request(app.getHttpServer())
         .delete(`/api/v1/admin-regions/${adminRegion.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -125,6 +141,7 @@ describe('AdminRegionsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/admin-regions`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -140,6 +157,7 @@ describe('AdminRegionsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/admin-regions/${adminRegion.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 

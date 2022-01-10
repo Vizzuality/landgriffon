@@ -10,6 +10,7 @@ import {
   createIndicatorCoefficient,
   createIndicatorSource,
 } from '../../entity-mocks';
+import { E2E_CONFIG } from '../../e2e.config';
 
 /**
  * Tests for the IndicatorCoefficientsModule.
@@ -18,6 +19,7 @@ import {
 describe('IndicatorCoefficientsModule (e2e)', () => {
   let app: INestApplication;
   let indicatorCoefficientRepository: IndicatorCoefficientRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -38,6 +40,15 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
       }),
     );
     await app.init();
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -54,6 +65,7 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .post('/api/v1/indicator-coefficients')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           indicatorSourceId: indicatorSource.id,
           year: 2000,
@@ -74,6 +86,7 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
   test('Create a indicator coefficient without the required fields should fail with a 400 error', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/indicator-coefficients')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.BAD_REQUEST);
 
@@ -94,6 +107,7 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/indicator-coefficients/${indicatorCoefficient.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           year: 2001,
         })
@@ -110,6 +124,7 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
 
       await request(app.getHttpServer())
         .delete(`/api/v1/indicator-coefficients/${indicatorCoefficient.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -126,6 +141,7 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/indicator-coefficients`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -140,6 +156,7 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/indicator-coefficients/${indicatorCoefficient.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 

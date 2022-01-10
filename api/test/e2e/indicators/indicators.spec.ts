@@ -5,6 +5,7 @@ import { AppModule } from 'app.module';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { IndicatorsModule } from 'modules/indicators/indicators.module';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
+import { E2E_CONFIG } from '../../e2e.config';
 
 /**
  * Tests for the IndicatorsModule.
@@ -13,6 +14,7 @@ import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 describe('IndicatorsModule (e2e)', () => {
   let app: INestApplication;
   let indicatorRepository: IndicatorRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -31,6 +33,16 @@ describe('IndicatorsModule (e2e)', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -45,6 +57,7 @@ describe('IndicatorsModule (e2e)', () => {
     test('Create an indicator should be successful (happy case)', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/indicators')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           name: 'test indicator',
         })
@@ -65,6 +78,7 @@ describe('IndicatorsModule (e2e)', () => {
   test('Create an indicator without the required fields should fail with a 400 error', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/indicators')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.BAD_REQUEST);
 
@@ -88,6 +102,7 @@ describe('IndicatorsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/indicators/${indicator.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           name: 'updated test indicator',
         })
@@ -107,6 +122,8 @@ describe('IndicatorsModule (e2e)', () => {
 
       await request(app.getHttpServer())
         .delete(`/api/v1/indicators/${indicator.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+
         .send()
         .expect(HttpStatus.OK);
 
@@ -122,6 +139,7 @@ describe('IndicatorsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/indicators`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -137,6 +155,7 @@ describe('IndicatorsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/indicators/${indicator.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 

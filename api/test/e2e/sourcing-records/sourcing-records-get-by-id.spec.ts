@@ -10,10 +10,12 @@ import {
   createSourcingRecord,
 } from '../../entity-mocks';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { E2E_CONFIG } from '../../e2e.config';
 
 describe('Sourcing records - Get by id', () => {
   let app: INestApplication;
   let sourcingRecordRepository: SourcingRecordRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -33,6 +35,16 @@ describe('Sourcing records - Get by id', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -48,6 +60,7 @@ describe('Sourcing records - Get by id', () => {
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/sourcing-records/${sourcingRecord.id}`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.OK);
 
@@ -69,6 +82,7 @@ describe('Sourcing records - Get by id', () => {
       .get(
         `/api/v1/sourcing-records/${sourcingRecord.id}?include=sourcingLocation`,
       )
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.OK);
 

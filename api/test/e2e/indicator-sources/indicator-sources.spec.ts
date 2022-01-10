@@ -6,6 +6,7 @@ import { IndicatorSource } from 'modules/indicator-sources/indicator-source.enti
 import { IndicatorSourcesModule } from 'modules/indicator-sources/indicator-sources.module';
 import { IndicatorSourceRepository } from 'modules/indicator-sources/indicator-source.repository';
 import { createIndicatorSource } from '../../entity-mocks';
+import { E2E_CONFIG } from '../../e2e.config';
 
 /**
  * Tests for the IndicatorSourcesModule.
@@ -14,6 +15,7 @@ import { createIndicatorSource } from '../../entity-mocks';
 describe('IndicatorSourcesModule (e2e)', () => {
   let app: INestApplication;
   let indicatorSourceRepository: IndicatorSourceRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -33,6 +35,16 @@ describe('IndicatorSourcesModule (e2e)', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -47,6 +59,7 @@ describe('IndicatorSourcesModule (e2e)', () => {
     test('Create a indicator source should be successful (happy case)', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/indicator-sources')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           title: 'test indicator source',
         })
@@ -67,6 +80,7 @@ describe('IndicatorSourcesModule (e2e)', () => {
   test('Create a indicator source without the required fields should fail with a 400 error', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/indicator-sources')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.BAD_REQUEST);
 
@@ -88,6 +102,7 @@ describe('IndicatorSourcesModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/indicator-sources/${indicatorSource.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           title: 'updated test indicator source',
         })
@@ -105,6 +120,7 @@ describe('IndicatorSourcesModule (e2e)', () => {
 
       await request(app.getHttpServer())
         .delete(`/api/v1/indicator-sources/${indicatorSource.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -120,6 +136,7 @@ describe('IndicatorSourcesModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/indicator-sources`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -133,6 +150,7 @@ describe('IndicatorSourcesModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/indicator-sources/${indicatorSource.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 

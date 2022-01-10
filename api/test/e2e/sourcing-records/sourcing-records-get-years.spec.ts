@@ -5,10 +5,12 @@ import { AppModule } from 'app.module';
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
 import { createSourcingRecord } from '../../entity-mocks';
+import { E2E_CONFIG } from '../../e2e.config';
 
 describe('Sourcing records - Get years', () => {
   let app: INestApplication;
   let sourcingRecordRepository: SourcingRecordRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -28,6 +30,16 @@ describe('Sourcing records - Get years', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -48,6 +60,7 @@ describe('Sourcing records - Get years', () => {
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/sourcing-records/years`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.OK);
 
@@ -57,6 +70,7 @@ describe('Sourcing records - Get years', () => {
   test('Get years from sourcing records should be successful and return an empty array if there are no sourcing records', async () => {
     const response = await request(app.getHttpServer())
       .get(`/api/v1/sourcing-records/years`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.OK);
 

@@ -7,10 +7,12 @@ import { MaterialsModule } from 'modules/materials/materials.module';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { createMaterial } from '../../entity-mocks';
 import { expectedJSONAPIAttributes } from './config';
+import { E2E_CONFIG } from '../../e2e.config';
 
 describe('Materials - Update', () => {
   let app: INestApplication;
   let materialRepository: MaterialRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -29,6 +31,16 @@ describe('Materials - Update', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -44,6 +56,7 @@ describe('Materials - Update', () => {
 
     const response = await request(app.getHttpServer())
       .patch(`/api/v1/materials/${material.id}`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send({
         name: 'updated test material',
       })
@@ -59,6 +72,7 @@ describe('Materials - Update', () => {
 
     const responseOne = await request(app.getHttpServer())
       .patch(`/api/v1/materials/${materialOne.id}`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send({
         parentId: materialTwo.id,
       })
@@ -69,6 +83,7 @@ describe('Materials - Update', () => {
 
     const responseTwo = await request(app.getHttpServer())
       .patch(`/api/v1/materials/${materialOne.id}`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send({
         parentId: null,
       })

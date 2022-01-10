@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
@@ -28,6 +28,7 @@ import {
 } from './mocks/h3-fixtures';
 import { riskMapCalculationResults } from './mocks/h3-risk-map-calculation-results';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
+import { E2E_CONFIG } from '../../e2e.config';
 
 /**
  * Tests for the H3DataModule.
@@ -45,6 +46,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
   let indicatorRepository: IndicatorRepository;
   let unitRepository: UnitRepository;
   let unitConversionRepository: UnitConversionRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -73,6 +75,16 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -98,9 +110,9 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
   describe('Missing input values', () => {
     test('When I get a calculated H3 Risk Map without any of the required parameters, then I should get a proper error message', async () => {
-      const response = await request(app.getHttpServer()).get(
-        `/api/v1/h3/map/risk`,
-      );
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/h3/map/risk`)
+        .set('Authorization', `Bearer ${jwtToken}`);
       expect(response.body.errors[0].meta.rawError.response.message).toEqual([
         'indicatorId should not be empty',
         'indicatorId must be a UUID',
@@ -119,6 +131,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/h3/map/risk`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           materialId: material.id,
           resolution: 1,
@@ -139,6 +152,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/h3/map/risk`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           indicatorId: indicator.id,
           materialId: material.id,
@@ -158,6 +172,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/h3/map/risk`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           indicatorId: indicator.id,
           year: 2020,
@@ -178,6 +193,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/h3/map/risk`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           indicatorId: indicator.id,
           year: 2020,
@@ -201,6 +217,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       });
       const response = await request(app.getHttpServer())
         .get(`/api/v1/h3/map/risk`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           indicatorId: indicator.id,
           resolution: 1,
@@ -231,6 +248,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/h3/map/risk`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           materialId: material.id,
           indicatorId: indicator.id,
@@ -276,6 +294,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/h3/map/risk`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           materialId: material.id,
           indicatorId: indicator.id,
@@ -307,6 +326,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -340,6 +360,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
     const responseRes6 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -349,6 +370,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
     const responseRes3 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -416,6 +438,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
     const responseRes6 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         indicatorId: indicator.id,
         year: 2000,
@@ -477,6 +500,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
     const responseRes6 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -486,6 +510,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
     const responseRes3 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -536,6 +561,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
     const responseRes6 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -545,6 +571,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
     const responseRes3 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -599,6 +626,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
     const responseRes6 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -608,6 +636,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
     const responseRes3 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -650,6 +679,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
     const responseRes6 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -659,6 +689,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
     const responseRes3 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -699,6 +730,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         indicatorId: indicator.id,
         year: 2020,
@@ -733,6 +765,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         indicatorId: indicator.id,
         year: 2020,

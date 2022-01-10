@@ -7,10 +7,12 @@ import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { createSupplier } from '../../entity-mocks';
 import { expectedJSONAPIAttributes } from './config';
+import { E2E_CONFIG } from '../../e2e.config';
 
 describe('Suppliers - Update', () => {
   let app: INestApplication;
   let supplierRepository: SupplierRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -29,6 +31,15 @@ describe('Suppliers - Update', () => {
       }),
     );
     await app.init();
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -44,6 +55,7 @@ describe('Suppliers - Update', () => {
 
     const response = await request(app.getHttpServer())
       .patch(`/api/v1/suppliers/${supplier.id}`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send({
         name: 'updated test supplier',
       })
@@ -59,6 +71,7 @@ describe('Suppliers - Update', () => {
 
     const responseOne = await request(app.getHttpServer())
       .patch(`/api/v1/suppliers/${supplierOne.id}`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send({
         parentId: supplierTwo.id,
       })
@@ -69,6 +82,7 @@ describe('Suppliers - Update', () => {
 
     const responseTwo = await request(app.getHttpServer())
       .patch(`/api/v1/suppliers/${supplierOne.id}`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send({
         parentId: null,
       })

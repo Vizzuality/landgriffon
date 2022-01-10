@@ -1,9 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { MaterialRepository } from 'modules/materials/material.repository';
+import { readdir } from 'fs/promises';
 import * as config from 'config';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
@@ -36,7 +39,7 @@ import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.servic
 import { h3BasicFixture } from '../../../e2e/h3-data/mocks/h3-fixtures';
 import { SourcingDataImportService } from 'modules/import-data/sourcing-data/sourcing-data-import.service';
 import { FileService } from 'modules/import-data/file.service';
-
+import { E2E_CONFIG } from '../../../e2e.config'
 let tablesToDrop: string[] = [];
 
 let missingDataFallbackPolicy: string = 'error';

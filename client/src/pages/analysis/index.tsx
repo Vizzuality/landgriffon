@@ -49,8 +49,8 @@ const AnalysisPage: React.FC = () => {
       <Head>
         <title>Analysis - Landgriffon</title>
       </Head>
-      <main className="flex-1 flex">
-        <div className="flex-1 flex h-screen-minus-header lg:h-screen">
+      <main className="flex-1">
+        <div className="lg:h-screen">
           <AnalysisVisualizationNoSSR />
 
           {/* Analysis content */}

@@ -54,7 +54,7 @@ const AnalysisPage: React.FC = () => {
           <AnalysisVisualizationNoSSR />
 
           {/* Analysis content */}
-          <section className="relative hidden lg:block lg:flex-shrink-0 lg:order-first">
+          <section className="fixed h-full top-0 hidden lg:block lg:flex-shrink-0 lg:order-first z-20">
             <Transition
               className="h-full relative flex flex-col border-r border-gray-200 bg-white p-6 w-96 overflow-x-hidden"
               show={!isSidebarCollapsed}

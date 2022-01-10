@@ -87,14 +87,15 @@ export class JobEventsService extends AppBaseService<
       );
     }
     const { data, errors } = jobEvent;
-    jobEvent.data = { ...data, ...newData };
-    jobEvent.status = newStatus;
+
+    if (newData) {
+      jobEvent.data = { ...data, ...newData };
+    }
 
     if (newErrors) {
       jobEvent.errors = { ...errors, ...newErrors };
     }
 
-    jobEvent.data = { ...data, ...newData };
     jobEvent.status = newStatus;
     await jobEvent.save();
   }

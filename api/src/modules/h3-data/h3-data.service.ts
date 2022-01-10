@@ -167,14 +167,19 @@ export class H3DataService {
     const availableIndicatorYears: number[] =
       await this.getAvailableYearsForH3IndicatorData(indicatorId);
 
-    const indicatorDataYear: number | undefined =
+    let indicatorDataYear: number | undefined =
       availableIndicatorYears.includes(year)
         ? year
         : availableIndicatorYears.find((el: number) => el < year);
 
     if (!indicatorDataYear)
+      indicatorDataYear = availableIndicatorYears
+        .reverse()
+        .find((el) => el > year);
+
+    if (!indicatorDataYear)
       throw new NotFoundException(
-        `There is no H3 Data registered for Indicator with ID ${indicatorId} for the year ${year} or any year before ${year}`,
+        `There is no H3 Data registered for Indicator with ID ${indicatorId} for year ${year} or any other year`,
       );
     const indicatorH3Data: H3Data | undefined =
       await this.h3DataRepository.findOne({
@@ -192,14 +197,19 @@ export class H3DataService {
         MATERIAL_TO_H3_TYPE.HARVEST,
       );
 
-    const harvestDataYear: number | undefined =
+    let harvestDataYear: number | undefined =
       availableHarvestDataYears.includes(year)
         ? year
         : availableHarvestDataYears.find((el: number) => el < year);
 
     if (!harvestDataYear)
+      harvestDataYear = availableHarvestDataYears
+        .reverse()
+        .find((el) => el > year);
+
+    if (!harvestDataYear)
       throw new NotFoundException(
-        `There is no H3 Harvest data registered for Material with ID ${materialId} for the year ${year} or any year before ${year}`,
+        `There is no H3 Harvest data registered for Material with ID ${materialId} for year ${year} or any other year`,
       );
 
     const harvestMaterialH3Data: H3Data | undefined =
@@ -220,14 +230,19 @@ export class H3DataService {
         MATERIAL_TO_H3_TYPE.PRODUCER,
       );
 
-    const producerDataYear: number | undefined =
+    let producerDataYear: number | undefined =
       availableProducerDataYears.includes(year)
         ? year
         : availableProducerDataYears.find((el: number) => el < year);
 
     if (!producerDataYear)
+      producerDataYear = availableProducerDataYears
+        .reverse()
+        .find((el) => el > year);
+
+    if (!producerDataYear)
       throw new NotFoundException(
-        `There is no H3 Producer data registered for Material with ID ${materialId} for the year ${year} or any year before ${year}`,
+        `There is no H3 Producer data registered for Material with ID ${materialId} for year ${year} or any other year`,
       );
 
     const producerMaterialH3Data: H3Data | undefined =

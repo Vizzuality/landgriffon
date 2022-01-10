@@ -208,7 +208,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
           materialId: material.id,
         });
       expect(response.body.errors[0].title).toEqual(
-        `There is no H3 Data registered for Indicator with ID ${indicator.id} for the year 2020 or any year before 2020`,
+        `There is no H3 Data registered for Indicator with ID ${indicator.id} for year 2020 or any other year`,
       );
     });
 
@@ -239,7 +239,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         });
 
       expect(response.body.errors[0].title).toEqual(
-        `There is no H3 Harvest data registered for Material with ID ${material.id} for the year 2020 or any year before 2020`,
+        `There is no H3 Harvest data registered for Material with ID ${material.id} for year 2020 or any other year`,
       );
     });
 
@@ -284,39 +284,9 @@ describe('H3 Data Module (e2e) - Risk map', () => {
         });
 
       expect(response.body.errors[0].title).toEqual(
-        `There is no H3 Producer data registered for Material with ID ${material.id} for the year 2020 or any year before 2020`,
+        `There is no H3 Producer data registered for Material with ID ${material.id} for year 2020 or any other year`,
       );
     });
-  });
-
-  test('When I get a calculated H3 Water Risk Map with the necessary input values and there is H3 data, but only for the years after the requested one, I should get a proper error message', async () => {
-    const { material, indicator } = await createWorldForRiskMapGeneration({
-      indicatorType: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
-      fakeTable: 'fakeMaterialTable',
-      fakeColumn: 'fakeMaterialColumn',
-      year: 2010,
-    });
-
-    await h3DataMock({
-      h3TableName: 'fakeIndicatorTable',
-      h3ColumnName: 'fakeIndicatorColumn',
-      additionalH3Data: h3IndicatorExampleDataFixture,
-      indicatorId: indicator.id,
-      year: 2005,
-    });
-
-    const response = await request(app.getHttpServer())
-      .get(`/api/v1/h3/map/risk`)
-      .query({
-        indicatorId: indicator.id,
-        year: 1999,
-        materialId: material.id,
-        resolution: 6,
-      });
-
-    expect(response.body.errors[0].title).toEqual(
-      `There is no H3 Data registered for Indicator with ID ${indicator.id} for the year 1999 or any year before 1999`,
-    );
   });
 
   test('When I get a calculated H3 Water Risk Map with the necessary input values, then I should get the h3 data (happy case). H3 data for the requested year is available, calculations are based on that data', async () => {
@@ -334,15 +304,6 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       indicatorId: indicator.id,
       year: 2020,
     });
-
-    const responseRes6 = await request(app.getHttpServer())
-      .get(`/api/v1/h3/map/risk`)
-      .query({
-        indicatorId: indicator.id,
-        year: 2020,
-        materialId: material.id,
-        resolution: 6,
-      });
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/risk`)
@@ -406,6 +367,67 @@ describe('H3 Data Module (e2e) - Risk map', () => {
     );
     expect(responseRes3.body.metadata).toEqual(
       riskMapCalculationResults.waterRiskRes3Quantiles,
+    );
+  });
+
+  test('H3 Water Risk Map happy case - h3 data is not available the requested year or for any lower year, h3 data for nearest higher year is used for calculations', async () => {
+    const { material, indicator } = await createWorldForRiskMapGeneration({
+      indicatorType: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+      fakeTable: 'fakeMaterialTable',
+      fakeColumn: 'fakeMaterialColumn',
+      year: 2010,
+    });
+
+    await h3DataMock({
+      h3TableName: 'fakeIndicatorTable',
+      h3ColumnName: 'fakeIndicatorColumn',
+      additionalH3Data: h3IndicatorExampleDataFixture,
+      indicatorId: indicator.id,
+      year: 2005,
+    });
+
+    // Creating extra fake h3 tables for nearest future years
+
+    await h3DataMock({
+      h3TableName: 'fakeIndicatorTable2003',
+      h3ColumnName: 'fakeIndicatorColumn2003',
+      additionalH3Data: h3IndicatorExampleDataFixture,
+      indicatorId: indicator.id,
+      year: 2003,
+    });
+
+    const laterH3MaterialData = await h3DataMock({
+      h3TableName: 'fakeMaterialTable2002',
+      h3ColumnName: 'fakeMaterialColumn2002',
+      additionalH3Data: h3MaterialExampleDataFixture,
+      year: 2002,
+    });
+
+    await createMaterialToH3(
+      material.id,
+      laterH3MaterialData.id,
+      MATERIAL_TO_H3_TYPE.PRODUCER,
+    );
+    await createMaterialToH3(
+      material.id,
+      laterH3MaterialData.id,
+      MATERIAL_TO_H3_TYPE.HARVEST,
+    );
+
+    const responseRes6 = await request(app.getHttpServer())
+      .get(`/api/v1/h3/map/risk`)
+      .query({
+        indicatorId: indicator.id,
+        year: 2000,
+        materialId: material.id,
+        resolution: 6,
+      });
+
+    expect(responseRes6.body.data).toEqual(
+      expect.arrayContaining(riskMapCalculationResults.waterRiskRes6Values),
+    );
+    expect(responseRes6.body.metadata).toEqual(
+      riskMapCalculationResults.waterRiskRes6Quantiles2002,
     );
   });
 

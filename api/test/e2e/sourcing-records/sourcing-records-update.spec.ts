@@ -6,10 +6,12 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
 import { createSourcingRecord } from '../../entity-mocks';
+import { E2E_CONFIG } from '../../e2e.config';
 
 describe('Sourcing records - Update', () => {
   let app: INestApplication;
   let sourcingRecordRepository: SourcingRecordRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -29,6 +31,16 @@ describe('Sourcing records - Update', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -44,6 +56,7 @@ describe('Sourcing records - Update', () => {
 
     const response = await request(app.getHttpServer())
       .patch(`/api/v1/sourcing-records/${sourcingRecord.id}`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send({
         tonnage: 5678,
       })

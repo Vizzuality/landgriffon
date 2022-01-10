@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   forwardRef,
   Inject,
   Injectable,
@@ -127,6 +128,8 @@ export class AuthenticationService {
     user.password = await hash(signupDto.password, user.salt);
     user.email = signupDto.email;
     user.isActive = !config.get('auth.requireUserAccountActivation');
+
+    await this.checkEmail(user.email);
     const newUser: Omit<User, 'password' | 'salt' | 'isActive' | 'isDeleted'> =
       UsersService.getSanitizedUserMetadata(
         await this.userRepository.save(user),
@@ -259,5 +262,12 @@ export class AuthenticationService {
         },
       ),
     };
+  }
+
+  private async checkEmail(email: string): Promise<void> {
+    const user: User | undefined = await this.userRepository.findByEmail(email);
+    if (user) {
+      throw new ConflictException('Email already exists.');
+    }
   }
 }

@@ -5,6 +5,7 @@ import { AppModule } from 'app.module';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { SourcingLocationGroupsModule } from 'modules/sourcing-location-groups/sourcing-location-groups.module';
 import { SourcingLocationGroupRepository } from 'modules/sourcing-location-groups/sourcing-location-group.repository';
+import { E2E_CONFIG } from '../../e2e.config';
 
 /**
  * Tests for the SourcingLocationGroupsModule.
@@ -13,6 +14,7 @@ import { SourcingLocationGroupRepository } from 'modules/sourcing-location-group
 describe('SourcingLocationGroupsModule (e2e)', () => {
   let app: INestApplication;
   let sourcingRecordGroupRepository: SourcingLocationGroupRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -33,6 +35,16 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -47,6 +59,7 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
     test('Create a sourcing location group should be successful (happy case)', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/sourcing-location-groups')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           title: 'sourcing location group test name',
         })
@@ -67,6 +80,7 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
     test('Create a sourcing location group without the required fields should fail with a 400 error', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/sourcing-location-groups')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.BAD_REQUEST);
 
@@ -92,6 +106,7 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/sourcing-location-groups/${sourcingRecordGroup.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           title: 'Update sourcing location group title',
         })
@@ -112,6 +127,7 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
 
       await request(app.getHttpServer())
         .delete(`/api/v1/sourcing-location-groups/${sourcingRecordGroup.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -130,6 +146,7 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/sourcing-location-groups`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -146,6 +163,7 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/sourcing-location-groups/${sourcingRecordGroup.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 

@@ -40,11 +40,11 @@ describe('UsersModule (e2e)', () => {
   let apiEventsService: ApiEventsService;
   let userRepository: UserRepository;
 
-  const aNewPassword = faker.datatype.uuid();
+  const aNewPassword = 'aNewPassword123!';
 
   const signUpDto: SignUpDto = {
     email: `${v4()}@example.com`,
-    password: v4(),
+    password: 'Password123!',
     displayName: `${faker.name.firstName()} ${faker.name.lastName()}`,
   };
 
@@ -93,14 +93,10 @@ describe('UsersModule (e2e)', () => {
     });
 
     test('A user should not be able to create an account using an email address already in use', async () => {
-      /**
-       * We should handle this explicitly in the API - until then, this should
-       * throw a 500 error.
-       */
       await request(app.getHttpServer())
         .post('/auth/sign-up')
         .send(signUpDto)
-        .expect(HttpStatus.INTERNAL_SERVER_ERROR);
+        .expect(HttpStatus.CONFLICT);
     });
 
     test('A user should not be able to log in until their account has been validated', async () => {
@@ -165,6 +161,43 @@ describe('UsersModule (e2e)', () => {
     });
   });
 
+  describe('Users - User creation', () => {
+    let jwtToken: string;
+
+    const newUserDto: SignUpDto = {
+      email: `${v4()}@example.com`,
+      password: 'Example123!',
+      displayName: `${faker.name.firstName()} ${faker.name.lastName()}`,
+      lname: faker.name.firstName(),
+      fname: faker.name.lastName(),
+    };
+
+    beforeAll(async () => {
+      jwtToken = await request(app.getHttpServer())
+        .post('/auth/sign-in')
+        .send(loginDto)
+        .expect(HttpStatus.CREATED)
+        .then((response: Response) => response.body.accessToken);
+      Logger.debug(`jwtToken: ${jwtToken}`);
+    });
+
+    test('A user should be able to create new users', async () => {
+      await request(app.getHttpServer())
+        .post('/api/v1/users')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send(newUserDto)
+        .expect(HttpStatus.CREATED);
+    });
+
+    test('A user should not be able to create users using an email address already in use', async () => {
+      await request(app.getHttpServer())
+        .post('/api/v1/users')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send(newUserDto)
+        .expect(HttpStatus.CONFLICT);
+    });
+  });
+
   describe('Users - metadata', () => {
     let jwtToken: string;
 
@@ -211,7 +244,7 @@ describe('UsersModule (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           ...E2E_CONFIG.users.updated.bb(),
-          password: faker.random.alphaNumeric(),
+          password: 'newPassword123!!',
         })
         .expect(HttpStatus.FORBIDDEN);
     });

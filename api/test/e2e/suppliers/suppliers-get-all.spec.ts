@@ -7,10 +7,12 @@ import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { createSupplier } from '../../entity-mocks';
 import { expectedJSONAPIAttributes } from './config';
+import { E2E_CONFIG } from '../../e2e.config';
 
 describe('Suppliers - Get all', () => {
   let app: INestApplication;
   let supplierRepository: SupplierRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -29,6 +31,16 @@ describe('Suppliers - Get all', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -44,6 +56,7 @@ describe('Suppliers - Get all', () => {
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/suppliers`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.OK);
 
@@ -67,6 +80,7 @@ describe('Suppliers - Get all', () => {
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/suppliers`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         filter: {
           status: SUPPLIER_STATUS.ACTIVE,
@@ -89,6 +103,7 @@ describe('Suppliers - Get all', () => {
 
     const responseOne = await request(app.getHttpServer())
       .get(`/api/v1/suppliers`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         page: {
           size: 3,
@@ -102,6 +117,7 @@ describe('Suppliers - Get all', () => {
 
     const responseTwo = await request(app.getHttpServer())
       .get(`/api/v1/suppliers`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         page: {
           size: 3,
@@ -126,6 +142,7 @@ describe('Suppliers - Get all', () => {
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/suppliers`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         include: 'children',
       })

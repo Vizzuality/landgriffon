@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -34,8 +35,11 @@ import {
 import { CreateSourcingLocationGroupDto } from 'modules/sourcing-location-groups/dto/create.sourcing-location-group.dto';
 import { UpdateSourcingLocationGroupDto } from 'modules/sourcing-location-groups/dto/update.sourcing-location-group.dto';
 import { PaginationMeta } from 'utils/app-base.service';
+import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller(`/api/v1/sourcing-location-groups`)
+@UseGuards(JwtAuthGuard)
 @ApiTags(sourcingLocationGroupResource.className)
 export class SourcingLocationGroupsController {
   constructor(

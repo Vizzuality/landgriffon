@@ -34,6 +34,7 @@ import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-reco
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { SourcingLocationGroupRepository } from 'modules/sourcing-location-groups/sourcing-location-group.repository';
 import { UnitRepository } from 'modules/units/unit.repository';
+import { E2E_CONFIG } from '../../e2e.config';
 
 describe('Impact Table and Charts test suite (e2e)', () => {
   let app: INestApplication;
@@ -48,6 +49,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
   let indicatorRepository: IndicatorRepository;
   let sourcingLocationGroupRepository: SourcingLocationGroupRepository;
   let unitRepositoruy: UnitRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -97,6 +99,16 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -120,6 +132,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
   test('When I query the API for an Impact Table but some of the required fields are missing then I should get a proper error message', async () => {
     const response = await request(app.getHttpServer())
       .get('/api/v1/impact/table')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body.errors[0].meta.rawError.response.message).toEqual([
@@ -138,6 +151,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     await createIndicatorRecord();
     const response = await request(app.getHttpServer())
       .get('/api/v1/impact/table')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         'indicatorIds[]': [uuidv4(), uuidv4(), uuidv4()],
         endYear: 1,
@@ -187,6 +201,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
 
     const response1 = await request(app.getHttpServer())
       .get('/api/v1/impact/table')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         'indicatorIds[]': [indicator.id],
         endYear: 2012,
@@ -201,6 +216,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
 
     const response2 = await request(app.getHttpServer())
       .get('/api/v1/impact/table')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         'indicatorIds[]': [indicator.id],
         endYear: 2012,
@@ -215,6 +231,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
 
     const response3 = await request(app.getHttpServer())
       .get('/api/v1/impact/table')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         'indicatorIds[]': [indicator.id],
         endYear: 2012,
@@ -228,6 +245,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     );
     const response4 = await request(app.getHttpServer())
       .get('/api/v1/impact/table')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         'indicatorIds[]': [indicator.id],
         endYear: 2012,
@@ -276,6 +294,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     }
     const response = await request(app.getHttpServer())
       .get('/api/v1/impact/table')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         'indicatorIds[]': [indicator.id],
         endYear: 2012,
@@ -331,6 +350,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     }
     const response = await request(app.getHttpServer())
       .get('/api/v1/impact/table')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         'indicatorIds[]': [indicator.id],
         endYear: 2012,

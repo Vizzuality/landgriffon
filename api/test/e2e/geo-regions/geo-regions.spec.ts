@@ -5,6 +5,7 @@ import { AppModule } from 'app.module';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { GeoRegionsModule } from 'modules/geo-regions/geo-regions.module';
 import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
+import { E2E_CONFIG } from '../../e2e.config';
 
 /**
  * Tests for the GeoRegionsModule.
@@ -13,6 +14,7 @@ import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
 describe('GeoRegionsModule (e2e)', () => {
   let app: INestApplication;
   let geoRegionRepository: GeoRegionRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -31,6 +33,16 @@ describe('GeoRegionsModule (e2e)', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -45,6 +57,7 @@ describe('GeoRegionsModule (e2e)', () => {
     test('Create a geo region should be successful (happy case)', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/geo-regions')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           name: 'test geo region',
         })
@@ -66,6 +79,7 @@ describe('GeoRegionsModule (e2e)', () => {
   test('Create a geo region without the required fields should fail with a 400 error', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/geo-regions')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.BAD_REQUEST);
 
@@ -89,6 +103,7 @@ describe('GeoRegionsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/geo-regions/${geoRegion.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           name: 'updated test geo region',
         })
@@ -108,6 +123,7 @@ describe('GeoRegionsModule (e2e)', () => {
 
       await request(app.getHttpServer())
         .delete(`/api/v1/geo-regions/${geoRegion.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -123,6 +139,7 @@ describe('GeoRegionsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/geo-regions`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -138,6 +155,7 @@ describe('GeoRegionsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/geo-regions/${geoRegion.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 

@@ -8,12 +8,14 @@ import { AdminRegionRepository } from 'modules/admin-regions/admin-region.reposi
 import { createH3Data, createAdminRegion } from '../../entity-mocks';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { expectedJSONAPIAttributes } from './config';
+import { E2E_CONFIG } from '../../e2e.config';
 
 //TODO: Allow these tests when feature fix is merged
 describe('AdminRegions - Get trees', () => {
   let app: INestApplication;
   let adminRegionRepository: AdminRegionRepository;
   let h3dataRepository: H3DataRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -35,6 +37,16 @@ describe('AdminRegions - Get trees', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
 
     await adminRegionRepository.delete({});
     await h3dataRepository.delete({});
@@ -66,6 +78,7 @@ describe('AdminRegions - Get trees', () => {
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/admin-regions/trees`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.OK);
 
@@ -98,6 +111,7 @@ describe('AdminRegions - Get trees', () => {
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/admin-regions/trees`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.OK);
 
@@ -146,6 +160,7 @@ describe('AdminRegions - Get trees', () => {
 
     const responseDepthZero = await request(app.getHttpServer())
       .get(`/api/v1/admin-regions/trees`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         depth: 0,
       })
@@ -161,6 +176,7 @@ describe('AdminRegions - Get trees', () => {
 
     const responseDepthOne = await request(app.getHttpServer())
       .get(`/api/v1/admin-regions/trees`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         depth: 1,
       })
@@ -194,6 +210,7 @@ describe('AdminRegions - Get trees', () => {
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/admin-regions/trees`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.OK);
 

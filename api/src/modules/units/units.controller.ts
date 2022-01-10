@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -31,8 +32,11 @@ import { Unit, unitResource } from 'modules/units/unit.entity';
 import { CreateUnitDto } from 'modules/units/dto/create.unit.dto';
 import { UpdateUnitDto } from 'modules/units/dto/update.unit.dto';
 import { PaginationMeta } from 'utils/app-base.service';
+import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller(`/api/v1/units`)
+@UseGuards(JwtAuthGuard)
 @ApiTags(unitResource.className)
 export class UnitsController {
   constructor(public readonly unitsService: UnitsService) {}

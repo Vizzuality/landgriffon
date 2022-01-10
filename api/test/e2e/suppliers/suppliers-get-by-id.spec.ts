@@ -6,10 +6,12 @@ import { Supplier } from 'modules/suppliers/supplier.entity';
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { expectedJSONAPIAttributes } from './config';
+import { E2E_CONFIG } from '../../e2e.config';
 
 describe('Suppliers - Get by id', () => {
   let app: INestApplication;
   let supplierRepository: SupplierRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -28,6 +30,16 @@ describe('Suppliers - Get by id', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -46,6 +58,7 @@ describe('Suppliers - Get by id', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/suppliers/${supplier.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 

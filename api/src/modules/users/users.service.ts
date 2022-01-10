@@ -175,4 +175,8 @@ export class UsersService extends AppBaseService<
       );
     }
   }
+
+  async createUser(createUserDTO: CreateUserDTO) {
+    return await this.authenticationService.createUser(createUserDTO);
+  }
 }

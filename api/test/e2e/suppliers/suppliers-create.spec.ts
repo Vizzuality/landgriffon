@@ -7,10 +7,12 @@ import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { createSupplier } from '../../entity-mocks';
 import { expectedJSONAPIAttributes } from './config';
 import { Supplier } from 'modules/suppliers/supplier.entity';
+import { E2E_CONFIG } from '../../e2e.config';
 
 describe('Suppliers - Create', () => {
   let app: INestApplication;
   let supplierRepository: SupplierRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -29,6 +31,16 @@ describe('Suppliers - Create', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -42,6 +54,7 @@ describe('Suppliers - Create', () => {
   test('Create a supplier should be successful (happy case)', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/suppliers')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send({
         name: 'test supplier',
       })
@@ -62,6 +75,7 @@ describe('Suppliers - Create', () => {
   test('Create a supplier without the required fields should fail with a 400 error', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/suppliers')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.BAD_REQUEST);
 
@@ -81,6 +95,7 @@ describe('Suppliers - Create', () => {
     test('Create a supplier without a parent should be successful', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/suppliers')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           name: 'test supplier',
         })
@@ -92,6 +107,7 @@ describe('Suppliers - Create', () => {
     test('Create a supplier with a parent id that does not exist should fail with a 400 error', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/suppliers')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           name: 'test supplier',
           parentId: 'abcdefg',
@@ -109,6 +125,7 @@ describe('Suppliers - Create', () => {
 
       const response = await request(app.getHttpServer())
         .post('/api/v1/suppliers')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           name: 'test supplier',
           parentId: supplier.id,

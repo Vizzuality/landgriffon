@@ -29,7 +29,7 @@ import { H3DataModule } from 'modules/h3-data/h3-data.module';
 import { HttpModule } from '@nestjs/axios';
 import { BullModule } from '@nestjs/bull';
 import { ImpactModule } from 'modules/impact/impact.module';
-import { JobEventsModule } from 'modules/job-events/job-events.module';
+import { TasksModule } from 'modules/tasks/tasks.module';
 import * as config from 'config';
 
 const redisConfig: any = config.get('redis');
@@ -67,7 +67,7 @@ const redisConfig: any = config.get('redis');
     H3DataModule,
     GeoCodingModule,
     ImpactModule,
-    JobEventsModule,
+    TasksModule,
   ],
   providers: [
     {

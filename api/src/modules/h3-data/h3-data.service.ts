@@ -175,7 +175,7 @@ export class H3DataService {
     if (!indicatorDataYear)
       indicatorDataYear = availableIndicatorYears
         .reverse()
-        .find((el) => el > year);
+        .find((el: number) => el > year);
 
     if (!indicatorDataYear)
       throw new NotFoundException(
@@ -205,7 +205,7 @@ export class H3DataService {
     if (!harvestDataYear)
       harvestDataYear = availableHarvestDataYears
         .reverse()
-        .find((el) => el > year);
+        .find((el: number) => el > year);
 
     if (!harvestDataYear)
       throw new NotFoundException(
@@ -238,7 +238,7 @@ export class H3DataService {
     if (!producerDataYear)
       producerDataYear = availableProducerDataYears
         .reverse()
-        .find((el) => el > year);
+        .find((el: number) => el > year);
 
     if (!producerDataYear)
       throw new NotFoundException(

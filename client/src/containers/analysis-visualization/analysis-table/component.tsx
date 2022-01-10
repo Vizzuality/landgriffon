@@ -10,6 +10,7 @@ import Button from 'components/button';
 import Loading from 'components/loading';
 import Table from 'components/table';
 import { ISummaryRowProps } from 'ka-table/props';
+import { DATA_NUMBER_FORMAT } from '../constants';
 
 type ITableData = ITableProps & {
   key?: string;
@@ -51,7 +52,7 @@ const AnalysisTable: React.FC = () => {
           id: `${indicatorId}-${rowIndex}`,
           material: row.name,
           ...row.values
-            .map(({ year, value }) => ({ [year as string]: value }))
+            .map(({ year, value }) => ({ [year as string]: DATA_NUMBER_FORMAT(value as number) }))
             .reduce((a, b) => ({ ...a, ...b })),
         })),
         yearSum,
@@ -97,10 +98,13 @@ const AnalysisTable: React.FC = () => {
                             </td>
                           );
                         }
+                        const totalCell = props.yearSum.find(
+                          (d) => d.year.toString() === column.key,
+                        );
                         return (
                           <td key={column.key} className="ka-cell">
                             <div className="ka-cell-text">
-                              {props.yearSum.find((d) => d.year.toString() === column.key).value}
+                              {totalCell && DATA_NUMBER_FORMAT(totalCell.value)}
                             </div>
                           </td>
                         );

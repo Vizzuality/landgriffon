@@ -8,3 +8,5 @@ export const COLOR_RAMPS: ColorRamps = {
 };
 
 export const NUMBER_FORMAT = format(',.1s');
+
+export const DATA_NUMBER_FORMAT = format(',.2r');

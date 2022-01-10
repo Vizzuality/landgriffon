@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { E2E_CONFIG } from '../../e2e.config';
@@ -58,7 +58,7 @@ describe('AppController (e2e)', () => {
           username: E2E_CONFIG.users.basic.aa.username,
           password: E2E_CONFIG.users.basic.aa.password,
         })
-        .expect(201);
+        .expect(HttpStatus.CREATED);
     });
 
     it('Fails to authenticate a user with an incorrect password', async () => {

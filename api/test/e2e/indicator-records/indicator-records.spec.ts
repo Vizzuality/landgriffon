@@ -12,6 +12,7 @@ import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-r
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { E2E_CONFIG } from '../../e2e.config';
 
 /**
  * Tests for the IndicatorRecordsModule.
@@ -20,6 +21,7 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 describe('IndicatorRecordsModule (e2e)', () => {
   let app: INestApplication;
   let indicatorRecordRepository: IndicatorRecordRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -39,6 +41,16 @@ describe('IndicatorRecordsModule (e2e)', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -55,6 +67,7 @@ describe('IndicatorRecordsModule (e2e)', () => {
       const indicator: Indicator = await createIndicator();
       const response = await request(app.getHttpServer())
         .post('/api/v1/indicator-records')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           value: 2000,
           indicatorId: indicator.id,
@@ -77,6 +90,7 @@ describe('IndicatorRecordsModule (e2e)', () => {
   test('Create a indicator records without the required fields should fail with a 400 error', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/indicator-records')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.BAD_REQUEST);
 
@@ -98,6 +112,7 @@ describe('IndicatorRecordsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/indicator-records/${indicatorRecord.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           value: 2001,
         })
@@ -113,6 +128,7 @@ describe('IndicatorRecordsModule (e2e)', () => {
 
       await request(app.getHttpServer())
         .delete(`/api/v1/indicator-records/${indicatorRecord.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -128,6 +144,7 @@ describe('IndicatorRecordsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get('/api/v1/indicator-records')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -141,6 +158,7 @@ describe('IndicatorRecordsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/indicator-records/${indicatorRecord.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 

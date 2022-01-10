@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
@@ -10,6 +10,7 @@ import { MaterialRepository } from 'modules/materials/material.repository';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { h3MaterialExampleDataFixture } from './mocks/h3-fixtures';
+import { E2E_CONFIG } from '../../e2e.config';
 
 /**
  * Tests for the H3DataModule.
@@ -23,6 +24,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
   const FAKE_UUID = '959dc56e-a782-441a-be36-1aaa617ed843';
   const fakeTable = 'faketable';
   const fakeColumn = 'fakecolumn';
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -45,6 +47,16 @@ describe('H3 Data Module (e2e) - Material map', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -59,18 +71,20 @@ describe('H3 Data Module (e2e) - Material map', () => {
   });
 
   test('When I query a material H3 with a non available resolution, then I should get a proper error message', async () => {
-    const response = await request(app.getHttpServer()).get(
-      `/api/v1/h3/map/material?materialId=${FAKE_UUID}&resolution=0`,
-    );
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/h3/map/material?materialId=${FAKE_UUID}&resolution=0`)
+      .set('Authorization', `Bearer ${jwtToken}`);
     expect(response.body.errors[0].meta.rawError.response.message[0]).toEqual(
       'Available resolutions: 1 to 6',
     );
   });
 
   test('When I query a material H3 data with a resolution value that is not a number, then I should get a proper error message', async () => {
-    const response = await request(app.getHttpServer()).get(
-      `/api/v1/h3/map/material?materialId=${FAKE_UUID}&resolution=definitelyNotANumber`,
-    );
+    const response = await request(app.getHttpServer())
+      .get(
+        `/api/v1/h3/map/material?materialId=${FAKE_UUID}&resolution=definitelyNotANumber`,
+      )
+      .set('Authorization', `Bearer ${jwtToken}`);
     expect(response.body.errors[0].meta.rawError.response.message[1]).toEqual(
       'resolution must be a number conforming to the specified constraints',
     );
@@ -80,6 +94,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
     const material = await createMaterial({ name: 'Material with no H3' });
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/material`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         materialId: material.id,
         resolution: 1,
@@ -95,6 +110,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
     const material = await createMaterial({ name: 'Material with no H3' });
     const response = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/material`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         materialId: material.id,
         resolution: 1,
@@ -108,9 +124,9 @@ describe('H3 Data Module (e2e) - Material map', () => {
 
   test('When I query a material H3 data with no resolution provided, then I should get a proper error message', async () => {
     const material = await createMaterial();
-    const response = await request(app.getHttpServer()).get(
-      `/api/v1/h3/map/material?materialId=${material.id}`,
-    );
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/h3/map/material?materialId=${material.id}`)
+      .set('Authorization', `Bearer ${jwtToken}`);
     expect(response.body.errors[0].meta.rawError.response.message[2]).toEqual(
       'resolution should not be empty',
     );
@@ -131,6 +147,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
     );
     const responseRes1 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/material`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         materialId: material.id,
         resolution: 1,
@@ -139,6 +156,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
 
     const responseRes3 = await request(app.getHttpServer())
       .get(`/api/v1/h3/map/material`)
+      .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         materialId: material.id,
         resolution: 3,

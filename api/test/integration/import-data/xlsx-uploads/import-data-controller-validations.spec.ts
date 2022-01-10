@@ -5,6 +5,7 @@ import { AppModule } from 'app.module';
 import { readdir } from 'fs/promises';
 import * as config from 'config';
 import { ImportDataModule } from 'modules/import-data/import-data.module';
+import { E2E_CONFIG } from '../../../e2e.config';
 
 jest.mock('config', () => {
   const config = jest.requireActual('config');
@@ -23,6 +24,7 @@ jest.mock('config', () => {
 
 describe('XLSX Upload Feature Validation Tests', () => {
   let app: INestApplication;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -38,6 +40,16 @@ describe('XLSX Upload Feature Validation Tests', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterAll(async () => {
@@ -47,6 +59,7 @@ describe('XLSX Upload Feature Validation Tests', () => {
   test('When a file is sent to the API and its size is too large then it should return a 413 "Payload Too Large" error', async () => {
     await request(app.getHttpServer())
       .post('/api/v1/import/sourcing-data')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .attach('file', __dirname + '/base-dataset.xlsx')
       .expect(HttpStatus.PAYLOAD_TOO_LARGE);
 
@@ -57,6 +70,7 @@ describe('XLSX Upload Feature Validation Tests', () => {
   test('When a file is not sent to the API then it should return a 400 code and the storage folder should be empty', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/import/sourcing-data')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .expect(HttpStatus.BAD_REQUEST);
     expect(response.body.errors[0].title).toEqual(
       'A .XLSX file must be provided as payload',

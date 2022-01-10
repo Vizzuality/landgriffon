@@ -38,5 +38,11 @@
   },
   "geolocation": {
     "gmapsApiKey": null
+  },
+  "password": {
+    "minLength": 6,
+    "includeNumerics": false,
+    "includeUpperCase": false,
+    "includeSpecialCharacters": false
   }
 }

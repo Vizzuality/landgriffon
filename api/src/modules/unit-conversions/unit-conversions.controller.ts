@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -33,8 +34,11 @@ import {
 import { CreateUnitConversionDto } from 'modules/unit-conversions/dto/create.unit-conversion.dto';
 import { UpdateUnitConversionDto } from 'modules/unit-conversions/dto/update.unit-conversion.dto';
 import { PaginationMeta } from 'utils/app-base.service';
+import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller(`/api/v1/unit-conversions`)
+@UseGuards(JwtAuthGuard)
 @ApiTags(unitConversionResource.className)
 export class UnitConversionsController {
   constructor(public readonly unitConversionsService: UnitConversionsService) {}

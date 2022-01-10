@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Patch,
+  Post,
   Request,
   UseGuards,
   ValidationPipe,
@@ -13,6 +14,7 @@ import { UsersService } from 'modules/users/users.service';
 
 import {
   ApiBearerAuth,
+  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
@@ -30,6 +32,7 @@ import {
 import { UpdateUserDTO } from 'modules/users/dto/update.user.dto';
 import { UpdateUserPasswordDTO } from 'modules/users/dto/update.user-password';
 import { PaginationMeta } from 'utils/app-base.service';
+import { CreateUserDTO } from './dto/create.user.dto';
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
@@ -66,6 +69,18 @@ export class UsersController {
       metadata: PaginationMeta | undefined;
     } = await this.service.findAllPaginated(fetchSpecification);
     return this.service.serialize(results.data, results.metadata);
+  }
+
+  @ApiOperation({ description: 'Create new user' })
+  @ApiCreatedResponse({ description: 'User created successfully' })
+  @ApiOkResponse({
+    type: User,
+  })
+  @Post()
+  async createUser(
+    @Body(new ValidationPipe()) createUserDTO: CreateUserDTO,
+  ): Promise<User> {
+    return this.service.serialize(await this.service.createUser(createUserDTO));
   }
 
   @ApiOperation({

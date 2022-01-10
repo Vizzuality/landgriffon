@@ -10,10 +10,12 @@ import {
   createSourcingLocation,
   createSourcingLocationGroup,
 } from '../../entity-mocks';
+import { E2E_CONFIG } from '../../e2e.config';
 
 describe('SourcingLocationsModule (e2e)', () => {
   let app: INestApplication;
   let sourcingLocationRepository: SourcingLocationRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -33,6 +35,16 @@ describe('SourcingLocationsModule (e2e)', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -54,6 +66,7 @@ describe('SourcingLocationsModule (e2e)', () => {
         .get(
           `/api/v1/sourcing-locations/${sourcingLocation.id}?include=sourcingLocationGroup`,
         )
+        .set('Authorization', `Bearer ${jwtToken}`)
         .expect(HttpStatus.OK);
 
       expect(response.body.data.attributes.sourcingLocationGroupId).toEqual(

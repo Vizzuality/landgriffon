@@ -9,6 +9,7 @@ import {
 import { ScenarioInterventionsModule } from 'modules/scenario-interventions/scenario-interventions.module';
 import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
 import { createScenarioIntervention } from '../../entity-mocks';
+import { E2E_CONFIG } from '../../e2e.config';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -22,6 +23,7 @@ const expectedJSONAPIAttributes: string[] = [
 describe('ScenarioInterventionsModule (e2e)', () => {
   let app: INestApplication;
   let scenarioInterventionRepository: ScenarioInterventionRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -42,6 +44,16 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -56,6 +68,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     test('Create a scenario intervention should be successful (happy case)', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           title: 'test scenario intervention',
         })
@@ -78,6 +91,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     test('Create a scenario intervention without the required fields should fail with a 400 error', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.BAD_REQUEST);
 
@@ -101,6 +115,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/scenario-interventions/${scenarioIntervention.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           title: 'updated test scenario intervention',
         })
@@ -121,6 +136,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       await request(app.getHttpServer())
         .delete(`/api/v1/scenario-interventions/${scenarioIntervention.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -137,6 +153,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/scenario-interventions`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -152,6 +169,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       const responseOne = await request(app.getHttpServer())
         .get(`/api/v1/scenario-interventions`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           page: {
             size: 3,
@@ -165,6 +183,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       const responseTwo = await request(app.getHttpServer())
         .get(`/api/v1/scenario-interventions`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           page: {
             size: 3,
@@ -196,6 +215,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/scenario-interventions`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           filter: {
             status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
@@ -220,6 +240,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/scenario-interventions/${scenarioIntervention.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 

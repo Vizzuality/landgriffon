@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -38,8 +39,10 @@ import { UpdateAdminRegionDto } from 'modules/admin-regions/dto/update.admin-reg
 import { PaginationMeta } from 'utils/app-base.service';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
 import { ParseOptionalIntPipe } from 'pipes/parse-optional-int.pipe';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller(`/api/v1/admin-regions`)
+@UseGuards(AuthGuard('jwt'))
 @ApiTags(adminRegionResource.className)
 export class AdminRegionsController {
   constructor(public readonly adminRegionsService: AdminRegionsService) {}

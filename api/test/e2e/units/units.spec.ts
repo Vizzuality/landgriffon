@@ -5,6 +5,7 @@ import { AppModule } from 'app.module';
 import { Unit } from 'modules/units/unit.entity';
 import { UnitsModule } from 'modules/units/units.module';
 import { UnitRepository } from 'modules/units/unit.repository';
+import { E2E_CONFIG } from '../../e2e.config';
 
 /**
  * Tests for the UnitsModule.
@@ -13,6 +14,7 @@ import { UnitRepository } from 'modules/units/unit.repository';
 describe('UnitsModule (e2e)', () => {
   let app: INestApplication;
   let unitRepository: UnitRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -30,6 +32,16 @@ describe('UnitsModule (e2e)', () => {
       }),
     );
     await app.init();
+
+    const user = await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -44,6 +56,7 @@ describe('UnitsModule (e2e)', () => {
     test('Create a unit should be successful (happy case)', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/units')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           name: 'test unit',
         })
@@ -61,6 +74,7 @@ describe('UnitsModule (e2e)', () => {
     test('Create a unit without the required fields should fail with a 400 error', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/units')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.BAD_REQUEST);
 
@@ -85,6 +99,7 @@ describe('UnitsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/units/${unit.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           name: 'Updated test unit',
         })
@@ -102,6 +117,7 @@ describe('UnitsModule (e2e)', () => {
 
       await request(app.getHttpServer())
         .delete(`/api/v1/units/${unit.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -117,6 +133,7 @@ describe('UnitsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/units`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -132,6 +149,7 @@ describe('UnitsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/units/${unit.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 

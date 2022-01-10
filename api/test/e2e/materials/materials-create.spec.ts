@@ -8,10 +8,12 @@ import { createMaterial } from '../../entity-mocks';
 import { Material } from 'modules/materials/material.entity';
 import { expectedJSONAPIAttributes } from './config';
 import { v4 as uuidv4 } from 'uuid';
+import { E2E_CONFIG } from '../../e2e.config';
 
 describe('Materials - Create', () => {
   let app: INestApplication;
   let materialRepository: MaterialRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -30,6 +32,16 @@ describe('Materials - Create', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -43,6 +55,7 @@ describe('Materials - Create', () => {
   test('Create a material should be successful (happy case)', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/materials')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send({
         name: 'test material',
         hsCodeId: 'test',
@@ -64,6 +77,7 @@ describe('Materials - Create', () => {
   test('Create a material without the required fields should fail with a 400 error', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/materials')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.BAD_REQUEST);
     expect(response).toHaveErrorMessage(
@@ -83,6 +97,7 @@ describe('Materials - Create', () => {
     test('Create a material without a parent should be successful', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/materials')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           name: 'test material',
           hsCodeId: 'testCode',
@@ -96,6 +111,7 @@ describe('Materials - Create', () => {
       const uuid = uuidv4();
       const response = await request(app.getHttpServer())
         .post('/api/v1/materials')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           name: 'test material',
           hsCodeId: 'testCode',
@@ -114,6 +130,7 @@ describe('Materials - Create', () => {
 
       const response = await request(app.getHttpServer())
         .post('/api/v1/materials')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           name: 'test material',
           hsCodeId: 'testCode',

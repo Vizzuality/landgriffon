@@ -5,6 +5,7 @@ import { AppModule } from 'app.module';
 import { UnitConversion } from 'modules/unit-conversions/unit-conversion.entity';
 import { UnitConversionsModule } from 'modules/unit-conversions/unit-conversions.module';
 import { UnitConversionRepository } from 'modules/unit-conversions/unit-conversion.repository';
+import { E2E_CONFIG } from '../../e2e.config';
 
 /**
  * Tests for the UnitConversionsModule.
@@ -13,6 +14,7 @@ import { UnitConversionRepository } from 'modules/unit-conversions/unit-conversi
 describe('UnitConversionsModule (e2e)', () => {
   let app: INestApplication;
   let unitConversionRepository: UnitConversionRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -32,6 +34,16 @@ describe('UnitConversionsModule (e2e)', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -46,6 +58,7 @@ describe('UnitConversionsModule (e2e)', () => {
     test('Create a unit conversion should be successful (happy case)', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/unit-conversions')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           unit1: 1234,
         })
@@ -70,6 +83,7 @@ describe('UnitConversionsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/unit-conversions/${unitConversion.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           unit1: 1234,
         })
@@ -86,6 +100,7 @@ describe('UnitConversionsModule (e2e)', () => {
 
       await request(app.getHttpServer())
         .delete(`/api/v1/unit-conversions/${unitConversion.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -102,6 +117,7 @@ describe('UnitConversionsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/unit-conversions`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -116,6 +132,7 @@ describe('UnitConversionsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/unit-conversions/${unitConversion.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 

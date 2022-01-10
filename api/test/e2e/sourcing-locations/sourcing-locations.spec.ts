@@ -7,6 +7,7 @@ import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-loc
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { createMaterial, createSourcingLocation } from '../../entity-mocks';
 import { Material } from 'modules/materials/material.entity';
+import { E2E_CONFIG } from '../../e2e.config';
 
 /**
  * Tests for the SourcingLocationsModule.
@@ -15,6 +16,7 @@ import { Material } from 'modules/materials/material.entity';
 describe('SourcingLocationsModule (e2e)', () => {
   let app: INestApplication;
   let sourcingLocationRepository: SourcingLocationRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -34,6 +36,16 @@ describe('SourcingLocationsModule (e2e)', () => {
       }),
     );
     await app.init();
+
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(E2E_CONFIG.users.signUp)
+      .expect(HttpStatus.CREATED);
+    const response = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(E2E_CONFIG.users.signIn)
+      .expect(HttpStatus.CREATED);
+    jwtToken = response.body.accessToken;
   });
 
   afterEach(async () => {
@@ -49,6 +61,7 @@ describe('SourcingLocationsModule (e2e)', () => {
       const material: Material = await createMaterial();
       const response = await request(app.getHttpServer())
         .post('/api/v1/sourcing-locations')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           title: 'test sourcing location',
           locationAddressInput: 'pqrst',
@@ -74,6 +87,7 @@ describe('SourcingLocationsModule (e2e)', () => {
     test.skip('Create a sourcing location without the required fields should fail with a 400 error', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/sourcing-locations')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.BAD_REQUEST);
 
@@ -98,6 +112,7 @@ describe('SourcingLocationsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/sourcing-locations/${sourcingLocation.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           title: 'updated test sourcing location',
         })
@@ -115,6 +130,7 @@ describe('SourcingLocationsModule (e2e)', () => {
 
       await request(app.getHttpServer())
         .delete(`/api/v1/sourcing-locations/${sourcingLocation.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -130,6 +146,7 @@ describe('SourcingLocationsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/sourcing-locations`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -143,6 +160,7 @@ describe('SourcingLocationsModule (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/sourcing-locations/${sourcingLocation.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 

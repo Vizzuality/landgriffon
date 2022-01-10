@@ -14,10 +14,9 @@ const AnalysisVisualization: React.FC = () => {
 
   return (
     <section
-      className={classNames(
-        'relative flex flex-col flex-1 w-screen md:w-full sm:h-screen-minus-header md:h-full bg-gray-50 lg:order-last',
-        { 'overflow-hidden': visualizationMode === 'map' },
-      )}
+      className={classNames('relative flex flex-col flex-1 md:h-full bg-gray-50 lg:order-last', {
+        'overflow-hidden': visualizationMode === 'map',
+      })}
     >
       <div
         className={classNames(

@@ -6,11 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
-import {
-  H3Data,
-  H3IndexValueData,
-  LAYER_TYPES,
-} from 'modules/h3-data/h3-data.entity';
+import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { UnitConversionsService } from 'modules/unit-conversions/unit-conversions.service';
@@ -24,7 +20,6 @@ import { H3FilterYearsByLayerService } from 'modules/h3-data/services/h3-filter-
 import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
-import { getManager } from 'typeorm';
 
 /**
  * @debt: Check if we actually need extending nestjs-base-service over this module.
@@ -175,7 +170,7 @@ export class H3DataService {
     const indicatorDataYear: number | undefined =
       availableIndicatorYears.includes(year)
         ? year
-        : availableIndicatorYears.find((el) => el < year);
+        : availableIndicatorYears.find((el: number) => el < year);
 
     if (!indicatorDataYear)
       throw new NotFoundException(
@@ -200,7 +195,7 @@ export class H3DataService {
     const harvestDataYear: number | undefined =
       availableHarvestDataYears.includes(year)
         ? year
-        : availableHarvestDataYears.find((el) => el < year);
+        : availableHarvestDataYears.find((el: number) => el < year);
 
     if (!harvestDataYear)
       throw new NotFoundException(
@@ -228,7 +223,7 @@ export class H3DataService {
     const producerDataYear: number | undefined =
       availableProducerDataYears.includes(year)
         ? year
-        : availableProducerDataYears.find((el) => el < year);
+        : availableProducerDataYears.find((el: number) => el < year);
 
     if (!producerDataYear)
       throw new NotFoundException(

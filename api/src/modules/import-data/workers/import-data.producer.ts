@@ -5,7 +5,7 @@ import { TinyTypeOf } from 'tiny-types';
 
 export interface ExcelImportJob {
   xlsxFileData: Express.Multer.File;
-  userId: string;
+  taskId: string;
 }
 
 export class ImportQueueName extends TinyTypeOf<string>() {}
@@ -22,11 +22,11 @@ export class ImportDataProducer {
 
   async addExcelImportJob(
     xlsxFileData: Express.Multer.File,
-    userId: string,
+    taskId: string,
   ): Promise<void> {
     await this.importQueue.add('excel-import-job', {
       xlsxFileData,
-      userId,
+      taskId,
     });
   }
 }

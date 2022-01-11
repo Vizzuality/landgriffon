@@ -98,7 +98,6 @@ const AnalysisTable: React.FC<{ data: ImpactTableData }> = ({ data }) => {
                 className: 'h-auto py-3 sticky left-0 group-even:bg-gray-50 group-odd:bg-white',
               };
             }
-            console.log(props);
             return {
               className: 'h-auto py-3',
             };

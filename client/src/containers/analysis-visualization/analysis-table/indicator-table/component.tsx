@@ -6,6 +6,8 @@ import Table from 'components/table';
 import { ISummaryCellProps } from 'ka-table/props';
 import { DATA_NUMBER_FORMAT } from '../../constants';
 
+import type { ImpactTableData } from 'types';
+
 type ITableData = ITableProps & {
   key?: string;
   yearSum: {
@@ -21,8 +23,7 @@ type CustomSummaryCell = ISummaryCellProps & {
   }[];
 };
 
-const AnalysisTable: React.FC<{ data: any }> = ({ data }) => {
-  console.log(data);
+const AnalysisTable: React.FC<{ data: ImpactTableData }> = ({ data }) => {
   // initial value of the *props
   const tableProps: ITableData = useMemo(() => {
     const { indicatorId, yearSum, rows } = data;
@@ -97,6 +98,7 @@ const AnalysisTable: React.FC<{ data: any }> = ({ data }) => {
                 className: 'h-auto py-3 sticky left-0 group-even:bg-gray-50 group-odd:bg-white',
               };
             }
+            console.log(props);
             return {
               className: 'h-auto py-3',
             };

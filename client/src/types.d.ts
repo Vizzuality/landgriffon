@@ -77,3 +77,25 @@ export type OriginRegion = {
   name: string;
   children: OriginRegion[];
 };
+
+export type ImpactTableData = {
+  groupBy: string;
+  indicatorId: string;
+  indicatorShortName: string;
+  metadata: Record<string, unknown>;
+  rows: {
+    name: string;
+    values: Record<string, number | string | boolean>[];
+  }[];
+  yearSum: {
+    year: number;
+    value: number;
+  }[];
+};
+
+export type ImpactData = {
+  data: {
+    impactTable: ImpactTableData[];
+  };
+  metadata: Record<string, unknown>;
+};

@@ -39,47 +39,6 @@ export function useColors(): RGBColor[] {
 
 type AnalysisDataResponse = UseQueryResult<unknown, unknown>;
 
-export function useAnalysisData(): AnalysisDataResponse {
-  const { layer } = useAppSelector(analysis);
-  const filters = filtersForTabularAPI(store.getState());
-  const isEnable = !!filters?.indicatorId;
-
-  // const colors = useColors();
-
-  const query = useQuery(
-    ['analysis-data-impact', layer, JSON.stringify({ layer, ...filters })],
-    async () =>
-      apiService
-        .get('/impact/table', {
-          params: {
-            indicatorIds: [filters.indicatorId],
-            startYear: filters.startYear,
-            endYear: filters.endYear,
-            groupBy: filters.groupBy,
-          },
-        })
-        // Adding color to the response
-        .then((response) => {
-          return response;
-        }),
-    {
-      ...DEFAULT_QUERY_OPTIONS,
-      enabled: layer === 'impact' && isEnable,
-    },
-  );
-
-  const { data, isError } = query;
-
-  return useMemo(
-    () =>
-      ({
-        ...query,
-        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data),
-    }),
-    [query, isError, data],
-  );
-}
-
 export function useAnalysisChart() {
   // const [session] = useSession();
   const { filters } = useAppSelector(analysis);

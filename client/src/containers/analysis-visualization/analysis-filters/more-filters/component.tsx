@@ -32,6 +32,7 @@ const MoreFilters: React.FC = () => {
   const [counter, setCounter] = useState(0);
 
   const handleApply = useCallback(() => {
+    console.log('handle apply', moreFilters);
     dispatch(
       setFilters({
         materials: moreFilters.materials || INITIAL_FILTERS.materials,
@@ -95,7 +96,11 @@ const MoreFilters: React.FC = () => {
               <div className="flex flex-col gap-3">
                 <div>
                   <div className="mb-1">Material</div>
-                  <Materials multiple current={filters.materials} />
+                  <Materials
+                    multiple
+                    current={filters.materials}
+                    onChange={(values) => handleChangeFilter('materials', values)}
+                  />
                 </div>
                 <div>
                   <div className="mb-1">Origins</div>
@@ -107,7 +112,11 @@ const MoreFilters: React.FC = () => {
                 </div>
                 <div>
                   <div className="mb-1">Suppliers</div>
-                  <Suppliers multiple current={filters.suppliers} />
+                  <Suppliers
+                    multiple
+                    current={filters.suppliers}
+                    onChange={(values) => handleChangeFilter('suppliers', values)}
+                  />
                 </div>
               </div>
               <div className="flex gap-2 mt-4">

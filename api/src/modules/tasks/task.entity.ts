@@ -49,9 +49,9 @@ export class Task extends TimestampedBaseEntity {
    * @debt: Define proper typing for the fields below. Add logging to import-process
    */
 
-  @Column({ type: 'array', nullable: true })
-  logs?: Record<string, any>[];
+  @Column('jsonb', { array: false, default: () => "'[]'" })
+  logs!: Array<Record<string, any>>;
 
-  @Column({ type: 'array', nullable: true })
-  errors?: Record<string, any>[];
+  @Column('jsonb', { array: false, default: () => "'[]'" })
+  errors!: Array<Record<string, any>>;
 }

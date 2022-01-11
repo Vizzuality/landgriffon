@@ -88,7 +88,7 @@ export class TasksService extends AppBaseService<
     }
 
     if (newErrors) {
-      task.errors?.push({ [newErrors.name]: newErrors.message });
+      task.errors.push({ [newErrors.name]: newErrors.message });
     }
 
     task.status = newStatus;

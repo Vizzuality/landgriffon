@@ -10,7 +10,7 @@ import { useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
 import { useIndicators } from 'hooks/indicators';
 
-import type { RGBColor } from 'types';
+import type { RGBColor, ImpactData } from 'types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   placeholderData: {
@@ -33,26 +33,6 @@ export function useColors(): RGBColor[] {
   const colors = useMemo(() => COLOR_SCALE[layer].map((color) => chroma(color).rgb()), [layer]);
   return colors;
 }
-
-type ImpactData = {
-  data: {
-    impactTable: {
-      groupBy: string;
-      indicatorId: string;
-      indicatorShortName: string;
-      metadata: Record<string, unknown>;
-      rows: {
-        name: string;
-        values: Record<string, number | string | boolean>[];
-      }[];
-      yearSum: {
-        year: number;
-        value: number;
-      }[];
-    }[];
-  };
-  metadata: Record<string, unknown>;
-};
 
 type ImpactDataResponse = UseQueryResult<ImpactData, unknown>;
 

@@ -44,7 +44,7 @@ export const createWorldForRiskMapGeneration = async (data: {
   });
 
   const material = await createMaterial({
-    name: 'Material with no H3',
+    name: 'Fake material',
   });
   await createMaterialToH3(
     material.id,

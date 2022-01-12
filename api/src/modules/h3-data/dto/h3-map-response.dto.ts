@@ -3,6 +3,7 @@
  */
 import { H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 import { ApiProperty, PickType } from '@nestjs/swagger';
+import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 
 export class H3MapResponse {
   @ApiProperty({
@@ -36,11 +37,22 @@ export class H3MapResponse {
       indicatorDataYear: {
         type: 'number',
       },
-      harvestDataYear: {
-        type: 'number',
-      },
-      producerDataYear: {
-        type: 'number',
+      materialsH3DataYears: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            materialName: {
+              type: 'string',
+            },
+            materialDataYear: {
+              type: 'number',
+            },
+            materialDataType: {
+              type: 'string',
+            },
+          },
+        },
       },
     },
   })
@@ -48,9 +60,14 @@ export class H3MapResponse {
     unit: string;
     quantiles: number[];
     indicatorDataYear?: number;
-    harvestDataYear?: number;
-    producerDataYear?: number;
+    materialsH3DataYears?: MaterialsH3DataYears[];
   };
+}
+
+export class MaterialsH3DataYears {
+  materialName: string;
+  materialDataYear: number | undefined;
+  materialDataType: MATERIAL_TO_H3_TYPE;
 }
 
 export class H3DataResponse extends PickType(H3MapResponse, [

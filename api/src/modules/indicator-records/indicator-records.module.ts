@@ -6,6 +6,9 @@ import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-r
 import { H3DataModule } from 'modules/h3-data/h3-data.module';
 import { IndicatorsModule } from 'modules/indicators/indicators.module';
 import { MaterialsModule } from 'modules/materials/materials.module';
+import { H3FilterYearsByLayerService } from 'modules/h3-data/services/h3-filter-years-by-layer.service';
+import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
+import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 
 @Module({
   imports: [
@@ -13,9 +16,14 @@ import { MaterialsModule } from 'modules/materials/materials.module';
     IndicatorsModule,
     H3DataModule,
     MaterialsModule,
+    SourcingRecordsModule,
   ],
   controllers: [IndicatorRecordsController],
-  providers: [IndicatorRecordsService],
+  providers: [
+    IndicatorRecordsService,
+    H3FilterYearsByLayerService,
+    H3DataRepository,
+  ],
   exports: [IndicatorRecordsService],
 })
 export class IndicatorRecordsModule {}

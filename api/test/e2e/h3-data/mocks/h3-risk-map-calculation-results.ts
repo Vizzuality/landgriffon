@@ -46,9 +46,19 @@ export const riskMapCalculationResults = {
       0.08185538881309687,
     ],
     unit: 'tonnes',
-    harvestDataYear: 2010,
     indicatorDataYear: 2005,
-    producerDataYear: 2010,
+    materialsH3DataYears: [
+      {
+        materialName: 'Fake material',
+        materialDataYear: 2010,
+        materialDataType: 'harvest',
+      },
+      {
+        materialName: 'Fake material',
+        materialDataYear: 2010,
+        materialDataType: 'producer',
+      },
+    ],
   },
 
   waterRiskRes6Quantiles2020: {
@@ -58,9 +68,19 @@ export const riskMapCalculationResults = {
       0.08185538881309687,
     ],
     unit: 'tonnes',
-    harvestDataYear: 2020,
     indicatorDataYear: 2020,
-    producerDataYear: 2020,
+    materialsH3DataYears: [
+      {
+        materialName: 'Fake material',
+        materialDataYear: 2020,
+        materialDataType: 'harvest',
+      },
+      {
+        materialName: 'Fake material',
+        materialDataYear: 2020,
+        materialDataType: 'producer',
+      },
+    ],
   },
 
   waterRiskRes6Quantiles2002: {
@@ -70,9 +90,19 @@ export const riskMapCalculationResults = {
       0.08185538881309687,
     ],
     unit: 'tonnes',
-    harvestDataYear: 2002,
     indicatorDataYear: 2003,
-    producerDataYear: 2002,
+    materialsH3DataYears: [
+      {
+        materialName: 'Fake material',
+        materialDataYear: 2002,
+        materialDataType: 'harvest',
+      },
+      {
+        materialName: 'Fake material',
+        materialDataYear: 2002,
+        materialDataType: 'producer',
+      },
+    ],
   },
 
   waterRiskRes3Values: [
@@ -93,9 +123,19 @@ export const riskMapCalculationResults = {
       0.21828103683492497,
     ],
     unit: 'tonnes',
-    harvestDataYear: 2010,
     indicatorDataYear: 2005,
-    producerDataYear: 2010,
+    materialsH3DataYears: [
+      {
+        materialName: 'Fake material',
+        materialDataYear: 2010,
+        materialDataType: 'harvest',
+      },
+      {
+        materialName: 'Fake material',
+        materialDataYear: 2010,
+        materialDataType: 'producer',
+      },
+    ],
   },
 
   biodiversityLossRes6Values: [
@@ -139,9 +179,19 @@ export const riskMapCalculationResults = {
       101.70282532278931, 118.42534601795609, 169.49152573943138,
     ],
     unit: 'tonnes',
-    harvestDataYear: 2010,
     indicatorDataYear: 2005,
-    producerDataYear: 2010,
+    materialsH3DataYears: [
+      {
+        materialName: 'Fake material',
+        materialDataYear: 2010,
+        materialDataType: 'harvest',
+      },
+      {
+        materialName: 'Fake material',
+        materialDataYear: 2010,
+        materialDataType: 'producer',
+      },
+    ],
   },
 
   biodiversityLossRes3Values: [
@@ -174,9 +224,19 @@ export const riskMapCalculationResults = {
       169.49152573943138,
     ],
     unit: 'tonnes',
-    harvestDataYear: 2010,
     indicatorDataYear: 2005,
-    producerDataYear: 2010,
+    materialsH3DataYears: [
+      {
+        materialName: 'Fake material',
+        materialDataYear: 2010,
+        materialDataType: 'harvest',
+      },
+      {
+        materialName: 'Fake material',
+        materialDataYear: 2010,
+        materialDataType: 'producer',
+      },
+    ],
   },
 
   carbonEmissionsRes6Values: [
@@ -221,9 +281,19 @@ export const riskMapCalculationResults = {
       0.016949152573943138,
     ],
     unit: 'tonnes',
-    harvestDataYear: 2010,
     indicatorDataYear: 2005,
-    producerDataYear: 2010,
+    materialsH3DataYears: [
+      {
+        materialName: 'Fake material',
+        materialDataYear: 2010,
+        materialDataType: 'harvest',
+      },
+      {
+        materialName: 'Fake material',
+        materialDataYear: 2010,
+        materialDataType: 'producer',
+      },
+    ],
   },
 
   carbonEmissionsRes3Values: [
@@ -241,9 +311,19 @@ export const riskMapCalculationResults = {
       0.016949152573943138,
     ],
     unit: 'tonnes',
-    harvestDataYear: 2010,
     indicatorDataYear: 2005,
-    producerDataYear: 2010,
+    materialsH3DataYears: [
+      {
+        materialName: 'Fake material',
+        materialDataYear: 2010,
+        materialDataType: 'harvest',
+      },
+      {
+        materialName: 'Fake material',
+        materialDataYear: 2010,
+        materialDataType: 'producer',
+      },
+    ],
   },
 
   deforestationRes6Values: [
@@ -375,9 +455,19 @@ export const riskMapCalculationResults = {
       25.245441436767578,
     ],
     unit: 'tonnes',
-    harvestDataYear: 2010,
     indicatorDataYear: 2005,
-    producerDataYear: 2010,
+    materialsH3DataYears: [
+      {
+        materialName: 'Fake material',
+        materialDataYear: 2010,
+        materialDataType: 'harvest',
+      },
+      {
+        materialName: 'Fake material',
+        materialDataYear: 2010,
+        materialDataType: 'producer',
+      },
+    ],
   },
 
   deforestationRes3Quantiles: {
@@ -387,8 +477,18 @@ export const riskMapCalculationResults = {
       46.28330993652344,
     ],
     unit: 'tonnes',
-    harvestDataYear: 2010,
     indicatorDataYear: 2005,
-    producerDataYear: 2010,
+    materialsH3DataYears: [
+      {
+        materialName: 'Fake material',
+        materialDataYear: 2010,
+        materialDataType: 'harvest',
+      },
+      {
+        materialName: 'Fake material',
+        materialDataYear: 2010,
+        materialDataType: 'producer',
+      },
+    ],
   },
 };

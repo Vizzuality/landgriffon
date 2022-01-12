@@ -25,6 +25,7 @@ import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import * as config from 'config';
+import { H3FilterYearsByLayerService } from 'modules/h3-data/services/h3-filter-years-by-layer.service';
 
 @Injectable()
 export class IndicatorRecordsService extends AppBaseService<
@@ -39,6 +40,7 @@ export class IndicatorRecordsService extends AppBaseService<
     private readonly indicatorService: IndicatorsService,
     private readonly h3DataService: H3DataService,
     private readonly materialsToH3sService: MaterialsToH3sService,
+    private readonly filterYearsByLayerService: H3FilterYearsByLayerService,
   ) {
     super(
       indicatorRecordRepository,
@@ -89,8 +91,15 @@ export class IndicatorRecordsService extends AppBaseService<
         this.logger.debug(
           `Missing ${type} h3 data for material "${sourcingRecord.sourcingLocation.material.name}" and year "${sourcingRecord.year}". Falling back to different year`,
         );
+        const h3DataYearToApply: number | undefined =
+          await this.filterYearsByLayerService.getH3MaterialYearForCalculations(
+            sourcingRecord.sourcingLocation.material.id,
+            type,
+            sourcingRecord.year,
+          );
         h3Table = await this.materialsToH3sService.findH3DataForMaterial({
           materialId: sourcingRecord.sourcingLocation.material.id,
+          year: h3DataYearToApply,
           type,
         });
         if (!h3Table) {

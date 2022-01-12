@@ -129,6 +129,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         500, 539.0078, 578.0858000000001, 617, 783.6999999999999, 950.7, 1117,
       ],
       unit: 'tonnes',
+      indicatorDataYear: 2020,
+      materialsH3DataYears: [],
     });
   });
 
@@ -153,6 +155,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(response.body.metadata).toEqual({
         quantiles: [2234, 2234, 2234, 2234, 2234, 2234, 2234],
         unit: 'tonnes',
+        indicatorDataYear: 2020,
+        materialsH3DataYears: [],
       });
     });
 
@@ -176,6 +180,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(response.body.metadata).toEqual({
         quantiles: [2234, 2234, 2234, 2234, 2234, 2234, 2234],
         unit: 'tonnes',
+        indicatorDataYear: 2020,
+        materialsH3DataYears: [],
       });
     });
 
@@ -209,6 +215,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
           500, 539.0078, 578.0858000000001, 617, 783.6999999999999, 950.7, 1117,
         ],
         unit: 'tonnes',
+        indicatorDataYear: 2020,
+        materialsH3DataYears: [],
       });
     });
   });
@@ -239,6 +247,19 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(response.body.metadata).toEqual({
         quantiles: [617, 617, 617, 617, 617, 617, 617],
         unit: 'tonnes',
+        indicatorDataYear: 2020,
+        materialsH3DataYears: [
+          {
+            materialDataType: 'harvest',
+            materialDataYear: 2020,
+            materialName: 'MaterialOne',
+          },
+          {
+            materialDataType: 'producer',
+            materialDataYear: 2020,
+            materialName: 'MaterialOne',
+          },
+        ],
       });
     });
 
@@ -267,6 +288,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(response.body.metadata).toEqual({
         quantiles: [617, 617, 617, 617, 617, 617, 617],
         unit: 'tonnes',
+        indicatorDataYear: 2020,
+        materialsH3DataYears: [],
       });
     });
 
@@ -295,6 +318,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(response.body.metadata).toEqual({
         quantiles: [617, 617, 617, 617, 617, 617, 617],
         unit: 'tonnes',
+        indicatorDataYear: 2020,
+        materialsH3DataYears: [],
       });
     });
 
@@ -323,6 +348,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(response.body.metadata).toEqual({
         quantiles: [617, 617, 617, 617, 617, 617, 617],
         unit: 'tonnes',
+        indicatorDataYear: 2020,
+        materialsH3DataYears: [],
       });
     });
   });

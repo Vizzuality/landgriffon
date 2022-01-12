@@ -10,7 +10,10 @@ import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { UnitConversionsService } from 'modules/unit-conversions/unit-conversions.service';
-import { H3MapResponse } from 'modules/h3-data/dto/h3-map-response.dto';
+import {
+  H3MapResponse,
+  MaterialsH3DataYears,
+} from 'modules/h3-data/dto/h3-map-response.dto';
 import {
   Indicator,
   INDICATOR_TYPES,
@@ -20,6 +23,7 @@ import { H3FilterYearsByLayerService } from 'modules/h3-data/services/h3-filter-
 import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
+import { Material } from 'modules/materials/material.entity';
 
 /**
  * @debt: Check if we actually need extending nestjs-base-service over this module.
@@ -164,18 +168,11 @@ export class H3DataService {
      * @note To generate a Risk Map, harvest data and h3Data by indicatorId are required
      */
 
-    const availableIndicatorYears: number[] =
-      await this.getAvailableYearsForH3IndicatorData(indicatorId);
-
-    let indicatorDataYear: number | undefined =
-      availableIndicatorYears.includes(year)
-        ? year
-        : availableIndicatorYears.find((el: number) => el < year);
-
-    if (!indicatorDataYear)
-      indicatorDataYear = availableIndicatorYears
-        .reverse()
-        .find((el: number) => el > year);
+    const indicatorDataYear: number | undefined =
+      await this.filterYearsByLayerService.getH3IndicatorYearForCalculations(
+        indicatorId,
+        year,
+      );
 
     if (!indicatorDataYear)
       throw new NotFoundException(
@@ -191,27 +188,25 @@ export class H3DataService {
         `There is no H3 Data for Indicator with ID ${indicatorId} and year ${year}`,
       );
 
-    const availableHarvestDataYears: number[] =
-      await this.getAvailableYearsForH3MaterialData(
+    const material: Material = await this.materialService.getMaterialById(
+      materialId,
+    );
+
+    const materialsH3DataYears: MaterialsH3DataYears[] = [];
+
+    const harvestDataYear: number | undefined =
+      await this.filterYearsByLayerService.getH3MaterialYearForCalculations(
         materialId,
         MATERIAL_TO_H3_TYPE.HARVEST,
+        year,
       );
-
-    let harvestDataYear: number | undefined =
-      availableHarvestDataYears.includes(year)
-        ? year
-        : availableHarvestDataYears.find((el: number) => el < year);
-
-    if (!harvestDataYear)
-      harvestDataYear = availableHarvestDataYears
-        .reverse()
-        .find((el: number) => el > year);
 
     if (!harvestDataYear)
       throw new NotFoundException(
         `There is no H3 Harvest data registered for Material with ID ${materialId} for year ${year} or any other year`,
       );
 
+    materialsH3DataYears.push();
     const harvestMaterialH3Data: H3Data | undefined =
       await this.materialToH3Service.findH3DataForMaterial({
         materialId,
@@ -224,21 +219,12 @@ export class H3DataService {
       );
     }
 
-    const availableProducerDataYears: number[] =
-      await this.getAvailableYearsForH3MaterialData(
+    const producerDataYear: number | undefined =
+      await this.filterYearsByLayerService.getH3MaterialYearForCalculations(
         materialId,
         MATERIAL_TO_H3_TYPE.PRODUCER,
+        year,
       );
-
-    let producerDataYear: number | undefined =
-      availableProducerDataYears.includes(year)
-        ? year
-        : availableProducerDataYears.find((el: number) => el < year);
-
-    if (!producerDataYear)
-      producerDataYear = availableProducerDataYears
-        .reverse()
-        .find((el: number) => el > year);
 
     if (!producerDataYear)
       throw new NotFoundException(
@@ -349,14 +335,26 @@ export class H3DataService {
         );
     }
 
+    materialsH3DataYears.push(
+      {
+        materialName: material.name,
+        materialDataYear: harvestDataYear,
+        materialDataType: MATERIAL_TO_H3_TYPE.HARVEST,
+      },
+      {
+        materialName: material.name,
+        materialDataYear: producerDataYear,
+        materialDataType: MATERIAL_TO_H3_TYPE.PRODUCER,
+      },
+    );
+
     return {
       data: riskMap,
       metadata: {
         quantiles: quantiles,
         unit: indicator.unit.symbol,
         indicatorDataYear,
-        harvestDataYear,
-        producerDataYear,
+        materialsH3DataYears,
       },
     };
   }
@@ -410,30 +408,46 @@ export class H3DataService {
       getImpactMapDto.supplierIds,
     );
 
+    const materialsH3DataYears: MaterialsH3DataYears[] = [];
+
+    if (getImpactMapDto.materialIds?.length)
+      for (const materialId of getImpactMapDto.materialIds) {
+        const material: Material = await this.materialService.getMaterialById(
+          materialId,
+        );
+        const materialHarvestH3DataYear: number | undefined =
+          await this.filterYearsByLayerService.getH3MaterialYearForCalculations(
+            materialId,
+            MATERIAL_TO_H3_TYPE.HARVEST,
+            getImpactMapDto.year,
+          );
+        const materialProducerH3DataYear: number | undefined =
+          await this.filterYearsByLayerService.getH3MaterialYearForCalculations(
+            materialId,
+            MATERIAL_TO_H3_TYPE.PRODUCER,
+            getImpactMapDto.year,
+          );
+        materialsH3DataYears.push(
+          {
+            materialName: material.name,
+            materialDataYear: materialHarvestH3DataYear,
+            materialDataType: MATERIAL_TO_H3_TYPE.HARVEST,
+          },
+          {
+            materialName: material.name,
+            materialDataYear: materialProducerH3DataYear,
+            materialDataType: MATERIAL_TO_H3_TYPE.PRODUCER,
+          },
+        );
+      }
     return {
       data: impactMap.riskMap,
       metadata: {
         quantiles: impactMap.quantiles,
         unit: indicator.unit.symbol,
+        indicatorDataYear: indicatorH3Data.year,
+        materialsH3DataYears,
       },
     };
-  }
-
-  async getAvailableYearsForH3MaterialData(
-    materialId: string,
-    materialType: MATERIAL_TO_H3_TYPE,
-  ): Promise<number[]> {
-    return await this.h3DataRepository.getAvailableYearsForH3MaterialData(
-      materialId,
-      materialType,
-    );
-  }
-
-  async getAvailableYearsForH3IndicatorData(
-    indicatorId: string,
-  ): Promise<number[]> {
-    return await this.h3DataRepository.getAvailableYearsForH3IndicatorData(
-      indicatorId,
-    );
   }
 }

@@ -19,6 +19,6 @@ import { H3FilterYearsByLayerService } from 'modules/h3-data/services/h3-filter-
   ],
   controllers: [H3DataController],
   providers: [H3DataService, H3FilterYearsByLayerService],
-  exports: [H3DataService],
+  exports: [H3DataService, H3FilterYearsByLayerService],
 })
 export class H3DataModule {}

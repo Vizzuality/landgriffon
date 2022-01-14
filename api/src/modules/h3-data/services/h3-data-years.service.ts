@@ -93,14 +93,21 @@ export class H3FilterYearsByLayerService {
     return this.sourcingRecordService.getYears(materialIds);
   }
 
-  async getH3MaterialYearForCalculations(
+  /**
+   * Methods that find closest year of available H3Data for Risk and Impact Map calculations
+   */
+
+  async getClosestAvailableYearForMaterialH3(
     materialId: string,
     materialType: MATERIAL_TO_H3_TYPE,
     year: number,
   ): Promise<number | undefined> {
     let materialDataYear: number | undefined;
     const availableH3DataYears: number[] =
-      await this.getAvailableYearsForH3MaterialData(materialId, materialType);
+      await this.h3DataRepository.getAvailableYearsForH3MaterialData(
+        materialId,
+        materialType,
+      );
 
     materialDataYear = availableH3DataYears.includes(year)
       ? year
@@ -114,13 +121,15 @@ export class H3FilterYearsByLayerService {
     return materialDataYear;
   }
 
-  async getH3IndicatorYearForCalculations(
+  async getClosestAvailableYearIndicatorH3(
     indicatorId: string,
     year: number,
   ): Promise<number | undefined> {
     let indicatorDataYear: number | undefined;
     const availableIndicatorYears: number[] =
-      await this.getAvailableYearsForH3IndicatorData(indicatorId);
+      await this.h3DataRepository.getAvailableYearsForH3IndicatorData(
+        indicatorId,
+      );
 
     indicatorDataYear = availableIndicatorYears.includes(year)
       ? year
@@ -131,23 +140,5 @@ export class H3FilterYearsByLayerService {
         .reverse()
         .find((el: number) => el > year);
     return indicatorDataYear;
-  }
-
-  async getAvailableYearsForH3MaterialData(
-    materialId: string,
-    materialType: MATERIAL_TO_H3_TYPE,
-  ): Promise<number[]> {
-    return await this.h3DataRepository.getAvailableYearsForH3MaterialData(
-      materialId,
-      materialType,
-    );
-  }
-
-  async getAvailableYearsForH3IndicatorData(
-    indicatorId: string,
-  ): Promise<number[]> {
-    return await this.h3DataRepository.getAvailableYearsForH3IndicatorData(
-      indicatorId,
-    );
   }
 }

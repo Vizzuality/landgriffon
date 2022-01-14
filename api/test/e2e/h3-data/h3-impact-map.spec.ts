@@ -130,7 +130,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       ],
       unit: 'tonnes',
       indicatorDataYear: 2020,
-      materialsH3DataYears: [],
     });
   });
 
@@ -156,7 +155,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         quantiles: [2234, 2234, 2234, 2234, 2234, 2234, 2234],
         unit: 'tonnes',
         indicatorDataYear: 2020,
-        materialsH3DataYears: [],
       });
     });
 
@@ -181,7 +179,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         quantiles: [2234, 2234, 2234, 2234, 2234, 2234, 2234],
         unit: 'tonnes',
         indicatorDataYear: 2020,
-        materialsH3DataYears: [],
       });
     });
 
@@ -216,7 +213,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         ],
         unit: 'tonnes',
         indicatorDataYear: 2020,
-        materialsH3DataYears: [],
       });
     });
   });
@@ -289,7 +285,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         quantiles: [617, 617, 617, 617, 617, 617, 617],
         unit: 'tonnes',
         indicatorDataYear: 2020,
-        materialsH3DataYears: [],
       });
     });
 
@@ -319,7 +314,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         quantiles: [617, 617, 617, 617, 617, 617, 617],
         unit: 'tonnes',
         indicatorDataYear: 2020,
-        materialsH3DataYears: [],
       });
     });
 
@@ -349,7 +343,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         quantiles: [617, 617, 617, 617, 617, 617, 617],
         unit: 'tonnes',
         indicatorDataYear: 2020,
-        materialsH3DataYears: [],
       });
     });
   });

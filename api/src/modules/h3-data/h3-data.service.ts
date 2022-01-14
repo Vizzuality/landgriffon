@@ -19,7 +19,7 @@ import {
   INDICATOR_TYPES,
 } from 'modules/indicators/indicator.entity';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
-import { H3FilterYearsByLayerService } from 'modules/h3-data/services/h3-filter-years-by-layer.service';
+import { H3FilterYearsByLayerService } from 'modules/h3-data/services/h3-data-years.service';
 import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
@@ -169,7 +169,7 @@ export class H3DataService {
      */
 
     const indicatorDataYear: number | undefined =
-      await this.filterYearsByLayerService.getH3IndicatorYearForCalculations(
+      await this.filterYearsByLayerService.getClosestAvailableYearIndicatorH3(
         indicatorId,
         year,
       );
@@ -195,7 +195,7 @@ export class H3DataService {
     const materialsH3DataYears: MaterialsH3DataYears[] = [];
 
     const harvestDataYear: number | undefined =
-      await this.filterYearsByLayerService.getH3MaterialYearForCalculations(
+      await this.filterYearsByLayerService.getClosestAvailableYearForMaterialH3(
         materialId,
         MATERIAL_TO_H3_TYPE.HARVEST,
         year,
@@ -206,7 +206,6 @@ export class H3DataService {
         `There is no H3 Harvest data registered for Material with ID ${materialId} for year ${year} or any other year`,
       );
 
-    materialsH3DataYears.push();
     const harvestMaterialH3Data: H3Data | undefined =
       await this.materialToH3Service.findH3DataForMaterial({
         materialId,
@@ -220,7 +219,7 @@ export class H3DataService {
     }
 
     const producerDataYear: number | undefined =
-      await this.filterYearsByLayerService.getH3MaterialYearForCalculations(
+      await this.filterYearsByLayerService.getClosestAvailableYearForMaterialH3(
         materialId,
         MATERIAL_TO_H3_TYPE.PRODUCER,
         year,
@@ -410,20 +409,21 @@ export class H3DataService {
 
     const materialsH3DataYears: MaterialsH3DataYears[] = [];
 
-    if (getImpactMapDto.materialIds?.length)
-      for (const materialId of getImpactMapDto.materialIds) {
-        const material: Material = await this.materialService.getMaterialById(
-          materialId,
+    if (getImpactMapDto.materialIds?.length) {
+      const requestedMaterials: Material[] =
+        await this.materialService.getMaterialsById(
+          getImpactMapDto.materialIds,
         );
+      for (const material of requestedMaterials) {
         const materialHarvestH3DataYear: number | undefined =
-          await this.filterYearsByLayerService.getH3MaterialYearForCalculations(
-            materialId,
+          await this.filterYearsByLayerService.getClosestAvailableYearForMaterialH3(
+            material.id,
             MATERIAL_TO_H3_TYPE.HARVEST,
             getImpactMapDto.year,
           );
         const materialProducerH3DataYear: number | undefined =
-          await this.filterYearsByLayerService.getH3MaterialYearForCalculations(
-            materialId,
+          await this.filterYearsByLayerService.getClosestAvailableYearForMaterialH3(
+            material.id,
             MATERIAL_TO_H3_TYPE.PRODUCER,
             getImpactMapDto.year,
           );
@@ -440,13 +440,14 @@ export class H3DataService {
           },
         );
       }
+    }
     return {
       data: impactMap.riskMap,
       metadata: {
         quantiles: impactMap.quantiles,
         unit: indicator.unit.symbol,
         indicatorDataYear: indicatorH3Data.year,
-        materialsH3DataYears,
+        ...(materialsH3DataYears.length ? { materialsH3DataYears } : {}),
       },
     };
   }

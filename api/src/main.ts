@@ -7,10 +7,11 @@ import {
 } from '@nestjs/common';
 import { AppModule } from 'app.module';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
-import { createClient, RedisClientType } from 'redis';
+import Redis from 'ioredis';
 import * as config from 'config';
 import * as helmet from 'helmet';
 import * as compression from 'compression';
+import IORedis from 'ioredis';
 
 async function bootstrap(): Promise<void> {
   const logger: Logger = new Logger('bootstrap');
@@ -58,16 +59,17 @@ async function bootstrap(): Promise<void> {
 /**
  * Create a redis connection at entrypoint and crash the API if this cannot be established / goes down
  */
+const redisConfig: any = config.get('redis');
 (async (): Promise<void> => {
-  const client: RedisClientType<any, any> = createClient();
-
-  client.on('error', (err: Error) => {
+  const redis: IORedis.Redis = new Redis({
+    host: redisConfig.host,
+    port: redisConfig.port,
+  });
+  redis.on('error', (err: Error) => {
     throw new ServiceUnavailableException(
-      `Connection to Redis cannot be established: ${err}`,
+      `Connection to redis cannot be established: ${err}`,
     );
   });
-
-  await client.connect();
 })();
 
 bootstrap();

@@ -40,7 +40,6 @@
     "compression": "~1.7.4",
     "config": "~3.3.6",
     "helmet": "~4.6.0",
-    "ioredis": "~4.27.0",
     "jsonapi-serializer": "~3.6.7",
     "lodash": "~4.17.21",
     "ms": "~2.1.3",

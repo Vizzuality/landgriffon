@@ -1,11 +1,12 @@
 import {
   OnQueueCompleted,
+  OnQueueError,
   OnQueueFailed,
   Process,
   Processor,
 } from '@nestjs/bull';
 import { Job } from 'bull';
-import { Logger } from '@nestjs/common';
+import { Logger, ServiceUnavailableException } from '@nestjs/common';
 import { ImportDataService } from 'modules/import-data/import-data.service';
 import { ExcelImportJob } from 'modules/import-data/workers/import-data.producer';
 import { TasksService } from 'modules/tasks/tasks.service';
@@ -18,6 +19,13 @@ export class ImportDataConsumer {
     public readonly importDataService: ImportDataService,
     public readonly tasksService: TasksService,
   ) {}
+
+  @OnQueueError()
+  async onQueueError(error: Error): Promise<void> {
+    throw new ServiceUnavailableException(
+      `Could not connect to Redis through BullMQ: ${error.message}`,
+    );
+  }
 
   @OnQueueFailed()
   async onJobFailed(job: Job<ExcelImportJob>, err: Error): Promise<void> {

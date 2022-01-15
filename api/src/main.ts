@@ -1,17 +1,10 @@
 import { NestFactory } from '@nestjs/core';
-import {
-  INestApplication,
-  Logger,
-  ServiceUnavailableException,
-  ValidationPipe,
-} from '@nestjs/common';
+import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from 'app.module';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
-import Redis from 'ioredis';
 import * as config from 'config';
 import * as helmet from 'helmet';
 import * as compression from 'compression';
-import IORedis from 'ioredis';
 
 async function bootstrap(): Promise<void> {
   const logger: Logger = new Logger('bootstrap');
@@ -55,21 +48,5 @@ async function bootstrap(): Promise<void> {
   await app.listen(port);
   logger.log(`Application listening on port ${port}`);
 }
-
-/**
- * Create a redis connection at entrypoint and crash the API if this cannot be established / goes down
- */
-const redisConfig: any = config.get('redis');
-(async (): Promise<void> => {
-  const redis: IORedis.Redis = new Redis({
-    host: redisConfig.host,
-    port: redisConfig.port,
-  });
-  redis.on('error', (err: Error) => {
-    throw new ServiceUnavailableException(
-      `Connection to redis cannot be established: ${err}`,
-    );
-  });
-})();
 
 bootstrap();

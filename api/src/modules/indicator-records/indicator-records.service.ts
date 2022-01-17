@@ -25,7 +25,7 @@ import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import * as config from 'config';
-import { H3FilterYearsByLayerService } from 'modules/h3-data/services/h3-data-years.service';
+import { H3DataYearsService } from 'modules/h3-data/services/h3-data-years.service';
 
 @Injectable()
 export class IndicatorRecordsService extends AppBaseService<
@@ -40,7 +40,7 @@ export class IndicatorRecordsService extends AppBaseService<
     private readonly indicatorService: IndicatorsService,
     private readonly h3DataService: H3DataService,
     private readonly materialsToH3sService: MaterialsToH3sService,
-    private readonly filterYearsByLayerService: H3FilterYearsByLayerService,
+    private readonly h3DataYearsService: H3DataYearsService,
   ) {
     super(
       indicatorRecordRepository,
@@ -92,7 +92,7 @@ export class IndicatorRecordsService extends AppBaseService<
           `Missing ${type} h3 data for material "${sourcingRecord.sourcingLocation.material.name}" and year "${sourcingRecord.year}". Falling back to different year`,
         );
         const h3DataYearToApply: number | undefined =
-          await this.filterYearsByLayerService.getClosestAvailableYearForMaterialH3(
+          await this.h3DataYearsService.getClosestAvailableYearForMaterialH3(
             sourcingRecord.sourcingLocation.material.id,
             type,
             sourcingRecord.year,

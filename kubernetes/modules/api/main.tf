@@ -128,7 +128,7 @@ resource "kubernetes_deployment" "api_deployment" {
             name = "REDIS_HOST"
             value_from {
               secret_key_ref {
-                name = "redis"
+                name = "db"
                 key  = "REDIS_HOST"
               }
             }

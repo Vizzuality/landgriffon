@@ -79,18 +79,10 @@ resource "kubernetes_secret" "db_secret" {
     DB_PASSWORD    = sensitive(local.postgres_secret_json.password)
     DB_DATABASE    = sensitive(local.postgres_secret_json.database)
     DB_SYNCHRONIZE = "true"
-  }
-}
-
-resource "kubernetes_secret" "redis_secret" {
-  metadata {
-    name      = "redis"
-    namespace = var.namespace
-  }
-
-  data = {
     REDIS_HOST     = "redis-master.default.svc.cluster.local"
   }
 }
+
+
 
 

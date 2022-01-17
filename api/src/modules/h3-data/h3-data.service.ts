@@ -19,7 +19,7 @@ import {
   INDICATOR_TYPES,
 } from 'modules/indicators/indicator.entity';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
-import { H3FilterYearsByLayerService } from 'modules/h3-data/services/h3-data-years.service';
+import { H3DataYearsService } from 'modules/h3-data/services/h3-data-years.service';
 import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
@@ -43,7 +43,7 @@ export class H3DataService {
     private readonly indicatorService: IndicatorsService,
     private readonly unitConversionsService: UnitConversionsService,
     private readonly sourcingRecordService: SourcingRecordsService,
-    private readonly filterYearsByLayerService: H3FilterYearsByLayerService,
+    private readonly h3DataYearsService: H3DataYearsService,
   ) {}
 
   /**
@@ -169,7 +169,7 @@ export class H3DataService {
      */
 
     const indicatorDataYear: number | undefined =
-      await this.filterYearsByLayerService.getClosestAvailableYearIndicatorH3(
+      await this.h3DataYearsService.getClosestAvailableYearForIndicatorH3(
         indicatorId,
         year,
       );
@@ -195,7 +195,7 @@ export class H3DataService {
     const materialsH3DataYears: MaterialsH3DataYears[] = [];
 
     const harvestDataYear: number | undefined =
-      await this.filterYearsByLayerService.getClosestAvailableYearForMaterialH3(
+      await this.h3DataYearsService.getClosestAvailableYearForMaterialH3(
         materialId,
         MATERIAL_TO_H3_TYPE.HARVEST,
         year,
@@ -219,7 +219,7 @@ export class H3DataService {
     }
 
     const producerDataYear: number | undefined =
-      await this.filterYearsByLayerService.getClosestAvailableYearForMaterialH3(
+      await this.h3DataYearsService.getClosestAvailableYearForMaterialH3(
         materialId,
         MATERIAL_TO_H3_TYPE.PRODUCER,
         year,
@@ -363,7 +363,7 @@ export class H3DataService {
     materialIds?: string[],
     indicatorId?: string,
   ): Promise<number[]> {
-    return this.filterYearsByLayerService.getYearsByLayerType(
+    return this.h3DataYearsService.getYearsByLayerType(
       layerType,
       materialIds,
       indicatorId,
@@ -416,13 +416,13 @@ export class H3DataService {
         );
       for (const material of requestedMaterials) {
         const materialHarvestH3DataYear: number | undefined =
-          await this.filterYearsByLayerService.getClosestAvailableYearForMaterialH3(
+          await this.h3DataYearsService.getClosestAvailableYearForMaterialH3(
             material.id,
             MATERIAL_TO_H3_TYPE.HARVEST,
             getImpactMapDto.year,
           );
         const materialProducerH3DataYear: number | undefined =
-          await this.filterYearsByLayerService.getClosestAvailableYearForMaterialH3(
+          await this.h3DataYearsService.getClosestAvailableYearForMaterialH3(
             material.id,
             MATERIAL_TO_H3_TYPE.PRODUCER,
             getImpactMapDto.year,

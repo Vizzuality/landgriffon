@@ -18,7 +18,7 @@ import {
 } from 'modules/materials/material-to-h3.entity';
 
 @Injectable()
-export class H3FilterYearsByLayerService {
+export class H3DataYearsService {
   constructor(
     @InjectRepository(H3DataRepository)
     protected readonly h3DataRepository: H3DataRepository,
@@ -121,7 +121,7 @@ export class H3FilterYearsByLayerService {
     return materialDataYear;
   }
 
-  async getClosestAvailableYearIndicatorH3(
+  async getClosestAvailableYearForIndicatorH3(
     indicatorId: string,
     year: number,
   ): Promise<number | undefined> {

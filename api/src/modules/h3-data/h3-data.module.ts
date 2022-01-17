@@ -7,7 +7,7 @@ import { MaterialsModule } from 'modules/materials/materials.module';
 import { IndicatorsModule } from 'modules/indicators/indicators.module';
 import { UnitConversionsModule } from 'modules/unit-conversions/unit-conversions.module';
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
-import { H3FilterYearsByLayerService } from 'modules/h3-data/services/h3-data-years.service';
+import { H3DataYearsService } from 'modules/h3-data/services/h3-data-years.service';
 
 @Module({
   imports: [
@@ -18,7 +18,7 @@ import { H3FilterYearsByLayerService } from 'modules/h3-data/services/h3-data-ye
     SourcingRecordsModule,
   ],
   controllers: [H3DataController],
-  providers: [H3DataService, H3FilterYearsByLayerService],
-  exports: [H3DataService, H3FilterYearsByLayerService],
+  providers: [H3DataService, H3DataYearsService],
+  exports: [H3DataService, H3DataYearsService],
 })
 export class H3DataModule {}

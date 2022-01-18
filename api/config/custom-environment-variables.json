@@ -29,5 +29,11 @@
     "sizeLimit": "FILE_SIZE_LIMIT",
     "storagePath": "FILE_STORAGE_PATH"
   },
-  "geolocation": {"gmapsApiKey": "GMAPS_API_KEY" }
+  "geolocation": {"gmapsApiKey": "GMAPS_API_KEY" },
+  "password": {
+    "minLength": "PASSWORD_MIN_LENGTH",
+    "includeNumerics": "PASSWORD_INCLUDE_NUMERICS",
+    "includeUpperCase": "PASSWORD_INCLUDE_UPPER_CASE",
+    "includeSpecialCharacters": "PASSWORD_INCLUDE_SPECIAL_CHARACTERS"
+  }
 }

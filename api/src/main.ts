@@ -1,10 +1,11 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from 'app.module';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import * as config from 'config';
 import * as helmet from 'helmet';
 import * as compression from 'compression';
+import { JwtAuthGuard } from 'guards/jwt-auth.guard';
 
 async function bootstrap(): Promise<void> {
   const logger: Logger = new Logger('bootstrap');
@@ -41,6 +42,8 @@ async function bootstrap(): Promise<void> {
       transform: true,
     }),
   );
+  const reflector: Reflector = app.get(Reflector);
+  app.useGlobalGuards(new JwtAuthGuard(reflector));
 
   app.enableShutdownHooks();
 

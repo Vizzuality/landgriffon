@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Post,
-  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -35,11 +34,8 @@ import {
 import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
 import { UpdateBusinessUnitDto } from 'modules/business-units/dto/update.business-unit.dto';
 import { PaginationMeta } from 'utils/app-base.service';
-import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller(`/api/v1/business-units`)
-@UseGuards(JwtAuthGuard)
 @ApiTags(businessUnitResource.className)
 export class BusinessUnitsController {
   constructor(public readonly businessUnitsService: BusinessUnitsService) {}

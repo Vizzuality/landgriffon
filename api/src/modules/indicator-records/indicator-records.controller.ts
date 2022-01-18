@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Post,
-  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -35,11 +34,8 @@ import { IndicatorRecordsService } from 'modules/indicator-records/indicator-rec
 import { CreateIndicatorRecordDto } from 'modules/indicator-records/dto/create.indicator-record.dto';
 import { UpdateIndicatorRecordDto } from 'modules/indicator-records/dto/update.indicator-record.dto';
 import { PaginationMeta } from 'utils/app-base.service';
-import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller(`/api/v1/indicator-records`)
-@UseGuards(JwtAuthGuard)
 @ApiTags(indicatorRecordResource.className)
 export class IndicatorRecordsController {
   constructor(

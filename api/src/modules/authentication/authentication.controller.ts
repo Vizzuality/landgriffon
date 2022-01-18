@@ -19,7 +19,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { RequestWithAuthenticatedUser } from 'app.controller';
-import { JwtAuthGuard } from 'guards/jwt-auth.guard';
+import { Public } from 'decorators/public.decorator';
 import { LocalAuthGuard } from 'guards/local-auth.guard';
 import {
   AccessToken,
@@ -34,6 +34,7 @@ import { UserAccountValidationDTO } from 'modules/authentication/dto/user-accoun
 export class AuthenticationController {
   constructor(private readonly authenticationService: AuthenticationService) {}
 
+  @Public()
   @UseGuards(LocalAuthGuard)
   @ApiOperation({
     description: 'Sign user in, issuing a JWT token.',
@@ -52,6 +53,7 @@ export class AuthenticationController {
     return this.authenticationService.login(req.user);
   }
 
+  @Public()
   @Post('sign-up')
   @ApiOperation({ description: 'Sign up for an user account.' })
   @ApiCreatedResponse({ description: 'User registered successfully' })
@@ -65,6 +67,7 @@ export class AuthenticationController {
     await this.authenticationService.createUser(signUpDto);
   }
 
+  @Public()
   @Get('validate-account/:sub/:validationToken')
   @ApiOperation({ description: 'Confirm an activation token for a new user.' })
   @ApiOkResponse()
@@ -80,7 +83,6 @@ export class AuthenticationController {
    * the time the JWT token being presented was issued and the attempt to
    * refresh the JWT.
    */
-  @UseGuards(JwtAuthGuard)
   @Post('refresh-token')
   @ApiOperation({
     description:

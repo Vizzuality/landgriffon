@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Param,
-  Query,
-  UseGuards,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Controller, Get, Param, Query, ValidationPipe } from '@nestjs/common';
 import {
   ApiOperation,
   ApiQuery,
@@ -23,11 +16,8 @@ import {
 } from 'modules/h3-data/dto/h3-map-response.dto';
 import { GetYearsByLayerAndMaterialsDto } from 'modules/h3-data/dto/get-years-by-layer-and-materials.dto';
 import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller('/api/v1/h3')
-@UseGuards(JwtAuthGuard)
 @ApiTags(H3Data.name)
 export class H3DataController {
   constructor(protected readonly h3DataService: H3DataService) {}

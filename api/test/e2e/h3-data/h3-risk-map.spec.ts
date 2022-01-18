@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
@@ -28,7 +28,8 @@ import {
 } from './mocks/h3-fixtures';
 import { riskMapCalculationResults } from './mocks/h3-risk-map-calculation-results';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
-import { E2E_CONFIG } from '../../e2e.config';
+import { saveUserAndGetToken } from '../../utils/userAuth';
+import { getApp } from '../../utils/getApp';
 
 /**
  * Tests for the H3DataModule.
@@ -66,25 +67,9 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       UnitConversionRepository,
     );
 
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
+    app = getApp(moduleFixture);
     await app.init();
-
-    await request(app.getHttpServer())
-      .post('/auth/sign-up')
-      .send(E2E_CONFIG.users.signUp)
-      .expect(HttpStatus.CREATED);
-    const response = await request(app.getHttpServer())
-      .post('/auth/sign-in')
-      .send(E2E_CONFIG.users.signIn)
-      .expect(HttpStatus.CREATED);
-    jwtToken = response.body.accessToken;
+    jwtToken = await saveUserAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {

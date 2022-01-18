@@ -2,7 +2,6 @@ import {
   Controller,
   Post,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiTags } from '@nestjs/swagger';
@@ -12,10 +11,8 @@ import { fileUploadInterceptor } from 'modules/import-data/file-upload.intercept
 import { XlsxPayloadInterceptor } from 'modules/import-data/xlsx-payload.interceptor';
 import { ImportDataService } from 'modules/import-data/import-data.service';
 import { Task } from 'modules/tasks/task.entity';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @ApiTags('Import Data')
-@UseGuards(JwtAuthGuard)
 @Controller(`/api/v1/import`)
 export class ImportDataController {
   constructor(public readonly importDataService: ImportDataService) {}

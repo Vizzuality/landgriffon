@@ -1,12 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { Material } from 'modules/materials/material.entity';
 import { MaterialsModule } from 'modules/materials/materials.module';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { createMaterial } from '../../entity-mocks';
-import { E2E_CONFIG } from '../../e2e.config';
+import { saveUserAndGetToken } from '../../utils/userAuth';
+import { getApp } from '../../utils/getApp';
 
 describe('Materials - Delete', () => {
   let app: INestApplication;
@@ -21,25 +22,9 @@ describe('Materials - Delete', () => {
     materialRepository =
       moduleFixture.get<MaterialRepository>(MaterialRepository);
 
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
+    app = getApp(moduleFixture);
     await app.init();
-
-    await request(app.getHttpServer())
-      .post('/auth/sign-up')
-      .send(E2E_CONFIG.users.signUp)
-      .expect(HttpStatus.CREATED);
-    const response = await request(app.getHttpServer())
-      .post('/auth/sign-in')
-      .send(E2E_CONFIG.users.signIn)
-      .expect(HttpStatus.CREATED);
-    jwtToken = response.body.accessToken;
+    jwtToken = await saveUserAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {

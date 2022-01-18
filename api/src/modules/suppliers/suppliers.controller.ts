@@ -7,7 +7,6 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -37,11 +36,8 @@ import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { ParseOptionalIntPipe } from 'pipes/parse-optional-int.pipe';
 import { PaginationMeta } from 'utils/app-base.service';
-import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller(`/api/v1/suppliers`)
-@UseGuards(JwtAuthGuard)
 @ApiTags(supplierResource.className)
 export class SuppliersController {
   constructor(

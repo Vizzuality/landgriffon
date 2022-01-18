@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEmail, IsOptional, MaxLength, Validate } from 'class-validator';
-import { PasswordValidation } from '../../../decorators/password-validator.decorator';
+import { PasswordValidation } from 'decorators/password-validator.decorator';
 
 export class CreateUserDTO {
   @ApiProperty()

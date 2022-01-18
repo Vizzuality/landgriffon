@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { Material } from 'modules/materials/material.entity';
@@ -15,7 +15,8 @@ import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
-import { E2E_CONFIG } from '../../e2e.config';
+import { saveUserAndGetToken } from '../../utils/userAuth';
+import { getApp } from '../../utils/getApp';
 
 //TODO: Allow these tests when feature fix is merged
 describe('Materials - Get trees', () => {
@@ -37,25 +38,9 @@ describe('Materials - Get trees', () => {
 
     h3dataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
 
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
+    app = getApp(moduleFixture);
     await app.init();
-
-    await request(app.getHttpServer())
-      .post('/auth/sign-up')
-      .send(E2E_CONFIG.users.signUp)
-      .expect(HttpStatus.CREATED);
-    const response = await request(app.getHttpServer())
-      .post('/auth/sign-in')
-      .send(E2E_CONFIG.users.signIn)
-      .expect(HttpStatus.CREATED);
-    jwtToken = response.body.accessToken;
+    jwtToken = await saveUserAndGetToken(moduleFixture, app);
 
     await materialToH3Service.delete({});
     await materialRepository.delete({});

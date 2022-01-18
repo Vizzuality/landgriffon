@@ -35,7 +35,7 @@ export class TasksService extends AppBaseService<
 
   get serializerConfig(): JSONAPISerializerConfig<Task> {
     return {
-      attributes: ['timestamp', 'topic', 'status', 'data'],
+      attributes: ['timestamp', 'topic', 'status', 'data', 'errors', 'logs'],
       keyForAttribute: 'camelCase',
     };
   }

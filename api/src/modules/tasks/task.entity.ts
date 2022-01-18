@@ -1,6 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { BaseServiceResource } from 'types/resource.interface';
+import { ApiProperty } from '@nestjs/swagger';
 
 export const taskResource: BaseServiceResource = {
   className: 'Task',
@@ -9,7 +10,7 @@ export const taskResource: BaseServiceResource = {
     plural: 'tasks',
   },
   entitiesAllowedAsIncludes: [],
-  columnsAllowedAsFilter: ['status', 'data'],
+  columnsAllowedAsFilter: ['status', 'data', 'createdBy'],
 };
 
 export enum TASK_STATUS {
@@ -26,9 +27,11 @@ export enum TASK_TYPE {
 
 @Entity()
 export class Task extends TimestampedBaseEntity {
+  @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
+  @ApiProperty()
   @Column({
     type: 'enum',
     enum: TASK_TYPE,
@@ -36,12 +39,15 @@ export class Task extends TimestampedBaseEntity {
   })
   type!: string;
 
+  @ApiProperty()
   @Column({ type: 'uuid' })
   createdBy!: string;
 
+  @ApiProperty()
   @Column({ type: 'enum', enum: TASK_STATUS, default: TASK_STATUS.PROCESSING })
   status!: TASK_STATUS;
 
+  @ApiProperty()
   @Column({ type: 'json' })
   data!: Record<string, any>;
 
@@ -49,9 +55,11 @@ export class Task extends TimestampedBaseEntity {
    * @debt: Define proper typing for the fields below. Add logging to import-process
    */
 
+  @ApiProperty()
   @Column('jsonb', { array: false, default: () => "'[]'" })
   logs!: Array<Record<string, any>>;
 
+  @ApiProperty()
   @Column('jsonb', { array: false, default: () => "'[]'" })
   errors!: Array<Record<string, any>>;
 }

@@ -176,7 +176,7 @@ export class UsersService extends AppBaseService<
     }
   }
 
-  async createUser(createUserDTO: CreateUserDTO) {
+  async createUser(createUserDTO: CreateUserDTO): Promise<Partial<User>> {
     return await this.authenticationService.createUser(createUserDTO);
   }
 }

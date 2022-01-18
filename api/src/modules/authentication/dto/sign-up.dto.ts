@@ -8,7 +8,7 @@ import {
   MaxLength,
   Validate,
 } from 'class-validator';
-import { PasswordValidation } from '../../../decorators/password-validator.decorator';
+import { PasswordValidation } from 'decorators/password-validator.decorator';
 
 /**
  * @todo Allow to provide fname/lname/display name on signup (and any other

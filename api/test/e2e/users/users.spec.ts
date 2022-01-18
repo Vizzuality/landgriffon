@@ -1,10 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  HttpStatus,
-  INestApplication,
-  Logger,
-  ValidationPipe,
-} from '@nestjs/common';
+import { HttpStatus, INestApplication, Logger } from '@nestjs/common';
 import * as faker from 'faker';
 import * as request from 'supertest';
 import { Response } from 'supertest';
@@ -21,6 +16,7 @@ import { UsersModule } from 'modules/users/users.module';
 import { LoginDto } from 'modules/authentication/dto/login.dto';
 import { ApiEventByTopicAndKind } from 'modules/api-events/api-event.topic+kind.entity';
 import { UserRepository } from 'modules/users/user.repository';
+import { getApp } from '../../utils/getApp';
 
 /**
  * Tests for the UsersModule.
@@ -66,14 +62,8 @@ describe('UsersModule (e2e)', () => {
     apiEventsService = moduleFixture.get<ApiEventsService>(ApiEventsService);
     userRepository = moduleFixture.get<UserRepository>(UserRepository);
 
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
+    app = getApp(moduleFixture);
+
     await app.init();
   });
 

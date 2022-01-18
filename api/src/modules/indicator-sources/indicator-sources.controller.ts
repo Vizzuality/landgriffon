@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Post,
-  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -35,11 +34,8 @@ import {
 import { CreateIndicatorSourceDto } from 'modules/indicator-sources/dto/create.indicator-source.dto';
 import { UpdateIndicatorSourceDto } from 'modules/indicator-sources/dto/update.indicator-source.dto';
 import { PaginationMeta } from 'utils/app-base.service';
-import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller(`/api/v1/indicator-sources`)
-@UseGuards(JwtAuthGuard)
 @ApiTags(indicatorSourceResource.className)
 export class IndicatorSourcesController {
   constructor(

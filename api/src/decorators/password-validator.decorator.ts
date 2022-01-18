@@ -7,24 +7,61 @@ import * as config from 'config';
 
 @ValidatorConstraint({ name: 'PasswordValidation', async: false })
 export class PasswordValidation implements ValidatorConstraintInterface {
-  validate(password: string, args: ValidationArguments) {
-    const minLength: number = config.get('password.minLength');
-    const includeUpperCase: boolean = config.get('password.includeUpperCase');
-    const includeNumerics: boolean = config.get('password.includeNumerics');
-    const includeSpecialCharacters: boolean = config.get(
-      'password.includeSpecialCharacters',
+  validate(password: string): boolean {
+    return (
+      PasswordValidation.minLengthCheck(password) &&
+      PasswordValidation.upperCaseCheck(password) &&
+      PasswordValidation.includeNumericsCheck(password) &&
+      PasswordValidation.includeSpecialCharactersCheck(password)
     );
-
-    if (minLength > password.length) return false;
-    if (includeUpperCase && password.toLowerCase() === password) return false;
-    if (includeNumerics && !/\d/.test(password)) return false;
-    if (includeSpecialCharacters && !/(?=.*[!@#$%^&*])/.test(password))
-      return false;
-
-    return true;
   }
 
-  defaultMessage(args: ValidationArguments) {
-    return 'Weak password';
+  private static minLengthCheck(password: string): boolean {
+    const minLength: number = +`${config.get('password.minLength')}`;
+    return minLength <= password.length;
+  }
+
+  private static upperCaseCheck(password: string): boolean {
+    const includeUpperCase: boolean =
+      `${config.get('password.includeUpperCase')}`.toLowerCase() === 'true';
+    return !(includeUpperCase && password.toLowerCase() === password);
+  }
+
+  private static includeNumericsCheck(password: string): boolean {
+    const includeNumerics: boolean =
+      `${config.get('password.includeNumerics')}`.toLowerCase() === 'true';
+    return !(includeNumerics && !/\d/.test(password));
+  }
+
+  private static includeSpecialCharactersCheck(password: string): boolean {
+    const includeSpecialCharacters: boolean =
+      `${config.get('password.includeSpecialCharacters')}`.toLowerCase() ===
+      'true';
+
+    return !(includeSpecialCharacters && !/(?=.*[!@#$%^&*])/.test(password));
+  }
+
+  defaultMessage(args: ValidationArguments): string {
+    const password: string = args.value;
+    let message: string = '';
+
+    if (!PasswordValidation.minLengthCheck(password))
+      message += `Password too short , minimal length is ${config.get(
+        'password.minLength',
+      )}.`;
+    if (!PasswordValidation.upperCaseCheck(password))
+      message += `${
+        message.length === 0 ? '' : ' '
+      }Password must contain at least 1 upper case letter.`;
+    if (!PasswordValidation.includeNumericsCheck(password))
+      message += `${
+        message.length === 0 ? '' : ' '
+      }Password must contain at least 1 numeric character.`;
+    if (!PasswordValidation.includeSpecialCharactersCheck(password))
+      message += `${
+        message.length === 0 ? '' : ' '
+      }Password must contain at least 1 special character (!@#$%^&*).`;
+
+    return message;
   }
 }

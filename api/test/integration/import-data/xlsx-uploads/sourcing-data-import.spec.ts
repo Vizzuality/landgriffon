@@ -40,6 +40,9 @@ import { h3BasicFixture } from '../../../e2e/h3-data/mocks/h3-fixtures';
 import { SourcingDataImportService } from 'modules/import-data/sourcing-data/sourcing-data-import.service';
 import { FileService } from 'modules/import-data/file.service';
 import { E2E_CONFIG } from '../../../e2e.config'
+import { saveUserAndGetToken } from '../../../utils/userAuth';
+import { getApp } from '../../../utils/getApp';
+import { ImportDataService } from '../../../../src/modules/import-data/import-data.service';
 let tablesToDrop: string[] = [];
 
 let missingDataFallbackPolicy: string = 'error';

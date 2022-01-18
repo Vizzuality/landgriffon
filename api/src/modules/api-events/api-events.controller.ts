@@ -6,11 +6,9 @@ import {
   Param,
   Post,
   Req,
-  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
   ApiForbiddenResponse,
@@ -39,7 +37,6 @@ import { CreateApiEventDTO } from 'modules/api-events/dto/create.api-event.dto';
 import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/api-events`)
-@UseGuards(AuthGuard('jwt'))
 @ApiTags('ApiEvents')
 @ApiBearerAuth()
 export class ApiEventsController {

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { H3DataModule } from 'modules/h3-data/h3-data.module';
@@ -9,7 +9,8 @@ import {
   deleteImpactMapMockData,
   ImpactMapMockData,
 } from './mocks/h3-impact-map.mock';
-import { E2E_CONFIG } from '../../e2e.config';
+import { saveUserAndGetToken } from '../../utils/userAuth';
+import { getApp } from '../../utils/getApp';
 
 /**
  * Tests for the h3 impact map.
@@ -27,25 +28,9 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       imports: [AppModule, H3DataModule],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
+    app = getApp(moduleFixture);
     await app.init();
-
-    await request(app.getHttpServer())
-      .post('/auth/sign-up')
-      .send(E2E_CONFIG.users.signUp)
-      .expect(HttpStatus.CREATED);
-    const response = await request(app.getHttpServer())
-      .post('/auth/sign-in')
-      .send(E2E_CONFIG.users.signIn)
-      .expect(HttpStatus.CREATED);
-    jwtToken = response.body.accessToken;
+    jwtToken = await saveUserAndGetToken(moduleFixture, app);
 
     impactMapMockData = await createImpactMapMockData();
   });

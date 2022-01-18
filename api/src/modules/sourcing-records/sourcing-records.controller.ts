@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Post,
-  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -35,11 +34,8 @@ import {
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sourcing-record.dto';
 import { PaginationMeta } from 'utils/app-base.service';
-import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller(`/api/v1/sourcing-records`)
-@UseGuards(JwtAuthGuard)
 @ApiTags(sourcingRecordResource.className)
 export class SourcingRecordsController {
   constructor(public readonly sourcingRecordsService: SourcingRecordsService) {}

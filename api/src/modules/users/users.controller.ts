@@ -6,7 +6,6 @@ import {
   Patch,
   Post,
   Request,
-  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { User, userResource, UserResult } from 'modules/users/user.entity';
@@ -22,7 +21,6 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'guards/jwt-auth.guard';
 import { RequestWithAuthenticatedUser } from 'app.controller';
 import { JSONAPIQueryParams } from 'decorators/json-api-parameters.decorator';
 import {
@@ -32,9 +30,8 @@ import {
 import { UpdateUserDTO } from 'modules/users/dto/update.user.dto';
 import { UpdateUserPasswordDTO } from 'modules/users/dto/update.user-password';
 import { PaginationMeta } from 'utils/app-base.service';
-import { CreateUserDTO } from './dto/create.user.dto';
+import { CreateUserDTO } from 'modules/users/dto/create.user.dto';
 
-@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 @ApiTags(userResource.className)
 @Controller(`/api/v1/users`)

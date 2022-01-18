@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { Unit } from 'modules/units/unit.entity';
 import { UnitsModule } from 'modules/units/units.module';
 import { UnitRepository } from 'modules/units/unit.repository';
-import { E2E_CONFIG } from '../../e2e.config';
+import { saveUserAndGetToken } from '../../utils/userAuth';
+import { getApp } from '../../utils/getApp';
 
 /**
  * Tests for the UnitsModule.
@@ -23,25 +24,9 @@ describe('UnitsModule (e2e)', () => {
 
     unitRepository = moduleFixture.get<UnitRepository>(UnitRepository);
 
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
+    app = getApp(moduleFixture);
     await app.init();
-
-    const user = await request(app.getHttpServer())
-      .post('/auth/sign-up')
-      .send(E2E_CONFIG.users.signUp)
-      .expect(HttpStatus.CREATED);
-    const response = await request(app.getHttpServer())
-      .post('/auth/sign-in')
-      .send(E2E_CONFIG.users.signIn)
-      .expect(HttpStatus.CREATED);
-    jwtToken = response.body.accessToken;
+    jwtToken = await saveUserAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {

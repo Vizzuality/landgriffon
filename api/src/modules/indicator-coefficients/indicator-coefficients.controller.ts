@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Post,
-  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -35,11 +34,8 @@ import {
 import { CreateIndicatorCoefficientDto } from 'modules/indicator-coefficients/dto/create.indicator-coefficient.dto';
 import { UpdateIndicatorCoefficientDto } from 'modules/indicator-coefficients/dto/update.indicator-coefficient.dto';
 import { PaginationMeta } from 'utils/app-base.service';
-import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller(`/api/v1/indicator-coefficients`)
-@UseGuards(JwtAuthGuard)
 @ApiTags(indicatorCoefficientResource.className)
 export class IndicatorCoefficientsController {
   constructor(

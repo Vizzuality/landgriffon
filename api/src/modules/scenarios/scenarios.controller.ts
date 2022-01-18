@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Post,
-  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { ScenariosService } from 'modules/scenarios/scenarios.service';
@@ -31,11 +30,8 @@ import { Scenario, scenarioResource } from 'modules/scenarios/scenario.entity';
 import { CreateScenarioDto } from 'modules/scenarios/dto/create.scenario.dto';
 import { UpdateScenarioDto } from 'modules/scenarios/dto/update.scenario.dto';
 import { PaginationMeta } from 'utils/app-base.service';
-import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller(`/api/v1/scenarios`)
-@UseGuards(JwtAuthGuard)
 @ApiTags(scenarioResource.className)
 export class ScenariosController {
   constructor(public readonly scenariosService: ScenariosService) {}

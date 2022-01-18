@@ -266,7 +266,7 @@ export class AuthenticationService {
 
   private async checkEmail(email: string): Promise<void> {
     const user: User | undefined = await this.userRepository.findByEmail(email);
-    if (user) {
+    if (user && !user.isDeleted) {
       throw new ConflictException('Email already exists.');
     }
   }

@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Post,
-  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -35,11 +34,8 @@ import {
 import { CreateGeoRegionDto } from 'modules/geo-regions/dto/create.geo-region.dto';
 import { UpdateGeoRegionDto } from 'modules/geo-regions/dto/update.geo-region.dto';
 import { PaginationMeta } from 'utils/app-base.service';
-import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller(`/api/v1/geo-regions`)
-@UseGuards(JwtAuthGuard)
 @ApiTags(geoRegionResource.className)
 export class GeoRegionsController {
   constructor(public readonly geoRegionsService: GeoRegionsService) {}

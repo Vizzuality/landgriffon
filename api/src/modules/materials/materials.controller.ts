@@ -7,7 +7,6 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -37,11 +36,8 @@ import { MaterialRepository } from 'modules/materials/material.repository';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
 import { ParseOptionalIntPipe } from 'pipes/parse-optional-int.pipe';
 import { PaginationMeta } from 'utils/app-base.service';
-import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller(`/api/v1/materials`)
-@UseGuards(JwtAuthGuard)
 @ApiTags(materialResource.className)
 export class MaterialsController {
   constructor(

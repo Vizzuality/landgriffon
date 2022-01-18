@@ -33,13 +33,19 @@ services:
       - DB_PASSWORD=${API_POSTGRES_PASSWORD}
       - DB_DATABASE=${API_POSTGRES_DATABASE}
       - DB_SYNCHRONIZE=${API_DB_SYNCHRONIZE}
+      - REDIS_HOST=${API_REDIS_SERVICE_HOST}
       - JWT_SECRET=${API_AUTH_JWT_SECRET}
     depends_on:
       - postgresql
       - redis
 
   redis:
-    image: redis:6.0.9-alpine3.12
+    build:
+      context: ./redis
+      dockerfile: Dockerfile
+    hostname: redis
+    container_name: landgriffon-redis
+    command: [ "redis-server" ]
     ports:
       - "${API_REDIS_SERVICE_PORT}:6379"
     restart: on-failure

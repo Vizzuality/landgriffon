@@ -57,6 +57,10 @@ export class AdminRegionsService extends AppBaseService<
     return found;
   }
 
+  async findAllUnpaginated(): Promise<AdminRegion[]> {
+    return this.adminRegionRepository.find();
+  }
+
   async findTreesWithOptions(
     args?: FindTreesWithOptionsArgs,
   ): Promise<AdminRegion[]> {
@@ -116,5 +120,9 @@ export class AdminRegionsService extends AppBaseService<
     return this.adminRegionRepository.getClosestAdminRegionByCoordinates(
       coordinates,
     );
+  }
+
+  async getAdminRegionByIds(ids: string[]): Promise<AdminRegion[]> {
+    return this.adminRegionRepository.findByIds(ids);
   }
 }

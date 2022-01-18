@@ -2,13 +2,15 @@ import { EntityRepository } from 'typeorm';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-region.dto';
-import { NotFoundException } from '@nestjs/common';
+import { Logger, NotFoundException } from '@nestjs/common';
 
 @EntityRepository(AdminRegion)
 export class AdminRegionRepository extends ExtendedTreeRepository<
   AdminRegion,
   CreateAdminRegionDto
 > {
+  logger: Logger = new Logger(AdminRegionRepository.name);
+
   async getAdminRegionAndGeoRegionIdByCoordinatesAndLevel(searchParams: {
     lng: number;
     lat: number;
@@ -30,6 +32,9 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
     );
 
     if (!res.length) {
+      this.logger.error(
+        `Could not retrieve a Admin Region with LEVEL ${searchParams.level} and Coordinates: LAT: ${searchParams.lat} LONG: ${searchParams.lng}`,
+      );
       throw new NotFoundException(
         `No Admin Region where coordinates ${searchParams.lat}, ${searchParams.lng} are could been found`,
       );
@@ -39,7 +44,7 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
 
   /**
    * @description: Get the closest available geometry given some coordinates.
-   * @note We don't know the adminRegion.level here so we use PostGIS ST_DWithin and ST_DistanceSphere
+   * @note We don't know the adminRegion.level here so we just order the results by this field and get the most accurate one (with the higher level value)
    *       Limiting the result to 3 as we only have 3 levels of admin regions
    *       Then we take the most accurate geometry (the higher value of adminRegion.level)
    */
@@ -60,17 +65,27 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
           st_setsrid($1::geometry, 4326),
           st_setsrid(g."theGeom"::geometry, 4326)
           )
-        AND ST_DWithin(g."theGeom" , st_setsrid($1::geometry, 4326), 1000)
-        AND a.level IS NOT NULL
         ORDER BY a.level DESC
-        LIMIT 1`,
+        LIMIT 3`,
       [`POINT(${coordinates.lng} ${coordinates.lat})`],
     );
+
     if (!res.length) {
+      this.logger.error(
+        `Could not find any Admin Region that intersects with Coordinates: LAT: ${coordinates.lat} LONG: ${coordinates.lng}`,
+      );
       throw new NotFoundException(
         `No Admin Region where coordinates ${coordinates.lat}, ${coordinates.lng} are could been found`,
       );
     }
-    return res[0];
+
+    /**
+     * In this case we can get an Intersection with the radius created by this sourcing location so we get the highest level
+     * as doing this is more performant that getting the geometry and intersecting with it
+     */
+
+    return res.reduce(function (previous: any, current: any) {
+      return previous.level > current.level ? previous : current;
+    });
   }
 }

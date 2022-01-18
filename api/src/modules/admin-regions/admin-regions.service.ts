@@ -117,4 +117,8 @@ export class AdminRegionsService extends AppBaseService<
       coordinates,
     );
   }
+
+  async getAdminRegionByIds(ids: string[]): Promise<AdminRegion[]> {
+    return this.adminRegionRepository.findByIds(ids);
+  }
 }

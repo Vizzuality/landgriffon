@@ -12,6 +12,9 @@ import { AppInfoDTO } from 'dto/info.dto';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update.sourcing-location.dto';
+import { Material } from 'modules/materials/material.entity';
+import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
+import { Supplier } from 'modules/suppliers/supplier.entity';
 
 @Injectable()
 export class SourcingLocationsService extends AppBaseService<
@@ -82,5 +85,63 @@ export class SourcingLocationsService extends AppBaseService<
     );
 
     return await this.sourcingLocationRepository.save(sourcingLocation as any);
+  }
+
+  /**
+   * @description Retrieve Ids of all required Entities and its Parent's present in Sourcing-Locations
+   * There is no rightJoin in the ORM to let us get and map the entities from this side
+   */
+
+  async getMaterialIdsAndParentIds(): Promise<string[]> {
+    const materialIds: { materialId: string }[] =
+      await this.sourcingLocationRepository
+        .createQueryBuilder('sl')
+        .select('m.id', 'materialId')
+        .addSelect('m.parent')
+        .distinct(true)
+        .innerJoin(Material, 'm', 'sl.materialId = m.id')
+        .getRawMany();
+
+    return materialIds.map(
+      (materialIdObject: { materialId: string }): string =>
+        materialIdObject.materialId,
+    );
+  }
+
+  async getAdminRegionIdsAndParentIds(): Promise<string[]> {
+    const adminRegionIds: { adminRegionId: string }[] =
+      await this.sourcingLocationRepository
+        .createQueryBuilder('sl')
+        .select('ar.id', 'adminRegionId')
+        .addSelect('ar.parent')
+        .distinct(true)
+        .innerJoin(AdminRegion, 'ar', 'sl.adminRegionId = ar.id')
+        .getRawMany();
+
+    return adminRegionIds.map(
+      (adminRegionObject: { adminRegionId: string }): string =>
+        adminRegionObject.adminRegionId,
+    );
+  }
+
+  async getSupplierIdsAndParentIds(): Promise<string[]> {
+    const supplierIds: { supplierIds: string }[] =
+      await this.sourcingLocationRepository
+        .createQueryBuilder('sl')
+        .select('supplier.id', 'supplierIds')
+        .addSelect('supplier.parent')
+        .distinct(true)
+        .innerJoin(
+          Supplier,
+          'supplier',
+          '(supplier.id = sl.t1SupplierId OR supplier.id = sl.producerId)',
+        )
+        .where('sl.t1SupplierId IS NOT NULL')
+        .andWhere('sl.producerId IS NOT NULL')
+        .getRawMany();
+
+    return supplierIds.map(
+      (supplierIds: { supplierIds: string }): string => supplierIds.supplierIds,
+    );
   }
 }

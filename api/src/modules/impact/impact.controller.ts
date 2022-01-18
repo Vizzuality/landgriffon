@@ -5,15 +5,12 @@ import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ImpactTable } from 'modules/impact/dto/response-impact-table.dto';
 import { ParseOptionalIntPipe } from 'pipes/parse-optional-int.pipe';
 import { Material } from 'modules/materials/material.entity';
-import { MaterialsService } from 'modules/materials/materials.service';
+import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 
 @Controller('/api/v1/impact')
 @ApiTags('Impact')
 export class ImpactController {
-  constructor(
-    public readonly impactService: ImpactService,
-    public readonly materialsService: MaterialsService,
-  ) {}
+  constructor(private readonly impactService: ImpactService) {}
 
   @ApiOperation({
     description: 'Get data for Impact Table',
@@ -31,18 +28,29 @@ export class ImpactController {
     return { data: impactTable };
   }
 
-  @ApiOperation({ description: 'Return materials imported by a User' })
+  @ApiOperation({ description: 'Return materials loaded by a user' })
   @ApiOkResponse({
     type: Material,
     isArray: true,
   })
   @Get('materials')
-  async getMaterialsForImpact(
+  async getMaterialTreeForImpact(
     @Query('depth', ParseOptionalIntPipe) depth?: number,
   ): Promise<Material[]> {
-    const results: Material[] =
-      await this.materialsService.getMaterialsForImpact();
-    //return this.materialsService.serialize(results);
-    return results;
+    return this.impactService.getMaterialTreeForImpact(depth);
+  }
+
+  @Get('admin-regions')
+  async getAdminRegionTreeForImpact(
+    @Query('depth', ParseOptionalIntPipe) depth?: number,
+  ): Promise<AdminRegion[]> {
+    return this.impactService.getAdminRegionTreeForImpact(depth);
+  }
+
+  @Get('suppliers')
+  async getSupplierTreeForImpact(
+    @Query('depth', ParseOptionalIntPipe) depth?: number,
+  ): Promise<AdminRegion[]> {
+    return this.impactService.getSupplierTreeForImpact(depth);
   }
 }

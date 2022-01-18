@@ -84,4 +84,12 @@ export class SuppliersService extends AppBaseService<
   async clearTable(): Promise<void> {
     await this.supplierRepository.delete({});
   }
+
+  async getSuppliersByIds(ids: string[]): Promise<Supplier[]> {
+    return this.supplierRepository.findByIds(ids);
+  }
+
+  async findTreesWithOptions(depth?: number): Promise<Supplier[]> {
+    return this.supplierRepository.findTrees({ depth });
+  }
 }

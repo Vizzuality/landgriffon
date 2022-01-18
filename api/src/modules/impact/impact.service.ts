@@ -12,6 +12,12 @@ import {
   ImpactTablePurchasedTonnes,
   ImpactTableRows,
 } from 'modules/impact/dto/response-impact-table.dto';
+import { MaterialsService } from 'modules/materials/materials.service';
+import { Material } from 'modules/materials/material.entity';
+import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
+import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
+import { Supplier } from 'modules/suppliers/supplier.entity';
+import { SuppliersService } from 'modules/suppliers/suppliers.service';
 
 @Injectable()
 export class ImpactService {
@@ -20,9 +26,12 @@ export class ImpactService {
   logger: Logger = new Logger(ImpactService.name);
 
   constructor(
-    public readonly indicatorService: IndicatorsService,
-    public readonly sourcingRecordService: SourcingRecordsService,
-    public readonly sourcingLocationService: SourcingLocationsService,
+    private readonly indicatorService: IndicatorsService,
+    private readonly sourcingRecordService: SourcingRecordsService,
+    private readonly sourcingLocationService: SourcingLocationsService,
+    private readonly materialsService: MaterialsService,
+    private readonly adminRegionsService: AdminRegionsService,
+    private readonly suppliersService: SuppliersService,
   ) {}
   async getImpactTable(
     impactTableDto: GetImpactTableDto,
@@ -162,5 +171,121 @@ export class ImpactService {
       }
     });
     return purchasedTonnes;
+  }
+
+  /**
+   *
+   * @description Get a tree of Materials imported by a User
+   */
+
+  async getMaterialTreeForImpact(depth?: number): Promise<Material[]> {
+    const materialIdsFromSourcingLocations: string[] =
+      await this.sourcingLocationService.getMaterialIdsAndParentIds();
+    const materialsFromSourcingLocations: Material[] =
+      await this.materialsService.getMaterialsById(
+        materialIdsFromSourcingLocations,
+      );
+    const fullMaterialTree: Material[] =
+      await this.materialsService.findTreesWithOptions({ depth });
+    const newTree: Material[] = this._createTreeForImpact<Material>(
+      fullMaterialTree,
+      materialsFromSourcingLocations,
+    );
+    return this.materialsService.serialize(newTree);
+  }
+
+  /**
+   *
+   * @description Get a tree of AdminRegions imported by a User
+   */
+
+  async getAdminRegionTreeForImpact(depth?: number): Promise<AdminRegion[]> {
+    const adminRegionIdsFromSourcingLocations: string[] =
+      await this.sourcingLocationService.getAdminRegionIdsAndParentIds();
+    const adminRegionsFromSourcingLocations: AdminRegion[] =
+      await this.adminRegionsService.getAdminRegionByIds(
+        adminRegionIdsFromSourcingLocations,
+      );
+    const fullAdminRegionTree: AdminRegion[] =
+      await this.adminRegionsService.findTreesWithOptions({ depth });
+    const newTree: AdminRegion[] = this._createTreeForImpact<AdminRegion>(
+      fullAdminRegionTree,
+      adminRegionsFromSourcingLocations,
+    );
+    return this.adminRegionsService.serialize(newTree);
+  }
+
+  /**
+   *
+   * @description Get a tree of Suppliers imported by a User
+   */
+
+  async getSupplierTreeForImpact(depth?: number): Promise<any> {
+    const supplierIdsFromSourcingLocations: string[] =
+      await this.sourcingLocationService.getSupplierIdsAndParentIds();
+    const suppliersFromSourcingLocations: Supplier[] =
+      await this.suppliersService.getSuppliersByIds(
+        supplierIdsFromSourcingLocations,
+      );
+    const fullSupplierTree: Supplier[] =
+      await this.suppliersService.findTreesWithOptions(depth);
+
+    const newTree: Supplier[] = this._createTreeForImpact<Supplier>(
+      fullSupplierTree,
+      suppliersFromSourcingLocations,
+    );
+    return this.suppliersService.serialize(newTree);
+  }
+
+  private _createTreeForImpact<
+    T extends { id: string; parentId?: string; children: T[] },
+  >(entityTree: T[], sourcingEntity: T[]): T[] {
+    const flatteneEntityTree: T[] = this._flattenTree<T>(entityTree);
+    let matchingEntities: T[] = [];
+    sourcingEntity.forEach((sourceEntity: T) => {
+      // Find all parents
+      matchingEntities.push(
+        flatteneEntityTree.find(
+          (parentEntityToFind: T) =>
+            sourceEntity.parentId === parentEntityToFind.id,
+        ) as T,
+      );
+      matchingEntities = [...matchingEntities.filter(Boolean)];
+      // Find all children
+      matchingEntities.push(
+        flatteneEntityTree.find(
+          (childEntityToFind: T) => sourceEntity.id === childEntityToFind.id,
+        ) as T,
+      );
+    });
+    // Rebuild tree
+    const hashMap: Record<any, any> = {};
+    const newTree: T[] = [];
+    matchingEntities.forEach((entity: T) => (hashMap[entity.id] = entity));
+    matchingEntities.forEach((entity: T) => {
+      if (entity.parentId) {
+        hashMap[entity.parentId].children.push(hashMap[entity.id]);
+      } else newTree.push(hashMap[entity.id]);
+    });
+    return newTree;
+  }
+
+  /**
+   * @description Recursively flatten a tree
+   * @param entityArray Array of entities of given type
+   * @private
+   */
+  private _flattenTree<
+    T extends { id: string; parentId?: string; children: T[] },
+  >(entityArray: T[]): T[] {
+    return entityArray.reduce((acc: T[], cur: T) => {
+      if (cur.children?.length) {
+        acc = acc.concat(this._flattenTree(cur.children));
+      }
+      cur.children = [];
+      acc.push(cur);
+
+      return acc;
+    }, []);
   }
 }

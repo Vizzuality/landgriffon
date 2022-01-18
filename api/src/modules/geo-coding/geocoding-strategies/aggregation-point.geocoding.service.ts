@@ -26,8 +26,8 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
         await this.geoRegionService.saveGeoRegionAsRadius({
           name: sourcingData.locationCountryInput,
           coordinates: {
-            lat: sourcingData.locationLatitude,
             lng: sourcingData.locationLongitude,
+            lat: sourcingData.locationLatitude,
           },
         });
 

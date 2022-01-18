@@ -93,9 +93,8 @@ export class SuppliersController {
   async getTrees(
     @Query('depth', ParseOptionalIntPipe) depth?: number,
   ): Promise<Supplier> {
-    const results: Supplier[] = await this.suppliersRepository.findTrees({
-      depth,
-    });
+    const results: Supplier[] =
+      await this.suppliersService.findTreesWithOptions(depth);
     return this.suppliersService.serialize(results);
   }
 

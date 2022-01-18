@@ -12,6 +12,12 @@ import {
   ImpactTablePurchasedTonnes,
   ImpactTableRows,
 } from 'modules/impact/dto/response-impact-table.dto';
+import { MaterialsService } from 'modules/materials/materials.service';
+import { Material } from 'modules/materials/material.entity';
+import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
+import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
+import { Supplier } from 'modules/suppliers/supplier.entity';
+import { SuppliersService } from 'modules/suppliers/suppliers.service';
 
 @Injectable()
 export class ImpactService {
@@ -20,10 +26,14 @@ export class ImpactService {
   logger: Logger = new Logger(ImpactService.name);
 
   constructor(
-    public readonly indicatorService: IndicatorsService,
-    public readonly sourcingRecordService: SourcingRecordsService,
-    public readonly sourcingLocationService: SourcingLocationsService,
+    private readonly indicatorService: IndicatorsService,
+    private readonly sourcingRecordService: SourcingRecordsService,
+    private readonly sourcingLocationService: SourcingLocationsService,
+    private readonly materialsService: MaterialsService,
+    private readonly adminRegionsService: AdminRegionsService,
+    private readonly suppliersService: SuppliersService,
   ) {}
+
   async getImpactTable(
     impactTableDto: GetImpactTableDto,
   ): Promise<ImpactTable> {
@@ -162,5 +172,102 @@ export class ImpactService {
       }
     });
     return purchasedTonnes;
+  }
+
+  /**
+   *
+   * @description Get a tree of Materials imported by a User
+   */
+
+  async getMaterialTreeForImpact(): Promise<Material[]> {
+    const materialIdsFromSourcingLocations: string[] =
+      await this.sourcingLocationService.getMaterialIdsAndParentIds();
+    const allMaterials: Material[] =
+      await this.materialsService.findAllUnpaginated();
+    const materialLineage: Material[] = this.getAncestry<Material>(
+      allMaterials,
+      materialIdsFromSourcingLocations,
+    );
+    return this.materialsService.serialize(
+      this.buildTree<Material>(materialLineage, null),
+    );
+  }
+
+  /**
+   *
+   * @description Get a tree of AdminRegions imported by a User
+   */
+
+  async getAdminRegionTreeForImpact(): Promise<any> {
+    const adminRegionIdsFromSourcingLocations: string[] =
+      await this.sourcingLocationService.getAdminRegionIdsAndParentIds();
+    const allAdminRegions: AdminRegion[] =
+      await this.adminRegionsService.findAllUnpaginated();
+    const adminRegionLineage: AdminRegion[] = this.getAncestry<AdminRegion>(
+      allAdminRegions,
+      adminRegionIdsFromSourcingLocations,
+    );
+
+    return this.adminRegionsService.serialize(
+      this.buildTree<AdminRegion>(adminRegionLineage, null),
+    );
+  }
+
+  /**
+   *
+   * @description Get a tree of Suppliers imported by a User
+   */
+
+  async getSupplierTreeForImpact(): Promise<any> {
+    const supplierIdsFromSourcingLocations: string[] =
+      await this.sourcingLocationService.getSupplierIdsAndParentIds();
+    const allSuppliers: Supplier[] =
+      await this.suppliersService.findAllUnpaginated();
+    const supplierLineage: Supplier[] = this.getAncestry<Supplier>(
+      allSuppliers,
+      supplierIdsFromSourcingLocations,
+    );
+    return this.suppliersService.serialize(
+      this.buildTree<Supplier>(supplierLineage, null),
+    );
+  }
+
+  getAncestry<T extends { id: string; parentId?: string; children?: T[] }>(
+    entityArray: T[],
+    relevantItemIds: string[],
+  ): T[] {
+    const relevantItems: T[] = entityArray.filter((entity: T) =>
+      relevantItemIds.includes(entity.id),
+    );
+    for (const element of relevantItems) {
+      if (element.parentId) {
+        relevantItems.push(
+          entityArray.find((entity: T) => entity.id === element.parentId) as T,
+        );
+      }
+    }
+    const uniqueElements: T[] = [
+      ...new Map(relevantItems.map((v: T) => [v.id, v])).values(),
+    ];
+
+    return uniqueElements;
+  }
+
+  private buildTree<T extends { id: string; parentId?: string; children: T[] }>(
+    nodes: T[],
+    parentId: string | null,
+  ): T[] {
+    return nodes
+      .filter((node: T) => node.parentId === parentId)
+      .reduce(
+        (tree: T[], node: T) => [
+          ...tree,
+          {
+            ...node,
+            children: this.buildTree(nodes, node.id),
+          },
+        ],
+        [],
+      );
   }
 }

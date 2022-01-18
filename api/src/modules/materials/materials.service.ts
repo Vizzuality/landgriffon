@@ -10,6 +10,7 @@ import { MaterialRepository } from 'modules/materials/material.repository';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { UpdateMaterialDto } from 'modules/materials/dto/update.material.dto';
 import { FindTreesWithOptionsArgs } from 'utils/tree.repository';
+import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 
 @Injectable()
 export class MaterialsService extends AppBaseService<
@@ -21,6 +22,7 @@ export class MaterialsService extends AppBaseService<
   constructor(
     @InjectRepository(MaterialRepository)
     protected readonly materialRepository: MaterialRepository,
+    protected readonly sourcingLocationsService: SourcingLocationsService,
   ) {
     super(
       materialRepository,
@@ -70,8 +72,8 @@ export class MaterialsService extends AppBaseService<
     } else {
       if (root.children) {
         root.children.forEach((child: Material) => {
-          const foo: Material[] = this.filterMaterialTree(child);
-          result = result.concat(foo);
+          const material: Material[] = this.filterMaterialTree(child);
+          result = result.concat(material);
         });
         root.children = result;
       }

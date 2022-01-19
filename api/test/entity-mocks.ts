@@ -22,6 +22,7 @@ import {
   MaterialToH3,
 } from 'modules/materials/material-to-h3.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
+import { Task, TASK_STATUS, TASK_TYPE } from 'modules/tasks/task.entity';
 
 async function createAdminRegion(
   additionalData: Partial<AdminRegion> = {},
@@ -280,6 +281,17 @@ async function createSourcingRecord(
   return sourcingRecord.save();
 }
 
+async function createTask(status: TASK_STATUS) {
+  const task: Task = new Task();
+  task.createdBy = '2a833cc7-5a6f-492d-9a60-0d6d056923ea';
+  task.type = TASK_TYPE.SOURCING_DATA_IMPORT;
+  task.status = status;
+  task.data = {
+    filename: 'fakeFile.xlsx',
+  };
+  return task.save();
+}
+
 async function createUnit(additionalData: Partial<Unit> = {}): Promise<Unit> {
   const unit = Unit.merge(
     new Unit(),
@@ -321,6 +333,7 @@ export {
   createSourcingLocation,
   createSourcingLocationGroup,
   createSourcingRecord,
+  createTask,
   createUnit,
   createUnitConversion,
   createGeoRegion,

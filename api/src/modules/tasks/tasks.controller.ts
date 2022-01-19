@@ -41,7 +41,7 @@ export class TasksController {
   @Get()
   async findAll(
     // To implement once Auth is merged:
-    //@Req() request: Request,
+    //@GetUser() user: User,
     @ProcessFetchSpecification({
       allowedFilters: taskResource.columnsAllowedAsFilter,
     })
@@ -49,9 +49,9 @@ export class TasksController {
   ): Promise<Task> {
     // To implement once Auth is merged:
     // fetchSpecification.filter
-    //   ? (fetchSpecification.filter.createdBy = [request.user.id])
+    //   ? (fetchSpecification.filter.createdBy = [user.id])
     //   : (fetchSpecification.filter = {
-    //       createdBy: [request.user.id],
+    //       createdBy: [user.id],
     //     });
     const results: {
       data: (Partial<Task> | undefined)[];

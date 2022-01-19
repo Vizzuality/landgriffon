@@ -5,6 +5,7 @@ import { AppModule } from 'app.module';
 import { Task, TASK_STATUS, TASK_TYPE } from 'modules/tasks/task.entity';
 import { TasksModule } from 'modules/tasks/tasks.module';
 import { TasksRepository } from 'modules/tasks/tasks.repository';
+import { createTask } from '../../entity-mocks';
 
 /**
  * Tests for Tasks Module.
@@ -89,14 +90,7 @@ describe('Tasks Module (e2e)', () => {
 
   describe('Tasks - Update', () => {
     test('Updating a task should be successful (happy case)', async () => {
-      const task: Task = new Task();
-      task.createdBy = '2a833cc7-5a6f-492d-9a60-0d6d056923ea';
-      task.type = TASK_TYPE.SOURCING_DATA_IMPORT;
-      task.status = TASK_STATUS.PROCESSING;
-      task.data = {
-        filename: 'fakeFile.xlsx',
-      };
-      await task.save();
+      const task: Task = await createTask(TASK_STATUS.PROCESSING);
 
       const response = await request(app.getHttpServer())
         .put(`/api/v1/tasks`)
@@ -116,15 +110,8 @@ describe('Tasks Module (e2e)', () => {
       );
     });
 
-    test('Updating a task without task id and new status should return proper error message', async () => {
-      const task: Task = new Task();
-      task.createdBy = '2a833cc7-5a6f-492d-9a60-0d6d056923ea';
-      task.type = TASK_TYPE.SOURCING_DATA_IMPORT;
-      task.status = TASK_STATUS.PROCESSING;
-      task.data = {
-        filename: 'fakeFile.xlsx',
-      };
-      await task.save();
+    test('Updating a task without task id should return proper error message', async () => {
+      await createTask(TASK_STATUS.PROCESSING);
 
       const response = await request(app.getHttpServer())
         .put(`/api/v1/tasks`)
@@ -134,26 +121,14 @@ describe('Tasks Module (e2e)', () => {
       expect(response).toHaveErrorMessage(
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
-        [
-          'taskId must be a UUID',
-          'taskId should not be empty',
-          'newStatus must be a string',
-          'newStatus should not be empty',
-        ],
+        ['taskId must be a UUID', 'taskId should not be empty'],
       );
     });
   });
 
   describe('Task - Delete', () => {
     test('Deleting a task should be successful (happy case)', async () => {
-      const task: Task = new Task();
-      task.createdBy = '2a833cc7-5a6f-492d-9a60-0d6d056923ea';
-      task.type = TASK_TYPE.SOURCING_DATA_IMPORT;
-      task.status = TASK_STATUS.PROCESSING;
-      task.data = {
-        filename: 'fakeFile.xlsx',
-      };
-      await task.save();
+      const task: Task = await createTask(TASK_STATUS.PROCESSING);
 
       await request(app.getHttpServer())
         .delete(`/api/v1/tasks/${task.id}`)
@@ -166,23 +141,8 @@ describe('Tasks Module (e2e)', () => {
 
   describe('Task - Find all', () => {
     test('Retrieving should be successful (happy case)', async () => {
-      const task1: Task = new Task();
-      task1.createdBy = '2a833cc7-5a6f-492d-9a60-0d6d056923ea';
-      task1.type = TASK_TYPE.SOURCING_DATA_IMPORT;
-      task1.status = TASK_STATUS.PROCESSING;
-      task1.data = {
-        filename: 'fakeFile.xlsx',
-      };
-      await task1.save();
-
-      const task2: Task = new Task();
-      task2.createdBy = '2a833cc7-5a6f-492d-9a60-0d6d056923bb';
-      task2.type = TASK_TYPE.SOURCING_DATA_IMPORT;
-      task2.status = TASK_STATUS.PROCESSING;
-      task2.data = {
-        filename: 'fakeFile2.xlsx',
-      };
-      await task2.save();
+      const task1: Task = await createTask(TASK_STATUS.PROCESSING);
+      const task2: Task = await createTask(TASK_STATUS.FAILED);
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/tasks`)
@@ -196,14 +156,7 @@ describe('Tasks Module (e2e)', () => {
 
   describe('Task - Get by id', () => {
     test('Retrieving a task by id should be successful (happy case)', async () => {
-      const task: Task = new Task();
-      task.createdBy = '2a833cc7-5a6f-492d-9a60-0d6d056923ea';
-      task.type = TASK_TYPE.SOURCING_DATA_IMPORT;
-      task.status = TASK_STATUS.ABORTED;
-      task.data = {
-        filename: 'fakeFile.xlsx',
-      };
-      await task.save();
+      const task: Task = await createTask(TASK_STATUS.ABORTED);
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/tasks/${task.id}`)

@@ -13,7 +13,7 @@ const defaultTableProps: ITableProps = {
   sortingMode: SortingMode.Single,
 };
 
-const OverviewDemo: React.FC<{ tablePropsInit: ITableProps; childComponents?: ChildComponents }> =
+const TableComponent: React.FC<{ tablePropsInit: ITableProps; childComponents?: ChildComponents }> =
   ({ tablePropsInit, childComponents = {} }) => {
     // in this case *props are stored in the state of parent component
     const [tableProps, changeTableProps] = useState({ ...defaultTableProps, ...tablePropsInit });
@@ -37,4 +37,4 @@ const OverviewDemo: React.FC<{ tablePropsInit: ITableProps; childComponents?: Ch
     );
   };
 
-export default OverviewDemo;
+export default TableComponent;

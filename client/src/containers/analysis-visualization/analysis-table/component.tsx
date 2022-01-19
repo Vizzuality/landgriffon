@@ -6,7 +6,8 @@ import { useImpactData } from 'hooks/impact';
 
 import Button from 'components/button';
 import Loading from 'components/loading';
-import IndicatorTable from './indicator-table';
+import SingleIndicatorTable from './single-indicator-table';
+import MultipleIndicatorTable from './multiple-indicator-table';
 
 const AnalysisTable: React.FC = () => {
   const { data: impactData, isLoading } = useImpactData();
@@ -43,16 +44,10 @@ const AnalysisTable: React.FC = () => {
         {isLoading && <Loading className="text-green-700" />}
 
         {/* Multiple indicators table */}
-        {tableData &&
-          tableData.length > 1 &&
-          tableData.map((data) => (
-            <div key={data.indicatorId} className="my-4">
-              <IndicatorTable data={data} />
-            </div>
-          ))}
+        {tableData && tableData.length > 1 && <MultipleIndicatorTable data={tableData} />}
 
         {/* Single indicator table */}
-        {tableData && tableData.length === 1 && <IndicatorTable data={tableData[0]} />}
+        {tableData && tableData.length === 1 && <SingleIndicatorTable data={tableData[0]} />}
       </div>
     </>
   );

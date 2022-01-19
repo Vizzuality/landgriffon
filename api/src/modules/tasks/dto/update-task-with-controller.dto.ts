@@ -6,12 +6,11 @@ export class UpdateTaskWithControllerDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsUUID()
-  taskId: string;
+  taskId!: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  newStatus: TASK_STATUS;
+  @ApiPropertyOptional()
+  @IsOptional()
+  newStatus?: TASK_STATUS;
 
   @ApiPropertyOptional()
   @IsOptional()

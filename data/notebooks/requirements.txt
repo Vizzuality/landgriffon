@@ -38,3 +38,5 @@ s3fs~=2021.4.0
 carto==1.11.1
 google-cloud-storage~=1.38.0
 google-api-python-client~=2.4.0
+Cartopy==0.20.2
+xarray-spatial==0.3.1

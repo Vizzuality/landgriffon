@@ -85,8 +85,9 @@ export class TasksController {
   @ApiNotFoundResponse({ description: 'Task not found' })
   @ApiOkResponse({ type: Task })
   @Put()
+  @UsePipes(ValidationPipe)
   async update(
-    @Body(new ValidationPipe())
+    @Body()
     dto: UpdateTaskWithControllerDto,
   ): Promise<Task> {
     return await this.taskService.serialize(

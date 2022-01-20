@@ -43,25 +43,23 @@ export class PasswordValidation implements ValidatorConstraintInterface {
 
   defaultMessage(args: ValidationArguments): string {
     const password: string = args.value;
-    let message: string = '';
+    const errors: string[] = [];
 
     if (!PasswordValidation.minLengthCheck(password))
-      message += `Password too short , minimal length is ${config.get(
-        'password.minLength',
-      )}.`;
+      errors.push(
+        `Password too short, minimal length is ${config.get(
+          'password.minLength',
+        )}`,
+      );
     if (!PasswordValidation.upperCaseCheck(password))
-      message += `${
-        message.length === 0 ? '' : ' '
-      }Password must contain at least 1 upper case letter.`;
+      errors.push(`Password must contain at least 1 upper case letter`);
     if (!PasswordValidation.includeNumericsCheck(password))
-      message += `${
-        message.length === 0 ? '' : ' '
-      }Password must contain at least 1 numeric character.`;
+      errors.push(`Password must contain at least 1 numeric character`);
     if (!PasswordValidation.includeSpecialCharactersCheck(password))
-      message += `${
-        message.length === 0 ? '' : ' '
-      }Password must contain at least 1 special character (!@#$%^&*).`;
+      errors.push(
+        `Password must contain at least 1 special character (!@#$%^&*)`,
+      );
 
-    return message;
+    return errors.join('. ');
   }
 }

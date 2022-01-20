@@ -90,7 +90,10 @@ describe('Tasks Module (e2e)', () => {
 
   describe('Tasks - Update', () => {
     test('Updating a task should be successful (happy case)', async () => {
-      const task: Task = await createTask(TASK_STATUS.PROCESSING);
+      const task: Task = await createTask({
+        status: TASK_STATUS.ABORTED,
+        createdBy: '2a833cc7-5a6f-492d-9a60-0d6d056923eb',
+      });
 
       const response = await request(app.getHttpServer())
         .put(`/api/v1/tasks`)
@@ -105,13 +108,16 @@ describe('Tasks Module (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(response.body.data.attributes.status).toEqual('failed');
+      expect(response.body.data.attributes.createdBy).toEqual(
+        '2a833cc7-5a6f-492d-9a60-0d6d056923eb',
+      );
       expect(response.body.data.attributes.errors[0].FakeError).toEqual(
         'Fake Error Added',
       );
     });
 
     test('Updating a task without task id should return proper error message', async () => {
-      await createTask(TASK_STATUS.PROCESSING);
+      await createTask();
 
       const response = await request(app.getHttpServer())
         .put(`/api/v1/tasks`)
@@ -128,7 +134,7 @@ describe('Tasks Module (e2e)', () => {
 
   describe('Task - Delete', () => {
     test('Deleting a task should be successful (happy case)', async () => {
-      const task: Task = await createTask(TASK_STATUS.PROCESSING);
+      const task: Task = await createTask();
 
       await request(app.getHttpServer())
         .delete(`/api/v1/tasks/${task.id}`)
@@ -141,8 +147,12 @@ describe('Tasks Module (e2e)', () => {
 
   describe('Task - Find all', () => {
     test('Retrieving should be successful (happy case)', async () => {
-      const task1: Task = await createTask(TASK_STATUS.PROCESSING);
-      const task2: Task = await createTask(TASK_STATUS.FAILED);
+      const task1: Task = await createTask({
+        status: TASK_STATUS.PROCESSING,
+      });
+      const task2: Task = await createTask({
+        status: TASK_STATUS.FAILED,
+      });
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/tasks`)
@@ -150,13 +160,17 @@ describe('Tasks Module (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(response.body.data[0].id).toEqual(task1.id);
+      expect(response.body.data[0].attributes.status).toEqual('processing');
       expect(response.body.data[1].id).toEqual(task2.id);
+      expect(response.body.data[1].attributes.status).toEqual('failed');
     });
   });
 
   describe('Task - Get by id', () => {
     test('Retrieving a task by id should be successful (happy case)', async () => {
-      const task: Task = await createTask(TASK_STATUS.ABORTED);
+      const task: Task = await createTask({
+        status: TASK_STATUS.ABORTED,
+      });
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/tasks/${task.id}`)

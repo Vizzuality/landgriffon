@@ -281,14 +281,19 @@ async function createSourcingRecord(
   return sourcingRecord.save();
 }
 
-async function createTask(status: TASK_STATUS) {
-  const task: Task = new Task();
-  task.createdBy = '2a833cc7-5a6f-492d-9a60-0d6d056923ea';
-  task.type = TASK_TYPE.SOURCING_DATA_IMPORT;
-  task.status = status;
-  task.data = {
-    filename: 'fakeFile.xlsx',
-  };
+async function createTask(additionalData: Partial<Task> = {}): Promise<Task> {
+  const task: Task = Task.merge(
+    new Task(),
+    {
+      createdBy: '2a833cc7-5a6f-492d-9a60-0d6d056923ea',
+      type: TASK_TYPE.SOURCING_DATA_IMPORT,
+      data: {
+        filename: 'fakeFile.xlsx',
+      },
+      status: TASK_STATUS.COMPLETED,
+    },
+    additionalData,
+  );
   return task.save();
 }
 

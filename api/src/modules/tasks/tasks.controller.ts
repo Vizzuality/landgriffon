@@ -40,19 +40,11 @@ export class TasksController {
   @ApiForbiddenResponse()
   @Get()
   async findAll(
-    // To implement once Auth is merged:
-    //@GetUser() user: User,
     @ProcessFetchSpecification({
       allowedFilters: taskResource.columnsAllowedAsFilter,
     })
     fetchSpecification: FetchSpecification,
   ): Promise<Task> {
-    // To implement once Auth is merged:
-    // fetchSpecification.filter
-    //   ? (fetchSpecification.filter.createdBy = [user.id])
-    //   : (fetchSpecification.filter = {
-    //       createdBy: [user.id],
-    //     });
     const results: {
       data: (Partial<Task> | undefined)[];
       metadata: PaginationMeta | undefined;

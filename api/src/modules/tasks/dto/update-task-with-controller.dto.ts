@@ -15,8 +15,4 @@ export class UpdateTaskWithControllerDto {
   @ApiPropertyOptional()
   @IsOptional()
   newData?: Record<string, any>;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  newErrors?: Error;
 }

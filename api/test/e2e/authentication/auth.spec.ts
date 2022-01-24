@@ -10,6 +10,28 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from 'typeorm.config';
 import { UsersModule } from 'modules/users/users.module';
 
+jest.mock('config', () => {
+  const config = jest.requireActual('config');
+
+  const configGet = config.get;
+
+  config.get = function (key: string): any {
+    switch (key) {
+      case 'password.minLength':
+        return 8;
+      case 'password.includeNumerics':
+        return true;
+      case 'password.includeUpperCase':
+        return true;
+      case 'password.includeSpecialCharacters':
+        return true;
+      default:
+        return configGet.call(config, key);
+    }
+  };
+  return config;
+});
+
 describe('AppController (e2e)', () => {
   let app: INestApplication;
   let userRepository: UserRepository;
@@ -49,6 +71,96 @@ describe('AppController (e2e)', () => {
       );
       user.isActive = true;
       return user.save();
+    });
+
+    it('Fails to sign up user with password without upper case character', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/sign-up')
+        .send({
+          email: E2E_CONFIG.users.signUp.email,
+          password: 'no1uppercase1!',
+        })
+        .expect(HttpStatus.BAD_REQUEST);
+      expect(response).toHaveErrorMessage(
+        HttpStatus.BAD_REQUEST,
+        'Bad Request Exception',
+        ['Password must contain at least 1 upper case letter'],
+      );
+    });
+
+    it('Fails to sign up user with password without numeric', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/sign-up')
+        .send({
+          email: E2E_CONFIG.users.signUp.email,
+          password: 'noNumeric!',
+        })
+        .expect(HttpStatus.BAD_REQUEST);
+      expect(response).toHaveErrorMessage(
+        HttpStatus.BAD_REQUEST,
+        'Bad Request Exception',
+        ['Password must contain at least 1 numeric character'],
+      );
+    });
+
+    it('Fails to sign up user with password without special character', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/sign-up')
+        .send({
+          email: E2E_CONFIG.users.signUp.email,
+          password: 'noSpecial123',
+        })
+        .expect(HttpStatus.BAD_REQUEST);
+      expect(response).toHaveErrorMessage(
+        HttpStatus.BAD_REQUEST,
+        'Bad Request Exception',
+        ['Password must contain at least 1 special character (!@#$%^&*)'],
+      );
+    });
+
+    it('Fails to sign up user with short password', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/sign-up')
+        .send({
+          email: E2E_CONFIG.users.signUp.email,
+          password: 'Short1!',
+        })
+        .expect(HttpStatus.BAD_REQUEST);
+      expect(response).toHaveErrorMessage(
+        HttpStatus.BAD_REQUEST,
+        'Bad Request Exception',
+        ['Password too short, minimal length is 8'],
+      );
+    });
+
+    it('Fails to sign up user with invalid password', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/sign-up')
+        .send({
+          email: E2E_CONFIG.users.signUp.email,
+          password: 'bad',
+        })
+        .expect(HttpStatus.BAD_REQUEST);
+      expect(response).toHaveErrorMessage(
+        HttpStatus.BAD_REQUEST,
+        'Bad Request Exception',
+        [
+          'Password too short, minimal length is 8. ' +
+            'Password must contain at least 1 upper case letter. ' +
+            'Password must contain at least 1 numeric character. ' +
+            'Password must contain at least 1 special character (!@#$%^&*)',
+        ],
+      );
+    });
+
+    it('Signs up user with valid password', async () => {
+      await request(app.getHttpServer())
+        .post('/auth/sign-up')
+        .send({
+          email: E2E_CONFIG.users.signUp.email,
+          password: E2E_CONFIG.users.signUp.password,
+        })
+        .expect(HttpStatus.CREATED);
     });
 
     it('Retrieves a JWT token when authenticating with valid credentials', async () => {

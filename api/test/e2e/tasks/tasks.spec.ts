@@ -100,9 +100,8 @@ describe('Tasks Module (e2e)', () => {
         .send({
           taskId: task.id,
           newStatus: TASK_STATUS.FAILED,
-          newErrors: {
-            name: 'FakeError',
-            message: 'Fake Error Added',
+          newData: {
+            file2: 'File2',
           },
         })
         .expect(HttpStatus.OK);
@@ -111,9 +110,7 @@ describe('Tasks Module (e2e)', () => {
       expect(response.body.data.attributes.createdBy).toEqual(
         '2a833cc7-5a6f-492d-9a60-0d6d056923eb',
       );
-      expect(response.body.data.attributes.errors[0].FakeError).toEqual(
-        'Fake Error Added',
-      );
+      expect(response.body.data.attributes.data.file2).toEqual('File2');
     });
 
     test('Updating a task without task id should return proper error message', async () => {

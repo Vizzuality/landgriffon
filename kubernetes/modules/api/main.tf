@@ -125,6 +125,16 @@ resource "kubernetes_deployment" "api_deployment" {
           }
 
           env {
+            name = "REDIS_HOST"
+            value_from {
+              secret_key_ref {
+                name = "db"
+                key  = "REDIS_HOST"
+              }
+            }
+          }
+
+          env {
             name = "JWT_SECRET"
             value_from {
               secret_key_ref {
@@ -185,3 +195,5 @@ resource "kubernetes_deployment" "api_deployment" {
     }
   }
 }
+
+

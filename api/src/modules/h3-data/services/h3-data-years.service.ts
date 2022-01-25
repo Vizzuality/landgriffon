@@ -12,10 +12,13 @@ import { MaterialsService } from 'modules/materials/materials.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
-import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
+import {
+  MaterialToH3,
+  MATERIAL_TO_H3_TYPE,
+} from 'modules/materials/material-to-h3.entity';
 
 @Injectable()
-export class H3FilterYearsByLayerService {
+export class H3DataYearsService {
   constructor(
     @InjectRepository(H3DataRepository)
     protected readonly h3DataRepository: H3DataRepository,
@@ -88,5 +91,54 @@ export class H3FilterYearsByLayerService {
     materialIds?: string[],
   ): Promise<number[]> {
     return this.sourcingRecordService.getYears(materialIds);
+  }
+
+  /**
+   * Methods that find closest year of available H3Data for Risk and Impact Map calculations
+   */
+
+  async getClosestAvailableYearForMaterialH3(
+    materialId: string,
+    materialType: MATERIAL_TO_H3_TYPE,
+    year: number,
+  ): Promise<number | undefined> {
+    let materialDataYear: number | undefined;
+    const availableH3DataYears: number[] =
+      await this.h3DataRepository.getAvailableYearsForH3MaterialData(
+        materialId,
+        materialType,
+      );
+
+    materialDataYear = availableH3DataYears.includes(year)
+      ? year
+      : availableH3DataYears.find((el: number) => el < year);
+
+    if (!materialDataYear)
+      materialDataYear = availableH3DataYears
+        .reverse()
+        .find((el: number) => el > year);
+
+    return materialDataYear;
+  }
+
+  async getClosestAvailableYearForIndicatorH3(
+    indicatorId: string,
+    year: number,
+  ): Promise<number | undefined> {
+    let indicatorDataYear: number | undefined;
+    const availableIndicatorYears: number[] =
+      await this.h3DataRepository.getAvailableYearsForH3IndicatorData(
+        indicatorId,
+      );
+
+    indicatorDataYear = availableIndicatorYears.includes(year)
+      ? year
+      : availableIndicatorYears.find((el: number) => el < year);
+
+    if (!indicatorDataYear)
+      indicatorDataYear = availableIndicatorYears
+        .reverse()
+        .find((el: number) => el > year);
+    return indicatorDataYear;
   }
 }

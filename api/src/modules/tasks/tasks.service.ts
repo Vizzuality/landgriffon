@@ -35,7 +35,15 @@ export class TasksService extends AppBaseService<
 
   get serializerConfig(): JSONAPISerializerConfig<Task> {
     return {
-      attributes: ['timestamp', 'topic', 'status', 'data'],
+      attributes: [
+        'timestamp',
+        'topic',
+        'status',
+        'data',
+        'errors',
+        'logs',
+        'createdBy',
+      ],
       keyForAttribute: 'camelCase',
     };
   }
@@ -64,7 +72,7 @@ export class TasksService extends AppBaseService<
   // TODO: First version. Add better typing to data & errors and enhance storage of both. We need to decide how we want to tackle this
   async updateImportJobEvent(updateTask: {
     taskId: string;
-    newStatus: TASK_STATUS;
+    newStatus?: TASK_STATUS;
     newData?: Record<string, any>;
     newErrors?: Error;
   }): Promise<Task> {
@@ -91,7 +99,7 @@ export class TasksService extends AppBaseService<
       task.errors.push({ [newErrors.name]: newErrors.message });
     }
 
-    task.status = newStatus;
+    if (newStatus) task.status = newStatus;
     return task.save();
   }
 }

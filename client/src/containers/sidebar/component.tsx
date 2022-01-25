@@ -23,7 +23,7 @@ const user = {
 const navigationItems: NavigationList = [
   { name: 'Overview', href: '/', icon: ChartSquareBarIcon },
   { name: 'Analysis', href: '/analysis', icon: CollectionIcon },
-  { name: 'Admin', href: '#', icon: CogIcon },
+  { name: 'Admin', href: '/admin', icon: CogIcon },
   { name: 'Help', href: '#', icon: QuestionMarkCircleIcon },
 ];
 

@@ -12,7 +12,7 @@ import PopUp from 'components/map/popup';
 import Legend from 'components/map/legend';
 import LegendItem from 'components/map/legend/item';
 import LegendTypeChoropleth from 'components/map/legend/types/choropleth';
-import Loading from 'components/loading';
+import PageLoading from 'containers/page-loading';
 
 import { useH3MaterialData, useH3RiskData, useH3ImpactData } from 'hooks/h3-data';
 
@@ -228,11 +228,7 @@ const AnalysisMap: React.FC = () => {
 
   return (
     <>
-      {(isFetching || isRendering) && (
-        <div className="absolute w-full h-full bg-black bg-opacity-40 backdrop-blur-sm z-20 flex justify-center items-center">
-          <Loading className="w-10 h-10" />
-        </div>
-      )}
+      {(isFetching || isRendering) && <PageLoading />}
       <DeckGL
         initialViewState={INITIAL_VIEW_STATE}
         controller

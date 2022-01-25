@@ -23,6 +23,7 @@ import {
 } from 'modules/materials/material-to-h3.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Task, TASK_STATUS, TASK_TYPE } from 'modules/tasks/task.entity';
+import { Target } from 'modules/targets/target.entity';
 
 async function createAdminRegion(
   additionalData: Partial<AdminRegion> = {},
@@ -281,6 +282,25 @@ async function createSourcingRecord(
   return sourcingRecord.save();
 }
 
+async function createTarget(
+  additionalData: Partial<Target> = {},
+): Promise<Target> {
+  const indicator: Indicator = await createIndicator({
+    name: (Math.random() + 1).toString(30).substring(6),
+  });
+  const target: Target = Target.merge(
+    new Target(),
+    {
+      baseLineYear: 2020,
+      year: 2023,
+      value: 10,
+      indicatorId: indicator.id,
+    },
+    additionalData,
+  );
+  return target.save();
+}
+
 async function createTask(additionalData: Partial<Task> = {}): Promise<Task> {
   const task: Task = Task.merge(
     new Task(),
@@ -338,6 +358,7 @@ export {
   createSourcingLocation,
   createSourcingLocationGroup,
   createSourcingRecord,
+  createTarget,
   createTask,
   createUnit,
   createUnitConversion,

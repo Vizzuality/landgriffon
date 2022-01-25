@@ -5,10 +5,10 @@ import {
 } from 'utils/app-base.service';
 import { AppInfoDTO } from 'dto/info.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Target, targetResource } from './target.entity';
-import { TargetsRepository } from './targets.repository';
-import { CreateTargetDto } from './dto/create-target.dto';
-import { UpdateTargetDto } from './dto/update-target.dto';
+import { Target, targetResource } from 'modules/targets/target.entity';
+import { TargetsRepository } from 'modules/targets/targets.repository';
+import { CreateTargetDto } from 'modules/targets/dto/create-target.dto';
+import { UpdateTargetDto } from 'modules/targets/dto/update-target.dto';
 
 @Injectable()
 export class TargetsService extends AppBaseService<
@@ -31,7 +31,7 @@ export class TargetsService extends AppBaseService<
   // To Do
   get serializerConfig(): JSONAPISerializerConfig<Target> {
     return {
-      attributes: [],
+      attributes: ['baseLineYear', 'year', 'value', 'indicatorId'],
       keyForAttribute: 'camelCase',
     };
   }

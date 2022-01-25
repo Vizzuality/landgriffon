@@ -8,7 +8,6 @@ import {
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { BaseServiceResource } from 'types/resource.interface';
 import { Indicator } from 'modules/indicators/indicator.entity';
-import { ApiProperty } from '@nestjs/swagger';
 import { User } from 'modules/users/user.entity';
 
 export const targetResource: BaseServiceResource = {
@@ -41,7 +40,7 @@ export class Target extends TimestampedBaseEntity {
   @JoinColumn({ name: 'indicatorId' })
   indicator!: Indicator;
   @Column({ nullable: true })
-  indicatorId: string;
+  indicatorId!: string;
 
   @ManyToOne(() => User, (user: User) => user.id)
   lastEditedUserId?: string;

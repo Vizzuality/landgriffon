@@ -1,7 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
+  Patch,
   Post,
   UsePipes,
   ValidationPipe,
@@ -9,19 +12,22 @@ import {
 import {
   ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { JSONAPISingleEntityQueryParams } from 'decorators/json-api-parameters.decorator';
 import {
   FetchSpecification,
   ProcessFetchSpecification,
 } from 'nestjs-base-service';
 import { PaginationMeta } from 'utils/app-base.service';
-import { CreateTargetDto } from './dto/create-target.dto';
-import { Target, targetResource } from './target.entity';
-import { TargetsService } from './targets.service';
+import { CreateTargetDto } from 'modules/targets/dto/create-target.dto';
+import { UpdateTargetDto } from 'modules/targets/dto/update-target.dto';
+import { Target, targetResource } from 'modules/targets/target.entity';
+import { TargetsService } from 'modules/targets/targets.service';
 
 @Controller('api/v1/targets')
 @ApiTags(targetResource.className)
@@ -47,6 +53,23 @@ export class TargetsController {
     return this.targetsService.serialize(results.data, results.metadata);
   }
 
+  @ApiOperation({ description: 'Find target by id' })
+  @ApiOkResponse({ type: Target })
+  @ApiNotFoundResponse({ description: 'Target not found' })
+  @JSONAPISingleEntityQueryParams()
+  @Get(':id')
+  async findOne(
+    @Param('id') id: string,
+    @ProcessFetchSpecification({
+      allowedFilters: targetResource.columnsAllowedAsFilter,
+    })
+    fetchSpecification: FetchSpecification,
+  ): Promise<Target> {
+    return await this.targetsService.serialize(
+      await this.targetsService.getById(id, fetchSpecification),
+    );
+  }
+
   @ApiOperation({ description: 'Create a target' })
   @ApiOkResponse({ type: Target })
   @ApiBadRequestResponse({
@@ -58,5 +81,27 @@ export class TargetsController {
     return await this.targetsService.serialize(
       await this.targetsService.create(dto),
     );
+  }
+
+  @ApiOperation({ description: 'Updates a target' })
+  @ApiOkResponse({ type: Target })
+  @ApiNotFoundResponse({ description: 'Target not found' })
+  @UsePipes(ValidationPipe)
+  @Patch(':id')
+  async update(
+    @Body() dto: UpdateTargetDto,
+    @Param('id') id: string,
+  ): Promise<Target> {
+    return await this.targetsService.serialize(
+      await this.targetsService.update(id, dto),
+    );
+  }
+
+  @ApiOperation({ description: 'Deletes a target' })
+  @ApiNotFoundResponse({ description: 'Target not found' })
+  @ApiOkResponse()
+  @Delete(':id')
+  async delete(@Param('id') id: string): Promise<void> {
+    return await this.targetsService.remove(id);
   }
 }

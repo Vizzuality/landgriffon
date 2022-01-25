@@ -16,7 +16,8 @@
     "test": "NODE_OPTIONS=\"--max-old-space-size=4096\" node ./node_modules/.bin/jest --config test/jest-config.json -i --logHeapUsage --detectOpenHandles --forceExit",
     "test:watch": "jest --config test/jest-config.json --watch",
     "test:cov": "NODE_OPTIONS=\"--max-old-space-size=4096\" node ./node_modules/.bin/jest --config test/jest-config.json --coverage -i --logHeapUsage --detectOpenHandles --forceExit",
-    "test:debug": "node --inspect-brk --expose-gc -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --config test/jest-config.json --runInBand --detectOpenHandles --forceExit"
+    "test:debug": "node --inspect-brk --expose-gc -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --config test/jest-config.json --runInBand --detectOpenHandles --forceExit",
+    "addUser": "ts-node -r tsconfig-paths/register src/add-user.ts"
   },
   "engines": {
     "node": "^16.13"

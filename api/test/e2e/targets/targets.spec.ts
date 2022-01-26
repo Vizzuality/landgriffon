@@ -56,7 +56,7 @@ describe('Tasks Module (e2e)', () => {
         .post('/api/v1/targets')
         .send({
           baseLineYear: 2020,
-          year: 2023,
+          targetYear: 2023,
           value: 10,
           indicatorId: indicator.id,
         })
@@ -87,8 +87,8 @@ describe('Tasks Module (e2e)', () => {
       [
         'baseLineYear should not be empty',
         'baseLineYear must be a number conforming to the specified constraints',
-        'year should not be empty',
-        'year must be a number conforming to the specified constraints',
+        'targetYear should not be empty',
+        'targetYear must be a number conforming to the specified constraints',
         'value should not be empty',
         'value must be a number conforming to the specified constraints',
         'indicatorId should not be empty',
@@ -104,12 +104,12 @@ describe('Tasks Module (e2e)', () => {
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/targets/${target.id}`)
         .send({
-          year: 2025,
+          targetYear: 2025,
           value: 30,
         })
         .expect(HttpStatus.OK);
 
-      expect(response.body.data.attributes.year).toEqual(2025);
+      expect(response.body.data.attributes.targetYear).toEqual(2025);
       expect(response.body.data.attributes.value).toEqual(30);
     });
 
@@ -162,7 +162,7 @@ describe('Tasks Module (e2e)', () => {
   describe('Target - Get by id', () => {
     test('Retrieving a target by id should be successful (happy case)', async () => {
       const target: Target = await createTarget({
-        year: 2024,
+        targetYear: 2024,
       });
 
       const response = await request(app.getHttpServer())
@@ -171,7 +171,7 @@ describe('Tasks Module (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(response.body.data.id).toEqual(target.id);
-      expect(response.body.data.attributes.year).toEqual(2024);
+      expect(response.body.data.attributes.targetYear).toEqual(2024);
     });
   });
 });

@@ -29,7 +29,7 @@ export class Target extends TimestampedBaseEntity {
   baseLineYear!: number;
 
   @Column({ type: 'int' })
-  year!: number;
+  targetYear!: number;
 
   @Column({ type: 'float' })
   value!: number;
@@ -39,9 +39,10 @@ export class Target extends TimestampedBaseEntity {
   })
   @JoinColumn({ name: 'indicatorId' })
   indicator!: Indicator;
-  @Column({ nullable: true })
+  @Column()
   indicatorId!: string;
 
   @ManyToOne(() => User, (user: User) => user.id)
+  @Column({ nullable: true })
   lastEditedUserId?: string;
 }

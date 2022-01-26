@@ -1,19 +1,33 @@
+import { INestApplicationContext, Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from 'app.module';
+import { validate } from 'class-validator';
 import { AuthenticationService } from 'modules/authentication/authentication.service';
+import { SignUpDto } from 'modules/authentication/dto/sign-up.dto';
+import { User } from 'modules/users/user.entity';
 
 async function bootstrap() {
+  const logger: Logger = new Logger('user-cli');
   const app = await NestFactory.createApplicationContext(AppModule);
 
-  const email: string = process.argv[2];
-  const password: string = process.argv[3];
-
   const newUserService = app.get(AuthenticationService);
-  await newUserService.createUser({
-    email,
-    password,
+
+  const newUser: SignUpDto = new SignUpDto();
+  newUser.email = process.argv[2];
+  newUser.password = process.argv[3];
+
+  validate(newUser).then(async (errors) => {
+    if (errors.length > 0) {
+      logger.error(errors);
+      process.exit(1);
+    }
   });
 
+  const createdUser: Partial<User> = await newUserService.createUser(newUser);
+  logger.log(`User with email ${createdUser.email} created`);
+
   await app.close();
+  process.exit(0);
 }
+
 bootstrap();

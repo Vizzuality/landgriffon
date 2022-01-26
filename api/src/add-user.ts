@@ -6,17 +6,18 @@ import { AuthenticationService } from 'modules/authentication/authentication.ser
 import { SignUpDto } from 'modules/authentication/dto/sign-up.dto';
 import { User } from 'modules/users/user.entity';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const logger: Logger = new Logger('user-cli');
-  const app = await NestFactory.createApplicationContext(AppModule);
+  const app: INestApplicationContext =
+    await NestFactory.createApplicationContext(AppModule);
 
-  const newUserService = app.get(AuthenticationService);
+  const newUserService: AuthenticationService = app.get(AuthenticationService);
 
   const newUser: SignUpDto = new SignUpDto();
   newUser.email = process.argv[2];
   newUser.password = process.argv[3];
 
-  validate(newUser).then(async (errors) => {
+  validate(newUser).then((errors: any) => {
     if (errors.length > 0) {
       logger.error(errors);
       process.exit(1);

@@ -31,6 +31,7 @@ import { BullModule } from '@nestjs/bull';
 import { ImpactModule } from 'modules/impact/impact.module';
 import { TasksModule } from 'modules/tasks/tasks.module';
 import { TargetsModule } from 'modules/targets/targets.module';
+import { CommandModule } from 'nestjs-command';
 import * as config from 'config';
 
 const redisConfig: any = config.get('redis');
@@ -70,6 +71,7 @@ const redisConfig: any = config.get('redis');
     ImpactModule,
     TasksModule,
     TargetsModule,
+    CommandModule,
   ],
   providers: [
     {

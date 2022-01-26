@@ -59,7 +59,7 @@ export class TasksController {
   @ApiForbiddenResponse()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Task> {
-    return await this.taskService.serialize(await this.taskService.getById(id));
+    return this.taskService.serialize(await this.taskService.getById(id));
   }
 
   @ApiOperation({ description: 'Create a Task' })
@@ -70,7 +70,7 @@ export class TasksController {
   @Post()
   @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateTaskDto): Promise<Task> {
-    return await this.taskService.serialize(await this.taskService.create(dto));
+    return this.taskService.serialize(await this.taskService.create(dto));
   }
 
   @ApiOperation({ description: 'Updates a task' })
@@ -82,7 +82,7 @@ export class TasksController {
     @Body()
     dto: UpdateTaskWithControllerDto,
   ): Promise<Task> {
-    return await this.taskService.serialize(
+    return this.taskService.serialize(
       await this.taskService.updateImportJobEvent(dto),
     );
   }
@@ -92,6 +92,6 @@ export class TasksController {
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
-    return await this.taskService.remove(id);
+    return this.taskService.remove(id);
   }
 }

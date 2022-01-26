@@ -38,6 +38,10 @@ describe('Impact Trees test suite (e2e)', () => {
     materialToH3Service = moduleFixture.get<MaterialsToH3sService>(
       MaterialsToH3sService,
     );
+    h3dataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
+    adminRegionRepository = moduleFixture.get<AdminRegionRepository>(
+      AdminRegionRepository,
+    );
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(
       new ValidationPipe({

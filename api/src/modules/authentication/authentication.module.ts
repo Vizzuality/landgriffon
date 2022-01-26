@@ -10,6 +10,7 @@ import { JwtStrategy } from 'modules/authentication/strategies/jwt.strategy';
 import { LocalStrategy } from 'modules/authentication/strategies/local.strategy';
 import { ApiEventsModule } from 'modules/api-events/api-events.module';
 import { UserRepository } from 'modules/users/user.repository';
+import { UserCommand } from 'modules/authentication/user.command';
 
 export const logger: Logger = new Logger('Authentication');
 
@@ -24,8 +25,8 @@ export const logger: Logger = new Logger('Authentication');
     }),
     TypeOrmModule.forFeature([UserRepository]),
   ],
-  providers: [AuthenticationService, LocalStrategy, JwtStrategy],
+  providers: [AuthenticationService, LocalStrategy, JwtStrategy, UserCommand],
   controllers: [AuthenticationController],
-  exports: [AuthenticationService],
+  exports: [AuthenticationService, UserCommand],
 })
 export class AuthenticationModule {}

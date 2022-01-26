@@ -10,7 +10,7 @@ export class CreateTargetDto {
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
-  year!: number;
+  targetYear!: number;
 
   @ApiProperty()
   @IsNumber()

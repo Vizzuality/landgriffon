@@ -65,7 +65,7 @@ export class TargetsController {
     })
     fetchSpecification: FetchSpecification,
   ): Promise<Target> {
-    return await this.targetsService.serialize(
+    return this.targetsService.serialize(
       await this.targetsService.getById(id, fetchSpecification),
     );
   }
@@ -78,9 +78,7 @@ export class TargetsController {
   @UsePipes(ValidationPipe)
   @Post()
   async create(@Body() dto: CreateTargetDto): Promise<Target> {
-    return await this.targetsService.serialize(
-      await this.targetsService.create(dto),
-    );
+    return this.targetsService.serialize(await this.targetsService.create(dto));
   }
 
   @ApiOperation({ description: 'Updates a target' })
@@ -92,7 +90,7 @@ export class TargetsController {
     @Body() dto: UpdateTargetDto,
     @Param('id') id: string,
   ): Promise<Target> {
-    return await this.targetsService.serialize(
+    return this.targetsService.serialize(
       await this.targetsService.update(id, dto),
     );
   }
@@ -102,6 +100,6 @@ export class TargetsController {
   @ApiOkResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
-    return await this.targetsService.remove(id);
+    return this.targetsService.remove(id);
   }
 }

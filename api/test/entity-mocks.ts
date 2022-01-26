@@ -292,7 +292,7 @@ async function createTarget(
     new Target(),
     {
       baseLineYear: 2020,
-      year: 2023,
+      targetYear: 2023,
       value: 10,
       indicatorId: indicator.id,
     },

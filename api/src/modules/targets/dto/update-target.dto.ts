@@ -5,7 +5,7 @@ export class UpdateTargetDto {
   @ApiProperty()
   @IsOptional()
   @IsNumber()
-  year?: number;
+  targetYear?: number;
 
   @ApiProperty()
   @IsOptional()

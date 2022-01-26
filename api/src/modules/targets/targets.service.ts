@@ -28,10 +28,9 @@ export class TargetsService extends AppBaseService<
     );
   }
 
-  // To Do
   get serializerConfig(): JSONAPISerializerConfig<Target> {
     return {
-      attributes: ['baseLineYear', 'year', 'value', 'indicatorId'],
+      attributes: ['baseLineYear', 'targetYear', 'value', 'indicatorId'],
       keyForAttribute: 'camelCase',
     };
   }

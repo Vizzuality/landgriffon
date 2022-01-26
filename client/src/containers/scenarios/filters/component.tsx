@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { SearchIcon, XIcon } from '@heroicons/react/solid';
-import { useDebounce } from '@react-hook/debounce';
 import classNames from 'classnames';
 import Select from 'components/select';
 
@@ -21,7 +20,7 @@ const ScenariosFilters = () => {
   const router = useRouter();
   const { query } = router;
   const [isSearchEnable, setSearchEnable] = useState(false);
-  const [term, setTerm] = useDebounce(null, 250); // wait 250ms before set term
+  const [term, setTerm] = useState(250); // wait 250ms before set term
 
   const toggleSearch = useCallback(() => setSearchEnable(!isSearchEnable), [isSearchEnable]);
   const handleSort = useCallback(

@@ -36,7 +36,7 @@ const tableProps: ITableData = {
   },
 };
 
-const AdminDataPage: React.FC = () => {
+const AdminMaterialsPage: React.FC = () => {
   const [uploadDataSourceModalOpen, setUploadDataSourceModalOpen] = useState(false);
 
   const data = Array(100)
@@ -110,4 +110,4 @@ const AdminDataPage: React.FC = () => {
   );
 };
 
-export default AdminDataPage;
+export default AdminMaterialsPage;

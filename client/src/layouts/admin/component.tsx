@@ -8,8 +8,8 @@ import { AdminLayoutProps } from './types';
 
 export const TABS: TabsType = {
   DATA: {
-    name: 'Data',
-    href: '/admin',
+    name: 'Materials',
+    href: '/admin/materials',
   },
   TARGETS: {
     name: 'Targets',

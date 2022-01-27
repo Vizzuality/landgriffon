@@ -61,3 +61,5 @@ This seed data is managed inside the `/data` folder at the root of the project. 
 - `PASSWORD_INCLUDE_NUMERICS` (boolean, optional, default false): if `true`, password will be required to contain at least one digit. 
 - `PASSWORD_INCLUDE_UPPER_CASE` (boolean, optional, default false): if `true`, password will be required to contain at least one upper case character.
 - `PASSWORD_INCLUDE_SPECIAL_CHARACTERS` (boolean, optional, default false): if `true`, password will be required to contain at least one special character.
+- `SIGN_UP_IS_PUBLIC` (boolean, optional, default true): if `true`, non-authenticated users will be able to sign up for a new account. Otherwise, new user accounts can only be created by existing users.
+- `REQUIRE_USER_AUTH` (boolean, optional, default true): if `true`, most endpoints will require user authentication. `false` disables user authentication requirement on all endpoints. Using `false` is deprecated.

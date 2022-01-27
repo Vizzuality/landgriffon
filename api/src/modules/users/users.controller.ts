@@ -6,6 +6,7 @@ import {
   Patch,
   Post,
   Request,
+  UnauthorizedException,
   ValidationPipe,
 } from '@nestjs/common';
 import { User, userResource, UserResult } from 'modules/users/user.entity';
@@ -125,7 +126,14 @@ export class UsersController {
   async userMetadata(
     @Request() req: RequestWithAuthenticatedUser,
   ): Promise<UserResult> {
-    return this.service.serialize(await this.service.getById(req.user.id));
+    if (!req?.user?.id) {
+      throw new UnauthorizedException();
+    }
+    const user: User = await this.service.getById(req.user.id);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return this.service.serialize(user);
   }
 
   @ApiOperation({

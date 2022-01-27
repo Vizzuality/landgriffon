@@ -9,6 +9,11 @@ import { UserRepository } from 'modules/users/user.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from 'typeorm.config';
 import { UsersModule } from 'modules/users/users.module';
+import { ApiEventByTopicAndKind } from '../../../src/modules/api-events/api-event.topic+kind.entity';
+import { API_EVENT_KINDS } from '../../../src/modules/api-events/api-event.entity';
+import { SignUpDto } from '../../../src/modules/authentication/dto/sign-up.dto';
+import { v4 } from 'uuid';
+import faker from 'faker';
 
 jest.mock('config', () => {
   const config = jest.requireActual('config');
@@ -17,13 +22,13 @@ jest.mock('config', () => {
 
   config.get = function (key: string): any {
     switch (key) {
-      case 'password.minLength':
+      case 'auth.password.minLength':
         return 8;
-      case 'password.includeNumerics':
+      case 'auth.password.includeNumerics':
         return true;
-      case 'password.includeUpperCase':
+      case 'auth.password.includeUpperCase':
         return true;
-      case 'password.includeSpecialCharacters':
+      case 'auth.password.includeSpecialCharacters':
         return true;
       default:
         return configGet.call(config, key);

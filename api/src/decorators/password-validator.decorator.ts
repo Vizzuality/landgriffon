@@ -17,26 +17,28 @@ export class PasswordValidation implements ValidatorConstraintInterface {
   }
 
   private static minLengthCheck(password: string): boolean {
-    const minLength: number = +`${config.get('password.minLength')}`;
+    const minLength: number = +`${config.get('auth.password.minLength')}`;
     return minLength <= password.length;
   }
 
   private static upperCaseCheck(password: string): boolean {
     const includeUpperCase: boolean =
-      `${config.get('password.includeUpperCase')}`.toLowerCase() === 'true';
+      `${config.get('auth.password.includeUpperCase')}`.toLowerCase() ===
+      'true';
     return !(includeUpperCase && password.toLowerCase() === password);
   }
 
   private static includeNumericsCheck(password: string): boolean {
     const includeNumerics: boolean =
-      `${config.get('password.includeNumerics')}`.toLowerCase() === 'true';
+      `${config.get('auth.password.includeNumerics')}`.toLowerCase() === 'true';
     return !(includeNumerics && !/\d/.test(password));
   }
 
   private static includeSpecialCharactersCheck(password: string): boolean {
     const includeSpecialCharacters: boolean =
-      `${config.get('password.includeSpecialCharacters')}`.toLowerCase() ===
-      'true';
+      `${config.get(
+        'auth.password.includeSpecialCharacters',
+      )}`.toLowerCase() === 'true';
 
     return !(includeSpecialCharacters && !/(?=.*[!@#$%^&*])/.test(password));
   }
@@ -48,7 +50,7 @@ export class PasswordValidation implements ValidatorConstraintInterface {
     if (!PasswordValidation.minLengthCheck(password))
       errors.push(
         `Password too short, minimal length is ${config.get(
-          'password.minLength',
+          'auth.password.minLength',
         )}`,
       );
     if (!PasswordValidation.upperCaseCheck(password))

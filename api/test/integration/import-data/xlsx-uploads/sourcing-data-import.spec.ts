@@ -197,9 +197,11 @@ describe('Sourcing Data import', () => {
     /**
      * Inject file to API for the test subject in this suite
      */
-    await request(app.getHttpServer())
-      .post('/api/v1/import/sourcing-data')
-      .attach('file', __dirname + '/base-dataset.xlsx');
+    if (!expect.getState().currentTestName.includes('(error strategy)')) {
+      await request(app.getHttpServer())
+        .post('/api/v1/import/sourcing-data')
+        .attach('file', __dirname + '/base-dataset.xlsx');
+    }
   });
 
   afterEach(async () => {
@@ -249,6 +251,7 @@ describe('Sourcing Data import', () => {
     await sourcingDataImportService.importSourcingData(xlsxFileData.path);
 
     const folderContent = await readdir(config.get('fileUploads.storagePath'));
+
     expect(folderContent.length).toEqual(0);
   }, 15000);
 
@@ -333,6 +336,10 @@ describe('Sourcing Data import', () => {
 
   describe('Additional config values for missing data fallback strategy and incomplete material h3 data', () => {
     test('When a valid file is sent to the API it should return a 400 bad request code, and an error should be displayed (error strategy)', async () => {
+      await request(app.getHttpServer())
+        .post('/api/v1/import/sourcing-data')
+        .attach('file', __dirname + '/base-dataset-one-material.xlsx');
+
       missingDataFallbackPolicy = 'error';
 
       const geoRegion: GeoRegion = await createGeoRegion();

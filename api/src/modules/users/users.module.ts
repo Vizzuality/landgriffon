@@ -5,14 +5,15 @@ import { UsersController } from 'modules/users/users.controller';
 import { UsersService } from 'modules/users/users.service';
 import { AuthenticationModule } from 'modules/authentication/authentication.module';
 import { UserRepository } from 'modules/users/user.repository';
+import { UserCommand } from 'modules/users/user.command';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserRepository]),
     forwardRef(() => AuthenticationModule),
   ],
-  providers: [UsersService],
+  providers: [UsersService, UserCommand],
   controllers: [UsersController],
-  exports: [UsersService],
+  exports: [UsersService, UserCommand],
 })
 export class UsersModule {}

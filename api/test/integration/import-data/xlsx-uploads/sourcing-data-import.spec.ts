@@ -1,12 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { MaterialRepository } from 'modules/materials/material.repository';
-import { readdir } from 'fs/promises';
 import * as config from 'config';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
@@ -37,8 +35,8 @@ import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { h3BasicFixture } from '../../../e2e/h3-data/mocks/h3-fixtures';
-import { ImportDataService } from '../../../../src/modules/import-data/import-data.service';
-import { SourcingDataImportService } from '../../../../src/modules/import-data/sourcing-data/sourcing-data-import.service';
+import { SourcingDataImportService } from 'modules/import-data/sourcing-data/sourcing-data-import.service';
+import { FileService } from 'modules/import-data/file.service';
 
 let tablesToDrop: string[] = [];
 
@@ -97,6 +95,7 @@ describe('Sourcing Data import', () => {
         }));
     },
   };
+
   class UnknownLocationServiceMock extends UnknownLocationService {
     async geoCodeByCountry(): Promise<any> {
       return {
@@ -113,6 +112,12 @@ describe('Sourcing Data import', () => {
     }
   }
 
+  class MockFileService extends FileService<any> {
+    async deleteDataFromFS(): Promise<void> {
+      return;
+    }
+  }
+
   let app: INestApplication;
   let businessUnitRepository: BusinessUnitRepository;
   let materialRepository: MaterialRepository;
@@ -126,21 +131,15 @@ describe('Sourcing Data import', () => {
   let indicatorRepository: IndicatorRepository;
   let sourcingLocationGroupRepository: SourcingLocationGroupRepository;
   let h3DataRepository: H3DataRepository;
-  let xlsxFileData: Express.Multer.File;
   let sourcingDataImportService: SourcingDataImportService;
-  const mockService: any = {
-    loadXlsxFile: jest.fn((id: string, fileData: Express.Multer.File) => {
-      xlsxFileData = fileData;
-    }),
-  };
 
   beforeAll(async () => {
     jest.setTimeout(10000);
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule, SourcingRecordsModule],
     })
-      .overrideProvider(ImportDataService)
-      .useValue(mockService)
+      .overrideProvider(FileService)
+      .useClass(MockFileService)
       .overrideProvider(GeoCodingService)
       .useValue(geoCodingServiceMock)
       .overrideProvider(UnknownLocationService)
@@ -193,23 +192,6 @@ describe('Sourcing Data import', () => {
     await app.init();
   });
 
-  beforeEach(async () => {
-    /**
-     * Inject file to API for the test subject in this suite
-     * All the tests are using the same base-data file, except the 'error fallback strategy test',
-     * which is using a shorter version of the file with just one client material in order to avoid test failure due to sorting order
-     */
-    if (expect.getState().currentTestName.includes('(error strategy)')) {
-      await request(app.getHttpServer())
-        .post('/api/v1/import/sourcing-data')
-        .attach('file', __dirname + '/base-dataset-one-material.xlsx');
-    } else {
-      await request(app.getHttpServer())
-        .post('/api/v1/import/sourcing-data')
-        .attach('file', __dirname + '/base-dataset.xlsx');
-    }
-  });
-
   afterEach(async () => {
     await materialToH3Service.delete({});
     await materialRepository.delete({});
@@ -238,7 +220,9 @@ describe('Sourcing Data import', () => {
   test('When a file is processed by the API and there are no materials in the database, an error should be displayed', async () => {
     expect.assertions(1);
     try {
-      await sourcingDataImportService.importSourcingData(xlsxFileData.path);
+      await sourcingDataImportService.importSourcingData(
+        __dirname + '/base-dataset.xlsx',
+      );
     } catch (err: any) {
       expect(err.message).toEqual(
         'No Materials found present in the DB. Please check the LandGriffon installation manual',
@@ -254,11 +238,9 @@ describe('Sourcing Data import', () => {
     });
     tablesToDrop = await createMaterialTreeForXLSXImport();
 
-    await sourcingDataImportService.importSourcingData(xlsxFileData.path);
-
-    const folderContent = await readdir(config.get('fileUploads.storagePath'));
-
-    expect(folderContent.length).toEqual(0);
+    await sourcingDataImportService.importSourcingData(
+      __dirname + '/base-dataset.xlsx',
+    );
   }, 15000);
 
   test('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (happy case)', async () => {
@@ -280,7 +262,9 @@ describe('Sourcing Data import', () => {
       'h3_grid_deforestation_global',
     ];
 
-    await sourcingDataImportService.importSourcingData(xlsxFileData.path);
+    await sourcingDataImportService.importSourcingData(
+      __dirname + '/base-dataset.xlsx',
+    );
 
     const businessUnits: BusinessUnit[] = await businessUnitRepository.find();
     expect(businessUnits).toHaveLength(5);
@@ -327,7 +311,9 @@ describe('Sourcing Data import', () => {
       'h3_grid_deforestation_global',
     ];
 
-    await sourcingDataImportService.importSourcingData(xlsxFileData.path);
+    await sourcingDataImportService.importSourcingData(
+      __dirname + '/base-dataset.xlsx',
+    );
 
     const sourcingRecords: SourcingRecord[] =
       await sourcingRecordRepository.find();
@@ -362,7 +348,9 @@ describe('Sourcing Data import', () => {
       ];
 
       try {
-        await sourcingDataImportService.importSourcingData(xlsxFileData.path);
+        await sourcingDataImportService.importSourcingData(
+          __dirname + '/base-dataset-one-material.xlsx',
+        );
       } catch (err: any) {
         expect(err.message).toEqual(
           'Cannot calculate impact for sourcing record - missing producer h3 data for material "Maize (corn)" and year "2010"',
@@ -390,7 +378,9 @@ describe('Sourcing Data import', () => {
         'h3_grid_deforestation_global',
       ];
 
-      await sourcingDataImportService.importSourcingData(xlsxFileData.path);
+      await sourcingDataImportService.importSourcingData(
+        __dirname + '/base-dataset.xlsx',
+      );
 
       const businessUnits: BusinessUnit[] = await businessUnitRepository.find();
       expect(businessUnits).toHaveLength(5);
@@ -439,7 +429,9 @@ describe('Sourcing Data import', () => {
         'h3_grid_deforestation_global',
       ];
 
-      await sourcingDataImportService.importSourcingData(xlsxFileData.path);
+      await sourcingDataImportService.importSourcingData(
+        __dirname + '/base-dataset.xlsx',
+      );
 
       const businessUnits: BusinessUnit[] = await businessUnitRepository.find();
       expect(businessUnits).toHaveLength(5);

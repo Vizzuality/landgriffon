@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { AppModule } from 'app.module';
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
@@ -118,7 +117,6 @@ describe('Sourcing Data import', () => {
     }
   }
 
-  let app: INestApplication;
   let businessUnitRepository: BusinessUnitRepository;
   let materialRepository: MaterialRepository;
   let materialToH3Service: MaterialsToH3sService;
@@ -180,16 +178,6 @@ describe('Sourcing Data import', () => {
     sourcingDataImportService = moduleFixture.get<SourcingDataImportService>(
       SourcingDataImportService,
     );
-
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
-    await app.init();
   });
 
   afterEach(async () => {
@@ -214,7 +202,6 @@ describe('Sourcing Data import', () => {
 
   afterAll(async () => {
     jest.clearAllTimers();
-    await app.close();
   });
 
   test('When a file is processed by the API and there are no materials in the database, an error should be displayed', async () => {

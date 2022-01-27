@@ -7,10 +7,18 @@
     ]
   },
   "auth": {
+    "requireUserAuth": true,
     "requireUserAccountActivation": true,
+    "signUpIsPublic": true,
     "jwt": {
       "expiresIn": "2h",
       "secret": null
+    },
+    "password": {
+      "minLength": 6,
+      "includeNumerics": false,
+      "includeUpperCase": false,
+      "includeSpecialCharacters": false
     }
   },
   "import": {
@@ -38,11 +46,5 @@
   },
   "geolocation": {
     "gmapsApiKey": null
-  },
-  "password": {
-    "minLength": 6,
-    "includeNumerics": false,
-    "includeUpperCase": false,
-    "includeSpecialCharacters": false
   }
 }

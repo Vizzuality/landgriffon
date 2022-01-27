@@ -28,6 +28,7 @@ import {
 import { LoginDto } from 'modules/authentication/dto/login.dto';
 import { SignUpDto } from 'modules/authentication/dto/sign-up.dto';
 import { UserAccountValidationDTO } from 'modules/authentication/dto/user-account.validation.dto';
+import * as config from 'config';
 
 @Controller('/auth')
 @ApiTags('Authentication')
@@ -53,7 +54,7 @@ export class AuthenticationController {
     return this.authenticationService.login(req.user);
   }
 
-  @Public()
+  @Public(`${config.get('auth.signUpIsPublic')}`.toLowerCase() === 'true')
   @Post('sign-up')
   @ApiOperation({ description: 'Sign up for an user account.' })
   @ApiCreatedResponse({ description: 'User registered successfully' })

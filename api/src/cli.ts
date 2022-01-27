@@ -6,7 +6,7 @@ import { INestApplicationContext } from '@nestjs/common';
 async function bootstrap(): Promise<void> {
   const app: INestApplicationContext =
     await NestFactory.createApplicationContext(AppModule, {
-      logger: ['error', 'log'],
+      logger: ['error'],
     });
 
   try {

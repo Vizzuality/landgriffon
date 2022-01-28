@@ -175,7 +175,7 @@ const YearsFilter: React.FC = () => {
                   current={currentStartYearValue}
                   options={optionsStartYear}
                   showSearch={false}
-                  onChange={onChangeEndYear}
+                  onChange={onChangeStartYear}
                   onSearch={handleAdditionalYear}
                 />
                 <div>To</div>

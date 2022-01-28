@@ -32,6 +32,7 @@ import { ImpactModule } from 'modules/impact/impact.module';
 import { TasksModule } from 'modules/tasks/tasks.module';
 import { TargetsModule } from 'modules/targets/targets.module';
 import * as config from 'config';
+import { TargetsModule } from 'modules/targets/targets.module';
 
 const redisConfig: any = config.get('redis');
 

@@ -3,7 +3,7 @@ import cx from 'classnames';
 import { useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
 
-import { useAnalysisChart, useAnalysisLegend } from 'hooks/analysis';
+import { useAnalysisChart } from 'hooks/analysis';
 
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -15,15 +15,12 @@ import Widget from 'components/widget';
 const AnalysisChart: React.FC = () => {
   const { filters } = useAppSelector(analysis);
 
-  const { data: chartData, isFetching: chartIsFetching } = useAnalysisChart();
-  const { data: legendData, isFetching: legendIsFetching } = useAnalysisLegend();
+  const { data: chartData, legend: legendData, isFetching: chartIsFetching } = useAnalysisChart();
 
-  const isFetching = chartIsFetching || legendIsFetching;
-
+  const isFetching = chartIsFetching;
   return (
     <>
       {isFetching && <Loading className="text-white" />}
-
       {!isFetching && chartData && (
         <AnimatePresence>
           <div
@@ -35,7 +32,6 @@ const AnalysisChart: React.FC = () => {
           >
             {chartData.map((d) => {
               const { id, indicator, keys, values, colors } = d;
-
               return (
                 <motion.div
                   key={`${id}-${JSON.stringify(filters)}`}

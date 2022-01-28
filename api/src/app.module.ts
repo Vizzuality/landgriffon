@@ -31,6 +31,7 @@ import { BullModule } from '@nestjs/bull';
 import { ImpactModule } from 'modules/impact/impact.module';
 import { TasksModule } from 'modules/tasks/tasks.module';
 import * as config from 'config';
+import { TargetsModule } from 'modules/targets/targets.module';
 
 const redisConfig: any = config.get('redis');
 
@@ -68,6 +69,7 @@ const redisConfig: any = config.get('redis');
     GeoCodingModule,
     ImpactModule,
     TasksModule,
+    TargetsModule,
   ],
   providers: [
     {

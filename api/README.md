@@ -51,6 +51,11 @@ By default, the database for a new application has structure but no seed data. H
 
 This seed data is managed inside the `/data` folder at the root of the project. Refer to its documentation for more info on how to import said data. 
 
+### Creating user with cli
+
+To create user via cli, use the following command `yarn nestjs-command create:user <email> <password>`
+For more details use `yarn nestjs-command create:user --help`
+
 ## Configuration
 
 - `IMPORT_MISSING_DATA_FALLBACK_STRATEGY`: When calculating impact data as part of a spreadsheet import, how to handle scenarios where a given material does not have impact data for a given year:

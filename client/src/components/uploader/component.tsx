@@ -102,6 +102,7 @@ const Uploader: React.FC<UploaderProps> = ({
   };
 
   const onDropAccepted = async (files: File[]) => {
+    setAlert(null);
     setFiles(files);
     onSelected && onSelected(files, { upload: uploadFiles });
     if (autoUpload) {
@@ -159,8 +160,9 @@ const Uploader: React.FC<UploaderProps> = ({
       {header && <div className="text-sm mb-3">{header}</div>}
       <div
         className={classNames(
-          'cursor-pointer rounded-md border-2 border-dashed py-10 px-4 text-center text-sm focus:outline-green-700',
+          'rounded-md border-2 border-dashed py-10 px-4 text-center text-sm focus:outline-green-700',
           {
+            'cursor-pointer': !disabled,
             'opacity-50': disabled,
           },
         )}

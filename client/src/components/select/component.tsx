@@ -134,13 +134,15 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
                 {optionsResult.map((option) => (
                   <Listbox.Option
                     key={option.value}
-                    className={({ active, selected }) =>
+                    className={({ active, selected, disabled }) =>
                       classNames(
                         active ? 'bg-green-50 text-green-700' : 'text-gray-900',
                         selected && 'bg-green-50 text-green-700',
                         'cursor-pointer select-none relative py-2 pl-4 pr-4',
+                        disabled && 'text-opacity-50 cursor-none',
                       )
                     }
+                    disabled={option.disabled}
                     value={option}
                   >
                     {({ selected }) => (

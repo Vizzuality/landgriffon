@@ -156,7 +156,13 @@ const Uploader: React.FC<UploaderProps> = ({
         <input {...getInputProps()} />
         <Image src="/images/image-placeholder.svg" width="38" height="39" alt="Upload file" />
         <p className="mt-1">
-          <span className="text-green-700">Upload a file</span> or drag and drop
+          {files.length > 0 ? (
+            files.map((file) => file.name).join(', ')
+          ) : (
+            <>
+              <span className="text-green-700">Upload a file</span> or drag and drop
+            </>
+          )}
         </p>
         <p className="text-gray-500 text-xs mt-1">
           {isUploading ? 'Uploading file...' : `${fileTypesString} ${bytesToMegabytes(maxSize)}MB`}

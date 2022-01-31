@@ -17,7 +17,7 @@ const UploadDataSourceModal: React.FC<UploadDataSourceModalProps> = ({
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploaded, setUploaded] = useState<boolean>(false);
 
-  const uploadRef = useRef({ upload: null });
+  const uploaderRef = useRef({ upload: null });
 
   useEffect(() => {
     if (open) return;
@@ -31,6 +31,7 @@ const UploadDataSourceModal: React.FC<UploadDataSourceModalProps> = ({
   return (
     <Modal title="Upload data source" open={open} onDismiss={onDismiss}>
       <Uploader
+        disabled={uploaded}
         url="/import/sourcing-data"
         fileTypes={['xlsx']}
         header="Upload the complete data file to update the data source"
@@ -46,7 +47,7 @@ const UploadDataSourceModal: React.FC<UploadDataSourceModalProps> = ({
           </a>
         }
         onSelected={(files, { upload }) => {
-          uploadRef.current = { upload };
+          uploaderRef.current = { upload };
           setFiles(files);
         }}
         onUploading={() => setIsUploading(true)}
@@ -67,7 +68,7 @@ const UploadDataSourceModal: React.FC<UploadDataSourceModalProps> = ({
           theme="primary"
           disabled={!hasFilesSelected || isUploading}
           onClick={() => {
-            uploaded ? onDismiss() : uploadRef.current.upload(files);
+            uploaded ? onDismiss() : uploaderRef.current.upload(files);
           }}
         >
           {uploaded ? (

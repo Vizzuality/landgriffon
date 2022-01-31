@@ -33,9 +33,10 @@ TRUNCATE TABLE admin_region CASCADE;
 
 -- 2.1 Create the records
 INSERT INTO admin_region
-    ("name", "gadmId", "geoRegionId", "isoA3")
+    ("name", "level", "gadmId", "geoRegionId", "isoA3")
 SELECT
     gadm_levels0_2.name,
+    gadm_levels0_2.level,
     gadm_levels0_2.mpath,
     geo_region.id,
     CASE

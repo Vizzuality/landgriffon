@@ -1,6 +1,8 @@
 import { TooltipWithBounds } from '@visx/tooltip';
 import { ReactNode } from 'react';
 
+import { DATA_NUMBER_FORMAT } from 'containers/analysis-visualization/constants';
+
 export type AreaStackedTooltipProps = {
   title: string | ReactNode;
   tooltipData:
@@ -43,7 +45,7 @@ const AreaStackedTooltip: React.FC<AreaStackedTooltipProps> = ({
             <li key={k} className="flex items-center space-x-1">
               <div className="w-2.5 h-2.5 rounded-full" style={{ background: colors[k] }} />
               <div>{k}:</div>
-              <div>{tooltipData[k]}</div>
+              <div>{DATA_NUMBER_FORMAT(tooltipData[k])}</div>
             </li>
           ))}
         </ul>

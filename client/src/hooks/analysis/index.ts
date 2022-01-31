@@ -22,8 +22,10 @@ export function useColors(): RGBColor[] {
 export function useAnalysisChart(): AnalysisChart {
   const { filters } = useAppSelector(analysis);
 
-  const { data: impactData, isLoading } = useImpactData();
-  const data = impactData?.data;
+  const {
+    data: { data },
+    isLoading,
+  } = useImpactData();
 
   const parsedImpact = data?.impactTable.map((data) => ({
     id: data.indicatorId,

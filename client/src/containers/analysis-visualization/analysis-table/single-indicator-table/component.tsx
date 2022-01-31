@@ -3,34 +3,11 @@ import { DataType } from 'ka-table/enums';
 
 import Table from 'components/table';
 import LineChart from 'components/chart/line';
-import { ISummaryCellProps, ICellProps } from 'ka-table/props';
-import { DATA_NUMBER_FORMAT } from '../../constants';
+import { DATA_NUMBER_FORMAT } from 'containers/analysis-visualization/constants';
 
+// types
 import type { ImpactTableData } from 'types';
-import { GroupRowData } from 'ka-table/models';
-
-type CustomSummaryCell = ISummaryCellProps & {
-  yearSum: {
-    year: number;
-    value: number;
-  }[];
-  rowData: unknown;
-  columns: ColumnHeadings[];
-  width: number;
-};
-
-type ColumnHeadings = Readonly<{
-  dataType: DataType.String | DataType.Number;
-  key: string;
-  title: string;
-  width?: number;
-  chart?: boolean;
-}>;
-
-type Prueba = ICellProps & {
-  column: { chart: boolean; width: number };
-  rowData: GroupRowData;
-};
+import { CustomChartCell, CustomSummaryCellSingleIndicator } from '../types';
 
 const AnalysisTable: React.FC<{ data: ImpactTableData }> = ({ data }) => {
   // initial value of the *props
@@ -46,6 +23,7 @@ const AnalysisTable: React.FC<{ data: ImpactTableData }> = ({ data }) => {
         title: year.toString(),
         dataType: DataType.Number,
         width: 100,
+        height: 50,
       })),
     [yearSum],
   );
@@ -135,21 +113,20 @@ const AnalysisTable: React.FC<{ data: ImpactTableData }> = ({ data }) => {
               className: 'h-auto py-3',
             };
           },
-          content: (props: PropsWithChildren<Prueba>) => {
+          content: (props: PropsWithChildren<CustomChartCell>) => {
             if (props.column.chart) {
               const chartData = Object.entries(props.rowData).map((row) => ({
                 x: row[0] as string | number,
                 y: row[1] as string | number,
               }));
 
-              const filtered: { x: number | string; y: number | string }[] = chartData.filter(
-                (d) => d.x !== 'id' && d.x !== 'name',
+              const filtered: { x: number | string; y: number | string }[] = chartData.filter((d) =>
+                years.includes(Number(d.x)),
               );
 
               const xAxisValues = filtered.map((d) => Number(d.x));
               const xMaxValue = Math.max(...xAxisValues);
               const xMinValue = Math.min(...xAxisValues);
-
               const min = xMaxValue - xMinValue;
               const chartConfig = {
                 lines: [
@@ -170,7 +147,10 @@ const AnalysisTable: React.FC<{ data: ImpactTableData }> = ({ data }) => {
               };
 
               return (
-                <div className="ka-cell-text text-center font-bold uppercase text-xs flex justify-center">
+                <div
+                  style={{ width: props.column.width, height: 50 }}
+                  className="ka-cell-text text-center font-bold uppercase text-xs flex justify-center h-full"
+                >
                   <LineChart chartConfig={chartConfig} width={props.column.width} />
                 </div>
               );
@@ -200,7 +180,7 @@ const AnalysisTable: React.FC<{ data: ImpactTableData }> = ({ data }) => {
               className: 'h-auto py-3 bg-gray-50',
             };
           },
-          content: (props: CustomSummaryCell) => {
+          content: (props: CustomSummaryCellSingleIndicator) => {
             if (props.column.key === 'name') {
               return (
                 <div className="ka-cell-text font-bold uppercase bg-gray-50 text-gray-500 text-xs">

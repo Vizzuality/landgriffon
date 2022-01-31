@@ -20,10 +20,11 @@ const Uploader: React.FC<UploaderProps> = ({
   fileTypes,
   maxFiles = 1,
   maxSize = FILE_UPLOADER_MAX_SIZE,
-  autoUpload = true,
+  autoUpload = false,
   showAlerts = true,
   onSelected,
   onRejected,
+  onUploading,
   onUpload,
   onError,
 }: UploaderProps) => {
@@ -33,54 +34,60 @@ const Uploader: React.FC<UploaderProps> = ({
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [alert, setAlert] = useState<AlertsItemProps>(null);
 
-  const uploadFiles = useCallback(() => {
-    if (!(files.length > 0)) return;
-    if (!url) return;
+  const uploadFiles = useCallback(
+    (files: File[]) => {
+      if (!(files.length > 0)) return;
+      if (!url) return;
 
-    const formData = new FormData();
-    files.forEach((file) => formData.append(key, file));
+      setIsUploading(true);
+      onUploading && onUploading(isUploading);
 
-    apiService
-      .request({
-        method: 'POST',
-        url: url,
-        data: formData,
-        headers: {
-          // Authorization: `Bearer ${session.accessToken}`,
-        },
-      })
-      .then((response) => {
-        onUpload && onUpload(response);
-        if (showAlerts) {
-          setAlert({
-            type: 'success',
-            title: 'Your file was successfully uploaded.',
-          });
-        }
-      })
-      .catch(({ request }) => {
-        onError && onError(request);
-        if (showAlerts) {
-          try {
-            const errors = JSON.parse(request.response).errors.map(({ title }) => title);
+      const formData = new FormData();
+      files.forEach((file) => formData.append(key, file));
 
+      apiService
+        .request({
+          method: 'POST',
+          url: url,
+          data: formData,
+          headers: {
+            // Authorization: `Bearer ${session.accessToken}`,
+          },
+        })
+        .then((response) => {
+          onUpload && onUpload(response);
+          if (showAlerts) {
             setAlert({
-              type: 'error',
-              title: errorAlertTitle(errors),
-              messages: errors,
-            });
-          } catch {
-            setAlert({
-              type: 'error',
-              title: 'There was an error uploading your file. Please try again.',
+              type: 'success',
+              title: 'Your file was successfully uploaded.',
             });
           }
-        }
-      })
-      .finally(() => {
-        setIsUploading(false);
-      });
-  }, [files, key, onError, onUpload, showAlerts, url]);
+        })
+        .catch(({ request }) => {
+          onError && onError(request);
+          if (showAlerts) {
+            try {
+              const errors = JSON.parse(request.response).errors.map(({ title }) => title);
+
+              setAlert({
+                type: 'error',
+                title: errorAlertTitle(errors),
+                messages: errors,
+              });
+            } catch {
+              setAlert({
+                type: 'error',
+                title: 'There was an error uploading your file. Please try again.',
+              });
+            }
+          }
+        })
+        .finally(() => {
+          setIsUploading(false);
+        });
+    },
+    [isUploading, key, onError, onUpload, onUploading, showAlerts, url],
+  );
 
   const fileTypesString = useMemo(() => {
     return (fileTypes || []).map((fileType) => fileType.toUpperCase()).join(', ');
@@ -96,8 +103,7 @@ const Uploader: React.FC<UploaderProps> = ({
     setFiles(files);
     onSelected && onSelected(files, { upload: uploadFiles });
     if (autoUpload) {
-      setIsUploading(true);
-      uploadFiles();
+      uploadFiles(files);
     }
   };
 
@@ -143,7 +149,7 @@ const Uploader: React.FC<UploaderProps> = ({
   useEffect(() => {
     if (!(files.length > 0)) return;
     if (!autoUpload) return;
-    uploadFiles();
+    uploadFiles(files);
   }, [autoUpload, files, uploadFiles]);
 
   return (

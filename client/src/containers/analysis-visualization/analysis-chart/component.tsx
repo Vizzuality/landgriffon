@@ -17,7 +17,6 @@ const AnalysisChart: React.FC = () => {
 
   const { data: chartData, legend: legendData, isFetching: chartIsFetching } = useAnalysisChart();
 
-  const isFetching = chartIsFetching;
   return (
     <>
       {isFetching && <Loading className="text-white" />}

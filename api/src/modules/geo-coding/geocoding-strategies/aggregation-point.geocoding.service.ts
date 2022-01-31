@@ -47,6 +47,11 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
     if (sourcingData.locationAddressInput) {
       const geocodedResponseData: GeocodeResponseData =
         await this.geoCodeByAddress(sourcingData.locationAddressInput);
+
+      console.log(
+        'GEOCODED RESPONSE:::::',
+        JSON.stringify(geocodedResponseData),
+      );
       /**
        * if given address is country type, raise and exception. it should be an address within a country
        */

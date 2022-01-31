@@ -57,7 +57,7 @@ export class GeoCodingService {
   async geoCodeAggregationPoint(
     sourcingData: SourcingData,
   ): Promise<SourcingData> {
-    return await this.aggregationPointGeocodingService.geoCodeAggregationPoint(
+    return this.aggregationPointGeocodingService.geoCodeAggregationPoint(
       sourcingData,
     );
   }
@@ -65,7 +65,7 @@ export class GeoCodingService {
   async geoCodePointOfProduction(
     sourcingData: SourcingData,
   ): Promise<SourcingData> {
-    return await this.pointOfProductionGeocodingService.geoCodePointOfProduction(
+    return this.pointOfProductionGeocodingService.geoCodePointOfProduction(
       sourcingData,
     );
   }
@@ -73,7 +73,7 @@ export class GeoCodingService {
   async geoCodeCountryOfProduction(
     sourcingData: SourcingData,
   ): Promise<SourcingData> {
-    return await this.countryOfProductionService.geoCodeCountryOfProduction(
+    return this.countryOfProductionService.geoCodeCountryOfProduction(
       sourcingData,
     );
   }
@@ -81,8 +81,6 @@ export class GeoCodingService {
   async geoCodeUnknownLocationType(
     sourcingData: SourcingData,
   ): Promise<SourcingData> {
-    return await this.unknownLocationService.geoCodeUnknownLocationType(
-      sourcingData,
-    );
+    return this.unknownLocationService.geoCodeUnknownLocationType(sourcingData);
   }
 }

@@ -16,6 +16,7 @@ import { Supplier } from 'modules/suppliers/supplier.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
+import { Scenario } from 'modules/scenarios/scenario.entity';
 
 export enum SCENARIO_INTERVENTION_STATUS {
   ACTIVE = 'active',
@@ -25,6 +26,9 @@ export enum SCENARIO_INTERVENTION_STATUS {
 
 export enum SCENARIO_INTERVENTION_TYPE {
   DEFAULT = 'default',
+  NEW_SUPPLIER = 'Source from new supplier ot location',
+  CHANGE_PRODUCTION_EFFICIENCY = 'Change production efficiency',
+  NEW_MATERIAL = 'Switch to a new material',
 }
 
 export const scenarioResource: BaseServiceResource = {
@@ -66,7 +70,6 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   @Column({
     type: 'enum',
     enum: SCENARIO_INTERVENTION_TYPE,
-    default: SCENARIO_INTERVENTION_TYPE.DEFAULT,
   })
   type!: SCENARIO_INTERVENTION_TYPE;
 
@@ -86,9 +89,14 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   @ApiPropertyOptional()
   newIndicatorCoefficients?: JSON;
 
+  @ManyToOne(() => Scenario)
+  @ApiProperty({ type: () => Scenario })
+  scenario?: Scenario;
+
   /**
    * Relationships with other entities - links of replaced relationships on this intervention
    */
+
   @ManyToMany(() => Material)
   @JoinTable()
   replacedMaterials?: Material[];

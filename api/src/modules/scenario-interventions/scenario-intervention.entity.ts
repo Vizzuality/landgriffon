@@ -70,6 +70,7 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   @Column({
     type: 'enum',
     enum: SCENARIO_INTERVENTION_TYPE,
+    default: SCENARIO_INTERVENTION_TYPE.DEFAULT,
   })
   type!: SCENARIO_INTERVENTION_TYPE;
 

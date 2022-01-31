@@ -1,46 +1,9 @@
 import { FC } from 'react';
 import { AnimatedLineSeries, XYChart, AnimatedAxis, AnimatedGrid } from '@visx/xychart';
-import { Orientation } from '@visx/axis';
+import { ParentSize } from '@visx/responsive';
 
-type ChartData = Readonly<{
-  x: string | number;
-  y: string | number;
-}>;
-
-type LinesConfig = Readonly<{
-  stroke: string;
-  width: string | number;
-  strokeDasharray?: string;
-  dataKey: string;
-  data: ChartData[];
-}>;
-
-type Grid = Readonly<{
-  numTicks: number;
-  columns: boolean;
-}>;
-
-type Axis = Readonly<{
-  orientation: Orientation;
-}>;
-
-type ChartConfig = Readonly<{
-  grid?: Grid;
-  axis?: Axis;
-  lines: LinesConfig[];
-}>;
-
-export type LineChartProps = Readonly<{
-  chartConfig: ChartConfig;
-  width?: number;
-  height?: number;
-  margin?: {
-    top: number;
-    right: number;
-    bottom: number;
-    left: number;
-  };
-}>;
+// types
+import { LineChartProps } from './types';
 
 const LineChart: FC<LineChartProps> = ({
   width = 200,
@@ -60,25 +23,29 @@ const LineChart: FC<LineChartProps> = ({
   };
 
   return (
-    <XYChart
-      height={height}
-      width={width}
-      margin={margin}
-      xScale={{ type: 'time' }}
-      yScale={{ type: 'linear' }}
-    >
-      {lines.map((line) => (
-        <AnimatedLineSeries
-          key={line.dataKey}
-          width={width}
-          height={height}
-          {...line}
-          {...accessors}
-        />
-      ))}
-      {!!axis && <AnimatedAxis {...axis} />}
-      {!!grid && <AnimatedGrid {...grid} />}
-    </XYChart>
+    <ParentSize>
+      {(parent) => (
+        <XYChart
+          height={parent.height}
+          width={parent.width}
+          margin={margin}
+          xScale={{ type: 'time' }}
+          yScale={{ type: 'linear' }}
+        >
+          {lines.map((line) => (
+            <AnimatedLineSeries
+              key={line.dataKey}
+              width={width}
+              height={height}
+              {...line}
+              {...accessors}
+            />
+          ))}
+          {!!axis && <AnimatedAxis {...axis} />}
+          {!!grid && <AnimatedGrid {...grid} />}
+        </XYChart>
+      )}
+    </ParentSize>
   );
 };
 

@@ -1,9 +1,12 @@
+import { useState } from 'react';
+
 import { ITableProps } from 'ka-table';
 import { DataType, PagingPosition } from 'ka-table/enums';
 import dynamic from 'next/dynamic';
 
 import AdminLayout, { TABS } from 'layouts/admin';
 import NoData from 'containers/admin/no-data';
+import UploadDataSourceModal from 'containers/admin/upload-data-source-modal';
 import Button from 'components/button';
 
 type ITableData = ITableProps;
@@ -28,6 +31,8 @@ const tableProps: ITableData = {
 };
 
 const AdminTargetsPage: React.FC = () => {
+  const [uploadDataSourceModalOpen, setUploadDataSourceModalOpen] = useState(false);
+
   const data = Array(4)
     .fill(undefined)
     .map((_, index) => ({
@@ -46,13 +51,19 @@ const AdminTargetsPage: React.FC = () => {
           <Button theme="secondary" onClick={() => console.info('Download: click')}>
             Download
           </Button>
-          <Button theme="primary" onClick={() => console.info('Upload data source: click')}>
+          <Button theme="primary" onClick={() => setUploadDataSourceModalOpen(true)}>
             Upload data source
           </Button>
         </>
       }
     >
+      <UploadDataSourceModal
+        open={uploadDataSourceModalOpen}
+        onDismiss={() => setUploadDataSourceModalOpen(false)}
+      />
+
       {!hasData && <NoData />}
+
       {hasData && <TableNoSSR tablePropsInit={{ ...tableProps, data: data }} />}
     </AdminLayout>
   );

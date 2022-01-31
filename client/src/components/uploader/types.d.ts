@@ -10,6 +10,7 @@ export type UploaderProps = {
   showAlerts?: boolean;
   onSelected?: (files: Files[], { upload: func }) => void;
   onRejected?: (errors) => void;
+  onUploading?: (isUploading: boolean) => void;
   onUpload?: (response: AxiosResponse) => void;
   onError?: (response) => void;
 };

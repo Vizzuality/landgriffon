@@ -49,6 +49,10 @@ export class AdminRegion extends BaseEntity {
   @Column({ type: 'text', unique: true, nullable: true })
   gadmId?: string;
 
+  // TODO: delete nullable true once level is persisted by import script
+  @Column({ type: 'int', nullable: true })
+  level: number;
+
   @Column({ nullable: true })
   @ApiPropertyOptional()
   name?: string;

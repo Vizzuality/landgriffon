@@ -103,7 +103,7 @@ export class AdminRegionsService extends AppBaseService<
     lng: number;
     lat: number;
   }): Promise<{ adminRegionId: string; geoRegionId: string }> {
-    return await this.adminRegionRepository.getAdminRegionAndGeoRegionIdByCoordinates(
+    return this.adminRegionRepository.getAdminRegionAndGeoRegionIdByCoordinates(
       coordinates,
     );
   }

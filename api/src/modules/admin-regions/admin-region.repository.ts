@@ -22,7 +22,7 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
           st_setsrid($1::geometry, 4326),
           st_setsrid(g."theGeom"::geometry, 4326)
           )
-          AND a."isoA2" IS NOT NULL;
+        ;
       `,
       [`POINT(${coordinates.lng} ${coordinates.lat})`],
     );
@@ -32,6 +32,7 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
         `No Admin Region where coordinates ${coordinates.lat}, ${coordinates.lng} are could been found`,
       );
     }
+    console.log('GEOCODING RESULTS', res);
     return res[0];
   }
 }

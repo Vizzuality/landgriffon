@@ -1,5 +1,6 @@
 import { useMemo, useEffect, useState, useCallback } from 'react';
 
+import classNames from 'classnames';
 import Image from 'next/image';
 // import { useSession } from 'next-auth/client';
 import { useDropzone } from 'react-dropzone';
@@ -22,6 +23,7 @@ const Uploader: React.FC<UploaderProps> = ({
   maxSize = FILE_UPLOADER_MAX_SIZE,
   autoUpload = false,
   showAlerts = true,
+  disabled = false,
   onSelected,
   onRejected,
   onUploading,
@@ -134,7 +136,7 @@ const Uploader: React.FC<UploaderProps> = ({
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: fileTypes && fileTypes.map((f) => '.' + f),
-    disabled: !!isUploading,
+    disabled: disabled || !!isUploading,
     maxSize,
     maxFiles,
     multiple: maxFiles > 1,
@@ -156,7 +158,12 @@ const Uploader: React.FC<UploaderProps> = ({
     <div>
       {header && <div className="text-sm mb-3">{header}</div>}
       <div
-        className="cursor-pointer rounded-md border-2 border-dashed py-10 px-4 text-center text-sm focus:outline-green-700"
+        className={classNames(
+          'cursor-pointer rounded-md border-2 border-dashed py-10 px-4 text-center text-sm focus:outline-green-700',
+          {
+            'opacity-50': disabled,
+          },
+        )}
         {...getRootProps()}
       >
         <input {...getInputProps()} />

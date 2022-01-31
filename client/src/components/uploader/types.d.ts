@@ -8,6 +8,7 @@ export type UploaderProps = {
   maxSize?: number;
   autoUpload?: boolean;
   showAlerts?: boolean;
+  disabled?: boolean;
   onSelected?: (files: Files[], { upload: func }) => void;
   onRejected?: (errors) => void;
   onUploading?: (isUploading: boolean) => void;

@@ -40,7 +40,12 @@ export class ImportDataController {
       xlsxFile,
     );
     return {
-      data: { id: task.id, createdAt: task.createdBy, status: task.status },
+      data: {
+        id: task.id,
+        createdAt: task.createdAt,
+        status: task.status,
+        createdBy: task.createdBy,
+      },
     };
   }
 }

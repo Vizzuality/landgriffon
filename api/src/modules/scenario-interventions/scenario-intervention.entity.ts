@@ -26,7 +26,7 @@ export enum SCENARIO_INTERVENTION_STATUS {
 
 export enum SCENARIO_INTERVENTION_TYPE {
   DEFAULT = 'default',
-  NEW_SUPPLIER = 'Source from new supplier ot location',
+  NEW_SUPPLIER = 'Source from new supplier or location',
   CHANGE_PRODUCTION_EFFICIENCY = 'Change production efficiency',
   NEW_MATERIAL = 'Switch to a new material',
 }

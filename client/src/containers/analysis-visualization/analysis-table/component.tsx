@@ -41,7 +41,7 @@ const AnalysisTable: React.FC = () => {
         </Button>
       </div>
       <div className="relative">
-        {isLoading && <Loading className="text-green-700" />}
+        {isLoading && <Loading className="text-green-700 -ml-1 mr-3" />}
 
         {/* Multiple indicators table */}
         {tableData && tableData.length > 1 && <MultipleIndicatorTable data={tableData} />}

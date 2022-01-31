@@ -70,7 +70,7 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
             >
               {loading ? (
                 <div className="p-4">
-                  <Loading className="text-green-700" />
+                  <Loading className="text-green-700 -ml-1 mr-3" />
                 </div>
               ) : (
                 <>

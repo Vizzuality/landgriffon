@@ -24,7 +24,7 @@ export function useSuppliers(): ResponseData {
       apiService
         .request({
           method: 'GET',
-          url: '/suppliers',
+          url: 'impact/suppliers',
           headers: {
             // Authorization: `Bearer ${session.accessToken}`,
           },

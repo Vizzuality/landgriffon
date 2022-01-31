@@ -24,7 +24,7 @@ export function useAdminRegions(): ResponseData {
       apiService
         .request({
           method: 'GET',
-          url: `/admin-regions/`,
+          url: `impact/admin-regions/`,
           headers: {
             // Authorization: `Bearer ${session.accessToken}`,
           },

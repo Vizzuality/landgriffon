@@ -24,7 +24,7 @@ export function useMaterials(): ResponseData {
       apiService
         .request({
           method: 'GET',
-          url: '/materials',
+          url: 'impact/materials',
           headers: {
             // Authorization: `Bearer ${session.accessToken}`,
           },

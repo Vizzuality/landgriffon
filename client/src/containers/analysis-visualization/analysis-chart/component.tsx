@@ -15,7 +15,7 @@ import Widget from 'components/widget';
 const AnalysisChart: React.FC = () => {
   const { filters } = useAppSelector(analysis);
 
-  const { data: chartData, legend: legendData, isFetching: chartIsFetching } = useAnalysisChart();
+  const { data: chartData, legend: legendData, isFetching } = useAnalysisChart();
 
   return (
     <>

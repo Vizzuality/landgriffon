@@ -1,71 +1,87 @@
-import { useMemo } from 'react';
-import { ITableProps } from 'ka-table';
+import { useMemo, PropsWithChildren } from 'react';
 import { DataType } from 'ka-table/enums';
 
 import Table from 'components/table';
-import { ISummaryCellProps } from 'ka-table/props';
+import LineChart from 'components/chart/line';
+import { ISummaryCellProps, ICellProps } from 'ka-table/props';
 import { DATA_NUMBER_FORMAT } from '../../constants';
 
 import type { ImpactTableData } from 'types';
-
-type ITableData = ITableProps & {
-  yearSum: Record<string, string>;
-};
+import { GroupRowData } from 'ka-table/models';
 
 type CustomSummaryCell = ISummaryCellProps & {
-  yearSum: Record<string, string>;
+  yearSum: {
+    year: number;
+    value: number;
+  }[];
+  rowData: unknown;
+  columns: ColumnHeadings[];
+  width: number;
 };
 
-const SingleIndicatorTable: React.FC<{ data: ImpactTableData }> = ({ data }) => {
-  // Parse data for table
-  const tableData = useMemo(() => {
-    const { indicatorId, rows } = data;
-    const result = [];
+type ColumnHeadings = Readonly<{
+  dataType: DataType.String | DataType.Number;
+  key: string;
+  title: string;
+  width?: number;
+  chart?: boolean;
+}>;
 
-    rows.forEach(({ name, values }) => {
-      result.push({
-        id: `${indicatorId}-${name}`,
-        name,
-        ...values
-          .map(({ year, value }) => ({ [year as string]: DATA_NUMBER_FORMAT(value as number) }))
-          .reduce((a, b) => ({ ...a, ...b })),
-      });
-    });
+type Prueba = ICellProps & {
+  column: { chart: boolean; width: number };
+  rowData: GroupRowData;
+};
 
-    return result;
-  }, [data]);
-
-  // Totals for summary
-  const yearSum = useMemo(() => {
-    const { yearSum } = data;
-    return yearSum
-      .map(({ year, value }) => ({ [year]: DATA_NUMBER_FORMAT(value as number) }))
-      .reduce((a, b) => ({ ...a, ...b }));
-  }, [data]);
-
-  // Years from table data
-  const years = useMemo(() => {
-    const { yearSum } = data;
-    return yearSum.map(({ year }) => year);
-  }, [data]);
-
+const AnalysisTable: React.FC<{ data: ImpactTableData }> = ({ data }) => {
   // initial value of the *props
-  const tableProps: ITableData = useMemo(() => {
+
+  const { indicatorId, yearSum, rows } = data;
+
+  const years = useMemo<number[]>(() => yearSum.map(({ year }) => year), [yearSum]);
+
+  const columnValues = useMemo(
+    () =>
+      yearSum.map(({ year }) => ({
+        key: year.toString(),
+        title: year.toString(),
+        dataType: DataType.Number,
+        width: 100,
+      })),
+    [yearSum],
+  );
+
+  const dataValues = useMemo(
+    () =>
+      rows.map((row, rowIndex) => ({
+        id: `${indicatorId}-${rowIndex}`,
+        name: row.name,
+        ...row.values
+          .map(({ year, value }) => ({ [year as number]: DATA_NUMBER_FORMAT(value as number) }))
+          .reduce((a, b) => ({ ...a, ...b })),
+      })),
+    [rows, indicatorId],
+  );
+  const tableProps = useMemo(() => {
+    const minYear = Math.min(...years);
+    const maxYear = Math.max(...years);
+
     return {
+      key: indicatorId,
       rowKeyField: 'id',
       columns: [
         { key: 'name', title: 'Name', dataType: DataType.String, width: 250 },
-        ...years.map((year) => ({
-          key: year.toString(),
-          title: year.toString(),
-          DataType: DataType.Number,
+        {
+          key: 'dates-range',
+          title: `${minYear}-${maxYear}`,
+          chart: true,
           width: 100,
-        })),
+        },
+        ...columnValues,
       ],
-      data: tableData,
+      data: dataValues,
       yearSum,
     };
-  }, [tableData, yearSum, years]);
+  }, [yearSum, years, indicatorId, columnValues, dataValues]);
 
   return (
     <Table
@@ -100,7 +116,7 @@ const SingleIndicatorTable: React.FC<{ data: ImpactTableData }> = ({ data }) => 
         },
         headCellContent: {
           elementAttributes: () => ({
-            className: 'font-bold uppercase text-xs leading-4 text-gray-500',
+            className: 'font-bold uppercase text-xs leading-4 text-gray-500 whitespace-nowrap',
           }),
         },
         dataRow: {
@@ -112,12 +128,53 @@ const SingleIndicatorTable: React.FC<{ data: ImpactTableData }> = ({ data }) => 
           elementAttributes: (props) => {
             if (props.column.key === 'name') {
               return {
-                className: 'h-auto py-3 sticky left-0 group-even:bg-gray-50 group-odd:bg-white',
+                className: 'h-auto py-3 sticky left-0 group-even:bg-gray-50 group-odd:bg-red',
               };
             }
             return {
               className: 'h-auto py-3',
             };
+          },
+          content: (props: PropsWithChildren<Prueba>) => {
+            if (props.column.chart) {
+              const chartData = Object.entries(props.rowData).map((row) => ({
+                x: row[0] as string | number,
+                y: row[1] as string | number,
+              }));
+
+              const filtered: { x: number | string; y: number | string }[] = chartData.filter(
+                (d) => d.x !== 'id' && d.x !== 'name',
+              );
+
+              const xAxisValues = filtered.map((d) => Number(d.x));
+              const xMaxValue = Math.max(...xAxisValues);
+              const xMinValue = Math.min(...xAxisValues);
+
+              const min = xMaxValue - xMinValue;
+              const chartConfig = {
+                lines: [
+                  {
+                    stroke: '#909194',
+                    width: '100%',
+                    dataKey: 'primary_line',
+                    data: filtered.filter((d) => Number(d.x) > xMinValue + min / 2),
+                  },
+                  {
+                    stroke: '#909194',
+                    width: '100%',
+                    strokeDasharray: '3 3',
+                    dataKey: 'secondary_line',
+                    data: filtered,
+                  },
+                ],
+              };
+
+              return (
+                <div className="ka-cell-text text-center font-bold uppercase text-xs flex justify-center">
+                  <LineChart chartConfig={chartConfig} width={props.column.width} />
+                </div>
+              );
+            }
           },
         },
         cellText: {
@@ -151,10 +208,10 @@ const SingleIndicatorTable: React.FC<{ data: ImpactTableData }> = ({ data }) => 
                 </div>
               );
             }
-            const totalCell = props.yearSum[props.column.key];
+            const totalCell = props.yearSum.find((d) => d.year.toString() === props.column.key);
             return (
               <div className="ka-cell-text text-center font-bold uppercase text-gray-500 text-xs">
-                {totalCell}
+                {totalCell && DATA_NUMBER_FORMAT(totalCell.value)}
               </div>
             );
           },
@@ -164,4 +221,4 @@ const SingleIndicatorTable: React.FC<{ data: ImpactTableData }> = ({ data }) => 
   );
 };
 
-export default SingleIndicatorTable;
+export default AnalysisTable;

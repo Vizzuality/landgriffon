@@ -285,7 +285,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
         <div className="absolute z-20 min-w-full max-w-xl max-h-96 bg-white shadow-lg rounded-md mt-1 ring-1 ring-black ring-opacity-5 overflow-y-auto overflow-x-hidden">
           {loading && (
             <div className="p-4">
-              <Loading className="text-green-700" />
+              <Loading className="text-green-700 -ml-1 mr-3" />
             </div>
           )}
           {!loading && showSearch && (

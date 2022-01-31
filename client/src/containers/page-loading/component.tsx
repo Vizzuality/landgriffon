@@ -18,7 +18,7 @@ const PageLoading: React.FC<PageLoadingProps> = ({
         },
       )}
     >
-      <Loading className="w-12 h-12" />
+      <Loading className="w-12 h-12 -ml-1 mr-3" />
       <p className="mt-6 text-center">{message}</p>
     </div>
   </div>

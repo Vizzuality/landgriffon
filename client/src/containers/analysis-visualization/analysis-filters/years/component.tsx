@@ -42,9 +42,9 @@ const YearsFilter: React.FC = () => {
       data?.map((year) => ({
         label: year.toString(),
         value: year,
-        disabled: endYear <= year,
+        disabled: visualizationMode !== 'map' && endYear <= year + 4, // results should  show a minimun of 5 years window
       })),
-    [data, endYear],
+    [data, endYear, visualizationMode],
   );
 
   const optionsEndYear: SelectOptions = useMemo(() => {
@@ -53,9 +53,9 @@ const YearsFilter: React.FC = () => {
     return result.map((year) => ({
       label: year.toString(),
       value: year,
-      disabled: year <= startYear,
+      disabled: visualizationMode !== 'map' && year - 4 <= startYear, // results should  show a minimun of 5 years window
     }));
-  }, [data, additionalYear, startYear]);
+  }, [data, additionalYear, startYear, visualizationMode]);
 
   const currentStartYearValue: SelectOption = useMemo(
     () => optionsStartYear?.find((option) => option.value === startYear),

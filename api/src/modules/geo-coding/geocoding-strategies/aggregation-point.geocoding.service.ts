@@ -20,6 +20,12 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
      * If coordinates, create a new geo-region: a 50KM radius around the given point
      */
     if (sourcingData.locationLatitude && sourcingData.locationLongitude) {
+      const aggregationPointCoordinatesGeocodeResponseData: GeocodeResponseData =
+        await this.reverseGeocode({
+          lat: sourcingData.locationLatitude,
+          lng: sourcingData.locationLongitude,
+        });
+
       const geoRegionId: GeoRegion =
         await this.geoRegionService.saveGeoRegionAsRadius({
           name: sourcingData.locationCountryInput,
@@ -48,10 +54,6 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
       const geocodedResponseData: GeocodeResponseData =
         await this.geoCodeByAddress(sourcingData.locationAddressInput);
 
-      console.log(
-        'GEOCODED RESPONSE:::::',
-        JSON.stringify(geocodedResponseData),
-      );
       /**
        * if given address is country type, raise and exception. it should be an address within a country
        */
@@ -64,9 +66,23 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
        */
       if (this.isAddressAdminLevel1(geocodedResponseData.results[0].types)) {
         const { adminRegionId, geoRegionId } =
-          await this.adminRegionService.getAdminRegionIdByCoordinates({
+          await this.adminRegionService.getAdminRegionIdByCoordinatesAndLevel({
             lng: geocodedResponseData?.results[0]?.geometry.location.lng,
             lat: geocodedResponseData?.results[0]?.geometry.location.lat,
+            level: 1,
+          });
+        return {
+          ...sourcingData,
+          adminRegionId,
+          geoRegionId,
+        };
+      }
+      if (this.isAddressAdminLevel2(geocodedResponseData.results[0].types)) {
+        const { adminRegionId, geoRegionId } =
+          await this.adminRegionService.getAdminRegionIdByCoordinatesAndLevel({
+            lng: geocodedResponseData?.results[0]?.geometry.location.lng,
+            lat: geocodedResponseData?.results[0]?.geometry.location.lat,
+            level: 2,
           });
         return {
           ...sourcingData,
@@ -76,6 +92,8 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
       } else {
         /**
          * Else, follow the same logics as coordinates
+         * If it's not neither AdminRegion Level 1 or Level 2, should be a GADM Level 0, which we can look it up in the db
+         * by it's name
          */
         const geoRegionId: GeoRegion =
           await this.geoRegionService.saveGeoRegionAsRadius({

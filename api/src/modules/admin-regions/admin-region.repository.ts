@@ -9,9 +9,10 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
   AdminRegion,
   CreateAdminRegionDto
 > {
-  async getAdminRegionAndGeoRegionIdByCoordinates(coordinates: {
+  async getAdminRegionAndGeoRegionIdByCoordinatesAndLevel(searchParams: {
     lng: number;
     lat: number;
+    level: number;
   }): Promise<{ adminRegionId: string; geoRegionId: string }> {
     const res: any = await this.query(
       `
@@ -22,17 +23,17 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
           st_setsrid($1::geometry, 4326),
           st_setsrid(g."theGeom"::geometry, 4326)
           )
+          AND a."level" = ${searchParams.level};
         ;
       `,
-      [`POINT(${coordinates.lng} ${coordinates.lat})`],
+      [`POINT(${searchParams.lng} ${searchParams.lat})`],
     );
 
-    if (res.length === 0) {
+    if (!res.length) {
       throw new NotFoundException(
-        `No Admin Region where coordinates ${coordinates.lat}, ${coordinates.lng} are could been found`,
+        `No Admin Region where coordinates ${searchParams.lat}, ${searchParams.lng} are could been found`,
       );
     }
-    console.log('GEOCODING RESULTS', res);
     return res[0];
   }
 }

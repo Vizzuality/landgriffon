@@ -99,12 +99,13 @@ export class AdminRegionsService extends AppBaseService<
     return adminRegion;
   }
 
-  async getAdminRegionIdByCoordinates(coordinates: {
+  async getAdminRegionIdByCoordinatesAndLevel(searchParams: {
     lng: number;
     lat: number;
+    level: number;
   }): Promise<{ adminRegionId: string; geoRegionId: string }> {
-    return this.adminRegionRepository.getAdminRegionAndGeoRegionIdByCoordinates(
-      coordinates,
+    return this.adminRegionRepository.getAdminRegionAndGeoRegionIdByCoordinatesAndLevel(
+      searchParams,
     );
   }
 }

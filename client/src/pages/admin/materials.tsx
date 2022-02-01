@@ -4,7 +4,7 @@ import { debounce } from 'lodash';
 import dynamic from 'next/dynamic';
 import { ExclamationIcon, FilterIcon } from '@heroicons/react/solid';
 
-import AdminLayout, { TABS } from 'layouts/admin';
+import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import NoData from 'containers/admin/no-data';
 import Button from 'components/button';
 
@@ -54,7 +54,7 @@ const AdminMaterialsPage: React.FC = () => {
 
   return (
     <AdminLayout
-      currentTab={TABS.DATA}
+      currentTab={ADMIN_TABS.DATA}
       headerButtons={
         <>
           <Button theme="secondary" onClick={() => console.info('Download: click')}>

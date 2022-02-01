@@ -1,29 +1,11 @@
 import Head from 'next/head';
 
 import ApplicationLayout from 'layouts/application';
-import Tabs, { TabsType } from 'components/tabs';
+import Tabs from 'components/tabs';
 import PageLoading from 'containers/page-loading';
 
 import { AdminLayoutProps } from './types';
-
-export const TABS: TabsType = {
-  DATA: {
-    name: 'Materials',
-    href: '/admin/materials',
-  },
-  TARGETS: {
-    name: 'Targets',
-    href: '/admin/targets',
-  },
-  USERS: {
-    name: 'Users',
-    href: '/admin/users',
-  },
-  SETTINGS: {
-    name: 'Settings',
-    href: '/admin/settings',
-  },
-};
+import { ADMIN_TABS } from './constants';
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({
   loading = false,
@@ -41,7 +23,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
       <h1 className="text-center md:text-left">Admin</h1>
 
       <div className="flex flex-col md:flex-row justify-between items-center mb-4 border-b border-gray-200">
-        <Tabs bottomBorder={false} activeTab={currentTab} tabs={TABS} />
+        <Tabs bottomBorder={false} activeTab={currentTab} tabs={ADMIN_TABS} />
         {headerButtons && <div className="flex gap-3 mt-4 md:-mt-4 mb-4">{headerButtons}</div>}
       </div>
 

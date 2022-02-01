@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import { ITableProps } from 'ka-table';
 import { DataType, PagingPosition } from 'ka-table/enums';
 import { debounce } from 'lodash';
@@ -8,7 +6,6 @@ import { ExclamationIcon, FilterIcon } from '@heroicons/react/solid';
 
 import AdminLayout, { TABS } from 'layouts/admin';
 import NoData from 'containers/admin/no-data';
-import UploadDataSourceModal from 'containers/admin/upload-data-source-modal';
 import Button from 'components/button';
 
 type ITableData = ITableProps;
@@ -37,8 +34,6 @@ const tableProps: ITableData = {
 };
 
 const AdminMaterialsPage: React.FC = () => {
-  const [uploadDataSourceModalOpen, setUploadDataSourceModalOpen] = useState(false);
-
   const data = Array(100)
     .fill(undefined)
     .map((_, index) => ({
@@ -65,17 +60,12 @@ const AdminMaterialsPage: React.FC = () => {
           <Button theme="secondary" onClick={() => console.info('Download: click')}>
             Download
           </Button>
-          <Button theme="primary" onClick={() => setUploadDataSourceModalOpen(true)}>
+          <Button theme="primary" onClick={() => console.info('Upload data source: click')}>
             Upload data source
           </Button>
         </>
       }
     >
-      <UploadDataSourceModal
-        open={uploadDataSourceModalOpen}
-        onDismiss={() => setUploadDataSourceModalOpen(false)}
-      />
-
       {!hasData && <NoData />}
 
       {hasData && (

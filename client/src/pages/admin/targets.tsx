@@ -2,7 +2,7 @@ import { ITableProps } from 'ka-table';
 import { DataType, PagingPosition } from 'ka-table/enums';
 import dynamic from 'next/dynamic';
 
-import AdminLayout, { TABS } from 'layouts/admin';
+import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import NoData from 'containers/admin/no-data';
 import Button from 'components/button';
 
@@ -40,7 +40,7 @@ const AdminTargetsPage: React.FC = () => {
 
   return (
     <AdminLayout
-      currentTab={TABS.TARGETS}
+      currentTab={ADMIN_TABS.TARGETS}
       headerButtons={
         <>
           <Button theme="secondary" onClick={() => console.info('Download: click')}>

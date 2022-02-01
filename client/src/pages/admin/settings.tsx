@@ -1,7 +1,7 @@
-import AdminLayout, { TABS } from 'layouts/admin';
+import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 
 const AdminSettingsPage: React.FC = () => {
-  return <AdminLayout currentTab={TABS.SETTINGS}>Settings</AdminLayout>;
+  return <AdminLayout currentTab={ADMIN_TABS.SETTINGS}>Settings</AdminLayout>;
 };
 
 export default AdminSettingsPage;

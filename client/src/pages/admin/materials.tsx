@@ -4,8 +4,10 @@ import { debounce } from 'lodash';
 import dynamic from 'next/dynamic';
 import { ExclamationIcon, FilterIcon } from '@heroicons/react/solid';
 
+import useModal from 'hooks/modals';
 import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import NoData from 'containers/admin/no-data';
+import UploadDataSourceModal from 'containers/admin/upload-data-source-modal';
 import Button from 'components/button';
 
 type ITableData = ITableProps;
@@ -34,6 +36,12 @@ const tableProps: ITableData = {
 };
 
 const AdminMaterialsPage: React.FC = () => {
+  const {
+    isOpen: isUploadDataSourceModalOpen,
+    open: openUploadDataSourceModal,
+    close: closeUploadDataSourceModal,
+  } = useModal();
+
   const data = Array(100)
     .fill(undefined)
     .map((_, index) => ({
@@ -60,12 +68,17 @@ const AdminMaterialsPage: React.FC = () => {
           <Button theme="secondary" onClick={() => console.info('Download: click')}>
             Download
           </Button>
-          <Button theme="primary" onClick={() => console.info('Upload data source: click')}>
+          <Button theme="primary" onClick={openUploadDataSourceModal}>
             Upload data source
           </Button>
         </>
       }
     >
+      <UploadDataSourceModal
+        open={isUploadDataSourceModalOpen}
+        onDismiss={closeUploadDataSourceModal}
+      />
+
       {!hasData && <NoData />}
 
       {hasData && (

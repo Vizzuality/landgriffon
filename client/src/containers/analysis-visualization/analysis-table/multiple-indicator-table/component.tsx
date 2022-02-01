@@ -23,7 +23,7 @@ const MultipleIndicatorTable: React.FC<{ data: ImpactTableData[] }> = ({ data })
           name,
           indicatorName: indicatorShortName,
           ...values
-            .map(({ year, value }) => ({ [year as string]: DATA_NUMBER_FORMAT(value as number) }))
+            .map(({ year, value }) => ({ [year as string]: value }))
             .reduce((a, b) => ({ ...a, ...b })),
         });
       });
@@ -54,7 +54,7 @@ const MultipleIndicatorTable: React.FC<{ data: ImpactTableData[] }> = ({ data })
       resultByYear.push(result.reduce((a, b) => ({ year, value: a.value + b.value })));
     });
     return resultByYear
-      .map(({ year, value }) => ({ [year as string]: DATA_NUMBER_FORMAT(value as number) }))
+      .map(({ year, value }) => ({ [year as string]: value }))
       .reduce((a, b) => ({ ...a, ...b }));
   }, [data, years]);
 
@@ -80,6 +80,17 @@ const MultipleIndicatorTable: React.FC<{ data: ImpactTableData[] }> = ({ data })
           width: 100,
         })),
       ],
+      format: ({ value, column }) => {
+        if (
+          column.key !== 'dates-range' &&
+          column.key !== 'name' &&
+          column.key !== 'indicatorName' &&
+          value
+        ) {
+          return DATA_NUMBER_FORMAT(value);
+        }
+        return value;
+      },
       data: tableData,
       groups: [{ columnKey: 'indicatorName' }],
       yearsSum,
@@ -140,16 +151,14 @@ const MultipleIndicatorTable: React.FC<{ data: ImpactTableData[] }> = ({ data })
           },
           content: (props: PropsWithChildren<CustomChartCell>) => {
             if (props.column.chart) {
-              const chartData = Object.entries(props.rowData).map((row) => ({
-                x: row[0] as string | number,
-                y: row[1] as string | number,
+              const chartData = Object.entries(props.rowData).map((row: [string, number]) => ({
+                x: row[0],
+                y: row[1],
               }));
 
-              const filtered: { x: number | string; y: number | string }[] = chartData.filter((d) =>
-                years.includes(Number(d.x)),
-              );
+              const filtered = chartData.filter((d) => years.includes(new Date(d.x).getFullYear()));
 
-              const xAxisValues = filtered.map((d) => Number(d.x));
+              const xAxisValues = filtered.map((d) => new Date(d.x).getFullYear());
               const xMaxValue = Math.max(...xAxisValues);
               const xMinValue = Math.min(...xAxisValues);
               const min = xMaxValue - xMinValue;
@@ -214,9 +223,10 @@ const MultipleIndicatorTable: React.FC<{ data: ImpactTableData[] }> = ({ data })
                 </div>
               );
             }
+            if (props.column.key === 'dates-range') return null;
             return (
               <div className="ka-cell-text text-center font-bold uppercase text-gray-500 text-xs">
-                {props.yearsSum[props.column.key]}
+                {DATA_NUMBER_FORMAT(props.yearsSum[props.column.key])}
               </div>
             );
           },

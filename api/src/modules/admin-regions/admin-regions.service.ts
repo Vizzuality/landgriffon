@@ -108,4 +108,13 @@ export class AdminRegionsService extends AppBaseService<
       searchParams,
     );
   }
+
+  async getClosestAdminRegionByCoordinates(coordinates: {
+    lng: number;
+    lat: number;
+  }): Promise<any> {
+    return this.adminRegionRepository.getClosestAdminRegionByCoordinates(
+      coordinates,
+    );
+  }
 }

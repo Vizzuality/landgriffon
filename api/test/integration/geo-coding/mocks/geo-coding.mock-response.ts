@@ -179,4 +179,49 @@ export const geocodeResponses = [
     ],
     status: 'OK',
   },
+  {
+    results: [
+      {
+        address_components: [
+          {
+            long_name: 'Asgard',
+            short_name: 'Asgard',
+            types: ['locality', 'political'],
+          },
+          {
+            long_name: 'Asgard is cool',
+            short_name: 'Asgard is cool',
+            types: ['administrative_area_level_0', 'political'],
+          },
+          {
+            long_name: 'Uttar Pradesh',
+            short_name: 'UP',
+            types: ['administrative_area_level_0', 'political'],
+          },
+          {
+            long_name: 'India',
+            short_name: 'IN',
+            types: ['country', 'political'],
+          },
+          { long_name: '225305', short_name: '225305', types: ['postal_code'] },
+        ],
+        formatted_address: 'Tehsil Fateh Pur, Uttar Pradesh 225305, India',
+        geometry: {
+          bounds: {
+            northeast: { lat: 27.1822721, lng: 81.2219238 },
+            southwest: { lat: 27.1654734, lng: 81.20252599999999 },
+          },
+          location: { lat: 27.1742902, lng: 81.2157665 },
+          location_type: 'APPROXIMATE',
+          viewport: {
+            northeast: { lat: 27.1822721, lng: 81.2219238 },
+            southwest: { lat: 27.1654734, lng: 81.20252599999999 },
+          },
+        },
+        place_id: 'ChIJYZCfnHhpmTkRI7KzO8kTs94',
+        types: ['locality', 'administrative_area_level_1'],
+      },
+    ],
+    status: 'OK',
+  },
 ];

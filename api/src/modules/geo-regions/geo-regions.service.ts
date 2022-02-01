@@ -75,11 +75,4 @@ export class GeoRegionsService extends AppBaseService<
       newGeroRegionValues,
     );
   }
-
-  /**
-   * @description Clears all Geo-Regions created by the data uploaded by a user
-   */
-  async clearUserGeoRegions(): Promise<void> {
-    await this.geoRegionRepository.delete({ isCreatedByUser: true });
-  }
 }

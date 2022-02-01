@@ -20,6 +20,7 @@ import { Material } from 'modules/materials/material.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 
 export interface LocationData {
@@ -56,6 +57,7 @@ export class SourcingDataImportService {
     protected readonly businessUnitService: BusinessUnitsService,
     protected readonly supplierService: SuppliersService,
     protected readonly adminRegionService: AdminRegionsService,
+    protected readonly geoRegionsService: GeoRegionsService,
     protected readonly sourcingLocationService: SourcingLocationsService,
     protected readonly sourcingRecordService: SourcingRecordsService,
     protected readonly sourcingLocationGroupService: SourcingLocationGroupsService,
@@ -121,19 +123,19 @@ export class SourcingDataImportService {
         `Generating indicator records for ${sourcingRecords.length} sourcing records`,
       );
 
-      //  for (const sourcingRecord of sourcingRecords) {
-      //    try {
-      //      await this.indicatorRecordsService.calculateImpactValue(
-      //        sourcingRecord,
-      //      );
-      //    } catch (error) {
-      //      // TODO: once we have complete data, this try/catch block can be removed, as we should aim to not have missing h3 data.
-      //      if (error instanceof MissingH3DataError) {
-      //        this.logger.log(error.toString());
-      //      }
-      //      throw error;
-      //    }
-      //  }
+      for (const sourcingRecord of sourcingRecords) {
+        try {
+          await this.indicatorRecordsService.calculateImpactValue(
+            sourcingRecord,
+          );
+        } catch (error) {
+          // TODO: once we have complete data, this try/catch block can be removed, as we should aim to not have missing h3 data.
+          if (error instanceof MissingH3DataError) {
+            this.logger.log(error.toString());
+          }
+          throw error;
+        }
+      }
 
       this.logger.log('Indicator records generated');
     } finally {

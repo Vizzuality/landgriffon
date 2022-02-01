@@ -1,0 +1,20 @@
+import { TabsType } from 'components/tabs';
+
+export const ADMIN_TABS: TabsType = {
+  DATA: {
+    name: 'Materials',
+    href: '/admin/materials',
+  },
+  TARGETS: {
+    name: 'Targets',
+    href: '/admin/targets',
+  },
+  USERS: {
+    name: 'Users',
+    href: '/admin/users',
+  },
+  SETTINGS: {
+    name: 'Settings',
+    href: '/admin/settings',
+  },
+};

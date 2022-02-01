@@ -4,7 +4,7 @@ import { debounce } from 'lodash';
 import dynamic from 'next/dynamic';
 import { PlusIcon } from '@heroicons/react/solid';
 
-import AdminLayout, { TABS } from 'layouts/admin';
+import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import Button from 'components/button';
 
 type ITableData = ITableProps;
@@ -45,7 +45,7 @@ const AdminUsersPage: React.FC = () => {
   }, 200);
 
   return (
-    <AdminLayout currentTab={TABS.USERS}>
+    <AdminLayout currentTab={ADMIN_TABS.USERS}>
       <div className="flex flex-col-reverse md:flex-row justify-between items-center">
         <div className="flex w-full md:w-auto gap-2 my-4">
           <input

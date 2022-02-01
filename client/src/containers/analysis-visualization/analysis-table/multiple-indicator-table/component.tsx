@@ -99,6 +99,7 @@ const MultipleIndicatorTable: React.FC<{ data: ImpactTableData[] }> = ({ data })
 
   return (
     <Table
+      key={`${years[0]}-${years[years.length - 1]}`}
       tablePropsInit={tableProps}
       childComponents={{
         tableWrapper: {

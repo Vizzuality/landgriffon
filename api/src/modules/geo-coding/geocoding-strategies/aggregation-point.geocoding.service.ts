@@ -1,12 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { GeoCodingBaseService } from 'modules/geo-coding/geo-coding.base.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { GeocodeResponseData } from '@googlemaps/google-maps-services-js/dist/geocode/geocode';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
-import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 
 @Injectable()
 export class AggregationPointGeocodingService extends GeoCodingBaseService {
+  aggregationPointGeocodingLogger: Logger = new Logger(
+    AggregationPointGeocodingService.name,
+  );
   async geoCodeAggregationPoint(sourcingData: SourcingData): Promise<any> {
     /**
      * The user must specify a country, and either an address OR coordinates
@@ -20,13 +22,7 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
      * If coordinates, create a new geo-region: a 50KM radius around the given point
      */
     if (sourcingData.locationLatitude && sourcingData.locationLongitude) {
-      const aggregationPointCoordinatesGeocodeResponseData: GeocodeResponseData =
-        await this.reverseGeocode({
-          lat: sourcingData.locationLatitude,
-          lng: sourcingData.locationLongitude,
-        });
-
-      const geoRegionId: GeoRegion =
+      const geoRegionId: Pick<GeoRegion, 'id'> =
         await this.geoRegionService.saveGeoRegionAsRadius({
           name: sourcingData.locationCountryInput,
           coordinates: {
@@ -34,16 +30,19 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
             lng: sourcingData.locationLongitude,
           },
         });
+
       /**
-       *  We just know the country so get the admin-region by its name
+       * Get closest AdminRegion given the same point
        */
-      const adminRegion: AdminRegion =
-        await this.adminRegionService.getAdminRegionByName(
-          sourcingData.locationCountryInput as string,
-        );
+      const { adminRegionId } =
+        await this.adminRegionService.getClosestAdminRegionByCoordinates({
+          lng: sourcingData.locationLongitude,
+          lat: sourcingData.locationLatitude,
+        });
+
       return {
         ...sourcingData,
-        adminRegionId: adminRegion.id,
+        adminRegionId,
         geoRegionId,
       };
     }
@@ -103,13 +102,18 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
               lng: geocodedResponseData.results[0].geometry.location.lng,
             },
           });
-        const adminRegion: AdminRegion =
-          await this.adminRegionService.getAdminRegionByName(
-            sourcingData.locationCountryInput as string,
-          );
+        /**
+         * Get closest AdminRegion given the same point
+         */
+        const { adminRegionId } =
+          await this.adminRegionService.getClosestAdminRegionByCoordinates({
+            lng: geocodedResponseData?.results[0]?.geometry.location.lng,
+            lat: geocodedResponseData?.results[0]?.geometry.location.lat,
+          });
+
         return {
           ...sourcingData,
-          adminRegionId: adminRegion.id,
+          adminRegionId,
           geoRegionId,
         };
       }

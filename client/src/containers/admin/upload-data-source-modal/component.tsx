@@ -5,7 +5,7 @@ import { DownloadIcon } from '@heroicons/react/solid';
 import Button from 'components/button';
 import Loading from 'components/loading';
 import Modal from 'components/modal';
-import Uploader from 'components/uploader';
+import Uploader from 'containers/uploader';
 
 import { UploadDataSourceModalProps } from './types';
 

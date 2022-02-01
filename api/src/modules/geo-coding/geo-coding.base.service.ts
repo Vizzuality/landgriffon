@@ -10,16 +10,13 @@ import {
   Client as ClientType,
   GeocodeRequest,
 } from '@googlemaps/google-maps-services-js';
-
 import {
   GeocodeResponse,
   GeocodeResponseData,
 } from '@googlemaps/google-maps-services-js/dist/geocode/geocode';
 import * as config from 'config';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
-
 import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
-
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { inspect } from 'util';
@@ -77,11 +74,9 @@ export class GeoCodingBaseService {
         key: this.apiKey,
       },
     };
-
     const geocodeResponseData: GeocodeResponseData = await this.geocode(
       geocodeRequest,
     );
-
     return geocodeResponseData;
   }
 
@@ -92,7 +87,6 @@ export class GeoCodingBaseService {
         key: this.apiKey,
       },
     };
-
     const geocodeResponseData: GeocodeResponseData = await this.geocode(
       geocodeRequest,
     );
@@ -120,6 +114,10 @@ export class GeoCodingBaseService {
 
   isAddressAdminLevel1(locationTypes: string[]): boolean {
     return locationTypes.includes('administrative_area_level_1');
+  }
+
+  isAddressAdminLevel2(locationTypes: string[]): boolean {
+    return locationTypes.includes('administrative_area_level_2');
   }
 
   getIsoA2Code(geoCodedResponse: GeocodeResponseData): string {

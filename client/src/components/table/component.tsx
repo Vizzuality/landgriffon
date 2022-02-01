@@ -31,6 +31,7 @@ const TableComponent: React.FC<{ tablePropsInit: ITableProps; childComponents?: 
     return (
       <Table
         {...tableProps} // ka-table UI is rendered according to props
+        // columns={tableProps.columns.filter((c) => c.visible)}
         dispatch={dispatch} // dispatch is required for obtain new actions from the UI
         childComponents={childComponents}
       />

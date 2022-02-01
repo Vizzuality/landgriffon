@@ -10,8 +10,6 @@ import type { ImpactTableData } from 'types';
 import { CustomChartCell, CustomSummaryCellSingleIndicator } from '../types';
 
 const AnalysisTable: React.FC<{ data: ImpactTableData }> = ({ data }) => {
-  // initial value of the *props
-
   const { indicatorId, yearSum, rows } = data;
 
   const years = useMemo<number[]>(() => yearSum.map(({ year }) => year), [yearSum]);
@@ -34,7 +32,7 @@ const AnalysisTable: React.FC<{ data: ImpactTableData }> = ({ data }) => {
         id: `${indicatorId}-${rowIndex}`,
         name: row.name,
         ...row.values
-          .map(({ year, value }) => ({ [year as number]: DATA_NUMBER_FORMAT(value as number) }))
+          .map(({ year, value }) => ({ [year as number]: value as number }))
           .reduce((a, b) => ({ ...a, ...b })),
       })),
     [rows, indicatorId],
@@ -46,6 +44,12 @@ const AnalysisTable: React.FC<{ data: ImpactTableData }> = ({ data }) => {
     return {
       key: indicatorId,
       rowKeyField: 'id',
+      format: ({ value, column }) => {
+        if (column.key !== 'dates-range' && column.key !== 'name' && value) {
+          return DATA_NUMBER_FORMAT(value);
+        }
+        return value;
+      },
       columns: [
         { key: 'name', title: 'Name', dataType: DataType.String, width: 250 },
         {
@@ -115,16 +119,13 @@ const AnalysisTable: React.FC<{ data: ImpactTableData }> = ({ data }) => {
           },
           content: (props: PropsWithChildren<CustomChartCell>) => {
             if (props.column.chart) {
-              const chartData = Object.entries(props.rowData).map((row) => ({
-                x: row[0] as string | number,
-                y: row[1] as string | number,
+              const chartData = Object.entries(props.rowData).map((row: [string, number]) => ({
+                x: row[0],
+                y: row[1],
               }));
+              const filtered = chartData.filter((d) => years.includes(new Date(d.x).getFullYear()));
 
-              const filtered: { x: number | string; y: number | string }[] = chartData.filter((d) =>
-                years.includes(Number(d.x)),
-              );
-
-              const xAxisValues = filtered.map((d) => Number(d.x));
+              const xAxisValues = filtered.map((d) => new Date(d.x).getFullYear());
               const xMaxValue = Math.max(...xAxisValues);
               const xMinValue = Math.min(...xAxisValues);
               const min = xMaxValue - xMinValue;
@@ -189,6 +190,7 @@ const AnalysisTable: React.FC<{ data: ImpactTableData }> = ({ data }) => {
               );
             }
             const totalCell = props.yearSum.find((d) => d.year.toString() === props.column.key);
+            if (props.column.key === 'dates-range') return null;
             return (
               <div className="ka-cell-text text-center font-bold uppercase text-gray-500 text-xs">
                 {totalCell && DATA_NUMBER_FORMAT(totalCell.value)}

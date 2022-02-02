@@ -121,7 +121,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body.errors[0].meta.rawError.response.message).toEqual([
-      'each value in indicatorIds must be a string',
+      'each value in indicatorIds must be a UUID',
       'startYear should not be empty',
       'startYear must be a number conforming to the specified constraints',
       'endYear should not be empty',

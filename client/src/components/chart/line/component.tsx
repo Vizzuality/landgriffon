@@ -33,13 +33,7 @@ const LineChart: FC<LineChartProps> = ({
           yScale={{ type: 'linear' }}
         >
           {lines.map((line) => (
-            <AnimatedLineSeries
-              key={line.dataKey}
-              width={width}
-              height={height}
-              {...line}
-              {...accessors}
-            />
+            <AnimatedLineSeries key={line.dataKey} width={width} {...line} {...accessors} />
           ))}
           {!!axis && <AnimatedAxis {...axis} />}
           {!!grid && <AnimatedGrid {...grid} />}

@@ -4,6 +4,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
@@ -12,7 +13,7 @@ import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 
 export class GetImpactTableDto {
   @ApiProperty()
-  @IsString({ each: true })
+  @IsUUID(4, { each: true })
   @Type(() => String)
   indicatorIds!: string[];
 
@@ -41,19 +42,19 @@ export class GetImpactTableDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString({ each: true })
+  @IsUUID(4, { each: true })
   @Type(() => String)
   materialIds?: string[];
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString({ each: true })
+  @IsUUID(4, { each: true })
   @Type(() => String)
   originIds?: string[];
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString({ each: true })
+  @IsUUID(4, { each: true })
   @Type(() => String)
   supplierIds?: string[];
 }

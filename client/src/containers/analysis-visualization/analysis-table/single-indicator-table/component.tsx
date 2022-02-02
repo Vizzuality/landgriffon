@@ -65,9 +65,11 @@ const AnalysisTable: React.FC<{ data: ImpactTableData }> = ({ data }) => {
     };
   }, [yearSum, years, indicatorId, columnValues, dataValues]);
 
+  const tableKey: string = useMemo(() => `${years[0]}-${years[years.length - 1]}`, [years]);
+
   return (
     <Table
-      key={`${years[0]}-${years[years.length - 1]}`}
+      key={tableKey}
       tablePropsInit={tableProps}
       childComponents={{
         tableWrapper: {
@@ -136,7 +138,7 @@ const AnalysisTable: React.FC<{ data: ImpactTableData }> = ({ data }) => {
                     stroke: '#909194',
                     width: '100%',
                     dataKey: 'primary_line',
-                    data: filtered.filter((d) => Number(d.x) > xMinValue + min / 2),
+                    data: filtered.filter((d) => Number(d.x) < xMinValue + min / 2),
                   },
                   {
                     stroke: '#909194',

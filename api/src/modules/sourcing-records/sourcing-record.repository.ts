@@ -157,7 +157,8 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
     }
     impactDataQueryBuilder
       .addGroupBy(`sourcingRecords.year, sourcingRecords.id, indicator.id`)
-      .orderBy('year', 'ASC');
+      .orderBy('year', 'ASC')
+      .orderBy('name');
     const dataForImpactTable: ImpactTableData[] =
       await impactDataQueryBuilder.getRawMany();
     if (!dataForImpactTable.length) {

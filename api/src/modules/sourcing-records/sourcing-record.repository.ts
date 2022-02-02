@@ -145,6 +145,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       case GROUP_BY_VALUES.SUPPLIER:
         impactDataQueryBuilder
           .addSelect('supplier.name', 'name')
+          .andWhere('supplier.name IS NOT NULL')
           .groupBy('supplier.name');
         break;
       case GROUP_BY_VALUES.BUSINESS_UNIT:

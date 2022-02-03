@@ -101,7 +101,12 @@ const ScenariosFilters = () => {
         </li>
       </ul>
 
-      <Select current={SORT_OPTIONS[0]} options={SORT_OPTIONS} onChange={handleSort} />
+      <Select
+        styles={{ border: false }}
+        current={SORT_OPTIONS[0]}
+        options={SORT_OPTIONS}
+        onChange={handleSort}
+      />
     </div>
   );
 };

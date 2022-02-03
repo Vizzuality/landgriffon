@@ -6,6 +6,10 @@ export type SelectOption = {
 
 export type SelectOptions = SelectOption[];
 
+type Styles = Readonly<{
+  border: boolean;
+}>;
+
 export type SelectProps = {
   showSearch?: boolean;
   disabled?: boolean;
@@ -17,4 +21,5 @@ export type SelectProps = {
   searchPlaceholder?: string;
   onChange?: (selected: SelectOption) => unknown;
   onSearch?: (query: string) => unknown;
+  styles?: Styles;
 };

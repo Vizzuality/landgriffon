@@ -1,10 +1,13 @@
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { PlusIcon, XCircleIcon } from '@heroicons/react/solid';
 import ScenariosFilters from 'containers/scenarios/filters';
 import ScenariosList from 'containers/scenarios/list';
+import Breadcrumb from 'components/breadcrumb';
 import { AnchorLink } from 'components/button';
 import type { UseQueryResult } from 'react-query';
 import type { Scenarios } from './types';
+import type { Page } from 'components/breadcrumb/types';
 
 type ScenariosProps = {
   scenarios: UseQueryResult;
@@ -12,17 +15,33 @@ type ScenariosProps = {
 
 const ScenariosComponent: React.FC<ScenariosProps> = ({ scenarios }: ScenariosProps) => {
   const { data, isLoading, error } = scenarios;
+  const { query } = useRouter();
+  const { edit_scenario } = query;
 
+  // Breadcrumbs
+  let pages: Page[] = [{ name: 'Analysis', href: '/analysis' }]; // Default
+  if (edit_scenario) {
+    pages = [...pages, { name: 'Edit scenario', href: '/analysis?edit_scenario' }];
+  }
   return (
-    <div>
-      <h1>Analyse impact</h1>
-      <p className="text-sm mt-2 mb-2">Select the scenario you want to analyse</p>
+    <div className="bg-white overscroll-contain">
+      <div className="sticky top-0 bottom-1 z-20 bg-white">
+        <div className="pb-10 bg-white pt-6">
+          <Breadcrumb pages={pages} />
+        </div>
+        <h1>Analyse impact</h1>
+        <p className="text-sm mt-2 mb-2">Select the scenario you want to analyse</p>
+        {!isLoading && data && (
+          <div className="pt-6">
+            <ScenariosFilters />
+          </div>
+        )}
+      </div>
       {isLoading && <p>Loading scenarios...</p>}
       {!isLoading && data && (
-        <>
-          <ScenariosFilters />
+        <div className="flex-1 z-10">
           <ScenariosList data={data as Scenarios} />
-        </>
+        </div>
       )}
       {!isLoading && error && (
         <div className="rounded-md bg-red-50 p-4 my-4">
@@ -38,17 +57,19 @@ const ScenariosComponent: React.FC<ScenariosProps> = ({ scenarios }: ScenariosPr
           </div>
         </div>
       )}
-      <Link href="/analysis?new_scenario=true" shallow passHref>
-        <AnchorLink size="xl">
-          <PlusIcon className="-ml-5 mr-3 h-5 w-5" aria-hidden="true" />
-          Create scenario
-        </AnchorLink>
-      </Link>
-      <div className="mt-4 p-6 text-center">
-        <p className="text-sm">
-          Scenarios let you simulate changes in sourcing to evaluate how they would affect impacts
-          and risks. Create a scenario to get started.
-        </p>
+      <div className="bg-white z-20 sticky bottom-2">
+        <Link href="/analysis?new_scenario=true" shallow passHref>
+          <AnchorLink size="xl" className="w-full">
+            <PlusIcon className="-ml-5 mr-3 h-5 w-5" aria-hidden="true" />
+            Create a new scenario
+          </AnchorLink>
+        </Link>
+        <div className="py-8 px-7 text-center absolute z-20 bg-white">
+          <p className="text-sm">
+            Scenarios let you simulate changes in sourcing to evaluate how they would affect impacts
+            and risks. Create a scenario to get started.
+          </p>
+        </div>
       </div>
     </div>
   );

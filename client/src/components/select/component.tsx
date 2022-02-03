@@ -4,6 +4,8 @@ import { ChevronDownIcon, ChevronUpIcon, XIcon, SearchIcon } from '@heroicons/re
 import classNames from 'classnames';
 import Fuse from 'fuse.js';
 
+import cx from 'classnames';
+
 import Loading from 'components/loading';
 
 import type { SelectProps } from './types';
@@ -26,6 +28,9 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
     searchPlaceholder = 'Search',
     onChange,
     onSearch,
+    styles = {
+      border: true,
+    },
   } = props;
   const [selected, setSelected] = useState<SelectProps['current']>(current);
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -65,8 +70,13 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
         <>
           <div className="relative">
             <Listbox.Button
-              className="bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left
-              focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer font-medium"
+              className={cx(
+                'bg-white relative w-full flex align-center rounded-md pl-3 pr-10 py-2 text-left focus:outline-none focus:ring-1  text-sm cursor-pointer font-medium',
+                {
+                  'shadow-sm border border-gray-300 focus:ring-green-700 focus:border-green-700':
+                    styles.border,
+                },
+              )}
             >
               {loading ? (
                 <div className="p-4">

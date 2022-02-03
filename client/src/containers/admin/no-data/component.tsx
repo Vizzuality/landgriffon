@@ -9,8 +9,15 @@ const AdminNoData: React.FC = () => (
       Please download the Excel Template and fill it with your data.
     </p>
     <Button theme="secondary" onClick={() => console.info('Download Template: click')}>
-      <DownloadIcon className="w-5 h-5 mr-2" aria-hidden="true" />
-      Excel Template
+      <a
+        className="flex"
+        href="/files/data-template.xlsx"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <DownloadIcon className="w-5 h-5 mr-2" aria-hidden="true" />
+        Excel Template
+      </a>
     </Button>
   </div>
 );

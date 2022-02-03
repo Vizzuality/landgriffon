@@ -2,13 +2,15 @@ import { EntityRepository } from 'typeorm';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-region.dto';
-import { NotFoundException } from '@nestjs/common';
+import { Logger, NotFoundException } from '@nestjs/common';
 
 @EntityRepository(AdminRegion)
 export class AdminRegionRepository extends ExtendedTreeRepository<
   AdminRegion,
   CreateAdminRegionDto
 > {
+  logger: Logger = new Logger(AdminRegionRepository.name);
+
   async getAdminRegionAndGeoRegionIdByCoordinatesAndLevel(searchParams: {
     lng: number;
     lat: number;
@@ -30,6 +32,9 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
     );
 
     if (!res.length) {
+      this.logger.error(
+        `Could not retrieve a Admin Region with LEVEL ${searchParams.level} and Coordinates: LAT: ${searchParams.lat} LONG: ${searchParams.lng}`,
+      );
       throw new NotFoundException(
         `No Admin Region where coordinates ${searchParams.lat}, ${searchParams.lng} are could been found`,
       );
@@ -67,6 +72,9 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
       [`POINT(${coordinates.lng} ${coordinates.lat})`],
     );
     if (!res.length) {
+      this.logger.error(
+        `Could not find any Admin Region that intersects with Coordinates: LAT: ${coordinates.lat} LONG: ${coordinates.lng}`,
+      );
       throw new NotFoundException(
         `No Admin Region where coordinates ${coordinates.lat}, ${coordinates.lng} are could been found`,
       );

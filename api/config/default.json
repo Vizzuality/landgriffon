@@ -38,7 +38,7 @@
     "synchronize": false,
     "migrationsRun": true,
     "dropSchema": false,
-    "logging": true
+    "logging": false
   },
   "fileUploads": {
     "sizeLimit": 5e6,

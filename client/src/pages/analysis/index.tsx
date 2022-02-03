@@ -6,7 +6,6 @@ import dynamic from 'next/dynamic';
 import Head from 'next/head';
 
 import ApplicationLayout from 'layouts/application';
-import Breadcrumb from 'components/breadcrumb';
 import Scenarios from 'containers/scenarios';
 import ScenarioNew from 'containers/scenarios/new';
 import ScenarioEdit from 'containers/scenarios/edit';
@@ -14,17 +13,12 @@ import InterventionForm from 'containers/interventions/form';
 import { analysis, setSubContentCollapsed } from 'store/features/analysis';
 import CollapseButton from 'containers/collapse-button';
 
-import type { Page } from 'components/breadcrumb/types';
-
 const AnalysisVisualizationNoSSR = dynamic(() => import('containers/analysis-visualization'), {
   ssr: false,
 });
 
 const AnalysisPage: React.FC = () => {
   const { isSidebarCollapsed, isSubContentCollapsed } = useAppSelector(analysis);
-  const dispatch = useAppDispatch();
-  const { query } = useRouter();
-  const { new_scenario, edit_scenario } = query;
 
   const analysisContent = () => {
     if (new_scenario) return <ScenarioNew />;
@@ -32,11 +26,9 @@ const AnalysisPage: React.FC = () => {
     return <Scenarios />;
   };
 
-  // Breadcrumbs
-  let pages: Page[] = [{ name: 'Analysis', href: '/analysis' }]; // Default
-  if (edit_scenario) {
-    pages = [...pages, { name: 'Edit scenario', href: '/analysis?edit_scenario' }];
-  }
+  const dispatch = useAppDispatch();
+  const { query } = useRouter();
+  const { new_scenario, edit_scenario } = query;
 
   useEffect(() => {
     // Close and cancel interventions creation
@@ -56,7 +48,7 @@ const AnalysisPage: React.FC = () => {
           {/* Analysis content */}
           <section className="fixed h-full top-0 hidden lg:block lg:flex-shrink-0 lg:order-first z-20">
             <Transition
-              className="h-full relative flex flex-col border-r border-gray-200 bg-white p-6 w-96 overflow-x-hidden"
+              className="h-full relative flex flex-col border-r border-gray-200 bg-white w-96 overflow-x-hidden px-6"
               show={!isSidebarCollapsed}
               enter="transition-opacity duration-75"
               enterFrom="opacity-0"
@@ -65,9 +57,6 @@ const AnalysisPage: React.FC = () => {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <div className="pb-10">
-                <Breadcrumb pages={pages} />
-              </div>
               {analysisContent()}
             </Transition>
             <div className="absolute top-5 right-0 transform translate-x-1/2 z-30">

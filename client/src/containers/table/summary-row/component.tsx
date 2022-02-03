@@ -1,0 +1,55 @@
+import classNames from 'classnames';
+import { times } from 'lodash';
+
+import { SummaryRowProps } from './types';
+
+const DEFAULT_CLASSNAMES =
+  'text-gray-600 border-t border-gray-300 bg-gray-50 py-3 text-xs break-words font-bold';
+
+const SummaryRow: React.FC<SummaryRowProps> = ({
+  rowData,
+  isFirstColumnSticky = true,
+  ...props
+}: SummaryRowProps) => {
+  const firstColumnKey = props.columns[0].key;
+
+  return (
+    <>
+      {times(props.groupColumnsCount, (idx) => (
+        <td
+          key={`ka-empty-cell-${idx}`}
+          className={classNames('ka-empty-cell', DEFAULT_CLASSNAMES)}
+        />
+      ))}
+
+      {props.columns.map(({ key }) => {
+        const isFirstColumn = key === firstColumnKey;
+
+        if (!rowData[key]) {
+          return <td key={key} className={classNames('ka-empty-cell', DEFAULT_CLASSNAMES)}></td>;
+        }
+
+        return (
+          <td
+            key={key}
+            className={classNames(
+              'ka-cell border-t border-gray-300 bg-gray-50',
+              DEFAULT_CLASSNAMES,
+              {
+                uppercase: isFirstColumn,
+                'text-center': !isFirstColumn,
+                'sticky z-10 left-0': isFirstColumn && isFirstColumnSticky,
+                'after:absolute after:opacity-100 after:-right-3 after:w-3 after:top-0 after:bottom-0 after:border-l after:border-gray-50 after:shadow-[12px_0_10px_-15px_inset_#c2c5c9]':
+                  isFirstColumn && isFirstColumnSticky,
+              },
+            )}
+          >
+            {rowData[key]}
+          </td>
+        );
+      })}
+    </>
+  );
+};
+
+export default SummaryRow;

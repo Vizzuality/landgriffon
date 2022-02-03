@@ -64,3 +64,35 @@
 .rc-tree-checkbox.rc-tree-checkbox-indeterminate {
   @apply bg-green-200;
 }
+
+/* ka-table overrides */
+.ka {
+  /* @apply bg-transparent; */
+  background-color: transparent;
+}
+
+.ka-table .ka-thead-background {
+  @apply bg-gray-50;
+}
+
+.ka-empty-cell {
+  /* @apply w-3 min-w-3; */
+  width: 12px;
+  min-width: 12px;;
+}
+
+.ka-table tr:first-child th:first-child {
+  border-top-left-radius: 0.5rem; /* rounded-lg */
+}
+
+.ka-table tr:first-child th:last-child {
+  border-top-right-radius: 0.5rem; /* rounded-lg */
+}
+
+.ka-table tr:last-child td:first-child {
+  border-bottom-left-radius: 0.5rem; /* rounded-lg */
+}
+
+.ka-table tr:last-child td:last-child {
+  border-bottom-right-radius: 0.5rem; /* rounded-lg */
+}

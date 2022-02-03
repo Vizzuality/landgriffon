@@ -18,7 +18,7 @@ const LineChart: FC<LineChartProps> = ({
 }: LineChartProps) => {
   const { axis, grid, lines } = chartConfig;
   const accessors = {
-    xAccessor: (d) => new Date(`${d.x}T00:00:00`),
+    xAccessor: (d) => new Date(`${d?.x}T00:00:00`),
     yAccessor: (d) => d.y,
   };
 

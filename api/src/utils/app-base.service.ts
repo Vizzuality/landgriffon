@@ -5,7 +5,7 @@ import {
 } from 'nestjs-base-service';
 
 import * as JSONAPISerializer from 'jsonapi-serializer';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Serializer } from 'jsonapi-serializer';
 
@@ -88,7 +88,7 @@ export abstract class AppBaseService<
       this.pluralAlias,
       {
         ...this.serializerConfig,
-        paginationMeta,
+        meta: paginationMeta,
       },
     );
 
@@ -125,6 +125,28 @@ export abstract class AppBaseService<
       info,
     );
     return this._paginate(entitiesAndCount, fetchSpecification);
+  }
+
+  async paginateCustomQueryResults(
+    query: SelectQueryBuilder<Entity>,
+    fetchSpecification?: FetchSpecification,
+  ): Promise<{
+    data: (Partial<Entity> | undefined)[];
+    metadata: PaginationMeta | undefined;
+  }> {
+    const totalAmountOfEntities: number = (await query.getRawMany()).length;
+    const pageSize: number = fetchSpecification?.pageSize || 25;
+    const pageNumber: number = fetchSpecification?.pageNumber || 1;
+
+    const entities: any = await query
+      .limit(pageSize || 25)
+      .offset(pageSize * (pageNumber - 1))
+      .getRawMany();
+
+    return this._paginate(
+      [entities, totalAmountOfEntities],
+      fetchSpecification,
+    );
   }
 
   private _paginate(

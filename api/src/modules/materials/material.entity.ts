@@ -109,3 +109,75 @@ export class Material extends TimestampedBaseEntity {
   )
   materialToH3s: MaterialToH3[];
 }
+
+export class ImportedMaterialsListResponse {
+  @ApiProperty({
+    type: 'object',
+    properties: {
+      totalItems: {
+        type: 'number',
+        example: 45,
+      },
+      totalPages: {
+        type: 'number',
+        example: 9,
+      },
+      size: {
+        type: 'number',
+        example: 5,
+      },
+      page: {
+        type: 'number',
+        example: 1,
+      },
+    },
+  })
+  'meta': Record<string, unknown>;
+
+  @ApiProperty({
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: {
+        type: {
+          type: 'string',
+          example: 'materials',
+        },
+        id: {
+          type: 'string',
+          example: 'a2428cbb-e1b1-4313-ad85-9579b260387f',
+        },
+        attributes: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              example: 'bananas',
+            },
+            country: {
+              type: 'string',
+              example: 'Japan',
+            },
+            businessUnit: {
+              type: 'string',
+              example: 'Accessories',
+            },
+            supplier: {
+              type: 'string',
+              example: 'Cargill',
+            },
+            producer: {
+              type: 'string',
+              example: 'Moll',
+            },
+            locationtype: {
+              type: 'string',
+              example: 'point of production',
+            },
+          },
+        },
+      },
+    },
+  })
+  'data': [];
+}

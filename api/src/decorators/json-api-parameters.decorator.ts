@@ -157,3 +157,10 @@ export const JSONAPISingleEntityQueryParams = (fetchConfiguration?: {
     fieldsQueryParam,
     omitFieldsQueryParam,
   );
+
+export const JSONAPIQueryParamsOnlyPagination = (): MethodDecorator =>
+  applyDecorators(
+    pageSizeQueryParam,
+    pageNumberQueryParam,
+    disablePaginationQueryParam,
+  );

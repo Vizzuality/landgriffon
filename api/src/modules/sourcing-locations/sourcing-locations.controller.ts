@@ -21,6 +21,7 @@ import {
 } from '@nestjs/swagger';
 import {
   JSONAPIQueryParams,
+  JSONAPIQueryParamsOnlyPagination,
   JSONAPISingleEntityQueryParams,
 } from 'decorators/json-api-parameters.decorator';
 import {
@@ -34,6 +35,7 @@ import {
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update.sourcing-location.dto';
 import { PaginationMeta } from 'utils/app-base.service';
+import { ImportedMaterialsListResponse } from 'modules/sourcing-locations/sourcing-location.entity';
 
 @Controller(`/api/v1/sourcing-locations`)
 @ApiTags(sourcingLocationResource.className)
@@ -75,6 +77,30 @@ export class SourcingLocationsController {
     return this.sourcingLocationsService.serialize(
       results.data,
       results.metadata,
+    );
+  }
+
+  @ApiOperation({
+    description:
+      'Get detailed list of materials imported by user and  existing in sourcing records',
+  })
+  @JSONAPIQueryParamsOnlyPagination()
+  @ApiOkResponse({ type: ImportedMaterialsListResponse })
+  @Get('/materials-list')
+  async materialList(
+    @ProcessFetchSpecification()
+    fetchSpecification: FetchSpecification,
+  ): Promise<Partial<SourcingLocation>[]> {
+    const materials: {
+      data: (Partial<SourcingLocation> | undefined)[];
+      metadata: PaginationMeta | undefined;
+    } = await this.sourcingLocationsService.getMaterialsFromSourcingLocations(
+      fetchSpecification,
+    );
+
+    return this.sourcingLocationsService.serialize(
+      materials.data,
+      materials.metadata,
     );
   }
 

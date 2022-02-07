@@ -123,19 +123,19 @@ export class SourcingDataImportService {
         `Generating indicator records for ${sourcingRecords.length} sourcing records`,
       );
 
-      //  for (const sourcingRecord of sourcingRecords) {
-      //    try {
-      //      await this.indicatorRecordsService.calculateImpactValue(
-      //        sourcingRecord,
-      //      );
-      //    } catch (error) {
-      //      // TODO: once we have complete data, this try/catch block can be removed, as we should aim to not have missing h3 data.
-      //      if (error instanceof MissingH3DataError) {
-      //        this.logger.log(error.toString());
-      //      }
-      //      throw error;
-      //    }
-      //  }
+      for (const sourcingRecord of sourcingRecords) {
+        try {
+          await this.indicatorRecordsService.calculateImpactValue(
+            sourcingRecord,
+          );
+        } catch (error) {
+          // TODO: once we have complete data, this try/catch block can be removed, as we should aim to not have missing h3 data.
+          if (error instanceof MissingH3DataError) {
+            this.logger.log(error.toString());
+          }
+          throw error;
+        }
+      }
 
       this.logger.log('Indicator records generated');
     } finally {

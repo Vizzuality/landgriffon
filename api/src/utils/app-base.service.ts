@@ -134,14 +134,14 @@ export abstract class AppBaseService<
     data: (Partial<Entity> | undefined)[];
     metadata: PaginationMeta | undefined;
   }> {
-    const totalAmountOfEntities: number = (await query.getRawMany()).length;
+    const totalAmountOfEntities: number = (await query.getMany()).length;
     const pageSize: number = fetchSpecification?.pageSize || 25;
     const pageNumber: number = fetchSpecification?.pageNumber || 1;
 
     const entities: any = await query
-      .limit(pageSize || 25)
-      .offset(pageSize * (pageNumber - 1))
-      .getRawMany();
+      .take(pageSize || 25)
+      .skip(pageSize * (pageNumber - 1))
+      .getMany();
 
     return this._paginate(
       [entities, totalAmountOfEntities],

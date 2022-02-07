@@ -200,9 +200,9 @@ describe('GeoCoding Service (Integration Testing)', () => {
     });
     test('When I send a location it has coordinates, then a geo-region point should be saved and a sourcing location returned with admin and geo-region ids', async () => {
       jest
-        .spyOn(adminRegionService, 'getAdminAndGeoRegionIdByCountryIsoAlpha2')
+        .spyOn(adminRegionService, 'getClosestAdminRegionByCoordinates')
         .mockResolvedValue({
-          id: ' 18711f09-e810-40a2-b662-fdd1d6e9b0b9',
+          adminRegionId: '18711f09-e810-40a2-b662-fdd1d6e9b0b9',
         } as any);
       jest
         .spyOn(pointOfProductionService, 'geoCodeByCountry')
@@ -216,9 +216,10 @@ describe('GeoCoding Service (Integration Testing)', () => {
       const sourcingLocation: any =
         await geoCodingService.geoCodePointOfProduction(sourcingData);
       const geoRegion = await geoRegionRepository.find({});
+
       expect(sourcingLocation.geoRegionId).toEqual(geoRegion[0].id);
       expect(sourcingLocation.adminRegionId).toEqual(
-        ' 18711f09-e810-40a2-b662-fdd1d6e9b0b9',
+        '18711f09-e810-40a2-b662-fdd1d6e9b0b9',
       );
       expect(geoRegion[0].theGeom).toEqual({
         coordinates: [78.96288, 20.593684],

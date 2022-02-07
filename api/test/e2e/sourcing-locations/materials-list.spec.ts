@@ -14,10 +14,11 @@ import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
+import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 
 describe('Materials - Get the list of Materials uploaded by User with details', () => {
   let app: INestApplication;
-  let materialRepository: MaterialRepository;
+  let sourcingLocationRepository: SourcingLocationRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
@@ -25,8 +26,9 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
       imports: [AppModule, MaterialsModule],
     }).compile();
 
-    materialRepository =
-      moduleFixture.get<MaterialRepository>(MaterialRepository);
+    sourcingLocationRepository = moduleFixture.get<SourcingLocationRepository>(
+      SourcingLocationRepository,
+    );
 
     app = getApp(moduleFixture);
     await app.init();
@@ -34,7 +36,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
   });
 
   afterEach(async () => {
-    await materialRepository.delete({});
+    await sourcingLocationRepository.delete({});
   });
 
   afterAll(async () => {
@@ -42,7 +44,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
   });
 
   test('Getting list of materials uploaded by users (and being part of sourcing locations) should be successful with default pagination', async () => {
-    // Creating varios materials and suppliers for sourcing locations:
+    // Creating various materials and suppliers for sourcing locations:
     const supplier1: Supplier = await createSupplier();
     const supplier2: Supplier = await createSupplier();
 
@@ -69,26 +71,26 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     });
 
     const responseWithDefaultPagination = await request(app.getHttpServer())
-      .get(`/api/v1/materials/materials-list`)
+      .get(`/api/v1/sourcing-locations/materials-list`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.OK);
 
     const responseWithCustomPagination = await request(app.getHttpServer())
-      .get(`/api/v1/materials/materials-list?page[size]=2`)
+      .get(`/api/v1/sourcing-locations/materials-list?page[size]=2`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.OK);
 
-    expect(responseWithDefaultPagination.body.data[0].attributes.name).toEqual(
-      'bananas',
-    );
     expect(
-      responseWithDefaultPagination.body.data[1].attributes.supplier,
+      responseWithDefaultPagination.body.data[0].attributes.materialName,
+    ).toEqual('bananas');
+    expect(
+      responseWithDefaultPagination.body.data[1].attributes.t1Supplier,
     ).toEqual(supplier2.name);
-    expect(responseWithDefaultPagination.body.data[2].attributes.name).toEqual(
-      'maize',
-    );
+    expect(
+      responseWithDefaultPagination.body.data[2].attributes.materialName,
+    ).toEqual('maize');
     expect(responseWithDefaultPagination.body.meta.size).toEqual(25);
     expect(responseWithDefaultPagination.body.meta.totalItems).toEqual(3);
     expect(responseWithDefaultPagination.body.meta.totalPages).toEqual(1);

@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
-  PaginationMeta,
 } from 'utils/app-base.service';
 import { Material, materialResource } from 'modules/materials/material.entity';
 import { AppInfoDTO } from 'dto/info.dto';
@@ -11,8 +10,6 @@ import { MaterialRepository } from 'modules/materials/material.repository';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { UpdateMaterialDto } from 'modules/materials/dto/update.material.dto';
 import { FindTreesWithOptionsArgs } from 'utils/tree.repository';
-import { SelectQueryBuilder } from 'typeorm';
-import { FetchSpecification } from 'nestjs-base-service';
 
 @Injectable()
 export class MaterialsService extends AppBaseService<
@@ -46,12 +43,6 @@ export class MaterialsService extends AppBaseService<
         'children',
         'createdAt',
         'updatedAt',
-        'country',
-        'businessUnit',
-        'supplier',
-        'producer',
-        'country',
-        'locationType',
       ],
       keyForAttribute: 'camelCase',
     };
@@ -151,17 +142,5 @@ export class MaterialsService extends AppBaseService<
 
   async findAllUnpaginated(): Promise<Material[]> {
     return this.materialRepository.find();
-  }
-
-  async getMaterialsImportedByUser(
-    fetchSpecification: FetchSpecification,
-  ): Promise<{
-    data: (Partial<Material> | undefined)[];
-    metadata: PaginationMeta | undefined;
-  }> {
-    const materialsQuery: SelectQueryBuilder<Material> =
-      await this.materialRepository.getMaterialsImportedByUserQuery();
-
-    return this.paginateCustomQueryResults(materialsQuery, fetchSpecification);
   }
 }

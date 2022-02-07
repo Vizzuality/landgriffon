@@ -23,18 +23,13 @@ import {
 } from '@nestjs/swagger';
 import {
   JSONAPIQueryParams,
-  JSONAPIQueryParamsOnlyPagination,
   JSONAPISingleEntityQueryParams,
 } from 'decorators/json-api-parameters.decorator';
 import {
   FetchSpecification,
   ProcessFetchSpecification,
 } from 'nestjs-base-service';
-import {
-  ImportedMaterialsListResponse,
-  Material,
-  materialResource,
-} from 'modules/materials/material.entity';
+import { Material, materialResource } from 'modules/materials/material.entity';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { UpdateMaterialDto } from 'modules/materials/dto/update.material.dto';
 import { MaterialRepository } from 'modules/materials/material.repository';
@@ -104,30 +99,6 @@ export class MaterialsController {
         depth,
       });
     return this.materialsService.serialize(results);
-  }
-
-  @ApiOperation({
-    description:
-      'Get detailed list of materials imported by user and  existing in sourcing records',
-  })
-  @JSONAPIQueryParamsOnlyPagination()
-  @ApiOkResponse({ type: ImportedMaterialsListResponse })
-  @Get('/materials-list')
-  async getMaterialsFromSourcingLocations(
-    @ProcessFetchSpecification()
-    fetchSpecification: FetchSpecification,
-  ): Promise<{
-    data: (Partial<Material> | undefined)[];
-    metadata: PaginationMeta | undefined;
-  }> {
-    const materials: {
-      data: (Partial<Material> | undefined)[];
-      metadata: PaginationMeta | undefined;
-    } = await this.materialsService.getMaterialsImportedByUser(
-      fetchSpecification,
-    );
-
-    return this.materialsService.serialize(materials.data, materials.metadata);
   }
 
   @ApiOperation({ description: 'Find material by id' })

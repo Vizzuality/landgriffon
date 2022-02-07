@@ -116,12 +116,12 @@ describe('Impact Trees test suite (e2e)', () => {
         .get('/api/v1/impact/materials')
         .expect(HttpStatus.OK);
 
-      expect(response.body.data[0].id).toEqual(parentMaterial.id);
-      expect(response.body.data[0].attributes.children[0].id).toEqual(
+      expect(response.body.data[0].id).toEqual(parentWithNoChildMaterial.id);
+      expect(response.body.data[0].attributes.children).toEqual([]);
+      expect(response.body.data[1].id).toEqual(parentMaterial.id);
+      expect(response.body.data[1].attributes.children[0].id).toEqual(
         childMaterial1.id,
       );
-      expect(response.body.data[1].id).toEqual(parentWithNoChildMaterial.id);
-      expect(response.body.data[1].attributes.children).toEqual([]);
       expect(
         response.body.data.find(
           (material: Material) =>
@@ -164,12 +164,12 @@ describe('Impact Trees test suite (e2e)', () => {
         .get('/api/v1/impact/admin-regions')
         .expect(HttpStatus.OK);
 
-      expect(response.body.data[0].id).toEqual(parentAdminRegion.id);
-      expect(response.body.data[0].attributes.children[0].id).toEqual(
+      expect(response.body.data[0].id).toEqual(parentWithNoChildAdminRegion.id);
+      expect(response.body.data[0].attributes.children).toEqual([]);
+      expect(response.body.data[1].id).toEqual(parentAdminRegion.id);
+      expect(response.body.data[1].attributes.children[0].id).toEqual(
         childAdminRegion.id,
       );
-      expect(response.body.data[1].id).toEqual(parentWithNoChildAdminRegion.id);
-      expect(response.body.data[1].attributes.children).toEqual([]);
       expect(
         response.body.data.find(
           (material: Material) =>

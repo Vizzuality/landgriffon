@@ -36,12 +36,14 @@ import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create
 import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update.sourcing-location.dto';
 import { PaginationMeta } from 'utils/app-base.service';
 import { ImportedMaterialsListResponseDto } from 'modules/sourcing-locations/dto/imported-materials.sourcing-location.dto';
+import { MaterialsFromSourcingLocationsService } from './materials-from-sourcing-locations.service';
 
 @Controller(`/api/v1/sourcing-locations`)
 @ApiTags(sourcingLocationResource.className)
 export class SourcingLocationsController {
   constructor(
     public readonly sourcingLocationsService: SourcingLocationsService,
+    public readonly materialsFromSourcingLocationsService: MaterialsFromSourcingLocationsService,
   ) {}
 
   @ApiOperation({
@@ -94,11 +96,11 @@ export class SourcingLocationsController {
     const materials: {
       data: (Partial<SourcingLocation> | undefined)[];
       metadata: PaginationMeta | undefined;
-    } = await this.sourcingLocationsService.getMaterialsFromSourcingLocations(
+    } = await this.materialsFromSourcingLocationsService.getMaterialsFromSourcingLocations(
       fetchSpecification,
     );
 
-    return this.sourcingLocationsService.serialize(
+    return this.materialsFromSourcingLocationsService.serialize(
       materials.data,
       materials.metadata,
     );

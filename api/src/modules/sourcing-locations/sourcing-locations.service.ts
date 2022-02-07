@@ -45,14 +45,6 @@ export class SourcingLocationsService extends AppBaseService<
         'createdAt',
         'updatedAt',
         'metadata',
-        'materialName',
-        'materialId',
-        't1Supplier',
-        'producer',
-        'businessUnit',
-        'sourcingRecords',
-        'locationCountryInput',
-        'purchases',
       ],
       keyForAttribute: 'camelCase',
     };
@@ -93,47 +85,5 @@ export class SourcingLocationsService extends AppBaseService<
     );
 
     return await this.sourcingLocationRepository.save(sourcingLocation as any);
-  }
-
-  async getMaterialsFromSourcingLocations(
-    fetchSpecification: FetchSpecification,
-  ): Promise<{
-    data: (Partial<SourcingLocation> | undefined)[];
-    metadata: PaginationMeta | undefined;
-  }> {
-    const materialsListQuery: SelectQueryBuilder<SourcingLocation> =
-      await this.sourcingLocationRepository.getSourcingLocationsMaterialsQuery();
-
-    const paginatedListOfMaterials: {
-      data: (Partial<SourcingLocation> | undefined)[];
-      metadata: PaginationMeta | undefined;
-    } = await this.paginateCustomQueryResults(
-      materialsListQuery,
-      fetchSpecification,
-    );
-
-    return this.transformMaterialsListForResponse(paginatedListOfMaterials);
-  }
-
-  async transformMaterialsListForResponse(materialsList: any): Promise<{
-    data: (Partial<SourcingLocation> | undefined)[];
-    metadata: PaginationMeta | undefined;
-  }> {
-    for (const obj of materialsList.data) {
-      obj.materialName = obj.material.name;
-      obj.materialId = obj.material.id;
-      obj.producer = obj.producer ? obj.producer.name : null;
-      obj.t1Supplier = obj.t1Supplier ? obj.t1Supplier.name : null;
-      obj.businessUnit = obj.businessUnit ? obj.businessUnit.name : null;
-
-      const purchases: { year: number; tonnage: number }[] = [];
-      for (const sr of obj.sourcingRecords) {
-        purchases.push({ year: sr.year, tonnage: sr.tonnage });
-      }
-      obj.purchases = purchases;
-      delete obj.sourcingRecords;
-    }
-
-    return materialsList;
   }
 }

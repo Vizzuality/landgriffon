@@ -51,6 +51,8 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     const material1: Material = await createMaterial({ name: 'bananas' });
     const material2: Material = await createMaterial({ name: 'maize' });
     const material3: Material = await createMaterial({ name: 'cotton' });
+    await createMaterial({ name: 'cocoa' });
+    await createMaterial({ name: 'soya beans' });
 
     // Creating sourcing locations for different materials and suppliers
     await createSourcingLocation({
@@ -76,24 +78,25 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
       .send()
       .expect(HttpStatus.OK);
 
-    const responseWithCustomPagination = await request(app.getHttpServer())
-      .get(`/api/v1/sourcing-locations/materials-list?page[size]=2`)
-      .set('Authorization', `Bearer ${jwtToken}`)
-      .send()
-      .expect(HttpStatus.OK);
-
     expect(
       responseWithDefaultPagination.body.data[0].attributes.materialName,
-    ).toEqual('bananas');
+    ).toEqual(material1.name);
     expect(
       responseWithDefaultPagination.body.data[1].attributes.t1Supplier,
     ).toEqual(supplier2.name);
     expect(
       responseWithDefaultPagination.body.data[2].attributes.materialName,
-    ).toEqual('maize');
+    ).toEqual(material2.name);
     expect(responseWithDefaultPagination.body.meta.size).toEqual(25);
     expect(responseWithDefaultPagination.body.meta.totalItems).toEqual(3);
     expect(responseWithDefaultPagination.body.meta.totalPages).toEqual(1);
+
+    const responseWithCustomPagination = await request(app.getHttpServer())
+      .get(`/api/v1/sourcing-locations/materials-list`)
+      .query({ 'page[size]': 2 })
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send()
+      .expect(HttpStatus.OK);
 
     expect(responseWithCustomPagination.body.meta.size).toEqual(2);
     expect(responseWithCustomPagination.body.meta.totalItems).toEqual(3);

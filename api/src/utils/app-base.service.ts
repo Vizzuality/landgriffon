@@ -127,28 +127,6 @@ export abstract class AppBaseService<
     return this._paginate(entitiesAndCount, fetchSpecification);
   }
 
-  async paginateCustomQueryResults(
-    query: SelectQueryBuilder<Entity>,
-    fetchSpecification?: FetchSpecification,
-  ): Promise<{
-    data: (Partial<Entity> | undefined)[];
-    metadata: PaginationMeta | undefined;
-  }> {
-    const totalAmountOfEntities: number = (await query.getMany()).length;
-    const pageSize: number = fetchSpecification?.pageSize || 25;
-    const pageNumber: number = fetchSpecification?.pageNumber || 1;
-
-    const entities: any = await query
-      .take(pageSize || 25)
-      .skip(pageSize * (pageNumber - 1))
-      .getMany();
-
-    return this._paginate(
-      [entities, totalAmountOfEntities],
-      fetchSpecification,
-    );
-  }
-
   private _paginate(
     entitiesAndCount: [Partial<Entity>[], number],
     fetchSpecification?: FetchSpecification,

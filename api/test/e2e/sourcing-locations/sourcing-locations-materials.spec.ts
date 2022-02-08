@@ -91,7 +91,8 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     });
 
     const responseWithDefaultPagination = await request(app.getHttpServer())
-      .get(`/api/v1/sourcing-locations/materials-list`)
+      .get(`/api/v1/sourcing-locations`)
+      .query({ materialsData: true })
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.OK);
@@ -107,13 +108,25 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     expect(
       responseWithDefaultPagination.body.data[2].attributes.materialName,
     ).toEqual(material2.name);
+    expect(
+      responseWithDefaultPagination.body.data[0].attributes.purchases.length,
+    ).toEqual(3);
+    expect(
+      responseWithDefaultPagination.body.data[0].attributes.purchases,
+    ).toEqual(
+      expect.arrayContaining([
+        { tonnage: '1000', year: 2000 },
+        { tonnage: '1000', year: 2001 },
+        { tonnage: '1000', year: 2002 },
+      ]),
+    );
     expect(responseWithDefaultPagination.body.meta.size).toEqual(25);
     expect(responseWithDefaultPagination.body.meta.totalItems).toEqual(3);
     expect(responseWithDefaultPagination.body.meta.totalPages).toEqual(1);
 
     const responseWithCustomPagination = await request(app.getHttpServer())
-      .get(`/api/v1/sourcing-locations/materials-list`)
-      .query({ 'page[size]': 2 })
+      .get(`/api/v1/sourcing-locations`)
+      .query({ materialsData: true, 'page[size]': 2 })
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.OK);

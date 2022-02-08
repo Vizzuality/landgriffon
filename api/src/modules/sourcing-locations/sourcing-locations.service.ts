@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
-  PaginationMeta,
 } from 'utils/app-base.service';
 import {
   SourcingLocation,
@@ -13,7 +12,6 @@ import { AppInfoDTO } from 'dto/info.dto';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update.sourcing-location.dto';
-import { FetchSpecification } from 'nestjs-base-service';
 import { SelectQueryBuilder } from 'typeorm';
 
 @Injectable()
@@ -87,23 +85,27 @@ export class SourcingLocationsService extends AppBaseService<
     return await this.sourcingLocationRepository.save(sourcingLocation as any);
   }
 
-  async getMaterialsFromSourcingLocations(
-    fetchSpecification: FetchSpecification,
-  ): Promise<{
-    data: (Partial<SourcingLocation> | undefined)[];
-    metadata: PaginationMeta | undefined;
-  }> {
-    const materialsListQuery: SelectQueryBuilder<SourcingLocation> =
-      await this.sourcingLocationRepository.getSourcingLocationsMaterialsQuery();
+  async extendFindAllQuery(
+    query: SelectQueryBuilder<SourcingLocation>,
+  ): Promise<SelectQueryBuilder<SourcingLocation>> {
+    query
+      .select([
+        `${this.alias}`,
+        'mat.id',
+        'mat.name',
+        'sup.name',
+        'producer.name',
+        'bu.name',
+        'sr',
+      ])
+      .innerJoin(`${this.alias}.material`, 'mat')
+      .leftJoin(`${this.alias}.t1Supplier`, 'sup')
+      .leftJoin(`${this.alias}.producer`, 'producer')
+      .leftJoin(`${this.alias}.businessUnit`, 'bu')
+      .leftJoin(`${this.alias}.sourcingRecords`, 'sr')
+      .orderBy('mat.name')
+      .addOrderBy(`${this.alias}.id`);
 
-    const paginatedListOfMaterials: {
-      data: (Partial<any> | undefined)[];
-      metadata: PaginationMeta | undefined;
-    } = await this.paginateCustomQueryResults(
-      materialsListQuery,
-      fetchSpecification,
-    );
-
-    return paginatedListOfMaterials;
+    return query;
   }
 }

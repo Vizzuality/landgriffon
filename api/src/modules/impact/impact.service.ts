@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { GetImpactTableDto } from 'modules/impact/dto/get-impact-table.dto';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
-import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { ImpactTableData } from 'modules/sourcing-records/sourcing-record.repository';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { range } from 'lodash';
@@ -12,12 +11,6 @@ import {
   ImpactTablePurchasedTonnes,
   ImpactTableRows,
 } from 'modules/impact/dto/response-impact-table.dto';
-import { MaterialsService } from 'modules/materials/materials.service';
-import { Material } from 'modules/materials/material.entity';
-import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
-import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
-import { Supplier } from 'modules/suppliers/supplier.entity';
-import { SuppliersService } from 'modules/suppliers/suppliers.service';
 
 @Injectable()
 export class ImpactService {
@@ -28,10 +21,6 @@ export class ImpactService {
   constructor(
     private readonly indicatorService: IndicatorsService,
     private readonly sourcingRecordService: SourcingRecordsService,
-    private readonly sourcingLocationService: SourcingLocationsService,
-    private readonly materialsService: MaterialsService,
-    private readonly adminRegionsService: AdminRegionsService,
-    private readonly suppliersService: SuppliersService,
   ) {}
 
   async getImpactTable(
@@ -172,125 +161,5 @@ export class ImpactService {
       }
     });
     return purchasedTonnes;
-  }
-
-  /**
-   *
-   * @description Get a tree of Materials imported by a User
-   */
-
-  async getMaterialTreeForImpact(): Promise<Material[]> {
-    const materialIdsFromSourcingLocations: string[] =
-      await this.sourcingLocationService.getMaterialIdsAndParentIds();
-    const allMaterials: Material[] =
-      await this.materialsService.findAllUnpaginated();
-    const materialLineage: Material[] = this.getAncestry<Material>(
-      allMaterials,
-      materialIdsFromSourcingLocations,
-    );
-    return this.materialsService.serialize(
-      this.buildTree<Material>(materialLineage, null),
-    );
-  }
-
-  /**
-   *
-   * @description Get a tree of AdminRegions imported by a User
-   */
-
-  async getAdminRegionTreeForImpact(): Promise<any> {
-    const adminRegionIdsFromSourcingLocations: string[] =
-      await this.sourcingLocationService.getAdminRegionIdsAndParentIds();
-    const allAdminRegions: AdminRegion[] =
-      await this.adminRegionsService.findAllUnpaginated();
-    const adminRegionLineage: AdminRegion[] = this.getAncestry<AdminRegion>(
-      allAdminRegions,
-      adminRegionIdsFromSourcingLocations,
-    );
-
-    return this.adminRegionsService.serialize(
-      this.buildTree<AdminRegion>(adminRegionLineage, null),
-    );
-  }
-
-  /**
-   *
-   * @description Get a tree of Suppliers imported by a User
-   */
-
-  async getSupplierTreeForImpact(): Promise<any> {
-    const supplierIdsFromSourcingLocations: string[] =
-      await this.sourcingLocationService.getSupplierIdsAndParentIds();
-    const allSuppliers: Supplier[] =
-      await this.suppliersService.findAllUnpaginated();
-    const supplierLineage: Supplier[] = this.getAncestry<Supplier>(
-      allSuppliers,
-      supplierIdsFromSourcingLocations,
-    );
-    return this.suppliersService.serialize(
-      this.buildTree<Supplier>(supplierLineage, null),
-    );
-  }
-
-  /**
-   * @description Given a array of entities and a array of IDs, retrieves a array of elements
-   * with ascendant ancestry until root level
-   *
-   * @param entityArray Array of entities of a given type
-   * @param relevantItemIds Array of IDs of the relevant items within the first param
-   */
-  getAncestry<T extends { id: string; parentId?: string; children?: T[] }>(
-    entityArray: T[],
-    relevantItemIds: string[],
-  ): T[] {
-    // Create a new array with relevant elements (matching Ids)
-    const relevantItems: T[] = entityArray.filter((entity: T) =>
-      relevantItemIds.includes(entity.id),
-    );
-
-    // Iterate the array and if any element has a parentId, find it and push it to the same array to 'recursively' find the lineage until root level
-    for (const element of relevantItems) {
-      if (element.parentId) {
-        relevantItems.push(
-          entityArray.find((entity: T) => entity.id === element.parentId) as T,
-        );
-      }
-    }
-
-    // As some elements could have the same parent, clean the array using a Map to leave only unique elements in it
-    const uniqueElements: T[] = [
-      ...new Map(
-        relevantItems.map((element: T) => [element.id, element]),
-      ).values(),
-    ];
-
-    return uniqueElements;
-  }
-
-  /**
-   *
-   *
-   * @param nodes Array of related elements in a flat format
-   * @param parentId Id of the parent
-   * @description: Recursively build a tree.
-   * @private
-   */
-
-  private buildTree<T extends { id: string; parentId?: string; children: T[] }>(
-    nodes: T[],
-    parentId: string | null,
-  ): T[] {
-    return nodes
-      .filter((node: T) => node.parentId === parentId)
-      .reduce(
-        (tree: T[], node: T) => [
-          ...tree,
-          {
-            ...node,
-            children: this.buildTree(nodes, node.id),
-          },
-        ],
-        [],
-      );
   }
 }

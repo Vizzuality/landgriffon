@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { PaginationMeta } from 'utils/app-base.service';
+import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 
-export class ImportedMaterialsListResponseDto {
+export class SourcingLocationsMaterialsResponseDto {
   @ApiProperty({
     type: 'object',
     properties: {
@@ -22,7 +24,7 @@ export class ImportedMaterialsListResponseDto {
       },
     },
   })
-  'meta': Record<string, unknown>;
+  'meta': PaginationMeta;
 
   @ApiProperty({
     type: 'array',
@@ -89,5 +91,16 @@ export class ImportedMaterialsListResponseDto {
       },
     },
   })
-  'data': [];
+  'data': { type: string; attributes: SourcingLocationMaterial[] }[];
+}
+
+export interface SourcingLocationMaterial {
+  materialName: string;
+  materialId: string;
+  t1Supplier: string | null;
+  producer: string | null;
+  businessUnit: string;
+  country: string | undefined;
+  locationType: LOCATION_TYPES;
+  purchases: { year: number; tonnage: number }[];
 }

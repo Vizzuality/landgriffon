@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -16,12 +17,12 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import {
   JSONAPIQueryParams,
-  JSONAPIQueryParamsOnlyPagination,
   JSONAPISingleEntityQueryParams,
 } from 'decorators/json-api-parameters.decorator';
 import {
@@ -35,22 +36,23 @@ import {
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update.sourcing-location.dto';
 import { PaginationMeta } from 'utils/app-base.service';
-import { ImportedMaterialsListResponseDto } from 'modules/sourcing-locations/dto/imported-materials-list-response.sourcing-location.dto';
-import { CustomSerializer } from 'modules/sourcing-locations/serializer/custom.serializer';
+import { SourcingLocationsMaterialsResponseDto } from 'modules/sourcing-locations/dto/materials.sourcing-location.dto';
+import { SourcingLocationsMaterialsSerializer } from 'modules/sourcing-locations/serializer/sourcing-locations-materials.serializer';
 
 @Controller(`/api/v1/sourcing-locations`)
 @ApiTags(sourcingLocationResource.className)
 export class SourcingLocationsController {
   constructor(
     public readonly sourcingLocationsService: SourcingLocationsService,
-    public readonly customSerializer: CustomSerializer,
+    public readonly sourcingLocationsMaterialsSerializer: SourcingLocationsMaterialsSerializer,
   ) {}
 
   @ApiOperation({
-    description: 'Find all sourcing locations',
+    description:
+      'Find all sourcing locations. With flag "materialsData=true" endpoint returns detailed data of the materials of the sourcing locations',
   })
   @ApiOkResponse({
-    type: SourcingLocation,
+    type: SourcingLocationsMaterialsResponseDto,
   })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
@@ -63,44 +65,33 @@ export class SourcingLocationsController {
     entitiesAllowedAsIncludes:
       sourcingLocationResource.entitiesAllowedAsIncludes,
   })
+  @ApiQuery({ name: 'materialsData', type: 'boolean', required: false })
   @Get()
   async findAll(
     @ProcessFetchSpecification({
       allowedFilters: sourcingLocationResource.columnsAllowedAsFilter,
     })
     fetchSpecification: FetchSpecification,
-  ): Promise<SourcingLocation> {
+    @Query('materialsData') materials?: boolean,
+  ): Promise<SourcingLocation | SourcingLocationsMaterialsResponseDto> {
     const results: {
       data: (Partial<SourcingLocation> | undefined)[];
       metadata: PaginationMeta | undefined;
     } = await this.sourcingLocationsService.findAllPaginated(
       fetchSpecification,
     );
-    return this.sourcingLocationsService.serialize(
-      results.data,
-      results.metadata,
-    );
-  }
 
-  @ApiOperation({
-    description:
-      'Get detailed list of materials imported by user and existing in sourcing records',
-  })
-  @JSONAPIQueryParamsOnlyPagination()
-  @ApiOkResponse({ type: ImportedMaterialsListResponseDto })
-  @Get('/materials-list')
-  async materialList(
-    @ProcessFetchSpecification()
-    fetchSpecification: FetchSpecification,
-  ): Promise<Partial<SourcingLocation>[]> {
-    const materials: {
-      data: (Partial<SourcingLocation> | undefined)[];
-      metadata: PaginationMeta | undefined;
-    } = await this.sourcingLocationsService.getMaterialsFromSourcingLocations(
-      fetchSpecification,
-    );
-
-    return this.customSerializer.serialize(materials.data, materials.metadata);
+    if (materials) {
+      return this.sourcingLocationsMaterialsSerializer.serialize(
+        results.data,
+        results.metadata,
+      );
+    } else {
+      return this.sourcingLocationsService.serialize(
+        results.data,
+        results.metadata,
+      );
+    }
   }
 
   @ApiOperation({ description: 'Find sourcing location by id' })

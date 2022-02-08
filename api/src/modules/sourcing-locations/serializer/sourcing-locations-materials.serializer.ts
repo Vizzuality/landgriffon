@@ -6,9 +6,12 @@ import {
 } from 'utils/app-base.service';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import {
+  SourcingLocationMaterial,
+  SourcingLocationsMaterialsResponseDto,
+} from 'modules/sourcing-locations/dto/materials.sourcing-location.dto';
 
-// TODO: rename to something else
-export class CustomSerializer {
+export class SourcingLocationsMaterialsSerializer {
   get serializerConfig(): JSONAPISerializerConfig<SourcingLocation> {
     return {
       attributes: [
@@ -17,7 +20,7 @@ export class CustomSerializer {
         't1Supplier',
         'producer',
         'businessUnit',
-        'locationCountryInput',
+        'country',
         'locationType',
         'purchases',
         'sr',
@@ -28,11 +31,13 @@ export class CustomSerializer {
   }
 
   async serialize(
-    entities: Partial<any> | (Partial<any> | undefined)[],
+    entities:
+      | Partial<SourcingLocation>
+      | (Partial<SourcingLocation> | undefined)[],
     paginationMeta?: PaginationMeta,
-  ): Promise<any> {
+  ): Promise<SourcingLocationsMaterialsResponseDto> {
     const serializer: Serializer = new JSONAPISerializer.Serializer(
-      'foo', // TODO: change to something else
+      'Sourcing locations materials',
       {
         ...this.serializerConfig,
         meta: paginationMeta,
@@ -44,21 +49,20 @@ export class CustomSerializer {
 
   transformMaterialsListForResponse(
     sourcingLocation: SourcingLocation,
-  ): Record<string, any> {
-    const response: Record<string, any> = {};
-
-    response.materialName = sourcingLocation.material.name;
-    response.materialId = sourcingLocation.material.id;
-    response.producer = sourcingLocation.producer?.name;
-    response.t1Supplier = sourcingLocation.t1Supplier?.name;
-    response.businessUnit = sourcingLocation.businessUnit?.name;
-
-    response.purchases = sourcingLocation.sourcingRecords.map(
-      (sr: SourcingRecord) => ({
+  ): SourcingLocationMaterial {
+    const response: SourcingLocationMaterial = {
+      materialName: sourcingLocation.material.name,
+      materialId: sourcingLocation.material.id,
+      producer: sourcingLocation.producer?.name || null,
+      t1Supplier: sourcingLocation.t1Supplier?.name || null,
+      businessUnit: sourcingLocation.businessUnit?.name,
+      country: sourcingLocation.locationCountryInput,
+      locationType: sourcingLocation.locationType,
+      purchases: sourcingLocation.sourcingRecords.map((sr: SourcingRecord) => ({
         year: sr.year,
         tonnage: sr.tonnage,
-      }),
-    );
+      })),
+    };
 
     return response;
   }

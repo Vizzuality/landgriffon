@@ -13,6 +13,7 @@ import { AdminRegionRepository } from 'modules/admin-regions/admin-region.reposi
 import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-region.dto';
 import { UpdateAdminRegionDto } from 'modules/admin-regions/dto/update.admin-region.dto';
 import { FindTreesWithOptionsArgs } from 'utils/tree.repository';
+import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 
 @Injectable()
 export class AdminRegionsService extends AppBaseService<
@@ -24,6 +25,7 @@ export class AdminRegionsService extends AppBaseService<
   constructor(
     @InjectRepository(AdminRegionRepository)
     protected readonly adminRegionRepository: AdminRegionRepository,
+    protected readonly sourcingLocationsService: SourcingLocationsService,
   ) {
     super(
       adminRegionRepository,
@@ -120,6 +122,32 @@ export class AdminRegionsService extends AppBaseService<
     return this.adminRegionRepository.getClosestAdminRegionByCoordinates(
       coordinates,
     );
+  }
+
+  /**
+   *
+   * @description Get a tree of AdminRegions where there are sourcing-locations registered within
+   */
+
+  async getAdminRegionTreeWithSourcingLocations(): Promise<any> {
+    const adminRegionIdsFromSourcingLocations: string[] =
+      await this.sourcingLocationsService.getAdminRegionIdsAndParentIds();
+    const allAdminRegions: AdminRegion[] = await this.findAllUnpaginated();
+    const adminRegionLineage: AdminRegion[] = this.getAncestry<AdminRegion>(
+      allAdminRegions,
+      adminRegionIdsFromSourcingLocations,
+    );
+    return this.buildTree<AdminRegion>(adminRegionLineage, null);
+  }
+
+  async getTrees(treeOptions: {
+    depth?: number;
+    withSourcingLocations?: boolean;
+  }): Promise<AdminRegion[]> {
+    const { depth, withSourcingLocations } = treeOptions;
+    if (withSourcingLocations)
+      return this.getAdminRegionTreeWithSourcingLocations();
+    return this.findTreesWithOptions({ depth });
   }
 
   async getAdminRegionByIds(ids: string[]): Promise<AdminRegion[]> {

@@ -91,13 +91,35 @@ export class MaterialsController {
     description:
       'A non-negative integer value. If specified, limits the depth of the tree crawling. 0 will return only the tree roots',
   })
+  @ApiQuery({
+    name: 'withSourcingLocations',
+    required: false,
+    description:
+      'A boolean value. If specified, returns a tree of materials with registered sourcing-locations, and depth param will be ignored',
+  })
   async getTrees(
     @Query('depth', ParseOptionalIntPipe) depth?: number,
+    @Query('withSourcingLocations') withSourcingLocations?: boolean,
   ): Promise<Material> {
+    const results: Material[] = await this.materialsService.getTrees({
+      depth,
+      withSourcingLocations,
+    });
+    return this.materialsService.serialize(results);
+  }
+  @ApiOperation({
+    description:
+      'Find all materials uploaded by a user and return them in a tree format. Data in the "children" will recursively extend for the deepest material of the tree',
+  })
+  @ApiOkTreeResponse({
+    treeNodeType: Material,
+  })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @Get('/trees/user')
+  async getUserTree(): Promise<Material> {
     const results: Material[] =
-      await this.materialsService.findTreesWithOptions({
-        depth,
-      });
+      await this.materialsService.getMaterialsTreeWithSourcingLocations();
     return this.materialsService.serialize(results);
   }
 

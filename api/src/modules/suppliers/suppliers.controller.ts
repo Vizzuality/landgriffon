@@ -90,11 +90,20 @@ export class SuppliersController {
     description:
       'A non-negative integer value. If specified, limits the depth of the tree crawling. 0 will return only the tree roots',
   })
+  @ApiQuery({
+    name: 'withSourcingLocations',
+    required: false,
+    description:
+      'A boolean value. If specified, returns a tree of materials with registered sourcing-locations, and depth param will be ignored',
+  })
   async getTrees(
     @Query('depth', ParseOptionalIntPipe) depth?: number,
+    @Query('withSourcingLocations') withSourcingLocations?: boolean,
   ): Promise<Supplier> {
-    const results: Supplier[] =
-      await this.suppliersService.findTreesWithOptions(depth);
+    const results: Supplier[] = await this.suppliersService.getTrees({
+      depth,
+      withSourcingLocations,
+    });
     return this.suppliersService.serialize(results);
   }
 

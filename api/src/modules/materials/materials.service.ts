@@ -10,6 +10,7 @@ import { MaterialRepository } from 'modules/materials/material.repository';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { UpdateMaterialDto } from 'modules/materials/dto/update.material.dto';
 import { FindTreesWithOptionsArgs } from 'utils/tree.repository';
+import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 
 @Injectable()
 export class MaterialsService extends AppBaseService<
@@ -21,6 +22,7 @@ export class MaterialsService extends AppBaseService<
   constructor(
     @InjectRepository(MaterialRepository)
     protected readonly materialRepository: MaterialRepository,
+    protected readonly sourcingLocationService: SourcingLocationsService,
   ) {
     super(
       materialRepository,
@@ -142,5 +144,31 @@ export class MaterialsService extends AppBaseService<
 
   async findAllUnpaginated(): Promise<Material[]> {
     return this.materialRepository.find();
+  }
+
+  /**
+   *
+   * @description Get a tree of Materials with registered sourcing locations
+   */
+
+  async getMaterialsTreeWithSourcingLocations(): Promise<Material[]> {
+    const materialIdsFromSourcingLocations: string[] =
+      await this.sourcingLocationService.getMaterialIdsAndParentIds();
+    const allMaterials: Material[] = await this.findAllUnpaginated();
+    const materialLineage: Material[] = this.getAncestry<Material>(
+      allMaterials,
+      materialIdsFromSourcingLocations,
+    );
+    return this.buildTree<Material>(materialLineage, null);
+  }
+
+  async getTrees(treeOptions: {
+    depth?: number;
+    withSourcingLocations?: boolean;
+  }): Promise<Material[]> {
+    const { depth, withSourcingLocations } = treeOptions;
+    if (withSourcingLocations)
+      return this.getMaterialsTreeWithSourcingLocations();
+    return this.findTreesWithOptions({ depth });
   }
 }

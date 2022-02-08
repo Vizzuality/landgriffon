@@ -9,7 +9,7 @@ const ApplicationLayout: React.FC<ApplicationLayoutProps> = (props: ApplicationL
   const { children } = props;
 
   return (
-    <div className="h-screen flex bg-gray-50">
+    <div className="h-screen flex bg-gray-100">
       {/* Navigation */}
       <Sidebar />
 

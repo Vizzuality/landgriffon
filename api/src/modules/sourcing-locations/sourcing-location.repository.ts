@@ -16,7 +16,8 @@ export class SourcingLocationRepository extends Repository<SourcingLocation> {
         'sl.locationType',
         'sl.locationCountryInput',
         'bu.name',
-        'sr',
+        'sr.year',
+        'sr.tonnage',
       ])
       .innerJoin('sl.material', 'mat')
       .leftJoin('sl.t1Supplier', 'sup')

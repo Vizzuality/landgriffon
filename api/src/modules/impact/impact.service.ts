@@ -232,13 +232,23 @@ export class ImpactService {
     );
   }
 
+  /**
+   * @description Given a array of entities and a array of IDs, retrieves a array of elements
+   * with ascendant ancestry until root level
+   *
+   * @param entityArray Array of entities of a given type
+   * @param relevantItemIds Array of IDs of the relevant items within the first param
+   */
   getAncestry<T extends { id: string; parentId?: string; children?: T[] }>(
     entityArray: T[],
     relevantItemIds: string[],
   ): T[] {
+    // Create a new array with relevant elements (matching Ids)
     const relevantItems: T[] = entityArray.filter((entity: T) =>
       relevantItemIds.includes(entity.id),
     );
+
+    // Iterate the array and if any element has a parentId, find it and push it to the same array to 'recursively' find the lineage until root level
     for (const element of relevantItems) {
       if (element.parentId) {
         relevantItems.push(
@@ -246,12 +256,25 @@ export class ImpactService {
         );
       }
     }
+
+    // As some elements could have the same parent, clean the array using a Map to leave only unique elements in it
     const uniqueElements: T[] = [
-      ...new Map(relevantItems.map((v: T) => [v.id, v])).values(),
+      ...new Map(
+        relevantItems.map((element: T) => [element.id, element]),
+      ).values(),
     ];
 
     return uniqueElements;
   }
+
+  /**
+   *
+   *
+   * @param nodes Array of related elements in a flat format
+   * @param parentId Id of the parent
+   * @description: Recursively build a tree.
+   * @private
+   */
 
   private buildTree<T extends { id: string; parentId?: string; children: T[] }>(
     nodes: T[],

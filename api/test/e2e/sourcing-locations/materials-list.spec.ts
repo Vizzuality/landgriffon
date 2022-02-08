@@ -4,10 +4,10 @@ import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { Material } from 'modules/materials/material.entity';
 import { MaterialsModule } from 'modules/materials/materials.module';
-import { MaterialRepository } from 'modules/materials/material.repository';
 import {
   createMaterial,
   createSourcingLocation,
+  createSourcingRecord,
   createSupplier,
 } from '../../entity-mocks';
 import { saveUserAndGetToken } from '../../utils/userAuth';
@@ -55,7 +55,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     await createMaterial({ name: 'soya beans' });
 
     // Creating sourcing locations for different materials and suppliers
-    await createSourcingLocation({
+    const sourcingLocation1 = await createSourcingLocation({
       t1SupplierId: supplier1.id,
       locationType: LOCATION_TYPES.UNKNOWN,
       materialId: material1.id,
@@ -72,11 +72,31 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
       materialId: material3.id,
     });
 
+    await createSourcingRecord({
+      tonnage: 1000,
+      year: 2000,
+      sourcingLocation: sourcingLocation1,
+    });
+
+    await createSourcingRecord({
+      tonnage: 1000,
+      year: 2001,
+      sourcingLocation: sourcingLocation1,
+    });
+
+    await createSourcingRecord({
+      tonnage: 1000,
+      year: 2002,
+      sourcingLocation: sourcingLocation1,
+    });
+
     const responseWithDefaultPagination = await request(app.getHttpServer())
       .get(`/api/v1/sourcing-locations/materials-list`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.OK);
+
+    expect(responseWithDefaultPagination.body.data.length).toEqual(3);
 
     expect(
       responseWithDefaultPagination.body.data[0].attributes.materialName,

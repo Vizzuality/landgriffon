@@ -9,6 +9,7 @@ import {
   createH3Data,
   createMaterial,
   createMaterialToH3,
+  createSourcingLocation,
 } from '../../entity-mocks';
 import { expectedJSONAPIAttributes } from './config';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
@@ -404,4 +405,72 @@ describe('Materials - Get trees', () => {
       },
     );
   });
+
+  test(
+    'When I query a Impact Material Tree endpoint' +
+      'Then I should receive a tree list of materials imported by a user' +
+      'And if any of them is a child material, I should get its parent too',
+    async () => {
+      const h3Data: H3Data = await createH3Data();
+
+      const parentMaterial: Material = await createMaterial({
+        name: 'parentMaterial',
+      });
+      await createMaterialToH3(
+        parentMaterial.id,
+        h3Data.id,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
+      const childMaterial1: Material = await createMaterial({
+        name: 'childMaterial',
+        parent: parentMaterial,
+      });
+      await createMaterialToH3(
+        childMaterial1.id,
+        h3Data.id,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
+      const parentWithNoChildMaterial: Material = await createMaterial({
+        name: 'parentWithNoChild',
+      });
+      await createMaterialToH3(
+        parentWithNoChildMaterial.id,
+        h3Data.id,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
+
+      const materialNotPresentInSourcingLocations: Material =
+        await createMaterial({ name: 'materialNotPresentInSourcingLocations' });
+      await createMaterialToH3(
+        materialNotPresentInSourcingLocations.id,
+        h3Data.id,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
+
+      for await (const material of [
+        childMaterial1,
+        parentWithNoChildMaterial,
+      ]) {
+        await createSourcingLocation({ materialId: material.id });
+      }
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/materials/trees/user')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .expect(HttpStatus.OK);
+
+      expect(response.body.data[0].id).toEqual(parentWithNoChildMaterial.id);
+      expect(response.body.data[0].attributes.children).toEqual([]);
+      expect(response.body.data[1].id).toEqual(parentMaterial.id);
+      expect(response.body.data[1].attributes.children[0].id).toEqual(
+        childMaterial1.id,
+      );
+      expect(
+        response.body.data.find(
+          (material: Material) =>
+            material.id === materialNotPresentInSourcingLocations.id,
+        ),
+      ).toBe(undefined);
+    },
+  );
 });

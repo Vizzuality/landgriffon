@@ -89,13 +89,20 @@ export class AdminRegionsController {
     description:
       'A non-negative integer value. If specified, limits the depth of the tree crawling. 0 will return only the tree roots',
   })
+  @ApiQuery({
+    name: 'withSourcingLocations',
+    required: false,
+    description:
+      'A boolean value. If specified, returns a tree of admin-regions with registered sourcing-locations within, and depth param will be ignored',
+  })
   async getTrees(
     @Query('depth', ParseOptionalIntPipe) depth?: number,
+    @Query('withSourcingLocations') withSourcingLocations?: boolean,
   ): Promise<AdminRegion> {
-    const results: AdminRegion[] =
-      await this.adminRegionsService.findTreesWithOptions({
-        depth,
-      });
+    const results: AdminRegion[] = await this.adminRegionsService.getTrees({
+      depth,
+      withSourcingLocations,
+    });
     return this.adminRegionsService.serialize(results);
   }
 

@@ -6,9 +6,9 @@ import { SortingMode } from 'ka-table/enums';
 import { DispatchFunc } from 'ka-table/types';
 
 import GroupRow from 'containers/table/group-row';
-import LineChart from 'components/chart/line/component';
+import LineChartCell from 'containers/table/line-chart-cell';
 
-import { DEFAULT_CLASSNAMES, CUSTOM_CELL_CLASSNAMES, SHADOW_CLASSNAMES } from './constants';
+import { DEFAULT_CLASSNAMES, SHADOW_CLASSNAMES } from './constants';
 import { TableProps, ColumnProps } from './types';
 
 const defaultProps: TableProps = {
@@ -100,15 +100,7 @@ const Table: React.FC<TableProps> = ({
       content: (props) => {
         switch ((props.column as ColumnProps).type) {
           case 'line-chart':
-            const chartConfig = props.rowData.datesRangeChart;
-            return (
-              <div
-                style={{ width: +props.column.width - 20, height: 50 }}
-                className={CUSTOM_CELL_CLASSNAMES.lineChart}
-              >
-                <LineChart chartConfig={chartConfig} />
-              </div>
-            );
+            return <LineChartCell {...props} />;
           default:
             return;
         }

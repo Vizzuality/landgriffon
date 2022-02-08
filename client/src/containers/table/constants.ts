@@ -1,10 +1,6 @@
 export const SHADOW_CLASSNAMES =
   'after:absolute after:opacity-100 after:-right-3 after:w-3 after:top-0 after:bottom-0 after:border-l after:border-gray-50 after:shadow-[12px_0_10px_-15px_inset_#c2c5c9]';
 
-export const CUSTOM_CELL_CLASSNAMES = {
-  lineChart: 'ka-cell-text text-center font-bold uppercase text-xs flex justify-center w-full px-4',
-};
-
 export const DEFAULT_CLASSNAMES = {
   tableWrapper: 'rounded-lg w-full',
   tableHead: 'border-b border-gray-300',

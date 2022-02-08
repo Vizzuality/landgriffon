@@ -40,7 +40,7 @@ const AnalysisTable: React.FC = () => {
           Download
         </Button>
       </div>
-      <div className="relative">
+      <div className="relative mt-2">
         {isLoading && <Loading className="text-green-700 -ml-1 mr-3" />}
 
         {/* Multiple indicators table */}

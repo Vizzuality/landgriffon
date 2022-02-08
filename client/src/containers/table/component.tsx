@@ -19,7 +19,7 @@ const defaultProps: TableProps = {
 };
 
 const Table: React.FC<TableProps> = ({
-  classNames,
+  className,
   stickyFirstColumn: isFirstColumnSticky = true,
   ...props
 }: TableProps) => {
@@ -147,8 +147,8 @@ const Table: React.FC<TableProps> = ({
 
   return (
     <div
-      className={cx('relative', classNames, {
-        'my-4': !classNames,
+      className={cx('relative', className, {
+        'my-4': !className,
       })}
     >
       <KaTable {...tableProps} childComponents={childComponents} dispatch={dispatch} />

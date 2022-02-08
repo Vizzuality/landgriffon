@@ -1,5 +1,6 @@
+import { useMemo } from 'react';
 import { ITableProps } from 'ka-table';
-import { DataType, PagingPosition } from 'ka-table/enums';
+import { DataType } from 'ka-table/enums';
 import { debounce } from 'lodash';
 import dynamic from 'next/dynamic';
 import { ExclamationIcon, FilterIcon } from '@heroicons/react/solid';
@@ -12,28 +13,7 @@ import Button from 'components/button';
 
 type ITableData = ITableProps;
 
-const TableNoSSR = dynamic(() => import('components/table'), { ssr: false });
-
-const columns = [
-  { key: 'material', title: 'Material', dataType: DataType.String },
-  { key: 'businessUnit', title: 'Business Unit', dataType: DataType.String },
-  { key: 't1Supplier', title: 'T1 Supplier', dataType: DataType.String },
-  { key: 'producer', title: 'Producer', dataType: DataType.String },
-  { key: 'locationType', title: 'Location Type', dataType: DataType.String },
-  { key: 'country', title: 'Country', dataType: DataType.String },
-];
-
-const tableProps: ITableData = {
-  columns,
-  rowKeyField: 'id',
-  paging: {
-    enabled: true,
-    pageIndex: 0,
-    pageSize: 10,
-    pageSizes: [10, 25, 50, 75, 100],
-    position: PagingPosition.Bottom,
-  },
-};
+const TableNoSSR = dynamic(() => import('containers/table'), { ssr: false });
 
 const AdminDataPage: React.FC = () => {
   const {
@@ -42,7 +22,7 @@ const AdminDataPage: React.FC = () => {
     close: closeUploadDataSourceModal,
   } = useModal();
 
-  const data = Array(100)
+  const tableData = Array(100)
     .fill(undefined)
     .map((_, index) => ({
       material: `Rubber: ${index}`,
@@ -58,7 +38,23 @@ const AdminDataPage: React.FC = () => {
     console.info('Search: ', target.value);
   }, 200);
 
-  const hasData = data?.length > 0;
+  const tableProps: ITableData = useMemo(
+    () => ({
+      rowKeyField: 'id',
+      columns: [
+        { key: 'material', title: 'Material', dataType: DataType.String, width: 240 },
+        { key: 'businessUnit', title: 'Business Unit', dataType: DataType.String },
+        { key: 't1Supplier', title: 'T1 Supplier', dataType: DataType.String },
+        { key: 'producer', title: 'Producer', dataType: DataType.String },
+        { key: 'locationType', title: 'Location Type', dataType: DataType.String },
+        { key: 'country', title: 'Country', dataType: DataType.String },
+      ],
+      data: tableData,
+    }),
+    [tableData],
+  );
+
+  const hasData = tableData?.length > 0;
 
   return (
     <AdminLayout
@@ -84,7 +80,7 @@ const AdminDataPage: React.FC = () => {
       {hasData && (
         <>
           <div className="flex flex-col-reverse md:flex-row justify-between items-center">
-            <div className="flex w-full md:w-auto gap-2 my-4">
+            <div className="flex w-full md:w-auto gap-2 mt-4">
               <input
                 className="w-full md:w-auto bg-white border border-gray-300 rounded-md shadow-sm text-left focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm font-medium"
                 type="search"
@@ -106,7 +102,8 @@ const AdminDataPage: React.FC = () => {
               needs to be updated
             </div>
           </div>
-          <TableNoSSR tablePropsInit={{ ...tableProps, data: data }} />
+
+          <TableNoSSR {...tableProps} />
         </>
       )}
     </AdminLayout>

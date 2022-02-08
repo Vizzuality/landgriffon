@@ -1,5 +1,6 @@
+import { useMemo } from 'react';
 import { ITableProps } from 'ka-table';
-import { DataType, PagingPosition } from 'ka-table/enums';
+import { DataType } from 'ka-table/enums';
 import dynamic from 'next/dynamic';
 
 import useModal from 'hooks/modals';
@@ -10,24 +11,7 @@ import Button from 'components/button';
 
 type ITableData = ITableProps;
 
-const TableNoSSR = dynamic(() => import('components/table'), { ssr: false });
-
-const columns = [
-  { key: 'indicator', title: 'Indicator', dataType: DataType.String },
-  { key: 'baselineYear', title: 'Baseline Year', dataType: DataType.Number },
-];
-
-const tableProps: ITableData = {
-  columns,
-  rowKeyField: 'id',
-  paging: {
-    enabled: true,
-    pageIndex: 0,
-    pageSize: 10,
-    pageSizes: [10, 25, 50, 75, 100],
-    position: PagingPosition.Bottom,
-  },
-};
+const TableNoSSR = dynamic(() => import('containers/table'), { ssr: false });
 
 const AdminTargetsPage: React.FC = () => {
   const {
@@ -36,7 +20,7 @@ const AdminTargetsPage: React.FC = () => {
     close: closeUploadDataSourceModal,
   } = useModal();
 
-  const data = Array(4)
+  const tableData = Array(4)
     .fill(undefined)
     .map((_, index) => ({
       indicator: `Deforestation loss due to land use change: ${index}`,
@@ -44,7 +28,19 @@ const AdminTargetsPage: React.FC = () => {
       id: index,
     }));
 
-  const hasData = data?.length > 0;
+  const tableProps: ITableData = useMemo(
+    () => ({
+      rowKeyField: 'id',
+      columns: [
+        { key: 'indicator', title: 'Indicator', dataType: DataType.String, width: 80 },
+        { key: 'baselineYear', title: 'Baseline Year', dataType: DataType.Number },
+      ],
+      data: tableData,
+    }),
+    [tableData],
+  );
+
+  const hasData = tableData?.length > 0;
 
   return (
     <AdminLayout
@@ -67,7 +63,7 @@ const AdminTargetsPage: React.FC = () => {
 
       {!hasData && <NoData />}
 
-      {hasData && <TableNoSSR tablePropsInit={{ ...tableProps, data: data }} />}
+      {hasData && <TableNoSSR {...tableProps} />}
     </AdminLayout>
   );
 };

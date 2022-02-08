@@ -10,7 +10,7 @@ const nextConfig = {
     return [
       {
         source: '/admin',
-        destination: '/admin/materials',
+        destination: '/admin/data',
         permanent: false,
       },
     ];

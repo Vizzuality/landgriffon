@@ -2,8 +2,8 @@ import { TabsType } from 'components/tabs';
 
 export const ADMIN_TABS: TabsType = {
   DATA: {
-    name: 'Materials',
-    href: '/admin/materials',
+    name: 'Data',
+    href: '/admin/data',
   },
   TARGETS: {
     name: 'Targets',

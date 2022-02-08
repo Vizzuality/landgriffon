@@ -86,4 +86,24 @@ export class SourcingLocationsService extends AppBaseService<
 
     return await this.sourcingLocationRepository.save(sourcingLocation as any);
   }
+
+  async getMaterialsFromSourcingLocations(
+    fetchSpecification: FetchSpecification,
+  ): Promise<{
+    data: (Partial<SourcingLocation> | undefined)[];
+    metadata: PaginationMeta | undefined;
+  }> {
+    const materialsListQuery: SelectQueryBuilder<SourcingLocation> =
+      await this.sourcingLocationRepository.getSourcingLocationsMaterialsQuery();
+
+    const paginatedListOfMaterials: {
+      data: (Partial<any> | undefined)[];
+      metadata: PaginationMeta | undefined;
+    } = await this.paginateCustomQueryResults(
+      materialsListQuery,
+      fetchSpecification,
+    );
+
+    return paginatedListOfMaterials;
+  }
 }

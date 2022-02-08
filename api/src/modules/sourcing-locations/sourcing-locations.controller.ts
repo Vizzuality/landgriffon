@@ -35,15 +35,15 @@ import {
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update.sourcing-location.dto';
 import { PaginationMeta } from 'utils/app-base.service';
-import { ImportedMaterialsListResponseDto } from 'modules/sourcing-locations/dto/imported-materials.sourcing-location.dto';
-import { MaterialsFromSourcingLocationsService } from './materials-from-sourcing-locations.service';
+import { ImportedMaterialsListResponseDto } from 'modules/sourcing-locations/dto/imported-materials-list-response.sourcing-location.dto';
+import { CustomSerializer } from 'modules/sourcing-locations/serializer/custom.serializer';
 
 @Controller(`/api/v1/sourcing-locations`)
 @ApiTags(sourcingLocationResource.className)
 export class SourcingLocationsController {
   constructor(
     public readonly sourcingLocationsService: SourcingLocationsService,
-    public readonly materialsFromSourcingLocationsService: MaterialsFromSourcingLocationsService,
+    public readonly customSerializer: CustomSerializer,
   ) {}
 
   @ApiOperation({
@@ -84,7 +84,7 @@ export class SourcingLocationsController {
 
   @ApiOperation({
     description:
-      'Get detailed list of materials imported by user and  existing in sourcing records',
+      'Get detailed list of materials imported by user and existing in sourcing records',
   })
   @JSONAPIQueryParamsOnlyPagination()
   @ApiOkResponse({ type: ImportedMaterialsListResponseDto })
@@ -96,14 +96,11 @@ export class SourcingLocationsController {
     const materials: {
       data: (Partial<SourcingLocation> | undefined)[];
       metadata: PaginationMeta | undefined;
-    } = await this.materialsFromSourcingLocationsService.getMaterialsFromSourcingLocations(
+    } = await this.sourcingLocationsService.getMaterialsFromSourcingLocations(
       fetchSpecification,
     );
 
-    return this.materialsFromSourcingLocationsService.serialize(
-      materials.data,
-      materials.metadata,
-    );
+    return this.customSerializer.serialize(materials.data, materials.metadata);
   }
 
   @ApiOperation({ description: 'Find sourcing location by id' })

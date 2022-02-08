@@ -80,7 +80,7 @@ const AdminDataPage: React.FC = () => {
       {hasData && (
         <>
           <div className="flex flex-col-reverse md:flex-row justify-between items-center">
-            <div className="flex w-full md:w-auto gap-2 mt-4">
+            <div className="flex w-full md:w-auto gap-2">
               <input
                 className="w-full md:w-auto bg-white border border-gray-300 rounded-md shadow-sm text-left focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm font-medium"
                 type="search"

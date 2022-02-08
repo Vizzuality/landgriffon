@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { ITableProps } from 'ka-table';
 import { DataType } from 'ka-table/enums';
 import dynamic from 'next/dynamic';
+import { InformationCircleIcon } from '@heroicons/react/solid';
 
 import useModal from 'hooks/modals';
 import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
@@ -32,7 +33,7 @@ const AdminTargetsPage: React.FC = () => {
     () => ({
       rowKeyField: 'id',
       columns: [
-        { key: 'indicator', title: 'Indicator', dataType: DataType.String, width: 80 },
+        { key: 'indicator', title: 'Indicator', dataType: DataType.String, width: 100 },
         { key: 'baselineYear', title: 'Baseline Year', dataType: DataType.Number },
       ],
       data: tableData,
@@ -63,7 +64,15 @@ const AdminTargetsPage: React.FC = () => {
 
       {!hasData && <NoData />}
 
-      {hasData && <TableNoSSR {...tableProps} />}
+      {hasData && (
+        <>
+          <div className="flex items-center text-sm text-black py-2">
+            <InformationCircleIcon className="w-5 h-5 mr-3 text-black" aria-hidden="true" />
+            Target value for each indicator by year (percentage of reduction)
+          </div>
+          <TableNoSSR {...tableProps} />
+        </>
+      )}
     </AdminLayout>
   );
 };

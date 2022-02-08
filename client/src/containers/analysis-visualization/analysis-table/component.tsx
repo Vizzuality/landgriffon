@@ -23,7 +23,7 @@ const AnalysisTable: React.FC = () => {
 
   return (
     <>
-      <div className="flex justify-between mb-6">
+      <div className="flex justify-between">
         <div className="flex items-center">
           <p className="m-0">
             <InformationCircleIcon className="inline w-5 h-4 mr-2 text-black" />

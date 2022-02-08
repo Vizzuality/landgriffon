@@ -4,15 +4,10 @@ import { GroupRowData } from 'ka-table/models';
 
 export type ITableData = ITableProps & {
   key?: string;
-  yearsSum: Record<number, string>;
-};
-
-export type CustomSummaryCell = ISummaryCellProps & {
-  yearsSum: Record<number, string>;
 };
 
 export type CustomColumn = ICellProps & {
-  chart: boolean;
+  type: 'analysis-chart';
   width: number;
 };
 
@@ -22,10 +17,6 @@ export type CustomChartCell = ICellProps & {
 };
 
 export type CustomSummaryCellSingleIndicator = ISummaryCellProps & {
-  yearSum: {
-    year: number;
-    value: number;
-  }[];
   rowData: unknown;
   columns: ColumnHeadings[];
   width: number;

@@ -1,20 +1,49 @@
-import { useMemo, PropsWithChildren } from 'react';
+import { useMemo } from 'react';
 import { DataType } from 'ka-table/enums';
 import { uniq } from 'lodash';
 
-import Table from 'components/table';
-import LineChart from 'components/chart/line/component';
-
 import { DATA_NUMBER_FORMAT } from 'containers/analysis-visualization/constants';
+import Table from 'containers/table';
+import SummaryRow from 'containers/table/summary-row';
 
 // types
 import type { ImpactTableData } from 'types';
-import { ITableData, CustomChartCell, CustomSummaryCell } from '../types';
+import { ITableData } from '../types';
 
 const MultipleIndicatorTable: React.FC<{ data: ImpactTableData[] }> = ({ data }) => {
   // Data parsed for the table
   const tableData = useMemo(() => {
     const result = [];
+
+    const datesRangeChartConfig = (data) => {
+      const chartData = data.map(({ year, value }) => ({
+        x: year,
+        y: value,
+      }));
+
+      const xAxisValues = chartData.map(({ x }) => x);
+      const xMaxValue = Math.max(...xAxisValues);
+      const xMinValue = Math.min(...xAxisValues);
+      const min = xMaxValue - xMinValue;
+
+      return {
+        lines: [
+          {
+            stroke: '#909194',
+            width: '100%',
+            dataKey: 'primary_line',
+            data: chartData.filter(({ x }) => x < xMinValue + min / 2),
+          },
+          {
+            stroke: '#909194',
+            width: '100%',
+            strokeDasharray: '3 3',
+            dataKey: 'secondary_line',
+            data: chartData,
+          },
+        ],
+      };
+    };
 
     data.forEach(({ indicatorId, indicatorShortName, rows }) => {
       rows.forEach(({ name, values }) => {
@@ -22,6 +51,7 @@ const MultipleIndicatorTable: React.FC<{ data: ImpactTableData[] }> = ({ data })
           id: `${indicatorId}-${name}`,
           name,
           indicatorName: indicatorShortName,
+          datesRangeChart: datesRangeChartConfig(values),
           ...values
             .map(({ year, value }) => ({ [year as string]: value }))
             .reduce((a, b) => ({ ...a, ...b })),
@@ -54,7 +84,7 @@ const MultipleIndicatorTable: React.FC<{ data: ImpactTableData[] }> = ({ data })
       resultByYear.push(result.reduce((a, b) => ({ year, value: a.value + b.value })));
     });
     return resultByYear
-      .map(({ year, value }) => ({ [year as string]: value }))
+      .map(({ year, value }) => ({ [year as string]: DATA_NUMBER_FORMAT(value) }))
       .reduce((a, b) => ({ ...a, ...b }));
   }, [data, years]);
 
@@ -67,22 +97,22 @@ const MultipleIndicatorTable: React.FC<{ data: ImpactTableData[] }> = ({ data })
       columns: [
         { key: 'name', title: 'Name', dataType: DataType.String, width: 250 },
         {
-          key: 'dates-range',
-          title: `${minYear}-${maxYear}`,
-          chart: true,
-          width: 100,
+          key: 'datesRangeChart',
+          title: `${minYear} - ${maxYear}`,
+          type: 'line-chart',
+          width: 140,
         },
         { key: 'indicatorName', title: 'Indicator', dataType: DataType.String },
         ...years.map((year) => ({
           key: year.toString(),
           title: year.toString(),
           DataType: DataType.Number,
-          width: 100,
+          width: 110,
         })),
       ],
       format: ({ value, column }) => {
         if (
-          column.key !== 'dates-range' &&
+          column.key !== 'datesRangeChart' &&
           column.key !== 'name' &&
           column.key !== 'indicatorName' &&
           value
@@ -93,150 +123,17 @@ const MultipleIndicatorTable: React.FC<{ data: ImpactTableData[] }> = ({ data })
       },
       data: tableData,
       groups: [{ columnKey: 'indicatorName' }],
-      yearsSum,
+      childComponents: {
+        summaryRow: {
+          content: (props) => (
+            <SummaryRow rowData={{ name: 'Total impact', ...yearsSum }} {...props} />
+          ),
+        },
+      },
     };
-  }, [tableData, yearsSum, years]);
+  }, [years, tableData, yearsSum]);
 
-  const tableKey: string = useMemo(() => `${years[0]}-${years[years.length - 1]}`, [years]);
-
-  return (
-    <Table
-      key={tableKey}
-      tablePropsInit={tableProps}
-      childComponents={{
-        tableWrapper: {
-          elementAttributes: () => ({
-            className: 'rounded-md border w-full',
-          }),
-        },
-        tableHead: {
-          elementAttributes: () => ({
-            className: 'border-b border-gray-300',
-          }),
-        },
-        tableFoot: {
-          elementAttributes: () => ({
-            className: 'border-t border-gray-300',
-          }),
-        },
-        headCell: {
-          elementAttributes: (props) => {
-            if (props.column.key === 'name') {
-              return {
-                className: 'h-auto py-3 bg-gray-50 sticky left-0 z-10',
-              };
-            }
-            return {
-              className: 'h-auto py-3 bg-gray-50 text-center',
-            };
-          },
-        },
-        headCellContent: {
-          elementAttributes: () => ({
-            className: 'font-bold uppercase text-xs leading-4 text-gray-500',
-          }),
-        },
-        dataRow: {
-          elementAttributes: () => ({
-            className: 'border-0 group even:bg-gray-50',
-          }),
-        },
-        cell: {
-          elementAttributes: (props) => {
-            if (props.column.key === 'name') {
-              return {
-                className: 'h-auto py-3 sticky left-0 group-even:bg-gray-50 group-odd:bg-white',
-              };
-            }
-            return {
-              className: 'h-auto py-3',
-            };
-          },
-          content: (props: PropsWithChildren<CustomChartCell>) => {
-            if (props.column.chart) {
-              const chartData = Object.entries(props.rowData).map((row: [string, number]) => ({
-                x: row[0],
-                y: row[1],
-              }));
-
-              const filtered = chartData.filter((d) => years.includes(new Date(d.x).getFullYear()));
-
-              const xAxisValues = filtered.map((d) => new Date(d.x).getFullYear());
-              const xMaxValue = Math.max(...xAxisValues);
-              const xMinValue = Math.min(...xAxisValues);
-              const min = xMaxValue - xMinValue;
-
-              const chartConfig = {
-                lines: [
-                  {
-                    stroke: '#909194',
-                    width: '100%',
-                    dataKey: 'primary_line',
-                    data: filtered.filter((d) => Number(d.x) < xMinValue + min / 2),
-                  },
-                  {
-                    stroke: '#909194',
-                    width: '100%',
-                    strokeDasharray: '3 3',
-                    dataKey: 'secondary_line',
-                    data: filtered,
-                  },
-                ],
-              };
-
-              return (
-                <div
-                  style={{ width: props.column.width, height: 50 }}
-                  className="ka-cell-text text-center font-bold uppercase text-xs flex justify-center w-full"
-                >
-                  <LineChart chartConfig={chartConfig} />
-                </div>
-              );
-            }
-          },
-        },
-        cellText: {
-          elementAttributes: (props) => {
-            if (props.column.key === 'name') {
-              return {
-                className: 'text-gray-900 leading-5',
-              };
-            }
-            return {
-              className: 'text-gray-500 leading-5 text-center',
-            };
-          },
-        },
-        summaryCell: {
-          elementAttributes: (props) => {
-            if (props.column.key === 'name') {
-              return {
-                className: 'h-auto py-3 bg-gray-50 sticky left-0',
-              };
-            }
-            return {
-              className: 'h-auto py-3 bg-gray-50',
-            };
-          },
-          content: (props: CustomSummaryCell) => {
-            if (props.column.key === 'name') {
-              return (
-                <div className="ka-cell-text font-bold uppercase bg-gray-50 text-gray-500 text-xs">
-                  Total impact
-                </div>
-              );
-            }
-            if (props.column.key === 'dates-range') return null;
-            return (
-              <div className="ka-cell-text text-center font-bold uppercase text-gray-500 text-xs">
-                {DATA_NUMBER_FORMAT(props.yearsSum[props.column.key])}
-              </div>
-            );
-          },
-        },
-      }}
-    />
-  );
+  return <Table {...tableProps} />;
 };
 
 export default MultipleIndicatorTable;

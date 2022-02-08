@@ -5,7 +5,7 @@ export type ColumnProps = ICellProps & {
 };
 
 export type TableProps = ITableProps & {
-  classNames?: string;
+  className?: string;
   stickyFirstColumn?: boolean;
   childComponents?: ChildComponents;
 };

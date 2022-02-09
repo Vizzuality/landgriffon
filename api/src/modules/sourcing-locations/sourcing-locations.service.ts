@@ -14,7 +14,9 @@ import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create
 import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update.sourcing-location.dto';
 import { Material } from 'modules/materials/material.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
-import { Supplier } from 'modules/suppliers/supplier.entity';
+import { Supplier, SUPPLIER_TYPES } from 'modules/suppliers/supplier.entity';
+import { SelectQueryBuilder } from 'typeorm';
+
 
 @Injectable()
 export class SourcingLocationsService extends AppBaseService<
@@ -87,9 +89,64 @@ export class SourcingLocationsService extends AppBaseService<
     return await this.sourcingLocationRepository.save(sourcingLocation as any);
   }
 
+  async extendFindAllQuery(
+    query: SelectQueryBuilder<SourcingLocation>,
+  ): Promise<SelectQueryBuilder<SourcingLocation>> {
+    query
+      .select([
+        `${this.alias}`,
+        'mat.id',
+        'mat.name',
+        'sup.name',
+        'producer.name',
+        'bu.name',
+        'sr',
+      ])
+      .innerJoin(`${this.alias}.material`, 'mat')
+      .leftJoin(`${this.alias}.t1Supplier`, 'sup')
+      .leftJoin(`${this.alias}.producer`, 'producer')
+      .leftJoin(`${this.alias}.businessUnit`, 'bu')
+      .leftJoin(`${this.alias}.sourcingRecords`, 'sr')
+      .orderBy('mat.name')
+      .addOrderBy(`${this.alias}.id`);
+
+    return query;
+  }
+
   /**
-   * @description Retrieve Ids of all required Entities and its Parent's present in Sourcing-LocationsW
+   * @description Retrieves materials and it's ancestors (in a plain format) there are registered sourcingLocations for
    */
+
+  async getRequiredMaterialsWithAncestry(): Promise<Material[]> {
+    // Join and filters over materials present in sourcing-locations. Resultant query returns IDs of elements meeting the filters
+    const [subQuery, subQueryParams]: [string, any[]] =
+      this.sourcingLocationRepository
+        .createQueryBuilder('sl')
+        .select('m.id')
+        .innerJoin(Material, 'm', 'sl.materialId = m.id')
+        .distinct(true)
+        .getQueryAndParameters();
+
+    // Recursively find elements and their ancestry given Ids of the subquery above
+    const result: any = this.sourcingLocationRepository.query(
+      `
+        with recursive name_tree as (
+            select m.id, m."parentId", m."name", m.description, m."createdAt", m."updatedAt", m."hsCodeId"
+            from material m
+            where id in
+                        (${subQuery})
+            union all
+            select c.id, c."parentId", c."name", c.description, c."createdAt", c."updatedAt", c."hsCodeId"
+            from material c
+            join name_tree p on p."parentId" = c.id
+        )
+        select *
+        from name_tree`,
+      subQueryParams,
+    );
+
+    return result;
+  }
 
   async getMaterialIdsAndParentIds(): Promise<string[]> {
     const materialIds: { materialId: string }[] =
@@ -123,7 +180,9 @@ export class SourcingLocationsService extends AppBaseService<
     );
   }
 
-  async getSupplierIdsAndParentIds(): Promise<string[]> {
+  async getSupplierIdsAndParentIds(queryOptions?: {
+    type?: SUPPLIER_TYPES;
+  }): Promise<string[]> {
     const supplierIds: { supplierIds: string }[] =
       await this.sourcingLocationRepository
         .createQueryBuilder('sl')

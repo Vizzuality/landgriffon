@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import Router from 'next/router';
 import { NavigationList } from 'containers/navigation/types';
+import NavigationError from 'containers/navigation/error';
+import Logo from 'containers/logo';
 
 import {
   CollectionIcon,
@@ -18,34 +20,31 @@ const navigationItems: NavigationList = [
 ];
 
 const Page404: React.FC = () => {
+  const handleGoBack = useCallback(() => Router.back(), []);
+
   return (
     <div className="flex justify-center h-screen place-items-center gap-x-4">
       <div className="flex-col space-y-40">
-        <h2 className="font-bold text-green-700 uppercase">landgriffon</h2>
+        <Logo />
 
         <div>
-          <h1 className="text-3xl font-bold">Page not found</h1>
+          <h1 className="text-5xl font-semibold text-gray-900 mb-2">Page not found</h1>
 
-          <p className="text-gray-400">Sorry, we couldn't find Page you are looking for.</p>
+          <p className="text-gray-400 font-medium leading-5">
+            Sorry, we couldn&apos;t find Page you are looking for.
+          </p>
 
-          <a onClick={() => Router.back()} className="flex mt-6 text-green-700 cursor-pointer">
+          <button
+            type="button"
+            onClick={handleGoBack}
+            className="flex mt-10 text-green-700 cursor-pointer hover:underline"
+          >
             <ArrowLeftIcon className="w-4 h-4 mt-1 mr-1" />
             Go back
-          </a>
+          </button>
         </div>
 
-        <div className="flex bg-white bottom-7">
-          {navigationItems.map((item) => (
-            <a
-              key={item.name}
-              href={item.href}
-              className="flex flex-col items-center w-full p-3 text-xs font-medium text-green-800 rounded-md"
-            >
-              <item.icon className="w-6 h-6" aria-hidden="true" />
-              <span className="mt-2">{item.name}</span>
-            </a>
-          ))}
-        </div>
+        <NavigationError navigationItems={navigationItems} />
       </div>
 
       <span className="absolute font-bold text-9xl text-gray-200 -mt-64 sm:m-0 sm:text-[25vw] sm:relative">

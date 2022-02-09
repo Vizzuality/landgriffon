@@ -107,21 +107,6 @@ export class MaterialsController {
     });
     return this.materialsService.serialize(results);
   }
-  @ApiOperation({
-    description:
-      'Find all materials uploaded by a user and return them in a tree format. Data in the "children" will recursively extend for the deepest material of the tree',
-  })
-  @ApiOkTreeResponse({
-    treeNodeType: Material,
-  })
-  @ApiUnauthorizedResponse()
-  @ApiForbiddenResponse()
-  @Get('/trees/user')
-  async getUserTree(): Promise<Material> {
-    const results: Material[] =
-      await this.materialsService.getMaterialsTreeWithSourcingLocations();
-    return this.materialsService.serialize(results);
-  }
 
   @ApiOperation({ description: 'Find material by id' })
   @ApiNotFoundResponse({ description: 'Material not found' })

@@ -455,7 +455,8 @@ describe('Materials - Get trees', () => {
       }
 
       const response = await request(app.getHttpServer())
-        .get('/api/v1/materials/trees/user')
+        .get('/api/v1/materials/trees')
+        .query({ withSourcingLocations: true })
         .set('Authorization', `Bearer ${jwtToken}`)
         .expect(HttpStatus.OK);
 

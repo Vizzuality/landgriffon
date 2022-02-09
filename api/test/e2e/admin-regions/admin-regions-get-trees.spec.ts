@@ -258,7 +258,8 @@ describe('AdminRegions - Get trees', () => {
       }
 
       const response = await request(app.getHttpServer())
-        .get('/api/v1/admin-regions/trees/user')
+        .get('/api/v1/admin-regions/trees')
+        .query({ withSourcingLocations: true })
         .set('Authorization', `Bearer ${jwtToken}`)
         .expect(HttpStatus.OK);
 

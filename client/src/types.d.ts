@@ -4,6 +4,13 @@ export type HEXColor = string;
 
 export type ColorRamps = Record<string, HEXColor[]>;
 
+export type APIMetadataPagination = {
+  page: number;
+  size: number;
+  totalItems: number;
+  totalPages: number;
+};
+
 export type H3Item = {
   c: RGBColor;
   h: string;
@@ -64,6 +71,23 @@ export type Material = {
   id: string;
   name: string;
   children: Material[];
+};
+
+export type SourcingLocation = {
+  materialId: string;
+  materialName: string;
+  t1Supplier: string;
+  producer: string;
+  businessUnit: string;
+  country: string;
+  locationType: string;
+  purchases: Record<string, integer>;
+};
+
+export type SourcingLocationsParams = {
+  materialsData?: boolean;
+  'page[size]'?: number;
+  'page[number]'?: number;
 };
 
 export type Supplier = {

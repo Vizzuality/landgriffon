@@ -107,6 +107,7 @@ export class SourcingLocationsService extends AppBaseService<
       .leftJoin(`${this.alias}.producer`, 'producer')
       .leftJoin(`${this.alias}.businessUnit`, 'businessUnit')
       .leftJoin(`${this.alias}.sourcingRecords`, 'sr');
+
     if (fetchSpecification.search) {
       query.andWhere('material.name ILIKE :search', {
         search: `%${fetchSpecification.search}%`,

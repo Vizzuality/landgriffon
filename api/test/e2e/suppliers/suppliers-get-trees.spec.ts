@@ -5,10 +5,11 @@ import { AppModule } from 'app.module';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
-import { createSupplier } from '../../entity-mocks';
+import { createSourcingLocation, createSupplier } from '../../entity-mocks';
 import { expectedJSONAPIAttributes } from './config';
 import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
+import { Material } from 'modules/materials/material.entity';
 
 describe('Suppliers - Get trees', () => {
   let app: INestApplication;
@@ -166,4 +167,54 @@ describe('Suppliers - Get trees', () => {
       },
     );
   });
+
+  test(
+    'When I query a Supplier Tree endpoint ' +
+      'And I query the ones with sourcing locations' +
+      'Then I should receive a tree list of suppliers where there are sourcing-locations for' +
+      'And if any of them is a child supplier, I should get its parent too',
+    async () => {
+      const parentSupplier: Supplier = await createSupplier({
+        name: 'parentSupplier',
+      });
+      const childSupplier: Supplier = await createSupplier({
+        name: 'childSupplier',
+        parent: parentSupplier,
+      });
+
+      const parentWithNoChildSupplier: Supplier = await createSupplier({
+        name: 'parentWithNoChild',
+      });
+      const supplierNotPresentInSourcingLocations: Supplier =
+        await createSupplier({
+          name: 'adminRegionNotPresentInSourcingLocations',
+        });
+
+      for await (const supplier of [childSupplier, parentWithNoChildSupplier]) {
+        await createSourcingLocation({
+          t1SupplierId: supplier.id,
+          producerId: supplier.id,
+        });
+      }
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/suppliers/trees')
+        .query({ withSourcingLocations: true })
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .expect(HttpStatus.OK);
+
+      expect(response.body.data[0].id).toEqual(parentWithNoChildSupplier.id);
+      expect(response.body.data[0].attributes.children).toEqual([]);
+      expect(response.body.data[1].id).toEqual(parentSupplier.id);
+      expect(response.body.data[1].attributes.children[0].id).toEqual(
+        childSupplier.id,
+      );
+      expect(
+        response.body.data.find(
+          (material: Material) =>
+            material.id === supplierNotPresentInSourcingLocations.id,
+        ),
+      ).toBe(undefined);
+    },
+  );
 });

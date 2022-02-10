@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { DataType } from 'ka-table/enums';
+import { DataType, SortingMode } from 'ka-table/enums';
 
 import { DATA_NUMBER_FORMAT } from 'containers/analysis-visualization/constants';
 import Table from 'containers/table';
@@ -104,6 +104,7 @@ const AnalysisTable: React.FC<{ data: ImpactTableData }> = ({ data }) => {
           ),
         },
       },
+      sortingMode: SortingMode.Single,
     };
   }, [yearsSum, years, indicatorId, columnValues, dataValues]);
 

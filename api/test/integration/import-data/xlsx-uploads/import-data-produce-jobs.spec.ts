@@ -50,7 +50,7 @@ describe('XLSX Upload Feature Job Producer Tests', () => {
     });
     expect(tasks[0].status).toEqual('processing');
     expect(tasks[0].createdBy).toEqual(userId);
-  });
+  }, 100000);
   test('When loadXlsxFile is called with required file data and a userId, but the Job can not be added to the queue, and the related tasks should be removed', async () => {
     await bootstrapTestingApp(importQueueFail);
     const fileData = {

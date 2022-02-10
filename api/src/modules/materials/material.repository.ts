@@ -41,8 +41,9 @@ export class MaterialRepository extends ExtendedTreeRepository<
             from material c
             join material_tree p on p."parentId" = c.id
         )
-        select *
-        from material_tree`,
+        select distinct *
+        from material_tree
+        order by name`,
       subQueryParams,
     ).catch((err: Error) =>
       this.logger.error(

@@ -5,7 +5,7 @@ import {
 } from 'nestjs-base-service';
 
 import * as JSONAPISerializer from 'jsonapi-serializer';
-import { Repository, SelectQueryBuilder } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Serializer } from 'jsonapi-serializer';
 

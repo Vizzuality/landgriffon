@@ -14,7 +14,7 @@ import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
 import { UpdateSupplierDto } from 'modules/suppliers/dto/update.supplier.dto';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
-import { SelectQueryBuilder } from 'typeorm';
+import { SelectQueryBuilder, QueryRunner } from 'typeorm';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetSupplierByType } from 'modules/suppliers/dto/get-supplier-by-type.dto';
 import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-tree-with-options.dto';
@@ -94,9 +94,17 @@ export class SuppliersService extends AppBaseService<
     return this.findTreesWithOptions(supplierTreeOptions.depth);
   }
 
-  async createTree(importData: CreateSupplierDto[]): Promise<Supplier[]> {
+  async createTree(
+    importData: CreateSupplierDto[],
+    queryRunner?: QueryRunner,
+  ): Promise<Supplier[]> {
     this.logger.log(`Creating Supplier tree with ${importData.length} nodes`);
-    return this.supplierRepository.saveListToTree(importData, 'mpath');
+    return this.supplierRepository.saveListToTree(
+      importData,
+      'mpath',
+      queryRunner,
+      Supplier,
+    );
   }
 
   async clearTable(): Promise<void> {

@@ -14,7 +14,7 @@ import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto';
 import { UpdateIndicatorDto } from 'modules/indicators/dto/update.indicator.dto';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
-import { getManager } from 'typeorm';
+import { getManager, QueryRunner } from 'typeorm';
 
 @Injectable()
 export class IndicatorsService extends AppBaseService<
@@ -95,7 +95,9 @@ export class IndicatorsService extends AppBaseService<
     return indicators;
   }
 
-  async findAllUnpaginated(): Promise<Indicator[]> {
-    return this.indicatorRepository.find();
+  async findAllUnpaginated(queryRunner?: QueryRunner): Promise<Indicator[]> {
+    return queryRunner
+      ? queryRunner.manager.find(Indicator, {})
+      : this.indicatorRepository.find();
   }
 }

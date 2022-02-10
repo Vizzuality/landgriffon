@@ -12,8 +12,7 @@ import { AppInfoDTO } from 'dto/info.dto';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update.sourcing-location.dto';
-import { SelectQueryBuilder } from 'typeorm';
-
+import { QueryRunner, SelectQueryBuilder } from 'typeorm';
 
 @Injectable()
 export class SourcingLocationsService extends AppBaseService<
@@ -73,6 +72,7 @@ export class SourcingLocationsService extends AppBaseService<
    */
   async save(
     sourcingLocationDTOs: CreateSourcingLocationDto[],
+    queryRunner?: QueryRunner,
   ): Promise<SourcingLocation[]> {
     this.logger.log(`Saving ${sourcingLocationDTOs.length} nodes`);
     const sourcingLocation: SourcingLocation[] = await Promise.all(
@@ -83,7 +83,9 @@ export class SourcingLocationsService extends AppBaseService<
       ),
     );
 
-    return await this.sourcingLocationRepository.save(sourcingLocation as any);
+    return queryRunner
+      ? await queryRunner.manager.save(SourcingLocation, sourcingLocation)
+      : await this.sourcingLocationRepository.save(sourcingLocation as any);
   }
 
   async extendFindAllQuery(

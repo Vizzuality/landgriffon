@@ -26,6 +26,7 @@ import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import * as config from 'config';
 import { H3DataYearsService } from 'modules/h3-data/services/h3-data-years.service';
+import { QueryRunner } from 'typeorm';
 
 @Injectable()
 export class IndicatorRecordsService extends AppBaseService<
@@ -68,13 +69,17 @@ export class IndicatorRecordsService extends AppBaseService<
   private async getH3DataForSourcingRecord(
     sourcingRecord: SourcingRecord,
     type: MATERIAL_TO_H3_TYPE,
+    queryRunner?: QueryRunner,
   ): Promise<H3Data | null> {
     let h3Table: H3Data | undefined =
-      await this.materialsToH3sService.findH3DataForMaterial({
-        materialId: sourcingRecord.sourcingLocation.material.id,
-        year: sourcingRecord.year,
-        type,
-      });
+      await this.materialsToH3sService.findH3DataForMaterial(
+        {
+          materialId: sourcingRecord.sourcingLocation.material.id,
+          year: sourcingRecord.year,
+          type,
+        },
+        queryRunner,
+      );
 
     if (h3Table) {
       return h3Table;
@@ -96,12 +101,16 @@ export class IndicatorRecordsService extends AppBaseService<
             sourcingRecord.sourcingLocation.material.id,
             type,
             sourcingRecord.year,
+            queryRunner,
           );
-        h3Table = await this.materialsToH3sService.findH3DataForMaterial({
-          materialId: sourcingRecord.sourcingLocation.material.id,
-          year: h3DataYearToApply,
-          type,
-        });
+        h3Table = await this.materialsToH3sService.findH3DataForMaterial(
+          {
+            materialId: sourcingRecord.sourcingLocation.material.id,
+            year: h3DataYearToApply,
+            type,
+          },
+          queryRunner,
+        );
         if (!h3Table) {
           throw new MissingH3DataError(
             `Cannot calculate impact for sourcing record - missing ${type} h3 data for material "${sourcingRecord.sourcingLocation.material.name}" with year fallback strategy`,
@@ -134,12 +143,13 @@ export class IndicatorRecordsService extends AppBaseService<
 
   async calculateImpactValue(
     sourcingRecord: SourcingRecord,
+    queryRunner?: QueryRunner,
   ): Promise<IndicatorRecord[]> {
     this.logger.debug(
       `Calculating impact value for sourcing record ${sourcingRecord.id}`,
     );
     const indicators: Indicator[] =
-      await this.indicatorService.findAllUnpaginated();
+      await this.indicatorService.findAllUnpaginated(queryRunner);
 
     if (!sourcingRecord.sourcingLocation.geoRegion) {
       throw new Error(
@@ -156,6 +166,7 @@ export class IndicatorRecordsService extends AppBaseService<
       await this.getH3DataForSourcingRecord(
         sourcingRecord,
         MATERIAL_TO_H3_TYPE.PRODUCER,
+        queryRunner,
       );
 
     if (!producerH3Table) {
@@ -165,6 +176,7 @@ export class IndicatorRecordsService extends AppBaseService<
     const harvestH3Table: H3Data | null = await this.getH3DataForSourcingRecord(
       sourcingRecord,
       MATERIAL_TO_H3_TYPE.HARVEST,
+      queryRunner,
     );
 
     if (!harvestH3Table) {
@@ -176,7 +188,10 @@ export class IndicatorRecordsService extends AppBaseService<
     await Promise.all(
       indicators.map(async (indicator: Indicator): Promise<void> => {
         const indicatorH3Table: H3Data | undefined =
-          await this.h3DataService.findH3ByIndicatorId(indicator.id);
+          await this.h3DataService.findH3ByIndicatorId(
+            indicator.id,
+            queryRunner,
+          );
 
         if (!indicatorH3Table) {
           throw new Error(
@@ -194,6 +209,7 @@ export class IndicatorRecordsService extends AppBaseService<
                 harvestH3Table,
                 indicatorH3Table,
                 sourcingRecord.id,
+                queryRunner,
               );
             break;
           case INDICATOR_TYPES.DEFORESTATION:
@@ -203,6 +219,7 @@ export class IndicatorRecordsService extends AppBaseService<
                 harvestH3Table,
                 indicatorH3Table,
                 sourcingRecord.id,
+                queryRunner,
               );
             break;
           case INDICATOR_TYPES.BIODIVERSITY_LOSS:
@@ -212,6 +229,7 @@ export class IndicatorRecordsService extends AppBaseService<
                 harvestH3Table,
                 indicatorH3Table,
                 sourcingRecord.id,
+                queryRunner,
               );
             break;
           case INDICATOR_TYPES.CARBON_EMISSIONS:
@@ -221,6 +239,7 @@ export class IndicatorRecordsService extends AppBaseService<
                 harvestH3Table,
                 indicatorH3Table,
                 sourcingRecord.id,
+                queryRunner,
               );
             break;
 
@@ -243,8 +262,9 @@ export class IndicatorRecordsService extends AppBaseService<
             sourcingRecordId: sourcingRecord.id,
           },
         );
-
-        await this.indicatorRecordRepository.insert(indicatorRecord);
+        queryRunner
+          ? await queryRunner.manager.insert(IndicatorRecord, indicatorRecord)
+          : await this.indicatorRecordRepository.insert(indicatorRecord);
         indicatorRecords.push(indicatorRecord);
       }),
     );

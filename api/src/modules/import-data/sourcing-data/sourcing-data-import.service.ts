@@ -22,6 +22,9 @@ import { IndicatorRecordsService } from 'modules/indicator-records/indicator-rec
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
+import { Connection, QueryRunner } from 'typeorm';
+import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -65,17 +68,21 @@ export class SourcingDataImportService {
     protected readonly dtoProcessor: SourcingRecordsDtoProcessorService,
     protected readonly geoCodingService: GeoCodingService,
     protected readonly indicatorRecordsService: IndicatorRecordsService,
+    protected readonly connection: Connection,
   ) {}
 
   async importSourcingData(filePath: string): Promise<any> {
     this.logger.log(`Starting import process`);
     await this.fileService.isFilePresentInFs(filePath);
+    const queryRunner: QueryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try {
       const parsedXLSXDataset: SourcingRecordsSheets =
         await this.fileService.transformToJson(filePath, SHEETS_MAP);
 
       const sourcingLocationGroup: SourcingLocationGroup =
-        await this.sourcingLocationGroupService.create({
+        await queryRunner.manager.save(SourcingLocationGroup, {
           title: 'Sourcing Records import from XLSX file',
         });
       const dtoMatchedData: SourcingRecordsDtos =
@@ -86,7 +93,7 @@ export class SourcingDataImportService {
 
       this.logger.log(`Validating DTOs`);
       await this.validateDTOs(dtoMatchedData);
-      await this.cleanDataBeforeImport();
+      await this.cleanDataBeforeImport(queryRunner);
 
       const materials: Material[] =
         await this.materialService.findAllUnpaginated();
@@ -95,12 +102,15 @@ export class SourcingDataImportService {
           'No Materials found present in the DB. Please check the LandGriffon installation manual',
         );
       }
-
       const businessUnits: BusinessUnit[] =
-        await this.businessUnitService.createTree(dtoMatchedData.businessUnits);
+        await this.businessUnitService.createTree(
+          dtoMatchedData.businessUnits,
+          queryRunner,
+        );
 
       const suppliers: Supplier[] = await this.supplierService.createTree(
         dtoMatchedData.suppliers,
+        queryRunner,
       );
       const sourcingDataWithOrganizationalEntities: any =
         this.relateSourcingDataWithOrganizationalEntities(
@@ -115,10 +125,13 @@ export class SourcingDataImportService {
           sourcingDataWithOrganizationalEntities,
         );
 
-      await this.sourcingLocationService.save(geoCodedSourcingData);
+      await this.sourcingLocationService.save(
+        geoCodedSourcingData,
+        queryRunner,
+      );
 
       const sourcingRecords: SourcingRecord[] =
-        await this.sourcingRecordService.findAllUnpaginated();
+        await this.sourcingRecordService.findAllUnpaginated(queryRunner);
       this.logger.log(
         `Generating indicator records for ${sourcingRecords.length} sourcing records`,
       );
@@ -127,6 +140,7 @@ export class SourcingDataImportService {
         try {
           await this.indicatorRecordsService.calculateImpactValue(
             sourcingRecord,
+            queryRunner,
           );
         } catch (error) {
           // TODO: once we have complete data, this try/catch block can be removed, as we should aim to not have missing h3 data.
@@ -138,7 +152,12 @@ export class SourcingDataImportService {
       }
 
       this.logger.log('Indicator records generated');
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
     } finally {
+      await queryRunner.release();
       await this.fileService.deleteDataFromFS(filePath);
     }
   }
@@ -173,14 +192,14 @@ export class SourcingDataImportService {
    * TODO: Check if we need to clean admin-regions up (plus geo-regions)
    * The latter should be loaded as part of the data-pipeline importing GADM
    */
-  private async cleanDataBeforeImport(): Promise<void> {
+  private async cleanDataBeforeImport(queryRunner: QueryRunner): Promise<void> {
     this.logger.log('Cleaning database before import...');
     try {
-      await this.indicatorRecordsService.clearTable();
-      await this.businessUnitService.clearTable();
-      await this.supplierService.clearTable();
-      await this.sourcingLocationService.clearTable();
-      await this.sourcingRecordService.clearTable();
+      await queryRunner.manager.delete(IndicatorRecord, {});
+      await queryRunner.manager.delete(BusinessUnit, {});
+      await queryRunner.manager.delete(Supplier, {});
+      await queryRunner.manager.delete(SourcingLocation, {});
+      await queryRunner.manager.delete(SourcingRecord, {});
     } catch ({ message }) {
       throw new Error(
         `Database could not been cleaned before loading new dataset: ${message}`,

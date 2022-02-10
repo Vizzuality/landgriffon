@@ -152,13 +152,8 @@ export class MaterialsService extends AppBaseService<
    */
 
   async getMaterialsTreeWithSourcingLocations(): Promise<Material[]> {
-    const materialIdsFromSourcingLocations: string[] =
-      await this.sourcingLocationService.getMaterialIdsAndParentIds();
-    const allMaterials: Material[] = await this.findAllUnpaginated();
-    const materialLineage: Material[] = this.getAncestry<Material>(
-      allMaterials,
-      materialIdsFromSourcingLocations,
-    );
+    const materialLineage: Material[] =
+      await this.materialRepository.getSourcingDataMaterialsWithAncestry();
     return this.buildTree<Material>(materialLineage, null);
   }
 

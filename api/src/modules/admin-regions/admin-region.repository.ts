@@ -1,8 +1,9 @@
-import { EntityRepository } from 'typeorm';
+import { EntityRepository, SelectQueryBuilder } from 'typeorm';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-region.dto';
 import { Logger, NotFoundException } from '@nestjs/common';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 
 @EntityRepository(AdminRegion)
 export class AdminRegionRepository extends ExtendedTreeRepository<
@@ -87,5 +88,51 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
     return res.reduce(function (previous: any, current: any) {
       return previous.level > current.level ? previous : current;
     });
+  }
+
+  /**
+   * @description Retrieves admin-regions and it's ancestors (in a plain format) there are registered sourcingLocations within
+   */
+
+  async getSourcingDataAdminRegionsWithAncestry(): Promise<AdminRegion[]> {
+    // Join and filters over materials present in sourcing-locations. Resultant query returns IDs of elements meeting the filters
+    const queryBuilder: SelectQueryBuilder<AdminRegion> =
+      this.createQueryBuilder('ar')
+        .select('ar.id')
+        .innerJoin(SourcingLocation, 'sl', 'sl.adminRegionId = ar.id')
+        .distinct(true);
+
+    const [subQuery, subQueryParams]: [string, any[]] =
+      queryBuilder.getQueryAndParameters();
+
+    // Recursively find elements and their ancestry given Ids of the subquery above
+    const result: AdminRegion[] = await this.query(
+      `
+        with recursive adminregion_tree as (
+            select m.id, m."parentId", m."name"
+            from admin_region m
+            where id in
+                        (${subQuery})
+            union all
+            select c.id, c."parentId", c."name"
+            from admin_region c
+            join adminregion_tree p on p."parentId" = c.id
+        )
+        select *
+        from adminregion_tree`,
+      subQueryParams,
+    ).catch((err: Error) =>
+      this.logger.error(
+        `Query Failed for retrieving admin-regions with sourcing locations: `,
+        err,
+      ),
+    );
+
+    if (!result || !result.length)
+      throw new NotFoundException(
+        'No Admin Regions with sourcing locations within found. Please check if sourcing-data has been provided to the platform',
+      );
+
+    return result;
   }
 }

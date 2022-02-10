@@ -15,6 +15,11 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { IsOptional, IsString } from 'class-validator';
 
+export enum SUPPLIER_TYPES {
+  T1SUPPLIER = 't1supplier',
+  PRODUCER = 'producer',
+}
+
 export enum SUPPLIER_STATUS {
   ACTIVE = 'active',
   INACTIVE = 'inactive',

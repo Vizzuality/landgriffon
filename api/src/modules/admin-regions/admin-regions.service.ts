@@ -130,13 +130,8 @@ export class AdminRegionsService extends AppBaseService<
    */
 
   async getAdminRegionTreeWithSourcingLocations(): Promise<any> {
-    const adminRegionIdsFromSourcingLocations: string[] =
-      await this.sourcingLocationsService.getAdminRegionIdsAndParentIds();
-    const allAdminRegions: AdminRegion[] = await this.findAllUnpaginated();
-    const adminRegionLineage: AdminRegion[] = this.getAncestry<AdminRegion>(
-      allAdminRegions,
-      adminRegionIdsFromSourcingLocations,
-    );
+    const adminRegionLineage: AdminRegion[] =
+      await this.adminRegionRepository.getSourcingDataAdminRegionsWithAncestry();
     return this.buildTree<AdminRegion>(adminRegionLineage, null);
   }
 

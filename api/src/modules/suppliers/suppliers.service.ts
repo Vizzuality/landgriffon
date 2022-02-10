@@ -10,6 +10,7 @@ import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
 import { UpdateSupplierDto } from 'modules/suppliers/dto/update.supplier.dto';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
+import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-by-type.dto';
 
 @Injectable()
 export class SuppliersService extends AppBaseService<
@@ -104,23 +105,23 @@ export class SuppliersService extends AppBaseService<
    * @description Get a tree of Suppliers imported by a User
    */
 
-  async getSuppliersWithSourcingLocations(): Promise<any> {
-    const supplierIdsFromSourcingLocations: string[] =
-      await this.sourcingLocationService.getSupplierIdsAndParentIds();
-    const allSuppliers: Supplier[] = await this.findAllUnpaginated();
-    const supplierLineage: Supplier[] = this.getAncestry<Supplier>(
-      allSuppliers,
-      supplierIdsFromSourcingLocations,
-    );
+  async getSuppliersWithSourcingLocations(
+    supplierOptions?: GetSupplierTreeWithOptions,
+  ): Promise<any> {
+    const supplierLineage: Supplier[] =
+      await this.supplierRepository.getSourcingDataSuppliersWithAncestry(
+        supplierOptions,
+      );
     return this.buildTree<Supplier>(supplierLineage, null);
   }
 
   async getTrees(treeOptions: {
     depth?: number;
-    withSourcingLocations?: boolean;
+    supplierOptions?: GetSupplierTreeWithOptions;
   }): Promise<Supplier[]> {
-    const { depth, withSourcingLocations } = treeOptions;
-    if (withSourcingLocations) return this.getSuppliersWithSourcingLocations();
+    const { depth, supplierOptions } = treeOptions;
+    if (supplierOptions)
+      return this.getSuppliersWithSourcingLocations(supplierOptions);
     return this.findTreesWithOptions(depth);
   }
 }

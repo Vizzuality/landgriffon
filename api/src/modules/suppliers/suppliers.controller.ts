@@ -34,8 +34,8 @@ import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
 import { UpdateSupplierDto } from 'modules/suppliers/dto/update.supplier.dto';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
-import { ParseOptionalIntPipe } from 'pipes/parse-optional-int.pipe';
 import { PaginationMeta } from 'utils/app-base.service';
+import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-by-type.dto';
 
 @Controller(`/api/v1/suppliers`)
 @ApiTags(supplierResource.className)
@@ -97,12 +97,10 @@ export class SuppliersController {
       'A boolean value. If specified, returns a tree of materials with registered sourcing-locations, and depth param will be ignored',
   })
   async getTrees(
-    @Query('depth', ParseOptionalIntPipe) depth?: number,
-    @Query('withSourcingLocations') withSourcingLocations?: boolean,
+    @Query(ValidationPipe) supplierOptions?: GetSupplierTreeWithOptions,
   ): Promise<Supplier> {
     const results: Supplier[] = await this.suppliersService.getTrees({
-      depth,
-      withSourcingLocations,
+      supplierOptions,
     });
     return this.suppliersService.serialize(results);
   }

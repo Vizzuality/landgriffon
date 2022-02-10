@@ -22,15 +22,16 @@ const AnalysisVisualizationNoSSR = dynamic(() => import('containers/analysis-vis
 
 const AnalysisPage: React.FC = () => {
   const { isSidebarCollapsed, isSubContentCollapsed } = useAppSelector(analysis);
-  const dispatch = useAppDispatch();
-  const { query } = useRouter();
-  const { new_scenario, edit_scenario } = query;
 
   const analysisContent = () => {
     if (new_scenario) return <ScenarioNew />;
     if (edit_scenario) return <ScenarioEdit />;
     return <Scenarios />;
   };
+
+  const dispatch = useAppDispatch();
+  const { query } = useRouter();
+  const { new_scenario, edit_scenario } = query;
 
   // Breadcrumbs
   let pages: Page[] = [{ name: 'Analysis', href: '/analysis' }]; // Default

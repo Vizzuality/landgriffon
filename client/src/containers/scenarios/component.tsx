@@ -5,12 +5,12 @@ import ScenariosFilters from 'containers/scenarios/filters';
 import ScenariosList from 'containers/scenarios/list';
 import Breadcrumb from 'components/breadcrumb';
 import { AnchorLink } from 'components/button';
-import type { UseQueryResult } from 'react-query';
+import type { UseScenariosQueryResult } from 'react-query';
 import type { Scenarios } from './types';
 import type { Page } from 'components/breadcrumb/types';
 
 type ScenariosProps = {
-  scenarios: UseQueryResult;
+  scenarios: UseScenariosQueryResult;
 };
 
 const ScenariosComponent: React.FC<ScenariosProps> = ({ scenarios }: ScenariosProps) => {
@@ -64,12 +64,13 @@ const ScenariosComponent: React.FC<ScenariosProps> = ({ scenarios }: ScenariosPr
             Create a new scenario
           </AnchorLink>
         </Link>
+        {!data || data.length === 0 && (
         <div className="py-8 px-7 text-center absolute z-20 bg-white">
           <p className="text-sm">
             Scenarios let you simulate changes in sourcing to evaluate how they would affect impacts
             and risks. Create a scenario to get started.
           </p>
-        </div>
+        </div>)}
       </div>
     </div>
   );

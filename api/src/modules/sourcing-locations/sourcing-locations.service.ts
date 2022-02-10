@@ -90,24 +90,40 @@ export class SourcingLocationsService extends AppBaseService<
 
   async extendFindAllQuery(
     query: SelectQueryBuilder<SourcingLocation>,
+    fetchSpecification: Record<string, unknown>,
   ): Promise<SelectQueryBuilder<SourcingLocation>> {
     query
       .select([
         `${this.alias}`,
-        'mat.id',
-        'mat.name',
-        'sup.name',
+        'material.id',
+        'material.name',
+        't1Supplier.name',
         'producer.name',
-        'bu.name',
+        'businessUnit.name',
         'sr',
       ])
-      .innerJoin(`${this.alias}.material`, 'mat')
-      .leftJoin(`${this.alias}.t1Supplier`, 'sup')
+      .innerJoin(`${this.alias}.material`, 'material')
+      .leftJoin(`${this.alias}.t1Supplier`, 't1Supplier')
       .leftJoin(`${this.alias}.producer`, 'producer')
-      .leftJoin(`${this.alias}.businessUnit`, 'bu')
-      .leftJoin(`${this.alias}.sourcingRecords`, 'sr')
-      .orderBy('mat.name')
-      .addOrderBy(`${this.alias}.id`);
+      .leftJoin(`${this.alias}.businessUnit`, 'businessUnit')
+      .leftJoin(`${this.alias}.sourcingRecords`, 'sr');
+    if (fetchSpecification.search) {
+      query.andWhere('material.name ILIKE :search', {
+        search: `%${fetchSpecification.search}%`,
+      });
+    }
+
+    if (fetchSpecification.orderBy === 'country') {
+      query.orderBy(`${this.alias}.locationCountryInput`);
+    } else if (fetchSpecification.orderBy === 'locationType') {
+      query.orderBy(`${this.alias}.locationType`);
+    } else {
+      fetchSpecification.orderBy
+        ? query.orderBy(`${fetchSpecification.orderBy}.name`)
+        : query.orderBy('material.name');
+    }
+
+    query.addOrderBy(`${this.alias}.id`);
 
     return query;
   }

@@ -18,6 +18,9 @@ module.exports = {
       height: {
         'screen-minus-header': "calc(100vh - theme('spacing.16'))",
       },
+      spacing: {
+        125: '30.875rem',
+      }
     },
     colors: {
       black: colors.black,

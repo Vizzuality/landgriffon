@@ -1,0 +1,16 @@
+export type PaginationProps = {
+  /** Classnames to be applied */
+  className?: string;
+  /** Number of items being displayed */
+  numItems: number;
+  /** Current page number */
+  currentPage: number;
+  /** Total number of pages */
+  totalPages: number;
+  /** Total number of items/records */
+  totalItems: number;
+  /** Number of Number buttons to display. defaults to 8 */
+  numNumberButtons?: number;
+  /** Callback for when the user chooses a page */
+  onPageClick?: (page: number) => void;
+};

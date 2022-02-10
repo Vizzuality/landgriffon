@@ -35,7 +35,8 @@ import { UpdateSupplierDto } from 'modules/suppliers/dto/update.supplier.dto';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { PaginationMeta } from 'utils/app-base.service';
-import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-by-type.dto';
+import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-tree-with-options.dto';
+import { GetSupplierByType } from 'modules/suppliers/dto/get-supplier-by-type.dto';
 
 @Controller(`/api/v1/suppliers`)
 @ApiTags(supplierResource.className)
@@ -97,11 +98,23 @@ export class SuppliersController {
       'A boolean value. If specified, returns a tree of materials with registered sourcing-locations, and depth param will be ignored',
   })
   async getTrees(
-    @Query(ValidationPipe) supplierOptions?: GetSupplierTreeWithOptions,
+    @Query(ValidationPipe) supplierOptions: GetSupplierTreeWithOptions,
   ): Promise<Supplier> {
+    const { depth, withSourcingLocations } = supplierOptions;
     const results: Supplier[] = await this.suppliersService.getTrees({
-      supplierOptions,
+      depth,
+      withSourcingLocations,
     });
+    return this.suppliersService.serialize(results);
+  }
+
+  @Get('/types')
+  async getSupplierByType(
+    @Query(ValidationPipe) type: GetSupplierByType,
+  ): Promise<Supplier[]> {
+    const results: Supplier[] = await this.suppliersService.getSupplierByType(
+      type,
+    );
     return this.suppliersService.serialize(results);
   }
 

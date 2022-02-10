@@ -157,3 +157,19 @@ export const JSONAPISingleEntityQueryParams = (fetchConfiguration?: {
     fieldsQueryParam,
     omitFieldsQueryParam,
   );
+
+export const JSONAPISourcingMaterialsQueryParams = (fetchConfiguration?: {
+  entitiesAllowedAsIncludes?: string[];
+  availableFilters?: {
+    name: string;
+    description?: string;
+    examples?: string[];
+  }[];
+}): MethodDecorator =>
+  applyDecorators(
+    includeQueryParam(fetchConfiguration),
+    filterQueryParam(fetchConfiguration),
+    pageSizeQueryParam,
+    pageNumberQueryParam,
+    disablePaginationQueryParam,
+  );

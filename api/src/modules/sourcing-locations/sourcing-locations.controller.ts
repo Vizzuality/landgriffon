@@ -22,8 +22,8 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import {
-  JSONAPIQueryParams,
   JSONAPISingleEntityQueryParams,
+  JSONAPISourcingMaterialsQueryParams,
 } from 'decorators/json-api-parameters.decorator';
 import {
   FetchSpecification,
@@ -38,6 +38,7 @@ import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update
 import { PaginationMeta } from 'utils/app-base.service';
 import { SourcingLocationsMaterialsResponseDto } from 'modules/sourcing-locations/dto/materials.sourcing-location.dto';
 import { SourcingLocationsMaterialsSerializer } from 'modules/sourcing-locations/serializer/sourcing-locations-materials.serializer';
+import { GetSourcingMaterialsQueryDto } from './dto/materials-query.sourcing-location.dto';
 
 @Controller(`/api/v1/sourcing-locations`)
 @ApiTags(sourcingLocationResource.className)
@@ -56,7 +57,7 @@ export class SourcingLocationsController {
   })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
-  @JSONAPIQueryParams({
+  @JSONAPISourcingMaterialsQueryParams({
     availableFilters: sourcingLocationResource.columnsAllowedAsFilter.map(
       (columnName: string) => ({
         name: columnName,
@@ -65,14 +66,14 @@ export class SourcingLocationsController {
     entitiesAllowedAsIncludes:
       sourcingLocationResource.entitiesAllowedAsIncludes,
   })
-  @ApiQuery({ name: 'materialsData', type: 'boolean', required: false })
   @Get()
   async findAll(
     @ProcessFetchSpecification({
       allowedFilters: sourcingLocationResource.columnsAllowedAsFilter,
     })
     fetchSpecification: FetchSpecification,
-    @Query('materialsData') materials?: boolean,
+
+    @Query(ValidationPipe) queryParams: GetSourcingMaterialsQueryDto,
   ): Promise<SourcingLocation | SourcingLocationsMaterialsResponseDto> {
     const results: {
       data: (Partial<SourcingLocation> | undefined)[];
@@ -81,7 +82,7 @@ export class SourcingLocationsController {
       fetchSpecification,
     );
 
-    if (materials) {
+    if (queryParams.materialsData) {
       return this.sourcingLocationsMaterialsSerializer.serialize(
         results.data,
         results.metadata,

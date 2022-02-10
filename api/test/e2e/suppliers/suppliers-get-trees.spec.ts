@@ -203,10 +203,10 @@ describe('Suppliers - Get trees', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .expect(HttpStatus.OK);
 
-      expect(response.body.data[0].id).toEqual(parentWithNoChildSupplier.id);
-      expect(response.body.data[0].attributes.children).toEqual([]);
-      expect(response.body.data[1].id).toEqual(parentSupplier.id);
-      expect(response.body.data[1].attributes.children[0].id).toEqual(
+      expect(response.body.data[1].id).toEqual(parentWithNoChildSupplier.id);
+      expect(response.body.data[1].attributes.children).toEqual([]);
+      expect(response.body.data[0].id).toEqual(parentSupplier.id);
+      expect(response.body.data[0].attributes.children[0].id).toEqual(
         childSupplier.id,
       );
       expect(

@@ -88,9 +88,6 @@ describe('Suppliers - Get by type', () => {
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
           .expect(HttpStatus.BAD_REQUEST);
-
-        console.log(response.body.errors[0].meta.rawError.response.message[0]);
-
         expect(
           response.body.errors[0].meta.rawError.response.message[0],
         ).toEqual('Available Supplier types: t1supplier, producer');

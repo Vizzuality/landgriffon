@@ -46,8 +46,9 @@ export class SupplierRepository extends ExtendedTreeRepository<
             from supplier c
             join supplier_tree p on p."parentId" = c.id
         )
-        select *
-        from supplier_tree`,
+        select distinct *
+        from supplier_tree
+        order by name`,
       subQueryParams,
     ).catch((err: Error) =>
       this.logger.error(

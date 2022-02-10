@@ -33,7 +33,7 @@ export class BusinessUnitsService extends AppBaseService<
 
   get serializerConfig(): JSONAPISerializerConfig<BusinessUnit> {
     return {
-      attributes: ['name', 'description', 'status', 'metadata'],
+      attributes: ['name', 'description', 'status', 'metadata', 'children'],
       keyForAttribute: 'camelCase',
     };
   }
@@ -64,5 +64,20 @@ export class BusinessUnitsService extends AppBaseService<
 
   async clearTable(): Promise<void> {
     await this.businessUnitRepository.delete({});
+  }
+
+  // TODO: Implement Tree response similar to other entities as Admin-Regions
+  async getTrees(treeOptions: {
+    depth?: number;
+    withSourcingLocations?: boolean;
+  }): Promise<BusinessUnit[]> {
+    //const { depth, withSourcingLocations } = treeOptions;
+    return this.getBusinessUnitTreeWithSourcingLocations();
+  }
+
+  async getBusinessUnitTreeWithSourcingLocations(): Promise<BusinessUnit[]> {
+    const businessUnitsLineage: BusinessUnit[] =
+      await this.businessUnitRepository.getSourcingDataAdminRegionsWithAncestry();
+    return this.buildTree<BusinessUnit>(businessUnitsLineage, null);
   }
 }

@@ -129,7 +129,7 @@ export class AdminRegionsService extends AppBaseService<
    * @description Get a tree of AdminRegions where there are sourcing-locations registered within
    */
 
-  async getAdminRegionTreeWithSourcingLocations(): Promise<any> {
+  async getAdminRegionTreeWithSourcingLocations(): Promise<AdminRegion[]> {
     const adminRegionLineage: AdminRegion[] =
       await this.adminRegionRepository.getSourcingDataAdminRegionsWithAncestry();
     return this.buildTree<AdminRegion>(adminRegionLineage, null);

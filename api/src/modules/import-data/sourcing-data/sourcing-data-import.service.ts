@@ -1,4 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
@@ -83,8 +88,6 @@ export class SourcingDataImportService {
           sourcingLocationGroup.id,
         );
 
-      this.logger.log(`Validating DTOs`);
-      await this.validateDTOs(dtoMatchedData);
       await this.cleanDataBeforeImport();
 
       const materials: Material[] =
@@ -160,7 +163,8 @@ export class SourcingDataImportService {
      * in order to return the array containing errors in a more readable way
      * Or add a function per entity to validate
      */
-    if (validationErrorArray.length) throw new Error(`${validationErrorArray}`);
+    if (validationErrorArray.length)
+      throw new BadRequestException(`${validationErrorArray}`);
   }
 
   /**
@@ -239,5 +243,43 @@ export class SourcingDataImportService {
       sourcingLocation.materialId = materialMap[sourcingLocationMaterialId];
     }
     return sourcingData;
+  }
+
+  async validateFile(
+    filePath: string,
+    filename: string,
+  ): Promise<void | Array<ErrorConstructor>> {
+    let parsedXLSXDataset: SourcingRecordsSheets;
+    try {
+      parsedXLSXDataset = await this.fileService.transformToJson(
+        filePath,
+        SHEETS_MAP,
+      );
+    } catch (error) {
+      throw new ServiceUnavailableException(
+        `File: ${filename} could not have been loaded. Please try again later or contact the administrator`,
+      );
+    }
+
+    /**
+     * Pass random id to create DTOs for validation
+     * @note: If we decide to path DTOs to task instead of path
+     * this has to change to generate valid id
+     */
+    const sourcingLocationGroupId: string =
+      'd24e81d0-1929-4f35-9182-d37768c4bf6b';
+    const dtoMatchedData: SourcingRecordsDtos =
+      await this.dtoProcessor.createDTOsFromSourcingRecordsSheets(
+        parsedXLSXDataset,
+        sourcingLocationGroupId,
+      );
+
+    this.logger.log(`Validating DTOs`);
+    try {
+      await this.validateDTOs(dtoMatchedData);
+    } catch (error) {
+      await this.fileService.deleteDataFromFS(filePath);
+      throw error;
+    }
   }
 }

@@ -232,11 +232,7 @@ describe.skip('Sourcing Data import', () => {
     await sourcingDataImportService.importSourcingData(
       __dirname + '/base-dataset.xlsx',
     );
-
-    expect(fs.readdirSync(config.get('fileUploads.storagePath'))).toHaveLength(
-      0,
-    );
-  }, 20000);
+  }, 100000);
 
   test('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (happy case)', async () => {
     const geoRegion: GeoRegion = await createGeoRegion();

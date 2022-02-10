@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export enum MATERIALS_ORDER_BY_VALUES {
   COUNTRY = 'country',
@@ -11,17 +11,18 @@ export enum MATERIALS_ORDER_BY_VALUES {
 }
 
 export class GetSourcingMaterialsQueryDto {
-  @ApiProperty({ required: false, enum: MATERIALS_ORDER_BY_VALUES })
-  @IsOptional()
-  @IsEnum(MATERIALS_ORDER_BY_VALUES, {
-    message:
-      'Available columns for orderBy: country, material, producer, t1Supplier, locationType',
-  })
-  orderBy?: MATERIALS_ORDER_BY_VALUES;
-
   @ApiProperty({ required: false })
   @IsOptional()
   materialsData?: boolean;
+
+  @ApiProperty({ required: false, enum: MATERIALS_ORDER_BY_VALUES })
+  @IsOptional()
+  @IsEnum(MATERIALS_ORDER_BY_VALUES, {
+    message: `Available columns for orderBy: ${Object.values(
+      MATERIALS_ORDER_BY_VALUES,
+    ).join(', ')}`,
+  })
+  orderBy?: MATERIALS_ORDER_BY_VALUES;
 
   @ApiProperty({ required: false })
   @IsOptional()

@@ -113,14 +113,21 @@ export class SourcingLocationsService extends AppBaseService<
       });
     }
 
-    if (fetchSpecification.orderBy === 'country') {
-      query.orderBy(`${this.alias}.locationCountryInput`);
-    } else if (fetchSpecification.orderBy === 'locationType') {
-      query.orderBy(`${this.alias}.locationType`);
-    } else {
-      fetchSpecification.orderBy
-        ? query.orderBy(`${fetchSpecification.orderBy}.name`)
-        : query.orderBy('material.name');
+    switch (fetchSpecification.orderBy) {
+      case 'country':
+        query.orderBy(`${this.alias}.locationCountryInput`);
+        break;
+      case 'locationType':
+        query.orderBy(`${this.alias}.locationType`);
+        break;
+      case 'material':
+      case 't1Supplier':
+      case 'producer':
+      case 'businessUnit':
+        query.orderBy(`${fetchSpecification.orderBy}.name`);
+        break;
+      default:
+        query.orderBy('material.name');
     }
 
     query.addOrderBy(`${this.alias}.id`);

@@ -324,7 +324,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
       HttpStatus.BAD_REQUEST,
       'Bad Request Exception',
       [
-        'Available columns for orderBy: country, material, producer, t1Supplier, locationType',
+        'Available columns for orderBy: country, businessUnit, producer, t1Supplier, material, locationType',
       ],
     );
   });

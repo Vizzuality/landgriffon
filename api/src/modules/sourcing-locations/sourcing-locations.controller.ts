@@ -48,8 +48,9 @@ export class SourcingLocationsController {
   ) {}
 
   @ApiOperation({
-    description: `Find all sourcing locations. With flag "materialsData=true" endpoint returns data of the materials of the sourcing locations, orderBy and search params are implemented for this case. 
-       Rest of the query params, except pagination params, should be used for standard sourcing locations Get endpoint without materialsData flag`,
+    description: `Find all sourcing locations. 
+      With flag "materialsData=true" endpoint returns data of the materials of the sourcing locations, orderBy and search params are implemented for this case. 
+      Rest of the query params (except pagination params which can be applied in any case), should be used for standard sourcing locations Get endpoint without materialsData flag`,
   })
   @ApiOkResponse({
     type: SourcingLocationsMaterialsResponseDto,

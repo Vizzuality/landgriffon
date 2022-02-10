@@ -315,7 +315,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/sourcing-locations`)
-      .query({ materialsData: true, orderBy: 'purcahses' })
+      .query({ materialsData: true, orderBy: 'purchases' })
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.BAD_REQUEST);

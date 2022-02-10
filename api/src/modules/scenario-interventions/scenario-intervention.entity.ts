@@ -78,21 +78,21 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   @Column({ nullable: true })
   startYear?: number;
 
-  @ApiPropertyOptional()
-  @Column({ nullable: true })
-  endYear?: number;
+  @ApiProperty()
+  @Column()
+  endYear!: number;
 
-  @ApiPropertyOptional()
-  @Column({ nullable: true })
-  percentage?: number;
+  @ApiProperty()
+  @Column()
+  percentage!: number;
 
-  @Column({ type: 'jsonb', nullable: true })
-  @ApiPropertyOptional()
-  newIndicatorCoefficients?: JSON;
+  @Column({ type: 'jsonb' })
+  @ApiProperty()
+  newIndicatorCoefficients!: JSON;
 
   @ManyToOne(() => Scenario)
   @ApiProperty({ type: () => Scenario })
-  scenario?: Scenario;
+  scenario!: Scenario;
 
   /**
    * Relationships with other entities - links of replaced relationships on this intervention

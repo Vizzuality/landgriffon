@@ -1,12 +1,8 @@
-/**
- * Get Supplier with options:
- */
-import { IsBoolean, IsEnum, IsNumber, IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEnum, IsOptional } from 'class-validator';
 import { SUPPLIER_TYPES } from 'modules/suppliers/supplier.entity';
-import { Type } from 'class-transformer';
 
-export class GetSupplierTreeWithOptions {
+export class GetSupplierByType {
   @ApiPropertyOptional()
   @IsOptional()
   @IsEnum(SUPPLIER_TYPES, {
@@ -15,15 +11,4 @@ export class GetSupplierTreeWithOptions {
       .toLowerCase()}`,
   })
   type?: SUPPLIER_TYPES;
-
-  @ApiPropertyOptional()
-  @Type(() => Boolean)
-  @IsOptional()
-  @IsBoolean()
-  withSourcingLocations?: boolean;
-
-  @Type(() => Number)
-  @IsOptional()
-  @IsNumber()
-  depth?: number;
 }

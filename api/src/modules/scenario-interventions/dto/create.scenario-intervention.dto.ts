@@ -10,10 +10,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import {
-  SCENARIO_INTERVENTION_STATUS,
-  SCENARIO_INTERVENTION_TYPE,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+import { SCENARIO_INTERVENTION_TYPE } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 
 export class CreateScenarioInterventionDto {
@@ -30,16 +27,10 @@ export class CreateScenarioInterventionDto {
   description?: string;
 
   @IsString()
-  @IsOptional()
-  @IsEnum(Object.values(SCENARIO_INTERVENTION_STATUS))
-  @ApiPropertyOptional()
-  status?: string;
-
-  @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   @IsEnum(Object.values(SCENARIO_INTERVENTION_TYPE))
-  @ApiPropertyOptional()
-  type?: string;
+  @ApiProperty()
+  type!: string;
 
   @IsNumber()
   @IsOptional()
@@ -47,45 +38,50 @@ export class CreateScenarioInterventionDto {
   startYear?: number;
 
   @IsNumber()
-  @IsOptional()
-  @ApiPropertyOptional()
-  endYear?: number;
+  @IsNotEmpty()
+  @ApiProperty()
+  endYear!: number;
 
   @IsNumber()
-  @IsOptional()
-  @ApiPropertyOptional()
-  percentage?: number;
+  @IsNotEmpty()
+  @ApiProperty()
+  percentage!: number;
+
+  @IsUUID()
+  @IsNotEmpty()
+  @ApiProperty()
+  scenarioId!: string;
+
+  @IsUUID(4, { each: true })
+  @IsNotEmpty()
+  @ApiProperty()
+  materialsIds!: string[];
 
   @IsUUID(4, { each: true })
   @IsOptional()
   @ApiPropertyOptional()
-  materialsIds: string[];
+  businessUnitsIds?: string[];
 
   @IsUUID(4, { each: true })
   @IsOptional()
   @ApiPropertyOptional()
-  businessUnitsIds: string[];
+  suppliersIds?: string[];
 
   @IsUUID(4, { each: true })
   @IsOptional()
   @ApiPropertyOptional()
-  suppliersIds: string[];
+  adminRegionsIds?: string[];
 
   @IsUUID(4, { each: true })
   @IsOptional()
   @ApiPropertyOptional()
-  adminRegionsIds: string[];
-
-  @IsUUID(4, { each: true })
-  @IsOptional()
-  @ApiPropertyOptional()
-  sourcingLocationsIds: string[];
+  sourcingLocationsIds?: string[];
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   @IsJSON()
-  @ApiPropertyOptional()
-  newIndicatorCoefficients?: JSON;
+  @ApiProperty()
+  newIndicatorCoefficients!: JSON;
 
   @IsUUID()
   @IsOptional()
@@ -97,7 +93,7 @@ export class CreateScenarioInterventionDto {
   @ApiPropertyOptional()
   newProducerId?: string;
 
-  @IsUUID()
+  @IsEnum(Object.values(LOCATION_TYPES))
   @IsOptional()
   @ApiPropertyOptional()
   newLocationType?: LOCATION_TYPES;

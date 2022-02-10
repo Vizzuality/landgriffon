@@ -15,7 +15,7 @@ const defaultProps: TableProps = {
   columns: [],
   data: [],
   rowKeyField: 'id',
-  sortingMode: SortingMode.Single,
+  sortingMode: SortingMode.None,
 };
 
 const Table: React.FC<TableProps> = ({

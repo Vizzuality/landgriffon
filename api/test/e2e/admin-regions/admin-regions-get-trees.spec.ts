@@ -263,10 +263,10 @@ describe('AdminRegions - Get trees', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .expect(HttpStatus.OK);
 
-      expect(response.body.data[0].id).toEqual(parentWithNoChildAdminRegion.id);
-      expect(response.body.data[0].attributes.children).toEqual([]);
-      expect(response.body.data[1].id).toEqual(parentAdminRegion.id);
-      expect(response.body.data[1].attributes.children[0].id).toEqual(
+      expect(response.body.data[1].id).toEqual(parentWithNoChildAdminRegion.id);
+      expect(response.body.data[1].attributes.children).toEqual([]);
+      expect(response.body.data[0].id).toEqual(parentAdminRegion.id);
+      expect(response.body.data[0].attributes.children[0].id).toEqual(
         childAdminRegion.id,
       );
       expect(

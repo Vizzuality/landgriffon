@@ -118,8 +118,10 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
             from admin_region c
             join adminregion_tree p on p."parentId" = c.id
         )
-        select *
-        from adminregion_tree`,
+        select distinct *
+        from adminregion_tree
+        order by name`,
+
       subQueryParams,
     ).catch((err: Error) =>
       this.logger.error(

@@ -1,64 +1,109 @@
-import { useMemo } from 'react';
-import { ITableProps } from 'ka-table';
+import { useState, useMemo } from 'react';
 import { DataType } from 'ka-table/enums';
-import { debounce } from 'lodash';
-import dynamic from 'next/dynamic';
-import { ExclamationIcon, FilterIcon } from '@heroicons/react/solid';
+import { /*debounce,*/ flatten, merge, uniq } from 'lodash';
+// import { ExclamationIcon, FilterIcon } from '@heroicons/react/solid';
 
 import useModal from 'hooks/modals';
+import { useSourcingLocations } from 'hooks/sourcing-locations';
 import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import NoData from 'containers/admin/no-data';
 import UploadDataSourceModal from 'containers/admin/upload-data-source-modal';
 import Button from 'components/button';
-
-type ITableData = ITableProps;
-
-const TableNoSSR = dynamic(() => import('containers/table'), { ssr: false });
+import Pagination, { PaginationProps } from 'components/pagination';
+import Table, { TableProps } from 'containers/table';
 
 const AdminDataPage: React.FC = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const {
+    data: sourcingData,
+    metadata: sourcingMetadata,
+    isFetching: isFetchingSourcingData,
+  } = useSourcingLocations({
+    materialsData: true,
+    'page[size]': 10,
+    'page[number]': currentPage,
+  });
+
   const {
     isOpen: isUploadDataSourceModalOpen,
     open: openUploadDataSourceModal,
     close: closeUploadDataSourceModal,
   } = useModal();
 
-  const tableData = Array(100)
-    .fill(undefined)
-    .map((_, index) => ({
-      material: `Rubber: ${index}`,
-      businessUnit: `Accessories: ${index}`,
-      t1Supplier: `The Supplier: ${index}`,
-      producer: `Select Harvest: ${index}`,
-      locationType: `Unknown: ${index}`,
-      country: `China: ${index}`,
-      id: index,
-    }));
+  /** Processing data for use in the table props */
 
-  const handleSearch = debounce(({ target }: { target: HTMLInputElement }): void => {
-    console.info('Search: ', target.value);
-  }, 200);
+  const yearsArray = uniq(
+    flatten(sourcingData.map(({ purchases }) => purchases.map(({ year }) => year))).sort(),
+  );
 
-  const tableProps: ITableData = useMemo(
+  const yearsData = useMemo(
+    () => ({
+      columns: yearsArray.map((year) => ({
+        key: year.toString(),
+        title: year.toString(),
+        DataType: DataType.Number,
+        width: 80,
+      })),
+      data: sourcingData.map((dataRow) => ({
+        ...dataRow,
+        ...dataRow.purchases
+          .map(({ year, tonnage }) => ({ [year as string]: tonnage }))
+          .reduce((a, b) => ({ ...a, ...b })),
+      })),
+    }),
+    [sourcingData, yearsArray],
+  );
+
+  /** Table Props */
+
+  const tableProps: TableProps = useMemo(
     () => ({
       rowKeyField: 'id',
       columns: [
-        { key: 'material', title: 'Material', dataType: DataType.String, width: 240 },
+        { key: 'materialName', title: 'Material', dataType: DataType.String, width: 240 },
         { key: 'businessUnit', title: 'Business Unit', dataType: DataType.String },
         { key: 't1Supplier', title: 'T1 Supplier', dataType: DataType.String },
         { key: 'producer', title: 'Producer', dataType: DataType.String },
         { key: 'locationType', title: 'Location Type', dataType: DataType.String },
         { key: 'country', title: 'Country', dataType: DataType.String },
+        ...yearsData.columns,
       ],
-      data: tableData,
+      data: merge(sourcingData, yearsData.data),
     }),
-    [tableData],
+    [sourcingData, yearsData],
   );
 
-  const hasData = tableData?.length > 0;
+  /** Pagination Props */
+
+  const paginationProps: PaginationProps = useMemo(
+    () => ({
+      numItems: sourcingData.length,
+      currentPage: currentPage,
+      totalPages: sourcingMetadata.totalPages,
+      totalItems: sourcingMetadata.totalItems,
+      onPageClick: setCurrentPage,
+    }),
+    [currentPage, sourcingData, sourcingMetadata],
+  );
+
+  /** Search, filtering handling */
+
+  /*
+  const handleSearch = debounce(({ target }: { target: HTMLInputElement }): void => {
+    console.info('Search: ', target.value);
+  }, 200);
+  */
+
+  /** Helpers for use in the JSX */
+
+  const hasData = sourcingData?.length > 0;
+  const isFetchingData = isFetchingSourcingData;
 
   return (
     <AdminLayout
       currentTab={ADMIN_TABS.DATA}
+      loading={isFetchingSourcingData}
       headerButtons={
         <>
           <Button theme="secondary" onClick={() => console.info('Download: click')}>
@@ -75,10 +120,11 @@ const AdminDataPage: React.FC = () => {
         onDismiss={closeUploadDataSourceModal}
       />
 
-      {!hasData && <NoData />}
+      {!hasData && !isFetchingData && <NoData />}
 
       {hasData && (
         <>
+          {/*
           <div className="flex flex-col-reverse md:flex-row justify-between items-center">
             <div className="flex w-full md:w-auto gap-2">
               <input
@@ -102,8 +148,10 @@ const AdminDataPage: React.FC = () => {
               needs to be updated
             </div>
           </div>
+          */}
 
-          <TableNoSSR {...tableProps} />
+          <Table {...tableProps} />
+          <Pagination className="my-4 ml-4 mr-2" {...paginationProps} />
         </>
       )}
     </AdminLayout>

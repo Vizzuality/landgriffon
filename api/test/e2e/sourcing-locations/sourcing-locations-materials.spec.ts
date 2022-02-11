@@ -91,12 +91,11 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     });
 
     const responseWithDefaultPagination = await request(app.getHttpServer())
-      .get(`/api/v1/sourcing-locations`)
-      .query({ materialsData: true })
+      .get(`/api/v1/sourcing-locations/materials`)
       .set('Authorization', `Bearer ${jwtToken}`)
-      .send()
-      .expect(HttpStatus.OK);
+      .send();
 
+    expect(HttpStatus.OK);
     expect(responseWithDefaultPagination.body.data.length).toEqual(3);
 
     expect(
@@ -125,12 +124,12 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     expect(responseWithDefaultPagination.body.meta.totalPages).toEqual(1);
 
     const responseWithCustomPagination = await request(app.getHttpServer())
-      .get(`/api/v1/sourcing-locations`)
+      .get(`/api/v1/sourcing-locations/materials`)
       .query({ materialsData: true, 'page[size]': 2 })
       .set('Authorization', `Bearer ${jwtToken}`)
-      .send()
-      .expect(HttpStatus.OK);
+      .send();
 
+    expect(HttpStatus.OK);
     expect(responseWithCustomPagination.body.meta.size).toEqual(2);
     expect(responseWithCustomPagination.body.meta.totalItems).toEqual(3);
     expect(responseWithCustomPagination.body.meta.totalPages).toEqual(2);
@@ -171,24 +170,24 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     });
 
     const response1 = await request(app.getHttpServer())
-      .get(`/api/v1/sourcing-locations`)
+      .get(`/api/v1/sourcing-locations/materials`)
       .query({ materialsData: true, search: 'maize' })
       .set('Authorization', `Bearer ${jwtToken}`)
-      .send()
-      .expect(HttpStatus.OK);
+      .send();
 
+    expect(HttpStatus.OK);
     expect(response1.body.data.length).toEqual(1);
     expect(response1.body.data[0].attributes.materialName).toEqual(
       material2.name,
     );
 
     const response2 = await request(app.getHttpServer())
-      .get(`/api/v1/sourcing-locations`)
+      .get(`/api/v1/sourcing-locations/materials`)
       .query({ materialsData: true, search: 'co' })
       .set('Authorization', `Bearer ${jwtToken}`)
-      .send()
-      .expect(HttpStatus.OK);
+      .send();
 
+    expect(HttpStatus.OK);
     expect(response2.body.data.length).toEqual(2);
     expect(response2.body.data[0].attributes.materialName).toEqual(
       material4.name,
@@ -239,12 +238,12 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
 
     // Order by country name
     const response1 = await request(app.getHttpServer())
-      .get(`/api/v1/sourcing-locations`)
+      .get(`/api/v1/sourcing-locations/materials`)
       .query({ materialsData: true, orderBy: 'country' })
       .set('Authorization', `Bearer ${jwtToken}`)
-      .send()
-      .expect(HttpStatus.OK);
+      .send();
 
+    expect(HttpStatus.OK);
     expect(response1.body.data.length).toEqual(4);
     expect(response1.body.data[0].attributes.materialName).toEqual(
       material1.name,
@@ -261,12 +260,12 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
 
     // Order by supplierT1 name
     const response2 = await request(app.getHttpServer())
-      .get(`/api/v1/sourcing-locations`)
+      .get(`/api/v1/sourcing-locations/materials`)
       .query({ materialsData: true, orderBy: 't1Supplier' })
       .set('Authorization', `Bearer ${jwtToken}`)
-      .send()
-      .expect(HttpStatus.OK);
+      .send();
 
+    expect(HttpStatus.OK);
     expect(response2.body.data[0].attributes.materialName).toEqual(
       material2.name,
     );
@@ -282,11 +281,12 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
 
     // Order by producer name
     const response3 = await request(app.getHttpServer())
-      .get(`/api/v1/sourcing-locations`)
+      .get(`/api/v1/sourcing-locations/materials`)
       .query({ materialsData: true, orderBy: 'producer' })
       .set('Authorization', `Bearer ${jwtToken}`)
-      .send()
-      .expect(HttpStatus.OK);
+      .send();
+
+    expect(HttpStatus.OK);
     expect(response3.body.data[0].attributes.materialName).toEqual(
       material1.name,
     );
@@ -314,12 +314,12 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     });
 
     const response = await request(app.getHttpServer())
-      .get(`/api/v1/sourcing-locations`)
+      .get(`/api/v1/sourcing-locations/materials`)
       .query({ materialsData: true, orderBy: 'purchases' })
       .set('Authorization', `Bearer ${jwtToken}`)
-      .send()
-      .expect(HttpStatus.BAD_REQUEST);
+      .send();
 
+    expect(HttpStatus.BAD_REQUEST);
     expect(response).toHaveErrorMessage(
       HttpStatus.BAD_REQUEST,
       'Bad Request Exception',

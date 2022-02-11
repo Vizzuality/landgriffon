@@ -10,7 +10,7 @@ export enum MATERIALS_ORDER_BY_VALUES {
   LOCATION_TYPE = 'locationType',
 }
 
-export enum MATERIALS_ORDER_BY_OPTIONS {
+export enum ORDER_BY_OPTIONS {
   DESC = 'desc',
   ASC = 'asc',
 }
@@ -25,14 +25,14 @@ export class GetSourcingMaterialsQueryDto {
   })
   orderBy?: MATERIALS_ORDER_BY_VALUES;
 
-  @ApiPropertyOptional({ enum: MATERIALS_ORDER_BY_OPTIONS })
+  @ApiPropertyOptional({ enum: ORDER_BY_OPTIONS })
   @IsOptional()
-  @IsEnum(MATERIALS_ORDER_BY_OPTIONS, {
+  @IsEnum(ORDER_BY_OPTIONS, {
     message: `Available columns for order: ${Object.values(
-      MATERIALS_ORDER_BY_OPTIONS,
+      ORDER_BY_OPTIONS,
     ).join(', ')}`,
   })
-  order?: string;
+  order?: ORDER_BY_OPTIONS;
 
   @ApiPropertyOptional()
   @IsOptional()

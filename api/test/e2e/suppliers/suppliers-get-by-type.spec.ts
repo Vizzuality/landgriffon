@@ -86,11 +86,12 @@ describe('Suppliers - Get by type', () => {
           .get(`/api/v1/suppliers/types`)
           .query({ type: 'I have not sell anything in my life' })
           .set('Authorization', `Bearer ${jwtToken}`)
-          .send()
-          .expect(HttpStatus.BAD_REQUEST);
+          .send();
+
+        expect(HttpStatus.BAD_REQUEST);
         expect(
           response.body.errors[0].meta.rawError.response.message[0],
-        ).toEqual('Available Supplier types: t1supplier, producer');
+        ).toEqual('Allowed Supplier types: t1supplier, producer');
       },
     );
   });

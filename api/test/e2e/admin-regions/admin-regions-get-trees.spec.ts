@@ -260,9 +260,9 @@ describe('AdminRegions - Get trees', () => {
       const response = await request(app.getHttpServer())
         .get('/api/v1/admin-regions/trees')
         .query({ withSourcingLocations: true })
-        .set('Authorization', `Bearer ${jwtToken}`)
-        .expect(HttpStatus.OK);
+        .set('Authorization', `Bearer ${jwtToken}`);
 
+      expect(HttpStatus.OK);
       expect(response.body.data[1].id).toEqual(parentWithNoChildAdminRegion.id);
       expect(response.body.data[1].attributes.children).toEqual([]);
       expect(response.body.data[0].id).toEqual(parentAdminRegion.id);

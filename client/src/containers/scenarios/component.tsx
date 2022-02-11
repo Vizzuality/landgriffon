@@ -5,24 +5,21 @@ import ScenariosFilters from 'containers/scenarios/filters';
 import ScenariosList from 'containers/scenarios/list';
 import Breadcrumb from 'components/breadcrumb';
 import { AnchorLink } from 'components/button';
-import type { UseScenariosQueryResult } from 'react-query';
-import type { Scenarios } from './types';
+import { useScenarios } from 'hooks/scenarios';
 import type { Page } from 'components/breadcrumb/types';
 
-type ScenariosProps = {
-  scenarios: UseScenariosQueryResult;
-};
-
-const ScenariosComponent: React.FC<ScenariosProps> = ({ scenarios }: ScenariosProps) => {
-  const { data, isLoading, error } = scenarios;
+const ScenariosComponent: React.FC = () => {
   const { query } = useRouter();
+  const { data, isLoading, error } = useScenarios({ sort: query.sortBy as string });
   const { edit_scenario } = query;
 
   // Breadcrumbs
   let pages: Page[] = [{ name: 'Analysis', href: '/analysis' }]; // Default
+
   if (edit_scenario) {
     pages = [...pages, { name: 'Edit scenario', href: '/analysis?edit_scenario' }];
   }
+
   return (
     <div className="bg-white overscroll-contain">
       <div className="sticky top-0 bottom-1 z-20 bg-white">
@@ -39,8 +36,8 @@ const ScenariosComponent: React.FC<ScenariosProps> = ({ scenarios }: ScenariosPr
       </div>
       {isLoading && <p>Loading scenarios...</p>}
       {!isLoading && data && (
-        <div className="flex-1 z-10">
-          <ScenariosList data={data as Scenarios} />
+        <div className="flex-1 z-10 pb-4">
+          <ScenariosList data={data} />
         </div>
       )}
       {!isLoading && error && (
@@ -57,20 +54,24 @@ const ScenariosComponent: React.FC<ScenariosProps> = ({ scenarios }: ScenariosPr
           </div>
         </div>
       )}
-      <div className="bg-white z-20 sticky bottom-2">
-        <Link href="/analysis?new_scenario=true" shallow passHref>
-          <AnchorLink size="xl" className="w-full">
-            <PlusIcon className="-ml-5 mr-3 h-5 w-5" aria-hidden="true" />
-            Create a new scenario
-          </AnchorLink>
-        </Link>
-        {!data || data.length === 0 && (
-        <div className="py-8 px-7 text-center absolute z-20 bg-white">
-          <p className="text-sm">
-            Scenarios let you simulate changes in sourcing to evaluate how they would affect impacts
-            and risks. Create a scenario to get started.
-          </p>
-        </div>)}
+      <div className="bg-white z-20 sticky bottom-0 left-0 w-full">
+        <div className="py-2">
+          <Link href="/analysis?new_scenario=true" shallow passHref>
+            <AnchorLink size="xl" className="block w-full">
+              <PlusIcon className="-ml-5 mr-3 h-5 w-5" aria-hidden="true" />
+              Create a new scenario
+            </AnchorLink>
+          </Link>
+        </div>
+        {!data ||
+          (data.length === 0 && (
+            <div className="py-8 px-7 text-center absolute z-20 bg-white">
+              <p className="text-sm">
+                Scenarios let you simulate changes in sourcing to evaluate how they would affect
+                impacts and risks. Create a scenario to get started.
+              </p>
+            </div>
+          ))}
       </div>
     </div>
   );

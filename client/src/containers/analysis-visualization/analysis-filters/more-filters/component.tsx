@@ -32,7 +32,6 @@ const MoreFilters: React.FC = () => {
   const [counter, setCounter] = useState(0);
 
   const handleApply = useCallback(() => {
-    console.log('handle apply', moreFilters);
     dispatch(
       setFilters({
         materials: moreFilters.materials || INITIAL_FILTERS.materials,
@@ -41,7 +40,7 @@ const MoreFilters: React.FC = () => {
       } as AnalysisState['filters']),
     );
     setOpen(false);
-  }, [dispatch, moreFilters.materials, moreFilters.origins, moreFilters.suppliers]);
+  }, [dispatch, moreFilters]);
 
   const handleClearFilters = useCallback(() => {
     setMoreFilters(INITIAL_FILTERS as AnalysisState['filters']); // reset filters

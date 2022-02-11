@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export enum MATERIALS_ORDER_BY_VALUES {
@@ -11,11 +11,11 @@ export enum MATERIALS_ORDER_BY_VALUES {
 }
 
 export class GetSourcingMaterialsQueryDto {
-  @ApiProperty({ required: false })
+  @ApiPropertyOptional()
   @IsOptional()
   materialsData?: boolean;
 
-  @ApiProperty({ required: false, enum: MATERIALS_ORDER_BY_VALUES })
+  @ApiPropertyOptional({ enum: MATERIALS_ORDER_BY_VALUES })
   @IsOptional()
   @IsEnum(MATERIALS_ORDER_BY_VALUES, {
     message: `Available columns for orderBy: ${Object.values(
@@ -24,7 +24,7 @@ export class GetSourcingMaterialsQueryDto {
   })
   orderBy?: MATERIALS_ORDER_BY_VALUES;
 
-  @ApiProperty({ required: false })
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   search?: string;

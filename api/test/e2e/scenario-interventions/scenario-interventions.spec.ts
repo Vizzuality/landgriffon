@@ -5,12 +5,19 @@ import { AppModule } from 'app.module';
 import {
   SCENARIO_INTERVENTION_STATUS,
   ScenarioIntervention,
+  SCENARIO_INTERVENTION_TYPE,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { ScenarioInterventionsModule } from 'modules/scenario-interventions/scenario-interventions.module';
 import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
-import { createScenarioIntervention } from '../../entity-mocks';
+import {
+  createMaterial,
+  createScenario,
+  createScenarioIntervention,
+} from '../../entity-mocks';
 import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
+import { Scenario } from 'modules/scenarios/scenario.entity';
+import { Material } from 'modules/materials/material.entity';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -51,11 +58,20 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
   describe('Scenario interventions - Create', () => {
     test('Create a scenario intervention should be successful (happy case)', async () => {
+      const scenario: Scenario = await createScenario();
+      const material: Material = await createMaterial();
       const response = await request(app.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           title: 'test scenario intervention',
+          endYear: 2025,
+          percentage: 50,
+          scenarioId: scenario.id,
+          materialsIds: [material.id],
+          type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          newIndicatorCoefficients:
+            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
         })
         .expect(HttpStatus.CREATED);
 
@@ -84,10 +100,24 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
         [
-          'title should not be empty',
           'title must be shorter than or equal to 40 characters',
           'title must be longer than or equal to 2 characters',
+          'title should not be empty',
           'title must be a string',
+          'type must be a valid enum value',
+          'type should not be empty',
+          'type must be a string',
+          'endYear should not be empty',
+          'endYear must be a number conforming to the specified constraints',
+          'percentage should not be empty',
+          'percentage must be a number conforming to the specified constraints',
+          'scenarioId should not be empty',
+          'scenarioId must be a UUID',
+          'materialsIds should not be empty',
+          'each value in materialsIds must be a UUID',
+          'newIndicatorCoefficients must be a json string',
+          'newIndicatorCoefficients should not be empty',
+          'newIndicatorCoefficients must be a string',
         ],
       );
     });

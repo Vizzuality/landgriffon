@@ -42,7 +42,7 @@ const YearsFilter: React.FC = () => {
       data?.map((year) => ({
         label: year.toString(),
         value: year,
-        disabled: visualizationMode !== 'map' && endYear <= year + 4, // results should  show a minimun of 5 years window
+        disabled: visualizationMode !== 'map' && endYear <= year + 4, // results should  show a minimum of 5 years window
       })),
     [data, endYear, visualizationMode],
   );
@@ -53,7 +53,7 @@ const YearsFilter: React.FC = () => {
     return result.map((year) => ({
       label: year.toString(),
       value: year,
-      disabled: visualizationMode !== 'map' && year - 4 <= startYear, // results should  show a minimun of 5 years window
+      disabled: visualizationMode !== 'map' && year - 4 <= startYear, // results should  show a minimum of 5 years window
     }));
   }, [data, additionalYear, startYear, visualizationMode]);
 

@@ -24,7 +24,7 @@ export function useAdminRegions(): ResponseData {
       apiService
         .request({
           method: 'GET',
-          url: `impact/admin-regions/`,
+          url: '/impact/admin-regions/',
           headers: {
             // Authorization: `Bearer ${session.accessToken}`,
           },
@@ -56,7 +56,7 @@ export function useAdminRegionsTrees(params: TreeParams): ResponseData {
       apiService
         .request({
           method: 'GET',
-          url: `/admin-regions/trees`,
+          url: '/admin-regions/trees',
           params,
           headers: {
             // Authorization: `Bearer ${session.accessToken}`,

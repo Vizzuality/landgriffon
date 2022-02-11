@@ -162,4 +162,9 @@ export class ImpactService {
     });
     return purchasedTonnes;
   }
+
+  /**
+   * @description Retrieve base estimates for all indicators
+   */
+  async getEstimates(): Promise<any> {}
 }

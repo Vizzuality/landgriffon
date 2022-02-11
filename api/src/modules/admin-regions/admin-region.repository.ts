@@ -91,7 +91,7 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
   }
 
   /**
-   * @description Retrieves admin-regions and it's ancestors (in a plain format) there are registered sourcingLocations within
+   ** @description Retrieves Admin Regions and their ancestors (in a plain format) when there are associated Sourcing Locations
    */
 
   async getSourcingDataAdminRegionsWithAncestry(): Promise<AdminRegion[]> {
@@ -125,14 +125,14 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
       subQueryParams,
     ).catch((err: Error) =>
       this.logger.error(
-        `Query Failed for retrieving admin-regions with sourcing locations: `,
+        `Query failed for retrieving Admin Regions with Sourcing Locations: `,
         err,
       ),
     );
 
     if (!result || !result.length)
       throw new NotFoundException(
-        'No Admin Regions with sourcing locations within found. Please check if sourcing-data has been provided to the platform',
+        'No Admin Regions with associated Sourcing Locations found. Please check if sourcing data has been provided to the platform',
       );
 
     return result;

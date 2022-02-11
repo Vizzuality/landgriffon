@@ -6,7 +6,7 @@ export class GetSupplierByType {
   @ApiProperty()
   @IsNotEmpty()
   @IsEnum(SUPPLIER_TYPES, {
-    message: `Available Supplier types: ${Object.values(SUPPLIER_TYPES).join(
+    message: `Allowed Supplier types: ${Object.values(SUPPLIER_TYPES).join(
       ', ',
     )}`,
   })

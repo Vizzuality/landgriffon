@@ -117,7 +117,7 @@ export class SuppliersService extends AppBaseService<
 
   /**
    *
-   * @description Get a tree of Suppliers with sourcing locations
+   *  @description Get a tree of Suppliers that are associated with sourcing locations
    */
 
   async getSuppliersWithSourcingLocations(): Promise<any> {

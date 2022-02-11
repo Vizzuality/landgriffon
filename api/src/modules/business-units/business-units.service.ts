@@ -77,7 +77,7 @@ export class BusinessUnitsService extends AppBaseService<
 
   async getBusinessUnitTreeWithSourcingLocations(): Promise<BusinessUnit[]> {
     const businessUnitsLineage: BusinessUnit[] =
-      await this.businessUnitRepository.getSourcingDataAdminRegionsWithAncestry();
+      await this.businessUnitRepository.getSourcingDataBusinessUnitssWithAncestry();
     return this.buildTree<BusinessUnit>(businessUnitsLineage, null);
   }
 }

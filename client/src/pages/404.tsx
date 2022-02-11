@@ -4,6 +4,8 @@ import { NavigationList } from 'containers/navigation/types';
 import NavigationError from 'containers/navigation/error';
 import Logo from 'containers/logo';
 
+import Image from 'next/image';
+
 import {
   CollectionIcon,
   CogIcon,
@@ -23,14 +25,14 @@ const Page404: React.FC = () => {
   const handleGoBack = useCallback(() => Router.back(), []);
 
   return (
-    <div className="flex justify-center h-screen place-items-center gap-x-4">
-      <div className="flex-col space-y-40">
+    <div className="flex justify-center h-screen place-items-center">
+      <div className="flex-col space-y-44">
         <Logo />
 
         <div>
-          <h1 className="text-5xl font-semibold text-gray-900 mb-2">Page not found</h1>
+          <h1 className="mb-2 text-5xl font-semibold text-gray-900">Page not found</h1>
 
-          <p className="text-gray-400 font-medium leading-5">
+          <p className="font-medium leading-5 text-gray-400">
             Sorry, we couldn&apos;t find Page you are looking for.
           </p>
 
@@ -44,12 +46,12 @@ const Page404: React.FC = () => {
           </button>
         </div>
 
-        <NavigationError navigationItems={navigationItems} />
+        <NavigationError items={navigationItems} />
       </div>
 
-      <span className="absolute font-bold text-9xl text-gray-200 -mt-64 sm:m-0 sm:text-[25vw] sm:relative">
-        404
-      </span>
+      <div className="ml-32">
+        <Image src="/images/404.svg" width="700" height="264.24" alt="404 ERROR" />
+      </div>
     </div>
   );
 };

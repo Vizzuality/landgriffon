@@ -16,7 +16,7 @@ export class BusinessUnitRepository extends ExtendedTreeRepository<
    * @description Retrieves business-units and it's ancestors (in a plain format) there are registered sourcingLocations for
    */
 
-  async getSourcingDataAdminRegionsWithAncestry(): Promise<BusinessUnit[]> {
+  async getSourcingDataBusinessUnitssWithAncestry(): Promise<BusinessUnit[]> {
     // Join and filters over business-units present in sourcing-locations. Resultant query returns IDs of elements meeting the filters
     const queryBuilder: SelectQueryBuilder<BusinessUnit> =
       this.createQueryBuilder('bu')

@@ -299,9 +299,30 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     expect(response3.body.data[3].attributes.materialName).toEqual(
       material2.name,
     );
+
+    // Order by producer name - descending order
+    const response4 = await request(app.getHttpServer())
+      .get(`/api/v1/sourcing-locations/materials`)
+      .query({ orderBy: 'producer', order: 'desc' })
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send();
+
+    expect(HttpStatus.OK);
+    expect(response4.body.data[0].attributes.materialName).toEqual(
+      material2.name,
+    );
+    expect(response4.body.data[1].attributes.materialName).toEqual(
+      material3.name,
+    );
+    expect(response4.body.data[2].attributes.materialName).toEqual(
+      material4.name,
+    );
+    expect(response4.body.data[3].attributes.materialName).toEqual(
+      material1.name,
+    );
   });
 
-  test('Getting list of materials with order by flag applied to incorrect column should return proper error message', async () => {
+  test('Getting list of materials with incorrect should return proper error message', async () => {
     const supplier1: Supplier = await createSupplier({ name: 'aSupplier' });
 
     const material1: Material = await createMaterial({ name: 'bananas' });
@@ -313,19 +334,32 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
       materialId: material1.id,
     });
 
-    const response = await request(app.getHttpServer())
+    const response1 = await request(app.getHttpServer())
       .get(`/api/v1/sourcing-locations/materials`)
       .query({ orderBy: 'purchases' })
       .set('Authorization', `Bearer ${jwtToken}`)
       .send();
 
     expect(HttpStatus.BAD_REQUEST);
-    expect(response).toHaveErrorMessage(
+    expect(response1).toHaveErrorMessage(
       HttpStatus.BAD_REQUEST,
       'Bad Request Exception',
       [
         'Available columns for orderBy: country, businessUnit, producer, t1Supplier, material, locationType',
       ],
+    );
+
+    const response2 = await request(app.getHttpServer())
+      .get(`/api/v1/sourcing-locations/materials`)
+      .query({ orderBy: 'country', order: 'random' })
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send();
+
+    expect(HttpStatus.BAD_REQUEST);
+    expect(response2).toHaveErrorMessage(
+      HttpStatus.BAD_REQUEST,
+      'Bad Request Exception',
+      ['Available columns for order: desc, asc'],
     );
   });
 });

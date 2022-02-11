@@ -26,9 +26,8 @@ export class SupplierRepository extends ExtendedTreeRepository<
         SourcingLocation,
         'sl',
         '(s.id = sl.t1SupplierId OR s.id = sl.producerId)',
-      );
-
-    queryBuilder.distinct(true);
+      )
+      .distinct(true);
 
     const [subQuery, subQueryParams]: [string, any[]] =
       queryBuilder.getQueryAndParameters();

@@ -140,7 +140,7 @@ const Table: React.FC<TableProps> = ({
   return (
     <div
       className={cx('relative', className, {
-        'my-4': !className,
+        'my-4 shadow-sm': !className,
       })}
     >
       <KaTable {...tableProps} childComponents={childComponents} dispatch={dispatch} />

@@ -4,7 +4,7 @@ import { /*debounce,*/ flatten, merge, uniq } from 'lodash';
 // import { ExclamationIcon, FilterIcon } from '@heroicons/react/solid';
 
 import useModal from 'hooks/modals';
-import { useSourcingLocations } from 'hooks/sourcing-locations';
+import { useSourcingLocationsMaterials } from 'hooks/sourcing-locations';
 import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import NoData from 'containers/admin/no-data';
 import UploadDataSourceModal from 'containers/admin/upload-data-source-modal';
@@ -19,8 +19,7 @@ const AdminDataPage: React.FC = () => {
     data: sourcingData,
     metadata: sourcingMetadata,
     isFetching: isFetchingSourcingData,
-  } = useSourcingLocations({
-    materialsData: true,
+  } = useSourcingLocationsMaterials({
     'page[size]': 10,
     'page[number]': currentPage,
   });
@@ -125,10 +124,10 @@ const AdminDataPage: React.FC = () => {
       {hasData && (
         <>
           {/*
-          <div className="flex flex-col-reverse md:flex-row justify-between items-center">
-            <div className="flex w-full md:w-auto gap-2">
+          <div className="flex flex-col-reverse items-center justify-between md:flex-row">
+            <div className="flex w-full gap-2 md:w-auto">
               <input
-                className="w-full md:w-auto bg-white border border-gray-300 rounded-md shadow-sm text-left focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm font-medium"
+                className="w-full text-sm font-medium text-left bg-white border border-gray-300 rounded-md shadow-sm md:w-auto focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700"
                 type="search"
                 placeholder="Search table"
                 defaultValue=""

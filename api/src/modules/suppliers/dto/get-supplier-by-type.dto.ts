@@ -1,14 +1,14 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsOptional } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsNotEmpty } from 'class-validator';
 import { SUPPLIER_TYPES } from 'modules/suppliers/supplier.entity';
 
 export class GetSupplierByType {
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiProperty()
+  @IsNotEmpty()
   @IsEnum(SUPPLIER_TYPES, {
-    message: `Available Supplier types: ${Object.keys(SUPPLIER_TYPES)
-      .join(', ')
-      .toLowerCase()}`,
+    message: `Available Supplier types: ${Object.values(SUPPLIER_TYPES).join(
+      ', ',
+    )}`,
   })
-  type?: SUPPLIER_TYPES;
+  type!: SUPPLIER_TYPES;
 }

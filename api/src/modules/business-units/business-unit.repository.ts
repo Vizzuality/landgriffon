@@ -10,7 +10,7 @@ export class BusinessUnitRepository extends ExtendedTreeRepository<
   BusinessUnit,
   CreateBusinessUnitDto
 > {
-  logger: Logger = new Logger(BusinessUnit.name);
+  logger: Logger = new Logger(BusinessUnitRepository.name);
 
   /**
    * @description Retrieves business-units and it's ancestors (in a plain format) there are registered sourcingLocations for

@@ -125,7 +125,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
 
     const responseWithCustomPagination = await request(app.getHttpServer())
       .get(`/api/v1/sourcing-locations/materials`)
-      .query({ materialsData: true, 'page[size]': 2 })
+      .query({ 'page[size]': 2 })
       .set('Authorization', `Bearer ${jwtToken}`)
       .send();
 
@@ -171,7 +171,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
 
     const response1 = await request(app.getHttpServer())
       .get(`/api/v1/sourcing-locations/materials`)
-      .query({ materialsData: true, search: 'maize' })
+      .query({ search: 'maize' })
       .set('Authorization', `Bearer ${jwtToken}`)
       .send();
 
@@ -183,7 +183,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
 
     const response2 = await request(app.getHttpServer())
       .get(`/api/v1/sourcing-locations/materials`)
-      .query({ materialsData: true, search: 'co' })
+      .query({ search: 'co' })
       .set('Authorization', `Bearer ${jwtToken}`)
       .send();
 
@@ -239,7 +239,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     // Order by country name
     const response1 = await request(app.getHttpServer())
       .get(`/api/v1/sourcing-locations/materials`)
-      .query({ materialsData: true, orderBy: 'country' })
+      .query({ orderBy: 'country' })
       .set('Authorization', `Bearer ${jwtToken}`)
       .send();
 
@@ -261,7 +261,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     // Order by supplierT1 name
     const response2 = await request(app.getHttpServer())
       .get(`/api/v1/sourcing-locations/materials`)
-      .query({ materialsData: true, orderBy: 't1Supplier' })
+      .query({ orderBy: 't1Supplier' })
       .set('Authorization', `Bearer ${jwtToken}`)
       .send();
 
@@ -282,7 +282,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     // Order by producer name
     const response3 = await request(app.getHttpServer())
       .get(`/api/v1/sourcing-locations/materials`)
-      .query({ materialsData: true, orderBy: 'producer' })
+      .query({ orderBy: 'producer' })
       .set('Authorization', `Bearer ${jwtToken}`)
       .send();
 
@@ -315,7 +315,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/sourcing-locations/materials`)
-      .query({ materialsData: true, orderBy: 'purchases' })
+      .query({ orderBy: 'purchases' })
       .set('Authorization', `Bearer ${jwtToken}`)
       .send();
 

@@ -15,7 +15,6 @@ import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update
 import { Material } from 'modules/materials/material.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
-import { SelectQueryBuilder } from 'typeorm';
 
 @Injectable()
 export class SourcingLocationsService extends AppBaseService<
@@ -86,54 +85,6 @@ export class SourcingLocationsService extends AppBaseService<
     );
 
     return await this.sourcingLocationRepository.save(sourcingLocation as any);
-  }
-
-  async extendFindAllQuery(
-    query: SelectQueryBuilder<SourcingLocation>,
-    fetchSpecification: Record<string, unknown>,
-  ): Promise<SelectQueryBuilder<SourcingLocation>> {
-    query
-      .select([
-        `${this.alias}`,
-        'material.id',
-        'material.name',
-        't1Supplier.name',
-        'producer.name',
-        'businessUnit.name',
-        'sr',
-      ])
-      .innerJoin(`${this.alias}.material`, 'material')
-      .leftJoin(`${this.alias}.t1Supplier`, 't1Supplier')
-      .leftJoin(`${this.alias}.producer`, 'producer')
-      .leftJoin(`${this.alias}.businessUnit`, 'businessUnit')
-      .leftJoin(`${this.alias}.sourcingRecords`, 'sr');
-
-    if (fetchSpecification.search) {
-      query.andWhere('material.name ILIKE :search', {
-        search: `%${fetchSpecification.search}%`,
-      });
-    }
-
-    switch (fetchSpecification.orderBy) {
-      case 'country':
-        query.orderBy(`${this.alias}.locationCountryInput`);
-        break;
-      case 'locationType':
-        query.orderBy(`${this.alias}.locationType`);
-        break;
-      case 'material':
-      case 't1Supplier':
-      case 'producer':
-      case 'businessUnit':
-        query.orderBy(`${fetchSpecification.orderBy}.name`);
-        break;
-      default:
-        query.orderBy('material.name');
-    }
-
-    query.addOrderBy(`${this.alias}.id`);
-
-    return query;
   }
 
   /**

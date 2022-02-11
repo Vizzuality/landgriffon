@@ -1,18 +1,22 @@
 import { useState, useMemo } from 'react';
 import { DataType } from 'ka-table/enums';
-import { /*debounce,*/ flatten, merge, uniq } from 'lodash';
-// import { ExclamationIcon, FilterIcon } from '@heroicons/react/solid';
+import { flatten, merge, uniq } from 'lodash';
+import { useDebounce } from '@react-hook/debounce';
+import { ExclamationIcon /*, FilterIcon*/ } from '@heroicons/react/solid';
 
 import useModal from 'hooks/modals';
 import { useSourcingLocationsMaterials } from 'hooks/sourcing-locations';
 import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import NoData from 'containers/admin/no-data';
+import NoResults from 'containers/admin/no-results';
 import UploadDataSourceModal from 'containers/admin/upload-data-source-modal';
 import Button from 'components/button';
 import Pagination, { PaginationProps } from 'components/pagination';
+import Search from 'components/search';
 import Table, { TableProps } from 'containers/table';
 
 const AdminDataPage: React.FC = () => {
+  const [searchText, setSearchText] = useDebounce('', 250);
   const [currentPage, setCurrentPage] = useState(1);
 
   const {
@@ -20,6 +24,7 @@ const AdminDataPage: React.FC = () => {
     metadata: sourcingMetadata,
     isFetching: isFetchingSourcingData,
   } = useSourcingLocationsMaterials({
+    search: searchText,
     'page[size]': 10,
     'page[number]': currentPage,
   });
@@ -86,18 +91,11 @@ const AdminDataPage: React.FC = () => {
     [currentPage, sourcingData, sourcingMetadata],
   );
 
-  /** Search, filtering handling */
-
-  /*
-  const handleSearch = debounce(({ target }: { target: HTMLInputElement }): void => {
-    console.info('Search: ', target.value);
-  }, 200);
-  */
-
   /** Helpers for use in the JSX */
 
   const hasData = sourcingData?.length > 0;
   const isFetchingData = isFetchingSourcingData;
+  const isSearching = !!searchText;
 
   return (
     <AdminLayout
@@ -119,36 +117,34 @@ const AdminDataPage: React.FC = () => {
         onDismiss={closeUploadDataSourceModal}
       />
 
-      {!hasData && !isFetchingData && <NoData />}
+      {!hasData && !isFetchingData && !isSearching && <NoData />}
+
+      {!(!hasData && !isFetchingData && !isSearching) && (
+        <div className="flex flex-col-reverse items-center justify-between md:flex-row">
+          <div className="flex w-full gap-2 md:w-auto">
+            <Search placeholder="Search table" onChange={setSearchText} />
+            {/*
+            <Button theme="secondary" onClick={() => console.info('Filters: click')}>
+              <span className="block h-5 truncate">
+                <FilterIcon className="w-5 h-5 text-gray-900" aria-hidden="true" />
+              </span>
+              <span className="flex items-center justify-center w-5 h-5 ml-1 text-xs font-semibold text-white bg-green-700 rounded-full">
+                2
+              </span>
+            </Button>
+            */}
+          </div>
+          <div className="flex items-center text-sm text-yellow-800">
+            <ExclamationIcon className="w-5 h-5 mr-3 text-yellow-400" aria-hidden="true" />1 entry
+            needs to be updated
+          </div>
+        </div>
+      )}
+
+      {!hasData && isSearching && <NoResults />}
 
       {hasData && (
         <>
-          {/*
-          <div className="flex flex-col-reverse items-center justify-between md:flex-row">
-            <div className="flex w-full gap-2 md:w-auto">
-              <input
-                className="w-full text-sm font-medium text-left bg-white border border-gray-300 rounded-md shadow-sm md:w-auto focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700"
-                type="search"
-                placeholder="Search table"
-                defaultValue=""
-                onChange={handleSearch}
-              />
-              <Button theme="secondary" onClick={() => console.info('Filters: click')}>
-                <span className="block h-5 truncate">
-                  <FilterIcon className="w-5 h-5 text-gray-900" aria-hidden="true" />
-                </span>
-                <span className="flex items-center justify-center w-5 h-5 ml-1 text-xs font-semibold text-white bg-green-700 rounded-full">
-                  2
-                </span>
-              </Button>
-            </div>
-            <div className="flex items-center text-sm text-yellow-800">
-              <ExclamationIcon className="w-5 h-5 mr-3 text-yellow-400" aria-hidden="true" />1 entry
-              needs to be updated
-            </div>
-          </div>
-          */}
-
           <Table {...tableProps} />
           <Pagination className="my-4 ml-4 mr-2" {...paginationProps} />
         </>

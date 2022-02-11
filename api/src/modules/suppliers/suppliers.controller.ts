@@ -108,6 +108,20 @@ export class SuppliersController {
     return this.suppliersService.serialize(results);
   }
 
+  @ApiOperation({
+    description: 'Find all suppliers by type',
+  })
+  @ApiOkResponse({
+    type: Supplier,
+  })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @ApiQuery({
+    name: 'type',
+    required: true,
+    description:
+      'Type of the supplier depending on to the external company (whether you buy directly from them or not) ',
+  })
   @Get('/types')
   async getSupplierByType(
     @Query(ValidationPipe) type: GetSupplierByType,

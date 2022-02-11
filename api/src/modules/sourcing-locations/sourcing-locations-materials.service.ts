@@ -56,6 +56,9 @@ export class SourcingLocationsMaterialsService extends AppBaseService<
     query: SelectQueryBuilder<SourcingLocation>,
     fetchSpecification: Record<string, unknown>,
   ): Promise<SelectQueryBuilder<SourcingLocation>> {
+    const sortingOrder: 'DESC' | 'ASC' | undefined =
+      fetchSpecification.order === 'desc' ? 'DESC' : 'ASC';
+
     query
       .select([
         `${this.alias}`,
@@ -80,19 +83,19 @@ export class SourcingLocationsMaterialsService extends AppBaseService<
 
     switch (fetchSpecification.orderBy) {
       case 'country':
-        query.orderBy(`${this.alias}.locationCountryInput`);
+        query.orderBy(`${this.alias}.locationCountryInput`, sortingOrder);
         break;
       case 'locationType':
-        query.orderBy(`${this.alias}.locationType`);
+        query.orderBy(`${this.alias}.locationType`, sortingOrder);
         break;
       case 'material':
       case 't1Supplier':
       case 'producer':
       case 'businessUnit':
-        query.orderBy(`${fetchSpecification.orderBy}.name`);
+        query.orderBy(`${fetchSpecification.orderBy}.name`, sortingOrder);
         break;
       default:
-        query.orderBy('material.name');
+        query.orderBy('material.name', sortingOrder);
     }
 
     query.addOrderBy(`${this.alias}.id`);

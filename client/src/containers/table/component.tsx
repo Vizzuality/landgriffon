@@ -23,18 +23,22 @@ const Table: React.FC<TableProps> = ({
   stickyFirstColumn: isFirstColumnSticky = true,
   ...props
 }: TableProps) => {
-  const [tableProps, changeTableProps] = useState({ ...defaultProps, ...props });
+  const [tableProps, setTableProps] = useState({ ...defaultProps, ...props });
 
   const firstColumnKey = props.columns[0]?.key;
   const stickyColumnKey = isFirstColumnSticky && firstColumnKey;
 
   const dispatch: DispatchFunc = (action) => {
-    changeTableProps((prevState) => kaReducer(prevState, action));
+    setTableProps((prevState) => kaReducer(prevState, action));
   };
 
   useEffect(() => {
     dispatch(updateData(props.data));
   }, [props.data]);
+
+  useEffect(() => {
+    setTableProps((tableProps) => ({ ...tableProps, columns: props.columns }));
+  }, [props.columns]);
 
   const childComponents = {
     tableWrapper: {

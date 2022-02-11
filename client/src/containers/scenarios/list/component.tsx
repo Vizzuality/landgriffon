@@ -25,22 +25,25 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
 
   const [selected, setSelected] = useState(null);
 
-  const handleOnChange = useCallback(({ id }) => {
-    router.push({
-      pathname: '/analysis',
-      query: {
-        ...query,
-        scenario: id,
-      },
-    });
-  }, []);
+  const handleOnChange = useCallback(
+    ({ id }) => {
+      router.push({
+        pathname: '/analysis',
+        query: {
+          ...router.query,
+          scenario: id,
+        },
+      });
+    },
+    [router],
+  );
 
   useEffect(() => {
     if (data && !currentScenario) {
       router.push({
         pathname: '/analysis',
         query: {
-          ...query,
+          ...router.query,
           scenario: data[0].id, // by default firs option of the list
         },
       });
@@ -48,18 +51,18 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
     if (data && currentScenario) {
       setSelected(data.find(({ id }) => isScenarioSelected(id, currentScenario)));
     }
-  }, [data, currentScenario]);
+  }, [data, currentScenario, router]);
 
   useEffect(() => {
     if (scenario) {
       dispatch(setCurrentScenario(scenario as string));
     }
-  }, [scenario]);
+  }, [dispatch, scenario]);
 
   return (
     <RadioGroup value={selected} onChange={handleOnChange}>
       <RadioGroup.Label className="sr-only">Scenarios</RadioGroup.Label>
-      <ul className=" overflow-y-scroll my-2 grid grid-cols-1 gap-5 sm:gap-2 sm:grid-cols-2 lg:grid-cols-1 relative">
+      <ul className="my-2 grid grid-cols-1 gap-5 sm:gap-2 sm:grid-cols-2 lg:grid-cols-1 relative">
         {data.map((item) => (
           <ScenarioItem
             key={item.id}

@@ -1,7 +1,14 @@
 import { useMemo } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery, UseQueryResult, UseQueryOptions } from 'react-query';
 import { getScenarios } from 'services/scenarios';
 import type { Scenario } from 'containers/scenarios/types';
+
+const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
+  placeholderData: [],
+  retry: false,
+  keepPreviousData: true,
+  refetchOnWindowFocus: false,
+};
 
 /**
  * Actual data to the data response
@@ -11,22 +18,23 @@ const ACTUAL_DATA: Scenario = {
   title: 'Actual data',
 };
 
-export function useScenarios(queryParams) {
-  const response = useQuery(['scenariosList', queryParams], async () => getScenarios(queryParams), {
-    retry: false,
-  });
+type ResponseData = UseQueryResult<Scenario[]>;
 
-  return useMemo(() => {
+export function useScenarios(queryParams: { sort: string }): ResponseData {
+  const response = useQuery(
+    ['scenariosList', queryParams],
+    async () => getScenarios(queryParams),
+    DEFAULT_QUERY_OPTIONS,
+  );
+
+  return useMemo<ResponseData>((): ResponseData => {
     const data =
       response.isSuccess && response.data
-        ? {
-            ...response,
-            // injecting actual data
-            data: [ACTUAL_DATA, ...response.data],
-          }
-        : response;
+        ? [ACTUAL_DATA, ...(response.data as Scenario[])]
+        : response.data;
     return {
+      ...response,
       data,
-    };
+    } as ResponseData;
   }, [response]);
 }

@@ -457,9 +457,9 @@ describe('Materials - Get trees', () => {
       const response = await request(app.getHttpServer())
         .get('/api/v1/materials/trees')
         .query({ withSourcingLocations: true })
-        .set('Authorization', `Bearer ${jwtToken}`)
-        .expect(HttpStatus.OK);
+        .set('Authorization', `Bearer ${jwtToken}`);
 
+      expect(HttpStatus.OK);
       expect(response.body.data[1].id).toEqual(parentWithNoChildMaterial.id);
       expect(response.body.data[1].attributes.children).toEqual([]);
       expect(response.body.data[0].id).toEqual(parentMaterial.id);

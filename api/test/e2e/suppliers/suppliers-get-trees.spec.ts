@@ -200,9 +200,9 @@ describe('Suppliers - Get trees', () => {
       const response = await request(app.getHttpServer())
         .get('/api/v1/suppliers/trees')
         .query({ withSourcingLocations: true })
-        .set('Authorization', `Bearer ${jwtToken}`)
-        .expect(HttpStatus.OK);
+        .set('Authorization', `Bearer ${jwtToken}`);
 
+      expect(HttpStatus.OK);
       expect(response.body.data[1].id).toEqual(parentWithNoChildSupplier.id);
       expect(response.body.data[1].attributes.children).toEqual([]);
       expect(response.body.data[0].id).toEqual(parentSupplier.id);

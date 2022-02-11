@@ -74,9 +74,9 @@ describe('BusinessUnits - Get Trees', () => {
         const response = await request(app.getHttpServer())
           .get('/api/v1/business-units/trees')
           .query({ withSourcingLocations: true })
-          .set('Authorization', `Bearer ${jwtToken}`)
-          .expect(HttpStatus.OK);
+          .set('Authorization', `Bearer ${jwtToken}`);
 
+        expect(HttpStatus.OK);
         expect(response.body.data[1].id).toEqual(
           parentWithNoChildBusinessUnit.id,
         );

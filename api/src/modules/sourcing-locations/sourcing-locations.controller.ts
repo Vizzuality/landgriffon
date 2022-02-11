@@ -21,6 +21,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import {
+  JSONAPIPaginationQueryParams,
   JSONAPIQueryParams,
   JSONAPISingleEntityQueryParams,
 } from 'decorators/json-api-parameters.decorator';
@@ -36,24 +37,22 @@ import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create
 import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update.sourcing-location.dto';
 import { PaginationMeta } from 'utils/app-base.service';
 import { SourcingLocationsMaterialsResponseDto } from 'modules/sourcing-locations/dto/materials.sourcing-location.dto';
-import { SourcingLocationsMaterialsSerializer } from 'modules/sourcing-locations/serializer/sourcing-locations-materials.serializer';
 import { GetSourcingMaterialsQueryDto } from 'modules/sourcing-locations/dto/materials-query.sourcing-location.dto';
+import { SourcingLocationsMaterialsService } from 'modules/sourcing-locations/sourcing-locations-materials.service';
 
 @Controller(`/api/v1/sourcing-locations`)
 @ApiTags(sourcingLocationResource.className)
 export class SourcingLocationsController {
   constructor(
     public readonly sourcingLocationsService: SourcingLocationsService,
-    public readonly sourcingLocationsMaterialsSerializer: SourcingLocationsMaterialsSerializer,
+    public readonly sourcingLocationsMaterialsService: SourcingLocationsMaterialsService,
   ) {}
 
   @ApiOperation({
-    description: `Find all sourcing locations. 
-      With flag "materialsData=true" endpoint returns data of the materials of the sourcing locations, orderBy and search params are implemented for this case. 
-      Rest of the query params (except pagination params which can be applied in any case), should be used for standard sourcing locations Get endpoint without materialsData flag`,
+    description: 'Find all sourcing locations',
   })
   @ApiOkResponse({
-    type: SourcingLocationsMaterialsResponseDto,
+    type: SourcingLocation,
   })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
@@ -72,27 +71,45 @@ export class SourcingLocationsController {
       allowedFilters: sourcingLocationResource.columnsAllowedAsFilter,
     })
     fetchSpecification: FetchSpecification,
-
-    @Query(ValidationPipe) queryParams: GetSourcingMaterialsQueryDto,
-  ): Promise<SourcingLocation | SourcingLocationsMaterialsResponseDto> {
+  ): Promise<SourcingLocation> {
     const results: {
       data: (Partial<SourcingLocation> | undefined)[];
       metadata: PaginationMeta | undefined;
     } = await this.sourcingLocationsService.findAllPaginated(
       fetchSpecification,
     );
+    return this.sourcingLocationsService.serialize(
+      results.data,
+      results.metadata,
+    );
+  }
 
-    if (queryParams.materialsData) {
-      return this.sourcingLocationsMaterialsSerializer.serialize(
-        results.data,
-        results.metadata,
-      );
-    } else {
-      return this.sourcingLocationsService.serialize(
-        results.data,
-        results.metadata,
-      );
-    }
+  @ApiOperation({
+    description: 'Find all Materials with details for Sourcing Locations',
+  })
+  @ApiOkResponse({
+    type: SourcingLocationsMaterialsResponseDto,
+  })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @JSONAPIPaginationQueryParams()
+  @Get('/materials')
+  async findAllMaterials(
+    @ProcessFetchSpecification()
+    fetchSpecification: FetchSpecification,
+
+    @Query(ValidationPipe) queryParams: GetSourcingMaterialsQueryDto,
+  ): Promise<SourcingLocationsMaterialsResponseDto> {
+    const results: {
+      data: (Partial<SourcingLocation> | undefined)[];
+      metadata: PaginationMeta | undefined;
+    } = await this.sourcingLocationsMaterialsService.findAllPaginated(
+      fetchSpecification,
+    );
+    return this.sourcingLocationsMaterialsService.serialize(
+      results.data,
+      results.metadata,
+    );
   }
 
   @ApiOperation({ description: 'Find sourcing location by id' })

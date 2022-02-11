@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export enum MATERIALS_ORDER_BY_VALUES {
@@ -11,10 +11,6 @@ export enum MATERIALS_ORDER_BY_VALUES {
 }
 
 export class GetSourcingMaterialsQueryDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  materialsData?: boolean;
-
   @ApiPropertyOptional({ enum: MATERIALS_ORDER_BY_VALUES })
   @IsOptional()
   @IsEnum(MATERIALS_ORDER_BY_VALUES, {

@@ -14,6 +14,7 @@ type SourcingLocationsMaterialsDataResponse = UseQueryResult &
   SourcingLocationsMaterialsAPIResponse;
 
 export type SourcingLocationsParams = {
+  search?: string;
   'page[number]'?: number;
   'page[size]'?: number;
 };

@@ -23,7 +23,7 @@ export const Search: FC<SearchProps> = ({ ...props }: SearchProps) => {
         ref={ref}
         placeholder={placeholder}
         type="search"
-        className="py-3 pl-10 pr-8 text-sm font-medium leading-4 text-left bg-white border-none rounded-md shadow-sm md:w-auto focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700"
+        className="h-full py-2 pl-10 pr-8 text-sm font-medium leading-4 text-left bg-white border border-gray-300 rounded-md shadow-sm md:w-auto focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700"
       />
 
       {state.value !== '' && (

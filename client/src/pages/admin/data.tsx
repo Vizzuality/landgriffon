@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { DataType } from 'ka-table/enums';
 import { flatten, merge, uniq } from 'lodash';
 import { useDebounce } from '@react-hook/debounce';
@@ -13,11 +13,14 @@ import UploadDataSourceModal from 'containers/admin/upload-data-source-modal';
 import Button from 'components/button';
 import Pagination, { PaginationProps } from 'components/pagination';
 import Search from 'components/search';
+import YearsRangeFilter from 'containers/filters/years-range';
 import Table, { TableProps } from 'containers/table';
 
 const AdminDataPage: React.FC = () => {
   const [searchText, setSearchText] = useDebounce('', 250);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [startYear, setStartYear] = useState<number>();
+  const [endYear, setEndYear] = useState<number>();
 
   const {
     data: sourcingData,
@@ -37,17 +40,22 @@ const AdminDataPage: React.FC = () => {
 
   /** Processing data for use in the table props */
 
-  const yearsArray = uniq(
+  const allYears = uniq(
     flatten(sourcingData.map(({ purchases }) => purchases.map(({ year }) => year))).sort(),
   );
 
-  const yearsData = useMemo(
-    () => ({
-      columns: yearsArray.map((year) => ({
+  const filteredYears = allYears.filter((year) =>
+    startYear && endYear ? year >= startYear && year <= endYear : true,
+  );
+
+  const yearsData = useMemo(() => {
+    return {
+      columns: allYears.map((year) => ({
         key: year.toString(),
         title: year.toString(),
         DataType: DataType.Number,
         width: 80,
+        visible: filteredYears.includes(year),
       })),
       data: sourcingData.map((dataRow) => ({
         ...dataRow,
@@ -55,14 +63,24 @@ const AdminDataPage: React.FC = () => {
           .map(({ year, tonnage }) => ({ [year as string]: tonnage }))
           .reduce((a, b) => ({ ...a, ...b })),
       })),
-    }),
-    [sourcingData, yearsArray],
-  );
+    };
+  }, [allYears, sourcingData, filteredYears]);
+
+  const handleYearsRangeChange = ({ startYear, endYear }) => {
+    setStartYear(startYear);
+    setEndYear(endYear);
+  };
+
+  useEffect(() => {
+    if (startYear && endYear) return;
+    setStartYear(allYears[0]);
+    setEndYear(allYears[allYears.length - 1]);
+  }, [allYears, endYear, startYear]);
 
   /** Table Props */
 
-  const tableProps: TableProps = useMemo(
-    () => ({
+  const tableProps: TableProps = useMemo(() => {
+    return {
       rowKeyField: 'id',
       columns: [
         { key: 'materialName', title: 'Material', dataType: DataType.String, width: 240 },
@@ -74,9 +92,8 @@ const AdminDataPage: React.FC = () => {
         ...yearsData.columns,
       ],
       data: merge(sourcingData, yearsData.data),
-    }),
-    [sourcingData, yearsData],
-  );
+    };
+  }, [sourcingData, yearsData]);
 
   /** Pagination Props */
 
@@ -123,6 +140,12 @@ const AdminDataPage: React.FC = () => {
         <div className="flex flex-col-reverse items-center justify-between md:flex-row">
           <div className="flex w-full gap-2 md:w-auto">
             <Search placeholder="Search table" onChange={setSearchText} />
+            <YearsRangeFilter
+              startYear={startYear}
+              endYear={endYear}
+              years={allYears}
+              onChange={handleYearsRangeChange}
+            />
             {/*
             <Button theme="secondary" onClick={() => console.info('Filters: click')}>
               <span className="block h-5 truncate">

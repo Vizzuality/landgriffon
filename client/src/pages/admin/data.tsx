@@ -13,14 +13,12 @@ import UploadDataSourceModal from 'containers/admin/upload-data-source-modal';
 import Button from 'components/button';
 import Pagination, { PaginationProps } from 'components/pagination';
 import Search from 'components/search';
-import YearsRangeFilter from 'containers/filters/years-range';
+import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range';
 import Table, { TableProps } from 'containers/table';
 
 const AdminDataPage: React.FC = () => {
   const [searchText, setSearchText] = useDebounce('', 250);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [startYear, setStartYear] = useState<number>();
-  const [endYear, setEndYear] = useState<number>();
 
   const {
     data: sourcingData,
@@ -31,6 +29,8 @@ const AdminDataPage: React.FC = () => {
     'page[size]': 10,
     'page[number]': currentPage,
   });
+
+  const { startYear, endYear, setYearsRange } = useYearsRange({});
 
   const {
     isOpen: isUploadDataSourceModalOpen,
@@ -66,16 +66,13 @@ const AdminDataPage: React.FC = () => {
     };
   }, [allYears, sourcingData, filteredYears]);
 
-  const handleYearsRangeChange = ({ startYear, endYear }) => {
-    setStartYear(startYear);
-    setEndYear(endYear);
-  };
-
   useEffect(() => {
     if (startYear && endYear) return;
-    setStartYear(allYears[0]);
-    setEndYear(allYears[allYears.length - 1]);
-  }, [allYears, endYear, startYear]);
+    setYearsRange({
+      startYear: allYears[0],
+      endYear: allYears[allYears.length - 1],
+    });
+  }, [allYears, endYear, setYearsRange, startYear]);
 
   /** Table Props */
 
@@ -144,7 +141,7 @@ const AdminDataPage: React.FC = () => {
               startYear={startYear}
               endYear={endYear}
               years={allYears}
-              onChange={handleYearsRangeChange}
+              onChange={setYearsRange}
             />
             {/*
             <Button theme="secondary" onClick={() => console.info('Filters: click')}>

@@ -1,2 +1,3 @@
 export { default } from './component';
-export type { YearsRangeFilterProps } from './types';
+export { useYearsRange } from './hooks';
+export type { YearsRangeFilterProps, UseYearsRangeProps, YearsRangeParams } from './types';

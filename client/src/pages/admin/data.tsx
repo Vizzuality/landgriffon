@@ -42,11 +42,7 @@ const AdminDataPage: React.FC = () => {
     flatten(sourcingData.map(({ purchases }) => purchases.map(({ year }) => year))).sort(),
   );
 
-  const { startYear, endYear, setYearsRange } = useYearsRange({ years: allYears });
-
-  const filteredYears = allYears.filter((year) =>
-    startYear && endYear ? year >= startYear && year <= endYear : true,
-  );
+  const { startYear, endYear, yearsInRange, setYearsRange } = useYearsRange({ years: allYears });
 
   const yearsData = useMemo(() => {
     return {
@@ -55,7 +51,7 @@ const AdminDataPage: React.FC = () => {
         title: year.toString(),
         DataType: DataType.Number,
         width: 80,
-        visible: filteredYears.includes(year),
+        visible: yearsInRange.includes(year),
       })),
       data: sourcingData.map((dataRow) => ({
         ...dataRow,
@@ -64,7 +60,7 @@ const AdminDataPage: React.FC = () => {
           .reduce((a, b) => ({ ...a, ...b })),
       })),
     };
-  }, [allYears, sourcingData, filteredYears]);
+  }, [allYears, sourcingData, yearsInRange]);
 
   /** Table Props */
 

@@ -13,10 +13,10 @@ const YearsFilter: React.FC = () => {
 
   const { visualizationMode, filters, layer } = useAppSelector(analysis);
   const { materials, indicator } = filters;
-  const { data: allYears, isLoading } = useYears(layer, materials, indicator);
+  const { data: years, isLoading } = useYears(layer, materials, indicator);
 
   const { startYear, endYear, yearsGap, setYearsRange } = useYearsRange({
-    years: allYears,
+    years: years,
     yearsGap: 5,
     ...filters,
   });
@@ -32,8 +32,8 @@ const YearsFilter: React.FC = () => {
   );
 
   const yearSelectOptions = useMemo(
-    () => allYears?.map((year) => ({ label: year.toString(), value: year })),
-    [allYears],
+    () => years?.map((year) => ({ label: year.toString(), value: year })),
+    [years],
   );
 
   return visualizationMode === 'map' ? (
@@ -50,7 +50,7 @@ const YearsFilter: React.FC = () => {
       loading={isLoading}
       startYear={startYear}
       endYear={endYear}
-      years={allYears}
+      years={years}
       yearsGap={yearsGap}
       onChange={setYearsRange}
     />

@@ -72,11 +72,6 @@ export class CreateScenarioInterventionDto {
   @ApiPropertyOptional()
   adminRegionsIds?: string[];
 
-  @IsUUID(4, { each: true })
-  @IsOptional()
-  @ApiPropertyOptional()
-  sourcingLocationsIds?: string[];
-
   @IsString()
   @IsNotEmpty()
   @IsJSON()

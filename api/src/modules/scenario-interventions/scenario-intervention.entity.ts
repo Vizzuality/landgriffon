@@ -14,7 +14,10 @@ import { Material } from 'modules/materials/material.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
-import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import {
+  LOCATION_TYPES,
+  SourcingLocation,
+} from 'modules/sourcing-locations/sourcing-location.entity';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 
@@ -121,25 +124,50 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   /**
    * Relationships with other entities - list of "new" relationships
    */
-  @ManyToMany(() => Material)
-  @JoinTable()
-  newMaterials?: Material[];
+  @ManyToOne(() => Material)
+  @ApiPropertyOptional()
+  newMaterial?: Material;
 
-  @ManyToMany(() => BusinessUnit)
-  @JoinTable()
-  newBusinessUnits?: BusinessUnit[];
+  @ManyToOne(() => BusinessUnit)
+  @ApiPropertyOptional()
+  newBusinessUnit?: BusinessUnit;
 
-  @ManyToMany(() => Supplier)
-  @JoinTable()
-  newSuppliers?: Supplier[];
+  @ManyToOne(() => Supplier)
+  @ApiPropertyOptional()
+  newT1Supplier?: Supplier;
 
-  @ManyToMany(() => AdminRegion)
-  @JoinTable()
-  newAdminRegion?: AdminRegion[];
+  @ManyToOne(() => Supplier)
+  @ApiPropertyOptional()
+  newProducer?: Supplier;
 
-  @ManyToMany(() => SourcingLocation)
-  @JoinTable()
-  newSourcingLocation?: SourcingLocation[];
+  @ManyToOne(() => AdminRegion)
+  @ApiPropertyOptional()
+  newAdminRegion?: AdminRegion;
+
+  // TODO - makes sense only if new sourcing location is created, based on the received data for new supplier/location:
+  @ManyToOne(() => SourcingLocation)
+  @ApiPropertyOptional()
+  newSourcingLocation?: SourcingLocation;
+
+  /**
+   * New sourcing data, if intervention type involves supplier change:
+   */
+
+  @ApiPropertyOptional()
+  @Column({ nullable: true })
+  newLocationType?: LOCATION_TYPES;
+
+  @ApiPropertyOptional()
+  @Column({ nullable: true })
+  newLocationCountryInput?: string;
+
+  @ApiPropertyOptional()
+  @Column({ nullable: true })
+  newLocationAddressInput?: string;
+
+  @ApiPropertyOptional()
+  @Column({ nullable: true })
+  newMaterialTonnageRatio?: number;
 
   /**
    * Relationships with User

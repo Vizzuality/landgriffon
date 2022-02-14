@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { DataType } from 'ka-table/enums';
 import { flatten, merge, uniq } from 'lodash';
 import { useDebounce } from '@react-hook/debounce';
@@ -30,8 +30,6 @@ const AdminDataPage: React.FC = () => {
     'page[number]': currentPage,
   });
 
-  const { startYear, endYear, setYearsRange } = useYearsRange({});
-
   const {
     isOpen: isUploadDataSourceModalOpen,
     open: openUploadDataSourceModal,
@@ -43,6 +41,8 @@ const AdminDataPage: React.FC = () => {
   const allYears = uniq(
     flatten(sourcingData.map(({ purchases }) => purchases.map(({ year }) => year))).sort(),
   );
+
+  const { startYear, endYear, setYearsRange } = useYearsRange({ years: allYears });
 
   const filteredYears = allYears.filter((year) =>
     startYear && endYear ? year >= startYear && year <= endYear : true,
@@ -65,14 +65,6 @@ const AdminDataPage: React.FC = () => {
       })),
     };
   }, [allYears, sourcingData, filteredYears]);
-
-  useEffect(() => {
-    if (startYear && endYear) return;
-    setYearsRange({
-      startYear: allYears[0],
-      endYear: allYears[allYears.length - 1],
-    });
-  }, [allYears, endYear, setYearsRange, startYear]);
 
   /** Table Props */
 

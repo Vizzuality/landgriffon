@@ -141,7 +141,7 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
                         active ? 'bg-green-50 text-green-700' : 'text-gray-900',
                         selected && 'bg-green-50 text-green-700',
                         'cursor-pointer select-none relative py-2 pl-4 pr-4',
-                        disabled && 'text-opacity-50 cursor-none',
+                        disabled && 'text-opacity-50 cursor-default',
                       )
                     }
                     disabled={option.disabled}

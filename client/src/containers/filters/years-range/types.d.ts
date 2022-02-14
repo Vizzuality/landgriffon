@@ -41,7 +41,9 @@ export type YearsRangeFilterProps = YearsRangeParams & {
 
 export type UseYearsRangeProps = Partial<YearsRangeParams> & {
   /** Array of all available years */
-  years: number[];
+  years?: number[];
+  /** Array of years in the range specified */
+  yearsInRange?: number[];
   /** Enforce N years gap between startYear and endYear */
   yearsGap?: number;
   /** Set the start year */

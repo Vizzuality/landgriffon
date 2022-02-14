@@ -1,15 +1,17 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 
 import { UseYearsRangeProps, YearsRangeParams } from './types';
 
 export function useYearsRange({
-  years,
+  years: yearsProp,
   yearsGap = 0,
   startYear: initialStartYear,
   endYear: initialEndYear,
 }: UseYearsRangeProps): UseYearsRangeProps {
   const [startYear, setStartYear] = useState<number>(initialStartYear);
   const [endYear, setEndYear] = useState<number>(initialEndYear);
+
+  const years = useMemo(() => yearsProp.sort(), [yearsProp]);
 
   const setYearsRange = useCallback(
     ({ startYear: startYearParam, endYear: endYearParam }: YearsRangeParams) => {
@@ -53,8 +55,15 @@ export function useYearsRange({
     }
   }, [endYear, setYearsRange, startYear, years, yearsGap]);
 
+  const yearsInRange = useMemo(
+    () =>
+      years.filter((year) => (startYear && endYear ? year >= startYear && year <= endYear : true)),
+    [endYear, startYear, years],
+  );
+
   return {
     years,
+    yearsInRange,
     yearsGap,
     startYear,
     endYear,

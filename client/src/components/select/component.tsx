@@ -69,23 +69,15 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
       {({ open }) => (
         <>
           <div className="relative">
-            <Listbox.Button
-              className={cx(
-                'bg-white relative w-full flex align-center rounded-md pl-3 pr-10 py-2 text-left focus:outline-none focus:ring-1  text-sm cursor-pointer font-medium',
-                {
-                  'shadow-sm border border-gray-300 focus:ring-green-700 focus:border-green-700':
-                    styles.border,
-                },
-              )}
-            >
+            <Listbox.Button className="relative flex w-full py-2 pl-3 pr-10 text-sm font-medium text-left bg-white border border-gray-300 rounded-md shadow-sm cursor-pointer align-center focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700">
               {loading ? (
                 <div className="p-4">
-                  <Loading className="text-green-700 -ml-1 mr-3" />
+                  <Loading className="mr-3 -ml-1 text-green-700" />
                 </div>
               ) : (
                 <>
                   {label && (
-                    <span className="inline-block truncate mr-1 text-gray-400">{label}</span>
+                    <span className="inline-block mr-1 text-gray-400 truncate">{label}</span>
                   )}
                   {placeholder && !selected?.label && (
                     <span className="text-gray-300 truncate">{placeholder}</span>
@@ -93,9 +85,9 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
                   {selected && <span className="inline-block truncate">{selected?.label}</span>}
                   <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                     {open ? (
-                      <ChevronUpIcon className="h-4 w-4 text-gray-900" aria-hidden="true" />
+                      <ChevronUpIcon className="w-4 h-4 text-gray-900" aria-hidden="true" />
                     ) : (
-                      <ChevronDownIcon className="h-4 w-4 text-gray-900" aria-hidden="true" />
+                      <ChevronDownIcon className="w-4 h-4 text-gray-900" aria-hidden="true" />
                     )}
                   </span>
                 </>
@@ -124,19 +116,19 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
               >
                 {showSearch && (
                   <div className="relative flex items-center border-b border-b-gray-400">
-                    <div className="pl-2 py-1">
-                      <SearchIcon className="block h-4 w-4 text-gray-400" />
+                    <div className="py-1 pl-2">
+                      <SearchIcon className="block w-4 h-4 text-gray-400" />
                     </div>
                     <input
                       type="search"
                       value={searchTerm}
                       placeholder={searchPlaceholder}
-                      className="block w-24 text-sm border-0 rounded-t-md focus:ring-0 focus:border-green-700 flex-1"
+                      className="flex-1 block w-24 text-sm border-0 rounded-t-md focus:ring-0 focus:border-green-700"
                       onChange={handleSearch}
                     />
                     {searchTerm && (
                       <button type="button" onClick={resetSearch} className="px-2 py-1">
-                        <XIcon className="h-4 w-4 text-gray-400" />
+                        <XIcon className="w-4 h-4 text-gray-400" />
                       </button>
                     )}
                   </div>

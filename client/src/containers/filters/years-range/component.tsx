@@ -12,8 +12,13 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
   startYear,
   endYear,
   years,
-  fiveYearGap = false,
+  loading = false,
+  yearsGap = 0,
+  showStartYearSearch = false,
+  showEndYearSearch = true,
+  showSearch,
   onChange,
+  onSearch,
 }: YearsRangeFilterProps) => {
   const wrapperRef = useRef();
 
@@ -31,7 +36,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
       years?.map((year) => ({
         label: year.toString(),
         value: year,
-        disabled: fiveYearGap && endYear <= year + 4,
+        disabled: endYear <= year + (yearsGap - 1),
       })),
     );
 
@@ -39,12 +44,12 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
       years?.map((year) => ({
         label: year.toString(),
         value: year,
-        disabled: fiveYearGap && year - 4 <= startYear,
+        disabled: startYear >= year - (yearsGap - 1),
       })),
     );
 
     setIsLoaded(true);
-  }, [endYear, fiveYearGap, isLoaded, startYear, years]);
+  }, [endYear, isLoaded, startYear, years, yearsGap]);
 
   useEffect(() => {
     if (!startYearOptions || !endYearOptions) return;
@@ -54,17 +59,17 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
 
   useEffect(() => {
     if (!startYearOption || !endYearOption) return;
-    // Prevents `onChange` to be called when this component loads, possibly causing a loop.
     if (startYear === startYearOption.value && endYear === endYearOption.value) return;
-    onChange({ startYear: Number(startYearOption.value), endYear: Number(endYearOption.value) });
+    onChange &&
+      onChange({ startYear: Number(startYearOption.value), endYear: Number(endYearOption.value) });
   }, [
     startYear,
     endYear,
-    onChange,
     startYearOption,
-    endYearOption,
     startYearOptions,
+    endYearOption,
     endYearOptions,
+    onChange,
   ]);
 
   useOutsideClick(wrapperRef, () => {
@@ -112,19 +117,21 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
               <div className="grid grid-cols-1 gap-2">
                 <div>From</div>
                 <Select
-                  loading={false}
-                  showSearch={false}
+                  loading={loading}
+                  showSearch={showSearch ?? showStartYearSearch}
                   options={startYearOptions}
                   current={startYearOption}
                   onChange={setStartYearOption}
+                  onSearch={onSearch}
                 />
                 <div>To</div>
                 <Select
-                  loading={false}
-                  showSearch={true}
+                  loading={loading}
+                  showSearch={showSearch ?? showEndYearSearch}
                   options={endYearOptions}
                   current={endYearOption}
                   onChange={setEndYearOption}
+                  onSearch={onSearch}
                 />
               </div>
             </div>

@@ -34,7 +34,7 @@ export function useYearsRange({
     const lastYear = years[years.length - 1];
 
     // We have a startYear and an endYear, but they fall out of the years array boundaries. Correct that.
-    if (startYear <= firstYear || endYear >= lastYear) {
+    if (startYear < firstYear || endYear > lastYear) {
       setStartYear(firstYear);
       setEndYear(lastYear);
       return;

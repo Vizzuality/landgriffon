@@ -17,6 +17,7 @@ import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 
 export enum LOCATION_TYPES {
   PRODUCTION_UNIT = 'production unit',
@@ -195,4 +196,11 @@ export class SourcingLocation extends TimestampedBaseEntity {
     { cascade: true, onDelete: 'CASCADE' },
   )
   sourcingRecords: SourcingRecord[];
+
+  @ManyToOne(
+    () => ScenarioIntervention,
+    (scenarioIntervention: ScenarioIntervention) => scenarioIntervention.id,
+    { onDelete: 'CASCADE', eager: true },
+  )
+  scenarioIntervention: ScenarioIntervention;
 }

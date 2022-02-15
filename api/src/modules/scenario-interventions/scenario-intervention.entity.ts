@@ -1,9 +1,11 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -20,6 +22,7 @@ import {
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
+import { IsEnum, IsNotEmpty, isNotEmpty, ValidateIf } from 'class-validator';
 
 export enum SCENARIO_INTERVENTION_STATUS {
   ACTIVE = 'active',
@@ -125,7 +128,7 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
    * Relationships with other entities - list of "new" relationships
    */
   @ManyToOne(() => Material)
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: () => Material })
   newMaterial?: Material;
 
   @ManyToOne(() => BusinessUnit)
@@ -144,10 +147,11 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   @ApiPropertyOptional()
   newAdminRegion?: AdminRegion;
 
-  // TODO - makes sense only if new sourcing location is created, based on the received data for new supplier/location:
-  @ManyToOne(() => SourcingLocation)
-  @ApiPropertyOptional()
-  newSourcingLocation?: SourcingLocation;
+  @OneToMany(
+    () => SourcingLocation,
+    (sourcingLocation) => sourcingLocation.scenarioIntervention,
+  )
+  newSourcingLocations: SourcingLocation[];
 
   /**
    * New sourcing data, if intervention type involves supplier change:

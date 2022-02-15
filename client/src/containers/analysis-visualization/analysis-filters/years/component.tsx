@@ -75,7 +75,7 @@ const YearsFilter: React.FC = () => {
         dispatch(
           setFilter({
             id: 'endYear',
-            value: nextEndYearAvailable?.value || currentStartYearValue.value,
+            value: nextEndYearAvailable?.value || currentStartYearValue?.value,
           }),
         );
       }

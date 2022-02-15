@@ -123,6 +123,7 @@ export class SourcingDataImportService {
       const geoCodedSourcingData: SourcingData[] =
         await this.geoCodingService.geoCodeLocations(
           sourcingDataWithOrganizationalEntities,
+          queryRunner,
         );
 
       await this.sourcingLocationService.save(

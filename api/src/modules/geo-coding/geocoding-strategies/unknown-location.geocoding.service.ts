@@ -3,11 +3,13 @@ import { GeoCodingBaseService } from 'modules/geo-coding/geo-coding.base.service
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GeocodeResponseData } from '@googlemaps/google-maps-services-js/dist/geocode/geocode';
+import { QueryRunner } from 'typeorm';
 
 @Injectable()
 export class UnknownLocationService extends GeoCodingBaseService {
   async geoCodeUnknownLocationType(
     sourcingData: SourcingData,
+    queryRunner?: QueryRunner,
   ): Promise<SourcingLocation> {
     /**
      *   The user must specify a country, but address and coordinates should be empty
@@ -30,6 +32,7 @@ export class UnknownLocationService extends GeoCodingBaseService {
     const { id: adminRegionId, geoRegionId } =
       await this.adminRegionService.getAdminAndGeoRegionIdByCountryIsoAlpha2(
         geoCodedResponse.results[0]?.address_components?.[0]?.short_name,
+        queryRunner,
       );
     return {
       ...sourcingData,

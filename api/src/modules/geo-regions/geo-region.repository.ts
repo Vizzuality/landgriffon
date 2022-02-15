@@ -1,7 +1,10 @@
 import {
+  EntityManager,
   EntityRepository,
   getManager,
   InsertResult,
+  QueryBuilder,
+  QueryRunner,
   Repository,
   SelectQueryBuilder,
 } from 'typeorm';
@@ -25,8 +28,12 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
    */
   async saveGeoRegionAsRadius(
     newGeoRegionValues: LocationGeoRegionDto,
+    queryRunner?: QueryRunner,
   ): Promise<GeoRegion> {
-    const selectQuery: SelectQueryBuilder<any> = getManager()
+    const manager: EntityManager = queryRunner
+      ? queryRunner.manager
+      : getManager();
+    const selectQuery: SelectQueryBuilder<any> = manager
       .createQueryBuilder()
       .select(`hashtext(concat($3::text, points.radius))`)
       .addSelect(`points.radius`)
@@ -37,7 +44,7 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
       )
       .from('points', 'points');
 
-    const res: any = await this.query(
+    const res: any = await manager.query(
       `WITH
         points AS (SELECT ST_BUFFER(ST_SetSRID(ST_POINT($1,$2),4326)::geometry, 0.5) as radius)
       INSERT INTO geo_region (name, "theGeom", "h3Compact")
@@ -58,12 +65,17 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
   /**
    * Saves a new geo-regions with theGeom as POINT (as it comes)
    * @param newGeoRegionValues name, coordinates
+   * @param queryRunner
    * @returns created geo-regions id
    */
   async saveGeoRegionAsPoint(
     newGeoRegionValues: LocationGeoRegionDto,
+    queryRunner?: QueryRunner,
   ): Promise<Pick<GeoRegion, 'id'>> {
-    const res: InsertResult = await this.createQueryBuilder()
+    const geoRegionQueryBuilder: QueryBuilder<GeoRegion> = queryRunner
+      ? queryRunner.manager.createQueryBuilder(GeoRegion, 'geoRegion')
+      : this.createQueryBuilder();
+    const res: InsertResult = await geoRegionQueryBuilder
       .insert()
       .values({
         name: () => `hashtext(:arg1)`,

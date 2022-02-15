@@ -15,6 +15,7 @@ import { UpdateAdminRegionDto } from 'modules/admin-regions/dto/update.admin-reg
 import { FindTreesWithOptionsArgs } from 'utils/tree.repository';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { GetAdminRegionTreeWithOptionsDto } from 'modules/admin-regions/dto/get-admin-region-tree-with-options.dto';
+import { QueryBuilder, QueryRunner } from 'typeorm';
 
 @Injectable()
 export class AdminRegionsService extends AppBaseService<
@@ -77,9 +78,12 @@ export class AdminRegionsService extends AppBaseService<
   // TODO: proper typing after validating this works
   async getAdminAndGeoRegionIdByCountryIsoAlpha2(
     countryIsoAlpha2Code: string,
+    queryRunner?: QueryRunner,
   ): Promise<{ id: string; geoRegionId: string }> {
-    const adminAndGeoRegionId: any = await this.adminRegionRepository
-      .createQueryBuilder('ar')
+    const adminRegionQueryBuilder: QueryBuilder<AdminRegion> = queryRunner
+      ? queryRunner.manager.createQueryBuilder(AdminRegion, 'ar')
+      : this.adminRegionRepository.createQueryBuilder('ar');
+    const adminAndGeoRegionId: any = await adminRegionQueryBuilder
       .select('id')
       .addSelect('"geoRegionId"')
       .where('ar.isoA2 = :countryIsoAlpha2Code', {
@@ -106,22 +110,30 @@ export class AdminRegionsService extends AppBaseService<
     return adminRegion;
   }
 
-  async getAdminRegionIdByCoordinatesAndLevel(searchParams: {
-    lng: number;
-    lat: number;
-    level: number;
-  }): Promise<{ adminRegionId: string; geoRegionId: string }> {
+  async getAdminRegionIdByCoordinatesAndLevel(
+    searchParams: {
+      lng: number;
+      lat: number;
+      level: number;
+    },
+    queryRunner?: QueryRunner,
+  ): Promise<{ adminRegionId: string; geoRegionId: string }> {
     return this.adminRegionRepository.getAdminRegionAndGeoRegionIdByCoordinatesAndLevel(
       searchParams,
+      queryRunner,
     );
   }
 
-  async getClosestAdminRegionByCoordinates(coordinates: {
-    lng: number;
-    lat: number;
-  }): Promise<any> {
+  async getClosestAdminRegionByCoordinates(
+    coordinates: {
+      lng: number;
+      lat: number;
+    },
+    queryRunner?: QueryRunner,
+  ): Promise<any> {
     return this.adminRegionRepository.getClosestAdminRegionByCoordinates(
       coordinates,
+      queryRunner,
     );
   }
 

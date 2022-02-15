@@ -62,7 +62,8 @@ export class ScenarioInterventionsService extends AppBaseService<
   async createScenarioIntervention(
     dto: CreateScenarioInterventionDto,
   ): Promise<ScenarioIntervention> {
-    let scenarioIntervention = new ScenarioIntervention();
+    const scenarioIntervention: ScenarioIntervention =
+      new ScenarioIntervention();
 
     // Depending on the type of scenario intervention - the dto should be processed by the relevant service.
     // For example in case of 'Change production efficiency scenario' the service will be the minimum - adding the initial intervention data + newIndicatorCoefficients

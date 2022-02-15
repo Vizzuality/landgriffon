@@ -1,7 +1,6 @@
 import {
   Column,
   Entity,
-  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
@@ -22,7 +21,6 @@ import {
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
-import { IsEnum, IsNotEmpty, isNotEmpty, ValidateIf } from 'class-validator';
 
 export enum SCENARIO_INTERVENTION_STATUS {
   ACTIVE = 'active',
@@ -149,7 +147,8 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
 
   @OneToMany(
     () => SourcingLocation,
-    (sourcingLocation) => sourcingLocation.scenarioIntervention,
+    (sourcingLocation: SourcingLocation) =>
+      sourcingLocation.scenarioIntervention,
   )
   newSourcingLocations: SourcingLocation[];
 

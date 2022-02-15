@@ -9,6 +9,7 @@ import {
   IsUUID,
   MaxLength,
   MinLength,
+  ValidateIf,
 } from 'class-validator';
 import { SCENARIO_INTERVENTION_TYPE } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
@@ -88,13 +89,23 @@ export class CreateScenarioInterventionDto {
   @ApiPropertyOptional()
   newProducerId?: string;
 
+  @ValidateIf(
+    (dto) =>
+      dto.type === SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL ||
+      dto.type === SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+  )
   @IsEnum(Object.values(LOCATION_TYPES))
-  @IsOptional()
+  @IsNotEmpty()
   @ApiPropertyOptional()
   newLocationType?: LOCATION_TYPES;
 
+  @ValidateIf(
+    (dto) =>
+      dto.type === SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL ||
+      dto.type === SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+  )
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   @ApiPropertyOptional()
   newCountryInput?: string;
 

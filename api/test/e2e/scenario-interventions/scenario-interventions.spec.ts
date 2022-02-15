@@ -72,8 +72,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           newIndicatorCoefficients:
             '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
-        })
-        .expect(HttpStatus.CREATED);
+        });
+
+      expect(HttpStatus.CREATED);
 
       const createdScenarioIntervention =
         await scenarioInterventionRepository.findOne(response.body.data.id);
@@ -88,14 +89,16 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
     });
+  });
 
+  describe('Missing data and validations', () => {
     test('Create a scenario intervention without the required fields should fail with a 400 error', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
-        .send()
-        .expect(HttpStatus.BAD_REQUEST);
+        .send();
 
+      expect(HttpStatus.BAD_REQUEST);
       expect(response).toHaveErrorMessage(
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
@@ -118,6 +121,68 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           'newIndicatorCoefficients must be a json string',
           'newIndicatorCoefficients should not be empty',
           'newIndicatorCoefficients must be a string',
+        ],
+      );
+    });
+
+    test('Create new intervention with replacing supplier without new location data fields should fail with a 400 error', async () => {
+      const scenario: Scenario = await createScenario();
+      const material: Material = await createMaterial();
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'test scenario intervention',
+          endYear: 2025,
+          percentage: 50,
+          scenarioId: scenario.id,
+          materialsIds: [material.id],
+          type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          newIndicatorCoefficients:
+            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
+        });
+
+      expect(HttpStatus.BAD_REQUEST);
+      expect(response).toHaveErrorMessage(
+        HttpStatus.BAD_REQUEST,
+        'Bad Request Exception',
+        [
+          'Available columns for new location type: production unit, processing facility, tier 1 Trade facility, tier 2 Trade facility, origin Country, unknown, aggregation point, point of production, country of production',
+          'New location type input is required for the selected intervention type',
+          'New country input is required for the selected intervention type',
+          'New address or coordinates input is required for the selected intervention type',
+        ],
+      );
+    });
+
+    test('Create new intervention with replacing material without new location data fields should fail with a 400 error', async () => {
+      const scenario: Scenario = await createScenario();
+      const material: Material = await createMaterial();
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'test scenario intervention',
+          endYear: 2025,
+          percentage: 50,
+          scenarioId: scenario.id,
+          materialsIds: [material.id],
+          type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+          newIndicatorCoefficients:
+            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
+        });
+
+      expect(HttpStatus.BAD_REQUEST);
+      expect(response).toHaveErrorMessage(
+        HttpStatus.BAD_REQUEST,
+        'Bad Request Exception',
+        [
+          'Available columns for new location type: production unit, processing facility, tier 1 Trade facility, tier 2 Trade facility, origin Country, unknown, aggregation point, point of production, country of production',
+          'New location type input is required for the selected intervention type',
+          'New country input is required for the selected intervention type',
+          'New address or coordinates input is required for the selected intervention type',
+          'newMaterialId must be a UUID',
+          'New Material is required for the selected intervention type',
         ],
       );
     });

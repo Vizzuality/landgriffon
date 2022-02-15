@@ -90,27 +90,42 @@ export class CreateScenarioInterventionDto {
   newProducerId?: string;
 
   @ValidateIf(
-    (dto) =>
+    (dto: CreateScenarioInterventionDto) =>
       dto.type === SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL ||
       dto.type === SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
   )
-  @IsEnum(Object.values(LOCATION_TYPES))
-  @IsNotEmpty()
+  @IsNotEmpty({
+    message:
+      'New location type input is required for the selected intervention type',
+  })
+  @IsEnum(Object.values(LOCATION_TYPES), {
+    message: `Available columns for new location type: ${Object.values(
+      LOCATION_TYPES,
+    ).join(', ')}`,
+  })
   @ApiPropertyOptional()
   newLocationType?: LOCATION_TYPES;
 
   @ValidateIf(
-    (dto) =>
+    (dto: CreateScenarioInterventionDto) =>
       dto.type === SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL ||
       dto.type === SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
   )
-  @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({
+    message: 'New country input is required for the selected intervention type',
+  })
   @ApiPropertyOptional()
   newCountryInput?: string;
 
-  @IsString()
-  @IsOptional()
+  @ValidateIf(
+    (dto: CreateScenarioInterventionDto) =>
+      dto.type === SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL ||
+      dto.type === SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+  )
+  @IsNotEmpty({
+    message:
+      'New address or coordinates input is required for the selected intervention type',
+  })
   @ApiPropertyOptional()
   newAddressInput?: string;
 
@@ -119,8 +134,14 @@ export class CreateScenarioInterventionDto {
   @ApiPropertyOptional()
   newGeoRegionId?: string;
 
+  @ValidateIf(
+    (dto: CreateScenarioInterventionDto) =>
+      dto.type === SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+  )
+  @IsNotEmpty({
+    message: 'New Material is required for the selected intervention type',
+  })
   @IsUUID()
-  @IsOptional()
   @ApiPropertyOptional()
   newMaterialId?: string;
 

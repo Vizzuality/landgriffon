@@ -1,11 +1,15 @@
 import { useCallback, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
-import { analysis, setSidebarCollapsed } from 'store/features/analysis';
+import { analysis, setSidebarCollapsed, setSubContentCollapsed } from 'store/features/analysis';
 import Component from './component';
 
-const CollapseButtonContainer: React.FC = () => {
-  const { isSidebarCollapsed } = useAppSelector(analysis);
+type CollapseButton = Readonly<{
+  onClick?: () => void;
+}>
+
+const CollapseButtonContainer: React.FC<CollapseButton>= ({ onClick }: CollapseButton) => {
+  const { isSidebarCollapsed, isSubContentCollapsed } = useAppSelector(analysis);
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { query } = router;
@@ -19,6 +23,8 @@ const CollapseButtonContainer: React.FC = () => {
         collapsed: !isSidebarCollapsed,
       },
     });
+
+    !isSubContentCollapsed && dispatch(setSubContentCollapsed(true));
   }, [isSidebarCollapsed]);
 
   useEffect(() => {

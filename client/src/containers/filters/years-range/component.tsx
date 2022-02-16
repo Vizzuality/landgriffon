@@ -17,8 +17,9 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
   showStartYearSearch = false,
   showEndYearSearch = true,
   showSearch,
-  onChange,
-  onSearch,
+  onChange = () => null,
+  onStartYearSearch = () => null,
+  onEndYearSearch = () => null,
 }: YearsRangeFilterProps) => {
   const wrapperRef = useRef();
 
@@ -122,7 +123,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
                   options={startYearOptions}
                   current={startYearOption}
                   onChange={setStartYearOption}
-                  onSearch={onSearch}
+                  onSearch={onStartYearSearch}
                 />
                 <div>To</div>
                 <Select
@@ -131,7 +132,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
                   options={endYearOptions}
                   current={endYearOption}
                   onChange={setEndYearOption}
-                  onSearch={onSearch}
+                  onSearch={onEndYearSearch}
                 />
               </div>
             </div>

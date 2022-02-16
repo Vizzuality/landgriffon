@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { useCallback, useMemo, useState } from 'react';
-=======
-import { useCallback, useMemo } from 'react';
->>>>>>> b7c3ded (new scenario options layout)
 import { useRouter } from 'next/router';
 import { useAppDispatch } from 'store/hooks';
 import Steps from 'components/steps';
@@ -18,11 +14,7 @@ const steps: Step[] = [
     id: 'Step 1',
     slug: 'intervention_step1',
     name: 'Define scope',
-<<<<<<< HEAD
     description:
-=======
-    description: 
->>>>>>> 35c952f (interactivity map removed on blur, eslint)
       'Choose to which data of your supply chain you want to apply the intervention in order to analyze changes.',
     href: '#intervention_step1',
     status: 'current',
@@ -44,21 +36,13 @@ const InterventionForm = () => {
 
   const currentStep = useMemo<string>(() => asPath.split('#')[1], [asPath]);
   const isFirstStep = useMemo<boolean>(() => currentStep === 'intervention_step1', [currentStep]);
-<<<<<<< HEAD
-=======
-
->>>>>>> 35c952f (interactivity map removed on blur, eslint)
   const handleCancel = useCallback(() => {
     dispatch(setSubContentCollapsed(true));
   }, []);
 
   return (
     <>
-<<<<<<< HEAD
       <Steps steps={steps} current={currentStep} className="mb-10 z-20" />
-=======
-      <Steps steps={steps} current={currentStep} className="mb-10 z-20" />  
->>>>>>> 35c952f (interactivity map removed on blur, eslint)
       <form className="space-y-8">
         {(!currentStep || isFirstStep) && <Step1 />}
         {!!currentStep && !isFirstStep && <Step2 />}

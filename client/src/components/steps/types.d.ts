@@ -1,7 +1,8 @@
 export type Step = {
   id: string;
+  slug?: string;
   name: string;
   href: string;
-  description?: string,
+  description?: string;
   status: 'complete' | 'current' | 'upcoming';
 };

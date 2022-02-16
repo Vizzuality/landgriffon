@@ -2,7 +2,7 @@ import type { Step } from './types';
 import cx from 'classnames';
 
 import Link from 'next/link';
- 
+
 type StepsProps = React.HTMLAttributes<unknown> & {
   steps: Step[];
   current?: string;

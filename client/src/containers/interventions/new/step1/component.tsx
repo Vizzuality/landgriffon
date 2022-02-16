@@ -20,7 +20,6 @@ const Step1 = () => {
   const dispatch = useAppDispatch();
   //const [isOpen, setIsOpen] = useState<boolean>(false);
   const { filters } = useAppSelector(analysis);
-
   const businesses = ['business1', 'business2', 'business3'];
   const yearCompletions = [2001, 2015, 2020];
   const interventionTypes = [

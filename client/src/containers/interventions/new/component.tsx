@@ -14,7 +14,8 @@ const steps: Step[] = [
     id: 'Step 1',
     slug: 'intervention_step1',
     name: 'Define scope',
-    description: 'Choose to which data of your supply chain you want to apply the intervention in order to analyze changes.',
+    description: 
+      'Choose to which data of your supply chain you want to apply the intervention in order to analyze changes.',
     href: '#intervention_step1',
     status: 'current',
   },
@@ -22,7 +23,8 @@ const steps: Step[] = [
     id: 'Step 2',
     slug: 'intervention_step2',
     name: 'Source from a new supplier or location',
-    description: 'Select a new location or supplier you want to source from in order to analyse changes.',
+    description:
+      'Select a new location or supplier you want to source from in order to analyse changes.',
     href: '#intervention_step2',
     status: 'upcoming',
   },
@@ -34,14 +36,14 @@ const InterventionForm = () => {
 
   const currentStep = useMemo<string>(() => asPath.split('#')[1], [asPath]);
   const isFirstStep = useMemo<boolean>(() => currentStep === 'intervention_step1', [currentStep]);
-  
+
   const handleCancel = useCallback(() => {
     dispatch(setSubContentCollapsed(true));
   }, []);
 
   return (
     <>
-    <Steps steps={steps} current={currentStep} className="mb-10 z-20" />
+      <Steps steps={steps} current={currentStep} className="mb-10 z-20" />  
       <form className="space-y-8">
         {(!currentStep || isFirstStep) && <Step1 />}
         {!isFirstStep && <Step2 />}
@@ -63,8 +65,7 @@ const InterventionForm = () => {
           </div>
         </div>
       </form>
-      </>
-
+    </>
   );
 };
 

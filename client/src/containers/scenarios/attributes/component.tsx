@@ -76,7 +76,7 @@ const ScenarioAttributes = ({ handleNewIntervention }) => {
         <div>
           <div className="p-6 text-center">
             <p className="text-sm">
-              Growth rates set your expectations of how purchaces of raw materials will change into 
+              Growth rates set your expectations of how purchaces of raw materials will change into{' '}
               the future. Add a new rule to get started.
             </p>
           </div>

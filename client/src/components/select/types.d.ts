@@ -22,4 +22,5 @@ export type SelectProps = {
   onChange?: (selected: SelectOption) => unknown;
   onSearch?: (query: string) => unknown;
   styles?: Styles;
+  theme?: string;
 };

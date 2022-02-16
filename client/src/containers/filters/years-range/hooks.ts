@@ -7,6 +7,7 @@ export function useYearsRange({
   yearsGap = 0,
   startYear: initialStartYear,
   endYear: initialEndYear,
+  validateRange = true,
 }: UseYearsRangeProps): UseYearsRangeProps {
   const [startYear, setStartYear] = useState<number>(initialStartYear);
   const [endYear, setEndYear] = useState<number>(initialEndYear);
@@ -36,7 +37,7 @@ export function useYearsRange({
     const lastYear = years[years.length - 1];
 
     // We have a startYear and an endYear, but they fall out of the years array boundaries. Correct that.
-    if (startYear < firstYear || endYear > lastYear) {
+    if (validateRange && (startYear < firstYear || endYear > lastYear)) {
       setStartYear(firstYear);
       setEndYear(lastYear);
       return;
@@ -53,7 +54,7 @@ export function useYearsRange({
         console.error('Years gap cannot be respected; not enough years data');
       }
     }
-  }, [endYear, setYearsRange, startYear, years, yearsGap]);
+  }, [endYear, setYearsRange, startYear, validateRange, years, yearsGap]);
 
   const yearsInRange = useMemo(
     () =>

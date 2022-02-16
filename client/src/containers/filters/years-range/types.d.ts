@@ -31,8 +31,6 @@ export type YearsRangeFilterProps = YearsRangeParams & {
   showSearch?: boolean;
   /** Callback when the years range is changed */
   onChange?: ({ startYear, endYear }: YearsRangeParams) => void;
-  /** Callback when one of the years fields is searched */
-  onSearch?: SelectProps['onSearch'];
   /** Callback when the start year is searched */
   onStartYearSearch?: SelectProps['onSearch'];
   /** Callback when the end year is searched */
@@ -46,6 +44,11 @@ export type UseYearsRangeProps = Partial<YearsRangeParams> & {
   yearsInRange?: number[];
   /** Enforce N years gap between startYear and endYear */
   yearsGap?: number;
+  /**
+   * Whether to validate the set startYear/endYear fall within the years array range.
+   * Defaults to `true`
+   * */
+  validateRange?: boolean;
   /** Set the start year */
   setStartYear?: (startYear: number) => void;
   /** Set the end year */

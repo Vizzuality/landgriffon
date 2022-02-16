@@ -22,16 +22,15 @@ const AnalysisVisualizationNoSSR = dynamic(() => import('containers/analysis-vis
 
 const AnalysisPage: React.FC = () => {
   const { isSidebarCollapsed, isSubContentCollapsed } = useAppSelector(analysis);
+  const dispatch = useAppDispatch();
+  const { query } = useRouter();
+  const { new_scenario, edit_scenario } = query;
 
   const analysisContent = () => {
     if (new_scenario) return <ScenarioNew />;
     if (edit_scenario) return <ScenarioEdit />;
     return <Scenarios />;
   };
-
-  const dispatch = useAppDispatch();
-  const { query } = useRouter();
-  const { new_scenario, edit_scenario } = query;
 
   // Breadcrumbs
   let pages: Page[] = [{ name: 'Analysis', href: '/analysis' }]; // Default
@@ -77,8 +76,8 @@ const AnalysisPage: React.FC = () => {
 
               {/* Analysis aside */}
               {!isSubContentCollapsed && !isSidebarCollapsed && (
-                <aside className="absolute ml-96 top-0 h-full hidden lg:block lg:flex-shrink-0 bg-white z-20 min-w-min w-250">
-                  <div className="h-full flex flex-col border-r border-gray-200 p-6 overflow-auto w-full">
+                <aside className="absolute ml-96 top-0 h-full hidden lg:block lg:flex-shrink-0 bg-white z-20 w-max max-w-3xl">
+                  <div className="h-full flex flex-col w-auto border-r border-gray-200 p-6 overflow-auto">
                     {/* For now, I'm going to assume we will only have the intervention form here */}
                     <ScenariosForm />
                   </div>

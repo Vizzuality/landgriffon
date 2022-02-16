@@ -1,9 +1,10 @@
 import { useCallback, useMemo } from 'react';
 
+
 // hooks
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 
-//import { analysis, setFilter } from 'store/features/analysis';
+import { analysis, setFilter } from 'store/features/analysis';
 
 // components
 import Select from 'components/select';
@@ -11,14 +12,18 @@ import Select from 'components/select';
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
 
+
 const GowthForm = () => {
+
   const dispatch = useAppDispatch();
   //const [isOpen, setIsOpen] = useState<boolean>(false);
-  //const { filters } = useAppSelector(analysis);
+  const { filters } = useAppSelector(analysis);
 
-  const onChange = useCallback((key: string, value: string | number) => {
-    console.log(key, value);
-  }, []);
+  const onChange = useCallback(
+    (key: string, value: string | number) => {
+    },
+    [],
+  );
   const businessUnities = ['business1', 'business2', 'business3'];
   const growthRates = ['growth1', 'growth2', 'growth3'];
 
@@ -32,41 +37,30 @@ const GowthForm = () => {
   const isLoadingBusinessUnity = false;
   const isLoadingGrowth = false;
 
-  const optionsBusiness: SelectOptions = useMemo(
-    () =>
-      businessUnities.map((business) => ({
-        label: business,
-        value: business,
-      })),
-    [businessUnities],
-  );
+  const optionsBusiness: SelectOptions = useMemo(() =>
+    businessUnities.map((business) => ({
+      label: business,
+      value: business,
+    })), [businessUnities]);
 
   const currentBusinessUnity = useMemo<SelectOption>(
-    () => optionsBusiness?.find((option) => option.value === businessUnity),
-    [optionsBusiness],
-  );
+    () => optionsBusiness?.find((option) => option.value === businessUnity), [optionsBusiness])
 
-  const optionsGrowth: SelectOptions = useMemo(
-    () =>
-      growthRates.map((business) => ({
-        label: business,
-        value: business,
-      })),
-    [growthRates],
-  );
+  const optionsGrowth: SelectOptions = useMemo(() =>
+    growthRates.map((business) => ({
+      label: business,
+      value: business,
+    })), [growthRates]);
 
   const currentGrowth = useMemo<SelectOption>(
     () => optionsGrowth?.find((option) => option.value === growthRate),
-    [optionsGrowth],
-  );
+    [optionsGrowth]);
 
   return (
     <>
       <h2 className="text-xl">Set growth rate</h2>
-      <p className="text-sm text-gray-600">
-        Growth rates set your expectations of how purchaces of raw materials will change into the{' '}
-        future. More specific settings override less specific ones.
-      </p>
+      <p className="text-sm text-gray-600">Growth rates set your expectations of how purchaces of raw materials will change into the future. More specific settings override less specific ones.</p>
+
       <fieldset className="sm:col-span-3 text-sm">
         <div className="mt-6">
           <label htmlFor="business" className="block text-sm font-medium text-gray-700">
@@ -85,25 +79,30 @@ const GowthForm = () => {
       </fieldset>
 
       <fieldset className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2 text-sm font-medium text-gray-700">
-        <div className="mt-1">
+        <div>
+          <div className="mt-1">
           <span>Business unity</span>
-          <Select
-            loading={isLoadingBusinessUnity}
-            current={currentBusinessUnity}
-            options={optionsBusiness}
-            placeholder="Select"
-            onChange={() => onChange('business_unity', currentBusinessUnity.value)}
-          />
+            <Select
+              loading={isLoadingBusinessUnity}
+              current={currentBusinessUnity}
+              options={optionsBusiness}
+              placeholder="Select"
+              onChange={() => onChange('business_unity', currentBusinessUnity.value)}
+            />
+          </div>
         </div>
-        <div className="mt-1">
-          <span>Growth rate (Linear)</span>
-          <Select
-            loading={isLoadingGrowth}
-            current={currentGrowth}
-            options={optionsGrowth}
-            placeholder="Select"
-            onChange={() => onChange('growth', currentGrowth.value)}
-          />
+        <div>
+
+          <div className="mt-1">
+            <span>Growth rate (Linear)</span>
+            <Select
+              loading={isLoadingGrowth}
+              current={currentGrowth}
+              options={optionsGrowth}
+              placeholder="Select"
+              onChange={() => onChange('growth', currentGrowth.value)}
+            />
+          </div>
         </div>
       </fieldset>
     </>

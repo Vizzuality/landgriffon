@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { useCallback, useMemo, useState } from 'react';
+=======
+import { useCallback, useMemo } from 'react';
+>>>>>>> b7c3ded (new scenario options layout)
 import { useRouter } from 'next/router';
 import { useAppDispatch } from 'store/hooks';
 import Steps from 'components/steps';
@@ -36,7 +40,6 @@ const InterventionForm = () => {
 
   const currentStep = useMemo<string>(() => asPath.split('#')[1], [asPath]);
   const isFirstStep = useMemo<boolean>(() => currentStep === 'intervention_step1', [currentStep]);
-
   const handleCancel = useCallback(() => {
     dispatch(setSubContentCollapsed(true));
   }, []);

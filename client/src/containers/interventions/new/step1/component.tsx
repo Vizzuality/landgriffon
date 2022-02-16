@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react';
 
 // hooks
 import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { useRouter } from 'next/router';
 
 import { analysis, setFilter } from 'store/features/analysis';
 
@@ -16,10 +17,9 @@ const Step1 = () => {
   //const [isOpen, setIsOpen] = useState<boolean>(false);
   const { filters } = useAppSelector(analysis);
   const { materials: materialsData } = filters;
+  const router = useRouter();
+  const { query } = router;
 
-  const onChange = useCallback((key: string, value: string | number) => {
-    console.log('onChnage', key, value);
-  }, []);
   const materials = ['material1', 'material2', 'material3'];
   const businesses = ['business1', 'business2', 'business3'];
   const supliers = ['supplier1', 'supplier2', 'supplier3'];
@@ -134,6 +134,18 @@ const Step1 = () => {
   const isLoadingYearCompletion = false;
   const isLoadingInterventionTypes = false;
 
+  const onChange = useCallback((key: string, value: string | number) => {
+    if (key === 'intervention_type') {
+      // router.push({
+      //   pathname: '/analysis',
+      //   query: {
+      //     ...query,
+      //     intervention_type: value, // by default firs option of the list
+      //   },
+      // });
+    }
+  }, []);
+  
   return (
     <>
       <fieldset className="sm:col-span-3 text-sm">
@@ -178,7 +190,7 @@ const Step1 = () => {
               current={currentMaterial}
               options={optionsMaterial}
               placeholder="all materials"
-              onChange={() => onChange('all', currentMaterial.value)}
+              onChange={() => onChange('materials', currentMaterial.value)}
               theme="secondary"
             />
           </div>
@@ -188,7 +200,7 @@ const Step1 = () => {
             current={currentBusiness}
             options={optionsBusinesses}
             placeholder="all businesses"
-            onChange={() => onChange('all', currentBusiness.value)}
+            onChange={() => onChange('businesses', currentBusiness.value)}
             theme="secondary"
           />
           <span className="text-gray-700 font-medium pr-2">from</span>
@@ -197,7 +209,7 @@ const Step1 = () => {
             current={currentSuplier}
             options={optionsSuplier}
             placeholder="all supliers"
-            onChange={() => onChange('all', currentSuplier.value)}
+            onChange={() => onChange('supliers', currentSuplier.value)}
             theme="secondary"
           />
           <span className="text-gray-700 font-medium pr-2">in</span>
@@ -206,7 +218,7 @@ const Step1 = () => {
             current={currentsourcingRegion}
             options={optionsSourcingRegion}
             placeholder="all sourcing regions"
-            onChange={() => onChange('all', currentsourcingRegion.value)}
+            onChange={() => onChange('sourcing_regions', currentsourcingRegion.value)}
             theme="secondary"
           />
           <span className="text-gray-700 font-medium pr-2">.</span>
@@ -234,7 +246,7 @@ const Step1 = () => {
               current={currentInterventionType}
               options={optionsInterventionType}
               placeholder="Select"
-              onChange={() => onChange('intervention_typen', currentInterventionType?.value)}
+              onChange={() => onChange('intervention_type', currentInterventionType?.value)}
             />
           </div>
         </div>

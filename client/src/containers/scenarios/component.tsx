@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { PlusIcon, XCircleIcon } from '@heroicons/react/solid';
 import ScenariosFilters from 'containers/scenarios/filters';
 import ScenariosList from 'containers/scenarios/list';
+import Breadcrumb from 'components/breadcrumb';
 import { AnchorLink } from 'components/button';
 import { useScenarios } from 'hooks/scenarios';
 import type { Page } from 'components/breadcrumb/types';

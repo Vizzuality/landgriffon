@@ -25,8 +25,7 @@ const Step2 = () => {
   );
 
   const currentProducer = useMemo<SelectOption>(
-    () =>
-      optionsProducers?.find((option) => option.value === producer),
+    () => optionsProducers?.find((option) => option.value === producer),
     [optionsProducers],
   );
 
@@ -40,15 +39,15 @@ const Step2 = () => {
   );
 
   const currentLocationType = useMemo<SelectOption>(
-    () =>
-      optionsLocationTypes?.find((option) => option.value === locationType),
+    () => optionsLocationTypes?.find((option) => option.value === locationType),
     [optionsLocationTypes],
   );
 
   const optionsCountries: SelectOptions = useMemo(
-    () => countries.map((country) => ({
-      label: country,
-      value: country,
+    () =>
+      countries.map((country) => ({
+        label: country,
+        value: country,
       })),
     [countries],
   );

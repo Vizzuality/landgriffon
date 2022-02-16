@@ -14,7 +14,7 @@ const steps: Step[] = [
     id: 'Step 1',
     slug: 'intervention_step1',
     name: 'Define scope',
-    description: 
+    description:
       'Choose to which data of your supply chain you want to apply the intervention in order to analyze changes.',
     href: '#intervention_step1',
     status: 'current',
@@ -43,7 +43,7 @@ const InterventionForm = () => {
 
   return (
     <>
-      <Steps steps={steps} current={currentStep} className="mb-10 z-20" />  
+      <Steps steps={steps} current={currentStep} className="mb-10 z-20" />
       <form className="space-y-8">
         {(!currentStep || isFirstStep) && <Step1 />}
         {!isFirstStep && <Step2 />}

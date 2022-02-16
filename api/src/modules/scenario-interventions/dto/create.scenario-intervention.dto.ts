@@ -59,18 +59,18 @@ export class CreateScenarioInterventionDto {
   materialsIds!: string[];
 
   @IsUUID(4, { each: true })
-  @IsOptional()
+  @IsNotEmpty()
   @ApiPropertyOptional()
-  businessUnitsIds?: string[];
+  businessUnitsIds!: string[];
+
+  @IsUUID(4, { each: true })
+  @IsNotEmpty()
+  @ApiProperty()
+  suppliersIds!: string[];
 
   @IsUUID(4, { each: true })
   @IsOptional()
-  @ApiPropertyOptional()
-  suppliersIds?: string[];
-
-  @IsUUID(4, { each: true })
-  @IsOptional()
-  @ApiPropertyOptional()
+  @ApiProperty()
   adminRegionsIds?: string[];
 
   @IsString()

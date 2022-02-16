@@ -17,12 +17,9 @@ const Step1 = () => {
   const { filters } = useAppSelector(analysis);
   const { materials: materialsData } = filters;
 
-  const onChange = useCallback(
-    (key: string, value: string | number) => {
-      console.log('onChnage', key, value)
-    },
-    [],
-  );
+  const onChange = useCallback((key: string, value: string | number) => {
+    console.log('onChnage', key, value);
+  }, []);
   const materials = ['material1', 'material2', 'material3'];
   const businesses = ['business1', 'business2', 'business3'];
   const supliers = ['supplier1', 'supplier2', 'supplier3'];
@@ -56,14 +53,16 @@ const Step1 = () => {
   );
 
   const currentMaterial = useMemo<SelectOption>(
-    () => optionsMaterial?.find((option) => option.value === material), [optionsMaterial])
-    
+    () => optionsMaterial?.find((option) => option.value === material),
+    [optionsMaterial],
+  );
+
   const optionsBusinesses: SelectOptions = useMemo(
-    () => 
+    () =>
       businesses.map((business) => ({
         label: business,
         value: business,
-      })), 
+      })),
     [businesses],
   );
 
@@ -73,7 +72,7 @@ const Step1 = () => {
   );
 
   const optionsSuplier: SelectOptions = useMemo(
-    () => 
+    () =>
       supliers.map((suplier) => ({
         label: suplier,
         value: suplier,

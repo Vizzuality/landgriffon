@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { isFinite, toNumber } from 'lodash';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis, setFilter } from 'store/features/analysis';
@@ -6,20 +7,26 @@ import { analysis, setFilter } from 'store/features/analysis';
 import { useYears } from 'hooks/years';
 
 import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range';
-import Select from 'components/select';
+import Select, { SelectProps } from 'components/select';
 
 const YearsFilter: React.FC = () => {
   const dispatch = useAppDispatch();
 
+  const [years, setYears] = useState<number[]>([]);
   const { visualizationMode, filters, layer } = useAppSelector(analysis);
   const { materials, indicator } = filters;
-  const { data: years, isLoading } = useYears(layer, materials, indicator);
+  const { data, isLoading } = useYears(layer, materials, indicator);
 
   const { startYear, endYear, yearsGap, setYearsRange } = useYearsRange({
     years: years,
     yearsGap: 5,
+    validateRange: false,
     ...filters,
   });
+
+  useEffect(() => {
+    setYears(data);
+  }, [data]);
 
   useEffect(() => {
     dispatch(setFilter({ id: 'startYear', value: startYear }));
@@ -35,6 +42,16 @@ const YearsFilter: React.FC = () => {
     () => years?.map((year) => ({ label: year.toString(), value: year })),
     [years],
   );
+
+  const handleOnEndYearSearch: SelectProps['onSearch'] = (searchedYear) => {
+    if (!isFinite(toNumber(searchedYear)) || toNumber(searchedYear) <= data[0]) {
+      return;
+    }
+
+    if (!years.includes(toNumber(searchedYear))) {
+      setYears([toNumber(searchedYear), ...data]);
+    }
+  };
 
   return visualizationMode === 'map' ? (
     <Select
@@ -52,7 +69,9 @@ const YearsFilter: React.FC = () => {
       endYear={endYear}
       years={years}
       yearsGap={yearsGap}
+      showEndYearSearch={true}
       onChange={setYearsRange}
+      onEndYearSearch={handleOnEndYearSearch}
     />
   );
 };

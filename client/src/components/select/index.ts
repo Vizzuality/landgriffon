@@ -1,2 +1,2 @@
 export { default } from './component';
-export type { SelectOption } from './types';
+export type { SelectOption, SelectProps } from './types';

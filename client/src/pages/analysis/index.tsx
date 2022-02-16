@@ -59,7 +59,7 @@ const AnalysisPage: React.FC = () => {
           <div className="relative h-full z-30">
             <section className="relative h-full top-0 hidden lg:block lg:flex-shrink-0 lg:order-first">
               <Transition
-                className="h-full relative flex flex-col border-r border-gray-200 bg-white w-96 overflow-x-hidden p-6"
+                className="h-full relative flex flex-col border-r border-gray-200 bg-white w-96 overflow-x-hidden px-6"
                 show={!isSidebarCollapsed}
                 enter="transition-opacity duration-75"
                 enterFrom="opacity-0"
@@ -68,7 +68,7 @@ const AnalysisPage: React.FC = () => {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
-                <div className="pb-10">
+                <div className="pt-6 pb-10">
                   <Breadcrumb pages={pages} />
                 </div>
                 {analysisContent()}

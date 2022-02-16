@@ -4,11 +4,7 @@ import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysis, setSidebarCollapsed, setSubContentCollapsed } from 'store/features/analysis';
 import Component from './component';
 
-type CollapseButton = Readonly<{
-  onClick?: () => void;
-}>
-
-const CollapseButtonContainer: React.FC<CollapseButton>= ({ onClick }: CollapseButton) => {
+const CollapseButtonContainer: React.FC = () => {
   const { isSidebarCollapsed, isSubContentCollapsed } = useAppSelector(analysis);
   const dispatch = useAppDispatch();
   const router = useRouter();

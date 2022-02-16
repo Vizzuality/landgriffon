@@ -16,47 +16,58 @@ const Step2 = () => {
   const country = 'Spain';
 
   const optionsProducers: SelectOptions = useMemo(
-    () => producers.map((producer) => ({
-      label: producer,
-      value: producer,
-    })), [producers]);
+    () =>
+      producers.map((producer) => ({
+        label: producer,
+        value: producer,
+      })),
+    [producers],
+  );
 
   const currentProducer = useMemo<SelectOption>(
-    () => optionsProducers?.find((option) => option.value === producer),
-    [optionsProducers]);
+    () =>
+      optionsProducers?.find((option) => option.value === producer),
+    [optionsProducers],
+  );
 
   const optionsLocationTypes: SelectOptions = useMemo(
-    () => locationTypes.map((locationType) => ({
-      label: locationType,
-      value: locationType,
-    })), [locationTypes]);
+    () =>
+      locationTypes.map((locationType) => ({
+        label: locationType,
+        value: locationType,
+      })),
+    [locationTypes],
+  );
 
   const currentLocationType = useMemo<SelectOption>(
-    () => optionsLocationTypes?.find((option) => option.value === locationType),
-    [optionsLocationTypes]);
+    () =>
+      optionsLocationTypes?.find((option) => option.value === locationType),
+    [optionsLocationTypes],
+  );
 
   const optionsCountries: SelectOptions = useMemo(
     () => countries.map((country) => ({
       label: country,
       value: country,
-    })), [countries]);
+      })),
+    [countries],
+  );
 
   const currentCountry = useMemo<SelectOption>(
     () => optionsCountries?.find((option) => option.value === country),
-    [optionsCountries]);
+    [optionsCountries],
+  );
 
   const isLoadingProducers = false;
   const isLoadingLocationType = false;
   const isLoadingCountries = false;
 
   const onChange = useCallback((key: string, value: string | number) => {
-    console.log('onChange filter')
-  },
-    [],
-  );
+    console.log('onChange filter');
+  }, []);
 
   const handleChange = useCallback(() => {
-    setLandgriffonEstimates(!landgriffonEstimates)
+    setLandgriffonEstimates(!landgriffonEstimates);
   }, []);
 
   return (

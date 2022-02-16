@@ -10,12 +10,13 @@ import AnalysisFilters from './analysis-filters';
 import AnalysisTable from './analysis-table';
 
 const AnalysisVisualization: React.FC = () => {
-  const { visualizationMode } = useAppSelector(analysis);
+  const { visualizationMode, isSubContentCollapsed } = useAppSelector(analysis);
 
   return (
     <section
       className={classNames('relative flex flex-col flex-1 md:h-full lg:order-last', {
         'overflow-hidden': visualizationMode === 'map',
+        'backdrop-blur-3xl blur-sm': !isSubContentCollapsed 
       })}
     >
       <div

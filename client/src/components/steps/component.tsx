@@ -17,7 +17,8 @@ const Steps: React.FC<StepsProps> = ({ steps, current, ...props }: StepsProps) =
             <Link href={step.href}>
               <a
                 href={step.href}
-                className={cx('group pl-4 py-2 flex flex-col border-l-4md:pl-0 md:pt-4 md:pb-0 md:border-l-0 md:border-t-4',
+                className={cx(
+                  'group pl-4 py-2 flex flex-col border-l-4md:pl-0 md:pt-4 md:pb-0 md:border-l-0 md:border-t-4',
                   {
                     'border-indigo-600 hover:border-indigo-800': step.slug !== current,
                     'border-green-700': step.slug === current,
@@ -38,7 +39,8 @@ const Steps: React.FC<StepsProps> = ({ steps, current, ...props }: StepsProps) =
             <Link href={step.href}>
               <a
                 href={step.href}
-                className={cx('pl-4 py-2 flex flex-col border-l-4 md:pl-0 md:pt-4 md:pb-0 md:border-l-0 md:border-t-4',
+                className={cx(
+                  'pl-4 py-2 flex flex-col border-l-4 md:pl-0 md:pt-4 md:pb-0 md:border-l-0 md:border-t-4',
                   {
                     'border-green-70': step.slug !== current,
                     'border-green-700': step.slug === current,
@@ -60,7 +62,8 @@ const Steps: React.FC<StepsProps> = ({ steps, current, ...props }: StepsProps) =
             <Link href={step.href}>
               <a
                 href={step.href}
-                className={cx('group pl-4 py-2 flex flex-col border-l-4 md:pl-0 md:pt-4 md:pb-0 md:border-l-0 md:border-t-4',
+                className={cx(
+                  'group pl-4 py-2 flex flex-col border-l-4 md:pl-0 md:pt-4 md:pb-0 md:border-l-0 md:border-t-4',
                   {
                     'border-gray-200 hover:border-gray-300': step.slug !== current,
                     'border-green-700': step.slug === current,

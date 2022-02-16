@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from 'react';
 
-import { ChevronDownIcon, ChevronUpIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
 // hooks
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 
@@ -12,9 +11,7 @@ import Select from 'components/select';
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
 
-
 const Step1 = () => {
-
   const dispatch = useAppDispatch();
   //const [isOpen, setIsOpen] = useState<boolean>(false);
   const { filters } = useAppSelector(analysis);
@@ -34,7 +31,7 @@ const Step1 = () => {
   const interventionTypes = [
     'Source from a new supplier or location',
     'Change production efficiency',
-    'Switch to a new material'
+    'Switch to a new material',
   ];
 
   // const { data: materials, isLoading: isLoadingMaterials } = useMaterials();
@@ -50,67 +47,86 @@ const Step1 = () => {
   const interventionType = '';
 
   const optionsMaterial: SelectOptions = useMemo(
-    () => materials.map((material) => ({
-      label: material,
-      value: material,
-    })), [materials]);
+    () =>
+      materials.map((material) => ({
+        label: material,
+        value: material,
+      })),
+    [materials],
+  );
 
   const currentMaterial = useMemo<SelectOption>(
     () => optionsMaterial?.find((option) => option.value === material), [optionsMaterial])
-
+    
   const optionsBusinesses: SelectOptions = useMemo(
-    () => businesses.map((business) => ({
-      label: business,
-      value: business,
-    })), [businesses]);
+    () => 
+      businesses.map((business) => ({
+        label: business,
+        value: business,
+      })), 
+    [businesses],
+  );
 
   const currentBusiness = useMemo<SelectOption>(
     () => optionsBusinesses?.find((option) => option.value === business),
-    [optionsBusinesses]);
+    [optionsBusinesses],
+  );
 
   const optionsSuplier: SelectOptions = useMemo(
-    () => supliers.map((suplier) => ({
-      label: suplier,
-      value: suplier,
-    })),
-    [supliers]);
+    () => 
+      supliers.map((suplier) => ({
+        label: suplier,
+        value: suplier,
+      })),
+    [supliers],
+  );
 
   const currentSuplier = useMemo<SelectOption>(
     () => optionsSuplier?.find((option) => option.value === suplier),
-    [optionsSuplier]);
+    [optionsSuplier],
+  );
 
   const optionsSourcingRegion: SelectOptions = useMemo(
-    () => sourcingRegions.map((sourcingRegion) => ({
-      label: sourcingRegion,
-      value: sourcingRegion,
-    })),
-    [sourcingRegions]);
+    () =>
+      sourcingRegions.map((sourcingRegion) => ({
+        label: sourcingRegion,
+        value: sourcingRegion,
+      })),
+    [sourcingRegions],
+  );
 
   const currentsourcingRegion = useMemo<SelectOption>(
     () => optionsSourcingRegion?.find((option) => option.value === sourcingRegion),
-    [optionsSourcingRegion]);
+    [optionsSourcingRegion],
+  );
 
   const optionsYearCompletion: SelectOptions = useMemo(
-    () => yearCompletions.map((YearCompletion) => ({
-      label: YearCompletion.toString(),
-      value: YearCompletion,
-    })),
-    [yearCompletions]);
+    () =>
+      yearCompletions.map((YearCompletion) => ({
+        label: YearCompletion.toString(),
+        value: YearCompletion,
+      })),
+    [yearCompletions],
+  );
 
   const currentYearCompletion = useMemo<SelectOption>(
     () => optionsYearCompletion?.find((option) => option.value === yearCompletion),
-    [optionsYearCompletion]);
+    [optionsYearCompletion],
+  );
 
   const optionsInterventionType: SelectOptions = useMemo(
-    () => interventionTypes.map((InterventionType) => ({
-      label: InterventionType,
-      value: InterventionType,
-    })),
-    [interventionTypes]);
+    () =>
+      interventionTypes.map((InterventionType) => ({
+        label: InterventionType,
+        value: InterventionType,
+      })),
+    [interventionTypes],
+  );
 
   const currentInterventionType = useMemo<SelectOption>(
     () => optionsInterventionType?.find((option) => option.value === interventionType),
-    [optionsInterventionType]);
+    [optionsInterventionType],
+  );
 
   const isLoadingMaterials = false;
   const isLoadingBusinesses = false;
@@ -123,7 +139,10 @@ const Step1 = () => {
     <>
       <fieldset className="sm:col-span-3 text-sm">
         <div className="mt-6">
-          <label htmlFor="intervention_description" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="intervention_description"
+            className="block text-sm font-medium text-gray-700"
+          >
             Intervention description <span className="text-gray-600">(optional)</span>
           </label>
           <div className="mt-1">

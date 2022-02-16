@@ -21,6 +21,5 @@ export type SelectProps = {
   searchPlaceholder?: string;
   onChange?: (selected: SelectOption) => unknown;
   onSearch?: (query: string) => unknown;
-  styles?: Styles;
-  theme?: string;
+  theme?: 'primary' | 'primary_bordernone' | 'secondary';
 };

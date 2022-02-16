@@ -27,9 +27,6 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
     searchPlaceholder = 'Search',
     onChange,
     onSearch,
-    styles = {
-      border: true,
-    },
     theme = 'primary',
   } = props;
   const [selected, setSelected] = useState<SelectProps['current']>(current);
@@ -65,9 +62,11 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
   }, [fuse, options, searchTerm]);
 
   const THEME = {
-    primary: 'border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 pl-3 pr-10',
-    secondary: 'underline text-green-700 pr-2 font-bold'
-  }
+    primary:
+      'border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 pl-3 pr-10',
+    primary_bordernone: 'focus:outline-none pl-3 pr-10',
+    secondary: 'underline text-green-700 pr-2 font-bold',
+  };
 
   return (
     <Listbox value={selected} onChange={setSelected} disabled={disabled}>
@@ -78,7 +77,7 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
               className={cx(
                 'bg-white relative w-full flex align-center py-2 text-left text-sm cursor-pointer font-medium',
                 {
-                  [THEME[theme]]: !!theme
+                  [THEME[theme]]: !!theme,
                 },
               )}
             >
@@ -95,21 +94,24 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
                     <span className="text-gray-300 truncate">{placeholder}</span>
                   )}
                   {selected && <span className="inline-block truncate">{selected?.label}</span>}
-                  {theme === 'secondary' && <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2  flex items-center pointer-events-none">
-                    {open ? (
-                      <ChevronUpIcon className="h-4 w-4 text-green-700" aria-hidden="true" />
-                    ) : (
-                      <ChevronDownIcon className="h-4 w-4 text-green-700" aria-hidden="true" />
-                    )}
-                  </span>}
-                  {theme !== 'secondary' && <span className={cx('absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none')}>
-                    {open ? (
-                      <ChevronUpIcon className="w-4 h-4 text-gray-900" aria-hidden="true" />
-                    ) : (
-                      <ChevronDownIcon className="w-4 h-4 text-gray-900" aria-hidden="true" />
-                    )}
-                  </span>
-                  }
+                  {theme === 'secondary' && (
+                    <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 flex items-center pointer-events-none">
+                      {open ? (
+                        <ChevronUpIcon className="h-4 w-4 text-green-700" aria-hidden="true" />
+                      ) : (
+                        <ChevronDownIcon className="h-4 w-4 text-green-700" aria-hidden="true" />
+                      )}
+                    </span>
+                  )}
+                  {theme !== 'secondary' && (
+                    <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                      {open ? (
+                        <ChevronUpIcon className="h-4 w-4 text-gray-900" aria-hidden="true" />
+                      ) : (
+                        <ChevronDownIcon className="h-4 w-4 text-gray-900" aria-hidden="true" />
+                      )}
+                    </span>
+                  )}
                 </>
               )}
             </Listbox.Button>

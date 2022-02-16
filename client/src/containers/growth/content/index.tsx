@@ -18,8 +18,7 @@ const GowthForm = () => {
 
   const onChange = useCallback((key: string, value: string | number) => {
     console.log(key, value);
-  }, [],
-  );
+  }, []);
   const businessUnities = ['business1', 'business2', 'business3'];
   const growthRates = ['growth1', 'growth2', 'growth3'];
 

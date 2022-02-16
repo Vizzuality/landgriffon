@@ -26,6 +26,7 @@ export type AnalysisState = {
     materials: Option[];
     origins: Option[];
     suppliers: Option[];
+    interventionType: 'Source from a new supplier or location' | 'Change production efficiency' | 'Switch to a new material';
   };
 };
 
@@ -49,6 +50,7 @@ const initialState: AnalysisState = {
     materials: [],
     origins: [],
     suppliers: [],
+    interventionType: 'Source from a new supplier or location',
   },
 };
 

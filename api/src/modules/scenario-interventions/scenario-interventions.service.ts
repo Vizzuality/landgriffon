@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
@@ -13,6 +18,12 @@ import { AppInfoDTO } from 'dto/info.dto';
 import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
 import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
 import { UpdateScenarioInterventionDto } from 'modules/scenario-interventions/dto/update.scenario-intervention.dto';
+import {
+  LOCATION_TYPES,
+  SourcingLocation,
+} from 'modules/sourcing-locations/sourcing-location.entity';
+import { getManager } from 'typeorm';
+//import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 
 @Injectable()
 export class ScenarioInterventionsService extends AppBaseService<
@@ -24,7 +35,8 @@ export class ScenarioInterventionsService extends AppBaseService<
   constructor(
     @InjectRepository(ScenarioInterventionRepository)
     protected readonly scenarioInterventionRepository: ScenarioInterventionRepository,
-  ) {
+  ) //protected readonly geoCodingService: GeoCodingService,
+  {
     super(
       scenarioInterventionRepository,
       scenarioResource.name.singular,
@@ -61,7 +73,9 @@ export class ScenarioInterventionsService extends AppBaseService<
 
   async createScenarioIntervention(
     dto: CreateScenarioInterventionDto,
-  ): Promise<ScenarioIntervention> {
+  ): Promise<any> {
+    const growthRate: number = 1.5;
+    const startYear: number = 2019;
     const scenarioIntervention: ScenarioIntervention =
       new ScenarioIntervention();
 
@@ -73,13 +87,89 @@ export class ScenarioInterventionsService extends AppBaseService<
         //scenarioIntervention = await this.createNewMaterialScenarioIntervention(dto);
         break;
       case SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER:
-        // scenarioIntervention = await this.createNewSupplierScenarioIntervention(dto)
+        // Getting latest Sourcing Records of all Materials of the intervention
+        const materialsAndTonnage: any[] =
+          await this.findMaterialsStartYearTonnage(dto);
+
+        //Starting to create data for Geo Coding
+        const newSourcingData: any = [];
+        for (const material of materialsAndTonnage) {
+          //TODO businessUnit
+          const newSourcingLocation: any = {};
+          newSourcingLocation.materialId = material.materialId;
+          newSourcingLocation.locationType =
+            dto.newLocationType as LOCATION_TYPES;
+          newSourcingLocation.locationAddressInput = dto.newAddressInput;
+          newSourcingLocation.locationCountryInput = dto.newCountryInput;
+
+          const newSourcingRecords: any = [];
+          let tonnage: number = material.tonnage;
+          for (let year: number = startYear + 1; year <= dto.endYear; ++year) {
+            newSourcingRecords.push({ year, tonnage });
+            tonnage *= growthRate;
+          }
+          newSourcingLocation.sourcingRecords = newSourcingRecords;
+          newSourcingLocation.t1SupplierId = dto.newSupplierT1Id;
+          newSourcingLocation.producerId = dto.newSupplierT1Id;
+
+          newSourcingData.push(newSourcingLocation);
+        }
+        // // Geocoding newly created data:
+        // const geoCodedSourcingData: any[] =
+        //   await this.geoCodingService.geoCodeLocations(newSourcingData);
+
+        // // Saving new locations
+        // const newData: any = await this.sourcingLocationService.save(
+        //   geoCodedSourcingData,
+        // );
+
+        // TODO - calculate impact with
+
+        //return newData;
+
         break;
       case SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY:
         // scenarioIntervention = await this.createNewProductionEfficiencyIntervention(dto)
+
         break;
     }
 
     return scenarioIntervention.save();
+  }
+
+  async findMaterialsStartYearTonnage(
+    dto: CreateScenarioInterventionDto,
+  ): Promise<SourcingLocation[]> {
+    const sourcingLocations: SourcingLocation[] = await getManager()
+      .createQueryBuilder()
+      .select('sl.materialId')
+      .addSelect('sr.year')
+      .addSelect('SUM(sr.tonnage) as tonnage')
+      .from(SourcingLocation, 'sl')
+      .leftJoin('sourcing_records', 'sr', 'sr.sourcingLocationId = sl.id')
+      .where('sl."materialId" IN (:...materialIds)', {
+        materialIds: dto.materialsIds,
+      })
+      .andWhere('sl."t1SupplierId" IN (:...suppliers)', {
+        suppliers: dto.suppliersIds,
+      })
+      .andWhere('sl."producerId" IN (:...suppliers)', {
+        suppliers: dto.suppliersIds,
+      })
+      .orWhere('sl."producerId" IN (:...suppliers)', {
+        suppliers: dto.suppliersIds,
+      })
+      .andWhere('sl."businessUnitId" IN (:...businessUnits)', {
+        businessUnits: dto.businessUnitsIds,
+      })
+      .andWhere('sr.year = :startYear', { startYear: 2019 })
+      // .andWhere('sl.adminRegionId IN (:...adminRegion)', {
+      // adminRegion: dto.adminRegionsIds,
+      // })
+      .groupBy('sl.materialId')
+      .addGroupBy('sr.year')
+      .getRawMany();
+
+    return sourcingLocations;
   }
 }

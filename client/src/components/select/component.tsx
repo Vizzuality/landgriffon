@@ -95,21 +95,24 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
                     <span className="text-gray-300 truncate">{placeholder}</span>
                   )}
                   {selected && <span className="inline-block truncate">{selected?.label}</span>}
-                  {theme === 'secondary' && <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2  flex items-center pointer-events-none">
-                    {open ? (
-                      <ChevronUpIcon className="h-4 w-4 text-green-700" aria-hidden="true" />
-                    ) : (
-                      <ChevronDownIcon className="h-4 w-4 text-green-700" aria-hidden="true" />
-                    )}
-                  </span>}
-                  {theme !== 'secondary' && <span className={cx('absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none')}>
-                    {open ? (
-                      <ChevronUpIcon className="w-4 h-4 text-gray-900" aria-hidden="true" />
-                    ) : (
-                      <ChevronDownIcon className="w-4 h-4 text-gray-900" aria-hidden="true" />
-                    )}
-                  </span>
-                  }
+                  {theme === 'secondary' && (
+                    <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 flex items-center pointer-events-none">
+                      {open ? (
+                        <ChevronUpIcon className="h-4 w-4 text-green-700" aria-hidden="true" />
+                      ) : (
+                        <ChevronDownIcon className="h-4 w-4 text-green-700" aria-hidden="true" />
+                      )}
+                    </span>
+                  )}
+                  {theme !== 'secondary' && (
+                    <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                      {open ? (
+                        <ChevronUpIcon className="h-4 w-4 text-gray-900" aria-hidden="true" />
+                      ) : (
+                        <ChevronDownIcon className="h-4 w-4 text-gray-900" aria-hidden="true" />
+                      )}
+                    </span>
+                  )}
                 </>
               )}
             </Listbox.Button>

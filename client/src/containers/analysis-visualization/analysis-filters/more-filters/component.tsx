@@ -1,4 +1,5 @@
-import React, { Fragment, useCallback, useEffect, useState, useMemo } from 'react';
+import React, { Fragment, useCallback, useEffect, useState, useMemo, useRef } from 'react';
+import { useOutsideClick } from 'rooks';
 import { Popover, Transition } from '@headlessui/react';
 import { FilterIcon } from '@heroicons/react/solid';
 
@@ -18,6 +19,8 @@ const INITIAL_FILTERS: Partial<AnalysisState['filters']> = {
 };
 
 const MoreFilters: React.FC = () => {
+  const filtersWrapperRef = useRef();
+
   const { filters } = useAppSelector(analysis);
   const dispatch = useAppDispatch();
 
@@ -63,8 +66,12 @@ const MoreFilters: React.FC = () => {
     setCounter(total);
   }, [selectedFilters]);
 
+  useOutsideClick(filtersWrapperRef, () => {
+    setOpen(false);
+  });
+
   return (
-    <Popover className="relative">
+    <Popover className="relative" >
       <Button theme="secondary" onClick={() => setOpen(!open)}>
         <span className="block h-5 truncate">
           <FilterIcon className="w-5 h-5 text-gray-900" aria-hidden="true" />
@@ -84,7 +91,10 @@ const MoreFilters: React.FC = () => {
         leaveTo="opacity-0"
       >
         <Popover.Panel static className="absolute right-0 z-10 mt-1 w-80 z-20">
-          <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+          <div
+            ref={filtersWrapperRef}
+            className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5"
+          >
             <div className="relative p-4 bg-white rounded-lg">
               <div className="flex justify-between mb-4">
                 <div>Filter by</div>

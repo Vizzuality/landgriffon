@@ -192,8 +192,8 @@ export class SourcingLocation extends TimestampedBaseEntity {
   sourcingLocationGroup: SourcingLocationGroup;
 
   @Column({ nullable: true })
-  @ApiProperty()
-  sourcingLocationGroupId!: string;
+  @ApiPropertyOptional()
+  sourcingLocationGroupId?: string;
 
   @Column({ nullable: true })
   @ApiPropertyOptional()
@@ -212,5 +212,9 @@ export class SourcingLocation extends TimestampedBaseEntity {
     (scenarioIntervention: ScenarioIntervention) => scenarioIntervention.id,
     { onDelete: 'CASCADE', eager: true },
   )
+  @JoinColumn({ name: 'scenarioInterventionId' })
   scenarioIntervention: ScenarioIntervention;
+  @Column({ nullable: true })
+  @ApiPropertyOptional()
+  scenarioInterventionId?: string;
 }

@@ -1,18 +1,13 @@
 import { Fragment, useCallback, useState, useMemo, useEffect } from 'react';
 import classNames from 'classnames';
 import { Transition } from '@headlessui/react';
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  ChevronRightIcon,
-  XIcon,
-  SearchIcon,
-} from '@heroicons/react/solid';
+import { ChevronDownIcon, ChevronRightIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
 import Tree, { TreeNode, TreeProps } from 'rc-tree';
 import Fuse from 'fuse.js';
 
-import Badge from 'components/badge';
 import Loading from 'components/loading';
+import TreeSelectButtonPrimary from './primary-layout';
+import TreeSelectButtonSecondary from './secondary-layout';
 
 import type { TreeSelectProps, TreeSelectOption } from './types';
 
@@ -36,6 +31,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   showSearch = false,
   onChange,
   onSearch,
+  theme = 'primary',
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -66,8 +62,6 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     if (expanded) return <ChevronDownIcon className="h-4 w-4" />;
     return <ChevronRightIcon className="h-4 w-4" />;
   }, []);
-
-  const handleToggleOpen = useCallback(() => setIsOpen(!isOpen), [isOpen]);
 
   const handleExpand: TreeProps['onExpand'] = useCallback((keys) => setExpandedKeys(keys), []);
 
@@ -188,16 +182,6 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     [checkedKeys, onChange, options],
   );
 
-  const Icon = () => (
-    <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-      {isOpen ? (
-        <ChevronUpIcon className="h-4 w-4 text-gray-900" aria-hidden="true" />
-      ) : (
-        <ChevronDownIcon className="h-4 w-4 text-gray-900" aria-hidden="true" />
-      )}
-    </span>
-  );
-
   // Current selection
   useEffect(() => {
     if (current && current.length) {
@@ -210,54 +194,33 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
 
   return (
     <div className="relative">
-      {multiple ? (
-        <div
-          className="flex align-center bg-white relative border border-gray-300 rounded-md shadow-sm py-2 pr-10 pl-3 cursor-pointer"
-          onClick={handleToggleOpen}
-        >
-          <div className="flex flex-wrap">
-            {currentOptions &&
-              !!currentOptions.length &&
-              currentOptions.slice(0, maxBadges).map((option) => (
-                <Badge
-                  key={option.value}
-                  className="text-sm m-0.5"
-                  data={option}
-                  onClick={handleRemoveBadget}
-                  removable
-                >
-                  {option.label}
-                </Badge>
-              ))}
-            {currentOptions && currentOptions.length > maxBadges && (
-              <Badge className="text-sm m-0.5">
-                {currentOptions.length - maxBadges} more selected
-              </Badge>
-            )}
-            {(!currentOptions || currentOptions.length === 0) && (
-              <span className="inline-block truncate">
-                {placeholder && <span className="text-gray-300 text-sm">{placeholder}</span>}
-              </span>
-            )}
-          </div>
-          <Icon />
-        </div>
-      ) : (
-        <button
-          type="button"
-          className="bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left
-          focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer"
-          onClick={handleToggleOpen}
-        >
-          <span className="inline-block truncate">
-            {selected ? (
-              <span className="font-medium">{selected.label}</span>
-            ) : (
-              <span className="text-gray-300">{placeholder}</span>
-            )}
-          </span>
-          <Icon />
-        </button>
+      {theme === 'primary' && (
+        <TreeSelectButtonPrimary
+          current={current}
+          currentOptions={currentOptions}
+          isOpen={isOpen}
+          handleOpen={setIsOpen}
+          maxBadges={maxBadges}
+          multiple={multiple}
+          options={options}
+          placeholder={placeholder}
+          onChange={onChange}
+          handleRemoveBadget={handleRemoveBadget}
+        />
+      )}
+      {theme === 'secondary' && (
+        <TreeSelectButtonSecondary
+          current={current}
+          currentOptions={currentOptions}
+          isOpen={isOpen}
+          handleOpen={setIsOpen}
+          maxBadges={maxBadges}
+          multiple={multiple}
+          options={options}
+          placeholder={placeholder}
+          onChange={onChange}
+          handleRemoveBadget={handleRemoveBadget}
+        />
       )}
       <Transition
         show={isOpen}

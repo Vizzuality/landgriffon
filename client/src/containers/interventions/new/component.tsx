@@ -46,7 +46,7 @@ const InterventionForm = () => {
       <Steps steps={steps} current={currentStep} className="mb-10 z-20" />
       <form className="space-y-8">
         {(!currentStep || isFirstStep) && <Step1 />}
-        {!isFirstStep && <Step2 />}
+        {!!currentStep && !isFirstStep && <Step2 />}
         <div className="pt-5">
           <div className="flex justify-end">
             <button

@@ -15,6 +15,7 @@ type MaterialsFilterProps = {
   /** Only materials with sourcing locations. */
   withSourcingLocations?: MaterialsTreesParams['withSourcingLocations'];
   onChange?: TreeSelectProps['onChange'];
+  theme?: 'primary' | 'secondary';
 };
 
 const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
@@ -48,6 +49,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
       placeholder="Materials"
       onChange={onChange}
       current={current}
+      theme={theme}
     />
   );
 };

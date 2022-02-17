@@ -14,11 +14,12 @@ import { ScenarioInterventionRepository } from 'modules/scenario-interventions/s
 import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
 import { UpdateScenarioInterventionDto } from 'modules/scenario-interventions/dto/update.scenario-intervention.dto';
 import {
-  LOCATION_TYPES,
   SourcingLocation,
+  TYPE_TO_INTERVENTION,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { getManager } from 'typeorm';
 import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
+import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 
 @Injectable()
 export class ScenarioInterventionsService extends AppBaseService<
@@ -31,6 +32,7 @@ export class ScenarioInterventionsService extends AppBaseService<
     @InjectRepository(ScenarioInterventionRepository)
     protected readonly scenarioInterventionRepository: ScenarioInterventionRepository,
     protected readonly geoCodingService: GeoCodingService,
+    protected readonly sourcingLocationsService: SourcingLocationsService,
   ) {
     super(
       scenarioInterventionRepository,
@@ -69,70 +71,142 @@ export class ScenarioInterventionsService extends AppBaseService<
   async createScenarioIntervention(
     dto: CreateScenarioInterventionDto,
   ): Promise<any> {
-    const growthRate: number = 1.5;
-    const startYear: number = 2019;
-    const scenarioIntervention: ScenarioIntervention =
+    /**
+     *  Creating New Intervention to be saved in scenario_interventions table
+     */
+    const newScenarioIntervention: ScenarioIntervention =
       new ScenarioIntervention();
+    Object.assign(newScenarioIntervention, dto);
 
-    // Depending on the type of scenario intervention - the dto should be processed by the relevant service.
-    // For example in case of 'Change production efficiency scenario' the service will be the minimum - adding the initial intervention data + newIndicatorCoefficients
-    // In case of 'New supplier intervention' depending on the received input, new Supplier and Sourcing location may be created and added to the new Scenario Intervention
+    /**
+     * Depending on the type of scenario intervention - the dto should be processed by the relevant service.
+     */
+
     switch (dto.type) {
       case SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL:
-        //scenarioIntervention = await this.createNewMaterialScenarioIntervention(dto);
+        // TODO
         break;
+
       case SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER:
-        // Getting latest Sourcing Records of all Materials of the intervention
-        const materialsAndTonnage: any[] =
-          await this.findMaterialsStartYearTonnage(dto);
+        /**
+         * Getting Sourcing Locations and Sourcing Records for start year of all Materials of the intervention with applied filters
+         */
 
-        //Starting to create data for Geo Coding
-        const newInterventionSourcingData: any = [];
-        for (const material of materialsAndTonnage) {
-          //TODO businessUnit
-          const newSourcingLocation: any = {};
-          newSourcingLocation.materialId = material.materialId;
-          newSourcingLocation.locationType =
-            dto.newLocationType as LOCATION_TYPES;
-          newSourcingLocation.locationAddressInput = dto.newAddressInput;
-          newSourcingLocation.locationCountryInput = dto.newCountryInput;
-          newSourcingLocation.sourcingRecords = [
-            { year: material.year, tonnage: material.tonnage },
-          ];
-          newSourcingLocation.t1SupplierId = dto.newSupplierT1Id;
-          newSourcingLocation.producerId = dto.newSupplierT1Id;
-          newSourcingLocation.businessUnitId = material.businessUnitId;
+        const actualSourcingDataWithTonnage: any[] =
+          await this.findRequestedSourcingLocationsAndRecords(dto);
 
-          newInterventionSourcingData.push(newSourcingLocation);
+        /**
+         * NEW SOURCING LOCATIONS #1 - Basically copies of the actual existing Sourcing Locations that will be replaced by intervention,
+         * saved one more time but with the scenarioInterventionId and type 'CANCELED' related to intervention
+         */
+
+        // Creating array for new locations with intervention type CANCELED and reference to the new Intervention Id
+
+        const newCancelledByInterventionLocations: any[] = [];
+
+        for (const location of actualSourcingDataWithTonnage) {
+          const newCancelledInterventionLocation: any = {
+            materialId: location.materialId,
+            locationType: dto.newLocationType,
+            t1SupplierId: location.supplierT1Id,
+            producerId: location.producerId,
+            businessUnitId: location.businessUnitId,
+            geoRegionId: location.geoRegionId,
+            adminRegionId: location.adminRegionId,
+            sourcingRecords: [
+              { year: location.year, tonnage: location.tonnage },
+            ],
+            scenarioInterventionId: newScenarioIntervention.id,
+            typeAccordingToIntervention: TYPE_TO_INTERVENTION.CANCELED,
+          };
+
+          newCancelledByInterventionLocations.push(
+            newCancelledInterventionLocation,
+          );
         }
 
-        return newInterventionSourcingData;
-        // // Geocoding newly created data:
-        // const geoCodedSourcingData: any[] =
-        //   await this.geoCodingService.geoCodeLocations(
-        //     newInterventionSourcingData,
-        //   );
+        // Saving new Sourcing Locations with intervention type cancelled and reference to the new Intervention Id with start year record
 
-        // // Saving new locations
-        // const newData: any = await this.sourcingLocationService.save(
-        //   geoCodedSourcingData,
-        // );
+        const cancelledInterventionSourcingLocations: SourcingLocation[] =
+          await this.sourcingLocationsService.save(
+            newCancelledByInterventionLocations,
+          );
 
-        // TODO - calculate impact with
+        // Adding relation to newly created cancelled Sourcing locations to New Intervention
+        newScenarioIntervention.replacedSourcingLocations =
+          cancelledInterventionSourcingLocations;
 
-        //return newData;
+        /**
+         * NEW SOURCING LOCATIONS #2 - The ones of the Intervention, will replace the CANCELED ones
+         */
+
+        /* Since new SupplierLocation is the same for all the replaced Sourcing Locations/Records
+           we can pass just 1 record with the Supplier Locations inputs through geoCodeLocations service
+           to get geoRegionId and adminRegionId that will be the same in all newly created Sourcing Locations of the Intervention
+        */
+
+        const locationSampleForGeoCoding: any[] = [
+          {
+            materialId: actualSourcingDataWithTonnage[0].materialId,
+            locationType: dto.newLocationType,
+            locationAddressInput: dto.newAddressInput,
+            locationCountryInput: dto.newCountryInput,
+            t1SupplierId: dto.newSupplierT1Id,
+            producerId: dto.newSupplierT1Id,
+            businessUnitId: actualSourcingDataWithTonnage[0].businessUnitId,
+          },
+        ];
+
+        const geoCodedLocationSample: any[] =
+          await this.geoCodingService.geoCodeLocations(
+            locationSampleForGeoCoding,
+          );
+
+        const newInterventionLocations: any[] = [];
+        for (const location of actualSourcingDataWithTonnage) {
+          const newInterventionLocation: any = {
+            materialId: location.materialId,
+            locationType: dto.newLocationType,
+            locationAddressInput: dto.newAddressInput,
+            locationCountryInput: dto.newCountryInput,
+            t1SupplierId: dto.newSupplierT1Id,
+            producerId: dto.newProducerId,
+            businessUnitId: location.businessUnitId,
+            geoRegionId: geoCodedLocationSample[0].geoRegionId,
+            adminRegionId: geoCodedLocationSample[0].adminRegionId,
+            sourcingRecords: [
+              { year: location.year, tonnage: location.tonnage },
+            ],
+            scenarioInterventionId: newScenarioIntervention.id,
+            typeAccordingToIntervention: TYPE_TO_INTERVENTION.REPLACING,
+          };
+
+          newInterventionLocations.push(newInterventionLocation);
+        }
+
+        const newInterventionSourcingLocations: SourcingLocation[] =
+          await this.sourcingLocationsService.save(newInterventionLocations);
+
+        newScenarioIntervention.newSourcingLocations =
+          newInterventionSourcingLocations;
+
+        /**
+         * After both sets of new Sourcing Locations with Sourcing record for the start year has been created
+         * and added as relations to the new Scenario Intervention, saving the new Scenario intervention in database
+         */
+
+        newScenarioIntervention.save();
 
         break;
+
       case SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY:
         // scenarioIntervention = await this.createNewProductionEfficiencyIntervention(dto)
-        return this.findMaterialsStartYearTonnage(dto);
+        return this.findRequestedSourcingLocationsAndRecords(dto);
         break;
     }
-
-    return scenarioIntervention.save();
   }
 
-  async findMaterialsStartYearTonnage(
+  async findRequestedSourcingLocationsAndRecords(
     dto: CreateScenarioInterventionDto,
   ): Promise<SourcingLocation[]> {
     const sourcingLocations: SourcingLocation[] = await getManager()
@@ -141,6 +215,8 @@ export class ScenarioInterventionsService extends AppBaseService<
       .addSelect('sl.businessUnitId', 'businessUnitId')
       .addSelect('sl.t1SupplierId', 't1SupplierId')
       .addSelect('sl.producerId', 'producerId')
+      .addSelect('sl.geoRegionId', 'geoRegionId')
+      .addSelect('sl.adminRegionId', 'adminRegionId')
       .addSelect('sr.year', 'year')
       .addSelect('SUM(sr.tonnage) as tonnage')
       .from(SourcingLocation, 'sl')
@@ -160,16 +236,10 @@ export class ScenarioInterventionsService extends AppBaseService<
       .andWhere('sl."businessUnitId" IN (:...businessUnits)', {
         businessUnits: dto.businessUnitsIds,
       })
-      .andWhere('sr.year = :startYear', { startYear: 2019 })
+      .andWhere('sr.year = :startYear', { startYear: dto.startYear })
       .andWhere('sl.adminRegionId IN (:...adminRegion)', {
         adminRegion: dto.adminRegionsIds,
       })
-      .groupBy('sl.materialId')
-      .addGroupBy('sr.year')
-      .addGroupBy('sl.businessUnitId')
-      .addGroupBy('sl.t1SupplierId')
-      .addGroupBy('sl.producerId')
-
       .getRawMany();
 
     return sourcingLocations;

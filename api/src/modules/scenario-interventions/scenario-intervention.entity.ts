@@ -21,6 +21,7 @@ import {
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
+import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 
 export enum SCENARIO_INTERVENTION_STATUS {
   ACTIVE = 'active',
@@ -116,11 +117,11 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
 
   @ManyToMany(() => AdminRegion)
   @JoinTable()
-  replacedAdminRegion?: AdminRegion[];
+  replacedAdminRegions?: AdminRegion[];
 
   @ManyToMany(() => SourcingLocation)
   @JoinTable()
-  replacedSourcingLocation?: SourcingLocation[];
+  replacedSourcingLocations?: SourcingLocation[];
 
   /**
    * Relationships with other entities - list of "new" relationships
@@ -141,9 +142,9 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   @ApiPropertyOptional()
   newProducer?: Supplier;
 
-  @ManyToOne(() => AdminRegion)
+  @ManyToOne(() => GeoRegion)
   @ApiPropertyOptional()
-  newAdminRegion?: AdminRegion;
+  newGeoRegion?: GeoRegion;
 
   @OneToMany(
     () => SourcingLocation,

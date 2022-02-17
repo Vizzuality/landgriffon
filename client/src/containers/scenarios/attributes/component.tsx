@@ -21,6 +21,25 @@ const items = [
   },
 ];
 
+const interventions = [
+  {
+    id: 1,
+    title: 'Replace <strong>50% of Palm Oil</strong> with Soybean Oil (RFA-certified) by 2025',
+  },
+  {
+    id: 2,
+    title: 'Change supplier of Rubber for pep.a.1.001 to Namazie International in 2022',
+  },
+  {
+    id: 3,
+    title: 'Change production efficiency of Palm oil for pep.a1 in 2 regions by 2025',
+  },
+  {
+    id: 4,
+    title: 'Change production efficiency of Cocoa for pep.a1 in 2 regions by 2025',
+  },
+];
+
 const ScenarioAttributes = ({ handleNewIntervention }) => {
   const { asPath } = useRouter();
   const tab = useMemo<string>(() => asPath.split('#')[1], [asPath]);
@@ -36,7 +55,7 @@ const ScenarioAttributes = ({ handleNewIntervention }) => {
                 href="#interventions"
                 className={cx({ 'border-b-2 border-green-700': interventionsContent })}
               >
-                Interventions ({items.length})
+                Interventions (0)
               </a>
             </Link>
             <Link href="#growth">
@@ -44,7 +63,7 @@ const ScenarioAttributes = ({ handleNewIntervention }) => {
                 href="#growth"
                 className={cx({ 'border-b-2 border-green-700': !interventionsContent })}
               >
-                Growth rates
+                Growth rates ({items.length})
               </a>
             </Link>
           </div>
@@ -66,10 +85,22 @@ const ScenarioAttributes = ({ handleNewIntervention }) => {
         </div>
       )}
 
-      {interventionsContent && !items.length && (
+      {interventionsContent && !interventions.length && (
         <p className="mt-4 text-sm text-center">
           Each intervention is a specific change in sourcing. Create an intervention to get started
         </p>
+      )}
+
+      {interventionsContent && interventions.length && (
+        <div className="bg-white border border-gray-300 overflow-hidden rounded-md mt-4">
+          <ul className="divide-y divide-gray-300 text-sm">
+            {interventions.map((intervention) => (
+              <li key={intervention.id} className="px-4 py-4 sm:px-6">
+                <p>{intervention.title}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
       {!interventionsContent && !items.length && (

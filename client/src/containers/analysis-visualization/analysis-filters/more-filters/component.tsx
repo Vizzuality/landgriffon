@@ -83,7 +83,7 @@ const MoreFilters: React.FC = () => {
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
       >
-        <Popover.Panel static className="absolute right-0 z-10 mt-1 w-80">
+        <Popover.Panel static className="absolute right-0 z-10 mt-1 w-80 z-20">
           <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
             <div className="relative p-4 bg-white rounded-lg">
               <div className="flex justify-between mb-4">

@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { DataType } from 'ka-table/enums';
 import { flatten, merge, uniq } from 'lodash';
 import { useDebounce } from '@react-hook/debounce';
 import { ExclamationIcon /*, FilterIcon*/ } from '@heroicons/react/solid';
@@ -14,17 +13,24 @@ import Button from 'components/button';
 import Pagination, { PaginationProps } from 'components/pagination';
 import Search from 'components/search';
 import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range';
-import Table, { TableProps } from 'containers/table';
+import Table, { TableProps, DataType, SortingMode, ApiSortingType } from 'containers/table';
 
 const AdminDataPage: React.FC = () => {
   const [searchText, setSearchText] = useDebounce('', 250);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [sorting, setSorting] = useState<ApiSortingType>();
 
   const {
     data: sourcingData,
     metadata: sourcingMetadata,
     isFetching: isFetchingSourcingData,
   } = useSourcingLocationsMaterials({
+    ...(sorting && {
+      // Even though in the data the key is `materialName`, the endpoint
+      // expects it to be `material` when using filters.
+      orderBy: sorting.orderBy === 'materialName' ? 'material' : sorting.orderBy,
+      order: sorting.order,
+    }),
     search: searchText,
     'page[size]': 10,
     'page[number]': currentPage,
@@ -74,11 +80,17 @@ const AdminDataPage: React.FC = () => {
         { key: 'producer', title: 'Producer', dataType: DataType.String },
         { key: 'locationType', title: 'Location Type', dataType: DataType.String },
         { key: 'country', title: 'Country', dataType: DataType.String },
-        ...yearsData.columns,
+        ...yearsData.columns.map((column) => ({ ...column, isSortable: false })),
       ],
       data: merge(sourcingData, yearsData.data),
+      sortingMode: SortingMode.Api,
+      defaultSorting: sorting,
+      onSortingChange: (params: ApiSortingType) => {
+        setCurrentPage(1);
+        setSorting(params);
+      },
     };
-  }, [sourcingData, yearsData]);
+  }, [sorting, sourcingData, yearsData.columns, yearsData.data]);
 
   /** Pagination Props */
 

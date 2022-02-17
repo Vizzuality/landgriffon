@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import cx from 'classnames';
 import { Table as KaTable, kaReducer } from 'ka-table';
 import { updateData } from 'ka-table/actionCreators';
-import { SortingMode } from 'ka-table/enums';
+import { ActionType, SortingMode as kaSortingMode, SortDirection } from 'ka-table/enums';
 import { DispatchFunc } from 'ka-table/types';
 
 import GroupRow from 'containers/table/group-row';
+import HeadCellContent from 'containers/table/head-cell-content';
 import LineChartCell from 'containers/table/line-chart-cell';
 
 import { DEFAULT_CLASSNAMES, SHADOW_CLASSNAMES } from './constants';
-import { TableProps, ColumnProps } from './types';
+import { TableProps, ColumnProps, ApiSortingType } from './types';
+import { SortingMode, ApiSortingDirection } from './enums';
 
 const defaultProps: TableProps = {
   columns: [],
@@ -21,24 +23,87 @@ const defaultProps: TableProps = {
 const Table: React.FC<TableProps> = ({
   className,
   stickyFirstColumn: isFirstColumnSticky = true,
+  sortingMode,
+  defaultSorting,
+  onSortingChange,
   ...props
 }: TableProps) => {
-  const [tableProps, setTableProps] = useState({ ...defaultProps, ...props });
-
   const firstColumnKey = props.columns[0]?.key;
   const stickyColumnKey = isFirstColumnSticky && firstColumnKey;
 
-  const dispatch: DispatchFunc = (action) => {
+  const [tableProps, setTableProps] = useState({ ...defaultProps, ...props });
+  const [apiSorting, setApiSorting] = useState<ApiSortingType>({
+    orderBy: defaultSorting?.orderBy || firstColumnKey,
+    order: defaultSorting?.order || ApiSortingDirection.Ascending,
+  });
+
+  const updateTableProps = (action) => {
     setTableProps((prevState) => kaReducer(prevState, action));
   };
 
-  useEffect(() => {
-    dispatch(updateData(props.data));
-  }, [props.data]);
+  const handleApiSorting = useCallback(
+    (action) => {
+      const column = props.columns.find((column) => column.key === action.columnKey) as ColumnProps;
+      const isSortable = column?.isSortable !== false;
+      const isSameColumn = action.columnKey === apiSorting?.orderBy;
+      const isCurrentAscending = apiSorting.order === ApiSortingDirection.Ascending;
+
+      if (!isSortable) return;
+
+      const { orderBy, order } = {
+        orderBy: action.columnKey,
+        order:
+          isSameColumn && isCurrentAscending
+            ? ApiSortingDirection.Descending
+            : ApiSortingDirection.Ascending,
+      };
+
+      if (orderBy !== apiSorting.orderBy || order !== apiSorting.order) {
+        onSortingChange({ orderBy, order });
+      }
+
+      setApiSorting({ orderBy, order });
+    },
+    [apiSorting.order, apiSorting.orderBy, onSortingChange, props.columns],
+  );
+
+  const dispatch: DispatchFunc = useCallback(
+    (action) => {
+      switch (action.type) {
+        case ActionType.UpdateSortDirection:
+          if (sortingMode === SortingMode.Api) {
+            handleApiSorting(action);
+          } else {
+            updateTableProps(action);
+          }
+          return;
+        default:
+          updateTableProps(action);
+      }
+    },
+    [handleApiSorting, sortingMode],
+  );
 
   useEffect(() => {
-    setTableProps((tableProps) => ({ ...tableProps, columns: props.columns }));
-  }, [props.columns]);
+    dispatch(updateData(props.data));
+  }, [props.data, dispatch]);
+
+  useEffect(() => {
+    const columns =
+      sortingMode === SortingMode.Api
+        ? props.columns.map((column) => ({
+            ...column,
+            ...(apiSorting.orderBy === column.key && {
+              sortDirection:
+                apiSorting.order === ApiSortingDirection.Ascending
+                  ? SortDirection.Ascend
+                  : SortDirection.Descend,
+            }),
+          }))
+        : props.columns;
+
+    setTableProps((tableProps) => ({ ...tableProps, columns }));
+  }, [props.columns, apiSorting, sortingMode]);
 
   const childComponents = {
     tableWrapper: {
@@ -63,12 +128,15 @@ const Table: React.FC<TableProps> = ({
       elementAttributes: (props) => {
         const isFirstColumn = props.column.key === firstColumnKey;
         const isSticky = isFirstColumnSticky && props.column.key === stickyColumnKey;
+        const isSortable = props.column.isSortable !== false;
         const classNames = DEFAULT_CLASSNAMES.headCell;
 
         return {
           className: cx(classNames, {
             'text-center': !isFirstColumn,
             'sticky left-0 z-10 w-80': isSticky,
+            'cursor-default': !isSortable,
+            'cursor-pointer': isSortable,
             [SHADOW_CLASSNAMES]: isSticky,
           }),
         };
@@ -76,9 +144,18 @@ const Table: React.FC<TableProps> = ({
       ...props.childComponents?.headCell,
     },
     headCellContent: {
-      elementAttributes: () => ({
-        className: DEFAULT_CLASSNAMES.headCellContent,
-      }),
+      elementAttributes: (props) => {
+        const isSortable = props.column.isSortable !== false;
+        const classNames = DEFAULT_CLASSNAMES.headCellContent;
+
+        return {
+          className: cx(classNames, {
+            'cursor-text': !isSortable,
+            'cursor-pointer': isSortable,
+          }),
+        };
+      },
+      content: HeadCellContent,
       ...props.childComponents?.headCellContent,
     },
     dataRow: {
@@ -147,7 +224,12 @@ const Table: React.FC<TableProps> = ({
         'my-4 shadow-sm': !className,
       })}
     >
-      <KaTable {...tableProps} childComponents={childComponents} dispatch={dispatch} />
+      <KaTable
+        {...tableProps}
+        sortingMode={sortingMode as kaSortingMode}
+        childComponents={childComponents}
+        dispatch={dispatch}
+      />
     </div>
   );
 };

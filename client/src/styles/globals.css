@@ -30,7 +30,7 @@
   input[type=number] {
     -moz-appearance: textfield;
   }
-  
+
   body {
     @apply text-gray-900 antialiased;
   }
@@ -107,4 +107,8 @@
 
 .ka-table tr:last-child td:last-child {
   border-bottom-right-radius: 0.5rem; /* rounded-lg */
+}
+
+.ka-table .ka-icon-sort {
+  display: none;
 }

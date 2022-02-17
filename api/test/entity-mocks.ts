@@ -232,7 +232,7 @@ async function createScenarioIntervention(
     new ScenarioIntervention(),
     {
       title: 'Scenario intervention title',
-      endYear: 2025,
+      startYear: 2020,
       percentage: 50,
       scenario: scenario,
       type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,

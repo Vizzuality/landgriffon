@@ -14,6 +14,7 @@ type SuppliersFilterProps = {
   /** Only suppliers with sourcing locations. */
   withSourcingLocations?: SuppliersTreesParams['withSourcingLocations'];
   onChange?: TreeSelectProps['onChange'];
+  theme?: 'primary' | 'secondary';
 };
 
 const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
@@ -44,9 +45,10 @@ const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
       showSearch
       loading={isFetching}
       options={treeOptions}
-      placeholder="Materials"
+      placeholder="Suppliers"
       onChange={onChange}
       current={current}
+      theme={theme}
     />
   );
 };

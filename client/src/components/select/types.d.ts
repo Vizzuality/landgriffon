@@ -15,6 +15,7 @@ export type SelectProps = {
   disabled?: boolean;
   loading?: boolean;
   label?: string;
+  id?: string;
   options: SelectOption[];
   current: SelectOption;
   placeholder?: string;

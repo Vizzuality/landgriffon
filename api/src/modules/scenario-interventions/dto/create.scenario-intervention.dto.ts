@@ -108,11 +108,14 @@ export class CreateScenarioInterventionDto {
 
   @ValidateIf(
     (dto: CreateScenarioInterventionDto) =>
-      dto.type === SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL ||
-      dto.type === SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+      (dto.type === SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL ||
+        dto.type === SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER) &&
+      (dto.newLocationType === LOCATION_TYPES.ORIGIN_COUNTRY ||
+        dto.newLocationType === LOCATION_TYPES.COUNTRY_OF_PRODUCTION),
   )
   @IsNotEmpty({
-    message: 'New country input is required for the selected intervention type',
+    message:
+      'New country input is required for the selected intervention and location type',
   })
   @ApiPropertyOptional()
   newCountryInput?: string;
@@ -126,7 +129,7 @@ export class CreateScenarioInterventionDto {
   )
   @IsNotEmpty({
     message:
-      'New address or coordinates input is required for the selected intervention type',
+      'New address or coordinates input is required for the selected intervention and location type',
   })
   @ApiPropertyOptional()
   newAddressInput?: string;

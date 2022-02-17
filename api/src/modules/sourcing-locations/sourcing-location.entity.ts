@@ -37,6 +37,11 @@ export enum LOCATION_ACCURACY {
   HIGH = 'HIGH',
 }
 
+export enum TYPE_TO_INTERVENTION {
+  CANCELED = 'Sourcing location canceled by intervention',
+  REPLACING = 'New sourcing location of the intervention',
+}
+
 export const sourcingLocationResource: BaseServiceResource = {
   className: 'SourcingLocation',
   name: {
@@ -189,6 +194,11 @@ export class SourcingLocation extends TimestampedBaseEntity {
   @Column({ nullable: true })
   @ApiProperty()
   sourcingLocationGroupId!: string;
+
+  @Column({ nullable: true })
+  @ApiPropertyOptional()
+  // TODO - come up with better naming
+  typeAccordingToIntervention?: TYPE_TO_INTERVENTION;
 
   @OneToMany(
     () => SourcingRecord,

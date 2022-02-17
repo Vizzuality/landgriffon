@@ -81,7 +81,9 @@ export class ScenarioInterventionsController {
   async create(
     @Body() dto: CreateScenarioInterventionDto,
   ): Promise<ScenarioIntervention> {
-    return this.scenariosService.createScenarioIntervention(dto);
+    return this.scenariosService.serialize(
+      await this.scenariosService.create(dto),
+    );
   }
 
   @ApiOperation({ description: 'Update a scenario intervention' })

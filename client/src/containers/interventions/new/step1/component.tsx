@@ -1,29 +1,27 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 // hooks
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { useRouter } from 'next/router';
 
 import { analysis, setFilter } from 'store/features/analysis';
 
 // components
 import Select from 'components/select';
 
+import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
+import Suppliers from 'containers/analysis-visualization/analysis-filters/suppliers/component';
+import OriginRegions from 'containers/analysis-visualization/analysis-filters/origin-regions/component';
+
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
+import type { AnalysisState } from 'store/features/analysis';
 
 const Step1 = () => {
   const dispatch = useAppDispatch();
   //const [isOpen, setIsOpen] = useState<boolean>(false);
   const { filters } = useAppSelector(analysis);
-  const { materials: materialsData } = filters;
-  const router = useRouter();
-  const { query } = router;
 
-  const materials = ['material1', 'material2', 'material3'];
   const businesses = ['business1', 'business2', 'business3'];
-  const supliers = ['supplier1', 'supplier2', 'supplier3'];
-  const sourcingRegions = ['sourcingRegion1', 'sourcingRegion2', 'sourcingRegion3'];
   const yearCompletions = [2001, 2015, 2020];
   const interventionTypes = [
     'Source from a new supplier or location',
@@ -36,26 +34,17 @@ const Step1 = () => {
   // const { data: supliers, isLoading: isLoadingSupliers } = useSupliers();
   // const { data: sourcingRegions, isLoading: isLoadingSourcingRegions } = useSourcingRegions();
 
-  const material = 'material1';
   const business = 'business2';
-  const suplier = 'supplier2';
-  const sourcingRegion = 'sourcingRegion3';
   const yearCompletion = 2015;
   const interventionType = '';
 
-  const optionsMaterial: SelectOptions = useMemo(
-    () =>
-      materials.map((material) => ({
-        label: material,
-        value: material,
-      })),
-    [materials],
+  const { materials, origins, suppliers } = filters;
+  const selectedFilters = useMemo(
+    () => ({ materials, origins, suppliers }),
+    [materials, origins, suppliers],
   );
 
-  const currentMaterial = useMemo<SelectOption>(
-    () => optionsMaterial?.find((option) => option.value === material),
-    [optionsMaterial],
-  );
+  const [moreFilters, setMoreFilters] = useState(selectedFilters);
 
   const optionsBusinesses: SelectOptions = useMemo(
     () =>
@@ -69,34 +58,6 @@ const Step1 = () => {
   const currentBusiness = useMemo<SelectOption>(
     () => optionsBusinesses?.find((option) => option.value === business),
     [optionsBusinesses],
-  );
-
-  const optionsSuplier: SelectOptions = useMemo(
-    () =>
-      supliers.map((suplier) => ({
-        label: suplier,
-        value: suplier,
-      })),
-    [supliers],
-  );
-
-  const currentSuplier = useMemo<SelectOption>(
-    () => optionsSuplier?.find((option) => option.value === suplier),
-    [optionsSuplier],
-  );
-
-  const optionsSourcingRegion: SelectOptions = useMemo(
-    () =>
-      sourcingRegions.map((sourcingRegion) => ({
-        label: sourcingRegion,
-        value: sourcingRegion,
-      })),
-    [sourcingRegions],
-  );
-
-  const currentsourcingRegion = useMemo<SelectOption>(
-    () => optionsSourcingRegion?.find((option) => option.value === sourcingRegion),
-    [optionsSourcingRegion],
   );
 
   const optionsYearCompletion: SelectOptions = useMemo(
@@ -127,25 +88,25 @@ const Step1 = () => {
     [optionsInterventionType],
   );
 
-  const isLoadingMaterials = false;
   const isLoadingBusinesses = false;
-  const isLoadingSupliers = false;
-  const isLoadingSourcingRegions = false;
   const isLoadingYearCompletion = false;
   const isLoadingInterventionTypes = false;
 
-  const onChange = useCallback((key: string, value: string | number) => {
-    if (key === 'intervention_type') {
-      // router.push({
-      //   pathname: '/analysis',
-      //   query: {
-      //     ...query,
-      //     intervention_type: value, // by default firs option of the list
-      //   },
-      // });
-    }
+  const onChange = useCallback((e) => {
+    console.log(e);
   }, []);
-  
+
+  const handleChangeFilter = useCallback(
+    // only save ids on store
+    (key, values) => {
+      setMoreFilters({
+        ...moreFilters,
+        [key]: values,
+      } as AnalysisState['filters']);
+    },
+    [moreFilters],
+  );
+
   return (
     <>
       <fieldset className="sm:col-span-3 text-sm">
@@ -185,12 +146,10 @@ const Step1 = () => {
 
           <span className="text-gray-700 font-medium pr-2">of</span>
           <div className="font-bold">
-            <Select
-              loading={isLoadingMaterials}
-              current={currentMaterial}
-              options={optionsMaterial}
-              placeholder="all materials"
-              onChange={() => onChange('materials', currentMaterial.value)}
+            <Materials
+              multiple
+              current={filters.materials}
+              onChange={(values) => handleChangeFilter('materials', values)}
               theme="secondary"
             />
           </div>
@@ -200,25 +159,21 @@ const Step1 = () => {
             current={currentBusiness}
             options={optionsBusinesses}
             placeholder="all businesses"
-            onChange={() => onChange('businesses', currentBusiness.value)}
+            // onChange={() => onChange('businesses', currentBusiness.value)}
             theme="secondary"
           />
           <span className="text-gray-700 font-medium pr-2">from</span>
-          <Select
-            loading={isLoadingSupliers}
-            current={currentSuplier}
-            options={optionsSuplier}
-            placeholder="all supliers"
-            onChange={() => onChange('supliers', currentSuplier.value)}
+          <Suppliers
+            multiple
+            current={filters.suppliers}
+            onChange={(values) => handleChangeFilter('suppliers', values)}
             theme="secondary"
           />
           <span className="text-gray-700 font-medium pr-2">in</span>
-          <Select
-            loading={isLoadingSourcingRegions}
-            current={currentsourcingRegion}
-            options={optionsSourcingRegion}
-            placeholder="all sourcing regions"
-            onChange={() => onChange('sourcing_regions', currentsourcingRegion.value)}
+          <OriginRegions
+            multiple
+            current={filters.suppliers}
+            onChange={(values) => handleChangeFilter('suppliers', values)}
             theme="secondary"
           />
           <span className="text-gray-700 font-medium pr-2">.</span>
@@ -233,7 +188,7 @@ const Step1 = () => {
               current={currentYearCompletion}
               options={optionsYearCompletion}
               placeholder="Select"
-              onChange={() => onChange('year_completion', currentYearCompletion.value)}
+              // onChange={() => onChange('year_completion', currentYearCompletion.value)}
             />
           </div>
         </div>
@@ -243,10 +198,11 @@ const Step1 = () => {
           <div className="mt-1">
             <Select
               loading={isLoadingInterventionTypes}
+              id="interventionType"
               current={currentInterventionType}
               options={optionsInterventionType}
               placeholder="Select"
-              onChange={() => onChange('intervention_type', currentInterventionType?.value)}
+              // onChange={(e) => handleApply(e)}
             />
           </div>
         </div>

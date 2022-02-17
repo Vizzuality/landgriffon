@@ -24,7 +24,7 @@ const items = [
 const interventions = [
   {
     id: 1,
-    title: 'Replace <strong>50% of Palm Oil</strong> with Soybean Oil (RFA-certified) by 2025',
+    title: 'Replace 50% of Palm Oil with Soybean Oil (RFA-certified) by 2025',
   },
   {
     id: 2,
@@ -55,7 +55,7 @@ const ScenarioAttributes = ({ handleNewIntervention }) => {
                 href="#interventions"
                 className={cx({ 'border-b-2 border-green-700': interventionsContent })}
               >
-                Interventions (0)
+                Interventions ({interventions.length})
               </a>
             </Link>
             <Link href="#growth">

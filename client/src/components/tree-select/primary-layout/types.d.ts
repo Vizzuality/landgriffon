@@ -9,6 +9,7 @@ export type TreeSelectOptions = TreeSelectOption[];
 export type TreeSelectProps = {
   maxBadges?: number;
   placeholder?: string;
+  currentOptions: TreeSelectOption[];
   searchPlaceholder?: string;
   showSearch?: boolean;
   multiple?: boolean;
@@ -17,5 +18,7 @@ export type TreeSelectProps = {
   current: TreeSelectOptions;
   onChange?: (selected: SelectOption) => unknown;
   onSearch?: (query: string) => unknown;
-  theme?: 'primary' | 'secondary';
+  isOpen: boolean;
+  handleOpen: Dispatch<SetStateAction<boolean>>;
+  handleRemoveBadget: (option: any) => void;
 };

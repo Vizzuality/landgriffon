@@ -119,8 +119,10 @@ export class CreateScenarioInterventionDto {
 
   @ValidateIf(
     (dto: CreateScenarioInterventionDto) =>
-      dto.type === SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL ||
-      dto.type === SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+      (dto.type === SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL ||
+        dto.type === SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER) &&
+      (dto.newLocationType === LOCATION_TYPES.AGGREGATION_POINT ||
+        dto.newLocationType === LOCATION_TYPES.POINT_OF_PRODUCTION),
   )
   @IsNotEmpty({
     message:

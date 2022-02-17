@@ -1,9 +1,4 @@
-import {
-  forwardRef,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
@@ -23,7 +18,7 @@ import {
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { getManager } from 'typeorm';
-//import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
+import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 
 @Injectable()
 export class ScenarioInterventionsService extends AppBaseService<
@@ -35,8 +30,8 @@ export class ScenarioInterventionsService extends AppBaseService<
   constructor(
     @InjectRepository(ScenarioInterventionRepository)
     protected readonly scenarioInterventionRepository: ScenarioInterventionRepository,
-  ) //protected readonly geoCodingService: GeoCodingService,
-  {
+    protected readonly geoCodingService: GeoCodingService,
+  ) {
     super(
       scenarioInterventionRepository,
       scenarioResource.name.singular,
@@ -92,7 +87,7 @@ export class ScenarioInterventionsService extends AppBaseService<
           await this.findMaterialsStartYearTonnage(dto);
 
         //Starting to create data for Geo Coding
-        const newSourcingData: any = [];
+        const newInterventionSourcingData: any = [];
         for (const material of materialsAndTonnage) {
           //TODO businessUnit
           const newSourcingLocation: any = {};
@@ -101,22 +96,22 @@ export class ScenarioInterventionsService extends AppBaseService<
             dto.newLocationType as LOCATION_TYPES;
           newSourcingLocation.locationAddressInput = dto.newAddressInput;
           newSourcingLocation.locationCountryInput = dto.newCountryInput;
-
-          const newSourcingRecords: any = [];
-          let tonnage: number = material.tonnage;
-          for (let year: number = startYear + 1; year <= dto.endYear; ++year) {
-            newSourcingRecords.push({ year, tonnage });
-            tonnage *= growthRate;
-          }
-          newSourcingLocation.sourcingRecords = newSourcingRecords;
+          newSourcingLocation.sourcingRecords = [
+            { year: material.year, tonnage: material.tonnage },
+          ];
           newSourcingLocation.t1SupplierId = dto.newSupplierT1Id;
           newSourcingLocation.producerId = dto.newSupplierT1Id;
+          newSourcingLocation.businessUnitId = material.businessUnitId;
 
-          newSourcingData.push(newSourcingLocation);
+          newInterventionSourcingData.push(newSourcingLocation);
         }
+
+        return newInterventionSourcingData;
         // // Geocoding newly created data:
         // const geoCodedSourcingData: any[] =
-        //   await this.geoCodingService.geoCodeLocations(newSourcingData);
+        //   await this.geoCodingService.geoCodeLocations(
+        //     newInterventionSourcingData,
+        //   );
 
         // // Saving new locations
         // const newData: any = await this.sourcingLocationService.save(
@@ -130,7 +125,7 @@ export class ScenarioInterventionsService extends AppBaseService<
         break;
       case SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY:
         // scenarioIntervention = await this.createNewProductionEfficiencyIntervention(dto)
-
+        return this.findMaterialsStartYearTonnage(dto);
         break;
     }
 
@@ -142,8 +137,11 @@ export class ScenarioInterventionsService extends AppBaseService<
   ): Promise<SourcingLocation[]> {
     const sourcingLocations: SourcingLocation[] = await getManager()
       .createQueryBuilder()
-      .select('sl.materialId')
-      .addSelect('sr.year')
+      .select('sl.materialId', 'materialId')
+      .addSelect('sl.businessUnitId', 'businessUnitId')
+      .addSelect('sl.t1SupplierId', 't1SupplierId')
+      .addSelect('sl.producerId', 'producerId')
+      .addSelect('sr.year', 'year')
       .addSelect('SUM(sr.tonnage) as tonnage')
       .from(SourcingLocation, 'sl')
       .leftJoin('sourcing_records', 'sr', 'sr.sourcingLocationId = sl.id')
@@ -153,21 +151,25 @@ export class ScenarioInterventionsService extends AppBaseService<
       .andWhere('sl."t1SupplierId" IN (:...suppliers)', {
         suppliers: dto.suppliersIds,
       })
-      .andWhere('sl."producerId" IN (:...suppliers)', {
+      .orWhere('sl."producerId" IN (:...suppliers)', {
         suppliers: dto.suppliersIds,
       })
-      .orWhere('sl."producerId" IN (:...suppliers)', {
+      .andWhere('sl."producerId" IN (:...suppliers)', {
         suppliers: dto.suppliersIds,
       })
       .andWhere('sl."businessUnitId" IN (:...businessUnits)', {
         businessUnits: dto.businessUnitsIds,
       })
       .andWhere('sr.year = :startYear', { startYear: 2019 })
-      // .andWhere('sl.adminRegionId IN (:...adminRegion)', {
-      // adminRegion: dto.adminRegionsIds,
-      // })
+      .andWhere('sl.adminRegionId IN (:...adminRegion)', {
+        adminRegion: dto.adminRegionsIds,
+      })
       .groupBy('sl.materialId')
       .addGroupBy('sr.year')
+      .addGroupBy('sl.businessUnitId')
+      .addGroupBy('sl.t1SupplierId')
+      .addGroupBy('sl.producerId')
+
       .getRawMany();
 
     return sourcingLocations;

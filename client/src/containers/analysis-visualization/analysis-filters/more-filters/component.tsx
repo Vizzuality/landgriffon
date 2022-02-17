@@ -71,7 +71,7 @@ const MoreFilters: React.FC = () => {
   });
 
   return (
-    <Popover className="relative" >
+    <Popover className="relative">
       <Button theme="secondary" onClick={() => setOpen(!open)}>
         <span className="block h-5 truncate">
           <FilterIcon className="w-5 h-5 text-gray-900" aria-hidden="true" />
@@ -90,7 +90,7 @@ const MoreFilters: React.FC = () => {
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
       >
-        <Popover.Panel static className="absolute right-0 z-10 mt-1 w-80 z-20">
+        <Popover.Panel static className="absolute right-0 mt-1 w-80 z-20">
           <div
             ref={filtersWrapperRef}
             className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5"

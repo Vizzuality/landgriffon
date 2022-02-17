@@ -79,13 +79,13 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   })
   type!: SCENARIO_INTERVENTION_TYPE;
 
-  @ApiPropertyOptional()
-  @Column({ nullable: true })
-  startYear?: number;
-
   @ApiProperty()
   @Column()
-  endYear!: number;
+  startYear!: number;
+
+  @ApiPropertyOptional()
+  @Column({ nullable: true })
+  endYear?: number;
 
   @ApiProperty()
   @Column()

@@ -34,14 +34,14 @@ export class CreateScenarioInterventionDto {
   type!: string;
 
   @IsNumber()
-  @IsOptional()
-  @ApiPropertyOptional()
-  startYear?: number;
-
-  @IsNumber()
   @IsNotEmpty()
   @ApiProperty()
-  endYear!: number;
+  startYear!: number;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiPropertyOptional()
+  endYear?: number;
 
   @IsNumber()
   @IsNotEmpty()

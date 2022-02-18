@@ -4,6 +4,7 @@ import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { Logger, NotFoundException } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { GetMaterialTreeWithOptionsDto } from './dto/get-material-tree-with-options.dto';
 
 @EntityRepository(Material)
 export class MaterialRepository extends ExtendedTreeRepository<
@@ -16,7 +17,9 @@ export class MaterialRepository extends ExtendedTreeRepository<
    * @description Retrieves materials and it's ancestors (in a plain format) there are registered sourcingLocations for
    */
 
-  async getSourcingDataMaterialsWithAncestry(): Promise<Material[]> {
+  async getSourcingDataMaterialsWithAncestry(
+    materialTreeOptions: GetMaterialTreeWithOptionsDto,
+  ): Promise<Material[]> {
     // Join and filters over materials present in sourcing-locations. Resultant query returns IDs of elements meeting the filters
     const queryBuilder: SelectQueryBuilder<Material> = this.createQueryBuilder(
       'm',
@@ -24,6 +27,25 @@ export class MaterialRepository extends ExtendedTreeRepository<
       .select('m.id')
       .innerJoin(SourcingLocation, 'sl', 'sl.materialId = m.id')
       .distinct(true);
+
+    if (materialTreeOptions.supplierIds) {
+      queryBuilder.andWhere('sl.t1SupplierId IN (:...materialIds)', {
+        materialIds: materialTreeOptions.supplierIds,
+      });
+      queryBuilder.orWhere('sl.producerId IN (:...materialIds)', {
+        materialIds: materialTreeOptions.supplierIds,
+      });
+    }
+    if (materialTreeOptions.businessUnitIds) {
+      queryBuilder.andWhere('sl.businessUnitId IN (:...businessUnitIds)', {
+        businessUnitIds: materialTreeOptions.businessUnitIds,
+      });
+    }
+    if (materialTreeOptions.originIds) {
+      queryBuilder.andWhere('sl.adminRegionId IN (:...originIds)', {
+        originIds: materialTreeOptions.originIds,
+      });
+    }
 
     const [subQuery, subQueryParams]: [string, any[]] =
       queryBuilder.getQueryAndParameters();

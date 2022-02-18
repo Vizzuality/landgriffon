@@ -34,8 +34,8 @@ import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { UpdateMaterialDto } from 'modules/materials/dto/update.material.dto';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
-import { ParseOptionalIntPipe } from 'pipes/parse-optional-int.pipe';
 import { PaginationMeta } from 'utils/app-base.service';
+import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
 
 @Controller(`/api/v1/materials`)
 @ApiTags(materialResource.className)
@@ -98,13 +98,11 @@ export class MaterialsController {
       'A boolean value. If specified, returns a tree of materials with registered sourcing-locations, and depth param will be ignored',
   })
   async getTrees(
-    @Query('depth', ParseOptionalIntPipe) depth?: number,
-    @Query('withSourcingLocations') withSourcingLocations?: boolean,
+    @Query(ValidationPipe) materialTreeOptions: GetMaterialTreeWithOptionsDto,
   ): Promise<Material> {
-    const results: Material[] = await this.materialsService.getTrees({
-      depth,
-      withSourcingLocations,
-    });
+    const results: Material[] = await this.materialsService.getTrees(
+      materialTreeOptions,
+    );
     return this.materialsService.serialize(results);
   }
 

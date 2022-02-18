@@ -5,10 +5,10 @@ import { IsBoolean, IsNumber, IsOptional, IsUUID } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
-export class GetMaterialTreeWithOptionsDto {
+export class GetAdminRegionTreeWithOptionsDto {
   @ApiPropertyOptional({
     description:
-      'Return Materials with related Sourcing Locations. Setting this to true will override depth param',
+      'Return Admin Regions with related Sourcing Locations. Setting this to true will override depth param',
   })
   @Type(() => Boolean)
   @IsOptional()
@@ -30,10 +30,10 @@ export class GetMaterialTreeWithOptionsDto {
   @IsUUID('4', { each: true })
   @ApiPropertyOptional()
   @IsOptional()
-  businessUnitIds?: string[];
+  materialIds?: string[];
 
   @IsUUID('4', { each: true })
   @ApiPropertyOptional()
   @IsOptional()
-  originIds?: string[];
+  businessUnitIds?: string[];
 }

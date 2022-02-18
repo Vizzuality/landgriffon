@@ -4,7 +4,7 @@ import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
 import { Logger, NotFoundException } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { GetBusinessUnitTreeWithOptionsDto } from './dto/get-business-unit-tree-with-options.dto';
+import { GetBusinessUnitTreeWithOptionsDto } from 'modules/business-units/dto/get-business-unit-tree-with-options.dto';
 
 @EntityRepository(BusinessUnit)
 export class BusinessUnitRepository extends ExtendedTreeRepository<
@@ -28,15 +28,15 @@ export class BusinessUnitRepository extends ExtendedTreeRepository<
         .distinct(true);
 
     if (businessUnitTreeOptions.supplierIds) {
-      queryBuilder.andWhere('sl.t1SupplierId IN (:...materialIds)', {
-        materialIds: businessUnitTreeOptions.supplierIds,
+      queryBuilder.andWhere('sl.t1SupplierId IN (:...supplierIds)', {
+        supplierIds: businessUnitTreeOptions.supplierIds,
       });
-      queryBuilder.orWhere('sl.producerId IN (:...materialIds)', {
-        materialIds: businessUnitTreeOptions.supplierIds,
+      queryBuilder.orWhere('sl.producerId IN (:...supplierIds)', {
+        supplierIds: businessUnitTreeOptions.supplierIds,
       });
     }
     if (businessUnitTreeOptions.materialIds) {
-      queryBuilder.andWhere('sl.materialId IN (:...businessUnitIds)', {
+      queryBuilder.andWhere('sl.materialId IN (:...materialIds)', {
         materialIds: businessUnitTreeOptions.materialIds,
       });
     }

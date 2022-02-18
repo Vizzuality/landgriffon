@@ -16,17 +16,18 @@ import OriginRegions from 'containers/analysis-visualization/analysis-filters/or
 import { SelectOptions, SelectOption } from 'components/select/types';
 import type { AnalysisState } from 'store/features/analysis';
 
+const businesses = ['business1', 'business2', 'business3'];
+const yearCompletions = [2001, 2015, 2020];
+const interventionTypes = [
+  'Source from a new supplier or location',
+  'Change production efficiency',
+  'Switch to a new material',
+];
+
 const Step1 = () => {
   const dispatch = useAppDispatch();
   //const [isOpen, setIsOpen] = useState<boolean>(false);
   const { filters } = useAppSelector(analysis);
-  const businesses = ['business1', 'business2', 'business3'];
-  const yearCompletions = [2001, 2015, 2020];
-  const interventionTypes = [
-    'Source from a new supplier or location',
-    'Change production efficiency',
-    'Switch to a new material',
-  ];
 
   // const { data: materials, isLoading: isLoadingMaterials } = useMaterials();
   // const { data: businesses, isLoading: isLoadingBusinesses } = useBusinesses();
@@ -51,7 +52,7 @@ const Step1 = () => {
         label: business,
         value: business,
       })),
-    [businesses],
+    [],
   );
 
   const currentBusiness = useMemo<SelectOption>(
@@ -65,7 +66,7 @@ const Step1 = () => {
         label: YearCompletion.toString(),
         value: YearCompletion,
       })),
-    [yearCompletions],
+    [],
   );
 
   const currentYearCompletion = useMemo<SelectOption>(
@@ -75,11 +76,11 @@ const Step1 = () => {
 
   const optionsInterventionType: SelectOptions = useMemo(
     () =>
-      interventionTypes.map((InterventionType, index) => ({
+      interventionTypes.map((InterventionType) => ({
         label: InterventionType,
         value: InterventionType,
       })),
-    [interventionTypes],
+    [],
   );
 
   const currentInterventionType = useMemo<SelectOption>(
@@ -91,9 +92,12 @@ const Step1 = () => {
   const isLoadingYearCompletion = false;
   const isLoadingInterventionTypes = false;
 
-  const onChange = useCallback((e) => {
-    console.log(e);
-  }, []);
+  const handleChange = useCallback(
+    (e) => {
+      dispatch(setFilter({ id: 'materials', value: e }));
+    },
+    [dispatch],
+  );
 
   const handleChangeFilter = useCallback(
     // only save ids on store
@@ -108,11 +112,13 @@ const Step1 = () => {
 
   const handleInterventioType = useCallback(
     ({ value }) =>
-      setFilter({
-        id: 'interventionType',
-        value,
-      }),
-    [],
+      dispatch(
+        setFilter({
+          id: 'interventionType',
+          value,
+        }),
+      ),
+    [dispatch],
   );
 
   return (
@@ -157,7 +163,8 @@ const Step1 = () => {
             <Materials
               multiple
               current={filters.materials}
-              onChange={(values) => handleChangeFilter('materials', values)}
+              // onChange={(values) => handleChangeFilter('materials', values)}
+              onChange={handleChange}
               theme="secondary"
             />
           </div>
@@ -174,14 +181,14 @@ const Step1 = () => {
           <Suppliers
             multiple
             current={filters.suppliers}
-            onChange={(values) => handleChangeFilter('suppliers', values)}
+            // onChange={(values) => handleChangeFilter('suppliers', values)}
             theme="secondary"
           />
           <span className="text-gray-700 font-medium pr-2">in</span>
           <OriginRegions
             multiple
             current={filters.suppliers}
-            onChange={(values) => handleChangeFilter('suppliers', values)}
+            // onChange={(values) => handleChangeFilter('suppliers', values)}
             theme="secondary"
           />
           <span className="text-gray-700 font-medium pr-2">.</span>

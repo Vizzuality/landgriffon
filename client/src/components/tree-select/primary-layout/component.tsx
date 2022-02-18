@@ -22,7 +22,6 @@ const TreeSelectPrimary: React.FC<TreeSelectProps> = ({
 }) => {
   const [selected, setSelected] = useState<TreeSelectOption>(null);
   const [selectedKeys, setSelectedKeys] = useState<TreeProps['selectedKeys']>([]);
-  const [checkedKeys, setCheckedKeys] = useState<TreeProps['checkedKeys']>([]);
 
   const renderTreeNodes = useMemo(
     () =>
@@ -72,7 +71,6 @@ const TreeSelectPrimary: React.FC<TreeSelectProps> = ({
       const currentKeys = current.map(({ value }) => value);
       setSelected(current[0]);
       setSelectedKeys(currentKeys);
-      setCheckedKeys(currentKeys);
     }
   }, [current]);
 

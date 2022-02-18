@@ -35,7 +35,6 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [selected, setSelected] = useState<TreeSelectOption>(null);
   const [selectedKeys, setSelectedKeys] = useState<TreeProps['selectedKeys']>([]);
   const [expandedKeys, setExpandedKeys] = useState<TreeProps['expandedKeys']>([]);
   const [checkedKeys, setCheckedKeys] = useState<TreeProps['checkedKeys']>([]);
@@ -70,7 +69,6 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     (keys, { node }) => {
       const currentSelection = { label: node.title as string, value: node.key };
       setSelectedKeys(keys);
-      setSelected(currentSelection);
       if (onChange) onChange(currentSelection);
       if (!multiple) setIsOpen(false);
     },
@@ -186,7 +184,6 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   useEffect(() => {
     if (current && current.length) {
       const currentKeys = current.map(({ value }) => value);
-      setSelected(current[0]);
       setSelectedKeys(currentKeys);
       setCheckedKeys(currentKeys);
     }

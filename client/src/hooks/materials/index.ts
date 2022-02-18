@@ -11,8 +11,10 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
 };
 
 type ResponseData = UseQueryResult<Material[]>;
-type TreeParams = {
+
+export type MaterialsTreesParams = {
   depth?: number;
+  withSourcingLocations?: boolean;
 };
 
 export function useMaterials(): ResponseData {
@@ -47,11 +49,11 @@ export function useMaterials(): ResponseData {
   );
 }
 
-export function useMaterialsTrees(params: TreeParams): ResponseData {
+export function useMaterialsTrees(params: MaterialsTreesParams): ResponseData {
   // const [session] = useSession();
 
   const query = useQuery(
-    ['materials-trees'],
+    ['materials-trees', params],
     async () =>
       apiService
         .request({

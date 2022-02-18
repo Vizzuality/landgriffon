@@ -11,8 +11,10 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
 };
 
 type ResponseData = UseQueryResult<Supplier[]>;
-type TreeParams = {
+
+export type SuppliersTreesParams = {
   depth?: number;
+  withSourcingLocations?: boolean;
 };
 
 export function useSuppliers(): ResponseData {
@@ -47,7 +49,7 @@ export function useSuppliers(): ResponseData {
   );
 }
 
-export function useSuppliersTrees(params: TreeParams): ResponseData {
+export function useSuppliersTrees(params: SuppliersTreesParams): ResponseData {
   // const [session] = useSession();
 
   const query = useQuery(

@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import { UseYearsRangeProps, YearsRangeParams } from './types';
 
 export function useYearsRange({
-  years: yearsProp,
+  years: yearsProp = [],
   yearsGap = 0,
   startYear: initialStartYear,
   endYear: initialEndYear,

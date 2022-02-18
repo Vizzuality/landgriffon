@@ -114,8 +114,6 @@ describe('Materials - Get trees - Smart Filters', () => {
         })
         .set('Authorization', `Bearer ${jwtToken}`);
 
-      console.log(JSON.stringify(response.body.data));
-
       expect(HttpStatus.OK);
       expect(response.body.data[0].id).toEqual(parentMaterial1.id);
       expect(response.body.data[0].attributes.children[0].name).toEqual(

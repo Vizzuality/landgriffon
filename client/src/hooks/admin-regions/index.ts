@@ -11,8 +11,10 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
 };
 
 type ResponseData = UseQueryResult<OriginRegion[]>;
-type TreeParams = {
+
+export type AdminRegionsTreesParams = {
   depth?: number;
+  withSourcingLocations?: boolean;
 };
 
 export function useAdminRegions(): ResponseData {
@@ -47,7 +49,7 @@ export function useAdminRegions(): ResponseData {
   );
 }
 
-export function useAdminRegionsTrees(params: TreeParams): ResponseData {
+export function useAdminRegionsTrees(params: AdminRegionsTreesParams): ResponseData {
   // const [session] = useSession();
 
   const query = useQuery(

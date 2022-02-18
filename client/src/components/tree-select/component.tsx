@@ -62,7 +62,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   );
 
   const customSwitcherIcon = useCallback(({ isLeaf, expanded }) => {
-    if (isLeaf) return null;
+    if (isLeaf) return <span className="block w-4" />;
     if (expanded) return <ChevronDownIcon className="h-4 w-4" />;
     return <ChevronRightIcon className="h-4 w-4" />;
   }, []);

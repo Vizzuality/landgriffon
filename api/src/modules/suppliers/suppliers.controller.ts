@@ -85,18 +85,6 @@ export class SuppliersController {
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
   @Get('/trees')
-  @ApiQuery({
-    name: 'depth',
-    required: false,
-    description:
-      'A non-negative integer value. If specified, limits the depth of the tree crawling. 0 will return only the tree roots',
-  })
-  @ApiQuery({
-    name: 'withSourcingLocations',
-    required: false,
-    description:
-      'A boolean value. If specified, returns a tree of materials with registered sourcing-locations, and depth param will be ignored',
-  })
   async getTrees(
     @Query(ValidationPipe) supplierTreeOptions: GetSupplierTreeWithOptions,
   ): Promise<Supplier> {

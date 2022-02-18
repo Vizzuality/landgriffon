@@ -11,6 +11,7 @@ import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { UpdateMaterialDto } from 'modules/materials/dto/update.material.dto';
 import { FindTreesWithOptionsArgs } from 'utils/tree.repository';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
+import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
 
 @Injectable()
 export class MaterialsService extends AppBaseService<
@@ -151,19 +152,21 @@ export class MaterialsService extends AppBaseService<
    * @description Get a tree of Materials with registered sourcing locations
    */
 
-  async getMaterialsTreeWithSourcingLocations(): Promise<Material[]> {
+  async getMaterialsTreeWithSourcingLocations(
+    materialTreeOptions: GetMaterialTreeWithOptionsDto,
+  ): Promise<Material[]> {
     const materialLineage: Material[] =
-      await this.materialRepository.getSourcingDataMaterialsWithAncestry();
+      await this.materialRepository.getSourcingDataMaterialsWithAncestry(
+        materialTreeOptions,
+      );
     return this.buildTree<Material>(materialLineage, null);
   }
 
-  async getTrees(treeOptions: {
-    depth?: number;
-    withSourcingLocations?: boolean;
-  }): Promise<Material[]> {
-    const { depth, withSourcingLocations } = treeOptions;
-    if (withSourcingLocations)
-      return this.getMaterialsTreeWithSourcingLocations();
-    return this.findTreesWithOptions({ depth });
+  async getTrees(
+    materialTreeOptions: GetMaterialTreeWithOptionsDto,
+  ): Promise<Material[]> {
+    if (materialTreeOptions.withSourcingLocations)
+      return this.getMaterialsTreeWithSourcingLocations(materialTreeOptions);
+    return this.findTreesWithOptions({ depth: materialTreeOptions.depth });
   }
 }

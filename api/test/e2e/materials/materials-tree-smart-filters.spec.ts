@@ -3,7 +3,6 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { Supplier } from 'modules/suppliers/supplier.entity';
-import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import {
   createMaterial,
@@ -13,10 +12,11 @@ import {
 import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 import { Material } from 'modules/materials/material.entity';
+import { MaterialsModule } from 'modules/materials/materials.module';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { MaterialRepository } from 'modules/materials/material.repository';
 
-describe('Suppliers - Get trees - Smart Filters', () => {
+describe('Materials - Get trees - Smart Filters', () => {
   let app: INestApplication;
   let supplierRepository: SupplierRepository;
   let sourcingLocationsRepository: SourcingLocationRepository;
@@ -25,7 +25,7 @@ describe('Suppliers - Get trees - Smart Filters', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, SuppliersModule],
+      imports: [AppModule, MaterialsModule],
     }).compile();
 
     supplierRepository =
@@ -54,8 +54,8 @@ describe('Suppliers - Get trees - Smart Filters', () => {
   test(
     'When I query a Supplier Tree endpoint ' +
       'And I query the ones with sourcing locations' +
-      'And I filter them by a related material or materials' +
-      'Then I should receive a tree list of suppliers where there are sourcing-locations for',
+      'And I filter them by a related supplier or suppliers' +
+      'Then I should receive a tree list of materials where there are sourcing-locations for',
     async () => {
       const parentSupplier: Supplier = await createSupplier({
         name: 'parentSupplier',
@@ -69,8 +69,13 @@ describe('Suppliers - Get trees - Smart Filters', () => {
         name: 'supplierWithRelatedMaterial2',
       });
 
-      const material1: Material = await createMaterial({
-        name: 'childSupplierMaterial',
+      const parentMaterial1: Material = await createMaterial({
+        name: 'parentMaterial1',
+      });
+
+      const childMaterial1: Material = await createMaterial({
+        name: 'childMaterial1',
+        parentId: parentMaterial1.id,
       });
 
       const material2: Material = await createMaterial({
@@ -85,7 +90,7 @@ describe('Suppliers - Get trees - Smart Filters', () => {
       });
       await createSourcingLocation({
         t1SupplierId: childSupplierWithRelatedMaterial.id,
-        materialId: material1.id,
+        materialId: childMaterial1.id,
       });
 
       await createSourcingLocation({
@@ -99,23 +104,27 @@ describe('Suppliers - Get trees - Smart Filters', () => {
       });
 
       const response = await request(app.getHttpServer())
-        .get('/api/v1/suppliers/trees')
+        .get('/api/v1/materials/trees')
         .query({
           withSourcingLocations: true,
-          'materialIds[]': [material1.id, material2.id],
+          'supplierIds[]': [
+            childSupplierWithRelatedMaterial.id,
+            supplierWithRelatedMaterial3.id,
+          ],
         })
         .set('Authorization', `Bearer ${jwtToken}`);
 
+      console.log(JSON.stringify(response.body.data));
+
       expect(HttpStatus.OK);
-      expect(response.body.data[0].id).toEqual(parentSupplier.id);
+      expect(response.body.data[0].id).toEqual(parentMaterial1.id);
       expect(response.body.data[0].attributes.children[0].name).toEqual(
-        childSupplierWithRelatedMaterial.name,
+        childMaterial1.name,
       );
-      expect(response.body.data[1].id).toEqual(supplier2WithRelatedMaterial.id);
+      expect(response.body.data[1].id).toEqual(material3.id);
       expect(
         response.body.data.find(
-          (supplier: Supplier) =>
-            supplier.id === supplierWithRelatedMaterial3.id,
+          (material: Supplier) => material.id === material2.id,
         ),
       ).toBe(undefined);
     },

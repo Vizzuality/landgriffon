@@ -17,6 +17,7 @@ import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-lo
 import { SelectQueryBuilder } from 'typeorm';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetSupplierByType } from 'modules/suppliers/dto/get-supplier-by-type.dto';
+import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-tree-with-options.dto';
 
 @Injectable()
 export class SuppliersService extends AppBaseService<
@@ -85,13 +86,12 @@ export class SuppliersService extends AppBaseService<
     await this.supplierRepository.save(entityArray);
   }
 
-  async getTrees(treeOptions: {
-    depth?: number;
-    withSourcingLocations?: boolean;
-  }): Promise<Supplier[]> {
-    if (treeOptions.withSourcingLocations)
-      return this.getSuppliersWithSourcingLocations();
-    return this.findTreesWithOptions(treeOptions.depth);
+  async getTrees(
+    supplierTreeOptions: GetSupplierTreeWithOptions,
+  ): Promise<Supplier[]> {
+    if (supplierTreeOptions.withSourcingLocations)
+      return this.getSuppliersWithSourcingLocations(supplierTreeOptions);
+    return this.findTreesWithOptions(supplierTreeOptions.depth);
   }
 
   async createTree(importData: CreateSupplierDto[]): Promise<Supplier[]> {
@@ -120,9 +120,13 @@ export class SuppliersService extends AppBaseService<
    *  @description Get a tree of Suppliers that are associated with sourcing locations
    */
 
-  async getSuppliersWithSourcingLocations(): Promise<any> {
+  async getSuppliersWithSourcingLocations(
+    supplierTreeOptions: GetSupplierTreeWithOptions,
+  ): Promise<any> {
     const supplierLineage: Supplier[] =
-      await this.supplierRepository.getSourcingDataSuppliersWithAncestry();
+      await this.supplierRepository.getSourcingDataSuppliersWithAncestry(
+        supplierTreeOptions,
+      );
     return this.buildTree<Supplier>(supplierLineage, null);
   }
 

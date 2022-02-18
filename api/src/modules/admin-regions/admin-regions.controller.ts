@@ -17,7 +17,6 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -37,7 +36,7 @@ import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-reg
 import { UpdateAdminRegionDto } from 'modules/admin-regions/dto/update.admin-region.dto';
 import { PaginationMeta } from 'utils/app-base.service';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
-import { ParseOptionalIntPipe } from 'pipes/parse-optional-int.pipe';
+import { GetAdminRegionTreeWithOptionsDto } from 'modules/admin-regions/dto/get-admin-region-tree-with-options.dto';
 
 @Controller(`/api/v1/admin-regions`)
 @ApiTags(adminRegionResource.className)
@@ -83,26 +82,13 @@ export class AdminRegionsController {
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
   @Get('/trees')
-  @ApiQuery({
-    name: 'depth',
-    required: false,
-    description:
-      'A non-negative integer value. If specified, limits the depth of the tree crawling. 0 will return only the tree roots',
-  })
-  @ApiQuery({
-    name: 'withSourcingLocations',
-    required: false,
-    description:
-      'A boolean value. If specified, returns a tree of admin-regions with registered sourcing-locations within, and depth param will be ignored',
-  })
   async getTrees(
-    @Query('depth', ParseOptionalIntPipe) depth?: number,
-    @Query('withSourcingLocations') withSourcingLocations?: boolean,
+    @Query(ValidationPipe)
+    adminRegionTreeOptions: GetAdminRegionTreeWithOptionsDto,
   ): Promise<AdminRegion> {
-    const results: AdminRegion[] = await this.adminRegionsService.getTrees({
-      depth,
-      withSourcingLocations,
-    });
+    const results: AdminRegion[] = await this.adminRegionsService.getTrees(
+      adminRegionTreeOptions,
+    );
     return this.adminRegionsService.serialize(results);
   }
 

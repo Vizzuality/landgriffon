@@ -4,7 +4,7 @@ import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { Logger, NotFoundException } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { GetMaterialTreeWithOptionsDto } from './dto/get-material-tree-with-options.dto';
+import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
 
 @EntityRepository(Material)
 export class MaterialRepository extends ExtendedTreeRepository<
@@ -29,11 +29,11 @@ export class MaterialRepository extends ExtendedTreeRepository<
       .distinct(true);
 
     if (materialTreeOptions.supplierIds) {
-      queryBuilder.andWhere('sl.t1SupplierId IN (:...materialIds)', {
-        materialIds: materialTreeOptions.supplierIds,
+      queryBuilder.andWhere('sl.t1SupplierId IN (:...supplierIds)', {
+        supplierIds: materialTreeOptions.supplierIds,
       });
-      queryBuilder.orWhere('sl.producerId IN (:...materialIds)', {
-        materialIds: materialTreeOptions.supplierIds,
+      queryBuilder.orWhere('sl.producerId IN (:...supplierIds)', {
+        supplierIds: materialTreeOptions.supplierIds,
       });
     }
     if (materialTreeOptions.businessUnitIds) {

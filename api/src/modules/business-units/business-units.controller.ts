@@ -17,7 +17,6 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -37,6 +36,7 @@ import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.busines
 import { UpdateBusinessUnitDto } from 'modules/business-units/dto/update.business-unit.dto';
 import { PaginationMeta } from 'utils/app-base.service';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
+import { GetBusinessUnitTreeWithOptionsDto } from 'modules/business-units/dto/get-business-unit-tree-with-options.dto';
 
 @Controller(`/api/v1/business-units`)
 @ApiTags(businessUnitResource.className)
@@ -82,19 +82,14 @@ export class BusinessUnitsController {
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
   @Get('/trees')
-  @ApiQuery({
-    name: 'withSourcingLocations',
-    required: false,
-    description:
-      'A boolean value. If specified, returns a tree of business units with registered sourcing-locations within, and depth param will be ignored',
-  })
   // TODO: Implement Tree response similar to other entities as Admin-Regions
   async getTrees(
-    @Query('withSourcingLocations') withSourcingLocations?: boolean,
+    @Query(ValidationPipe)
+    businessUnitTreeOptions: GetBusinessUnitTreeWithOptionsDto,
   ): Promise<BusinessUnit[]> {
-    const results: BusinessUnit[] = await this.businessUnitsService.getTrees({
-      withSourcingLocations,
-    });
+    const results: BusinessUnit[] = await this.businessUnitsService.getTrees(
+      businessUnitTreeOptions,
+    );
     return this.businessUnitsService.serialize(results);
   }
 

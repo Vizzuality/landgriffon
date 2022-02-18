@@ -47,30 +47,17 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   const renderTreeNodes = useMemo(
     () =>
       (data, counter = 0) =>
-        data.map((item) => {
-          if (item.children) {
-            return (
-              <TreeNode
-                key={item.value}
-                title={item.label}
-                className={classNames(TREE_NODE_CLASSNAMES, `pl-${4 * counter}`, {
-                  'bg-green-50 text-green-700 font-semibold': selectedKeys.includes(item.value),
-                })}
-              >
-                {renderTreeNodes(item.children, counter + 1)}
-              </TreeNode>
-            );
-          }
-          return (
-            <TreeNode
-              key={item.value}
-              title={item.label}
-              className={classNames(TREE_NODE_CLASSNAMES, `pl-${4 * counter}`, {
-                'bg-green-50 text-green-700 font-semibold': selectedKeys.includes(item.value),
-              })}
-            />
-          );
-        }),
+        data.map((item) => (
+          <TreeNode
+            key={item.value}
+            title={item.label}
+            className={classNames(TREE_NODE_CLASSNAMES, `pl-${4 * counter}`, {
+              'bg-green-50 text-green-700 font-semibold': selectedKeys.includes(item.value),
+            })}
+          >
+            {item.children && renderTreeNodes(item.children, counter + 1)}
+          </TreeNode>
+        )),
     [selectedKeys],
   );
 

@@ -8,7 +8,7 @@ import { Type } from 'class-transformer';
 export class GetBusinessUnitTreeWithOptionsDto {
   @ApiPropertyOptional({
     description:
-      'Return Suppliers with related Sourcing Locations. Setting this to true will override depth param',
+      'Return Business Units with related Sourcing Locations. Setting this to true will override depth param',
   })
   @Type(() => Boolean)
   @IsOptional()

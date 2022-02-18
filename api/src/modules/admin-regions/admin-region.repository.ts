@@ -4,6 +4,7 @@ import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-region.dto';
 import { Logger, NotFoundException } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { GetAdminRegionTreeWithOptionsDto } from 'modules/admin-regions/dto/get-admin-region-tree-with-options.dto';
 
 @EntityRepository(AdminRegion)
 export class AdminRegionRepository extends ExtendedTreeRepository<
@@ -94,13 +95,34 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
    ** @description Retrieves Admin Regions and their ancestors (in a plain format) when there are associated Sourcing Locations
    */
 
-  async getSourcingDataAdminRegionsWithAncestry(): Promise<AdminRegion[]> {
+  async getSourcingDataAdminRegionsWithAncestry(
+    adminRegionTreeOptions: GetAdminRegionTreeWithOptionsDto,
+  ): Promise<AdminRegion[]> {
     // Join and filters over materials present in sourcing-locations. Resultant query returns IDs of elements meeting the filters
     const queryBuilder: SelectQueryBuilder<AdminRegion> =
       this.createQueryBuilder('ar')
         .select('ar.id')
         .innerJoin(SourcingLocation, 'sl', 'sl.adminRegionId = ar.id')
         .distinct(true);
+
+    if (adminRegionTreeOptions.supplierIds) {
+      queryBuilder.andWhere('sl.t1SupplierId IN (:...supplierIds)', {
+        supplierIds: adminRegionTreeOptions.supplierIds,
+      });
+      queryBuilder.orWhere('sl.producerId IN (:...supplierIds)', {
+        supplierIds: adminRegionTreeOptions.supplierIds,
+      });
+    }
+    if (adminRegionTreeOptions.materialIds) {
+      queryBuilder.andWhere('sl.materialId IN (:...materialIds)', {
+        materialIds: adminRegionTreeOptions.materialIds,
+      });
+    }
+    if (adminRegionTreeOptions.businessUnitIds) {
+      queryBuilder.andWhere('sl.businessUnitId IN (:...businessUnitIds)', {
+        businessUnitIds: adminRegionTreeOptions.businessUnitIds,
+      });
+    }
 
     const [subQuery, subQueryParams]: [string, any[]] =
       queryBuilder.getQueryAndParameters();

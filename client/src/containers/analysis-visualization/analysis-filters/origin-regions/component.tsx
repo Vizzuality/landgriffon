@@ -2,21 +2,27 @@ import { useMemo } from 'react';
 import TreeSelect from 'components/tree-select';
 import { sortBy } from 'lodash';
 
-import { useAdminRegionsTrees } from 'hooks/admin-regions';
+import { useAdminRegionsTrees, AdminRegionsTreesParams } from 'hooks/admin-regions';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
 type OriginRegionsFilterProps = {
   current: TreeSelectProps['current'];
   multiple?: TreeSelectProps['multiple'];
+  /** Tree depth. Defaults to `1` */
+  depth?: AdminRegionsTreesParams['depth'];
+  /** Only regions with sourcing locations. */
+  withSourcingLocations?: AdminRegionsTreesParams['withSourcingLocations'];
   onChange?: TreeSelectProps['onChange'];
 };
 
 const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
   multiple,
   current,
+  depth = 1,
+  withSourcingLocations, // Do not a default; backend will override depth if this is set at all
   onChange,
 }) => {
-  const { data, isFetching } = useAdminRegionsTrees({ depth: 1 });
+  const { data, isFetching } = useAdminRegionsTrees({ depth, withSourcingLocations });
 
   const treeOptions: TreeSelectProps['options'] = useMemo(
     () =>

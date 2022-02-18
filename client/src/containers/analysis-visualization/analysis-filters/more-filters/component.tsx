@@ -106,6 +106,7 @@ const MoreFilters: React.FC = () => {
                   <div className="mb-1">Origins</div>
                   <OriginRegions
                     multiple
+                    withSourcingLocations
                     current={filters.origins}
                     onChange={(values) => handleChangeFilter('origins', values)}
                   />

@@ -28,7 +28,7 @@ const InterventionForm = () => {
   }, []);
 
   return (
-    <div className="bg-red-700 ">
+    <div>
       <Steps steps={steps} className="mb-10" />
       <form className="space-y-8 divide-y divide-gray-200">
         <div className="space-y-8 divide-y divide-gray-200">

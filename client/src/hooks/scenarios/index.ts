@@ -38,24 +38,3 @@ export function useScenarios(queryParams: { sort: string }): ResponseData {
     } as ResponseData;
   }, [response]);
 }
-
-export function useInterventionType(intervention: string) {
-  const interventionTypes = [
-    {
-      id: 1,
-      title: 'Source from a new supplier or location',
-    },
-    {
-      id: 2,
-      title: 'Change production efficiency',
-    },
-    {
-      id: 3,
-      title: 'Switch to a new material',
-    },
-  ];
-  return useMemo<number>(
-    () => interventionTypes.find(({ title }) => intervention === title).id,
-    [intervention],
-  );
-}

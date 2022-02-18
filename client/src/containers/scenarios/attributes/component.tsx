@@ -1,10 +1,14 @@
-import { useMemo } from 'react';
+import { useMemo, FC } from 'react';
 import { PlusIcon } from '@heroicons/react/solid';
 import { useRouter } from 'next/router';
 import { Button } from 'components/button';
 import Link from 'next/link';
 
 import cx from 'classnames';
+
+interface ScenarioAttributes {
+  handleNewIntervention: () => void;
+}
 
 const items = [
   {
@@ -40,7 +44,9 @@ const interventions = [
   },
 ];
 
-const ScenarioAttributes = ({ handleNewIntervention }) => {
+const ScenarioAttributes: FC<ScenarioAttributes> = ({
+  handleNewIntervention,
+}: ScenarioAttributes) => {
   const { asPath } = useRouter();
   const tab = useMemo<string>(() => asPath.split('#')[1], [asPath]);
   const interventionsContent = !tab || tab?.includes('intervention');

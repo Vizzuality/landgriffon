@@ -20,7 +20,7 @@ const ScenariosNewContainer: React.FC = () => {
   const dispatch = useAppDispatch();
   const handleNewIntervention = useCallback(() => {
     dispatch(setSubContentCollapsed(false));
-  }, []);
+  }, [dispatch]);
 
   return (
     <>

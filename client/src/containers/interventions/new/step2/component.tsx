@@ -8,19 +8,14 @@ import SupplierImpact from './supplier-impact';
 
 import { analysis } from 'store/features/analysis';
 
-// types
-import { useInterventionType } from 'hooks/scenarios';
-
 const Step2: FC = () => {
   const { filters } = useAppSelector(analysis);
   const { interventionType } = filters;
 
-  const intervention = useInterventionType(interventionType);
-
   return (
     <>
-      {intervention === 3 && <Material />}
-      {(intervention === 3 || intervention === 2) && <Supplier />}
+      {interventionType === 2 && <Material />}
+      {(interventionType === 2 || interventionType === 1) && <Supplier />}
       <SupplierImpact />
     </>
   );

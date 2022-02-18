@@ -2,18 +2,28 @@ import { useMemo } from 'react';
 import TreeSelect from 'components/tree-select';
 import { sortBy } from 'lodash';
 
-import { useSuppliersTrees } from 'hooks/suppliers';
+import { useSuppliersTrees, SuppliersTreesParams } from 'hooks/suppliers';
 
 import type { TreeSelectProps } from 'components/tree-select/types';
 
 type SuppliersFilterProps = {
   current: TreeSelectProps['current'];
   multiple?: TreeSelectProps['multiple'];
+  /** Tree depth. Defaults to `1` */
+  depth?: SuppliersTreesParams['depth'];
+  /** Only suppliers with sourcing locations. */
+  withSourcingLocations?: SuppliersTreesParams['withSourcingLocations'];
   onChange?: TreeSelectProps['onChange'];
 };
 
-const SuppliersFilter: React.FC<SuppliersFilterProps> = ({ multiple, current, onChange }) => {
-  const { data, isFetching } = useSuppliersTrees({ depth: 1 });
+const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
+  multiple,
+  current,
+  depth = 1,
+  withSourcingLocations, // Do not a default; backend will override depth if this is set at all
+  onChange,
+}) => {
+  const { data, isFetching } = useSuppliersTrees({ depth, withSourcingLocations });
 
   const treeOptions: TreeSelectProps['options'] = useMemo(
     () =>

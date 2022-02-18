@@ -124,6 +124,7 @@ const MoreFilters: React.FC = () => {
                   <div className="mb-1">Suppliers</div>
                   <Suppliers
                     multiple
+                    withSourcingLocations
                     current={filters.suppliers}
                     onChange={(values) => handleChangeFilter('suppliers', values)}
                   />

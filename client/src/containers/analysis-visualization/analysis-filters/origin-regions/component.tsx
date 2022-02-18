@@ -45,7 +45,7 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
       showSearch
       loading={isFetching}
       options={treeOptions}
-      placeholder="Sorcing regions"
+      placeholder="Sourcing regions"
       onChange={onChange}
       current={current}
       theme={theme}

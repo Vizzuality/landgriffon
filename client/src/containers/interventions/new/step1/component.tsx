@@ -76,9 +76,9 @@ const Step1 = () => {
 
   const optionsInterventionType: SelectOptions = useMemo(
     () =>
-      interventionTypes.map((InterventionType) => ({
+      interventionTypes.map((InterventionType, index) => ({
         label: InterventionType,
-        value: InterventionType,
+        value: index,
       })),
     [],
   );
@@ -110,7 +110,7 @@ const Step1 = () => {
     [moreFilters],
   );
 
-  const handleInterventioType = useCallback(
+  const handleInterventionType = useCallback(
     ({ value }) =>
       dispatch(
         setFilter({
@@ -217,7 +217,7 @@ const Step1 = () => {
               current={currentInterventionType}
               options={optionsInterventionType}
               placeholder="Select"
-              onChange={handleInterventioType}
+              onChange={handleInterventionType}
               // onChange={({ value }) => dispatch(setFilter({ id: 'interventioType', value: value }))}
             />
           </div>

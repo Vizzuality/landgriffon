@@ -65,10 +65,6 @@ const Material = () => {
     console.log('onChange filter');
   }, []);
 
-  const handleChange = useCallback(() => {
-    setLandgriffonEstimates(!landgriffonEstimates);
-  }, []);
-
   return (
     <>
       <fieldset className="sm:col-span-3 text-sm">

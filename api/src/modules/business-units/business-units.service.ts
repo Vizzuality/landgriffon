@@ -12,6 +12,7 @@ import { AppInfoDTO } from 'dto/info.dto';
 import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
 import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
 import { UpdateBusinessUnitDto } from 'modules/business-units/dto/update.business-unit.dto';
+import { GetBusinessUnitTreeWithOptionsDto } from 'modules/business-units/dto/get-business-unit-tree-with-options.dto';
 
 @Injectable()
 export class BusinessUnitsService extends AppBaseService<
@@ -67,17 +68,22 @@ export class BusinessUnitsService extends AppBaseService<
   }
 
   // TODO: Implement Tree response similar to other entities as Admin-Regions
-  async getTrees(treeOptions: {
-    depth?: number;
-    withSourcingLocations?: boolean;
-  }): Promise<BusinessUnit[]> {
+  async getTrees(
+    businessUnitTreeOptions: GetBusinessUnitTreeWithOptionsDto,
+  ): Promise<BusinessUnit[]> {
     //const { depth, withSourcingLocations } = treeOptions;
-    return this.getBusinessUnitTreeWithSourcingLocations();
+    return this.getBusinessUnitTreeWithSourcingLocations(
+      businessUnitTreeOptions,
+    );
   }
 
-  async getBusinessUnitTreeWithSourcingLocations(): Promise<BusinessUnit[]> {
+  async getBusinessUnitTreeWithSourcingLocations(
+    businessUnitTreeOptions: GetBusinessUnitTreeWithOptionsDto,
+  ): Promise<BusinessUnit[]> {
     const businessUnitsLineage: BusinessUnit[] =
-      await this.businessUnitRepository.getSourcingDataBusinessUnitssWithAncestry();
+      await this.businessUnitRepository.getSourcingDataBusinessUnitssWithAncestry(
+        businessUnitTreeOptions,
+      );
     return this.buildTree<BusinessUnit>(businessUnitsLineage, null);
   }
 }

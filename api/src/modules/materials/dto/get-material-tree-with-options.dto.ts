@@ -6,7 +6,10 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 export class GetMaterialTreeWithOptionsDto {
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description:
+      'Return Suppliers with related Sourcing Locations. Setting this to true will override depth param',
+  })
   @Type(() => Boolean)
   @IsOptional()
   @IsBoolean()

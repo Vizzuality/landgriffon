@@ -98,13 +98,11 @@ export class SuppliersController {
       'A boolean value. If specified, returns a tree of materials with registered sourcing-locations, and depth param will be ignored',
   })
   async getTrees(
-    @Query(ValidationPipe) supplierOptions: GetSupplierTreeWithOptions,
+    @Query(ValidationPipe) supplierTreeOptions: GetSupplierTreeWithOptions,
   ): Promise<Supplier> {
-    const { depth, withSourcingLocations } = supplierOptions;
-    const results: Supplier[] = await this.suppliersService.getTrees({
-      depth,
-      withSourcingLocations,
-    });
+    const results: Supplier[] = await this.suppliersService.getTrees(
+      supplierTreeOptions,
+    );
     return this.suppliersService.serialize(results);
   }
 

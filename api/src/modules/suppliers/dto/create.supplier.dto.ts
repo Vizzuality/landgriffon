@@ -14,7 +14,7 @@ export class CreateSupplierDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(2)
-  @MaxLength(40)
+  @MaxLength(300)
   @ApiProperty()
   name!: string;
 

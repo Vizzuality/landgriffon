@@ -13,7 +13,13 @@ import Button from 'components/button';
 import Pagination, { PaginationProps } from 'components/pagination';
 import Search from 'components/search';
 import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range';
-import Table, { TableProps, DataType, SortingMode, ApiSortingType } from 'containers/table';
+import {
+  TableNoSSR as Table,
+  TableProps,
+  DataType,
+  SortingMode,
+  ApiSortingType,
+} from 'containers/table';
 
 const AdminDataPage: React.FC = () => {
   const [searchText, setSearchText] = useDebounce('', 250);
@@ -72,6 +78,7 @@ const AdminDataPage: React.FC = () => {
 
   const tableProps: TableProps = useMemo(() => {
     return {
+      isLoading: isFetchingSourcingData,
       rowKeyField: 'id',
       columns: [
         { key: 'materialName', title: 'Material', dataType: DataType.String, width: 240 },
@@ -90,19 +97,20 @@ const AdminDataPage: React.FC = () => {
         setSorting(params);
       },
     };
-  }, [sorting, sourcingData, yearsData.columns, yearsData.data]);
+  }, [isFetchingSourcingData, sorting, sourcingData, yearsData.columns, yearsData.data]);
 
   /** Pagination Props */
 
   const paginationProps: PaginationProps = useMemo(
     () => ({
+      isLoading: isFetchingSourcingData,
       numItems: sourcingData.length,
       currentPage: currentPage,
       totalPages: sourcingMetadata.totalPages,
       totalItems: sourcingMetadata.totalItems,
       onPageClick: setCurrentPage,
     }),
-    [currentPage, sourcingData, sourcingMetadata],
+    [currentPage, isFetchingSourcingData, sourcingData, sourcingMetadata],
   );
 
   /** Helpers for use in the JSX */
@@ -114,7 +122,6 @@ const AdminDataPage: React.FC = () => {
   return (
     <AdminLayout
       currentTab={ADMIN_TABS.DATA}
-      loading={isFetchingSourcingData}
       headerButtons={
         <>
           <Button theme="secondary" onClick={() => console.info('Download: click')}>
@@ -163,7 +170,7 @@ const AdminDataPage: React.FC = () => {
 
       {!hasData && isSearching && <NoResults />}
 
-      {hasData && (
+      {(hasData || isFetchingData) && (
         <>
           <Table {...tableProps} />
           <Pagination className="my-4 ml-4 mr-2" {...paginationProps} />

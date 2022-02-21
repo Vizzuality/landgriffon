@@ -9,6 +9,7 @@ import {
   MinLength,
 } from 'class-validator';
 import {
+  CANCELED_OR_REPLACING_BY_INTERVENTION,
   LOCATION_ACCURACY,
   LOCATION_TYPES,
 } from 'modules/sourcing-locations/sourcing-location.entity';
@@ -95,4 +96,20 @@ export class CreateSourcingLocationDto {
   @IsOptional()
   @ApiPropertyOptional()
   sourcingLocationGroupId?: string;
+
+  @IsString()
+  @IsOptional()
+  scenarioInterventionId?: string;
+
+  @IsString()
+  @IsOptional()
+  typeAccordingToIntervention?: CANCELED_OR_REPLACING_BY_INTERVENTION;
+
+  @IsString()
+  @IsOptional()
+  geoRegionId?: string;
+
+  @IsString()
+  @IsOptional()
+  adminRegionId?: string;
 }

@@ -20,6 +20,7 @@ import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { inspect } from 'util';
+import { GeoCodingBaseAbstractService } from 'modules/geo-coding/geo-coding.base.abstract.service';
 
 /**
  * @note: Landgriffon Geocoding strategy doc:
@@ -27,7 +28,7 @@ import { inspect } from 'util';
  */
 
 @Injectable()
-export class GeoCodingBaseService {
+export class GeoCodingBaseService extends GeoCodingBaseAbstractService {
   private logger: Logger = new Logger(GeoCodingBaseService.name);
   private readonly client: ClientType;
   private readonly apiKey: string = config.get('geolocation.gmapsApiKey');
@@ -37,6 +38,7 @@ export class GeoCodingBaseService {
     protected readonly geoRegionService: GeoRegionsService,
     protected readonly sourcingLocationService: SourcingLocationsService,
   ) {
+    super(adminRegionService, geoRegionService, sourcingLocationService);
     this.client = new Client({});
     if (this.apiKey === null) {
       this.logger.warn(

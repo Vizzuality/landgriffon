@@ -1,11 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { GeoCodingBaseService } from 'modules/geo-coding/geo-coding.base.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { GeocodeResponseData } from '@googlemaps/google-maps-services-js/dist/geocode/geocode';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { GeoCodingBaseAbstractService } from 'modules/geo-coding/geo-coding.base.abstract.service';
+import { GeoCodingCacheableBaseService } from 'modules/geo-coding/geo-coding-cacheable.base.service';
 
 @Injectable()
-export class AggregationPointGeocodingService extends GeoCodingBaseService {
+export class AggregationPointGeocodingService
+  extends GeoCodingCacheableBaseService
+  implements GeoCodingBaseAbstractService
+{
   aggregationPointGeocodingLogger: Logger = new Logger(
     AggregationPointGeocodingService.name,
   );

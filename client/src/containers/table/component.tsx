@@ -177,6 +177,12 @@ const Table: React.FC<TableProps> = ({
       }),
       ...props.childComponents?.dataRow,
     },
+    noDataRow: {
+      elementAttributes: () => ({
+        className: DEFAULT_CLASSNAMES.noDataRow,
+      }),
+      ...props.childComponents?.noDataRow,
+    },
     cell: {
       elementAttributes: (props) => {
         const isFirstColumn = props.column.key === firstColumnKey;

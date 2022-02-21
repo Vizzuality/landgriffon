@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from 'store';
 import type { Scenario } from 'containers/scenarios/types';
+import { Indicator } from 'types';
 
 // Define a type for the slice state
 type Option = {
@@ -18,6 +19,7 @@ export type AnalysisState = {
   layer: 'impact' | 'risk' | 'material';
   filters: {
     indicator: Option;
+    indicators: Indicator[];
     by: string;
     startYear: number;
     endYear: number;
@@ -40,6 +42,7 @@ const initialState: AnalysisState = {
   layer: 'material',
   filters: {
     indicator: null,
+    indicators: [],
     by: 'material',
     startYear: null,
     endYear: null,

@@ -60,6 +60,8 @@ export type ImpactTabularAPIParams = {
 export type Indicator = {
   id: string;
   name: string;
+  value?: number;
+  unit?: string;
 };
 
 export type Group = {

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import {
   ChevronDoubleLeftIcon,
@@ -12,6 +12,7 @@ import { PaginationProps } from './types';
 
 const Table: React.FC<PaginationProps> = ({
   className,
+  isLoading = false,
   numItems,
   currentPage,
   totalPages,
@@ -21,19 +22,32 @@ const Table: React.FC<PaginationProps> = ({
     // noOp
   },
 }: PaginationProps) => {
+  const [pagination, setPagination] = useState({
+    numItems: undefined,
+    currentPage: undefined,
+    totalPages: undefined,
+    totalItems: undefined,
+  });
+
+  useEffect(() => {
+    // Do not update pagination if data is loading.
+    if (isLoading) return;
+    setPagination({ numItems, currentPage, totalPages, totalItems });
+  }, [currentPage, isLoading, numItems, totalItems, totalPages]);
+
   const calcPagingRange = useCallback(() => {
     // https://codereview.stackexchange.com/a/183472
     const min = 1;
     let length = numNumberButtons;
 
-    if (length > totalPages) length = totalPages;
+    if (length > pagination.totalPages) length = pagination.totalPages;
 
-    let start = currentPage - Math.floor(length / 2);
+    let start = pagination.currentPage - Math.floor(length / 2);
     start = Math.max(start, min);
-    start = Math.min(start, min + totalPages - length);
+    start = Math.min(start, min + pagination.totalPages - length);
 
     return Array.from({ length: length }, (el, i) => start + i);
-  }, [currentPage, numNumberButtons, totalPages]);
+  }, [numNumberButtons, pagination]);
 
   const rangeButtons = calcPagingRange();
 
@@ -42,8 +56,8 @@ const Table: React.FC<PaginationProps> = ({
   };
 
   const handlePreviousClick = () => {
-    if (currentPage <= 1) return;
-    onPageClick(currentPage - 1);
+    if (pagination.currentPage <= 1) return;
+    onPageClick(pagination.currentPage - 1);
   };
 
   const handleRangeButtonClick = (pageNumber) => {
@@ -51,13 +65,16 @@ const Table: React.FC<PaginationProps> = ({
   };
 
   const handleNextClick = () => {
-    if (currentPage >= totalPages) return;
+    if (pagination.currentPage >= pagination.totalPages) return;
     onPageClick(currentPage + 1);
   };
 
   const handleLastClick = () => {
-    onPageClick(totalPages);
+    onPageClick(pagination.totalPages);
   };
+
+  // We don't have enough values to display the pagination; show nothing.
+  if (Object.values(pagination).some((val) => val === undefined)) return null;
 
   return (
     <div
@@ -71,16 +88,16 @@ const Table: React.FC<PaginationProps> = ({
       </div>
 
       <div className="flex items-center">
-        <Button disabled={currentPage <= 1} onClick={handleFirstClick}>
+        <Button disabled={pagination.currentPage <= 1} onClick={handleFirstClick}>
           <ChevronDoubleLeftIcon className="w-4 h-4" />
         </Button>
-        <Button disabled={currentPage <= 1} onClick={handlePreviousClick}>
+        <Button disabled={pagination.currentPage <= 1} onClick={handlePreviousClick}>
           <ChevronLeftIcon className="w-5 h-5" />
         </Button>
         {rangeButtons.map((buttonNumber) => (
           <Button
             key={buttonNumber}
-            active={buttonNumber === currentPage}
+            active={buttonNumber === pagination.currentPage}
             onClick={() => {
               handleRangeButtonClick(buttonNumber);
             }}
@@ -88,10 +105,16 @@ const Table: React.FC<PaginationProps> = ({
             {buttonNumber}
           </Button>
         ))}
-        <Button disabled={currentPage >= totalPages} onClick={handleNextClick}>
+        <Button
+          disabled={pagination.currentPage >= pagination.totalPages}
+          onClick={handleNextClick}
+        >
           <ChevronRightIcon className="w-5 h-5" />
         </Button>
-        <Button disabled={currentPage >= totalPages} onClick={handleLastClick}>
+        <Button
+          disabled={pagination.currentPage >= pagination.totalPages}
+          onClick={handleLastClick}
+        >
           <ChevronDoubleRightIcon className="w-4 h-4" />
         </Button>
       </div>

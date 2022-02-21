@@ -8,6 +8,7 @@ export const DEFAULT_CLASSNAMES = {
   headCell: 'h-auto py-3 w-48',
   headCellContent: 'font-bold uppercase whitespace-nowrap text-xs leading-4 text-gray-600',
   dataRow: 'border-0 group even:bg-gray-50 odd:bg-white',
+  noDataRow: 'h-44 md:h-96',
   cell: 'h-auto py-3 group-even:bg-gray-50 group-odd:bg-white w-90',
   cellText: 'text-gray-900 leading-5 break-words',
   groupCell: 'z-10 sticky left-0 flex',

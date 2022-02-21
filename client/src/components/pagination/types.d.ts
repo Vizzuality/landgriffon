@@ -1,6 +1,11 @@
 export type PaginationProps = {
   /** Classnames to be applied */
   className?: string;
+  /**
+   * Whether data is currently being loaded. Will cause pagination to freeze its current state.
+   * Defaults to `false`.
+   * */
+  isLoading?: boolean;
   /** Number of items being displayed */
   numItems: number;
   /** Current page number */

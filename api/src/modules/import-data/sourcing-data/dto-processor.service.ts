@@ -14,7 +14,9 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
  * and spread through typing
  */
 export interface SourcingData extends CreateSourcingLocationDto {
-  sourcingRecords: SourcingRecord[];
+  sourcingRecords: SourcingRecord[] | { year: number; tonnage: number }[];
+  geoRegionId?: string;
+  adminRegionId?: string;
 }
 
 export interface SourcingRecordsDtos {

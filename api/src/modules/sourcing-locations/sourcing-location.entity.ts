@@ -210,7 +210,7 @@ export class SourcingLocation extends TimestampedBaseEntity {
   @ManyToOne(
     () => ScenarioIntervention,
     (scenarioIntervention: ScenarioIntervention) => scenarioIntervention.id,
-    { onDelete: 'CASCADE', eager: true },
+    { eager: false },
   )
   @JoinColumn({ name: 'scenarioInterventionId' })
   scenarioIntervention: ScenarioIntervention;

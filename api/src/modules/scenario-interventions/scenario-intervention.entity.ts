@@ -119,8 +119,12 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   @JoinTable()
   replacedAdminRegions?: AdminRegion[];
 
-  @ManyToMany(() => SourcingLocation)
-  @JoinTable()
+  @OneToMany(
+    () => SourcingLocation,
+    (sourcingLocations: SourcingLocation) =>
+      sourcingLocations.scenarioIntervention,
+    { cascade: true, onDelete: 'CASCADE' },
+  )
   replacedSourcingLocations?: SourcingLocation[];
 
   /**
@@ -146,13 +150,6 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   @ApiPropertyOptional()
   newGeoRegion?: GeoRegion;
 
-  @OneToMany(
-    () => SourcingLocation,
-    (sourcingLocation: SourcingLocation) =>
-      sourcingLocation.scenarioIntervention,
-  )
-  newSourcingLocations: SourcingLocation[];
-
   /**
    * New sourcing data, if intervention type involves supplier change:
    */
@@ -172,6 +169,17 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   @ApiPropertyOptional()
   @Column({ nullable: true })
   newMaterialTonnageRatio?: number;
+
+  /**
+   * New Sourcing locations that will be created by Intervention
+   */
+
+  @OneToMany(
+    () => SourcingLocation,
+    (sourcingLocation: SourcingLocation) =>
+      sourcingLocation.scenarioIntervention,
+  )
+  newSourcingLocations?: SourcingLocation[];
 
   /**
    * Relationships with User

@@ -14,6 +14,7 @@ import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create
 import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update.sourcing-location.dto';
 
 import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
+import { SourcingLocationWithRecord } from 'modules/sourcing-locations/dto/sourcing-location-with-record.interface';
 
 @Injectable()
 export class SourcingLocationsService extends AppBaseService<
@@ -88,8 +89,8 @@ export class SourcingLocationsService extends AppBaseService<
 
   async findFilteredSourcingLocationsForIntervention(
     createInterventionDto: CreateScenarioInterventionDto,
-  ): Promise<SourcingLocation[]> {
-    const sourcingLocations: SourcingLocation[] =
+  ): Promise<SourcingLocationWithRecord[]> {
+    const sourcingLocations: SourcingLocationWithRecord[] =
       await this.sourcingLocationRepository
         .createQueryBuilder('sl')
         .select('sl.materialId', 'materialId')

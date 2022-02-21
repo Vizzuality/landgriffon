@@ -1,19 +1,72 @@
-import { useMemo, useCallback, useState } from 'react';
+import { useMemo, useCallback, useState, FC } from 'react';
+
+// hooks
+// import { useIndicators } from 'hooks/indicators';
 
 import Select from 'components/select';
 
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
+import { setFilter } from 'store/features/analysis';
 
-const Step2 = () => {
+const producers = ['prod1', 'prod2'];
+const producer = 'prod1';
+const locationTypes = ['location1', 'location2'];
+const locationType = 'location1';
+const countries = ['Spain', 'Portugal'];
+const country = 'Spain';
+
+interface Indicator {
+  name: string;
+  value: number;
+  description: string;
+  id: string;
+  metadata: unknown;
+  unit: string;
+}
+
+const Step2: FC = () => {
   const [landgriffonEstimates, setLandgriffonEstimates] = useState(false);
+  // const { data: indicators, isFetching, isFetched, error } = useIndicators();
 
-  const producers = ['prod1', 'prod2'];
-  const producer = 'prod1';
-  const locationTypes = ['location1', 'location2'];
-  const locationType = 'location1';
-  const countries = ['Spain', 'Portugal'];
-  const country = 'Spain';
+  const data = useMemo<Indicator[]>(
+    () => [
+      {
+        description:
+          'The different terrestrial ecosystems play an important role storing carbon on the below-ground plant organic matter and soil. Particularly forest, through growth of trees and the increase of soil carbon, contain a large part of the carbon stored on land.\n\nActivities such us land use change or deforestation may affect carbon storage producing a disturbance of the carbon pools that may be released into the atmosphere.\n\nCarbon emissions due to land use change would therefore be the realease of carbon into the atmosphere driven by the change from forest into a specific aggriculture commodity.',
+        id: 'c71eb531-2c8e-40d2-ae49-1049543be4d1',
+        metadata: {},
+        name: 'Carbon emissions',
+        value: 0,
+        unit: 'tCO2e',
+      },
+      {
+        description: 'Deforestation risk due to ...',
+        id: '',
+        metadata: {},
+        name: 'Deforestation risk',
+        value: 0,
+        unit: 'Ha',
+      },
+      {
+        description: 'With the Unsustainable water use indicator...',
+        id: 'e2c00251-fe31-4330-8c38-604535d795dc',
+        metadata: {},
+        name: 'Water withdrawal',
+        value: 0,
+        unit: '100m3',
+      },
+      {
+        description: 'Land use and land use change...',
+        id: '0594aba7-70a5-460c-9b58-fc1802d264ea',
+        metadata: {},
+        name: 'Biodiversity impact',
+        value: 0,
+        unit: 'X',
+      },
+    ],
+    [],
+  );
 
   const optionsProducers: SelectOptions = useMemo(
     () =>
@@ -21,7 +74,7 @@ const Step2 = () => {
         label: producer,
         value: producer,
       })),
-    [producers],
+    [],
   );
 
   const currentProducer = useMemo<SelectOption>(
@@ -35,7 +88,7 @@ const Step2 = () => {
         label: locationType,
         value: locationType,
       })),
-    [locationTypes],
+    [],
   );
 
   const currentLocationType = useMemo<SelectOption>(
@@ -49,7 +102,7 @@ const Step2 = () => {
         label: country,
         value: country,
       })),
-    [countries],
+    [],
   );
 
   const currentCountry = useMemo<SelectOption>(
@@ -61,13 +114,25 @@ const Step2 = () => {
   const isLoadingLocationType = false;
   const isLoadingCountries = false;
 
-  const onChange = useCallback((key: string, value: string | number) => {
-    console.log('onChange filter');
+  const onChange = useCallback((key: string, value: number | string) => {
+    console.log(key, value);
   }, []);
 
-  const handleChange = useCallback(() => {
-    setLandgriffonEstimates(!landgriffonEstimates);
+  const handleChange = useCallback((key: string, value: number) => {
+    setFilter({
+      id: key,
+      value,
+    });
   }, []);
+
+  const indicatorsValues = () =>
+    data.reduce(
+      (obj, indicator) => ({
+        ...obj,
+        [indicator.name]: indicator.value,
+      }),
+      {},
+    );
 
   return (
     <>
@@ -157,7 +222,7 @@ const Step2 = () => {
               name="landgriffon_estimates"
               type="checkbox"
               className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-              onChange={handleChange}
+              onChange={() => setLandgriffonEstimates(!landgriffonEstimates)}
             />
             <label htmlFor="landgriffon_estimates" className="ml-2 block text-sm text-gray-900">
               Use LandGriffon location-based estimates.
@@ -165,63 +230,28 @@ const Step2 = () => {
           </div>
         </div>
         <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
-          <label htmlFor="carbon_emissions" className="block font-medium text-gray-700">
-            Carbon emissions
-            <div className="mt-1">
-              <input
-                type="text"
-                name="carbon_emissions"
-                id="carbon_emissions"
-                autoComplete="given-emission"
-                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full border-gray-300 rounded-md"
-                disabled={landgriffonEstimates}
-              />
-            </div>
-          </label>
-
-          <label htmlFor="deforestation_risk" className="block font-medium text-gray-700">
-            Deforestation risk
-            <div className="mt-1">
-              <input
-                type="text"
-                name="deforestation_risk"
-                id="deforestation_risk"
-                autoComplete="given-risk"
-                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full border-gray-300 rounded-md"
-                disabled={landgriffonEstimates}
-              />
-            </div>
-          </label>
-        </div>
-
-        <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
-          <label htmlFor="water_withdrawal" className="block font-medium text-gray-700">
-            Water withdrawal
-            <div className="mt-1">
-              <input
-                type="text"
-                name="water_withdrawal"
-                id="water_withdrawal"
-                autoComplete="given-water-withdrawal"
-                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full border-gray-300 rounded-md"
-                disabled={landgriffonEstimates}
-              />
-            </div>
-          </label>
-
-          <label htmlFor="biodiversity_impact" className="block font-medium text-gray-700">
-            Biodiversity impact
-            <div className="mt-1">
-              <input
-                type="text"
-                name="biodiversity_impact"
-                id="biodiversity_impact"
-                autoComplete="given-biodiversity-impact"
-                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full border-gray-300 rounded-md"
-                disabled={landgriffonEstimates}
-              />
-            </div>
-          </label>
+          {data.map((indicator) => (
+            <label
+              htmlFor={indicator.name}
+              key={indicator.id}
+              className="block font-medium text-gray-700"
+            >
+              {indicator.name}
+              <div className="mt-1 relative flex items-center">
+                <input
+                  type="number"
+                  name={indicator.name}
+                  id={indicator.name}
+                  defaultValue={landgriffonEstimates ? indicator.value : ''}
+                  value={landgriffonEstimates ? indicator.value : indicatorsValues[indicator.name]}
+                  className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full border-gray-300 rounded-md text-gray-500"
+                  disabled={landgriffonEstimates}
+                  onChange={(e) => handleChange(indicator.name, Number(e?.target?.value))}
+                />
+                <span className="absolute right-2 text-gray-500">{indicator.unit}</span>
+              </div>
+            </label>
+          ))}
         </div>
       </fieldset>
     </>

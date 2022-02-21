@@ -54,7 +54,7 @@ const AnalysisPage: React.FC = () => {
         <title>Analysis - Landgriffon</title>
       </Head>
       <main className="flex-1">
-        <div className="lg:h-screen flex">
+        <div className="h-screen flex">
           {/* Analysis content */}
           <div className="relative h-full z-30">
             <section className="relative h-full top-0 hidden lg:block lg:flex-shrink-0 lg:order-first">

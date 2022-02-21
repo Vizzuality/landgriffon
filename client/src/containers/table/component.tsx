@@ -9,6 +9,8 @@ import GroupRow from 'containers/table/group-row';
 import HeadCellContent from 'containers/table/head-cell-content';
 import LineChartCell from 'containers/table/line-chart-cell';
 
+import Loading from 'components/loading';
+
 import { DEFAULT_CLASSNAMES, SHADOW_CLASSNAMES } from './constants';
 import { TableProps, ColumnProps, ApiSortingType } from './types';
 import { SortingMode, ApiSortingDirection } from './enums';
@@ -22,6 +24,7 @@ const defaultProps: TableProps = {
 
 const Table: React.FC<TableProps> = ({
   className,
+  isLoading = false,
   stickyFirstColumn: isFirstColumnSticky = true,
   sortingMode,
   defaultSorting,
@@ -37,9 +40,14 @@ const Table: React.FC<TableProps> = ({
     order: defaultSorting?.order || ApiSortingDirection.Ascending,
   });
 
-  const updateTableProps = (action) => {
-    setTableProps((prevState) => kaReducer(prevState, action));
-  };
+  const updateTableProps = useCallback(
+    (action) => {
+      // Data is loading; let's retain the existing props for now.
+      if (isLoading) return;
+      setTableProps((prevState) => kaReducer(prevState, action));
+    },
+    [isLoading],
+  );
 
   const handleApiSorting = useCallback(
     (action) => {
@@ -81,14 +89,19 @@ const Table: React.FC<TableProps> = ({
           updateTableProps(action);
       }
     },
-    [handleApiSorting, sortingMode],
+    [handleApiSorting, sortingMode, updateTableProps],
   );
 
   useEffect(() => {
+    // Data is loading; let's retain the existing data for now.
+    if (isLoading) return;
     dispatch(updateData(props.data));
-  }, [props.data, dispatch]);
+  }, [props.data, dispatch, isLoading]);
 
   useEffect(() => {
+    // Data is loading; let's retain the existing columns for now.
+    if (isLoading) return;
+
     const columns =
       sortingMode === SortingMode.Api
         ? props.columns.map((column) => ({
@@ -103,7 +116,7 @@ const Table: React.FC<TableProps> = ({
         : props.columns;
 
     setTableProps((tableProps) => ({ ...tableProps, columns }));
-  }, [props.columns, apiSorting, sortingMode]);
+  }, [props.columns, apiSorting, sortingMode, isLoading]);
 
   const childComponents = {
     tableWrapper: {
@@ -224,6 +237,12 @@ const Table: React.FC<TableProps> = ({
         'my-4 shadow-sm': !className,
       })}
     >
+      {isLoading && (
+        <div className="absolute top-0 right-0 bottom-0 left-0 z-30 bg-white bg-opacity-60 backdrop-blur-xs flex flex-col items-center justify-center">
+          <Loading className="w-12 h-12" />
+          <span className="mt-4 text-gray-600">Loading...</span>
+        </div>
+      )}
       <KaTable
         {...tableProps}
         sortingMode={sortingMode as kaSortingMode}

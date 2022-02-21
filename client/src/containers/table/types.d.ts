@@ -9,6 +9,7 @@ export type ColumnProps = ICellProps & {
 
 export interface TableProps extends ITableProps {
   className?: string;
+  isLoading?: boolean;
   stickyFirstColumn?: boolean;
   childComponents?: ChildComponents;
   sortingMode?: SortingMode;

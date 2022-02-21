@@ -9,6 +9,9 @@ import Select from 'components/select';
 import { SelectOptions, SelectOption } from 'components/select/types';
 import { setFilter } from 'store/features/analysis';
 
+// utils
+import { NUMBER_FORMAT } from 'containers/analysis-visualization/constants';
+
 const producers = ['prod1', 'prod2'];
 const producer = 'prod1';
 const locationTypes = ['location1', 'location2'];
@@ -121,7 +124,7 @@ const Step2: FC = () => {
   const handleChange = useCallback((key: string, value: number) => {
     setFilter({
       id: key,
-      value,
+      value: NUMBER_FORMAT(value),
     });
   }, []);
 

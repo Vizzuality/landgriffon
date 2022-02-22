@@ -10,10 +10,13 @@ import {
 import { ScenarioInterventionsModule } from 'modules/scenario-interventions/scenario-interventions.module';
 import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
 import {
+  createAdminRegion,
   createBusinessUnit,
   createMaterial,
   createScenario,
   createScenarioIntervention,
+  createSourcingLocation,
+  createSourcingRecord,
   createSupplier,
 } from '../../entity-mocks';
 import { saveUserAndGetToken } from '../../utils/userAuth';
@@ -22,6 +25,16 @@ import { Scenario } from 'modules/scenarios/scenario.entity';
 import { Material } from 'modules/materials/material.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
+import {
+  LOCATION_TYPES,
+  SourcingLocation,
+} from 'modules/sourcing-locations/sourcing-location.entity';
+import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
+import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
+import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
+import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
+import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -35,17 +48,30 @@ const expectedJSONAPIAttributes: string[] = [
 describe('ScenarioInterventionsModule (e2e)', () => {
   let app: INestApplication;
   let scenarioInterventionRepository: ScenarioInterventionRepository;
+  let sourcingLocationRepository: SourcingLocationRepository;
+  let sourcingRecordRepository: SourcingRecordRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, ScenarioInterventionsModule],
+      imports: [
+        AppModule,
+        ScenarioInterventionsModule,
+        SourcingLocationsModule,
+        SourcingRecordsModule,
+      ],
     }).compile();
 
     scenarioInterventionRepository =
       moduleFixture.get<ScenarioInterventionRepository>(
         ScenarioInterventionRepository,
       );
+    sourcingLocationRepository = moduleFixture.get<SourcingLocationRepository>(
+      SourcingLocationRepository,
+    );
+    sourcingRecordRepository = moduleFixture.get<SourcingRecordRepository>(
+      SourcingRecordRepository,
+    );
 
     app = getApp(moduleFixture);
     await app.init();
@@ -53,6 +79,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   });
 
   afterEach(async () => {
+    await sourcingLocationRepository.delete({});
+    await sourcingRecordRepository.delete({});
     await scenarioInterventionRepository.delete({});
   });
 
@@ -60,12 +88,27 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     await app.close();
   });
 
-  describe('Scenario interventions - Create', () => {
-    test('Create a scenario intervention should be successful (happy case)', async () => {
+  describe('Scenario interventions - Creating intervention of type - Change of production efficiency', () => {
+    test('Create a scenario intervention of type Change of production efficiency with start year for which there is no sourcing data, should return an error', async () => {
       const scenario: Scenario = await createScenario();
       const material: Material = await createMaterial();
       const supplier: Supplier = await createSupplier();
+      const adminRegion: AdminRegion = await createAdminRegion();
       const businessUnit: BusinessUnit = await createBusinessUnit();
+
+      const sourcingLocation: SourcingLocation = await createSourcingLocation({
+        materialId: material.id,
+        t1SupplierId: supplier.id,
+        businessUnitId: businessUnit.id,
+        adminRegionId: adminRegion.id,
+      });
+
+      await createSourcingRecord({
+        sourcingLocationId: sourcingLocation.id,
+        year: 2018,
+        tonnage: 500,
+      });
+
       const response = await request(app.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -77,6 +120,135 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           materialsIds: [material.id],
           suppliersIds: [supplier.id],
           businessUnitsIds: [businessUnit.id],
+          adminRegionsIds: [adminRegion.id],
+          type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          newIndicatorCoefficients:
+            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
+        });
+
+      expect(HttpStatus.BAD_REQUEST);
+      expect(response.body.errors[0].title).toEqual(
+        'No actual data for requested filters',
+      );
+    });
+
+    test('Create a scenario intervention of type Change of production efficiency, when there are no sourcing locations matching the filters, should return an error', async () => {
+      const scenario: Scenario = await createScenario();
+
+      const material1: Material = await createMaterial();
+      const supplier1: Supplier = await createSupplier();
+      const adminRegion1: AdminRegion = await createAdminRegion();
+      const businessUnit1: BusinessUnit = await createBusinessUnit();
+
+      const material2: Material = await createMaterial();
+      const supplier2: Supplier = await createSupplier();
+      const adminRegion2: AdminRegion = await createAdminRegion();
+      const businessUnit2: BusinessUnit = await createBusinessUnit();
+
+      // Creating Sourcing Location:
+
+      const sourcingLocation1: SourcingLocation = await createSourcingLocation({
+        materialId: material1.id,
+        t1SupplierId: supplier1.id,
+        businessUnitId: businessUnit1.id,
+        adminRegionId: adminRegion1.id,
+      });
+
+      await createSourcingRecord({
+        sourcingLocationId: sourcingLocation1.id,
+        year: 2018,
+        tonnage: 500,
+      });
+
+      const sourcingLocation2: SourcingLocation = await createSourcingLocation({
+        materialId: material2.id,
+        t1SupplierId: supplier2.id,
+        businessUnitId: businessUnit2.id,
+        adminRegionId: adminRegion2.id,
+      });
+
+      await createSourcingRecord({
+        sourcingLocationId: sourcingLocation2.id,
+        year: 2015,
+        tonnage: 600,
+      });
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'test scenario intervention',
+          startYear: 2015,
+          percentage: 50,
+          scenarioId: scenario.id,
+          materialsIds: [material1.id],
+          suppliersIds: [supplier2.id],
+          businessUnitsIds: [businessUnit2.id],
+          adminRegionsIds: [adminRegion2.id],
+          type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          newIndicatorCoefficients:
+            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
+        });
+
+      expect(HttpStatus.BAD_REQUEST);
+      expect(response.body.errors[0].title).toEqual(
+        'No actual data for requested filters',
+      );
+    });
+
+    test('Create a scenario intervention of type Change of production efficiency, with correct data should be successful', async () => {
+      const scenario: Scenario = await createScenario();
+
+      const material1: Material = await createMaterial();
+      const supplier1: Supplier = await createSupplier();
+      const adminRegion1: AdminRegion = await createAdminRegion();
+      const businessUnit1: BusinessUnit = await createBusinessUnit();
+
+      const material2: Material = await createMaterial();
+      const supplier2: Supplier = await createSupplier();
+      const adminRegion2: AdminRegion = await createAdminRegion();
+      const businessUnit2: BusinessUnit = await createBusinessUnit();
+
+      // Creating Sourcing Location:
+
+      const sourcingLocation1: SourcingLocation = await createSourcingLocation({
+        materialId: material1.id,
+        t1SupplierId: supplier1.id,
+        businessUnitId: businessUnit1.id,
+        adminRegionId: adminRegion1.id,
+      });
+
+      await createSourcingRecord({
+        sourcingLocationId: sourcingLocation1.id,
+        year: 2018,
+        tonnage: 500,
+      });
+
+      const sourcingLocation2: SourcingLocation = await createSourcingLocation({
+        materialId: material2.id,
+        t1SupplierId: supplier2.id,
+        businessUnitId: businessUnit2.id,
+        adminRegionId: adminRegion2.id,
+      });
+
+      await createSourcingRecord({
+        sourcingLocationId: sourcingLocation2.id,
+        year: 2015,
+        tonnage: 600,
+      });
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'test scenario intervention',
+          startYear: 2018,
+          percentage: 50,
+          scenarioId: scenario.id,
+          materialsIds: [material1.id],
+          suppliersIds: [supplier1.id],
+          businessUnitsIds: [businessUnit1.id],
+          adminRegionsIds: [adminRegion1.id],
           type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           newIndicatorCoefficients:
             '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
@@ -96,6 +268,60 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       );
 
       expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
+
+      const allSourcingLocations: [SourcingLocation[], number] =
+        await sourcingLocationRepository.findAndCount();
+      const allSourcingRecords: [SourcingRecord[], number] =
+        await sourcingRecordRepository.findAndCount();
+
+      expect(allSourcingLocations[1]).toEqual(4);
+      expect(allSourcingRecords[1]).toEqual(4);
+
+      const canceledSourcingLocations: SourcingLocation[] =
+        await sourcingLocationRepository.find({
+          where: {
+            typeAccordingToIntervention:
+              'Sourcing location canceled by intervention',
+          },
+        });
+
+      expect(canceledSourcingLocations.length).toBe(1);
+      expect(canceledSourcingLocations[0].scenarioInterventionId).toEqual(
+        response.body.data.id,
+      );
+
+      const canceledSourcingRecords: SourcingRecord[] =
+        await sourcingRecordRepository.find({
+          where: {
+            sourcingLocationId: canceledSourcingLocations[0].id,
+          },
+        });
+
+      expect(canceledSourcingRecords.length).toBe(1);
+      expect(canceledSourcingRecords[0].tonnage).toEqual('500');
+
+      const newSourcingLocations: SourcingLocation[] =
+        await sourcingLocationRepository.find({
+          where: {
+            typeAccordingToIntervention:
+              'New sourcing location of the intervention',
+          },
+        });
+
+      expect(newSourcingLocations.length).toBe(1);
+      expect(newSourcingLocations[0].scenarioInterventionId).toEqual(
+        response.body.data.id,
+      );
+
+      const newSourcingRecords: SourcingRecord[] =
+        await sourcingRecordRepository.find({
+          where: {
+            sourcingLocationId: canceledSourcingLocations[0].id,
+          },
+        });
+
+      expect(newSourcingRecords.length).toBe(1);
+      expect(newSourcingRecords[0].tonnage).toEqual('500');
     });
   });
 
@@ -137,7 +363,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       );
     });
 
-    test('Create new intervention with replacing supplier without new location data fields should fail with a 400 error', async () => {
+    test('Create new intervention with replacing supplier without new location type should fail with a 400 error', async () => {
       const scenario: Scenario = await createScenario();
       const material: Material = await createMaterial();
       const supplier: Supplier = await createSupplier();
@@ -165,6 +391,122 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         [
           'Available columns for new location type: production unit, processing facility, tier 1 Trade facility, tier 2 Trade facility, origin Country, unknown, aggregation point, point of production, country of production',
           'New location type input is required for the selected intervention type',
+        ],
+      );
+    });
+
+    test('Create new intervention with replacing supplier with new location type Country and no country data should fail with a 400 error', async () => {
+      const scenario: Scenario = await createScenario();
+      const material: Material = await createMaterial();
+      const supplier: Supplier = await createSupplier();
+      const businessUnit: BusinessUnit = await createBusinessUnit();
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'test scenario intervention',
+          startYear: 2025,
+          percentage: 50,
+          scenarioId: scenario.id,
+          materialsIds: [material.id],
+          suppliersIds: [supplier.id],
+          businessUnitsIds: [businessUnit.id],
+          type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+          newIndicatorCoefficients:
+            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
+        });
+
+      expect(HttpStatus.BAD_REQUEST);
+      expect(response).toHaveErrorMessage(
+        HttpStatus.BAD_REQUEST,
+        'Bad Request Exception',
+        [
+          'New country input is required for the selected intervention and location type',
+        ],
+      );
+
+      const response2 = await request(app.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'test scenario intervention',
+          startYear: 2025,
+          percentage: 50,
+          scenarioId: scenario.id,
+          materialsIds: [material.id],
+          suppliersIds: [supplier.id],
+          businessUnitsIds: [businessUnit.id],
+          type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          newLocationType: LOCATION_TYPES.ORIGIN_COUNTRY,
+          newIndicatorCoefficients:
+            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
+        });
+
+      expect(HttpStatus.BAD_REQUEST);
+      expect(response2).toHaveErrorMessage(
+        HttpStatus.BAD_REQUEST,
+        'Bad Request Exception',
+        [
+          'New country input is required for the selected intervention and location type',
+        ],
+      );
+    });
+
+    test('Create new intervention with replacing supplier with new location type point of Production or Aggregation point and no address/coordinates data should fail with a 400 error', async () => {
+      const scenario: Scenario = await createScenario();
+      const material: Material = await createMaterial();
+      const supplier: Supplier = await createSupplier();
+      const businessUnit: BusinessUnit = await createBusinessUnit();
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'test scenario intervention',
+          startYear: 2025,
+          percentage: 50,
+          scenarioId: scenario.id,
+          materialsIds: [material.id],
+          suppliersIds: [supplier.id],
+          businessUnitsIds: [businessUnit.id],
+          type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          newLocationType: LOCATION_TYPES.AGGREGATION_POINT,
+          newIndicatorCoefficients:
+            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
+        });
+
+      expect(HttpStatus.BAD_REQUEST);
+      expect(response).toHaveErrorMessage(
+        HttpStatus.BAD_REQUEST,
+        'Bad Request Exception',
+        [
+          'New address or coordinates input is required for the selected intervention and location type',
+        ],
+      );
+
+      const response2 = await request(app.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'test scenario intervention',
+          startYear: 2025,
+          percentage: 50,
+          scenarioId: scenario.id,
+          materialsIds: [material.id],
+          suppliersIds: [supplier.id],
+          businessUnitsIds: [businessUnit.id],
+          type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          newLocationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
+          newIndicatorCoefficients:
+            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
+        });
+
+      expect(HttpStatus.BAD_REQUEST);
+      expect(response2).toHaveErrorMessage(
+        HttpStatus.BAD_REQUEST,
+        'Bad Request Exception',
+        [
+          'New address or coordinates input is required for the selected intervention and location type',
         ],
       );
     });

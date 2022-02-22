@@ -82,7 +82,7 @@ export class ScenarioInterventionsController {
     @Body() dto: CreateScenarioInterventionDto,
   ): Promise<ScenarioIntervention> {
     return this.scenariosService.serialize(
-      await this.scenariosService.create(dto),
+      await this.scenariosService.createScenarioIntervention(dto),
     );
   }
 

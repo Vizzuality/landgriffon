@@ -10,6 +10,7 @@ import { analysis } from 'store/features/analysis';
 
 import type { RGBColor } from 'types';
 import type { AnalysisChart } from './types';
+import type { Intervention } from './types';
 
 const COLOR_SCALE = chroma.scale(['#8DD3C7', '#BEBADA', '#FDB462']);
 
@@ -119,4 +120,25 @@ export function useAnalysisChart(): AnalysisChart {
       legend: legendData,
     };
   }, [filters, parsedImpact, isLoading]);
+}
+
+export function useInterventionTypes(): Intervention[] {
+  return [
+    {
+      slug: 'new_supplier_location',
+      title: 'Source from a new supplier or location',
+      description:
+        'Select a new location or supplier you want to source from in order to analyse changes.',
+    },
+    {
+      slug: 'production_efficiency',
+      title: 'Change production efficiency',
+      description: 'Setup new impacts in order to analyse the changes.',
+    },
+    {
+      slug: 'new_material',
+      title: 'Switch to a new material',
+      description: 'Select a new material you want to source from in order to analyse changes.',
+    },
+  ];
 }

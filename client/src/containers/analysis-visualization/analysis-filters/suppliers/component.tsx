@@ -48,7 +48,6 @@ const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
       placeholder="Suppliers"
       onChange={onChange}
       current={current}
-      theme={theme}
     />
   );
 };

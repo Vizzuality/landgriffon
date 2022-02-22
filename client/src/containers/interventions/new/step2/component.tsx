@@ -14,8 +14,10 @@ const Step2: FC = () => {
 
   return (
     <>
-      {interventionType === 2 && <Material />}
-      {(interventionType === 2 || interventionType === 1) && <Supplier />}
+      {interventionType === 'new_supplier_location' && <Material />}
+      {(interventionType === 'new_supplier_location' || interventionType === 'new_material') && (
+        <Supplier />
+      )}
       <SupplierImpact />
     </>
   );

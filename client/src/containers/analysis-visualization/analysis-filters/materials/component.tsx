@@ -49,7 +49,6 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
       placeholder="Materials"
       onChange={onChange}
       current={current}
-      theme={theme}
     />
   );
 };

@@ -142,7 +142,7 @@ const Step1: FC = () => {
 
       <fieldset className="mt-1 flex flex-col">
         <p className="font-medium leading-5 text-sm">Apply intervention to:</p>
-        <div className="flex items-center text-green-700">
+        <div className="flex items-center text-green-700 space-x-2">
           <input
             type="number"
             name="percentage"
@@ -153,42 +153,43 @@ const Step1: FC = () => {
             placeholder="100"
             className="border-none mr-1 will-change-contents text-green-700"
           />
-          <span className="text-green-700 font-bold pr-2">%</span>
+          <span className="text-green-700 font-bold">%</span>
 
-          <span className="text-gray-700 font-medium pr-2">of</span>
+          <span className="text-gray-700 font-medium">of</span>
           <div className="font-bold">
             <Materials
               multiple
               current={filters.materials}
               // onChange={(values) => handleChangeFilter('materials', values)}
               onChange={handleChange}
-              theme="secondary"
+              theme="primary"
+              ellipsis
             />
           </div>
-          <span className="text-gray-700 font-medium pr-2">for</span>
+          <span className="text-gray-700 font-medium">for</span>
           <Select
             loading={isLoadingBusinesses}
             current={currentBusiness}
             options={optionsBusinesses}
             placeholder="all businesses"
             // onChange={() => onChange('businesses', currentBusiness.value)}
-            theme="secondary"
+            theme="primary"
           />
-          <span className="text-gray-700 font-medium pr-2">from</span>
+          <span className="text-gray-700 font-medium">from</span>
           <Suppliers
             multiple
             current={filters.suppliers}
             // onChange={(values) => handleChangeFilter('suppliers', values)}
-            theme="secondary"
+            theme="primary"
           />
-          <span className="text-gray-700 font-medium pr-2">in</span>
+          <span className="text-gray-700 font-medium">in</span>
           <OriginRegions
             multiple
             current={filters.suppliers}
             // onChange={(values) => handleChangeFilter('suppliers', values)}
-            theme="secondary"
+            theme="primary"
           />
-          <span className="text-gray-700 font-medium pr-2">.</span>
+          <span className="text-gray-700 font-medium">.</span>
         </div>
       </fieldset>
       <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">

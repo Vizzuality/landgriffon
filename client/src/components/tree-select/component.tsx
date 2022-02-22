@@ -1,18 +1,43 @@
 import { Fragment, useCallback, useState, useMemo, useEffect } from 'react';
 import classNames from 'classnames';
 import { Transition } from '@headlessui/react';
-import { ChevronDownIcon, ChevronRightIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  ChevronRightIcon,
+  XIcon,
+  SearchIcon,
+} from '@heroicons/react/solid';
 import Tree, { TreeNode, TreeProps } from 'rc-tree';
 import Fuse from 'fuse.js';
 
+import Badge from 'components/badge';
 import Loading from 'components/loading';
-import TreeSelectButtonPrimary from './primary-layout';
-import TreeSelectButtonSecondary from './secondary-layout';
 
 import type { TreeSelectProps, TreeSelectOption } from './types';
 
-const TREE_NODE_CLASSNAMES =
-  'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700';
+const THEMES_TREE_NODES = {
+  default:
+    'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
+  primary:
+    'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
+};
+
+const THEMES_LABEL = {
+  default: 'text-gray-300',
+  primary: 'truncate text-ellipsis font-bold',
+};
+
+const THEMES_WRAPPER = {
+  default:
+    'flex-wrap bg-white relative border border-gray-300 rounded-md shadow-sm py-2 pr-10 pl-3 cursor-pointer',
+  primary: 'border-b-2 border-green-700 max-w-[190px] overflow-x-hidden truncate text-ellipsis',
+};
+
+const THEMES_ICON = {
+  default: 'inset-y-0 right-0 items-center pr-2  text-gray-900',
+  primary: '-bottom-3  transform left-1/2 -translate-x-1/2 text-green-700',
+};
 
 const SEARCH_OPTIONS = {
   includeScore: false,
@@ -31,10 +56,12 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   showSearch = false,
   onChange,
   onSearch,
-  theme = 'primary',
+  theme = 'default',
+  ellipsis = false,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [selected, setSelected] = useState<TreeSelectOption>(null);
   const [selectedKeys, setSelectedKeys] = useState<TreeProps['selectedKeys']>([]);
   const [expandedKeys, setExpandedKeys] = useState<TreeProps['expandedKeys']>([]);
   const [checkedKeys, setCheckedKeys] = useState<TreeProps['checkedKeys']>([]);
@@ -46,14 +73,14 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           <TreeNode
             key={item.value}
             title={item.label}
-            className={classNames(TREE_NODE_CLASSNAMES, `pl-${4 * counter}`, {
+            className={classNames(THEMES_TREE_NODES[theme], `pl-${4 * counter}`, {
               'bg-green-50 text-green-700 font-semibold': selectedKeys.includes(item.value),
             })}
           >
             {item.children && renderTreeNodes(item.children, counter + 1)}
           </TreeNode>
         )),
-    [selectedKeys],
+    [selectedKeys, theme],
   );
 
   const customSwitcherIcon = useCallback(({ isLeaf, expanded }) => {
@@ -62,6 +89,8 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     return <ChevronRightIcon className="h-4 w-4" />;
   }, []);
 
+  const handleToggleOpen = useCallback(() => setIsOpen(!isOpen), [isOpen]);
+
   const handleExpand: TreeProps['onExpand'] = useCallback((keys) => setExpandedKeys(keys), []);
 
   // Selection for non-multiple
@@ -69,6 +98,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     (keys, { node }) => {
       const currentSelection = { label: node.title as string, value: node.key };
       setSelectedKeys(keys);
+      setSelected(currentSelection);
       if (onChange) onChange(currentSelection);
       if (!multiple) setIsOpen(false);
     },
@@ -180,10 +210,21 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     [checkedKeys, onChange, options],
   );
 
+  const Icon = () => (
+    <span className={classNames('absolute flex pointer-events-none', THEMES_ICON[theme])}>
+      {isOpen ? (
+        <ChevronUpIcon className="h-4 w-4" aria-hidden="true" />
+      ) : (
+        <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
+      )}
+    </span>
+  );
+
   // Current selection
   useEffect(() => {
     if (current && current.length) {
       const currentKeys = current.map(({ value }) => value);
+      setSelected(current[0]);
       setSelectedKeys(currentKeys);
       setCheckedKeys(currentKeys);
     }
@@ -191,33 +232,65 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
 
   return (
     <div className="relative">
-      {theme === 'primary' && (
-        <TreeSelectButtonPrimary
-          current={current}
-          currentOptions={currentOptions}
-          isOpen={isOpen}
-          handleOpen={setIsOpen}
-          maxBadges={maxBadges}
-          multiple={multiple}
-          options={options}
-          placeholder={placeholder}
-          onChange={onChange}
-          handleRemoveBadget={handleRemoveBadget}
-        />
-      )}
-      {theme === 'secondary' && (
-        <TreeSelectButtonSecondary
-          current={current}
-          currentOptions={currentOptions}
-          isOpen={isOpen}
-          handleOpen={setIsOpen}
-          maxBadges={maxBadges}
-          multiple={multiple}
-          options={options}
-          placeholder={placeholder}
-          onChange={onChange}
-          handleRemoveBadget={handleRemoveBadget}
-        />
+      {multiple ? (
+        <div className="flex align-center relative" onClick={handleToggleOpen}>
+          <div className={classNames('flex', THEMES_WRAPPER[theme])}>
+            {currentOptions &&
+              !!currentOptions.length &&
+              !ellipsis &&
+              currentOptions.slice(0, maxBadges).map((option) => (
+                <Badge
+                  key={option.value}
+                  className={classNames('text-sm m-0.5', THEMES_LABEL[theme])}
+                  data={option}
+                  onClick={handleRemoveBadget}
+                  removable={theme === 'primary' ? false : true}
+                >
+                  {option.label}
+                </Badge>
+              ))}
+            {currentOptions && !!currentOptions.length && ellipsis && (
+              <Badge
+                key={currentOptions[0].value}
+                className={classNames('text-sm m-0.5', THEMES_LABEL[theme])}
+                data={currentOptions[0]}
+                onClick={handleRemoveBadget}
+                removable={theme === 'primary' ? false : true}
+              >
+                {currentOptions[0].label}
+              </Badge>
+            )}
+            {currentOptions && currentOptions.length > maxBadges && (
+              <Badge className={classNames('text-sm m-0.5', THEMES_LABEL[theme])}>
+                {currentOptions.length - maxBadges} more selected
+              </Badge>
+            )}
+            {(!currentOptions || currentOptions.length === 0) && (
+              <span className="inline-block truncate">
+                {placeholder && (
+                  <span className={classNames('text-sm', THEMES_LABEL[theme])}>{placeholder}</span>
+                )}
+              </span>
+            )}
+          </div>
+          <Icon />
+        </div>
+      ) : (
+        <button
+          type="button"
+          className="bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left
+          focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer"
+          onClick={handleToggleOpen}
+        >
+          <span className="inline-block truncate">
+            {selected ? (
+              <span className="font-medium">{selected.label}</span>
+            ) : (
+              <span className="text-gray-300">{placeholder}</span>
+            )}
+          </span>
+          <Icon />
+        </button>
       )}
       <Transition
         show={isOpen}

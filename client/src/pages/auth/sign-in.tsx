@@ -3,6 +3,7 @@ import Head from 'next/head';
 import AuthenticationLayout from 'layouts/authentication';
 import LandgriffonLogo from 'containers/logo/component';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 const Home: React.FC = () => {
   const router = useRouter();
@@ -24,13 +25,16 @@ const Home: React.FC = () => {
       <AuthenticationLayout>
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <div className="text-center">
+            <div className="text-center mb-10">
               <LandgriffonLogo />
-              <h2 className="text-3xl font-bold mt-4 mb-10">Sign in to your account</h2>
+              <h2 className="text-3xl font-bold my-4">Sign in to your account</h2>
+              <p className="text-sm font-medium text-gray-500">
+                To continue please enter your details below.
+              </p>
             </div>
             <form
               className="space-y-6"
-              action="/analysis"
+              action="#"
               method="POST"
               onSubmit={fakeLogin}
               id="signInForm"
@@ -96,6 +100,14 @@ const Home: React.FC = () => {
                 </button>
               </div>
             </form>
+          </div>
+          <div className="my-4">
+            <p className="text-center text-sm">
+              Don&apos;t have an account?{' '}
+              <Link href="/auth/sign-up">
+                <a className="text-white">Sign-up</a>
+              </Link>
+            </p>
           </div>
         </div>
       </AuthenticationLayout>

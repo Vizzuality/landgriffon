@@ -25,8 +25,8 @@ const STEP1: Step = {
 const STEPS2 = {
   'new-supplier-location': {
     id: 2,
-    slug: 'step2',
     title: 'Step 2',
+    slug: 'step2',
     name: 'Source from a new supplier or location',
     description:
       'Select a new location or supplier you want to source from in order to analyse changes.',

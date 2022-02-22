@@ -15,6 +15,7 @@ import type { Step } from 'components/steps/types';
 import Step1 from './step1';
 import Step2 from './step2';
 
+<<<<<<< HEAD
 const STEP1: Step = {
   id: 'Step 1',
   slug: 'intervention_step1',
@@ -27,8 +28,20 @@ const STEP1: Step = {
 
 const STEPS2 = {
   new_supplier_location: {
+=======
+const steps: Step[] = [
+  {
+    id: 'Step 1',
+    slug: 1,
+    name: 'Define scope',
+    description:
+      'Choose to which data of your supply chain you want to apply the intervention in order to analyze changes.',
+    status: 'current',
+  },
+  {
+>>>>>>> 984d7ff (new scen componentized, scen attributes removed)
     id: 'Step 2',
-    slug: 'step2',
+    slug: 1,
     name: 'Source from a new supplier or location',
     description:
       'Select a new location or supplier you want to source from in order to analyse changes.',
@@ -54,9 +67,14 @@ const STEPS2 = {
 
 const InterventionForm: FC = () => {
   const dispatch = useAppDispatch();
+<<<<<<< HEAD
   const { asPath } = useRouter();
   const { filters } = useAppSelector(analysis);
   const { interventionType } = filters;
+=======
+  const { interventions } = useAppSelector(analysis);
+  const { step } = interventions;
+>>>>>>> 984d7ff (new scen componentized, scen attributes removed)
 
   const steps = useMemo(() => [STEP1, STEPS2[interventionType]], [interventionType]);
 
@@ -74,8 +92,13 @@ const InterventionForm: FC = () => {
     <>
       <Steps steps={steps} current={step} className="mb-10 z-20" />
       <form className="space-y-8">
+<<<<<<< HEAD
         {(!currentStep || isFirstStep) && <Step1 />}
         {!!currentStep && !isFirstStep && <Step2 />}
+=======
+        {step === 1 && <Step1 />}
+        {step === 2 && <Step2 />}
+>>>>>>> 984d7ff (new scen componentized, scen attributes removed)
         <div className="pt-5">
           <div className="flex justify-end">
             <button

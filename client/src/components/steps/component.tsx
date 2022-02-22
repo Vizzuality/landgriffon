@@ -2,27 +2,18 @@ import { useCallback } from 'react';
 import cx from 'classnames';
 
 import { useAppDispatch } from 'store/hooks';
-import { setTab } from 'store/features/analysis';
+import { setScenarioTab } from 'store/features/analysis';
 
 import type { Step } from './types';
 
 type StepsProps = React.HTMLAttributes<unknown> & {
   steps: Step[];
-  current?: string;
+  current?: number;
 };
 
 const Steps: React.FC<StepsProps> = ({ steps, current, ...props }: StepsProps) => {
   const dispatch = useAppDispatch();
-  const handleTab = useCallback(
-    (tab, step) =>
-      dispatch(
-        setTab({
-          tab,
-          step,
-        }),
-      ),
-    [dispatch],
-  );
+  const handleTab = useCallback((step) => dispatch(setScenarioTab(step)), [dispatch]);
 
   return (
     <nav aria-label="Progress" {...props}>
@@ -38,7 +29,7 @@ const Steps: React.FC<StepsProps> = ({ steps, current, ...props }: StepsProps) =
                     'border-green-700': step.slug === current,
                   },
                 )}
-                onClick={() => handleTab('interventions', step.slug)}
+                onClick={() => handleTab(step.slug)}
               >
                 <span className="text-xs text-indigo-600 font-semibold tracking-wide uppercase group-hover:text-indigo-800">
                   {step.id}
@@ -59,7 +50,7 @@ const Steps: React.FC<StepsProps> = ({ steps, current, ...props }: StepsProps) =
                   },
                 )}
                 aria-current="step"
-                onClick={() => handleTab('interventions', step.slug)}
+                onClick={() => handleTab(step.slug)}
               >
                 <span className="text-xs text-indigo-600 font-semibold tracking-wide uppercase">
                   {step.id}
@@ -79,7 +70,7 @@ const Steps: React.FC<StepsProps> = ({ steps, current, ...props }: StepsProps) =
                     'border-green-700': step.slug === current,
                   },
                 )}
-                onClick={() => handleTab('interventions', step.slug)}
+                onClick={() => handleTab(step.slug)}
               >
                 <span className="text-xs text-gray-500 font-semibold tracking-wide uppercase group-hover:text-gray-700">
                   {step.id}

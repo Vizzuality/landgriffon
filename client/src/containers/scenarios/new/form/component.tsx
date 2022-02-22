@@ -8,13 +8,12 @@ import GrowthForm from 'containers/growth';
 import CollapseButton from 'containers/collapse-button';
 
 const ScenariosForm: FC = () => {
-  const { currentTab } = useAppSelector(analysis);
-  const { tab } = currentTab;
+  const { scenarioCurrentTab } = useAppSelector(analysis);
 
   return (
     <div className="p-12 bg-white z-50 h-full">
-      {tab === 'interventions' && <InterventionsForm />}
-      {tab === 'growth' && <GrowthForm />}
+      {scenarioCurrentTab === 'interventions' && <InterventionsForm />}
+      {scenarioCurrentTab === 'growth' && <GrowthForm />}
       <div className="absolute top-5 right-0 transform translate-x-1/2 z-30">
         <CollapseButton />
       </div>

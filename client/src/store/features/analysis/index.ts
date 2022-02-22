@@ -97,12 +97,9 @@ export const analysisSlice = createSlice({
       ...state,
       layer: action.payload,
     }),
-    setTab: (state, action: PayloadAction<AnalysisState['currentTab']>) => ({
+    setScenarioTab: (state, action: PayloadAction<AnalysisState['scenarioCurrentTab']>) => ({
       ...state,
-      currentTab: {
-        tab: action.payload.tab,
-        step: action.payload.step,
-      },
+      scenarioCurrentTab: action.payload,
     }),
     setFilter: (state, action: PayloadAction<{ id: string; value: unknown }>) => ({
       ...state,
@@ -129,7 +126,7 @@ export const {
   setScenarioToCompare,
   setComparisonMode,
   setLayer,
-  setTab,
+  setScenarioTab,
   setFilter,
   setFilters,
 } = analysisSlice.actions;

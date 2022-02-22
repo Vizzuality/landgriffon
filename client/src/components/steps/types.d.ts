@@ -1,6 +1,6 @@
 export type Step = {
   id: string;
-  slug?: string;
+  slug?: number;
   name: string;
   description?: string;
   href?: string;

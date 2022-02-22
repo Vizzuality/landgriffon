@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import cx from 'classnames';
 
 import { useAppDispatch } from 'store/hooks';
-import { setScenarioTab } from 'store/features/analysis';
+import { setInterventionsStep } from 'store/features/analysis';
 
 import type { Step } from './types';
 
@@ -13,7 +13,10 @@ type StepsProps = React.HTMLAttributes<unknown> & {
 
 const Steps: React.FC<StepsProps> = ({ steps, current, ...props }: StepsProps) => {
   const dispatch = useAppDispatch();
-  const handleTab = useCallback((step) => dispatch(setScenarioTab(step)), [dispatch]);
+  const handleTab = useCallback(
+    (step) => dispatch(setInterventionsStep({ id: 'step', value: step })),
+    [dispatch],
+  );
 
   return (
     <nav aria-label="Progress" {...props}>

@@ -41,7 +41,7 @@ const steps: Step[] = [
   {
 >>>>>>> 984d7ff (new scen componentized, scen attributes removed)
     id: 'Step 2',
-    slug: 1,
+    slug: 2,
     name: 'Source from a new supplier or location',
     description:
       'Select a new location or supplier you want to source from in order to analyse changes.',

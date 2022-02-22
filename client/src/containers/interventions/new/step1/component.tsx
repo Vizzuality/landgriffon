@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState, FC } from 'react';
 // hooks
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 
-import { analysis, setFilter } from 'store/features/analysis';
+import { analysis } from 'store/features/analysis';
 
 // components
 import Select from 'components/select';

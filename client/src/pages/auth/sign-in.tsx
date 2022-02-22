@@ -1,21 +1,46 @@
 import { useCallback } from 'react';
 import Head from 'next/head';
-import AuthenticationLayout from 'layouts/authentication';
-import LandgriffonLogo from 'containers/logo/component';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useMutation } from 'react-query';
+import * as yup from 'yup';
+import { nextAuthService } from 'services/authentication';
+import AuthenticationLayout from 'layouts/authentication';
+import LandgriffonLogo from 'containers/logo/component';
+
+type SignInPayload = {
+  email: string;
+  password: string;
+};
+
+const schemaValidation = yup.object({
+  email: yup.string().email().required(),
+  password: yup.string().min(8).required('password is required'),
+});
+
+const signInService = (data: SignInPayload) => nextAuthService.post('/signin/credentials', data);
 
 const Home: React.FC = () => {
   const router = useRouter();
 
-  const fakeLogin = useCallback(
-    (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schemaValidation),
+  });
+
+  const mutation = useMutation(signInService, {
+    onSuccess: () => {
+      // Redirect to sign-in when user is created successfully
       router.push('/analysis');
     },
-    [router],
-  );
+  });
+
+  const handleSignIn = useCallback((data) => mutation.mutate(data), [mutation]);
 
   return (
     <>
@@ -36,7 +61,7 @@ const Home: React.FC = () => {
               className="space-y-6"
               action="#"
               method="POST"
-              onSubmit={fakeLogin}
+              onSubmit={handleSubmit(handleSignIn)}
               id="signInForm"
             >
               <div>
@@ -45,14 +70,13 @@ const Home: React.FC = () => {
                 </label>
                 <div className="mt-1">
                   <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
+                    {...register('email')}
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
                   />
                 </div>
+                {errors.email && (
+                  <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>
+                )}
               </div>
 
               <div>
@@ -61,14 +85,14 @@ const Home: React.FC = () => {
                 </label>
                 <div className="mt-1">
                   <input
-                    id="password"
-                    name="password"
+                    {...register('password')}
                     type="password"
-                    autoComplete="current-password"
-                    required
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
                   />
                 </div>
+                {errors.password && (
+                  <p className="mt-2 text-sm text-red-600">{errors.password.message}</p>
+                )}
               </div>
 
               <div className="flex items-center justify-between">

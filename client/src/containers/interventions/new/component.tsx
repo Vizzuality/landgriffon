@@ -6,6 +6,8 @@ import { analysis } from 'store/features/analysis';
 import Link from 'next/link';
 
 import Steps from 'components/steps';
+import Button from 'components/button';
+
 import { setSubContentCollapsed } from 'store/features/analysis';
 
 import type { Step } from 'components/steps/types';
@@ -65,6 +67,10 @@ const InterventionForm: FC = () => {
     dispatch(setSubContentCollapsed(true));
   }, [dispatch]);
 
+  const handleIntervention = useCallback(() => {
+    dispatch(setSubContentCollapsed(true));
+  }, [dispatch]);
+
   return (
     <>
       <Steps steps={steps} current={currentStep} className="mb-10 z-20" />
@@ -81,12 +87,14 @@ const InterventionForm: FC = () => {
               Cancel
             </button>
             {!!currentStep && !isFirstStep && (
-              <button
-                type="submit"
+              <Button
+                type="button"
+                //type="submit"
                 className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={handleIntervention}
               >
                 Add intervention
-              </button>
+              </Button>
             )}
             {(!currentStep || isFirstStep) && (
               <Link href="#intervention_step2" shallow passHref>

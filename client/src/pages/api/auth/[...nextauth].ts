@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth';
 import JWT from 'jsonwebtoken';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import AUTHENTICATION from 'services/authentication';
+import authService from 'services/authentication';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { NextAuthOptions } from 'next-auth';
 
@@ -18,7 +18,7 @@ const SESSION_BUFFER_TIME = 10 * 60; // 10 minutes
  */
 async function refreshAccessToken(token) {
   try {
-    const refreshTokenResponse = await AUTHENTICATION.request({
+    const refreshTokenResponse = await authService.request({
       url: '/refresh-token',
       method: 'POST',
       headers: {
@@ -76,8 +76,8 @@ const options: NextAuthOptions = {
         const { username, password } = credentials as CustomCredentials;
 
         // Request to sign in
-        const signInRequest = await AUTHENTICATION.request({
-          url: '/sign-in',
+        const signInRequest = await authService.request({
+          url: '/auth/sign-in',
           method: 'POST',
           data: { username, password },
           headers: { 'Content-Type': 'application/json' },

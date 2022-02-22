@@ -6,7 +6,9 @@ import LandgriffonLogo from 'containers/logo/component';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useMutation } from 'react-query';
 import * as yup from 'yup';
+import { authService } from 'services/authentication';
 
 type SignUpPayload = {
   fname: string;
@@ -26,8 +28,11 @@ const schemaValidation = yup.object({
     .oneOf([yup.ref('password'), null], 'passwords must match'),
 });
 
+const signUpService = (data: SignUpPayload) => authService.post('/sign-up', data);
+
 const Home: React.FC = () => {
   const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -36,12 +41,18 @@ const Home: React.FC = () => {
     resolver: yupResolver(schemaValidation),
   });
 
-  const handleSignUp = useCallback(
-    (data: SignUpPayload) => {
-      console.log(data);
+  const mutation = useMutation(signUpService, {
+    onSuccess: () => {
+      // Redirect to sign-in when user is created successfully
       router.push('/auth/sign-in');
     },
-    [router],
+  });
+
+  const handleSignUp = useCallback(
+    (data: SignUpPayload) => {
+      mutation.mutate(data);
+    },
+    [mutation],
   );
 
   return (

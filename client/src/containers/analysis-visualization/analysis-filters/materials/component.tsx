@@ -16,6 +16,8 @@ type MaterialsFilterProps = {
   withSourcingLocations?: MaterialsTreesParams['withSourcingLocations'];
   onChange?: TreeSelectProps['onChange'];
   theme?: 'primary' | 'secondary';
+  currentOptions?: TreeSelectProps['current'];
+  ellipsis?: TreeSelectProps['ellipsis'];
 };
 
 const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
@@ -24,6 +26,8 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
   depth = 1,
   withSourcingLocations, // Do not a default; backend will override depth if this is set at all
   onChange,
+  theme,
+  ellipsis,
 }) => {
   const { data, isFetching } = useMaterialsTrees({ depth, withSourcingLocations });
 
@@ -49,6 +53,8 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
       placeholder="Materials"
       onChange={onChange}
       current={current}
+      theme={theme}
+      ellipsis={ellipsis}
     />
   );
 };

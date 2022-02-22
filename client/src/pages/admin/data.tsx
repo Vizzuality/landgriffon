@@ -8,6 +8,7 @@ import { useSourcingLocationsMaterials } from 'hooks/sourcing-locations';
 import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import NoData from 'containers/admin/no-data';
 import NoResults from 'containers/admin/no-results';
+import DownloadMaterialsDataButton from 'containers/admin/download-materials-data-button';
 import UploadDataSourceModal from 'containers/admin/upload-data-source-modal';
 import Button from 'components/button';
 import Pagination, { PaginationProps } from 'components/pagination';
@@ -25,6 +26,7 @@ const AdminDataPage: React.FC = () => {
   const [searchText, setSearchText] = useDebounce('', 250);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [sorting, setSorting] = useState<ApiSortingType>();
+  const [dataDownloadError, setDataDownloadError] = useState<string>();
 
   const {
     data: sourcingData,
@@ -124,9 +126,10 @@ const AdminDataPage: React.FC = () => {
       currentTab={ADMIN_TABS.DATA}
       headerButtons={
         <>
-          <Button theme="secondary" onClick={() => console.info('Download: click')}>
-            Download
-          </Button>
+          <DownloadMaterialsDataButton
+            onDownloading={() => setDataDownloadError(null)}
+            onError={setDataDownloadError}
+          />
           <Button theme="primary" onClick={openUploadDataSourceModal}>
             Upload data source
           </Button>
@@ -161,10 +164,12 @@ const AdminDataPage: React.FC = () => {
             </Button>
             */}
           </div>
-          <div className="flex items-center text-sm text-yellow-800">
-            <ExclamationIcon className="w-5 h-5 mr-3 text-yellow-400" aria-hidden="true" />1 entry
-            needs to be updated
-          </div>
+          {dataDownloadError && (
+            <div className="flex items-center text-sm text-yellow-800">
+              <ExclamationIcon className="w-5 h-5 mr-3 text-yellow-400" aria-hidden="true" />
+              {dataDownloadError}
+            </div>
+          )}
         </div>
       )}
 

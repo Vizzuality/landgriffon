@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Jsona from 'jsona';
-import { signOut } from 'next-auth/client';
+import { signOut } from 'next-auth/react';
 import type { Scenario, ScenarioPayload } from 'containers/scenarios/types';
 
 const dataFormatter = new Jsona();

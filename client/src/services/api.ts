@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Jsona from 'jsona';
-import { signOut } from 'next-auth/client';
+import { signOut } from 'next-auth/react';
 
 const dataFormatter = new Jsona();
 

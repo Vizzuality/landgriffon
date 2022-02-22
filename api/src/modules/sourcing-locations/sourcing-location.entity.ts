@@ -195,7 +195,10 @@ export class SourcingLocation extends TimestampedBaseEntity {
   @ApiPropertyOptional()
   sourcingLocationGroupId?: string;
 
-  @Column({ nullable: true })
+  @Column('enum', {
+    nullable: true,
+    enum: CANCELED_OR_REPLACING_BY_INTERVENTION,
+  })
   @ApiPropertyOptional()
   // TODO - come up with better naming
   typeAccordingToIntervention?: CANCELED_OR_REPLACING_BY_INTERVENTION;
@@ -207,11 +210,7 @@ export class SourcingLocation extends TimestampedBaseEntity {
   )
   sourcingRecords: SourcingRecord[];
 
-  @ManyToOne(
-    () => ScenarioIntervention,
-    (scenarioIntervention: ScenarioIntervention) => scenarioIntervention.id,
-    { eager: false },
-  )
+  @ManyToOne(() => ScenarioIntervention)
   @JoinColumn({ name: 'scenarioInterventionId' })
   scenarioIntervention: ScenarioIntervention;
   @Column({ nullable: true })

@@ -176,8 +176,9 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
 
   @OneToMany(
     () => SourcingLocation,
-    (sourcingLocation: SourcingLocation) =>
-      sourcingLocation.scenarioIntervention,
+    (sourcingLocations: SourcingLocation) =>
+      sourcingLocations.scenarioIntervention,
+    { cascade: true, onDelete: 'CASCADE' },
   )
   newSourcingLocations?: SourcingLocation[];
 

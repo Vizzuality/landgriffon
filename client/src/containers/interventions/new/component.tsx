@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, FC } from 'react';
 import { useRouter } from 'next/router';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis } from 'store/features/analysis';
@@ -24,7 +24,7 @@ const STEP1: Step = {
 };
 
 const STEPS2 = {
-  0: {
+  new_supplier_location: {
     id: 'Step 2',
     slug: 'intervention_step2',
     name: 'Source from a new supplier or location',
@@ -33,7 +33,7 @@ const STEPS2 = {
     href: '#intervention_step2',
     status: 'upcoming',
   },
-  1: {
+  production_efficiency: {
     id: 'Step 2',
     slug: 'intervention_step2',
     name: 'Change production efficiency',
@@ -41,7 +41,7 @@ const STEPS2 = {
     href: '#intervention_step2',
     status: 'upcoming',
   },
-  2: {
+  new_material: {
     id: 'Step 2',
     slug: 'intervention_step2',
     name: 'Switch to a new material',
@@ -51,7 +51,7 @@ const STEPS2 = {
   },
 };
 
-const InterventionForm = () => {
+const InterventionForm: FC = () => {
   const dispatch = useAppDispatch();
   const { asPath } = useRouter();
   const { filters } = useAppSelector(analysis);
@@ -63,7 +63,7 @@ const InterventionForm = () => {
   const isFirstStep = useMemo<boolean>(() => currentStep === 'intervention_step1', [currentStep]);
   const handleCancel = useCallback(() => {
     dispatch(setSubContentCollapsed(true));
-  }, []);
+  }, [dispatch]);
 
   return (
     <>

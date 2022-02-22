@@ -26,7 +26,7 @@ export type AnalysisState = {
     materials: Option[];
     origins: Option[];
     suppliers: Option[];
-    interventionType: number;
+    interventionType: string;
   };
 };
 
@@ -50,7 +50,7 @@ const initialState: AnalysisState = {
     materials: [],
     origins: [],
     suppliers: [],
-    interventionType: 0,
+    interventionType: 'new_supplier_location',
   },
 };
 

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { useMemo, useCallback, useState, FC } from 'react';
 
 // types
@@ -75,45 +74,6 @@ const Step2: FC = () => {
       {},
     );
 
-=======
-import { useState, useCallback, useMemo } from 'react';
-
-import { useAppDispatch } from 'store/hooks';
-import { setFilter } from 'store/features/analysis';
-
-import Select from 'components/select';
-
-import { SelectOptions, SelectOption } from 'components/select/types';
-
-const options = ['00', 'option2', 'option3'];
-const OPTION = '00';
-
-const SupplierImpact = () => {
-  const [landgriffonEstimates, setLandgriffonEstimates] = useState(false);
-  const dispatch = useAppDispatch();
-
-  const isLoading = false;
-  const optionsSelect: SelectOptions = useMemo(
-    () =>
-      options.map((option) => ({
-        label: option,
-        value: option,
-      })),
-    [],
-  );
-
-  const currentOption = useMemo<SelectOption>(
-    () => optionsSelect?.find((option) => option.value === OPTION),
-    [optionsSelect],
-  );
-
-  // const handleChange = useCallback(
-  //   (e) => {
-  //     dispatch(setFilter({ id: 'materials', value: e }));
-  //   },
-  //   [dispatch],
-  // );
->>>>>>> 344535e (select to impact suppliers)
   return (
     <>
       <fieldset className="sm:col-span-3 text-sm">
@@ -131,39 +91,8 @@ const SupplierImpact = () => {
               Use LandGriffon location-based estimates.
             </label>
           </div>
-<<<<<<< HEAD
-=======
-        </div> */}
-        <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
-          <div className="block font-medium text-gray-700">
-            <span>Carbon emissionsl</span>
-            <div className="mt-1">
-              <Select
-                loading={isLoading}
-                current={currentOption}
-                options={optionsSelect}
-                placeholder="00"
-                // onChange={handleChange}
-              />
-            </div>
-          </div>
-
-          <div className="block font-medium text-gray-700">
-            <span>Deforestation risk</span>
-            <div className="mt-1">
-              <Select
-                loading={isLoading}
-                current={currentOption}
-                options={optionsSelect}
-                placeholder="00"
-                // onChange={handleChange}
-              />
-            </div>
-          </div>
->>>>>>> 344535e (select to impact suppliers)
         </div>
         <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
-<<<<<<< HEAD
           {data.map((indicator) => (
             <label
               htmlFor={indicator.name}
@@ -186,33 +115,6 @@ const SupplierImpact = () => {
               </div>
             </label>
           ))}
-=======
-          <div className="block font-medium text-gray-700">
-            <span>Water withdrawal</span>
-            <div className="mt-1">
-              <Select
-                loading={isLoading}
-                current={currentOption}
-                options={optionsSelect}
-                placeholder="00"
-                // onChange={handleChange}
-              />
-            </div>
-          </div>
-
-          <div className="block font-medium text-gray-700">
-            <span>Biodiversity impact</span>
-            <div className="mt-1">
-              <Select
-                loading={isLoading}
-                current={currentOption}
-                options={optionsSelect}
-                placeholder="00"
-                // onChange={handleChange}
-              />
-            </div>
-          </div>
->>>>>>> 344535e (select to impact suppliers)
         </div>
       </fieldset>
     </>

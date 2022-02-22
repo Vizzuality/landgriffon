@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, FC } from 'react';
 
 // hooks
 import { useAppDispatch, useAppSelector } from 'store/hooks';
@@ -15,19 +15,16 @@ import OriginRegions from 'containers/analysis-visualization/analysis-filters/or
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
 import type { AnalysisState } from 'store/features/analysis';
+import { useInterventionTypes } from 'hooks/analysis';
 
 const businesses = ['business1', 'business2', 'business3'];
 const yearCompletions = [2001, 2015, 2020];
-const interventionTypes = [
-  'Source from a new supplier or location',
-  'Change production efficiency',
-  'Switch to a new material',
-];
 
-const Step1 = () => {
+const Step1: FC = () => {
   const dispatch = useAppDispatch();
   //const [isOpen, setIsOpen] = useState<boolean>(false);
   const { filters } = useAppSelector(analysis);
+  const interventionTypes = useInterventionTypes();
 
   // const { data: materials, isLoading: isLoadingMaterials } = useMaterials();
   // const { data: businesses, isLoading: isLoadingBusinesses } = useBusinesses();
@@ -76,9 +73,9 @@ const Step1 = () => {
 
   const optionsInterventionType: SelectOptions = useMemo(
     () =>
-      interventionTypes.map((InterventionType, index) => ({
-        label: InterventionType,
-        value: index,
+      interventionTypes.map(({ title, slug }) => ({
+        label: title,
+        value: slug,
       })),
     [],
   );

@@ -295,7 +295,9 @@ convert-glw3-livestock: rasterize-glw3-livestock
 # Download generic blue water footprint dataset: https://data.4tu.nl/articles/dataset/The_green_blue_grey_and_total_water_footprint_related_to_production/12675440
 download-water-footprint:
 	mkdir -p $(WORKDIR_WATER_FOOTPRINT)
+	mkdir -p $(WORKDIR_WATER_FOOTPRINT)/spam2010v2r0_global_prod_irr
 	wget -q -O $(WORKDIR_WATER_FOOTPRINT)/Report50-WF-of-production-RasterFiles.zip https://data.4tu.nl/ndownloader/files/23992634
+	wget -q -O $(WORKDIR_WATER_FOOTPRINT)/spam2010v2r0_global_prod.geotiff.zip https://s3.amazonaws.com/mapspam/2010/v2.0/geotiff/spam2010v2r0_global_prod.geotiff.zip
 
 # # Download crop specific water footprint
 # $(WORKDIR_WATER_FOOTPRINT)/Report47-App-IV-CropWaterFootprints-RasterMaps.zip:
@@ -303,16 +305,35 @@ download-water-footprint:
 # 	wget -q -O $@ https://waterfootprint.org/media/downloads/Report47-App-IV-CropWaterFootprints-RasterMaps.zip
 
 #extract generic wf data
+#sum all irrigated mapspam production
+# devide bwf by the sum of irrigated mapspam production
 extract-water-footprint: download-water-footprint
 	mkdir -p $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint
 	unzip -jn -o -u $(WORKDIR_WATER_FOOTPRINT)/Report50-WF-of-production-RasterFiles.zip -d $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint
 	unzip -j -o -u $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/Report50-WF-of-production-RasterFiles.zip */wf_bltot_mmyr/* -d $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint
+	unzip -u $(WORKDIR_WATER_FOOTPRINT)/spam2010v2r0_global_prod.geotiff.zip *_I.tif -d $(WORKDIR_WATER_FOOTPRINT)/spam2010v2r0_global_prod_irr
 	gdal_translate -of GTiff $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/hdr.adf $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr_m2.tif
 	gdal_calc.py --calc "A*10000*10000" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr_m2.tif \
 	 --A_band 1 --outfile $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr.tif;
 	rm -f $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr_m2.tif
+
+get-bwf_irrigated_prod: extract-water-footprint
+	gdal_calc.py --calc "(A>0)*0" --format GTiff --type Float32 --NoDataValue -9999 -A $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr.tif --outfile $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/total_irrigated_production.tif;
+	for tiffile in $(WORKDIR_WATER_FOOTPRINT)/spam2010v2r0_global_prod_irr/*.tif; do \
+		gdal_translate -projwin -179.99166665 83.08834447 180.00836215 -55.91166665 -of GTiff "$${tiffile}" $(WORKDIR_WATER_FOOTPRINT)/spam2010v2r0_global_prod_irr/irr_prod_new_extent.tif; \
+		gdal_calc.py --calc "A+B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_WATER_FOOTPRINT)/spam2010v2r0_global_prod_irr/irr_prod_new_extent.tif -B $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/total_irrigated_production.tif \
+		 --outfile $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/total_irrigated_production.tif;\
+		rm -f $(WORKDIR_WATER_FOOTPRINT)/spam2010v2r0_global_prod_irr/irr_prod_new_extent.tif;\
+	done;
+	gdal_calc.py --calc "(A>0)*A" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/total_irrigated_production.tif \
+	--A_band 1 --outfile $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/total_irrigated_production_noZero.tif;
+	gdal_calc.py --calc "A/B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr.tif -B $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/total_irrigated_production_noZero.tif \
+	--outfile $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr_t.tif;
+	rm -f $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/total_irrigated_production.tif $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/total_irrigated_production_noZero.tif $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr.tif;
+
+
 # Convert the wf tiffs in the folder to h3indexes at resolution 6
-convert-water-footprint: extract-water-footprint
+convert-water-footprint: get-bwf_irrigated_prod
 	python tiff_folder_to_h3_table.py $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint h3_grid_wf_global indicator UWU_T 2005 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 # BIODIVERSITY

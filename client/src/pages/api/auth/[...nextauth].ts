@@ -1,6 +1,6 @@
 import NextAuth from 'next-auth';
-import Providers from 'next-auth/providers';
 import JWT from 'jsonwebtoken';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import AUTHENTICATION from 'services/authentication';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { NextAuthOptions } from 'next-auth';
@@ -56,13 +56,13 @@ const options: NextAuthOptions = {
   },
 
   session: {
-    jwt: true,
+    strategy: 'jwt',
     maxAge: MAX_AGE,
   },
 
   // Configure one or more authentication providers
   providers: [
-    Providers.Credentials({
+    CredentialsProvider({
       // The name to display on the sign in form (e.g. 'Sign in with...')
       name: 'Landgriffon',
       // The credentials is used to generate a suitable form on the sign in page.
@@ -96,7 +96,7 @@ const options: NextAuthOptions = {
 
   callbacks: {
     // Assigning encoded token from API to token created in the session
-    async jwt(token, user) {
+    async jwt({ token, user }) {
       const newToken = { ...token };
 
       if (user) {
@@ -120,34 +120,35 @@ const options: NextAuthOptions = {
     },
 
     // Extending session object
-    async session(session, token) {
+    async session({ session, token }) {
       const newSession = session;
       newSession.accessToken = token.accessToken;
       return newSession;
     },
 
-    async redirect(callbackUrl) {
-      // By default it should be redirect to /projects
-      if (callbackUrl.includes('/sign-in') || callbackUrl.includes('/sign-up')) {
-        return '/projects';
-      }
-      return callbackUrl;
-    },
+    // async redirect({ url }) {
+    //   // By default it should be redirect to /analysis
+    //   if (url.includes('/sign-in') || url.includes('/sign-up')) {
+    //     return '/analysis';
+    //   }
+    //   return url;
+    // },
   },
 
   events: {
-    async signOut(session) {
+    async signOut(message) {
+      console.log('sign out message: ', message);
       // After sign-out expire token in the API
-      if (session) {
-        await AUTHENTICATION.request({
-          url: '/sign-out',
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${session.accessToken}`,
-            'Content-Type': 'application/json',
-          },
-        });
-      }
+      // if (session) {
+      //   await AUTHENTICATION.request({
+      //     url: '/sign-out',
+      //     method: 'POST',
+      //     headers: {
+      //       Authorization: `Bearer ${session.accessToken}`,
+      //       'Content-Type': 'application/json',
+      //     },
+      //   });
+      // }
     },
   },
 };

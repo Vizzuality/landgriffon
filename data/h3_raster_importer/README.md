@@ -8,14 +8,15 @@ Import raster data sources into the Landgriffon DB.
 
 From the root directory:
 1. Make sure your `.env` is set up with the `API_POSTGRES...` variables.
-2. `docker-compose up postgresql` - Make sure the LandGriffon DB is running.
-3. `cd data/h3_raster_importer && docker-compose up --build` - Run the import script.
+2. `make start-api` - Make sure the LandGriffon DB is running.
+3. `cd data && ./data.sh seed-h3-tables` - Run the h3 tables import script.
 
 Currently this will download the following data sources and create tables in the database
+<folder> <table> <dataType> <dataset> <year> [--h3-res=6] [--thread-count=4]
 
-| dataset | table | h3_res | columns |
+| dataset | table | dataType| year | h3_res | columns |
 | --- | --- | --- | --- |
-| MapSPAM v2 global production for 2010 | `h3_grid_spam2010v2r0_global_prod` | 6 | One column for each of 42 crops |
+| MapSPAM v2 global production for 2010 | `h3_grid_spam2010v2r0_global_prod` | producer | 2010 | 6 | One column for each of 42 crops |
 
 Check the DB to see that the table(s) have been imported.
 

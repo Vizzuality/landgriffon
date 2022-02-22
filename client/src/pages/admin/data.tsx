@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { flatten, merge, uniq } from 'lodash';
 import { useDebounce } from '@react-hook/debounce';
-import { ExclamationIcon /*, FilterIcon*/ } from '@heroicons/react/solid';
+// import { FilterIcon } from '@heroicons/react/solid';
 
 import useModal from 'hooks/modals';
 import { useSourcingLocationsMaterials } from 'hooks/sourcing-locations';
@@ -160,10 +160,6 @@ const AdminDataPage: React.FC = () => {
               </span>
             </Button>
             */}
-          </div>
-          <div className="flex items-center text-sm text-yellow-800">
-            <ExclamationIcon className="w-5 h-5 mr-3 text-yellow-400" aria-hidden="true" />1 entry
-            needs to be updated
           </div>
         </div>
       )}

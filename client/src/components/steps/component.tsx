@@ -4,6 +4,7 @@ import cx from 'classnames';
 import { useAppDispatch } from 'store/hooks';
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { setNewInterventionStep } from 'store/features/analysis';
 =======
 import { setTab } from 'store/features/analysis';
@@ -11,6 +12,9 @@ import { setTab } from 'store/features/analysis';
 =======
 import { setScenarioTab } from 'store/features/analysis';
 >>>>>>> 1701329b (new scen componentized, scen attributes removed)
+=======
+import { setInterventionsStep } from 'store/features/analysis';
+>>>>>>> febac337 (setInterventionsStep added to Steps component)
 
 import type { Step } from './types';
 
@@ -94,7 +98,10 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
 =======
 const Steps: React.FC<StepsProps> = ({ steps, current, ...props }: StepsProps) => {
   const dispatch = useAppDispatch();
-  const handleTab = useCallback((step) => dispatch(setScenarioTab(step)), [dispatch]);
+  const handleTab = useCallback(
+    (step) => dispatch(setInterventionsStep({ id: 'step', value: step })),
+    [dispatch],
+  );
 
   return (
     <nav aria-label="Progress" {...props}>

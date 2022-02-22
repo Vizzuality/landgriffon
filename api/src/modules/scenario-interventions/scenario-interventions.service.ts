@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
@@ -72,7 +76,7 @@ export class ScenarioInterventionsService extends AppBaseService<
 
   async createScenarioIntervention(
     dto: CreateScenarioInterventionDto,
-  ): Promise<ScenarioIntervention | undefined> {
+  ): Promise<ScenarioIntervention> {
     //   /**
     //    *  Creating New Intervention to be saved in scenario_interventions table
     //    */
@@ -88,6 +92,10 @@ export class ScenarioInterventionsService extends AppBaseService<
       await this.sourcingLocationsService.findFilteredSourcingLocationsForIntervention(
         dto,
       );
+
+    if (!actualSourcingDataWithTonnage.length) {
+      throw new BadRequestException('No actual data for requested filters');
+    }
     //   /**
     //    * NEW SOURCING LOCATIONS #1 - Basically copies of the actual existing Sourcing Locations that will be replaced by intervention,
     //    * saved one more time but with the scenarioInterventionId and type 'CANCELED' related to intervention
@@ -98,7 +106,6 @@ export class ScenarioInterventionsService extends AppBaseService<
     const newCancelledByInterventionLocationsData: CreateSourcingLocationDto[] =
       await this.createSourcingLocationsObjectsForIntervention(
         actualSourcingDataWithTonnage,
-        newScenarioIntervention.id,
         CANCELED_OR_REPLACING_BY_INTERVENTION.CANCELED,
       );
 
@@ -124,7 +131,6 @@ export class ScenarioInterventionsService extends AppBaseService<
           await this.createSourcingLocationsDataForNewMaterialIntervention(
             dto,
             actualSourcingDataWithTonnage,
-            newScenarioIntervention.id,
           );
 
         const newInterventionSourcingLocations: SourcingLocation[] =
@@ -138,7 +144,6 @@ export class ScenarioInterventionsService extends AppBaseService<
           await this.createSourcingLocationsDataForNewSupplierIntervention(
             dto,
             actualSourcingDataWithTonnage,
-            newScenarioIntervention.id,
           );
 
         const newInterventionSourcingLocations: SourcingLocation[] =
@@ -152,7 +157,6 @@ export class ScenarioInterventionsService extends AppBaseService<
         const newInterventionLocations: CreateSourcingLocationDto[] =
           await this.createSourcingLocationsObjectsForIntervention(
             actualSourcingDataWithTonnage,
-            newScenarioIntervention.id,
             CANCELED_OR_REPLACING_BY_INTERVENTION.REPLACING,
           );
 
@@ -168,6 +172,7 @@ export class ScenarioInterventionsService extends AppBaseService<
        * and added as relations to the new Scenario Intervention, saving the new Scenario intervention in database
        */
     }
+
     return newScenarioIntervention.save();
   }
 
@@ -185,10 +190,10 @@ export class ScenarioInterventionsService extends AppBaseService<
    */
   async createSourcingLocationsDataForNewMaterialIntervention(
     dto: CreateScenarioInterventionDto,
-    actualSourcingDataWithTonnage: SourcingLocationWithRecord[],
-    newScenarioInterventionId: string,
+    sourcingData: SourcingLocationWithRecord[],
+    //newScenarioInterventionId: string,
   ): Promise<SourcingData[]> {
-    const tonnage: number = actualSourcingDataWithTonnage.reduce(
+    const tonnage: number = sourcingData.reduce(
       (previous: any, current: any) => previous + Number(current.tonnage),
       0,
     );
@@ -201,7 +206,7 @@ export class ScenarioInterventionsService extends AppBaseService<
         locationCountryInput: dto.newCountryInput,
         t1SupplierId: dto.newSupplierT1Id,
         producerId: dto.newProducerId,
-        businessUnitId: actualSourcingDataWithTonnage[0].businessUnitId,
+        businessUnitId: sourcingData[0].businessUnitId,
         sourcingRecords: [{ year: dto.startYear, tonnage }],
       },
     ];
@@ -215,7 +220,6 @@ export class ScenarioInterventionsService extends AppBaseService<
       {
         ...geoCodedNewInterventionLocation[0],
         ...{
-          scenarioInterventionId: newScenarioInterventionId,
           typeAccordingToIntervention:
             CANCELED_OR_REPLACING_BY_INTERVENTION.REPLACING,
         },
@@ -233,22 +237,21 @@ export class ScenarioInterventionsService extends AppBaseService<
 
   async createSourcingLocationsDataForNewSupplierIntervention(
     dto: CreateScenarioInterventionDto,
-    actualSourcingDataWithTonnage: SourcingLocationWithRecord[],
-    newScenarioInterventionId: string,
+    sourcingData: SourcingLocationWithRecord[],
   ): Promise<SourcingData[]> {
     const locationSampleForGeoCoding: SourcingData[] = [
       {
-        materialId: actualSourcingDataWithTonnage[0].materialId,
+        materialId: sourcingData[0].materialId,
         locationType: dto.newLocationType,
         locationAddressInput: dto.newAddressInput,
         locationCountryInput: dto.newCountryInput,
         t1SupplierId: dto.newSupplierT1Id,
         producerId: dto.newSupplierT1Id,
-        businessUnitId: actualSourcingDataWithTonnage[0].businessUnitId,
+        businessUnitId: sourcingData[0].businessUnitId,
         sourcingRecords: [
           {
             year: dto.startYear,
-            tonnage: actualSourcingDataWithTonnage[0].tonnage,
+            tonnage: sourcingData[0].tonnage,
           },
         ],
       },
@@ -258,7 +261,7 @@ export class ScenarioInterventionsService extends AppBaseService<
       await this.geoCodingService.geoCodeLocations(locationSampleForGeoCoding);
 
     const newInterventionLocations: SourcingData[] = [];
-    for (const location of actualSourcingDataWithTonnage) {
+    for (const location of sourcingData) {
       const newInterventionLocation: SourcingData = {
         materialId: location.materialId,
         locationType: dto.newLocationType,
@@ -270,7 +273,6 @@ export class ScenarioInterventionsService extends AppBaseService<
         geoRegionId: geoCodedLocationSample[0].geoRegionId,
         adminRegionId: geoCodedLocationSample[0].adminRegionId,
         sourcingRecords: [{ year: location.year, tonnage: location.tonnage }],
-        scenarioInterventionId: newScenarioInterventionId,
         typeAccordingToIntervention:
           CANCELED_OR_REPLACING_BY_INTERVENTION.REPLACING,
       };
@@ -290,7 +292,6 @@ export class ScenarioInterventionsService extends AppBaseService<
 
   async createSourcingLocationsObjectsForIntervention(
     sourcingData: SourcingLocationWithRecord[],
-    interventionId: string,
     canceledOrReplacing: CANCELED_OR_REPLACING_BY_INTERVENTION,
   ): Promise<SourcingData[]> {
     const sourcingLocationsToSave: SourcingData[] = [];
@@ -310,7 +311,6 @@ export class ScenarioInterventionsService extends AppBaseService<
             tonnage: location.tonnage,
           },
         ],
-        scenarioInterventionId: interventionId,
         typeAccordingToIntervention: canceledOrReplacing,
       };
 

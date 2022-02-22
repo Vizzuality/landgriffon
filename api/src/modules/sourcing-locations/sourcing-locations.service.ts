@@ -15,6 +15,7 @@ import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update
 
 import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
 import { SourcingLocationWithRecord } from 'modules/sourcing-locations/dto/sourcing-location-with-record.interface';
+import { Brackets, WhereExpressionBuilder } from 'typeorm';
 
 @Injectable()
 export class SourcingLocationsService extends AppBaseService<
@@ -105,19 +106,19 @@ export class SourcingLocationsService extends AppBaseService<
         .where('sl."materialId" IN (:...materialIds)', {
           materialIds: createInterventionDto.materialsIds,
         })
-        .andWhere('sl."t1SupplierId" IN (:...suppliers)', {
-          suppliers: createInterventionDto.suppliersIds,
-        })
-        .orWhere('sl."producerId" IN (:...suppliers)', {
-          suppliers: createInterventionDto.suppliersIds,
-        })
-        .andWhere('sl."producerId" IN (:...suppliers)', {
-          suppliers: createInterventionDto.suppliersIds,
-        })
+        .andWhere(
+          new Brackets((qb: WhereExpressionBuilder) => {
+            qb.where('sl."t1SupplierId" IN (:...suppliers)', {
+              suppliers: createInterventionDto.suppliersIds,
+            }).orWhere('sl."producerId" IN (:...suppliers)', {
+              suppliers: createInterventionDto.suppliersIds,
+            });
+          }),
+        )
         .andWhere('sl."businessUnitId" IN (:...businessUnits)', {
           businessUnits: createInterventionDto.businessUnitsIds,
         })
-        .andWhere('sr.year = :startYear', {
+        .andWhere('sr.year=:startYear', {
           startYear: createInterventionDto.startYear,
         })
         .andWhere('sl.adminRegionId IN (:...adminRegion)', {

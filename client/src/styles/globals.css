@@ -43,7 +43,7 @@
     @apply text-xl font-medium;
   }
 
-  h2 {
+  h3 {
     @apply text-lg font-medium;
   }
 }

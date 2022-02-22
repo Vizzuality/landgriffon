@@ -20,7 +20,7 @@ module.exports = {
       },
       spacing: {
         125: '30.875rem',
-        '250': '48.75rem',
+        250: '48.75rem',
       },
     },
     colors: {

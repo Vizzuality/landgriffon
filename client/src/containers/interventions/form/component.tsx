@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, FC } from 'react';
 import { useAppDispatch } from 'store/hooks';
 import Steps from 'components/steps';
 import { setSubContentCollapsed } from 'store/features/analysis';
@@ -20,12 +20,12 @@ const steps: Step[] = [
   },
 ];
 
-const InterventionForm = () => {
+const InterventionForm: FC = () => {
   const dispatch = useAppDispatch();
 
   const handleCancel = useCallback(() => {
     dispatch(setSubContentCollapsed(true));
-  }, []);
+  }, [dispatch]);
 
   return (
     <div>

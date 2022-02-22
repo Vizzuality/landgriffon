@@ -1,15 +1,15 @@
-import { useCallback } from 'react';
+import { useCallback, FC } from 'react';
 import { useAppDispatch } from 'store/hooks';
 import { setSubContentCollapsed } from 'store/features/analysis';
 
 import GrowthFormContent from './content';
 
-const GrowthForm = () => {
+const GrowthForm: FC = () => {
   const dispatch = useAppDispatch();
 
   const handleCancel = useCallback(() => {
     dispatch(setSubContentCollapsed(true));
-  }, []);
+  }, [dispatch]);
 
   return (
     <form className="space-y-8">

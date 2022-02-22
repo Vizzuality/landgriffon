@@ -1,8 +1,10 @@
-import { useMemo, FC } from 'react';
+import { useCallback, useMemo } from 'react';
 import { PlusIcon } from '@heroicons/react/solid';
-import { useRouter } from 'next/router';
+
+import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { analysis } from 'store/features/analysis';
+import { setTab } from 'store/features/analysis';
 import { Button } from 'components/button';
-import Link from 'next/link';
 
 import cx from 'classnames';
 
@@ -44,19 +46,28 @@ const interventions = [
   },
 ];
 
-const ScenarioAttributes: FC<ScenarioAttributes> = ({
-  handleNewIntervention,
-}: ScenarioAttributes) => {
-  const { asPath } = useRouter();
-  const tab = useMemo<string>(() => asPath.split('#')[1], [asPath]);
-  const interventionsContent = !tab || tab?.includes('intervention');
+const ScenarioAttributes = ({ handleNewIntervention }) => {
+  const dispatch = useAppDispatch();
+  const { currentTab } = useAppSelector(analysis);
+  const interventionsContent = useMemo(() => currentTab.tab === 'interventions', [currentTab]);
+
+  const handleTab = useCallback(
+    (tab, step) =>
+      dispatch(
+        setTab({
+          tab,
+          step,
+        }),
+      ),
+    [dispatch],
+  );
 
   return (
     <div className="relative">
       <div className="flex items-center content-between text-sm">
         <div className="pb-6 flex items-center justify-between w-full">
           <div className="space-x-2">
-            <Link href="#intervention_step1">
+            {/* <Link href="#intervention_step1">
               <a
                 href="#interventions"
                 className={cx({ 'border-b-2 border-green-700': interventionsContent })}
@@ -71,7 +82,23 @@ const ScenarioAttributes: FC<ScenarioAttributes> = ({
               >
                 Growth rates ({items.length})
               </a>
-            </Link>
+            </Link> */}
+
+            <button
+              type="button"
+              className={cx({ 'border-b-2 border-green-700': interventionsContent })}
+              onClick={() => handleTab('interventions', 'step1')}
+            >
+              Interventions (0)
+            </button>
+
+            <button
+              type="button"
+              className={cx({ 'border-b-2 border-green-700': !interventionsContent })}
+              onClick={() => handleTab('growth', null)}
+            >
+              Growth rates ({items.length})
+            </button>
           </div>
           <Button onClick={() => handleNewIntervention()}>
             <PlusIcon className="-ml-1 mr-1 h-5 w-5" aria-hidden="true" />

@@ -28,11 +28,10 @@ const STEP1: Step = {
 const STEPS2 = {
   new_supplier_location: {
     id: 'Step 2',
-    slug: 'intervention_step2',
+    slug: 'step2',
     name: 'Source from a new supplier or location',
     description:
       'Select a new location or supplier you want to source from in order to analyse changes.',
-    href: '#intervention_step2',
     status: 'upcoming',
   },
   production_efficiency: {
@@ -73,7 +72,7 @@ const InterventionForm: FC = () => {
 
   return (
     <>
-      <Steps steps={steps} current={currentStep} className="mb-10 z-20" />
+      <Steps steps={steps} current={step} className="mb-10 z-20" />
       <form className="space-y-8">
         {(!currentStep || isFirstStep) && <Step1 />}
         {!!currentStep && !isFirstStep && <Step2 />}

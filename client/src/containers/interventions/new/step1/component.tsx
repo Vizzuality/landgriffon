@@ -210,7 +210,6 @@ const Step1: FC = () => {
           <div className="mt-1">
             <Select
               loading={isLoadingInterventionTypes}
-              id="interventionType"
               current={currentInterventionType}
               options={optionsInterventionType}
               placeholder="Select"

@@ -20,7 +20,6 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
     showSearch = false,
     disabled = false,
     label,
-    id,
     options = [],
     current = options[0],
     loading = false,

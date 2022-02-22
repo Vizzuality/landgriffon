@@ -53,3 +53,9 @@ export interface AnalysisChart {
   legend: ChartLegend[];
   data: ChartData[];
 }
+
+export type Intervention = Readonly<{
+  slug: string;
+  title: string;
+  description: string;
+}>;

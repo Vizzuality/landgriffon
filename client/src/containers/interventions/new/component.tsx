@@ -13,8 +13,9 @@ import Step1 from './step1';
 import Step2 from './step2';
 
 const STEP1: Step = {
-  id: 'Step 1',
-  slug: 1,
+  id: 1,
+  slug: 'step1',
+  title: 'Step 1',
   name: 'Define scope',
   description:
     'Choose to which data of your supply chain you want to apply the intervention in order to analyze changes.',
@@ -23,24 +24,27 @@ const STEP1: Step = {
 
 const STEPS2 = {
   'new-supplier-location': {
-    id: 'Step 2',
-    slug: 2,
+    id: 2,
+    slug: 'step2',
+    title: 'Step 2',
     name: 'Source from a new supplier or location',
     description:
       'Select a new location or supplier you want to source from in order to analyse changes.',
     status: 'upcoming',
   },
   'production-efficiency': {
-    id: 'Step 2',
-    slug: 'intervention_step2',
+    id: 2,
+    slug: 'step2',
+    title: 'Step 2',
     name: 'Change production efficiency',
     description: 'Setup new impacts in order to analyse the changes.',
     href: '#intervention_step2',
     status: 'upcoming',
   },
   'new-material': {
-    id: 'Step 2',
-    slug: 'intervention_step2',
+    id: 2,
+    slug: 'step2',
+    title: 'Step 2',
     name: 'Switch to a new material',
     description: 'Select a new material you want to source from in order to analyse changes.',
     href: '#intervention_step2',

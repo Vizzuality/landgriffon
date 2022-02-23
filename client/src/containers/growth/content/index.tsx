@@ -40,7 +40,6 @@ const GowthForm: FC = () => {
       })),
     [businessUnities],
   );
-
   const currentBusinessUnity = useMemo<SelectOption>(
     () => optionsBusiness?.find((option) => option.value === businessUnity),
     [optionsBusiness],

@@ -62,16 +62,21 @@ const options: NextAuthOptions = {
 
   // Configure one or more authentication providers
   providers: [
+    Providers.Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+
     Providers.Credentials({
       // The name to display on the sign in form (e.g. 'Sign in with...')
       name: 'Landgriffon',
       // The credentials is used to generate a suitable form on the sign in page.
       // You can specify whatever fields you are expecting to be submitted.
       // e.g. domain, username, password, 2FA token, etc.
-      credentials: {
-        username: { label: 'Email', type: 'email', placeholder: 'username@domain.com' },
-        password: { label: 'Password', type: 'password' },
-      },
+      // credentials: {
+      //  username: { label: 'Email', type: 'email', placeholder: 'username@domain.com' },
+      //  password: { label: 'Password', type: 'password' },
+      //   },
       async authorize(credentials) {
         const { username, password } = credentials as CustomCredentials;
 
@@ -129,7 +134,7 @@ const options: NextAuthOptions = {
     async redirect(callbackUrl) {
       // By default it should be redirect to /projects
       if (callbackUrl.includes('/sign-in') || callbackUrl.includes('/sign-up')) {
-        return '/projects';
+        return '/analysis';
       }
       return callbackUrl;
     },

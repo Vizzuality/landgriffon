@@ -8,7 +8,7 @@ import { useMutation } from 'react-query';
 import * as yup from 'yup';
 import { nextAuthService } from 'services/authentication';
 import AuthenticationLayout from 'layouts/authentication';
-import LandgriffonLogo from 'containers/logo/component';
+import { Label, Input } from 'components/forms';
 
 type SignInPayload = {
   email: string;
@@ -51,7 +51,6 @@ const Home: React.FC = () => {
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
             <div className="text-center mb-10">
-              <LandgriffonLogo />
               <h2 className="text-3xl font-bold my-4">Sign in to your account</h2>
               <p className="text-sm font-medium text-gray-500">
                 To continue please enter your details below.
@@ -65,34 +64,13 @@ const Home: React.FC = () => {
               id="signInForm"
             >
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                  Email address
-                </label>
-                <div className="mt-1">
-                  <input
-                    {...register('email')}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                  />
-                </div>
-                {errors.email && (
-                  <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>
-                )}
+                <Label htmlFor="email">Email address</Label>
+                <Input {...register('email')} type="email" error={errors.email?.message} />
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                  Password
-                </label>
-                <div className="mt-1">
-                  <input
-                    {...register('password')}
-                    type="password"
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                  />
-                </div>
-                {errors.password && (
-                  <p className="mt-2 text-sm text-red-600">{errors.password.message}</p>
-                )}
+                <Label htmlFor="password">Password</Label>
+                <Input {...register('password')} type="password" error={errors.password?.message} />
               </div>
 
               <div className="flex items-center justify-between">

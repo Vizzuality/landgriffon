@@ -6,7 +6,7 @@ type LandgriffonLogoProps = {
 
 const LandgriffonLogo: React.FC<LandgriffonLogoProps> = ({ className }) => (
   <div className={className}>
-    <Image src="/landgriffon-logo.svg" width="175" height="14" alt="Landgriffon logo" />
+    <Image src="/landgriffon-logo-white.svg" width="196" height="16" alt="Landgriffon logo" />
   </div>
 );
 

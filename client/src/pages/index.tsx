@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import ApplicationLayout from 'layouts/application';
+import type { Redirect } from 'next';
 
 const Home: React.FC = () => (
   <>
@@ -10,10 +11,10 @@ const Home: React.FC = () => (
   </>
 );
 
-export async function getServerSideProps() {
+export async function getServerSideProps(): Promise<{ redirect: Redirect }> {
   return {
     redirect: {
-      destination: '/auth/sign-in',
+      destination: '/analysis',
       permanent: false,
     },
   };

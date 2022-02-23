@@ -13,8 +13,11 @@ import ScenarioEdit from 'containers/scenarios/edit';
 import ScenariosForm from 'containers/scenarios/new/form';
 import { analysis, setSubContentCollapsed } from 'store/features/analysis';
 import CollapseButton from 'containers/collapse-button';
+import { withProtection } from 'lib/hoc/auth';
 
 import type { Page } from 'components/breadcrumb/types';
+
+export const getServerSideProps = withProtection();
 
 const AnalysisVisualizationNoSSR = dynamic(() => import('containers/analysis-visualization'), {
   ssr: false,

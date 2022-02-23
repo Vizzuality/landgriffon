@@ -57,6 +57,37 @@ describe('Suppliers - Create', () => {
     expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
   });
 
+  test('Create a supplier with name smaller or equal to 300 characters should be successful', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/suppliers')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send({
+        name: 'i'.repeat(300),
+      })
+      .expect(HttpStatus.CREATED);
+
+    const createdSupplier = await supplierRepository.findOne(
+      response.body.data.id,
+    );
+
+    if (!createdSupplier) {
+      throw new Error('Error loading created Supplier');
+    }
+
+    expect(createdSupplier.name).toEqual('i'.repeat(300));
+    expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
+  });
+
+  test('Create a supplier with name bigger than 300 characters should return bad request error', async () => {
+    await request(app.getHttpServer())
+      .post('/api/v1/suppliers')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send({
+        name: 'i'.repeat(301),
+      })
+      .expect(HttpStatus.BAD_REQUEST);
+  });
+
   test('Create a supplier without the required fields should fail with a 400 error', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/suppliers')

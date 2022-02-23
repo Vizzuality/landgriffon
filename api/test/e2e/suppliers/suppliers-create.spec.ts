@@ -79,13 +79,19 @@ describe('Suppliers - Create', () => {
   });
 
   test('Create a supplier with name bigger than 300 characters should return bad request error', async () => {
-    await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .post('/api/v1/suppliers')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
         name: 'i'.repeat(301),
       })
       .expect(HttpStatus.BAD_REQUEST);
+
+    expect(response).toHaveErrorMessage(
+      HttpStatus.BAD_REQUEST,
+      'Bad Request Exception',
+      ['name must be shorter than or equal to 300 characters'],
+    );
   });
 
   test('Create a supplier without the required fields should fail with a 400 error', async () => {

@@ -5,6 +5,7 @@ import { useAppDispatch } from 'store/hooks';
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { setNewInterventionStep } from 'store/features/analysis';
 =======
 import { setTab } from 'store/features/analysis';
@@ -15,6 +16,9 @@ import { setScenarioTab } from 'store/features/analysis';
 =======
 import { setInterventionsStep } from 'store/features/analysis';
 >>>>>>> febac337 (setInterventionsStep added to Steps component)
+=======
+import { setNewInterventionStep } from 'store/features/analysis';
+>>>>>>> 9cd566ae (Button component added to growth content)
 
 import type { Step } from './types';
 
@@ -99,7 +103,7 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
 const Steps: React.FC<StepsProps> = ({ steps, current, ...props }: StepsProps) => {
   const dispatch = useAppDispatch();
   const handleTab = useCallback(
-    (step) => dispatch(setInterventionsStep({ id: 'step', value: step })),
+    (step) => dispatch(setNewInterventionStep({ id: 'step', value: step })),
     [dispatch],
   );
 

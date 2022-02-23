@@ -119,11 +119,7 @@ const ScenariosNewContainer: React.FC = () => {
                   Growth rates ({items.length})
                 </button>
               </div>
-<<<<<<< HEAD
               <Button onClick={handleNewScenarioFeature}>
-=======
-              <Button onClick={() => handleNewScenarioFeature()}>
->>>>>>> 1701329b (new scen componentized, scen attributes removed)
                 <PlusIcon className="-ml-1 mr-1 h-5 w-5" aria-hidden="true" />
                 New
               </Button>

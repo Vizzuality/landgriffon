@@ -159,6 +159,7 @@ const Step1: FC = () => {
           <div className="font-bold">
             <Materials
               multiple
+              withSourcingLocations
               current={filters.materials}
               // onChange={(values) => handleChangeFilter('materials', values)}
               onChange={handleChange}
@@ -178,6 +179,7 @@ const Step1: FC = () => {
           <span className="text-gray-700 font-medium">from</span>
           <Suppliers
             multiple
+            withSourcingLocations
             current={filters.suppliers}
             // onChange={(values) => handleChangeFilter('suppliers', values)}
             theme="primary"
@@ -185,6 +187,7 @@ const Step1: FC = () => {
           <span className="text-gray-700 font-medium">in</span>
           <OriginRegions
             multiple
+            withSourcingLocations
             current={filters.suppliers}
             // onChange={(values) => handleChangeFilter('suppliers', values)}
             theme="primary"

@@ -13,10 +13,14 @@ import { SelectOptions, SelectOption } from 'components/select/types';
 
 const GowthForm: FC = () => {
 <<<<<<< HEAD
+<<<<<<< HEAD
   //const dispatch = useAppDispatch();
 =======
   const dispatch = useAppDispatch();
 >>>>>>> 9cd566ae (Button component added to growth content)
+=======
+  //const dispatch = useAppDispatch();
+>>>>>>> 017e2ed8 (step description)
   //const [isOpen, setIsOpen] = useState<boolean>(false);
   //const { filters } = useAppSelector(analysis);
 

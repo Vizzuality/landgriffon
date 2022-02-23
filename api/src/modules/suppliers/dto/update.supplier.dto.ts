@@ -6,7 +6,7 @@ export class UpdateSupplierDto extends PartialType(CreateSupplierDto) {
   @IsString()
   @IsOptional()
   @MinLength(2)
-  @MaxLength(40)
+  @MaxLength(300)
   @ApiProperty()
   name?: string;
 }

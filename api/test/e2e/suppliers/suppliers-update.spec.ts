@@ -70,7 +70,7 @@ describe('Suppliers - Update', () => {
       .send({
         name: 'i'.repeat(300),
       })
-      .expect(HttpStatus.BAD_REQUEST);
+      .expect(HttpStatus.OK);
   });
 
   test("Update a supplier's parentId should be successful", async () => {

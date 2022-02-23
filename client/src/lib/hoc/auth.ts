@@ -1,5 +1,5 @@
 import type { NextPageContext } from 'next';
-import { getSession } from 'next-auth/client';
+import { getSession } from 'next-auth/react';
 import { useUsers } from 'hooks/users';
 import { dehydrate } from 'react-query/hydration';
 
@@ -96,7 +96,7 @@ export function withoutProtection(getServerSidePropsFunc?: AuthHOC) {
     if (session) {
       return {
         redirect: {
-          destination: '/projects',
+          destination: '/analysis',
           permanent: false,
         },
       };

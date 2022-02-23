@@ -57,15 +57,25 @@ const SignIn: React.FC = () => {
                 To continue please enter your details below.
               </p>
             </div>
-            <form className="space-y-6" onSubmit={handleSubmit(handleSignIn)}>
+            <form className="space-y-6" id="signInForm" onSubmit={handleSubmit(handleSignIn)}>
               <div>
                 <Label htmlFor="email">Email address</Label>
-                <Input {...register('email')} type="email" error={errors.email?.message} />
+                <Input
+                  {...register('email')}
+                  type="email"
+                  id="email"
+                  error={errors.email?.message}
+                />
               </div>
 
               <div>
                 <Label htmlFor="password">Password</Label>
-                <Input {...register('password')} type="password" error={errors.password?.message} />
+                <Input
+                  {...register('password')}
+                  type="password"
+                  id="password"
+                  error={errors.password?.message}
+                />
               </div>
 
               <div className="flex items-center justify-between">

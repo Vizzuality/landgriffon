@@ -10,13 +10,13 @@ import type { Page } from 'components/breadcrumb/types';
 const ScenariosComponent: React.FC = () => {
   const { query } = useRouter();
   const { data, isLoading, error } = useScenarios({ sort: query.sortBy as string });
-  const { edit_scenario } = query;
+  const { scenario } = query;
 
   // Breadcrumbs
   let pages: Page[] = [{ name: 'Analysis', href: '/analysis' }]; // Default
 
-  if (edit_scenario) {
-    pages = [...pages, { name: 'Edit scenario', href: '/analysis?edit_scenario' }];
+  if (scenario === 'edit') {
+    pages = [...pages, { name: 'Edit scenario', href: '/analysis?scenario=edit' }];
   }
 
   return (
@@ -51,7 +51,7 @@ const ScenariosComponent: React.FC = () => {
         </div>
       )}
       <div className="bg-white z-20 sticky bottom-0 left-0 w-full py-6">
-        <Link href="/analysis?new_scenario=true" shallow passHref>
+        <Link href={{ pathname: '/analysis', query: { scenario: 'new' } }} shallow passHref>
           <AnchorLink size="xl" className="block w-full">
             <PlusIcon className="-ml-5 mr-3 h-5 w-5" aria-hidden="true" />
             Create a new scenario

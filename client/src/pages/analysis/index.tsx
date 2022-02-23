@@ -24,30 +24,31 @@ const AnalysisPage: React.FC = () => {
   const { isSidebarCollapsed, isSubContentCollapsed } = useAppSelector(analysis);
 
   const analysisContent = () => {
-    if (new_scenario) return <ScenarioNew />;
-    if (edit_scenario) return <ScenarioEdit />;
+    if (scenario === 'new') return <ScenarioNew />;
+    if (scenario === 'edit') return <ScenarioEdit />;
     return <Scenarios />;
   };
 
   const dispatch = useAppDispatch();
-  const { query } = useRouter();
-  const { new_scenario, edit_scenario } = query;
+  const {
+    query: { scenario },
+  } = useRouter();
 
   // Breadcrumbs
   let pages: Page[] = [{ name: 'Analysis', href: '/analysis' }]; // Default
-  if (edit_scenario) {
-    pages = [...pages, { name: 'Edit scenario', href: '/analysis?edit_scenario' }];
+  if (scenario === 'edit') {
+    pages = [...pages, { name: 'Edit scenario', href: '/analysis?scenario=edit' }];
   }
 
-  if (new_scenario) {
-    pages = [...pages, { name: 'New scenario', href: '/analysis?new_scenario' }];
+  if (scenario === 'new') {
+    pages = [...pages, { name: 'New scenario', href: '/analysis?scenario=new' }];
   }
 
   useEffect(() => {
     // Close and cancel interventions creation
     // when user goes to scenarios list
-    if (!new_scenario && !edit_scenario) dispatch(setSubContentCollapsed(true));
-  }, [new_scenario, edit_scenario, dispatch]);
+    if (!scenario) dispatch(setSubContentCollapsed(true));
+  }, [scenario, dispatch]);
 
   return (
     <ApplicationLayout>

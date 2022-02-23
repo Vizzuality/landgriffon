@@ -13,7 +13,7 @@ describe('Navigation', () => {
     cy.get('form#signInForm #password').type('anypass');
     cy.get('form#signInForm').submit();
 
-    // The new url should include "/analysis"
-    cy.url().should('include', '/analysis');
+    // The login should fail and stay in the same page
+    cy.url().should('include', '/auth/sign-in');
   });
 });

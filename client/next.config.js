@@ -9,6 +9,11 @@ const nextConfig = {
   async redirects() {
     return [
       {
+        source: '/',
+        destination: '/analysis',
+        permanent: false,
+      },
+      {
         source: '/admin',
         destination: '/admin/data',
         permanent: false,

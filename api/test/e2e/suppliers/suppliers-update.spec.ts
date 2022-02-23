@@ -53,13 +53,19 @@ describe('Suppliers - Update', () => {
 
   test('Update a supplier name with length more than 300 should return bad request error', async () => {
     const supplier: Supplier = await createSupplier();
-    await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .patch(`/api/v1/suppliers/${supplier.id}`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
         name: 'i'.repeat(301),
       })
       .expect(HttpStatus.BAD_REQUEST);
+
+    expect(response).toHaveErrorMessage(
+      HttpStatus.BAD_REQUEST,
+      'Bad Request Exception',
+      ['name must be shorter than or equal to 300 characters'],
+    );
   });
 
   test('Update a supplier name with length less or equal to 300 should be successful', async () => {

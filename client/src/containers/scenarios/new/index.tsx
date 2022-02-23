@@ -11,9 +11,9 @@ const ScenariosNewContainer: React.FC = () => {
 
   if (response.isSuccess) {
     // router.replace({
-    //   pathname: '/analysis',
+    //   pathname: '/analysis/scenario',
     //   query: {
-    //     new_scenario: response.data.id,
+    //     new: response.data.id,
     //   },
     // });
   }

@@ -114,7 +114,8 @@ const ScenariosNewContainer: React.FC = () => {
                 <button
                   type="button"
                   className={cx({ 'border-b-2 border-green-700': !interventionsContent })}
-                  onClick={() => handleTab('growth')}
+                  onClick={handleTab}
+                  dataTab="growth"
                 >
                   Growth rates ({items.length})
                 </button>

@@ -12,7 +12,7 @@ import Select from 'components/select';
 import { SelectOptions, SelectOption } from 'components/select/types';
 
 const GowthForm: FC = () => {
-  const dispatch = useAppDispatch();
+  //const dispatch = useAppDispatch();
   //const [isOpen, setIsOpen] = useState<boolean>(false);
   //const { filters } = useAppSelector(analysis);
 

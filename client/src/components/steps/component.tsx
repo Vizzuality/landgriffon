@@ -18,6 +18,11 @@ const Steps: React.FC<StepsProps> = ({ steps, current, ...props }: StepsProps) =
     [dispatch],
   );
 
+  const stepDescription = useCallback(
+    (description: string) => <p className="text-left text-xs text-gray-500">{description}</p>,
+    [],
+  );
+
   return (
     <nav aria-label="Progress" {...props}>
       <ol className="space-y-4 md:flex md:space-y-0 md:space-x-8">
@@ -38,9 +43,7 @@ const Steps: React.FC<StepsProps> = ({ steps, current, ...props }: StepsProps) =
                   {step.id}
                 </span>
                 <span className="text-sm font-medium">{step.name}</span>
-                {!!step.description && step.slug === current && (
-                  <p className="text-left text-xs text-gray-500">{step.description}</p>
-                )}
+                {!!step.description && step.slug === current && stepDescription(step.description)}
               </button>
             )}
             {step.status === 'current' && (
@@ -59,9 +62,7 @@ const Steps: React.FC<StepsProps> = ({ steps, current, ...props }: StepsProps) =
                   {step.id}
                 </span>
                 <span className="text-sm font-medium">{step.name}</span>
-                {!!step.description && step.slug === current && (
-                  <p className="text-left text-xs text-gray-500">{step.description}</p>
-                )}
+                {!!step.description && step.slug === current && stepDescription(step.description)}
               </button>
             )}
             {step.status === 'upcoming' && (
@@ -79,9 +80,7 @@ const Steps: React.FC<StepsProps> = ({ steps, current, ...props }: StepsProps) =
                   {step.id}
                 </span>
                 <span className="text-sm font-medium">{step.name}</span>
-                {!!step.description && step.slug === current && (
-                  <p className="text-left text-xs text-gray-500">{step.description}</p>
-                )}
+                {!!step.description && step.slug === current && stepDescription(step.description)}
               </button>
             )}
           </li>

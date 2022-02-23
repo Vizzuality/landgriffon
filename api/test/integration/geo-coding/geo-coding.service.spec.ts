@@ -7,12 +7,12 @@ import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service
 import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { AggregationPointGeocodingService } from 'modules/geo-coding/geocoding-strategies/aggregation-point.geocoding.service';
+import { AggregationPointGeocodingService } from 'modules/geo-coding/strategies/aggregation-point.geocoding.service';
 import { geocodeResponses } from './mocks/geo-coding.mock-response';
 import { GeocodeResponseData } from '@googlemaps/google-maps-services-js/dist/geocode/geocode';
 import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
-import { PointOfProductionGeocodingService } from 'modules/geo-coding/geocoding-strategies/point-of-production.geocoding.service';
-import { UnknownLocationService } from 'modules/geo-coding/geocoding-strategies/unknown-location.geocoding.service';
+import { PointOfProductionGeocodingService } from 'modules/geo-coding/strategies/point-of-production.geocoding.service';
+import { UnknownLocationService } from 'modules/geo-coding/strategies/unknown-location.geocoding.service';
 
 // TODO: Re-organize properly tests. Handle all use cases
 
@@ -78,7 +78,7 @@ describe('GeoCoding Service (Integration Testing)', () => {
     });
   });
 
-  describe('Aggregation Point Locatio ', () => {
+  describe('Aggregation Point Location ', () => {
     test('When a location is sent to the service, and has both address and coordinates, then an error should be shown ', async () => {
       const sourcingData = {
         locationAddressInput: true,

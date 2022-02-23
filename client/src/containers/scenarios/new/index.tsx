@@ -120,7 +120,7 @@ const ScenariosNewContainer: React.FC = () => {
                   Growth rates ({items.length})
                 </button>
               </div>
-              <Button onClick={() => handleNewScenarioFeature()}>
+              <Button onClick={handleNewScenarioFeature}>
                 <PlusIcon className="-ml-1 mr-1 h-5 w-5" aria-hidden="true" />
                 New
               </Button>

@@ -1,29 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { GeoCodingBaseService } from 'modules/geo-coding/geo-coding.base.service';
+import { BaseStrategy } from 'modules/geo-coding/strategies/base-strategy';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { GeocodeResponseData } from '@googlemaps/google-maps-services-js/dist/geocode/geocode';
+import { GeocodeResponse } from 'modules/geo-coding/geocoders/geocoder.interface';
 
 @Injectable()
-export class UnknownLocationService extends GeoCodingBaseService {
-  async geoCodeUnknownLocationType(
+export class CountryOfProductionService extends BaseStrategy {
+  async geoCodeCountryOfProduction(
     sourcingData: SourcingData,
   ): Promise<SourcingLocation> {
     /**
-     *   The user must specify a country, but address and coordinates should be empty
-     *
+     * The user must specify a country, and either address OR coordinates.
      */
     if (!sourcingData.locationCountryInput)
       throw new Error(
-        'A country where material is received needs to be provided for Unknown Location Types',
+        'A country where material is received needs to be provided for Country of Production Location Types',
       );
-    if (sourcingData.locationAddressInput || sourcingData.locationLatitude)
+    if (sourcingData.locationAddressInput && sourcingData.locationLatitude)
       throw new Error(
-        'Unknown Location type should not include an address or coordinates',
+        'Country of Production Location type must include either an address or coordinates',
       );
+
     // Geo-code country to get short_name property which matches isoA2 when location is a country
     // Find admin-region and geo-region ids via isoA2Alpha code
-    const geoCodedResponse: GeocodeResponseData = await this.geoCodeByCountry(
+
+    const geoCodedResponse: GeocodeResponse = await this.geoCodeByCountry(
       sourcingData?.locationCountryInput,
     );
 

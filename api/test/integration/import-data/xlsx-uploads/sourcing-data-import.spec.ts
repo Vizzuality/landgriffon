@@ -15,10 +15,9 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { createAdminRegion, createGeoRegion } from '../../../entity-mocks';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
-import { UnknownLocationService } from 'modules/geo-coding/geocoding-strategies/unknown-location.geocoding.service';
+import { UnknownLocationService } from 'modules/geo-coding/strategies/unknown-location.geocoding.service';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
-import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 import {
   createMaterialTreeForXLSXImport,
   createIndicatorsForXLSXImport,
@@ -37,6 +36,8 @@ import { SourcingDataImportService } from 'modules/import-data/sourcing-data/sou
 import { FileService } from 'modules/import-data/file.service';
 import * as fs from 'fs';
 import * as config from 'config';
+import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
+
 let tablesToDrop: string[] = [];
 
 let missingDataFallbackPolicy: string = 'error';
@@ -64,8 +65,8 @@ describe.skip('Sourcing Data import', () => {
    * so this mock filters them to avoid DB constraint errors for not be one of the allowed
    * location types (enum)
    */
-  const geoCodingServiceMock = {
-    geoCodeLocations: async (sourcingData: any): Promise<any> => {
+  class GeoCodingServiceMock implements GeoCodingAbstractClass {
+    async geoCodeLocations(sourcingData: any): Promise<any> {
       const geoRegion: GeoRegion | undefined =
         await geoRegionRepository.findOne({
           name: 'ABC',
@@ -93,8 +94,8 @@ describe.skip('Sourcing Data import', () => {
           adminRegionId: adminRegion.id,
           geoRegionId: geoRegion.id,
         }));
-    },
-  };
+    }
+  }
 
   class UnknownLocationServiceMock extends UnknownLocationService {
     async geoCodeByCountry(): Promise<any> {
@@ -139,8 +140,8 @@ describe.skip('Sourcing Data import', () => {
     })
       .overrideProvider(FileService)
       .useClass(MockFileService)
-      .overrideProvider(GeoCodingService)
-      .useValue(geoCodingServiceMock)
+      .overrideProvider(GeoCodingAbstractClass)
+      .useClass(GeoCodingServiceMock)
       .overrideProvider(UnknownLocationService)
       .useClass(UnknownLocationServiceMock)
       .compile();

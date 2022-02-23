@@ -28,6 +28,10 @@
     "host": "localhost",
     "port": 6379
   },
+  "geocodingCache": {
+    "enabled": true,
+    "TTL": 86400
+  },
   "db": {
     "type": "postgres",
     "host": "localhost",

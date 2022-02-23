@@ -58,7 +58,7 @@ const initialState: AnalysisState = {
     materials: [],
     origins: [],
     suppliers: [],
-    interventionType: 'new_supplier_location',
+    interventionType: 'new-supplier-location',
   },
 };
 
@@ -101,11 +101,11 @@ export const analysisSlice = createSlice({
       ...state,
       scenarioCurrentTab: action.payload,
     }),
-    setInterventionsStep: (state, action: PayloadAction<{ id: string; value: unknown }>) => ({
+    setNewInterventionStep: (state, action: PayloadAction<1 | 2>) => ({
       ...state,
       interventions: {
         ...state.interventions,
-        [action.payload.id]: action.payload.value,
+        step: action.payload,
       },
     }),
     setFilter: (state, action: PayloadAction<{ id: string; value: unknown }>) => ({
@@ -134,7 +134,7 @@ export const {
   setComparisonMode,
   setLayer,
   setScenarioTab,
-  setInterventionsStep,
+  setNewInterventionStep,
   setFilter,
   setFilters,
 } = analysisSlice.actions;

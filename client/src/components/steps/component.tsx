@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import cx from 'classnames';
 
 import { useAppDispatch } from 'store/hooks';
-import { setInterventionsStep } from 'store/features/analysis';
+import { setNewInterventionStep } from 'store/features/analysis';
 
 import type { Step } from './types';
 
@@ -14,7 +14,7 @@ type StepsProps = React.HTMLAttributes<unknown> & {
 const Steps: React.FC<StepsProps> = ({ steps, current, ...props }: StepsProps) => {
   const dispatch = useAppDispatch();
   const handleTab = useCallback(
-    (step) => dispatch(setInterventionsStep({ id: 'step', value: step })),
+    (step) => dispatch(setNewInterventionStep({ id: 'step', value: step })),
     [dispatch],
   );
 

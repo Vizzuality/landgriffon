@@ -1,11 +1,11 @@
-import { useMemo, useCallback, useState } from 'react';
+import { useMemo, useCallback, useState, FC } from 'react';
 
 import Select from 'components/select';
 
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
 
-const Supplier = () => {
+const Supplier: FC = () => {
   const [landgriffonEstimates, setLandgriffonEstimates] = useState(false);
 
   const locationTypes = ['location1', 'location2'];

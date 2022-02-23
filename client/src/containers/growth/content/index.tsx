@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, FC } from 'react';
 
 // hooks
 import { useAppDispatch, useAppSelector } from 'store/hooks';
@@ -11,7 +11,7 @@ import Select from 'components/select';
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
 
-const GowthForm = () => {
+const GowthForm: FC = () => {
   const dispatch = useAppDispatch();
   //const [isOpen, setIsOpen] = useState<boolean>(false);
   //const { filters } = useAppSelector(analysis);
@@ -40,7 +40,6 @@ const GowthForm = () => {
       })),
     [businessUnities],
   );
-
   const currentBusinessUnity = useMemo<SelectOption>(
     () => optionsBusiness?.find((option) => option.value === businessUnity),
     [optionsBusiness],

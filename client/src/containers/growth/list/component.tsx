@@ -5,7 +5,6 @@ import { ScenarioInterventionsGrowthItems } from 'containers/scenarios/types';
 const GrowthList: FC<ScenarioInterventionsGrowthItems> = ({
   items,
 }: ScenarioInterventionsGrowthItems) => {
-<<<<<<< HEAD
   return items?.length > 0 ? (
     <div className="bg-white border border-gray-300 overflow-hidden rounded-md mt-4">
       <ul className="divide-y divide-gray-300">
@@ -25,32 +24,6 @@ const GrowthList: FC<ScenarioInterventionsGrowthItems> = ({
         </p>
       </div>
     </div>
-=======
-  return (
-    <>
-      {items.length && (
-        <div className="bg-white border border-gray-300 overflow-hidden rounded-md mt-4">
-          <ul className="divide-y divide-gray-300">
-            {items.map((item) => (
-              <li key={item.id} className="px-4 py-4 sm:px-6">
-                <p>{item.title}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {!items.length && (
-        <div>
-          <div className="p-6 text-center">
-            <p className="text-sm">
-              Growth rates set your expectations of how purchaces of raw materials will change into{' '}
-              the future. Add a new rule to get started.
-            </p>
-          </div>
-        </div>
-      )}
-    </>
->>>>>>> 1701329b (new scen componentized, scen attributes removed)
   );
 };
 

@@ -14,12 +14,12 @@ import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-record
 import { SourcingLocationGroupsService } from 'modules/sourcing-location-groups/sourcing-location-groups.service';
 import { validateOrReject } from 'class-validator';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
-import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { Material } from 'modules/materials/material.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
+import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -61,7 +61,7 @@ export class SourcingDataImportService {
     protected readonly sourcingLocationGroupService: SourcingLocationGroupsService,
     protected readonly fileService: FileService<SourcingRecordsSheets>,
     protected readonly dtoProcessor: SourcingRecordsDtoProcessorService,
-    protected readonly geoCodingService: GeoCodingService,
+    protected readonly geoCodingService: GeoCodingAbstractClass,
     protected readonly indicatorRecordsService: IndicatorRecordsService,
   ) {}
 

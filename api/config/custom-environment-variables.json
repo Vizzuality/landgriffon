@@ -24,6 +24,10 @@
     "host": "REDIS_HOST",
     "port": "REDIS_PORT"
   },
+  "geocodingCache": {
+    "enabled": "GEOCODING_CACHE_ENABLED",
+    "TTL": "GEOCODING_CACHE_TTL"
+  },
   "db": {
     "host": "DB_HOST",
     "port": "DB_PORT",
@@ -37,5 +41,7 @@
     "sizeLimit": "FILE_SIZE_LIMIT",
     "storagePath": "FILE_STORAGE_PATH"
   },
-  "geolocation": {"gmapsApiKey": "GMAPS_API_KEY" }
+  "geolocation": {
+    "gmapsApiKey": "GMAPS_API_KEY"
+  }
 }

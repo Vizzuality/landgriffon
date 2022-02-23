@@ -8,7 +8,7 @@ import { useMutation } from 'react-query';
 import * as yup from 'yup';
 import { nextAuthService } from 'services/authentication';
 import AuthenticationLayout from 'layouts/authentication';
-import { Label, Input } from 'components/forms';
+import { Label, Input, Checkbox } from 'components/forms';
 
 type SignInPayload = {
   email: string;
@@ -18,11 +18,12 @@ type SignInPayload = {
 const schemaValidation = yup.object({
   email: yup.string().email().required(),
   password: yup.string().min(8).required('password is required'),
+  remember: yup.boolean(),
 });
 
 const signInService = (data: SignInPayload) => nextAuthService.post('/signin/credentials', data);
 
-const Home: React.FC = () => {
+const SignIn: React.FC = () => {
   const router = useRouter();
 
   const {
@@ -56,13 +57,7 @@ const Home: React.FC = () => {
                 To continue please enter your details below.
               </p>
             </div>
-            <form
-              className="space-y-6"
-              action="#"
-              method="POST"
-              onSubmit={handleSubmit(handleSignIn)}
-              id="signInForm"
-            >
+            <form className="space-y-6" onSubmit={handleSubmit(handleSignIn)}>
               <div>
                 <Label htmlFor="email">Email address</Label>
                 <Input {...register('email')} type="email" error={errors.email?.message} />
@@ -74,17 +69,13 @@ const Home: React.FC = () => {
               </div>
 
               <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <input
-                    id="remember_me"
-                    name="remember_me"
-                    type="checkbox"
-                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                  />
-                  <label htmlFor="remember_me" className="ml-2 block text-sm text-gray-900">
-                    Remember me
-                  </label>
-                </div>
+                <Checkbox
+                  {...register('remember')}
+                  id="rememberMe"
+                  error={errors.remember?.message}
+                >
+                  Remember me
+                </Checkbox>
 
                 <div className="text-sm">
                   <a href="#" className="font-medium text-green-800 hover:text-green-700">
@@ -117,4 +108,4 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home;
+export default SignIn;

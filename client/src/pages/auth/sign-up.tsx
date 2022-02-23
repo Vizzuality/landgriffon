@@ -30,7 +30,7 @@ const schemaValidation = yup.object({
 
 const signUpService = (data: SignUpPayload) => authService.post('/sign-up', data);
 
-const Home: React.FC = () => {
+const SignUp: React.FC = () => {
   const router = useRouter();
 
   const {
@@ -121,4 +121,4 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home;
+export default SignUp;

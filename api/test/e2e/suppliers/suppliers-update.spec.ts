@@ -51,6 +51,28 @@ describe('Suppliers - Update', () => {
     expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
   });
 
+  test('Update a supplier name with length more than 300 should return bad request error', async () => {
+    const supplier: Supplier = await createSupplier();
+    await request(app.getHttpServer())
+      .patch(`/api/v1/suppliers/${supplier.id}`)
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send({
+        name: 'i'.repeat(301),
+      })
+      .expect(HttpStatus.BAD_REQUEST);
+  });
+
+  test('Update a supplier name with length less or equal to 300 should be successful', async () => {
+    const supplier: Supplier = await createSupplier();
+    await request(app.getHttpServer())
+      .patch(`/api/v1/suppliers/${supplier.id}`)
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send({
+        name: 'i'.repeat(300),
+      })
+      .expect(HttpStatus.BAD_REQUEST);
+  });
+
   test("Update a supplier's parentId should be successful", async () => {
     const supplierOne: Supplier = await createSupplier();
     const supplierTwo: Supplier = await createSupplier();

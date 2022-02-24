@@ -1,6 +1,10 @@
 import { useMemo, useCallback, useState } from 'react';
 
+// components
 import Select from 'components/select';
+
+// containers
+import InfoTooltip from 'containers/info-tooltip';
 
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
@@ -68,7 +72,10 @@ const Material = () => {
   return (
     <>
       <fieldset className="sm:col-span-3 text-sm">
-        <legend className="font-medium leading-5">New supplier</legend>
+        <legend className="flex font-medium leading-5">
+          New supplier
+          <InfoTooltip className="ml-2" />
+        </legend>
 
         <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
           <div className="block font-medium text-gray-700">

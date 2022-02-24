@@ -3,6 +3,9 @@ import { useMemo, useCallback, useState, FC } from 'react';
 // types
 import { setFilter } from 'store/features/analysis';
 
+// containers
+import InfoTooltip from 'containers/info-tooltip';
+
 // utils
 import { NUMBER_FORMAT } from 'containers/analysis-visualization/constants';
 
@@ -77,7 +80,10 @@ const Step2: FC = () => {
   return (
     <>
       <fieldset className="sm:col-span-3 text-sm">
-        <legend className="font-medium leading-5">Supplier impacts per tone</legend>
+        <legend className="flex font-medium leading-5">
+          Supplier impacts per tone
+          <InfoTooltip className="ml-2" />
+        </legend>
         <div className="flex items-center justify-between mt-6">
           <div className="flex items-center">
             <input

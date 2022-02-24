@@ -131,8 +131,8 @@ const MoreFilters: React.FC = () => {
                   />
                 </div>
               </div>
-              <div className="flex gap-2 mt-4">
-                <Button theme="secondary" className="px-8" onClick={() => setOpen(false)}>
+              <div className="flex gap-2 mt-6">
+                <Button theme="secondary" className="px-9" onClick={() => setOpen(false)}>
                   Cancel
                 </Button>
                 <Button theme="primary" className="flex-grow" onClick={handleApply}>

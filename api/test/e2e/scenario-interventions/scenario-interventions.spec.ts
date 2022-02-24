@@ -367,8 +367,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         geoRegion,
       });
 
-      console.log(preconditions);
-
       const replacingMaterial: Material = await createMaterial();
 
       const response = await request(app.getHttpServer())
@@ -420,7 +418,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       const allSourcingLocations: [SourcingLocation[], number] =
         await sourcingLocationRepository.findAndCount();
-      console.log(allSourcingLocations);
       const allSourcingRecords: [SourcingRecord[], number] =
         await sourcingRecordRepository.findAndCount();
 

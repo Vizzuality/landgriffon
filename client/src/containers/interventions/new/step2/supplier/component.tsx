@@ -1,6 +1,7 @@
 import { useMemo, useCallback, useState } from 'react';
 
 // components
+import Input from 'components/forms/input';
 import Select from 'components/select';
 
 // containers
@@ -95,12 +96,12 @@ const Supplier = () => {
         <label htmlFor="address" className="mt-4 block font-medium text-gray-700">
           City / Address / Coordinates
           <div className="mt-1">
-            <input
+            <Input
+              className="w-full"
               type="text"
               name="address"
               id="address"
               autoComplete="given-address"
-              className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full border-gray-300 rounded-md"
             />
           </div>
         </label>

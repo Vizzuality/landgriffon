@@ -1,18 +1,21 @@
 import { useMemo } from 'react';
+import { useDebounce } from '@react-hook/debounce';
 import { ITableProps } from 'ka-table';
 import { DataType } from 'ka-table/enums';
-import { debounce } from 'lodash';
 import dynamic from 'next/dynamic';
 import { PlusIcon } from '@heroicons/react/solid';
 
 import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import Button from 'components/button';
+import Search from 'components/search';
 
 type ITableData = ITableProps;
 
 const TableNoSSR = dynamic(() => import('containers/table'), { ssr: false });
 
 const AdminUsersPage: React.FC = () => {
+  const [searchText, setSearchText] = useDebounce('', 250);
+
   const tableData = Array(100)
     .fill(undefined)
     .map((_, index) => ({
@@ -21,10 +24,6 @@ const AdminUsersPage: React.FC = () => {
       title: `Title: ${index}`,
       role: `Role: ${index}`,
     }));
-
-  const handleSearch = debounce(({ target }: { target: HTMLInputElement }): void => {
-    console.info('Search: ', target.value);
-  }, 200);
 
   const tableProps: ITableData = useMemo(
     () => ({
@@ -44,13 +43,7 @@ const AdminUsersPage: React.FC = () => {
     <AdminLayout currentTab={ADMIN_TABS.USERS}>
       <div className="flex flex-col-reverse md:flex-row justify-between items-center">
         <div className="flex w-full md:w-auto gap-2">
-          <input
-            className="w-full md:w-auto bg-white border border-gray-300 rounded-md shadow-sm text-left focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm font-medium"
-            type="search"
-            placeholder="Search table"
-            defaultValue=""
-            onChange={handleSearch}
-          />
+          <Search placeholder="Search table" onChange={setSearchText} />
         </div>
         <div className="flex items-center">
           <Button theme="primary" onClick={() => console.info('Add user: click')}>

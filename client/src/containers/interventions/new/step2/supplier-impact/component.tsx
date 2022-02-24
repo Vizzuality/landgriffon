@@ -1,5 +1,8 @@
 import { useMemo, useCallback, useState, FC } from 'react';
 
+// components
+import Input from 'components/forms/input';
+
 // types
 import { setFilter } from 'store/features/analysis';
 
@@ -86,7 +89,7 @@ const Step2: FC = () => {
         </legend>
         <div className="flex items-center justify-between mt-6">
           <div className="flex items-center">
-            <input
+            <Input
               id="landgriffon_estimates"
               name="landgriffon_estimates"
               type="checkbox"
@@ -106,18 +109,18 @@ const Step2: FC = () => {
               className="block font-medium text-gray-700"
             >
               {indicator.name}
-              <div className="mt-1 relative flex items-center">
-                <input
+              <div className="mt-1 relative">
+                <Input
+                  className="w-full"
                   type="number"
                   name={indicator.name}
                   id={indicator.name}
+                  unit={indicator.unit}
                   defaultValue={landgriffonEstimates ? indicator.value : ''}
                   value={landgriffonEstimates ? indicator.value : indicatorsValues[indicator.name]}
-                  className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full border-gray-300 rounded-md text-gray-500"
                   disabled={landgriffonEstimates}
                   onChange={(e) => handleChange(indicator.name, Number(e?.target?.value))}
                 />
-                <span className="absolute right-2 text-gray-500">{indicator.unit}</span>
               </div>
             </label>
           ))}

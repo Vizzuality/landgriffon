@@ -12,7 +12,7 @@ const ScenariosForm = () => {
   const growthContent = useMemo<boolean>(() => tab && tab.includes('growth'), [tab]);
 
   return (
-    <div className="p-12 bg-white z-50 h-full">
+    <div className="p-12 bg-white z-50">
       {!growthContent && <InterventionsForm />}
       {growthContent && <GrowthForm />}
       <div className="absolute top-5 right-0 transform translate-x-1/2 z-30">

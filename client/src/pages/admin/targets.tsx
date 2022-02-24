@@ -9,13 +9,10 @@ import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import NoData from 'containers/admin/no-data';
 import UploadDataSourceModal from 'containers/admin/upload-data-source-modal';
 import Button from 'components/button';
-import { withProtection } from 'lib/hoc/auth';
 
 type ITableData = ITableProps;
 
 const TableNoSSR = dynamic(() => import('containers/table'), { ssr: false });
-
-export const getServerSideProps = withProtection();
 
 const AdminTargetsPage: React.FC = () => {
   const {

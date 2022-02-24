@@ -1,30 +1,22 @@
 import { useCallback } from 'react';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useMutation } from 'react-query';
 import * as yup from 'yup';
-import { nextAuthService } from 'services/authentication';
 import AuthenticationLayout from 'layouts/authentication';
 import { Label, Input, Checkbox } from 'components/forms';
 
-type SignInPayload = {
-  email: string;
-  password: string;
-};
-
 const schemaValidation = yup.object({
-  email: yup.string().email().required(),
+  username: yup.string().email().required(),
   password: yup.string().min(8).required('password is required'),
   remember: yup.boolean(),
 });
 
-const signInService = (data: SignInPayload) => nextAuthService.post('/signin/credentials', data);
-
 const SignIn: React.FC = () => {
-  const router = useRouter();
+  const { query } = useRouter();
 
   const {
     register,
@@ -34,14 +26,10 @@ const SignIn: React.FC = () => {
     resolver: yupResolver(schemaValidation),
   });
 
-  const mutation = useMutation(signInService, {
-    onSuccess: () => {
-      // Redirect to sign-in when user is created successfully
-      router.push('/analysis');
-    },
-  });
-
-  const handleSignIn = useCallback((data) => mutation.mutate(data), [mutation]);
+  const handleSignIn = useCallback(
+    (data) => signIn('credentials', { ...data, callbackUrl: query.callbackUrl || '/analysis' }),
+    [query.callbackUrl],
+  );
 
   return (
     <>
@@ -61,7 +49,7 @@ const SignIn: React.FC = () => {
               <div>
                 <Label htmlFor="email">Email address</Label>
                 <Input
-                  {...register('email')}
+                  {...register('username')}
                   type="email"
                   id="email"
                   error={errors.email?.message}

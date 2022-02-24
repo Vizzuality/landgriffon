@@ -7,13 +7,10 @@ import { PlusIcon } from '@heroicons/react/solid';
 
 import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import Button from 'components/button';
-import { withProtection } from 'lib/hoc/auth';
 
 type ITableData = ITableProps;
 
 const TableNoSSR = dynamic(() => import('containers/table'), { ssr: false });
-
-export const getServerSideProps = withProtection();
 
 const AdminUsersPage: React.FC = () => {
   const tableData = Array(100)

@@ -20,9 +20,6 @@ import {
   SortingMode,
   ApiSortingType,
 } from 'containers/table';
-import { withProtection } from 'lib/hoc/auth';
-
-export const getServerSideProps = withProtection();
 
 const AdminDataPage: React.FC = () => {
   const [searchText, setSearchText] = useDebounce('', 250);

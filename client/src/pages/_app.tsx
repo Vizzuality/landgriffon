@@ -14,13 +14,7 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => (
   <ReduxProvider store={store}>
     <QueryClientProvider client={queryClient}>
       <Hydrate state={pageProps.dehydratedState}>
-        <SessionProvider
-          session={pageProps.session}
-          // options={{
-          //   clientMaxAge: 5 * 60, // Re-fetch session if cache is older than 60 seconds
-          //   keepAlive: 10 * 60, // Send keepAlive message every 10 minutes
-          // }}
-        >
+        <SessionProvider session={pageProps.session}>
           <OverlayProvider>
             <Component {...pageProps} />
           </OverlayProvider>

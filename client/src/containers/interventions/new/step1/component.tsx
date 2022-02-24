@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis, setFilter } from 'store/features/analysis';
 
 // components
+import Input from 'components/forms/input';
 import Select from 'components/select';
 
 import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
@@ -143,7 +144,7 @@ const Step1: FC = () => {
       <fieldset className="mt-1 flex flex-col">
         <p className="font-medium leading-5 text-sm">Apply intervention to:</p>
         <div className="flex items-center text-green-700 space-x-2">
-          <input
+          <Input
             type="number"
             name="percentage"
             id="percentage"

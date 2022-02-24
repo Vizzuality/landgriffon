@@ -125,53 +125,61 @@ export class ScenarioInterventionsService extends AppBaseService<
      * Depending on the intervention type
      */
 
+    let newInterventionSourcingLocations: SourcingLocation[];
+
     switch (dto.type) {
-      case SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL: {
-        const geoCodedNewIntervention: SourcingData[] =
+      case SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL:
+        const newMaterialInterventionLocation: SourcingData[] =
           await this.createSourcingLocationsDataForNewMaterialIntervention(
             dto,
             actualSourcingDataWithTonnage,
           );
 
-        const newInterventionSourcingLocations: SourcingLocation[] =
-          await this.sourcingLocationsService.save(geoCodedNewIntervention);
+        newInterventionSourcingLocations =
+          await this.sourcingLocationsService.save(
+            newMaterialInterventionLocation,
+          );
+
         newScenarioIntervention.newSourcingLocations =
           newInterventionSourcingLocations;
-      }
+        break;
 
-      case SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER: {
-        const newInterventionLocations: SourcingData[] =
+      case SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER:
+        const newSupplerInterventionLocations: SourcingData[] =
           await this.createSourcingLocationsDataForNewSupplierIntervention(
             dto,
             actualSourcingDataWithTonnage,
           );
 
-        const newInterventionSourcingLocations: SourcingLocation[] =
-          await this.sourcingLocationsService.save(newInterventionLocations);
+        newInterventionSourcingLocations =
+          await this.sourcingLocationsService.save(
+            newSupplerInterventionLocations,
+          );
 
         newScenarioIntervention.newSourcingLocations =
           newInterventionSourcingLocations;
-      }
+        break;
 
-      case SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY: {
-        const newInterventionLocations: CreateSourcingLocationDto[] =
+      case SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY:
+        const newEfficiencyChangeInterventionLocations: CreateSourcingLocationDto[] =
           await this.createSourcingLocationsObjectsForIntervention(
             actualSourcingDataWithTonnage,
             CANCELED_OR_REPLACING_BY_INTERVENTION.REPLACING,
           );
 
-        const newInterventionSourcingLocations: SourcingLocation[] =
-          await this.sourcingLocationsService.save(newInterventionLocations);
-
+        newInterventionSourcingLocations =
+          await this.sourcingLocationsService.save(
+            newEfficiencyChangeInterventionLocations,
+          );
         newScenarioIntervention.newSourcingLocations =
           newInterventionSourcingLocations;
-      }
-
-      /**
-       * After both sets of new Sourcing Locations with Sourcing record for the start year has been created
-       * and added as relations to the new Scenario Intervention, saving the new Scenario intervention in database
-       */
+        break;
     }
+
+    /**
+     * After both sets of new Sourcing Locations with Sourcing record for the start year has been created
+     * and added as relations to the new Scenario Intervention, saving the new Scenario intervention in database
+     */
 
     return newScenarioIntervention.save();
   }
@@ -260,7 +268,7 @@ export class ScenarioInterventionsService extends AppBaseService<
     const geoCodedLocationSample: SourcingData[] =
       await this.geoCodingService.geoCodeLocations(locationSampleForGeoCoding);
 
-    const newInterventionLocations: SourcingData[] = [];
+    const sourcingLocationsToSave: SourcingData[] = [];
     for (const location of sourcingData) {
       const newInterventionLocation: SourcingData = {
         materialId: location.materialId,
@@ -277,9 +285,9 @@ export class ScenarioInterventionsService extends AppBaseService<
           CANCELED_OR_REPLACING_BY_INTERVENTION.REPLACING,
       };
 
-      newInterventionLocations.push(newInterventionLocation);
+      sourcingLocationsToSave.push(newInterventionLocation);
     }
-    return newInterventionLocations;
+    return sourcingLocationsToSave;
   }
 
   /**

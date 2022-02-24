@@ -12,11 +12,10 @@ import { ScenarioInterventionRepository } from 'modules/scenario-interventions/s
 import {
   createAdminRegion,
   createBusinessUnit,
+  createGeoRegion,
   createMaterial,
   createScenario,
   createScenarioIntervention,
-  createSourcingLocation,
-  createSourcingRecord,
   createSupplier,
 } from '../../entity-mocks';
 import { saveUserAndGetToken } from '../../utils/userAuth';
@@ -35,6 +34,15 @@ import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-loc
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
+import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
+import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
+import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
+import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import {
+  createInterventionPreconditions,
+  ScenarioInterventionPreconditions,
+} from '../../utils/scenario-interventions-preconditions';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -46,10 +54,44 @@ const expectedJSONAPIAttributes: string[] = [
 ];
 
 describe('ScenarioInterventionsModule (e2e)', () => {
+  const geoCodingServiceMock = {
+    geoCodeLocations: async (sourcingData: any): Promise<any> => {
+      const geoRegion: GeoRegion | undefined =
+        await geoRegionRepository.findOne({
+          name: 'ABC',
+        });
+      if (geoRegion === undefined) {
+        throw new Error('Could not find expected mock GeoRegion with name=ABC');
+      }
+      const adminRegion: AdminRegion | undefined =
+        await adminRegionRepository.findOne({
+          geoRegionId: geoRegion.id,
+        });
+      if (adminRegion === undefined) {
+        throw new Error(
+          'Could not find expected mock AdminRegion for GeoRegion with name=ABC',
+        );
+      }
+
+      return sourcingData
+        .filter(
+          (each: SourcingData | { locationType: '#N/A' }) =>
+            each.locationType !== '#N/A',
+        )
+        .map((each: SourcingData) => ({
+          ...each,
+          adminRegionId: adminRegion.id,
+          geoRegionId: geoRegion.id,
+        }));
+    },
+  };
+
   let app: INestApplication;
   let scenarioInterventionRepository: ScenarioInterventionRepository;
   let sourcingLocationRepository: SourcingLocationRepository;
   let sourcingRecordRepository: SourcingRecordRepository;
+  let adminRegionRepository: AdminRegionRepository;
+  let geoRegionRepository: GeoRegionRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
@@ -60,7 +102,10 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         SourcingLocationsModule,
         SourcingRecordsModule,
       ],
-    }).compile();
+    })
+      .overrideProvider(GeoCodingService)
+      .useValue(geoCodingServiceMock)
+      .compile();
 
     scenarioInterventionRepository =
       moduleFixture.get<ScenarioInterventionRepository>(
@@ -72,6 +117,11 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     sourcingRecordRepository = moduleFixture.get<SourcingRecordRepository>(
       SourcingRecordRepository,
     );
+    adminRegionRepository = moduleFixture.get<AdminRegionRepository>(
+      AdminRegionRepository,
+    );
+    geoRegionRepository =
+      moduleFixture.get<GeoRegionRepository>(GeoRegionRepository);
 
     app = getApp(moduleFixture);
     await app.init();
@@ -82,6 +132,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     await sourcingLocationRepository.delete({});
     await sourcingRecordRepository.delete({});
     await scenarioInterventionRepository.delete({});
+    await adminRegionRepository.delete({});
+    await geoRegionRepository.delete({});
   });
 
   afterAll(async () => {
@@ -89,153 +141,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   });
 
   describe('Scenario interventions - Creating intervention of type - Change of production efficiency', () => {
-    test('Create a scenario intervention of type Change of production efficiency with start year for which there is no sourcing data, should return an error', async () => {
-      const scenario: Scenario = await createScenario();
-      const material: Material = await createMaterial();
-      const supplier: Supplier = await createSupplier();
-      const adminRegion: AdminRegion = await createAdminRegion();
-      const businessUnit: BusinessUnit = await createBusinessUnit();
-
-      const sourcingLocation: SourcingLocation = await createSourcingLocation({
-        materialId: material.id,
-        t1SupplierId: supplier.id,
-        businessUnitId: businessUnit.id,
-        adminRegionId: adminRegion.id,
-      });
-
-      await createSourcingRecord({
-        sourcingLocationId: sourcingLocation.id,
-        year: 2018,
-        tonnage: 500,
-      });
-
-      const response = await request(app.getHttpServer())
-        .post('/api/v1/scenario-interventions')
-        .set('Authorization', `Bearer ${jwtToken}`)
-        .send({
-          title: 'test scenario intervention',
-          startYear: 2025,
-          percentage: 50,
-          scenarioId: scenario.id,
-          materialsIds: [material.id],
-          suppliersIds: [supplier.id],
-          businessUnitsIds: [businessUnit.id],
-          adminRegionsIds: [adminRegion.id],
-          type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
-          newIndicatorCoefficients:
-            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
-        });
-
-      expect(HttpStatus.BAD_REQUEST);
-      expect(response.body.errors[0].title).toEqual(
-        'No actual data for requested filters',
-      );
-    });
-
-    test('Create a scenario intervention of type Change of production efficiency, when there are no sourcing locations matching the filters, should return an error', async () => {
-      const scenario: Scenario = await createScenario();
-
-      const material1: Material = await createMaterial();
-      const supplier1: Supplier = await createSupplier();
-      const adminRegion1: AdminRegion = await createAdminRegion();
-      const businessUnit1: BusinessUnit = await createBusinessUnit();
-
-      const material2: Material = await createMaterial();
-      const supplier2: Supplier = await createSupplier();
-      const adminRegion2: AdminRegion = await createAdminRegion();
-      const businessUnit2: BusinessUnit = await createBusinessUnit();
-
-      // Creating Sourcing Location:
-
-      const sourcingLocation1: SourcingLocation = await createSourcingLocation({
-        materialId: material1.id,
-        t1SupplierId: supplier1.id,
-        businessUnitId: businessUnit1.id,
-        adminRegionId: adminRegion1.id,
-      });
-
-      await createSourcingRecord({
-        sourcingLocationId: sourcingLocation1.id,
-        year: 2018,
-        tonnage: 500,
-      });
-
-      const sourcingLocation2: SourcingLocation = await createSourcingLocation({
-        materialId: material2.id,
-        t1SupplierId: supplier2.id,
-        businessUnitId: businessUnit2.id,
-        adminRegionId: adminRegion2.id,
-      });
-
-      await createSourcingRecord({
-        sourcingLocationId: sourcingLocation2.id,
-        year: 2015,
-        tonnage: 600,
-      });
-
-      const response = await request(app.getHttpServer())
-        .post('/api/v1/scenario-interventions')
-        .set('Authorization', `Bearer ${jwtToken}`)
-        .send({
-          title: 'test scenario intervention',
-          startYear: 2015,
-          percentage: 50,
-          scenarioId: scenario.id,
-          materialsIds: [material1.id],
-          suppliersIds: [supplier2.id],
-          businessUnitsIds: [businessUnit2.id],
-          adminRegionsIds: [adminRegion2.id],
-          type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
-          newIndicatorCoefficients:
-            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
-        });
-
-      expect(HttpStatus.BAD_REQUEST);
-      expect(response.body.errors[0].title).toEqual(
-        'No actual data for requested filters',
-      );
-    });
-
     test('Create a scenario intervention of type Change of production efficiency, with correct data should be successful', async () => {
-      const scenario: Scenario = await createScenario();
-
-      const material1: Material = await createMaterial();
-      const supplier1: Supplier = await createSupplier();
-      const adminRegion1: AdminRegion = await createAdminRegion();
-      const businessUnit1: BusinessUnit = await createBusinessUnit();
-
-      const material2: Material = await createMaterial();
-      const supplier2: Supplier = await createSupplier();
-      const adminRegion2: AdminRegion = await createAdminRegion();
-      const businessUnit2: BusinessUnit = await createBusinessUnit();
-
-      // Creating Sourcing Location:
-
-      const sourcingLocation1: SourcingLocation = await createSourcingLocation({
-        materialId: material1.id,
-        t1SupplierId: supplier1.id,
-        businessUnitId: businessUnit1.id,
-        adminRegionId: adminRegion1.id,
-      });
-
-      await createSourcingRecord({
-        sourcingLocationId: sourcingLocation1.id,
-        year: 2018,
-        tonnage: 500,
-      });
-
-      const sourcingLocation2: SourcingLocation = await createSourcingLocation({
-        materialId: material2.id,
-        t1SupplierId: supplier2.id,
-        businessUnitId: businessUnit2.id,
-        adminRegionId: adminRegion2.id,
-      });
-
-      await createSourcingRecord({
-        sourcingLocationId: sourcingLocation2.id,
-        year: 2015,
-        tonnage: 600,
-      });
+      const preconditions: ScenarioInterventionPreconditions =
+        await createInterventionPreconditions();
 
       const response = await request(app.getHttpServer())
         .post('/api/v1/scenario-interventions')
@@ -244,11 +152,11 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           title: 'test scenario intervention',
           startYear: 2018,
           percentage: 50,
-          scenarioId: scenario.id,
-          materialsIds: [material1.id],
-          suppliersIds: [supplier1.id],
-          businessUnitsIds: [businessUnit1.id],
-          adminRegionsIds: [adminRegion1.id],
+          scenarioId: preconditions.scenario.id,
+          materialsIds: [preconditions.material1.id],
+          suppliersIds: [preconditions.supplier1.id],
+          businessUnitsIds: [preconditions.businessUnit1.id],
+          adminRegionsIds: [preconditions.adminRegion1.id],
           type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           newIndicatorCoefficients:
             '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
@@ -289,6 +197,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       expect(canceledSourcingLocations[0].scenarioInterventionId).toEqual(
         response.body.data.id,
       );
+      expect(canceledSourcingLocations[0].materialId).toEqual(
+        preconditions.material1.id,
+      );
+      expect(canceledSourcingLocations[0].adminRegionId).toEqual(
+        preconditions.adminRegion1.id,
+      );
 
       const canceledSourcingRecords: SourcingRecord[] =
         await sourcingRecordRepository.find({
@@ -312,6 +226,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       expect(newSourcingLocations[0].scenarioInterventionId).toEqual(
         response.body.data.id,
       );
+      expect(newSourcingLocations[0].adminRegionId).toEqual(
+        preconditions.adminRegion1.id,
+      );
 
       const newSourcingRecords: SourcingRecord[] =
         await sourcingRecordRepository.find({
@@ -322,6 +239,287 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(newSourcingRecords.length).toBe(1);
       expect(newSourcingRecords[0].tonnage).toEqual('500');
+    });
+  });
+
+  describe('Scenario interventions - Creating intervention of type - Change of supplier location', () => {
+    test('Create a scenario intervention of type Change of supplier location, with correct data should be successful', async () => {
+      const preconditions: ScenarioInterventionPreconditions =
+        await createInterventionPreconditions();
+
+      const geoRegion: GeoRegion = await createGeoRegion();
+      await createAdminRegion({
+        isoA2: 'ABC',
+        geoRegion,
+      });
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'scenario intervention supplier',
+          startYear: 2018,
+          percentage: 50,
+          scenarioId: preconditions.scenario.id,
+          materialsIds: [preconditions.material1.id],
+          suppliersIds: [preconditions.supplier1.id],
+          businessUnitsIds: [preconditions.businessUnit1.id],
+          adminRegionsIds: [preconditions.adminRegion1.id],
+          type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+          newCountryInput: 'Spain',
+          newIndicatorCoefficients:
+            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
+        });
+
+      expect(HttpStatus.CREATED);
+
+      const createdScenarioIntervention =
+        await scenarioInterventionRepository.findOne(response.body.data.id);
+
+      if (!createdScenarioIntervention) {
+        throw new Error('Error loading created Scenario intervention');
+      }
+
+      expect(createdScenarioIntervention.title).toEqual(
+        'scenario intervention supplier',
+      );
+
+      expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
+
+      const allSourcingLocations: [SourcingLocation[], number] =
+        await sourcingLocationRepository.findAndCount();
+      const allSourcingRecords: [SourcingRecord[], number] =
+        await sourcingRecordRepository.findAndCount();
+
+      expect(allSourcingLocations[1]).toEqual(4);
+      expect(allSourcingRecords[1]).toEqual(4);
+
+      const canceledSourcingLocations: SourcingLocation[] =
+        await sourcingLocationRepository.find({
+          where: {
+            typeAccordingToIntervention:
+              'Sourcing location canceled by intervention',
+          },
+        });
+
+      expect(canceledSourcingLocations.length).toBe(1);
+      expect(canceledSourcingLocations[0].scenarioInterventionId).toEqual(
+        response.body.data.id,
+      );
+      expect(canceledSourcingLocations[0].materialId).toEqual(
+        preconditions.material1.id,
+      );
+      expect(canceledSourcingLocations[0].adminRegionId).toEqual(
+        preconditions.adminRegion1.id,
+      );
+
+      const canceledSourcingRecords: SourcingRecord[] =
+        await sourcingRecordRepository.find({
+          where: {
+            sourcingLocationId: canceledSourcingLocations[0].id,
+          },
+        });
+
+      expect(canceledSourcingRecords.length).toBe(1);
+      expect(canceledSourcingRecords[0].tonnage).toEqual('500');
+
+      const newSourcingLocations: SourcingLocation[] =
+        await sourcingLocationRepository.find({
+          where: {
+            typeAccordingToIntervention:
+              'New sourcing location of the intervention',
+          },
+        });
+
+      expect(newSourcingLocations.length).toBe(1);
+      expect(newSourcingLocations[0].scenarioInterventionId).toEqual(
+        response.body.data.id,
+      );
+      expect(newSourcingLocations[0].materialId).toEqual(
+        preconditions.material1.id,
+      );
+      expect(newSourcingLocations[0].adminRegionId).not.toEqual(
+        preconditions.adminRegion1.id,
+      );
+      expect(newSourcingLocations[0].geoRegionId).toEqual(geoRegion.id);
+
+      const newSourcingRecords: SourcingRecord[] =
+        await sourcingRecordRepository.find({
+          where: {
+            sourcingLocationId: canceledSourcingLocations[0].id,
+          },
+        });
+
+      expect(newSourcingRecords.length).toBe(1);
+      expect(newSourcingRecords[0].tonnage).toEqual('500');
+    });
+  });
+
+  describe('Scenario interventions - Creating intervention of type - Change of material', () => {
+    test('Create a scenario intervention of type Change of material, with correct data should be successful', async () => {
+      const preconditions: ScenarioInterventionPreconditions =
+        await createInterventionPreconditions();
+
+      const geoRegion: GeoRegion = await createGeoRegion();
+      await createAdminRegion({
+        isoA2: 'ABC',
+        geoRegion,
+      });
+
+      console.log(preconditions);
+
+      const replacingMaterial: Material = await createMaterial();
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'scenario intervention material',
+          startYear: 2018,
+          percentage: 50,
+          scenarioId: preconditions.scenario.id,
+          materialsIds: [
+            preconditions.material1.id,
+            preconditions.material2.id,
+          ],
+          suppliersIds: [
+            preconditions.supplier1.id,
+            preconditions.supplier2.id,
+          ],
+          businessUnitsIds: [
+            preconditions.businessUnit1.id,
+            preconditions.businessUnit2.id,
+          ],
+          adminRegionsIds: [
+            preconditions.adminRegion1.id,
+            preconditions.adminRegion2.id,
+          ],
+          type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+          newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+          newCountryInput: 'Spain',
+          newMaterialId: replacingMaterial.id,
+          newIndicatorCoefficients:
+            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
+        });
+
+      expect(HttpStatus.CREATED);
+
+      const createdScenarioIntervention =
+        await scenarioInterventionRepository.findOne(response.body.data.id);
+
+      if (!createdScenarioIntervention) {
+        throw new Error('Error loading created Scenario intervention');
+      }
+
+      expect(createdScenarioIntervention.title).toEqual(
+        'scenario intervention material',
+      );
+
+      expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
+
+      const allSourcingLocations: [SourcingLocation[], number] =
+        await sourcingLocationRepository.findAndCount();
+      console.log(allSourcingLocations);
+      const allSourcingRecords: [SourcingRecord[], number] =
+        await sourcingRecordRepository.findAndCount();
+
+      expect(allSourcingLocations[1]).toEqual(5);
+      expect(allSourcingRecords[1]).toEqual(5);
+
+      const canceledSourcingLocations: SourcingLocation[] =
+        await sourcingLocationRepository.find({
+          where: {
+            typeAccordingToIntervention:
+              'Sourcing location canceled by intervention',
+          },
+        });
+
+      expect(canceledSourcingLocations.length).toBe(2);
+
+      const newSourcingLocations: SourcingLocation[] =
+        await sourcingLocationRepository.find({
+          where: {
+            typeAccordingToIntervention:
+              'New sourcing location of the intervention',
+          },
+        });
+
+      expect(newSourcingLocations.length).toBe(1);
+      expect(newSourcingLocations[0].scenarioInterventionId).toEqual(
+        response.body.data.id,
+      );
+      expect(newSourcingLocations[0].materialId).toEqual(replacingMaterial.id);
+      expect(newSourcingLocations[0].adminRegionId).not.toEqual(
+        preconditions.adminRegion1.id,
+      );
+      expect(newSourcingLocations[0].geoRegionId).toEqual(geoRegion.id);
+
+      const newSourcingRecords: SourcingRecord[] =
+        await sourcingRecordRepository.find({
+          where: {
+            sourcingLocationId: newSourcingLocations[0].id,
+          },
+        });
+
+      expect(newSourcingRecords.length).toBe(1);
+      expect(newSourcingRecords[0].tonnage).toEqual('1100');
+    });
+  });
+
+  describe('Scenario interventions - Missing data for requested filters', () => {
+    test('Create a scenario intervention of type Change of production efficiency with start year for which there is no sourcing data, should return an error', async () => {
+      const preconditions: ScenarioInterventionPreconditions =
+        await createInterventionPreconditions();
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'test scenario intervention',
+          startYear: 2025,
+          percentage: 50,
+          scenarioId: preconditions.scenario.id,
+          materialsIds: [preconditions.material1.id],
+          suppliersIds: [preconditions.supplier1.id],
+          businessUnitsIds: [preconditions.businessUnit1.id],
+          adminRegionsIds: [preconditions.adminRegion1.id],
+          type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          newIndicatorCoefficients:
+            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
+        });
+
+      expect(HttpStatus.BAD_REQUEST);
+      expect(response.body.errors[0].title).toEqual(
+        'No actual data for requested filters',
+      );
+    });
+
+    test('Create a scenario intervention of type Change of production efficiency, when there are no sourcing locations matching the filters, should return an error', async () => {
+      const preconditions: ScenarioInterventionPreconditions =
+        await createInterventionPreconditions();
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'test scenario intervention',
+          startYear: 2015,
+          percentage: 50,
+          scenarioId: preconditions.scenario.id,
+          materialsIds: [preconditions.material1.id],
+          suppliersIds: [preconditions.supplier2.id],
+          businessUnitsIds: [preconditions.businessUnit2.id],
+          adminRegionsIds: [preconditions.adminRegion2.id],
+          type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          newIndicatorCoefficients:
+            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
+        });
+
+      expect(HttpStatus.BAD_REQUEST);
+      expect(response.body.errors[0].title).toEqual(
+        'No actual data for requested filters',
+      );
     });
   });
 

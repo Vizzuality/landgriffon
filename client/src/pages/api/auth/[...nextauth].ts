@@ -1,8 +1,6 @@
 import NextAuth from 'next-auth';
-import JWT from 'jsonwebtoken';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import authService from 'services/authentication';
-import type { NextApiRequest, NextApiResponse } from 'next';
 import type { NextAuthOptions } from 'next-auth';
 
 type CustomCredentials = Credential & {
@@ -11,39 +9,6 @@ type CustomCredentials = Credential & {
 };
 
 const MAX_AGE = 2 * 60 * 60; // 2 hours
-const SESSION_BUFFER_TIME = 10 * 60; // 10 minutes
-
-/**
- * Takes a token, and returns a new token
- */
-async function refreshAccessToken(token) {
-  try {
-    const refreshTokenResponse = await authService.request({
-      url: '/refresh-token',
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token.accessToken}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    const { data, status } = refreshTokenResponse;
-
-    if (status !== 201) {
-      throw new Error(data);
-    }
-
-    return {
-      ...token,
-      accessToken: data.accessToken,
-    };
-  } catch (error) {
-    return {
-      ...token,
-      error: 'RefreshAccessTokenError',
-    };
-  }
-}
 
 const options: NextAuthOptions = {
   /**
@@ -52,7 +17,7 @@ const options: NextAuthOptions = {
    */
   pages: {
     signIn: '/auth/sign-in',
-    // error: '/auth/sign-in',
+    error: '/auth/sign-in',
   },
 
   session: {
@@ -77,7 +42,7 @@ const options: NextAuthOptions = {
 
         // Request to sign in
         const signInRequest = await authService.request({
-          url: '/auth/sign-in',
+          url: '/sign-in',
           method: 'POST',
           data: { username, password },
           headers: { 'Content-Type': 'application/json' },
@@ -85,18 +50,16 @@ const options: NextAuthOptions = {
 
         const { data, status } = signInRequest;
 
-        if (status === 201) {
-          return data;
-        }
+        if (status === 201) return data;
 
-        throw new Error(data);
+        return null;
       },
     }),
   ],
 
   callbacks: {
     // Assigning encoded token from API to token created in the session
-    async jwt({ token, user }) {
+    jwt({ token, account: user }) {
       const newToken = { ...token };
 
       if (user) {
@@ -104,39 +67,18 @@ const options: NextAuthOptions = {
         newToken.accessToken = accessToken as string;
       }
 
-      // Use custom JWT decode, otherwise "exp date" will be increasing beyond the infinite
-      const { exp } = JWT.decode(newToken.accessToken as string) as { exp: number };
-
-      const expDate = new Date(exp * 1000);
-
-      // Return previous token if the access token has not expired yet
-      const remainingTime = expDate.getTime() - Date.now();
-      const shouldRefresh = remainingTime < SESSION_BUFFER_TIME * 1000 && remainingTime > 0;
-
-      // Refresh token
-      if (shouldRefresh) return refreshAccessToken(newToken);
-
       return newToken;
     },
 
     // Extending session object
-    async session({ session, token }) {
-      const newSession = session;
-      newSession.accessToken = token.accessToken;
-      return newSession;
+    session({ session, token }) {
+      session.accessToken = token.accessToken;
+      return session;
     },
-
-    // async redirect({ url }) {
-    //   // By default it should be redirect to /analysis
-    //   if (url.includes('/sign-in') || url.includes('/sign-up')) {
-    //     return '/analysis';
-    //   }
-    //   return url;
-    // },
   },
 
   events: {
-    async signOut(message) {
+    signOut(message) {
       console.log('sign out message: ', message);
       // After sign-out expire token in the API
       // if (session) {
@@ -153,7 +95,4 @@ const options: NextAuthOptions = {
   },
 };
 
-const response = (req: NextApiRequest, res: NextApiResponse): unknown =>
-  NextAuth(req, res, options);
-
-export default response;
+export default NextAuth(options);

@@ -551,9 +551,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           'each value in businessUnitsIds must be a UUID',
           'suppliersIds should not be empty',
           'each value in suppliersIds must be a UUID',
-          'newIndicatorCoefficients must be a json string',
           'newIndicatorCoefficients should not be empty',
-          'newIndicatorCoefficients must be a string',
+          'newIndicatorCoefficients must be a json string',
         ],
       );
     });

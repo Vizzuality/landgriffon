@@ -73,9 +73,8 @@ export class CreateScenarioInterventionDto {
   @ApiProperty()
   adminRegionsIds?: string[];
 
-  @IsString()
-  @IsNotEmpty()
   @IsJSON()
+  @IsNotEmpty()
   @ApiProperty()
   newIndicatorCoefficients!: JSON;
 

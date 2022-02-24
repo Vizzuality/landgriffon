@@ -13,6 +13,7 @@ import { GeocodeResponseData } from '@googlemaps/google-maps-services-js/dist/ge
 import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
 import { PointOfProductionGeocodingService } from 'modules/geo-coding/strategies/point-of-production.geocoding.service';
 import { UnknownLocationService } from 'modules/geo-coding/strategies/unknown-location.geocoding.service';
+import { GeoCodingAbstractClass } from '../../../src/modules/geo-coding/geo-coding-abstract-class';
 
 // TODO: Re-organize properly tests. Handle all use cases
 
@@ -31,7 +32,7 @@ describe('GeoCoding Service (Integration Testing)', () => {
       imports: [AppModule, GeoCodingModule],
     }).compile();
     adminRegionRepository = moduleFixture.get(AdminRegionRepository);
-    geoCodingService = moduleFixture.get(GeoCodingService);
+    geoCodingService = moduleFixture.get(GeoCodingAbstractClass);
     adminRegionService = moduleFixture.get(AdminRegionsService);
     geoRegionRepository = moduleFixture.get(GeoRegionRepository);
     sourcingLocationService = moduleFixture.get(SourcingLocationsService);

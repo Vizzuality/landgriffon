@@ -199,7 +199,6 @@ export class ScenarioInterventionsService extends AppBaseService<
   async createSourcingLocationsDataForNewMaterialIntervention(
     dto: CreateScenarioInterventionDto,
     sourcingData: SourcingLocationWithRecord[],
-    //newScenarioInterventionId: string,
   ): Promise<SourcingData[]> {
     const tonnage: number = sourcingData.reduce(
       (previous: any, current: any) => previous + Number(current.tonnage),
@@ -238,8 +237,8 @@ export class ScenarioInterventionsService extends AppBaseService<
   }
 
   /**
-   * In case of New Supplier Intervention , new 'replacing' Sourcing Location will be created for each of the canceled Sourcing location.
-   * Each of the new Sourcing location will have the same materialId as the relative  canceled one, but all supplier location data will be new
+   * In case of New Supplier Intervention , new 'replacing' Sourcing Location will be created for each of the canceled Sourcing Locations.
+   * Each of the new Intervention's Sourcing Locations will have the same materialId as the relative canceled one, but all supplier location data will be new
    * (received from dto and geocoded to add new AdminRegion and GeoRegion)
    */
 
@@ -268,7 +267,7 @@ export class ScenarioInterventionsService extends AppBaseService<
     const geoCodedLocationSample: SourcingData[] =
       await this.geoCodingService.geoCodeLocations(locationSampleForGeoCoding);
 
-    const sourcingLocationsToSave: SourcingData[] = [];
+    const newSourcingLocationData: SourcingData[] = [];
     for (const location of sourcingData) {
       const newInterventionLocation: SourcingData = {
         materialId: location.materialId,
@@ -285,24 +284,24 @@ export class ScenarioInterventionsService extends AppBaseService<
           CANCELED_OR_REPLACING_BY_INTERVENTION.REPLACING,
       };
 
-      sourcingLocationsToSave.push(newInterventionLocation);
+      newSourcingLocationData.push(newInterventionLocation);
     }
-    return sourcingLocationsToSave;
+    return newSourcingLocationData;
   }
 
   /**
-   * This method is used when we need to create the Sourcing Locations of type canceled or for Intervention type "Change production efficiency".
-   * Canceled Sourcing Locations of the Intervention are 'copies' of teh existing Sourcing Locations, found through dto filters received from user, but with reference to InterventionId
+   * This method is used when we need to generate the Sourcing Locations Data of type canceled or for Intervention type "Change production efficiency".
+   * Canceled Sourcing Locations of the Intervention are 'copies' of the existing Sourcing Locations, found through dto filters received from user, but with reference to InterventionId
    * and intervention sourcing location type CANCELED
    * New Sourcing Locations of Intervention of type "Change production efficiency" have the same format (copies with references to intervention and type), since changes of the intervention
-   * do not affect material, neither supplier location - changes of coefficients will be applied in the moment of calculating new impact of the i¡Intervention
+   * do not affect material, neither supplier location - changes of coefficients will be applied in the moment of calculating new impact of the Intervention
    */
 
   async createSourcingLocationsObjectsForIntervention(
     sourcingData: SourcingLocationWithRecord[],
     canceledOrReplacing: CANCELED_OR_REPLACING_BY_INTERVENTION,
   ): Promise<SourcingData[]> {
-    const sourcingLocationsToSave: SourcingData[] = [];
+    const newSourcingLocationData: SourcingData[] = [];
 
     for (const location of sourcingData) {
       const newCancelledInterventionLocation: SourcingData = {
@@ -322,9 +321,9 @@ export class ScenarioInterventionsService extends AppBaseService<
         typeAccordingToIntervention: canceledOrReplacing,
       };
 
-      sourcingLocationsToSave.push(newCancelledInterventionLocation);
+      newSourcingLocationData.push(newCancelledInterventionLocation);
     }
 
-    return sourcingLocationsToSave;
+    return newSourcingLocationData;
   }
 }

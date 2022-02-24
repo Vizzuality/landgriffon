@@ -30,7 +30,7 @@ const THEMES_LABEL = {
 
 const THEMES_WRAPPER = {
   default:
-    'flex-wrap bg-white relative border border-gray-300 rounded-md shadow-sm py-2 pr-10 pl-3 cursor-pointer',
+    'flex-wrap w-full bg-white relative border border-gray-300 rounded-md shadow-sm py-2 pr-10 pl-3 cursor-pointer',
   primary: 'border-b-2 border-green-700 max-w-[190px] overflow-x-hidden truncate text-ellipsis',
 };
 

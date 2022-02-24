@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import {
   GeocodeResponse,
+  Geocoder,
   GeocoderInterface,
 } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { AddressComponent } from '@googlemaps/google-maps-services-js';
@@ -17,7 +18,7 @@ import { AddressComponent } from '@googlemaps/google-maps-services-js';
 @Injectable()
 export abstract class BaseStrategy {
   constructor(
-    protected readonly geocoder: GeocoderInterface,
+    @Inject(Geocoder) protected readonly geocoder: GeocoderInterface,
     protected readonly adminRegionService: AdminRegionsService,
     protected readonly geoRegionService: GeoRegionsService,
     protected readonly sourcingLocationService: SourcingLocationsService,

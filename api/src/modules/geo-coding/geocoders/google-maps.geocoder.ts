@@ -7,9 +7,12 @@ import {
   GeocodeResponseData,
 } from '@googlemaps/google-maps-services-js/dist/geocode/geocode';
 import { inspect } from 'util';
-import { GeocodeArgs } from 'modules/geo-coding/geocoders/geocoder.interface';
+import {
+  GeocodeArgs,
+  GeocoderInterface,
+} from 'modules/geo-coding/geocoders/geocoder.interface';
 
-export class GoogleMapsGeocoder {
+export class GoogleMapsGeocoder implements GeocoderInterface {
   private logger: Logger = new Logger(GoogleMapsGeocoder.name);
   private readonly client: ClientType;
   private readonly apiKey: string = config.get('geolocation.gmapsApiKey');

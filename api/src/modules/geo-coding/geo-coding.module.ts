@@ -8,7 +8,7 @@ import { PointOfProductionGeocodingService } from 'modules/geo-coding/strategies
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
-import { GeocoderInterface } from 'modules/geo-coding/geocoders/geocoder.interface';
+import { Geocoder } from 'modules/geo-coding/geocoders/geocoder.interface';
 import {
   CacheGeocoder,
   GEOCODING_CACHE_ENABLED,
@@ -46,7 +46,7 @@ const geocodingCacheEnabled: boolean =
     },
     GoogleMapsGeocoder,
     {
-      provide: GeocoderInterface,
+      provide: Geocoder,
       useClass: CacheGeocoder,
     },
     {

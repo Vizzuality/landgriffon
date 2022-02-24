@@ -1,5 +1,7 @@
 import { GeocodeResult } from '@googlemaps/google-maps-services-js/dist/common';
 
+export const Geocoder: unique symbol = Symbol();
+
 export interface GeocodeArgs {
   address?: string;
   latlng?: string;
@@ -10,10 +12,10 @@ export interface GeocodeResponse {
   results: GeocodeResult[];
 }
 
-export abstract class GeocoderInterface {
-  abstract geocode(args: GeocodeArgs): Promise<GeocodeResponse>;
+export interface GeocoderInterface {
+  geocode(args: GeocodeArgs): Promise<GeocodeResponse>;
 
-  abstract reverseGeocode(coordinates: {
+  reverseGeocode(coordinates: {
     lat: number;
     lng: number;
   }): Promise<GeocodeResponse>;

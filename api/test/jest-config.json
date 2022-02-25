@@ -31,5 +31,6 @@
   "coveragePathIgnorePatterns": [
     "<rootDir>/node_modules/",
     "<rootDir>/test/"
-  ]
+  ],
+  "testTimeout": 10000
 }

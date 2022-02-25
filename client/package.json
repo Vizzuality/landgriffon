@@ -11,7 +11,7 @@
     "prettier": "prettier --config .prettierrc.json --check --write \"./src/**/*.{tsx,jsx,ts,js}\"",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run --headless --browser chrome",
-    "test": "start-server-and-test 'yarn build && yarn start' 3000 'nyc --reporter nyc-report-lcov-absolute yarn cypress:run cypress:run'"
+    "test": "start-server-and-test 'yarn build && yarn start' http://localhost:3000/auth/sign-in 'nyc --reporter nyc-report-lcov-absolute yarn cypress:run'"
   },
   "dependencies": {
     "@deck.gl/core": "8.5.8",
@@ -100,15 +100,15 @@
     "@types/react": "^17.0.5",
     "@typescript-eslint/eslint-plugin": "^4.23.0",
     "@typescript-eslint/parser": "^4.0.0",
-    "cypress": "8.2.0",
+    "cypress": "8.7.0",
     "eslint": "^7.2.0",
     "eslint-config-next": "12.0.2",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
     "istanbul-reports": "^3.0.0",
-    "nyc-report-lcov-absolute": "^1.0.0",
+    "nyc-report-lcov-absolute": "1.0.0",
     "prettier": "^2.3.1",
-    "start-server-and-test": "1.13.1",
+    "start-server-and-test": "1.14.0",
     "typescript": "4.4.4"
   }
 }

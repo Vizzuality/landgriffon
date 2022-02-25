@@ -81,29 +81,29 @@ const Material = () => {
 
         <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
           <div className="block font-medium text-gray-700">
-            Tier 1 supplier <span className="text-gray-500">(optional)</span>
-            <div className="mt-1">
-              <Select
-                loading={isLoadingProducers}
-                current={currentProducer}
-                options={optionsProducers}
-                placeholder="Select"
-                onChange={() => onChange('producer', currentProducer.value)}
-              />
-            </div>
+            <Label className="mb-1">
+              Tier 1 supplier <span className="text-gray-500">(optional)</span>
+            </Label>
+            <Select
+              loading={isLoadingProducers}
+              current={currentProducer}
+              options={optionsProducers}
+              placeholder="Select"
+              onChange={() => onChange('producer', currentProducer.value)}
+            />
           </div>
 
           <div className="block font-medium text-gray-700">
-            Producer <span className="text-gray-500">(optional)</span>
-            <div className="mt-1">
-              <Select
-                loading={isLoadingProducers}
-                current={currentProducer}
-                options={optionsProducers}
-                placeholder="Select"
-                onChange={() => onChange('producer', currentProducer.value)}
-              />
-            </div>
+            <Label className="mb-1">
+              Producer <span className="text-gray-500">(optional)</span>
+            </Label>
+            <Select
+              loading={isLoadingProducers}
+              current={currentProducer}
+              options={optionsProducers}
+              placeholder="Select"
+              onChange={() => onChange('producer', currentProducer.value)}
+            />
           </div>
         </div>
       </fieldset>
@@ -113,44 +113,38 @@ const Material = () => {
 
         <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
           <div className="block font-medium text-gray-700">
-            <span>Location type</span>
-            <div className="mt-1">
-              <Select
-                loading={isLoadingLocationType}
-                current={currentLocationType}
-                options={optionsLocationTypes}
-                placeholder="all LocationTypes"
-                onChange={() => onChange('all', currentLocationType.value)}
-              />
-            </div>
+            <Label className="mb-1">Location type</Label>
+            <Select
+              loading={isLoadingLocationType}
+              current={currentLocationType}
+              options={optionsLocationTypes}
+              placeholder="all LocationTypes"
+              onChange={() => onChange('all', currentLocationType.value)}
+            />
           </div>
 
           <div className="block font-medium text-gray-700">
-            <span>Country</span>
-            <div className="mt-1">
-              <Select
-                loading={isLoadingCountries}
-                current={currentCountry}
-                options={optionsCountries}
-                placeholder="All Countries"
-                onChange={() => onChange('all_countries', currentCountry.value)}
-              />
-            </div>
+            <Label className="mb-1">Country</Label>
+            <Select
+              loading={isLoadingCountries}
+              current={currentCountry}
+              options={optionsCountries}
+              placeholder="All Countries"
+              onChange={() => onChange('all_countries', currentCountry.value)}
+            />
           </div>
         </div>
 
         <Label htmlFor="address" className="mt-4">
           City / Address / Coordinates
         </Label>
-        <div className="mt-1">
-          <Input
-            className="w-full"
-            type="text"
-            name="address"
-            id="address"
-            autoComplete="given-address"
-          />
-        </div>
+        <Input
+          className="w-full"
+          type="text"
+          name="address"
+          id="address"
+          autoComplete="given-address"
+        />
       </fieldset>
     </>
   );

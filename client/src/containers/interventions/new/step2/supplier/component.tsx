@@ -97,15 +97,13 @@ const Supplier = () => {
         <Label htmlFor="address" className="mt-4">
           City / Address / Coordinates
         </Label>
-        <div className="mt-1">
-          <Input
-            className="w-full"
-            type="text"
-            name="address"
-            id="address"
-            autoComplete="given-address"
-          />
-        </div>
+        <Input
+          className="w-full"
+          type="text"
+          name="address"
+          id="address"
+          autoComplete="given-address"
+        />
       </fieldset>
     </>
   );

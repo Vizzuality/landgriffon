@@ -74,33 +74,27 @@ const GowthForm = () => {
           <Label htmlFor="business">
             Growth description <span className="text-gray-600">(optional)</span>
           </Label>
-          <div className="mt-1">
-            <Textarea id="business" name="business" rows={3} className="w-full" defaultValue="" />
-          </div>
+          <Textarea id="business" name="business" rows={3} className="w-full" defaultValue="" />
         </div>
       </fieldset>
 
       <fieldset className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2 text-sm font-medium text-gray-700">
-        <div className="mt-1">
-          <span>Business unity</span>
-          <Select
-            loading={isLoadingBusinessUnity}
-            current={currentBusinessUnity}
-            options={optionsBusiness}
-            placeholder="Select"
-            onChange={() => onChange('business_unity', currentBusinessUnity.value)}
-          />
-        </div>
-        <div className="mt-1">
-          <span>Growth rate (Linear)</span>
-          <Select
-            loading={isLoadingGrowth}
-            current={currentGrowth}
-            options={optionsGrowth}
-            placeholder="Select"
-            onChange={() => onChange('growth', currentGrowth.value)}
-          />
-        </div>
+        <Label>Business unity</Label>
+        <Select
+          loading={isLoadingBusinessUnity}
+          current={currentBusinessUnity}
+          options={optionsBusiness}
+          placeholder="Select"
+          onChange={() => onChange('business_unity', currentBusinessUnity.value)}
+        />
+        <Label>Growth rate (Linear)</Label>
+        <Select
+          loading={isLoadingGrowth}
+          current={currentGrowth}
+          options={optionsGrowth}
+          placeholder="Select"
+          onChange={() => onChange('growth', currentGrowth.value)}
+        />
       </fieldset>
     </>
   );

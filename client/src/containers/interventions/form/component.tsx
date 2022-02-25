@@ -4,6 +4,7 @@ import { useAppDispatch } from 'store/hooks';
 import { setSubContentCollapsed } from 'store/features/analysis';
 
 import Checkbox from 'components/forms/checkbox';
+import Radio from 'components/forms/radio';
 import Textarea from 'components/forms/textarea';
 import Steps from 'components/steps';
 import type { Step } from 'components/steps/types';
@@ -332,12 +333,7 @@ const InterventionForm = () => {
                 </div>
                 <div className="mt-4 space-y-4">
                   <div className="flex items-center">
-                    <input
-                      id="push_everything"
-                      name="push_notifications"
-                      type="radio"
-                      className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
-                    />
+                    <Radio id="push_everything" name="push_notifications" />
                     <label
                       htmlFor="push_everything"
                       className="ml-3 block text-sm font-medium text-gray-700"
@@ -346,12 +342,7 @@ const InterventionForm = () => {
                     </label>
                   </div>
                   <div className="flex items-center">
-                    <input
-                      id="push_email"
-                      name="push_notifications"
-                      type="radio"
-                      className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
-                    />
+                    <Radio id="push_email" name="push_notifications" />
                     <label
                       htmlFor="push_email"
                       className="ml-3 block text-sm font-medium text-gray-700"
@@ -360,12 +351,7 @@ const InterventionForm = () => {
                     </label>
                   </div>
                   <div className="flex items-center">
-                    <input
-                      id="push_nothing"
-                      name="push_notifications"
-                      type="radio"
-                      className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
-                    />
+                    <Radio id="push_nothing" name="push_notifications" />
                     <label
                       htmlFor="push_nothing"
                       className="ml-3 block text-sm font-medium text-gray-700"

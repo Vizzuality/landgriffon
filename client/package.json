@@ -79,7 +79,7 @@
     "react-dropzone": "^11.5.1",
     "react-hook-form": "7.27.1",
     "react-map-gl": "^6.1.15",
-    "react-query": "^3.16.0",
+    "react-query": "3.34.16",
     "react-redux": "^7.2.4",
     "react-spring": "^9.4.2",
     "rooks": "^5.10.0",

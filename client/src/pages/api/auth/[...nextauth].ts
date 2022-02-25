@@ -50,7 +50,17 @@ const options: NextAuthOptions = {
 
         const { data, status } = signInRequest;
 
-        if (status === 201) return data;
+        // Parsing session data
+        if (data && status === 201) {
+          return {
+            ...data.user,
+            name:
+              data.displayName ||
+              (data.user.fname && data.user.lname ? `${data.user.fname} ${data.user.lname}` : null),
+            picture: data.user.avatarDataUrl,
+            accessToken: data.accessToken,
+          };
+        }
 
         return null;
       },
@@ -59,7 +69,7 @@ const options: NextAuthOptions = {
 
   callbacks: {
     // Assigning encoded token from API to token created in the session
-    jwt({ token, account: user }) {
+    jwt({ token, user }) {
       const newToken = { ...token };
 
       if (user) {

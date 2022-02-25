@@ -1,8 +1,10 @@
 import { useCallback } from 'react';
+
 import { useAppDispatch } from 'store/hooks';
-import Steps from 'components/steps';
 import { setSubContentCollapsed } from 'store/features/analysis';
 
+import Textarea from 'components/forms/textarea';
+import Steps from 'components/steps';
 import type { Step } from 'components/steps/types';
 
 const steps: Step[] = [
@@ -64,13 +66,7 @@ const InterventionForm = () => {
                   About
                 </label>
                 <div className="mt-1">
-                  <textarea
-                    id="about"
-                    name="about"
-                    rows={3}
-                    className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border border-gray-300 rounded-md"
-                    defaultValue=""
-                  />
+                  <Textarea id="about" name="about" rows={3} className="w-full" defaultValue="" />
                 </div>
                 <p className="mt-2 text-sm text-gray-500">Write a few sentences about yourself.</p>
               </div>

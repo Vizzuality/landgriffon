@@ -31,7 +31,7 @@ const ScenariosNewContainer: React.FC = () => {
           name="title"
           id="title"
           placeholder="Untitled"
-          aria-label="sceanrio title"
+          aria-label="Scenario title"
           autoFocus
           className="flex-1 block w-full md:text-2xl sm:text-sm border-none text-gray-400 p-0 font-semibold mb-6"
         />

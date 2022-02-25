@@ -41,15 +41,13 @@ const ScenariosNewContainer: React.FC = () => {
           <Label htmlFor="description">
             Scenario description <span className="text-gray-500">(optional)</span>
           </Label>
-          <div className="mt-1">
-            <Textarea
-              id="description"
-              name="description"
-              rows={3}
-              className="w-full"
-              defaultValue=""
-            />
-          </div>
+          <Textarea
+            id="description"
+            name="description"
+            rows={3}
+            className="w-full"
+            defaultValue=""
+          />
         </div>
       </form>
       <div className="h-full flex flex-col w-auto bg-white py-6 overflow-auto relative">

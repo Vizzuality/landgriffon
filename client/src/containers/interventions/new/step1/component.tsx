@@ -7,6 +7,7 @@ import { analysis, setFilter } from 'store/features/analysis';
 
 // components
 import Input from 'components/forms/input';
+import Label from 'components/forms/label';
 import Textarea from 'components/forms/textarea';
 import Select from 'components/select';
 
@@ -124,12 +125,9 @@ const Step1: FC = () => {
     <>
       <fieldset className="sm:col-span-3 text-sm">
         <div className="mt-6">
-          <label
-            htmlFor="intervention_description"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <Label htmlFor="intervention_description">
             Intervention description <span className="text-gray-600">(optional)</span>
-          </label>
+          </Label>
           <div className="mt-1">
             <Textarea
               id="intervention_description"

@@ -2,6 +2,7 @@ import { useMemo, useCallback, useState } from 'react';
 
 // components
 import Input from 'components/forms/input';
+import Label from 'components/forms/label';
 import Select from 'components/select';
 
 // containers
@@ -93,7 +94,7 @@ const Supplier = () => {
           </div>
         </div>
 
-        <label htmlFor="address" className="mt-4 block font-medium text-gray-700">
+        <Label htmlFor="address" className="mt-4">
           City / Address / Coordinates
           <div className="mt-1">
             <Input
@@ -104,7 +105,7 @@ const Supplier = () => {
               autoComplete="given-address"
             />
           </div>
-        </label>
+        </Label>
       </fieldset>
     </>
   );

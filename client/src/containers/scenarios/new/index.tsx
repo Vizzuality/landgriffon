@@ -3,6 +3,7 @@ import { useQuery } from 'react-query';
 import { createScenario } from 'services/scenarios';
 
 import InterventionsAttributes from 'containers/scenarios/attributes';
+import Label from 'components/forms/label';
 import Textarea from 'components/forms/textarea';
 import { useAppDispatch } from 'store/hooks';
 import { setSubContentCollapsed } from 'store/features/analysis';
@@ -37,9 +38,9 @@ const ScenariosNewContainer: React.FC = () => {
         />
 
         <div className="sm:col-span-6">
-          <label htmlFor="description" className="block text-sm text-gray-900">
+          <Label htmlFor="description">
             Scenario description <span className="text-gray-500">(optional)</span>
-          </label>
+          </Label>
           <div className="mt-1">
             <Textarea
               id="description"

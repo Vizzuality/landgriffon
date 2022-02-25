@@ -3,6 +3,7 @@ import { useMemo, useCallback, useState, FC } from 'react';
 // components
 import Checkbox from 'components/forms/checkbox';
 import Input from 'components/forms/input';
+import Label from 'components/forms/label';
 
 // types
 import { setFilter } from 'store/features/analysis';
@@ -95,18 +96,14 @@ const Step2: FC = () => {
               name="landgriffon_estimates"
               onChange={() => setLandgriffonEstimates(!landgriffonEstimates)}
             />
-            <label htmlFor="landgriffon_estimates" className="ml-2 block text-sm text-gray-900">
+            <Label htmlFor="landgriffon_estimates" className="ml-2">
               Use LandGriffon location-based estimates.
-            </label>
+            </Label>
           </div>
         </div>
         <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
           {data.map((indicator) => (
-            <label
-              htmlFor={indicator.name}
-              key={indicator.id}
-              className="block font-medium text-gray-700"
-            >
+            <Label htmlFor={indicator.name} key={indicator.id}>
               {indicator.name}
               <div className="mt-1 relative">
                 <Input
@@ -121,7 +118,7 @@ const Step2: FC = () => {
                   onChange={(e) => handleChange(indicator.name, Number(e?.target?.value))}
                 />
               </div>
-            </label>
+            </Label>
           ))}
         </div>
       </fieldset>

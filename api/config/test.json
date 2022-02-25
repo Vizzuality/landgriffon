@@ -1,4 +1,9 @@
 {
+  "server": {
+    "loggerLevel": [
+      "error"
+    ]
+  },
   "db": {
     "type": "postgres",
     "host": "localhost",

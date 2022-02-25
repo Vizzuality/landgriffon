@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from 'store/hooks';
 
 // components
 import Select from 'components/select';
+import Textarea from 'components/forms/textarea';
 
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
@@ -73,13 +74,7 @@ const GowthForm = () => {
             Growth description <span className="text-gray-600">(optional)</span>
           </label>
           <div className="mt-1">
-            <textarea
-              id="business"
-              name="business"
-              rows={3}
-              className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border border-gray-300 rounded-md"
-              defaultValue=""
-            />
+            <Textarea id="business" name="business" rows={3} className="w-full" defaultValue="" />
           </div>
         </div>
       </fieldset>

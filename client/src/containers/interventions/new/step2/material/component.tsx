@@ -131,7 +131,7 @@ const Material = () => {
                 loading={isLoadingCountries}
                 current={currentCountry}
                 options={optionsCountries}
-                placeholder="all Countrys"
+                placeholder="All Countries"
                 onChange={() => onChange('all_countries', currentCountry.value)}
               />
             </div>

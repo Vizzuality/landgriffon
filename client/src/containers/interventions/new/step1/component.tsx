@@ -30,7 +30,7 @@ const Step1: FC = () => {
 
   // const { data: materials, isLoading: isLoadingMaterials } = useMaterials();
   // const { data: businesses, isLoading: isLoadingBusinesses } = useBusinesses();
-  // const { data: supliers, isLoading: isLoadingSupliers } = useSupliers();
+  // const { data: suppliers, isLoading: isLoadingSuppliers } = useSuppliers();
   // const { data: sourcingRegions, isLoading: isLoadingSourcingRegions } = useSourcingRegions();
 
   const business = 'business2';
@@ -132,8 +132,8 @@ const Step1: FC = () => {
           </label>
           <div className="mt-1">
             <Textarea
-              id="ntervention_description"
-              name="ntervention_description"
+              id="intervention_description"
+              name="intervention_description"
               rows={3}
               className="w-full"
               defaultValue=""
@@ -220,7 +220,7 @@ const Step1: FC = () => {
               options={optionsInterventionType}
               placeholder="Select"
               onChange={handleInterventionType}
-              // onChange={({ value }) => dispatch(setFilter({ id: 'interventioType', value: value }))}
+              // onChange={({ value }) => dispatch(setFilter({ id: 'interventionType', value: value }))}
             />
           </div>
         </div>

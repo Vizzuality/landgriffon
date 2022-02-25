@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { useAppDispatch } from 'store/hooks';
 import { setSubContentCollapsed } from 'store/features/analysis';
 
+import Checkbox from 'components/forms/checkbox';
 import Textarea from 'components/forms/textarea';
 import Steps from 'components/steps';
 import type { Step } from 'components/steps/types';
@@ -281,12 +282,7 @@ const InterventionForm = () => {
                 <div className="mt-4 space-y-4">
                   <div className="relative flex items-start">
                     <div className="flex items-center h-5">
-                      <input
-                        id="comments"
-                        name="comments"
-                        type="checkbox"
-                        className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                      />
+                      <Checkbox id="comments" name="comments" />
                     </div>
                     <div className="ml-3 text-sm">
                       <label htmlFor="comments" className="font-medium text-gray-700">
@@ -299,12 +295,7 @@ const InterventionForm = () => {
                   </div>
                   <div className="relative flex items-start">
                     <div className="flex items-center h-5">
-                      <input
-                        id="candidates"
-                        name="candidates"
-                        type="checkbox"
-                        className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                      />
+                      <Checkbox id="candidates" name="candidates" />
                     </div>
                     <div className="ml-3 text-sm">
                       <label htmlFor="candidates" className="font-medium text-gray-700">
@@ -317,12 +308,7 @@ const InterventionForm = () => {
                   </div>
                   <div className="relative flex items-start">
                     <div className="flex items-center h-5">
-                      <input
-                        id="offers"
-                        name="offers"
-                        type="checkbox"
-                        className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                      />
+                      <Checkbox id="offers" name="offers" />
                     </div>
                     <div className="ml-3 text-sm">
                       <label htmlFor="offers" className="font-medium text-gray-700">

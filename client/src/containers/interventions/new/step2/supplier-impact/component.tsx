@@ -1,6 +1,7 @@
 import { useMemo, useCallback, useState, FC } from 'react';
 
 // components
+import Checkbox from 'components/forms/checkbox';
 import Input from 'components/forms/input';
 
 // types
@@ -89,11 +90,9 @@ const Step2: FC = () => {
         </legend>
         <div className="flex items-center justify-between mt-6">
           <div className="flex items-center">
-            <Input
+            <Checkbox
               id="landgriffon_estimates"
               name="landgriffon_estimates"
-              type="checkbox"
-              className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
               onChange={() => setLandgriffonEstimates(!landgriffonEstimates)}
             />
             <label htmlFor="landgriffon_estimates" className="ml-2 block text-sm text-gray-900">

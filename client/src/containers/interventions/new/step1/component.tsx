@@ -7,6 +7,7 @@ import { analysis, setFilter } from 'store/features/analysis';
 
 // components
 import Input from 'components/forms/input';
+import Textarea from 'components/forms/textarea';
 import Select from 'components/select';
 
 import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
@@ -130,11 +131,11 @@ const Step1: FC = () => {
             Intervention description <span className="text-gray-600">(optional)</span>
           </label>
           <div className="mt-1">
-            <textarea
+            <Textarea
               id="ntervention_description"
               name="ntervention_description"
               rows={3}
-              className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border border-gray-300 rounded-md"
+              className="w-full"
               defaultValue=""
             />
           </div>

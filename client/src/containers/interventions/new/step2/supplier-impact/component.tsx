@@ -103,22 +103,21 @@ const Step2: FC = () => {
         </div>
         <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
           {data.map((indicator) => (
-            <Label htmlFor={indicator.name} key={indicator.id}>
-              {indicator.name}
-              <div className="mt-1 relative">
-                <Input
-                  className="w-full"
-                  type="number"
-                  name={indicator.name}
-                  id={indicator.name}
-                  unit={indicator.unit}
-                  defaultValue={landgriffonEstimates ? indicator.value : ''}
-                  value={landgriffonEstimates ? indicator.value : indicatorsValues[indicator.name]}
-                  disabled={landgriffonEstimates}
-                  onChange={(e) => handleChange(indicator.name, Number(e?.target?.value))}
-                />
-              </div>
-            </Label>
+            <div key={indicator.name}>
+              <Label htmlFor={indicator.name} key={indicator.id}>
+                {indicator.name}
+              </Label>
+              <Input
+                type="number"
+                name={indicator.name}
+                id={indicator.name}
+                unit={indicator.unit}
+                defaultValue={landgriffonEstimates ? indicator.value : ''}
+                value={landgriffonEstimates ? indicator.value : indicatorsValues[indicator.name]}
+                disabled={landgriffonEstimates}
+                onChange={(e) => handleChange(indicator.name, Number(e?.target?.value))}
+              />
+            </div>
           ))}
         </div>
       </fieldset>

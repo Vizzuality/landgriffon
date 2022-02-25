@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from 'store/hooks';
 
 // components
 import Select from 'components/select';
+import Label from 'components/forms/label';
 import Textarea from 'components/forms/textarea';
 
 // types
@@ -70,9 +71,9 @@ const GowthForm = () => {
       </p>
       <fieldset className="sm:col-span-3 text-sm">
         <div className="mt-6">
-          <label htmlFor="business" className="block text-sm font-medium text-gray-700">
+          <Label htmlFor="business">
             Growth description <span className="text-gray-600">(optional)</span>
-          </label>
+          </Label>
           <div className="mt-1">
             <Textarea id="business" name="business" rows={3} className="w-full" defaultValue="" />
           </div>

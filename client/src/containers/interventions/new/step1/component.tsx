@@ -175,7 +175,7 @@ const Step1: FC = () => {
             options={optionsBusinesses}
             placeholder="all businesses"
             // onChange={() => onChange('businesses', currentBusiness.value)}
-            theme="primary"
+            theme="inline-primary"
           />
           <span className="text-gray-700 font-medium">from</span>
           <Suppliers

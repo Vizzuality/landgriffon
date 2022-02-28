@@ -20,7 +20,7 @@ const THEMES = {
     arrow: 'absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none',
   },
   'default-bordernone': {
-    base: 'focus:outline-none pl-3 pr-10',
+    base: 'flex focus:outline-none pl-3 pr-10',
     arrow: 'absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none',
   },
   'inline-primary': {

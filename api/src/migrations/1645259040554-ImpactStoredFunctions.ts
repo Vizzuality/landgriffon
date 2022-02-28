@@ -81,6 +81,34 @@ export class ImpactStoredFunctions1645259040554 implements MigrationInterface {
 
       -----
 
+      CREATE OR REPLACE FUNCTION sum_material_over_georegion(
+        geo_region_id uuid,
+        material_id uuid,
+        h3_data_type material_to_h3_type_enum
+      )
+      RETURNS float AS
+      $$
+        DECLARE
+          h3_table_name varchar;
+          h3_column_name varchar;
+          h3_resolution integer;
+          sum float;
+
+        BEGIN
+          -- Get h3data table name and column name for given material
+          SELECT * INTO h3_table_name, h3_column_name, h3_resolution
+          FROM get_h3_table_column_for_material(material_id, h3_data_type);
+
+          -- Sum table column over region
+          SELECT sum_h3_grid_over_georegion(geo_region_id, h3_resolution, h3_table_name, h3_column_name)
+          INTO sum;
+          RETURN sum;
+        END;
+      $$
+      LANGUAGE plpgsql;
+
+      -------
+
       CREATE OR REPLACE FUNCTION sum_weighted_deforestation_over_georegion(
        geo_region_id uuid,
        material_id uuid,
@@ -216,7 +244,7 @@ export class ImpactStoredFunctions1645259040554 implements MigrationInterface {
   $$
     DECLARE
         water_h3_table_name varchar := 'h3_grid_wf_global';
-        water_h3_column_name varchar := 'wfBltotMmyrT';
+        water_h3_column_name varchar := 'wfBltotMmyr';
         h3_resolution integer := 6;
         sum float;
 

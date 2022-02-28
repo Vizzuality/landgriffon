@@ -1,4 +1,5 @@
-import { Fragment, useCallback, useState, useMemo, useEffect } from 'react';
+import { Fragment, useCallback, useState, useMemo, useEffect, useRef } from 'react';
+import { useOutsideClick } from 'rooks';
 import classNames from 'classnames';
 import { Transition } from '@headlessui/react';
 import {
@@ -65,6 +66,8 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   const [selectedKeys, setSelectedKeys] = useState<TreeProps['selectedKeys']>([]);
   const [expandedKeys, setExpandedKeys] = useState<TreeProps['expandedKeys']>([]);
   const [checkedKeys, setCheckedKeys] = useState<TreeProps['checkedKeys']>([]);
+
+  const wrapperRef = useRef();
 
   const renderTreeNodes = useMemo(
     () =>
@@ -230,8 +233,12 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     }
   }, [current]);
 
+  useOutsideClick(wrapperRef, () => {
+    setIsOpen(false);
+  });
+
   return (
-    <div className="relative">
+    <div ref={wrapperRef} className="relative">
       {multiple ? (
         <div className="flex align-center relative" onClick={handleToggleOpen}>
           <div className={classNames('flex', THEMES_WRAPPER[theme])}>

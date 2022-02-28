@@ -102,7 +102,7 @@ const ScenariosFilters = () => {
       </ul>
 
       <Select
-        theme="primary_bordernone"
+        theme="default-bordernone"
         current={SORT_OPTIONS[0]}
         options={SORT_OPTIONS}
         onChange={handleSort}

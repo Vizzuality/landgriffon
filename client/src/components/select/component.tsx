@@ -15,7 +15,7 @@ const SEARCH_OPTIONS = {
   threshold: 0.4,
 };
 
-const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
+const Select: React.FC<SelectProps> = (props: SelectProps) => {
   const {
     showSearch = false,
     disabled = false,
@@ -193,4 +193,4 @@ const ScenariosComparison: React.FC<SelectProps> = (props: SelectProps) => {
   );
 };
 
-export default ScenariosComparison;
+export default Select;

@@ -17,27 +17,22 @@ import Loading from 'components/loading';
 
 import type { TreeSelectProps, TreeSelectOption } from './types';
 
-const THEMES_TREE_NODES = {
-  default:
-    'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
-  primary:
-    'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
-};
-
-const THEMES_LABEL = {
-  default: 'text-gray-300',
-  primary: 'truncate text-ellipsis font-bold cursor-pointer',
-};
-
-const THEMES_WRAPPER = {
-  default:
-    'flex-wrap w-full bg-white relative border border-gray-300 rounded-md shadow-sm py-2 pr-10 pl-3 cursor-pointer',
-  primary: 'border-b-2 border-green-700 max-w-[190px] overflow-x-hidden truncate text-ellipsis',
-};
-
-const THEMES_ICON = {
-  default: 'inset-y-0 right-0 items-center pr-2  text-gray-900',
-  primary: '-bottom-3  transform left-1/2 -translate-x-1/2 text-green-700',
+const THEMES = {
+  default: {
+    label: 'text-gray-300',
+    wrapper:
+      'flex-wrap w-full bg-white relative border border-gray-300 rounded-md shadow-sm py-2 pr-10 pl-3 cursor-pointer',
+    arrow: 'inset-y-0 right-0 items-center pr-2  text-gray-900',
+    treeNodes:
+      'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
+  },
+  'inline-primary': {
+    label: 'truncate text-ellipsis font-bold cursor-pointer px-0 py-0',
+    wrapper: 'border-b-2 border-green-700 max-w-[190px] overflow-x-hidden truncate text-ellipsis',
+    arrow: '-bottom-3  transform left-1/2 -translate-x-1/2 text-green-700',
+    treeNodes:
+      'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
+  },
 };
 
 const SEARCH_OPTIONS = {
@@ -76,7 +71,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           <TreeNode
             key={item.value}
             title={item.label}
-            className={classNames(THEMES_TREE_NODES[theme], `pl-${4 * counter}`, {
+            className={classNames(THEMES[theme].treeNodes, `pl-${4 * counter}`, {
               'bg-green-50 text-green-700 font-semibold': selectedKeys.includes(item.value),
             })}
           >
@@ -213,8 +208,8 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     [checkedKeys, onChange, options],
   );
 
-  const Icon = () => (
-    <span className={classNames('absolute flex pointer-events-none', THEMES_ICON[theme])}>
+  const Arrow = () => (
+    <span className={classNames('absolute flex pointer-events-none', THEMES[theme].arrow)}>
       {isOpen ? (
         <ChevronUpIcon className="h-4 w-4" aria-hidden="true" />
       ) : (
@@ -241,17 +236,17 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     <div ref={wrapperRef} className="relative">
       {multiple ? (
         <div className="flex align-center relative" onClick={handleToggleOpen}>
-          <div className={classNames('flex', THEMES_WRAPPER[theme])}>
+          <div className={classNames('flex', THEMES[theme].wrapper)}>
             {currentOptions &&
               !!currentOptions.length &&
               !ellipsis &&
               currentOptions.slice(0, maxBadges).map((option) => (
                 <Badge
                   key={option.value}
-                  className={classNames('text-sm m-0.5', THEMES_LABEL[theme])}
+                  className={classNames('text-sm m-0.5', THEMES[theme].label)}
                   data={option}
                   onClick={handleRemoveBadget}
-                  removable={theme === 'primary' ? false : true}
+                  removable={theme === 'inline-primary' ? false : true}
                 >
                   {option.label}
                 </Badge>
@@ -259,28 +254,28 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
             {currentOptions && !!currentOptions.length && ellipsis && (
               <Badge
                 key={currentOptions[0].value}
-                className={classNames('text-sm m-0.5', THEMES_LABEL[theme])}
+                className={classNames('text-sm m-0.5', THEMES[theme].label)}
                 data={currentOptions[0]}
                 onClick={handleRemoveBadget}
-                removable={theme === 'primary' ? false : true}
+                removable={theme === 'inline-primary' ? false : true}
               >
                 {currentOptions[0].label}
               </Badge>
             )}
             {currentOptions && currentOptions.length > maxBadges && (
-              <Badge className={classNames('text-sm m-0.5', THEMES_LABEL[theme])}>
+              <Badge className={classNames('text-sm m-0.5', THEMES[theme].label)}>
                 {currentOptions.length - maxBadges} more selected
               </Badge>
             )}
             {(!currentOptions || currentOptions.length === 0) && (
               <span className="inline-block truncate">
                 {placeholder && (
-                  <span className={classNames('text-sm', THEMES_LABEL[theme])}>{placeholder}</span>
+                  <span className={classNames('text-sm', THEMES[theme].label)}>{placeholder}</span>
                 )}
               </span>
             )}
           </div>
-          <Icon />
+          <Arrow />
         </div>
       ) : (
         <button
@@ -296,7 +291,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
               <span className="text-gray-300">{placeholder}</span>
             )}
           </span>
-          <Icon />
+          <Arrow />
         </button>
       )}
       <Transition

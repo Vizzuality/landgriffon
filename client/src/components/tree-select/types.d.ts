@@ -17,6 +17,6 @@ export type TreeSelectProps = {
   current: TreeSelectOptions;
   onChange?: (selected: SelectOption) => unknown;
   onSearch?: (query: string) => unknown;
-  theme?: 'primary' | 'secondary';
+  theme?: 'default' | 'inline-primary';
   ellipsis?: boolean;
 };

@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useState } from 'react';
+import { useMemo, useCallback, useState, FC } from 'react';
 
 // components
 import Select from 'components/select';
@@ -9,7 +9,7 @@ import InfoTooltip from 'containers/info-tooltip';
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
 
-const Supplier = () => {
+const Supplier: FC = () => {
   const [landgriffonEstimates, setLandgriffonEstimates] = useState(false);
 
   const locationTypes = ['location1', 'location2'];

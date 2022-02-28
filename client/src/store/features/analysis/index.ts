@@ -37,7 +37,7 @@ export type AnalysisState = {
 type FeatureState = RootState & { analysis: AnalysisState };
 
 // Define the initial state using that type
-const initialState: AnalysisState = {
+export const initialState: AnalysisState = {
   visualizationMode: 'map',
   isSidebarCollapsed: true,
   isSubContentCollapsed: true,

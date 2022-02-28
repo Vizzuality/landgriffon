@@ -26,7 +26,7 @@ const THEMES_TREE_NODES = {
 
 const THEMES_LABEL = {
   default: 'text-gray-300',
-  primary: 'truncate text-ellipsis font-bold',
+  primary: 'truncate text-ellipsis font-bold cursor-pointer',
 };
 
 const THEMES_WRAPPER = {

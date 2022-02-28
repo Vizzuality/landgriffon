@@ -14,7 +14,7 @@ type SuppliersFilterProps = {
   /** Only suppliers with sourcing locations. */
   withSourcingLocations?: SuppliersTreesParams['withSourcingLocations'];
   onChange?: TreeSelectProps['onChange'];
-  theme?: 'primary' | 'secondary';
+  theme?: 'default' | 'inline-primary';
   ellipsis?: TreeSelectProps['ellipsis'];
 };
 

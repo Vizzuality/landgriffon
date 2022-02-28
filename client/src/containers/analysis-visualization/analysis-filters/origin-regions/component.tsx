@@ -13,7 +13,7 @@ type OriginRegionsFilterProps = {
   /** Only regions with sourcing locations. */
   withSourcingLocations?: AdminRegionsTreesParams['withSourcingLocations'];
   onChange?: TreeSelectProps['onChange'];
-  theme?: 'primary' | 'secondary';
+  theme?: 'default' | 'inline-primary';
   ellipsis?: TreeSelectProps['ellipsis'];
 };
 

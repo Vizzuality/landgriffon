@@ -15,7 +15,7 @@ type MaterialsFilterProps = {
   /** Only materials with sourcing locations. */
   withSourcingLocations?: MaterialsTreesParams['withSourcingLocations'];
   onChange?: TreeSelectProps['onChange'];
-  theme?: 'primary' | 'secondary';
+  theme?: 'default' | 'inline-primary';
   currentOptions?: TreeSelectProps['current'];
   ellipsis?: TreeSelectProps['ellipsis'];
 };

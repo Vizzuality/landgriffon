@@ -8,10 +8,15 @@ const THEMES = {
     icon: 'absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 top-1/2 left-3',
     unit: 'absolute right-3 text-sm text-gray-500',
   },
+  'inline-primary': {
+    base: 'appearance-none w-full text-sm text-center text-green-700 font-bold border-0 border-b-2 border-green-700 px-0 py-0 focus:outline-none focus:border-green-700 focus:ring-0',
+    icon: 'absolute w-4 h-4 text-green-700 transform -translate-y-1/2 top-1/2 left-0',
+    unit: 'absolute right-0 text-sm font-bold text-green-700',
+  },
 };
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  theme?: 'default';
+  theme?: 'default' | 'inline-primary';
   type?: string;
   // https://github.com/tailwindlabs/heroicons/issues/64#issuecomment-859168741
   icon?: (props: React.ComponentProps<'svg'>) => JSX.Element;
@@ -31,7 +36,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             className={classnames([THEMES[theme].base], {
               // The Checkbox component should be used instead, but just in case.
               'px-0': type === 'checkbox',
-              'pl-10': !!icon,
+              'pl-10': !!icon && theme !== 'inline-primary',
+              'pl-3': !!icon && theme === 'inline-primary',
               'border-red-600': !!error,
             })}
             type={type}
@@ -40,7 +46,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             // approximate a padding based on the unit's character length to a good degree.
             // ~10px per character, + 14px for extra right padding.
             style={{
-              paddingRight: unit && unit?.length * 10 + 14,
+              paddingRight: unit && unit?.length * 10 + (theme === 'inline-primary' ? 2 : 14),
             }}
             {...props}
           />

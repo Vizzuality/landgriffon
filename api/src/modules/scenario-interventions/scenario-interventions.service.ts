@@ -77,16 +77,16 @@ export class ScenarioInterventionsService extends AppBaseService<
   async createScenarioIntervention(
     dto: CreateScenarioInterventionDto,
   ): Promise<ScenarioIntervention> {
-    //   /**
-    //    *  Creating New Intervention to be saved in scenario_interventions table
-    //    */
+    /**
+     *  Creating New Intervention to be saved in scenario_interventions table
+     */
     const newScenarioIntervention: ScenarioIntervention =
       new ScenarioIntervention();
     Object.assign(newScenarioIntervention, dto);
     await newScenarioIntervention.save();
-    //   /**
-    //    * Getting Sourcing Locations and Sourcing Records for start year of all Materials of the intervention with applied filters
-    //    */
+    /**
+     * Getting Sourcing Locations and Sourcing Records for start year of all Materials of the intervention with applied filters
+     */
 
     const actualSourcingDataWithTonnage: SourcingLocationWithRecord[] =
       await this.sourcingLocationsService.findFilteredSourcingLocationsForIntervention(
@@ -96,10 +96,10 @@ export class ScenarioInterventionsService extends AppBaseService<
     if (!actualSourcingDataWithTonnage.length) {
       throw new BadRequestException('No actual data for requested filters');
     }
-    //   /**
-    //    * NEW SOURCING LOCATIONS #1 - Basically copies of the actual existing Sourcing Locations that will be replaced by intervention,
-    //    * saved one more time but with the scenarioInterventionId and type 'CANCELED' related to intervention
-    //    */
+    /**
+     * NEW SOURCING LOCATIONS #1 - Basically copies of the actual existing Sourcing Locations that will be replaced by intervention,
+     * saved one more time but with the scenarioInterventionId and type 'CANCELED' related to intervention
+     */
 
     // Creating array for new locations with intervention type CANCELED and reference to the new Intervention Id
 
@@ -116,9 +116,10 @@ export class ScenarioInterventionsService extends AppBaseService<
         newCancelledByInterventionLocationsData,
       );
 
-    // // Adding relation to newly created cancelled Sourcing locations to New Intervention
     newScenarioIntervention.replacedSourcingLocations =
       cancelledInterventionSourcingLocations;
+
+    // TODO: Next step - calculate and save Impact Records for the newly created Sourcing Records, once calculation methodology is updated
 
     /**
      * NEW SOURCING LOCATIONS #2 - The ones of the Intervention, will replace the CANCELED ones
@@ -142,6 +143,8 @@ export class ScenarioInterventionsService extends AppBaseService<
 
         newScenarioIntervention.newSourcingLocations =
           newInterventionSourcingLocations;
+
+        // TODO: Next step - calculate and save Impact Records for the newly created Sourcing Records, once calculation methodology is updated
         break;
 
       case SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER:
@@ -158,6 +161,8 @@ export class ScenarioInterventionsService extends AppBaseService<
 
         newScenarioIntervention.newSourcingLocations =
           newInterventionSourcingLocations;
+
+        // TODO: Next step - calculate and save Impact Records for the newly created Sourcing Records, once calculation methodology is updated
         break;
 
       case SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY:
@@ -173,11 +178,13 @@ export class ScenarioInterventionsService extends AppBaseService<
           );
         newScenarioIntervention.newSourcingLocations =
           newInterventionSourcingLocations;
+
+        // TODO: Next step - calculate and save Impact Records once calculation methodology is updated
         break;
     }
 
     /**
-     * After both sets of new Sourcing Locations with Sourcing record for the start year has been created
+     * After both sets of new Sourcing Locations with Sourcing Record (and Impact Records in the future) for the start year has been created
      * and added as relations to the new Scenario Intervention, saving the new Scenario intervention in database
      */
 

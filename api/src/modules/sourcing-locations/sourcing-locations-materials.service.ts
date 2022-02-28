@@ -37,7 +37,7 @@ export class SourcingLocationsMaterialsService extends AppBaseService<
   get serializerConfig(): JSONAPISerializerConfig<SourcingLocation> {
     return {
       attributes: [
-        'materialName',
+        'material',
         'materialId',
         't1Supplier',
         'producer',
@@ -107,7 +107,7 @@ export class SourcingLocationsMaterialsService extends AppBaseService<
     sourcingLocation: SourcingLocation,
   ): SourcingLocationMaterial {
     const response: SourcingLocationMaterial = {
-      materialName: sourcingLocation.material.name,
+      material: sourcingLocation.material.name,
       materialId: sourcingLocation.material.id,
       producer: sourcingLocation.producer?.name || null,
       t1Supplier: sourcingLocation.t1Supplier?.name || null,

@@ -3,7 +3,6 @@ import { Listbox, Transition } from '@headlessui/react';
 import { ChevronDownIcon, ChevronUpIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
 import Fuse from 'fuse.js';
-import cx from 'classnames';
 
 import Loading from 'components/loading';
 
@@ -13,6 +12,21 @@ const SEARCH_OPTIONS = {
   includeScore: false,
   keys: ['label'],
   threshold: 0.4,
+};
+
+const THEMES = {
+  default: {
+    base: 'bg-white relative w-full flex align-center py-2 text-left text-sm cursor-pointer font-medium border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 pl-3 pr-10',
+    arrow: 'absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none',
+  },
+  'default-bordernone': {
+    base: 'focus:outline-none pl-3 pr-10',
+    arrow: 'absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none',
+  },
+  'inline-primary': {
+    base: 'relative py-0.5 flex text-sm font-bold border-b-2 border-green-700 max-w-[190px] truncate text-ellipsis',
+    arrow: 'absolute -bottom-3 transform left-1/2 -translate-x-1/2 text-green-700',
+  },
 };
 
 const Select: React.FC<SelectProps> = (props: SelectProps) => {
@@ -27,7 +41,7 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
     searchPlaceholder = 'Search',
     onChange,
     onSearch,
-    theme = 'primary',
+    theme = 'default',
   } = props;
   const [selected, setSelected] = useState<SelectProps['current']>(current);
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -53,7 +67,9 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
     },
     [onSearch],
   );
+
   const resetSearch = useCallback(() => setSearchTerm(''), []);
+
   const optionsResult: SelectProps['options'] = useMemo(() => {
     if (searchTerm && searchTerm !== '') {
       return fuse.search(searchTerm).map(({ item }) => item);
@@ -61,26 +77,12 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
     return options;
   }, [fuse, options, searchTerm]);
 
-  const THEME = {
-    primary:
-      'border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 pl-3 pr-10',
-    primary_bordernone: 'focus:outline-none pl-3 pr-10',
-    secondary: 'underline text-green-700 pr-2 font-bold',
-  };
-
   return (
     <Listbox value={selected} onChange={setSelected} disabled={disabled}>
       {({ open }) => (
         <>
           <div className="relative">
-            <Listbox.Button
-              className={cx(
-                'bg-white relative w-full flex align-center py-2 text-left text-sm cursor-pointer font-medium',
-                {
-                  [THEME[theme]]: !!theme,
-                },
-              )}
-            >
+            <Listbox.Button className={THEMES[theme].base}>
               {loading ? (
                 <div className="p-4">
                   <Loading className="mr-3 -ml-1 text-green-700" />
@@ -94,27 +96,17 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
                     <span className="text-gray-300 truncate">{placeholder}</span>
                   )}
                   {selected && <span className="inline-block truncate">{selected?.label}</span>}
-                  {theme === 'secondary' && (
-                    <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 flex items-center pointer-events-none">
-                      {open ? (
-                        <ChevronUpIcon className="h-4 w-4 text-green-700" aria-hidden="true" />
-                      ) : (
-                        <ChevronDownIcon className="h-4 w-4 text-green-700" aria-hidden="true" />
-                      )}
-                    </span>
-                  )}
-                  {theme !== 'secondary' && (
-                    <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                      {open ? (
-                        <ChevronUpIcon className="h-4 w-4 text-gray-900" aria-hidden="true" />
-                      ) : (
-                        <ChevronDownIcon className="h-4 w-4 text-gray-900" aria-hidden="true" />
-                      )}
-                    </span>
-                  )}
                 </>
               )}
             </Listbox.Button>
+
+            <span className={classNames('absolute flex pointer-events-none', THEMES[theme].arrow)}>
+              {open ? (
+                <ChevronUpIcon className="h-4 w-4" aria-hidden="true" />
+              ) : (
+                <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
+              )}
+            </span>
 
             <Transition
               show={open}

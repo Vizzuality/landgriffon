@@ -164,7 +164,7 @@ const Step1: FC = () => {
               current={filters.materials}
               // onChange={(values) => handleChangeFilter('materials', values)}
               onChange={handleChange}
-              theme="primary"
+              theme="inline-primary"
               ellipsis
             />
           </div>
@@ -183,7 +183,7 @@ const Step1: FC = () => {
             withSourcingLocations
             current={filters.suppliers}
             // onChange={(values) => handleChangeFilter('suppliers', values)}
-            theme="primary"
+            theme="inline-primary"
           />
           <span className="text-gray-700 font-medium">in</span>
           <OriginRegions
@@ -191,7 +191,7 @@ const Step1: FC = () => {
             withSourcingLocations
             current={filters.suppliers}
             // onChange={(values) => handleChangeFilter('suppliers', values)}
-            theme="primary"
+            theme="inline-primary"
           />
           <span className="text-gray-700 font-medium">.</span>
         </div>

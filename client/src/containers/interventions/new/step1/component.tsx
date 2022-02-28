@@ -151,9 +151,10 @@ const Step1: FC = () => {
             max={100}
             aria-label="percentage"
             placeholder="100"
-            className="border-none mr-1 will-change-contents text-green-700"
+            defaultValue={100}
+            theme="inline-primary"
+            unit="%"
           />
-          <span className="text-green-700 font-bold">%</span>
 
           <span className="text-gray-700 font-medium">of</span>
           <div className="font-bold">

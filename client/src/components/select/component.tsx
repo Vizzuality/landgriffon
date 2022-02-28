@@ -47,16 +47,13 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   useEffect(() => {
-    if (selected && onChange) onChange(selected);
-  }, [selected, onChange]);
-
-  useEffect(() => {
     if (!selected) setSelected(options[0]);
-  }, [options, selected]);
+    if (selected && selected !== options[0] && onChange) onChange(selected);
+  }, [options, selected, onChange]);
 
   useEffect(() => {
-    if (current) setSelected(current);
-  }, [current]);
+    if (current && !selected && current !== options[0]) setSelected(current);
+  }, [current, options, selected]);
 
   // Search capability
   const fuse = useMemo(() => new Fuse(options, SEARCH_OPTIONS), [options]);

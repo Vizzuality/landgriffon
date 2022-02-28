@@ -22,19 +22,34 @@ export function useYearsRange({
     [],
   );
 
+  const invalidRange = useMemo(
+    () => endYear - startYear < yearsGap,
+    [endYear, startYear, yearsGap],
+  );
+  const firstYear = years[0];
+  const lastYear = years[years.length - 1];
+
   useEffect(() => {
     // If we don't have a years array there's nothing to set
     if (!years) return;
 
     // If we don't have a startYear nor an endYear, we need to set them with the default values in the array.
     if (!startYear || !endYear) {
-      if (!startYear) setStartYear(years[0]);
+      if (!startYear) setStartYear(firstYear);
+      if (!endYear) setEndYear(lastYear);
+      return;
+    }
+  }, [startYear, endYear, firstYear, lastYear, years]);
+  useEffect(() => {
+    // If we don't have a years array there's nothing to set
+    if (!years) return;
+
+    // If we don't have a startYear nor an endYear, we need to set them with the default values in the array.
+    if (!startYear || !endYear) {
+      if (!startYear) setStartYear(firstYear);
       if (!endYear) setEndYear(years[years.length - 1]);
       return;
     }
-
-    const firstYear = years[0];
-    const lastYear = years[years.length - 1];
 
     // We have a startYear and an endYear, but they fall out of the years array boundaries. Correct that.
     if (validateRange && (startYear < firstYear || endYear > lastYear)) {
@@ -44,7 +59,7 @@ export function useYearsRange({
     }
 
     // We have a startYear and endYear, they're within array boundaries, but the year gap is not respected
-    if (endYear - startYear < yearsGap) {
+    if (invalidRange) {
       if (lastYear - firstYear < yearsGap) {
         setStartYear(firstYear);
         setEndYear(lastYear);
@@ -54,7 +69,17 @@ export function useYearsRange({
         console.error('Years gap cannot be respected; not enough years data');
       }
     }
-  }, [endYear, setYearsRange, startYear, validateRange, years, yearsGap]);
+  }, [
+    invalidRange,
+    setYearsRange,
+    startYear,
+    validateRange,
+    years,
+    yearsGap,
+    endYear,
+    lastYear,
+    firstYear,
+  ]);
 
   const yearsInRange = useMemo(
     () =>

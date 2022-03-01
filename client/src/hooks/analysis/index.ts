@@ -125,18 +125,18 @@ export function useAnalysisChart(): AnalysisChart {
 export function useInterventionTypes(): Intervention[] {
   return [
     {
-      slug: 'new_supplier_location',
+      slug: 'new-supplier-location',
       title: 'Source from a new supplier or location',
       description:
         'Select a new location or supplier you want to source from in order to analyse changes.',
     },
     {
-      slug: 'production_efficiency',
+      slug: 'production-efficiency',
       title: 'Change production efficiency',
       description: 'Setup new impacts in order to analyse the changes.',
     },
     {
-      slug: 'new_material',
+      slug: 'new-material',
       title: 'Switch to a new material',
       description: 'Select a new material you want to source from in order to analyse changes.',
     },

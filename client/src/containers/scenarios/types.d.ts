@@ -9,3 +9,12 @@ export type Scenario = ScenarioPayload & {
 };
 
 export type Scenarios = Scenario[];
+
+export type ScenarioInterventionsGrowthItem = Readonly<{
+  id: number;
+  title: string;
+}>;
+
+export type ScenarioInterventionsGrowthItems = Readonly<{
+  items: ScenarioInterventionsGrowthItem[];
+}>;

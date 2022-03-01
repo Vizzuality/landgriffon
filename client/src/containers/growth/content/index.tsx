@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, FC } from 'react';
 
 // hooks
 import { useAppDispatch, useAppSelector } from 'store/hooks';
@@ -13,8 +13,8 @@ import Textarea from 'components/forms/textarea';
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
 
-const GowthForm = () => {
-  const dispatch = useAppDispatch();
+const GowthForm: FC = () => {
+  //const dispatch = useAppDispatch();
   //const [isOpen, setIsOpen] = useState<boolean>(false);
   //const { filters } = useAppSelector(analysis);
 
@@ -42,7 +42,6 @@ const GowthForm = () => {
       })),
     [businessUnities],
   );
-
   const currentBusinessUnity = useMemo<SelectOption>(
     () => optionsBusiness?.find((option) => option.value === businessUnity),
     [optionsBusiness],
@@ -79,22 +78,26 @@ const GowthForm = () => {
       </fieldset>
 
       <fieldset className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2 text-sm font-medium text-gray-700">
-        <Label>Business unity</Label>
-        <Select
-          loading={isLoadingBusinessUnity}
-          current={currentBusinessUnity}
-          options={optionsBusiness}
-          placeholder="Select"
-          onChange={() => onChange('business_unity', currentBusinessUnity.value)}
-        />
-        <Label>Growth rate (Linear)</Label>
-        <Select
-          loading={isLoadingGrowth}
-          current={currentGrowth}
-          options={optionsGrowth}
-          placeholder="Select"
-          onChange={() => onChange('growth', currentGrowth.value)}
-        />
+        <div className="space-y-1">
+          <Label>Business unity</Label>
+          <Select
+            loading={isLoadingBusinessUnity}
+            current={currentBusinessUnity}
+            options={optionsBusiness}
+            placeholder="Select"
+            onChange={() => onChange('business_unity', currentBusinessUnity.value)}
+          />
+        </div>
+        <div className="space-y-1">
+          <Label>Growth rate (Linear)</Label>
+          <Select
+            loading={isLoadingGrowth}
+            current={currentGrowth}
+            options={optionsGrowth}
+            placeholder="Select"
+            onChange={() => onChange('growth', currentGrowth.value)}
+          />
+        </div>
       </fieldset>
     </>
   );

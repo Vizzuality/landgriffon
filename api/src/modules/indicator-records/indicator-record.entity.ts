@@ -89,12 +89,11 @@ export class IndicatorRecord extends TimestampedBaseEntity {
   @JoinColumn({ name: 'indicatorCoefficientId' })
   indicatorCoefficientId!: IndicatorCoefficient;
 
-  // Scaler: Production total sum
-  @Column({ type: 'float' })
+  // Scaler: Production total sum.
+  @Column({ type: 'float', nullable: true })
   scaler: number;
 
-  // Pointer: Points to a H3 table and column
-  // TODO: Science suggestion, double check if it's worth having it
+  // Points to related H3 Data for indicator. Not a relation for the time being
   @Column({ type: 'text' })
-  pointer: string;
+  h3DataId: string;
 }

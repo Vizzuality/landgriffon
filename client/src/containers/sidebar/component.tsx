@@ -12,7 +12,7 @@ import { ui, setMenuMobileOpen } from 'store/features/ui';
 import MobileNavigation from 'containers/navigation/mobile';
 import DesktopNavigation from 'containers/navigation/desktop';
 import Avatar from 'components/avatar';
-import Dropdown from 'containers/dropdown';
+import UserDropdown from 'containers/UserDropdown';
 import type { NavigationList } from 'containers/navigation/types';
 
 const user = {
@@ -130,7 +130,7 @@ const Sidebar: React.FC = () => {
               <DesktopNavigation items={navigationItems} />
             </div>
 
-            <Dropdown></Dropdown>
+            <UserDropdown />
             {/* <div className="flex flex-shrink-0 pb-5">
               <a href="#" className="flex justify-center flex-shrink-0 w-full">
                 <Avatar src={user.imageUrl} />

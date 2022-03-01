@@ -1,4 +1,4 @@
-export type stringAvatarProps = {
+export type stringAvatarProps = React.HTMLAttributes<HTMLElement> & {
   className?: string;
   fullName?: string;
 };

@@ -1,12 +1,11 @@
 import cx from 'classnames';
-import { stringAvatarProps } from './type';
+import type { stringAvatarProps } from './type';
 
-const stringAvatarFn = (name: string) => {
-  const userNames = name.split(' ');
-  console.log(userNames);
-
-  const stringAvatar = `${userNames[0][0]}${userNames[1][0]}`;
-  return stringAvatar;
+const renderUserInitials = (name: string) => {
+  const userNames = name?.split(' ');
+  if (!name || userNames?.length === 0) return 'LG'; // Default
+  if (userNames?.length === 1) return `${userNames[0][0]}${userNames[0][1]}`;
+  return `${userNames[0][0]}${userNames[1][0]}`;
 };
 
 export const StringAvatar: React.FC<stringAvatarProps> = ({
@@ -19,7 +18,7 @@ export const StringAvatar: React.FC<stringAvatarProps> = ({
       className,
     )}
   >
-    {stringAvatarFn(fullName)}
+    {renderUserInitials(fullName)}
   </div>
 );
 

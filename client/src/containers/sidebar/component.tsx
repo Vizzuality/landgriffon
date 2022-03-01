@@ -11,14 +11,8 @@ import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { ui, setMenuMobileOpen } from 'store/features/ui';
 import MobileNavigation from 'containers/navigation/mobile';
 import DesktopNavigation from 'containers/navigation/desktop';
-import Avatar from 'components/avatar';
-import UserDropdown from 'containers/UserDropdown';
+import UserDropdown from 'containers/user-dropdown';
 import type { NavigationList } from 'containers/navigation/types';
-
-const user = {
-  name: 'Emily Selman',
-  imageUrl: '/images/emily-selman.jpeg',
-};
 
 const navigationItems: NavigationList = [
   { name: 'Overview', href: '/', icon: ChartSquareBarIcon },
@@ -87,24 +81,17 @@ const Sidebar: React.FC = () => {
               </Transition.Child>
               <div className="pt-5 pb-4">
                 <div className="flex items-center flex-shrink-0 px-4">
-                  <img
+                  {/* Logo has been removed temporally */}
+                  {/* <img
                     className="w-auto h-8"
                     src="https://tailwindui.com/img/logos/workflow-mark.svg?color=white"
                     alt="Landgriffon"
-                  />
+                  /> */}
                 </div>
                 <MobileNavigation items={navigationItems} />
               </div>
               <div className="flex flex-shrink-0 p-4">
-                <a href="#" className="flex-shrink-0 block group">
-                  <div className="flex items-center">
-                    <Avatar src={user.imageUrl} />
-                    <div className="ml-3">
-                      <p className="text-base font-medium text-white">{user.name}</p>
-                      <p className="text-sm font-medium text-gray-400">Account Settings</p>
-                    </div>
-                  </div>
-                </a>
+                <UserDropdown />
               </div>
             </div>
           </Transition.Child>
@@ -131,15 +118,6 @@ const Sidebar: React.FC = () => {
             </div>
 
             <UserDropdown />
-            {/* <div className="flex flex-shrink-0 pb-5">
-              <a href="#" className="flex justify-center flex-shrink-0 w-full">
-                <Avatar src={user.imageUrl} />
-                <div className="sr-only">
-                  <p>{user.name}</p>
-                  <p>Account settings</p>
-                </div>
-              </a>
-            </div> */}
           </div>
         </div>
       </div>

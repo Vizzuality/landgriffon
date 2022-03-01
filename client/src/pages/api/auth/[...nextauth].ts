@@ -8,8 +8,6 @@ type CustomCredentials = Credential & {
   username: string;
 };
 
-const MAX_AGE = 2 * 60 * 60; // 2 hours
-
 const options: NextAuthOptions = {
   /**
    * Defining custom pages
@@ -22,8 +20,10 @@ const options: NextAuthOptions = {
 
   session: {
     strategy: 'jwt',
-    maxAge: MAX_AGE,
+    maxAge: 2 * 60 * 60, // 2 hours
   },
+
+  secret: process.env.NEXTAUTH_SECRET,
 
   // Configure one or more authentication providers
   providers: [

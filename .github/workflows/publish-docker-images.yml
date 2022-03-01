@@ -82,6 +82,7 @@ jobs:
             "NEXT_PUBLIC_MAPBOX_API_TOKEN=${{ secrets.NEXT_PUBLIC_MAPBOX_API_TOKEN }}"
             "NEXT_PUBLIC_API_URL=${{ github.ref != 'refs/heads/main' && secrets.NEXT_PUBLIC_API_URL_STAGING || secrets.NEXT_PUBLIC_API_URL_PRODUCTION }}"
             "NEXTAUTH_URL=${{ github.ref != 'refs/heads/main' && secrets.NEXTAUTH_URL_STAGING || secrets.NEXTAUTH_URL_PRODUCTION }}"
+            "NEXTAUTH_SECRET=${{ github.ref != 'refs/heads/main' && secrets.NEXTAUTH_SECRET_STAGING || secrets.NEXTAUTH_SECRET_PRODUCTION }}"
 
 
   push_data_import_to_registry:

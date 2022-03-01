@@ -236,7 +236,11 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     <div ref={wrapperRef} className="relative">
       {multiple ? (
         <div className="flex align-center relative" onClick={handleToggleOpen}>
-          <div className={classNames('flex', THEMES[theme].wrapper)}>
+          <div
+            className={classNames('flex', THEMES[theme].wrapper, {
+              'ring-green-700 border-green-700': isOpen,
+            })}
+          >
             {currentOptions &&
               !!currentOptions.length &&
               !ellipsis &&
@@ -247,6 +251,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                   data={option}
                   onClick={handleRemoveBadget}
                   removable={theme === 'inline-primary' ? false : true}
+                  theme={theme}
                 >
                   {option.label}
                 </Badge>
@@ -258,12 +263,13 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                 data={currentOptions[0]}
                 onClick={handleRemoveBadget}
                 removable={theme === 'inline-primary' ? false : true}
+                theme={theme}
               >
                 {currentOptions[0].label}
               </Badge>
             )}
             {currentOptions && currentOptions.length > maxBadges && (
-              <Badge className={classNames('text-sm m-0.5', THEMES[theme].label)}>
+              <Badge className={classNames('text-sm m-0.5', THEMES[theme].label)} theme={theme}>
                 {currentOptions.length - maxBadges} more selected
               </Badge>
             )}
@@ -280,8 +286,10 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
       ) : (
         <button
           type="button"
-          className="bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left
-          focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer"
+          className={classNames(
+            'bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer',
+            { 'ring-green-700 border-green-700': isOpen },
+          )}
           onClick={handleToggleOpen}
         >
           <span className="inline-block truncate">
@@ -304,7 +312,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
         leaveFrom="opacity-100 translate-y-0"
         leaveTo="opacity-0 translate-y-1"
       >
-        <div className="absolute z-20 min-w-full max-w-xl max-h-96 bg-white shadow-lg rounded-md mt-1 ring-1 ring-black ring-opacity-5 overflow-y-auto overflow-x-hidden">
+        <div className="absolute z-20 min-w-full left-0 right-0 max-h-96 bg-white shadow-lg rounded-md mt-1 ring-1 ring-black ring-opacity-5 overflow-y-auto overflow-x-hidden">
           {loading && (
             <div className="p-4">
               <Loading className="text-green-700 -ml-1 mr-3" />

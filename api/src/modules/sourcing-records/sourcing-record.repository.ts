@@ -7,7 +7,7 @@ import { Indicator } from 'modules/indicators/indicator.entity';
 import { Material } from 'modules/materials/material.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
-import { NotFoundException } from '@nestjs/common';
+import { Logger, NotFoundException } from '@nestjs/common';
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 
@@ -22,6 +22,8 @@ export class ImpactTableData {
 
 @EntityRepository(SourcingRecord)
 export class SourcingRecordRepository extends Repository<SourcingRecord> {
+  logger: Logger = new Logger(SourcingRecordRepository.name);
+
   async getYears(materialIds?: string[]): Promise<number[]> {
     const queryBuilder: SelectQueryBuilder<SourcingRecord> =
       this.createQueryBuilder('sr')
@@ -167,5 +169,53 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       );
     }
     return dataForImpactTable;
+  }
+
+  /**
+   * @description Retrieves data to calculate Indicator Records for all Sourcing Records present in the DB
+   * Uses stored functions created with migration: 1645259040554-ImpactStoredFunctions.ts
+   */
+  async getSourcingRecordDataToCalculateIndicatorRecords(): Promise<any> {
+    try {
+      const response: any = await this.query(`
+      SELECT
+          sr.id as "sourcingRecordId",
+          sr.tonnage,
+          sr.year,
+          sl.id as "sourcingLocationId",
+          sl.production,
+          sl.harvested_area,
+          sl.raw_deforestation,
+          sl.raw_biodiversity,
+          sl.raw_carbon,
+          sl.raw_water
+      FROM
+          sourcing_records sr
+          INNER JOIN
+              (
+                  SELECT
+                      id,
+                      sum_material_over_georegion("geoRegionId", "materialId", 'producer') as production,
+                      sum_material_over_georegion("geoRegionId", "materialId", 'harvest') as harvested_area,
+                      sum_weighted_deforestation_over_georegion("geoRegionId", "materialId", 'harvest') as raw_deforestation,
+                      sum_weighted_biodiversity_over_georegion("geoRegionId", "materialId", 'harvest') as raw_biodiversity,
+                      sum_weighted_carbon_over_georegion("geoRegionId", "materialId", 'harvest') as raw_carbon,
+                      sum_weighted_water_over_georegion("geoRegionId") as raw_water
+                  FROM
+                      sourcing_location
+              ) as sl
+              on sr."sourcingLocationId" = sl.id`);
+      if (!response.length)
+        this.logger.warn(
+          `Could not retrieve Sourcing Records with weighted indicator values`,
+        );
+
+      return response;
+    } catch (err: any) {
+      this.logger.error(
+        `Error querying data from DB to calculate Indicator Records: ${err.message}`,
+      );
+      return [];
+    }
   }
 }

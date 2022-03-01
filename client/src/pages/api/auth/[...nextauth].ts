@@ -57,7 +57,7 @@ const options: NextAuthOptions = {
             name:
               data.displayName ||
               (data.user.fname && data.user.lname ? `${data.user.fname} ${data.user.lname}` : null),
-            picture: data.user.avatarDataUrl,
+            image: data.user.avatarDataUrl,
             accessToken: data.accessToken,
           };
         }

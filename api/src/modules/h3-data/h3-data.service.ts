@@ -24,6 +24,7 @@ import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { Material } from 'modules/materials/material.entity';
+import { QueryRunner } from 'typeorm';
 
 /**
  * @debt: Check if we actually need extending nestjs-base-service over this module.
@@ -60,8 +61,13 @@ export class H3DataService {
     return await this.h3DataRepository.findOne({ id });
   }
 
-  async findH3ByIndicatorId(indicatorId: string): Promise<H3Data | undefined> {
-    return await this.h3DataRepository.findOne({ indicatorId });
+  async findH3ByIndicatorId(
+    indicatorId: string,
+    queryRunner?: QueryRunner,
+  ): Promise<H3Data | undefined> {
+    return queryRunner
+      ? queryRunner.manager.findOne(H3Data, { indicatorId })
+      : await this.h3DataRepository.findOne({ indicatorId });
   }
 
   async getWaterRiskIndicatorRecordValue(
@@ -69,12 +75,14 @@ export class H3DataService {
     harvestH3Table: H3Data,
     indicatorH3Table: H3Data,
     sourcingRecordId: string,
+    queryRunner?: QueryRunner,
   ): Promise<number | null> {
     return this.h3DataRepository.getWaterRiskIndicatorRecordValue(
       producerH3Table,
       harvestH3Table,
       indicatorH3Table,
       sourcingRecordId,
+      queryRunner,
     );
   }
 
@@ -83,12 +91,14 @@ export class H3DataService {
     harvestH3Table: H3Data,
     indicatorH3Table: H3Data,
     sourcingRecordId: string,
+    queryRunner?: QueryRunner,
   ): Promise<number | null> {
     return this.h3DataRepository.getDeforestationLossIndicatorRecordValue(
       producerH3Table,
       harvestH3Table,
       indicatorH3Table,
       sourcingRecordId,
+      queryRunner,
     );
   }
 
@@ -97,12 +107,14 @@ export class H3DataService {
     harvestH3Table: H3Data,
     indicatorH3Table: H3Data,
     sourcingRecordId: string,
+    queryRunner?: QueryRunner,
   ): Promise<number | null> {
     return this.h3DataRepository.getBiodiversityLossIndicatorRecordValue(
       producerH3Table,
       harvestH3Table,
       indicatorH3Table,
       sourcingRecordId,
+      queryRunner,
     );
   }
 
@@ -111,12 +123,14 @@ export class H3DataService {
     harvestH3Table: H3Data,
     indicatorH3Table: H3Data,
     sourcingRecordId: string,
+    queryRunner?: QueryRunner,
   ): Promise<number | null> {
     return this.h3DataRepository.getCarbonIndicatorRecordValue(
       producerH3Table,
       harvestH3Table,
       indicatorH3Table,
       sourcingRecordId,
+      queryRunner,
     );
   }
 

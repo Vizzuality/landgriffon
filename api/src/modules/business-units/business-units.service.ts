@@ -12,6 +12,7 @@ import { AppInfoDTO } from 'dto/info.dto';
 import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
 import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
 import { UpdateBusinessUnitDto } from 'modules/business-units/dto/update.business-unit.dto';
+import { QueryRunner } from 'typeorm';
 import { GetBusinessUnitTreeWithOptionsDto } from 'modules/business-units/dto/get-business-unit-tree-with-options.dto';
 
 @Injectable()
@@ -58,9 +59,15 @@ export class BusinessUnitsService extends AppBaseService<
 
   async createTree(
     importData: CreateBusinessUnitDto[],
+    queryRunner?: QueryRunner,
   ): Promise<BusinessUnit[]> {
     this.logger.log(`Creating Business tree with ${importData.length} nodes`);
-    return this.businessUnitRepository.saveListToTree(importData, 'mpath');
+    return this.businessUnitRepository.saveListToTree(
+      importData,
+      'mpath',
+      queryRunner,
+      BusinessUnit,
+    );
   }
 
   async clearTable(): Promise<void> {

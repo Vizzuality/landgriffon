@@ -1,4 +1,9 @@
-import { EntityRepository, SelectQueryBuilder } from 'typeorm';
+import {
+  EntityManager,
+  EntityRepository,
+  QueryRunner,
+  SelectQueryBuilder,
+} from 'typeorm';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-region.dto';
@@ -13,12 +18,18 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
 > {
   logger: Logger = new Logger(AdminRegionRepository.name);
 
-  async getAdminRegionAndGeoRegionIdByCoordinatesAndLevel(searchParams: {
-    lng: number;
-    lat: number;
-    level: number;
-  }): Promise<{ adminRegionId: string; geoRegionId: string }> {
-    const res: any = await this.query(
+  async getAdminRegionAndGeoRegionIdByCoordinatesAndLevel(
+    searchParams: {
+      lng: number;
+      lat: number;
+      level: number;
+    },
+    queryRunner?: QueryRunner,
+  ): Promise<{ adminRegionId: string; geoRegionId: string }> {
+    const manager: EntityManager | this = queryRunner
+      ? queryRunner.manager
+      : this;
+    const res: any = await manager.query(
       `
         SELECT a.id AS "adminRegionId", g.id AS "geoRegionId"
         FROM admin_region a
@@ -55,11 +66,17 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
   //      level 1 or 2, and depending on coordinates, level 0.
   //      Check how to properly perform this
 
-  async getClosestAdminRegionByCoordinates(coordinates: {
-    lng: number;
-    lat: number;
-  }): Promise<any> {
-    const res: any = await this.query(
+  async getClosestAdminRegionByCoordinates(
+    coordinates: {
+      lng: number;
+      lat: number;
+    },
+    queryRunner?: QueryRunner,
+  ): Promise<any> {
+    const manager: EntityManager | this = queryRunner
+      ? queryRunner.manager
+      : this;
+    const res: any = await manager.query(
       `SELECT a.id AS "adminRegionId" , a."name", a."level" , g."name" , g.id AS "geoRegionId"
         FROM admin_region a
                RIGHT JOIN geo_region g on a."geoRegionId" = g.id

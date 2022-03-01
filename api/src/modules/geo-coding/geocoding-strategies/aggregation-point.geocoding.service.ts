@@ -3,13 +3,17 @@ import { GeoCodingBaseService } from 'modules/geo-coding/geo-coding.base.service
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { GeocodeResponseData } from '@googlemaps/google-maps-services-js/dist/geocode/geocode';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { QueryRunner } from 'typeorm';
 
 @Injectable()
 export class AggregationPointGeocodingService extends GeoCodingBaseService {
   aggregationPointGeocodingLogger: Logger = new Logger(
     AggregationPointGeocodingService.name,
   );
-  async geoCodeAggregationPoint(sourcingData: SourcingData): Promise<any> {
+  async geoCodeAggregationPoint(
+    sourcingData: SourcingData,
+    queryRunner?: QueryRunner,
+  ): Promise<any> {
     /**
      * The user must specify a country, and either an address OR coordinates
      */
@@ -23,22 +27,28 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
      */
     if (sourcingData.locationLatitude && sourcingData.locationLongitude) {
       const geoRegionId: Pick<GeoRegion, 'id'> =
-        await this.geoRegionService.saveGeoRegionAsRadius({
-          name: sourcingData.locationCountryInput,
-          coordinates: {
-            lng: sourcingData.locationLongitude,
-            lat: sourcingData.locationLatitude,
+        await this.geoRegionService.saveGeoRegionAsRadius(
+          {
+            name: sourcingData.locationCountryInput,
+            coordinates: {
+              lng: sourcingData.locationLongitude,
+              lat: sourcingData.locationLatitude,
+            },
           },
-        });
+          queryRunner,
+        );
 
       /**
        * Get closest AdminRegion given the same point
        */
       const { adminRegionId } =
-        await this.adminRegionService.getClosestAdminRegionByCoordinates({
-          lng: sourcingData.locationLongitude,
-          lat: sourcingData.locationLatitude,
-        });
+        await this.adminRegionService.getClosestAdminRegionByCoordinates(
+          {
+            lng: sourcingData.locationLongitude,
+            lat: sourcingData.locationLatitude,
+          },
+          queryRunner,
+        );
 
       return {
         ...sourcingData,
@@ -65,11 +75,14 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
        */
       if (this.isAddressAdminLevel1(geocodedResponseData.results[0].types)) {
         const { adminRegionId, geoRegionId } =
-          await this.adminRegionService.getAdminRegionIdByCoordinatesAndLevel({
-            lng: geocodedResponseData?.results[0]?.geometry.location.lng,
-            lat: geocodedResponseData?.results[0]?.geometry.location.lat,
-            level: 1,
-          });
+          await this.adminRegionService.getAdminRegionIdByCoordinatesAndLevel(
+            {
+              lng: geocodedResponseData?.results[0]?.geometry.location.lng,
+              lat: geocodedResponseData?.results[0]?.geometry.location.lat,
+              level: 1,
+            },
+            queryRunner,
+          );
         return {
           ...sourcingData,
           adminRegionId,
@@ -78,11 +91,14 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
       }
       if (this.isAddressAdminLevel2(geocodedResponseData.results[0].types)) {
         const { adminRegionId, geoRegionId } =
-          await this.adminRegionService.getAdminRegionIdByCoordinatesAndLevel({
-            lng: geocodedResponseData?.results[0]?.geometry.location.lng,
-            lat: geocodedResponseData?.results[0]?.geometry.location.lat,
-            level: 2,
-          });
+          await this.adminRegionService.getAdminRegionIdByCoordinatesAndLevel(
+            {
+              lng: geocodedResponseData?.results[0]?.geometry.location.lng,
+              lat: geocodedResponseData?.results[0]?.geometry.location.lat,
+              level: 2,
+            },
+            queryRunner,
+          );
         return {
           ...sourcingData,
           adminRegionId,
@@ -95,21 +111,27 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
          * by it's name
          */
         const geoRegionId: GeoRegion =
-          await this.geoRegionService.saveGeoRegionAsRadius({
-            name: sourcingData.locationCountryInput,
-            coordinates: {
-              lat: geocodedResponseData.results[0].geometry.location.lat,
-              lng: geocodedResponseData.results[0].geometry.location.lng,
+          await this.geoRegionService.saveGeoRegionAsRadius(
+            {
+              name: sourcingData.locationCountryInput,
+              coordinates: {
+                lat: geocodedResponseData.results[0].geometry.location.lat,
+                lng: geocodedResponseData.results[0].geometry.location.lng,
+              },
             },
-          });
+            queryRunner,
+          );
         /**
          * Get closest AdminRegion given the same point
          */
         const { adminRegionId } =
-          await this.adminRegionService.getClosestAdminRegionByCoordinates({
-            lng: geocodedResponseData?.results[0]?.geometry.location.lng,
-            lat: geocodedResponseData?.results[0]?.geometry.location.lat,
-          });
+          await this.adminRegionService.getClosestAdminRegionByCoordinates(
+            {
+              lng: geocodedResponseData?.results[0]?.geometry.location.lng,
+              lat: geocodedResponseData?.results[0]?.geometry.location.lat,
+            },
+            queryRunner,
+          );
 
         return {
           ...sourcingData,

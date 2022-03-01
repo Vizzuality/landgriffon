@@ -5,6 +5,7 @@ import { CountryOfProductionService } from 'modules/geo-coding/geocoding-strateg
 import { UnknownLocationService } from 'modules/geo-coding/geocoding-strategies/unknown-location.geocoding.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
+import { QueryRunner } from 'typeorm';
 
 @Injectable()
 export class GeoCodingService {
@@ -19,6 +20,7 @@ export class GeoCodingService {
 
   async geoCodeLocations(
     sourcingData: SourcingData[],
+    queryRunner?: QueryRunner,
   ): Promise<SourcingData[]> {
     this.logger.log(
       `Geocoding locations for ${sourcingData.length} sourcing record elements`,
@@ -28,25 +30,25 @@ export class GeoCodingService {
       sourcingData.map(async (sourcingData: SourcingData) => {
         if (sourcingData.locationType === LOCATION_TYPES.UNKNOWN) {
           geoCodedSourcingData.push(
-            await this.geoCodeUnknownLocationType(sourcingData),
+            await this.geoCodeUnknownLocationType(sourcingData, queryRunner),
           );
         }
         if (
           sourcingData.locationType === LOCATION_TYPES.COUNTRY_OF_PRODUCTION
         ) {
           geoCodedSourcingData.push(
-            await this.geoCodeCountryOfProduction(sourcingData),
+            await this.geoCodeCountryOfProduction(sourcingData, queryRunner),
           );
         }
 
         if (sourcingData.locationType === LOCATION_TYPES.AGGREGATION_POINT) {
           geoCodedSourcingData.push(
-            await this.geoCodeAggregationPoint(sourcingData),
+            await this.geoCodeAggregationPoint(sourcingData, queryRunner),
           );
         }
         if (sourcingData.locationType === LOCATION_TYPES.POINT_OF_PRODUCTION) {
           geoCodedSourcingData.push(
-            await this.geoCodePointOfProduction(sourcingData),
+            await this.geoCodePointOfProduction(sourcingData, queryRunner),
           );
         }
       }),
@@ -56,31 +58,41 @@ export class GeoCodingService {
 
   async geoCodeAggregationPoint(
     sourcingData: SourcingData,
+    queryRunner?: QueryRunner,
   ): Promise<SourcingData> {
     return this.aggregationPointGeocodingService.geoCodeAggregationPoint(
       sourcingData,
+      queryRunner,
     );
   }
 
   async geoCodePointOfProduction(
     sourcingData: SourcingData,
+    queryRunner?: QueryRunner,
   ): Promise<SourcingData> {
     return this.pointOfProductionGeocodingService.geoCodePointOfProduction(
       sourcingData,
+      queryRunner,
     );
   }
 
   async geoCodeCountryOfProduction(
     sourcingData: SourcingData,
+    queryRunner?: QueryRunner,
   ): Promise<SourcingData> {
     return this.countryOfProductionService.geoCodeCountryOfProduction(
       sourcingData,
+      queryRunner,
     );
   }
 
   async geoCodeUnknownLocationType(
     sourcingData: SourcingData,
+    queryRunner?: QueryRunner,
   ): Promise<SourcingData> {
-    return this.unknownLocationService.geoCodeUnknownLocationType(sourcingData);
+    return this.unknownLocationService.geoCodeUnknownLocationType(
+      sourcingData,
+      queryRunner,
+    );
   }
 }

@@ -13,6 +13,7 @@ import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-reco
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sourcing-record.dto';
 import { GetImpactTableDto } from 'modules/impact/dto/get-impact-table.dto';
+import { QueryRunner } from 'typeorm';
 
 @Injectable()
 export class SourcingRecordsService extends AppBaseService<
@@ -61,8 +62,12 @@ export class SourcingRecordsService extends AppBaseService<
   async clearTable(): Promise<void> {
     await this.sourcingRecordRepository.delete({});
   }
-  async findAllUnpaginated(): Promise<SourcingRecord[]> {
-    return this.sourcingRecordRepository.find();
+  async findAllUnpaginated(
+    queryRunner?: QueryRunner,
+  ): Promise<SourcingRecord[]> {
+    return queryRunner
+      ? queryRunner.manager.find(SourcingRecord)
+      : this.sourcingRecordRepository.find();
   }
   async save(entityArray: any[]): Promise<void> {
     await this.sourcingRecordRepository.save(entityArray);

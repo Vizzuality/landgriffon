@@ -16,6 +16,7 @@ import {
   MaterialToH3,
   MATERIAL_TO_H3_TYPE,
 } from 'modules/materials/material-to-h3.entity';
+import { QueryRunner } from 'typeorm';
 
 @Injectable()
 export class H3DataYearsService {
@@ -101,12 +102,14 @@ export class H3DataYearsService {
     materialId: string,
     materialType: MATERIAL_TO_H3_TYPE,
     year: number,
+    queryRunner?: QueryRunner,
   ): Promise<number | undefined> {
     let materialDataYear: number | undefined;
     const availableH3DataYears: number[] =
       await this.h3DataRepository.getAvailableYearsForH3MaterialData(
         materialId,
         materialType,
+        queryRunner,
       );
 
     materialDataYear = availableH3DataYears.includes(year)

@@ -4,19 +4,29 @@ import {
   MATERIAL_TO_H3_TYPE,
   MaterialToH3,
 } from 'modules/materials/material-to-h3.entity';
-import { EntityRepository, getManager, SelectQueryBuilder } from 'typeorm';
+import {
+  EntityRepository,
+  getManager,
+  QueryRunner,
+  SelectQueryBuilder,
+} from 'typeorm';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 
 @Injectable()
 @EntityRepository(MaterialToH3)
 export class MaterialsToH3sService extends Repository<MaterialToH3> {
-  async findH3DataForMaterial(args: {
-    materialId: string;
-    year?: number;
-    type: MATERIAL_TO_H3_TYPE;
-  }): Promise<H3Data | undefined> {
-    const queryBuilder: SelectQueryBuilder<H3Data> = getManager()
-      .createQueryBuilder()
+  async findH3DataForMaterial(
+    args: {
+      materialId: string;
+      year?: number;
+      type: MATERIAL_TO_H3_TYPE;
+    },
+    queryRunner?: QueryRunner,
+  ): Promise<H3Data | undefined> {
+    const queryBuilder: SelectQueryBuilder<H3Data> = queryRunner
+      ? queryRunner.manager.createQueryBuilder()
+      : getManager().createQueryBuilder();
+    queryBuilder
       .select()
       .from(H3Data, 'h3data')
       .leftJoin(

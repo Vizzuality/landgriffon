@@ -1,4 +1,4 @@
-import { TreeRepository } from 'typeorm';
+import { EntityTarget, QueryRunner, TreeRepository } from 'typeorm';
 import { isEqual } from 'lodash';
 
 interface WithExplodedPath {
@@ -19,10 +19,14 @@ export class ExtendedTreeRepository<
    *
    * @param importData
    * @param pathKey
+   * @param queryRunner
+   * @param treeEntity
    */
   public async saveListToTree(
     importData: CreateDto[],
     pathKey: keyof CreateDto,
+    queryRunner?: QueryRunner,
+    treeEntity?: EntityTarget<TreeRepository<any>>,
   ): Promise<Entity[]> {
     let rest: (CreateDto & WithExplodedPath)[] = importData.map(
       (importElem: CreateDto) => {
@@ -59,9 +63,14 @@ export class ExtendedTreeRepository<
             async (
               elem: CreateDto & WithExplodedPath,
             ): Promise<Entity & WithExplodedPath> => {
-              const Entity: Entity & WithExplodedPath = (await this.save(
-                this.entityFromCreateDto(elem),
-              )) as unknown as Entity & WithExplodedPath;
+              const Entity: Entity & WithExplodedPath = (queryRunner &&
+              treeEntity
+                ? await queryRunner.manager
+                    .getTreeRepository(treeEntity)
+                    .save(this.entityFromCreateDto(elem))
+                : await this.save(
+                    this.entityFromCreateDto(elem),
+                  )) as unknown as Entity & WithExplodedPath;
               Entity.explodedPath = elem.explodedPath;
               return Entity;
             },
@@ -90,9 +99,13 @@ export class ExtendedTreeRepository<
 
             match.parent = parent;
 
-            const entity: Awaited<Entity> & WithExplodedPath = (await this.save(
-              this.entityFromCreateDto(match),
-            )) as Awaited<Entity> & WithExplodedPath;
+            const entity: Awaited<Entity> & WithExplodedPath = (
+              queryRunner && treeEntity
+                ? await queryRunner.manager
+                    .getTreeRepository(treeEntity)
+                    .save(this.entityFromCreateDto(match))
+                : await this.save(this.entityFromCreateDto(match))
+            ) as Awaited<Entity> & WithExplodedPath;
             entity.explodedPath = match.explodedPath;
             matches.push(entity);
           }),

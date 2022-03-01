@@ -2,6 +2,8 @@ import {
   Brackets,
   EntityRepository,
   getManager,
+  QueryBuilder,
+  QueryRunner,
   Repository,
   SelectQueryBuilder,
   WhereExpressionBuilder,
@@ -116,9 +118,11 @@ export class H3DataRepository extends Repository<H3Data> {
     harvestH3Table: H3Data,
     indicatorH3Table: H3Data,
     sourcingRecordId: string,
+    queryRunner?: QueryRunner,
   ): Promise<number | null> {
-    const result: { value: number }[] = await getManager()
-      .createQueryBuilder()
+    const h3DataQueryBuilder: QueryBuilder<any> =
+      H3DataRepository.getQueryBuilder(queryRunner);
+    const result: { value: number }[] = await h3DataQueryBuilder
       .select('locations.tonnage * sum(materials.water_risk_m3_t)', 'value')
       .from((subQuery: SelectQueryBuilder<any>) => {
         return subQuery
@@ -173,9 +177,11 @@ export class H3DataRepository extends Repository<H3Data> {
     harvestH3Table: H3Data,
     indicatorH3Table: H3Data,
     sourcingRecordId: string,
+    queryRunner?: QueryRunner,
   ): Promise<number | null> {
-    const result: { value: number }[] = await getManager()
-      .createQueryBuilder()
+    const h3DataQueryBuilder: QueryBuilder<any> =
+      H3DataRepository.getQueryBuilder(queryRunner);
+    const result: { value: number }[] = await h3DataQueryBuilder
       .select('locations.tonnage * sum(materials.def_risk_ha_t)', 'value')
       .from((subQuery: SelectQueryBuilder<any>) => {
         return subQuery
@@ -236,9 +242,11 @@ export class H3DataRepository extends Repository<H3Data> {
     harvestH3Table: H3Data,
     indicatorH3Table: H3Data,
     sourcingRecordId: string,
+    queryRunner?: QueryRunner,
   ): Promise<number | null> {
-    const result: { value: number }[] = await getManager()
-      .createQueryBuilder()
+    const h3DataQueryBuilder: QueryBuilder<any> =
+      H3DataRepository.getQueryBuilder(queryRunner);
+    const result: { value: number }[] = await h3DataQueryBuilder
       .select('locations.tonnage * sum(materials.carb_risk_co2e_t)', 'value')
       .from((subQuery: SelectQueryBuilder<any>) => {
         return subQuery
@@ -306,9 +314,11 @@ export class H3DataRepository extends Repository<H3Data> {
     harvestH3Table: H3Data,
     indicatorH3Table: H3Data,
     sourcingRecordId: string,
+    queryRunner?: QueryRunner,
   ): Promise<number | null> {
-    const result: { value: number }[] = await getManager()
-      .createQueryBuilder()
+    const h3DataQueryBuilder: QueryBuilder<any> =
+      H3DataRepository.getQueryBuilder(queryRunner);
+    const result: { value: number }[] = await h3DataQueryBuilder
       .select('locations.tonnage * sum(materials.bio_risk_pdf_t)', 'value')
       .from((subQuery: SelectQueryBuilder<any>) => {
         return subQuery
@@ -738,8 +748,12 @@ export class H3DataRepository extends Repository<H3Data> {
   async getAvailableYearsForH3MaterialData(
     materialId: string,
     materialType: MATERIAL_TO_H3_TYPE,
+    queryRunner?: QueryRunner,
   ): Promise<number[]> {
-    const years: { year: number }[] = await this.createQueryBuilder('h3data')
+    const h3DataQueryBuilder: QueryBuilder<H3Data> = queryRunner
+      ? queryRunner.manager.createQueryBuilder(H3Data, 'h3data')
+      : this.createQueryBuilder('h3data');
+    const years: { year: number }[] = await h3DataQueryBuilder
       .select('year')
       .leftJoin('material_to_h3', 'mth', 'h3data.id = mth.h3DataId')
       .where('mth.materialId = :materialId', { materialId })
@@ -759,5 +773,13 @@ export class H3DataRepository extends Repository<H3Data> {
       .orderBy('year', 'DESC')
       .getRawMany();
     return years.map((elem: { year: number }) => elem.year);
+  }
+
+  private static getQueryBuilder(
+    queryRunner: QueryRunner | undefined,
+  ): QueryBuilder<any> {
+    return queryRunner
+      ? queryRunner.manager.createQueryBuilder()
+      : getManager().createQueryBuilder();
   }
 }

@@ -215,6 +215,54 @@ describe('Sourcing Data import', () => {
     }
   });
 
+  test('When a file is processed by the API and there is an error, previous data should be intact', async () => {
+    expect.assertions(5);
+    // await populateTables();
+    const geoRegion: GeoRegion = await createGeoRegion();
+    await createAdminRegion({
+      isoA2: 'ABC',
+      geoRegion,
+    });
+
+    await h3DataMock({
+      h3TableName: 'h3_grid_deforestation_global',
+      h3ColumnName: 'hansen_loss_2019',
+      additionalH3Data: h3BasicFixture,
+      year: 2019,
+    });
+    tablesToDrop = [
+      ...(await createMaterialTreeForXLSXImport()),
+      ...(await createIndicatorsForXLSXImport()),
+      'h3_grid_deforestation_global',
+    ];
+    await sourcingDataImportService.importSourcingData(
+      __dirname + '/base-dataset.xlsx',
+    );
+    // delete materials to force error
+    await materialToH3Service.delete({});
+    await materialRepository.delete({});
+
+    try {
+      await sourcingDataImportService.importSourcingData(
+        __dirname + '/base-dataset.xlsx',
+      );
+    } catch (err: any) {
+      expect(err.message).toEqual(
+        'No Materials found present in the DB. Please check the LandGriffon installation manual',
+      );
+      const businessUnits: BusinessUnit[] = await businessUnitRepository.find();
+      expect(businessUnits).toHaveLength(5);
+      const businessUnitsRoots: BusinessUnit[] =
+        await businessUnitRepository.findRoots();
+      expect(businessUnitsRoots).toHaveLength(1);
+
+      const suppliers: Supplier[] = await supplierRepository.find();
+      expect(suppliers).toHaveLength(5);
+      const suppliersRoots: Supplier[] = await supplierRepository.findRoots();
+      expect(suppliersRoots).toHaveLength(4);
+    }
+  }, 100000);
+
   test('When a file is processed by the API and its size is allowed then it should return a 201 code and the storage folder should be empty', async () => {
     const geoRegion: GeoRegion = await createGeoRegion();
     await createAdminRegion({

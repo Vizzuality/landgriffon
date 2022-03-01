@@ -30,18 +30,61 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
   ellipsis,
 }) => {
   const { data, isFetching } = useMaterialsTrees({ depth, withSourcingLocations });
-
+  console.log(data)
+  const data2 = [
+    {
+      children: [{
+        children: [],
+        createdAt: "2022-01-31T18:27:44.520Z",
+        description: "Coffee, whether or not roasted or decaffeinated; husks and skins; coffee substitutes containing coffee in any proportion",
+        hsCodeId: "901",
+        id: "0d698ac1-9599-4dab-864b-45e028810992",
+        name: "Coffee",
+        parentId: "5ba2d1c4-4ec6-4931-ae65-ac603ac631aa",
+        updatedAt: "2022-01-31T18:27:44.520Z",
+      }],
+      createdAt: "2022-01-31T18:27:44.520Z",
+      description: "Cereals",
+      hsCodeId: "10",
+      id: "ed626334-1a6a-43c2-b52f-a61e94e756b4",
+      name: "Cereals",
+      parentId: null,
+      type: "materials",
+      updatedAt: "2022-01-31T18:27:44.520Z",
+    },
+    {
+      children: [
+        {
+          children: [],
+          createdAt: "2022-01-31T18:27:44.520Z",
+          description: "Coffee, whether or not roasted or decaffeinated; husks and skins; coffee substitutes containing coffee in any proportion",
+          hsCodeId: "901",
+          id: "0d698ac1-9599-4dab-864b-45e028810992",
+          name: "Coffee",
+          parentId: "5ba2d1c4-4ec6-4931-ae65-ac603ac631aa",
+          updatedAt: "2022-01-31T18:27:44.520Z",
+        }],
+      createdAt: "2022-01-31T18:27:44.520Z",
+      description: "Coffee, tea, mate and spices",
+      hsCodeId: "9",
+      id: "5ba2d1c4-4ec6-4931-ae65-ac603ac631aa",
+      name: "Coffee, whether or not roasted or decaffeinated; husks and skins; coffee substitutes containing coffee in any proportion",
+      parentId: null,
+      type: "materials",
+      updatedAt: "2022-01-31T18:27:44.520Z",
+    },
+  ];
   const treeOptions: TreeSelectProps['options'] = useMemo(
     () =>
       sortBy(
-        data?.map(({ name, id, children }) => ({
+        data2?.map(({ name, id, children }) => ({
           label: name,
           value: id,
           children: children?.map(({ name, id }) => ({ label: name, value: id })),
         })),
         'label',
       ),
-    [data],
+    [data2],
   );
 
   return (

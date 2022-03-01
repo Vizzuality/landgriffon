@@ -3,7 +3,14 @@ import { useCallback } from 'react';
 
 import type { BadgeProps } from './types';
 
-const Badge: React.FC<BadgeProps> = ({ data, children, className, removable = false, onClick }) => {
+const Badge: React.FC<BadgeProps> = ({
+  data,
+  children,
+  className,
+  removable = false,
+  onClick,
+  theme = 'default',
+}) => {
   const handleClick = useCallback(
     (e) => {
       e.preventDefault();
@@ -12,19 +19,32 @@ const Badge: React.FC<BadgeProps> = ({ data, children, className, removable = fa
     },
     [data, onClick],
   );
+
+  const THEMES_BADGE_WRAPPER = {
+    default: 'bg-green-50 rounded-xl',
+  };
+
+  const THEMES_BADGE_LABEL = {
+    default: 'text-gray-900',
+    primary: 'text-rgeen-900',
+  };
+
   return (
     <span
       className={classNames(
-        'inline-flex items-center py-0.5 font-medium  text-green-700',
+        'inline-flex items-center py-0.5 font-medium  text-green-700 overflow-hidden',
+        THEMES_BADGE_WRAPPER[theme],
         removable ? 'pl-2 pr-0.5' : 'px-2',
         className,
       )}
     >
-      <span className="truncate">{children}</span>
+      <span className={classNames('truncate text-ellipsis', THEMES_BADGE_LABEL[theme])}>
+        {children}
+      </span>
       {removable && (
         <button
           type="button"
-          className="flex-shrink-0 ml-0.5 h-4 w-4 rounded-full inline-flex items-center justify-center text-green-400 hover:bg-green-200 hover:text-green-500 focus:outline-none focus:bg-green-500 focus:text-white"
+          className="flex-shrink-0 ml-0.5 h-4 w-4 rounded-full inline-flex items-center justify-center text-green-900 hover:bg-green-200 hover:text-green-500 focus:outline-none focus:bg-green-500 focus:text-white"
           onClick={handleClick}
         >
           <span className="sr-only">Remove</span>

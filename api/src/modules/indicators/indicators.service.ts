@@ -98,4 +98,34 @@ export class IndicatorsService extends AppBaseService<
   async findAllUnpaginated(): Promise<Indicator[]> {
     return this.indicatorRepository.find();
   }
+
+  async getIndicatorsAndRelatedH3DataIds(): Promise<
+    {
+      id: string;
+      nameCode: string;
+      h3DataId: string;
+    }[]
+  > {
+    const indicators: {
+      id: string;
+      nameCode: string;
+      h3DataId: string;
+    }[] = await this.indicatorRepository
+      .createQueryBuilder('indicator')
+      .select([
+        'indicator.id as id',
+        'indicator.nameCode as "nameCode"',
+        'h3.id as "h3DataId"',
+      ])
+      .innerJoin(H3Data, 'h3', 'h3.indicatorId = indicator.id')
+      .getRawMany();
+
+    if (!indicators.length) {
+      throw new NotFoundException(
+        `No Indicators with related H3 Data could be found`,
+      );
+    }
+    console.log('RESULT', indicators);
+    return indicators;
+  }
 }

@@ -66,15 +66,19 @@
 
 /* RC Tree checkbox override */
 .rc-tree-checkbox {
-  @apply h-4 w-4 border border-gray-900;
+  @apply h-4 w-4 border border-gray-200 flex-shrink-0 rounded;
 }
 
 .rc-tree-checkbox.rc-tree-checkbox-checked {
-  @apply bg-green-400;
+  @apply bg-green-700;
 }
 
 .rc-tree-checkbox.rc-tree-checkbox-indeterminate {
   @apply bg-green-200;
+}
+
+.rc-tree-node-content-wrapper {
+  @apply text-ellipsis truncate overflow-hidden;
 }
 
 /* ka-table overrides */

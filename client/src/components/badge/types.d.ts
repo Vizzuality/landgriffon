@@ -4,4 +4,5 @@ export type BadgeProps = {
   className?: string;
   removable?: boolean;
   onClick?: (data: BadgeProps['data']) => void;
+  theme?: string;
 };

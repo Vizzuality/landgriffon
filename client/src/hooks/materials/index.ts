@@ -18,8 +18,6 @@ export type MaterialsTreesParams = {
 };
 
 export function useMaterials(): ResponseData {
-  // const [session] = useSession();
-
   const query = useQuery(
     ['materials'],
     async () =>
@@ -27,9 +25,6 @@ export function useMaterials(): ResponseData {
         .request({
           method: 'GET',
           url: 'impact/materials',
-          headers: {
-            // Authorization: `Bearer ${session.accessToken}`,
-          },
         })
         .then((response) => response.data),
     {
@@ -50,8 +45,6 @@ export function useMaterials(): ResponseData {
 }
 
 export function useMaterialsTrees(params: MaterialsTreesParams): ResponseData {
-  // const [session] = useSession();
-
   const query = useQuery(
     ['materials-trees', params],
     async () =>
@@ -60,9 +53,6 @@ export function useMaterialsTrees(params: MaterialsTreesParams): ResponseData {
           method: 'GET',
           url: '/materials/trees',
           params,
-          headers: {
-            // Authorization: `Bearer ${session.accessToken}`,
-          },
         })
         .then((response) => response.data),
     {

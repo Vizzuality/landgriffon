@@ -13,8 +13,6 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
 type ResponseData = UseQueryResult<Indicator[]>;
 
 export function useIndicators(): ResponseData {
-  // const [session] = useSession();
-
   const query = useQuery(
     ['indicators'],
     async () =>
@@ -22,9 +20,6 @@ export function useIndicators(): ResponseData {
         .request({
           method: 'GET',
           url: '/indicators',
-          headers: {
-            // Authorization: `Bearer ${session.accessToken}`,
-          },
         })
         .then((response) => response.data),
     {

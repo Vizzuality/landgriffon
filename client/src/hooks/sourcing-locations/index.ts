@@ -28,8 +28,6 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
 export function useSourcingLocationsMaterials(
   params: SourcingLocationsParams,
 ): SourcingLocationsMaterialsDataResponse {
-  // const [session] = useSession();
-
   const query = useQuery(
     ['sourcingLocationsMaterials', params],
     async () =>
@@ -38,9 +36,6 @@ export function useSourcingLocationsMaterials(
           method: 'GET',
           url: '/sourcing-locations/materials',
           params,
-          headers: {
-            // Authorization: `Bearer ${session.accessToken}`,
-          },
         })
         .then((response) => response.data),
     {

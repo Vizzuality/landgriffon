@@ -18,8 +18,6 @@ export type AdminRegionsTreesParams = {
 };
 
 export function useAdminRegions(): ResponseData {
-  // const [session] = useSession();
-
   const query = useQuery(
     ['admin-regions'],
     async () =>
@@ -27,9 +25,6 @@ export function useAdminRegions(): ResponseData {
         .request({
           method: 'GET',
           url: '/impact/admin-regions/',
-          headers: {
-            // Authorization: `Bearer ${session.accessToken}`,
-          },
         })
         .then((response) => response.data),
     {
@@ -50,8 +45,6 @@ export function useAdminRegions(): ResponseData {
 }
 
 export function useAdminRegionsTrees(params: AdminRegionsTreesParams): ResponseData {
-  // const [session] = useSession();
-
   const query = useQuery(
     ['admin-regions-trees'],
     async () =>
@@ -60,9 +53,6 @@ export function useAdminRegionsTrees(params: AdminRegionsTreesParams): ResponseD
           method: 'GET',
           url: '/admin-regions/trees',
           params,
-          headers: {
-            // Authorization: `Bearer ${session.accessToken}`,
-          },
         })
         .then((response) => response.data),
     {

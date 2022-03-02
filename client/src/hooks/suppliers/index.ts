@@ -18,8 +18,6 @@ export type SuppliersTreesParams = {
 };
 
 export function useSuppliers(): ResponseData {
-  // const [session] = useSession();
-
   const query = useQuery(
     ['suppliers'],
     async () =>
@@ -27,9 +25,6 @@ export function useSuppliers(): ResponseData {
         .request({
           method: 'GET',
           url: 'impact/suppliers',
-          headers: {
-            // Authorization: `Bearer ${session.accessToken}`,
-          },
         })
         .then((response) => response.data),
     {
@@ -50,8 +45,6 @@ export function useSuppliers(): ResponseData {
 }
 
 export function useSuppliersTrees(params: SuppliersTreesParams): ResponseData {
-  // const [session] = useSession();
-
   const query = useQuery(
     ['suppliers-trees'],
     async () =>
@@ -60,9 +53,6 @@ export function useSuppliersTrees(params: SuppliersTreesParams): ResponseData {
           method: 'GET',
           url: '/suppliers/trees',
           params,
-          headers: {
-            // Authorization: `Bearer ${session.accessToken}`,
-          },
         })
         .then((response) => response.data),
     {

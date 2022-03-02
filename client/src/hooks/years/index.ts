@@ -18,8 +18,6 @@ export function useYears(
   materials: AnalysisState['filters']['materials'],
   indicator: AnalysisState['filters']['indicator'],
 ): YearsResponse {
-  // const [session] = useSession();
-
   const result = useQuery(
     ['years', layer, materials, indicator],
     async () =>
@@ -27,9 +25,6 @@ export function useYears(
         .request<YearsData>({
           method: 'GET',
           url: '/h3/years',
-          headers: {
-            // Authorization: `Bearer ${session.accessToken}`,
-          },
           params: {
             layer,
             ...(materials && materials.length

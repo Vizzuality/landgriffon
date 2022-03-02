@@ -22,9 +22,6 @@ module.exports = {
         125: '30.875rem',
         250: '48.75rem',
       },
-      screens: {
-        xsm: '32rem',
-      },
     },
     colors: {
       black: colors.black,

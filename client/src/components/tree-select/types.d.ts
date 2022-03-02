@@ -19,4 +19,5 @@ export type TreeSelectProps = {
   onSearch?: (query: string) => unknown;
   theme?: 'default' | 'inline-primary';
   ellipsis?: boolean;
+  fitContent?: boolean;
 };

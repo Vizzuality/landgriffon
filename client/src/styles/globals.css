@@ -81,6 +81,10 @@
   @apply text-ellipsis truncate overflow-hidden;
 }
 
+.rc-tree-title {
+  @apply text-gray-900;
+}
+
 /* ka-table overrides */
 .ka {
   /* @apply bg-transparent; */

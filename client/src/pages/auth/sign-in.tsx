@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -8,6 +8,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import AuthenticationLayout from 'layouts/authentication';
 import { Label, Input, Checkbox } from 'components/forms';
+import { Button } from 'components/button';
 
 const schemaValidation = yup.object({
   username: yup.string().email().required(),
@@ -16,6 +17,7 @@ const schemaValidation = yup.object({
 });
 
 const SignIn: React.FC = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { query } = useRouter();
 
   const {
@@ -27,7 +29,10 @@ const SignIn: React.FC = () => {
   });
 
   const handleSignIn = useCallback(
-    (data) => signIn('credentials', { ...data, callbackUrl: query.callbackUrl || '/analysis' }),
+    (data) => {
+      setIsLoading(true);
+      signIn('credentials', { ...data, callbackUrl: query.callbackUrl || '/analysis' });
+    },
     [query.callbackUrl],
   );
 
@@ -83,12 +88,9 @@ const SignIn: React.FC = () => {
               </div>
 
               <div>
-                <button
-                  type="submit"
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-800 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                >
+                <Button type="submit" theme="primary" className="w-full" loading={isLoading}>
                   Sign in
-                </button>
+                </Button>
               </div>
             </form>
           </div>

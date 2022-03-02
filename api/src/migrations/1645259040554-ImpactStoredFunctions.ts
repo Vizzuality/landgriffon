@@ -283,13 +283,6 @@ export class ImpactStoredFunctions1645259040554 implements MigrationInterface {
 
     DROP FUNCTION IF EXISTS sum_weighted_carbon_over_georegion();
 
-
-
-
-
-
-
-
     `);
   }
 }

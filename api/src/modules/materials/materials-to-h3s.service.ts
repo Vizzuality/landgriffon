@@ -34,7 +34,6 @@ export class MaterialsToH3sService extends Repository<MaterialToH3> {
         .andWhere('h3data.year = :year', { year: args.year })
         .orderBy('year', 'ASC');
     }
-
     return queryBuilder.getRawOne();
   }
 }

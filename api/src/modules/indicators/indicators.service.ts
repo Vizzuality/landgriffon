@@ -125,7 +125,6 @@ export class IndicatorsService extends AppBaseService<
         `No Indicators with related H3 Data could be found`,
       );
     }
-    console.log('RESULT', indicators);
     return indicators;
   }
 }

@@ -1,5 +1,6 @@
 import cx from 'classnames';
 import { forwardRef } from 'react';
+import Loading from 'components/loading';
 
 const COMMON_CLASSNAMES = 'inline-flex items-center justify-center rounded-md cursor-pointer';
 
@@ -21,6 +22,7 @@ const SIZE = {
 export type AnchorButtonProps = {
   theme?: 'primary' | 'secondary' | 'textLight';
   size?: 'xs' | 'base' | 'xl' | 'text';
+  loading?: boolean;
 };
 
 // Button props
@@ -41,10 +43,17 @@ type Overload = {
 // Guard to check if href exists in props
 const hasHref = (props: ButtonProps | AnchorProps): props is AnchorProps => 'href' in props;
 
-function buildClassName({ className, disabled, size = 'base', theme = 'primary' }: AnchorProps) {
+function buildClassName({
+  className,
+  disabled,
+  size = 'base',
+  theme = 'primary',
+  loading = false,
+}: AnchorProps) {
   return cx(COMMON_CLASSNAMES, THEME[theme], SIZE[size], {
     [className]: !!className,
-    'opacity-50 pointer-events-none': disabled,
+    'opacity-50 pointer-events-none hover:bg-green-700': disabled,
+    'pointer-events-none hover:bg-green-700': loading,
   });
 }
 
@@ -127,6 +136,7 @@ export const Button: React.FC<ButtonProps> = ({
   size = 'base',
   className,
   disabled,
+  loading = true,
   ...restProps
 }: ButtonProps) => (
   <button
@@ -136,11 +146,12 @@ export const Button: React.FC<ButtonProps> = ({
       disabled,
       size,
       theme,
+      loading,
     } as AnchorProps)}
-    disabled={disabled}
+    disabled={loading || disabled}
     {...restProps}
   >
-    {children}
+    {loading ? <Loading className="text-white" /> : children}
   </button>
 );
 

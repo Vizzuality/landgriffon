@@ -1,6 +1,8 @@
 import axios from 'axios';
 import Jsona from 'jsona';
-import { signOut } from 'next-auth/react';
+import { getSession, signOut } from 'next-auth/react';
+
+// TO-DO: refactor api service
 
 const dataFormatter = new Jsona();
 
@@ -46,8 +48,18 @@ const onResponseError = (error) => {
   return Promise.reject(error);
 };
 
-apiService.interceptors.response.use(onResponseSuccess, onResponseError);
+const authorizedRequest = async (config) => {
+  const { accessToken } = await getSession();
+  config.headers['Authorization'] = `Bearer ${accessToken}`;
+  return config;
+};
 
+apiService.interceptors.response.use(onResponseSuccess, onResponseError);
 apiRawService.interceptors.response.use(onResponseSuccess, onResponseError);
+apiWithMetadataService.interceptors.response.use(onResponseSuccess, onResponseError);
+
+apiService.interceptors.request.use(authorizedRequest, onResponseError);
+apiRawService.interceptors.request.use(authorizedRequest, onResponseError);
+apiWithMetadataService.interceptors.request.use(authorizedRequest, onResponseError);
 
 export default apiService;

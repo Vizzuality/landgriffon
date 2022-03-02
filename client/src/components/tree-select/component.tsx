@@ -25,7 +25,6 @@ const THEMES = {
     arrow: 'inset-y-0 right-0 items-center pr-2  text-gray-900',
     treeNodes:
       'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
-    treeContent: 'left-0 right-0',
   },
   'inline-primary': {
     label: 'truncate text-ellipsis font-bold cursor-pointer px-0 py-0',
@@ -56,6 +55,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   onSearch,
   theme = 'default',
   ellipsis = false,
+  fitContent = false,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -316,8 +316,8 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
       >
         <div
           className={classNames(
-            THEMES[theme].treeContent,
             'absolute z-20 min-w-full max-h-96 bg-white shadow-lg rounded-md mt-1 ring-1 ring-black ring-opacity-5 overflow-y-auto overflow-x-hidden',
+            { 'left-0 right-0': fitContent },
           )}
         >
           {loading && (

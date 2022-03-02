@@ -20,27 +20,22 @@ const Badge: React.FC<BadgeProps> = ({
     [data, onClick],
   );
 
-  const THEMES_BADGE_WRAPPER = {
-    default: 'bg-green-50 rounded-xl',
-  };
-
-  const THEMES_BADGE_LABEL = {
-    default: 'text-gray-900',
-    primary: 'text-rgeen-900',
+  const THEMES = {
+    default: {
+      wrapper: 'bg-green-50 rounded-xl',
+    },
   };
 
   return (
     <span
       className={classNames(
         'inline-flex items-center py-0.5 font-medium  text-green-700 overflow-hidden',
-        THEMES_BADGE_WRAPPER[theme],
+        THEMES[theme].wrapper,
         removable ? 'pl-2 pr-0.5' : 'px-2',
         className,
       )}
     >
-      <span className={classNames('truncate text-ellipsis', THEMES_BADGE_LABEL[theme])}>
-        {children}
-      </span>
+      <span className="truncate text-ellipsis text-green-900">{children}</span>
       {removable && (
         <button
           type="button"

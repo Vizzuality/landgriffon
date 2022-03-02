@@ -15,6 +15,7 @@ type OriginRegionsFilterProps = {
   onChange?: TreeSelectProps['onChange'];
   theme?: 'default' | 'inline-primary';
   ellipsis?: TreeSelectProps['ellipsis'];
+  fitContent?: TreeSelectProps['fitContent'];
 };
 
 const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
@@ -25,6 +26,7 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
   onChange,
   theme,
   ellipsis,
+  fitContent,
 }) => {
   const { data, isFetching } = useAdminRegionsTrees({ depth, withSourcingLocations });
 
@@ -52,6 +54,7 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
       current={current}
       theme={theme}
       ellipsis={ellipsis}
+      fitContent={fitContent}
     />
   );
 };

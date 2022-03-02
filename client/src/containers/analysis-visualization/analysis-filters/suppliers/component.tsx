@@ -16,6 +16,7 @@ type SuppliersFilterProps = {
   onChange?: TreeSelectProps['onChange'];
   theme?: 'default' | 'inline-primary';
   ellipsis?: TreeSelectProps['ellipsis'];
+  fitContent?: TreeSelectProps['fitContent'];
 };
 
 const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
@@ -26,6 +27,7 @@ const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
   onChange,
   theme,
   ellipsis,
+  fitContent,
 }) => {
   const { data, isFetching } = useSuppliersTrees({ depth, withSourcingLocations });
 
@@ -53,6 +55,7 @@ const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
       current={current}
       theme={theme}
       ellipsis={ellipsis}
+      fitContent={fitContent}
     />
   );
 };

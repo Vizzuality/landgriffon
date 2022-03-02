@@ -10,6 +10,7 @@ import { Supplier } from 'modules/suppliers/supplier.entity';
 import { Logger, NotFoundException } from '@nestjs/common';
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
+import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 
 export class ImpactTableData {
   year: number;
@@ -175,7 +176,9 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
    * @description Retrieves data to calculate Indicator Records for all Sourcing Records present in the DB
    * Uses stored functions created with migration: 1645259040554-ImpactStoredFunctions.ts
    */
-  async getSourcingRecordDataToCalculateIndicatorRecords(): Promise<any> {
+  async getIndicatorRawDataForAllSourcingRecords(): Promise<
+    SourcingRecordsWithIndicatorRawDataDto[]
+  > {
     try {
       const response: any = await this.query(`
       SELECT
@@ -196,11 +199,11 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
                   SELECT
                       id,
                       sum_material_over_georegion("geoRegionId", "materialId", 'producer') as production,
-                      sum_material_over_georegion("geoRegionId", "materialId", 'harvest') as harvested_area,
-                      sum_weighted_deforestation_over_georegion("geoRegionId", "materialId", 'harvest') as raw_deforestation,
-                      sum_weighted_biodiversity_over_georegion("geoRegionId", "materialId", 'harvest') as raw_biodiversity,
-                      sum_weighted_carbon_over_georegion("geoRegionId", "materialId", 'harvest') as raw_carbon,
-                      sum_weighted_water_over_georegion("geoRegionId") as raw_water
+                      sum_material_over_georegion("geoRegionId", "materialId", 'harvest') as "harvestedArea",
+                      sum_weighted_deforestation_over_georegion("geoRegionId", "materialId", 'harvest') as "rawDeforestation",
+                      sum_weighted_biodiversity_over_georegion("geoRegionId", "materialId", 'harvest') as "rawBiodiversity",
+                      sum_weighted_carbon_over_georegion("geoRegionId", "materialId", 'harvest') as "rawCarbon",
+                      sum_weighted_water_over_georegion("geoRegionId") as "rawWater"
                   FROM
                       sourcing_location
               ) as sl

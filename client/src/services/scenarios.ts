@@ -1,3 +1,4 @@
+// NOTE: this file is deprecated, please ensure we are not using this file before removed it
 import axios from 'axios';
 import Jsona from 'jsona';
 import { signOut } from 'next-auth/react';

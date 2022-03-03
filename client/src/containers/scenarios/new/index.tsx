@@ -3,9 +3,12 @@ import { useMemo, useCallback } from 'react';
 import cx from 'classnames';
 import { useQuery } from 'react-query';
 import { apiService } from 'services/api';
+import { useRouter } from 'next/router';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis, setScenarioTab, setSubContentCollapsed } from 'store/features/analysis';
+
+import { useInterventions } from 'hooks/scenarios';
 
 import Button from 'components/button';
 import InterventionsList from 'containers/interventions/list';
@@ -29,31 +32,15 @@ const items = [
   },
 ];
 
-const interventions = [
-  {
-    id: 1,
-    title: 'Replace 50% of Palm Oil with Soybean Oil (RFA-certified) by 2025',
-  },
-  {
-    id: 2,
-    title: 'Change supplier of Rubber for pep.a.1.001 to Namazie International in 2022',
-  },
-  {
-    id: 3,
-    title: 'Change production efficiency of Palm oil for pep.a1 in 2 regions by 2025',
-  },
-  {
-    id: 4,
-    title: 'Change production efficiency of Cocoa for pep.a1 in 2 regions by 2025',
-  },
-];
-
 const ScenariosNewContainer: React.FC = () => {
   const response = useQuery('scenarioNew', () =>
     apiService
       .post('/scenarios', { title: 'Untitled' })
       .then(({ data: responseData }) => responseData.data),
   );
+
+  const { query } = useRouter();
+  const { data: interventions } = useInterventions({ sort: query.sortBy as string });
 
   if (response.isSuccess) {
     // router.replace({

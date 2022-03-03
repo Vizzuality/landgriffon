@@ -49,8 +49,9 @@ export class Indicator extends BaseEntity {
   @Column({ type: 'text', nullable: true, unique: true })
   shortName?: string;
 
-  @Column({ type: 'text', nullable: false, unique: true })
-  nameCode!: string;
+  // TODO: Make this non-nullable and update tests
+  @Column({ type: 'text', nullable: true, unique: true })
+  nameCode: string;
 
   @Column({ type: 'text', nullable: true })
   @ApiPropertyOptional()

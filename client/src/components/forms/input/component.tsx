@@ -29,7 +29,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const Icon = icon;
 
     return (
-      <div className={classnames('mt-1', className)}>
+      <div className={classnames('relative mt-1', className)}>
         <div className="flex items-center">
           {icon && <Icon className={THEMES[theme].icon} />}
           <input

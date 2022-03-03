@@ -3,7 +3,7 @@ import { useMemo, useCallback } from 'react';
 import cx from 'classnames';
 import { useRouter } from 'next/router';
 import { useScenario } from 'hooks/scenarios';
-import { useInterventions } from 'hooks/scenarios';
+import { useInterventions } from 'hooks/interventions';
 import { useQuery } from 'react-query';
 import { apiService } from 'services/api';
 
@@ -47,7 +47,7 @@ const ScenariosNewContainer: React.FC = () => {
     // router.replace({
     //   pathname: '/analysis/scenario',
     //   query: {
-    //     new: response.data.id,
+    //     edit: response.data.id,
     //   },
     // });
   }

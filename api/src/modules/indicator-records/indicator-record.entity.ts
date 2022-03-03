@@ -94,6 +94,6 @@ export class IndicatorRecord extends TimestampedBaseEntity {
   scaler: number;
 
   // Points to related H3 Data for indicator. Not a relation for the time being
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true })
   h3DataId: string;
 }

@@ -187,11 +187,11 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
           sr.year,
           sl.id as "sourcingLocationId",
           sl.production,
-          sl.harvested_area,
-          sl.raw_deforestation,
-          sl.raw_biodiversity,
-          sl.raw_carbon,
-          sl.raw_water
+          sl."harvestedArea",
+          sl."rawDeforestation",
+          sl."rawBiodiversity",
+          sl."rawCarbon",
+          sl."rawWater"
       FROM
           sourcing_records sr
           INNER JOIN

@@ -19,6 +19,7 @@ const ACTUAL_DATA: Scenario = {
 };
 
 type ResponseData = UseQueryResult<Scenario[]>;
+type ResponseDataScenario = UseQueryResult<Scenario>;
 
 export function useScenarios(queryParams: { sort: string }): ResponseData {
   const response = useQuery(
@@ -43,5 +44,28 @@ export function useScenarios(queryParams: { sort: string }): ResponseData {
       ...response,
       data,
     } as ResponseData;
+  }, [response]);
+}
+
+export function useScenario(id: string, queryParams: { sort: string }): ResponseDataScenario {
+  const response = useQuery(
+    ['scenario', queryParams],
+    async () =>
+      apiService
+        .request({
+          method: 'GET',
+          url: `/scenarios/${id}`,
+          params: queryParams,
+        })
+        .then(({ data: responseData }) => responseData.data),
+    DEFAULT_QUERY_OPTIONS,
+  );
+
+  return useMemo<ResponseDataScenario>((): ResponseDataScenario => {
+    const data = response.isSuccess && response.data ? response.data : (ACTUAL_DATA as Scenario);
+    return {
+      ...response,
+      data,
+    } as ResponseDataScenario;
   }, [response]);
 }

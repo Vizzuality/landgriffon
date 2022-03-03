@@ -70,7 +70,7 @@ const AnalysisPage: React.FC = () => {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
-                <div className="pt-6 pb-10">
+                <div className="py-6">
                   <Breadcrumb pages={pages} />
                 </div>
                 {analysisContent()}

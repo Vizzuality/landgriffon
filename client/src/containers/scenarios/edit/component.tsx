@@ -2,7 +2,10 @@ import { useMemo, useCallback } from 'react';
 
 import cx from 'classnames';
 import { useRouter } from 'next/router';
-import { useScenario, useInterventions } from 'hooks/scenarios';
+import { useScenario } from 'hooks/scenarios';
+import { useInterventions } from 'hooks/scenarios';
+import { useQuery } from 'react-query';
+import { apiService } from 'services/api';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis, setScenarioTab, setSubContentCollapsed } from 'store/features/analysis';
@@ -34,6 +37,20 @@ const ScenariosNewContainer: React.FC = () => {
 
   const { data: interventions } = useInterventions({ sort: query.sortBy as string });
 
+  const response = useQuery('scenarioNew', () =>
+    apiService
+      .post('/scenarios', { title: 'Untitled' })
+      .then(({ data: responseData }) => responseData.data),
+  );
+
+  if (response.isSuccess) {
+    // router.replace({
+    //   pathname: '/analysis/scenario',
+    //   query: {
+    //     new: response.data.id,
+    //   },
+    // });
+  }
   const dispatch = useAppDispatch();
   const handleNewScenarioFeature = useCallback(() => {
     dispatch(setSubContentCollapsed(false));
@@ -45,7 +62,7 @@ const ScenariosNewContainer: React.FC = () => {
     [scenarioCurrentTab],
   );
 
-  const { data, isLoading, error } = useScenario({ id: currentScenario as string });
+  const { data, isLoading, error } = useScenario(currentScenario as string, {});
   const { title } = !isLoading && !error && data;
 
   const handleTab = useCallback((step) => dispatch(setScenarioTab(step)), [dispatch]);
@@ -102,7 +119,6 @@ const ScenariosNewContainer: React.FC = () => {
               </Button>
             </div>
           </div>
-          {console.log(interventions)}
           {interventionsContent && <InterventionsList items={interventions} />}
           {!interventionsContent && <GrowthList items={items} />}
         </div>

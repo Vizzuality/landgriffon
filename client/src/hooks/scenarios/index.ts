@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useQuery, UseQueryResult, UseQueryOptions } from 'react-query';
-import { getScenarios } from 'services/scenarios';
+import { apiService } from 'services/api';
 import type { Scenario } from 'containers/scenarios/types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
@@ -23,7 +23,14 @@ type ResponseData = UseQueryResult<Scenario[]>;
 export function useScenarios(queryParams: { sort: string }): ResponseData {
   const response = useQuery(
     ['scenariosList', queryParams],
-    async () => getScenarios(queryParams),
+    async () =>
+      apiService
+        .request({
+          method: 'GET',
+          url: '/scenarios',
+          params: queryParams,
+        })
+        .then(({ data: responseData }) => responseData.data),
     DEFAULT_QUERY_OPTIONS,
   );
 

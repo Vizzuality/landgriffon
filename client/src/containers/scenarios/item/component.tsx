@@ -33,7 +33,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
       pathname: '/analysis',
       query: {
         ...query,
-        edit_scenario: data.id,
+        scenario: 'edit',
       },
     });
   }, []);

@@ -7,7 +7,6 @@
     "password": "",
     "database": "landgriffon_test",
     "synchronize": true,
-    "migrationsRun": true,
     "dropSchema": true,
     "logging": ["error"]
   },

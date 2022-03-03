@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useQuery, UseQueryResult, UseQueryOptions } from 'react-query';
-import apiService from 'services/api';
+import { apiService } from 'services/api';
 import type { Material } from 'types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
@@ -26,7 +26,7 @@ export function useMaterials(): ResponseData {
           method: 'GET',
           url: 'impact/materials',
         })
-        .then((response) => response.data),
+        .then(({ data: responseData }) => responseData.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
     },
@@ -54,7 +54,7 @@ export function useMaterialsTrees(params: MaterialsTreesParams): ResponseData {
           url: '/materials/trees',
           params,
         })
-        .then((response) => response.data),
+        .then(({ data: responseData }) => responseData.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
     },

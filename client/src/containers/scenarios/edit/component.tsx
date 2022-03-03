@@ -1,9 +1,8 @@
 import { useMemo, useCallback } from 'react';
 
 import cx from 'classnames';
-import { useQuery } from 'react-query';
-import { createScenario } from 'services/scenarios';
-import { useScenario } from 'hooks/scenarios';
+import { useRouter } from 'next/router';
+import { useScenario, useInterventions } from 'hooks/scenarios';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis, setScenarioTab, setSubContentCollapsed } from 'store/features/analysis';
@@ -30,36 +29,11 @@ const items = [
   },
 ];
 
-const interventions = [
-  {
-    id: 1,
-    title: 'Replace 50% of Palm Oil with Soybean Oil (RFA-certified) by 2025',
-  },
-  {
-    id: 2,
-    title: 'Change supplier of Rubber for pep.a.1.001 to Namazie International in 2022',
-  },
-  {
-    id: 3,
-    title: 'Change production efficiency of Palm oil for pep.a1 in 2 regions by 2025',
-  },
-  {
-    id: 4,
-    title: 'Change production efficiency of Cocoa for pep.a1 in 2 regions by 2025',
-  },
-];
-
 const ScenariosNewContainer: React.FC = () => {
-  const response = useQuery('scenarioNew', () => createScenario({ title: 'Untitled' }));
+  const { query } = useRouter();
 
-  if (response.isSuccess) {
-    // router.replace({
-    //   pathname: '/analysis/scenario',
-    //   query: {
-    //     new: response.data.id,
-    //   },
-    // });
-  }
+  const { data: interventions } = useInterventions({ sort: query.sortBy as string });
+
   const dispatch = useAppDispatch();
   const handleNewScenarioFeature = useCallback(() => {
     dispatch(setSubContentCollapsed(false));
@@ -128,6 +102,7 @@ const ScenariosNewContainer: React.FC = () => {
               </Button>
             </div>
           </div>
+          {console.log(interventions)}
           {interventionsContent && <InterventionsList items={interventions} />}
           {!interventionsContent && <GrowthList items={items} />}
         </div>

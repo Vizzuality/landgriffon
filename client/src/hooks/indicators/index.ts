@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useQuery, UseQueryResult, UseQueryOptions } from 'react-query';
-import apiService from 'services/api';
+import { apiService } from 'services/api';
 import type { Indicator } from 'types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
@@ -21,7 +21,7 @@ export function useIndicators(): ResponseData {
           method: 'GET',
           url: '/indicators',
         })
-        .then((response) => response.data),
+        .then(({ data: responseData }) => responseData.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
     },

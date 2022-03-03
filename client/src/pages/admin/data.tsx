@@ -30,7 +30,7 @@ const AdminDataPage: React.FC = () => {
 
   const {
     data: sourcingData,
-    metadata: sourcingMetadata,
+    meta: sourcingMetadata,
     isFetching: isFetchingSourcingData,
   } = useSourcingLocationsMaterials({
     ...(sorting && {

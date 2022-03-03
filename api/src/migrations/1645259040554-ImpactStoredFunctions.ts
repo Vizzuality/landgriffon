@@ -3,7 +3,6 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 export class ImpactStoredFunctions1645259040554 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-
       CREATE OR REPLACE FUNCTION get_h3_uncompact_geo_region(geo_region_id uuid, h3_resolution int)
       RETURNS TABLE (h3index h3index) AS
       $$
@@ -34,11 +33,10 @@ export class ImpactStoredFunctions1645259040554 implements MigrationInterface {
           RETURN sum;
         END;
       $$
-      LANGUAGE plpgsql;
+      LANGUAGE plpgsql`);
 
-      ------
-
-      CREATE OR REPLACE FUNCTION sumprod_h3_grids_over_georegion(
+    await queryRunner.query(`
+    CREATE OR REPLACE FUNCTION sumprod_h3_grids_over_georegion(
         geo_region_id uuid,
         h3_resolution int,
         h3_table_name_1 varchar,
@@ -63,10 +61,9 @@ export class ImpactStoredFunctions1645259040554 implements MigrationInterface {
           RETURN sumprod;
         END;
       $$
-      LANGUAGE plpgsql;
+      LANGUAGE plpgsql;`);
 
-      -----
-
+    await queryRunner.query(`
       CREATE OR REPLACE FUNCTION get_h3_table_column_for_material(material_id uuid, h3_data_type material_to_h3_type_enum)
       RETURNS TABLE (h3_table_name varchar, h3_column_name varchar, h3_resolution int) AS
       $$
@@ -77,10 +74,9 @@ export class ImpactStoredFunctions1645259040554 implements MigrationInterface {
         AND material_to_h3.type = h3_data_type
         LIMIT 1;
       $$
-      LANGUAGE SQL;
+      LANGUAGE SQL;`);
 
-      -----
-
+    await queryRunner.query(`
       CREATE OR REPLACE FUNCTION sum_material_over_georegion(
         geo_region_id uuid,
         material_id uuid,
@@ -105,10 +101,9 @@ export class ImpactStoredFunctions1645259040554 implements MigrationInterface {
           RETURN sum;
         END;
       $$
-      LANGUAGE plpgsql;
+      LANGUAGE plpgsql;`);
 
-      -------
-
+    await queryRunner.query(`
       CREATE OR REPLACE FUNCTION sum_weighted_deforestation_over_georegion(
        geo_region_id uuid,
        material_id uuid,
@@ -143,9 +138,9 @@ export class ImpactStoredFunctions1645259040554 implements MigrationInterface {
       END;
     $$
     LANGUAGE plpgsql;
+      `);
 
-    ------
-
+    await queryRunner.query(`
     CREATE OR REPLACE FUNCTION sum_weighted_biodiversity_over_georegion(
       geo_region_id uuid,
       material_id uuid,
@@ -188,10 +183,10 @@ export class ImpactStoredFunctions1645259040554 implements MigrationInterface {
       END;
     $$
     LANGUAGE plpgsql;
+    `);
 
-    -------
-
-    CREATE OR REPLACE FUNCTION sum_weighted_carbon_over_georegion(
+    await queryRunner.query(`
+     CREATE OR REPLACE FUNCTION sum_weighted_carbon_over_georegion(
       geo_region_id uuid,
       material_id uuid,
       h3_data_type material_to_h3_type_enum
@@ -233,11 +228,10 @@ export class ImpactStoredFunctions1645259040554 implements MigrationInterface {
     END;
   $$
   LANGUAGE plpgsql;
+    `);
 
-  ------
-
-
-  CREATE OR REPLACE FUNCTION sum_weighted_water_over_georegion(
+    await queryRunner.query(`
+    CREATE OR REPLACE FUNCTION sum_weighted_water_over_georegion(
     geo_region_id uuid
    )
   RETURNS float AS
@@ -264,7 +258,8 @@ export class ImpactStoredFunctions1645259040554 implements MigrationInterface {
     END;
   $$
   LANGUAGE plpgsql;
-       `);
+
+  `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

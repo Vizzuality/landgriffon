@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis, setScenarioTab, setSubContentCollapsed } from 'store/features/analysis';
 
-import { useInterventions } from 'hooks/scenarios';
+import { useInterventions } from 'hooks/interventions';
 
 import Button from 'components/button';
 import InterventionsList from 'containers/interventions/list';

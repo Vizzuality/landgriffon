@@ -16,8 +16,8 @@ export class IndicatorRecordCalculatedValuesDto {
   carbonLossPerHarvestedAreaLandUse: number;
 
   // Indicator name codes:
-  [INDICATOR_TYPES.DEFORESTATION]: string;
-  [INDICATOR_TYPES.BIODIVERSITY_LOSS]: string;
-  [INDICATOR_TYPES.CARBON_EMISSIONS]: string;
-  [INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE]: string;
+  [INDICATOR_TYPES.DEFORESTATION]: number;
+  [INDICATOR_TYPES.BIODIVERSITY_LOSS]: number;
+  [INDICATOR_TYPES.CARBON_EMISSIONS]: number;
+  [INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE]: number;
 }

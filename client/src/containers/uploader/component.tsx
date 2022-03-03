@@ -2,7 +2,6 @@ import { useMemo, useEffect, useState, useCallback } from 'react';
 
 import classNames from 'classnames';
 import Image from 'next/image';
-// import { useSession } from 'next-auth/client';
 import { useDropzone } from 'react-dropzone';
 
 import { FILE_UPLOADER_MAX_SIZE } from 'constants/file-uploader-size-limits';
@@ -30,12 +29,11 @@ const Uploader: React.FC<UploaderProps> = ({
   onUpload,
   onError,
 }: UploaderProps) => {
-  // const [session] = useSession();
-
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [alert, setAlert] = useState<AlertsItemProps>(null);
 
+  // TODO: consider replace by a hook
   const uploadFiles = useCallback(
     (files: File[]) => {
       if (!(files.length > 0)) return;
@@ -52,9 +50,6 @@ const Uploader: React.FC<UploaderProps> = ({
           method: 'POST',
           url: url,
           data: formData,
-          headers: {
-            // Authorization: `Bearer ${session.accessToken}`,
-          },
         })
         .then((response) => {
           onUpload && onUpload(response);

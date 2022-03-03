@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useQuery, UseQueryResult, UseQueryOptions } from 'react-query';
-import apiService from 'services/api';
+import { apiService } from 'services/api';
 import type { Supplier } from 'types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
@@ -26,7 +26,7 @@ export function useSuppliers(): ResponseData {
           method: 'GET',
           url: 'impact/suppliers',
         })
-        .then((response) => response.data),
+        .then(({ data: responseData }) => responseData.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
     },
@@ -54,7 +54,7 @@ export function useSuppliersTrees(params: SuppliersTreesParams): ResponseData {
           url: '/suppliers/trees',
           params,
         })
-        .then((response) => response.data),
+        .then(({ data: responseData }) => responseData.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
     },

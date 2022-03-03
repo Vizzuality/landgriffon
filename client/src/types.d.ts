@@ -123,5 +123,5 @@ export type ImpactData = {
   data: {
     impactTable: ImpactTableData[];
   };
-  metadata: Record<string, unknown>;
+  meta: Record<string, unknown>;
 };

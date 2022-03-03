@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-// import { useSession } from 'next-auth/client';
 import { CSVDownload } from 'react-csv';
 import { noop } from 'lodash';
 
@@ -23,20 +22,16 @@ const Downloader: React.FC<DownloaderProps> = ({
   onError = noop,
   children,
 }: DownloaderProps) => {
-  // const [session] = useSession();
-
   const [headers, setHeaders] = useState<Record<string, string>[]>(null);
   const [data, setData] = useState<Record<string, string>[]>(null);
 
+  // TODO: consider replace by a hook
   const getDataForExport = async () =>
     apiService
       .request({
         method: 'GET',
         url: url,
         params: { ...DEFAULT_PARAMS, ...params },
-        headers: {
-          // Authorization: `Bearer ${session.accessToken}`,
-        },
       })
       .then(({ data }) =>
         transformer

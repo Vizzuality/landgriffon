@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { useQuery, UseQueryResult, UseQueryOptions } from 'react-query';
 import { apiService } from 'services/api';
-import { getInterventions } from 'services/interventions';
 import type { Scenario, Intervention } from 'containers/scenarios/types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
@@ -94,7 +93,14 @@ export function useScenario(id: string, queryParams: { sort: string }): Response
 export function useInterventions(queryParams: { sort: string }): ResponseInterventionsData {
   const response = useQuery(
     ['interventionsList', queryParams],
-    async () => getInterventions(queryParams),
+    async () =>
+      apiService
+        .request({
+          method: 'GET',
+          url: `/scenario-intervention`,
+          params: queryParams,
+        })
+        .then(({ data: responseData }) => responseData.data),
     DEFAULT_QUERY_OPTIONS,
   );
 

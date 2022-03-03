@@ -7,7 +7,7 @@ import { useQueryClient } from 'react-query';
 import { useRouter } from 'next/router';
 
 import ScenariosComparison from 'containers/scenarios/comparison';
-import { deleteScenario } from 'services/scenarios';
+import { apiService } from 'services/api';
 import type { Scenario } from '../types';
 
 type ScenariosItemProps = {
@@ -39,7 +39,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
   }, []);
 
   const handleDelete = useCallback(() => {
-    deleteScenario(data.id).then(() => {
+    apiService.delete(`/scenarios/${data.id}`).then(() => {
       queryClient.invalidateQueries('scenariosList', { exact: true });
     });
   }, []);

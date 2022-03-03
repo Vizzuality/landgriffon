@@ -1,6 +1,8 @@
-import { Fragment, useCallback } from 'react';
+import { useCallback, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { signOut, useSession } from 'next-auth/react';
-import { Popover, Transition } from '@headlessui/react';
+import { Popover } from '@headlessui/react';
+import { usePopper } from 'react-popper';
 import StringAvatar from 'containers/string-avatar';
 import Avatar from 'components/avatar';
 import Loading from 'components/loading';
@@ -9,8 +11,24 @@ const MENU_ITEM_CLASSNAME =
   'block w-full py-2 px-4 text-sm text-left text-gray-900 h-9 hover:bg-green-50';
 
 const UserDropdown: React.FC = () => {
+  const [referenceElement, setReferenceElement] = useState(null);
+  const [popperElement, setPopperElement] = useState(null);
+  const { styles, attributes } = usePopper(referenceElement, popperElement, {
+    placement: 'top-end',
+    strategy: 'fixed',
+    modifiers: [
+      {
+        name: 'offset',
+        options: {
+          offset: [20, 10],
+        },
+      },
+    ],
+  });
+
+  const { data: session, status } = useSession(); // TO-DO: replace by useMe
+
   const handleSignOut = useCallback(() => signOut(), []);
-  const { data: session, status } = useSession();
 
   const renderAvatar = useCallback(
     (className?: string) => {
@@ -27,20 +45,16 @@ const UserDropdown: React.FC = () => {
     <Popover as="div" className="flex justify-center w-full mb-5">
       <div>
         {(!session || status === 'loading') && <Loading className="text-white" />}
-        <Popover.Button>{renderAvatar()}</Popover.Button>
+        <Popover.Button ref={setReferenceElement}>{renderAvatar()}</Popover.Button>
       </div>
-
-      {session && (
-        <Transition
-          as={Fragment}
-          enter="transition ease-out duration-100"
-          enterFrom="transform opacity-0 scale-95"
-          enterTo="transform opacity-100 scale-100"
-          leave="transition ease-in duration-75"
-          leaveFrom="transform opacity-100 scale-100"
-          leaveTo="transform opacity-0 scale-95"
-        >
-          <Popover.Panel className="absolute p-6 bg-white shadow-lg rounded-md bottom-5 left-24 focus:outline-none">
+      {session &&
+        createPortal(
+          <Popover.Panel
+            ref={setPopperElement}
+            style={styles.popper}
+            {...attributes.popper}
+            className="p-6 bg-white shadow-lg rounded-md focus:outline-none z-40"
+          >
             <div className="flex mb-3">
               {renderAvatar('w-14 h-14')}
 
@@ -61,9 +75,9 @@ const UserDropdown: React.FC = () => {
                 Logout
               </button>
             </div>
-          </Popover.Panel>
-        </Transition>
-      )}
+          </Popover.Panel>,
+          document.body,
+        )}
     </Popover>
   );
 };

@@ -31,6 +31,7 @@ import {
 } from 'modules/sourcing-records/sourcing-records.service';
 import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import { IndicatorRecordCalculatedValuesDto } from 'modules/indicator-records/dto/indicator-record-calculated-values.dto';
+import { IndicatorNameCodeWithRelatedH3 } from 'modules/indicators/dto/indicator-namecode-with-related-h3.dto';
 
 @Injectable()
 export class IndicatorRecordsService extends AppBaseService<
@@ -269,12 +270,9 @@ export class IndicatorRecordsService extends AppBaseService<
    * @description Creates Indicator Records from all existing Sourcing Records in the DB
    */
 
-  async createIndicatorRecordsForAllSourcingRecords(): Promise<any> {
-    const indicators: {
-      id: string;
-      nameCode: string;
-      h3DataId: string;
-    }[] = await this.indicatorService.getIndicatorsAndRelatedH3DataIds();
+  async createIndicatorRecordsForAllSourcingRecords(): Promise<void> {
+    const indicators: IndicatorNameCodeWithRelatedH3[] =
+      await this.indicatorService.getIndicatorsAndRelatedH3DataIds();
     const rawData: SourcingRecordsWithIndicatorRawDataDto[] =
       await this.sourcingRecordsService.getSourcingRecordDataToCalculateIndicatorRecords();
     const calculatedData: IndicatorRecordCalculatedValuesDto[] = rawData.map(

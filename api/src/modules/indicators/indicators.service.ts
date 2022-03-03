@@ -15,6 +15,7 @@ import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto'
 import { UpdateIndicatorDto } from 'modules/indicators/dto/update.indicator.dto';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { getManager } from 'typeorm';
+import { IndicatorNameCodeWithRelatedH3 } from 'modules/indicators/dto/indicator-namecode-with-related-h3.dto';
 
 @Injectable()
 export class IndicatorsService extends AppBaseService<
@@ -100,25 +101,18 @@ export class IndicatorsService extends AppBaseService<
   }
 
   async getIndicatorsAndRelatedH3DataIds(): Promise<
-    {
-      id: string;
-      nameCode: string;
-      h3DataId: string;
-    }[]
+    IndicatorNameCodeWithRelatedH3[]
   > {
-    const indicators: {
-      id: string;
-      nameCode: string;
-      h3DataId: string;
-    }[] = await this.indicatorRepository
-      .createQueryBuilder('indicator')
-      .select([
-        'indicator.id as id',
-        'indicator.nameCode as "nameCode"',
-        'h3.id as "h3DataId"',
-      ])
-      .innerJoin(H3Data, 'h3', 'h3.indicatorId = indicator.id')
-      .getRawMany();
+    const indicators: IndicatorNameCodeWithRelatedH3[] =
+      await this.indicatorRepository
+        .createQueryBuilder('indicator')
+        .select([
+          'indicator.id as id',
+          'indicator.nameCode as "nameCode"',
+          'h3.id as "h3DataId"',
+        ])
+        .innerJoin(H3Data, 'h3', 'h3.indicatorId = indicator.id')
+        .getRawMany();
 
     if (!indicators.length) {
       throw new NotFoundException(

@@ -2,7 +2,7 @@ import { useMemo, useCallback } from 'react';
 
 import cx from 'classnames';
 import { useQuery } from 'react-query';
-import { createScenario } from 'services/scenarios';
+import { apiService } from 'services/api';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis, setScenarioTab, setSubContentCollapsed } from 'store/features/analysis';
@@ -49,7 +49,11 @@ const interventions = [
 ];
 
 const ScenariosNewContainer: React.FC = () => {
-  const response = useQuery('scenarioNew', () => createScenario({ title: 'Untitled' }));
+  const response = useQuery('scenarioNew', () =>
+    apiService
+      .post('/scenarios', { title: 'Untitled' })
+      .then(({ data: responseData }) => responseData.data),
+  );
 
   if (response.isSuccess) {
     // router.replace({

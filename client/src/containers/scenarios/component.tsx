@@ -8,7 +8,7 @@ import Lottie from 'lottie-react';
 import { useScenarios } from 'hooks/scenarios';
 import type { Page } from 'components/breadcrumb/types';
 
-import newScenarios from 'utils/lottie/new-scenario.json';
+import noScenariosAnimationData from 'containers/scenarios/animations/noScenariosAnimationData.json';
 
 const ScenariosComponent: React.FC = () => {
   const { query } = useRouter();
@@ -69,7 +69,7 @@ const ScenariosComponent: React.FC = () => {
               </p>
               <div className="w-full">
                 <Lottie
-                  animationData={newScenarios}
+                  animationData={noScenariosAnimationData}
                   loop={true}
                   style={{ height: 74, width: 74, margin: 'auto' }}
                 />

@@ -1,6 +1,8 @@
 import {
   GeocodeResponse,
   GeocodeResponseData,
+  GeocodeResult,
+  Status,
 } from '@googlemaps/google-maps-services-js';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CACHE_MANAGER } from '@nestjs/common';
@@ -10,7 +12,7 @@ import { GeoCodingModule } from 'modules/geo-coding/geo-coding.module';
 import { CacheGeocoder } from 'modules/geo-coding/geocoders/cache.geocoder';
 import { GoogleMapsGeocoder } from 'modules/geo-coding/geocoders/google-maps.geocoder';
 import { Geocoder } from 'modules/geo-coding/geocoders/geocoder.interface';
-import { googleMapsGeocoderResponseMock } from './mocks/google-maps-response.mock';
+import { geocodeResponses } from './mocks/geo-coding.mock-response';
 
 describe('GeoCoding Service (Integration Testing)', () => {
   let cacheGeocoder: CacheGeocoder;
@@ -18,7 +20,13 @@ describe('GeoCoding Service (Integration Testing)', () => {
 
   class GoogleMapsGeocoderMock {
     geocode(): GeocodeResponseData | undefined {
-      const response: Partial<GeocodeResponse> = googleMapsGeocoderResponseMock;
+      const response: Partial<GeocodeResponse> = {
+        data: {
+          results: geocodeResponses[0].results as GeocodeResult[],
+          status: Status.OK,
+          error_message: 'None',
+        },
+      };
       return response.data;
     }
   }
@@ -50,15 +58,16 @@ describe('GeoCoding Service (Integration Testing)', () => {
     const cachedDataBefore: GeocodeResponse | undefined =
       await cacheManager.get(cacheKey);
 
-    await cacheGeocoder.geocode({
-      address: 'Spain',
-    });
+    const geocodingResult: Partial<GeocodeResponseData> =
+      await cacheGeocoder.geocode({
+        address: 'Spain',
+      });
 
     const cachedDataAfter: GeocodeResponse | undefined = await cacheManager.get(
       cacheKey,
     );
 
     expect(cachedDataBefore).toBe(null);
-    expect(cachedDataAfter).toEqual(googleMapsGeocoderResponseMock.data);
+    expect(cachedDataAfter).toEqual(geocodingResult);
   });
 });

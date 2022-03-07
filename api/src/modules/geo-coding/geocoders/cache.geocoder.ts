@@ -17,6 +17,7 @@ export class CacheGeocoder implements GeocoderInterface {
   ) {}
 
   async geocode(args: GeocodeArgs): Promise<GeocodeResponse> {
+    console.log(this.geocacheEnabled);
     if (!this.geocacheEnabled) {
       return this.backendGeocoder.geocode(args);
     }
@@ -37,10 +38,24 @@ export class CacheGeocoder implements GeocoderInterface {
     return Object.values(args).join(':');
   }
 
-  reverseGeocode(coordinates: {
+  async reverseGeocode(coordinates: {
     lat: number;
     lng: number;
   }): Promise<GeocodeResponse> {
-    return this.backendGeocoder.reverseGeocode(coordinates);
+    if (!this.geocacheEnabled) {
+      return this.backendGeocoder.reverseGeocode(coordinates);
+    }
+    const cacheKey: string = this.generateKeyFromRequest(
+      coordinates as GeocodeArgs,
+    );
+    const cachedData: GeocodeResponse | undefined = await this.cacheManager.get(
+      cacheKey,
+    );
+    if (cachedData) return cachedData;
+    const data: GeocodeResponse = await this.backendGeocoder.reverseGeocode(
+      coordinates,
+    );
+    await this.cacheManager.set(cacheKey, data);
+    return data;
   }
 }

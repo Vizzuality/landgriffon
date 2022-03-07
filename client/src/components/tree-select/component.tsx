@@ -222,6 +222,12 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
 
   // Current selection
   useEffect(() => {
+    // Clear selection when current is empty
+    if (current && current.length === 0) {
+      setSelected(null);
+      setSelectedKeys([]);
+      setCheckedKeys([]);
+    }
     if (current && current.length) {
       const currentKeys = current.map(({ value }) => value);
       setSelected(current[0]);

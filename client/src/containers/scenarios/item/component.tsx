@@ -3,11 +3,10 @@ import { format } from 'date-fns';
 import { Menu, RadioGroup, Switch, Transition } from '@headlessui/react';
 import { DotsVerticalIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
-import { useQueryClient } from 'react-query';
 import { useRouter } from 'next/router';
 
 import ScenariosComparison from 'containers/scenarios/comparison';
-import { apiService } from 'services/api';
+import { useDeleteScenario } from 'hooks/scenarios';
 import type { Scenario } from '../types';
 
 type ScenariosItemProps = {
@@ -24,7 +23,6 @@ const DROPDOWN_ITEM_ACTIVE_CLASSNAME = 'bg-gray-100 text-gray-900';
 const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) => {
   const { data, isSelected, isComparisonAvailable } = props;
   const [isComparisonEnabled, setComparisonEnabled] = useState(false);
-  const queryClient = useQueryClient();
   const router = useRouter();
   const { query } = router;
 
@@ -38,11 +36,21 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
     });
   }, []);
 
+  const deleteScenario = useDeleteScenario();
+
   const handleDelete = useCallback(() => {
-    apiService.delete(`/scenarios/${data.id}`).then(() => {
-      queryClient.invalidateQueries('scenariosList', { exact: true });
-    });
-  }, []);
+    deleteScenario.mutate(
+      { id: data.id },
+      // {
+      //   onSuccess: () => {
+      //     console.log('onsucces');
+      //   },
+      //   onError: (error, variables, context) => {
+      //     console.log('error', error, variables, context);
+      //   },
+      // },
+    );
+  }, [deleteScenario, data]);
 
   const handleShare = useCallback(() => {
     console.log('published scenarios');

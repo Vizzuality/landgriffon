@@ -340,7 +340,9 @@ export class IndicatorRecordsService extends AppBaseService<
         );
       },
     );
-    await this.indicatorRecordRepository.insert(indicatorRecords);
+    await this.indicatorRecordRepository.save(indicatorRecords, {
+      chunk: 1000,
+    });
   }
 
   /**

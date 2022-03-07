@@ -21,11 +21,12 @@ import {
   SourcingLocation,
   CANCELED_OR_REPLACING_BY_INTERVENTION,
 } from 'modules/sourcing-locations/sourcing-location.entity';
-import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { SourcingLocationWithRecord } from 'modules/sourcing-locations/dto/sourcing-location-with-record.interface';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
+import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
+import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 
 @Injectable()
 export class ScenarioInterventionsService extends AppBaseService<
@@ -37,8 +38,9 @@ export class ScenarioInterventionsService extends AppBaseService<
   constructor(
     @InjectRepository(ScenarioInterventionRepository)
     protected readonly scenarioInterventionRepository: ScenarioInterventionRepository,
-    protected readonly geoCodingService: GeoCodingService,
+    protected readonly geoCodingService: GeoCodingAbstractClass,
     protected readonly sourcingLocationsService: SourcingLocationsService,
+    protected readonly indicatorRecordsService: IndicatorRecordsService,
   ) {
     super(
       scenarioInterventionRepository,

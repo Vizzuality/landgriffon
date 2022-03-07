@@ -17,7 +17,6 @@ export class CacheGeocoder implements GeocoderInterface {
   ) {}
 
   async geocode(args: GeocodeArgs): Promise<GeocodeResponse> {
-    console.log(this.geocacheEnabled);
     if (!this.geocacheEnabled) {
       return this.backendGeocoder.geocode(args);
     }

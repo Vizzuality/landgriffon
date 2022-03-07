@@ -15,7 +15,7 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { createAdminRegion, createGeoRegion } from '../../../entity-mocks';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
-import { UnknownLocationGeocodingService } from 'modules/geo-coding/geocoding-strategies/unknown-location.geocoding.service';
+import { UnknownLocationGeoCodingStrategy } from 'modules/geo-coding/strategies/unknown-location.geocoding.service';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
 import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
@@ -96,7 +96,7 @@ describe.skip('Sourcing Data import', () => {
     },
   };
 
-  class UnknownLocationServiceMock extends UnknownLocationGeocodingService {
+  class UnknownLocationServiceMock extends UnknownLocationGeoCodingStrategy {
     async geoCodeByCountry(): Promise<any> {
       return {
         results: [
@@ -141,7 +141,7 @@ describe.skip('Sourcing Data import', () => {
       .useClass(MockFileService)
       .overrideProvider(GeoCodingService)
       .useValue(geoCodingServiceMock)
-      .overrideProvider(UnknownLocationGeocodingService)
+      .overrideProvider(UnknownLocationGeoCodingStrategy)
       .useClass(UnknownLocationServiceMock)
       .compile();
 

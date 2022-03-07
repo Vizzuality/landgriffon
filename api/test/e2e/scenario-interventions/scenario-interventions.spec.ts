@@ -34,7 +34,6 @@ import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-loc
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
-import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
 import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
@@ -43,6 +42,7 @@ import {
   createInterventionPreconditions,
   ScenarioInterventionPreconditions,
 } from '../../utils/scenario-interventions-preconditions';
+import { GeoCodingAbstractClass } from '../../../src/modules/geo-coding/geo-coding-abstract-class';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -103,7 +103,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         SourcingRecordsModule,
       ],
     })
-      .overrideProvider(GeoCodingService)
+      .overrideProvider(GeoCodingAbstractClass)
       .useValue(geoCodingServiceMock)
       .compile();
 

@@ -38,7 +38,7 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
         `Could not retrieve a Admin Region with LEVEL ${searchParams.level} and Coordinates: LAT: ${searchParams.lat} LONG: ${searchParams.lng}`,
       );
       throw new NotFoundException(
-        `No Admin Region where coordinates ${searchParams.lat}, ${searchParams.lng} are could been found`,
+        `No Admin Region where Coordinates: LAT: ${searchParams.lat}, LONG: ${searchParams.lng} are could been found`,
       );
     }
     return res[0];
@@ -67,6 +67,7 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
           st_setsrid($1::geometry, 4326),
           st_setsrid(g."theGeom"::geometry, 4326)
           )
+        AND a.id IS NOT NULL
         ORDER BY a.level DESC
         LIMIT 3`,
       [`POINT(${coordinates.lng} ${coordinates.lat})`],

@@ -1,7 +1,6 @@
 import ApplicationLayout from 'layouts/application';
 import Head from 'next/head';
 import { Label, Input } from 'components/forms';
-import { UserIcon } from '@heroicons/react/solid';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
@@ -21,7 +20,8 @@ const schemaValidation = yup.object({
   fname: yup.string().required('first name is required'),
   lname: yup.string().required('last name is required'),
   email: yup.string().email().required(),
-  password: yup.string().min(8).required('password is required'),
+  currentPassword: yup.string().min(8).required('password is required'),
+  newPassword: yup.string().min(8).required('password is required'),
   passwordConfirmation: yup
     .string()
     .required('password confirmation is required')
@@ -52,16 +52,13 @@ const UserProfile: React.FC = () => {
 
   const mutation = useMutation(editUserData, {
     onSuccess: () => {
-      console.log('Done');
+      router.reload();
     },
   });
 
   const mutationPassword = useMutation(editPassword, {
     onSuccess: () => {
-      router.push('/profile');
-    },
-    onError: (errors) => {
-      console.log(errors);
+      router.reload();
     },
   });
 
@@ -96,18 +93,6 @@ const UserProfile: React.FC = () => {
           </div>
 
           <div className="bg-white rounded-md shadow-lg w-250">
-            <div className="pt-6 pl-6">
-              <h1 className="mb-1 text-sm font-semibold">Photo</h1>
-              <div className="flex justify-items-center">
-                <div className="w-12 pt-1 overflow-hidden text-gray-300 bg-gray-100 rounded-full h-11">
-                  <UserIcon className="text-gray-300" />
-                </div>
-
-                <button className="px-3 py-2 mt-1 ml-5 text-xs bg-white border rounded-md shadow-sm border-slate-300 h-min">
-                  Add photo
-                </button>
-              </div>
-            </div>
             <form onSubmit={handleSubmit(handleEditUserData)}>
               <div className="grid grid-cols-2 gap-6 p-6 pb-8">
                 <div>
@@ -150,17 +135,17 @@ const UserProfile: React.FC = () => {
                 <div className="col-span-2">
                   <Label htmlFor="password">Current password</Label>
                   <Input
-                    {...registerPassword('password')}
+                    {...registerPassword('currentPassword')}
                     type="password"
-                    error={errorsPaaaword.password?.message}
+                    error={errorsPaaaword.currentPassword?.message}
                   />
                 </div>
                 <div className="col-span-2">
                   <Label htmlFor="password">New password</Label>
                   <Input
-                    {...registerPassword('password')}
+                    {...registerPassword('newPassword')}
                     type="password"
-                    error={errorsPaaaword.password?.message}
+                    error={errorsPaaaword.newPassword?.message}
                   />
                 </div>
 

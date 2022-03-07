@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { useQuery, UseQueryResult, UseQueryOptions } from 'react-query';
+import { useQuery, UseQueryResult, UseQueryOptions, useMutation } from 'react-query';
+import { useQueryClient } from 'react-query';
 import { apiService } from 'services/api';
 import type { Scenario, Intervention } from 'containers/scenarios/types';
 
@@ -68,4 +69,51 @@ export function useScenario(id: string, queryParams: { sort: string }): Response
       data,
     } as ResponseDataScenario;
   }, [response]);
+}
+
+export function useDeleteScenario() {
+  const queryClient = useQueryClient();
+  const deleteProject = ({ id }) =>
+    apiService.request({
+      method: 'DELETE',
+      url: `/scenarios/${decodeURIComponent(id)}`,
+    });
+
+  return useMutation(deleteProject, {
+    mutationKey: 'deleteScenario',
+    onSuccess: () => {
+      queryClient.invalidateQueries('scenariosList');
+      console.info('Succces');
+    },
+    onError: () => {
+      console.info('Error');
+    },
+  });
+}
+
+export function useUpdateScenario() {
+  const updateProject = ({ id, data }) =>
+    apiService.request({
+      method: 'PATCH',
+      data,
+      url: `/scenarios/${decodeURIComponent(id)}`,
+    });
+
+  // request body
+  // {
+  //   "title": "string",
+  //   "description": "string",
+  //   "status": "string",
+  //   "metadata": "string"
+  // }
+
+  return useMutation(updateProject, {
+    mutationKey: 'editScenario',
+    onSuccess: () => {
+      console.info('Success editing scenario');
+    },
+    onError: () => {
+      console.info('Error');
+    },
+  });
 }

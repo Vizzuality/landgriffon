@@ -1,11 +1,9 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 
 import cx from 'classnames';
 import { useRouter } from 'next/router';
-import { useScenario } from 'hooks/scenarios';
+import { useScenario, useUpdateScenario } from 'hooks/scenarios';
 import { useInterventions } from 'hooks/interventions';
-import { useQuery } from 'react-query';
-import { apiService } from 'services/api';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysis, setScenarioTab, setSubContentCollapsed } from 'store/features/analysis';
@@ -33,43 +31,48 @@ const items = [
 ];
 
 const ScenariosNewContainer: React.FC = () => {
-  const { query } = useRouter();
+  const router = useRouter();
+  const { query } = router;
+
+  const { scenarioCurrentTab, currentScenario } = useAppSelector(analysis);
+
+  const { data, isLoading, error } = useScenario(currentScenario as string, { sort: 'title' });
+  const { title } = !isLoading && !error && data;
 
   const { data: interventions } = useInterventions({ sort: query.sortBy as string });
+  const [scenarioNewData, setScenarioNewData] = useState(data);
 
-  const response = useQuery('scenarioNew', () =>
-    apiService
-      .post('/scenarios', { title: 'Untitled' })
-      .then(({ data: responseData }) => responseData.data),
-  );
+  const updateScenario = useUpdateScenario();
 
-  if (response.isSuccess) {
-    // router.replace({
-    //   pathname: '/analysis/scenario',
-    //   query: {
-    //     edit: response.data.id,
-    //   },
-    // });
-  }
+  const handleUpdateScenario = useCallback(() => {
+    updateScenario.mutate(
+      { id: data.id, data: scenarioNewData },
+      {
+        onSuccess: (data) => {
+          console.log('onsucces', data);
+        },
+        onError: (error, variables, context) => {
+          console.log('error', error, variables, context);
+        },
+      },
+    );
+  }, [updateScenario, data, scenarioNewData]);
+
   const dispatch = useAppDispatch();
   const handleNewScenarioFeature = useCallback(() => {
     dispatch(setSubContentCollapsed(false));
   }, [dispatch]);
 
-  const { scenarioCurrentTab, currentScenario } = useAppSelector(analysis);
   const interventionsContent = useMemo(
     () => scenarioCurrentTab === 'interventions',
     [scenarioCurrentTab],
   );
 
-  const { data, isLoading, error } = useScenario(currentScenario as string, {});
-  const { title } = !isLoading && !error && data;
-
   const handleTab = useCallback((step) => dispatch(setScenarioTab(step)), [dispatch]);
 
   return (
     <>
-      <form action="#" method="POST" className="z-20">
+      <form onSubmit={handleUpdateScenario} className="z-20">
         <input
           type="text"
           name="title"
@@ -89,6 +92,9 @@ const ScenariosNewContainer: React.FC = () => {
             rows={3}
             className="w-full"
             defaultValue=""
+            onChange={(e) =>
+              setScenarioNewData({ ...scenarioNewData, description: e.currentTarget.value })
+            }
           />
         </div>
       </form>

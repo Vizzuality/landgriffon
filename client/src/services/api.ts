@@ -37,7 +37,7 @@ apiService.interceptors.response.use(
     ...response,
     data: {
       ...response.data,
-      data: dataFormatter.deserialize(response.data), // JSON API deserialize
+      data: !!response.data && dataFormatter.deserialize(response.data), // JSON API deserialize
     },
   }),
   onResponseError,

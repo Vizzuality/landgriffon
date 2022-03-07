@@ -38,7 +38,7 @@ export function useInterventions(queryParams: { sort: string }): ResponseInterve
       apiService
         .request({
           method: 'GET',
-          url: `/scenario-intervention`,
+          url: '/scenario-interventions',
           params: queryParams,
         })
         .then(({ data: responseData }) => responseData.data),

@@ -40,7 +40,7 @@ const UserDropdown: React.FC = () => {
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-          <Popover.Panel className="absolute p-6 bg-white shadow-lg rounded-md bottom-5 left-24 focus:outline-none">
+          <Popover.Panel className="absolute p-6 bg-white rounded-md shadow-lg bottom-5 left-24 focus:outline-none">
             <div className="flex mb-3">
               {renderAvatar('w-14 h-14')}
 
@@ -51,7 +51,7 @@ const UserDropdown: React.FC = () => {
             </div>
 
             <div>
-              <a href="#" className={MENU_ITEM_CLASSNAME}>
+              <a href="./profile" className={MENU_ITEM_CLASSNAME}>
                 Edit Profile
               </a>
             </div>

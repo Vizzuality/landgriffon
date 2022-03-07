@@ -13,6 +13,17 @@ import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-reco
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sourcing-record.dto';
 import { GetImpactTableDto } from 'modules/impact/dto/get-impact-table.dto';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
+
+export interface SourcingRecordDataForImpact {
+  id: string;
+  year: number;
+  tonnage: number;
+  materialId: string;
+  geoRegionId: string;
+}
 
 @Injectable()
 export class SourcingRecordsService extends AppBaseService<
@@ -71,11 +82,56 @@ export class SourcingRecordsService extends AppBaseService<
     return this.sourcingRecordRepository.getYears(materialIds);
   }
 
+  /**
+   * @description Retrieve raw data from DB required to build (on the fly) a Impact Table/Chart
+   */
+
   async getDataForImpactTable(
     getImpactTableDto: GetImpactTableDto,
   ): Promise<any> {
     return this.sourcingRecordRepository.getDataForImpactTable(
       getImpactTableDto,
     );
+  }
+
+  /**
+   * @description Retrieve required data to calculate Impact for each Sourcing Record
+   *
+   * - Sourcing Record Id
+   * - Sourcing Record Year
+   * - Sourcing Record Tonnage
+   * - GeoRegion Id
+   * - Material Id
+   */
+
+  async getSourcingRecordDataToCalculateImpacts(): Promise<
+    SourcingRecordDataForImpact[]
+  > {
+    return this.sourcingRecordRepository
+      .createQueryBuilder('sourcingRecords')
+      .select([
+        'sourcingRecords.id as id',
+        'sourcingRecords.year as year',
+        'sourcingRecords.tonnage as tonnage',
+        'sourcingLocations.materialId as materialId',
+        'geoRegions.id as geoRegionId',
+      ])
+      .innerJoin(
+        SourcingLocation,
+        'sourcingLocations',
+        'sourcingRecords.sourcingLocationId = sourcingLocations.id',
+      )
+      .innerJoin(
+        GeoRegion,
+        'geoRegions',
+        'sourcingLocations.geoRegionId = geoRegions.id',
+      )
+      .getRawMany();
+  }
+
+  async getSourcingRecordDataToCalculateIndicatorRecords(): Promise<
+    SourcingRecordsWithIndicatorRawDataDto[]
+  > {
+    return this.sourcingRecordRepository.getIndicatorRawDataForAllSourcingRecords();
   }
 }

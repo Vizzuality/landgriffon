@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useQuery, UseQueryResult, UseQueryOptions } from 'react-query';
-import apiService from 'services/api';
+import { apiService } from 'services/api';
 import type { Indicator } from 'types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
@@ -13,8 +13,6 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
 type ResponseData = UseQueryResult<Indicator[]>;
 
 export function useIndicators(): ResponseData {
-  // const [session] = useSession();
-
   const query = useQuery(
     ['indicators'],
     async () =>
@@ -22,11 +20,8 @@ export function useIndicators(): ResponseData {
         .request({
           method: 'GET',
           url: '/indicators',
-          headers: {
-            // Authorization: `Bearer ${session.accessToken}`,
-          },
         })
-        .then((response) => response.data),
+        .then(({ data: responseData }) => responseData.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
     },

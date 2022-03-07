@@ -99,13 +99,13 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     expect(responseWithDefaultPagination.body.data.length).toEqual(3);
 
     expect(
-      responseWithDefaultPagination.body.data[0].attributes.materialName,
+      responseWithDefaultPagination.body.data[0].attributes.material,
     ).toEqual(material1.name);
     expect(
       responseWithDefaultPagination.body.data[1].attributes.t1Supplier,
     ).toEqual(supplier2.name);
     expect(
-      responseWithDefaultPagination.body.data[2].attributes.materialName,
+      responseWithDefaultPagination.body.data[2].attributes.material,
     ).toEqual(material2.name);
     expect(
       responseWithDefaultPagination.body.data[0].attributes.purchases.length,
@@ -177,9 +177,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
 
     expect(HttpStatus.OK);
     expect(response1.body.data.length).toEqual(1);
-    expect(response1.body.data[0].attributes.materialName).toEqual(
-      material2.name,
-    );
+    expect(response1.body.data[0].attributes.material).toEqual(material2.name);
 
     const response2 = await request(app.getHttpServer())
       .get(`/api/v1/sourcing-locations/materials`)
@@ -189,9 +187,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
 
     expect(HttpStatus.OK);
     expect(response2.body.data.length).toEqual(2);
-    expect(response2.body.data[0].attributes.materialName).toEqual(
-      material4.name,
-    );
+    expect(response2.body.data[0].attributes.material).toEqual(material4.name);
   });
 
   test('Getting list of materials with correct order by flag should be successful', async () => {
@@ -245,18 +241,10 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
 
     expect(HttpStatus.OK);
     expect(response1.body.data.length).toEqual(4);
-    expect(response1.body.data[0].attributes.materialName).toEqual(
-      material1.name,
-    );
-    expect(response1.body.data[1].attributes.materialName).toEqual(
-      material2.name,
-    );
-    expect(response1.body.data[2].attributes.materialName).toEqual(
-      material3.name,
-    );
-    expect(response1.body.data[3].attributes.materialName).toEqual(
-      material4.name,
-    );
+    expect(response1.body.data[0].attributes.material).toEqual(material1.name);
+    expect(response1.body.data[1].attributes.material).toEqual(material2.name);
+    expect(response1.body.data[2].attributes.material).toEqual(material3.name);
+    expect(response1.body.data[3].attributes.material).toEqual(material4.name);
 
     // Order by supplierT1 name
     const response2 = await request(app.getHttpServer())
@@ -266,18 +254,10 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
       .send();
 
     expect(HttpStatus.OK);
-    expect(response2.body.data[0].attributes.materialName).toEqual(
-      material2.name,
-    );
-    expect(response2.body.data[1].attributes.materialName).toEqual(
-      material3.name,
-    );
-    expect(response2.body.data[2].attributes.materialName).toEqual(
-      material4.name,
-    );
-    expect(response2.body.data[3].attributes.materialName).toEqual(
-      material1.name,
-    );
+    expect(response2.body.data[0].attributes.material).toEqual(material2.name);
+    expect(response2.body.data[1].attributes.material).toEqual(material3.name);
+    expect(response2.body.data[2].attributes.material).toEqual(material4.name);
+    expect(response2.body.data[3].attributes.material).toEqual(material1.name);
 
     // Order by producer name
     const response3 = await request(app.getHttpServer())
@@ -287,18 +267,10 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
       .send();
 
     expect(HttpStatus.OK);
-    expect(response3.body.data[0].attributes.materialName).toEqual(
-      material1.name,
-    );
-    expect(response3.body.data[1].attributes.materialName).toEqual(
-      material4.name,
-    );
-    expect(response3.body.data[2].attributes.materialName).toEqual(
-      material3.name,
-    );
-    expect(response3.body.data[3].attributes.materialName).toEqual(
-      material2.name,
-    );
+    expect(response3.body.data[0].attributes.material).toEqual(material1.name);
+    expect(response3.body.data[1].attributes.material).toEqual(material4.name);
+    expect(response3.body.data[2].attributes.material).toEqual(material3.name);
+    expect(response3.body.data[3].attributes.material).toEqual(material2.name);
 
     // Order by producer name - descending order
     const response4 = await request(app.getHttpServer())
@@ -308,18 +280,10 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
       .send();
 
     expect(HttpStatus.OK);
-    expect(response4.body.data[0].attributes.materialName).toEqual(
-      material2.name,
-    );
-    expect(response4.body.data[1].attributes.materialName).toEqual(
-      material3.name,
-    );
-    expect(response4.body.data[2].attributes.materialName).toEqual(
-      material4.name,
-    );
-    expect(response4.body.data[3].attributes.materialName).toEqual(
-      material1.name,
-    );
+    expect(response4.body.data[0].attributes.material).toEqual(material2.name);
+    expect(response4.body.data[1].attributes.material).toEqual(material3.name);
+    expect(response4.body.data[2].attributes.material).toEqual(material4.name);
+    expect(response4.body.data[3].attributes.material).toEqual(material1.name);
   });
 
   test('Getting list of materials with incorrect should return proper error message', async () => {

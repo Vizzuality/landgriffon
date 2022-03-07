@@ -1,4 +1,9 @@
 {
+  "server": {
+    "loggerLevel": [
+      "error"
+    ]
+  },
   "db": {
     "type": "postgres",
     "host": "localhost",
@@ -7,7 +12,6 @@
     "password": "",
     "database": "landgriffon_test",
     "synchronize": true,
-    "migrationsRun": false,
     "dropSchema": true,
     "logging": ["error"]
   },

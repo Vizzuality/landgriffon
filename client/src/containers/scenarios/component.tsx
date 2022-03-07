@@ -4,8 +4,11 @@ import { PlusIcon, XCircleIcon } from '@heroicons/react/solid';
 import ScenariosFilters from 'containers/scenarios/filters';
 import ScenariosList from 'containers/scenarios/list';
 import { AnchorLink } from 'components/button';
+import Lottie from 'lottie-react';
 import { useScenarios } from 'hooks/scenarios';
 import type { Page } from 'components/breadcrumb/types';
+
+import noScenariosAnimationData from 'containers/scenarios/animations/noScenariosAnimationData.json';
 
 const ScenariosComponent: React.FC = () => {
   const { query } = useRouter();
@@ -20,10 +23,10 @@ const ScenariosComponent: React.FC = () => {
   }
 
   return (
-    <div className="bg-white overscroll-contain">
-      <div className="sticky top-0 bottom-1 z-20 bg-white py-6">
-        <h1>Analyse impact</h1>
-        <p className="text-sm mt-2 mb-2">Select the scenario you want to analyse</p>
+    <div className="bg-white overscroll-contain text-gray-900">
+      <div className="sticky top-0 bottom-1 z-20 bg-white py-4 text-sm">
+        <h1>Scenarios</h1>
+        <p className="my-2">Select the scenario you want to analyse</p>
         {!isLoading && data && (
           <div className="pt-6">
             <ScenariosFilters />
@@ -59,11 +62,18 @@ const ScenariosComponent: React.FC = () => {
         </Link>
         {!data ||
           (data.length === 0 && (
-            <div className="py-8 px-7 text-center absolute z-20 bg-white">
+            <div className="p-7 space-y-8 text-center absolute z-20 bg-white">
               <p className="text-sm">
                 Scenarios let you simulate changes in sourcing to evaluate how they would affect
                 impacts and risks. Create a scenario to get started.
               </p>
+              <div className="w-full">
+                <Lottie
+                  animationData={noScenariosAnimationData}
+                  loop={true}
+                  style={{ height: 74, width: 74, margin: 'auto' }}
+                />
+              </div>
             </div>
           ))}
       </div>

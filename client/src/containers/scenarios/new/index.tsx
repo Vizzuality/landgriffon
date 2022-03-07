@@ -1,15 +1,46 @@
-import { useCallback } from 'react';
-import { useQuery } from 'react-query';
-import { createScenario } from 'services/scenarios';
+import { useMemo, useCallback } from 'react';
 
-import InterventionsAttributes from 'containers/scenarios/attributes';
+import cx from 'classnames';
+import { useQuery } from 'react-query';
+import { apiService } from 'services/api';
+import { useRouter } from 'next/router';
+
+import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { analysis, setScenarioTab, setSubContentCollapsed } from 'store/features/analysis';
+
+import { useInterventions } from 'hooks/interventions';
+
+import Button from 'components/button';
+import InterventionsList from 'containers/interventions/list';
 import Label from 'components/forms/label';
 import Textarea from 'components/forms/textarea';
-import { useAppDispatch } from 'store/hooks';
-import { setSubContentCollapsed } from 'store/features/analysis';
+import GrowthList from 'containers/growth/list/component';
+import { PlusIcon } from '@heroicons/react/solid';
+
+const items = [
+  {
+    id: 1,
+    title: 'Set growth rate for all materials to +2%/yr in 2020',
+  },
+  {
+    id: 2,
+    title: 'Set growth rate for all materials to +2%/yr in 2020',
+  },
+  {
+    id: 3,
+    title: 'Set growth rate for all materials to +2%/yr in 2020',
+  },
+];
 
 const ScenariosNewContainer: React.FC = () => {
-  const response = useQuery('scenarioNew', () => createScenario({ title: 'Untitled' }));
+  const response = useQuery('scenarioNew', () =>
+    apiService
+      .post('/scenarios', { title: 'Untitled' })
+      .then(({ data: responseData }) => responseData.data),
+  );
+
+  const { query } = useRouter();
+  const { data: interventions } = useInterventions({ sort: query.sortBy as string });
 
   if (response.isSuccess) {
     // router.replace({
@@ -20,9 +51,17 @@ const ScenariosNewContainer: React.FC = () => {
     // });
   }
   const dispatch = useAppDispatch();
-  const handleNewIntervention = useCallback(() => {
+  const handleNewScenarioFeature = useCallback(() => {
     dispatch(setSubContentCollapsed(false));
   }, [dispatch]);
+
+  const { scenarioCurrentTab } = useAppSelector(analysis);
+  const interventionsContent = useMemo(
+    () => scenarioCurrentTab === 'interventions',
+    [scenarioCurrentTab],
+  );
+
+  const handleTab = useCallback((step) => dispatch(setScenarioTab(step)), [dispatch]);
 
   return (
     <>
@@ -51,7 +90,35 @@ const ScenariosNewContainer: React.FC = () => {
         </div>
       </form>
       <div className="h-full flex flex-col w-auto bg-white py-6 overflow-auto relative">
-        <InterventionsAttributes handleNewIntervention={handleNewIntervention} />
+        <div className="relative">
+          <div className="flex items-center content-between text-sm">
+            <div className="pb-6 flex items-center justify-between w-full">
+              <div className="space-x-2">
+                <button
+                  type="button"
+                  className={cx({ 'border-b-2 border-green-700': interventionsContent })}
+                  onClick={() => handleTab('interventions')}
+                >
+                  Interventions ({interventions.length})
+                </button>
+
+                <button
+                  type="button"
+                  className={cx({ 'border-b-2 border-green-700': !interventionsContent })}
+                  onClick={() => handleTab('growth')}
+                >
+                  Growth rates ({items.length})
+                </button>
+              </div>
+              <Button onClick={handleNewScenarioFeature}>
+                <PlusIcon className="-ml-1 mr-1 h-5 w-5" aria-hidden="true" />
+                New
+              </Button>
+            </div>
+          </div>
+          {interventionsContent && <InterventionsList items={interventions} />}
+          {!interventionsContent && <GrowthList items={items} />}
+        </div>
       </div>
     </>
   );

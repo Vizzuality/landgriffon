@@ -2,12 +2,12 @@ import { useMemo } from 'react';
 import { useQuery, UseQueryOptions, UseQueryResult } from 'react-query';
 import { v4 as uuidv4 } from 'uuid';
 
-import { apiWithMetadataService } from 'services/api';
+import apiService from 'services/api';
 import { SourcingLocation, APIMetadataPagination } from 'types';
 
 type SourcingLocationsMaterialsAPIResponse = {
   data: SourcingLocation[];
-  metadata: APIMetadataPagination;
+  meta: APIMetadataPagination;
 };
 
 type SourcingLocationsMaterialsDataResponse = UseQueryResult &
@@ -28,19 +28,14 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
 export function useSourcingLocationsMaterials(
   params: SourcingLocationsParams,
 ): SourcingLocationsMaterialsDataResponse {
-  // const [session] = useSession();
-
   const query = useQuery(
     ['sourcingLocationsMaterials', params],
     async () =>
-      apiWithMetadataService
+      apiService
         .request({
           method: 'GET',
           url: '/sourcing-locations/materials',
           params,
-          headers: {
-            // Authorization: `Bearer ${session.accessToken}`,
-          },
         })
         .then((response) => response.data),
     {
@@ -63,7 +58,7 @@ export function useSourcingLocationsMaterials(
             id: uuidv4(),
             ...data,
           })) || DEFAULT_QUERY_OPTIONS.placeholderData,
-        metadata: (response as SourcingLocationsMaterialsAPIResponse).metadata || {},
+        meta: (response as SourcingLocationsMaterialsAPIResponse).meta || {},
       } as SourcingLocationsMaterialsDataResponse),
     [query, response],
   );

@@ -53,7 +53,7 @@ const UserDropdown: React.FC = () => {
             ref={setPopperElement}
             style={styles.popper}
             {...attributes.popper}
-            className="z-40 p-6 bg-white rounded-md shadow-lg focus:outline-none"
+            className="p-6 bg-white shadow-lg rounded-md focus:outline-none z-40"
           >
             <div className="flex mb-3">
               {renderAvatar('w-14 h-14')}

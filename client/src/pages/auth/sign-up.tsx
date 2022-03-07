@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import AuthenticationLayout from 'layouts/authentication';
@@ -9,6 +9,7 @@ import { useMutation } from 'react-query';
 import * as yup from 'yup';
 import { authService } from 'services/authentication';
 import { Label, Input } from 'components/forms';
+import { Button } from 'components/button';
 
 type SignUpPayload = {
   fname: string;
@@ -31,6 +32,7 @@ const schemaValidation = yup.object({
 const signUpService = (data: SignUpPayload) => authService.post('/sign-up', data);
 
 const SignUp: React.FC = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const {
@@ -43,6 +45,7 @@ const SignUp: React.FC = () => {
 
   const mutation = useMutation(signUpService, {
     onSuccess: () => {
+      setIsLoading(false);
       // Redirect to sign-in when user is created successfully
       router.push('/auth/sign-in');
     },
@@ -50,6 +53,7 @@ const SignUp: React.FC = () => {
 
   const handleSignUp = useCallback(
     (data: SignUpPayload) => {
+      setIsLoading(true);
       mutation.mutate(data);
     },
     [mutation],
@@ -98,12 +102,9 @@ const SignUp: React.FC = () => {
               </div>
 
               <div className="col-span-2">
-                <button
-                  type="submit"
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-800 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                >
+                <Button type="submit" className="w-full" loading={isLoading}>
                   Sign up
-                </button>
+                </Button>
               </div>
             </form>
           </div>

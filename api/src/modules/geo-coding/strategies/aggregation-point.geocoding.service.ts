@@ -1,13 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { GeoCodingBaseService } from 'modules/geo-coding/geo-coding.base.service';
+import { BaseStrategy } from 'modules/geo-coding/strategies/base-strategy';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
-import { GeocodeResponseData } from '@googlemaps/google-maps-services-js/dist/geocode/geocode';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { GeocodeResponse } from 'modules/geo-coding/geocoders/geocoder.interface';
 
 @Injectable()
-export class AggregationPointGeocodingService extends GeoCodingBaseService {
+export class AggregationPointGeocodingStrategy extends BaseStrategy {
   aggregationPointGeocodingLogger: Logger = new Logger(
-    AggregationPointGeocodingService.name,
+    AggregationPointGeocodingStrategy.name,
   );
   async geoCodeAggregationPoint(sourcingData: SourcingData): Promise<any> {
     /**
@@ -50,8 +50,9 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
      * if address, geocode the address
      */
     if (sourcingData.locationAddressInput) {
-      const geocodedResponseData: GeocodeResponseData =
-        await this.geoCodeByAddress(sourcingData.locationAddressInput);
+      const geocodedResponseData: GeocodeResponse = await this.geoCodeByAddress(
+        sourcingData.locationAddressInput,
+      );
 
       /**
        * if given address is country type, raise and exception. it should be an address within a country
@@ -91,8 +92,8 @@ export class AggregationPointGeocodingService extends GeoCodingBaseService {
       } else {
         /**
          * Else, follow the same logics as coordinates
-         * If it's not neither AdminRegion Level 1 or Level 2, should be a GADM Level 0, which we can look it up in the db
-         * by it's name
+         * If it's neither AdminRegion Level 1 nor Level 2, should be a GADM Level 0, which we can look it up in the db
+         * by its name
          */
         const geoRegionId: GeoRegion =
           await this.geoRegionService.saveGeoRegionAsRadius({

@@ -3,11 +3,10 @@ import { format } from 'date-fns';
 import { Menu, RadioGroup, Switch, Transition } from '@headlessui/react';
 import { DotsVerticalIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
-import { useQueryClient } from 'react-query';
 import { useRouter } from 'next/router';
 
 import ScenariosComparison from 'containers/scenarios/comparison';
-import { deleteScenario } from 'services/scenarios';
+import { useDeleteScenario } from 'hooks/scenarios';
 import type { Scenario } from '../types';
 
 type ScenariosItemProps = {
@@ -17,14 +16,13 @@ type ScenariosItemProps = {
 };
 
 const DROPDOWN_BUTTON_CLASSNAME =
-  'w-8 h-8 inline-flex items-center justify-center text-gray-900 rounded-full bg-transparent hover:text-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-700';
+  'w-8 h-8 inline-flex items-center justify-center text-gray-900 rounded-full bg-transparent hover:text-green-800';
 const DROPDOWN_ITEM_CLASSNAME = 'block px-4 py-2 text-sm w-full text-left';
 const DROPDOWN_ITEM_ACTIVE_CLASSNAME = 'bg-gray-100 text-gray-900';
 
 const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) => {
   const { data, isSelected, isComparisonAvailable } = props;
   const [isComparisonEnabled, setComparisonEnabled] = useState(false);
-  const queryClient = useQueryClient();
   const router = useRouter();
   const { query } = router;
 
@@ -33,15 +31,29 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
       pathname: '/analysis',
       query: {
         ...query,
-        edit_scenario: data.id,
+        scenario: 'edit',
       },
     });
   }, []);
 
+  const deleteScenario = useDeleteScenario();
+
   const handleDelete = useCallback(() => {
-    deleteScenario(data.id).then(() => {
-      queryClient.invalidateQueries('scenariosList', { exact: true });
-    });
+    deleteScenario.mutate(
+      { id: data.id },
+      // {
+      //   onSuccess: () => {
+      //     console.log('onsucces');
+      //   },
+      //   onError: (error, variables, context) => {
+      //     console.log('error', error, variables, context);
+      //   },
+      // },
+    );
+  }, [deleteScenario, data]);
+
+  const handleShare = useCallback(() => {
+    console.log('published scenarios');
   }, []);
 
   useEffect(() => {
@@ -54,10 +66,11 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
   return (
     <li className="col-span-1 rounded-md">
       <div
-        className={classNames('flex items-center border border-gray-200 bg-white rounded', {
-          'border-green-700 bg-green-50': isSelected,
-          'rounded-b-none': isComparisonAvailable,
-        })}
+        className={classNames(
+          'flex items-center border bg-white',
+          isSelected ? 'border-green-700 bg-green-50' : 'border-gray-200',
+          isComparisonAvailable ? 'rounded-t' : 'rounded',
+        )}
       >
         <RadioGroup.Option
           key={data.title}
@@ -97,11 +110,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
               {({ open }) => (
                 <>
                   <div>
-                    <Menu.Button
-                      className={classNames(DROPDOWN_BUTTON_CLASSNAME, {
-                        'ring-2 ring-green-700 text-green-700': open,
-                      })}
-                    >
+                    <Menu.Button className={DROPDOWN_BUTTON_CLASSNAME}>
                       <span className="sr-only">Open options</span>
                       <DotsVerticalIcon className="w-5 h-5" aria-hidden="true" />
                     </Menu.Button>
@@ -150,6 +159,20 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                             </button>
                           )}
                         </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              type="button"
+                              className={classNames(
+                                active ? DROPDOWN_ITEM_ACTIVE_CLASSNAME : 'text-gray-700',
+                                DROPDOWN_ITEM_CLASSNAME,
+                              )}
+                              onClick={handleShare}
+                            >
+                              Shared
+                            </button>
+                          )}
+                        </Menu.Item>
                       </div>
                     </Menu.Items>
                   </Transition>
@@ -160,7 +183,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
         )}
       </div>
       {isSelected && isComparisonAvailable && (
-        <div className="border-green-700 border-b border-l border-r rounded bg-green-50 rounded-t-none p-4">
+        <div className="border-green-700 border-b border-l border-r rounded-b bg-green-50 p-4">
           <div className="flex justify-between">
             <span className="block text-sm">Compare this scenario</span>
             <Switch
@@ -189,7 +212,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
               />
             </Switch>
           </div>
-          {isComparisonEnabled && <ScenariosComparison />}
+          {<ScenariosComparison disabled={!isComparisonEnabled} />}
         </div>
       )}
     </li>

@@ -18,6 +18,7 @@ type MaterialsFilterProps = {
   theme?: 'default' | 'inline-primary';
   currentOptions?: TreeSelectProps['current'];
   ellipsis?: TreeSelectProps['ellipsis'];
+  fitContent?: TreeSelectProps['fitContent'];
 };
 
 const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
@@ -28,6 +29,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
   onChange,
   theme,
   ellipsis,
+  fitContent,
 }) => {
   const { data, isFetching } = useMaterialsTrees({ depth, withSourcingLocations });
 
@@ -54,6 +56,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
       onChange={onChange}
       current={current}
       theme={theme}
+      fitContent={fitContent}
       ellipsis={ellipsis}
     />
   );

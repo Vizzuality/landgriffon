@@ -49,7 +49,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
       errorData.meta.stack = exception.stack;
     }
 
-    Logger.error(errorData);
+    if (status >= 500) {
+      Logger.error(errorData);
+    } else {
+      Logger.warn(errorData);
+    }
 
     /**
      * When *not* running in a development environment, we strip off raw error

@@ -79,7 +79,6 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
 
   // Prevent display when not loaded
   if (!isLoaded) return null;
-
   return (
     <div ref={wrapperRef} className="relative">
       <button

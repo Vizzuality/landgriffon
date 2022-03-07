@@ -1,7 +1,10 @@
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
 import { IndicatorSource } from 'modules/indicator-sources/indicator-source.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import {
+  ScenarioIntervention,
+  SCENARIO_INTERVENTION_TYPE,
+} from 'modules/scenario-interventions/scenario-intervention.entity';
 import { Material } from 'modules/materials/material.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
@@ -224,10 +227,18 @@ async function createScenario(
 async function createScenarioIntervention(
   additionalData: Partial<ScenarioIntervention> = {},
 ): Promise<ScenarioIntervention> {
+  const scenario: Scenario = await createScenario();
   const scenarioIntervention = ScenarioIntervention.merge(
     new ScenarioIntervention(),
     {
       title: 'Scenario intervention title',
+      startYear: 2020,
+      percentage: 50,
+      scenario: scenario,
+      type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+      newIndicatorCoefficients: JSON.parse(
+        JSON.stringify({ ce: 11, de: 10, ww: 5, bi: 3 }),
+      ),
     },
     additionalData,
   );

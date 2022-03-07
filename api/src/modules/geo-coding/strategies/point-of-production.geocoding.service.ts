@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { GeoCodingBaseService } from 'modules/geo-coding/geo-coding.base.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
-import { GeocodeResponseData } from '@googlemaps/google-maps-services-js/dist/geocode/geocode';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { BaseStrategy } from 'modules/geo-coding/strategies/base-strategy';
+import { GeocodeResponse } from 'modules/geo-coding/geocoders/geocoder.interface';
 
 @Injectable()
-export class PointOfProductionGeocodingService extends GeoCodingBaseService {
+export class PointOfProductionGeocodingStrategy extends BaseStrategy {
   async geoCodePointOfProduction(sourcingData: SourcingData): Promise<any> {
     if (!sourcingData.locationCountryInput)
       throw new Error(
@@ -39,8 +39,9 @@ export class PointOfProductionGeocodingService extends GeoCodingBaseService {
       };
     }
     if (sourcingData.locationAddressInput) {
-      const geoCodeResponseData: GeocodeResponseData =
-        await this.geoCodeByAddress(sourcingData.locationAddressInput);
+      const geoCodeResponseData: GeocodeResponse = await this.geoCodeByAddress(
+        sourcingData.locationAddressInput,
+      );
 
       const geoRegionId: Pick<GeoRegion, 'id'> =
         await this.geoRegionService.saveGeoRegionAsPoint({

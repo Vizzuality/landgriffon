@@ -3,7 +3,7 @@ import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
 import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
 import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-region.dto';
-import { SourcingRecordsSheets } from 'modules/import-data/sourcing-data/sourcing-data-import.service';
+import { SourcingRecordsSheets } from 'modules/import-data/sourcing-data/sourcing-records-sheets.interface';
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { WorkSheet } from 'xlsx';
@@ -14,7 +14,9 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
  * and spread through typing
  */
 export interface SourcingData extends CreateSourcingLocationDto {
-  sourcingRecords: SourcingRecord[];
+  sourcingRecords: SourcingRecord[] | { year: number; tonnage: number }[];
+  geoRegionId?: string;
+  adminRegionId?: string;
 }
 
 export interface SourcingRecordsDtos {

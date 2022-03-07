@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useQuery, UseQueryResult, UseQueryOptions } from 'react-query';
-import apiService from 'services/api';
+import { apiService } from 'services/api';
 import type { OriginRegion } from 'types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
@@ -18,8 +18,6 @@ export type AdminRegionsTreesParams = {
 };
 
 export function useAdminRegions(): ResponseData {
-  // const [session] = useSession();
-
   const query = useQuery(
     ['admin-regions'],
     async () =>
@@ -27,11 +25,8 @@ export function useAdminRegions(): ResponseData {
         .request({
           method: 'GET',
           url: '/impact/admin-regions/',
-          headers: {
-            // Authorization: `Bearer ${session.accessToken}`,
-          },
         })
-        .then((response) => response.data),
+        .then(({ data: responseData }) => responseData.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
     },
@@ -50,8 +45,6 @@ export function useAdminRegions(): ResponseData {
 }
 
 export function useAdminRegionsTrees(params: AdminRegionsTreesParams): ResponseData {
-  // const [session] = useSession();
-
   const query = useQuery(
     ['admin-regions-trees'],
     async () =>
@@ -60,11 +53,8 @@ export function useAdminRegionsTrees(params: AdminRegionsTreesParams): ResponseD
           method: 'GET',
           url: '/admin-regions/trees',
           params,
-          headers: {
-            // Authorization: `Bearer ${session.accessToken}`,
-          },
         })
-        .then((response) => response.data),
+        .then(({ data: responseData }) => responseData.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
     },

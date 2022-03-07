@@ -46,7 +46,7 @@ export class SourcingLocationsMaterialsResponseDto {
               type: 'string',
               example: 'point of production',
             },
-            materialName: {
+            material: {
               type: 'string',
               example: 'bananas',
             },
@@ -95,7 +95,7 @@ export class SourcingLocationsMaterialsResponseDto {
 }
 
 export interface SourcingLocationMaterial {
-  materialName: string;
+  material: string;
   materialId: string;
   t1Supplier: string | null;
   producer: string | null;

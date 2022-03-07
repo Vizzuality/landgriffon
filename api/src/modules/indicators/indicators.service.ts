@@ -15,6 +15,7 @@ import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto'
 import { UpdateIndicatorDto } from 'modules/indicators/dto/update.indicator.dto';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { getManager } from 'typeorm';
+import { IndicatorNameCodeWithRelatedH3 } from 'modules/indicators/dto/indicator-namecode-with-related-h3.dto';
 
 @Injectable()
 export class IndicatorsService extends AppBaseService<
@@ -97,5 +98,27 @@ export class IndicatorsService extends AppBaseService<
 
   async findAllUnpaginated(): Promise<Indicator[]> {
     return this.indicatorRepository.find();
+  }
+
+  async getIndicatorsAndRelatedH3DataIds(): Promise<
+    IndicatorNameCodeWithRelatedH3[]
+  > {
+    const indicators: IndicatorNameCodeWithRelatedH3[] =
+      await this.indicatorRepository
+        .createQueryBuilder('indicator')
+        .select([
+          'indicator.id as id',
+          'indicator.nameCode as "nameCode"',
+          'h3.id as "h3DataId"',
+        ])
+        .innerJoin(H3Data, 'h3', 'h3.indicatorId = indicator.id')
+        .getRawMany();
+
+    if (!indicators.length) {
+      throw new NotFoundException(
+        `No Indicators with related H3 Data could be found`,
+      );
+    }
+    return indicators;
   }
 }

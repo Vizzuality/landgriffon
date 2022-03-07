@@ -90,7 +90,10 @@ const MoreFilters: React.FC = () => {
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
       >
-        <Popover.Panel static className="absolute right-0 mt-1 w-80 z-20">
+        <Popover.Panel
+          static
+          className="absolute md:right-0 lg:left-0 lg:clear-right-0 mt-1 w-80 z-20"
+        >
           <div
             ref={filtersWrapperRef}
             className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5"
@@ -109,6 +112,7 @@ const MoreFilters: React.FC = () => {
                     multiple
                     withSourcingLocations
                     current={filters.materials}
+                    fitContent
                     onChange={(values) => handleChangeFilter('materials', values)}
                   />
                 </div>
@@ -118,6 +122,7 @@ const MoreFilters: React.FC = () => {
                     multiple
                     withSourcingLocations
                     current={filters.origins}
+                    fitContent
                     onChange={(values) => handleChangeFilter('origins', values)}
                   />
                 </div>
@@ -127,6 +132,7 @@ const MoreFilters: React.FC = () => {
                     multiple
                     withSourcingLocations
                     current={filters.suppliers}
+                    fitContent
                     onChange={(values) => handleChangeFilter('suppliers', values)}
                   />
                 </div>

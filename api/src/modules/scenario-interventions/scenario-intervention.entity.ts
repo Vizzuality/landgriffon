@@ -4,6 +4,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -14,8 +15,13 @@ import { Material } from 'modules/materials/material.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
-import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import {
+  LOCATION_TYPES,
+  SourcingLocation,
+} from 'modules/sourcing-locations/sourcing-location.entity';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
+import { Scenario } from 'modules/scenarios/scenario.entity';
+import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 
 export enum SCENARIO_INTERVENTION_STATUS {
   ACTIVE = 'active',
@@ -25,6 +31,9 @@ export enum SCENARIO_INTERVENTION_STATUS {
 
 export enum SCENARIO_INTERVENTION_TYPE {
   DEFAULT = 'default',
+  NEW_SUPPLIER = 'Source from new supplier or location',
+  CHANGE_PRODUCTION_EFFICIENCY = 'Change production efficiency',
+  NEW_MATERIAL = 'Switch to a new material',
 }
 
 export const scenarioResource: BaseServiceResource = {
@@ -70,25 +79,30 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   })
   type!: SCENARIO_INTERVENTION_TYPE;
 
-  @ApiPropertyOptional()
-  @Column({ nullable: true })
-  startYear?: number;
+  @ApiProperty()
+  @Column()
+  startYear!: number;
 
   @ApiPropertyOptional()
   @Column({ nullable: true })
   endYear?: number;
 
-  @ApiPropertyOptional()
-  @Column({ nullable: true })
-  percentage?: number;
+  @ApiProperty()
+  @Column()
+  percentage!: number;
 
-  @Column({ type: 'jsonb', nullable: true })
-  @ApiPropertyOptional()
-  newIndicatorCoefficients?: JSON;
+  @Column({ type: 'jsonb' })
+  @ApiProperty()
+  newIndicatorCoefficients!: JSON;
+
+  @ManyToOne(() => Scenario)
+  @ApiProperty({ type: () => Scenario })
+  scenario!: Scenario;
 
   /**
    * Relationships with other entities - links of replaced relationships on this intervention
    */
+
   @ManyToMany(() => Material)
   @JoinTable()
   replacedMaterials?: Material[];
@@ -103,34 +117,70 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
 
   @ManyToMany(() => AdminRegion)
   @JoinTable()
-  replacedAdminRegion?: AdminRegion[];
+  replacedAdminRegions?: AdminRegion[];
 
-  @ManyToMany(() => SourcingLocation)
-  @JoinTable()
-  replacedSourcingLocation?: SourcingLocation[];
+  @OneToMany(
+    () => SourcingLocation,
+    (sourcingLocations: SourcingLocation) =>
+      sourcingLocations.scenarioIntervention,
+    { cascade: true, onDelete: 'CASCADE' },
+  )
+  replacedSourcingLocations?: SourcingLocation[];
 
   /**
    * Relationships with other entities - list of "new" relationships
    */
-  @ManyToMany(() => Material)
-  @JoinTable()
-  newMaterials?: Material[];
+  @ManyToOne(() => Material)
+  @ApiPropertyOptional({ type: () => Material })
+  newMaterial?: Material;
 
-  @ManyToMany(() => BusinessUnit)
-  @JoinTable()
-  newBusinessUnits?: BusinessUnit[];
+  @ManyToOne(() => BusinessUnit)
+  @ApiPropertyOptional()
+  newBusinessUnit?: BusinessUnit;
 
-  @ManyToMany(() => Supplier)
-  @JoinTable()
-  newSuppliers?: Supplier[];
+  @ManyToOne(() => Supplier)
+  @ApiPropertyOptional()
+  newT1Supplier?: Supplier;
 
-  @ManyToMany(() => AdminRegion)
-  @JoinTable()
-  newAdminRegion?: AdminRegion[];
+  @ManyToOne(() => Supplier)
+  @ApiPropertyOptional()
+  newProducer?: Supplier;
 
-  @ManyToMany(() => SourcingLocation)
-  @JoinTable()
-  newSourcingLocation?: SourcingLocation[];
+  @ManyToOne(() => GeoRegion)
+  @ApiPropertyOptional()
+  newGeoRegion?: GeoRegion;
+
+  /**
+   * New sourcing data, if intervention type involves supplier change:
+   */
+
+  @ApiPropertyOptional()
+  @Column({ nullable: true })
+  newLocationType?: LOCATION_TYPES;
+
+  @ApiPropertyOptional()
+  @Column({ nullable: true })
+  newLocationCountryInput?: string;
+
+  @ApiPropertyOptional()
+  @Column({ nullable: true })
+  newLocationAddressInput?: string;
+
+  @ApiPropertyOptional()
+  @Column({ nullable: true })
+  newMaterialTonnageRatio?: number;
+
+  /**
+   * New Sourcing locations that will be created by Intervention
+   */
+
+  @OneToMany(
+    () => SourcingLocation,
+    (sourcingLocations: SourcingLocation) =>
+      sourcingLocations.scenarioIntervention,
+    { cascade: true, onDelete: 'CASCADE' },
+  )
+  newSourcingLocations?: SourcingLocation[];
 
   /**
    * Relationships with User

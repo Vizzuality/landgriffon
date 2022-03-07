@@ -16,7 +16,7 @@ const SEARCH_OPTIONS = {
 
 const THEMES = {
   default: {
-    base: 'bg-white relative w-full flex align-center py-2 text-left text-sm cursor-pointer font-medium border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 pl-3 pr-10',
+    base: 'shadow-sm bg-white relative w-full flex align-center py-2 text-left text-sm font-medium border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 pl-3 pr-10',
     arrow: 'absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none',
   },
   'default-bordernone': {
@@ -47,16 +47,13 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   useEffect(() => {
-    if (selected && onChange) onChange(selected);
-  }, [selected, onChange]);
-
-  useEffect(() => {
     if (!selected) setSelected(options[0]);
-  }, [options, selected]);
+    if (selected && selected !== options[0] && onChange) onChange(selected);
+  }, [options, selected, onChange]);
 
   useEffect(() => {
-    if (current) setSelected(current);
-  }, [current]);
+    if (current && !selected && current !== options[0]) setSelected(current);
+  }, [current, options, selected]);
 
   // Search capability
   const fuse = useMemo(() => new Fuse(options, SEARCH_OPTIONS), [options]);
@@ -81,8 +78,13 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
     <Listbox value={selected} onChange={setSelected} disabled={disabled}>
       {({ open }) => (
         <>
-          <div className="relative">
-            <Listbox.Button className={THEMES[theme].base}>
+          <div className="relative shadow-sm">
+            <Listbox.Button
+              className={classNames(
+                THEMES[theme].base,
+                disabled ? 'cursor-default' : 'cursor-pointer',
+              )}
+            >
               {loading ? (
                 <div className="p-4">
                   <Loading className="mr-3 -ml-1 text-green-700" />
@@ -95,7 +97,15 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
                   {placeholder && !selected?.label && (
                     <span className="text-gray-300 truncate">{placeholder}</span>
                   )}
-                  {selected && <span className="inline-block truncate">{selected?.label}</span>}
+                  {selected && (
+                    <span
+                      className={classNames('inline-block truncate', {
+                        'text-gray-400 cursor-default': disabled,
+                      })}
+                    >
+                      {selected?.label}
+                    </span>
+                  )}
                 </>
               )}
             </Listbox.Button>

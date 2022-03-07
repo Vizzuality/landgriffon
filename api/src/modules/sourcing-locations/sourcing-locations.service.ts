@@ -12,8 +12,10 @@ import { AppInfoDTO } from 'dto/info.dto';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update.sourcing-location.dto';
-import { SelectQueryBuilder } from 'typeorm';
 
+import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
+import { SourcingLocationWithRecord } from 'modules/sourcing-locations/dto/sourcing-location-with-record.interface';
+import { Brackets, WhereExpressionBuilder } from 'typeorm';
 
 @Injectable()
 export class SourcingLocationsService extends AppBaseService<
@@ -86,27 +88,45 @@ export class SourcingLocationsService extends AppBaseService<
     return await this.sourcingLocationRepository.save(sourcingLocation as any);
   }
 
-  async extendFindAllQuery(
-    query: SelectQueryBuilder<SourcingLocation>,
-  ): Promise<SelectQueryBuilder<SourcingLocation>> {
-    query
-      .select([
-        `${this.alias}`,
-        'mat.id',
-        'mat.name',
-        'sup.name',
-        'producer.name',
-        'bu.name',
-        'sr',
-      ])
-      .innerJoin(`${this.alias}.material`, 'mat')
-      .leftJoin(`${this.alias}.t1Supplier`, 'sup')
-      .leftJoin(`${this.alias}.producer`, 'producer')
-      .leftJoin(`${this.alias}.businessUnit`, 'bu')
-      .leftJoin(`${this.alias}.sourcingRecords`, 'sr')
-      .orderBy('mat.name')
-      .addOrderBy(`${this.alias}.id`);
+  async findFilteredSourcingLocationsForIntervention(
+    createInterventionDto: CreateScenarioInterventionDto,
+  ): Promise<SourcingLocationWithRecord[]> {
+    const sourcingLocations: SourcingLocationWithRecord[] =
+      await this.sourcingLocationRepository
+        .createQueryBuilder('sl')
+        .select('sl.materialId', 'materialId')
+        .addSelect('sl.businessUnitId', 'businessUnitId')
+        .addSelect('sl.t1SupplierId', 't1SupplierId')
+        .addSelect('sl.producerId', 'producerId')
+        .addSelect('sl.geoRegionId', 'geoRegionId')
+        .addSelect('sl.adminRegionId', 'adminRegionId')
+        .addSelect('sr.year', 'year')
+        .addSelect('sr.tonnage', 'tonnage')
+        .leftJoin('sourcing_records', 'sr', 'sr.sourcingLocationId = sl.id')
+        .where('sl."materialId" IN (:...materialIds)', {
+          materialIds: createInterventionDto.materialsIds,
+        })
+        .andWhere(
+          new Brackets((qb: WhereExpressionBuilder) => {
+            qb.where('sl."t1SupplierId" IN (:...suppliers)', {
+              suppliers: createInterventionDto.suppliersIds,
+            }).orWhere('sl."producerId" IN (:...suppliers)', {
+              suppliers: createInterventionDto.suppliersIds,
+            });
+          }),
+        )
+        .andWhere('sl."businessUnitId" IN (:...businessUnits)', {
+          businessUnits: createInterventionDto.businessUnitsIds,
+        })
+        .andWhere('sr.year=:startYear', {
+          startYear: createInterventionDto.startYear,
+        })
+        .andWhere('sl.adminRegionId IN (:...adminRegion)', {
+          adminRegion: createInterventionDto.adminRegionsIds,
+        })
+        .andWhere('sl.typeAccordingToIntervention IS NULL')
+        .getRawMany();
 
-    return query;
+    return sourcingLocations;
   }
 }

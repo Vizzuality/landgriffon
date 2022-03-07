@@ -1,41 +1,24 @@
 import axios from 'axios';
 import Jsona from 'jsona';
-import { signOut } from 'next-auth/react';
+import { getSession, signOut } from 'next-auth/react';
+
+/**
+ * API service require to be authenticated.
+ * Then, by default all the request are sending the authorization header.
+ */
 
 const dataFormatter = new Jsona();
 
-export const apiService = axios.create({
+const defaultConfig = {
   baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api/v1`,
   headers: { 'Content-Type': 'application/json' },
-  transformResponse: (response) => {
-    try {
-      const parsedData = JSON.parse(response);
-      return dataFormatter.deserialize(parsedData);
-    } catch (error) {
-      return response;
-    }
-  },
-});
+};
 
-export const apiWithMetadataService = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api/v1`,
-  headers: { 'Content-Type': 'application/json' },
-  transformResponse: (response) => {
-    try {
-      const parsedData = JSON.parse(response);
-      return { data: dataFormatter.deserialize(parsedData), metadata: parsedData.meta };
-    } catch (error) {
-      return response;
-    }
-  },
-});
-
-export const apiRawService = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api/v1`,
-  headers: { 'Content-Type': 'application/json' },
-});
-
-const onResponseSuccess = (response) => response;
+const authorizedRequest = async (config) => {
+  const { accessToken } = await getSession();
+  config.headers['Authorization'] = `Bearer ${accessToken}`;
+  return config;
+};
 
 const onResponseError = (error) => {
   // Any status codes that falls outside the range of 2xx cause this function to trigger
@@ -46,8 +29,27 @@ const onResponseError = (error) => {
   return Promise.reject(error);
 };
 
-apiService.interceptors.response.use(onResponseSuccess, onResponseError);
+// This endpoint by default will deserialize the data
+export const apiService = axios.create(defaultConfig);
 
-apiRawService.interceptors.response.use(onResponseSuccess, onResponseError);
+apiService.interceptors.response.use(
+  (response) => ({
+    ...response,
+    data: {
+      ...response.data,
+      data: !!response.data && dataFormatter.deserialize(response.data), // JSON API deserialize
+    },
+  }),
+  onResponseError,
+);
+
+apiService.interceptors.request.use(authorizedRequest, onResponseError);
+
+// Use this endpoint when JSON API spec is not needed
+// or the response doesn't follow this format
+export const apiRawService = axios.create(defaultConfig);
+
+apiRawService.interceptors.response.use((response) => response, onResponseError);
+apiRawService.interceptors.request.use(authorizedRequest, onResponseError);
 
 export default apiService;

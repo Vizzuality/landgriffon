@@ -4,7 +4,7 @@ import Loading from 'components/loading';
 
 const COMMON_CLASSNAMES = 'inline-flex items-center justify-center rounded-md cursor-pointer';
 
-const THEME = {
+export const THEME = {
   primary:
     'border-transparent shadow-sm text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-1 focus:ring-green-700',
   secondary:
@@ -136,7 +136,7 @@ export const Button: React.FC<ButtonProps> = ({
   size = 'base',
   className,
   disabled,
-  loading = true,
+  loading = false,
   ...restProps
 }: ButtonProps) => (
   <button

@@ -159,6 +159,11 @@ resource "kubernetes_deployment" "api_deployment" {
             value = "false"
           }
 
+          env {
+            name = "DB_MIGRATIONS_RUN"
+            value = "true"
+          }
+
           resources {
             limits = {
               cpu    = "1"

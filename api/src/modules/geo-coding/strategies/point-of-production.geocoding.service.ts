@@ -5,7 +5,7 @@ import { BaseStrategy } from 'modules/geo-coding/strategies/base-strategy';
 import { GeocodeResponse } from 'modules/geo-coding/geocoders/geocoder.interface';
 
 @Injectable()
-export class PointOfProductionGeocodingService extends BaseStrategy {
+export class PointOfProductionGeocodingStrategy extends BaseStrategy {
   async geoCodePointOfProduction(sourcingData: SourcingData): Promise<any> {
     if (!sourcingData.locationCountryInput)
       throw new Error(

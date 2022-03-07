@@ -7,25 +7,25 @@ import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service
 import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { AggregationPointGeocodingService } from 'modules/geo-coding/strategies/aggregation-point.geocoding.service';
+import { AggregationPointGeocodingStrategy } from 'modules/geo-coding/strategies/aggregation-point.geocoding.service';
 import { geocodeResponses } from './mocks/geo-coding.mock-response';
 import { GeocodeResponseData } from '@googlemaps/google-maps-services-js/dist/geocode/geocode';
 import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
-import { PointOfProductionGeocodingService } from 'modules/geo-coding/strategies/point-of-production.geocoding.service';
-import { UnknownLocationService } from 'modules/geo-coding/strategies/unknown-location.geocoding.service';
+import { PointOfProductionGeocodingStrategy } from 'modules/geo-coding/strategies/point-of-production.geocoding.service';
+import { UnknownLocationGeoCodingStrategy } from 'modules/geo-coding/strategies/unknown-location.geocoding.service';
 import { GeoCodingAbstractClass } from '../../../src/modules/geo-coding/geo-coding-abstract-class';
 
 // TODO: Re-organize properly tests. Handle all use cases
 
 describe('GeoCoding Service (Integration Testing)', () => {
   let geoCodingService: GeoCodingService;
-  let pointOfProductionService: PointOfProductionGeocodingService;
+  let pointOfProductionService: PointOfProductionGeocodingStrategy;
   let adminRegionService: AdminRegionsService;
   let geoRegionRepository: GeoRegionRepository;
   let sourcingLocationService: SourcingLocationsService;
-  let aggregationPointService: AggregationPointGeocodingService;
+  let aggregationPointService: AggregationPointGeocodingStrategy;
   let adminRegionRepository: AdminRegionRepository;
-  let unknownLocationService: UnknownLocationService;
+  let unknownLocationService: UnknownLocationGeoCodingStrategy;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -37,12 +37,14 @@ describe('GeoCoding Service (Integration Testing)', () => {
     geoRegionRepository = moduleFixture.get(GeoRegionRepository);
     sourcingLocationService = moduleFixture.get(SourcingLocationsService);
     aggregationPointService = moduleFixture.get(
-      AggregationPointGeocodingService,
+      AggregationPointGeocodingStrategy,
     );
     pointOfProductionService = moduleFixture.get(
-      PointOfProductionGeocodingService,
+      PointOfProductionGeocodingStrategy,
     );
-    unknownLocationService = moduleFixture.get(UnknownLocationService);
+    unknownLocationService = moduleFixture.get(
+      UnknownLocationGeoCodingStrategy,
+    );
   });
 
   afterEach(async () => {

@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AggregationPointGeocodingService } from 'modules/geo-coding/strategies/aggregation-point.geocoding.service';
-import { PointOfProductionGeocodingService } from 'modules/geo-coding/strategies/point-of-production.geocoding.service';
-import { CountryOfProductionService } from 'modules/geo-coding/strategies/country-of-production.geocoding.service';
-import { UnknownLocationService } from 'modules/geo-coding/strategies/unknown-location.geocoding.service';
+import { AggregationPointGeocodingStrategy } from 'modules/geo-coding/strategies/aggregation-point.geocoding.service';
+import { PointOfProductionGeocodingStrategy } from 'modules/geo-coding/strategies/point-of-production.geocoding.service';
+import { CountryOfProductionGeoCodingStrategy } from 'modules/geo-coding/strategies/country-of-production.geocoding.service';
+import { UnknownLocationGeoCodingStrategy } from 'modules/geo-coding/strategies/unknown-location.geocoding.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
@@ -12,10 +12,10 @@ export class GeoCodingService extends GeoCodingAbstractClass {
   protected readonly logger: Logger = new Logger(GeoCodingService.name);
 
   constructor(
-    protected readonly aggregationPointGeocodingService: AggregationPointGeocodingService,
-    protected readonly pointOfProductionGeocodingService: PointOfProductionGeocodingService,
-    protected readonly countryOfProductionService: CountryOfProductionService,
-    protected readonly unknownLocationService: UnknownLocationService,
+    protected readonly aggregationPointGeocodingService: AggregationPointGeocodingStrategy,
+    protected readonly pointOfProductionGeocodingService: PointOfProductionGeocodingStrategy,
+    protected readonly countryOfProductionService: CountryOfProductionGeoCodingStrategy,
+    protected readonly unknownLocationService: UnknownLocationGeoCodingStrategy,
   ) {
     super();
   }

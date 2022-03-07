@@ -5,7 +5,7 @@ import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.e
 import { GeocodeResponse } from 'modules/geo-coding/geocoders/geocoder.interface';
 
 @Injectable()
-export class UnknownLocationService extends BaseStrategy {
+export class UnknownLocationGeoCodingStrategy extends BaseStrategy {
   async geoCodeUnknownLocationType(
     sourcingData: SourcingData,
   ): Promise<SourcingLocation> {

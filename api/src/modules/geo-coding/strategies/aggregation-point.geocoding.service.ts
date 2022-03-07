@@ -5,9 +5,9 @@ import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { GeocodeResponse } from 'modules/geo-coding/geocoders/geocoder.interface';
 
 @Injectable()
-export class AggregationPointGeocodingService extends BaseStrategy {
+export class AggregationPointGeocodingStrategy extends BaseStrategy {
   aggregationPointGeocodingLogger: Logger = new Logger(
-    AggregationPointGeocodingService.name,
+    AggregationPointGeocodingStrategy.name,
   );
   async geoCodeAggregationPoint(sourcingData: SourcingData): Promise<any> {
     /**

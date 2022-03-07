@@ -1,10 +1,10 @@
 import { CacheModule, Module } from '@nestjs/common';
 import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { GeoRegionsModule } from 'modules/geo-regions/geo-regions.module';
-import { UnknownLocationService } from 'modules/geo-coding/strategies/unknown-location.geocoding.service';
-import { CountryOfProductionService } from 'modules/geo-coding/strategies/country-of-production.geocoding.service';
-import { AggregationPointGeocodingService } from 'modules/geo-coding/strategies/aggregation-point.geocoding.service';
-import { PointOfProductionGeocodingService } from 'modules/geo-coding/strategies/point-of-production.geocoding.service';
+import { UnknownLocationGeoCodingStrategy } from 'modules/geo-coding/strategies/unknown-location.geocoding.service';
+import { CountryOfProductionGeoCodingStrategy } from 'modules/geo-coding/strategies/country-of-production.geocoding.service';
+import { AggregationPointGeocodingStrategy } from 'modules/geo-coding/strategies/aggregation-point.geocoding.service';
+import { PointOfProductionGeocodingStrategy } from 'modules/geo-coding/strategies/point-of-production.geocoding.service';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
@@ -53,10 +53,10 @@ const geocodingCacheEnabled: boolean =
       provide: GeoCodingAbstractClass,
       useClass: GeoCodingService,
     },
-    UnknownLocationService,
-    CountryOfProductionService,
-    AggregationPointGeocodingService,
-    PointOfProductionGeocodingService,
+    UnknownLocationGeoCodingStrategy,
+    CountryOfProductionGeoCodingStrategy,
+    AggregationPointGeocodingStrategy,
+    PointOfProductionGeocodingStrategy,
   ],
   exports: [GeoCodingAbstractClass],
 })

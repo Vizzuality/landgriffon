@@ -80,6 +80,7 @@ const ScenariosNewContainer: React.FC = () => {
           placeholder={title}
           aria-label="Scenario title"
           className="flex-1 block w-full md:text-2xl sm:text-sm border-none text-gray-900 p-0 mb-6"
+          onChange={(e) => setScenarioNewData({ ...scenarioNewData, title: e.currentTarget.value })}
         />
 
         <div className="sm:col-span-6">

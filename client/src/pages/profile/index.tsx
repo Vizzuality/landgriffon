@@ -5,9 +5,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-query';
-import { useRouter } from 'next/router';
 import { useCallback } from 'react';
-import { updateUserData } from 'services/authentication';
+import { apiService } from 'services/api';
 
 type UserProfilePayload = {
   fname?: string;
@@ -28,12 +27,10 @@ const schemaValidation = yup.object({
     .oneOf([yup.ref('password'), null], 'passwords must match'),
 });
 
-const editUserData = (data: UserProfilePayload) => updateUserData.patch('/users/me', data);
-const editPassword = (data: UserProfilePayload) => updateUserData.patch('/users/password', data);
+const editUserData = (data: UserProfilePayload) => apiService.patch('/users/me', data);
+const editPassword = (data: UserProfilePayload) => apiService.patch('/users/password', data);
 
 const UserProfile: React.FC = () => {
-  const router = useRouter();
-
   const {
     register,
     handleSubmit,
@@ -51,15 +48,11 @@ const UserProfile: React.FC = () => {
   });
 
   const mutation = useMutation(editUserData, {
-    onSuccess: () => {
-      router.reload();
-    },
+    /* onSuccess: () => {}, */
   });
 
   const mutationPassword = useMutation(editPassword, {
-    onSuccess: () => {
-      router.reload();
-    },
+    /*   onSuccess: () => {}, */
   });
 
   const handleEditUserData = useCallback(
@@ -122,7 +115,7 @@ const UserProfile: React.FC = () => {
         </div>
       </section>
 
-      <section className="mt-8 ml-6 mb-14">
+      <section className="mt-8 ml-6 mb-44">
         <div className="flex">
           <div className="w-125">
             <h1 className="text-lg">Password</h1>

@@ -6,25 +6,16 @@ import ScenariosList from 'containers/scenarios/list';
 import { AnchorLink } from 'components/button';
 import Lottie from 'lottie-react';
 import { useScenarios } from 'hooks/scenarios';
-import type { Page } from 'components/breadcrumb/types';
 
 import noScenariosAnimationData from 'containers/scenarios/animations/noScenariosAnimationData.json';
 
 const ScenariosComponent: React.FC = () => {
   const { query } = useRouter();
   const { data, isLoading, error } = useScenarios({ sort: query.sortBy as string });
-  const { scenario } = query;
-
-  // Breadcrumbs
-  let pages: Page[] = [{ name: 'Analysis', href: '/analysis' }]; // Default
-
-  if (scenario === 'edit') {
-    pages = [...pages, { name: 'Edit scenario', href: '/analysis?scenario=edit' }];
-  }
 
   return (
     <div className="bg-white overscroll-contain text-gray-900">
-      <div className="sticky top-0 bottom-1 z-20 bg-white py-4 text-sm">
+      <div className="sticky top-0 z-10 bg-white py-4 text-sm">
         <h1>Scenarios</h1>
         <p className="my-2">Select the scenario you want to analyse</p>
         {!isLoading && data && (
@@ -70,7 +61,7 @@ const ScenariosComponent: React.FC = () => {
               <div className="w-full">
                 <Lottie
                   animationData={noScenariosAnimationData}
-                  loop={true}
+                  loop
                   style={{ height: 74, width: 74, margin: 'auto' }}
                 />
               </div>

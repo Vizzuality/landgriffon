@@ -10,16 +10,10 @@ import AnalysisFilters from './analysis-filters';
 import AnalysisTable from './analysis-table';
 
 const AnalysisVisualization: React.FC = () => {
-  const { visualizationMode, isSubContentCollapsed } = useAppSelector(analysis);
+  const { visualizationMode } = useAppSelector(analysis);
 
   return (
-    <section
-      className={classNames('relative flex flex-col flex-1 md:h-full lg:order-last', {
-        'overflow-hidden': visualizationMode === 'map',
-        'overflow-x-hidden': visualizationMode !== 'map',
-        'backdrop-blur-3xl blur-sm pointer-events-none': !isSubContentCollapsed,
-      })}
-    >
+    <>
       <div
         className={classNames(
           {
@@ -51,7 +45,7 @@ const AnalysisVisualization: React.FC = () => {
           <AnalysisChart />
         </div>
       )}
-    </section>
+    </>
   );
 };
 

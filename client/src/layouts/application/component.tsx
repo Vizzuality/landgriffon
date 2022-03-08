@@ -1,5 +1,5 @@
 import Sidebar from 'containers/sidebar';
-import HeaderMobile from 'containers/mobile-header';
+// import HeaderMobile from 'containers/mobile-header';
 
 type ApplicationLayoutProps = {
   children: React.ReactNode;
@@ -9,16 +9,18 @@ const ApplicationLayout: React.FC<ApplicationLayoutProps> = (props: ApplicationL
   const { children } = props;
 
   return (
-    <div className="flex bg-gray-100">
+    <div className="h-full lg:min-h-screen flex">
       {/* Navigation */}
       <Sidebar />
 
-      <div className="pl-0 flex-1 min-w-0 flex flex-col lg:pl-28">
-        {/* Mobile top navigation */}
-        <HeaderMobile />
+      <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
+        <main className="flex-1 flex overflow-hidden">
+          {/* Mobile top navigation */}
+          {/* <HeaderMobile /> */}
 
-        {/* Content */}
-        {children}
+          {/* Content */}
+          {children}
+        </main>
       </div>
     </div>
   );

@@ -1,0 +1,108 @@
+import { useLayoutEffect, useRef, useState, Fragment } from 'react';
+import dynamic from 'next/dynamic';
+import { createPortal } from 'react-dom';
+import { Transition } from '@headlessui/react';
+import classNames from 'classnames';
+
+import { useAppSelector } from 'store/hooks';
+import { analysis } from 'store/features/analysis';
+
+import ApplicationLayout from 'layouts/application';
+import PageLoading from 'containers/page-loading';
+import CollapseButton from 'containers/collapse-button';
+import ScenariosForm from 'containers/scenarios/new/form';
+import type { AnalysisLayoutProps } from './types';
+
+const AnalysisVisualizationNoSSR = dynamic(() => import('containers/analysis-visualization'), {
+  ssr: false,
+});
+
+const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({
+  loading = false,
+  children,
+}: AnalysisLayoutProps) => {
+  const asideRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState<DOMRect>(null);
+  const { visualizationMode, isSidebarCollapsed, isSubContentCollapsed } = useAppSelector(analysis);
+
+  useLayoutEffect(() => {
+    if (asideRef && asideRef.current) {
+      setPosition(asideRef.current.getBoundingClientRect());
+    }
+  }, [asideRef]);
+
+  return (
+    <ApplicationLayout>
+      {/* <section className="relative p-6 md:pl-12 min-h-screen bg-gray-100"> */}
+      <>
+        {loading && <PageLoading />}
+
+        {/* Primary column */}
+        <section
+          aria-labelledby="primary-heading"
+          className="relative min-w-0 flex-1 h-full lg:h-screen flex flex-col overflow-y-auto lg:order-last"
+        >
+          <h1 id="primary-heading" className="sr-only">
+            Analysis
+          </h1>
+
+          {/* Interventions and growth forms */}
+          {!isSubContentCollapsed && !isSidebarCollapsed && (
+            <div className="absolute top-0 left-0 h-full w-full min-w-min xl:w-250 lg:flex-shrink-0 bg-white z-10">
+              <div className="h-full flex flex-col border-r border-gray-200 p-6 overflow-auto w-full">
+                <ScenariosForm />
+              </div>
+            </div>
+          )}
+
+          {/* Map, chart or table */}
+          <div
+            className={classNames({
+              'absolute w-full h-full top-0 left-0 overflow-hidden': visualizationMode === 'map',
+              'backdrop-blur-3xl blur-sm pointer-events-none': !isSubContentCollapsed,
+            })}
+          >
+            <AnalysisVisualizationNoSSR />
+          </div>
+        </section>
+
+        {/* Secondary column (hidden on smaller screens) */}
+        <aside className="relative hidden lg:block lg:flex-shrink-0 lg:order-first" ref={asideRef}>
+          <Transition
+            as="aside"
+            show={!isSidebarCollapsed}
+            enter="transition-opacity duration-75"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="transition-opacity duration-150"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+            afterEnter={() => setPosition(asideRef?.current?.getBoundingClientRect())}
+            afterLeave={() => setPosition(asideRef?.current?.getBoundingClientRect())}
+          >
+            <div className="h-full lg:h-screen relative flex flex-col border-r border-gray-200 bg-white overflow-y-auto w-96 px-6">
+              {children}
+            </div>
+          </Transition>
+        </aside>
+      </>
+
+      {/* Button for collapsing */}
+      {typeof window !== 'undefined' &&
+        position &&
+        createPortal(
+          <div
+            className={classNames('absolute top-5 transform -translate-x-1/2 z-20', {
+              hidden: !isSubContentCollapsed,
+            })}
+            style={{ left: position.x + position.width }}
+          >
+            <CollapseButton />
+          </div>,
+          document?.body,
+        )}
+    </ApplicationLayout>
+  );
+};
+
+export default AnalysisLayout;

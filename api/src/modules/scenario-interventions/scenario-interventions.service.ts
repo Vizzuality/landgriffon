@@ -113,7 +113,6 @@ export class ScenarioInterventionsService extends AppBaseService<
       );
 
     // Saving new Sourcing Locations with intervention type canceled and reference to the new Intervention Id with start year record
-    // TODO: The tonnage * percentage result should be saved as sourcing record for the new created sourcing location?
 
     const cancelledInterventionSourcingLocations: SourcingLocation[] =
       await this.sourcingLocationsService.save(
@@ -122,8 +121,6 @@ export class ScenarioInterventionsService extends AppBaseService<
 
     newScenarioIntervention.replacedSourcingLocations =
       cancelledInterventionSourcingLocations;
-
-    // TODO: Next step - calculate and save Impact Records for the newly created Sourcing Records, once calculation methodology is updated
 
     /**
      * NEW SOURCING LOCATIONS #2 - The ones of the Intervention, will replace the CANCELED ones
@@ -145,10 +142,20 @@ export class ScenarioInterventionsService extends AppBaseService<
             newMaterialInterventionLocation,
           );
 
+        for await (const sourcingLocation of newInterventionSourcingLocations) {
+          await this.indicatorRecordsService.createIndicatorRecordsBySourcingRecords(
+            {
+              sourcingRecordId: sourcingLocation.sourcingRecords[0].id,
+              tonnage: sourcingLocation.sourcingRecords[0].tonnage,
+              geoRegionId: sourcingLocation.geoRegionId,
+              materialId: sourcingLocation.materialId,
+            },
+          );
+        }
+
         newScenarioIntervention.newSourcingLocations =
           newInterventionSourcingLocations;
 
-        // TODO: Next step - calculate and save Impact Records for the newly created Sourcing Records, once calculation methodology is updated
         break;
 
       case SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER:
@@ -165,8 +172,16 @@ export class ScenarioInterventionsService extends AppBaseService<
 
         newScenarioIntervention.newSourcingLocations =
           newInterventionSourcingLocations;
-
-        // TODO: Next step - calculate and save Impact Records for the newly created Sourcing Records, once calculation methodology is updated
+        for await (const sourcingLocation of newInterventionSourcingLocations) {
+          await this.indicatorRecordsService.createIndicatorRecordsBySourcingRecords(
+            {
+              sourcingRecordId: sourcingLocation.sourcingRecords[0].id,
+              tonnage: sourcingLocation.sourcingRecords[0].tonnage,
+              geoRegionId: sourcingLocation.geoRegionId,
+              materialId: sourcingLocation.materialId,
+            },
+          );
+        }
         break;
 
       case SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY:
@@ -182,8 +197,17 @@ export class ScenarioInterventionsService extends AppBaseService<
           );
         newScenarioIntervention.newSourcingLocations =
           newInterventionSourcingLocations;
+        for await (const sourcingLocation of newInterventionSourcingLocations) {
+          await this.indicatorRecordsService.createIndicatorRecordsBySourcingRecords(
+            {
+              sourcingRecordId: sourcingLocation.sourcingRecords[0].id,
+              tonnage: sourcingLocation.sourcingRecords[0].tonnage,
+              geoRegionId: sourcingLocation.geoRegionId,
+              materialId: sourcingLocation.materialId,
+            },
+          );
+        }
 
-        // TODO: Next step - calculate and save Impact Records once calculation methodology is updated
         break;
     }
 
@@ -205,16 +229,18 @@ export class ScenarioInterventionsService extends AppBaseService<
   /**
    * In case of New Material Intervention only 1 new Sourcing Location will be created, it will have the material, suppliers and supplier's location
    * received from user in create-intervention dto. However, the tonnage of the New Intervention must be taken as a sum of all tonnages of the Sourcing Locations
-   * that are being canceled by the Intervention
+   * that are being canceled by the Intervention, and multiplied by the percentage selected by the user
    */
   async createSourcingLocationsDataForNewMaterialIntervention(
     dto: CreateScenarioInterventionDto,
     sourcingData: SourcingLocationWithRecord[],
   ): Promise<SourcingData[]> {
-    const tonnage: number = sourcingData.reduce(
-      (previous: any, current: any) => previous + Number(current.tonnage),
-      0,
-    );
+    const tonnage: number =
+      sourcingData.reduce(
+        (previous: any, current: any) => previous + Number(current.tonnage),
+        0,
+      ) *
+      (dto.percentage / 100);
 
     const newInterventionLocationDataForGeoCoding: SourcingData[] = [
       {

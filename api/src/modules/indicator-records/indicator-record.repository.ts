@@ -1,6 +1,7 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
-import { Logger } from '@nestjs/common';
+import { Logger, ServiceUnavailableException } from '@nestjs/common';
+import { IndicatorComputedRawDataDto } from 'modules/indicators/dto/indicator-computed-raw-data.dto';
 
 @EntityRepository(IndicatorRecord)
 export class IndicatorRecordRepository extends Repository<IndicatorRecord> {
@@ -16,9 +17,9 @@ export class IndicatorRecordRepository extends Repository<IndicatorRecord> {
   async getIndicatorRawDataByGeoRegionAndMaterial(
     geoRegionId: string,
     materialId: string,
-  ): Promise<any> {
+  ): Promise<IndicatorComputedRawDataDto> {
     try {
-      const res: any = await this.query(
+      const res: IndicatorComputedRawDataDto[] = await this.query(
         `
                  SELECT
                       sum_material_over_georegion($1, $2, 'producer') as production,
@@ -30,10 +31,13 @@ export class IndicatorRecordRepository extends Repository<IndicatorRecord> {
                  `,
         [geoRegionId, materialId],
       );
-      return res;
+      return res[0];
     } catch (error: any) {
       this.logger.error(
         `Could not calculate raw Indicator values for GeoRegion Id: ${geoRegionId} and Material Id: ${materialId} `,
+      );
+      throw new ServiceUnavailableException(
+        `Could not calculate Raw Indicator values for new Scenario`,
       );
     }
   }

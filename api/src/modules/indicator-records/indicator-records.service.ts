@@ -32,6 +32,7 @@ import {
 import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import { IndicatorRecordCalculatedValuesDto } from 'modules/indicator-records/dto/indicator-record-calculated-values.dto';
 import { IndicatorNameCodeWithRelatedH3 } from 'modules/indicators/dto/indicator-namecode-with-related-h3.dto';
+import { IndicatorComputedRawDataDto } from 'modules/indicators/dto/indicator-computed-raw-data.dto';
 
 @Injectable()
 export class IndicatorRecordsService extends AppBaseService<
@@ -350,18 +351,92 @@ export class IndicatorRecordsService extends AppBaseService<
    *       Will need to refactor once PR: https://github.com/Vizzuality/landgriffon/pull/231 is merged
    */
 
-  async createIndicatorRecordsBySourcingRecord(
-    geoRegionId: string,
-    materialId: string,
-  ): Promise<IndicatorRecord[]> {
-    return this.indicatorRecordRepository.getIndicatorRawDataByGeoRegionAndMaterial(
-      geoRegionId,
-      materialId,
+  async createIndicatorRecordsBySourcingRecords(
+    sourcingData: any,
+  ): Promise<any> {
+    const { geoRegionId, materialId } = sourcingData;
+    const rawData: IndicatorComputedRawDataDto =
+      await this.indicatorRecordRepository.getIndicatorRawDataByGeoRegionAndMaterial(
+        geoRegionId as string,
+        materialId,
+      );
+    const calculatedIndicatorRecordValues: IndicatorRecordCalculatedValuesDto =
+      this.calculateIndicatorValues({
+        sourcingRecordId: sourcingData.sourcingRecordId,
+        tonnage: sourcingData.tonnage,
+        ...rawData,
+      });
+    const indicators: IndicatorNameCodeWithRelatedH3[] =
+      await this.indicatorService.getIndicatorsAndRelatedH3DataIds();
+
+    const indicatorMapper: Record<string, any> = {};
+    indicators.forEach(
+      (indicator: { id: string; nameCode: string; h3DataId: string }) => {
+        indicatorMapper[indicator.nameCode] = indicator;
+      },
     );
+    const indicatorRecords: IndicatorRecord[] = [];
+    const indicatorRecordDeforestation: IndicatorRecord = IndicatorRecord.merge(
+      new IndicatorRecord(),
+      {
+        value: calculatedIndicatorRecordValues[INDICATOR_TYPES.DEFORESTATION],
+        indicatorId: indicatorMapper[INDICATOR_TYPES.DEFORESTATION].id,
+        status: INDICATOR_RECORD_STATUS.SUCCESS,
+        sourcingRecordId: calculatedIndicatorRecordValues.sourcingRecordId,
+        scaler: calculatedIndicatorRecordValues.production,
+        h3DataId: indicatorMapper[INDICATOR_TYPES.DEFORESTATION].h3DataId,
+      },
+    );
+    const indicatorRecordBiodiversity: IndicatorRecord = IndicatorRecord.merge(
+      new IndicatorRecord(),
+      {
+        value:
+          calculatedIndicatorRecordValues[INDICATOR_TYPES.BIODIVERSITY_LOSS],
+        indicatorId: indicatorMapper[INDICATOR_TYPES.BIODIVERSITY_LOSS].id,
+        status: INDICATOR_RECORD_STATUS.SUCCESS,
+        sourcingRecordId: calculatedIndicatorRecordValues.sourcingRecordId,
+        scaler: calculatedIndicatorRecordValues.production,
+        h3DataId: indicatorMapper[INDICATOR_TYPES.BIODIVERSITY_LOSS].h3DataId,
+      },
+    );
+    const indicatorRecordCarbonEmissions: IndicatorRecord =
+      IndicatorRecord.merge(new IndicatorRecord(), {
+        value:
+          calculatedIndicatorRecordValues[INDICATOR_TYPES.CARBON_EMISSIONS],
+        indicatorId: indicatorMapper[INDICATOR_TYPES.CARBON_EMISSIONS].id,
+        status: INDICATOR_RECORD_STATUS.SUCCESS,
+        sourcingRecordId: calculatedIndicatorRecordValues.sourcingRecordId,
+        scaler: calculatedIndicatorRecordValues.production,
+        h3DataId: indicatorMapper[INDICATOR_TYPES.CARBON_EMISSIONS].h3DataId,
+      });
+    const indicatorRecordUnsustainableWater: IndicatorRecord =
+      IndicatorRecord.merge(new IndicatorRecord(), {
+        value:
+          calculatedIndicatorRecordValues[
+            INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE
+          ],
+        indicatorId:
+          indicatorMapper[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE].id,
+        status: INDICATOR_RECORD_STATUS.SUCCESS,
+        sourcingRecordId: calculatedIndicatorRecordValues.sourcingRecordId,
+        scaler: calculatedIndicatorRecordValues.production,
+        h3DataId:
+          indicatorMapper[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE].h3DataId,
+      });
+
+    indicatorRecords.push(
+      indicatorRecordDeforestation,
+      indicatorRecordBiodiversity,
+      indicatorRecordCarbonEmissions,
+      indicatorRecordUnsustainableWater,
+    );
+    return this.indicatorRecordRepository.save(indicatorRecords);
+
+    // return this.calculateIndicatorValues({ ...sourcingData, ...rawData });
   }
 
   private calculateIndicatorValues(
-    sourcingRecordData: SourcingRecordsWithIndicatorRawDataDto,
+    sourcingRecordData: any,
   ): IndicatorRecordCalculatedValuesDto {
     const calculatedIndicatorValues: IndicatorRecordCalculatedValuesDto =
       new IndicatorRecordCalculatedValuesDto();
@@ -392,5 +467,69 @@ export class IndicatorRecordsService extends AppBaseService<
       sourcingRecordData.rawWater * sourcingRecordData.tonnage;
 
     return calculatedIndicatorValues;
+  }
+
+  async createIndicatorRecords(
+    calculatedIndicatorRecords: any,
+  ): Promise<IndicatorRecord[]> {
+    const indicators: IndicatorNameCodeWithRelatedH3[] =
+      await this.indicatorService.getIndicatorsAndRelatedH3DataIds();
+    const indicatorMapper: Record<string, any> = {};
+    indicators.forEach(
+      (indicator: { id: string; nameCode: string; h3DataId: string }) => {
+        indicatorMapper[indicator.nameCode] = indicator;
+      },
+    );
+    const indicatorRecords: IndicatorRecord[] = [];
+    const indicatorRecordDeforestation: IndicatorRecord = IndicatorRecord.merge(
+      new IndicatorRecord(),
+      {
+        value: calculatedIndicatorRecords[INDICATOR_TYPES.DEFORESTATION],
+        indicatorId: indicatorMapper[INDICATOR_TYPES.DEFORESTATION].id,
+        status: INDICATOR_RECORD_STATUS.SUCCESS,
+        sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
+        scaler: calculatedIndicatorRecords.production,
+        h3DataId: indicatorMapper[INDICATOR_TYPES.DEFORESTATION].h3DataId,
+      },
+    );
+    const indicatorRecordBiodiversity: IndicatorRecord = IndicatorRecord.merge(
+      new IndicatorRecord(),
+      {
+        value: calculatedIndicatorRecords[INDICATOR_TYPES.BIODIVERSITY_LOSS],
+        indicatorId: indicatorMapper[INDICATOR_TYPES.BIODIVERSITY_LOSS].id,
+        status: INDICATOR_RECORD_STATUS.SUCCESS,
+        sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
+        scaler: calculatedIndicatorRecords.production,
+        h3DataId: indicatorMapper[INDICATOR_TYPES.BIODIVERSITY_LOSS].h3DataId,
+      },
+    );
+    const indicatorRecordCarbonEmissions: IndicatorRecord =
+      IndicatorRecord.merge(new IndicatorRecord(), {
+        value: calculatedIndicatorRecords[INDICATOR_TYPES.CARBON_EMISSIONS],
+        indicatorId: indicatorMapper[INDICATOR_TYPES.CARBON_EMISSIONS].id,
+        status: INDICATOR_RECORD_STATUS.SUCCESS,
+        sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
+        scaler: calculatedIndicatorRecords.production,
+        h3DataId: indicatorMapper[INDICATOR_TYPES.CARBON_EMISSIONS].h3DataId,
+      });
+    const indicatorRecordUnsustainableWater: IndicatorRecord =
+      IndicatorRecord.merge(new IndicatorRecord(), {
+        value:
+          calculatedIndicatorRecords[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE],
+        indicatorId:
+          indicatorMapper[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE].id,
+        status: INDICATOR_RECORD_STATUS.SUCCESS,
+        sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
+        scaler: calculatedIndicatorRecords.production,
+        h3DataId:
+          indicatorMapper[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE].h3DataId,
+      });
+    indicatorRecords.push(
+      indicatorRecordDeforestation,
+      indicatorRecordBiodiversity,
+      indicatorRecordCarbonEmissions,
+      indicatorRecordUnsustainableWater,
+    );
+    return indicatorRecords;
   }
 }

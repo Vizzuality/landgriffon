@@ -4,8 +4,8 @@ import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import {
   SCENARIO_INTERVENTION_STATUS,
-  ScenarioIntervention,
   SCENARIO_INTERVENTION_TYPE,
+  ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { ScenarioInterventionsModule } from 'modules/scenario-interventions/scenario-interventions.module';
 import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
@@ -26,6 +26,7 @@ import { Supplier } from 'modules/suppliers/supplier.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import {
   LOCATION_TYPES,
+  SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
@@ -188,8 +189,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const canceledSourcingLocations: SourcingLocation[] =
         await sourcingLocationRepository.find({
           where: {
-            typeAccordingToIntervention:
-              'Sourcing location canceled by intervention',
+            interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
           },
         });
 
@@ -217,8 +217,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const newSourcingLocations: SourcingLocation[] =
         await sourcingLocationRepository.find({
           where: {
-            typeAccordingToIntervention:
-              'New sourcing location of the intervention',
+            interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
           },
         });
 
@@ -298,8 +297,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const canceledSourcingLocations: SourcingLocation[] =
         await sourcingLocationRepository.find({
           where: {
-            typeAccordingToIntervention:
-              'Sourcing location canceled by intervention',
+            interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
           },
         });
 
@@ -327,8 +325,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const newSourcingLocations: SourcingLocation[] =
         await sourcingLocationRepository.find({
           where: {
-            typeAccordingToIntervention:
-              'New sourcing location of the intervention',
+            interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
           },
         });
 
@@ -427,8 +424,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const canceledSourcingLocations: SourcingLocation[] =
         await sourcingLocationRepository.find({
           where: {
-            typeAccordingToIntervention:
-              'Sourcing location canceled by intervention',
+            interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
           },
         });
 
@@ -437,8 +433,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const newSourcingLocations: SourcingLocation[] =
         await sourcingLocationRepository.find({
           where: {
-            typeAccordingToIntervention:
-              'New sourcing location of the intervention',
+            interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
           },
         });
 

@@ -3,6 +3,7 @@ import { useQuery, UseQueryResult, UseQueryOptions, useMutation } from 'react-qu
 import { useQueryClient } from 'react-query';
 import { apiService } from 'services/api';
 import type { Scenario, Intervention } from 'containers/scenarios/types';
+import { useRouter } from 'next/router';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   placeholderData: [],
@@ -72,23 +73,25 @@ export function useScenario(id: string, queryParams: { sort: string }): Response
 }
 
 export function useDeleteScenario() {
+  const { query } = useRouter();
   const queryClient = useQueryClient();
-  const deleteProject = ({ id }) =>
-    apiService.request({
-      method: 'DELETE',
-      url: `/scenarios/${decodeURIComponent(id)}`,
-    });
 
-  return useMutation(deleteProject, {
-    mutationKey: 'deleteScenario',
-    onSuccess: () => {
-      queryClient.invalidateQueries('scenariosList');
-      console.info('Succces');
+  return useMutation(
+    (id: Scenario['id']) =>
+      apiService.request({
+        method: 'DELETE',
+        url: `/scenarios/${decodeURIComponent(id as string)}`,
+      }),
+    {
+      mutationKey: 'deleteScenario',
+      onSuccess: () => {
+        queryClient.invalidateQueries(['scenariosList', { sort: query.sort }]);
+      },
+      onError: () => {
+        console.info('Error');
+      },
     },
-    onError: () => {
-      console.info('Error');
-    },
-  });
+  );
 }
 
 export function useUpdateScenario() {

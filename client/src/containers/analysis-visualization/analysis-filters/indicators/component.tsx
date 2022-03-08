@@ -7,7 +7,7 @@ import Select from 'components/select';
 
 import { useIndicators } from 'hooks/indicators';
 
-import { SelectProps } from 'components/select/types';
+import type { SelectProps } from 'components/select/types';
 
 const IndicatorsFilter: React.FC = () => {
   const { visualizationMode, filters } = useAppSelector(analysis);

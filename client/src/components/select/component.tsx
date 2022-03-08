@@ -86,7 +86,7 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
               )}
             >
               {loading ? (
-                <div className="p-4">
+                <div>
                   <Loading className="mr-3 -ml-1 text-green-700" />
                 </div>
               ) : (

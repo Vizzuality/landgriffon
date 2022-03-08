@@ -20,8 +20,8 @@ const THEMES = {
     arrow: 'absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none',
   },
   'default-bordernone': {
-    base: 'flex focus:outline-none pl-3 pr-10',
-    arrow: 'absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none',
+    base: 'inline-block relative pr-6 flex focus:outline-none shadow-none text-gray-500',
+    arrow: 'absolute inset-y-0 right-0 flex items-center pointer-events-none',
   },
   'inline-primary': {
     base: 'relative py-0.5 flex text-sm font-bold border-b-2 border-green-700 max-w-[190px] truncate text-ellipsis',
@@ -78,7 +78,7 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
     <Listbox value={selected} onChange={setSelected} disabled={disabled}>
       {({ open }) => (
         <>
-          <div className="relative shadow-sm">
+          <div className={classNames('relative', { 'shadow-sm': theme !== 'default-bordernone' })}>
             <Listbox.Button
               className={classNames(
                 THEMES[theme].base,

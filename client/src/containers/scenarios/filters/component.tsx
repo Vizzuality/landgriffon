@@ -106,15 +106,17 @@ const ScenariosFilters: FC = () => {
         )}
       </div>
 
-      <ul className="relative flex space-x-4 ml-4 justify-start whitespace-nowrap items-center">
+      <ul className="relative flex flex-1 space-x-2 ml-3 justify-start whitespace-nowrap items-center">
         {filtersItems.map((item) => (
           <li key={item.filter}>
             <Link href={{ pathname: '/analysis', query: { ...query, filter: item.filter } }}>
               <a
-                className={classNames('block', {
-                  'border-b-2 border-green-700 box-content':
-                    query.filter === item.filter || (!query.filter && item.filter === 'all'),
-                })}
+                className={classNames(
+                  'block',
+                  query.filter === item.filter || (!query.filter && item.filter === 'all')
+                    ? 'border-b-2 border-green-700 box-content text-gray-900'
+                    : 'text-gray-500',
+                )}
               >
                 {item.name}
               </a>
@@ -122,7 +124,8 @@ const ScenariosFilters: FC = () => {
           </li>
         ))}
       </ul>
-      <div className="absolute right-0 bg-white p-2">
+
+      <div className="">
         <Select
           theme="default-bordernone"
           current={SORT_OPTIONS[0]}

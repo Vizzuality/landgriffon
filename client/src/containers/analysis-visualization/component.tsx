@@ -18,7 +18,7 @@ const AnalysisVisualization: React.FC = () => {
         className={classNames(
           {
             'absolute top-6 left-6 xl:left-12 right-6 z-20': visualizationMode === 'map',
-            'm-6 xl:ml-12': visualizationMode !== 'map',
+            'py-6 pr-6 pl-6 xl:pl-12': visualizationMode !== 'map',
           },
           'flex gap-2 flex-wrap justify-between',
         )}
@@ -35,7 +35,7 @@ const AnalysisVisualization: React.FC = () => {
       {visualizationMode === 'map' && <AnalysisMap />}
 
       {visualizationMode === 'table' && (
-        <div className="flex flex-col pr-6 pl-12">
+        <div className="flex flex-col pr-6 pl-6 xl:pl-12">
           <AnalysisTable />
         </div>
       )}

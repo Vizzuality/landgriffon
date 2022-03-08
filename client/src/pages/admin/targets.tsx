@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import Head from 'next/head';
 import { ITableProps } from 'ka-table';
 import { DataType } from 'ka-table/enums';
 import dynamic from 'next/dynamic';
@@ -57,6 +58,10 @@ const AdminTargetsPage: React.FC = () => {
         </>
       }
     >
+      <Head>
+        <title>Admin targets | Landgriffon</title>
+      </Head>
+
       <UploadDataSourceModal
         open={isUploadDataSourceModalOpen}
         onDismiss={closeUploadDataSourceModal}

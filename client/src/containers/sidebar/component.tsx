@@ -102,22 +102,17 @@ const Sidebar: React.FC = () => {
       </Transition.Root>
 
       {/* Static sidebar for desktop */}
-      <div className="fixed z-10 hidden h-screen lg:flex lg:flex-shrink-0 w-28">
-        <div className="flex flex-col bg-green-700 w-28">
-          <div className="flex flex-col flex-1 h-0 overflow-y-auto">
-            <div className="flex flex-col flex-1">
-              {/* Logo has been removed temporally */}
-              {/* <div className="flex items-center justify-center flex-shrink-0 py-4">
-                <img
-                  className="w-auto h-8"
-                  src="https://tailwindui.com/img/logos/workflow-mark.svg?color=white"
-                  alt="Landgriffon"
-                />
-              </div> */}
+      <div className="hidden lg:flex lg:flex-shrink-0">
+        <div className="flex flex-col w-28">
+          <div className="flex-1 flex flex-col min-h-0 overflow-y-auto bg-green-700">
+            <div className="flex-1">
+              {/* TODO: Logo should be here */}
               <DesktopNavigation items={navigationItems} />
             </div>
 
-            <UserDropdown />
+            <div className="flex-shrink-0 flex pb-5">
+              <UserDropdown />
+            </div>
           </div>
         </div>
       </div>

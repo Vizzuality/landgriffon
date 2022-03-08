@@ -124,7 +124,7 @@ export class SourcingLocationsService extends AppBaseService<
         .andWhere('sl.adminRegionId IN (:...adminRegion)', {
           adminRegion: createInterventionDto.adminRegionsIds,
         })
-        .andWhere('sl.typeAccordingToIntervention IS NULL')
+        .andWhere('sl.interventionType IS NULL')
         .getRawMany();
 
     return sourcingLocations;

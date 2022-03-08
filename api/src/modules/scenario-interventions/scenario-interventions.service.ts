@@ -9,23 +9,24 @@ import {
   JSONAPISerializerConfig,
 } from 'utils/app-base.service';
 import {
+  SCENARIO_INTERVENTION_TYPE,
   ScenarioIntervention,
   scenarioResource,
-  SCENARIO_INTERVENTION_TYPE,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { AppInfoDTO } from 'dto/info.dto';
 import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
 import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
 import { UpdateScenarioInterventionDto } from 'modules/scenario-interventions/dto/update.scenario-intervention.dto';
 import {
+  SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
-  CANCELED_OR_REPLACING_BY_INTERVENTION,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { SourcingLocationWithRecord } from 'modules/sourcing-locations/dto/sourcing-location-with-record.interface';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
+import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 
 @Injectable()
 export class ScenarioInterventionsService extends AppBaseService<
@@ -39,6 +40,7 @@ export class ScenarioInterventionsService extends AppBaseService<
     protected readonly scenarioInterventionRepository: ScenarioInterventionRepository,
     protected readonly geoCodingService: GeoCodingAbstractClass,
     protected readonly sourcingLocationsService: SourcingLocationsService,
+    protected readonly indicatorRecordsService: IndicatorRecordsService,
   ) {
     super(
       scenarioInterventionRepository,
@@ -84,7 +86,7 @@ export class ScenarioInterventionsService extends AppBaseService<
     const newScenarioIntervention: ScenarioIntervention =
       new ScenarioIntervention();
     Object.assign(newScenarioIntervention, dto);
-    await newScenarioIntervention.save();
+    await this.scenarioInterventionRepository.save(newScenarioIntervention);
     /**
      * Getting Sourcing Locations and Sourcing Records for start year of all Materials of the intervention with applied filters
      */
@@ -107,10 +109,11 @@ export class ScenarioInterventionsService extends AppBaseService<
     const newCancelledByInterventionLocationsData: CreateSourcingLocationDto[] =
       await this.createSourcingLocationsObjectsForIntervention(
         actualSourcingDataWithTonnage,
-        CANCELED_OR_REPLACING_BY_INTERVENTION.CANCELED,
+        SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
       );
 
     // Saving new Sourcing Locations with intervention type canceled and reference to the new Intervention Id with start year record
+    // TODO: The tonnage * percentage result should be saved as sourcing record for the new created sourcing location?
 
     const cancelledInterventionSourcingLocations: SourcingLocation[] =
       await this.sourcingLocationsService.save(
@@ -170,7 +173,7 @@ export class ScenarioInterventionsService extends AppBaseService<
         const newEfficiencyChangeInterventionLocations: CreateSourcingLocationDto[] =
           await this.createSourcingLocationsObjectsForIntervention(
             actualSourcingDataWithTonnage,
-            CANCELED_OR_REPLACING_BY_INTERVENTION.REPLACING,
+            SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
           );
 
         newInterventionSourcingLocations =
@@ -235,8 +238,7 @@ export class ScenarioInterventionsService extends AppBaseService<
       {
         ...geoCodedNewInterventionLocation[0],
         ...{
-          typeAccordingToIntervention:
-            CANCELED_OR_REPLACING_BY_INTERVENTION.REPLACING,
+          interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
         },
       },
     ];
@@ -288,8 +290,7 @@ export class ScenarioInterventionsService extends AppBaseService<
         geoRegionId: geoCodedLocationSample[0].geoRegionId,
         adminRegionId: geoCodedLocationSample[0].adminRegionId,
         sourcingRecords: [{ year: location.year, tonnage: location.tonnage }],
-        typeAccordingToIntervention:
-          CANCELED_OR_REPLACING_BY_INTERVENTION.REPLACING,
+        interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
       };
 
       newSourcingLocationData.push(newInterventionLocation);
@@ -307,7 +308,7 @@ export class ScenarioInterventionsService extends AppBaseService<
 
   async createSourcingLocationsObjectsForIntervention(
     sourcingData: SourcingLocationWithRecord[],
-    canceledOrReplacing: CANCELED_OR_REPLACING_BY_INTERVENTION,
+    canceledOrReplacing: SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   ): Promise<SourcingData[]> {
     const newSourcingLocationData: SourcingData[] = [];
 
@@ -326,7 +327,7 @@ export class ScenarioInterventionsService extends AppBaseService<
             tonnage: location.tonnage,
           },
         ],
-        typeAccordingToIntervention: canceledOrReplacing,
+        interventionType: canceledOrReplacing,
       };
 
       newSourcingLocationData.push(newCancelledInterventionLocation);

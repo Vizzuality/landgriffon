@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { createPortal } from 'react-dom';
 import { Transition } from '@headlessui/react';
@@ -25,7 +25,7 @@ const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({
   const [position, setPosition] = useState<DOMRect>(null);
   const { visualizationMode, isSidebarCollapsed, isSubContentCollapsed } = useAppSelector(analysis);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (asideRef && asideRef.current) {
       setPosition(asideRef.current.getBoundingClientRect());
     }

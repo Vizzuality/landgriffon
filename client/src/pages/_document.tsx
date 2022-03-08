@@ -9,7 +9,7 @@ class MyDocument extends Document {
 
   render(): JSX.Element {
     return (
-      <Html>
+      <Html className="h-full bg-gray-100">
         <Head>
           <meta
             name="description"
@@ -25,7 +25,7 @@ class MyDocument extends Document {
             rel="stylesheet"
           />
         </Head>
-        <body>
+        <body className="h-full overflow-hidden">
           <Main />
           <NextScript />
         </body>

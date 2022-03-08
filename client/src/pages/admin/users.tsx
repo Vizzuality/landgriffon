@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import Head from 'next/head';
 import { useDebounce } from '@react-hook/debounce';
 import { ITableProps } from 'ka-table';
 import { DataType } from 'ka-table/enums';
@@ -41,6 +42,9 @@ const AdminUsersPage: React.FC = () => {
 
   return (
     <AdminLayout currentTab={ADMIN_TABS.USERS}>
+      <Head>
+        <title>Admin users | Landgriffon</title>
+      </Head>
       <div className="flex flex-col-reverse md:flex-row justify-between items-center">
         <div className="flex w-full md:w-auto gap-2">
           <Search placeholder="Search table" onChange={setSearchText} />

@@ -1,5 +1,3 @@
-import Head from 'next/head';
-
 import ApplicationLayout from 'layouts/application';
 import Tabs from 'components/tabs';
 import PageLoading from 'containers/page-loading';
@@ -14,10 +12,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
   children,
 }: AdminLayoutProps) => (
   <ApplicationLayout>
-    <Head>
-      <title>Admin - Landgriffon</title>
-    </Head>
-    <main className="relative p-6 md:pl-12 min-h-screen bg-gray-100">
+    <section
+      aria-labelledby="primary-heading"
+      className="min-w-0 flex-1 h-full flex flex-col overflow-y-auto p-6"
+    >
       {loading && <PageLoading />}
 
       <h1 className="text-center md:text-left">Admin</h1>
@@ -30,7 +28,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
       </div>
 
       <section className="pt-4 mt-4 pb-1 md:py-1">{children}</section>
-    </main>
+    </section>
   </ApplicationLayout>
 );
 

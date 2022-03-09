@@ -68,7 +68,7 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   @Column({
     type: 'enum',
     enum: SCENARIO_INTERVENTION_STATUS,
-    default: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+    default: SCENARIO_INTERVENTION_STATUS.ACTIVE,
   })
   status!: SCENARIO_INTERVENTION_STATUS;
 

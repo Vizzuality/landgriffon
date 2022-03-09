@@ -272,52 +272,43 @@ export class IndicatorRecordsService extends AppBaseService<
    */
 
   async createIndicatorRecordsForAllSourcingRecords(): Promise<void> {
-    const indicators: IndicatorNameCodeWithRelatedH3[] =
-      await this.indicatorService.getIndicatorsAndRelatedH3DataIds();
     const rawData: SourcingRecordsWithIndicatorRawDataDto[] =
       await this.sourcingRecordsService.getSourcingRecordDataToCalculateIndicatorRecords();
     const calculatedData: IndicatorRecordCalculatedValuesDto[] = rawData.map(
       (sourcingRecordData: SourcingRecordsWithIndicatorRawDataDto) =>
         this.calculateIndicatorValues(sourcingRecordData),
     );
-    const indicatorMapper: Record<string, any> = {};
-    indicators.forEach(
-      (indicator: { id: string; nameCode: string; h3DataId: string }) => {
-        indicatorMapper[indicator.nameCode] = indicator;
-      },
-    );
+    const indicatorMap: Record<string, any> = await this.getIndicatorMap();
     const indicatorRecords: IndicatorRecord[] = [];
     calculatedData.forEach(
       (calculatedIndicatorRecords: IndicatorRecordCalculatedValuesDto) => {
         const indicatorRecordDeforestation: IndicatorRecord =
           IndicatorRecord.merge(new IndicatorRecord(), {
             value: calculatedIndicatorRecords[INDICATOR_TYPES.DEFORESTATION],
-            indicatorId: indicatorMapper[INDICATOR_TYPES.DEFORESTATION].id,
+            indicatorId: indicatorMap[INDICATOR_TYPES.DEFORESTATION].id,
             status: INDICATOR_RECORD_STATUS.SUCCESS,
             sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
             scaler: calculatedIndicatorRecords.production,
-            h3DataId: indicatorMapper[INDICATOR_TYPES.DEFORESTATION].h3DataId,
+            h3DataId: indicatorMap[INDICATOR_TYPES.DEFORESTATION].h3DataId,
           });
         const indicatorRecordBiodiversity: IndicatorRecord =
           IndicatorRecord.merge(new IndicatorRecord(), {
             value:
               calculatedIndicatorRecords[INDICATOR_TYPES.BIODIVERSITY_LOSS],
-            indicatorId: indicatorMapper[INDICATOR_TYPES.BIODIVERSITY_LOSS].id,
+            indicatorId: indicatorMap[INDICATOR_TYPES.BIODIVERSITY_LOSS].id,
             status: INDICATOR_RECORD_STATUS.SUCCESS,
             sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
             scaler: calculatedIndicatorRecords.production,
-            h3DataId:
-              indicatorMapper[INDICATOR_TYPES.BIODIVERSITY_LOSS].h3DataId,
+            h3DataId: indicatorMap[INDICATOR_TYPES.BIODIVERSITY_LOSS].h3DataId,
           });
         const indicatorRecordCarbonEmissions: IndicatorRecord =
           IndicatorRecord.merge(new IndicatorRecord(), {
             value: calculatedIndicatorRecords[INDICATOR_TYPES.CARBON_EMISSIONS],
-            indicatorId: indicatorMapper[INDICATOR_TYPES.CARBON_EMISSIONS].id,
+            indicatorId: indicatorMap[INDICATOR_TYPES.CARBON_EMISSIONS].id,
             status: INDICATOR_RECORD_STATUS.SUCCESS,
             sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
             scaler: calculatedIndicatorRecords.production,
-            h3DataId:
-              indicatorMapper[INDICATOR_TYPES.CARBON_EMISSIONS].h3DataId,
+            h3DataId: indicatorMap[INDICATOR_TYPES.CARBON_EMISSIONS].h3DataId,
           });
         const indicatorRecordUnsustainableWater: IndicatorRecord =
           IndicatorRecord.merge(new IndicatorRecord(), {
@@ -326,12 +317,12 @@ export class IndicatorRecordsService extends AppBaseService<
                 INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE
               ],
             indicatorId:
-              indicatorMapper[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE].id,
+              indicatorMap[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE].id,
             status: INDICATOR_RECORD_STATUS.SUCCESS,
             sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
             scaler: calculatedIndicatorRecords.production,
             h3DataId:
-              indicatorMapper[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE].h3DataId,
+              indicatorMap[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE].h3DataId,
           });
         indicatorRecords.push(
           indicatorRecordDeforestation,
@@ -347,8 +338,8 @@ export class IndicatorRecordsService extends AppBaseService<
   }
 
   /**
-   * TODO: Use for calculate Impact for new Scenarios. The method expects a GeoRegion Id and a Material Id from a related Sourcing Record
-   *       Will need to refactor once PR: https://github.com/Vizzuality/landgriffon/pull/231 is merged
+   * @description Creates Indicator-Records for each Sourcing-Record, by first retrieving Raw Indicator data from the DB, then applying
+   * the methodology and persist new Indicator Records
    */
 
   async createIndicatorRecordsBySourcingRecords(
@@ -366,15 +357,8 @@ export class IndicatorRecordsService extends AppBaseService<
         tonnage: sourcingData.tonnage,
         ...rawData,
       });
-    const indicators: IndicatorNameCodeWithRelatedH3[] =
-      await this.indicatorService.getIndicatorsAndRelatedH3DataIds();
 
-    const indicatorMapper: Record<string, any> = {};
-    indicators.forEach(
-      (indicator: { id: string; nameCode: string; h3DataId: string }) => {
-        indicatorMapper[indicator.nameCode] = indicator;
-      },
-    );
+    const indicatorMapper: Record<string, any> = await this.getIndicatorMap();
     const indicatorRecords: IndicatorRecord[] = [];
     const indicatorRecordDeforestation: IndicatorRecord = IndicatorRecord.merge(
       new IndicatorRecord(),
@@ -431,9 +415,12 @@ export class IndicatorRecordsService extends AppBaseService<
       indicatorRecordUnsustainableWater,
     );
     return this.indicatorRecordRepository.save(indicatorRecords);
-
-    // return this.calculateIndicatorValues({ ...sourcingData, ...rawData });
   }
+
+  /**
+   *
+   * @description Consumes Indicator Raw Data from the DB to calculate final values for Indicator Records
+   */
 
   private calculateIndicatorValues(
     sourcingRecordData: any,
@@ -472,57 +459,49 @@ export class IndicatorRecordsService extends AppBaseService<
   async createIndicatorRecords(
     calculatedIndicatorRecords: any,
   ): Promise<IndicatorRecord[]> {
-    const indicators: IndicatorNameCodeWithRelatedH3[] =
-      await this.indicatorService.getIndicatorsAndRelatedH3DataIds();
-    const indicatorMapper: Record<string, any> = {};
-    indicators.forEach(
-      (indicator: { id: string; nameCode: string; h3DataId: string }) => {
-        indicatorMapper[indicator.nameCode] = indicator;
-      },
-    );
+    const indicatorMap: Record<string, any> = await this.getIndicatorMap();
     const indicatorRecords: IndicatorRecord[] = [];
     const indicatorRecordDeforestation: IndicatorRecord = IndicatorRecord.merge(
       new IndicatorRecord(),
       {
         value: calculatedIndicatorRecords[INDICATOR_TYPES.DEFORESTATION],
-        indicatorId: indicatorMapper[INDICATOR_TYPES.DEFORESTATION].id,
+        indicatorId: indicatorMap[INDICATOR_TYPES.DEFORESTATION].id,
         status: INDICATOR_RECORD_STATUS.SUCCESS,
         sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
         scaler: calculatedIndicatorRecords.production,
-        h3DataId: indicatorMapper[INDICATOR_TYPES.DEFORESTATION].h3DataId,
+        h3DataId: indicatorMap[INDICATOR_TYPES.DEFORESTATION].h3DataId,
       },
     );
     const indicatorRecordBiodiversity: IndicatorRecord = IndicatorRecord.merge(
       new IndicatorRecord(),
       {
         value: calculatedIndicatorRecords[INDICATOR_TYPES.BIODIVERSITY_LOSS],
-        indicatorId: indicatorMapper[INDICATOR_TYPES.BIODIVERSITY_LOSS].id,
+        indicatorId: indicatorMap[INDICATOR_TYPES.BIODIVERSITY_LOSS].id,
         status: INDICATOR_RECORD_STATUS.SUCCESS,
         sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
         scaler: calculatedIndicatorRecords.production,
-        h3DataId: indicatorMapper[INDICATOR_TYPES.BIODIVERSITY_LOSS].h3DataId,
+        h3DataId: indicatorMap[INDICATOR_TYPES.BIODIVERSITY_LOSS].h3DataId,
       },
     );
     const indicatorRecordCarbonEmissions: IndicatorRecord =
       IndicatorRecord.merge(new IndicatorRecord(), {
         value: calculatedIndicatorRecords[INDICATOR_TYPES.CARBON_EMISSIONS],
-        indicatorId: indicatorMapper[INDICATOR_TYPES.CARBON_EMISSIONS].id,
+        indicatorId: indicatorMap[INDICATOR_TYPES.CARBON_EMISSIONS].id,
         status: INDICATOR_RECORD_STATUS.SUCCESS,
         sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
         scaler: calculatedIndicatorRecords.production,
-        h3DataId: indicatorMapper[INDICATOR_TYPES.CARBON_EMISSIONS].h3DataId,
+        h3DataId: indicatorMap[INDICATOR_TYPES.CARBON_EMISSIONS].h3DataId,
       });
     const indicatorRecordUnsustainableWater: IndicatorRecord =
       IndicatorRecord.merge(new IndicatorRecord(), {
         value:
           calculatedIndicatorRecords[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE],
-        indicatorId:
-          indicatorMapper[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE].id,
+        indicatorId: indicatorMap[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE].id,
         status: INDICATOR_RECORD_STATUS.SUCCESS,
         sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
         scaler: calculatedIndicatorRecords.production,
         h3DataId:
-          indicatorMapper[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE].h3DataId,
+          indicatorMap[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE].h3DataId,
       });
     indicatorRecords.push(
       indicatorRecordDeforestation,
@@ -531,5 +510,17 @@ export class IndicatorRecordsService extends AppBaseService<
       indicatorRecordUnsustainableWater,
     );
     return indicatorRecords;
+  }
+
+  async getIndicatorMap(): Promise<Record<string, any>> {
+    const indicators: IndicatorNameCodeWithRelatedH3[] =
+      await this.indicatorService.getIndicatorsAndRelatedH3DataIds();
+    const indicatorMap: Record<string, any> = {};
+    indicators.forEach(
+      (indicator: { id: string; nameCode: string; h3DataId: string }) => {
+        indicatorMap[indicator.nameCode] = indicator;
+      },
+    );
+    return indicatorMap;
   }
 }

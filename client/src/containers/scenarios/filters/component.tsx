@@ -41,6 +41,7 @@ const ScenariosFilters: FC = () => {
   const handleFilter = useCallback((value) => dispatch(setScenarioFilter(value)), [dispatch]);
 
   const router = useRouter();
+
   const { query } = router;
   const [isSearchEnable, setSearchEnable] = useState(false);
   const { filter } = useAppSelector(scenarios);
@@ -57,6 +58,7 @@ const ScenariosFilters: FC = () => {
       }),
     [],
   );
+
   const handleSearchByTerm = useCallback((event) => setTerm(event.currentTarget.value), []);
 
   useEffect(() => {
@@ -73,17 +75,8 @@ const ScenariosFilters: FC = () => {
 
   return (
     <div className="flex items-center">
-      <div
-        className={classNames(
-          'relative w-full',
-          isSearchEnable ? 'sm:max-w-[100px]' : 'sm:max-w-[20px]',
-        )}
-      >
-        <button
-          type="button"
-          onClick={toggleSearch}
-          className="absolute top-1/2 transform -translate-y-1/2 left-0"
-        >
+      <div className="relative flex">
+        <button type="button" onClick={toggleSearch} className="realtive">
           <SearchIcon className="w-4 h-4" />
         </button>
         {isSearchEnable && (
@@ -100,7 +93,7 @@ const ScenariosFilters: FC = () => {
               id="search"
               name="search"
               placeholder="Search"
-              className="absolute top-1/2 w-20 transform -translate-y-1/2 left-6 appearance-none text-sm text-green-700 font-bold border-0 border-b-2 border-green-700 px-0 py-0 focus:outline-none focus:border-green-700 focus:ring-0"
+              className="flex-1 appearance-none text-sm text-green-700 font-bold border-0 border-b-2 border-green-700 px-0 py-0 focus:outline-none focus:border-green-700 focus:ring-0 max-w-[86px]"
               type="search"
               onChange={handleSearchByTerm}
             />
@@ -126,7 +119,7 @@ const ScenariosFilters: FC = () => {
         ))}
       </ul>
 
-      <div className="">
+      <div className="absolute right-0 bg-white z-10 pl-5">
         <Select
           theme="default-bordernone"
           current={SORT_OPTIONS[0]}

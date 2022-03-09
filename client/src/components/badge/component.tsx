@@ -3,14 +3,7 @@ import { useCallback } from 'react';
 
 import type { BadgeProps } from './types';
 
-const Badge: React.FC<BadgeProps> = ({
-  data,
-  children,
-  className,
-  removable = false,
-  onClick,
-  theme = 'default',
-}) => {
+const Badge: React.FC<BadgeProps> = ({ data, children, className, removable = false, onClick }) => {
   const handleClick = useCallback(
     (e) => {
       e.preventDefault();
@@ -20,17 +13,10 @@ const Badge: React.FC<BadgeProps> = ({
     [data, onClick],
   );
 
-  const THEMES = {
-    default: {
-      wrapper: 'bg-green-50 rounded-xl',
-    },
-  };
-
   return (
     <span
       className={classNames(
-        'inline-flex items-center py-0.5 font-medium  text-green-700 overflow-hidden',
-        THEMES[theme]?.wrapper,
+        'inline-flex items-center py-0.5 font-medium  text-green-700 overflow-hidden bg-green-50 rounded-xl',
         removable ? 'pl-2 pr-0.5' : 'px-2',
         className,
       )}

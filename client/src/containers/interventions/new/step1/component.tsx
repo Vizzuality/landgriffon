@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, FC } from 'react';
+import { useCallback, useMemo, FC } from 'react';
 
 // hooks
 import { useAppDispatch, useAppSelector } from 'store/hooks';
@@ -37,14 +37,6 @@ const Step1: FC = () => {
   const business = 'business2';
   const yearCompletion = 2015;
   const interventionType = '';
-
-  const { materials, origins, suppliers } = filters;
-  const selectedFilters = useMemo(
-    () => ({ materials, origins, suppliers }),
-    [materials, origins, suppliers],
-  );
-
-  const [moreFilters, setMoreFilters] = useState(selectedFilters);
 
   const optionsBusinesses: SelectOptions = useMemo(
     () =>
@@ -93,8 +85,8 @@ const Step1: FC = () => {
   const isLoadingInterventionTypes = false;
 
   const handleChange = useCallback(
-    (e) => {
-      dispatch(setFilter({ id: 'materials', value: e }));
+    (id, e) => {
+      dispatch(setFilter({ id, value: e.value }));
     },
     [dispatch],
   );
@@ -162,8 +154,7 @@ const Step1: FC = () => {
               multiple
               withSourcingLocations
               current={filters.materials}
-              // onChange={(values) => handleChangeFilter('materials', values)}
-              onChange={handleChange}
+              onChange={(values) => handleChange('materials', values)}
               theme="inline-primary"
               ellipsis
             />
@@ -182,7 +173,7 @@ const Step1: FC = () => {
             multiple
             withSourcingLocations
             current={filters.suppliers}
-            // onChange={(values) => handleChangeFilter('suppliers', values)}
+            onChange={({ values }) => handleChange('suppliers', values)}
             theme="inline-primary"
           />
           <span className="text-gray-700 font-medium">in</span>
@@ -190,7 +181,7 @@ const Step1: FC = () => {
             multiple
             withSourcingLocations
             current={filters.suppliers}
-            // onChange={(values) => handleChangeFilter('suppliers', values)}
+            onChange={({ values }) => handleChange('origin', values)}
             theme="inline-primary"
           />
           <span className="text-gray-700 font-medium">.</span>

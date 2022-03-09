@@ -11,7 +11,8 @@ import noScenariosAnimationData from 'containers/scenarios/animations/noScenario
 
 const ScenariosComponent: React.FC = () => {
   const { query } = useRouter();
-  const { data, isLoading, error } = useScenarios({ sort: query.sortBy as string });
+  const params = query ? { sort: query.sortBy as string } : null;
+  const { data, isLoading, error } = useScenarios(params);
 
   return (
     <div className="bg-white overscroll-contain text-gray-900">

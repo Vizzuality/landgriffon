@@ -107,7 +107,7 @@ export class CreateScenarioInterventionDto {
 
   @IsNotEmpty({
     message:
-      'New country input is required for the selected intervention and location type',
+      'New Location Country input is required for the selected intervention and location type',
   })
   @ApiProperty()
   newLocationCountryInput!: string;
@@ -124,7 +124,7 @@ export class CreateScenarioInterventionDto {
       'New address or coordinates input is required for the selected intervention and location type',
   })
   @ApiPropertyOptional()
-  newAddressInput?: string;
+  newLocationAddressInput?: string;
 
   @IsUUID()
   @IsOptional()

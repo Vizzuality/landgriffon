@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { RadioGroup } from '@headlessui/react';
 import ScenarioItem from 'containers/scenarios/item';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
-import { analysis, setCurrentScenario } from 'store/features/analysis';
+import { scenarios, setCurrentScenario } from 'store/features/analysis/scenarios';
 import type { Scenario, Scenarios } from '../types';
 
 type ScenariosListProps = {
@@ -16,7 +16,7 @@ const isScenarioSelected: (scenarioId: Scenario['id'], currentId: Scenario['id']
 ): boolean => scenarioId.toString() === currentId?.toString();
 
 const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProps) => {
-  const { currentScenario } = useAppSelector(analysis);
+  const { currentScenario } = useAppSelector(scenarios);
   const dispatch = useAppDispatch();
 
   const router = useRouter();
@@ -40,18 +40,12 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
 
   useEffect(() => {
     if (data && !currentScenario) {
-      router.push({
-        pathname: '/analysis',
-        query: {
-          ...router.query,
-          scenario: data[0].id, // by default firs option of the list
-        },
-      });
+      dispatch(setCurrentScenario(data[0].id as string)); // first option of the list by default
     }
     if (data && currentScenario) {
       setSelected(data.find(({ id }) => isScenarioSelected(id, currentScenario)));
     }
-  }, [data, currentScenario, router]);
+  }, [data, currentScenario, dispatch]);
 
   useEffect(() => {
     if (scenario) {

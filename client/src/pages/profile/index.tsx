@@ -24,7 +24,7 @@ const passwordSchemaValidation = yup.object({
   passwordConfirmation: yup
     .string()
     .required('password confirmation is required')
-    .oneOf([yup.ref('password'), null], 'passwords must match'),
+    .oneOf([yup.ref('newPassword'), null], 'passwords must match'),
 });
 
 const editUserData = (data: UserProfilePayload) => apiService.patch('/users/me', data);
@@ -47,6 +47,7 @@ const UserProfile: React.FC = () => {
   const {
     register: registerPassword,
     handleSubmit: handleSubmitPassword,
+    reset: resetPasswordInput,
     formState: { errors: errorsPaaaword },
   } = useForm({
     resolver: yupResolver(passwordSchemaValidation),
@@ -115,14 +116,14 @@ const UserProfile: React.FC = () => {
 
   const handleEditPassword = useCallback(
     (data: UserProfilePayload) => {
-      reset();
+      resetPasswordInput();
       setIsLoading(true);
       mutationPassword.mutate(data);
       setTimeout(() => {
         setShowAlert(false);
       }, 3000);
     },
-    [mutationPassword, reset],
+    [mutationPassword, resetPasswordInput],
   );
   return (
     <ApplicationLayout>

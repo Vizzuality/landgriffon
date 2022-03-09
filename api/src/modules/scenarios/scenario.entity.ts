@@ -1,9 +1,16 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { User } from 'modules/users/user.entity';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 
 export enum SCENARIO_STATUS {
   ACTIVE = 'active',
@@ -47,6 +54,13 @@ export class Scenario extends TimestampedBaseEntity {
   @ApiPropertyOptional()
   @Column({ type: 'jsonb', nullable: true })
   metadata?: JSON;
+
+  @OneToMany(
+    () => ScenarioIntervention,
+    (scenarioIntervention: ScenarioIntervention) =>
+      scenarioIntervention.scenario,
+  )
+  scenarioInterventions: ScenarioIntervention[];
 
   @ManyToOne(() => User, (user: User) => user.scenarios, {
     eager: false,

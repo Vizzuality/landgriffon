@@ -65,9 +65,12 @@ export class ScenarioInterventionsController {
   @ApiNotFoundResponse({ description: 'Scenario intervention not found' })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<ScenarioIntervention> {
+  async findOne(
+    @Param('id') id: string,
+    @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
+  ): Promise<ScenarioIntervention> {
     return await this.scenariosService.serialize(
-      await this.scenariosService.getById(id),
+      await this.scenariosService.getById(id, fetchSpecification),
     );
   }
 

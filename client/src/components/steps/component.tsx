@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import cx from 'classnames';
 
 import { useAppDispatch } from 'store/hooks';
-import { setNewInterventionStep } from 'store/features/analysis';
+import { setNewInterventionStep } from 'store/features/analysis/scenarios';
 
 import type { Step } from './types';
 

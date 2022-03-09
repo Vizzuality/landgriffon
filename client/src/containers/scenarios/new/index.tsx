@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useCallback } from 'react';
 
 import cx from 'classnames';
 import { useQuery } from 'react-query';
@@ -6,7 +6,8 @@ import { apiService } from 'services/api';
 import { useRouter } from 'next/router';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { analysis, setScenarioTab, setSubContentCollapsed } from 'store/features/analysis';
+import { setSubContentCollapsed } from 'store/features/analysis';
+import { scenarios, setScenarioTab } from 'store/features/analysis/scenarios';
 
 import { useInterventions } from 'hooks/interventions';
 
@@ -55,11 +56,7 @@ const ScenariosNewContainer: React.FC = () => {
     dispatch(setSubContentCollapsed(false));
   }, [dispatch]);
 
-  const { scenarioCurrentTab } = useAppSelector(analysis);
-  const interventionsContent = useMemo(
-    () => scenarioCurrentTab === 'interventions',
-    [scenarioCurrentTab],
-  );
+  const { scenarioCurrentTab } = useAppSelector(scenarios);
 
   const handleTab = useCallback((step) => dispatch(setScenarioTab(step)), [dispatch]);
 
@@ -96,7 +93,9 @@ const ScenariosNewContainer: React.FC = () => {
               <div className="space-x-2">
                 <button
                   type="button"
-                  className={cx({ 'border-b-2 border-green-700': interventionsContent })}
+                  className={cx({
+                    'border-b-2 border-green-700': scenarioCurrentTab == 'interventions',
+                  })}
                   onClick={() => handleTab('interventions')}
                 >
                   Interventions ({interventions.length})
@@ -104,7 +103,7 @@ const ScenariosNewContainer: React.FC = () => {
 
                 <button
                   type="button"
-                  className={cx({ 'border-b-2 border-green-700': !interventionsContent })}
+                  className={cx({ 'border-b-2 border-green-700': scenarioCurrentTab == 'growth' })}
                   onClick={() => handleTab('growth')}
                 >
                   Growth rates ({items.length})
@@ -116,8 +115,8 @@ const ScenariosNewContainer: React.FC = () => {
               </Button>
             </div>
           </div>
-          {interventionsContent && <InterventionsList items={interventions} />}
-          {!interventionsContent && <GrowthList items={items} />}
+          {scenarioCurrentTab == 'interventions' && <InterventionsList items={interventions} />}
+          {scenarioCurrentTab == 'growth' && <GrowthList items={items} />}
         </div>
       </div>
     </>

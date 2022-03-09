@@ -3,11 +3,13 @@ import type { ReducersMapObject } from '@reduxjs/toolkit';
 import ui from 'store/features/ui';
 import analysisUI from 'store/features/analysis/ui';
 import analysisFilters from 'store/features/analysis/filters';
+import analysisScenarios from 'store/features/analysis/scenarios';
 
 const staticReducers = {
   ui,
   'analysis/filters': analysisFilters,
   'analysis/ui': analysisUI,
+  'analysis/scenarios': analysisScenarios,
 };
 
 const asyncReducers = {};

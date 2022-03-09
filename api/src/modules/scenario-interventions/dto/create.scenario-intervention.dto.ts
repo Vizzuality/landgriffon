@@ -81,7 +81,7 @@ export class CreateScenarioInterventionDto {
   @IsUUID()
   @IsOptional()
   @ApiPropertyOptional()
-  newSupplierT1Id?: string;
+  newT1SupplierId?: string;
 
   @IsUUID()
   @IsOptional()
@@ -105,19 +105,12 @@ export class CreateScenarioInterventionDto {
   @ApiPropertyOptional()
   newLocationType?: LOCATION_TYPES;
 
-  @ValidateIf(
-    (dto: CreateScenarioInterventionDto) =>
-      (dto.type === SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL ||
-        dto.type === SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER) &&
-      (dto.newLocationType === LOCATION_TYPES.ORIGIN_COUNTRY ||
-        dto.newLocationType === LOCATION_TYPES.COUNTRY_OF_PRODUCTION),
-  )
   @IsNotEmpty({
     message:
       'New country input is required for the selected intervention and location type',
   })
-  @ApiPropertyOptional()
-  newCountryInput?: string;
+  @ApiProperty()
+  newLocationCountryInput!: string;
 
   @ValidateIf(
     (dto: CreateScenarioInterventionDto) =>

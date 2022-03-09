@@ -33,10 +33,12 @@ const editPassword = (data: UserProfilePayload) => apiService.patch('/users/pass
 const UserProfile: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [alert, setAlert] = useState<AlertsItemProps>(null);
+  const [showAlert, setShowAlert] = useState<boolean>(false);
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
@@ -58,6 +60,8 @@ const UserProfile: React.FC = () => {
         type: 'success',
         title: 'Your changes were successfully saved.',
       });
+
+      setShowAlert(true);
     },
 
     onError: () => {
@@ -67,6 +71,8 @@ const UserProfile: React.FC = () => {
         type: 'error',
         title: 'An error has occured while saving. Please try gain later',
       });
+
+      setShowAlert(true);
     },
   });
 
@@ -78,6 +84,8 @@ const UserProfile: React.FC = () => {
         type: 'success',
         title: 'Your changes were successfully saved.',
       });
+
+      setShowAlert(true);
     },
 
     onError: () => {
@@ -87,22 +95,34 @@ const UserProfile: React.FC = () => {
         type: 'error',
         title: 'An error has occured while saving. Please try gain later',
       });
+
+      setShowAlert(true);
     },
   });
 
   const handleEditUserData = useCallback(
     (data: UserProfilePayload) => {
+      reset();
       setIsLoading(true);
       mutation.mutate(data);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
     },
-    [mutation],
+
+    [mutation, reset],
   );
 
   const handleEditPassword = useCallback(
     (data: UserProfilePayload) => {
+      reset();
+      setIsLoading(true);
       mutationPassword.mutate(data);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
     },
-    [mutationPassword],
+    [mutationPassword, reset],
   );
   return (
     <ApplicationLayout>
@@ -185,7 +205,7 @@ const UserProfile: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex justify-end h-16 py-3 pr-6 rounded-md bg-gray-50">
-                  <Button type="submit" theme="primary">
+                  <Button type="submit" theme="primary" loading={isLoading}>
                     Save
                   </Button>
                 </div>
@@ -196,10 +216,10 @@ const UserProfile: React.FC = () => {
 
         <div className="ml-6">
           <Transition
-            show={!alert == null}
+            show={showAlert}
             enter="transition-opacity ease-in-out duration-700 delay-1000"
             enterFrom="opacity-0"
-            enterTo="opacity-100 "
+            enterTo="opacity-100"
             leave="transition-opacity ease-in-out duration-700 delay-1000"
             leaveFrom="opacity-100"
             leaveTo="opacity-0"

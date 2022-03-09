@@ -56,6 +56,7 @@ export class ScenarioInterventionsService extends AppBaseService<
         'type',
         'createdAt',
         'updatedAt',
+        'scenario',
       ],
       keyForAttribute: 'camelCase',
     };

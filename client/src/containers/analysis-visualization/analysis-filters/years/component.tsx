@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { isFinite, toNumber } from 'lodash';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { analysis, setFilter } from 'store/features/analysis';
+import { analysisUI } from 'store/features/analysis/ui';
+import { analysisFilters, setFilter } from 'store/features/analysis/filters';
 
 import { useYears } from 'hooks/years';
 
@@ -13,8 +14,9 @@ const YearsFilter: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const [years, setYears] = useState<number[]>([]);
-  const { visualizationMode, filters, layer } = useAppSelector(analysis);
-  const { materials, indicator } = filters;
+  const { visualizationMode } = useAppSelector(analysisUI);
+  const filters = useAppSelector(analysisFilters);
+  const { layer, materials, indicator } = filters;
   const { data, isLoading } = useYears(layer, materials, indicator);
 
   const { startYear, endYear, yearsGap, setYearsRange } = useYearsRange({

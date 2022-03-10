@@ -6,7 +6,7 @@ import { StaticMap } from 'react-map-gl';
 import { XCircleIcon } from '@heroicons/react/solid';
 
 import { useAppSelector } from 'store/hooks';
-import { analysis } from 'store/features/analysis';
+import { analysisFilters } from 'store/features/analysis/filters';
 
 import PopUp from 'components/map/popup';
 import Legend from 'components/map/legend';
@@ -41,7 +41,8 @@ type PopUpInfoProps = {
 };
 
 const AnalysisMap: React.FC = () => {
-  const { layer, filters } = useAppSelector(analysis);
+  const filters = useAppSelector(analysisFilters);
+  const { layer } = filters;
   const [hoveredHexagon, setHoveredHexagon] = useState(null);
   const [popUpInfo, setPopUpInfo] = useState<PopUpInfoProps>(null);
   const [legendItems, setLegendItems] = useState([]);

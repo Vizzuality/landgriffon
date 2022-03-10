@@ -1,6 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
-import type { RootState } from 'store';
-import type { AnalysisState } from './index';
+import { analysisFilters } from './filters';
+
+import type { AnalysisFiltersState } from './filters';
 import type {
   MaterialH3APIParams,
   RiskH3APIParams,
@@ -8,63 +9,63 @@ import type {
   ImpactTabularAPIParams,
 } from 'types';
 
-const analysis = (state: RootState) => state.analysis;
+export const filtersForH3API = createSelector(
+  [analysisFilters],
+  (analysisFiltersState: AnalysisFiltersState) => {
+    const { layer, startYear, materials, indicator, suppliers, origins } = analysisFiltersState;
 
-export const filtersForH3API = createSelector([analysis], (analysisState: AnalysisState) => {
-  const { layer, filters } = analysisState;
+    if (layer === 'material') {
+      const result: MaterialH3APIParams = {
+        year: startYear,
+        materialId: materials && materials.length && materials[0].value,
+        resolution: 4,
+      };
+      return result;
+    }
 
-  if (layer === 'material') {
-    const result: MaterialH3APIParams = {
-      year: filters.startYear,
-      materialId: filters.materials && filters.materials.length && filters.materials[0].value,
+    if (layer === 'risk') {
+      const result: RiskH3APIParams = {
+        year: startYear,
+        indicatorId: indicator?.value,
+        materialId: materials && materials.length && materials[0].value,
+        resolution: 4,
+      };
+      return result;
+    }
+
+    // when layer is impact
+    const result: ImpactH3APIParams = {
+      year: startYear,
+      indicatorId: indicator?.value,
+      ...(materials && materials.length
+        ? { materialIds: materials?.map(({ value }) => value) }
+        : {}),
+      ...(suppliers && suppliers.length
+        ? { supplierIds: suppliers?.map(({ value }) => value) }
+        : {}),
+      ...(origins && origins.length ? { originIds: origins?.map(({ value }) => value) } : {}),
       resolution: 4,
     };
+
     return result;
-  }
-
-  if (layer === 'risk') {
-    const result: RiskH3APIParams = {
-      year: filters.startYear,
-      indicatorId: filters.indicator?.value,
-      materialId: filters.materials && filters.materials.length && filters.materials[0].value,
-      resolution: 4,
-    };
-    return result;
-  }
-
-  // when layer is impact
-  const result: ImpactH3APIParams = {
-    year: filters.startYear,
-    indicatorId: filters.indicator?.value,
-    ...(filters.materials && filters.materials.length
-      ? { materialIds: filters.materials?.map(({ value }) => value) }
-      : {}),
-    ...(filters.suppliers && filters.suppliers.length
-      ? { supplierIds: filters.suppliers?.map(({ value }) => value) }
-      : {}),
-    ...(filters.origins && filters.origins.length
-      ? { originIds: filters.origins?.map(({ value }) => value) }
-      : {}),
-    resolution: 4,
-  };
-
-  return result;
-});
+  },
+);
 
 export const filtersForTabularAPI = createSelector(
-  [analysis],
-  (analysisState: AnalysisState): ImpactTabularAPIParams => {
-    const { layer, filters } = analysisState;
+  [analysisFilters],
+  (analysisFiltersState: AnalysisFiltersState): ImpactTabularAPIParams => {
+    const { layer, startYear, endYear, by, indicator, materials, suppliers, origins } =
+      analysisFiltersState;
 
     if (layer === 'impact') {
       const result: ImpactTabularAPIParams = {
-        startYear: filters.startYear,
-        endYear: filters.endYear,
-        groupBy: filters.by,
-        indicatorId: filters.indicator?.value,
-        materialIds: filters.materials?.map(({ value }) => value),
-        supplierIds: filters.suppliers?.map(({ value }) => value),
-        originIds: filters.origins?.map(({ value }) => value),
+        startYear: startYear,
+        endYear: endYear,
+        groupBy: by,
+        indicatorId: indicator?.value,
+        materialIds: materials?.map(({ value }) => value),
+        supplierIds: suppliers?.map(({ value }) => value),
+        originIds: origins?.map(({ value }) => value),
       };
       return result;
     }

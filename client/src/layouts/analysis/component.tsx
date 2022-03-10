@@ -5,7 +5,7 @@ import { Transition } from '@headlessui/react';
 import classNames from 'classnames';
 
 import { useAppSelector } from 'store/hooks';
-import { analysis } from 'store/features/analysis';
+import { analysisUI } from 'store/features/analysis/ui';
 
 import ApplicationLayout from 'layouts/application';
 import PageLoading from 'containers/page-loading';
@@ -23,7 +23,8 @@ const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({
 }: AnalysisLayoutProps) => {
   const asideRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<DOMRect>(null);
-  const { visualizationMode, isSidebarCollapsed, isSubContentCollapsed } = useAppSelector(analysis);
+  const { visualizationMode, isSidebarCollapsed, isSubContentCollapsed } =
+    useAppSelector(analysisUI);
 
   useEffect(() => {
     if (asideRef && asideRef.current) {

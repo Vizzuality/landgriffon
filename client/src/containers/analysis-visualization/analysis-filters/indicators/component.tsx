@@ -1,7 +1,8 @@
 import { useCallback, useMemo, useEffect } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { analysis, setFilter } from 'store/features/analysis';
+import { analysisUI } from 'store/features/analysis/ui';
+import { analysisFilters, setFilter } from 'store/features/analysis/filters';
 
 import Select from 'components/select';
 
@@ -10,7 +11,8 @@ import { useIndicators } from 'hooks/indicators';
 import type { SelectProps } from 'components/select/types';
 
 const IndicatorsFilter: React.FC = () => {
-  const { visualizationMode, filters } = useAppSelector(analysis);
+  const { visualizationMode } = useAppSelector(analysisUI);
+  const filters = useAppSelector(analysisFilters);
   const dispatch = useAppDispatch();
 
   const { data, isFetching, isFetched, error } = useIndicators();

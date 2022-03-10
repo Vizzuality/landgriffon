@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { analysis, setFilter } from 'store/features/analysis';
+import { analysisFilters, setFilter } from 'store/features/analysis/filters';
 
 import Select from 'components/select';
 
@@ -27,7 +27,7 @@ const GROUP_BY_OPTIONS: Group[] = [
 ];
 
 const GroupByFilter: React.FC = () => {
-  const { filters } = useAppSelector(analysis);
+  const filters = useAppSelector(analysisFilters);
   const dispatch = useAppDispatch();
 
   const handleChange: SelectProps['onChange'] = useCallback(

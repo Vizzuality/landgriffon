@@ -1,31 +1,22 @@
-import { useCallback, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useCallback } from 'react';
+
 import { useAppSelector, useAppDispatch } from 'store/hooks';
-import { analysis, setSidebarCollapsed, setSubContentCollapsed } from 'store/features/analysis';
+import {
+  analysisUI,
+  setSidebarCollapsed,
+  setSubContentCollapsed,
+} from 'store/features/analysis/ui';
+
 import Component from './component';
 
 const CollapseButtonContainer: React.FC = () => {
-  const { isSidebarCollapsed, isSubContentCollapsed } = useAppSelector(analysis);
+  const { isSidebarCollapsed, isSubContentCollapsed } = useAppSelector(analysisUI);
   const dispatch = useAppDispatch();
-  const router = useRouter();
-  const { query } = router;
-  const { collapsed } = query;
 
   const handleClick = useCallback(() => {
-    router.replace({
-      pathname: '/analysis',
-      query: {
-        ...query,
-        collapsed: !isSidebarCollapsed,
-      },
-    });
-
-    !isSubContentCollapsed && dispatch(setSubContentCollapsed(true));
-  }, [isSidebarCollapsed]);
-
-  useEffect(() => {
-    if (collapsed) dispatch(setSidebarCollapsed(collapsed === 'true'));
-  }, [collapsed]);
+    if (!isSubContentCollapsed) dispatch(setSubContentCollapsed(true));
+    dispatch(setSidebarCollapsed(!isSidebarCollapsed));
+  }, [dispatch, isSidebarCollapsed, isSubContentCollapsed]);
 
   return <Component active={isSidebarCollapsed} onClick={handleClick} />;
 };

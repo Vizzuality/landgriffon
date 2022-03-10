@@ -1,4 +1,4 @@
-import { useCallback, useMemo, FC } from 'react';
+import { useCallback, useMemo, useState, FC } from 'react';
 
 import { flatten } from 'lodash';
 // hooks
@@ -17,7 +17,9 @@ import Suppliers from 'containers/analysis-visualization/analysis-filters/suppli
 import OriginRegions from 'containers/analysis-visualization/analysis-filters/origin-regions/component';
 
 // types
-import { SelectOptions, SelectOption } from 'components/select/types';
+import type { SelectOptions, SelectOption } from 'components/select/types';
+import type { AnalysisFiltersState } from 'store/features/analysis/filters';
+
 //import type { AnalysisState } from 'store/features/analysis';
 import { useInterventionTypes } from 'hooks/analysis';
 
@@ -27,10 +29,46 @@ const yearCompletions = [2001, 2015, 2020];
 const Step1: FC = () => {
   const dispatch = useAppDispatch();
   //const [isOpen, setIsOpen] = useState<boolean>(false);
-  const filters = useAppSelector(analysisFilters);
   const interventionTypes = useInterventionTypes();
+  const filters = useAppSelector(analysisFilters);
 
+  const { materials, origins, suppliers } = filters;
+  const selectedFilters = useMemo(
+    () => ({ materials, origins, suppliers }),
+    [materials, origins, suppliers],
+  );
+
+  const [moreFilters, setMoreFilters] = useState(selectedFilters);
   // const { data: sourcingRegions, isLoading: isLoadingSourcingRegions } = useSourcingRegions();
+
+  // const handleApply = useCallback(() => {
+  //   dispatch(
+  //     setFilters({
+  //       materials: moreFilters.materials || INITIAL_FILTERS.materials,
+  //       origins: moreFilters.origins || INITIAL_FILTERS.origins,
+  //       suppliers: moreFilters.suppliers || INITIAL_FILTERS.suppliers,
+  //     } as AnalysisFiltersState),
+  //   );
+  //   // setOpen(false);
+  // }, [dispatch, moreFilters]);
+
+  const handleChangeFilter = useCallback(
+    // only save ids on store
+    (key, values) => {
+      const childrenIds = values.map((v) => {
+        if (!!v?.children) {
+          return v.children;
+        }
+        return v;
+      });
+
+      setMoreFilters({
+        ...moreFilters,
+        [key]: flatten(childrenIds),
+      } as AnalysisFiltersState);
+    },
+    [moreFilters],
+  );
 
   const business = 'business2';
   const yearCompletion = 2015;
@@ -81,38 +119,6 @@ const Step1: FC = () => {
   const isLoadingBusinesses = false;
   const isLoadingYearCompletion = false;
   const isLoadingInterventionTypes = false;
-
-  const handleChangeFilter = useCallback(
-    // only save ids on store
-    (id, values) => {
-      const childrenIds = flatten(
-        values.map((v) => {
-          if (!!v.children) {
-            return v.children.map(({ value }) => value);
-          }
-          return v.value;
-        }),
-      );
-      dispatch(
-        setFilter({
-          id,
-          value: childrenIds,
-        }),
-      );
-    },
-    [dispatch],
-  );
-
-  // const handleChangeFilter = useCallback(
-  //   // only save ids on store
-  //   (key, values) => {
-  //     setMoreFilters({
-  //       ...moreFilters,
-  //       [key]: values,
-  //     } as AnalysisState['filters']);
-  //   },
-  //   [moreFilters],
-  // );
 
   const handleInterventionType = useCallback(
     ({ value }) =>
@@ -192,7 +198,7 @@ const Step1: FC = () => {
           <OriginRegions
             multiple
             withSourcingLocations
-            current={filters.suppliers}
+            current={filters.origins}
             onChange={(values) => handleChangeFilter('origins', values)}
             theme="inline-primary"
           />

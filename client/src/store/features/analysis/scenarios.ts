@@ -3,6 +3,7 @@ import type { RootState } from 'store';
 import type { Scenario } from 'containers/scenarios/types';
 
 export type ScenariosState = {
+  mode: 'list' | 'create' | 'edit',
   comparisonMode: 'percentage' | 'absolute' | 'both';
   currentScenario: Scenario['id'];
   scenarioToCompare: Scenario['id'];
@@ -21,7 +22,7 @@ type FeatureState = RootState & { analysis: ScenariosState };
 
 // Define the initial state using that type
 export const initialState: ScenariosState = {
-  // mode: 'list' | 'create' | 'edit',
+  mode: 'list',
   comparisonMode: null,
   currentScenario: null,
   scenarioToCompare: null,

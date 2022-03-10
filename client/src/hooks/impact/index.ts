@@ -4,10 +4,11 @@ import { useQuery, UseQueryOptions, UseQueryResult } from 'react-query';
 import chroma from 'chroma-js';
 
 import store from 'store';
-import { filtersForTabularAPI } from 'store/features/analysis/selector';
-import { apiRawService } from 'services/api';
 import { useAppSelector } from 'store/hooks';
+import { filtersForTabularAPI } from 'store/features/analysis/selector';
 import { analysisFilters } from 'store/features/analysis/filters';
+
+import { apiRawService } from 'services/api';
 import { useIndicators } from 'hooks/indicators';
 
 import type { RGBColor, ImpactData } from 'types';

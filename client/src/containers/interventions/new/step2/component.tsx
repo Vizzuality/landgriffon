@@ -6,10 +6,10 @@ import Material from './material';
 import Supplier from './supplier';
 import SupplierImpact from './supplier-impact';
 
-import { analysis } from 'store/features/analysis';
+import { analysisFilters } from 'store/features/analysis/filters';
 
 const Step2: FC = () => {
-  const { filters } = useAppSelector(analysis);
+  const filters = useAppSelector(analysisFilters);
   const { interventionType } = filters;
 
   return (

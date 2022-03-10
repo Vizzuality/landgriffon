@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { useAppSelector } from 'store/hooks';
-import { scenarios } from 'store/features/analysis';
+import { scenarios } from 'store/features/analysis/scenarios';
 
 import InterventionsForm from 'containers/interventions/new';
 import GrowthForm from 'containers/growth';

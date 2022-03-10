@@ -7,7 +7,7 @@ import store from 'store';
 import { filtersForTabularAPI } from 'store/features/analysis/selector';
 import { apiRawService } from 'services/api';
 import { useAppSelector } from 'store/hooks';
-import { analysis } from 'store/features/analysis';
+import { analysisFilters } from 'store/features/analysis/filters';
 import { useIndicators } from 'hooks/indicators';
 
 import type { RGBColor, ImpactData } from 'types';
@@ -29,7 +29,7 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
 const COLOR_SCALE = chroma.scale(['#8DD3C7', '#BEBADA', '#FDB462']);
 
 export function useColors(): RGBColor[] {
-  const { layer } = useAppSelector(analysis);
+  const { layer } = useAppSelector(analysisFilters);
   const colors = useMemo(() => COLOR_SCALE[layer].map((color) => chroma(color).rgb()), [layer]);
   return colors;
 }
@@ -38,7 +38,7 @@ type ImpactDataResponse = UseQueryResult<ImpactData, unknown>;
 
 export function useImpactData(): ImpactDataResponse {
   const { data: indicators } = useIndicators();
-  const { layer } = useAppSelector(analysis);
+  const { layer } = useAppSelector(analysisFilters);
   const filters = filtersForTabularAPI(store.getState());
   const isEnable =
     !!filters?.indicatorId && !!indicators?.length && !!filters.startYear && !!filters.endYear;

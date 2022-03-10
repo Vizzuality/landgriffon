@@ -48,7 +48,7 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
 
   useEffect(() => {
     if (!selected) setSelected(options[0]);
-    if (selected && selected !== options[0] && onChange) onChange(selected);
+    if (selected && onChange) onChange(selected);
   }, [options, selected, onChange]);
 
   useEffect(() => {

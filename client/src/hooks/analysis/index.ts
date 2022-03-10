@@ -6,7 +6,7 @@ import chroma from 'chroma-js';
 
 import { useAppSelector } from 'store/hooks';
 import { useImpactData } from 'hooks/impact';
-import { analysis } from 'store/features/analysis';
+import { analysisFilters } from 'store/features/analysis/filters';
 
 import type { RGBColor } from 'types';
 import type { AnalysisChart } from './types';
@@ -15,13 +15,13 @@ import type { Intervention } from './types';
 const COLOR_SCALE = chroma.scale(['#8DD3C7', '#BEBADA', '#FDB462']);
 
 export function useColors(): RGBColor[] {
-  const { layer } = useAppSelector(analysis);
+  const { layer } = useAppSelector(analysisFilters);
   const colors = useMemo(() => COLOR_SCALE[layer].map((color) => chroma(color).rgb()), [layer]);
   return colors;
 }
 
 export function useAnalysisChart(): AnalysisChart {
-  const { filters } = useAppSelector(analysis);
+  const filters = useAppSelector(analysisFilters);
 
   const {
     data: { data },

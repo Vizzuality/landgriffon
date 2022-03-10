@@ -1,15 +1,15 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useAppDispatch } from 'store/hooks';
 import Head from 'next/head';
+
+import { useAppDispatch } from 'store/hooks';
+import { setSubContentCollapsed } from 'store/features/analysis/ui';
 
 import AnalysisLayout from 'layouts/analysis';
 import Breadcrumb from 'components/breadcrumb';
 import Scenarios from 'containers/scenarios';
 import ScenarioNew from 'containers/scenarios/new';
 import ScenarioEdit from 'containers/scenarios/edit';
-import { setSubContentCollapsed } from 'store/features/analysis';
-
 import type { Page } from 'components/breadcrumb/types';
 
 const AnalysisPage: React.FC = () => {

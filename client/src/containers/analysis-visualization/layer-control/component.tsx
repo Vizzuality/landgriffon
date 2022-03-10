@@ -4,9 +4,10 @@ import classNames from 'classnames';
 import Select from 'components/select';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { analysis, setLayer } from 'store/features/analysis';
+import { analysisUI } from 'store/features/analysis/ui';
+import { analysisFilters, setLayer } from 'store/features/analysis/filters';
 
-import type { AnalysisState } from 'store/features/analysis';
+import type { AnalysisFiltersState } from 'store/features/analysis/filters';
 import type { SelectOptions } from 'components/select/types';
 
 const LAYERS_OPTIONS: SelectOptions = [
@@ -25,7 +26,8 @@ const LAYERS_OPTIONS: SelectOptions = [
 ];
 
 const LayerControl: React.FC = () => {
-  const { layer, visualizationMode } = useAppSelector(analysis);
+  const { visualizationMode } = useAppSelector(analysisUI);
+  const { layer } = useAppSelector(analysisFilters);
   const dispatch = useAppDispatch();
 
   const handleChange = useCallback((selected) => dispatch(setLayer(selected.value)), [dispatch]);
@@ -33,7 +35,7 @@ const LayerControl: React.FC = () => {
   useEffect(() => {
     if (visualizationMode !== 'map') {
       // set impact when visualization mode is not map
-      dispatch(setLayer(LAYERS_OPTIONS[2].value as AnalysisState['layer']));
+      dispatch(setLayer(LAYERS_OPTIONS[2].value as AnalysisFiltersState['layer']));
     }
   }, [dispatch, visualizationMode]);
 

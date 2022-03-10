@@ -4,3 +4,8 @@ export type UserProfilePayload = {
   email?: string;
   password?: string;
 };
+
+export type formProps = {
+  alert: any;
+  showAlert: any;
+};

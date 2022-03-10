@@ -1,7 +1,6 @@
 import { useCallback, useMemo, FC } from 'react';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { analysis, setSubContentCollapsed } from 'store/features/analysis';
-import { scenarios, setNewInterventionStep } from 'store/features/analysis/scenarios';
+import { analysis, setSubContentCollapsed, scenarios, setNewInterventionStep } from 'store/features/analysis';
 
 import Steps from 'components/steps';
 import Button from 'components/button';

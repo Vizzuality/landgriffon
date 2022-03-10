@@ -37,7 +37,7 @@ export const initialState: ScenariosState = {
 };
 
 export const analysisScenariosSlice = createSlice({
-  name: 'scenarios',
+  name: 'analysis/scenarios',
   initialState,
   reducers: {
     setCurrentScenario: (state, action: PayloadAction<ScenariosState['currentScenario']>) => ({
@@ -74,6 +74,6 @@ export const {
   setNewInterventionStep,
 } = analysisScenariosSlice.actions;
 
-export const scenarios = (state: FeatureState) => state.scenarios;
+export const scenarios = (state: FeatureState) => state['analysis/scenarios'];
 
 export default analysisScenariosSlice.reducer;

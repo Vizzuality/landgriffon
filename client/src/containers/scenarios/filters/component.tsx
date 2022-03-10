@@ -17,10 +17,6 @@ const SORT_OPTIONS = [
     label: 'Title',
     value: 'title',
   },
-  {
-    label: 'Shared',
-    value: 'shared',
-  },
 ];
 
 const filtersItems = [
@@ -30,11 +26,11 @@ const filtersItems = [
   },
   {
     name: 'My scenarios',
-    filter: 'my-scenarios',
+    filter: 'userId',
   },
   {
     name: 'Shared',
-    filter: 'shared',
+    filter: 'status',
   },
 ];
 

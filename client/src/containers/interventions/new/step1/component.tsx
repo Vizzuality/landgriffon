@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState, FC } from 'react';
 // hooks
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 
-import { analysis, setFilter } from 'store/features/analysis';
+import { setFilter, analysisFilters } from 'store/features/analysis/filters';
 
 // components
 import Input from 'components/forms/input';
@@ -17,7 +17,7 @@ import OriginRegions from 'containers/analysis-visualization/analysis-filters/or
 
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
-import type { AnalysisState } from 'store/features/analysis';
+//import type { AnalysisState } from 'store/features/analysis';
 import { useInterventionTypes } from 'hooks/analysis';
 
 const businesses = ['business1', 'business2', 'business3'];
@@ -26,7 +26,7 @@ const yearCompletions = [2001, 2015, 2020];
 const Step1: FC = () => {
   const dispatch = useAppDispatch();
   //const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { filters } = useAppSelector(analysis);
+  const filters = useAppSelector(analysisFilters);
   const interventionTypes = useInterventionTypes();
 
   // const { data: materials, isLoading: isLoadingMaterials } = useMaterials();
@@ -99,16 +99,16 @@ const Step1: FC = () => {
     [dispatch],
   );
 
-  const handleChangeFilter = useCallback(
-    // only save ids on store
-    (key, values) => {
-      setMoreFilters({
-        ...moreFilters,
-        [key]: values,
-      } as AnalysisState['filters']);
-    },
-    [moreFilters],
-  );
+  // const handleChangeFilter = useCallback(
+  //   // only save ids on store
+  //   (key, values) => {
+  //     setMoreFilters({
+  //       ...moreFilters,
+  //       [key]: values,
+  //     } as AnalysisState['filters']);
+  //   },
+  //   [moreFilters],
+  // );
 
   const handleInterventionType = useCallback(
     ({ value }) =>

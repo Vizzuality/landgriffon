@@ -82,6 +82,7 @@ export class SourcingDataImportService {
         await this.sourcingLocationGroupService.create({
           title: 'Sourcing Records import from XLSX file',
         });
+
       const dtoMatchedData: SourcingRecordsDtos =
         await this.dtoProcessor.createDTOsFromSourcingRecordsSheets(
           parsedXLSXDataset,
@@ -268,11 +269,19 @@ export class SourcingDataImportService {
      */
     const sourcingLocationGroupId: string =
       'd24e81d0-1929-4f35-9182-d37768c4bf6b';
-    const dtoMatchedData: SourcingRecordsDtos =
-      await this.dtoProcessor.createDTOsFromSourcingRecordsSheets(
-        parsedXLSXDataset,
-        sourcingLocationGroupId,
-      );
+
+    let dtoMatchedData: SourcingRecordsDtos;
+
+    try {
+      dtoMatchedData =
+        await this.dtoProcessor.createDTOsFromSourcingRecordsSheets(
+          parsedXLSXDataset,
+          sourcingLocationGroupId,
+        );
+    } catch (error) {
+      await this.fileService.deleteDataFromFS(filePath);
+      throw error;
+    }
 
     this.logger.log(`Validating DTOs`);
     try {

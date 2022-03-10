@@ -1,5 +1,4 @@
 import { FC, Fragment, useCallback, useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { SearchIcon } from '@heroicons/react/solid';
 import { Transition } from '@headlessui/react';
@@ -7,6 +6,9 @@ import { useDebounce } from '@react-hook/debounce';
 
 import classNames from 'classnames';
 import Select from 'components/select';
+import { useAppSelector } from 'store/hooks';
+import { scenarios, setScenarioFilter } from 'store/features/analysis/scenarios';
+import { useDispatch } from 'react-redux';
 
 const SORT_OPTIONS = [
   {
@@ -26,18 +28,22 @@ const filtersItems = [
   },
   {
     name: 'My scenarios',
-    filter: 'userId',
+    filter: 'private',
   },
   {
     name: 'Shared',
-    filter: 'status',
+    filter: 'public',
   },
 ];
 
 const ScenariosFilters: FC = () => {
+  const dispatch = useDispatch();
+  const handleFilter = useCallback((value) => dispatch(setScenarioFilter(value)), [dispatch]);
+
   const router = useRouter();
   const { query } = router;
   const [isSearchEnable, setSearchEnable] = useState(false);
+  const { filter } = useAppSelector(scenarios);
   const [term, setTerm] = useDebounce(null, 250); // wait 250ms before set term
   const toggleSearch = useCallback(() => setSearchEnable(!isSearchEnable), [isSearchEnable]);
   const handleSort = useCallback(
@@ -105,18 +111,17 @@ const ScenariosFilters: FC = () => {
       <ul className="relative flex flex-1 space-x-2 ml-3 justify-start whitespace-nowrap items-center">
         {filtersItems.map((item) => (
           <li key={item.filter}>
-            <Link href={{ pathname: '/analysis', query: { ...query, filter: item.filter } }}>
-              <a
-                className={classNames(
-                  'block',
-                  query.filter === item.filter || (!query.filter && item.filter === 'all')
-                    ? 'border-b-2 border-green-700 box-content text-gray-900'
-                    : 'text-gray-500',
-                )}
-              >
-                {item.name}
-              </a>
-            </Link>
+            <button
+              className={classNames(
+                'block',
+                filter === item.filter
+                  ? 'border-b-2 border-green-700 box-content text-gray-900'
+                  : 'text-gray-500',
+              )}
+              onClick={() => handleFilter(item.filter)}
+            >
+              {item.name}
+            </button>
           </li>
         ))}
       </ul>

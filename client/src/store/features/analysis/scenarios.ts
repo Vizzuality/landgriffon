@@ -56,6 +56,10 @@ export const analysisScenariosSlice = createSlice({
       ...state,
       scenarioCurrentTab: action.payload,
     }),
+    setScenarioFilter: (state, action: PayloadAction<ScenariosState['filter']>) => ({
+      ...state,
+      filter: action.payload,
+    }),
     setNewInterventionStep: (
       state,
       action: PayloadAction<ScenariosState['interventionsStep']>,
@@ -71,6 +75,7 @@ export const {
   setScenarioToCompare,
   setComparisonMode,
   setScenarioTab,
+  setScenarioFilter,
   setNewInterventionStep,
 } = analysisScenariosSlice.actions;
 

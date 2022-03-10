@@ -1,3 +1,5 @@
+import { AlertsItemProps } from 'components/alerts';
+
 export type UserProfilePayload = {
   fname?: string;
   lname?: string;
@@ -6,6 +8,6 @@ export type UserProfilePayload = {
 };
 
 export type formProps = {
-  alert: any;
-  showAlert: any;
+  alert: (msg: AlertsItemProps) => void;
+  showAlert: (showAlert: boolean) => void;
 };

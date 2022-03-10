@@ -22,13 +22,13 @@ const UserProfile: React.FC = () => {
         <h1 className="mt-6 ml-6">My profile</h1>
 
         <UserDataForm
-          alert={(msg: AlertsItemProps) => setAlert(msg)}
-          showAlert={(val: boolean) => setShowAlert(val)}
+          alert={(msg) => setAlert(msg)}
+          showAlert={(alertState) => setShowAlert(alertState)}
         ></UserDataForm>
 
         <UserPasswordForm
-          alert={(msg: AlertsItemProps) => setAlert(msg)}
-          showAlert={(val: boolean) => setShowAlert(val)}
+          alert={(msg) => setAlert(msg)}
+          showAlert={(alertState) => setShowAlert(alertState)}
         ></UserPasswordForm>
 
         <div className="ml-6">

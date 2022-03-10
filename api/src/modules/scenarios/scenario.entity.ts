@@ -24,7 +24,7 @@ export const scenarioResource: BaseServiceResource = {
     singular: 'scenario',
     plural: 'scenarios',
   },
-  entitiesAllowedAsIncludes: [],
+  entitiesAllowedAsIncludes: ['scenarioInterventions'],
   columnsAllowedAsFilter: ['title', 'description', 'status', 'userId'],
 };
 

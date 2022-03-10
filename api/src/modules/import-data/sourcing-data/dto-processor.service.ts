@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
 import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
@@ -8,6 +8,8 @@ import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sou
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { WorkSheet } from 'xlsx';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { SourcingDataFromExcelDto } from 'modules/import-data/sourcing-data/validators/sourcing-data.class.validator';
+import { validateOrReject } from 'class-validator';
 
 /**
  * @debt: Define a more accurate DTO / Interface / Class for API-DB trades
@@ -73,9 +75,8 @@ export class SourcingRecordsDtoProcessorService {
     const adminRegions: CreateAdminRegionDto[] =
       await this.createAdminRegionDtos(importData.countries);
 
-    const processedSourcingData: Record<string, any> = this.cleanCustomData(
-      importData.sourcingData,
-    );
+    const processedSourcingData: Record<string, any> =
+      await this.cleanCustomData(importData.sourcingData);
     /**
      * Builds SourcingData from parsed XLSX
      */
@@ -102,9 +103,9 @@ export class SourcingRecordsDtoProcessorService {
     return regexMatch ? parseInt(regexMatch[0]) : null;
   }
 
-  private cleanCustomData(customData: WorkSheet[]): {
+  private async cleanCustomData(customData: WorkSheet[]): Promise<{
     sourcingData: SourcingData[];
-  } {
+  }> {
     this.logger.debug(`Cleaning ${customData.length} custom data rows`);
     const sourcingData: SourcingData[] = [];
 
@@ -121,6 +122,9 @@ export class SourcingRecordsDtoProcessorService {
      * Separate metadata properties to metadata object common for each sourcing-location row
      * Check if current key contains a year ('2018_tonnage') if so, get the year and its value
      */
+
+    await this.validateCleanData(nonEmptyData);
+
     for (const eachRecordOfCustomData of nonEmptyData) {
       const sourcingRecords: Record<string, any>[] = [];
       const years: Record<string, any> = {};
@@ -367,5 +371,31 @@ export class SourcingRecordsDtoProcessorService {
     sourcingRecordDto.tonnage = sourcingRecordData.tonnage;
     sourcingRecordDto.year = sourcingRecordData.year;
     return sourcingRecordDto;
+  }
+
+  private async validateCleanData(nonEmptyData: any): Promise<void> {
+    const excelErrors: any[] = [];
+
+    for (const [index, dto] of nonEmptyData.entries()) {
+      const objectToValidate: SourcingDataFromExcelDto =
+        new SourcingDataFromExcelDto();
+      Object.assign(objectToValidate, dto);
+
+      try {
+        await validateOrReject(objectToValidate);
+      } catch (errors: any) {
+        errors.forEach((error: any) => {
+          excelErrors.push({
+            line: index + 2,
+            column: error?.property,
+            errors: error?.constraints,
+          });
+        });
+      }
+    }
+
+    if (excelErrors.length) {
+      throw new BadRequestException(excelErrors);
+    }
   }
 }

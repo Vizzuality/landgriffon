@@ -5,9 +5,10 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
-import { analysis, setVisualizationMode } from 'store/features/analysis';
+import { analysisUI, setVisualizationMode } from 'store/features/analysis/ui';
+import { analysisFilters } from 'store/features/analysis/filters';
 
-import type { AnalysisState } from 'store/features/analysis';
+import type { AnalysisUIState } from 'store/features/analysis/ui';
 
 const CONTROL_ITEM_CLASS_NAMES =
   'relative inline-flex items-center px-4 py-1.5 border border-gray-200 bg-white text-sm font-medium text-gray-600 hover:bg-green-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700';
@@ -15,14 +16,15 @@ const CONTROL_ITEM_ACTIVE_CLASS_NAMES =
   'z-10 outline-none ring-1 ring-green-700 text-green-700 border-green-700 bg-green-50';
 
 const ModeControl: React.FC = () => {
-  const { layer, visualizationMode } = useAppSelector(analysis);
+  const { visualizationMode } = useAppSelector(analysisUI);
+  const { layer } = useAppSelector(analysisFilters);
   const dispatch = useAppDispatch();
   const { query } = useRouter();
   const { mode } = query;
 
   useEffect(() => {
     if (mode) {
-      const selectedMode = mode as AnalysisState['visualizationMode'];
+      const selectedMode = mode as AnalysisUIState['visualizationMode'];
       dispatch(setVisualizationMode(selectedMode));
     }
   }, [dispatch, mode]);

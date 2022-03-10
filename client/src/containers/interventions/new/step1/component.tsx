@@ -1,5 +1,6 @@
 import { useCallback, useMemo, FC } from 'react';
 
+import { flatten } from 'lodash';
 // hooks
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 
@@ -29,9 +30,6 @@ const Step1: FC = () => {
   const filters = useAppSelector(analysisFilters);
   const interventionTypes = useInterventionTypes();
 
-  // const { data: materials, isLoading: isLoadingMaterials } = useMaterials();
-  // const { data: businesses, isLoading: isLoadingBusinesses } = useBusinesses();
-  // const { data: suppliers, isLoading: isLoadingSuppliers } = useSuppliers();
   // const { data: sourcingRegions, isLoading: isLoadingSourcingRegions } = useSourcingRegions();
 
   const business = 'business2';
@@ -84,9 +82,23 @@ const Step1: FC = () => {
   const isLoadingYearCompletion = false;
   const isLoadingInterventionTypes = false;
 
-  const handleChange = useCallback(
-    (id, e) => {
-      dispatch(setFilter({ id, value: e.value }));
+  const handleChangeFilter = useCallback(
+    // only save ids on store
+    (id, values) => {
+      const childrenIds = flatten(
+        values.map((v) => {
+          if (!!v.children) {
+            return v.children.map(({ value }) => value);
+          }
+          return v.value;
+        }),
+      );
+      dispatch(
+        setFilter({
+          id,
+          value: childrenIds,
+        }),
+      );
     },
     [dispatch],
   );
@@ -154,7 +166,7 @@ const Step1: FC = () => {
               multiple
               withSourcingLocations
               current={filters.materials}
-              onChange={(values) => handleChange('materials', values)}
+              onChange={(values) => handleChangeFilter('materials', values)}
               theme="inline-primary"
               ellipsis
             />
@@ -173,7 +185,7 @@ const Step1: FC = () => {
             multiple
             withSourcingLocations
             current={filters.suppliers}
-            onChange={({ values }) => handleChange('suppliers', values)}
+            onChange={(values) => handleChangeFilter('suppliers', values)}
             theme="inline-primary"
           />
           <span className="text-gray-700 font-medium">in</span>
@@ -181,7 +193,7 @@ const Step1: FC = () => {
             multiple
             withSourcingLocations
             current={filters.suppliers}
-            onChange={({ values }) => handleChange('origin', values)}
+            onChange={(values) => handleChangeFilter('origins', values)}
             theme="inline-primary"
           />
           <span className="text-gray-700 font-medium">.</span>

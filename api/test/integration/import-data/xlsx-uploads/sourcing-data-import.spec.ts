@@ -35,8 +35,6 @@ import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.servic
 import { h3BasicFixture } from '../../../e2e/h3-data/mocks/h3-fixtures';
 import { SourcingDataImportService } from 'modules/import-data/sourcing-data/sourcing-data-import.service';
 import { FileService } from 'modules/import-data/file.service';
-import * as fs from 'fs';
-import * as config from 'config';
 let tablesToDrop: string[] = [];
 
 let missingDataFallbackPolicy: string = 'error';

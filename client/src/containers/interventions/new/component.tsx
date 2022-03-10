@@ -1,6 +1,8 @@
 import { useCallback, useMemo, FC } from 'react';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { analysis, setSubContentCollapsed, scenarios, setNewInterventionStep } from 'store/features/analysis';
+import { setSubContentCollapsed } from 'store/features/analysis/ui';
+import { scenarios, setNewInterventionStep } from 'store/features/analysis/scenarios';
+import { analysisFilters } from 'store/features/analysis/filters';
 
 import Steps from 'components/steps';
 import Button from 'components/button';
@@ -52,7 +54,7 @@ const STEPS2 = {
 
 const InterventionForm: FC = () => {
   const dispatch = useAppDispatch();
-  const { filters } = useAppSelector(analysis);
+  const filters = useAppSelector(analysisFilters);
   const { interventionsStep } = useAppSelector(scenarios);
   const { interventionType } = filters;
 

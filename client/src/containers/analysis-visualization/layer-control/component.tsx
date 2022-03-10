@@ -5,9 +5,8 @@ import Select from 'components/select';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisUI } from 'store/features/analysis/ui';
-import { analysisFilters, setLayer } from 'store/features/analysis/filters';
+import { analysisFilters, setLayer, AnalysisFiltersState } from 'store/features/analysis/filters';
 
-import type { AnalysisFiltersState } from 'store/features/analysis/filters';
 import type { SelectOptions } from 'components/select/types';
 
 const LAYERS_OPTIONS: SelectOptions = [

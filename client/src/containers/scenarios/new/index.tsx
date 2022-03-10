@@ -6,7 +6,9 @@ import { apiService } from 'services/api';
 import { useRouter } from 'next/router';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { setSubContentCollapsed, scenarios, setScenarioTab } from 'store/features/analysis';
+
+import { setSubContentCollapsed } from 'store/features/analysis/ui';
+import { scenarios, setScenarioTab } from 'store/features/analysis/scenarios';
 
 import { useInterventions } from 'hooks/interventions';
 

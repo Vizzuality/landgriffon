@@ -6,7 +6,7 @@ import Input from 'components/forms/input';
 import Label from 'components/forms/label';
 
 // types
-import { setFilter } from 'store/features/analysis';
+import { setFilter } from 'store/features/analysis/filters';
 
 // containers
 import InfoTooltip from 'containers/info-tooltip';

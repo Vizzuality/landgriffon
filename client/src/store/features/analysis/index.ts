@@ -19,9 +19,8 @@ export type AnalysisState = {
 
 type FeatureState = RootState & { analysis: AnalysisState };
 
-export const {
-  setVisualizationMode, setSidebarCollapsed, setSubContentCollapsed
-} = analysisUISlice.actions;
+export const { setVisualizationMode, setSidebarCollapsed, setSubContentCollapsed } =
+  analysisUISlice.actions;
 
 export const { setLayer, setFilter, setFilters } = analysisFiltersSlice.actions;
 

@@ -6,8 +6,7 @@ import { useScenario, useUpdateScenario } from 'hooks/scenarios';
 import { useInterventions } from 'hooks/interventions';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { setSubContentCollapsed } from 'store/features/analysis';
-import { scenarios, setScenarioTab } from 'store/features/analysis/scenarios';
+import { setSubContentCollapsed, setScenarioTab, scenarios } from 'store/features/analysis';
 
 import Button from 'components/button';
 import InterventionsList from 'containers/interventions/list';

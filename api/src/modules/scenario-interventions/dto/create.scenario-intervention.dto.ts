@@ -126,11 +126,6 @@ export class CreateScenarioInterventionDto {
   @ApiPropertyOptional()
   newLocationAddressInput?: string;
 
-  @IsUUID()
-  @IsOptional()
-  @ApiPropertyOptional()
-  newGeoRegionId?: string;
-
   @ValidateIf(
     (dto: CreateScenarioInterventionDto) =>
       dto.type === SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,

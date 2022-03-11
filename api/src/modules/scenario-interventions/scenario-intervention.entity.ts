@@ -92,7 +92,7 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   @Column()
   percentage!: number;
 
-  @Column({ type: 'jsonb' })
+  @Column({ type: 'jsonb', nullable: true })
   @ApiProperty()
   newIndicatorCoefficients!: JSON;
 

@@ -149,6 +149,7 @@ export class ScenarioInterventionsService extends AppBaseService<
               geoRegionId: sourcingLocation.geoRegionId,
               materialId: sourcingLocation.materialId,
             },
+            dto.newIndicatorCoefficients,
           );
         }
 
@@ -180,6 +181,7 @@ export class ScenarioInterventionsService extends AppBaseService<
               geoRegionId: sourcingLocation.geoRegionId,
               materialId: sourcingLocation.materialId,
             },
+            dto.newIndicatorCoefficients,
           );
         }
         break;
@@ -207,6 +209,7 @@ export class ScenarioInterventionsService extends AppBaseService<
               geoRegionId: sourcingLocation.geoRegionId,
               materialId: sourcingLocation.materialId,
             },
+            dto.newIndicatorCoefficients,
           );
         }
 

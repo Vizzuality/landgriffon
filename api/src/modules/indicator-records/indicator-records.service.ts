@@ -33,6 +33,8 @@ import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records
 import { IndicatorRecordCalculatedValuesDto } from 'modules/indicator-records/dto/indicator-record-calculated-values.dto';
 import { IndicatorNameCodeWithRelatedH3 } from 'modules/indicators/dto/indicator-namecode-with-related-h3.dto';
 import { IndicatorComputedRawDataDto } from 'modules/indicators/dto/indicator-computed-raw-data.dto';
+import { IndicatorCoefficientsInterface } from 'modules/indicator-coefficients/interfaces/indicator-coefficients.interface';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 
 @Injectable()
 export class IndicatorRecordsService extends AppBaseService<
@@ -344,6 +346,7 @@ export class IndicatorRecordsService extends AppBaseService<
 
   async createIndicatorRecordsBySourcingRecords(
     sourcingData: any,
+    providedCoefficient?: IndicatorCoefficientsInterface,
   ): Promise<any> {
     const { geoRegionId, materialId } = sourcingData;
     const rawData: IndicatorComputedRawDataDto =
@@ -351,12 +354,20 @@ export class IndicatorRecordsService extends AppBaseService<
         geoRegionId as string,
         materialId,
       );
-    const calculatedIndicatorRecordValues: IndicatorRecordCalculatedValuesDto =
-      this.calculateIndicatorValues({
+
+    let calculatedIndicatorRecordValues: IndicatorRecordCalculatedValuesDto;
+    if (providedCoefficient) {
+      calculatedIndicatorRecordValues = this.useProvidedIndicatorCoefficients(
+        providedCoefficient,
+        sourcingData,
+      );
+    } else {
+      calculatedIndicatorRecordValues = this.calculateIndicatorValues({
         sourcingRecordId: sourcingData.sourcingRecordId,
         tonnage: sourcingData.tonnage,
         ...rawData,
       });
+    }
 
     const indicatorMapper: Record<string, any> = await this.getIndicatorMap();
     const indicatorRecords: IndicatorRecord[] = [];
@@ -418,7 +429,6 @@ export class IndicatorRecordsService extends AppBaseService<
   }
 
   /**
-   *
    * @description Consumes Indicator Raw Data from the DB to calculate final values for Indicator Records
    */
 
@@ -512,6 +522,10 @@ export class IndicatorRecordsService extends AppBaseService<
     return indicatorRecords;
   }
 
+  /**
+   * @description Get a Indicator Hashmap to relate Indicator Records with Indicators by the Name Code
+   */
+
   async getIndicatorMap(): Promise<Record<string, any>> {
     const indicators: IndicatorNameCodeWithRelatedH3[] =
       await this.indicatorService.getIndicatorsAndRelatedH3DataIds();
@@ -522,5 +536,30 @@ export class IndicatorRecordsService extends AppBaseService<
       },
     );
     return indicatorMap;
+  }
+
+  /**
+   * @description: Calculates Indicator values by the tonnage of the impact and estimates (coefficients) provided
+   * by the user
+   */
+  useProvidedIndicatorCoefficients(
+    newIndicatorCoefficients: IndicatorCoefficientsInterface,
+    sourcingRecord: SourcingRecord,
+  ): IndicatorRecordCalculatedValuesDto {
+    const calculatedIndicatorValues: IndicatorRecordCalculatedValuesDto =
+      new IndicatorRecordCalculatedValuesDto();
+    calculatedIndicatorValues[INDICATOR_TYPES.DEFORESTATION] =
+      newIndicatorCoefficients[INDICATOR_TYPES.DEFORESTATION] *
+      sourcingRecord.tonnage;
+    calculatedIndicatorValues[INDICATOR_TYPES.BIODIVERSITY_LOSS] =
+      newIndicatorCoefficients[INDICATOR_TYPES.BIODIVERSITY_LOSS] *
+      sourcingRecord.tonnage;
+    calculatedIndicatorValues[INDICATOR_TYPES.CARBON_EMISSIONS] =
+      newIndicatorCoefficients[INDICATOR_TYPES.CARBON_EMISSIONS] *
+      sourcingRecord.tonnage;
+    calculatedIndicatorValues[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE] =
+      newIndicatorCoefficients[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE] *
+      sourcingRecord.tonnage;
+    return calculatedIndicatorValues;
   }
 }

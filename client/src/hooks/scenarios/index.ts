@@ -9,6 +9,10 @@ import {
 } from 'react-query';
 import { useQueryClient } from 'react-query';
 
+import { useAppSelector } from 'store/hooks';
+
+import { scenarios } from 'store/features/analysis/scenarios';
+
 import { apiService } from 'services/api';
 import type { Scenario } from 'containers/scenarios/types';
 import { AxiosResponse } from 'axios';
@@ -47,15 +51,26 @@ const ACTUAL_DATA: Scenario = {
   title: 'Actual data',
 };
 
-export function useScenarios(queryParams: QueryParams = null): ResponseData {
+export function useScenarios(): ResponseData {
+  const { sort, filter, searchTerm } = useAppSelector(scenarios);
+
+  //this should come from API
+  const userId = '94757458-343444';
+  const params = {
+    ...(!!sort && { sort }),
+    ...(filter === 'private' && { 'filter[userId]': userId }),
+    ...(filter === 'public' && { 'filter[status]': filter }),
+    ...(!!searchTerm && { 'filter[title]': searchTerm }),
+  };
+
   const response: ResponseData = useQuery<Scenario[]>(
-    ['scenariosList', queryParams],
+    ['scenariosList', sort, filter, searchTerm],
     async () =>
       apiService
         .request({
           method: 'GET',
           url: '/scenarios',
-          params: queryParams,
+          params,
         })
         .then(({ data: responseData }) => responseData.data),
     DEFAULT_QUERY_OPTIONS,
@@ -97,6 +112,8 @@ export function useInfiniteScenarios(QueryParams: QueryParams): ResponseInfinite
 }
 
 export function useScenario(id: string, queryParams: { sort: string }): ResponseDataScenario {
+  const { sort, filter, searchTerm } = useAppSelector(scenarios);
+
   const response = useQuery(
     ['scenario', queryParams],
     async () =>
@@ -104,7 +121,7 @@ export function useScenario(id: string, queryParams: { sort: string }): Response
         .request({
           method: 'GET',
           url: `/scenarios/${id}`,
-          params: queryParams,
+          params: { sort, 'filter[title]': searchTerm, filter },
         })
         .then(({ data: responseData }) => responseData.data),
     DEFAULT_QUERY_OPTIONS,

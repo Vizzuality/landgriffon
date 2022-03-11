@@ -86,12 +86,9 @@ export class ScenarioInterventionsService extends AppBaseService<
     const newScenarioIntervention: ScenarioIntervention =
       new ScenarioIntervention();
     Object.assign(newScenarioIntervention, dto);
-    const savedNewScenarioIntervention: ScenarioIntervention =
-      await this.scenarioInterventionRepository.save(newScenarioIntervention);
     /**
      * Getting Sourcing Locations and Sourcing Records for start year of all Materials of the intervention with applied filters
      */
-
     const actualSourcingDataWithTonnage: SourcingLocationWithRecord[] =
       await this.sourcingLocationsService.findFilteredSourcingLocationsForIntervention(
         dto,
@@ -144,10 +141,11 @@ export class ScenarioInterventionsService extends AppBaseService<
           );
 
         for await (const sourcingLocation of newInterventionSourcingLocations) {
+          const [sourcingRecord] = sourcingLocation.sourcingRecords;
           await this.indicatorRecordsService.createIndicatorRecordsBySourcingRecords(
             {
-              sourcingRecordId: sourcingLocation.sourcingRecords[0].id,
-              tonnage: sourcingLocation.sourcingRecords[0].tonnage,
+              sourcingRecordId: sourcingRecord.id,
+              tonnage: sourcingRecord.tonnage,
               geoRegionId: sourcingLocation.geoRegionId,
               materialId: sourcingLocation.materialId,
             },
@@ -174,10 +172,11 @@ export class ScenarioInterventionsService extends AppBaseService<
         newScenarioIntervention.newSourcingLocations =
           newInterventionSourcingLocations;
         for await (const sourcingLocation of newInterventionSourcingLocations) {
+          const [sourcingRecord] = sourcingLocation.sourcingRecords;
           await this.indicatorRecordsService.createIndicatorRecordsBySourcingRecords(
             {
-              sourcingRecordId: sourcingLocation.sourcingRecords[0].id,
-              tonnage: sourcingLocation.sourcingRecords[0].tonnage,
+              sourcingRecordId: sourcingRecord.id,
+              tonnage: sourcingRecord.tonnage,
               geoRegionId: sourcingLocation.geoRegionId,
               materialId: sourcingLocation.materialId,
             },
@@ -198,11 +197,13 @@ export class ScenarioInterventionsService extends AppBaseService<
           );
         newScenarioIntervention.newSourcingLocations =
           newInterventionSourcingLocations;
+
         for await (const sourcingLocation of newInterventionSourcingLocations) {
+          const [sourcingRecord] = sourcingLocation.sourcingRecords;
           await this.indicatorRecordsService.createIndicatorRecordsBySourcingRecords(
             {
-              sourcingRecordId: sourcingLocation.sourcingRecords[0].id,
-              tonnage: sourcingLocation.sourcingRecords[0].tonnage,
+              sourcingRecordId: sourcingRecord.id,
+              tonnage: sourcingRecord.tonnage,
               geoRegionId: sourcingLocation.geoRegionId,
               materialId: sourcingLocation.materialId,
             },
@@ -217,10 +218,7 @@ export class ScenarioInterventionsService extends AppBaseService<
      * and added as relations to the new Scenario Intervention, saving the new Scenario intervention in database
      */
 
-    const newScenarioInterventionSaved: ScenarioIntervention =
-      await this.scenarioInterventionRepository.save(newScenarioIntervention);
-
-    return newScenarioInterventionSaved;
+    return this.scenarioInterventionRepository.save(newScenarioIntervention);
   }
 
   /**
@@ -250,8 +248,10 @@ export class ScenarioInterventionsService extends AppBaseService<
       {
         materialId: dto.newMaterialId as string,
         locationType: dto.newLocationType,
-        locationAddressInput: dto.newAddressInput,
+        locationAddressInput: dto.newLocationAddressInput,
         locationCountryInput: dto.newLocationCountryInput,
+        locationLongitude: dto.newLocationLongitude,
+        locationLatitude: dto.newLocationLatitude,
         t1SupplierId: dto.newT1SupplierId,
         producerId: dto.newProducerId,
         businessUnitId: sourcingData[0].businessUnitId,
@@ -290,8 +290,10 @@ export class ScenarioInterventionsService extends AppBaseService<
       {
         materialId: sourcingData[0].materialId,
         locationType: dto.newLocationType,
-        locationAddressInput: dto.newAddressInput,
+        locationAddressInput: dto.newLocationAddressInput,
         locationCountryInput: dto.newLocationCountryInput,
+        locationLatitude: dto.newLocationLatitude,
+        locationLongitude: dto.newLocationLongitude,
         t1SupplierId: dto.newT1SupplierId,
         producerId: dto.newProducerId,
         businessUnitId: sourcingData[0].businessUnitId,
@@ -312,8 +314,10 @@ export class ScenarioInterventionsService extends AppBaseService<
       const newInterventionLocation: SourcingData = {
         materialId: location.materialId,
         locationType: dto.newLocationType,
-        locationAddressInput: dto.newAddressInput,
+        locationAddressInput: dto.newLocationAddressInput,
         locationCountryInput: dto.newLocationCountryInput,
+        locationLatitude: dto.newLocationLatitude,
+        locationLongitude: dto.newLocationLongitude,
         t1SupplierId: dto.newT1SupplierId,
         producerId: dto.newProducerId,
         businessUnitId: location.businessUnitId,

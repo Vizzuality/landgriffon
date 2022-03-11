@@ -46,7 +46,6 @@ export class GoogleMapsGeocoder implements GeocoderInterface {
       );
     }
 
-    console.log('ARGS', args, response);
     if (!response.data.results.length) {
       throw new GeoCodingError(
         `Could not GeoLocate new Location by address: ${args.address}. Please make sure your Address info is correct`,

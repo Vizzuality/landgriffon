@@ -33,8 +33,7 @@ import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records
 import { IndicatorRecordCalculatedValuesDto } from 'modules/indicator-records/dto/indicator-record-calculated-values.dto';
 import { IndicatorNameCodeWithRelatedH3 } from 'modules/indicators/dto/indicator-namecode-with-related-h3.dto';
 import { IndicatorComputedRawDataDto } from 'modules/indicators/dto/indicator-computed-raw-data.dto';
-import { IndicatorCoefficientsInterface } from 'modules/indicator-coefficients/interfaces/indicator-coefficients.interface';
-import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
 
 @Injectable()
 export class IndicatorRecordsService extends AppBaseService<
@@ -346,29 +345,27 @@ export class IndicatorRecordsService extends AppBaseService<
 
   async createIndicatorRecordsBySourcingRecords(
     sourcingData: any,
-    providedCoefficient?: IndicatorCoefficientsInterface,
+    providedCoefficients?: IndicatorCoefficientsDto,
   ): Promise<any> {
     const { geoRegionId, materialId } = sourcingData;
-    const rawData: IndicatorComputedRawDataDto =
-      await this.indicatorRecordRepository.getIndicatorRawDataByGeoRegionAndMaterial(
-        geoRegionId as string,
-        materialId,
-      );
-
     let calculatedIndicatorRecordValues: IndicatorRecordCalculatedValuesDto;
-    if (providedCoefficient) {
+    if (providedCoefficients) {
       calculatedIndicatorRecordValues = this.useProvidedIndicatorCoefficients(
-        providedCoefficient,
+        providedCoefficients,
         sourcingData,
       );
     } else {
+      const rawData: IndicatorComputedRawDataDto =
+        await this.indicatorRecordRepository.getIndicatorRawDataByGeoRegionAndMaterial(
+          geoRegionId as string,
+          materialId,
+        );
       calculatedIndicatorRecordValues = this.calculateIndicatorValues({
         sourcingRecordId: sourcingData.sourcingRecordId,
         tonnage: sourcingData.tonnage,
         ...rawData,
       });
     }
-
     const indicatorMapper: Record<string, any> = await this.getIndicatorMap();
     const indicatorRecords: IndicatorRecord[] = [];
     const indicatorRecordDeforestation: IndicatorRecord = IndicatorRecord.merge(
@@ -433,7 +430,10 @@ export class IndicatorRecordsService extends AppBaseService<
    */
 
   private calculateIndicatorValues(
-    sourcingRecordData: any,
+    sourcingRecordData: IndicatorComputedRawDataDto & {
+      sourcingRecordId: string;
+      tonnage: number;
+    },
   ): IndicatorRecordCalculatedValuesDto {
     const calculatedIndicatorValues: IndicatorRecordCalculatedValuesDto =
       new IndicatorRecordCalculatedValuesDto();
@@ -543,23 +543,24 @@ export class IndicatorRecordsService extends AppBaseService<
    * by the user
    */
   useProvidedIndicatorCoefficients(
-    newIndicatorCoefficients: IndicatorCoefficientsInterface,
-    sourcingRecord: SourcingRecord,
+    newIndicatorCoefficients: IndicatorCoefficientsDto,
+    sourcingData: { sourcingRecordId: string; tonnage: number },
   ): IndicatorRecordCalculatedValuesDto {
     const calculatedIndicatorValues: IndicatorRecordCalculatedValuesDto =
       new IndicatorRecordCalculatedValuesDto();
+    calculatedIndicatorValues.sourcingRecordId = sourcingData.sourcingRecordId;
     calculatedIndicatorValues[INDICATOR_TYPES.DEFORESTATION] =
       newIndicatorCoefficients[INDICATOR_TYPES.DEFORESTATION] *
-      sourcingRecord.tonnage;
+      sourcingData.tonnage;
     calculatedIndicatorValues[INDICATOR_TYPES.BIODIVERSITY_LOSS] =
       newIndicatorCoefficients[INDICATOR_TYPES.BIODIVERSITY_LOSS] *
-      sourcingRecord.tonnage;
+      sourcingData.tonnage;
     calculatedIndicatorValues[INDICATOR_TYPES.CARBON_EMISSIONS] =
       newIndicatorCoefficients[INDICATOR_TYPES.CARBON_EMISSIONS] *
-      sourcingRecord.tonnage;
+      sourcingData.tonnage;
     calculatedIndicatorValues[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE] =
       newIndicatorCoefficients[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE] *
-      sourcingRecord.tonnage;
+      sourcingData.tonnage;
     return calculatedIndicatorValues;
   }
 }

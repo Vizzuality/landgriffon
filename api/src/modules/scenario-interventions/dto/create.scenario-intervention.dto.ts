@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEnum,
-  IsJSON,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -10,10 +9,12 @@ import {
   MaxLength,
   MinLength,
   ValidateIf,
+  ValidateNested,
 } from 'class-validator';
 import { SCENARIO_INTERVENTION_TYPE } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
-import { IndicatorCoefficientsInterface } from 'modules/indicator-coefficients/interfaces/indicator-coefficients.interface';
+import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
+import { Type } from 'class-transformer';
 
 export class CreateScenarioInterventionDto {
   @IsString()
@@ -74,10 +75,15 @@ export class CreateScenarioInterventionDto {
   @ApiProperty()
   adminRegionsIds?: string[];
 
-  @IsJSON()
-  @IsNotEmpty()
-  @ApiProperty()
-  newIndicatorCoefficients!: IndicatorCoefficientsInterface;
+  @IsOptional()
+  @ApiPropertyOptional()
+  @ValidateIf(
+    (dto: CreateScenarioInterventionDto) =>
+      dto.newIndicatorCoefficients !== null,
+  )
+  @ValidateNested()
+  @Type(() => IndicatorCoefficientsDto)
+  newIndicatorCoefficients?: IndicatorCoefficientsDto;
 
   @IsUUID()
   @IsOptional()

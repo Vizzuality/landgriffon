@@ -43,7 +43,9 @@ import {
   createInterventionPreconditions,
   ScenarioInterventionPreconditions,
 } from '../../utils/scenario-interventions-preconditions';
-import { GeoCodingAbstractClass } from '../../../src/modules/geo-coding/geo-coding-abstract-class';
+import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
+import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
+import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -102,10 +104,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         ScenarioInterventionsModule,
         SourcingLocationsModule,
         SourcingRecordsModule,
+        IndicatorRecordsModule,
       ],
     })
       .overrideProvider(GeoCodingAbstractClass)
       .useValue(geoCodingServiceMock)
+      .overrideProvider(IndicatorRecordsService)
+      .useValue({ createIndicatorRecordsBySourcingRecords: () => null })
       .compile();
 
     scenarioInterventionRepository =
@@ -158,9 +163,14 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           suppliersIds: [preconditions.supplier1.id],
           businessUnitsIds: [preconditions.businessUnit1.id],
           adminRegionsIds: [preconditions.adminRegion1.id],
+          newLocationCountryInput: 'TestCountry',
           type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
-          newIndicatorCoefficients:
-            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
+          newIndicatorCoefficients: {
+            GHG_LUC_T: 1,
+            DF_LUC_T: 10,
+            UWU_T: 5,
+            BL_LUC_T: 3,
+          },
         });
 
       expect(HttpStatus.CREATED);
@@ -266,9 +276,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           adminRegionsIds: [preconditions.adminRegion1.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
-          newCountryInput: 'Spain',
-          newIndicatorCoefficients:
-            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
+          newLocationCountryInput: 'Spain',
+          newIndicatorCoefficients: {
+            GHG_LUC_T: 1,
+            DF_LUC_T: 10,
+            UWU_T: 5,
+            BL_LUC_T: 3,
+          },
         });
 
       expect(HttpStatus.CREATED);
@@ -392,10 +406,14 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           ],
           type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
           newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
-          newCountryInput: 'Spain',
+          newLocationCountryInput: 'Spain',
           newMaterialId: replacingMaterial.id,
-          newIndicatorCoefficients:
-            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
+          newIndicatorCoefficients: {
+            GHG_LUC_T: 1,
+            DF_LUC_T: 10,
+            UWU_T: 5,
+            BL_LUC_T: 3,
+          },
         });
 
       expect(HttpStatus.CREATED);
@@ -455,7 +473,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
       expect(newSourcingRecords.length).toBe(1);
-      expect(newSourcingRecords[0].tonnage).toEqual('1100');
+      expect(newSourcingRecords[0].tonnage).toEqual('550');
     });
   });
 
@@ -476,9 +494,14 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           suppliersIds: [preconditions.supplier1.id],
           businessUnitsIds: [preconditions.businessUnit1.id],
           adminRegionsIds: [preconditions.adminRegion1.id],
+          newLocationCountryInput: 'TestCountry',
           type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
-          newIndicatorCoefficients:
-            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
+          newIndicatorCoefficients: {
+            GHG_LUC_T: 1,
+            DF_LUC_T: 10,
+            UWU_T: 5,
+            BL_LUC_T: 3,
+          },
         });
 
       expect(HttpStatus.BAD_REQUEST);
@@ -503,9 +526,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           suppliersIds: [preconditions.supplier2.id],
           businessUnitsIds: [preconditions.businessUnit2.id],
           adminRegionsIds: [preconditions.adminRegion2.id],
+          newLocationCountryInput: 'TestCountry',
           type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
-          newIndicatorCoefficients:
-            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
         });
 
       expect(HttpStatus.BAD_REQUEST);
@@ -521,6 +543,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send();
+
+      console.log(JSON.stringify(response.body));
 
       expect(HttpStatus.BAD_REQUEST);
       expect(response).toHaveErrorMessage(
@@ -546,8 +570,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           'each value in businessUnitsIds must be a UUID',
           'suppliersIds should not be empty',
           'each value in suppliersIds must be a UUID',
-          'newIndicatorCoefficients should not be empty',
-          'newIndicatorCoefficients must be a json string',
+          'New Location Country input is required for the selected intervention and location type',
         ],
       );
     });
@@ -569,8 +592,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           suppliersIds: [supplier.id],
           businessUnitsIds: [businessUnit.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-          newIndicatorCoefficients:
-            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
+          newIndicatorCoefficients: {
+            GHG_LUC_T: 1,
+            DF_LUC_T: 10,
+            UWU_T: 5,
+            BL_LUC_T: 3,
+          },
         });
 
       expect(HttpStatus.BAD_REQUEST);
@@ -580,6 +607,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         [
           'Available columns for new location type: production unit, processing facility, tier 1 Trade facility, tier 2 Trade facility, origin Country, unknown, aggregation point, point of production, country of production',
           'New location type input is required for the selected intervention type',
+          'New Location Country input is required for the selected intervention and location type',
         ],
       );
     });
@@ -602,8 +630,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitsIds: [businessUnit.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
-          newIndicatorCoefficients:
-            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
         });
 
       expect(HttpStatus.BAD_REQUEST);
@@ -611,7 +637,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
         [
-          'New country input is required for the selected intervention and location type',
+          'New Location Country input is required for the selected intervention and location type',
         ],
       );
 
@@ -628,8 +654,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitsIds: [businessUnit.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.ORIGIN_COUNTRY,
-          newIndicatorCoefficients:
-            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
         });
 
       expect(HttpStatus.BAD_REQUEST);
@@ -637,12 +661,14 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
         [
-          'New country input is required for the selected intervention and location type',
+          'New Location Country input is required for the selected intervention and location type',
         ],
       );
     });
 
-    test('Create new intervention with replacing supplier with new location type point of Production or Aggregation point and no address/coordinates data should fail with a 400 error', async () => {
+    // TODO: Add custom validation to check if either newLocationAddressInput or LAT LONG properties are provided for intervention types needing geocoding.
+    //       This can't be done by class-validator
+    test.skip('Create new intervention with replacing supplier with new location type point of Production or Aggregation point and no address/coordinates data should fail with a 400 error', async () => {
       const scenario: Scenario = await createScenario();
       const material: Material = await createMaterial();
       const supplier: Supplier = await createSupplier();
@@ -660,8 +686,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitsIds: [businessUnit.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.AGGREGATION_POINT,
-          newIndicatorCoefficients:
-            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
         });
 
       expect(HttpStatus.BAD_REQUEST);
@@ -669,7 +693,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
         [
-          'New address or coordinates input is required for the selected intervention and location type',
+          'New Location Country input is required for the selected intervention and location type',
         ],
       );
 
@@ -686,8 +710,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitsIds: [businessUnit.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
-          newIndicatorCoefficients:
-            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
+          newLocationCountryInput: 'TestCountry',
         });
 
       expect(HttpStatus.BAD_REQUEST);
@@ -696,6 +719,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'Bad Request Exception',
         [
           'New address or coordinates input is required for the selected intervention and location type',
+          'New Location Country input is required for the selected intervention and location type',
         ],
       );
     });
@@ -717,8 +741,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           suppliersIds: [supplier.id],
           businessUnitsIds: [businessUnit.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
-          newIndicatorCoefficients:
-            '{ "ce": "11", "de": "10", "ww": "5", "bi": "3" }',
+          newLocationCountryInput: 'TestCountry',
         });
 
       expect(HttpStatus.BAD_REQUEST);
@@ -727,9 +750,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'Bad Request Exception',
         [
           'Available columns for new location type: production unit, processing facility, tier 1 Trade facility, tier 2 Trade facility, origin Country, unknown, aggregation point, point of production, country of production',
-          'New location type input is required for the selected intervention type',
           'newMaterialId must be a UUID',
           'New Material is required for the selected intervention type',
+          'New location type input is required for the selected intervention type',
         ],
       );
     });

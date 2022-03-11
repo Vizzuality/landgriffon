@@ -11,6 +11,7 @@ import {
   GeocodeArgs,
   GeocoderInterface,
 } from 'modules/geo-coding/geocoders/geocoder.interface';
+import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 
 export class GoogleMapsGeocoder implements GeocoderInterface {
   private logger: Logger = new Logger(GoogleMapsGeocoder.name);
@@ -44,9 +45,9 @@ export class GoogleMapsGeocoder implements GeocoderInterface {
         `Google geocoding API request failed. Please make sure that a correct API key is provided`,
       );
     }
-    if (!response?.data) {
-      throw new UnprocessableEntityException(
-        `Google geocoding API request failed. Please make sure that a correct API key is provided`,
+    if (!response.data.results.length) {
+      throw new GeoCodingError(
+        `Could not GeoLocate new Location by address: ${args}. Please make sure your Address info is correct`,
       );
     }
     return response.data;
@@ -62,6 +63,12 @@ export class GoogleMapsGeocoder implements GeocoderInterface {
     const geocodeResponseData: GeocodeResponseData = await this.geocode(
       geocodeRequest,
     );
+
+    if (!geocodeResponseData.results.length) {
+      throw new GeoCodingError(
+        `Could not GeoLocate new Location by Coordinates Latitude ${coordinates.lat} and Longitude: ${coordinates.lng}. Please make sure your Location info is correct`,
+      );
+    }
     return geocodeResponseData;
   }
 }

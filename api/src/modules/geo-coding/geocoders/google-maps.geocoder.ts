@@ -45,9 +45,11 @@ export class GoogleMapsGeocoder implements GeocoderInterface {
         `Google geocoding API request failed. Please make sure that a correct API key is provided`,
       );
     }
+
+    console.log('ARGS', args, response);
     if (!response.data.results.length) {
       throw new GeoCodingError(
-        `Could not GeoLocate new Location by address: ${args}. Please make sure your Address info is correct`,
+        `Could not GeoLocate new Location by address: ${args.address}. Please make sure your Address info is correct`,
       );
     }
     return response.data;

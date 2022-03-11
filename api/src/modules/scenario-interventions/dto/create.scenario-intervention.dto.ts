@@ -13,6 +13,7 @@ import {
 } from 'class-validator';
 import { SCENARIO_INTERVENTION_TYPE } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
+import { IndicatorCoefficientsInterface } from 'modules/indicator-coefficients/interfaces/indicator-coefficients.interface';
 
 export class CreateScenarioInterventionDto {
   @IsString()
@@ -76,7 +77,7 @@ export class CreateScenarioInterventionDto {
   @IsJSON()
   @IsNotEmpty()
   @ApiProperty()
-  newIndicatorCoefficients!: JSON;
+  newIndicatorCoefficients!: IndicatorCoefficientsInterface;
 
   @IsUUID()
   @IsOptional()

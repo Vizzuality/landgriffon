@@ -35,7 +35,7 @@ export class ImportDataController {
   ): Promise<Partial<Task>> {
     // TODO: Add userId once auth is in place
     const userId: string = '2a833cc7-5a6f-492d-9a60-0d6d056923ea';
-    const task: Task = await this.importDataService.ValidateAndLoadXlsxFile(
+    const task: Task = await this.importDataService.validateAndLoadXlsxFile(
       userId,
       xlsxFile,
     );

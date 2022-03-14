@@ -7,6 +7,7 @@ import * as config from 'config';
 import { ImportDataModule } from 'modules/import-data/import-data.module';
 import { saveUserAndGetToken } from '../../../utils/userAuth';
 import { getApp } from '../../../utils/getApp';
+import { sourcingDataValidationErrorResponse } from './import-mocks';
 
 jest.mock('config', () => {
   const config = jest.requireActual('config');
@@ -86,141 +87,9 @@ describe('XLSX Upload Feature Validation Tests', () => {
         .attach('file', __dirname + '/base-dataset-location-errors.xlsx');
 
       expect(HttpStatus.BAD_REQUEST);
-      expect(response.body.errors[0].meta.rawError.response.message).toEqual([
-        {
-          line: 2,
-          column: 'material.hsCode',
-          errors: {
-            minLength:
-              'material.hsCode must be longer than or equal to 2 characters',
-          },
-        },
-        {
-          line: 2,
-          column: 'location_country_input',
-          errors: {
-            isString: 'location_country_input must be a string',
-            isNotEmpty: 'Location country input is required',
-          },
-        },
-        {
-          line: 2,
-          column: 'location_address_input',
-          errors: {
-            location_address:
-              'Address must be empty for locations of type unknown',
-          },
-        },
-        {
-          line: 2,
-          column: 'location_latitude_input',
-          errors: {
-            latitude: 'Coordinates must be empty for locations of type unknown',
-          },
-        },
-        {
-          line: 2,
-          column: 'location_longitude_input',
-          errors: {
-            longitude:
-              'Coordinates must be empty for locations of type unknown',
-          },
-        },
-        {
-          line: 3,
-          column: 'business_unit.path',
-          errors: {
-            isString: 'business_unit.path must be a string',
-            isNotEmpty: 'Business Unit path cannot be empty',
-          },
-        },
-        {
-          line: 3,
-          column: 'location_latitude_input',
-          errors: {
-            latitude:
-              'Coordinates must be empty for locations of type country of production',
-          },
-        },
-        {
-          line: 3,
-          column: 'location_longitude_input',
-          errors: {
-            longitude:
-              'Coordinates must be empty for locations of type country of production',
-          },
-        },
-        {
-          line: 7,
-          column: 'location_address_input',
-          errors: {
-            location_address:
-              'Address input or coordinates are obligatory for locations of type aggregation point.',
-          },
-        },
-        {
-          line: 7,
-          column: 'location_latitude_input',
-          errors: {
-            latitude:
-              'Address input or coordinates are obligatory for locations of type aggregation point. Latitude values must be min: -90, max: 90',
-          },
-        },
-        {
-          line: 8,
-          column: 'location_address_input',
-          errors: {
-            location_address:
-              'Address input or coordinates are obligatory for locations of type point of production.',
-          },
-        },
-        {
-          line: 8,
-          column: 'location_latitude_input',
-          errors: {
-            latitude:
-              'Address input or coordinates are obligatory for locations of type point of production. Latitude values must be min: -90, max: 90',
-          },
-        },
-        {
-          line: 8,
-          column: 'location_longitude_input',
-          errors: {
-            longitude:
-              'Address input or coordinates are obligatory for locations of type point of production. Longitude values must be min: -180, max: 180',
-          },
-        },
-        {
-          line: 9,
-          column: 'location_latitude_input',
-          errors: {
-            latitude:
-              'Address input or coordinates are obligatory for locations of type point of production. Latitude values must be min: -90, max: 90',
-          },
-        },
-        {
-          line: 9,
-          column: 'location_longitude_input',
-          errors: {
-            longitude:
-              'Address input or coordinates are obligatory for locations of type point of production. Longitude values must be min: -180, max: 180',
-          },
-        },
-        {
-          line: 10,
-          column: '2012_tons',
-          errors: {
-            min: '2012_tons must not be less than 0',
-          },
-        },
-        {
-          line: 10,
-          column: '2015_tons',
-          errors: {
-            min: '2015_tons must not be less than 0',
-          },
-        },
-      ]);
+      expect(response.body.errors[0].meta.rawError.response.message).toEqual(
+        sourcingDataValidationErrorResponse,
+      );
       const folderContent = await readdir(
         config.get('fileUploads.storagePath'),
       );

@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -7,11 +8,13 @@ import {
   Min,
   MinLength,
   Validate,
+  ValidateNested,
 } from 'class-validator';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import { LocationAddressInputValidator } from 'modules/import-data/sourcing-data/validators/address-input.custom.validator';
 import { LocationLatitudeInputValidator } from 'modules/import-data/sourcing-data/validators/latitude-input.custom.validator';
 import { LocationLongitudeInputValidator } from 'modules/import-data/sourcing-data/validators/longitude-input.custom.validator';
+import { Type } from 'class-transformer';
 
 export class SourcingDataFromExcelDto {
   @IsNotEmpty({
@@ -61,58 +64,18 @@ export class SourcingDataFromExcelDto {
   @Validate(LocationLongitudeInputValidator)
   'location_longitude_input': number;
 
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(0)
-  '2010_tons': number;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => SourcingRecordObject)
+  'sourcingRecords': SourcingRecordObject[];
+}
 
-  @IsNotEmpty()
+class SourcingRecordObject {
   @IsNumber()
   @Min(0)
-  '2011_tons': number;
+  tonnage: number;
 
-  @IsNotEmpty()
   @IsNumber()
-  @Min(0)
-  '2012_tons': number;
-
   @IsNotEmpty()
-  @IsNumber()
-  @Min(0)
-  '2013_tons': number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(0)
-  '2014_tons': number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(0)
-  '2015_tons': number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(0)
-  '2016_tons': number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(0)
-  '2017_tons': number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(0)
-  '2018_tons': number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(0)
-  '2019_tons': number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(0)
-  '2020_tons': number;
+  year: number;
 }

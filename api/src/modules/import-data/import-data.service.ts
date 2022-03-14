@@ -19,7 +19,7 @@ export class ImportDataService {
     private readonly tasksService: TasksService,
   ) {}
 
-  async ValidateAndLoadXlsxFile(
+  async validateAndLoadXlsxFile(
     userId: string,
     xlsxFileData: Express.Multer.File,
   ): Promise<Task> {

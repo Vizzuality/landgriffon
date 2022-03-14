@@ -103,7 +103,7 @@ export class SourcingLocation extends TimestampedBaseEntity {
 
   @Column({ nullable: true })
   @ApiPropertyOptional()
-  geoRegionId?: string;
+  geoRegionId: string;
 
   @Column({ type: 'jsonb', nullable: true })
   @ApiPropertyOptional()

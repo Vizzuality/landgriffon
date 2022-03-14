@@ -9,10 +9,6 @@ export class IndicatorRecordRepository extends Repository<IndicatorRecord> {
 
   /**
    * @description Calculate Raw Indicator values given a GeoRegion Id and Material Id:
-   * @todo: This most likely will change to fit PR: https://github.com/Vizzuality/landgriffon/pull/231/
-   *        once it's merged
-   *
-   *@todo: Add proper typing when functionally validated with Science
    */
   async getIndicatorRawDataByGeoRegionAndMaterial(
     geoRegionId: string,
@@ -37,7 +33,7 @@ export class IndicatorRecordRepository extends Repository<IndicatorRecord> {
         `Could not calculate raw Indicator values for GeoRegion Id: ${geoRegionId} and Material Id: ${materialId} `,
       );
       throw new ServiceUnavailableException(
-        `Could not calculate Raw Indicator values for new Scenario`,
+        `Could not calculate Raw Indicator values for new Scenario: ${error.message}`,
       );
     }
   }

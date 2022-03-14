@@ -21,7 +21,10 @@ import {
 import { H3DataService } from 'modules/h3-data/h3-data.service';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
-import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
+import {
+  MATERIAL_TO_H3_TYPE,
+  MaterialToH3,
+} from 'modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import * as config from 'config';
 import { H3DataYearsService } from 'modules/h3-data/services/h3-data-years.service';
@@ -344,7 +347,12 @@ export class IndicatorRecordsService extends AppBaseService<
    */
 
   async createIndicatorRecordsBySourcingRecords(
-    sourcingData: any,
+    sourcingData: {
+      sourcingRecordId: string;
+      geoRegionId: string;
+      materialId: string;
+      tonnage: number;
+    },
     providedCoefficients?: IndicatorCoefficientsDto,
   ): Promise<any> {
     const { geoRegionId, materialId } = sourcingData;
@@ -355,6 +363,13 @@ export class IndicatorRecordsService extends AppBaseService<
         sourcingData,
       );
     } else {
+      const materialH3Data: MaterialToH3 | undefined =
+        await this.materialsToH3sService.findOne(materialId);
+      if (!materialH3Data) {
+        throw new MissingH3DataError(
+          `No H3 Data required for calculate Impact for Material with ID: ${materialId}`,
+        );
+      }
       const rawData: IndicatorComputedRawDataDto =
         await this.indicatorRecordRepository.getIndicatorRawDataByGeoRegionAndMaterial(
           geoRegionId as string,

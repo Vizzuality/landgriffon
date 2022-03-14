@@ -20,6 +20,7 @@ import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
+import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -108,6 +109,8 @@ export class SourcingDataImportService {
           dtoMatchedData.sourcingData,
         );
 
+      // TODO: TBD What to do when there is some location where we cannot determine it's admin-region: i.e coordinates
+      //       in the middle of the sea
       const geoCodedSourcingData: SourcingData[] =
         await this.geoCodingService.geoCodeLocations(
           sourcingDataWithOrganizationalEntities,
@@ -116,8 +119,21 @@ export class SourcingDataImportService {
       await this.sourcingLocationService.save(geoCodedSourcingData);
 
       this.logger.log('Generating Indicator Records...');
-      await this.indicatorRecordsService.createIndicatorRecordsForAllSourcingRecords();
-      this.logger.log('Indicator Records generated');
+
+      // TODO: Current approach calculates Impact for all Sourcing Records present in the DB
+      //       Getting H3 data for calculations is done within DB so we need to improve the error handling
+      //       TBD: What to when is no H3 for a Material
+      try {
+        await this.indicatorRecordsService.createIndicatorRecordsForAllSourcingRecords();
+        this.logger.log('Indicator Records generated');
+      } catch (err: any) {
+        if (err instanceof MissingH3DataError) {
+          throw new MissingH3DataError(
+            `Missing H3 Data to calculate Impact in Import`,
+          );
+          throw err;
+        }
+      }
     } finally {
       await this.fileService.deleteDataFromFS(filePath);
     }

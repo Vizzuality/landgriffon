@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  ValidationError,
+} from '@nestjs/common';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
 import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
@@ -10,6 +15,7 @@ import { WorkSheet } from 'xlsx';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { SourcingDataFromExcelDto } from 'modules/import-data/sourcing-data/validators/sourcing-data.class.validator';
 import { validateOrReject } from 'class-validator';
+import { plainToClass } from 'class-transformer';
 
 /**
  * @debt: Define a more accurate DTO / Interface / Class for API-DB trades
@@ -123,8 +129,6 @@ export class SourcingRecordsDtoProcessorService {
      * Check if current key contains a year ('2018_tonnage') if so, get the year and its value
      */
 
-    await this.validateCleanData(nonEmptyData);
-
     for (const eachRecordOfCustomData of nonEmptyData) {
       const sourcingRecords: Record<string, any>[] = [];
       const years: Record<string, any> = {};
@@ -177,6 +181,8 @@ export class SourcingRecordsDtoProcessorService {
       };
       sourcingData.push(sourcingLocationWithSourcingRecords as SourcingData);
     }
+
+    await this.validateCleanData(sourcingData);
 
     return { sourcingData };
   }
@@ -373,23 +379,38 @@ export class SourcingRecordsDtoProcessorService {
     return sourcingRecordDto;
   }
 
-  private async validateCleanData(nonEmptyData: any): Promise<void> {
-    const excelErrors: any[] = [];
+  private async validateCleanData(nonEmptyData: SourcingData[]): Promise<void> {
+    const excelErrors: {
+      line: number;
+      column: string;
+      errors: { [type: string]: string } | undefined;
+    }[] = [];
 
     for (const [index, dto] of nonEmptyData.entries()) {
-      const objectToValidate: SourcingDataFromExcelDto =
-        new SourcingDataFromExcelDto();
-      Object.assign(objectToValidate, dto);
+      const objectToValidate: SourcingDataFromExcelDto = plainToClass(
+        SourcingDataFromExcelDto,
+        dto,
+      );
 
       try {
         await validateOrReject(objectToValidate);
       } catch (errors: any) {
-        errors.forEach((error: any) => {
-          excelErrors.push({
-            line: index + 2,
-            column: error?.property,
-            errors: error?.constraints,
-          });
+        errors.forEach((error: ValidationError) => {
+          if (error.children?.length) {
+            error.children.forEach((nestedError: ValidationError) => {
+              excelErrors.push({
+                line: index + 2,
+                column: nestedError.value.year,
+                errors: nestedError.children?.[0].constraints,
+              });
+            });
+          } else {
+            excelErrors.push({
+              line: index + 2,
+              column: error?.property,
+              errors: error?.constraints,
+            });
+          }
         });
       }
     }

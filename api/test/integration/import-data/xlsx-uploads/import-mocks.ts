@@ -291,11 +291,27 @@ const sourcingDataValidationErrorResponse: Record<string, any>[] = [
     },
   },
   {
-    line: 7,
+    line: 6,
     column: 'location_address_input',
     errors: {
       location_address:
-        'Address input or coordinates are obligatory for locations of type aggregation point.',
+        'Address input OR coordinates are required for locations of type aggregation point. Address must be empty if coordinates are provided',
+    },
+  },
+  {
+    line: 6,
+    column: 'location_latitude_input',
+    errors: {
+      latitude:
+        'Address input OR coordinates must be provided for locations of type aggregation point. Latitude must be empty if address is provided',
+    },
+  },
+  {
+    line: 6,
+    column: 'location_longitude_input',
+    errors: {
+      longitude:
+        'Address input OR coordinates must be provided for locations of type aggregation point. Latitude must be empty if address is provided',
     },
   },
   {
@@ -303,7 +319,7 @@ const sourcingDataValidationErrorResponse: Record<string, any>[] = [
     column: 'location_latitude_input',
     errors: {
       latitude:
-        'Address input or coordinates are obligatory for locations of type aggregation point. Latitude values must be min: -90, max: 90',
+        'Address input or coordinates are required for locations of type aggregation point. Latitude values must be min: -90, max: 90',
     },
   },
   {
@@ -311,7 +327,7 @@ const sourcingDataValidationErrorResponse: Record<string, any>[] = [
     column: 'location_address_input',
     errors: {
       location_address:
-        'Address input or coordinates are obligatory for locations of type point of production.',
+        'Address input or coordinates are required for locations of type point of production.',
     },
   },
   {
@@ -319,7 +335,7 @@ const sourcingDataValidationErrorResponse: Record<string, any>[] = [
     column: 'location_latitude_input',
     errors: {
       latitude:
-        'Address input or coordinates are obligatory for locations of type point of production. Latitude values must be min: -90, max: 90',
+        'Address input or coordinates are required for locations of type point of production. Latitude values must be min: -90, max: 90',
     },
   },
   {
@@ -327,7 +343,7 @@ const sourcingDataValidationErrorResponse: Record<string, any>[] = [
     column: 'location_longitude_input',
     errors: {
       longitude:
-        'Address input or coordinates are obligatory for locations of type point of production. Longitude values must be min: -180, max: 180',
+        'Address input or coordinates are required for locations of type point of production. Longitude values must be min: -180, max: 180',
     },
   },
   {
@@ -335,7 +351,7 @@ const sourcingDataValidationErrorResponse: Record<string, any>[] = [
     column: 'location_latitude_input',
     errors: {
       latitude:
-        'Address input or coordinates are obligatory for locations of type point of production. Latitude values must be min: -90, max: 90',
+        'Address input or coordinates are required for locations of type point of production. Latitude values must be min: -90, max: 90',
     },
   },
   {
@@ -343,7 +359,7 @@ const sourcingDataValidationErrorResponse: Record<string, any>[] = [
     column: 'location_longitude_input',
     errors: {
       longitude:
-        'Address input or coordinates are obligatory for locations of type point of production. Longitude values must be min: -180, max: 180',
+        'Address input or coordinates are required for locations of type point of production. Longitude values must be min: -180, max: 180',
     },
   },
   {

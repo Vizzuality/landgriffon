@@ -11,19 +11,27 @@ export class LocationAddressInputValidator
 {
   validate(addressInput: string, args: ValidationArguments): boolean {
     if (
-      JSON.parse(JSON.stringify(args.object)).location_type ===
-        LOCATION_TYPES.UNKNOWN ||
-      JSON.parse(JSON.stringify(args.object)).location_type ===
+      (args.object as any).location_type === LOCATION_TYPES.UNKNOWN ||
+      (args.object as any).location_type ===
         LOCATION_TYPES.COUNTRY_OF_PRODUCTION
     ) {
       return !addressInput;
     } else if (
-      (JSON.parse(JSON.stringify(args.object)).location_type ===
+      ((args.object as any).location_type ===
         LOCATION_TYPES.AGGREGATION_POINT ||
-        JSON.parse(JSON.stringify(args.object)).location_type ===
+        (args.object as any).location_type ===
           LOCATION_TYPES.POINT_OF_PRODUCTION) &&
-      (!JSON.parse(JSON.stringify(args.object)).location_latitude_input ||
-        !JSON.parse(JSON.stringify(args.object)).location_longitude_input)
+      ((args.object as any).location_latitude_input ||
+        (args.object as any).location_longitude_input)
+    ) {
+      return !addressInput;
+    } else if (
+      ((args.object as any).location_type ===
+        LOCATION_TYPES.AGGREGATION_POINT ||
+        (args.object as any).location_type ===
+          LOCATION_TYPES.POINT_OF_PRODUCTION) &&
+      (!(args.object as any).location_latitude_input ||
+        !(args.object as any).location_longitude_input)
     ) {
       return typeof addressInput === 'string' && addressInput.length > 2;
     } else {
@@ -32,25 +40,28 @@ export class LocationAddressInputValidator
   }
   defaultMessage(args: ValidationArguments): string {
     if (
-      JSON.parse(JSON.stringify(args.object)).location_type ===
-        LOCATION_TYPES.UNKNOWN ||
-      JSON.parse(JSON.stringify(args.object)).location_type ===
+      (args.object as any).location_type === LOCATION_TYPES.UNKNOWN ||
+      (args.object as any).location_type ===
         LOCATION_TYPES.COUNTRY_OF_PRODUCTION
     ) {
       return `Address must be empty for locations of type ${
         JSON.parse(JSON.stringify(args.object)).location_type
       }`;
     } else if (
-      JSON.parse(JSON.stringify(args.object)).location_type ===
+      ((args.object as any).location_type ===
         LOCATION_TYPES.AGGREGATION_POINT ||
-      JSON.parse(JSON.stringify(args.object)).location_type ===
-        LOCATION_TYPES.POINT_OF_PRODUCTION
+        (args.object as any).location_type ===
+          LOCATION_TYPES.POINT_OF_PRODUCTION) &&
+      ((args.object as any).location_latitude_input ||
+        (args.object as any).location_longitude_input)
     ) {
-      return `Address input or coordinates are obligatory for locations of type ${
-        JSON.parse(JSON.stringify(args.object)).location_type
-      }.`;
+      return `Address input OR coordinates are required for locations of type ${
+        (args.object as any).location_type
+      }. Address must be empty if coordinates are provided`;
     } else {
-      return 'Incorrect Input value for selected location type';
+      return `Address input or coordinates are required for locations of type ${
+        (args.object as any).location_type
+      }.`;
     }
   }
 }

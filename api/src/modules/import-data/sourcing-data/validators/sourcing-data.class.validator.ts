@@ -16,7 +16,7 @@ import { LocationLatitudeInputValidator } from 'modules/import-data/sourcing-dat
 import { LocationLongitudeInputValidator } from 'modules/import-data/sourcing-data/validators/longitude-input.custom.validator';
 import { Type } from 'class-transformer';
 
-export class SourcingDataFromExcelDto {
+export class SourcingDataExcelValidator {
   @IsNotEmpty({
     message: 'Material hs code cannot be empty',
   })
@@ -66,11 +66,11 @@ export class SourcingDataFromExcelDto {
 
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => SourcingRecordObject)
-  'sourcingRecords': SourcingRecordObject[];
+  @Type(() => SourcingRecordExcelValidator)
+  'sourcingRecords': SourcingRecordExcelValidator[];
 }
 
-class SourcingRecordObject {
+class SourcingRecordExcelValidator {
   @IsNumber()
   @Min(0)
   tonnage: number;

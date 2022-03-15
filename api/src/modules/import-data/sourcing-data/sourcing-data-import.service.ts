@@ -263,12 +263,9 @@ export class SourcingDataImportService {
     }
 
     /**
-     * Pass random id to create DTOs for validation
      * @note: If we decide to path DTOs to task instead of path
      * this has to change to generate valid id
      */
-    const sourcingLocationGroupId: string =
-      'd24e81d0-1929-4f35-9182-d37768c4bf6b';
 
     let dtoMatchedData: SourcingRecordsDtos;
 
@@ -276,7 +273,6 @@ export class SourcingDataImportService {
       dtoMatchedData =
         await this.dtoProcessor.createDTOsFromSourcingRecordsSheets(
           parsedXLSXDataset,
-          sourcingLocationGroupId,
         );
     } catch (error) {
       await this.fileService.deleteDataFromFS(filePath);

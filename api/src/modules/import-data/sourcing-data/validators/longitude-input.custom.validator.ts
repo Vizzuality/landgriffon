@@ -11,18 +11,25 @@ export class LocationLongitudeInputValidator
 {
   validate(longitudeInput: number, args: ValidationArguments): boolean {
     if (
-      JSON.parse(JSON.stringify(args.object)).location_type ===
-        LOCATION_TYPES.UNKNOWN ||
-      JSON.parse(JSON.stringify(args.object)).location_type ===
+      (args.object as any).location_type === LOCATION_TYPES.UNKNOWN ||
+      (args.object as any).location_type ===
         LOCATION_TYPES.COUNTRY_OF_PRODUCTION
     ) {
       return !longitudeInput;
     } else if (
-      (JSON.parse(JSON.stringify(args.object)).location_type ===
+      ((args.object as any).location_type ===
         LOCATION_TYPES.AGGREGATION_POINT ||
-        JSON.parse(JSON.stringify(args.object)).location_type ===
+        (args.object as any).location_type ===
           LOCATION_TYPES.POINT_OF_PRODUCTION) &&
-      !JSON.parse(JSON.stringify(args.object)).location_address_input
+      (args.object as any).location_address_input
+    ) {
+      return !longitudeInput;
+    } else if (
+      ((args.object as any).location_type ===
+        LOCATION_TYPES.AGGREGATION_POINT ||
+        (args.object as any).location_type ===
+          LOCATION_TYPES.POINT_OF_PRODUCTION) &&
+      !(args.object as any).location_address_input
     ) {
       return longitudeInput >= -180 && longitudeInput <= 180;
     } else {
@@ -31,25 +38,27 @@ export class LocationLongitudeInputValidator
   }
   defaultMessage(args: ValidationArguments): string {
     if (
-      JSON.parse(JSON.stringify(args.object)).location_type ===
-        LOCATION_TYPES.UNKNOWN ||
-      JSON.parse(JSON.stringify(args.object)).location_type ===
+      (args.object as any).location_type === LOCATION_TYPES.UNKNOWN ||
+      (args.object as any).location_type ===
         LOCATION_TYPES.COUNTRY_OF_PRODUCTION
     ) {
       return `Coordinates must be empty for locations of type ${
-        JSON.parse(JSON.stringify(args.object)).location_type
+        (args.object as any).location_type
       }`;
     } else if (
-      JSON.parse(JSON.stringify(args.object)).location_type ===
+      ((args.object as any).location_type ===
         LOCATION_TYPES.AGGREGATION_POINT ||
-      JSON.parse(JSON.stringify(args.object)).location_type ===
-        LOCATION_TYPES.POINT_OF_PRODUCTION
+        (args.object as any).location_type ===
+          LOCATION_TYPES.POINT_OF_PRODUCTION) &&
+      (args.object as any).location_address_input
     ) {
-      return `Address input or coordinates are obligatory for locations of type ${
-        JSON.parse(JSON.stringify(args.object)).location_type
-      }. Longitude values must be min: -180, max: 180`;
+      return `Address input OR coordinates must be provided for locations of type ${
+        (args.object as any).location_type
+      }. Latitude must be empty if address is provided`;
     } else {
-      return 'Incorrect Input value for selected location type';
+      return `Address input or coordinates are required for locations of type ${
+        (args.object as any).location_type
+      }. Longitude values must be min: -180, max: 180`;
     }
   }
 }

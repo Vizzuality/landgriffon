@@ -13,7 +13,7 @@ import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sou
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { WorkSheet } from 'xlsx';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
-import { SourcingDataFromExcelDto } from 'modules/import-data/sourcing-data/validators/sourcing-data.class.validator';
+import { SourcingDataExcelValidator } from 'modules/import-data/sourcing-data/validators/sourcing-data.class.validator';
 import { validateOrReject } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 
@@ -67,7 +67,7 @@ export class SourcingRecordsDtoProcessorService {
 
   async createDTOsFromSourcingRecordsSheets(
     importData: SourcingRecordsSheets,
-    sourcingLocationGroupId: string,
+    sourcingLocationGroupId?: string,
   ): Promise<SourcingRecordsDtos> {
     this.logger.debug(`Creating DTOs from sourcing records sheets`);
     const materials: CreateMaterialDto[] = await this.createMaterialDtos(
@@ -83,6 +83,12 @@ export class SourcingRecordsDtoProcessorService {
 
     const processedSourcingData: Record<string, any> =
       await this.cleanCustomData(importData.sourcingData);
+
+    /**
+     * Validating parsed and cleaned from Sourcing Data sheet
+     */
+
+    await this.validateCleanData(processedSourcingData.sourcingData);
     /**
      * Builds SourcingData from parsed XLSX
      */
@@ -182,8 +188,6 @@ export class SourcingRecordsDtoProcessorService {
       sourcingData.push(sourcingLocationWithSourcingRecords as SourcingData);
     }
 
-    await this.validateCleanData(sourcingData);
-
     return { sourcingData };
   }
 
@@ -260,7 +264,7 @@ export class SourcingRecordsDtoProcessorService {
    */
   private async createSourcingDataDTOs(
     importData: Record<string, any>[],
-    sourcingLocationGroupId: string,
+    sourcingLocationGroupId?: string,
   ): Promise<SourcingData[]> {
     this.logger.debug(
       `Creating sourcing data DTOs from ${importData.length} data rows`,
@@ -334,7 +338,7 @@ export class SourcingRecordsDtoProcessorService {
 
   private createSourcingLocationDTOFromData(
     sourcingLocationData: Record<string, any>,
-    sourcingLocationGroupId: string,
+    sourcingLocationGroupId?: string,
   ): CreateSourcingLocationDto {
     const sourcingLocationDto: CreateSourcingLocationDto =
       new CreateSourcingLocationDto();
@@ -354,7 +358,9 @@ export class SourcingRecordsDtoProcessorService {
         ? undefined
         : parseFloat(sourcingLocationData.location_longitude_input);
     sourcingLocationDto.metadata = sourcingLocationData.metadata;
-    sourcingLocationDto.sourcingLocationGroupId = sourcingLocationGroupId;
+    sourcingLocationDto.sourcingLocationGroupId = !sourcingLocationGroupId
+      ? undefined
+      : sourcingLocationGroupId;
     sourcingLocationDto.businessUnitId =
       sourcingLocationData['business_unit.path'];
     sourcingLocationDto.materialId = sourcingLocationData['material.hsCode'];
@@ -387,8 +393,8 @@ export class SourcingRecordsDtoProcessorService {
     }[] = [];
 
     for (const [index, dto] of nonEmptyData.entries()) {
-      const objectToValidate: SourcingDataFromExcelDto = plainToClass(
-        SourcingDataFromExcelDto,
+      const objectToValidate: SourcingDataExcelValidator = plainToClass(
+        SourcingDataExcelValidator,
         dto,
       );
 

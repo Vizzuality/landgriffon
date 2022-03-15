@@ -11,6 +11,7 @@ import { Logger, NotFoundException } from '@nestjs/common';
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
+import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 
 export class ImpactTableData {
   year: number;
@@ -218,7 +219,9 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       this.logger.error(
         `Error querying data from DB to calculate Indicator Records: ${err.message}`,
       );
-      return [];
+      throw new MissingH3DataError(
+        `Could net retrieve Indicator Raw data from Sourcing Locations: ${err}`,
+      );
     }
   }
 }

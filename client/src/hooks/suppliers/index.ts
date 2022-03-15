@@ -24,7 +24,7 @@ export function useSuppliers(): ResponseData {
       apiService
         .request({
           method: 'GET',
-          url: 'impact/suppliers',
+          url: 'suppliers',
         })
         .then(({ data: responseData }) => responseData.data),
     {

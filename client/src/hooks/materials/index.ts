@@ -24,7 +24,7 @@ export function useMaterials(): ResponseData {
       apiService
         .request({
           method: 'GET',
-          url: 'impact/materials',
+          url: 'materials',
         })
         .then(({ data: responseData }) => responseData.data),
     {

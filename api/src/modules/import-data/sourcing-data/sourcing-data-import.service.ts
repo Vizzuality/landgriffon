@@ -109,7 +109,7 @@ export class SourcingDataImportService {
           dtoMatchedData.sourcingData,
         );
 
-      // TODO: TBD What to do when there is some location where we cannot determine it's admin-region: i.e coordinates
+      // TODO: TBD What to do when there is some location where we cannot determine its admin-region: i.e coordinates
       //       in the middle of the sea
       const geoCodedSourcingData: SourcingData[] =
         await this.geoCodingService.geoCodeLocations(
@@ -122,7 +122,7 @@ export class SourcingDataImportService {
 
       // TODO: Current approach calculates Impact for all Sourcing Records present in the DB
       //       Getting H3 data for calculations is done within DB so we need to improve the error handling
-      //       TBD: What to when is no H3 for a Material
+      //       TBD: What to do when there is no H3 for a Material
       try {
         await this.indicatorRecordsService.createIndicatorRecordsForAllSourcingRecords();
         this.logger.log('Indicator Records generated');

@@ -24,7 +24,6 @@ const GowthForm: FC = () => {
   const businessUnities = ['business1', 'business2', 'business3'];
   const growthRates = ['growth1', 'growth2', 'growth3'];
 
-  // const { data: materials, isLoading: isLoadingMaterials } = useMaterials();
   // const { data: businesses, isLoading: isLoadingBusinesses } = useBusinesses();
   // const { data: supliers, isLoading: isLoadingSupliers } = useSupliers();
   // const { data: sourcingRegions, isLoading: isLoadingSourcingRegions } = useSourcingRegions();

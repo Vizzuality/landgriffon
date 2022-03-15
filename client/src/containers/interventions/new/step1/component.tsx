@@ -18,13 +18,14 @@ import OriginRegions from 'containers/analysis-visualization/analysis-filters/or
 import type { SelectOptions, SelectOption } from 'components/select/types';
 import type { AnalysisFiltersState } from 'store/features/analysis/filters';
 
+import type { RegisterForm } from 'containers/interventions/new/types';
 //import type { AnalysisState } from 'store/features/analysis';
 import { useInterventionTypes } from 'hooks/analysis';
 
 const businesses = ['business1', 'business2', 'business3'];
 const yearCompletions = [2001, 2015, 2020];
 
-const Step1: FC = () => {
+const Step1: FC<RegisterForm> = ({ register }: RegisterForm) => {
   const dispatch = useAppDispatch();
   //const [isOpen, setIsOpen] = useState<boolean>(false);
   const interventionTypes = useInterventionTypes();
@@ -131,11 +132,11 @@ const Step1: FC = () => {
           </Label>
           <div className="mt-1">
             <Textarea
+              {...register('interventionDescription')}
               id="intervention_description"
               name="intervention_description"
               rows={3}
               className="w-full"
-              defaultValue=""
             />
           </div>
         </div>
@@ -145,6 +146,7 @@ const Step1: FC = () => {
         <p className="font-medium leading-5 text-sm">Apply intervention to:</p>
         <div className="flex items-center text-green-700 space-x-2">
           <Input
+            {...register('percentage')}
             type="number"
             name="percentage"
             id="percentage"
@@ -160,6 +162,7 @@ const Step1: FC = () => {
           <span className="text-gray-700 font-medium">of</span>
           <div className="font-bold">
             <Materials
+              {...register('material')}
               multiple
               withSourcingLocations
               current={filters.materials}

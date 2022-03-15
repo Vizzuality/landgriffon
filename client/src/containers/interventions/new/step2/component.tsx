@@ -8,17 +8,17 @@ import SupplierImpact from './supplier-impact';
 
 import { analysisFilters } from 'store/features/analysis/filters';
 
-const Step2: FC = () => {
+const Step2: FC = ({ register }) => {
   const filters = useAppSelector(analysisFilters);
   const { interventionType } = filters;
 
   return (
     <>
-      {interventionType === 'new-supplier-location' && <Material />}
+      {interventionType === 'new-supplier-location' && <Material register={register} />}
       {(interventionType === 'new-supplier-location' || interventionType === 'new-material') && (
-        <Supplier />
+        <Supplier register={register} />
       )}
-      <SupplierImpact />
+      <SupplierImpact register={register} />
     </>
   );
 };

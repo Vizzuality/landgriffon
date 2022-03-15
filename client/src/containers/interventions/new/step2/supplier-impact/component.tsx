@@ -1,18 +1,12 @@
-import { useMemo, useCallback, useState, FC } from 'react';
+import { useMemo, useState, FC } from 'react';
 
 // components
 import Checkbox from 'components/forms/checkbox';
 import Input from 'components/forms/input';
 import Label from 'components/forms/label';
 
-// types
-import { setFilter } from 'store/features/analysis/filters';
-
 // containers
 import InfoTooltip from 'containers/info-tooltip';
-
-// utils
-import { NUMBER_FORMAT } from 'containers/analysis-visualization/constants';
 
 interface Indicator {
   name: string;
@@ -23,7 +17,7 @@ interface Indicator {
   unit: string;
 }
 
-const Step2: FC = () => {
+const SuppliersImpact: FC = ({ register }) => {
   const [landgriffonEstimates, setLandgriffonEstimates] = useState(false);
   // const { data: indicators, isFetching, isFetched, error } = useIndicators();
 
@@ -32,15 +26,16 @@ const Step2: FC = () => {
       {
         description:
           'The different terrestrial ecosystems play an important role storing carbon on the below-ground plant organic matter and soil. Particularly forest, through growth of trees and the increase of soil carbon, contain a large part of the carbon stored on land.\n\nActivities such us land use change or deforestation may affect carbon storage producing a disturbance of the carbon pools that may be released into the atmosphere.\n\nCarbon emissions due to land use change would therefore be the release of carbon into the atmosphere driven by the change from forest into a specific agriculture commodity.',
-        id: 'c71eb531-2c8e-40d2-ae49-1049543be4d1',
+        // id: 'c71eb531-2c8e-40d2-ae49-1049543be4d1',
         metadata: {},
         name: 'Carbon emissions',
+        id: 'carbonEmissions',
         value: 0,
         unit: 'tCO2e',
       },
       {
         description: 'Deforestation risk due to ...',
-        id: '',
+        id: 'deforestationRisk',
         metadata: {},
         name: 'Deforestation risk',
         value: 0,
@@ -48,7 +43,8 @@ const Step2: FC = () => {
       },
       {
         description: 'With the Unsustainable water use indicator...',
-        id: 'e2c00251-fe31-4330-8c38-604535d795dc',
+        // id: 'e2c00251-fe31-4330-8c38-604535d795dc',
+        id: 'waterWithdrawal',
         metadata: {},
         name: 'Water withdrawal',
         value: 0,
@@ -56,7 +52,8 @@ const Step2: FC = () => {
       },
       {
         description: 'Land use and land use change...',
-        id: '0594aba7-70a5-460c-9b58-fc1802d264ea',
+        // id: '0594aba7-70a5-460c-9b58-fc1802d264ea',
+        id: 'biodiversityImpact',
         metadata: {},
         name: 'Biodiversity impact',
         value: 0,
@@ -65,13 +62,6 @@ const Step2: FC = () => {
     ],
     [],
   );
-
-  const handleChange = useCallback((key: string, value: number) => {
-    setFilter({
-      id: key,
-      value: NUMBER_FORMAT(value),
-    });
-  }, []);
 
   const indicatorsValues = () =>
     data.reduce(
@@ -108,14 +98,14 @@ const Step2: FC = () => {
                 {indicator.name}
               </Label>
               <Input
+                {...register(indicator.id)}
+                id={indicator.id}
                 type="number"
                 name={indicator.name}
-                id={indicator.name}
                 unit={indicator.unit}
-                defaultValue={landgriffonEstimates ? indicator.value : ''}
-                value={landgriffonEstimates ? indicator.value : indicatorsValues[indicator.name]}
-                disabled={landgriffonEstimates}
-                onChange={(e) => handleChange(indicator.name, Number(e?.target?.value))}
+                defaultValue={!!landgriffonEstimates ? indicator.value : 0}
+                value={!!landgriffonEstimates ? indicator.value : indicatorsValues[indicator.name]}
+                disabled={!!landgriffonEstimates}
               />
             </div>
           ))}
@@ -125,4 +115,4 @@ const Step2: FC = () => {
   );
 };
 
-export default Step2;
+export default SuppliersImpact;

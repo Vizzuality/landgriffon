@@ -1,11 +1,16 @@
 import { useCallback, useMemo, FC } from 'react';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { setSubContentCollapsed } from 'store/features/analysis/ui';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import { scenarios, setNewInterventionStep } from 'store/features/analysis/scenarios';
 import { analysisFilters } from 'store/features/analysis/filters';
 
 import Steps from 'components/steps';
 import Button from 'components/button';
+
+import { isEmpty } from 'lodash';
 
 import type { Step } from 'components/steps/types';
 
@@ -58,6 +63,51 @@ const InterventionForm: FC = () => {
   const { interventionsStep } = useAppSelector(scenarios);
   const { interventionType } = filters;
 
+  const getSchemaValidation = (interventionType) => {
+    let value;
+    switch (interventionType) {
+      case 'new-supplier-location':
+        value = yup.object({
+          // step1
+          interventionDescription: yup.string(),
+          percentage: yup.number().required(),
+          // step 2 - supplier
+          address: yup.string().required(),
+        });
+        break;
+      case 'production-efficiency':
+        value = yup.object({
+          // step1
+          interventionDescription: yup.string(),
+          percentage: yup.number().required(),
+          // step 2 - supplier impact
+          carbonEmissions: yup.number().required(),
+          deforestationRisk: yup.number().required(),
+          waterWithdrawal: yup.number().required(),
+          biodiversityImpact: yup.number().required(),
+        });
+        break;
+      default:
+        value = yup.object({
+          // step1
+          interventionDescription: yup.string(),
+          percentage: yup.number().required(),
+          materialTons: yup.number().required(),
+        });
+    }
+    return value;
+  };
+
+  const schemaValidation = useMemo(() => getSchemaValidation(interventionType), [interventionType]);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schemaValidation),
+  });
+
   const steps = useMemo(() => [STEP1, STEPS2[interventionType]], [interventionType]);
 
   const handleCancel = useCallback(() => {
@@ -69,32 +119,50 @@ const InterventionForm: FC = () => {
     dispatch(setNewInterventionStep(2));
   }, [dispatch]);
 
-  const handleIntervention = useCallback(() => {
-    dispatch(setSubContentCollapsed(true));
-  }, [dispatch]);
+  const handleIntervention = useCallback(
+    (data) => {
+    console.log(data, 'data')
+      dispatch(setSubContentCollapsed(true));
+    },
+    [dispatch],
+  );
 
+  const interventionErrors = useMemo(
+    () => schemaValidation && isEmpty(errors),
+    [errors, schemaValidation],
+  );
+
+  console.log(interventionErrors, errors, 'interventionErrors')
   return (
     <>
       <Steps steps={steps} current={interventionsStep} className="mb-10 z-20" />
-      <form className="space-y-8">
-        {interventionsStep === 1 && <Step1 />}
-        {interventionsStep === 2 && <Step2 />}
+      <form
+        id="newInterventionForm"
+        className="space-y-8"
+        onSubmit={handleSubmit(handleIntervention)}
+      >
+        {interventionsStep === 1 && <Step1 register={register} />}
+        {interventionsStep === 2 && <Step2 register={register} />}
         <div className="pt-5">
           <div className="flex justify-end">
             <Button type="button" onClick={handleCancel} theme="secondary">
               Cancel
             </Button>
             {interventionsStep === 1 && (
-              <Button type="button" className="ml-3" onClick={handleContinue}>
+              <Button
+                disabled={!isEmpty(errors)}
+                type="button"
+                className="ml-3"
+                onClick={handleContinue}
+              >
                 Continue
               </Button>
             )}
             {interventionsStep === 2 && (
               <Button
-                // type="button"
                 type="submit"
                 className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                onClick={handleIntervention}
+                disabled={!interventionErrors}
               >
                 Add intervention
               </Button>

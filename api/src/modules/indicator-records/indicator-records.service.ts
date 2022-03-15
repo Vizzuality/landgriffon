@@ -364,7 +364,7 @@ export class IndicatorRecordsService extends AppBaseService<
       );
     } else {
       const materialH3Data: MaterialToH3 | undefined =
-        await this.materialsToH3sService.findOne(materialId);
+        await this.materialsToH3sService.findOne({ where: { materialId } });
       if (!materialH3Data) {
         throw new MissingH3DataError(
           `No H3 Data required for calculate Impact for Material with ID: ${materialId}`,

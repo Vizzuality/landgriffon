@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  Max,
   Min,
   MinLength,
   Validate,
@@ -15,6 +16,8 @@ import { LocationAddressInputValidator } from 'modules/import-data/sourcing-data
 import { LocationLatitudeInputValidator } from 'modules/import-data/sourcing-data/validators/latitude-input.custom.validator';
 import { LocationLongitudeInputValidator } from 'modules/import-data/sourcing-data/validators/longitude-input.custom.validator';
 import { Type } from 'class-transformer';
+
+const MAX_INT32_VALUE = 2147483647;
 
 export class SourcingDataExcelValidator {
   @IsNotEmpty({
@@ -73,6 +76,7 @@ export class SourcingDataExcelValidator {
 class SourcingRecordExcelValidator {
   @IsNumber()
   @Min(0)
+  @Max(MAX_INT32_VALUE)
   tonnage: number;
 
   @IsNumber()

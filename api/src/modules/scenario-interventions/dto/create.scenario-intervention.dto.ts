@@ -22,8 +22,8 @@ export class CreateScenarioInterventionDto {
   @MinLength(2)
   @MaxLength(40)
   @ApiProperty({
-    description: 'Title of the intervention',
-    type: 'string',
+    description: 'Title of the Intervention',
+    type: String,
     example: 'Replace cotton',
   })
   title!: string;
@@ -31,8 +31,8 @@ export class CreateScenarioInterventionDto {
   @IsString()
   @IsOptional()
   @ApiPropertyOptional({
-    description: 'Brief description of the intervention',
-    type: 'string',
+    description: 'Brief description of the Intervention',
+    type: String,
     example: 'This intervention will replace cotton for wool',
   })
   description?: string;
@@ -41,7 +41,7 @@ export class CreateScenarioInterventionDto {
   @IsNotEmpty()
   @IsEnum(Object.values(SCENARIO_INTERVENTION_TYPE))
   @ApiProperty({
-    description: 'Type of the intervention',
+    description: 'Type of the Intervention',
     enum: Object.values(SCENARIO_INTERVENTION_TYPE),
     example: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
   })
@@ -50,8 +50,8 @@ export class CreateScenarioInterventionDto {
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
-    description: 'Start year of the intervention',
-    type: 'number',
+    description: 'Start year of the Intervention',
+    type: Number,
     example: 2022,
   })
   startYear!: number;
@@ -59,8 +59,8 @@ export class CreateScenarioInterventionDto {
   @IsNumber()
   @IsOptional()
   @ApiPropertyOptional({
-    description: 'End year of the intervention',
-    type: 'number',
+    description: 'End year of the Intervention',
+    type: Number,
     example: 2025,
   })
   endYear?: number;
@@ -70,7 +70,7 @@ export class CreateScenarioInterventionDto {
   @ApiProperty({
     description:
       'Percentage of the chosen sourcing records affected by intervention',
-    type: 'number',
+    type: Number,
     example: 50,
   })
   percentage!: number;
@@ -87,8 +87,8 @@ export class CreateScenarioInterventionDto {
   @IsUUID(4, { each: true })
   @IsNotEmpty()
   @ApiProperty({
-    type: [String],
     description: 'Ids of Materials that will be affected by intervention',
+    type: [String],
     example: 'bc5e4933-cd9a-4afc-bd53-56941b816ef3',
   })
   materialsIds!: string[];
@@ -96,8 +96,8 @@ export class CreateScenarioInterventionDto {
   @IsUUID(4, { each: true })
   @IsNotEmpty()
   @ApiPropertyOptional({
-    type: [String],
     description: 'Ids of Business Units that will be affected by intervention',
+    type: [String],
     example: 'bc5e4933-cd9a-4afc-bd53-56941b812345',
   })
   businessUnitsIds!: string[];
@@ -105,9 +105,9 @@ export class CreateScenarioInterventionDto {
   @IsUUID(4, { each: true })
   @IsNotEmpty()
   @ApiProperty({
-    type: [String],
     description:
       'Ids of Suppliers or Producers that will be affected by intervention',
+    type: [String],
     example: 'bc5e4933-cd9a-4afc-bd53-56941b865432',
   })
   suppliersIds!: string[];
@@ -115,8 +115,8 @@ export class CreateScenarioInterventionDto {
   @IsUUID(4, { each: true })
   @IsOptional()
   @ApiProperty({
-    type: [String],
     description: 'Ids of Admin Regions that will be affected by intervention',
+    type: [String],
     example: 'bc5e4933-cd9a-4afc-bd53-56941b8adca3',
   })
   adminRegionsIds?: string[];
@@ -136,8 +136,8 @@ export class CreateScenarioInterventionDto {
   @IsUUID()
   @IsOptional()
   @ApiPropertyOptional({
-    type: String,
     description: `Id of the New Supplier`,
+    type: String,
     example: 'bc5e4933-cd9a-4afc-bd53-56941b8adc111',
   })
   newT1SupplierId?: string;
@@ -145,8 +145,8 @@ export class CreateScenarioInterventionDto {
   @IsUUID()
   @IsOptional()
   @ApiPropertyOptional({
-    type: String,
     description: `Id of the New Producer`,
+    type: String,
     example: 'bc5e4933-cd9a-4afc-bd53-56941b8adc222',
   })
   newProducerId?: string;
@@ -186,9 +186,9 @@ export class CreateScenarioInterventionDto {
   @ApiPropertyOptional({
     description: `
     New Supplier Location address, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER} 
-    and New Supplier Locations of type: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT}. 
+    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT}. 
     
-    Must be empty for New Supplier Locations of type: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}
+    Must be NULL for New Supplier Locations of types: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}
     or if coordinates are provided for the relevant location types`,
     type: String,
     example: 'Main Street, 1',
@@ -198,9 +198,9 @@ export class CreateScenarioInterventionDto {
   @ApiPropertyOptional({
     description: `
     New Supplier Location latitude, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER} 
-    and New Supplier Locations of type: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT}. 
+    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT}. 
     
-    Must be empty for New Supplier Locations of type: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}
+    Must be NULL for New Supplier Locations of types: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}
     or if address is provided for the relevant location types.`,
     type: Number,
     minimum: -90,
@@ -211,10 +211,10 @@ export class CreateScenarioInterventionDto {
 
   @ApiPropertyOptional({
     description: `
-    New Supplier Location latitude, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER} 
-    and New Supplier Locations of type: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT}. 
+    New Supplier Location longitude, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER} 
+    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT}. 
     
-    Must be empty for New Supplier Locations of type: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}
+    Must be NULL for New Supplier Locations of type: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}
     or if address is provided for the relevant location types.`,
     type: Number,
     minimum: -180,
@@ -232,8 +232,8 @@ export class CreateScenarioInterventionDto {
   })
   @IsUUID()
   @ApiPropertyOptional({
-    type: String,
     description: `Id of the New Material, is required if Intervention type is ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}`,
+    type: String,
     example: 'bc5e4933-cd9a-4afc-bd53-56941b8adc444',
   })
   newMaterialId?: string;

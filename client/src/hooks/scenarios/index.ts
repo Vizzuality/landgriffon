@@ -1,6 +1,11 @@
 import { useMemo } from 'react';
-import { useQuery, UseQueryResult, UseQueryOptions, useMutation } from 'react-query';
-import { useQueryClient } from 'react-query';
+import {
+  useQuery,
+  useQueryClient,
+  UseQueryResult,
+  UseQueryOptions,
+  useMutation,
+} from 'react-query';
 
 import { apiService } from 'services/api';
 import type { Scenario } from 'containers/scenarios/types';

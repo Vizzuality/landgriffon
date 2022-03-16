@@ -3,7 +3,7 @@ import { AlertsItemProps } from 'components/alerts';
 export type UserProfilePayload = {
   fname?: string;
   lname?: string;
-  email?: string;
+  email: string;
   password?: string;
 };
 

@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import Link from 'next/link';
 import { createPortal } from 'react-dom';
 import { signOut, useSession } from 'next-auth/react';
 import { Popover } from '@headlessui/react';
@@ -65,9 +66,9 @@ const UserDropdown: React.FC = () => {
             </div>
 
             <div>
-              <a href="#" className={MENU_ITEM_CLASSNAME}>
-                Edit Profile
-              </a>
+              <Link href="/profile">
+                <a className={MENU_ITEM_CLASSNAME}>Edit Profile</a>
+              </Link>
             </div>
 
             <div>

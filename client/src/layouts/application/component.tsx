@@ -1,5 +1,6 @@
 import Sidebar from 'containers/sidebar';
 import HeaderMobile from 'containers/mobile-header';
+import { Toaster } from 'react-hot-toast';
 
 type ApplicationLayoutProps = {
   children: React.ReactNode;
@@ -21,6 +22,8 @@ const ApplicationLayout: React.FC<ApplicationLayoutProps> = (props: ApplicationL
           {children}
         </main>
       </div>
+
+      <Toaster position="bottom-center" />
     </div>
   );
 };

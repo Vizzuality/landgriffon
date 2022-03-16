@@ -1,8 +1,6 @@
 import React, { Fragment, useCallback, useEffect, useState, useMemo } from 'react';
 import classNames from 'classnames';
 
-import { flatten } from 'lodash';
-
 import { Popover, Transition } from '@headlessui/react';
 import { FilterIcon } from '@heroicons/react/solid';
 
@@ -54,16 +52,9 @@ const MoreFilters: React.FC = () => {
   const handleChangeFilter = useCallback(
     // only save ids on store
     (key, values) => {
-      const childrenIds = values.map((v) => {
-        if (!!v?.children) {
-          return v.children;
-        }
-        return v;
-      });
-
       setMoreFilters({
         ...moreFilters,
-        [key]: flatten(childrenIds),
+        [key]: values,
       } as AnalysisFiltersState);
     },
     [moreFilters],

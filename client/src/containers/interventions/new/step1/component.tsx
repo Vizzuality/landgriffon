@@ -1,9 +1,7 @@
 import { useCallback, useMemo, useState, FC } from 'react';
 
-import { flatten } from 'lodash';
 // hooks
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-
 import { setFilter, analysisFilters } from 'store/features/analysis/filters';
 
 // components
@@ -55,16 +53,9 @@ const Step1: FC = () => {
   const handleChangeFilter = useCallback(
     // only save ids on store
     (key, values) => {
-      const childrenIds = values.map((v) => {
-        if (!!v?.children) {
-          return v.children;
-        }
-        return v;
-      });
-
       setMoreFilters({
         ...moreFilters,
-        [key]: flatten(childrenIds),
+        [key]: values,
       } as AnalysisFiltersState);
     },
     [moreFilters],

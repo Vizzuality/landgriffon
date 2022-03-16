@@ -14,6 +14,7 @@ import Fuse from 'fuse.js';
 
 import Badge from 'components/badge';
 import Loading from 'components/loading';
+import { CHECKED_STRATEGIES } from './utils';
 
 import type { TreeSelectProps, TreeSelectOption } from './types';
 
@@ -56,6 +57,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   theme = 'default',
   ellipsis = false,
   fitContent = false,
+  checkedStrategy = 'CHILD', // by default show child
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -109,20 +111,9 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   const handleCheck = useCallback(
     (checkedKeys, info) => {
       const { checkedNodes } = info;
-      // 1. Extracting parents selected
-      const parentsWithChildren = checkedNodes.filter((node) => !!node?.children);
-      // 2. Extracting children ids from parents selected above
-      const childrenWithParents = [];
-      if (parentsWithChildren && parentsWithChildren.length) {
-        parentsWithChildren.forEach(({ children }) =>
-          children.forEach(({ key }) => childrenWithParents.push(key)),
-        );
-      }
-      // 3. Filtering checkedKeys with children ids to not send unnecessary values
-      const filteredValues =
-        childrenWithParents && childrenWithParents.length
-          ? checkedKeys.filter((key) => !childrenWithParents.includes(key))
-          : checkedKeys;
+
+      // Depending of the checked strategy apply different filters
+      const filteredValues = CHECKED_STRATEGIES[checkedStrategy](checkedKeys, checkedNodes);
 
       // TO-DO: this function is repeated
       const checkedOptions = [];
@@ -141,7 +132,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
       if (onChange) onChange(checkedOptions);
       setCheckedKeys(filteredValues);
     },
-    [onChange, options],
+    [checkedStrategy, onChange, options],
   );
 
   // Search capability
@@ -353,6 +344,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           {!loading && (
             <Tree
               autoExpandParent
+              checkStrictly={false}
               checkable={multiple}
               selectable={!multiple}
               multiple={multiple}

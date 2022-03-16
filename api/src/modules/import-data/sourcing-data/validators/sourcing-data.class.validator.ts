@@ -17,7 +17,7 @@ import { LocationLatitudeInputValidator } from 'modules/import-data/sourcing-dat
 import { LocationLongitudeInputValidator } from 'modules/import-data/sourcing-data/validators/longitude-input.custom.validator';
 import { Type } from 'class-transformer';
 
-const MAX_INT32_VALUE = 2147483647;
+const MAX_INT32_VALUE: number = 2147483647;
 
 export class SourcingDataExcelValidator {
   @IsNotEmpty({

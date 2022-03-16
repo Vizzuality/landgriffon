@@ -1,4 +1,5 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect } from 'react';
+import { useDebounce } from '@react-hook/debounce';
 
 import cx from 'classnames';
 import { useRouter } from 'next/router';
@@ -38,10 +39,10 @@ const ScenariosNewContainer: React.FC = () => {
   const { scenarioCurrentTab, currentScenario } = useAppSelector(scenarios);
 
   const { data, isLoading, error } = useScenario(currentScenario as string, { sort: 'title' });
-  const { title } = !isLoading && !error && data;
+  const { title, description } = !isLoading && !error && data;
 
   const { data: interventions } = useInterventions({ sort: query.sortBy as string });
-  const [scenarioNewData, setScenarioNewData] = useState(data);
+  const [scenarioNewData, setScenarioNewData] = useDebounce(data, 250);
 
   const updateScenario = useUpdateScenario();
 
@@ -59,6 +60,12 @@ const ScenariosNewContainer: React.FC = () => {
     );
   }, [updateScenario, data, scenarioNewData]);
 
+  useEffect(() => {
+    if (scenarioNewData !== data) {
+      handleUpdateScenario();
+    }
+  }, [scenarioNewData, data]);
+
   const dispatch = useAppDispatch();
   const handleNewScenarioFeature = useCallback(() => {
     dispatch(setSubContentCollapsed(false));
@@ -68,7 +75,7 @@ const ScenariosNewContainer: React.FC = () => {
 
   return (
     <>
-      <form onSubmit={handleUpdateScenario} className="z-20">
+      <form className="z-20">
         <input
           type="text"
           name="title"
@@ -88,6 +95,7 @@ const ScenariosNewContainer: React.FC = () => {
             name="description"
             rows={3}
             className="w-full"
+            placeholder={description}
             defaultValue=""
             onChange={(e) =>
               setScenarioNewData({ ...scenarioNewData, description: e.currentTarget.value })

@@ -33,7 +33,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
         name: 'offset',
 
         options: {
-          offset: [-120, -20],
+          offset: [-110, -20],
         },
       },
     ],
@@ -131,7 +131,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                           style={styles.popper}
                           {...attributes.popper}
                           static
-                          className="absolute right-0 z-10 w-56 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                          className="z-10 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                         >
                           <div className="py-1">
                             <div>

@@ -13,6 +13,9 @@ WORKDIR_WATER_FOOTPRINT=data/waterFootprint
 WORKDIR_BIODIVERSITY=data/biodiversity
 WORKDIR_CARBON=data/gfw_carbon
 WORKDIR_DEFORESTATION=data/hansen_loss
+WORKDIR_SPECIESRICHNESS=data/satelligence/species_richness
+WORKDIR_ABOVEGROUNDBIOMASS=data/satelligence/above_ground_biomass
+WORKDIR_SATDEFORESTATION=data/satelligence/deforestation
 
 all:
 	make clean
@@ -22,7 +25,7 @@ crop:
 	make -j 2 convert-mapspam-crop-production convert-earthstat-crop-production convert-earthstat-crop-harvest convert-mapspam-crop-harvest convert-cropland convert-pasture
 
 indicators:
-	make -j 2 convert-water-footprint convert-biodiversity convert-carbon
+	make -j 2 convert-water-footprint convert-biodiversity convert-carbon convert-speciesRichness convert-aboveGroundBiomass convert-satDeforestation
 	# Processing deforestation data is quite intensive, so we do it separately, so we can allocate all threads to it
 		# There is probably a better way to do this, that future me will learn about - in the future.
 	make convert-deforestation
@@ -311,6 +314,59 @@ rasterize-pasture: preprocess-pasture
 
 convert-pasture: rasterize-pasture
 	python tiff_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/FAOSTATS h3_grid_pasture_production production es 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+
+##################################
+#        Satelligence data       #
+##################################
+
+# Species richness:
+# download species richness data from satelligence bucket
+#rasterize-biodiversity
+download-speciesRichness:
+	mkdir -p $(WORKDIR_SPECIESRICHNESS)
+	wget -q -O $(WORKDIR_SPECIESRICHNESS)/SpeciesRichness_IDN_2021-01-01-2022-01-01.tif https://storage.googleapis.com/s11-landgriffon-data/v0/SpeciesRichness/SpeciesRichness_IDN_2021-01-01-2022-01-01.tif
+
+# upsampling data from 30m resolution to 10km resolution using gdal warp
+#¶esampling method used based on data number of species per area - sum: compute the weighted sum of all non-NODATA contributing pixels (since GDAL 3.1)
+# for more information regarding resampling methods please visit: https://gdal.org/programs/gdalwarp.html
+preprocess-speciesRichness: download-speciesRichness
+	gdalwarp -s_srs EPSG:4326 -t_srs EPSG:4326 -dstnodata 0.0 -tr 0.0833333333333286 0.0833333333333286 -r sum -te 94.918029685 2.146125243 98.479926218 5.963450309 -te_srs EPSG:4326 -multi -of GTiff \
+	"$(WORKDIR_SPECIESRICHNESS)/SpeciesRichness_IDN_2021-01-01-2022-01-01.tif" "$(WORKDIR_SPECIESRICHNESS)/SpeciesRichness_IDN_10km_count.tif";\
+	rm -f "$(WORKDIR_SPECIESRICHNESS)/SpeciesRichness_IDN_2021-01-01-2022-01-01.tif"
+
+#to update with the reference of a new satelligence indicator
+convert-speciesRichness: preprocess-speciesRichness
+	python tiff_folder_to_h3_table.py $(WORKDIR_SPECIESRICHNESS)/ h3_grid_speciesrichness_idn_count indicator BL_LUC_T 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+
+# Above ground biomass
+download-aboveGroundBiomass:
+	mkdir -p $(WORKDIR_ABOVEGROUNDBIOMASS)
+	wget -q -O $(WORKDIR_ABOVEGROUNDBIOMASS)/AboveGroundBiomass_GLO_2001-01-01-2002-01-01.tif https://storage.googleapis.com/s11-landgriffon-data/v0/AboveGroundBiomass/AboveGroundBiomass_GLO_2001-01-01-2002-01-01.tif
+
+preprocess-aboveGroundBiomass: download-aboveGroundBiomass
+	gdalwarp -s_srs EPSG:4326 -t_srs EPSG:4326 -dstnodata 0.0 -tr 0.0833333333333286 0.0833333333333286 -r sum -te 94.918029685 2.146125243 98.479926218 5.963450309 -te_srs EPSG:4326 -multi -of GTiff \
+	"$(WORKDIR_ABOVEGROUNDBIOMASS)/AboveGroundBiomass_GLO_2001-01-01-2002-01-01.tif" "$(WORKDIR_ABOVEGROUNDBIOMASS)/AboveGroundBiomass_GLO_2001_2002_10km.tif";\
+	rm -f "$(WORKDIR_ABOVEGROUNDBIOMASS)/AboveGroundBiomass_GLO_2001-01-01-2002-01-01.tif"
+
+#to update with the reference of a new satelligence indicator
+convert-aboveGroundBiomass: preprocess-aboveGroundBiomass
+	python tiff_folder_to_h3_table.py $(WORKDIR_ABOVEGROUNDBIOMASS)/ h3_grid_abovegroundbiomass_glo_tha indicator GHG_LUC_T 2001 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+
+# Satelligence deforestation
+download-satDeforestation:
+	mkdir -p $(WORKDIR_SATDEFORESTATION)
+	wget -q -O $(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01.tif https://storage.googleapis.com/s11-landgriffon-data/v0/Deforestation/Deforestation_IDN_2021-01-01-2022-01-01.tif
+
+#resampling method we select max to get the most recent deforestation year
+# change to fraction deforested as right now we are overstimating deforestation -- deforested_count/total_count
+preprocess-satDeforestation: download-satDeforestation
+	gdalwarp -s_srs EPSG:4326 -t_srs EPSG:4326 -dstnodata 0.0 -tr 0.0833333333333286 0.0833333333333286 -r max -te 94.918029685 2.146125243 98.479926218 5.963450309 -te_srs EPSG:4326 -multi -of GTiff \
+	"$(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01.tif" "$(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021_2022.tif";\
+	rm -f "$(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01.tif"
+
+#to update with the reference of a new satelligence indicator
+convert-satDeforestation: preprocess-satDeforestation
+	python tiff_folder_to_h3_table.py $(WORKDIR_SATDEFORESTATION)/ h3_grid_deforestation_ind_year indicator DF_LUC_T 2001 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 clean:
 	rm -rf data/*

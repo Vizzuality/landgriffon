@@ -456,15 +456,17 @@ export class IndicatorRecordsService extends AppBaseService<
       sourcingRecordData.sourcingRecordId;
     calculatedIndicatorValues.production = sourcingRecordData.production;
     calculatedIndicatorValues.landPerTon =
-      sourcingRecordData.harvestedArea / sourcingRecordData.production;
+      sourcingRecordData.harvestedArea / sourcingRecordData.production || 0;
     calculatedIndicatorValues.deforestationPerHarvestedAreaLandUse =
-      sourcingRecordData.rawDeforestation / sourcingRecordData.harvestedArea;
+      sourcingRecordData.rawDeforestation / sourcingRecordData.harvestedArea ||
+      0;
     calculatedIndicatorValues.biodiversityLossPerHarvestedAreaLandUse =
-      sourcingRecordData.rawBiodiversity / sourcingRecordData.harvestedArea;
+      sourcingRecordData.rawBiodiversity / sourcingRecordData.harvestedArea ||
+      0;
     calculatedIndicatorValues.carbonLossPerHarvestedAreaLandUse =
-      sourcingRecordData.rawCarbon / sourcingRecordData.harvestedArea;
+      sourcingRecordData.rawCarbon / sourcingRecordData.harvestedArea || 0;
     calculatedIndicatorValues.landUse =
-      calculatedIndicatorValues.landPerTon * sourcingRecordData.tonnage;
+      calculatedIndicatorValues.landPerTon * sourcingRecordData.tonnage || 0;
 
     calculatedIndicatorValues[INDICATOR_TYPES.DEFORESTATION] =
       calculatedIndicatorValues.deforestationPerHarvestedAreaLandUse *

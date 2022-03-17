@@ -1,81 +1,50 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { isFinite, toNumber } from 'lodash';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { analysisUI } from 'store/features/analysis/ui';
 import { analysisFilters, setFilter } from 'store/features/analysis/filters';
 
 import { useYears } from 'hooks/years';
 
-import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range';
 import Select, { SelectProps } from 'components/select';
 
 const YearsFilter: React.FC = () => {
   const dispatch = useAppDispatch();
-
-  const [years, setYears] = useState<number[]>([]);
-  const { visualizationMode } = useAppSelector(analysisUI);
   const filters = useAppSelector(analysisFilters);
-  const { layer, materials, indicator } = filters;
-  const { data, isLoading } = useYears(layer, materials, indicator);
+  const { layer, materials, indicator, startYear } = filters;
+  const { data: years, isLoading } = useYears(layer, materials, indicator);
 
-  const { startYear, endYear, yearsGap, setYearsRange } = useYearsRange({
-    years: years,
-    yearsGap: 5,
-    // Map mode only makes use of the endYear and will display the Select,
-    // not the YearsRangeFilter.
-    validateRange: visualizationMode !== 'map',
-    ...filters,
-  });
-
-  useEffect(() => {
-    setYears(data);
-  }, [data]);
-
-  useEffect(() => {
-    dispatch(setFilter({ id: 'startYear', value: startYear }));
-    dispatch(setFilter({ id: 'endYear', value: endYear }));
-  }, [startYear, endYear, dispatch]);
-
-  const yearSelectCurrentOption = useMemo(
-    () => ({ label: endYear?.toString(), value: endYear }),
-    [endYear],
-  );
-
-  const yearSelectOptions = useMemo(
+  const yearOptions: SelectProps['options'] = useMemo(
     () => years?.map((year) => ({ label: year.toString(), value: year })),
     [years],
   );
 
-  const handleOnEndYearSearch: SelectProps['onSearch'] = (searchedYear) => {
-    if (!isFinite(toNumber(searchedYear)) || toNumber(searchedYear) <= data[0]) {
-      return;
-    }
+  // Always set a value
+  const yearSelected: SelectProps['current'] = useMemo(
+    () => ({ label: startYear?.toString(), value: startYear }),
+    [startYear],
+  );
 
-    if (!years.includes(toNumber(searchedYear))) {
-      setYears([toNumber(searchedYear), ...data]);
-    }
-  };
+  const handleChange: SelectProps['onChange'] = useCallback(
+    ({ value }) => dispatch(setFilter({ id: 'startYear', value: value })),
+    [dispatch],
+  );
 
-  return visualizationMode === 'map' ? (
+  // Update filters when data changes
+  useEffect(() => {
+    if (years && !isLoading) {
+      dispatch(setFilter({ id: 'startYear', value: years[years.length - 1] }));
+      dispatch(setFilter({ id: 'endYear', value: null }));
+    }
+  }, [dispatch, isLoading, years]);
+
+  return (
     <Select
       loading={isLoading}
-      current={yearSelectCurrentOption}
-      options={yearSelectOptions}
+      current={yearSelected}
+      options={yearOptions}
       placeholder="Year"
       showSearch
-      onChange={({ value }) => setFilter({ id: 'endYear', value: value })}
-    />
-  ) : (
-    <YearsRangeFilter
-      loading={isLoading}
-      startYear={startYear}
-      endYear={endYear}
-      years={years}
-      yearsGap={yearsGap}
-      showEndYearSearch={true}
-      onChange={setYearsRange}
-      onEndYearSearch={handleOnEndYearSearch}
+      onChange={handleChange}
     />
   );
 };

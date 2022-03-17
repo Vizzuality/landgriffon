@@ -46,15 +46,6 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
   const [selected, setSelected] = useState<SelectProps['current']>(current);
   const [searchTerm, setSearchTerm] = useState<string>('');
 
-  useEffect(() => {
-    if (!selected) setSelected(options[0]);
-    if (selected && onChange) onChange(selected);
-  }, [options, selected, onChange]);
-
-  useEffect(() => {
-    if (current && !selected && current !== options[0]) setSelected(current);
-  }, [current, options, selected]);
-
   // Search capability
   const fuse = useMemo(() => new Fuse(options, SEARCH_OPTIONS), [options]);
   const handleSearch = useCallback(
@@ -64,9 +55,7 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
     },
     [onSearch],
   );
-
   const resetSearch = useCallback(() => setSearchTerm(''), []);
-
   const optionsResult: SelectProps['options'] = useMemo(() => {
     if (searchTerm && searchTerm !== '') {
       return fuse.search(searchTerm).map(({ item }) => item);
@@ -74,8 +63,22 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
     return options;
   }, [fuse, options, searchTerm]);
 
+  // On change
+  const handleChange = useCallback(
+    (currentOption) => {
+      if (onChange) onChange(currentOption);
+      setSelected(currentOption);
+    },
+    [onChange],
+  );
+
+  // Update selected when current prop changes
+  useEffect(() => {
+    setSelected(current);
+  }, [current]);
+
   return (
-    <Listbox value={selected} onChange={setSelected} disabled={disabled}>
+    <Listbox value={current} onChange={handleChange} disabled={disabled}>
       {({ open }) => (
         <>
           <div className={classNames('relative', { 'shadow-sm': theme !== 'default-bordernone' })}>

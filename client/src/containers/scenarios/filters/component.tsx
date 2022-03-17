@@ -1,5 +1,4 @@
 import { FC, Fragment, useCallback, useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { SearchIcon } from '@heroicons/react/solid';
 import { Transition } from '@headlessui/react';
@@ -7,6 +6,9 @@ import { useDebounce } from '@react-hook/debounce';
 
 import classNames from 'classnames';
 import Select from 'components/select';
+import { useAppSelector } from 'store/hooks';
+import { scenarios, setScenarioFilter } from 'store/features/analysis/scenarios';
+import { useDispatch } from 'react-redux';
 
 const SORT_OPTIONS = [
   {
@@ -17,10 +19,6 @@ const SORT_OPTIONS = [
     label: 'Title',
     value: 'title',
   },
-  {
-    label: 'Shared',
-    value: 'shared',
-  },
 ];
 
 const filtersItems = [
@@ -30,18 +28,23 @@ const filtersItems = [
   },
   {
     name: 'My scenarios',
-    filter: 'my-scenarios',
+    filter: 'private',
   },
   {
     name: 'Shared',
-    filter: 'shared',
+    filter: 'public',
   },
 ];
 
 const ScenariosFilters: FC = () => {
+  const dispatch = useDispatch();
+  const handleFilter = useCallback((value) => dispatch(setScenarioFilter(value)), [dispatch]);
+
   const router = useRouter();
+
   const { query } = router;
   const [isSearchEnable, setSearchEnable] = useState(false);
+  const { filter } = useAppSelector(scenarios);
   const [term, setTerm] = useDebounce(null, 250); // wait 250ms before set term
   const toggleSearch = useCallback(() => setSearchEnable(!isSearchEnable), [isSearchEnable]);
   const handleSort = useCallback(
@@ -55,6 +58,7 @@ const ScenariosFilters: FC = () => {
       }),
     [],
   );
+
   const handleSearchByTerm = useCallback((event) => setTerm(event.currentTarget.value), []);
 
   useEffect(() => {
@@ -71,17 +75,8 @@ const ScenariosFilters: FC = () => {
 
   return (
     <div className="flex items-center">
-      <div
-        className={classNames(
-          'relative w-full',
-          isSearchEnable ? 'sm:max-w-[100px]' : 'sm:max-w-[20px]',
-        )}
-      >
-        <button
-          type="button"
-          onClick={toggleSearch}
-          className="absolute top-1/2 transform -translate-y-1/2 left-0"
-        >
+      <div className="relative flex">
+        <button type="button" onClick={toggleSearch} className="realtive">
           <SearchIcon className="w-4 h-4" />
         </button>
         {isSearchEnable && (
@@ -98,7 +93,7 @@ const ScenariosFilters: FC = () => {
               id="search"
               name="search"
               placeholder="Search"
-              className="absolute top-1/2 w-20 transform -translate-y-1/2 left-6 appearance-none text-sm text-green-700 font-bold border-0 border-b-2 border-green-700 px-0 py-0 focus:outline-none focus:border-green-700 focus:ring-0"
+              className="flex-1 appearance-none text-sm text-green-700 font-bold border-0 border-b-2 border-green-700 px-0 py-0 focus:outline-none focus:border-green-700 focus:ring-0 max-w-[86px]"
               type="search"
               onChange={handleSearchByTerm}
             />
@@ -109,23 +104,22 @@ const ScenariosFilters: FC = () => {
       <ul className="relative flex flex-1 space-x-2 ml-3 justify-start whitespace-nowrap items-center">
         {filtersItems.map((item) => (
           <li key={item.filter}>
-            <Link href={{ pathname: '/analysis', query: { ...query, filter: item.filter } }}>
-              <a
-                className={classNames(
-                  'block',
-                  query.filter === item.filter || (!query.filter && item.filter === 'all')
-                    ? 'border-b-2 border-green-700 box-content text-gray-900'
-                    : 'text-gray-500',
-                )}
-              >
-                {item.name}
-              </a>
-            </Link>
+            <button
+              className={classNames(
+                'block',
+                filter === item.filter
+                  ? 'border-b-2 border-green-700 box-content text-gray-900'
+                  : 'text-gray-500',
+              )}
+              onClick={() => handleFilter(item.filter)}
+            >
+              {item.name}
+            </button>
           </li>
         ))}
       </ul>
 
-      <div className="">
+      <div className="absolute right-0 bg-white z-10 pl-5">
         <Select
           theme="default-bordernone"
           current={SORT_OPTIONS[0]}

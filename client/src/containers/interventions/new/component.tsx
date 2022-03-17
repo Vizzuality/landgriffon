@@ -1,11 +1,11 @@
 import { useCallback, useMemo, FC } from 'react';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { analysis } from 'store/features/analysis';
+import { setSubContentCollapsed } from 'store/features/analysis/ui';
+import { scenarios, setNewInterventionStep } from 'store/features/analysis/scenarios';
+import { analysisFilters } from 'store/features/analysis/filters';
 
 import Steps from 'components/steps';
 import Button from 'components/button';
-
-import { setSubContentCollapsed, setNewInterventionStep } from 'store/features/analysis';
 
 import type { Step } from 'components/steps/types';
 
@@ -54,10 +54,9 @@ const STEPS2 = {
 
 const InterventionForm: FC = () => {
   const dispatch = useAppDispatch();
-  const { filters } = useAppSelector(analysis);
+  const filters = useAppSelector(analysisFilters);
+  const { interventionsStep } = useAppSelector(scenarios);
   const { interventionType } = filters;
-  const { interventions } = useAppSelector(analysis);
-  const { step } = interventions;
 
   const steps = useMemo(() => [STEP1, STEPS2[interventionType]], [interventionType]);
 
@@ -76,21 +75,21 @@ const InterventionForm: FC = () => {
 
   return (
     <>
-      <Steps steps={steps} current={step} className="mb-10 z-20" />
+      <Steps steps={steps} current={interventionsStep} className="mb-10 z-20" />
       <form className="space-y-8">
-        {step === 1 && <Step1 />}
-        {step === 2 && <Step2 />}
+        {interventionsStep === 1 && <Step1 />}
+        {interventionsStep === 2 && <Step2 />}
         <div className="pt-5">
           <div className="flex justify-end">
             <Button type="button" onClick={handleCancel} theme="secondary">
               Cancel
             </Button>
-            {step === 1 && (
+            {interventionsStep === 1 && (
               <Button type="button" className="ml-3" onClick={handleContinue}>
                 Continue
               </Button>
             )}
-            {step === 2 && (
+            {interventionsStep === 2 && (
               <Button
                 // type="button"
                 type="submit"

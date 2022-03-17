@@ -1,6 +1,6 @@
 import { useCallback, FC } from 'react';
 import { useAppDispatch } from 'store/hooks';
-import { setSubContentCollapsed } from 'store/features/analysis';
+import { setSubContentCollapsed } from 'store/features/analysis/ui';
 
 import Button from 'components/button';
 

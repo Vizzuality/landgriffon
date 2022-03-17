@@ -20,4 +20,10 @@ export type TreeSelectProps = {
   theme?: 'default' | 'inline-primary';
   ellipsis?: boolean;
   fitContent?: boolean;
+  /**
+   * ALL: show all ids in the values (default by tree-select component)
+   * PARENT: if parent is selected and also all children are selected, only parent id is in the values
+   * CHILD: if parent is selected and also all children are selected, only children ids are in the values
+   */
+  checkedStrategy?: 'ALL' | 'PARENT' | 'CHILD';
 };

@@ -35,8 +35,6 @@ import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.servic
 import { h3BasicFixture } from '../../../e2e/h3-data/mocks/h3-fixtures';
 import { SourcingDataImportService } from 'modules/import-data/sourcing-data/sourcing-data-import.service';
 import { FileService } from 'modules/import-data/file.service';
-import * as fs from 'fs';
-import * as config from 'config';
 let tablesToDrop: string[] = [];
 
 let missingDataFallbackPolicy: string = 'error';
@@ -232,11 +230,7 @@ describe.skip('Sourcing Data import', () => {
     await sourcingDataImportService.importSourcingData(
       __dirname + '/base-dataset.xlsx',
     );
-
-    expect(fs.readdirSync(config.get('fileUploads.storagePath'))).toHaveLength(
-      0,
-    );
-  }, 20000);
+  }, 100000);
 
   test('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (happy case)', async () => {
     const geoRegion: GeoRegion = await createGeoRegion();

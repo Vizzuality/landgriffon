@@ -1,7 +1,7 @@
 import cx from 'classnames';
 
 import { useAppSelector } from 'store/hooks';
-import { analysis } from 'store/features/analysis';
+import { analysisFilters } from 'store/features/analysis/filters';
 
 import { useAnalysisChart } from 'hooks/analysis';
 
@@ -13,7 +13,7 @@ import AreaStacked from 'components/chart/area-stacked';
 import Widget from 'components/widget';
 
 const AnalysisChart: React.FC = () => {
-  const { filters } = useAppSelector(analysis);
+  const filters = useAppSelector(analysisFilters);
 
   const { data: chartData, legend: legendData, isFetching } = useAnalysisChart();
 

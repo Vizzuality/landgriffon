@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEnum,
-  IsJSON,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -10,82 +9,146 @@ import {
   MaxLength,
   MinLength,
   ValidateIf,
+  ValidateNested,
 } from 'class-validator';
 import { SCENARIO_INTERVENTION_TYPE } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
+import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
+import { Type } from 'class-transformer';
 
 export class CreateScenarioInterventionDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(2)
   @MaxLength(40)
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Title of the Intervention',
+    type: String,
+    example: 'Replace cotton',
+  })
   title!: string;
 
   @IsString()
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'Brief description of the Intervention',
+    type: String,
+    example: 'This intervention will replace cotton for wool',
+  })
   description?: string;
 
   @IsString()
   @IsNotEmpty()
   @IsEnum(Object.values(SCENARIO_INTERVENTION_TYPE))
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Type of the Intervention',
+    enum: Object.values(SCENARIO_INTERVENTION_TYPE),
+    example: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+  })
   type!: string;
 
   @IsNumber()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Start year of the Intervention',
+    type: Number,
+    example: 2022,
+  })
   startYear!: number;
 
   @IsNumber()
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'End year of the Intervention',
+    type: Number,
+    example: 2025,
+  })
   endYear?: number;
 
   @IsNumber()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({
+    description:
+      'Percentage of the chosen sourcing records affected by intervention',
+    type: Number,
+    example: 50,
+  })
   percentage!: number;
 
   @IsUUID()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Id of Scenario the intervention belongs to',
+    type: 'uuid',
+    example: 'a15e4933-cd9a-4afc-bd53-56941b816ef3',
+  })
   scenarioId!: string;
 
   @IsUUID(4, { each: true })
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Ids of Materials that will be affected by intervention',
+    type: [String],
+    example: 'bc5e4933-cd9a-4afc-bd53-56941b816ef3',
+  })
   materialsIds!: string[];
 
   @IsUUID(4, { each: true })
   @IsNotEmpty()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'Ids of Business Units that will be affected by intervention',
+    type: [String],
+    example: 'bc5e4933-cd9a-4afc-bd53-56941b812345',
+  })
   businessUnitsIds!: string[];
 
   @IsUUID(4, { each: true })
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({
+    description:
+      'Ids of Suppliers or Producers that will be affected by intervention',
+    type: [String],
+    example: 'bc5e4933-cd9a-4afc-bd53-56941b865432',
+  })
   suppliersIds!: string[];
 
   @IsUUID(4, { each: true })
   @IsOptional()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Ids of Admin Regions that will be affected by intervention',
+    type: [String],
+    example: 'bc5e4933-cd9a-4afc-bd53-56941b8adca3',
+  })
   adminRegionsIds?: string[];
 
-  @IsJSON()
-  @IsNotEmpty()
-  @ApiProperty()
-  newIndicatorCoefficients!: JSON;
+  @IsOptional()
+  @ApiPropertyOptional({
+    type: () => IndicatorCoefficientsDto,
+  })
+  @ValidateIf(
+    (dto: CreateScenarioInterventionDto) =>
+      dto.newIndicatorCoefficients !== null,
+  )
+  @ValidateNested()
+  @Type(() => IndicatorCoefficientsDto)
+  newIndicatorCoefficients?: IndicatorCoefficientsDto;
 
   @IsUUID()
   @IsOptional()
-  @ApiPropertyOptional()
-  newSupplierT1Id?: string;
+  @ApiPropertyOptional({
+    description: `Id of the New Supplier`,
+    type: String,
+    example: 'bc5e4933-cd9a-4afc-bd53-56941b8adc111',
+  })
+  newT1SupplierId?: string;
 
   @IsUUID()
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: `Id of the New Producer`,
+    type: String,
+    example: 'bc5e4933-cd9a-4afc-bd53-56941b8adc222',
+  })
   newProducerId?: string;
 
   @ValidateIf(
@@ -102,41 +165,63 @@ export class CreateScenarioInterventionDto {
       LOCATION_TYPES,
     ).join(', ')}`,
   })
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: `Type of new Supplier Location, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL} and ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER}`,
+    enum: Object.values(LOCATION_TYPES),
+    example: LOCATION_TYPES.POINT_OF_PRODUCTION,
+  })
   newLocationType?: LOCATION_TYPES;
 
-  @ValidateIf(
-    (dto: CreateScenarioInterventionDto) =>
-      (dto.type === SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL ||
-        dto.type === SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER) &&
-      (dto.newLocationType === LOCATION_TYPES.ORIGIN_COUNTRY ||
-        dto.newLocationType === LOCATION_TYPES.COUNTRY_OF_PRODUCTION),
-  )
   @IsNotEmpty({
     message:
-      'New country input is required for the selected intervention and location type',
+      'New Location Country input is required for the selected intervention and location type',
   })
-  @ApiPropertyOptional()
-  newCountryInput?: string;
-
-  @ValidateIf(
-    (dto: CreateScenarioInterventionDto) =>
-      (dto.type === SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL ||
-        dto.type === SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER) &&
-      (dto.newLocationType === LOCATION_TYPES.AGGREGATION_POINT ||
-        dto.newLocationType === LOCATION_TYPES.POINT_OF_PRODUCTION),
-  )
-  @IsNotEmpty({
-    message:
-      'New address or coordinates input is required for the selected intervention and location type',
+  @ApiProperty({
+    description: `New Supplier Location country, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER}`,
+    type: String,
+    example: 'Spain',
   })
-  @ApiPropertyOptional()
-  newAddressInput?: string;
+  newLocationCountryInput!: string;
 
-  @IsUUID()
-  @IsOptional()
-  @ApiPropertyOptional()
-  newGeoRegionId?: string;
+  @ApiPropertyOptional({
+    description: `
+    New Supplier Location address, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER} 
+    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT}. 
+    
+    Must be NULL for New Supplier Locations of types: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}
+    or if coordinates are provided for the relevant location types`,
+    type: String,
+    example: 'Main Street, 1',
+  })
+  newLocationAddressInput?: string;
+
+  @ApiPropertyOptional({
+    description: `
+    New Supplier Location latitude, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER} 
+    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT}. 
+    
+    Must be NULL for New Supplier Locations of types: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}
+    or if address is provided for the relevant location types.`,
+    type: Number,
+    minimum: -90,
+    maximum: 90,
+    example: 30.123,
+  })
+  newLocationLatitude?: number;
+
+  @ApiPropertyOptional({
+    description: `
+    New Supplier Location longitude, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER} 
+    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT}. 
+    
+    Must be NULL for New Supplier Locations of type: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}
+    or if address is provided for the relevant location types.`,
+    type: Number,
+    minimum: -180,
+    maximum: 180,
+    example: 100.123,
+  })
+  newLocationLongitude?: number;
 
   @ValidateIf(
     (dto: CreateScenarioInterventionDto) =>
@@ -146,11 +231,19 @@ export class CreateScenarioInterventionDto {
     message: 'New Material is required for the selected intervention type',
   })
   @IsUUID()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: `Id of the New Material, is required if Intervention type is ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}`,
+    type: String,
+    example: 'bc5e4933-cd9a-4afc-bd53-56941b8adc444',
+  })
   newMaterialId?: string;
 
   @IsNumber()
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    type: Number,
+    description: `New Material tonnage ratio`,
+    example: 0.5,
+  })
   newMaterialTonnageRatio?: number;
 }

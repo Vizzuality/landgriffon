@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import cx from 'classnames';
 import { useRouter } from 'next/router';
@@ -6,7 +6,8 @@ import { useScenario, useUpdateScenario } from 'hooks/scenarios';
 import { useInterventions } from 'hooks/interventions';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { analysis, setScenarioTab, setSubContentCollapsed } from 'store/features/analysis';
+import { setSubContentCollapsed } from 'store/features/analysis/ui';
+import { setScenarioTab, scenarios } from 'store/features/analysis/scenarios';
 
 import Button from 'components/button';
 import InterventionsList from 'containers/interventions/list';
@@ -34,7 +35,7 @@ const ScenariosNewContainer: React.FC = () => {
   const router = useRouter();
   const { query } = router;
 
-  const { scenarioCurrentTab, currentScenario } = useAppSelector(analysis);
+  const { scenarioCurrentTab, currentScenario } = useAppSelector(scenarios);
 
   const { data, isLoading, error } = useScenario(currentScenario as string, { sort: 'title' });
   const { title } = !isLoading && !error && data;
@@ -62,11 +63,6 @@ const ScenariosNewContainer: React.FC = () => {
   const handleNewScenarioFeature = useCallback(() => {
     dispatch(setSubContentCollapsed(false));
   }, [dispatch]);
-
-  const interventionsContent = useMemo(
-    () => scenarioCurrentTab === 'interventions',
-    [scenarioCurrentTab],
-  );
 
   const handleTab = useCallback((step) => dispatch(setScenarioTab(step)), [dispatch]);
 
@@ -106,7 +102,9 @@ const ScenariosNewContainer: React.FC = () => {
               <div className="space-x-2">
                 <button
                   type="button"
-                  className={cx({ 'border-b-2 border-green-700': interventionsContent })}
+                  className={cx({
+                    'border-b-2 border-green-700': scenarioCurrentTab === 'interventions',
+                  })}
                   onClick={() => handleTab('interventions')}
                 >
                   Interventions ({interventions.length})
@@ -114,7 +112,7 @@ const ScenariosNewContainer: React.FC = () => {
 
                 <button
                   type="button"
-                  className={cx({ 'border-b-2 border-green-700': !interventionsContent })}
+                  className={cx({ 'border-b-2 border-green-700': scenarioCurrentTab === 'growth' })}
                   onClick={() => handleTab('growth')}
                 >
                   Growth rates ({items.length})
@@ -126,8 +124,8 @@ const ScenariosNewContainer: React.FC = () => {
               </Button>
             </div>
           </div>
-          {interventionsContent && <InterventionsList items={interventions} />}
-          {!interventionsContent && <GrowthList items={items} />}
+          {scenarioCurrentTab === 'growth' && <InterventionsList items={interventions} />}
+          {scenarioCurrentTab === 'interventions' && <GrowthList items={items} />}
         </div>
       </div>
     </>

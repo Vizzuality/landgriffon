@@ -4,7 +4,7 @@ import chroma from 'chroma-js';
 import { scaleThreshold } from 'd3-scale';
 import store from 'store';
 import { useAppSelector } from 'store/hooks';
-import { analysis } from 'store/features/analysis';
+import { analysisFilters } from 'store/features/analysis/filters';
 import { filtersForH3API } from 'store/features/analysis/selector';
 
 import { apiRawService } from 'services/api';
@@ -51,13 +51,13 @@ const responseParser = (response: AxiosResponse, colors: RGBColor[]): H3APIRespo
 };
 
 export function useColors(): RGBColor[] {
-  const { layer } = useAppSelector(analysis);
+  const { layer } = useAppSelector(analysisFilters);
   const colors = useMemo(() => COLOR_RAMPS[layer].map((color) => chroma(color).rgb()), [layer]);
   return colors;
 }
 
 export function useH3MaterialData(): H3DataResponse {
-  const { layer } = useAppSelector(analysis);
+  const { layer } = useAppSelector(analysisFilters);
   const filters = filtersForH3API(store.getState()) as MaterialH3APIParams;
   const isEnable = !!filters.materialId;
 
@@ -94,7 +94,7 @@ export function useH3MaterialData(): H3DataResponse {
 }
 
 export function useH3RiskData(): H3DataResponse {
-  const { layer } = useAppSelector(analysis);
+  const { layer } = useAppSelector(analysisFilters);
   const filters = filtersForH3API(store.getState()) as RiskH3APIParams;
   const isEnable = !!filters.materialId && !!filters.indicatorId;
 
@@ -131,7 +131,7 @@ export function useH3RiskData(): H3DataResponse {
 }
 
 export function useH3ImpactData(): H3DataResponse {
-  const { layer } = useAppSelector(analysis);
+  const { layer } = useAppSelector(analysisFilters);
   const filters = filtersForH3API(store.getState()) as ImpactH3APIParams;
   const isEnable = !!filters.indicatorId;
 

@@ -30,7 +30,7 @@ const Badge: React.FC<BadgeProps> = ({
     <span
       className={classNames(
         'inline-flex items-center py-0.5 font-medium  text-green-700 overflow-hidden',
-        THEMES[theme].wrapper,
+        THEMES[theme]?.wrapper,
         removable ? 'pl-2 pr-0.5' : 'px-2',
         className,
       )}

@@ -1,6 +1,7 @@
 import { useAppSelector } from 'store/hooks';
-import { analysis } from 'store/features/analysis';
 import classNames from 'classnames';
+
+import { analysisUI } from 'store/features/analysis/ui';
 
 import LayerControl from './layer-control';
 import ModeControl from './mode-control';
@@ -10,7 +11,7 @@ import AnalysisFilters from './analysis-filters';
 import AnalysisTable from './analysis-table';
 
 const AnalysisVisualization: React.FC = () => {
-  const { visualizationMode } = useAppSelector(analysis);
+  const { visualizationMode } = useAppSelector(analysisUI);
 
   return (
     <>

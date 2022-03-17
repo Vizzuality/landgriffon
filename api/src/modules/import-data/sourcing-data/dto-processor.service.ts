@@ -1,4 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  ValidationError,
+} from '@nestjs/common';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
 import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
@@ -8,6 +13,9 @@ import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sou
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { WorkSheet } from 'xlsx';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { SourcingDataExcelValidator } from 'modules/import-data/sourcing-data/validators/sourcing-data.class.validator';
+import { validateOrReject } from 'class-validator';
+import { plainToClass } from 'class-transformer';
 
 /**
  * @debt: Define a more accurate DTO / Interface / Class for API-DB trades
@@ -59,7 +67,7 @@ export class SourcingRecordsDtoProcessorService {
 
   async createDTOsFromSourcingRecordsSheets(
     importData: SourcingRecordsSheets,
-    sourcingLocationGroupId: string,
+    sourcingLocationGroupId?: string,
   ): Promise<SourcingRecordsDtos> {
     this.logger.debug(`Creating DTOs from sourcing records sheets`);
     const materials: CreateMaterialDto[] = await this.createMaterialDtos(
@@ -73,9 +81,14 @@ export class SourcingRecordsDtoProcessorService {
     const adminRegions: CreateAdminRegionDto[] =
       await this.createAdminRegionDtos(importData.countries);
 
-    const processedSourcingData: Record<string, any> = this.cleanCustomData(
-      importData.sourcingData,
-    );
+    const processedSourcingData: Record<string, any> =
+      await this.cleanCustomData(importData.sourcingData);
+
+    /**
+     * Validating parsed and cleaned from Sourcing Data sheet
+     */
+
+    await this.validateCleanData(processedSourcingData.sourcingData);
     /**
      * Builds SourcingData from parsed XLSX
      */
@@ -102,9 +115,9 @@ export class SourcingRecordsDtoProcessorService {
     return regexMatch ? parseInt(regexMatch[0]) : null;
   }
 
-  private cleanCustomData(customData: WorkSheet[]): {
+  private async cleanCustomData(customData: WorkSheet[]): Promise<{
     sourcingData: SourcingData[];
-  } {
+  }> {
     this.logger.debug(`Cleaning ${customData.length} custom data rows`);
     const sourcingData: SourcingData[] = [];
 
@@ -121,6 +134,7 @@ export class SourcingRecordsDtoProcessorService {
      * Separate metadata properties to metadata object common for each sourcing-location row
      * Check if current key contains a year ('2018_tonnage') if so, get the year and its value
      */
+
     for (const eachRecordOfCustomData of nonEmptyData) {
       const sourcingRecords: Record<string, any>[] = [];
       const years: Record<string, any> = {};
@@ -250,7 +264,7 @@ export class SourcingRecordsDtoProcessorService {
    */
   private async createSourcingDataDTOs(
     importData: Record<string, any>[],
-    sourcingLocationGroupId: string,
+    sourcingLocationGroupId?: string,
   ): Promise<SourcingData[]> {
     this.logger.debug(
       `Creating sourcing data DTOs from ${importData.length} data rows`,
@@ -324,7 +338,7 @@ export class SourcingRecordsDtoProcessorService {
 
   private createSourcingLocationDTOFromData(
     sourcingLocationData: Record<string, any>,
-    sourcingLocationGroupId: string,
+    sourcingLocationGroupId?: string,
   ): CreateSourcingLocationDto {
     const sourcingLocationDto: CreateSourcingLocationDto =
       new CreateSourcingLocationDto();
@@ -344,7 +358,9 @@ export class SourcingRecordsDtoProcessorService {
         ? undefined
         : parseFloat(sourcingLocationData.location_longitude_input);
     sourcingLocationDto.metadata = sourcingLocationData.metadata;
-    sourcingLocationDto.sourcingLocationGroupId = sourcingLocationGroupId;
+    sourcingLocationDto.sourcingLocationGroupId = !sourcingLocationGroupId
+      ? undefined
+      : sourcingLocationGroupId;
     sourcingLocationDto.businessUnitId =
       sourcingLocationData['business_unit.path'];
     sourcingLocationDto.materialId = sourcingLocationData['material.hsCode'];
@@ -367,5 +383,46 @@ export class SourcingRecordsDtoProcessorService {
     sourcingRecordDto.tonnage = sourcingRecordData.tonnage;
     sourcingRecordDto.year = sourcingRecordData.year;
     return sourcingRecordDto;
+  }
+
+  private async validateCleanData(nonEmptyData: SourcingData[]): Promise<void> {
+    const excelErrors: {
+      line: number;
+      column: string;
+      errors: { [type: string]: string } | undefined;
+    }[] = [];
+
+    for (const [index, dto] of nonEmptyData.entries()) {
+      const objectToValidate: SourcingDataExcelValidator = plainToClass(
+        SourcingDataExcelValidator,
+        dto,
+      );
+
+      try {
+        await validateOrReject(objectToValidate);
+      } catch (errors: any) {
+        errors.forEach((error: ValidationError) => {
+          if (error.children?.length) {
+            error.children.forEach((nestedError: ValidationError) => {
+              excelErrors.push({
+                line: index + 2,
+                column: nestedError.value.year,
+                errors: nestedError.children?.[0].constraints,
+              });
+            });
+          } else {
+            excelErrors.push({
+              line: index + 2,
+              column: error?.property,
+              errors: error?.constraints,
+            });
+          }
+        });
+      }
+    }
+
+    if (excelErrors.length) {
+      throw new BadRequestException(excelErrors);
+    }
   }
 }

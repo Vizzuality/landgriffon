@@ -73,16 +73,6 @@ resource "kubernetes_deployment" "client_deployment" {
 
           args = ["start:prod"]
 
-          env {
-            name  = "NEXTAUTH_URL"
-            value = var.site_url
-          }
-
-          env {
-            name  = "NEXT_PUBLIC_API_URL"
-            value = var.api_url
-          }
-
           resources {
             limits = {
               cpu    = "1"

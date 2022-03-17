@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
@@ -42,7 +43,7 @@ export const scenarioResource: BaseServiceResource = {
     singular: 'scenarioIntervention',
     plural: 'scenarioInterventions',
   },
-  entitiesAllowedAsIncludes: [],
+  entitiesAllowedAsIncludes: ['scenario'],
   columnsAllowedAsFilter: [],
 };
 
@@ -67,7 +68,7 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   @Column({
     type: 'enum',
     enum: SCENARIO_INTERVENTION_STATUS,
-    default: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+    default: SCENARIO_INTERVENTION_STATUS.ACTIVE,
   })
   status!: SCENARIO_INTERVENTION_STATUS;
 
@@ -91,18 +92,24 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   @Column()
   percentage!: number;
 
-  @Column({ type: 'jsonb' })
+  @Column({ type: 'jsonb', nullable: true })
   @ApiProperty()
   newIndicatorCoefficients!: JSON;
 
-  @ManyToOne(() => Scenario)
+  @ManyToOne(
+    () => Scenario,
+    (scenario: Scenario) => scenario.scenarioInterventions,
+  )
   @ApiProperty({ type: () => Scenario })
+  @JoinColumn({ name: 'scenarioId' })
   scenario!: Scenario;
+
+  @Column({ nullable: false })
+  scenarioId!: string;
 
   /**
    * Relationships with other entities - links of replaced relationships on this intervention
    */
-
   @ManyToMany(() => Material)
   @JoinTable()
   replacedMaterials?: Material[];

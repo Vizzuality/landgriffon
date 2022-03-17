@@ -2,8 +2,7 @@ import { useCallback, useMemo, useState, FC } from 'react';
 
 // hooks
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-
-import { analysis, setFilter } from 'store/features/analysis';
+import { setFilter, analysisFilters } from 'store/features/analysis/filters';
 
 // components
 import Input from 'components/forms/input';
@@ -16,8 +15,10 @@ import Suppliers from 'containers/analysis-visualization/analysis-filters/suppli
 import OriginRegions from 'containers/analysis-visualization/analysis-filters/origin-regions/component';
 
 // types
-import { SelectOptions, SelectOption } from 'components/select/types';
-import type { AnalysisState } from 'store/features/analysis';
+import type { SelectOptions, SelectOption } from 'components/select/types';
+import type { AnalysisFiltersState } from 'store/features/analysis/filters';
+
+//import type { AnalysisState } from 'store/features/analysis';
 import { useInterventionTypes } from 'hooks/analysis';
 
 const businesses = ['business1', 'business2', 'business3'];
@@ -26,17 +27,8 @@ const yearCompletions = [2001, 2015, 2020];
 const Step1: FC = () => {
   const dispatch = useAppDispatch();
   //const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { filters } = useAppSelector(analysis);
   const interventionTypes = useInterventionTypes();
-
-  // const { data: materials, isLoading: isLoadingMaterials } = useMaterials();
-  // const { data: businesses, isLoading: isLoadingBusinesses } = useBusinesses();
-  // const { data: suppliers, isLoading: isLoadingSuppliers } = useSuppliers();
-  // const { data: sourcingRegions, isLoading: isLoadingSourcingRegions } = useSourcingRegions();
-
-  const business = 'business2';
-  const yearCompletion = 2015;
-  const interventionType = '';
+  const filters = useAppSelector(analysisFilters);
 
   const { materials, origins, suppliers } = filters;
   const selectedFilters = useMemo(
@@ -45,6 +37,33 @@ const Step1: FC = () => {
   );
 
   const [moreFilters, setMoreFilters] = useState(selectedFilters);
+  // const { data: sourcingRegions, isLoading: isLoadingSourcingRegions } = useSourcingRegions();
+
+  // const handleApply = useCallback(() => {
+  //   dispatch(
+  //     setFilters({
+  //       materials: moreFilters.materials || INITIAL_FILTERS.materials,
+  //       origins: moreFilters.origins || INITIAL_FILTERS.origins,
+  //       suppliers: moreFilters.suppliers || INITIAL_FILTERS.suppliers,
+  //     } as AnalysisFiltersState),
+  //   );
+  //   // setOpen(false);
+  // }, [dispatch, moreFilters]);
+
+  const handleChangeFilter = useCallback(
+    // only save ids on store
+    (key, values) => {
+      setMoreFilters({
+        ...moreFilters,
+        [key]: values,
+      } as AnalysisFiltersState);
+    },
+    [moreFilters],
+  );
+
+  const business = 'business2';
+  const yearCompletion = 2015;
+  const interventionType = '';
 
   const optionsBusinesses: SelectOptions = useMemo(
     () =>
@@ -91,24 +110,6 @@ const Step1: FC = () => {
   const isLoadingBusinesses = false;
   const isLoadingYearCompletion = false;
   const isLoadingInterventionTypes = false;
-
-  const handleChange = useCallback(
-    (e) => {
-      dispatch(setFilter({ id: 'materials', value: e }));
-    },
-    [dispatch],
-  );
-
-  const handleChangeFilter = useCallback(
-    // only save ids on store
-    (key, values) => {
-      setMoreFilters({
-        ...moreFilters,
-        [key]: values,
-      } as AnalysisState['filters']);
-    },
-    [moreFilters],
-  );
 
   const handleInterventionType = useCallback(
     ({ value }) =>
@@ -162,8 +163,7 @@ const Step1: FC = () => {
               multiple
               withSourcingLocations
               current={filters.materials}
-              // onChange={(values) => handleChangeFilter('materials', values)}
-              onChange={handleChange}
+              onChange={(values) => handleChangeFilter('materials', values)}
               theme="inline-primary"
               ellipsis
             />
@@ -182,15 +182,15 @@ const Step1: FC = () => {
             multiple
             withSourcingLocations
             current={filters.suppliers}
-            // onChange={(values) => handleChangeFilter('suppliers', values)}
+            onChange={(values) => handleChangeFilter('suppliers', values)}
             theme="inline-primary"
           />
           <span className="text-gray-700 font-medium">in</span>
           <OriginRegions
             multiple
             withSourcingLocations
-            current={filters.suppliers}
-            // onChange={(values) => handleChangeFilter('suppliers', values)}
+            current={filters.origins}
+            onChange={(values) => handleChangeFilter('origins', values)}
             theme="inline-primary"
           />
           <span className="text-gray-700 font-medium">.</span>

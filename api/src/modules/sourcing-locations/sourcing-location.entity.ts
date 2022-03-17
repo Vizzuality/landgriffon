@@ -37,9 +37,9 @@ export enum LOCATION_ACCURACY {
   HIGH = 'HIGH',
 }
 
-export enum CANCELED_OR_REPLACING_BY_INTERVENTION {
-  CANCELED = 'Sourcing location canceled by intervention',
-  REPLACING = 'New sourcing location of the intervention',
+export enum SOURCING_LOCATION_TYPE_BY_INTERVENTION {
+  CANCELED = 'CANCELED_BY_INTERVENTION',
+  REPLACING = 'CREATED_BY_INTERVENTION',
 }
 
 export const sourcingLocationResource: BaseServiceResource = {
@@ -103,7 +103,7 @@ export class SourcingLocation extends TimestampedBaseEntity {
 
   @Column({ nullable: true })
   @ApiPropertyOptional()
-  geoRegionId?: string;
+  geoRegionId: string;
 
   @Column({ type: 'jsonb', nullable: true })
   @ApiPropertyOptional()
@@ -197,11 +197,11 @@ export class SourcingLocation extends TimestampedBaseEntity {
 
   @Column('enum', {
     nullable: true,
-    enum: CANCELED_OR_REPLACING_BY_INTERVENTION,
+    enum: SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   })
   @ApiPropertyOptional()
   // TODO - come up with better naming
-  typeAccordingToIntervention?: CANCELED_OR_REPLACING_BY_INTERVENTION;
+  interventionType?: SOURCING_LOCATION_TYPE_BY_INTERVENTION;
 
   @OneToMany(
     () => SourcingRecord,

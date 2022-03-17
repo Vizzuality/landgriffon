@@ -14,9 +14,9 @@ type YearsData = number[];
 type YearsResponse = UseQueryResult<YearsData>;
 
 export function useYears(
-  layer: AnalysisState['layer'],
-  materials: AnalysisState['filters']['materials'],
-  indicator: AnalysisState['filters']['indicator'],
+  layer: AnalysisState['analysis/filters']['layer'],
+  materials: AnalysisState['analysis/filters']['materials'],
+  indicator: AnalysisState['analysis/filters']['indicator'],
 ): YearsResponse {
   const result = useQuery(
     ['years', layer, materials, indicator],

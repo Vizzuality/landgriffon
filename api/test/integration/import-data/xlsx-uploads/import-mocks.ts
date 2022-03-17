@@ -229,4 +229,153 @@ async function createMaterialTreeForXLSXImport(args?: {
   return tableList;
 }
 
-export { createMaterialTreeForXLSXImport, createIndicatorsForXLSXImport };
+const sourcingDataValidationErrorResponse: Record<string, any>[] = [
+  {
+    line: 2,
+    column: 'material.hsCode',
+    errors: {
+      minLength: 'material.hsCode must be longer than or equal to 2 characters',
+    },
+  },
+  {
+    line: 2,
+    column: 'location_country_input',
+    errors: {
+      isString: 'location_country_input must be a string',
+      isNotEmpty: 'Location country input is required',
+    },
+  },
+  {
+    line: 2,
+    column: 'location_address_input',
+    errors: {
+      location_address: 'Address must be empty for locations of type unknown',
+    },
+  },
+  {
+    line: 2,
+    column: 'location_latitude_input',
+    errors: {
+      latitude: 'Coordinates must be empty for locations of type unknown',
+    },
+  },
+  {
+    line: 2,
+    column: 'location_longitude_input',
+    errors: {
+      longitude: 'Coordinates must be empty for locations of type unknown',
+    },
+  },
+  {
+    line: 3,
+    column: 'business_unit.path',
+    errors: {
+      isString: 'business_unit.path must be a string',
+      isNotEmpty: 'Business Unit path cannot be empty',
+    },
+  },
+  {
+    line: 3,
+    column: 'location_latitude_input',
+    errors: {
+      latitude:
+        'Coordinates must be empty for locations of type country of production',
+    },
+  },
+  {
+    line: 3,
+    column: 'location_longitude_input',
+    errors: {
+      longitude:
+        'Coordinates must be empty for locations of type country of production',
+    },
+  },
+  {
+    line: 6,
+    column: 'location_address_input',
+    errors: {
+      location_address:
+        'Address input OR coordinates are required for locations of type aggregation point. Address must be empty if coordinates are provided',
+    },
+  },
+  {
+    line: 6,
+    column: 'location_latitude_input',
+    errors: {
+      latitude:
+        'Address input OR coordinates must be provided for locations of type aggregation point. Latitude must be empty if address is provided',
+    },
+  },
+  {
+    line: 6,
+    column: 'location_longitude_input',
+    errors: {
+      longitude:
+        'Address input OR coordinates must be provided for locations of type aggregation point. Latitude must be empty if address is provided',
+    },
+  },
+  {
+    line: 7,
+    column: 'location_latitude_input',
+    errors: {
+      latitude:
+        'Address input or coordinates are required for locations of type aggregation point. Latitude values must be min: -90, max: 90',
+    },
+  },
+  {
+    line: 8,
+    column: 'location_address_input',
+    errors: {
+      location_address:
+        'Address input or coordinates are required for locations of type point of production.',
+    },
+  },
+  {
+    line: 8,
+    column: 'location_latitude_input',
+    errors: {
+      latitude:
+        'Address input or coordinates are required for locations of type point of production. Latitude values must be min: -90, max: 90',
+    },
+  },
+  {
+    line: 8,
+    column: 'location_longitude_input',
+    errors: {
+      longitude:
+        'Address input or coordinates are required for locations of type point of production. Longitude values must be min: -180, max: 180',
+    },
+  },
+  {
+    line: 9,
+    column: 'location_latitude_input',
+    errors: {
+      latitude:
+        'Address input or coordinates are required for locations of type point of production. Latitude values must be min: -90, max: 90',
+    },
+  },
+  {
+    line: 9,
+    column: 'location_longitude_input',
+    errors: {
+      longitude:
+        'Address input or coordinates are required for locations of type point of production. Longitude values must be min: -180, max: 180',
+    },
+  },
+  {
+    line: 10,
+    column: 2012,
+    errors: { min: 'tonnage must not be less than 0' },
+  },
+  {
+    line: 10,
+    column: 2015,
+    errors: { min: 'tonnage must not be less than 0' },
+  },
+];
+
+export {
+  createMaterialTreeForXLSXImport,
+  createIndicatorsForXLSXImport,
+  sourcingDataValidationErrorResponse,
+};

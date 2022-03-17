@@ -1,11 +1,11 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { createPortal } from 'react-dom';
 import { Transition } from '@headlessui/react';
 import classNames from 'classnames';
 
 import { useAppSelector } from 'store/hooks';
-import { analysis } from 'store/features/analysis';
+import { analysisUI } from 'store/features/analysis/ui';
 
 import ApplicationLayout from 'layouts/application';
 import PageLoading from 'containers/page-loading';
@@ -23,9 +23,10 @@ const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({
 }: AnalysisLayoutProps) => {
   const asideRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<DOMRect>(null);
-  const { visualizationMode, isSidebarCollapsed, isSubContentCollapsed } = useAppSelector(analysis);
+  const { visualizationMode, isSidebarCollapsed, isSubContentCollapsed } =
+    useAppSelector(analysisUI);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (asideRef && asideRef.current) {
       setPosition(asideRef.current.getBoundingClientRect());
     }

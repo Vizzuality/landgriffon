@@ -1,10 +1,17 @@
 import { useMemo } from 'react';
 import { useQuery, UseQueryResult, UseQueryOptions, useMutation } from 'react-query';
 import { useQueryClient } from 'react-query';
-import { apiService } from 'services/api';
-import type { Scenario, Intervention } from 'containers/scenarios/types';
 
-const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
+import { apiService } from 'services/api';
+import type { Scenario } from 'containers/scenarios/types';
+
+type ResponseData = UseQueryResult<Scenario[]>;
+type ResponseDataScenario = UseQueryResult<Scenario>;
+type QueryParams = {
+  sort?: string;
+};
+
+const DEFAULT_QUERY_OPTIONS: UseQueryOptions<Scenario[]> = {
   placeholderData: [],
   retry: false,
   keepPreviousData: true,
@@ -19,11 +26,8 @@ const ACTUAL_DATA: Scenario = {
   title: 'Actual data',
 };
 
-type ResponseData = UseQueryResult<Scenario[]>;
-type ResponseDataScenario = UseQueryResult<Scenario>;
-
-export function useScenarios(queryParams: { sort: string }): ResponseData {
-  const response = useQuery(
+export function useScenarios(queryParams: QueryParams = null): ResponseData {
+  const response: ResponseData = useQuery<Scenario[]>(
     ['scenariosList', queryParams],
     async () =>
       apiService
@@ -36,8 +40,8 @@ export function useScenarios(queryParams: { sort: string }): ResponseData {
     DEFAULT_QUERY_OPTIONS,
   );
 
-  return useMemo<ResponseData>((): ResponseData => {
-    const data =
+  return useMemo((): ResponseData => {
+    const data: ResponseData['data'] =
       response.isSuccess && response.data
         ? [ACTUAL_DATA, ...(response.data as Scenario[])]
         : response.data;
@@ -73,22 +77,23 @@ export function useScenario(id: string, queryParams: { sort: string }): Response
 
 export function useDeleteScenario() {
   const queryClient = useQueryClient();
-  const deleteProject = ({ id }) =>
-    apiService.request({
-      method: 'DELETE',
-      url: `/scenarios/${decodeURIComponent(id)}`,
-    });
 
-  return useMutation(deleteProject, {
-    mutationKey: 'deleteScenario',
-    onSuccess: () => {
-      queryClient.invalidateQueries('scenariosList');
-      console.info('Succces');
+  return useMutation(
+    (id: Scenario['id']) =>
+      apiService.request({
+        method: 'DELETE',
+        url: `/scenarios/${decodeURIComponent(id as string)}`,
+      }),
+    {
+      mutationKey: 'deleteScenario',
+      onSuccess: () => {
+        queryClient.invalidateQueries('scenariosList');
+      },
+      onError: () => {
+        console.info('Error');
+      },
     },
-    onError: () => {
-      console.info('Error');
-    },
-  });
+  );
 }
 
 export function useUpdateScenario() {
@@ -98,14 +103,6 @@ export function useUpdateScenario() {
       data,
       url: `/scenarios/${decodeURIComponent(id)}`,
     });
-
-  // request body
-  // {
-  //   "title": "string",
-  //   "description": "string",
-  //   "status": "string",
-  //   "metadata": "string"
-  // }
 
   return useMutation(updateProject, {
     mutationKey: 'editScenario',

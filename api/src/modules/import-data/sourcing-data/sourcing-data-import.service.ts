@@ -1,4 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
@@ -20,6 +25,7 @@ import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
+import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -76,14 +82,13 @@ export class SourcingDataImportService {
         await this.sourcingLocationGroupService.create({
           title: 'Sourcing Records import from XLSX file',
         });
+
       const dtoMatchedData: SourcingRecordsDtos =
         await this.dtoProcessor.createDTOsFromSourcingRecordsSheets(
           parsedXLSXDataset,
           sourcingLocationGroup.id,
         );
 
-      this.logger.log(`Validating DTOs`);
-      await this.validateDTOs(dtoMatchedData);
       await this.cleanDataBeforeImport();
 
       const materials: Material[] =
@@ -108,6 +113,8 @@ export class SourcingDataImportService {
           dtoMatchedData.sourcingData,
         );
 
+      // TODO: TBD What to do when there is some location where we cannot determine its admin-region: i.e coordinates
+      //       in the middle of the sea
       const geoCodedSourcingData: SourcingData[] =
         await this.geoCodingService.geoCodeLocations(
           sourcingDataWithOrganizationalEntities,
@@ -116,8 +123,21 @@ export class SourcingDataImportService {
       await this.sourcingLocationService.save(geoCodedSourcingData);
 
       this.logger.log('Generating Indicator Records...');
-      await this.indicatorRecordsService.createIndicatorRecordsForAllSourcingRecords();
-      this.logger.log('Indicator Records generated');
+
+      // TODO: Current approach calculates Impact for all Sourcing Records present in the DB
+      //       Getting H3 data for calculations is done within DB so we need to improve the error handling
+      //       TBD: What to do when there is no H3 for a Material
+      try {
+        await this.indicatorRecordsService.createIndicatorRecordsForAllSourcingRecords();
+        this.logger.log('Indicator Records generated');
+      } catch (err: any) {
+        if (err instanceof MissingH3DataError) {
+          throw new MissingH3DataError(
+            `Missing H3 Data to calculate Impact in Import`,
+          );
+          throw err;
+        }
+      }
     } finally {
       await this.fileService.deleteDataFromFS(filePath);
     }
@@ -144,7 +164,8 @@ export class SourcingDataImportService {
      * in order to return the array containing errors in a more readable way
      * Or add a function per entity to validate
      */
-    if (validationErrorArray.length) throw new Error(`${validationErrorArray}`);
+    if (validationErrorArray.length)
+      throw new BadRequestException(`${validationErrorArray}`);
   }
 
   /**
@@ -223,5 +244,47 @@ export class SourcingDataImportService {
       sourcingLocation.materialId = materialMap[sourcingLocationMaterialId];
     }
     return sourcingData;
+  }
+
+  async validateFile(
+    filePath: string,
+    filename: string,
+  ): Promise<void | Array<ErrorConstructor>> {
+    let parsedXLSXDataset: SourcingRecordsSheets;
+    try {
+      parsedXLSXDataset = await this.fileService.transformToJson(
+        filePath,
+        SHEETS_MAP,
+      );
+    } catch (error) {
+      throw new ServiceUnavailableException(
+        `File: ${filename} could not have been loaded. Please try again later or contact the administrator`,
+      );
+    }
+
+    /**
+     * @note: If we decide to path DTOs to task instead of path
+     * this has to change to generate valid id
+     */
+
+    let dtoMatchedData: SourcingRecordsDtos;
+
+    try {
+      dtoMatchedData =
+        await this.dtoProcessor.createDTOsFromSourcingRecordsSheets(
+          parsedXLSXDataset,
+        );
+    } catch (error) {
+      await this.fileService.deleteDataFromFS(filePath);
+      throw error;
+    }
+
+    this.logger.log(`Validating DTOs`);
+    try {
+      await this.validateDTOs(dtoMatchedData);
+    } catch (error) {
+      await this.fileService.deleteDataFromFS(filePath);
+      throw error;
+    }
   }
 }

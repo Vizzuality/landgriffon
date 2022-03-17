@@ -1,25 +1,27 @@
 import React, { Fragment, useCallback, useEffect, useState, useMemo } from 'react';
 import classNames from 'classnames';
+
 import { Popover, Transition } from '@headlessui/react';
 import { FilterIcon } from '@heroicons/react/solid';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { analysis, setFilters } from 'store/features/analysis';
-import type { AnalysisState } from 'store/features/analysis';
+import { analysisFilters, setFilters } from 'store/features/analysis/filters';
 import Button, { THEME } from 'components/button/component';
 
 import Materials from '../materials/component';
 import OriginRegions from '../origin-regions/component';
 import Suppliers from '../suppliers/component';
 
-const INITIAL_FILTERS: Partial<AnalysisState['filters']> = {
+import type { AnalysisFiltersState } from 'store/features/analysis/filters';
+
+const INITIAL_FILTERS: Partial<AnalysisFiltersState> = {
   materials: [],
   origins: [],
   suppliers: [],
 };
 
 const MoreFilters: React.FC = () => {
-  const { filters } = useAppSelector(analysis);
+  const filters = useAppSelector(analysisFilters);
   const dispatch = useAppDispatch();
 
   const { materials, origins, suppliers } = filters;
@@ -38,13 +40,13 @@ const MoreFilters: React.FC = () => {
         materials: moreFilters.materials || INITIAL_FILTERS.materials,
         origins: moreFilters.origins || INITIAL_FILTERS.origins,
         suppliers: moreFilters.suppliers || INITIAL_FILTERS.suppliers,
-      } as AnalysisState['filters']),
+      } as AnalysisFiltersState),
     );
     // setOpen(false);
   }, [dispatch, moreFilters]);
 
   const handleClearFilters = useCallback(() => {
-    setMoreFilters(INITIAL_FILTERS as AnalysisState['filters']); // reset filters
+    setMoreFilters(INITIAL_FILTERS as AnalysisFiltersState); // reset filters
   }, []);
 
   const handleChangeFilter = useCallback(
@@ -53,7 +55,7 @@ const MoreFilters: React.FC = () => {
       setMoreFilters({
         ...moreFilters,
         [key]: values,
-      } as AnalysisState['filters']);
+      } as AnalysisFiltersState);
     },
     [moreFilters],
   );

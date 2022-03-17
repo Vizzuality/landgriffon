@@ -4,7 +4,7 @@ import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
 import { Logger, NotFoundException } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { GetSupplierTreeWithOptions } from './dto/get-supplier-tree-with-options.dto';
+import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-tree-with-options.dto';
 
 @EntityRepository(Supplier)
 export class SupplierRepository extends ExtendedTreeRepository<

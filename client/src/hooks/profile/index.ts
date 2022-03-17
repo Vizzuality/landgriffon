@@ -1,4 +1,4 @@
-import { AxiosError, AxiosPromise } from 'axios';
+import { AxiosPromise } from 'axios';
 import { useMemo } from 'react';
 import {
   useQuery,
@@ -10,25 +10,9 @@ import {
 
 import { apiService } from 'services/api';
 
-type ProfilePayload = {
-  fname?: string;
-  lname?: string;
-  email: string;
-};
-
-type PasswordPayload = {
-  currentPassword: string;
-  newPassword: string;
-};
+import type { ProfilePayload, PasswordPayload, ErrorResponse } from 'types';
 
 type ResponseData = UseQueryResult<ProfilePayload>;
-
-type ErrorResponse = AxiosError<{
-  errors: {
-    status: string;
-    title: string;
-  }[];
-}>;
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions<ProfilePayload> = {
   retry: false,
@@ -58,7 +42,7 @@ export function useProfile(): ResponseData {
 export function useUpdateProfile() {
   const queryClient = useQueryClient();
 
-  const patchProfile = ({ data }): AxiosPromise =>
+  const patchProfile = (data: ProfilePayload): AxiosPromise =>
     apiService
       .request({
         method: 'PATCH',
@@ -70,14 +54,14 @@ export function useUpdateProfile() {
         return response;
       });
 
-  return useMutation<unknown, ErrorResponse, { data: ProfilePayload }>(patchProfile, {
+  return useMutation<unknown, ErrorResponse, ProfilePayload>(patchProfile, {
     mutationKey: 'update-profile',
     onSuccess: () => queryClient.invalidateQueries('profile'),
   });
 }
 
 export function useUpdatePassword() {
-  const patchPassword = ({ data }): AxiosPromise =>
+  const patchPassword = (data): AxiosPromise =>
     apiService
       .request({
         method: 'PATCH',
@@ -89,7 +73,7 @@ export function useUpdatePassword() {
         return response;
       });
 
-  return useMutation<unknown, ErrorResponse, { data: PasswordPayload }>(patchPassword, {
+  return useMutation<unknown, ErrorResponse, PasswordPayload>(patchPassword, {
     mutationKey: 'update-password',
   });
 }

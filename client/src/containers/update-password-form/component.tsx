@@ -48,14 +48,14 @@ const UserPasswordForm: React.FC = () => {
   );
 
   return (
-    <section className="mt-8 ml-6">
-      <div className="flex">
-        <div className="w-125">
+    <section className="mt-8">
+      <div className="grid gap-4 grid-cols-12">
+        <div className="col-span-4">
           <h1 className="text-lg">Password</h1>
           <p className="text-sm text-gray-500">Update your password.</p>
         </div>
 
-        <div className="bg-white rounded-md shadow-lg w-250">
+        <div className="bg-white rounded-md shadow-lg col-span-8">
           <form onSubmit={handleSubmitPassword(handleEditPassword)}>
             <div className="grid grid-cols-2 gap-6 p-6 pb-8">
               <div className="col-span-2">

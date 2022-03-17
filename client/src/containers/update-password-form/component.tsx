@@ -1,14 +1,16 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { useMutation } from 'react-query';
+import toast from 'react-hot-toast';
 
-import { apiService } from 'services/api';
+import { useUpdatePassword } from 'hooks/profile';
+
 import { Label, Input } from 'components/forms';
 import { Button } from 'components/button';
-import { formProps, UserProfilePayload } from './types';
+
+import type { PasswordPayload, ErrorResponse } from 'types';
 
 const passwordSchemaValidation = yup.object({
   currentPassword: yup.string().min(8).required('password is required'),
@@ -19,55 +21,32 @@ const passwordSchemaValidation = yup.object({
     .oneOf([yup.ref('newPassword'), null], 'passwords must match'),
 });
 
-const editPassword = (data: UserProfilePayload) => apiService.patch('/users/password', data);
-
-const UserPasswordForm: React.FC<formProps> = ({ alert, showAlert }: formProps) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
+const UserPasswordForm: React.FC = () => {
   const {
     register: registerPassword,
     handleSubmit: handleSubmitPassword,
-    reset: resetPasswordInput,
-    formState: { errors: errorsPaaaword },
+    formState: { errors },
   } = useForm({
     resolver: yupResolver(passwordSchemaValidation),
   });
 
-  const mutationPassword = useMutation(editPassword, {
-    onSuccess: () => {
-      setIsLoading(false);
-
-      alert({
-        type: 'success',
-        title: 'Your changes were successfully saved.',
-      });
-
-      showAlert(true);
-    },
-
-    onError: () => {
-      setIsLoading(false);
-
-      alert({
-        type: 'error',
-        title: 'An error has occured while saving. Please try gain later',
-      });
-
-      showAlert(true);
-    },
-  });
+  const updatePassword = useUpdatePassword();
 
   const handleEditPassword = useCallback(
-    (data: UserProfilePayload) => {
-      resetPasswordInput();
-      setIsLoading(true);
-      mutationPassword.mutate(data);
-      setTimeout(() => {
-        showAlert(false);
-      }, 3000);
+    (data: PasswordPayload) => {
+      updatePassword.mutate(data, {
+        onSuccess: () => {
+          toast.success('Your changes were successfully saved.');
+        },
+        onError: (error: ErrorResponse) => {
+          const { errors } = error.response?.data;
+          errors.forEach(({ title }) => toast.error(title));
+        },
+      });
     },
-    [mutationPassword, resetPasswordInput, showAlert],
+    [updatePassword],
   );
+
   return (
     <section className="mt-8 ml-6">
       <div className="flex">
@@ -84,7 +63,7 @@ const UserPasswordForm: React.FC<formProps> = ({ alert, showAlert }: formProps) 
                 <Input
                   {...registerPassword('currentPassword')}
                   type="password"
-                  error={errorsPaaaword.currentPassword?.message}
+                  error={errors.currentPassword?.message}
                 />
               </div>
               <div className="col-span-2">
@@ -92,7 +71,7 @@ const UserPasswordForm: React.FC<formProps> = ({ alert, showAlert }: formProps) 
                 <Input
                   {...registerPassword('newPassword')}
                   type="password"
-                  error={errorsPaaaword.newPassword?.message}
+                  error={errors.newPassword?.message}
                 />
               </div>
 
@@ -101,12 +80,12 @@ const UserPasswordForm: React.FC<formProps> = ({ alert, showAlert }: formProps) 
                 <Input
                   {...registerPassword('passwordConfirmation')}
                   type="password"
-                  error={errorsPaaaword.passwordConfirmation?.message}
+                  error={errors.passwordConfirmation?.message}
                 />
               </div>
             </div>
             <div className="flex justify-end h-16 py-3 pr-6 rounded-md bg-gray-50">
-              <Button type="submit" theme="primary" loading={isLoading}>
+              <Button type="submit" theme="primary" loading={updatePassword.isLoading}>
                 Save
               </Button>
             </div>

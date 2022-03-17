@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -8,7 +8,8 @@ import { useProfile, useUpdateProfile } from 'hooks/profile';
 
 import { Label, Input } from 'components/forms';
 import { Button } from 'components/button';
-import { UserProfilePayload } from './types';
+
+import type { ProfilePayload, ErrorResponse } from 'types';
 
 const schemaValidation = yup.object({
   fname: yup.string(),
@@ -29,26 +30,19 @@ const UserDataForm: React.FC = () => {
   const updateProfile = useUpdateProfile();
 
   const handleEditUserData = useCallback(
-    (data: UserProfilePayload) => {
-      updateProfile.mutate({ data });
+    (data: ProfilePayload) => {
+      updateProfile.mutate(data, {
+        onSuccess: () => {
+          toast.success('Your changes were successfully saved.');
+        },
+        onError: (error: ErrorResponse) => {
+          const { errors } = error.response?.data;
+          errors.forEach(({ title }) => toast.error(title));
+        },
+      });
     },
     [updateProfile],
   );
-
-  useEffect(() => {
-    if (updateProfile.isSuccess) toast.success('Your changes were successfully saved.');
-    if (updateProfile.isError) {
-      if (updateProfile.error.response?.data) {
-        const { errors } = updateProfile.error.response?.data;
-        errors.forEach(({ title }) => toast.error(title));
-      } else {
-        toast.error(
-          updateProfile.error.message ||
-            'An error has occurred while saving. Please try again later',
-        );
-      }
-    }
-  }, [updateProfile]);
 
   return (
     <section className="ml-6 mt-14">

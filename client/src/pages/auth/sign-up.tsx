@@ -1,22 +1,18 @@
 import { useCallback, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import AuthenticationLayout from 'layouts/authentication';
 import { useRouter } from 'next/router';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from 'react-query';
+import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+
+import AuthenticationLayout from 'layouts/authentication';
 import { authService } from 'services/authentication';
 import { Label, Input } from 'components/forms';
 import { Button } from 'components/button';
 
-type SignUpPayload = {
-  fname: string;
-  lname: string;
-  email: string;
-  password: string;
-};
+import type { ProfilePayload } from 'types';
 
 const schemaValidation = yup.object({
   fname: yup.string().required('first name is required'),
@@ -29,7 +25,7 @@ const schemaValidation = yup.object({
     .oneOf([yup.ref('password'), null], 'passwords must match'),
 });
 
-const signUpService = (data: SignUpPayload) => authService.post('/sign-up', data);
+const signUpService = (data: ProfilePayload) => authService.post('/sign-up', data);
 
 const SignUp: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -52,7 +48,7 @@ const SignUp: React.FC = () => {
   });
 
   const handleSignUp = useCallback(
-    (data: SignUpPayload) => {
+    (data: ProfilePayload) => {
       setIsLoading(true);
       mutation.mutate(data);
     },

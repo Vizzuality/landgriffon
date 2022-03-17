@@ -125,3 +125,31 @@ export type ImpactData = {
   };
   meta: Record<string, unknown>;
 };
+
+/**
+ * User profile
+ */
+
+// User profile payload for API, also for sign-up purposes
+export type ProfilePayload = {
+  fname?: string;
+  lname?: string;
+  email: string;
+  password?: string;
+};
+
+// Password payload for API
+export type PasswordPayload = {
+  currentPassword: string;
+  newPassword: string;
+};
+
+/**
+ * Generic response for all errors in API
+ */
+export type ErrorResponse = AxiosError<{
+  errors: {
+    status: string;
+    title: string;
+  }[];
+}>;

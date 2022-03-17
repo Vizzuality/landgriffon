@@ -1,23 +1,36 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, MutableRefObject } from 'react';
+import { UseInfiniteQueryResult } from 'react-query';
 import { useRouter } from 'next/router';
 import { RadioGroup } from '@headlessui/react';
 import ScenarioItem from 'containers/scenarios/item';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
+import useBottomScrollListener from 'hooks/scroll';
 import { scenarios, setCurrentScenario } from 'store/features/analysis/scenarios';
+
 import type { Scenario, Scenarios } from '../types';
 
 type ScenariosListProps = {
   data: Scenarios;
-};
+  scrollRef: MutableRefObject<HTMLDivElement | null>;
+} & UseInfiniteQueryResult;
 
 const isScenarioSelected: (scenarioId: Scenario['id'], currentId: Scenario['id']) => boolean = (
   scenarioId,
   currentId,
 ): boolean => scenarioId.toString() === currentId?.toString();
 
-const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProps) => {
+const ScenariosList: React.FC<ScenariosListProps> = ({
+  data,
+  hasNextPage,
+  fetchNextPage,
+  scrollRef,
+}: ScenariosListProps) => {
   const { currentScenario } = useAppSelector(scenarios);
   const dispatch = useAppDispatch();
+
+  useBottomScrollListener(() => {
+    if (hasNextPage) fetchNextPage();
+  }, scrollRef);
 
   const router = useRouter();
   const { query } = router;
@@ -57,13 +70,15 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
     <RadioGroup value={selected} onChange={handleOnChange}>
       <RadioGroup.Label className="sr-only">Scenarios</RadioGroup.Label>
       <ul className="my-2 grid grid-cols-1 gap-5 sm:gap-2 sm:grid-cols-2 lg:grid-cols-1 relative">
-        {data.map((item) => (
-          <ScenarioItem
-            key={item.id}
-            data={item}
-            isSelected={isScenarioSelected(item.id, currentScenario)}
-          />
-        ))}
+        {data.map((item) => {
+          return (
+            <ScenarioItem
+              key={item.id}
+              data={item}
+              isSelected={isScenarioSelected(item.id, currentScenario)}
+            />
+          );
+        })}
       </ul>
     </RadioGroup>
   );

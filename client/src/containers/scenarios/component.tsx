@@ -5,14 +5,14 @@ import ScenariosFilters from 'containers/scenarios/filters';
 import ScenariosList from 'containers/scenarios/list';
 import { AnchorLink } from 'components/button';
 import Lottie from 'lottie-react';
-import { useScenarios } from 'hooks/scenarios';
+import { useInfiniteScenarios } from 'hooks/scenarios';
 
 import noScenariosAnimationData from 'containers/scenarios/animations/noScenariosAnimationData.json';
 
-const ScenariosComponent: React.FC = () => {
+const ScenariosComponent: React.FC = (scrollRef) => {
   const { query } = useRouter();
   const params = query ? { sort: query.sortBy as string } : null;
-  const { data, isLoading, error } = useScenarios(params);
+  const { fetchNextPage, hasNextPage, data, isLoading, error } = useInfiniteScenarios(params);
 
   return (
     <div className="bg-white overscroll-contain text-gray-900">
@@ -28,7 +28,12 @@ const ScenariosComponent: React.FC = () => {
       {isLoading && <p>Loading scenarios...</p>}
       {!isLoading && data && (
         <div className="flex-1 z-10 pb-4">
-          <ScenariosList data={data} />
+          <ScenariosList
+            data={data}
+            fetchNextPage={fetchNextPage}
+            hasNextPage={hasNextPage}
+            scrollRef={scrollRef}
+          />
         </div>
       )}
       {!isLoading && error && (

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, Children, isValidElement, cloneElement } from 'react';
 import dynamic from 'next/dynamic';
 import { createPortal } from 'react-dom';
 import { Transition } from '@headlessui/react';
@@ -31,6 +31,15 @@ const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({
       setPosition(asideRef.current.getBoundingClientRect());
     }
   }, [asideRef]);
+
+  const scrollRef = useRef(null);
+
+  const clonedChildren = Children.map(children, (Child) => {
+    if (isValidElement(Child)) {
+      return cloneElement(Child, scrollRef);
+    }
+    return null;
+  });
 
   return (
     <ApplicationLayout>
@@ -79,8 +88,11 @@ const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({
           afterEnter={() => setPosition(asideRef?.current?.getBoundingClientRect())}
           afterLeave={() => setPosition(asideRef?.current?.getBoundingClientRect())}
         >
-          <div className="h-full lg:h-screen relative flex flex-col border-r border-gray-200 bg-white overflow-y-auto w-96 px-6">
-            {children}
+          <div
+            ref={scrollRef}
+            className="h-full lg:h-screen relative flex flex-col border-r border-gray-200 bg-white overflow-y-auto w-96 px-6"
+          >
+            {clonedChildren}
           </div>
         </Transition>
       </aside>

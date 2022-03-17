@@ -1,23 +1,34 @@
 import { useMemo } from 'react';
 import {
   useQuery,
-  useQueryClient,
+  useInfiniteQuery,
   UseQueryResult,
   UseQueryOptions,
   useMutation,
+  UseInfiniteQueryResult,
+  UseInfiniteQueryOptions,
 } from 'react-query';
+import { useQueryClient } from 'react-query';
 
 import { apiService } from 'services/api';
 import type { Scenario } from 'containers/scenarios/types';
 
 type ResponseData = UseQueryResult<Scenario[]>;
+type ResponseInfiniteData = UseInfiniteQueryResult<Scenario[]>;
 type ResponseDataScenario = UseQueryResult<Scenario>;
 type QueryParams = {
   sort?: string;
+  pageParam?: number;
 };
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions<Scenario[]> = {
   placeholderData: [],
+  retry: false,
+  keepPreviousData: true,
+  refetchOnWindowFocus: false,
+};
+
+const DEFAULT_INFINITE_QUERY_OPTIONS = {
   retry: false,
   keepPreviousData: true,
   refetchOnWindowFocus: false,
@@ -44,7 +55,6 @@ export function useScenarios(queryParams: QueryParams = null): ResponseData {
         .then(({ data: responseData }) => responseData.data),
     DEFAULT_QUERY_OPTIONS,
   );
-
   return useMemo((): ResponseData => {
     const data: ResponseData['data'] =
       response.isSuccess && response.data
@@ -55,6 +65,39 @@ export function useScenarios(queryParams: QueryParams = null): ResponseData {
       data,
     } as ResponseData;
   }, [response]);
+}
+
+export function useInfiniteScenarios(QueryParams: QueryParams): ResponseInfiniteData {
+  const fetchScenarios = ({ pageParam = 1 }) =>
+    apiService.request({
+      method: 'GET',
+      url: '/scenarios',
+      params: {
+        'page[number]': pageParam,
+        ...QueryParams,
+      },
+    });
+
+  const query = useInfiniteQuery(['scenariosList', QueryParams], fetchScenarios, {
+    ...DEFAULT_INFINITE_QUERY_OPTIONS,
+    getNextPageParam: (lastPage) => {
+      const { meta } = lastPage?.data;
+      const { page, totalPages } = meta;
+      const nextPage = page + 1 > totalPages ? null : page + 1;
+      return nextPage;
+    },
+  });
+
+  const { data } = query;
+  const { pages } = data || {};
+
+  return useMemo(() => {
+    const parsedData = pages?.reduce((acc, { data }) => acc.concat(data?.data), []);
+    return {
+      ...query,
+      data: parsedData,
+    };
+  }, [pages, query]);
 }
 
 export function useScenario(id: string, queryParams: { sort: string }): ResponseDataScenario {

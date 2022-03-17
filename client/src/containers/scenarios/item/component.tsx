@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 
 import ScenariosComparison from 'containers/scenarios/comparison';
 import { useDeleteScenario } from 'hooks/scenarios';
+import useBottomScrollListener from 'hooks/scroll';
 import type { Scenario } from '../types';
 
 type ScenariosItemProps = {
@@ -21,7 +22,7 @@ const DROPDOWN_ITEM_CLASSNAME = 'block px-4 py-2 text-sm w-full text-left';
 const DROPDOWN_ITEM_ACTIVE_CLASSNAME = 'bg-gray-100 text-gray-900';
 
 const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) => {
-  const { data, isSelected, isComparisonAvailable } = props;
+  const { data, isSelected, isComparisonAvailable, hasNextPage, fetchNextPage } = props;
   const [isComparisonEnabled, setComparisonEnabled] = useState<boolean>(false);
   const router = useRouter();
 

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -28,7 +28,6 @@ const schemaValidation = yup.object({
 const signUpService = (data: ProfilePayload) => authService.post('/sign-up', data);
 
 const SignUp: React.FC = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const {
@@ -39,9 +38,8 @@ const SignUp: React.FC = () => {
     resolver: yupResolver(schemaValidation),
   });
 
-  const mutation = useMutation(signUpService, {
+  const signUp = useMutation(signUpService, {
     onSuccess: () => {
-      setIsLoading(false);
       // Redirect to sign-in when user is created successfully
       router.push('/auth/sign-in');
     },
@@ -49,10 +47,9 @@ const SignUp: React.FC = () => {
 
   const handleSignUp = useCallback(
     (data: ProfilePayload) => {
-      setIsLoading(true);
-      mutation.mutate(data);
+      signUp.mutate(data);
     },
-    [mutation],
+    [signUp],
   );
 
   return (
@@ -98,7 +95,7 @@ const SignUp: React.FC = () => {
               </div>
 
               <div className="col-span-2">
-                <Button type="submit" className="w-full" loading={isLoading}>
+                <Button type="submit" className="w-full" loading={signUp.isLoading}>
                   Sign up
                 </Button>
               </div>

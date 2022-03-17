@@ -45,17 +45,17 @@ const UserDataForm: React.FC = () => {
   );
 
   return (
-    <section className="ml-6 mt-14">
-      <div className="flex">
-        <div className="w-125">
+    <section className="mt-14">
+      <div className="grid gap-4 grid-cols-12">
+        <div className="col-span-4">
           <h1 className="text-lg ">Personal information</h1>
           <p className="text-sm text-gray-500">
             Use a permanent address where you can receive mail.
           </p>
         </div>
 
-        <div className="bg-white rounded-md shadow-lg w-250">
-          {!user.isLoading && (
+        <div className="bg-white rounded-md shadow-lg col-span-8">
+          {user.data && !user.isLoading && (
             <form onSubmit={handleSubmit(handleEditUserData)}>
               <div className="grid grid-cols-2 gap-6 p-6 pb-8">
                 <div>

@@ -5,6 +5,7 @@ import { analysisFilters } from 'store/features/analysis/filters';
 import IndicatorsFilter from './indicators';
 import GroupByFilter from './group-by';
 import YearsFilter from './years';
+import YearsRangeFilter from './years-range';
 import Materials from './materials';
 import MoreFilters from './more-filters';
 
@@ -17,7 +18,8 @@ const AnalysisFilters: React.FC = () => {
       {layer !== 'material' && <IndicatorsFilter />}
       {layer !== 'impact' && <Materials />}
       {layer === 'impact' && visualizationMode !== 'map' && <GroupByFilter />}
-      <YearsFilter />
+      {visualizationMode === 'map' && <YearsFilter />}
+      {visualizationMode !== 'map' && <YearsRangeFilter />}
       {layer === 'impact' && <MoreFilters />}
     </div>
   );

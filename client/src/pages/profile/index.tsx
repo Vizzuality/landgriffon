@@ -11,13 +11,16 @@ const UserProfile: React.FC = () => (
       <title>Edit profile - Landgriffon</title>
     </Head>
 
-    <div className="flex-col">
-      <h1 className="mt-6 ml-6">Edit profile</h1>
-
-      <UpdateProfileForm />
-
-      <UpdatePasswordForm />
-    </div>
+    <section
+      aria-labelledby="primary-heading"
+      className="min-w-0 flex-1 h-full flex flex-col overflow-y-auto p-6"
+    >
+      <h1 className="text-center md:text-left">Edit Profile</h1>
+      <section className="pt-4 mt-4 pb-1 md:py-1">
+        <UpdateProfileForm />
+        <UpdatePasswordForm />
+      </section>
+    </section>
   </ApplicationLayout>
 );
 

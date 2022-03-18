@@ -11,9 +11,13 @@ import InfoTooltip from 'containers/info-tooltip';
 // hooks
 import { useSuppliers } from 'hooks/suppliers';
 
+// form validation
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
-import { id } from 'date-fns/locale';
 
 const producers = ['producer1', 'producer2'];
 const producer = 'producer1';
@@ -22,7 +26,15 @@ const locationType = 'location1';
 const countries = ['Spain', 'Portugal'];
 const country = 'Spain';
 
-const Supplier: FC = ({ register }) => {
+const schemaValidation = yup.object({
+  supplier: yup.string().required(),
+  producer: yup.string().required(),
+  locationType: yup.string().required(),
+  country: yup.string().required(),
+  address: yup.string().required(),
+});
+
+const Supplier: FC = () => {
   const { data: suppliers, isLoading: isLoadingSuppliers } = useSuppliers();
 
   const [formData, setFormData] = useState({
@@ -99,6 +111,13 @@ const Supplier: FC = ({ register }) => {
   const isLoadingProducers = false;
   const isLoadingLocationType = false;
   const isLoadingCountries = false;
+
+  const {
+    register,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schemaValidation),
+  });
 
   return (
     <>

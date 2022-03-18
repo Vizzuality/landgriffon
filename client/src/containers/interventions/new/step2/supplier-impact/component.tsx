@@ -8,6 +8,11 @@ import Label from 'components/forms/label';
 // containers
 import InfoTooltip from 'containers/info-tooltip';
 
+// form validation
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+
 interface Indicator {
   name: string;
   value: number;
@@ -17,11 +22,11 @@ interface Indicator {
   unit: string;
 }
 
-const SuppliersImpact: FC = ({ register }) => {
+const SuppliersImpact: FC = () => {
   const [landgriffonEstimates, setLandgriffonEstimates] = useState(false);
   // const { data: indicators, isFetching, isFetched, error } = useIndicators();
 
-  const data = useMemo<Indicator[]>(
+  const indicators = useMemo<Indicator[]>(
     () => [
       {
         description:
@@ -64,7 +69,7 @@ const SuppliersImpact: FC = ({ register }) => {
   );
 
   const indicatorsValues = () =>
-    data.reduce(
+    indicators.reduce(
       (obj, indicator) => ({
         ...obj,
         [indicator.name]: indicator.value,
@@ -72,8 +77,25 @@ const SuppliersImpact: FC = ({ register }) => {
       {},
     );
 
+  const schemaValidation = useMemo(() => {
+    const validationObject = indicators
+      .map((indicator) => ({
+        [indicator.id]: yup.number().required(),
+      }))
+      .reduce((a, b) => ({ ...a, ...b }));
+
+    return yup.object(validationObject);
+  }, []);
+
+  const {
+    register,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schemaValidation),
+  });
+
   return (
-    <>
+    <form>
       <fieldset className="sm:col-span-3 text-sm">
         <legend className="flex font-medium leading-5">
           Supplier impacts per tone
@@ -92,7 +114,7 @@ const SuppliersImpact: FC = ({ register }) => {
           </div>
         </div>
         <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
-          {data.map((indicator) => (
+          {indicators.map((indicator) => (
             <div key={indicator.name}>
               <Label htmlFor={indicator.name} key={indicator.id}>
                 {indicator.name}
@@ -111,7 +133,7 @@ const SuppliersImpact: FC = ({ register }) => {
           ))}
         </div>
       </fieldset>
-    </>
+    </form>
   );
 };
 

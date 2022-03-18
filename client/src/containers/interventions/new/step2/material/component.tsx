@@ -8,10 +8,20 @@ import Input from 'components/forms/input';
 import Label from 'components/forms/label';
 import Select from 'components/select';
 
+// form validation
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
 
-const Material = ({ register }) => {
+const schemaValidation = yup.object({
+  materialTons: yup.number().required('Tones are required'),
+  material: yup.array().min(1).required('Select material'),
+});
+
+const Material = () => {
   const { data: materials, isLoading: isLoadingMaterials } = useMaterials();
   const optionsMaterials: SelectOptions = useMemo(
     () =>
@@ -40,8 +50,15 @@ const Material = ({ register }) => {
     [formData],
   );
 
+  const {
+    register,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schemaValidation),
+  });
+
   return (
-    <>
+    <form>
       <fieldset className="sm:col-span-3 text-sm">
         <legend className="font-medium leading-5">New material</legend>
 
@@ -76,7 +93,7 @@ const Material = ({ register }) => {
           </div>
         </div>
       </fieldset>
-    </>
+    </form>
   );
 };
 

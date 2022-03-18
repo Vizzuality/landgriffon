@@ -85,7 +85,7 @@ function useBottomScrollListener<T extends HTMLDivElement>(
       }
     }
     // ref dependency needed for the tests, doesn't matter for normal execution
-  }, [offset, debouncedOnBottom]);
+  }, [containerRef, offset, debouncedOnBottom]);
 
   useEffect((): (() => void) => {
     const ref = containerRef.current;
@@ -107,7 +107,7 @@ function useBottomScrollListener<T extends HTMLDivElement>(
         window.removeEventListener('scroll', handleOnScroll);
       }
     };
-  }, [handleOnScroll, triggerOnNoScroll, debounce]);
+  }, [handleOnScroll, triggerOnNoScroll, debounce, containerRef]);
 
   return containerRef as RefObject<T>;
 }

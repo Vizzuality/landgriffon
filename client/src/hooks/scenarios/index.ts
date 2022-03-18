@@ -6,15 +6,20 @@ import {
   UseQueryOptions,
   useMutation,
   UseInfiniteQueryResult,
-  UseInfiniteQueryOptions,
 } from 'react-query';
 import { useQueryClient } from 'react-query';
 
 import { apiService } from 'services/api';
 import type { Scenario } from 'containers/scenarios/types';
+import { AxiosResponse } from 'axios';
 
 type ResponseData = UseQueryResult<Scenario[]>;
-type ResponseInfiniteData = UseInfiniteQueryResult<Scenario[]>;
+type ResponseInfiniteData = UseInfiniteQueryResult<
+  AxiosResponse<{
+    data: Scenario[];
+    meta: Record<string, unknown>;
+  }>
+>;
 type ResponseDataScenario = UseQueryResult<Scenario>;
 type QueryParams = {
   sort?: string;
@@ -88,16 +93,7 @@ export function useInfiniteScenarios(QueryParams: QueryParams): ResponseInfinite
     },
   });
 
-  const { data } = query;
-  const { pages } = data || {};
-
-  return useMemo(() => {
-    const parsedData = pages?.reduce((acc, { data }) => acc.concat(data?.data), []);
-    return {
-      ...query,
-      data: parsedData,
-    };
-  }, [pages, query]);
+  return useMemo<ResponseInfiniteData>((): ResponseInfiniteData => query, [query]);
 }
 
 export function useScenario(id: string, queryParams: { sort: string }): ResponseDataScenario {

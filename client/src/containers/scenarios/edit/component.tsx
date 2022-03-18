@@ -39,29 +39,20 @@ const ScenariosNewContainer: React.FC = () => {
   const { scenarioCurrentTab, currentScenario } = useAppSelector(scenarios);
 
   const { data, isLoading, error } = useScenario(currentScenario as string, { sort: 'title' });
-  const { title, description } = !isLoading && !error && data;
 
   const { data: interventions } = useInterventions({ sort: query.sortBy as string });
-  const [scenarioNewData, setScenarioNewData] = useDebounce(data, 250);
+  const [scenarioNewData, setScenarioNewData] = useDebounce(data, 500);
 
   const updateScenario = useUpdateScenario();
 
   const handleUpdateScenario = useCallback(() => {
-    updateScenario.mutate(
-      { id: data.id, data: scenarioNewData },
-      {
-        onSuccess: (data) => {
-          console.log('onsucces', data);
-        },
-        onError: (error, variables, context) => {
-          console.log('error', error, variables, context);
-        },
-      },
-    );
+    if (!!scenarioNewData.title || !!scenarioNewData.description)
+      updateScenario.mutate({ id: data.id, data: scenarioNewData });
   }, [updateScenario, data, scenarioNewData]);
 
   useEffect(() => {
-    if (scenarioNewData !== data) {
+    if (!isLoading && !error && scenarioNewData !== data) {
+      setScenarioNewData(data);
       handleUpdateScenario();
     }
   }, [scenarioNewData, data]);
@@ -73,6 +64,20 @@ const ScenariosNewContainer: React.FC = () => {
 
   const handleTab = useCallback((step) => dispatch(setScenarioTab(step)), [dispatch]);
 
+  const handleOnKeyDown = useCallback(
+    (id, e) => {
+      if (e.keyCode === 46 || e.keyCode === 8) {
+        const data =
+          id === 'title'
+            ? { ...scenarioNewData, title: 'Untitled' }
+            : { ...scenarioNewData, description: '  ' };
+        setScenarioNewData(data);
+        updateScenario.mutate({ id: data.id, data });
+      }
+    },
+    [data.id, scenarioNewData],
+  );
+
   return (
     <>
       <form className="z-20">
@@ -80,10 +85,14 @@ const ScenariosNewContainer: React.FC = () => {
           type="text"
           name="title"
           id="title"
-          placeholder={title}
+          placeholder={scenarioNewData.title}
           aria-label="Scenario title"
           className="flex-1 block w-full md:text-2xl sm:text-sm border-none text-gray-900 p-0 mb-6"
-          onChange={(e) => setScenarioNewData({ ...scenarioNewData, title: e.currentTarget.value })}
+          onChange={(e) =>
+            e.currentTarget.value.length > 2 &&
+            setScenarioNewData({ ...scenarioNewData, title: e.currentTarget.value })
+          }
+          onKeyDown={(e) => e.currentTarget.value.length === 0 && handleOnKeyDown('title', e)}
         />
 
         <div className="sm:col-span-6">
@@ -95,10 +104,14 @@ const ScenariosNewContainer: React.FC = () => {
             name="description"
             rows={3}
             className="w-full"
-            placeholder={description}
+            placeholder={scenarioNewData.description}
             defaultValue=""
             onChange={(e) =>
+              e.currentTarget.value.length > 2 &&
               setScenarioNewData({ ...scenarioNewData, description: e.currentTarget.value })
+            }
+            onKeyDown={(e) =>
+              e.currentTarget.value.length === 0 && handleOnKeyDown('description', e)
             }
           />
         </div>

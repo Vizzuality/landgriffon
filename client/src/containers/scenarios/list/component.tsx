@@ -1,36 +1,26 @@
-import { useEffect, useState, useCallback, MutableRefObject } from 'react';
-import { UseInfiniteQueryResult } from 'react-query';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { RadioGroup } from '@headlessui/react';
-import ScenarioItem from 'containers/scenarios/item';
+
 import { useAppSelector, useAppDispatch } from 'store/hooks';
-import useBottomScrollListener from 'hooks/scroll';
 import { scenarios, setCurrentScenario } from 'store/features/analysis/scenarios';
+
+import ScenarioItem from 'containers/scenarios/item';
 
 import type { Scenario, Scenarios } from '../types';
 
 type ScenariosListProps = {
   data: Scenarios;
-  scrollRef: MutableRefObject<HTMLDivElement | null>;
-} & UseInfiniteQueryResult;
+};
 
 const isScenarioSelected: (scenarioId: Scenario['id'], currentId: Scenario['id']) => boolean = (
   scenarioId,
   currentId,
 ): boolean => scenarioId.toString() === currentId?.toString();
 
-const ScenariosList: React.FC<ScenariosListProps> = ({
-  data,
-  hasNextPage,
-  fetchNextPage,
-  scrollRef,
-}: ScenariosListProps) => {
+const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProps) => {
   const { currentScenario } = useAppSelector(scenarios);
   const dispatch = useAppDispatch();
-
-  useBottomScrollListener(() => {
-    if (hasNextPage) fetchNextPage();
-  }, scrollRef);
 
   const router = useRouter();
   const { query } = router;

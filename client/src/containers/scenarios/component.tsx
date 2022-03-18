@@ -1,18 +1,35 @@
+import { MutableRefObject, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import Lottie from 'lottie-react';
 import { PlusIcon, XCircleIcon } from '@heroicons/react/solid';
+
+import { useInfiniteScenarios } from 'hooks/scenarios';
+import useBottomScrollListener from 'hooks/scroll';
+
 import ScenariosFilters from 'containers/scenarios/filters';
 import ScenariosList from 'containers/scenarios/list';
 import { AnchorLink } from 'components/button';
-import Lottie from 'lottie-react';
-import { useInfiniteScenarios } from 'hooks/scenarios';
 
 import noScenariosAnimationData from 'containers/scenarios/animations/noScenariosAnimationData.json';
 
-const ScenariosComponent: React.FC = (scrollRef) => {
+import type { Scenario } from './types';
+
+const ScenariosComponent: React.FC<{ scrollRef: MutableRefObject<HTMLDivElement> }> = ({
+  scrollRef,
+}) => {
   const { query } = useRouter();
   const params = query ? { sort: query.sortBy as string } : null;
   const { fetchNextPage, hasNextPage, data, isLoading, error } = useInfiniteScenarios(params);
+
+  const scenarios: Scenario[] = useMemo(() => {
+    const { pages } = data || {};
+    return pages?.reduce((acc, { data }) => acc.concat(data?.data), []);
+  }, [data]);
+
+  useBottomScrollListener(() => {
+    if (hasNextPage) fetchNextPage();
+  }, scrollRef);
 
   return (
     <div className="bg-white overscroll-contain text-gray-900">
@@ -28,12 +45,7 @@ const ScenariosComponent: React.FC = (scrollRef) => {
       {isLoading && <p>Loading scenarios...</p>}
       {!isLoading && data && (
         <div className="flex-1 z-10 pb-4">
-          <ScenariosList
-            data={data}
-            fetchNextPage={fetchNextPage}
-            hasNextPage={hasNextPage}
-            scrollRef={scrollRef}
-          />
+          <ScenariosList data={scenarios} />
         </div>
       )}
       {!isLoading && error && (
@@ -57,8 +69,8 @@ const ScenariosComponent: React.FC = (scrollRef) => {
             Create a new scenario
           </AnchorLink>
         </Link>
-        {!data ||
-          (data.length === 0 && (
+        {!scenarios ||
+          (scenarios.length === 0 && (
             <div className="p-7 space-y-8 text-center absolute z-20 bg-white">
               <p className="text-sm">
                 Scenarios let you simulate changes in sourcing to evaluate how they would affect

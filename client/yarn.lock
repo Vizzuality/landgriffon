@@ -6612,6 +6612,11 @@ listr2@^3.8.3:
     through "^2.3.8"
     wrap-ansi "^7.0.0"
 
+little-state-machine@^4.2.3:
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/little-state-machine/-/little-state-machine-4.2.3.tgz#1599d9a280577e48b41abb50e6e6073bf022c33e"
+  integrity sha512-USuzo9sbmvvJwZVKUpcjw+pBmmTJKPRJgpjRpTFN0j2uzvH8K4wxd9ueuoRUqJI26FSWB5SnGqt7vbEz8EYSEg==
+
 loader-runner@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/loader-runner/-/loader-runner-4.2.0.tgz#d7022380d66d14c5fb1d496b89864ebcfd478384"

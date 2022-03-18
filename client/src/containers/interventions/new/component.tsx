@@ -100,13 +100,12 @@ const InterventionForm: FC = () => {
 
   const schemaValidation = useMemo(() => getSchemaValidation(interventionType), [interventionType]);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schemaValidation),
-  });
+  // const {
+  //   handleSubmit,
+  //   formState: { errors },
+  // } = useForm({
+  //   resolver: yupResolver(schemaValidation),
+  // });
 
   const steps = useMemo(() => [STEP1, STEPS2[interventionType]], [interventionType]);
 
@@ -115,60 +114,23 @@ const InterventionForm: FC = () => {
     dispatch(setNewInterventionStep(1));
   }, [dispatch]);
 
-  const handleContinue = useCallback(() => {
-    dispatch(setNewInterventionStep(2));
-  }, [dispatch]);
+  const handleInterventionData = useCallback(() => {
+    console.log('submit')
+  }, [])
 
-  const handleIntervention = useCallback(
-    (data) => {
-    console.log(data, 'data')
-      dispatch(setSubContentCollapsed(true));
-    },
-    [dispatch],
-  );
-
-  const interventionErrors = useMemo(
-    () => schemaValidation && isEmpty(errors),
-    [errors, schemaValidation],
-  );
-
-  console.log(interventionErrors, errors, 'interventionErrors')
   return (
     <>
       <Steps steps={steps} current={interventionsStep} className="mb-10 z-20" />
       <form
         id="newInterventionForm"
         className="space-y-8"
-        onSubmit={handleSubmit(handleIntervention)}
+        // onSubmit={handleSubmit(handleIntervention)}
       >
-        {interventionsStep === 1 && <Step1 register={register} />}
-        {interventionsStep === 2 && <Step2 register={register} />}
-        <div className="pt-5">
-          <div className="flex justify-end">
-            <Button type="button" onClick={handleCancel} theme="secondary">
-              Cancel
-            </Button>
-            {interventionsStep === 1 && (
-              <Button
-                disabled={!isEmpty(errors)}
-                type="button"
-                className="ml-3"
-                onClick={handleContinue}
-              >
-                Continue
-              </Button>
-            )}
-            {interventionsStep === 2 && (
-              <Button
-                type="submit"
-                className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                disabled={!interventionErrors}
-              >
-                Add intervention
-              </Button>
-            )}
-          </div>
-        </div>
+        {interventionsStep === 1 && (
+          <Step1
+            handleCancel={handleCancel} handleInterventionData={handleInterventionData} />
+        )}
+        {interventionsStep === 2 && <Step2 handleCancel={handleCancel} />}
       </form>
     </>
   );

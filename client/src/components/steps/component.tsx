@@ -38,7 +38,7 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
               <span className="text-xs text-indigo-600 font-semibold tracking-wide uppercase group-hover:text-indigo-800">
                 {step.title}
               </span>
-              <span className="text-sm font-medium">{step.name}</span>
+              <span className="text-sm font-medium text-left">{step.name}</span>
               {!!step.description && step.id === current && stepDescription(step.description)}
             </button>
           )}
@@ -57,7 +57,7 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
               <span className="text-xs text-indigo-600 font-semibold tracking-wide uppercase">
                 {step.title}
               </span>
-              <span className="text-sm font-medium">{step.name}</span>
+              <span className="text-sm font-medium text-left">{step.name}</span>
               {!!step.description && step.id === current && stepDescription(step.description)}
             </button>
           )}
@@ -75,7 +75,7 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
               <span className="text-xs text-gray-500 font-semibold tracking-wide uppercase group-hover:text-gray-700">
                 {step.title}
               </span>
-              <span className="text-sm font-medium">{step.name}</span>
+              <span className="text-sm font-medium text-left">{step.name}</span>
               {!!step.description && step.id === current && stepDescription(step.description)}
             </button>
           )}

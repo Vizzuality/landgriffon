@@ -1,8 +1,12 @@
-import { useCallback, useEffect } from 'react';
-import { useDebounce } from '@react-hook/debounce';
-
+import { useCallback } from 'react';
+import { useDebounceCallback } from '@react-hook/debounce';
+import { useForm } from 'react-hook-form';
 import cx from 'classnames';
 import { useRouter } from 'next/router';
+import toast from 'react-hot-toast';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+
 import { useScenario, useUpdateScenario } from 'hooks/scenarios';
 import { useInterventions } from 'hooks/interventions';
 
@@ -12,10 +16,11 @@ import { setScenarioTab, scenarios } from 'store/features/analysis/scenarios';
 
 import Button from 'components/button';
 import InterventionsList from 'containers/interventions/list';
-import Label from 'components/forms/label';
-import Textarea from 'components/forms/textarea';
+import { Label, Input, Textarea } from 'components/forms';
 import GrowthList from 'containers/growth/list/component';
 import { PlusIcon } from '@heroicons/react/solid';
+
+import type { ErrorResponse } from 'types';
 
 const items = [
   {
@@ -32,67 +37,71 @@ const items = [
   },
 ];
 
-const ScenariosNewContainer: React.FC = () => {
-  const router = useRouter();
-  const { query } = router;
+const schemaValidation = yup.object({
+  title: yup.string().min(2).required(),
+  description: yup.string(),
+});
 
+const ScenariosNewContainer: React.FC = () => {
+  const { query } = useRouter();
+
+  const dispatch = useAppDispatch();
   const { scenarioCurrentTab, currentScenario } = useAppSelector(scenarios);
 
-  const { data, isLoading, error } = useScenario(currentScenario as string, { sort: 'title' });
+  const {
+    register,
+    getValues,
+    formState: { isValid, errors },
+  } = useForm({
+    mode: 'onChange',
+    resolver: yupResolver(schemaValidation),
+  });
 
+  const { data: scenario, isLoading } = useScenario(currentScenario as string, { sort: 'title' });
   const { data: interventions } = useInterventions({ sort: query.sortBy as string });
-  const [scenarioNewData, setScenarioNewData] = useDebounce(data, 500);
 
   const updateScenario = useUpdateScenario();
 
-  const handleUpdateScenario = useCallback(() => {
-    if (!!scenarioNewData.title || !!scenarioNewData.description)
-      updateScenario.mutate({ id: data.id, data: scenarioNewData });
-  }, [updateScenario, data, scenarioNewData]);
-
-  useEffect(() => {
-    if (!isLoading && !error && scenarioNewData !== data) {
-      setScenarioNewData(data);
-      handleUpdateScenario();
-    }
-  }, [scenarioNewData, data]);
-
-  const dispatch = useAppDispatch();
   const handleNewScenarioFeature = useCallback(() => {
     dispatch(setSubContentCollapsed(false));
   }, [dispatch]);
 
   const handleTab = useCallback((step) => dispatch(setScenarioTab(step)), [dispatch]);
 
-  const handleOnKeyDown = useCallback(
-    (id, e) => {
-      if (e.keyCode === 46 || e.keyCode === 8) {
-        const data =
-          id === 'title'
-            ? { ...scenarioNewData, title: 'Untitled' }
-            : { ...scenarioNewData, description: '  ' };
-        setScenarioNewData(data);
-        updateScenario.mutate({ id: data.id, data });
+  const handleChange = useDebounceCallback(
+    useCallback(() => {
+      const { id } = scenario;
+      if (isValid) {
+        updateScenario.mutate(
+          { id, data: getValues() },
+          {
+            onSuccess: () => {
+              toast.success('Your changes were successfully saved.');
+            },
+            onError: (error: ErrorResponse) => {
+              const { errors } = error.response?.data;
+              errors.forEach(({ title }) => toast.error(title));
+            },
+          },
+        );
       }
-    },
-    [data.id, scenarioNewData],
+    }, [scenario, isValid, updateScenario, getValues]),
+    500,
   );
 
   return (
     <>
       <form className="z-20">
-        <input
+        <Input
           type="text"
-          name="title"
-          id="title"
-          placeholder={scenarioNewData.title}
+          {...register('title')}
+          placeholder="Untitled"
+          defaultValue={scenario.title}
           aria-label="Scenario title"
           className="flex-1 block w-full md:text-2xl sm:text-sm border-none text-gray-900 p-0 mb-6"
-          onChange={(e) =>
-            e.currentTarget.value.length > 2 &&
-            setScenarioNewData({ ...scenarioNewData, title: e.currentTarget.value })
-          }
-          onKeyDown={(e) => e.currentTarget.value.length === 0 && handleOnKeyDown('title', e)}
+          onInput={handleChange}
+          disabled={isLoading}
+          error={errors.title?.message}
         />
 
         <div className="sm:col-span-6">
@@ -100,19 +109,12 @@ const ScenariosNewContainer: React.FC = () => {
             Scenario description <span className="text-gray-500">(optional)</span>
           </Label>
           <Textarea
-            id="description"
-            name="description"
+            {...register('description')}
             rows={3}
             className="w-full"
-            placeholder={scenarioNewData.description}
-            defaultValue=""
-            onChange={(e) =>
-              e.currentTarget.value.length > 2 &&
-              setScenarioNewData({ ...scenarioNewData, description: e.currentTarget.value })
-            }
-            onKeyDown={(e) =>
-              e.currentTarget.value.length === 0 && handleOnKeyDown('description', e)
-            }
+            defaultValue={scenario.description}
+            disabled={isLoading}
+            error={errors.description?.message}
           />
         </div>
       </form>

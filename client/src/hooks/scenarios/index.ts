@@ -9,9 +9,6 @@ import {
 
 import { apiService } from 'services/api';
 import type { Scenario } from 'containers/scenarios/types';
-import toast from 'react-hot-toast';
-
-import { ErrorResponse } from 'types';
 
 type ResponseData = UseQueryResult<Scenario[]>;
 type ResponseDataScenario = UseQueryResult<Scenario>;
@@ -114,12 +111,5 @@ export function useUpdateScenario() {
 
   return useMutation(updateProject, {
     mutationKey: 'editScenario',
-    onSuccess: () => {
-      toast.success('Your changes were successfully saved.');
-    },
-    onError: (error: ErrorResponse) => {
-      const { errors } = error.response?.data;
-      errors.forEach(({ title }) => toast.error(title));
-    },
   });
 }

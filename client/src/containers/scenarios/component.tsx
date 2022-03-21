@@ -15,7 +15,7 @@ import noScenariosAnimationData from 'containers/scenarios/animations/noScenario
 
 import type { Scenario } from './types';
 
-const ScenariosComponent: React.FC<{ scrollRef: MutableRefObject<HTMLDivElement> }> = ({
+const ScenariosComponent: React.FC<{ scrollRef?: MutableRefObject<HTMLDivElement> }> = ({
   scrollRef,
 }) => {
   const { query } = useRouter();

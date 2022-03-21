@@ -68,7 +68,6 @@
     "jsona": "1.9.2",
     "jsonwebtoken": "8.5.1",
     "ka-table": "7.3.0",
-    "little-state-machine": "^4.2.3",
     "lodash": "4.17.21",
     "lottie-react": "2.2.1",
     "next": "12.1.0",

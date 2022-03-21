@@ -98,15 +98,12 @@ export const analysisScenariosSlice = createSlice({
     }),
     setNewInterventionData: (
       state,
-      action: PayloadAction<{
-        id: string;
-        value: unknown;
-      }>,
+      action: PayloadAction<Partial<ScenariosState['newInterventionData']>>,
     ) => ({
       ...state,
       newInterventionData: {
         ...state.newInterventionData,
-        [action.payload.id]: action.payload.value,
+        ...action.payload,
       },
     }),
   },

@@ -30,6 +30,8 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
       .createQueryBuilder()
       .select(`hashtext(concat($3::text, points.radius))`)
       .addSelect(`points.radius`)
+      .addSelect(`array(SELECT h3_polyfill(points.radius,6))`)
+      .addSelect(`cardinality(array(SELECT h3_polyfill(points.radius,6)))`)
       .addSelect(
         `array(
         SELECT h3_compact(array(SELECT h3_polyfill(points.radius,6)))
@@ -40,7 +42,7 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
     const res: any = await this.query(
       `WITH
         points AS (SELECT ST_BUFFER(ST_SetSRID(ST_POINT($1,$2),4326)::geometry, 0.5) as radius)
-      INSERT INTO geo_region (name, "theGeom", "h3Compact")
+      INSERT INTO geo_region (name, "theGeom", "h3Flat", "h3FlatLength", "h3Compact")
       ${selectQuery.getSql()}
       ON CONFLICT (name) DO UPDATE
           SET "theGeom" = excluded."theGeom", "h3Compact" = excluded."h3Compact"
@@ -68,6 +70,9 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
       .values({
         name: () => `hashtext(:arg1)`,
         theGeom: () => `ST_GeomFromText(:arg2, 4326)`,
+        h3Flat: () => `array(SELECT h3_geo_to_h3(ST_GeomFromText(:arg2), 6))`,
+        h3FlatLength: () =>
+          `cardinality(array(SELECT h3_geo_to_h3(ST_GeomFromText(:arg2), 6)))`,
         h3Compact: () =>
           `array( SELECT (h3_compact(array(SELECT h3_geo_to_h3(ST_GeomFromText(:arg2), 6)))))`,
       })

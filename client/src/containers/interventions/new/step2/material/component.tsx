@@ -46,7 +46,6 @@ const Material = () => {
 
   const onChange = useCallback(
     (e) => {
-      console.log(e, 'step2')
       dispatch(setNewInterventionData(e))
       },
       // setFormData({

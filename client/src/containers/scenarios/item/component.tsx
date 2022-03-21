@@ -147,7 +147,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                               </button>
                             )}
                           </Menu.Item>
-                          <Menu.Item>
+                          {/* <Menu.Item>
                             {({ active }) => (
                               <button
                                 type="button"
@@ -160,7 +160,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                                 Shared
                               </button>
                             )}
-                          </Menu.Item>
+                          </Menu.Item> TO DO - unhide when API gets ready */}
                         </div>
                       </Menu.Items>
                     </Transition>

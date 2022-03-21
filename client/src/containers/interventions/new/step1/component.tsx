@@ -1,5 +1,5 @@
-import { useCallback, useMemo, useState, FC } from 'react';
-import { useForm, useController, Controller } from 'react-hook-form';
+import { useCallback, useMemo, FC } from 'react';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
@@ -7,7 +7,6 @@ import * as yup from 'yup';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { useInterventionTypes } from 'hooks/analysis';
 
-import { scenarios } from 'store/features/analysis/scenarios';
 import { setNewInterventionStep, setNewInterventionData } from 'store/features/analysis/scenarios';
 import { setFilter, analysisFilters } from 'store/features/analysis/filters';
 
@@ -18,13 +17,13 @@ import Textarea from 'components/forms/textarea';
 import Select from 'components/select';
 import { Button } from 'components/button';
 
-import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
-import Suppliers from 'containers/analysis-visualization/analysis-filters/suppliers/component';
-import OriginRegions from 'containers/analysis-visualization/analysis-filters/origin-regions/component';
+// import Materials from 'containers/analysis-visualization/analysis-filters/materials';
+import Materials from 'containers/interventions/smart-filters/materials';
+import Suppliers from 'containers/interventions/smart-filters/suppliers/component';
+import OriginRegions from 'containers/interventions/smart-filters/origin-regions/component';
 
 // types
 import type { SelectOptions, SelectOption } from 'components/select/types';
-import type { AnalysisFiltersState } from 'store/features/analysis/filters';
 import type { StepProps } from 'containers/interventions/new/types';
 
 const businesses = ['business1', 'business2', 'business3'];
@@ -206,7 +205,6 @@ const Step1: FC<StepProps> = ({ handleCancel }: StepProps) => {
               multiple
               withSourcingLocations
               current={filters.materials}
-              theme="inline-primary"
               ellipsis
             />
           </div>

@@ -250,3 +250,14 @@ export type METADATA_INTERVENTIONS = {
   impacts: string;
   material: string;
 };
+
+/**
+ * Targets
+ */
+export type Target = {
+  id: string;
+  baselineYear: number;
+  targetYear: number;
+  value: number;
+  indicatorId: Indicator['id'];
+};

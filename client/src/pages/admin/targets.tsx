@@ -1,19 +1,30 @@
-import { useMemo } from 'react';
+import { useCallback } from 'react';
 import Head from 'next/head';
-import { ITableProps } from 'ka-table';
-import { DataType } from 'ka-table/enums';
-import dynamic from 'next/dynamic';
 import { InformationCircleIcon } from '@heroicons/react/solid';
 
 import useModal from 'hooks/modals';
+import { useTargets } from 'hooks/targets';
+
 import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import NoData from 'containers/admin/no-data';
 import UploadDataSourceModal from 'containers/admin/upload-data-source-modal';
+import TargetsList from 'containers/targets/list';
 import Button from 'components/button';
+import Loading from 'components/loading';
 
-type ITableData = ITableProps;
+import type { Target } from 'types';
+import useIndicators from 'hooks/indicators';
 
 const TableNoSSR = dynamic(() => import('components/table'), { ssr: false });
+const TARGETS_DATA: Target[] = [
+  {
+    id: 'target-1',
+    indicatorId: 'Carbon emissions fue to land use change (tCO2)',
+    baselineYear: 2015,
+    targetYear: 2045,
+    value: 2.3,
+  },
+];
 
 const AdminTargetsPage: React.FC = () => {
   const {
@@ -22,38 +33,20 @@ const AdminTargetsPage: React.FC = () => {
     close: closeUploadDataSourceModal,
   } = useModal();
 
-  const tableData = Array(4)
-    .fill(undefined)
-    .map((_, index) => ({
-      indicator: `Deforestation loss due to land use change: ${index}`,
-      baselineYear: 2018,
-      id: index,
-    }));
+  const { data: indicators } = useIndicators();
+  const { data: targets, isLoading } = useTargets();
+  const hasData = indicators?.length > 0;
+  console.log('indicators: ', indicators);
 
-  const tableProps: ITableData = useMemo(
-    () => ({
-      rowKeyField: 'id',
-      columns: [
-        { key: 'indicator', title: 'Indicator', dataType: DataType.String, width: 100 },
-        { key: 'baselineYear', title: 'Baseline Year', dataType: DataType.Number },
-      ],
-      data: tableData,
-    }),
-    [tableData],
-  );
-
-  const hasData = tableData?.length > 0;
+  const handleCreateTarget = useCallback(() => console.log('create a new target'), []);
 
   return (
     <AdminLayout
       currentTab={ADMIN_TABS.TARGETS}
       headerButtons={
         <>
-          <Button theme="secondary" onClick={() => console.info('Download: click')}>
-            Download
-          </Button>
-          <Button theme="primary" onClick={openUploadDataSourceModal}>
-            Upload data source
+          <Button theme="primary" onClick={handleCreateTarget}>
+            Create a new target
           </Button>
         </>
       }
@@ -62,20 +55,48 @@ const AdminTargetsPage: React.FC = () => {
         <title>Admin targets | Landgriffon</title>
       </Head>
 
-      <UploadDataSourceModal
-        open={isUploadDataSourceModalOpen}
-        onDismiss={closeUploadDataSourceModal}
-      />
+      {!isLoading && !hasData && <NoData />}
 
-      {!hasData && <NoData />}
+      {isLoading && (
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <Loading />
+        </div>
+      )}
 
       {hasData && (
         <>
           <div className="flex items-center text-sm text-black py-2">
             <InformationCircleIcon className="w-5 h-5 mr-3 text-black" aria-hidden="true" />
-            Target value for each indicator by year (percentage of reduction)
+            Target value for each indicator by year
           </div>
-          <TableNoSSR {...tableProps} />
+          <div className="mt-4 space-y-4">
+            {indicators.map(({ id, name }) => (
+              <div className="rounded-md bg-white" key={id}>
+                <div>{name}</div>
+                {/* <div>
+                  <div>
+                    <div>Baseline</div>
+                    <div>2.37Mt</div>
+                  </div>
+                  <div>
+                    <div>2035</div>
+                    <div>2.37Mt</div>
+                  </div>
+                  <div>
+                    <div>2040</div>
+                    <div>2.37Mt</div>
+                  </div>
+                  <div>
+                    <div>2050</div>
+                    <div>2.37Mt</div>
+                  </div>
+                </div> */}
+                <div>
+                  <button>Edit</button>
+                </div>
+              </div>
+            ))}
+          </div>
         </>
       )}
     </AdminLayout>

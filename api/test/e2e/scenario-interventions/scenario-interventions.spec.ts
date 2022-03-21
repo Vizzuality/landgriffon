@@ -544,8 +544,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .send();
 
-      console.log(JSON.stringify(response.body));
-
       expect(HttpStatus.BAD_REQUEST);
       expect(response).toHaveErrorMessage(
         HttpStatus.BAD_REQUEST,

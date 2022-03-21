@@ -121,7 +121,7 @@ const InterventionForm: FC = () => {
   return (
     <>
       <Steps steps={steps} current={interventionsStep} className="mb-10 z-20" />
-      <form
+      <div
         id="newInterventionForm"
         className="space-y-8"
         // onSubmit={handleSubmit(handleIntervention)}
@@ -131,7 +131,7 @@ const InterventionForm: FC = () => {
             handleCancel={handleCancel} handleInterventionData={handleInterventionData} />
         )}
         {interventionsStep === 2 && <Step2 handleCancel={handleCancel} />}
-      </form>
+      </div>
     </>
   );
 };

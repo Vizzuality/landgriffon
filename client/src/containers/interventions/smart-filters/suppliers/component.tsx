@@ -6,15 +6,6 @@ import { useSuppliersTrees, SuppliersTreesParams } from 'hooks/suppliers';
 
 import type { TreeSelectProps } from 'components/tree-select/types';
 
-// form validation
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-
-const schemaValidation = yup.object({
-  suppliers: yup.array().of(yup.string()).min(1).required(),
-});
-
 type SuppliersFilterProps = {
   current: TreeSelectProps['current'];
   multiple?: TreeSelectProps['multiple'];
@@ -37,6 +28,7 @@ const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
   theme,
   ellipsis,
   fitContent,
+  ...props
 }) => {
   const { data, isFetching } = useSuppliersTrees({ depth, withSourcingLocations });
 
@@ -53,18 +45,9 @@ const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
     [data],
   );
 
-  const {
-    register,
-    control,
-    getValues,
-    formState: { isValid, errors },
-  } = useForm({
-    resolver: yupResolver(schemaValidation),
-  });
-
   return (
     <TreeSelect
-      {...register('suppliers')}
+      {...props}
       multiple={multiple}
       showSearch
       loading={isFetching}

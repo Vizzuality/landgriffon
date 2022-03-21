@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { sortBy } from 'lodash';
 
 import { useMaterialsTrees, MaterialsTreesParams } from 'hooks/materials';
@@ -6,15 +6,6 @@ import { useMaterialsTrees, MaterialsTreesParams } from 'hooks/materials';
 import TreeSelect from 'components/tree-select';
 
 import type { TreeSelectProps } from 'components/tree-select/types';
-
-// form validation
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-
-const schemaValidation = yup.object({
-  materials: yup.array().of(yup.string()).min(1).required(),
-});
 
 type MaterialsFilterProps = {
   current: TreeSelectProps['current'];
@@ -38,6 +29,8 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
   theme = 'inline-primary',
   ellipsis,
   fitContent,
+  onChange,
+  ...props
 }) => {
   const { data, isFetching } = useMaterialsTrees({ depth, withSourcingLocations });
 
@@ -54,22 +47,9 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
     [data],
   );
 
-  const {
-    register,
-    control,
-    getValues,
-    formState: { isValid, errors },
-  } = useForm({
-    resolver: yupResolver(schemaValidation),
-  });
-
-  const onChange = useCallback(() => {
-    const values = getValues();
-  }, [getValues]);
-
   return (
     <TreeSelect
-      {...register('materials')}
+      {...props}
       multiple={multiple}
       showSearch
       loading={isFetching}

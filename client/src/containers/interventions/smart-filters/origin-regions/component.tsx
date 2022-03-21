@@ -5,15 +5,6 @@ import { sortBy } from 'lodash';
 import { useAdminRegionsTrees, AdminRegionsTreesParams } from 'hooks/admin-regions';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
-// form validation
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-
-const schemaValidation = yup.object({
-  originRegions: yup.array().of(yup.string()).min(1).required(),
-});
-
 type OriginRegionsFilterProps = {
   current: TreeSelectProps['current'];
   multiple?: TreeSelectProps['multiple'];
@@ -36,6 +27,7 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
   theme,
   ellipsis,
   fitContent,
+  ...props
 }) => {
   const { data, isFetching } = useAdminRegionsTrees({ depth, withSourcingLocations });
 
@@ -52,19 +44,9 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
     [data],
   );
 
-
-  const {
-    register,
-    control,
-    getValues,
-    formState: { isValid, errors },
-  } = useForm({
-    resolver: yupResolver(schemaValidation),
-  });
-
   return (
     <TreeSelect
-      {...register('originRegions')}
+      {...props}
       multiple={multiple}
       showSearch
       loading={isFetching}

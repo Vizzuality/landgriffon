@@ -1,4 +1,4 @@
-import { useCallback, useMemo, FC } from 'react';
+import { useCallback, useMemo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -18,7 +18,7 @@ import Select from 'components/select';
 import { Button } from 'components/button';
 
 // import Materials from 'containers/analysis-visualization/analysis-filters/materials';
-import Materials from 'containers/interventions/smart-filters/materials';
+import Materials from 'containers/interventions/smart-filters/materials/component';
 import Suppliers from 'containers/interventions/smart-filters/suppliers/component';
 import OriginRegions from 'containers/interventions/smart-filters/origin-regions/component';
 
@@ -44,7 +44,7 @@ type schemaValidationMulti = {
   // originRegions: yup.array().min(1).required(),
 };
 
-const Step1: FC<StepProps> = ({ handleCancel }: StepProps) => {
+const Step1: React.FC<StepProps> = ({ handleCancel }: StepProps) => {
   const dispatch = useAppDispatch();
   //const [isOpen, setIsOpen] = useState<boolean>(false);
   const interventionTypes = useInterventionTypes();
@@ -121,9 +121,9 @@ const Step1: FC<StepProps> = ({ handleCancel }: StepProps) => {
 
   const {
     register,
-    control,
     handleSubmit,
-    getValues,
+    setValue,
+    watch,
     formState: { isValid, errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
@@ -139,13 +139,11 @@ const Step1: FC<StepProps> = ({ handleCancel }: StepProps) => {
   //   defaultValue: "",
   // });
 
-  const handleContinue = useCallback(
-    (values) => {
-      dispatch(setNewInterventionData(values));
-      if (isValid) dispatch(setNewInterventionStep(2));
-    },
-    [dispatch, isValid],
-  );
+  const handleContinue = useCallback((values) => {
+    console.log(values);
+    // dispatch(setNewInterventionData(values));
+    // if (isValid) dispatch(setNewInterventionStep(2));
+  }, []);
 
   const handleSelect = useCallback(
     (e) => {
@@ -202,16 +200,16 @@ const Step1: FC<StepProps> = ({ handleCancel }: StepProps) => {
           <div className="font-bold">
             <Materials
               {...register('materials')}
-              multiple
               withSourcingLocations
-              current={filters.materials}
+              multiple
               ellipsis
+              current={watch('materials')}
+              onChange={(values) => setValue('materials', values)}
             />
           </div>
           <span className="text-gray-700 font-medium">for</span>
 
           <Select
-            {...register('business')}
             loading={isLoadingBusinesses}
             current={currentBusiness}
             options={optionsBusinesses}
@@ -224,17 +222,18 @@ const Step1: FC<StepProps> = ({ handleCancel }: StepProps) => {
             {...register('suppliers')}
             multiple
             withSourcingLocations
-            current={filters.suppliers}
             theme="inline-primary"
+            current={watch('suppliers')}
+            onChange={(values) => setValue('suppliers', values)}
           />
           <span className="text-gray-700 font-medium">in</span>
           <OriginRegions
             {...register('originRegions')}
             multiple
             withSourcingLocations
-            current={filters.origins}
             theme="inline-primary"
-            onChange={handleSelect}
+            current={watch('originRegions')}
+            onChange={(values) => setValue('originRegions', values)}
           />
           <span className="text-gray-700 font-medium">.</span>
         </div>
@@ -244,7 +243,6 @@ const Step1: FC<StepProps> = ({ handleCancel }: StepProps) => {
           <span>Year of completion</span>
           <div className="mt-1">
             <Select
-              {...register('year')}
               loading={isLoadingYearCompletion}
               current={currentYearCompletion}
               options={optionsYearCompletion}
@@ -272,7 +270,7 @@ const Step1: FC<StepProps> = ({ handleCancel }: StepProps) => {
           <Button type="button" onClick={handleCancel} theme="secondary">
             Cancel
           </Button>
-          <Button disabled={!isValid} type="submit" className="ml-3">
+          <Button type="submit" className="ml-3">
             Continue
           </Button>
         </div>

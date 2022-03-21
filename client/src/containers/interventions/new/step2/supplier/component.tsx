@@ -86,14 +86,14 @@ const Supplier: FC = () => {
     [optionsCountries],
   );
 
-  const onChange = useCallback(
-    (key: string, value: string | number) =>
-      setFormData({
-        ...formData,
-        [key]: value,
-      }),
-    [],
-  );
+  // const onChange = useCallback(
+  //   (key: string, value: string | number) =>
+  //     setFormData({
+  //       ...formData,
+  //       [key]: value,
+  //     }),
+  //   [],
+  // );
 
   const optionsProducers: SelectOptions = useMemo(
     () =>
@@ -117,6 +117,7 @@ const Supplier: FC = () => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
+    mode: 'onChange',
   });
 
   return (
@@ -133,13 +134,11 @@ const Supplier: FC = () => {
               Tier 1 supplier <span className="text-gray-500">(optional)</span>
             </Label>
             <Select
-              id="supplier"
-              {...register('supplier', { value: formData.supplier })}
+              {...register('supplier')}
               loading={isLoadingSuppliers}
               current={currentSupplier}
               options={optionsSuppliers}
               placeholder="Select"
-              onChange={onChange}
             />
           </div>
 
@@ -148,13 +147,12 @@ const Supplier: FC = () => {
               Producer <span className="text-gray-500">(optional)</span>
             </Label>
             <Select
-              id="producer"
-              {...register('producer', { value: formData.producer })}
+              // id="producer"
+              {...register('producer')}
               loading={isLoadingProducers}
               current={currentProducer}
               options={optionsProducers}
               placeholder="Select"
-              onChange={onChange}
             />
           </div>
         </div>

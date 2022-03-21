@@ -1,4 +1,7 @@
 import { useCallback, useMemo, useState, FC } from 'react';
+import { useForm, useController, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
 // hooks
 import { useAppDispatch, useAppSelector } from 'store/hooks';
@@ -19,16 +22,10 @@ import Materials from 'containers/analysis-visualization/analysis-filters/materi
 import Suppliers from 'containers/analysis-visualization/analysis-filters/suppliers/component';
 import OriginRegions from 'containers/analysis-visualization/analysis-filters/origin-regions/component';
 
-// form validation
-import { useForm, useController, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-
 // types
 import type { SelectOptions, SelectOption } from 'components/select/types';
 import type { AnalysisFiltersState } from 'store/features/analysis/filters';
 import type { StepProps } from 'containers/interventions/new/types';
-import select from 'components/select';
 
 const businesses = ['business1', 'business2', 'business3'];
 const yearCompletions = [2001, 2015, 2020];
@@ -43,7 +40,7 @@ const schemaValidation = yup.object({
 
 type schemaValidationMulti = {
   // percentage: yup.number().required(),
-  //materials: yup.array().min(1).required();
+  // materials: yup.array().min(1).required();
   // suppliers: yup.array().min(1).required(),
   // originRegions: yup.array().min(1).required(),
 };
@@ -60,7 +57,6 @@ const Step1: FC<StepProps> = ({ handleCancel }: StepProps) => {
     [materials, origins, suppliers],
   );
 
-  const [moreFilters, setMoreFilters] = useState(selectedFilters);
   // const { data: sourcingRegions, isLoading: isLoadingSourcingRegions } = useSourcingRegions();
 
   const business = 'business2';
@@ -132,18 +128,17 @@ const Step1: FC<StepProps> = ({ handleCancel }: StepProps) => {
     formState: { isValid, errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
-    mode: 'onChange',
   });
 
-  const {
-    field: { onChange: onChangeMaterials, onBlur, name: MaterialsName, value, ref },
-    fieldState: { invalid, isTouched, isDirty },
-    formState: { isValid: isValidMulti, touchedFields, dirtyFields, errors: errorsMulti }
-  } = useController({
-    control,
-    rules: { required: true },
-    defaultValue: "",
-  });
+  // const {
+  //   field: { onChange: onChangeMaterials, onBlur, name: MaterialsName, value, ref },
+  //   fieldState: { invalid, isTouched, isDirty },
+  //   formState: { isValid: isValidMulti, touchedFields, dirtyFields, errors: errorsMulti }
+  // } = useController({
+  //   control,
+  //   rules: { required: true },
+  //   defaultValue: "",
+  // });
 
   const handleContinue = useCallback(
     (values) => {
@@ -155,12 +150,23 @@ const Step1: FC<StepProps> = ({ handleCancel }: StepProps) => {
 
   const handleSelect = useCallback(
     (e) => {
-      const selectIds = e.map(({ value }) => value);
-      if (!isValidMulti) {
-        dispatch(setNewInterventionData({ id: 'materials', value: selectIds }));
+      const values = Array.isArray(e) ? e : [e];
+      const selectIds = values.map(({ value }) => value);
+      if (isValid) {
+        dispatch(setNewInterventionData({ value: selectIds }));
       }
     },
-    [dispatch, isValidMulti],
+    [dispatch, isValid],
+  );
+
+  const handleMaterials = useCallback(
+    (selected) => {
+      const selectIds = selected.map(({ value }) => value);
+      if (isValid) {
+        dispatch(setNewInterventionData({ materials: selectIds }));
+      }
+    },
+    [dispatch, isValid],
   );
 
   return (
@@ -195,50 +201,26 @@ const Step1: FC<StepProps> = ({ handleCancel }: StepProps) => {
 
           <span className="text-gray-700 font-medium">of</span>
           <div className="font-bold">
-            <Controller
-              control={control}
-              name="materials"
-              defaultValue={filters.materials}
-              render={({ field }) => (
-                <Materials
-                  {...field}
-                  // {...register('materials')}
-                  // name="materials"
-                  multiple
-                  withSourcingLocations
-                  current={filters.materials}
-                  theme="inline-primary"
-                  ellipsis
-                  onChange={handleSelect}
-                />
-              )}
-              rules={{ required: true }}
+            <Materials
+              {...register('materials')}
+              multiple
+              withSourcingLocations
+              current={filters.materials}
+              theme="inline-primary"
+              ellipsis
             />
           </div>
           <span className="text-gray-700 font-medium">for</span>
-          <Controller
-            control={control}
-            name="business"
-            // defaultValue={filters.materials}
-            rules={{
-              validate: (e) => {
-                console.log('validate', e)
-              }
-            }}
-            render={({ field: { onChange, value } }) => (
-              <Select
-                {...register('business')}
-                loading={isLoadingBusinesses}
-                current={currentBusiness}
-                options={optionsBusinesses}
-                placeholder="all businesses"
-                onChange={handleSelect}
-                theme="inline-primary"
 
-              />
-            )}
-            rules={{ required: true }}
+          <Select
+            {...register('business')}
+            loading={isLoadingBusinesses}
+            current={currentBusiness}
+            options={optionsBusinesses}
+            placeholder="all businesses"
+            theme="inline-primary"
           />
+
           <span className="text-gray-700 font-medium">from</span>
           <Suppliers
             {...register('suppliers')}
@@ -248,21 +230,13 @@ const Step1: FC<StepProps> = ({ handleCancel }: StepProps) => {
             theme="inline-primary"
           />
           <span className="text-gray-700 font-medium">in</span>
-          <Controller
-            control={control}
-            name="materials"
-            defaultValue={filters.materials}
-            render={({ field }) => (
-              <OriginRegions
-                {...field}
-                multiple
-                withSourcingLocations
-                current={filters.origins}
-                theme="inline-primary"
-                onChange={handleSelect}
-              />
-            )}
-            rules={{ required: true }}
+          <OriginRegions
+            {...register('originRegions')}
+            multiple
+            withSourcingLocations
+            current={filters.origins}
+            theme="inline-primary"
+            onChange={handleSelect}
           />
           <span className="text-gray-700 font-medium">.</span>
         </div>

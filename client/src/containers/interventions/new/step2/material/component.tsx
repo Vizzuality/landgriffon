@@ -2,6 +2,7 @@ import { useMemo, useCallback, useState } from 'react';
 
 // hooks
 import { useMaterials } from 'hooks/materials';
+import { useAppDispatch } from 'store/hooks';
 
 // components
 import Input from 'components/forms/input';
@@ -9,12 +10,13 @@ import Label from 'components/forms/label';
 import Select from 'components/select';
 
 // form validation
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
+import { setNewInterventionData } from 'store/features/analysis/scenarios';
 
 const schemaValidation = yup.object({
   materialTons: yup.number().required('Tones are required'),
@@ -23,6 +25,7 @@ const schemaValidation = yup.object({
 
 const Material = () => {
   const { data: materials, isLoading: isLoadingMaterials } = useMaterials();
+  const dispatch = useAppDispatch();
   const optionsMaterials: SelectOptions = useMemo(
     () =>
       materials.map((material) => ({
@@ -42,15 +45,19 @@ const Material = () => {
   );
 
   const onChange = useCallback(
-    (key: string, value: string | number) =>
-      setFormData({
-        ...formData,
-        [key]: value,
-      }),
-    [formData],
+    (e) => {
+      console.log(e, 'step2')
+      dispatch(setNewInterventionData(e))
+      },
+      // setFormData({
+      //   ...formData,
+      //   [key]: value,
+      // }),
+    [dispatch],
   );
 
   const {
+    handleSubmit,
     register,
     formState: { errors },
   } = useForm({
@@ -65,6 +72,7 @@ const Material = () => {
         <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
           <div className="block font-medium text-gray-700">
             <Label className="mb-1">Material</Label>
+
             <Select
               id="material"
               {...register('material', { value: formData.material })}
@@ -75,6 +83,7 @@ const Material = () => {
               onChange={onChange}
               fitContent
             />
+
           </div>
 
           <div className="block font-medium text-gray-700">

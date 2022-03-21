@@ -38,7 +38,7 @@ const Step2: FC<StepProps> = ({ handleCancel }: StepProps) => {
 
   const {
     handleSubmit,
-    formState: { isValid, errors },
+    formState: { isValid },
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });

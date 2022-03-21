@@ -22,18 +22,18 @@ const SORT_OPTIONS = [
 ];
 
 const filtersItems = [
-  // {
-  //   name: 'All',
-  //   filter: 'all',
-  // },
-  // {
-  //   name: 'My scenarios',
-  //   filter: 'private',
-  // },
-  // {
-  //   name: 'Shared',
-  //   filter: 'public',
-  // }, // TO DO - change hen API is ready
+  {
+    name: 'All',
+    filter: 'all',
+  },
+  {
+    name: 'My scenarios',
+    filter: 'private',
+  },
+  {
+    name: 'Shared',
+    filter: 'public',
+  },
 ];
 
 const ScenariosFilters: FC = () => {
@@ -76,10 +76,10 @@ const ScenariosFilters: FC = () => {
   return (
     <div className="flex items-center">
       <div className="relative flex">
-        <button type="button" onClick={toggleSearch} className="realtive">
-          <SearchIcon className="w-4 h-4" />
-        </button>
-        {isSearchEnable && (
+        {/* <button type="button" onClick={toggleSearch}> */}
+        <SearchIcon className="w-4 h-4" />
+        {/* </button> */}
+        {/* {isSearchEnable && ( 
           <Transition
             as={Fragment}
             enter="transition-opacity ease-linear duration-700"
@@ -88,19 +88,19 @@ const ScenariosFilters: FC = () => {
             leave="transition-opacity ease-linear duration-700"
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
-          >
-            <input
-              id="search"
-              name="search"
-              placeholder="Search"
-              className="flex-1 appearance-none text-sm text-green-700 font-bold border-0 border-b-2 border-green-700 px-0 py-0 focus:outline-none focus:border-green-700 focus:ring-0 max-w-[86px]"
-              type="search"
-              onChange={handleSearchByTerm}
-            />
-          </Transition>
-        )}
+          > */}
+        <input
+          id="search"
+          name="search"
+          placeholder="Search"
+          className="flex-1 appearance-none text-sm text-green-700 font-bold focus:border-0 focus:border-b-2 px-0 py-0 focus:outline-none focus:border-green-700 focus:ring-0 max-w-[86px]"
+          type="search"
+          onChange={handleSearchByTerm}
+        />
+        {/* </Transition>
+         )} */}
       </div>
-
+      {/* 
       <ul className="relative flex flex-1 space-x-2 ml-3 justify-start whitespace-nowrap items-center">
         {filtersItems.map((item) => (
           <li key={item.filter}>
@@ -117,7 +117,7 @@ const ScenariosFilters: FC = () => {
             </button>
           </li>
         ))}
-      </ul>
+      </ul>  TO DO - unhide when API gets ready */}
 
       <div className="absolute right-0 bg-white z-10 pl-5">
         <Select

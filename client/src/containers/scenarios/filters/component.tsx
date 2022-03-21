@@ -22,18 +22,18 @@ const SORT_OPTIONS = [
 ];
 
 const filtersItems = [
-  {
-    name: 'All',
-    filter: 'all',
-  },
-  {
-    name: 'My scenarios',
-    filter: 'private',
-  },
-  {
-    name: 'Shared',
-    filter: 'public',
-  },
+  // {
+  //   name: 'All',
+  //   filter: 'all',
+  // },
+  // {
+  //   name: 'My scenarios',
+  //   filter: 'private',
+  // },
+  // {
+  //   name: 'Shared',
+  //   filter: 'public',
+  // }, // TO DO - change hen API is ready
 ];
 
 const ScenariosFilters: FC = () => {

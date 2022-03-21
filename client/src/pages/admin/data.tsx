@@ -7,7 +7,7 @@ import { ExclamationIcon /*, FilterIcon*/ } from '@heroicons/react/solid';
 import useModal from 'hooks/modals';
 import { useSourcingLocationsMaterials } from 'hooks/sourcing-locations';
 import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
-import NoData from 'containers/admin/no-data';
+import NoDataUpload from 'containers/admin/no-data-upload';
 import NoResults from 'containers/admin/no-results';
 import DownloadMaterialsDataButton from 'containers/admin/download-materials-data-button';
 import UploadDataSourceModal from 'containers/admin/upload-data-source-modal';
@@ -146,7 +146,7 @@ const AdminDataPage: React.FC = () => {
         onDismiss={closeUploadDataSourceModal}
       />
 
-      {!hasData && !isFetchingData && !isSearching && <NoData />}
+      {!hasData && !isFetchingData && !isSearching && <NoDataUpload />}
 
       {!(!hasData && !isFetchingData && !isSearching) && (
         <div className="flex flex-col-reverse items-center justify-between md:flex-row">

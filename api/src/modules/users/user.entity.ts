@@ -102,7 +102,7 @@ export class User extends BaseEntity {
   @OneToMany(
     () => ScenarioIntervention,
     (scenarioIntervention: ScenarioIntervention) =>
-      scenarioIntervention.lastEditedUser,
+      scenarioIntervention.updatedBy,
   )
   scenarioInterventionsLastEdited: ScenarioIntervention[];
 }

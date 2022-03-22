@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -34,6 +35,7 @@ import {
 import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
 import { UpdateScenarioInterventionDto } from 'modules/scenario-interventions/dto/update.scenario-intervention.dto';
 import { PaginationMeta } from 'utils/app-base.service';
+import { SetUserInterceptor } from 'decorators/set-user.interceptor';
 
 @Controller(`/api/v1/scenario-interventions`)
 @ApiTags(scenarioResource.className)
@@ -93,6 +95,7 @@ export class ScenarioInterventionsController {
   @ApiOkResponse({ type: ScenarioIntervention })
   @ApiNotFoundResponse({ description: 'Scenario intervention not found' })
   @UsePipes(ValidationPipe)
+  @UseInterceptors(SetUserInterceptor)
   @Patch(':id')
   async update(
     @Body(new ValidationPipe()) dto: UpdateScenarioInterventionDto,

@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -34,6 +35,7 @@ import {
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sourcing-record.dto';
 import { PaginationMeta } from 'utils/app-base.service';
+import { SetUserInterceptor } from 'decorators/set-user.interceptor';
 
 @Controller(`/api/v1/sourcing-records`)
 @ApiTags(sourcingRecordResource.className)
@@ -129,6 +131,7 @@ export class SourcingRecordsController {
   @ApiOperation({ description: 'Updates a sourcing record' })
   @ApiOkResponse({ type: SourcingRecord })
   @ApiNotFoundResponse({ description: 'Sourcing record not found' })
+  @UseInterceptors(SetUserInterceptor)
   @Patch(':id')
   async update(
     @Body(new ValidationPipe()) dto: UpdateSourcingRecordDto,

@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -28,6 +29,7 @@ import { CreateTargetDto } from 'modules/targets/dto/create-target.dto';
 import { UpdateTargetDto } from 'modules/targets/dto/update-target.dto';
 import { Target, targetResource } from 'modules/targets/target.entity';
 import { TargetsService } from 'modules/targets/targets.service';
+import { SetUserInterceptor } from 'decorators/set-user.interceptor';
 
 @Controller('api/v1/targets')
 @ApiTags(targetResource.className)
@@ -85,6 +87,7 @@ export class TargetsController {
   @ApiOkResponse({ type: Target })
   @ApiNotFoundResponse({ description: 'Target not found' })
   @UsePipes(ValidationPipe)
+  @UseInterceptors(SetUserInterceptor)
   @Patch(':id')
   async update(
     @Body() dto: UpdateTargetDto,

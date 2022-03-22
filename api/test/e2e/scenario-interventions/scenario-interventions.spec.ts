@@ -18,7 +18,7 @@ import {
   createScenarioIntervention,
   createSupplier,
 } from '../../entity-mocks';
-import { saveUserAndGetToken } from '../../utils/userAuth';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { Material } from 'modules/materials/material.entity';
@@ -96,6 +96,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   let adminRegionRepository: AdminRegionRepository;
   let geoRegionRepository: GeoRegionRepository;
   let jwtToken: string;
+  let userId: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -131,7 +132,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    const tokenWithId = await saveUserAndGetTokenWithUserId(moduleFixture, app);
+    jwtToken = tokenWithId.jwtToken;
+    userId = tokenWithId.userId;
   });
 
   afterEach(async () => {
@@ -768,6 +771,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           title: 'updated test scenario intervention',
         })
         .expect(HttpStatus.OK);
+
+      const updatedScenarioIntervention =
+        await scenarioInterventionRepository.findOneOrFail(
+          scenarioIntervention.id,
+        );
+      expect(updatedScenarioIntervention.updatedById).toEqual(userId);
 
       expect(response.body.data.attributes.title).toEqual(
         'updated test scenario intervention',

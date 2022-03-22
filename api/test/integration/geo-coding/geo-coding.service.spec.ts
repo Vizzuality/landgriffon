@@ -119,6 +119,7 @@ describe('GeoCoding Service (Integration Testing)', () => {
         );
       }
 
+      expect.assertions(1);
       try {
         await geoCodingService.geoCodeUnknownLocationType(
           sourcingDataWithAddress,

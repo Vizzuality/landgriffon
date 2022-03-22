@@ -22,6 +22,9 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
    *
    * NOTE: Against all documentation and whats happening in mars, the correct value to generate a 50KM radius around a given point is 0.5
    * instead of 50000 (which should be the correct value)
+   *
+   * TODO: Refactor the queries so that they follow same approach / pattern to improve readability
+   *
    */
   async saveGeoRegionAsRadius(
     newGeoRegionValues: LocationGeoRegionDto,

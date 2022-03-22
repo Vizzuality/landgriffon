@@ -7,7 +7,7 @@ python-dotenv>=0.5.1
 # external tools requirements
 tqdm~=4.60.0
 pandas~=1.2.4
-geopandas~=0.9.0
+geopandas~=0.10.0
 simpledbf~=0.2.6
 matplotlib~=3.4.2
 rtree~=0.9.7

@@ -8,6 +8,7 @@ import type {
   ImpactH3APIParams,
   ImpactTabularAPIParams,
 } from 'types';
+import material from 'containers/interventions/new/step2/material';
 
 export const filtersForH3API = createSelector(
   [analysisFilters],

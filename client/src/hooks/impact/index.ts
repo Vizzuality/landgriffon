@@ -41,6 +41,7 @@ export function useImpactData(): ImpactDataResponse {
   const { data: indicators } = useIndicators();
   const { layer } = useAppSelector(analysisFilters);
   const filters = filtersForTabularAPI(store.getState());
+
   const isEnable =
     !!filters?.indicatorId && !!indicators?.length && !!filters.startYear && !!filters.endYear;
 
@@ -56,6 +57,7 @@ export function useImpactData(): ImpactDataResponse {
             startYear: filters.startYear,
             endYear: filters.endYear,
             groupBy: filters.groupBy,
+            ...filters,
           },
         })
         .then((response) => response.data),

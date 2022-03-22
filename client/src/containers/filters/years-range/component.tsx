@@ -7,6 +7,7 @@ import Select from 'components/select';
 import type { SelectOption } from 'components/select/types';
 
 import { YearsRangeFilterProps } from './types';
+import { start } from 'repl';
 
 export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
   startYear,
@@ -32,7 +33,6 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
 
   useEffect(() => {
     if (!years.length) return;
-
     setStartYearOptions(
       years?.map((year) => ({
         label: year.toString(),
@@ -54,7 +54,13 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
 
   useEffect(() => {
     if (!startYearOptions || !endYearOptions) return;
-    setStartYearOption(startYearOptions.find((option) => option.value === startYear));
+
+    const startYearForRange =
+      startYear === endYear
+        ? startYearOptions[0]
+        : startYearOptions.find((option) => option.value === startYear);
+
+    setStartYearOption(startYearForRange);
     setEndYearOption(endYearOptions.find((option) => option.value === endYear));
   }, [startYearOptions, endYearOptions, startYear, endYear]);
 

@@ -7,7 +7,7 @@ import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-loc
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { createMaterial, createSourcingLocation } from '../../entity-mocks';
 import { Material } from 'modules/materials/material.entity';
-import { saveUserAndGetToken } from '../../utils/userAuth';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 
 /**
@@ -18,6 +18,7 @@ describe('SourcingLocationsModule (e2e)', () => {
   let app: INestApplication;
   let sourcingLocationRepository: SourcingLocationRepository;
   let jwtToken: string;
+  let userId: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -30,7 +31,10 @@ describe('SourcingLocationsModule (e2e)', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+
+    const tokenWithId = await saveUserAndGetTokenWithUserId(moduleFixture, app);
+    jwtToken = tokenWithId.jwtToken;
+    userId = tokenWithId.userId;
   });
 
   afterEach(async () => {
@@ -102,6 +106,11 @@ describe('SourcingLocationsModule (e2e)', () => {
           title: 'updated test sourcing location',
         })
         .expect(HttpStatus.OK);
+
+      const updatedSourcingLocation =
+        await sourcingLocationRepository.findOneOrFail(sourcingLocation.id);
+
+      expect(updatedSourcingLocation.updatedById).toEqual(userId);
 
       expect(response.body.data.attributes.title).toEqual(
         'updated test sourcing location',

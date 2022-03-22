@@ -13,10 +13,9 @@ export class CreateTaskDto {
   @IsString()
   status!: TASK_STATUS;
 
-  @ApiProperty()
   @IsNotEmpty()
   @IsUUID()
-  createdBy: string;
+  userId: string;
 
   @ApiProperty()
   @IsOptional()

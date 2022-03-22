@@ -52,7 +52,7 @@ export class SourcingRecordsService extends AppBaseService<
         'metadata',
         'createdAt',
         'updatedAt',
-        'updatedBy',
+        'updatedById',
       ],
       keyForAttribute: 'camelCase',
     };

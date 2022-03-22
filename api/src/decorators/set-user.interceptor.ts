@@ -15,11 +15,6 @@ export class SetUserInterceptor implements NestInterceptor {
         request.body.userId = request.user.id;
         break;
     }
-    // const token: string = request.headers['authorization'];
-    // if (token) {
-    //   const decoded = jwt_decode(token);
-    //   request.body['userId'] = decoded['id'];
-    // }
 
     return next.handle();
   }

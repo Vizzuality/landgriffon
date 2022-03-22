@@ -17,6 +17,7 @@ import Loading from 'components/loading';
 import { CHECKED_STRATEGIES } from './utils';
 
 import type { TreeSelectProps, TreeSelectOption } from './types';
+import { some } from 'lodash';
 
 const THEMES = {
   default: {
@@ -110,7 +111,16 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   // Selection for multiple
   const handleCheck = useCallback(
     (checkedKeys, info) => {
-      const { checkedNodes } = info;
+      const { checkedNodes, halfCheckedKeys } = info;
+
+      // TO DO - API
+      // Find nodes of half selected options (parent that has no all children selected)
+      // const halfCheckedNodes = options
+      //   .filter(({ value }) => halfCheckedKeys.includes(value))
+      //   .map(({ label, value }) => ({
+      //     label,
+      //     value,
+      //   }));
 
       // Depending of the checked strategy apply different filters
       const filteredValues = CHECKED_STRATEGIES[checkedStrategy](checkedKeys, checkedNodes);
@@ -128,6 +138,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           recursiveSearch(options);
         });
       }
+
 
       if (onChange) onChange(checkedOptions);
       setCheckedKeys(filteredValues);

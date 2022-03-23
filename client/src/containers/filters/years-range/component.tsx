@@ -7,7 +7,6 @@ import Select from 'components/select';
 import type { SelectOption } from 'components/select/types';
 
 import { YearsRangeFilterProps } from './types';
-import { start } from 'repl';
 
 export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
   startYear,

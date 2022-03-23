@@ -1,4 +1,4 @@
-import { useCallback, useMemo, FC } from 'react';
+import { useCallback, useMemo, useState, FC } from 'react';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { setSubContentCollapsed } from 'store/features/analysis/ui';
 import { scenarios, setNewInterventionStep } from 'store/features/analysis/scenarios';
@@ -65,15 +65,26 @@ const InterventionForm: FC = () => {
   }, [dispatch]);
 
   const handleInterventionData = useCallback(() => {
-    console.log('submit')
+    console.log('submit');
   }, [])
+
+  const [isValidForm, setIsValid] = useState(false);
 
   return (
     <>
-      <Steps steps={steps} current={interventionsStep} className="mb-10 z-20" />
+      <Steps
+        steps={steps}
+        current={interventionsStep}
+        // isValidForm={isValidForm}
+        className="mb-10 z-20"
+      />
       <div id="newInterventionForm" className="space-y-8">
         {interventionsStep === 1 && (
-          <Step1 handleCancel={handleCancel} handleInterventionData={handleInterventionData} />
+          <Step1
+            handleCancel={handleCancel}
+            handleInterventionData={handleInterventionData}
+            // setIsValid={setIsValid}
+          />
         )}
         {interventionsStep === 2 && (
           <Step2 handleCancel={handleCancel} handleInterventionData={handleInterventionData} />

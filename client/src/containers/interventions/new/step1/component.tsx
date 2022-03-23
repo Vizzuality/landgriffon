@@ -33,24 +33,30 @@ const yearCompletions = [2001, 2015, 2020];
 
 const schemaValidation = yup.object({
   interventionDescription: yup.string(),
-  percentage: yup.number().required(),
+  percentage: yup.number().min(0).max(100).required(),
   materials: yup.array().min(1).required('error'),
+  business: yup.array().min(1).required('error'),
   suppliers: yup.array().min(1).required('error'),
   originRegions: yup.array().min(1).required('error'),
+  year: yup.number().required('error'),
+  useInterventionType: yup.string().required(),
 });
 
-type schemaValidationMulti = {
-  // percentage: yup.number().required(),
-  // materials: yup.array().min(1).required();
-  // suppliers: yup.array().min(1).required(),
-  // originRegions: yup.array().min(1).required(),
-};
-
-const Step1: React.FC<StepProps> = ({ handleCancel }: StepProps) => {
+const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: StepProps) => {
   const dispatch = useAppDispatch();
-  //const [isOpen, setIsOpen] = useState<boolean>(false);
   const interventionTypes = useInterventionTypes();
   const filters = useAppSelector(analysisFilters);
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    getValues,
+    watch,
+    formState: { errors, isValid },
+  } = useForm({
+    resolver: yupResolver(schemaValidation),
+  });
 
   const { materials, origins, suppliers } = filters;
   const selectedFilters = useMemo(
@@ -111,6 +117,28 @@ const Step1: React.FC<StepProps> = ({ handleCancel }: StepProps) => {
   const isLoadingInterventionTypes = false;
 
   const handleInterventionType = useCallback(
+    ({ value }) => {
+      dispatch(
+        setFilter({
+          id: 'interventionType',
+          value,
+        }),
+      ),
+        setValue('interventionType', value);
+    },
+    [dispatch],
+  );
+
+  const handleBusiness = useCallback(
+    ({ value }) =>
+      setFilter({
+        id: 'interventionType',
+        value,
+      }),
+    [dispatch],
+  );
+
+  const handleYear = useCallback(
     ({ value }) =>
       dispatch(
         setFilter({
@@ -121,22 +149,16 @@ const Step1: React.FC<StepProps> = ({ handleCancel }: StepProps) => {
     [dispatch],
   );
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schemaValidation),
-  });
-
   const handleContinue = useCallback((values) => {
     if (isEmpty(errors)) {
       dispatch(setNewInterventionData(values));
       dispatch(setNewInterventionStep(2));
+      // dispatch(handleInterventionData(values))
     }
   }, []);
+
+  const values = getValues();
+  console.log('step1', values, isValid, errors)
 
   return (
     <form onSubmit={handleSubmit(handleContinue)}>
@@ -182,11 +204,13 @@ const Step1: React.FC<StepProps> = ({ handleCancel }: StepProps) => {
           <span className="text-gray-700 font-medium">for</span>
 
           <Select
+            {...register('business')}
             loading={isLoadingBusinesses}
             current={currentBusiness}
             options={optionsBusinesses}
             placeholder="all businesses"
             theme="inline-primary"
+            onChange={(values) => setValue('business', values)}
           />
 
           <span className="text-gray-700 font-medium">from</span>
@@ -215,10 +239,12 @@ const Step1: React.FC<StepProps> = ({ handleCancel }: StepProps) => {
           <span>Year of completion</span>
           <div className="mt-1">
             <Select
+              {...register('year')}
               loading={isLoadingYearCompletion}
               current={currentYearCompletion}
               options={optionsYearCompletion}
               placeholder="Select"
+              onChange={handleYear}
             />
           </div>
         </div>
@@ -229,10 +255,10 @@ const Step1: React.FC<StepProps> = ({ handleCancel }: StepProps) => {
             <Select
               {...register('interventionType')}
               loading={isLoadingInterventionTypes}
-              current={currentInterventionType}
               options={optionsInterventionType}
               placeholder="Select"
-              onChange={handleInterventionType}
+              current={watch('interventionType')}
+              onChange={(values) => setValue('interventionType', values)}
             />
           </div>
         </div>

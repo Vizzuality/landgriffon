@@ -175,7 +175,6 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                             </div>
                           </Transition>
                         </Popover.Panel>,
-
                         document.body,
                       )}
                   </>

@@ -9,9 +9,7 @@ import Label from 'components/forms/label';
 import InfoTooltip from 'containers/info-tooltip';
 
 // form validation
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import { useFormContext } from 'react-hook-form';
 
 interface Indicator {
   name: string;
@@ -77,43 +75,28 @@ const SuppliersImpact: FC = () => {
       {},
     );
 
-  const schemaValidation = useMemo(() => {
-    const validationObject = indicators
-      .map((indicator) => ({
-        [indicator.id]: yup.number().required(),
-      }))
-      .reduce((a, b) => ({ ...a, ...b }));
-
-    return yup.object(validationObject);
-  }, []);
-
-  const {
-    register,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schemaValidation),
-  });
+  const { register } = useFormContext();
 
   return (
     <form>
-      <fieldset className="sm:col-span-3 text-sm">
+      <fieldset className="sm:col-span-3 text-sm mt-8">
         <legend className="flex font-medium leading-5">
           Supplier impacts per tone
           <InfoTooltip className="ml-2" />
         </legend>
-        <div className="flex items-center justify-between mt-6">
+        <div className="flex items-center justify-between mt-4">
           <div className="flex items-center">
             <Checkbox
               id="landgriffon_estimates"
               name="landgriffon_estimates"
               onChange={() => setLandgriffonEstimates(!landgriffonEstimates)}
             />
-            <Label htmlFor="landgriffon_estimates" className="ml-2">
+            <Label htmlFor="landgriffon_estimates" className="ml-2 mt-1">
               Use LandGriffon location-based estimates.
             </Label>
           </div>
         </div>
-        <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
+        <div className="mt-4 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
           {indicators.map((indicator) => (
             <div key={indicator.name}>
               <Label htmlFor={indicator.name} key={indicator.id}>

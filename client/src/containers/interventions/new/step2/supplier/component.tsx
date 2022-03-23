@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useState, FC } from 'react';
+import { useMemo, useState, FC } from 'react';
 
 // components
 import Input from 'components/forms/input';
@@ -12,9 +12,7 @@ import InfoTooltip from 'containers/info-tooltip';
 import { useSuppliers } from 'hooks/suppliers';
 
 // form validation
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import { useFormContext } from 'react-hook-form';
 
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
@@ -25,14 +23,6 @@ const locationTypes = ['location1', 'location2'];
 const locationType = 'location1';
 const countries = ['Spain', 'Portugal'];
 const country = 'Spain';
-
-const schemaValidation = yup.object({
-  supplier: yup.string().required(),
-  producer: yup.string().required(),
-  locationType: yup.string().required(),
-  country: yup.string().required(),
-  address: yup.string().required(),
-});
 
 const Supplier: FC = () => {
   const { data: suppliers, isLoading: isLoadingSuppliers } = useSuppliers();
@@ -112,23 +102,17 @@ const Supplier: FC = () => {
   const isLoadingLocationType = false;
   const isLoadingCountries = false;
 
-  const {
-    register,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schemaValidation),
-    mode: 'onChange',
-  });
+  const { register } = useFormContext();
 
   return (
     <>
-      <fieldset className="sm:col-span-3 text-sm">
+      <fieldset className="sm:col-span-3 text-sm mt-8">
         <legend className="flex font-medium leading-5">
           New supplier
           <InfoTooltip className="ml-2" />
         </legend>
 
-        <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
+        <div className="mt-4 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
           <div className="block font-medium text-gray-700">
             <Label className="mb-1">
               Tier 1 supplier <span className="text-gray-500">(optional)</span>
@@ -157,24 +141,23 @@ const Supplier: FC = () => {
           </div>
         </div>
       </fieldset>
-      <fieldset className="sm:col-span-3 text-sm">
+      <fieldset className="sm:col-span-3 text-sm mt-8">
         <legend className="flex font-medium leading-5">
           Supplier location
           <InfoTooltip className="ml-2" />
         </legend>
 
-        <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
+        <div className="mt-4 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
           <div className="block font-medium text-gray-700">
             <span>Location type</span>
             <div className="mt-1">
               <Select
                 id="locationType"
-                {...register('locationType', { value: formData.locationType })}
+                {...register('locationType')}
                 loading={isLoadingLocationType}
                 current={currentLocationType}
                 options={optionsLocationTypes}
                 placeholder="all LocationTypes"
-                onChange={onChange}
               />
             </div>
           </div>
@@ -184,12 +167,11 @@ const Supplier: FC = () => {
             <div className="mt-1">
               <Select
                 id="country"
-                {...register('country', { value: formData.country })}
+                {...register('country')}
                 loading={isLoadingCountries}
                 current={currentCountry}
                 options={optionsCountries}
                 placeholder="All Countries"
-                onChange={onChange}
               />
             </div>
           </div>

@@ -61,6 +61,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
   },
 }: AreaStackedProps) => {
   const { showTooltip, hideTooltip, tooltipData, tooltipTop, tooltipLeft } = useTooltip();
+  const limitedKeys = keys.slice(0, 6);
 
   const lastCurrentIndex = useMemo(() => {
     const i = data.findIndex((d) => !d.current);
@@ -374,7 +375,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
           tooltipTop={tooltipTop}
           tooltipLeft={tooltipLeft + margin.left}
           tooltipData={tooltipData}
-          keys={keys}
+          keys={limitedKeys}
           colors={colors}
         />
       )}

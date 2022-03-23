@@ -36,7 +36,7 @@ const AreaStackedTooltip: React.FC<AreaStackedTooltipProps> = ({
   if (!tooltipData) return null;
 
   return (
-    <TooltipWithBounds top={tooltipTop} left={tooltipLeft}>
+    <TooltipWithBounds top={tooltipTop} left={tooltipLeft} className="z-10">
       <div className="flex flex-col p-2.5 space-y-2">
         <h3>{title}</h3>
 

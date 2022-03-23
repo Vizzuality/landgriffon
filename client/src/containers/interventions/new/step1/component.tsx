@@ -22,6 +22,8 @@ import Materials from 'containers/interventions/smart-filters/materials/componen
 import Suppliers from 'containers/interventions/smart-filters/suppliers/component';
 import OriginRegions from 'containers/interventions/smart-filters/origin-regions/component';
 
+import { isEmpty } from 'lodash';
+
 // types
 import type { SelectOptions, SelectOption } from 'components/select/types';
 import type { StepProps } from 'containers/interventions/new/types';
@@ -30,11 +32,11 @@ const businesses = ['business1', 'business2', 'business3'];
 const yearCompletions = [2001, 2015, 2020];
 
 const schemaValidation = yup.object({
-  interventionDescription: yup.string().min(2).required(),
-  // percentage: yup.number().required(),
-  // materials: yup.array().min(1).required(),
-  // suppliers: yup.array().min(1).required(),
-  // originRegions: yup.array().min(1).required(),
+  interventionDescription: yup.string(),
+  percentage: yup.number().required(),
+  materials: yup.array().min(1).required('error'),
+  suppliers: yup.array().min(1).required('error'),
+  originRegions: yup.array().min(1).required('error'),
 });
 
 type schemaValidationMulti = {
@@ -124,47 +126,17 @@ const Step1: React.FC<StepProps> = ({ handleCancel }: StepProps) => {
     handleSubmit,
     setValue,
     watch,
-    formState: { isValid, errors },
+    formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
 
-  // const {
-  //   field: { onChange: onChangeMaterials, onBlur, name: MaterialsName, value, ref },
-  //   fieldState: { invalid, isTouched, isDirty },
-  //   formState: { isValid: isValidMulti, touchedFields, dirtyFields, errors: errorsMulti }
-  // } = useController({
-  //   control,
-  //   rules: { required: true },
-  //   defaultValue: "",
-  // });
-
   const handleContinue = useCallback((values) => {
-    console.log(values);
-    // dispatch(setNewInterventionData(values));
-    // if (isValid) dispatch(setNewInterventionStep(2));
+    if (isEmpty(errors)) {
+      dispatch(setNewInterventionData(values));
+      dispatch(setNewInterventionStep(2));
+    }
   }, []);
-
-  const handleSelect = useCallback(
-    (e) => {
-      const values = Array.isArray(e) ? e : [e];
-      const selectIds = values.map(({ value }) => value);
-      if (isValid) {
-        dispatch(setNewInterventionData({ value: selectIds }));
-      }
-    },
-    [dispatch, isValid],
-  );
-
-  const handleMaterials = useCallback(
-    (selected) => {
-      const selectIds = selected.map(({ value }) => value);
-      if (isValid) {
-        dispatch(setNewInterventionData({ materials: selectIds }));
-      }
-    },
-    [dispatch, isValid],
-  );
 
   return (
     <form onSubmit={handleSubmit(handleContinue)}>
@@ -179,7 +151,7 @@ const Step1: React.FC<StepProps> = ({ handleCancel }: StepProps) => {
         </div>
       </fieldset>
 
-      <fieldset className="mt-1 flex flex-col">
+      <fieldset className="mt-3 flex flex-col">
         <p className="font-medium leading-5 text-sm">Apply intervention to:</p>
         <div className="flex items-center text-green-700 space-x-2">
           <Input

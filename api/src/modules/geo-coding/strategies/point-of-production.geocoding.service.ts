@@ -41,6 +41,7 @@ export class PointOfProductionGeocodingStrategy extends BaseStrategy {
     if (sourcingData.locationAddressInput) {
       const geoCodeResponseData: GeocodeResponse = await this.geoCodeByAddress(
         sourcingData.locationAddressInput,
+        sourcingData.locationCountryInput,
       );
 
       const geoRegionId: Pick<GeoRegion, 'id'> =

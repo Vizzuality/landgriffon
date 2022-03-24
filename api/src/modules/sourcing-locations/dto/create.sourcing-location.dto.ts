@@ -66,11 +66,10 @@ export class CreateSourcingLocationDto {
   @ApiPropertyOptional()
   locationAddressInput?: string;
 
-  @IsOptional()
   @IsString()
   @MinLength(2)
-  @ApiPropertyOptional()
-  locationCountryInput?: string;
+  @ApiProperty()
+  locationCountryInput!: string;
 
   @IsString()
   @IsOptional()

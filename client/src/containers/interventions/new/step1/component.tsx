@@ -29,24 +29,23 @@ import type { SelectOptions, SelectOption } from 'components/select/types';
 import type { StepProps } from 'containers/interventions/new/types';
 
 const businesses = ['business1', 'business2', 'business3'];
-const yearCompletions = [2001, 2015, 2020];
 
 const schemaValidation = yup.object({
   interventionDescription: yup.string(),
   percentage: yup.number().min(0).max(100).required(),
-  materials: yup.array().min(1).required('error'),
-  business: yup.object({ label: yup.string(), value: yup.string() }).required(),
-  suppliers: yup.array().min(1).required('error'),
-  originRegions: yup.array().min(1).required('error'),
-  yearCompletion: yup
+  materialsIds: yup.array().min(1).required('error'),
+  businessUnitsIds: yup.object({ label: yup.string(), value: yup.string() }).required(),
+  suppliersIds: yup.array().min(1).required('error'),
+  adminRegionsIds: yup.array().min(1).required('error'),
+  endYear: yup
     .number()
     .test(
       'len',
       'Must be exactly 4 digits',
       (val) => Math.ceil(Math.log(val + 1) / Math.LN10) === 4,
     )
-    .required('error'),
-  interventionType: yup.object({ label: yup.string(), value: yup.string() }).required(),
+    .required('error'), // year completion
+  interventionType: yup.string().required(),
 });
 
 const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: StepProps) => {
@@ -66,15 +65,10 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
   });
 
   const { materials, origins, suppliers } = filters;
-  const selectedFilters = useMemo(
-    () => ({ materials, origins, suppliers }),
-    [materials, origins, suppliers],
-  );
 
   // const { data: sourcingRegions, isLoading: isLoadingSourcingRegions } = useSourcingRegions();
 
   const business = 'business2';
-  const yearCompletion = 2015;
   const interventionType = '';
 
   const optionsBusinesses: SelectOptions = useMemo(
@@ -89,20 +83,6 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
   const currentBusiness = useMemo<SelectOption>(
     () => optionsBusinesses?.find((option) => option.value === business),
     [optionsBusinesses],
-  );
-
-  const optionsYearCompletion: SelectOptions = useMemo(
-    () =>
-      yearCompletions.map((YearCompletion) => ({
-        label: YearCompletion.toString(),
-        value: YearCompletion,
-      })),
-    [],
-  );
-
-  const currentYearCompletion = useMemo<SelectOption>(
-    () => optionsYearCompletion?.find((option) => option.value === yearCompletion),
-    [optionsYearCompletion],
   );
 
   const optionsInterventionType: SelectOptions = useMemo(
@@ -120,7 +100,6 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
   );
 
   const isLoadingBusinesses = false;
-  const isLoadingYearCompletion = false;
   const isLoadingInterventionTypes = false;
 
   const handleInterventionType = useCallback(
@@ -136,15 +115,6 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
     [dispatch],
   );
 
-  const handleBusiness = useCallback(
-    ({ value }) =>
-      setFilter({
-        id: 'interventionType',
-        value,
-      }),
-    [dispatch],
-  );
-
   const handleContinue = useCallback((values) => {
     if (isEmpty(errors)) {
       dispatch(setNewInterventionData(values));
@@ -155,6 +125,14 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
 
   const values = getValues();
   console.log('step1', values, isValid, errors)
+
+  const handleDropdown = useCallback(
+    (id, values) => {
+      const valuesIds = values.map(({ value }) => value);
+      setValue(id, valuesIds);
+    },
+    [setValue],
+  );
 
   return (
     <form onSubmit={handleSubmit(handleContinue)}>
@@ -189,43 +167,43 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
           <span className="text-gray-700 font-medium">of</span>
           <div className="font-bold">
             <Materials
-              {...register('materials')}
+              {...register('materialsIds')}
               withSourcingLocations
               multiple
               ellipsis
               current={watch('materials')}
-              onChange={(values) => setValue('materials', values)}
+              onChange={(values) => handleDropdown('materialsIds', values)}
             />
           </div>
           <span className="text-gray-700 font-medium">for</span>
 
           <Select
-            {...register('business')}
+            {...register('businessUnitsIds')}
             loading={isLoadingBusinesses}
             current={currentBusiness}
             options={optionsBusinesses}
             placeholder="all businesses"
             theme="inline-primary"
-            onChange={(values) => setValue('business', values)}
+            onChange={(values) => setValue('businessUnitsIds', values)}
           />
 
           <span className="text-gray-700 font-medium">from</span>
           <Suppliers
-            {...register('suppliers')}
+            {...register('suppliersIds')}
             multiple
             withSourcingLocations
             theme="inline-primary"
             current={watch('suppliers')}
-            onChange={(values) => setValue('suppliers', values)}
+            onChange={(values) => handleDropdown('suppliersIds', values)}
           />
           <span className="text-gray-700 font-medium">in</span>
           <OriginRegions
-            {...register('originRegions')}
+            {...register('adminRegionsIds')}
             multiple
             withSourcingLocations
             theme="inline-primary"
             current={watch('originRegions')}
-            onChange={(values) => setValue('originRegions', values)}
+            onChange={(values) => handleDropdown('adminRegionsIds', values)}
           />
           <span className="text-gray-700 font-medium">.</span>
         </div>
@@ -235,11 +213,11 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
           <span>Year of completion</span>
           <div className="mt-1">
             <Input
-              {...register('yearCompletion')}
+              {...register('endYear')}
               type="number"
               name="yearCompletion"
               id="yearCompletion"
-              aria-label="percentage"
+              aria-label="year"
               placeholder="Insert year"
               defaultValue={2021}
             />
@@ -255,7 +233,7 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
               options={optionsInterventionType}
               placeholder="Select"
               current={watch(interventionType)}
-              onChange={(values) => setValue('interventionType', values)}
+              onChange={handleInterventionType}
             />
           </div>
         </div>

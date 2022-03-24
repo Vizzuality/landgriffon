@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 // hooks
 import { useMaterials } from 'hooks/materials';
@@ -13,9 +13,14 @@ import { useFormContext } from 'react-hook-form';
 
 // types
 import { SelectOptions } from 'components/select/types';
+import { current } from '@reduxjs/toolkit';
 
 const Material = () => {
   const { data: materials, isLoading: isLoadingMaterials } = useMaterials();
+
+  const [formData, setFormData] = useState({
+    material: materials[0]?.id,
+  });
 
   const optionsMaterials: SelectOptions = useMemo(
     () =>
@@ -26,7 +31,12 @@ const Material = () => {
     [],
   );
 
-  const { register } = useFormContext();
+  const currentMaterial = useMemo<SelectOption>(
+    () => optionsMaterials?.find((option) => option.value === formData.material),
+    [optionsMaterials, formData.material],
+  );
+
+  const { register, setValue } = useFormContext();
 
   return (
     <form>
@@ -38,11 +48,12 @@ const Material = () => {
             <Label className="mb-1">Material</Label>
 
             <Select
-              id="material"
-              {...register('material')}
+              {...register('newMaterialId')}
               loading={isLoadingMaterials}
+              current={currentMaterial}
               options={optionsMaterials}
               placeholder="Select"
+              onChange={(values) => setValue('newMaterialId', values.value)}
             />
           </div>
 
@@ -51,7 +62,7 @@ const Material = () => {
               Tons of new material per ton
             </Label>
             <Input
-              {...register('materialTons')}
+              {...register('newMaterialTonnageRatio')}
               type="number"
               name="materialTons"
               id="materialTons"

@@ -2,7 +2,12 @@ import { FC, useCallback, useMemo } from 'react';
 
 // hooks
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { setNewInterventionStep, setNewInterventionData } from 'store/features/analysis/scenarios';
+import { useCreateNewIntervention } from 'hooks/interventions';
+
+import { useQuery } from 'react-query';
+import { apiService } from 'services/api';
+
+import { setNewInterventionData } from 'store/features/analysis/scenarios';
 
 import Button from 'components/button';
 
@@ -16,6 +21,7 @@ import Supplier from './supplier';
 import SupplierImpact from './supplier-impact';
 
 import { analysisFilters } from 'store/features/analysis/filters';
+import { scenarios } from 'store/features/analysis/scenarios';
 
 import type { StepProps } from 'containers/interventions/new/types';
 
@@ -31,6 +37,7 @@ const Step2: FC<StepProps> = ({ handleCancel }: StepProps) => {
   const dispatch = useAppDispatch();
 
   const filters = useAppSelector(analysisFilters);
+  const { newInterventionData } = useAppSelector(scenarios);
 
   const { interventionType } = filters;
 
@@ -38,7 +45,11 @@ const Step2: FC<StepProps> = ({ handleCancel }: StepProps) => {
     switch (interventionType) {
       case 'new-supplier-location':
         return yup.object({
-          address: yup.string().required(),
+          newT1SupplierId: yup.string().required(),
+          newProducerId: yup.string().required(),
+          newLocationType: yup.string().required(),
+          newLocationCountryInput: yup.string().required(),
+          newLocationAddressInput: yup.string().required(),
         });
         break;
       case 'production-efficiency':
@@ -52,7 +63,8 @@ const Step2: FC<StepProps> = ({ handleCancel }: StepProps) => {
       default:
         return yup.object({
           percentage: yup.number().required(),
-          materialTons: yup.number().required(),
+          newMaterialId: yup.string().required(),
+          newMaterialTonnageRatio: yup.number().required(),
         });
     }
   };
@@ -67,11 +79,30 @@ const Step2: FC<StepProps> = ({ handleCancel }: StepProps) => {
     formState: { isValid },
   } = methods;
 
+  const createIntervention = useCreateNewIntervention();
   const handleStepsSubmissons = useCallback(
     (values) => {
-      if (isValid) dispatch(setNewInterventionData(values));
+      if (isValid) {
+        dispatch(
+          setNewInterventionData({
+            ...newInterventionData,
+            ...values,
+          }),
+        );
+        return createIntervention.mutate(
+          { data: newInterventionData },
+          {
+            onSuccess: (data) => {
+              console.log('onsucces', data);
+            },
+            onError: (error, variables, context) => {
+              console.log('error', error, variables, context);
+            },
+          },
+        );
+      }
     },
-    [dispatch, isValid],
+    [dispatch, isValid, newInterventionData, createIntervention],
   );
 
   return (

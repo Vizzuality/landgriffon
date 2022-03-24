@@ -24,6 +24,12 @@ const SuppliersImpact: FC = () => {
   const [landgriffonEstimates, setLandgriffonEstimates] = useState(false);
   // const { data: indicators, isFetching, isFetched, error } = useIndicators();
 
+  // "newIndicatorCoefficients": {
+  //   "DF_LUC_T": 0,
+  //   "UWU_T": 0,
+  //   "BL_LUC_T": 0,
+  //   "GHG_LUC_T": 0
+  // },
   const indicators = useMemo<Indicator[]>(
     () => [
       {

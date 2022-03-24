@@ -40,7 +40,7 @@ const ScenariosNewContainer: React.FC = () => {
       .post('/scenarios', { title: 'Untitled' })
       .then(({ data: responseData }) => responseData.data),
   );
-
+console.log(response, 'scenarios')
   const { query } = useRouter();
   const { data: interventions } = useInterventions({ sort: query.sortBy as string });
 

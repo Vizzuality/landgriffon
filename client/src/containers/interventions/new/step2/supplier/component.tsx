@@ -121,12 +121,12 @@ const Supplier: FC = () => {
               Tier 1 supplier <span className="text-gray-500">(optional)</span>
             </Label>
             <Select
-              {...register('supplier')}
+              {...register('newT1SupplierId')}
               loading={isLoadingSuppliers}
               current={currentSupplier}
               options={optionsSuppliers}
               placeholder="Select"
-              onChange={(value) => setValue('supplier', value)}
+              onChange={(value) => setValue('newT1SupplierId', value)}
             />
           </div>
 
@@ -135,12 +135,12 @@ const Supplier: FC = () => {
               Producer <span className="text-gray-500">(optional)</span>
             </Label>
             <Select
-              {...register('producer')}
+              {...register('newProducerId')}
               loading={isLoadingProducers}
               current={currentProducer}
               options={optionsProducers}
               placeholder="Select"
-              onChange={(value) => setValue('producer', value)}
+              onChange={(value) => setValue('newProducerId', value)}
             />
           </div>
         </div>
@@ -156,12 +156,12 @@ const Supplier: FC = () => {
             <span>Location type</span>
             <div className="mt-1">
               <Select
-                {...register('locationType')}
+                {...register('newLocationType')}
                 loading={isLoadingLocationType}
                 current={currentLocationType}
                 options={optionsLocationTypes}
                 placeholder="all LocationTypes"
-                onChange={(value) => setValue('locationType', value)}
+                onChange={(value) => setValue('newLocationType', value)}
               />
             </div>
           </div>
@@ -170,12 +170,12 @@ const Supplier: FC = () => {
             <span>Country</span>
             <div className="mt-1">
               <Select
-                {...register('country')}
+                {...register('newLocationCountryInput')}
                 loading={isLoadingCountries}
                 current={currentCountry}
                 options={optionsCountries}
                 placeholder="All Countries"
-                onChange={(value) => setValue('country', value)}
+                onChange={(value) => setValue('newLocationCountryInput', value)}
               />
             </div>
           </div>
@@ -185,7 +185,7 @@ const Supplier: FC = () => {
           City / Address / Coordinates
         </Label>
         <Input
-          {...register('address')}
+          {...register('newLocationAddressInput')}
           id="address"
           className="w-full"
           type="text"

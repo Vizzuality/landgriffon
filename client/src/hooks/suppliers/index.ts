@@ -17,7 +17,8 @@ export type SuppliersTreesParams = {
   withSourcingLocations?: boolean;
 };
 
-export function useSuppliers(): ResponseData {
+export function useSuppliers(params): ResponseData {
+  console.log(params)
   const query = useQuery(
     ['suppliers'],
     async () =>
@@ -25,6 +26,7 @@ export function useSuppliers(): ResponseData {
         .request({
           method: 'GET',
           url: 'suppliers',
+          params,
         })
         .then(({ data: responseData }) => responseData.data),
     {
@@ -52,6 +54,34 @@ export function useSuppliersTrees(params: SuppliersTreesParams): ResponseData {
         .request({
           method: 'GET',
           url: '/suppliers/trees',
+          params,
+        })
+        .then(({ data: responseData }) => responseData.data),
+    {
+      ...DEFAULT_QUERY_OPTIONS,
+    },
+  );
+
+  const { data, isError } = query;
+
+  return useMemo<ResponseData>(
+    () =>
+      ({
+        ...query,
+        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as ResponseData,
+      } as ResponseData),
+    [query, isError, data],
+  );
+}
+
+export function useSuppliersTypes(params): ResponseData {
+  const query = useQuery(
+    ['suppliers'],
+    async () =>
+      apiService
+        .request({
+          method: 'GET',
+          url: 'suppliers/types',
           params,
         })
         .then(({ data: responseData }) => responseData.data),

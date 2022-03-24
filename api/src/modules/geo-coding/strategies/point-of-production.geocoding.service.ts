@@ -38,9 +38,13 @@ export class PointOfProductionGeocodingStrategy extends BaseStrategy {
         geoRegionId,
       };
     }
-    if (sourcingData.locationAddressInput) {
+    if (
+      sourcingData.locationAddressInput &&
+      sourcingData.locationCountryInput
+    ) {
       const geoCodeResponseData: GeocodeResponse = await this.geoCodeByAddress(
         sourcingData.locationAddressInput,
+        sourcingData.locationCountryInput,
       );
 
       const geoRegionId: Pick<GeoRegion, 'id'> =

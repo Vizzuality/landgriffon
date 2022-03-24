@@ -49,9 +49,13 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
     /**
      * if address, geocode the address
      */
-    if (sourcingData.locationAddressInput) {
+    if (
+      sourcingData.locationAddressInput &&
+      sourcingData.locationCountryInput
+    ) {
       const geocodedResponseData: GeocodeResponse = await this.geoCodeByAddress(
         sourcingData.locationAddressInput,
+        sourcingData.locationCountryInput,
       );
 
       /**

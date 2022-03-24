@@ -31,9 +31,12 @@ export abstract class BaseStrategy {
     return geocodeResponseData;
   }
 
-  async geoCodeByAddress(locationAddress: string): Promise<GeocodeResponse> {
+  async geoCodeByAddress(
+    locationAddress: string,
+    locationCountry: string,
+  ): Promise<GeocodeResponse> {
     const geocodeResponseData: GeocodeResponse = await this.geocoder.geocode({
-      address: locationAddress,
+      address: `${locationAddress}, ${locationCountry}`,
     });
     return geocodeResponseData;
   }

@@ -183,6 +183,7 @@ describe('GeoCoding Service (Integration Testing)', () => {
         .mockResolvedValue(geocodeResponses[2] as GeocodeResponseData);
       const sourcingData = {
         locationAddressInput: true,
+        locationCountryInput: true,
       } as unknown as SourcingData;
       expect.assertions(1);
       try {
@@ -209,6 +210,7 @@ describe('GeoCoding Service (Integration Testing)', () => {
 
       const sourcingData = {
         locationAddressInput: true,
+        locationCountryInput: true,
       } as unknown as SourcingData;
       const res: any = await geoCodingService.geoCodeAggregationPoint(
         sourcingData,

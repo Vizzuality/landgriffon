@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 
 import { setSubContentCollapsed } from 'store/features/analysis/ui';
-import { scenarios, setScenarioTab } from 'store/features/analysis/scenarios';
+import { scenarios, setNewInterventionData, setScenarioTab } from 'store/features/analysis/scenarios';
 
 import { useInterventions } from 'hooks/interventions';
 
@@ -35,23 +35,26 @@ const items = [
 ];
 
 const ScenariosNewContainer: React.FC = () => {
+  const { newInterventionData } = useAppSelector(scenarios);
   const response = useQuery('scenarioNew', () =>
     apiService
       .post('/scenarios', { title: 'Untitled' })
       .then(({ data: responseData }) => responseData.data),
   );
-console.log(response, 'scenarios')
+
   const { query } = useRouter();
   const { data: interventions } = useInterventions({ sort: query.sortBy as string });
 
   if (response.isSuccess) {
-    // router.replace({
-    //   pathname: '/analysis/scenario',
-    //   query: {
-    //     new: response.data.id,
-    //   },
-    // });
+    const {
+      data: { id: scenarioId },
+    } = response;
+    setNewInterventionData({
+      ...newInterventionData,
+      scenarioId: scenarioId,
+    });
   }
+
   const dispatch = useAppDispatch();
   const handleNewScenarioFeature = useCallback(() => {
     dispatch(setSubContentCollapsed(false));

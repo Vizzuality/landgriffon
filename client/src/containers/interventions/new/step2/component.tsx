@@ -4,9 +4,6 @@ import { FC, useCallback, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { useCreateNewIntervention } from 'hooks/interventions';
 
-import { useQuery } from 'react-query';
-import { apiService } from 'services/api';
-
 import { setNewInterventionData } from 'store/features/analysis/scenarios';
 
 import Button from 'components/button';

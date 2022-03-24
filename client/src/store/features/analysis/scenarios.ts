@@ -10,6 +10,7 @@ export type ScenariosState = {
   scenarioCurrentTab: 'interventions' | 'growth';
   interventionsStep: 1 | 2;
   newInterventionData: {
+    title: string;
     interventionDescription?: string;
     percentage: number;
     materials: string[];
@@ -43,6 +44,7 @@ export const initialState: ScenariosState = {
   scenarioCurrentTab: 'interventions',
   interventionsStep: 1,
   newInterventionData: {
+    title: 'Intervention title',
     interventionDescription: null,
     percentage: 100,
     materials: null,

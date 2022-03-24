@@ -353,20 +353,26 @@ convert-aboveGroundBiomass: preprocess-aboveGroundBiomass
 	python tiff_folder_to_h3_table.py $(WORKDIR_ABOVEGROUNDBIOMASS)/ h3_grid_abovegroundbiomass_glo_tha indicator GHG_LUC_T 2001 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 # Satelligence deforestation
+#Download satelligence deforestation
 download-satDeforestation:
 	mkdir -p $(WORKDIR_SATDEFORESTATION)
 	wget -q -O $(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01.tif https://storage.googleapis.com/s11-landgriffon-data/v0/Deforestation/Deforestation_IDN_2021-01-01-2022-01-01.tif
 
-#resampling method we select max to get the most recent deforestation year
-# change to fraction deforested as right now we are overstimating deforestation -- deforested_count/total_count
+#reproject to 3857 to get the data en meters
+#obtain the total area deforested at pixel level by multiplying by the pixel area and converting to hectares
+#upsample by summing the values into the 4326 projection and 10km resolution before translating to h3 and ingesting into the ddbb
 preprocess-satDeforestation: download-satDeforestation
-	gdalwarp -s_srs EPSG:4326 -t_srs EPSG:4326 -dstnodata 0.0 -tr 0.0833333333333286 0.0833333333333286 -r max -te 94.918029685 2.146125243 98.479926218 5.963450309 -te_srs EPSG:4326 -multi -of GTiff \
-	"$(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01.tif" "$(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021_2022.tif";\
+	gdalwarp -s_srs EPSG:4326 -t_srs EPSG:3857 -r near -of GTiff "$(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01.tif" "$(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01_3857.tif"
+	gdal_calc.py --calc "A*6.690190420354101164*6.690190420354101164*0.0001" --format GTiff --type Float32 -A "$(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01_3857.tif" --A_band 1 --outfile "$(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01_3857_ha.tif"
+	gdalwarp -s_srs EPSG:3857 -t_srs EPSG:4326 -dstnodata 0.0 -tr 0.0833333333333286 0.0833333333333286 -r sum  -multi -of GTiff \
+	"$(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01_3857_ha.tif" "$(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01_4326_ha.tif";\
 	rm -f "$(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01.tif"
+	rm -f "$(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01_3857.tif"
+	rm -f "$(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01_3857_ha.tif"
 
 #to update with the reference of a new satelligence indicator
 convert-satDeforestation: preprocess-satDeforestation
-	python tiff_folder_to_h3_table.py $(WORKDIR_SATDEFORESTATION)/ h3_grid_deforestation_ind_year indicator DF_LUC_T 2001 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python tiff_folder_to_h3_table.py $(WORKDIR_SATDEFORESTATION)/ h3_grid_deforestation_ind_ha indicator DF_LUC_T 2001 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 clean:
 	rm -rf data/*

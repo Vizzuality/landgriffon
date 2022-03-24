@@ -77,10 +77,10 @@ export class AdminRegionsService extends AppBaseService<
   // TODO: proper typing after validating this works
   async getAdminAndGeoRegionIdByCountryIsoAlpha2(
     countryIsoAlpha2Code: string,
-  ): Promise<{ id: string; geoRegionId: string }> {
+  ): Promise<{ adminRegionId: string; geoRegionId: string }> {
     const adminAndGeoRegionId: any = await this.adminRegionRepository
       .createQueryBuilder('ar')
-      .select('id')
+      .select('id', 'adminRegionId')
       .addSelect('"geoRegionId"')
       .where('ar.isoA2 = :countryIsoAlpha2Code', {
         countryIsoAlpha2Code: countryIsoAlpha2Code,

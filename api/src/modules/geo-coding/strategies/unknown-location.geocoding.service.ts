@@ -27,7 +27,7 @@ export class UnknownLocationGeoCodingStrategy extends BaseStrategy {
       sourcingData?.locationCountryInput,
     );
 
-    const { id: adminRegionId, geoRegionId } =
+    const { adminRegionId, geoRegionId } =
       await this.adminRegionService.getAdminAndGeoRegionIdByCountryIsoAlpha2(
         geoCodedResponse.results[0]?.address_components?.[0]?.short_name,
       );

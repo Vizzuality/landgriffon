@@ -4,7 +4,10 @@ import { PointOfProductionGeocodingStrategy } from 'modules/geo-coding/strategie
 import { CountryOfProductionGeoCodingStrategy } from 'modules/geo-coding/strategies/country-of-production.geocoding.service';
 import { UnknownLocationGeoCodingStrategy } from 'modules/geo-coding/strategies/unknown-location.geocoding.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
-import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
+import {
+  LOCATION_TYPES,
+  SourcingLocation,
+} from 'modules/sourcing-locations/sourcing-location.entity';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 
 @Injectable()
@@ -22,11 +25,11 @@ export class GeoCodingService extends GeoCodingAbstractClass {
 
   async geoCodeLocations(
     sourcingData: SourcingData[],
-  ): Promise<SourcingData[]> {
+  ): Promise<SourcingLocation[]> {
     this.logger.log(
       `Geocoding locations for ${sourcingData.length} sourcing record elements`,
     );
-    const geoCodedSourcingData: SourcingData[] = [];
+    const geoCodedSourcingData: SourcingLocation[] = [];
     await Promise.all(
       sourcingData.map(async (sourcingData: SourcingData) => {
         if (sourcingData.locationType === LOCATION_TYPES.UNKNOWN) {
@@ -59,7 +62,7 @@ export class GeoCodingService extends GeoCodingAbstractClass {
 
   async geoCodeAggregationPoint(
     sourcingData: SourcingData,
-  ): Promise<SourcingData> {
+  ): Promise<SourcingLocation> {
     return this.aggregationPointGeocodingService.geoCodeAggregationPoint(
       sourcingData,
     );
@@ -67,7 +70,7 @@ export class GeoCodingService extends GeoCodingAbstractClass {
 
   async geoCodePointOfProduction(
     sourcingData: SourcingData,
-  ): Promise<SourcingData> {
+  ): Promise<SourcingLocation> {
     return this.pointOfProductionGeocodingService.geoCodePointOfProduction(
       sourcingData,
     );
@@ -75,7 +78,7 @@ export class GeoCodingService extends GeoCodingAbstractClass {
 
   async geoCodeCountryOfProduction(
     sourcingData: SourcingData,
-  ): Promise<SourcingData> {
+  ): Promise<SourcingLocation> {
     return this.countryOfProductionService.geoCodeCountryOfProduction(
       sourcingData,
     );
@@ -83,7 +86,7 @@ export class GeoCodingService extends GeoCodingAbstractClass {
 
   async geoCodeUnknownLocationType(
     sourcingData: SourcingData,
-  ): Promise<SourcingData> {
+  ): Promise<SourcingLocation> {
     return this.unknownLocationService.geoCodeUnknownLocationType(sourcingData);
   }
 }

@@ -62,6 +62,8 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
 }: AreaStackedProps) => {
   const { showTooltip, hideTooltip, tooltipData, tooltipTop, tooltipLeft } = useTooltip();
 
+  console.log(tooltipData, 'data')
+
   const lastCurrentIndex = useMemo(() => {
     const i = data.findIndex((d) => !d.current);
     if (i > -1 && i !== data.length - 1) return i;

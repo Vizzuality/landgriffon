@@ -35,11 +35,18 @@ const schemaValidation = yup.object({
   interventionDescription: yup.string(),
   percentage: yup.number().min(0).max(100).required(),
   materials: yup.array().min(1).required('error'),
-  business: yup.array().min(1).required('error'),
+  business: yup.object({ label: yup.string(), value: yup.string() }).required(),
   suppliers: yup.array().min(1).required('error'),
   originRegions: yup.array().min(1).required('error'),
-  year: yup.number().required('error'),
-  useInterventionType: yup.string().required(),
+  yearCompletion: yup
+    .number()
+    .test(
+      'len',
+      'Must be exactly 4 digits',
+      (val) => Math.ceil(Math.log(val + 1) / Math.LN10) === 4,
+    )
+    .required('error'),
+  interventionType: yup.object({ label: yup.string(), value: yup.string() }).required(),
 });
 
 const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: StepProps) => {
@@ -138,17 +145,6 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
     [dispatch],
   );
 
-  const handleYear = useCallback(
-    ({ value }) =>
-      dispatch(
-        setFilter({
-          id: 'interventionType',
-          value,
-        }),
-      ),
-    [dispatch],
-  );
-
   const handleContinue = useCallback((values) => {
     if (isEmpty(errors)) {
       dispatch(setNewInterventionData(values));
@@ -238,13 +234,14 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
         <div className="text-sm font-medium text-gray-700">
           <span>Year of completion</span>
           <div className="mt-1">
-            <Select
-              {...register('year')}
-              loading={isLoadingYearCompletion}
-              current={currentYearCompletion}
-              options={optionsYearCompletion}
-              placeholder="Select"
-              onChange={handleYear}
+            <Input
+              {...register('yearCompletion')}
+              type="number"
+              name="yearCompletion"
+              id="yearCompletion"
+              aria-label="percentage"
+              placeholder="Insert year"
+              defaultValue={2021}
             />
           </div>
         </div>
@@ -257,7 +254,7 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
               loading={isLoadingInterventionTypes}
               options={optionsInterventionType}
               placeholder="Select"
-              current={watch('interventionType')}
+              current={watch(interventionType)}
               onChange={(values) => setValue('interventionType', values)}
             />
           </div>

@@ -9,7 +9,7 @@ import Select from 'components/select';
 import InfoTooltip from 'containers/info-tooltip';
 
 // hooks
-import { useSuppliers } from 'hooks/suppliers';
+import { useSuppliersTypes } from 'hooks/suppliers';
 
 // form validation
 import { useFormContext } from 'react-hook-form';
@@ -17,19 +17,22 @@ import { useFormContext } from 'react-hook-form';
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
 
-const producers = ['producer1', 'producer2'];
-const producer = 'producer1';
 const locationTypes = ['location1', 'location2'];
 const locationType = 'location1';
 const countries = ['Spain', 'Portugal'];
 const country = 'Spain';
 
 const Supplier: FC = () => {
-  const { data: suppliers, isLoading: isLoadingSuppliers } = useSuppliers();
+  const { data: suppliers, isLoading: isLoadingSuppliers } = useSuppliersTypes({
+    type: 't1supplier',
+  });
+  const { data: producers, isLoading: isLoadingProducers } = useSuppliersTypes({
+    type: 'producer',
+  });
 
   const [formData, setFormData] = useState({
     supplier: suppliers[0]?.id,
-    producer: producers[0], //?.id,
+    producer: producers[0]?.id,
     locationType: locationTypes[0], //.?id,
     countries: countries[0], //.?id,
   });
@@ -88,21 +91,21 @@ const Supplier: FC = () => {
   const optionsProducers: SelectOptions = useMemo(
     () =>
       producers.map((producer) => ({
-        label: producer,
-        value: producer,
+        label: producer.name,
+        value: producer.id,
       })),
-    [],
+    [producers],
   );
 
   const currentProducer = useMemo<SelectOption>(
-    () => optionsProducers?.find((option) => option.value === producer),
-    [optionsProducers],
+    () => optionsProducers?.find((option) => option.value === formData.producer),
+    [optionsProducers, formData.producer],
   );
-  const isLoadingProducers = false;
+
   const isLoadingLocationType = false;
   const isLoadingCountries = false;
 
-  const { register } = useFormContext();
+  const { register, setValue } = useFormContext();
 
   return (
     <>
@@ -123,6 +126,7 @@ const Supplier: FC = () => {
               current={currentSupplier}
               options={optionsSuppliers}
               placeholder="Select"
+              onChange={(value) => setValue('supplier', value)}
             />
           </div>
 
@@ -131,12 +135,12 @@ const Supplier: FC = () => {
               Producer <span className="text-gray-500">(optional)</span>
             </Label>
             <Select
-              // id="producer"
               {...register('producer')}
               loading={isLoadingProducers}
               current={currentProducer}
               options={optionsProducers}
               placeholder="Select"
+              onChange={(value) => setValue('producer', value)}
             />
           </div>
         </div>
@@ -152,12 +156,12 @@ const Supplier: FC = () => {
             <span>Location type</span>
             <div className="mt-1">
               <Select
-                id="locationType"
                 {...register('locationType')}
                 loading={isLoadingLocationType}
                 current={currentLocationType}
                 options={optionsLocationTypes}
                 placeholder="all LocationTypes"
+                onChange={(value) => setValue('locationType', value)}
               />
             </div>
           </div>
@@ -166,12 +170,12 @@ const Supplier: FC = () => {
             <span>Country</span>
             <div className="mt-1">
               <Select
-                id="country"
                 {...register('country')}
                 loading={isLoadingCountries}
                 current={currentCountry}
                 options={optionsCountries}
                 placeholder="All Countries"
+                onChange={(value) => setValue('country', value)}
               />
             </div>
           </div>

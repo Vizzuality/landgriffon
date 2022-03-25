@@ -449,7 +449,9 @@ export class H3DataRepository extends Repository<H3Data> {
       .innerJoin(SourcingRecord, 'sr', 'sl.id = sr.sourcingLocationId')
       .innerJoin(IndicatorRecord, 'ir', 'sr.id = ir.sourcingRecordId')
       .innerJoin(GeoRegion, 'gr', 'sl.geoRegionId = gr.id')
-      .where('ir.indicatorId = :indicatorId', { indicatorId: indicator.id })
+      .where('sl.scenarioInterventionId IS NULL')
+      .andWhere('sl.interventionType IS NULL')
+      .andWhere('ir.indicatorId = :indicatorId', { indicatorId: indicator.id })
       .andWhere('sr.year = :year', { year })
       .andWhere('gr."h3FlatLength" > 0')
       .groupBy('h');

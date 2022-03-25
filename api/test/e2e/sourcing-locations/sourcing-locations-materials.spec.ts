@@ -6,6 +6,7 @@ import { Material } from 'modules/materials/material.entity';
 import { MaterialsModule } from 'modules/materials/materials.module';
 import {
   createMaterial,
+  createScenarioIntervention,
   createSourcingLocation,
   createSourcingRecord,
   createSupplier,
@@ -13,8 +14,13 @@ import {
 import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 import { Supplier } from 'modules/suppliers/supplier.entity';
-import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
+import {
+  LOCATION_TYPES,
+  SOURCING_LOCATION_TYPE_BY_INTERVENTION,
+} from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { SourcingLocationMaterial } from 'modules/sourcing-locations/dto/materials.sourcing-location.dto';
 
 describe('Materials - Get the list of Materials uploaded by User with details', () => {
   let app: INestApplication;
@@ -51,7 +57,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     const material1: Material = await createMaterial({ name: 'bananas' });
     const material2: Material = await createMaterial({ name: 'maize' });
     const material3: Material = await createMaterial({ name: 'cotton' });
-    await createMaterial({ name: 'cocoa' });
+    const material4: Material = await createMaterial({ name: 'cocoa' });
     await createMaterial({ name: 'soya beans' });
 
     // Creating sourcing locations for different materials and suppliers
@@ -90,6 +96,24 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
       sourcingLocation: sourcingLocation1,
     });
 
+    // Adding sourcing location belonging to intervention, that must be ignored by endpoint
+    const scenarioIntervention: ScenarioIntervention =
+      await createScenarioIntervention();
+
+    const interventionSourcingLocation = await createSourcingLocation({
+      t1SupplierId: supplier1.id,
+      locationType: LOCATION_TYPES.UNKNOWN,
+      materialId: material4.id,
+      scenarioInterventionId: scenarioIntervention.id,
+      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+    });
+
+    await createSourcingRecord({
+      tonnage: 1000,
+      year: 2002,
+      sourcingLocation: interventionSourcingLocation,
+    });
+
     const responseWithDefaultPagination = await request(app.getHttpServer())
       .get(`/api/v1/sourcing-locations/materials`)
       .set('Authorization', `Bearer ${jwtToken}`)
@@ -122,6 +146,16 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     expect(responseWithDefaultPagination.body.meta.size).toEqual(25);
     expect(responseWithDefaultPagination.body.meta.totalItems).toEqual(3);
     expect(responseWithDefaultPagination.body.meta.totalPages).toEqual(1);
+
+    // Checking that material from intervention SL is not included in results:
+    expect(
+      responseWithDefaultPagination.body.data.find(
+        (sourcingLocation: {
+          type: string;
+          attributes: SourcingLocationMaterial;
+        }) => sourcingLocation.attributes.material === 'cocoa',
+      ),
+    ).toBe(undefined);
 
     const responseWithCustomPagination = await request(app.getHttpServer())
       .get(`/api/v1/sourcing-locations/materials`)

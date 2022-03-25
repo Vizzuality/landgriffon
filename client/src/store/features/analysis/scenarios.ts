@@ -44,7 +44,7 @@ export const initialState: ScenariosState = {
   scenarioCurrentTab: 'interventions',
   interventionsStep: 1,
   newInterventionData: {
-    title: 'Intervention title',
+    title: 'InterventionTitle',
     interventionDescription: null,
     percentage: 100,
     materials: null,

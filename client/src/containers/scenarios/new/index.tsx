@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import cx from 'classnames';
 import { useQuery } from 'react-query';
@@ -8,9 +8,14 @@ import { useRouter } from 'next/router';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 
 import { setSubContentCollapsed } from 'store/features/analysis/ui';
-import { scenarios, setNewInterventionData, setScenarioTab } from 'store/features/analysis/scenarios';
+import {
+  scenarios,
+  setNewInterventionData,
+  setScenarioTab,
+} from 'store/features/analysis/scenarios';
 
 import { useInterventions } from 'hooks/interventions';
+import { useCreateScenario } from 'hooks/scenarios';
 
 import Button from 'components/button';
 import InterventionsList from 'containers/interventions/list';
@@ -35,7 +40,11 @@ const items = [
 ];
 
 const ScenariosNewContainer: React.FC = () => {
-  const { newInterventionData } = useAppSelector(scenarios);
+  const dispatch = useAppDispatch();
+  const { scenarioCurrentTab } = useAppSelector(scenarios);
+
+  const createScenario = useCreateScenario();
+
   const response = useQuery('scenarioNew', () =>
     apiService
       .post('/scenarios', { title: 'Untitled' })
@@ -45,22 +54,25 @@ const ScenariosNewContainer: React.FC = () => {
   const { query } = useRouter();
   const { data: interventions } = useInterventions({ sort: query.sortBy as string });
 
-  if (response.isSuccess) {
-    const {
-      data: { id: scenarioId },
-    } = response;
-    setNewInterventionData({
-      ...newInterventionData,
-      scenarioId: scenarioId,
-    });
-  }
 
-  const dispatch = useAppDispatch();
+
+  createScenario.mutate(
+    {
+      onSuccess: (data) => {
+        console.log('onsucces', data);
+      },
+      onError: (error, variables, context) => {
+        console.log('error', error, variables, context);
+      },
+    },
+  );
+  // scenarioId && dispatch(setNewInterventionData(scenarioId));
+
+
+
   const handleNewScenarioFeature = useCallback(() => {
     dispatch(setSubContentCollapsed(false));
   }, [dispatch]);
-
-  const { scenarioCurrentTab } = useAppSelector(scenarios);
 
   const handleTab = useCallback((step) => dispatch(setScenarioTab(step)), [dispatch]);
 

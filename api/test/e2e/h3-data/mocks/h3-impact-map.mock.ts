@@ -9,12 +9,16 @@ import {
   createIndicatorRecord,
   createMaterial,
   createMaterialToH3,
+  createScenarioIntervention,
   createSourcingLocation,
   createSourcingRecord,
   createSupplier,
 } from '../../../entity-mocks';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
-import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import {
+  SourcingLocation,
+  SOURCING_LOCATION_TYPE_BY_INTERVENTION,
+} from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { getManager } from 'typeorm';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
@@ -25,6 +29,7 @@ import {
   MaterialToH3,
 } from 'modules/materials/material-to-h3.entity';
 import { h3BasicFixture } from './h3-fixtures';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 
 export interface ImpactMapMockData {
   indicatorId: string;
@@ -170,6 +175,34 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
     sourcingRecordId: sourcingRecordTwo.id,
     indicatorId: indicator.id,
     value: 1000,
+  });
+
+  // Creating Sourcing Location belonging to Intervention - it should be ignored when calculating impact map
+
+  const scenarioIntervention: ScenarioIntervention =
+    await createScenarioIntervention();
+
+  const interventionSourcingLocation: SourcingLocation =
+    await createSourcingLocation({
+      adminRegion: adminRegionTwo,
+      geoRegion: geoRegionTwo,
+      material: materialTwo,
+      t1Supplier: t1SupplierOne,
+      producer: producerOne,
+      scenarioInterventionId: scenarioIntervention.id,
+      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+    });
+
+  const interventionSourcingRecord: SourcingRecord = await createSourcingRecord(
+    {
+      sourcingLocation: interventionSourcingLocation,
+    },
+  );
+
+  await createIndicatorRecord({
+    sourcingRecordId: interventionSourcingRecord.id,
+    indicatorId: indicator.id,
+    value: 2000,
   });
 
   return {

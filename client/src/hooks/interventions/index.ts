@@ -56,7 +56,7 @@ export function useInterventions(queryParams: { sort: string }): ResponseInterve
 }
 
 export function useCreateNewIntervention() {
-  const createIntervention = (data) =>
+  const createIntervention = ({ data }) =>
     apiService.request({
       method: 'POST',
       url: '/scenario-interventions',

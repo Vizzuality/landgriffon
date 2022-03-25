@@ -51,10 +51,12 @@ const Step2: FC<StepProps> = ({ handleCancel }: StepProps) => {
         break;
       case 'production-efficiency':
         return yup.object({
-          carbonEmissions: yup.number().required(),
-          deforestationRisk: yup.number().required(),
-          waterWithdrawal: yup.number().required(),
-          biodiversityImpact: yup.number().required(),
+          newIndicatorCoefficients: yup.object({
+            DF_LUC_T: yup.number().required(),
+            UWU_T: yup.number().required(),
+            BL_LUC_T: yup.number().required(),
+            GHG_LUC_T: yup.number().required(),
+          }),
         });
         break;
       default:
@@ -79,6 +81,7 @@ const Step2: FC<StepProps> = ({ handleCancel }: StepProps) => {
   const createIntervention = useCreateNewIntervention();
   const handleStepsSubmissons = useCallback(
     (values) => {
+      console.log(values, 'valores')
       if (isValid) {
         dispatch(
           setNewInterventionData({
@@ -117,7 +120,7 @@ const Step2: FC<StepProps> = ({ handleCancel }: StepProps) => {
             </Button>
             <Button
               className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              disabled={!isValid}
+              // disabled={!isValid}
               type="submit"
             >
               Add intervention

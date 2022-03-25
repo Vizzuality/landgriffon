@@ -32,7 +32,6 @@ const AnalysisChart: React.FC = () => {
           >
             {chartData.map((d) => {
               const { id, indicator, keys, values, colors } = d;
-              console.log(values, 'values')
               return (
                 <motion.div
                   key={`${id}-${JSON.stringify(filters)}`}

@@ -24,12 +24,6 @@ const SuppliersImpact: FC = () => {
   const [landgriffonEstimates, setLandgriffonEstimates] = useState(false);
   // const { data: indicators, isFetching, isFetched, error } = useIndicators();
 
-  // "newIndicatorCoefficients": {
-  //   "DF_LUC_T": 0,
-  //   "UWU_T": 0,
-  //   "BL_LUC_T": 0,
-  //   "GHG_LUC_T": 0
-  // },
   const indicators = useMemo<Indicator[]>(
     () => [
       {
@@ -38,13 +32,13 @@ const SuppliersImpact: FC = () => {
         // id: 'c71eb531-2c8e-40d2-ae49-1049543be4d1',
         metadata: {},
         name: 'Carbon emissions',
-        id: 'carbonEmissions',
+        id: 'GHG_LUC_T',
         value: 0,
         unit: 'tCO2e',
       },
       {
         description: 'Deforestation risk due to ...',
-        id: 'deforestationRisk',
+        id: 'DF_LUC_T',
         metadata: {},
         name: 'Deforestation risk',
         value: 0,
@@ -53,7 +47,7 @@ const SuppliersImpact: FC = () => {
       {
         description: 'With the Unsustainable water use indicator...',
         // id: 'e2c00251-fe31-4330-8c38-604535d795dc',
-        id: 'waterWithdrawal',
+        id: 'UWU_T',
         metadata: {},
         name: 'Water withdrawal',
         value: 0,
@@ -62,11 +56,11 @@ const SuppliersImpact: FC = () => {
       {
         description: 'Land use and land use change...',
         // id: '0594aba7-70a5-460c-9b58-fc1802d264ea',
-        id: 'biodiversityImpact',
+        id: 'BL_LUC_T',
         metadata: {},
         name: 'Biodiversity impact',
         value: 0,
-        unit: 'X',
+        unit: 'PDF',
       },
     ],
     [],

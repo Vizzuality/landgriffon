@@ -25,14 +25,14 @@ const THEMES = {
       'flex-wrap w-full bg-white relative border border-gray-300 rounded-md shadow-sm py-2 pr-10 pl-3 cursor-pointer',
     arrow: 'inset-y-0 right-0 items-center pr-2  text-gray-900',
     treeNodes:
-      'flex items-center space-x-2 pr-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
+      'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
   },
   'inline-primary': {
     label: 'truncate text-ellipsis font-bold cursor-pointer px-0 py-0',
     wrapper: 'border-b-2 border-green-700 max-w-[190px] overflow-x-hidden truncate text-ellipsis',
     arrow: '-bottom-3  transform left-1/2 -translate-x-1/2 text-green-700',
     treeNodes:
-      'flex items-center space-x-2 pr-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
+      'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
     treeContent: 'max-w-xl',
   },
 };
@@ -71,21 +71,18 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   const renderTreeNodes = useMemo(
     () =>
       (data, counter = 0) =>
-        data.map((item) => {
-          const padding = counter * 4;
-          return (
-            <TreeNode
-              key={item.value}
-              title={item.label}
-              className={classNames(THEMES[theme].treeNodes, {
-                [`pl-${padding}`]: !!padding,
-                'bg-green-50 text-green-700 font-semibold': selectedKeys.includes(item.value),
-              })}
-            >
-              {item.children && renderTreeNodes(item.children, counter + 1)}
-            </TreeNode>
-          );
-        }),
+        data.map((item) => (
+          <TreeNode
+            key={item.value}
+            title={item.label}
+            className={classNames(THEMES[theme].treeNodes, {
+              'bg-green-50 text-green-700 font-semibold': selectedKeys.includes(item.value),
+            })}
+            style={{ paddingLeft: 16 * counter }}
+          >
+            {item.children && renderTreeNodes(item.children, counter + 1)}
+          </TreeNode>
+        )),
     [selectedKeys, theme],
   );
 

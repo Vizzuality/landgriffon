@@ -83,14 +83,9 @@ const Step2: FC<StepProps> = ({ handleCancel }: StepProps) => {
     (values) => {
       console.log(values, 'valores')
       if (isValid) {
-        dispatch(
-          setNewInterventionData({
-            ...newInterventionData,
-            ...values,
-          }),
-        );
+        dispatch(setNewInterventionData(values));
         return createIntervention.mutate(
-          { data: newInterventionData },
+          { ...newInterventionData },
           {
             onSuccess: (data) => {
               console.log('onsucces', data);

@@ -169,3 +169,22 @@ export function useUpdateScenario() {
     mutationKey: 'editScenario',
   });
 }
+
+export function useCreateScenario() {
+  const createScenario = (data) =>
+    apiService.request({
+      method: 'POST',
+      url: '/scenario',
+      data,
+    });
+
+  return useMutation(createScenario, {
+    mutationKey: 'createScenario',
+    onSuccess: () => {
+      console.info('Success creating a new scenario');
+    },
+    onError: () => {
+      console.info('Error');
+    },
+  });
+}

@@ -66,9 +66,7 @@ const InterventionForm: FC = () => {
 
   const handleInterventionData = useCallback(() => {
     console.log('submit');
-  }, [])
-
-  const [isValidForm, setIsValid] = useState(false);
+  }, []);
 
   return (
     <>

@@ -2,6 +2,7 @@ import { useCallback, useMemo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import toast from 'react-hot-toast';
 
 // hooks
 import { useAppDispatch, useAppSelector } from 'store/hooks';
@@ -121,6 +122,10 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
       dispatch(setNewInterventionStep(2));
       // dispatch(handleInterventionData(values))
     }
+    console.log(errors)
+    errors.forEach((props) => console.log(props, '*****') ||
+    toast.error(props));
+
   }, []);
 
   const values = getValues();

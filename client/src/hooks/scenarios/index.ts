@@ -174,7 +174,7 @@ export function useCreateScenario() {
   const createScenario = (data) =>
     apiService.request({
       method: 'POST',
-      url: '/scenario',
+      url: '/scenarios',
       data,
     });
 

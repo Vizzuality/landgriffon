@@ -73,3 +73,9 @@ export function useCreateNewIntervention() {
     },
   });
 }
+
+export function useLocationtypes() {
+  return useMemo<string[]>(() => {
+    return ['Point of production', 'Aggregation point', 'Country of production', 'Unknown'];
+  }, []);
+}

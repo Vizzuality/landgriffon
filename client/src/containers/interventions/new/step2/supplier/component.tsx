@@ -16,9 +16,9 @@ import { useFormContext } from 'react-hook-form';
 
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
+import { useLocationtypes } from 'hooks/interventions';
+import { useAdminRegions, useAdminRegionsTrees } from 'hooks/admin-regions';
 
-const locationTypes = ['location1', 'location2'];
-const locationType = 'location1';
 const countries = ['Spain', 'Portugal'];
 const country = 'Spain';
 
@@ -29,14 +29,6 @@ const Supplier: FC = () => {
   const { data: producers, isLoading: isLoadingProducers } = useSuppliersTypes({
     type: 'producer',
   });
-
-  const [formData, setFormData] = useState({
-    supplier: suppliers[0]?.id,
-    producer: producers[0]?.id,
-    locationType: locationTypes[0], //.?id,
-    countries: countries[0], //.?id,
-  });
-
   const optionsSuppliers: SelectOptions = useMemo(
     () =>
       suppliers.map((supplier) => ({
@@ -46,32 +38,43 @@ const Supplier: FC = () => {
     [suppliers],
   );
 
-  const currentSupplier = useMemo<SelectOption>(
-    () => optionsSuppliers?.find((option) => option.value === formData.supplier),
-    [optionsSuppliers, formData.supplier],
-  );
+  const locationTypes = useLocationtypes();
 
   const optionsLocationTypes: SelectOptions = useMemo(
     () =>
       locationTypes.map((locationType) => ({
         label: locationType,
-        value: locationType,
+        value: locationType.toLowerCase(),
       })),
     [],
   );
 
-  const currentLocationType = useMemo<SelectOption>(
-    () => optionsLocationTypes?.find((option) => option.value === locationType),
-    [optionsLocationTypes],
-  );
+  const { data: countries } = useAdminRegionsTrees({ depth: 0 });
 
   const optionsCountries: SelectOptions = useMemo(
     () =>
-      countries.map((country) => ({
-        label: country,
-        value: country,
+      countries.map(({ name, id }) => ({
+        label: name,
+        value: id,
       })),
     [],
+  );
+
+  const [formData, setFormData] = useState({
+    supplier: suppliers[0]?.id,
+    producer: producers[0]?.id,
+    locationType: locationTypes[0], //.?id,
+    countries: countries[0]?.id,
+  });
+
+  const currentSupplier = useMemo<SelectOption>(
+    () => optionsSuppliers?.find((option) => option.value === formData.supplier),
+    [optionsSuppliers, formData.supplier],
+  );
+
+  const currentLocationType = useMemo<SelectOption>(
+    () => optionsLocationTypes?.find((option) => option.value === formData.locationType),
+    [optionsLocationTypes],
   );
 
   const currentCountry = useMemo<SelectOption>(

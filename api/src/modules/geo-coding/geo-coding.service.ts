@@ -27,33 +27,28 @@ export class GeoCodingService extends GeoCodingAbstractClass {
       `Geocoding locations for ${sourcingData.length} sourcing record elements`,
     );
     const geoCodedSourcingData: SourcingData[] = [];
-    await Promise.all(
-      sourcingData.map(async (sourcingData: SourcingData) => {
-        if (sourcingData.locationType === LOCATION_TYPES.UNKNOWN) {
-          geoCodedSourcingData.push(
-            await this.geoCodeUnknownLocationType(sourcingData),
-          );
-        }
-        if (
-          sourcingData.locationType === LOCATION_TYPES.COUNTRY_OF_PRODUCTION
-        ) {
-          geoCodedSourcingData.push(
-            await this.geoCodeCountryOfProduction(sourcingData),
-          );
-        }
+    for await (const location of sourcingData) {
+      if (location.locationType === LOCATION_TYPES.UNKNOWN) {
+        geoCodedSourcingData.push(
+          await this.geoCodeUnknownLocationType(location),
+        );
+      }
+      if (location.locationType === LOCATION_TYPES.COUNTRY_OF_PRODUCTION) {
+        geoCodedSourcingData.push(
+          await this.geoCodeCountryOfProduction(location),
+        );
+      }
 
-        if (sourcingData.locationType === LOCATION_TYPES.AGGREGATION_POINT) {
-          geoCodedSourcingData.push(
-            await this.geoCodeAggregationPoint(sourcingData),
-          );
-        }
-        if (sourcingData.locationType === LOCATION_TYPES.POINT_OF_PRODUCTION) {
-          geoCodedSourcingData.push(
-            await this.geoCodePointOfProduction(sourcingData),
-          );
-        }
-      }),
-    );
+      if (location.locationType === LOCATION_TYPES.AGGREGATION_POINT) {
+        geoCodedSourcingData.push(await this.geoCodeAggregationPoint(location));
+      }
+      if (location.locationType === LOCATION_TYPES.POINT_OF_PRODUCTION) {
+        geoCodedSourcingData.push(
+          await this.geoCodePointOfProduction(location),
+        );
+      }
+    }
+
     return geoCodedSourcingData;
   }
 

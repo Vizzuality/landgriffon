@@ -84,7 +84,7 @@ const AdminDataPage: React.FC = () => {
       isLoading: isFetchingSourcingData,
       rowKeyField: 'id',
       columns: [
-        { key: 'materialName', title: 'Material', dataType: DataType.String, width: 240 },
+        { key: 'material', title: 'Material', dataType: DataType.String, width: 240 },
         { key: 'businessUnit', title: 'Business Unit', dataType: DataType.String },
         { key: 't1Supplier', title: 'T1 Supplier', dataType: DataType.String },
         { key: 'producer', title: 'Producer', dataType: DataType.String },

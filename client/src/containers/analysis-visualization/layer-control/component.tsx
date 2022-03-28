@@ -33,17 +33,22 @@ const DEFAULT_LAYER = LAYERS_OPTIONS[2];
 
 const LayerControl: React.FC = () => {
   const { visualizationMode } = useAppSelector(analysisUI);
-  const { layer } = useAppSelector(analysisFilters);
+  const { layer, indicator } = useAppSelector(analysisFilters);
   const dispatch = useAppDispatch();
 
   const current = useMemo(() => LAYERS_OPTIONS.find(({ value }) => value === layer), [layer]);
 
   const handleChange = useCallback(
     (selected: SelectOption) => {
-      dispatch(resetFiltersAndOverride({ layer: selected.value as AnalysisFiltersState['layer'] }));
+      dispatch(
+        resetFiltersAndOverride({
+          layer: selected.value,
+          indicator,
+        } as Partial<AnalysisFiltersState>),
+      );
       dispatch(setLayer(selected.value as AnalysisFiltersState['layer']));
     },
-    [dispatch],
+    [dispatch, indicator],
   );
 
   useEffect(() => {

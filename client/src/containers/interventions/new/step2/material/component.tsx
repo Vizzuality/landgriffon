@@ -12,8 +12,7 @@ import Select from 'components/select';
 import { useFormContext } from 'react-hook-form';
 
 // types
-import { SelectOptions } from 'components/select/types';
-import { current } from '@reduxjs/toolkit';
+import { SelectOption, SelectOptions } from 'components/select/types';
 
 const Material = () => {
   const { data: materials, isLoading: isLoadingMaterials } = useMaterials();
@@ -28,7 +27,7 @@ const Material = () => {
         label: material.name,
         value: material.id,
       })),
-    [],
+    [materials],
   );
 
   const currentMaterial = useMemo<SelectOption>(
@@ -36,7 +35,7 @@ const Material = () => {
     [optionsMaterials, formData.material],
   );
 
-  const { register, setValue } = useFormContext();
+  const { register, setValue, watch } = useFormContext();
 
   return (
     <form>
@@ -50,7 +49,7 @@ const Material = () => {
             <Select
               {...register('newMaterialId')}
               loading={isLoadingMaterials}
-              current={currentMaterial}
+              current={watch('newMaterialId')}
               options={optionsMaterials}
               placeholder="Select"
               onChange={(values) => setValue('newMaterialId', values.value)}

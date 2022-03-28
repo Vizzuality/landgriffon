@@ -24,6 +24,8 @@ const LAYERS_OPTIONS: SelectOptions = [
   },
 ];
 
+const DEFAULT_LAYER = LAYERS_OPTIONS[2];
+
 const LayerControl: React.FC = () => {
   const { visualizationMode } = useAppSelector(analysisUI);
   const { layer } = useAppSelector(analysisFilters);
@@ -32,11 +34,8 @@ const LayerControl: React.FC = () => {
   const handleChange = useCallback((selected) => dispatch(setLayer(selected.value)), [dispatch]);
 
   useEffect(() => {
-    if (visualizationMode !== 'map') {
-      // set impact when visualization mode is not map
-      dispatch(setLayer(LAYERS_OPTIONS[2].value as AnalysisFiltersState['layer']));
-    }
-  }, [dispatch, visualizationMode]);
+    dispatch(setLayer(DEFAULT_LAYER.value as AnalysisFiltersState['layer']));
+  }, [dispatch]);
 
   const current = useMemo(() => LAYERS_OPTIONS.find(({ value }) => value === layer), [layer]);
 

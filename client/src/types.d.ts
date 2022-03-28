@@ -104,6 +104,22 @@ export type OriginRegion = {
   children: OriginRegion[];
 };
 
+type BusinessUnitsAtributes = Readonly<{
+  name: string;
+  description: string;
+  status: 'inactive' | 'active';
+  metadata: null;
+}>;
+
+export type BusinessUnits = {
+  id: string;
+  name: string;
+  children: OriginRegion[];
+  type: 'businessUnits';
+  id: string;
+  attributes: BusinessUnitsAtributes;
+};
+
 export type ImpactTableData = {
   groupBy: string;
   indicatorId: string;

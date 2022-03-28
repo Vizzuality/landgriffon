@@ -42,11 +42,17 @@ const Step2: FC<StepProps> = ({ handleCancel }: StepProps) => {
     switch (interventionType) {
       case 'new-supplier-location':
         return yup.object({
-          newT1SupplierId: yup.string().required(),
-          newProducerId: yup.string().required(),
+          newT1SupplierId: yup.string(),
+          newProducerId: yup.string(),
           newLocationType: yup.string().required(),
           newLocationCountryInput: yup.string().required(),
           newLocationAddressInput: yup.string().required(),
+          newIndicatorCoefficients: yup.object({
+            DF_LUC_T: yup.number().required(),
+            UWU_T: yup.number().required(),
+            BL_LUC_T: yup.number().required(),
+            GHG_LUC_T: yup.number().required(),
+          }),
         });
         break;
       case 'production-efficiency':
@@ -61,9 +67,19 @@ const Step2: FC<StepProps> = ({ handleCancel }: StepProps) => {
         break;
       default:
         return yup.object({
-          percentage: yup.number().required(),
           newMaterialId: yup.string().required(),
           newMaterialTonnageRatio: yup.number().required(),
+          newT1SupplierId: yup.string(),
+          newProducerId: yup.string(),
+          newLocationType: yup.string().required(),
+          newLocationCountryInput: yup.string().required(),
+          newLocationAddressInput: yup.string().required(),
+          newIndicatorCoefficients: yup.object({
+            DF_LUC_T: yup.number().required(),
+            UWU_T: yup.number().required(),
+            BL_LUC_T: yup.number().required(),
+            GHG_LUC_T: yup.number().required(),
+          }),
         });
     }
   };
@@ -75,13 +91,12 @@ const Step2: FC<StepProps> = ({ handleCancel }: StepProps) => {
   });
 
   const {
-    formState: { isValid },
+    formState: { isValid, errors },
   } = methods;
 
   const createIntervention = useCreateNewIntervention();
   const handleStepsSubmissons = useCallback(
     (values) => {
-      console.log(values, 'valores')
       if (isValid) {
         dispatch(setNewInterventionData(values));
         return createIntervention.mutate(

@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 
 import cx from 'classnames';
 import { useQuery } from 'react-query';
@@ -8,7 +8,11 @@ import { useRouter } from 'next/router';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 
 import { setSubContentCollapsed } from 'store/features/analysis/ui';
-import { scenarios, setNewInterventionData, setScenarioTab } from 'store/features/analysis/scenarios';
+import {
+  scenarios,
+  setNewInterventionData,
+  setScenarioTab,
+} from 'store/features/analysis/scenarios';
 
 import { useInterventions } from 'hooks/interventions';
 
@@ -80,7 +84,6 @@ const ScenariosNewContainer: React.FC = () => {
             data: { id: scenarioId },
           } = response;
           scenarioId && dispatch(setNewInterventionData(scenarioId));
-
         },
         onError: (error, variables, context) => {
           console.log('error', error, variables, context);

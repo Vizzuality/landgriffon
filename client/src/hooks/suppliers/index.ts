@@ -18,7 +18,6 @@ export type SuppliersTreesParams = {
 };
 
 export function useSuppliers(params): ResponseData {
-  console.log(params)
   const query = useQuery(
     ['suppliers'],
     async () =>

@@ -17,9 +17,8 @@ import { useFormContext } from 'react-hook-form';
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
 import { useLocationtypes } from 'hooks/interventions';
-import { useAdminRegions, useAdminRegionsTrees } from 'hooks/admin-regions';
+import { useAdminRegionsTrees } from 'hooks/admin-regions';
 
-const countries = ['Spain', 'Portugal'];
 const country = 'Spain';
 
 const Supplier: FC = () => {
@@ -129,7 +128,7 @@ const Supplier: FC = () => {
               current={currentSupplier}
               options={optionsSuppliers}
               placeholder="Select"
-              onChange={(value) => setValue('newT1SupplierId', value)}
+              onChange={({ value }) => setValue('newT1SupplierId', value)}
             />
           </div>
 
@@ -143,7 +142,7 @@ const Supplier: FC = () => {
               current={currentProducer}
               options={optionsProducers}
               placeholder="Select"
-              onChange={(value) => setValue('newProducerId', value)}
+              onChange={({ value }) => setValue('newProducerId', value)}
             />
           </div>
         </div>
@@ -164,7 +163,7 @@ const Supplier: FC = () => {
                 current={currentLocationType}
                 options={optionsLocationTypes}
                 placeholder="all LocationTypes"
-                onChange={(value) => setValue('newLocationType', value)}
+                onChange={({ value }) => setValue('newLocationType', value)}
               />
             </div>
           </div>
@@ -178,7 +177,7 @@ const Supplier: FC = () => {
                 current={currentCountry}
                 options={optionsCountries}
                 placeholder="All Countries"
-                onChange={(value) => setValue('newLocationCountryInput', value)}
+                onChange={({ value }) => setValue('newLocationCountryInput', value)}
               />
             </div>
           </div>

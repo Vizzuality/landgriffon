@@ -28,16 +28,15 @@ import { isEmpty } from 'lodash';
 // types
 import type { SelectOptions, SelectOption } from 'components/select/types';
 import type { StepProps } from 'containers/interventions/new/types';
-
-const businesses = ['business1', 'business2', 'business3'];
+import { useBusinessUnits } from 'hooks/business-units';
 
 const schemaValidation = yup.object({
   interventionDescription: yup.string(),
   percentage: yup.number().min(0).max(100).required(),
-  materialsIds: yup.array().min(1).required('error'),
-  businessUnitsIds: yup.object({ label: yup.string(), value: yup.string() }).required(),
-  suppliersIds: yup.array().min(1).required('error'),
-  adminRegionsIds: yup.array().min(1).required('error'),
+  materialsIds: yup.array().min(1).required(),
+  businessUnitsIds: yup.string().required(),
+  suppliersIds: yup.array().min(1).required(),
+  adminRegionsIds: yup.array().min(1).required(),
   endYear: yup
     .number()
     .test(
@@ -46,13 +45,14 @@ const schemaValidation = yup.object({
       (val) => Math.ceil(Math.log(val + 1) / Math.LN10) === 4,
     )
     .required('error'), // year completion
-  interventionType: yup.string().required(),
+  type: yup.string().required(),
 });
 
 const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: StepProps) => {
   const dispatch = useAppDispatch();
   const interventionTypes = useInterventionTypes();
   const filters = useAppSelector(analysisFilters);
+  const { interventionType } = filters;
 
   const {
     register,
@@ -60,30 +60,30 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
     setValue,
     getValues,
     watch,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
 
-  const { materials, origins, suppliers } = filters;
+  const values = getValues();
 
-  // const { data: sourcingRegions, isLoading: isLoadingSourcingRegions } = useSourcingRegions();
-
-  const business = 'business2';
-  const interventionType = '';
+  const { data: businesses, isLoading: isLoadingBusinesses } = useBusinessUnits();
 
   const optionsBusinesses: SelectOptions = useMemo(
     () =>
-      businesses.map((business) => ({
-        label: business,
-        value: business,
+      businesses.map(({ name, id }) => ({
+        label: name,
+        value: id,
       })),
-    [],
+    [businesses],
   );
 
   const currentBusiness = useMemo<SelectOption>(
-    () => optionsBusinesses?.find((option) => option.value === business),
-    [optionsBusinesses],
+    () =>
+      optionsBusinesses?.find(
+        (option) => option.value === values?.businessUnitsIds || optionsBusinesses[0],
+      ),
+    [optionsBusinesses, values?.businessUnitsIds],
   );
 
   const optionsInterventionType: SelectOptions = useMemo(
@@ -92,44 +92,42 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
         label: title,
         value: slug,
       })),
-    [],
+    [interventionTypes],
   );
 
-  const currentInterventionType = useMemo<SelectOption>(
+  const currentInterventiontype = useMemo<SelectOption>(
     () => optionsInterventionType?.find((option) => option.value === interventionType),
-    [optionsInterventionType],
+    [optionsInterventionType, interventionType],
   );
-
-  const isLoadingBusinesses = false;
-  const isLoadingInterventionTypes = false;
 
   const handleInterventionType = useCallback(
     ({ value }) => {
+      setValue('type', value);
       dispatch(
         setFilter({
           id: 'interventionType',
           value,
         }),
-      ),
-        setValue('interventionType', value);
+      );
     },
-    [dispatch],
+    [dispatch, setValue],
   );
 
-  const handleContinue = useCallback((values) => {
-    if (isEmpty(errors)) {
-      dispatch(setNewInterventionData(values));
-      dispatch(setNewInterventionStep(2));
-      // dispatch(handleInterventionData(values))
+  const handleContinue = useCallback(
+    (values) => {
+      if (isEmpty(errors)) {
+        dispatch(setNewInterventionData(values));
+        dispatch(setNewInterventionStep(2));
+      }
+    },
+    [dispatch, errors],
+  );
+
+  useEffect(() => {
+    if (!!errors.length || !isEmpty(errors)) {
+      Object.values(errors)?.map((error) => toast.error(error.message));
     }
-    console.log(errors)
-    errors.forEach((props) => console.log(props, '*****') ||
-    toast.error(props));
-
-  }, []);
-
-  const values = getValues();
-  console.log('step1', values, isValid, errors)
+  }, [errors]);
 
   const handleDropdown = useCallback(
     (id, values) => {
@@ -138,6 +136,11 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
     },
     [setValue],
   );
+
+  const handleYear = useCallback((values) => {
+    setValue('startYear', values);
+    setValue('endYear', values);
+  }, []);
 
   return (
     <form onSubmit={handleSubmit(handleContinue)}>
@@ -185,11 +188,11 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
           <Select
             {...register('businessUnitsIds')}
             loading={isLoadingBusinesses}
-            current={currentBusiness}
+            current={watch((data, { name }) => data[name])}
             options={optionsBusinesses}
             placeholder="all businesses"
             theme="inline-primary"
-            onChange={(values) => setValue('businessUnitsIds', values)}
+            onChange={({ value }) => setValue('businessUnitsIds', value)}
           />
 
           <span className="text-gray-700 font-medium">from</span>
@@ -207,7 +210,7 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
             multiple
             withSourcingLocations
             theme="inline-primary"
-            current={watch('originRegions')}
+            current={watch('adminRegionsIds')}
             onChange={(values) => handleDropdown('adminRegionsIds', values)}
           />
           <span className="text-gray-700 font-medium">.</span>
@@ -225,6 +228,7 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
               aria-label="year"
               placeholder="Insert year"
               defaultValue={2021}
+              onChange={handleYear}
             />
           </div>
         </div>
@@ -233,12 +237,12 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
           <span>Type of intervention</span>
           <div className="mt-1">
             <Select
-              {...register('interventionType')}
-              loading={isLoadingInterventionTypes}
+              {...register('type')}
+              loading={!interventionType}
               options={optionsInterventionType}
               placeholder="Select"
-              current={watch(interventionType)}
-              onChange={handleInterventionType}
+              current={currentInterventiontype}
+              onChange={(values) => handleInterventionType(values)}
             />
           </div>
         </div>

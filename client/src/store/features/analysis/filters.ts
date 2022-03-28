@@ -25,7 +25,7 @@ type FeatureState = RootState & { 'analysis/filters': AnalysisFiltersState };
 
 // Define the initial state using that type
 export const initialState: AnalysisFiltersState = {
-  layer: 'material',
+  layer: 'impact',
   indicator: null,
   indicators: [],
   by: 'material',
@@ -49,14 +49,20 @@ export const analysisFiltersSlice = createSlice({
       ...state,
       [action.payload.id]: action.payload.value,
     }),
-    setFilters: (state, action: PayloadAction<AnalysisFiltersState>) => ({
+    setFilters: (state, action: PayloadAction<Partial<AnalysisFiltersState>>) => ({
       ...state,
+      ...action.payload,
+    }),
+    resetFiltersAndOverride: (state, action: PayloadAction<Partial<AnalysisFiltersState>>) => ({
+      ...state,
+      ...initialState,
       ...action.payload,
     }),
   },
 });
 
-export const { setLayer, setFilter, setFilters } = analysisFiltersSlice.actions;
+export const { setLayer, setFilter, setFilters, resetFiltersAndOverride } =
+  analysisFiltersSlice.actions;
 
 export const analysisFilters = (state: FeatureState) => state['analysis/filters'];
 

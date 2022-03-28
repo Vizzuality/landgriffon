@@ -21,6 +21,7 @@ import { analysisFilters } from 'store/features/analysis/filters';
 import { scenarios } from 'store/features/analysis/scenarios';
 
 import type { StepProps } from 'containers/interventions/new/types';
+import { isEmpty } from 'lodash';
 
 // const schemaValidation = yup.object({
 //   supplier: yup.string().required(),
@@ -47,22 +48,18 @@ const Step2: FC<StepProps> = ({ handleCancel }: StepProps) => {
           newLocationType: yup.string().required(),
           newLocationCountryInput: yup.string().required(),
           newLocationAddressInput: yup.string().required(),
-          newIndicatorCoefficients: yup.object({
-            DF_LUC_T: yup.number().required(),
-            UWU_T: yup.number().required(),
-            BL_LUC_T: yup.number().required(),
-            GHG_LUC_T: yup.number().required(),
-          }),
+          DF_LUC_T: yup.number().required(),
+          UWU_T: yup.number().required(),
+          BL_LUC_T: yup.number().required(),
+          GHG_LUC_T: yup.number().required(),
         });
         break;
       case 'production-efficiency':
         return yup.object({
-          newIndicatorCoefficients: yup.object({
-            DF_LUC_T: yup.number().required(),
-            UWU_T: yup.number().required(),
-            BL_LUC_T: yup.number().required(),
-            GHG_LUC_T: yup.number().required(),
-          }),
+          DF_LUC_T: yup.number().required(),
+          UWU_T: yup.number().required(),
+          BL_LUC_T: yup.number().required(),
+          GHG_LUC_T: yup.number().required(),
         });
         break;
       default:
@@ -74,12 +71,10 @@ const Step2: FC<StepProps> = ({ handleCancel }: StepProps) => {
           newLocationType: yup.string().required(),
           newLocationCountryInput: yup.string().required(),
           newLocationAddressInput: yup.string().required(),
-          newIndicatorCoefficients: yup.object({
-            DF_LUC_T: yup.number().required(),
-            UWU_T: yup.number().required(),
-            BL_LUC_T: yup.number().required(),
-            GHG_LUC_T: yup.number().required(),
-          }),
+          DF_LUC_T: yup.number().required(),
+          UWU_T: yup.number().required(),
+          BL_LUC_T: yup.number().required(),
+          GHG_LUC_T: yup.number().required(),
         });
     }
   };
@@ -91,16 +86,38 @@ const Step2: FC<StepProps> = ({ handleCancel }: StepProps) => {
   });
 
   const {
+    getValues,
     formState: { isValid, errors },
   } = methods;
 
+  const values = getValues();
+  console.log(errors, values, 'errores')
   const createIntervention = useCreateNewIntervention();
   const handleStepsSubmissons = useCallback(
     (values) => {
-      if (isValid) {
+      const parsedData = {
+        newIndicatorCoefficients: {
+          ...newInterventionData,
+        },
+        title: newInterventionData.title,
+        interventionDescription: newInterventionData.interventionDescription,
+        percentage: newInterventionData.percentage,
+        materialsIds: newInterventionData.materialsIds,
+        suppliersIds: newInterventionData.suppliersIds,
+        adminRegionsIds: newInterventionData.adminRegionsIds,
+        newMaterialTonnageRatio: newInterventionData.newMaterialTonnageRatio,
+        newMaterialId: newInterventionData.newMaterialId,
+        newT1SupplierId: newInterventionData.newT1SupplierId,
+        newProducerId: newInterventionData.newProducerId,
+        newLocationType: newInterventionData.newLocationType,
+        newLocationCountryInput: newInterventionData.newLocationCountryInput,
+        newLocationAddressInput: newInterventionData.newLocationAddressInput,
+      };
+
+      if (!isEmpty(errors)) {
         dispatch(setNewInterventionData(values));
-        return createIntervention.mutate(
-          { ...newInterventionData },
+        createIntervention.mutate(
+          { ...parsedData },
           {
             onSuccess: (data) => {
               console.log('onsucces', data);

@@ -19,8 +19,6 @@ import { SelectOptions, SelectOption } from 'components/select/types';
 import { useLocationtypes } from 'hooks/interventions';
 import { useAdminRegionsTrees } from 'hooks/admin-regions';
 
-const country = 'Spain';
-
 const Supplier: FC = () => {
   const { data: suppliers, isLoading: isLoadingSuppliers } = useSuppliersTypes({
     type: 't1supplier',
@@ -45,7 +43,7 @@ const Supplier: FC = () => {
         label: locationType,
         value: locationType.toLowerCase(),
       })),
-    [],
+    [locationTypes],
   );
 
   const { data: countries } = useAdminRegionsTrees({ depth: 0 });
@@ -56,39 +54,30 @@ const Supplier: FC = () => {
         label: name,
         value: id,
       })),
-    [],
+    [countries],
   );
 
   const [formData, setFormData] = useState({
-    supplier: suppliers[0]?.id,
-    producer: producers[0]?.id,
-    locationType: locationTypes[0], //.?id,
-    countries: countries[0]?.id,
+    newT1SupplierId: suppliers[0]?.id,
+    newProducerId: producers[0]?.id,
+    newLocationType: locationTypes[0],
+    newLocationCountryInput: countries[0]?.id,
   });
 
   const currentSupplier = useMemo<SelectOption>(
-    () => optionsSuppliers?.find((option) => option.value === formData.supplier),
-    [optionsSuppliers, formData.supplier],
+    () => optionsSuppliers?.find((option) => option.value === formData.newT1SupplierId),
+    [optionsSuppliers, formData.newT1SupplierId],
   );
 
   const currentLocationType = useMemo<SelectOption>(
-    () => optionsLocationTypes?.find((option) => option.value === formData.locationType),
-    [optionsLocationTypes],
+    () => optionsLocationTypes?.find((option) => option.value === formData.newLocationType),
+    [optionsLocationTypes, formData.newLocationType],
   );
 
   const currentCountry = useMemo<SelectOption>(
-    () => optionsCountries?.find((option) => option.value === country),
-    [optionsCountries],
+    () => optionsCountries?.find((option) => option.value === formData.newLocationCountryInput),
+    [optionsCountries, formData.newLocationCountryInput],
   );
-
-  // const onChange = useCallback(
-  //   (key: string, value: string | number) =>
-  //     setFormData({
-  //       ...formData,
-  //       [key]: value,
-  //     }),
-  //   [],
-  // );
 
   const optionsProducers: SelectOptions = useMemo(
     () =>
@@ -100,8 +89,8 @@ const Supplier: FC = () => {
   );
 
   const currentProducer = useMemo<SelectOption>(
-    () => optionsProducers?.find((option) => option.value === formData.producer),
-    [optionsProducers, formData.producer],
+    () => optionsProducers?.find((option) => option.value === formData.newProducerId),
+    [optionsProducers, formData.newProducerId],
   );
 
   const isLoadingLocationType = false;
@@ -188,11 +177,12 @@ const Supplier: FC = () => {
         </Label>
         <Input
           {...register('newLocationAddressInput')}
-          id="address"
+          name="newLocationAddressInput"
+          id="newLocationAddressInput"
           className="w-full"
           type="text"
-          name="address"
           autoComplete="given-address"
+          placeholder=""
         />
       </fieldset>
     </>

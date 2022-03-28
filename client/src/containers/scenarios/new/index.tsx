@@ -22,7 +22,7 @@ import Label from 'components/forms/label';
 import Textarea from 'components/forms/textarea';
 import GrowthList from 'containers/growth/list/component';
 import { PlusIcon } from '@heroicons/react/solid';
-import { useCreateScenario } from 'hooks/scenarios';
+// import { useCreateScenario } from 'hooks/scenarios';
 
 const items = [
   {
@@ -67,7 +67,7 @@ const ScenariosNewContainer: React.FC = () => {
   const { query } = useRouter();
   const { data: interventions } = useInterventions({ sort: query.sortBy as string });
 
-  const createScenario = useCreateScenario();
+  // const createScenario = useCreateScenario();
 
   const handleNewScenarioFeature = useCallback(() => {
     dispatch(setSubContentCollapsed(false));
@@ -75,22 +75,22 @@ const ScenariosNewContainer: React.FC = () => {
 
   const handleTab = useCallback((step) => dispatch(setScenarioTab(step)), [dispatch]);
 
-  const handleSave = useCallback(() => {
-    createScenario.mutate(
-      { title: 'Untitled' },
-      {
-        onSuccess: (response) => {
-          const {
-            data: { id: scenarioId },
-          } = response;
-          scenarioId && dispatch(setNewInterventionData(scenarioId));
-        },
-        onError: (error, variables, context) => {
-          console.log('error', error, variables, context);
-        },
-      },
-    );
-  }, []);
+  // const handleSave = useCallback(() => {
+  //   createScenario.mutate(
+  //     { title: 'Untitled' },
+  //     {
+  //       onSuccess: (response) => {
+  //         const {
+  //           data: { id: scenarioId },
+  //         } = response;
+  //         scenarioId && dispatch(setNewInterventionData(scenarioId));
+  //       },
+  //       onError: (error, variables, context) => {
+  //         console.log('error', error, variables, context);
+  //       },
+  //     },
+  //   );
+  // }, []);
 
   return (
     <>
@@ -150,12 +150,12 @@ const ScenariosNewContainer: React.FC = () => {
           {scenarioCurrentTab == 'interventions' && <InterventionsList items={interventions} />}
           {scenarioCurrentTab == 'growth' && <GrowthList items={items} />}
         </div>
-        <Button
+        {/* <Button
           className="absolute bottom-6 font-medium text-base px-6 py-3 w-full"
           onClick={handleSave}
         >
           Save scenario
-        </Button>
+        </Button> */}
       </div>
     </>
   );

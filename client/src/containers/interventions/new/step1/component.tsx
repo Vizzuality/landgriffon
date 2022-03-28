@@ -48,7 +48,7 @@ const schemaValidation = yup.object({
   type: yup.string().required(),
 });
 
-const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: StepProps) => {
+const Step1: React.FC<StepProps> = ({ handleCancel }: StepProps) => {
   const dispatch = useAppDispatch();
   const interventionTypes = useInterventionTypes();
   const filters = useAppSelector(analysisFilters);
@@ -79,10 +79,7 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
   );
 
   const currentBusiness = useMemo<SelectOption>(
-    () =>
-      optionsBusinesses?.find(
-        (option) => option.value === values?.businessUnitsIds || optionsBusinesses[0],
-      ),
+    () => optionsBusinesses?.find((option) => option.value === values?.businessUnitsIds),
     [optionsBusinesses, values?.businessUnitsIds],
   );
 
@@ -122,12 +119,6 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
     },
     [dispatch, errors],
   );
-
-  useEffect(() => {
-    if (!!errors.length || !isEmpty(errors)) {
-      Object.values(errors)?.map((error) => toast.error(error.message));
-    }
-  }, [errors]);
 
   const handleDropdown = useCallback(
     (id, values) => {
@@ -188,9 +179,10 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
           <Select
             {...register('businessUnitsIds')}
             loading={isLoadingBusinesses}
-            current={watch((data, { name }) => data[name])}
+            current={watch('businessUnitsIds')}
             options={optionsBusinesses}
             placeholder="all businesses"
+            allowEmpty
             theme="inline-primary"
             onChange={({ value }) => setValue('businessUnitsIds', value)}
           />
@@ -210,7 +202,7 @@ const Step1: React.FC<StepProps> = ({ handleCancel, handleInterventionData }: St
             multiple
             withSourcingLocations
             theme="inline-primary"
-            current={watch('adminRegionsIds')}
+            current={watch('originRegions')}
             onChange={(values) => handleDropdown('adminRegionsIds', values)}
           />
           <span className="text-gray-700 font-medium">.</span>

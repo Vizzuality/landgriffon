@@ -35,7 +35,7 @@ const Material = () => {
     [optionsMaterials, formData.material],
   );
 
-  const { register, setValue, watch } = useFormContext();
+  const { register, setValue } = useFormContext();
 
   return (
     <form>
@@ -49,10 +49,10 @@ const Material = () => {
             <Select
               {...register('newMaterialId')}
               loading={isLoadingMaterials}
-              current={watch('newMaterialId')}
+              current={currentMaterial}
               options={optionsMaterials}
               placeholder="Select"
-              onChange={(values) => setValue('newMaterialId', values.value)}
+              onChange={({ value }) => setValue('newMaterialId', value)}
             />
           </div>
 

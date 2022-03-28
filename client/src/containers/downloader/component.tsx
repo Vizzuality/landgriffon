@@ -44,16 +44,14 @@ const Downloader: React.FC<DownloaderProps> = ({
 
   const handleClick = async () => {
     onDownloading();
-
     switch (type) {
       case 'csv':
-        getDataForExport()
-          .then(({ headers, data }) => {
-            headers && setHeaders(headers);
-            data && setData(data);
-            onSuccess();
-          })
-          .catch(onError);
+        getDataForExport().then(({ headers, data }) => {
+          headers && setHeaders(headers);
+          data && setData(data);
+          onSuccess();
+        });
+        // .catch(onError);
         return;
       // TODO: Other export formats
       default:

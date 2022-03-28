@@ -13,16 +13,22 @@ export type ScenariosState = {
     title: string;
     interventionDescription?: string;
     percentage: number;
-    materials: string[];
-    suppliers: string[];
-    originRegions: string[];
-    materialTons: number;
-    material: string[];
-    supplier: string;
-    producer: string;
-    locationType: string;
-    country: string;
-    address: string;
+    materialsIds: string[];
+    suppliersIds: string[];
+    adminRegionsIds: string[];
+    newMaterialTonnageRatio: number;
+    newMaterialId: string;
+    newT1SupplierId: string;
+    newProducerId: string;
+    newLocationType: string;
+    newLocationCountryInput: string;
+    newLocationAddressInput: string;
+    newIndicatorCoefficients: {
+      DF_LUC_T: number;
+      UWU_T: number;
+      BL_LUC_T: number;
+      GHG_LUC_T: number;
+    };
   };
   searchTerm: string;
   filter: 'all' | 'private' | 'public';
@@ -47,16 +53,22 @@ export const initialState: ScenariosState = {
     title: 'InterventionTitle',
     interventionDescription: null,
     percentage: 100,
-    materials: null,
-    suppliers: null,
-    originRegions: null,
-    materialTons: null,
-    material: null,
-    supplier: null,
-    producer: null,
-    locationType: null, // duplicated
-    country: null,
-    address: null,
+    materialsIds: null,
+    suppliersIds: null,
+    adminRegionsIds: null,
+    newMaterialTonnageRatio: null,
+    newMaterialId: null,
+    newT1SupplierId: null,
+    newProducerId: null,
+    newLocationType: null, // duplicated
+    newLocationCountryInput: null,
+    newLocationAddressInput: null,
+    newIndicatorCoefficients: {
+      DF_LUC_T: null,
+      UWU_T: null,
+      BL_LUC_T: null,
+      GHG_LUC_T: null,
+    },
   },
   searchTerm: null,
   filter: 'all',

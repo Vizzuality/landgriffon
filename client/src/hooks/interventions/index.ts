@@ -55,8 +55,18 @@ export function useInterventions(queryParams: { sort: string }): ResponseInterve
   }, [response]);
 }
 
+// type Intervention = Readonly<{
+//   title: string;
+//   interventionDecsription?: string;
+//   percentage: number;
+//   materials: string[];
+//   suppliers: string[];
+//   originRegions: string[];
+//   materialTons: number;
+// }>;
+
 export function useCreateNewIntervention() {
-  const createIntervention = ({ data }: NewIntervention) =>
+  const createIntervention = (data) =>
     apiService.request({
       method: 'POST',
       url: '/scenario-interventions',

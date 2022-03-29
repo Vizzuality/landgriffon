@@ -1,23 +1,26 @@
-import { MutableRefObject, useMemo } from 'react';
-import Link from 'next/link';
+import { MutableRefObject, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Lottie from 'lottie-react';
 import { PlusIcon, XCircleIcon } from '@heroicons/react/solid';
+import toast from 'react-hot-toast';
 
-import { useInfiniteScenarios } from 'hooks/scenarios';
+import { useAppDispatch } from 'store/hooks';
+import { setMode, setCurrentScenario } from 'store/features/analysis/scenarios';
+import { useInfiniteScenarios, useCreateScenario } from 'hooks/scenarios';
 import useBottomScrollListener from 'hooks/scroll';
 
+import noScenariosAnimationData from 'containers/scenarios/animations/noScenariosAnimationData.json';
 import ScenariosFilters from 'containers/scenarios/filters';
 import ScenariosList from 'containers/scenarios/list';
-import { AnchorLink } from 'components/button';
+import Button from 'components/button';
 
-import noScenariosAnimationData from 'containers/scenarios/animations/noScenariosAnimationData.json';
-
+import type { ErrorResponse } from 'types';
 import type { Scenario } from './types';
 
 const ScenariosComponent: React.FC<{ scrollRef?: MutableRefObject<HTMLDivElement> }> = ({
   scrollRef,
 }) => {
+  const dispatch = useAppDispatch();
   const { query } = useRouter();
   const params = query ? { sort: query.sortBy as string } : null;
   const { fetchNextPage, hasNextPage, data, isLoading, error } = useInfiniteScenarios(params);
@@ -30,6 +33,28 @@ const ScenariosComponent: React.FC<{ scrollRef?: MutableRefObject<HTMLDivElement
   useBottomScrollListener(() => {
     if (hasNextPage) fetchNextPage();
   }, scrollRef);
+
+  const createScenario = useCreateScenario();
+
+  const handleClick = useCallback(() => {
+    createScenario.mutate(
+      { title: 'Untitled' },
+      {
+        onSuccess: ({ data }) => {
+          const {
+            data: { id: scenarioId },
+          } = data;
+          dispatch(setCurrentScenario(scenarioId));
+          dispatch(setMode('edit'));
+          toast.success('A new scenario has been created');
+        },
+        onError: (error: ErrorResponse) => {
+          const { errors } = error.response?.data;
+          errors.forEach(({ title }) => toast.error(title));
+        },
+      },
+    );
+  }, [createScenario, dispatch]);
 
   return (
     <div className="bg-white overscroll-contain text-gray-900">
@@ -63,12 +88,10 @@ const ScenariosComponent: React.FC<{ scrollRef?: MutableRefObject<HTMLDivElement
         </div>
       )}
       <div className="bg-white z-20 sticky bottom-0 left-0 w-full py-6">
-        <Link href={{ pathname: '/analysis', query: { scenario: 'new' } }} shallow passHref>
-          <AnchorLink size="xl" className="block w-full">
-            <PlusIcon className="-ml-5 mr-3 h-5 w-5" aria-hidden="true" />
-            Create a new scenario
-          </AnchorLink>
-        </Link>
+        <Button size="xl" className="block w-full" onClick={handleClick}>
+          <PlusIcon className="-ml-5 mr-3 h-5 w-5" aria-hidden="true" />
+          Create a new scenario
+        </Button>
         {!scenarios ||
           (scenarios.length === 0 && (
             <div className="p-7 space-y-8 text-center absolute z-20 bg-white">

@@ -9,7 +9,7 @@ import { PlusIcon } from '@heroicons/react/solid';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { useInterventions } from 'hooks/interventions';
-import { useUpdateScenario } from 'hooks/scenarios';
+import { useScenario, useUpdateScenario } from 'hooks/scenarios';
 
 import { setSubContentCollapsed } from 'store/features/analysis/ui';
 import { scenarios, setScenarioTab } from 'store/features/analysis/scenarios';
@@ -85,6 +85,9 @@ const ScenariosNewContainer: React.FC = () => {
     600,
   );
 
+  const { data: scenarioData } = useScenario(currentScenario);
+  if (!scenarioData) return null;
+  const { title, description } = scenarioData;
   return (
     <>
       <form action="#" method="POST" className="z-20">
@@ -93,7 +96,7 @@ const ScenariosNewContainer: React.FC = () => {
           type="text"
           name="title"
           id="title"
-          defaultValue="Untitled"
+          defaultValue={title}
           placeholder="Untitled"
           aria-label="Scenario title"
           autoFocus
@@ -112,7 +115,7 @@ const ScenariosNewContainer: React.FC = () => {
             name="description"
             rows={3}
             className="w-full"
-            defaultValue=""
+            defaultValue={description}
             onChange={handleChange}
           />
         </div>

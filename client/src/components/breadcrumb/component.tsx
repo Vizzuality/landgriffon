@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import classNames from 'classnames';
-import { useAppDispatch } from 'store/hooks';
-import { setMode } from 'store/features/analysis/scenarios';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { setMode, scenarios } from 'store/features/analysis/scenarios';
 import type { Page } from './types';
 
 export type BreadcrumbProps = {
@@ -12,6 +12,7 @@ const BREADCRUMB_ITEM_CLASSNAME = 'text-sm font-medium hover:text-gray-900';
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ pages }: BreadcrumbProps) => {
   const dispatch = useAppDispatch();
+  const { mode } = useAppSelector(scenarios);
   const middlePages = [...pages].slice(1, pages.length);
 
   const handleClick = useCallback(() => dispatch(setMode(pages[0].mode)), [dispatch, pages]);
@@ -44,7 +45,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ pages }: BreadcrumbProps) => {
             <button
               className={classNames(
                 BREADCRUMB_ITEM_CLASSNAME,
-                pages.length === 1 ? 'text-gray-900' : 'text-gray-600',
+                page.mode === mode ? 'text-gray-900' : 'text-gray-600',
               )}
               onClick={handleClick}
             >

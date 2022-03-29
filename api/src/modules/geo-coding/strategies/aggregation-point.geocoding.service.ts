@@ -3,6 +3,7 @@ import { BaseStrategy } from 'modules/geo-coding/strategies/base-strategy';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { GeocodeResponse } from 'modules/geo-coding/geocoders/geocoder.interface';
+import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 
 @Injectable()
 export class AggregationPointGeocodingStrategy extends BaseStrategy {
@@ -49,21 +50,23 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
     /**
      * if address, geocode the address
      */
-    if (
-      sourcingData.locationAddressInput &&
-      sourcingData.locationCountryInput
-    ) {
+    if (sourcingData.locationAddressInput) {
       const geocodedResponseData: GeocodeResponse = await this.geoCodeByAddress(
         sourcingData.locationAddressInput,
-        sourcingData.locationCountryInput,
+        sourcingData.locationCountryInput as string,
       );
 
       /**
        * if given address is country type, raise and exception. it should be an address within a country
        */
       if (this.isAddressACountry(geocodedResponseData.results[0].types))
-        throw new Error(
-          `${sourcingData.locationAddressInput} is a country, should be an address within a country`,
+        throw new GeoCodingError(
+          `${
+            sourcingData.locationAddressInput +
+            sourcingData.locationCountryInput
+          } is a country, should be an address within a country ${JSON.stringify(
+            geocodedResponseData.results[0].types,
+          )}`,
         );
       /**
        * if address is a level 1 admin-area, intersect the geocoding resultant coordinates to confirm which admin-area belongs to

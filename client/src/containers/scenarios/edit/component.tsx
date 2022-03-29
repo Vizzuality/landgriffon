@@ -1,23 +1,27 @@
-import { useCallback } from 'react';
-
+import { useCallback, useState } from 'react';
+import { useDebounceCallback } from '@react-hook/debounce';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import cx from 'classnames';
-import { useQuery } from 'react-query';
-import { apiService } from 'services/api';
-import { useRouter } from 'next/router';
+import toast from 'react-hot-toast';
+import { PlusIcon } from '@heroicons/react/solid';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { useInterventions } from 'hooks/interventions';
+import { useUpdateScenario } from 'hooks/scenarios';
 
 import { setSubContentCollapsed } from 'store/features/analysis/ui';
 import { scenarios, setScenarioTab } from 'store/features/analysis/scenarios';
 
-import { useInterventions } from 'hooks/interventions';
-
+import GrowthList from 'containers/growth/list/component';
 import Button from 'components/button';
 import InterventionsList from 'containers/interventions/list';
 import Label from 'components/forms/label';
+import { Input } from 'components/forms';
 import Textarea from 'components/forms/textarea';
-import GrowthList from 'containers/growth/list/component';
-import { PlusIcon } from '@heroicons/react/solid';
+
+import type { ErrorResponse } from 'types';
 
 const items = [
   {
@@ -34,28 +38,68 @@ const items = [
   },
 ];
 
+const schemaValidation = yup.object({
+  title: yup.string().min(2).required('Title must have at least two characters'),
+  description: yup.string(),
+});
+
 const ScenariosNewContainer: React.FC = () => {
-  const { data: interventions } = useInterventions({ sort: query.sortBy as string });
+  const { data: interventions } = useInterventions();
   const dispatch = useAppDispatch();
   const handleNewScenarioFeature = useCallback(() => {
     dispatch(setSubContentCollapsed(false));
   }, [dispatch]);
 
-  const { scenarioCurrentTab } = useAppSelector(scenarios);
+  const { scenarioCurrentTab, currentScenario } = useAppSelector(scenarios);
+
+  const {
+    register,
+    getValues,
+    formState: { isValid },
+  } = useForm({
+    resolver: yupResolver(schemaValidation),
+  });
 
   const handleTab = useCallback((step) => dispatch(setScenarioTab(step)), [dispatch]);
+  const [error, setError] = useState(null);
+
+  const updateScenario = useUpdateScenario();
+  const handleChange = useDebounceCallback(
+    useCallback(() => {
+      if (isValid) {
+        updateScenario.mutate(
+          { id: currentScenario, data: getValues() },
+          {
+            onSuccess: () => {
+              toast.success('Your changes were successfully saved.');
+              setError(null);
+            },
+            onError: (error: ErrorResponse) => {
+              const { errors } = error.response?.data;
+              errors.forEach(({ meta }) => setError(meta.rawError.response.message));
+            },
+          },
+        );
+      }
+    }, [currentScenario, isValid, getValues, updateScenario]),
+    600,
+  );
 
   return (
     <>
       <form action="#" method="POST" className="z-20">
-        <input
+        <Input
+          {...register('title')}
           type="text"
           name="title"
           id="title"
+          defaultValue="Untitled"
           placeholder="Untitled"
           aria-label="Scenario title"
           autoFocus
+          error={error}
           className="flex-1 block w-full md:text-2xl sm:text-sm border-none text-gray-400 p-0 font-semibold mb-6"
+          onInput={handleChange}
         />
 
         <div className="sm:col-span-6">
@@ -63,11 +107,13 @@ const ScenariosNewContainer: React.FC = () => {
             Scenario description <span className="text-gray-500">(optional)</span>
           </Label>
           <Textarea
+            {...register('description')}
             id="description"
             name="description"
             rows={3}
             className="w-full"
             defaultValue=""
+            onChange={handleChange}
           />
         </div>
       </form>

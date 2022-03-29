@@ -1,4 +1,4 @@
 export type Page = {
-  href: string;
+  mode: 'list' | 'edit';
   name: string;
 };

@@ -61,12 +61,8 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
        */
       if (this.isAddressACountry(geocodedResponseData.results[0].types))
         throw new GeoCodingError(
-          `${
-            sourcingData.locationAddressInput +
-            sourcingData.locationCountryInput
-          } is a country, should be an address within a country ${JSON.stringify(
-            geocodedResponseData.results[0].types,
-          )}`,
+          `${sourcingData.locationAddressInput} is a country, should be an address within a country
+          `,
         );
       /**
        * if address is a level 1 admin-area, intersect the geocoding resultant coordinates to confirm which admin-area belongs to

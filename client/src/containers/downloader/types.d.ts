@@ -5,13 +5,9 @@ export type DownloaderHeadersType = {
   label: string;
 };
 
-type DownloaderData = Readonly<{
-  data?: unknown[];
-}>;
-
 export type DownloaderTransformProps = {
   headers: DownloaderHeadersType[];
-  data: DownloaderDataType;
+  data: unknown[];
 };
 
 export type DownloaderProps = PropsWithChildren & {
@@ -24,7 +20,7 @@ export type DownloaderProps = PropsWithChildren & {
   /** params to pass to the endpoint */
   params?: Record<string, string>;
   /** Custom headers for export */
-  headers?: { label: string; key: string }[];
+  headers?: DownloaderHeadersType[];
   /** Callback to transform the headers/data prior to export  */
   transform?: ({ headers, data }: DownloaderTransformProps) => DownloaderTransformProps;
   /** Callback when downloading data/file starts */

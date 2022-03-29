@@ -3,8 +3,9 @@ import type { RootState } from 'store';
 import type { Scenario } from 'containers/scenarios/types';
 
 export type ScenariosState = {
-  mode: 'list' | 'create' | 'edit';
+  mode: 'list' | 'edit';
   comparisonMode: 'percentage' | 'absolute' | 'both';
+  // Scenario ID for selected, edition and creation
   currentScenario: Scenario['id'];
   scenarioToCompare: Scenario['id'];
   scenarioCurrentTab: 'interventions' | 'growth';
@@ -49,6 +50,10 @@ export const analysisScenariosSlice = createSlice({
       ...state,
       scenarioToCompare: action.payload,
     }),
+    setMode: (state, action: PayloadAction<ScenariosState['mode']>) => ({
+      ...state,
+      mode: action.payload,
+    }),
     setComparisonMode: (state, action: PayloadAction<ScenariosState['comparisonMode']>) => ({
       ...state,
       comparisonMode: action.payload,
@@ -74,6 +79,7 @@ export const analysisScenariosSlice = createSlice({
 export const {
   setCurrentScenario,
   setScenarioToCompare,
+  setMode,
   setComparisonMode,
   setScenarioTab,
   setScenarioFilter,

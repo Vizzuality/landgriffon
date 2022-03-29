@@ -75,11 +75,11 @@ const ScenariosFilters: FC = () => {
 
   return (
     <div className="flex items-center">
-      <div className="relative flex">
+      <div className="relative flex items-center">
         {/* <button type="button" onClick={toggleSearch}> */}
         <SearchIcon className="w-4 h-4" />
         {/* </button> */}
-        {/* {isSearchEnable && ( 
+        {/* {isSearchEnable && (
           <Transition
             as={Fragment}
             enter="transition-opacity ease-linear duration-700"
@@ -93,14 +93,14 @@ const ScenariosFilters: FC = () => {
           id="search"
           name="search"
           placeholder="Search"
-          className="flex-1 appearance-none text-sm text-green-700 font-bold focus:border-0 focus:border-b-2 px-0 py-0 focus:outline-none focus:border-green-700 focus:ring-0 max-w-[86px]"
+          className="flex-1 ml-1 appearance-none text-sm text-green-700 border-0 border-b-2 border-white focus:border-0 focus:border-b-2 px-0 py-0 focus:outline-none focus:border-green-700 focus:ring-0 max-w-[86px]"
           type="search"
           onChange={handleSearchByTerm}
         />
         {/* </Transition>
          )} */}
       </div>
-      {/* 
+      {/*
       <ul className="relative flex flex-1 space-x-2 ml-3 justify-start whitespace-nowrap items-center">
         {filtersItems.map((item) => (
           <li key={item.filter}>

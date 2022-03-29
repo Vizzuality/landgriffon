@@ -22,6 +22,7 @@ import Textarea from 'components/forms/textarea';
 import GrowthList from 'containers/growth/list/component';
 import { PlusIcon } from '@heroicons/react/solid';
 // import { useCreateScenario } from 'hooks/scenarios';
+<<<<<<< HEAD
 
 // form validator
 import { useForm } from 'react-hook-form';
@@ -34,6 +35,8 @@ import { isEmpty } from 'lodash';
 import { useCreateScenario, useUpdateScenario } from 'hooks/scenarios';
 
 import type { ErrorResponse } from 'types';
+=======
+>>>>>>> ae5572ac65b7e294b66f7e5ca741abfbecba0936
 
 const items = [
   {

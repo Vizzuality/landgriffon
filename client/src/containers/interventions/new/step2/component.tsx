@@ -91,7 +91,6 @@ const Step2: FC<StepProps> = ({ handleCancel }: StepProps) => {
   } = methods;
 
   const values = getValues();
-
   const createIntervention = useCreateNewIntervention();
   const handleStepsSubmissons = useCallback(
     (values) => {

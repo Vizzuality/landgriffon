@@ -24,6 +24,7 @@ type ResponseInfiniteData = UseInfiniteQueryResult<
     meta: Record<string, unknown>;
   }>
 >;
+
 type ResponseDataScenario = UseQueryResult<Scenario>;
 type QueryParams = {
   sort?: string;
@@ -94,10 +95,13 @@ export function useInfiniteScenarios(QueryParams: QueryParams): ResponseInfinite
   return useMemo<ResponseInfiniteData>((): ResponseInfiniteData => query, [query]);
 }
 
-export function useScenario(id: string, queryParams: { sort: string }): ResponseDataScenario {
+export function useScenario(
+  id: Scenario['id'],
+  queryParams: { sort: string },
+): ResponseDataScenario {
   const { sort, filter, searchTerm } = useAppSelector(scenarios);
 
-  const response = useQuery(
+  const response: ResponseDataScenario = useQuery(
     ['scenario', queryParams],
     async () =>
       apiService
@@ -110,13 +114,7 @@ export function useScenario(id: string, queryParams: { sort: string }): Response
     DEFAULT_QUERY_OPTIONS,
   );
 
-  return useMemo<ResponseDataScenario>((): ResponseDataScenario => {
-    const data = response.isSuccess && response.data ? response.data : (ACTUAL_DATA as Scenario);
-    return {
-      ...response,
-      data,
-    } as ResponseDataScenario;
-  }, [response]);
+  return useMemo<ResponseDataScenario>((): ResponseDataScenario => response, [response]);
 }
 
 export function useDeleteScenario() {

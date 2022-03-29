@@ -51,10 +51,14 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
 
   useEffect(() => {
     if (data && !currentScenario) {
-      dispatch(setCurrentScenario(data[0].id as string)); // first option of the list by default
+      dispatch(setCurrentScenario(ACTUAL_DATA.id as string)); // first option of the list by default
     }
     if (data && currentScenario) {
-      setSelected(data.find(({ id }) => isScenarioSelected(id, currentScenario)));
+      if (currentScenario === 'actual-data') {
+        setSelected(ACTUAL_DATA);
+      } else {
+        setSelected(data.find(({ id }) => isScenarioSelected(id, currentScenario)));
+      }
     }
   }, [data, currentScenario, dispatch]);
 

@@ -31,9 +31,9 @@ const INTERVENTIONS_DATA = [
 
 type ResponseInterventionsData = UseQueryResult<Intervention[]>;
 
-export function useInterventions(queryParams: { sort: string }): ResponseInterventionsData {
+export function useInterventions(queryParams = {}): ResponseInterventionsData {
   const response = useQuery(
-    ['interventionsList', queryParams],
+    ['interventionsList', JSON.stringify(queryParams)],
     async () =>
       apiService
         .request({

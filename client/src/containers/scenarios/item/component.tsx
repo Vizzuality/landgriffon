@@ -3,13 +3,14 @@ import { format } from 'date-fns';
 import { Popover, RadioGroup, Switch, Transition } from '@headlessui/react';
 import { DotsVerticalIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
-import { useRouter } from 'next/router';
 
 import ScenariosComparison from 'containers/scenarios/comparison';
 import { useDeleteScenario } from 'hooks/scenarios';
 import type { Scenario } from '../types';
 import { createPortal } from 'react-dom';
 import { usePopper } from 'react-popper';
+import { setMode } from 'store/features/analysis/scenarios';
+import { useAppDispatch } from 'store/hooks';
 
 type ScenariosItemProps = {
   data: Scenario;
@@ -23,6 +24,7 @@ const DROPDOWN_ITEM_CLASSNAME =
   'block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 hover:text-gray-900';
 
 const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) => {
+  const dispatch = useAppDispatch();
   const [referenceElement, setReferenceElement] = useState(null);
   const [popperElement, setPopperElement] = useState(null);
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
@@ -41,18 +43,8 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
 
   const { data, isSelected, isComparisonAvailable } = props;
   const [isComparisonEnabled, setComparisonEnabled] = useState<boolean>(false);
-  const router = useRouter();
 
-  const handleEdit = useCallback(() => {
-    const { query } = router;
-    router.push({
-      pathname: '/analysis',
-      query: {
-        ...query,
-        scenario: 'edit',
-      },
-    });
-  }, [router]);
+  const handleEdit = useCallback(() => dispatch(setMode('edit')), [dispatch]);
 
   const deleteScenario = useDeleteScenario();
 

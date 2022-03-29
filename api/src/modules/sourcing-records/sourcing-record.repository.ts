@@ -204,9 +204,13 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
                       sum_weighted_deforestation_over_georegion("geoRegionId", "materialId", 'harvest') as "rawDeforestation",
                       sum_weighted_biodiversity_over_georegion("geoRegionId", "materialId", 'harvest') as "rawBiodiversity",
                       sum_weighted_carbon_over_georegion("geoRegionId", "materialId", 'harvest') as "rawCarbon",
-                      sum_weighted_water_over_georegion("geoRegionId") as "rawWater"
+                      sum_weighted_water_over_georegion("geoRegionId") as "rawWater",
+                      "scenarioInterventionId",
+                      "interventionType"
                   FROM
                       sourcing_location
+                  WHERE "scenarioInterventionId" IS NULL 
+                  AND "interventionType" IS NULL
               ) as sl
               on sr."sourcingLocationId" = sl.id`);
       if (!response.length)

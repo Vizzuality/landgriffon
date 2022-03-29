@@ -42,7 +42,7 @@ export class TasksService extends AppBaseService<
         'data',
         'errors',
         'logs',
-        'createdBy',
+        'userId',
       ],
       keyForAttribute: 'camelCase',
     };
@@ -64,7 +64,7 @@ export class TasksService extends AppBaseService<
     return this.create({
       type: TASK_TYPE.SOURCING_DATA_IMPORT,
       status: TASK_STATUS.PROCESSING,
-      createdBy: userId,
+      userId,
       data: data ?? {},
     });
   }

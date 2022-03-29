@@ -48,7 +48,7 @@ describe('Tasks Module (e2e)', () => {
         .send({
           type: TASK_TYPE.SOURCING_DATA_IMPORT,
           status: TASK_STATUS.PROCESSING,
-          createdBy: '2a833cc7-5a6f-492d-9a60-0d6d056923ea',
+          userId: '2a833cc7-5a6f-492d-9a60-0d6d056923ea',
           data: {
             filename: 'fakeFile.xlsx',
           },
@@ -61,7 +61,7 @@ describe('Tasks Module (e2e)', () => {
         throw new Error('Error loading created Task');
       }
 
-      expect(createdTask.createdBy).toEqual(
+      expect(createdTask.userId).toEqual(
         '2a833cc7-5a6f-492d-9a60-0d6d056923ea',
       );
       expect(createdTask.data.filename).toEqual('fakeFile.xlsx');
@@ -82,8 +82,8 @@ describe('Tasks Module (e2e)', () => {
         'type should not be empty',
         'status must be a string',
         'status should not be empty',
-        'createdBy must be a UUID',
-        'createdBy should not be empty',
+        'userId must be a UUID',
+        'userId should not be empty',
       ],
     );
   });
@@ -92,7 +92,7 @@ describe('Tasks Module (e2e)', () => {
     test('Updating a task should be successful (happy case)', async () => {
       const task: Task = await createTask({
         status: TASK_STATUS.ABORTED,
-        createdBy: '2a833cc7-5a6f-492d-9a60-0d6d056923eb',
+        userId: '2a833cc7-5a6f-492d-9a60-0d6d056923eb',
       });
 
       const response = await request(app.getHttpServer())
@@ -107,7 +107,7 @@ describe('Tasks Module (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(response.body.data.attributes.status).toEqual('failed');
-      expect(response.body.data.attributes.createdBy).toEqual(
+      expect(response.body.data.attributes.userId).toEqual(
         '2a833cc7-5a6f-492d-9a60-0d6d056923eb',
       );
       expect(response.body.data.attributes.data.file2).toEqual('File2');

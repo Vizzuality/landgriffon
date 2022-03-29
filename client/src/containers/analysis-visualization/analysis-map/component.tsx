@@ -113,7 +113,7 @@ const AnalysisMap: React.FC = () => {
   }, [layer, filters]);
 
   useEffect(() => {
-    if (h3MaterialData?.data.length || h3RiskData?.data.length) {
+    if (h3MaterialData?.data.length || h3RiskData?.data.length || h3ImpactData?.data.length) {
       const nextLegendItems = [];
 
       if (layer === 'material') {

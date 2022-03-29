@@ -73,7 +73,9 @@ export class SourcingLocationsMaterialsService extends AppBaseService<
       .leftJoin(`${this.alias}.t1Supplier`, 't1Supplier')
       .leftJoin(`${this.alias}.producer`, 'producer')
       .leftJoin(`${this.alias}.businessUnit`, 'businessUnit')
-      .leftJoin(`${this.alias}.sourcingRecords`, 'sr');
+      .leftJoin(`${this.alias}.sourcingRecords`, 'sr')
+      .where(`${this.alias}.scenarioInterventionId IS NULL`)
+      .andWhere(`${this.alias}.interventionType IS NULL`);
 
     if (fetchSpecification.search) {
       query.andWhere('material.name ILIKE :search', {
@@ -97,7 +99,6 @@ export class SourcingLocationsMaterialsService extends AppBaseService<
       default:
         query.orderBy('material.name', sortingOrder);
     }
-
     query.addOrderBy(`${this.alias}.id`);
 
     return query;

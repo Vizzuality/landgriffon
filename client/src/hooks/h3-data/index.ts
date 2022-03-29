@@ -32,7 +32,7 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
     },
   },
   retry: false,
-  keepPreviousData: true,
+  keepPreviousData: false,
   refetchOnWindowFocus: false,
 };
 
@@ -59,12 +59,12 @@ export function useColors(): RGBColor[] {
 export function useH3MaterialData(): H3DataResponse {
   const { layer } = useAppSelector(analysisFilters);
   const filters = filtersForH3API(store.getState()) as MaterialH3APIParams;
-  const isEnable = !!filters.materialId;
+  const isEnable = !!(filters.materialId && filters.year);
 
   const colors = useColors();
 
   const query = useQuery(
-    ['h3-data-material', layer, JSON.stringify({ layer, ...filters })],
+    ['h3-data-material', JSON.stringify(filters)],
     async () =>
       apiRawService
         .get('/h3/map/material', {
@@ -96,12 +96,12 @@ export function useH3MaterialData(): H3DataResponse {
 export function useH3RiskData(): H3DataResponse {
   const { layer } = useAppSelector(analysisFilters);
   const filters = filtersForH3API(store.getState()) as RiskH3APIParams;
-  const isEnable = !!filters.materialId && !!filters.indicatorId;
+  const isEnable = !!(filters.materialId && filters.indicatorId && filters.year);
 
   const colors = useColors();
 
   const query = useQuery(
-    ['h3-data-risk', layer, JSON.stringify({ layer, ...filters })],
+    ['h3-data-risk', JSON.stringify(filters)],
     async () =>
       apiRawService
         .get('/h3/map/risk', {
@@ -133,12 +133,12 @@ export function useH3RiskData(): H3DataResponse {
 export function useH3ImpactData(): H3DataResponse {
   const { layer } = useAppSelector(analysisFilters);
   const filters = filtersForH3API(store.getState()) as ImpactH3APIParams;
-  const isEnable = !!filters.indicatorId;
+  const isEnable = !!(filters.indicatorId && filters.year);
 
   const colors = useColors();
 
   const query = useQuery(
-    ['h3-data-impact', layer, JSON.stringify({ layer, ...filters })],
+    ['h3-data-impact', JSON.stringify(filters)],
     async () =>
       apiRawService
         .get('/h3/map/impact', {

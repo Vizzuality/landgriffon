@@ -51,5 +51,5 @@ export class Target extends TimestampedBaseEntity {
   @ManyToOne(() => User, (user: User) => user.id)
   @ApiProperty()
   @Column({ nullable: true })
-  lastEditedUserId?: string;
+  updatedById?: string;
 }

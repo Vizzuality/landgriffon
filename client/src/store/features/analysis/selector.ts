@@ -37,7 +37,7 @@ export const filtersForH3API = createSelector(
     // when layer is impact
     const result: ImpactH3APIParams = {
       year: startYear,
-      indicatorId: indicator?.value,
+      indicatorId: indicator?.value && indicator?.value !== 'all' ? indicator?.value : null,
       ...(materials && materials.length
         ? { materialIds: materials?.map(({ value }) => value) }
         : {}),

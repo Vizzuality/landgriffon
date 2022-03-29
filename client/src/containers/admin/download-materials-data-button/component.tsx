@@ -34,20 +34,22 @@ const DownloadMaterialsDataButton: React.FC<DownloadMaterialsDataButtonProps> = 
 
     const headers = [
       ...DEFAULT_HEADERS,
-      ...years.map((year) => ({ key: year.toString(), label: year })),
+      ...(years.map((year) => ({ key: year.toString(), label: year })) as {
+        label: string;
+        key: string;
+      }[]),
     ];
 
     const fieldsToExport = headers.map(({ key }) => key);
 
     const data = originalData
-      .map((dataRow: Record<string, unknown>) => ({
+      ?.map((dataRow: Record<string, unknown>) => ({
         ...dataRow,
         ...(dataRow.purchases as { year: number; tonnage: number }[])
           .map(({ year, tonnage }) => ({ [year]: tonnage }))
           .reduce((a, b) => ({ ...a, ...b })),
       }))
       .map((dataRow) => pick(dataRow, fieldsToExport));
-
     return { headers, data };
   };
 

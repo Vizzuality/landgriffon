@@ -26,7 +26,7 @@ const Downloader: React.FC<DownloaderProps> = ({
   const [data, setData] = useState<Record<string, string>[]>(null);
 
   // TODO: consider replace by a hook
-  const getDataForExport = async () =>
+  const getDataForExport = () =>
     apiService
       .request({
         method: 'GET',
@@ -37,14 +37,13 @@ const Downloader: React.FC<DownloaderProps> = ({
         transformer
           ? transformer({
               headers: propsHeaders,
-              data,
+              data: data.data,
             })
-          : { headers: propsHeaders, data },
+          : { headers: propsHeaders, data: data.data },
       );
 
   const handleClick = async () => {
     onDownloading();
-
     switch (type) {
       case 'csv':
         getDataForExport()

@@ -9,6 +9,14 @@ import ScenarioItem from 'containers/scenarios/item';
 
 import type { Scenario, Scenarios } from '../types';
 
+/**
+ * Actual data to the data response
+ */
+const ACTUAL_DATA: Scenario = {
+  id: 'actual-data', // reserved id only for actual-data
+  title: 'Actual data',
+};
+
 type ScenariosListProps = {
   data: Scenarios;
 };
@@ -43,10 +51,14 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
 
   useEffect(() => {
     if (data && !currentScenario) {
-      dispatch(setCurrentScenario(data[0].id as string)); // first option of the list by default
+      dispatch(setCurrentScenario(ACTUAL_DATA.id as string)); // first option of the list by default
     }
     if (data && currentScenario) {
-      setSelected(data.find(({ id }) => isScenarioSelected(id, currentScenario)));
+      if (currentScenario === 'actual-data') {
+        setSelected(ACTUAL_DATA);
+      } else {
+        setSelected(data.find(({ id }) => isScenarioSelected(id, currentScenario)));
+      }
     }
   }, [data, currentScenario, dispatch]);
 
@@ -60,6 +72,10 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
     <RadioGroup value={selected} onChange={handleOnChange}>
       <RadioGroup.Label className="sr-only">Scenarios</RadioGroup.Label>
       <ul className="my-2 grid grid-cols-1 gap-5 sm:gap-2 sm:grid-cols-2 lg:grid-cols-1 relative">
+        <ScenarioItem
+          data={ACTUAL_DATA}
+          isSelected={isScenarioSelected(ACTUAL_DATA.id, currentScenario)}
+        />
         {data.map((item) => {
           return (
             <ScenarioItem

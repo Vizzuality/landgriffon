@@ -5,44 +5,71 @@ import Select from 'components/select';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisUI } from 'store/features/analysis/ui';
-import { analysisFilters, setLayer, AnalysisFiltersState } from 'store/features/analysis/filters';
+import {
+  analysisFilters,
+  resetFiltersAndOverride,
+  setLayer,
+  AnalysisFiltersState,
+} from 'store/features/analysis/filters';
 
-import type { SelectOptions } from 'components/select/types';
+import type { SelectOption } from 'components/select/types';
 
-const LAYERS_OPTIONS: SelectOptions = [
+const LAYERS_OPTIONS: SelectOption[] = [
   {
-    value: 'material',
-    label: 'Material production',
+    id: 'material',
+    name: 'Material production',
   },
   {
-    value: 'risk',
-    label: 'Risk',
+    id: 'risk',
+    name: 'Risk',
   },
   {
-    value: 'impact',
-    label: 'Impact',
+    id: 'impact',
+    name: 'Impact',
   },
 ];
 
+const DEFAULT_LAYER = LAYERS_OPTIONS[2];
+
 const LayerControl: React.FC = () => {
   const { visualizationMode } = useAppSelector(analysisUI);
-  const { layer } = useAppSelector(analysisFilters);
+  const { layer, indicator } = useAppSelector(analysisFilters);
   const dispatch = useAppDispatch();
-
-  const handleChange = useCallback((selected) => dispatch(setLayer(selected.value)), [dispatch]);
-
-  useEffect(() => {
-    if (visualizationMode !== 'map') {
-      // set impact when visualization mode is not map
-      dispatch(setLayer(LAYERS_OPTIONS[2].value as AnalysisFiltersState['layer']));
-    }
-  }, [dispatch, visualizationMode]);
 
   const current = useMemo(() => LAYERS_OPTIONS.find(({ value }) => value === layer), [layer]);
 
+  const handleChange = useCallback(
+    (selected: SelectOption) => {
+      dispatch(
+        resetFiltersAndOverride({
+          layer: selected.value,
+          indicator,
+        } as Partial<AnalysisFiltersState>),
+      );
+      dispatch(setLayer(selected.value as AnalysisFiltersState['layer']));
+    },
+    [dispatch, indicator],
+  );
+
+  useEffect(() => {
+    dispatch(setLayer(DEFAULT_LAYER.value as AnalysisFiltersState['layer']));
+  }, [dispatch]);
+
   return (
     <div className={classNames({ hidden: visualizationMode !== 'map' })}>
-      <Select current={current} onChange={handleChange} options={LAYERS_OPTIONS} />
+      <Select
+        value={layer}
+        onChange={handleChange}
+        className="w-36"
+        optionLabelProp="label"
+        suffixIcon={<ChevronDownIcon />}
+      >
+        {LAYERS_OPTIONS.map((option) => (
+          <Select.Option key={option.id} value={option.id} label={option.name}>
+            {option.name}
+          </Select.Option>
+        ))}
+      </Select>
     </div>
   );
 };

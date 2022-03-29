@@ -35,7 +35,7 @@ const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const clonedChildren = Children.map(children, (Child) => {
     if (isValidElement(Child)) {
-      return cloneElement(Child, { scrollRef });
+      return cloneElement(Child, { scrollref: scrollRef });
     }
     return null;
   });

@@ -3,7 +3,6 @@ import {
   useQuery,
   useInfiniteQuery,
   UseQueryResult,
-  UseQueryOptions,
   useMutation,
   UseInfiniteQueryResult,
 } from 'react-query';
@@ -31,8 +30,7 @@ type QueryParams = {
   pageParam?: number;
 };
 
-const DEFAULT_QUERY_OPTIONS: UseQueryOptions<Scenario[]> = {
-  placeholderData: [],
+const DEFAULT_QUERY_OPTIONS = {
   retry: false,
   keepPreviousData: true,
   refetchOnWindowFocus: false,
@@ -66,7 +64,10 @@ export function useScenarios(): ResponseData {
           params,
         })
         .then(({ data: responseData }) => responseData.data),
-    DEFAULT_QUERY_OPTIONS,
+    {
+      ...DEFAULT_QUERY_OPTIONS,
+      placeholderData: [],
+    },
   );
   return useMemo((): ResponseData => response, [response]);
 }

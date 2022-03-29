@@ -9,6 +9,14 @@ import ScenarioItem from 'containers/scenarios/item';
 
 import type { Scenario, Scenarios } from '../types';
 
+/**
+ * Actual data to the data response
+ */
+const ACTUAL_DATA: Scenario = {
+  id: 'actual-data', // reserved id only for actual-data
+  title: 'Actual data',
+};
+
 type ScenariosListProps = {
   data: Scenarios;
 };
@@ -60,6 +68,10 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
     <RadioGroup value={selected} onChange={handleOnChange}>
       <RadioGroup.Label className="sr-only">Scenarios</RadioGroup.Label>
       <ul className="my-2 grid grid-cols-1 gap-5 sm:gap-2 sm:grid-cols-2 lg:grid-cols-1 relative">
+        <ScenarioItem
+          data={ACTUAL_DATA}
+          isSelected={isScenarioSelected(ACTUAL_DATA.id, currentScenario)}
+        />
         {data.map((item) => {
           return (
             <ScenarioItem

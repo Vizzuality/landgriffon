@@ -43,14 +43,6 @@ const DEFAULT_INFINITE_QUERY_OPTIONS = {
   refetchOnWindowFocus: false,
 };
 
-/**
- * Actual data to the data response
- */
-const ACTUAL_DATA: Scenario = {
-  id: 'actual-data', // reserved id only for actual-data
-  title: 'Actual data',
-};
-
 export function useScenarios(): ResponseData {
   const { sort, filter, searchTerm } = useAppSelector(scenarios);
 
@@ -75,16 +67,7 @@ export function useScenarios(): ResponseData {
         .then(({ data: responseData }) => responseData.data),
     DEFAULT_QUERY_OPTIONS,
   );
-  return useMemo((): ResponseData => {
-    const data: ResponseData['data'] =
-      response.isSuccess && response.data
-        ? [ACTUAL_DATA, ...(response.data as Scenario[])]
-        : response.data;
-    return {
-      ...response,
-      data,
-    } as ResponseData;
-  }, [response]);
+  return useMemo((): ResponseData => response, [response]);
 }
 
 export function useInfiniteScenarios(QueryParams: QueryParams): ResponseInfiniteData {

@@ -4,9 +4,9 @@ import { setSubContentCollapsed } from 'store/features/analysis/ui';
 import { scenarios, setNewInterventionStep } from 'store/features/analysis/scenarios';
 import { analysisFilters } from 'store/features/analysis/filters';
 
-import Steps from 'components/steps';
+import Steps from './steps';
 
-import type { Step } from 'components/steps/types';
+import type { Step } from './steps/types';
 
 import Step1 from './step1';
 import Step2 from './step2';

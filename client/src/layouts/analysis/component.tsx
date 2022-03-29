@@ -10,7 +10,7 @@ import { analysisUI } from 'store/features/analysis/ui';
 import ApplicationLayout from 'layouts/application';
 import PageLoading from 'containers/page-loading';
 import CollapseButton from 'containers/collapse-button';
-import ScenariosForm from 'containers/scenarios/new/form';
+import ScenariosForm from 'containers/scenarios/edit/form';
 import type { AnalysisLayoutProps } from './types';
 
 const AnalysisVisualizationNoSSR = dynamic(() => import('containers/analysis-visualization'), {

@@ -316,7 +316,7 @@ async function createTask(additionalData: Partial<Task> = {}): Promise<Task> {
   const task: Task = Task.merge(
     new Task(),
     {
-      createdBy: '2a833cc7-5a6f-492d-9a60-0d6d056923ea',
+      userId: '2a833cc7-5a6f-492d-9a60-0d6d056923ea',
       type: TASK_TYPE.SOURCING_DATA_IMPORT,
       data: {
         filename: 'fakeFile.xlsx',

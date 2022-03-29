@@ -5,6 +5,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -28,6 +29,10 @@ export class CreateScenarioDto {
   @IsEnum(Object.values(SCENARIO_STATUS))
   @ApiPropertyOptional()
   status?: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  userId: string;
 
   @IsString()
   @IsOptional()

@@ -196,12 +196,12 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
     eager: false,
   })
   @ApiProperty({ type: () => User })
-  lastEditedUser?: User;
+  updatedBy?: User;
 
   /**
    * @debt Auto-assign user and make not nullable
    */
   @Column({ nullable: true })
   @ApiPropertyOptional()
-  lastEditedUserId?: string;
+  updatedById?: string;
 }

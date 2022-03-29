@@ -11,6 +11,8 @@ import { fileUploadInterceptor } from 'modules/import-data/file-upload.intercept
 import { XlsxPayloadInterceptor } from 'modules/import-data/xlsx-payload.interceptor';
 import { ImportDataService } from 'modules/import-data/import-data.service';
 import { Task } from 'modules/tasks/task.entity';
+import { GetUser } from 'decorators/get-user.decorator';
+import { User } from 'modules/users/user.entity';
 
 @ApiTags('Import Data')
 @Controller(`/api/v1/import`)
@@ -32,9 +34,9 @@ export class ImportDataController {
   @Post('/sourcing-data')
   async importSourcingRecords(
     @UploadedFile() xlsxFile: Express.Multer.File,
+    @GetUser() user: User,
   ): Promise<Partial<Task>> {
-    // TODO: Add userId once auth is in place
-    const userId: string = '2a833cc7-5a6f-492d-9a60-0d6d056923ea';
+    const userId: string = user.id;
     const task: Task = await this.importDataService.validateAndLoadXlsxFile(
       userId,
       xlsxFile,
@@ -44,7 +46,7 @@ export class ImportDataController {
         id: task.id,
         createdAt: task.createdAt,
         status: task.status,
-        createdBy: task.createdBy,
+        createdBy: task.userId,
       },
     };
   }

@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -27,6 +28,7 @@ import { Task, taskResource } from 'modules/tasks/task.entity';
 import { TasksService } from 'modules/tasks/tasks.service';
 import { UpdateTaskWithControllerDto } from 'modules/tasks/dto/update-task-with-controller.dto';
 import { CreateTaskDto } from 'modules/tasks/dto/create-task.dto';
+import { SetUserInterceptor } from 'decorators/set-user.interceptor';
 
 @Controller('/api/v1/tasks')
 @ApiTags(taskResource.className)
@@ -67,6 +69,7 @@ export class TasksController {
   @ApiBadRequestResponse({
     description: 'Bad Request. Incorrect or missing parameters',
   })
+  @UseInterceptors(SetUserInterceptor)
   @Post()
   @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateTaskDto): Promise<Task> {

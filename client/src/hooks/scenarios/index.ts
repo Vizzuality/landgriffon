@@ -3,7 +3,6 @@ import {
   useQuery,
   useInfiniteQuery,
   UseQueryResult,
-  UseQueryOptions,
   useMutation,
   UseInfiniteQueryResult,
 } from 'react-query';
@@ -24,14 +23,14 @@ type ResponseInfiniteData = UseInfiniteQueryResult<
     meta: Record<string, unknown>;
   }>
 >;
+
 type ResponseDataScenario = UseQueryResult<Scenario>;
 type QueryParams = {
   sort?: string;
   pageParam?: number;
 };
 
-const DEFAULT_QUERY_OPTIONS: UseQueryOptions<Scenario[]> = {
-  placeholderData: [],
+const DEFAULT_QUERY_OPTIONS = {
   retry: false,
   keepPreviousData: true,
   refetchOnWindowFocus: false,
@@ -41,14 +40,6 @@ const DEFAULT_INFINITE_QUERY_OPTIONS = {
   retry: false,
   keepPreviousData: true,
   refetchOnWindowFocus: false,
-};
-
-/**
- * Actual data to the data response
- */
-const ACTUAL_DATA: Scenario = {
-  id: 'actual-data', // reserved id only for actual-data
-  title: 'Actual data',
 };
 
 export function useScenarios(): ResponseData {
@@ -73,18 +64,12 @@ export function useScenarios(): ResponseData {
           params,
         })
         .then(({ data: responseData }) => responseData.data),
-    DEFAULT_QUERY_OPTIONS,
+    {
+      ...DEFAULT_QUERY_OPTIONS,
+      placeholderData: [],
+    },
   );
-  return useMemo((): ResponseData => {
-    const data: ResponseData['data'] =
-      response.isSuccess && response.data
-        ? [ACTUAL_DATA, ...(response.data as Scenario[])]
-        : response.data;
-    return {
-      ...response,
-      data,
-    } as ResponseData;
-  }, [response]);
+  return useMemo((): ResponseData => response, [response]);
 }
 
 export function useInfiniteScenarios(QueryParams: QueryParams): ResponseInfiniteData {
@@ -111,10 +96,13 @@ export function useInfiniteScenarios(QueryParams: QueryParams): ResponseInfinite
   return useMemo<ResponseInfiniteData>((): ResponseInfiniteData => query, [query]);
 }
 
-export function useScenario(id: string, queryParams: { sort: string }): ResponseDataScenario {
+export function useScenario(
+  id: Scenario['id'],
+  queryParams: { sort: string },
+): ResponseDataScenario {
   const { sort, filter, searchTerm } = useAppSelector(scenarios);
 
-  const response = useQuery(
+  const response: ResponseDataScenario = useQuery(
     ['scenario', queryParams],
     async () =>
       apiService
@@ -127,13 +115,7 @@ export function useScenario(id: string, queryParams: { sort: string }): Response
     DEFAULT_QUERY_OPTIONS,
   );
 
-  return useMemo<ResponseDataScenario>((): ResponseDataScenario => {
-    const data = response.isSuccess && response.data ? response.data : (ACTUAL_DATA as Scenario);
-    return {
-      ...response,
-      data,
-    } as ResponseDataScenario;
-  }, [response]);
+  return useMemo<ResponseDataScenario>((): ResponseDataScenario => response, [response]);
 }
 
 export function useDeleteScenario() {

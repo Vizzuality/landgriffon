@@ -1,12 +1,8 @@
-export type ScenarioPayload = {
+export type Scenario = {
+  id: string;
   title: string;
   description?: string;
   updatedAt?: date;
-};
-
-export type Scenario = ScenarioPayload & {
-  id: string | number;
-  title: string;
 };
 
 export type Scenarios = Scenario[];

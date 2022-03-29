@@ -41,7 +41,7 @@ export class Task extends TimestampedBaseEntity {
 
   @ApiProperty()
   @Column({ type: 'uuid' })
-  createdBy!: string;
+  userId!: string;
 
   @ApiProperty()
   @Column({ type: 'enum', enum: TASK_STATUS, default: TASK_STATUS.PROCESSING })

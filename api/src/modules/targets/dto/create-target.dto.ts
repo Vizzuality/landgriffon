@@ -22,8 +22,7 @@ export class CreateTargetDto {
   @IsNotEmpty()
   indicatorId!: string;
 
-  @ApiProperty()
   @IsString()
   @IsOptional()
-  lastEditedUserId?: string;
+  updatedById?: string;
 }

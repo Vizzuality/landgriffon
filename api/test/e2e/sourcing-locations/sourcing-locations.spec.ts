@@ -2,13 +2,21 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
-import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import {
+  SourcingLocation,
+  SOURCING_LOCATION_TYPE_BY_INTERVENTION,
+} from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
-import { createMaterial, createSourcingLocation } from '../../entity-mocks';
+import {
+  createMaterial,
+  createScenarioIntervention,
+  createSourcingLocation,
+} from '../../entity-mocks';
 import { Material } from 'modules/materials/material.entity';
-import { saveUserAndGetToken } from '../../utils/userAuth';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 
 /**
  * Tests for the SourcingLocationsModule.
@@ -18,6 +26,7 @@ describe('SourcingLocationsModule (e2e)', () => {
   let app: INestApplication;
   let sourcingLocationRepository: SourcingLocationRepository;
   let jwtToken: string;
+  let userId: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -30,7 +39,10 @@ describe('SourcingLocationsModule (e2e)', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+
+    const tokenWithId = await saveUserAndGetTokenWithUserId(moduleFixture, app);
+    jwtToken = tokenWithId.jwtToken;
+    userId = tokenWithId.userId;
   });
 
   afterEach(async () => {
@@ -103,6 +115,11 @@ describe('SourcingLocationsModule (e2e)', () => {
         })
         .expect(HttpStatus.OK);
 
+      const updatedSourcingLocation =
+        await sourcingLocationRepository.findOneOrFail(sourcingLocation.id);
+
+      expect(updatedSourcingLocation.updatedById).toEqual(userId);
+
       expect(response.body.data.attributes.title).toEqual(
         'updated test sourcing location',
       );
@@ -136,6 +153,32 @@ describe('SourcingLocationsModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(response.body.data[0].id).toEqual(sourcingLocation.id);
+    });
+
+    test('Get all sourcing locations should be successful, sourcing locations of the interventions must me ignored (happy case)', async () => {
+      const sourcingLocation: SourcingLocation = await createSourcingLocation();
+
+      const scenarioIntervention: ScenarioIntervention =
+        await createScenarioIntervention();
+
+      await createSourcingLocation({
+        scenarioInterventionId: scenarioIntervention.id,
+        interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+      });
+
+      await createSourcingLocation({
+        scenarioInterventionId: scenarioIntervention.id,
+        interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+      });
+
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/sourcing-locations`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send()
+        .expect(HttpStatus.OK);
+
+      expect(response.body.data[0].id).toEqual(sourcingLocation.id);
+      expect(response.body.data.length).toEqual(1);
     });
   });
 

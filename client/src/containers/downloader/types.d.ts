@@ -20,7 +20,7 @@ export type DownloaderProps = PropsWithChildren & {
   /** params to pass to the endpoint */
   params?: Record<string, string>;
   /** Custom headers for export */
-  headers?: DownloaderHeadersType;
+  headers?: DownloaderHeadersType[];
   /** Callback to transform the headers/data prior to export  */
   transform?: ({ headers, data }: DownloaderTransformProps) => DownloaderTransformProps;
   /** Callback when downloading data/file starts */

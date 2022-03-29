@@ -1,6 +1,13 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { CreateSourcingLocationGroupDto } from 'modules/sourcing-location-groups/dto/create.sourcing-location-group.dto';
-import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class UpdateSourcingLocationGroupDto extends PartialType(
   CreateSourcingLocationGroupDto,
@@ -11,4 +18,8 @@ export class UpdateSourcingLocationGroupDto extends PartialType(
   @MaxLength(40)
   @ApiProperty()
   title?: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  updatedById: string;
 }

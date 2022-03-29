@@ -8,7 +8,6 @@ import type {
   ImpactH3APIParams,
   ImpactTabularAPIParams,
 } from 'types';
-import material from 'containers/interventions/new/step2/material';
 
 export const filtersForH3API = createSelector(
   [analysisFilters],
@@ -37,7 +36,7 @@ export const filtersForH3API = createSelector(
     // when layer is impact
     const result: ImpactH3APIParams = {
       year: startYear,
-      indicatorId: indicator?.value,
+      indicatorId: indicator?.value && indicator?.value !== 'all' ? indicator?.value : null,
       ...(materials && materials.length
         ? { materialIds: materials?.map(({ value }) => value) }
         : {}),

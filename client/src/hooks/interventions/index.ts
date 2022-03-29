@@ -54,3 +54,9 @@ export function useInterventions(queryParams = {}): ResponseInterventionsData {
     } as ResponseInterventionsData;
   }, [response]);
 }
+
+export function useLocationtypes() {
+  return useMemo<string[]>(() => {
+    return ['Point of production', 'Aggregation point', 'Country of production', 'Unknown'];
+  }, []);
+}

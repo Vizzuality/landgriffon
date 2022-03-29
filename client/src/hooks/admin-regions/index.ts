@@ -24,7 +24,7 @@ export function useAdminRegions(): ResponseData {
       apiService
         .request({
           method: 'GET',
-          url: '/impact/admin-regions/',
+          url: '/admin-regions',
         })
         .then(({ data: responseData }) => responseData.data),
     {

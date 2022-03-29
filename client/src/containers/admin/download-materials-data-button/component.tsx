@@ -29,7 +29,7 @@ const DownloadMaterialsDataButton: React.FC<DownloadMaterialsDataButtonProps> = 
     data: originalData,
   }: DownloaderTransformProps): DownloaderTransformProps => {
     const years = uniq(
-      flatten(originalData?.data?.map(({ purchases }) => purchases.map(({ year }) => year))).sort(),
+      flatten(originalData.map(({ purchases }) => purchases.map(({ year }) => year))).sort(),
     );
 
     const headers = [
@@ -42,7 +42,7 @@ const DownloadMaterialsDataButton: React.FC<DownloadMaterialsDataButtonProps> = 
 
     const fieldsToExport = headers.map(({ key }) => key);
 
-    const data = originalData?.data
+    const data = originalData
       ?.map((dataRow: Record<string, unknown>) => ({
         ...dataRow,
         ...(dataRow.purchases as { year: number; tonnage: number }[])

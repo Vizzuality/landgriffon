@@ -96,14 +96,11 @@ export function useInfiniteScenarios(QueryParams: QueryParams): ResponseInfinite
   return useMemo<ResponseInfiniteData>((): ResponseInfiniteData => query, [query]);
 }
 
-export function useScenario(
-  id: Scenario['id'],
-  queryParams: { sort: string },
-): ResponseDataScenario {
+export function useScenario(id: Scenario['id']): ResponseDataScenario {
   const { sort, filter, searchTerm } = useAppSelector(scenarios);
 
   const response: ResponseDataScenario = useQuery(
-    ['scenario', queryParams],
+    ['scenario', id],
     async () =>
       apiService
         .request({

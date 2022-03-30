@@ -105,6 +105,12 @@ const AnalysisTable: React.FC<{ data: ImpactTableData }> = ({ data }) => {
         },
       },
       sortingMode: SortingMode.Single,
+      paging: {
+        enabled: true,
+        pageIndex: 0,
+        pageSize: 25,
+        pageSizes: [25, 50, 100],
+      },
     };
   }, [yearsSum, years, indicatorId, columnValues, dataValues]);
 

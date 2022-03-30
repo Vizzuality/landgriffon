@@ -6,6 +6,12 @@ export const h3BasicFixture = {
   '861203a4fffffff': 1000,
 };
 
+export const h3BasicFixtureForScaler = {
+  '861203a4fffffff': 1000,
+  '861203a6fffffff': 1000,
+  '861203a5fffffff': 1000,
+};
+
 /**
  * Dataset of h3 indexes in resolution 6 and it's value, mocking a part of 'real-life' h3 table contents with production or harvest volumes.
  * Each 10 indexes of resolution 6 have same resolution 1 parent, each 5 within those 10 have same resolution 3 parent

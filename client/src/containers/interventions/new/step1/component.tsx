@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState, FC } from 'react';
 // hooks
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { setFilter, analysisFilters } from 'store/features/analysis/filters';
+import { useBusinessUnits } from 'hooks/business-units';
 
 // components
 import Input from 'components/forms/input';
@@ -21,9 +22,6 @@ import type { AnalysisFiltersState } from 'store/features/analysis/filters';
 //import type { AnalysisState } from 'store/features/analysis';
 import { useInterventionTypes } from 'hooks/analysis';
 
-const businesses = ['business1', 'business2', 'business3'];
-const yearCompletions = [2001, 2015, 2020];
-
 const Step1: FC = () => {
   const dispatch = useAppDispatch();
   //const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -37,18 +35,6 @@ const Step1: FC = () => {
   );
 
   const [moreFilters, setMoreFilters] = useState(selectedFilters);
-  // const { data: sourcingRegions, isLoading: isLoadingSourcingRegions } = useSourcingRegions();
-
-  // const handleApply = useCallback(() => {
-  //   dispatch(
-  //     setFilters({
-  //       materials: moreFilters.materials || INITIAL_FILTERS.materials,
-  //       origins: moreFilters.origins || INITIAL_FILTERS.origins,
-  //       suppliers: moreFilters.suppliers || INITIAL_FILTERS.suppliers,
-  //     } as AnalysisFiltersState),
-  //   );
-  //   // setOpen(false);
-  // }, [dispatch, moreFilters]);
 
   const handleChangeFilter = useCallback(
     // only save ids on store
@@ -61,37 +47,7 @@ const Step1: FC = () => {
     [moreFilters],
   );
 
-  const business = 'business2';
-  const yearCompletion = 2015;
   const interventionType = '';
-
-  const optionsBusinesses: SelectOptions = useMemo(
-    () =>
-      businesses.map((business) => ({
-        label: business,
-        value: business,
-      })),
-    [],
-  );
-
-  const currentBusiness = useMemo<SelectOption>(
-    () => optionsBusinesses?.find((option) => option.value === business),
-    [optionsBusinesses],
-  );
-
-  const optionsYearCompletion: SelectOptions = useMemo(
-    () =>
-      yearCompletions.map((YearCompletion) => ({
-        label: YearCompletion.toString(),
-        value: YearCompletion,
-      })),
-    [],
-  );
-
-  const currentYearCompletion = useMemo<SelectOption>(
-    () => optionsYearCompletion?.find((option) => option.value === yearCompletion),
-    [optionsYearCompletion],
-  );
 
   const optionsInterventionType: SelectOptions = useMemo(
     () =>
@@ -106,9 +62,21 @@ const Step1: FC = () => {
     () => optionsInterventionType?.find((option) => option.value === interventionType),
     [optionsInterventionType],
   );
+  const { data: businesses, isLoading: isLoadingBusinesses } = useBusinessUnits();
 
-  const isLoadingBusinesses = false;
-  const isLoadingYearCompletion = false;
+  const optionsBusinesses: SelectOptions = useMemo(
+    () =>
+      businesses.map(({ name, id }) => ({
+        label: name,
+        value: id,
+      })),
+    [businesses],
+  );
+
+  const currentBusiness = useMemo<SelectOption>(
+    () => optionsBusinesses?.find((option) => option.value === 'values?.businessUnitsIds'),
+    [optionsBusinesses],
+  );
   const isLoadingInterventionTypes = false;
 
   const handleInterventionType = useCallback(
@@ -200,12 +168,14 @@ const Step1: FC = () => {
         <div className="text-sm font-medium text-gray-700">
           <span>Year of completion</span>
           <div className="mt-1">
-            <Select
-              loading={isLoadingYearCompletion}
-              current={currentYearCompletion}
-              options={optionsYearCompletion}
-              placeholder="Select"
-              // onChange={() => onChange('year_completion', currentYearCompletion.value)}
+            <Input
+              type="number"
+              name="yearCompletion"
+              id="yearCompletion"
+              aria-label="year"
+              placeholder="Insert year"
+              defaultValue={2021}
+              // onChange={handleYear}
             />
           </div>
         </div>

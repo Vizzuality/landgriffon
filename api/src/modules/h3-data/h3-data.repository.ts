@@ -23,7 +23,6 @@ import {
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
-import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 
 /**
@@ -442,40 +441,54 @@ export class H3DataRepository extends Repository<H3Data> {
     supplierIds?: string[],
     locationType?: LOCATION_TYPES_PARAMS[],
   ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
-    const query: SelectQueryBuilder<any> = getManager()
+    const queryBuilder: SelectQueryBuilder<any> = getManager()
       .createQueryBuilder()
-      .select(
-        `h3_to_parent(unnest(gr."h3Flat"::h3index[]), ${resolution})`,
-        'h',
-      )
-      .addSelect('sum(ir.value/gr."h3FlatLength")', 'v')
+      .select(`h3_to_parent((h3data.h3index), ${resolution})`, `h`)
+      .addSelect(`sum(h3data.value)`, `v`)
       .from(SourcingLocation, 'sl')
       .innerJoin(SourcingRecord, 'sr', 'sl.id = sr.sourcingLocationId')
       .innerJoin(IndicatorRecord, 'ir', 'sr.id = ir.sourcingRecordId')
-      .innerJoin(GeoRegion, 'gr', 'sl.geoRegionId = gr.id')
-      .where('sl.scenarioInterventionId IS NULL')
-      .andWhere('sl.interventionType IS NULL')
-      .andWhere('ir.indicatorId = :indicatorId', { indicatorId: indicator.id })
-      .andWhere('sr.year = :year', { year })
-      .andWhere('gr."h3FlatLength" > 0')
-      .groupBy('h');
+      .innerJoin('material_to_h3', 'mth', 'mth.materialId = sl.materialId');
+
+    const query: string = queryBuilder.getSql();
+
+    const sqlQueryParams: any[] = [year, indicator.id];
+
+    let sqlQuery: string =
+      query +
+      `, LATERAL(SELECT h3index, ir.value/ir.scaler * value as value FROM get_h3_data_over_georegion(sl."geoRegionId", mth."h3DataId")) h3data
+      WHERE sr.year=$1
+      AND sl."scenarioInterventionId" IS NULL
+      AND sl."interventionType" IS NULL
+      AND ir."indicatorId"=$2`;
+
+    let numberOfParams: number = 2;
 
     if (materialIds) {
-      query.andWhere('sl.material IN (:...materialIds)', { materialIds });
+      sqlQuery =
+        sqlQuery + ` AND sl."materialId" = ANY ($${numberOfParams + 1})`;
+      sqlQueryParams.push(materialIds);
+      numberOfParams += 1;
     }
 
     if (supplierIds) {
-      query.andWhere(
-        new Brackets((qb: WhereExpressionBuilder) => {
-          qb.where('sl.t1SupplierId IN (:...supplierIds)', {
-            supplierIds,
-          }).orWhere('sl.producerId IN (:...supplierIds)', { supplierIds });
-        }),
-      );
+      sqlQuery =
+        sqlQuery +
+        ` AND (sl."t1SupplierId" = ANY ($${
+          numberOfParams + 1
+        }) OR sl."producerId" = ANY ($${numberOfParams + 1}))`;
+      sqlQueryParams.push(supplierIds);
+      numberOfParams += 1;
     }
+
     if (originIds) {
-      query.andWhere('sl.adminRegionId IN (:...originIds)', { originIds });
+      sqlQuery =
+        sqlQuery + ` AND sl."adminRegionId" = ANY ($${numberOfParams + 1})`;
+      sqlQueryParams.push(originIds);
+      numberOfParams += 1;
     }
+
+    sqlQuery = sqlQuery + ` GROUP by h`;
 
     if (locationType) {
       const sourcingLocationTypes: string[] = locationType.map(
@@ -489,10 +502,9 @@ export class H3DataRepository extends Repository<H3Data> {
     }
 
     const tmpTableName: string = H3DataRepository.generateRandomTableName();
-    const [queryString, params] = query.getQueryAndParameters();
     await getManager().query(
-      `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${queryString});`,
-      params,
+      `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${sqlQuery});`,
+      sqlQueryParams,
     );
     const riskMap: any = await getManager().query(
       `SELECT *

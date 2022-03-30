@@ -6,19 +6,18 @@ import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { useBusinessUnits } from 'hooks/business-units';
 import { setFilter, analysisFilters } from 'store/features/analysis/filters';
 import { setSubContentCollapsed } from 'store/features/analysis/ui';
+
 // components
 import Input from 'components/forms/input';
 import Label from 'components/forms/label';
 import Textarea from 'components/forms/textarea';
 import Select from 'components/select';
 import Button from 'components/button';
+import Hint from 'components/forms/hint';
 
-// import Materials from 'containers/interventions/smart-filters/materials/component';
-// import Suppliers from 'containers/interventions/smart-filters/suppliers/component';
-// import OriginRegions from 'containers/interventions/smart-filters/origin-regions/component';
-import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
-import Suppliers from 'containers/analysis-visualization/analysis-filters/suppliers/component';
-import OriginRegions from 'containers/analysis-visualization/analysis-filters/origin-regions/component';
+import Materials from 'containers/interventions/smart-filters/materials/component';
+import Suppliers from 'containers/interventions/smart-filters/suppliers/component';
+import OriginRegions from 'containers/interventions/smart-filters/origin-regions/component';
 
 // hooks
 import { setNewInterventionStep } from 'store/features/analysis/scenarios';
@@ -28,12 +27,10 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
-import toast from 'react-hot-toast';
 import { isEmpty } from 'lodash';
 
 // types
 import type { SelectOptions, SelectOption } from 'components/select/types';
-import type { AnalysisFiltersState } from 'store/features/analysis/filters';
 
 //import type { AnalysisState } from 'store/features/analysis';
 import { useInterventionTypes } from 'hooks/analysis';
@@ -128,7 +125,7 @@ const Step1: FC = () => {
     },
     [setValue],
   );
-
+console.log(errors)
   const handleYear = useDebounceCallback(
     useCallback(
       (values) => {
@@ -169,6 +166,7 @@ const Step1: FC = () => {
         <p className="font-medium leading-5 text-sm">Apply intervention to:</p>
         <div className="flex items-center text-green-700 space-x-1">
           <Input
+            {...register('percentage')}
             type="number"
             name="percentage"
             id="percentage"
@@ -179,6 +177,7 @@ const Step1: FC = () => {
             defaultValue={100}
             theme="inline-primary"
             unit="%"
+            error={errors?.percentage?.message}
           />
 
           <span className="text-gray-700">of</span>
@@ -203,6 +202,7 @@ const Step1: FC = () => {
             allowEmpty
             theme="inline-primary"
             onChange={({ value }) => setValue('businessUnitsIds', value)}
+            // error={errors?.businessUnitsIds}
           />
           <span className="text-gray-700 font-medium">from</span>
           <Suppliers
@@ -224,6 +224,8 @@ const Step1: FC = () => {
           />
           <span className="text-gray-700 font-medium">.</span>
         </div>
+        {errors &&
+          Object.values(errors).map(({ message, ref }) => <Hint key={ref}>{message}</Hint>)}
       </fieldset>
       <div className="mt-9 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
         <div className="text-sm font-medium text-gray-700">
@@ -241,6 +243,7 @@ const Step1: FC = () => {
               placeholder="Insert year"
               aria-label="year"
               onChange={handleYear}
+              error={errors?.endYear?.message}
             />
           </div>
         </div>

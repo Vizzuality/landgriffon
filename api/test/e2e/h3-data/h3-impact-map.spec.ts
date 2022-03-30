@@ -111,23 +111,15 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
     expect(response.body.data).toEqual(
       expect.arrayContaining([
-        {
-          h: '861203a6fffffff',
-          v: 500,
-        },
-        {
-          h: '861203a4fffffff',
-          v: 1117,
-        },
-        {
-          h: '861203a5fffffff',
-          v: 617,
-        },
+        { h: '861203a6fffffff', v: 200 },
+        { h: '861203a4fffffff', v: 446.79999999999995 },
+        { h: '861203a5fffffff', v: 246.79999999999998 },
       ]),
     );
     expect(response.body.metadata).toEqual({
       quantiles: [
-        500, 539.0078, 578.0858000000001, 617, 783.6999999999999, 950.7, 1117,
+        200, 215.60312, 231.23432, 246.79999999999998, 313.47999999999996,
+        380.28, 446.79999999999995,
       ],
       unit: 'tonnes',
       indicatorDataYear: 2020,
@@ -147,14 +139,15 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          {
-            h: '821207fffffffff',
-            v: 2234,
-          },
+          { h: '821207fffffffff', v: 893.5999999999999 },
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [2234, 2234, 2234, 2234, 2234, 2234, 2234],
+        quantiles: [
+          893.5999999999999, 893.5999999999999, 893.5999999999999,
+          893.5999999999999, 893.5999999999999, 893.5999999999999,
+          893.5999999999999,
+        ],
         unit: 'tonnes',
         indicatorDataYear: 2020,
       });
@@ -172,14 +165,15 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          {
-            h: '841203bffffffff',
-            v: 2234,
-          },
+          { h: '841203bffffffff', v: 893.5999999999999 },
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [2234, 2234, 2234, 2234, 2234, 2234, 2234],
+        quantiles: [
+          893.5999999999999, 893.5999999999999, 893.5999999999999,
+          893.5999999999999, 893.5999999999999, 893.5999999999999,
+          893.5999999999999,
+        ],
         unit: 'tonnes',
         indicatorDataYear: 2020,
       });
@@ -197,23 +191,15 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          {
-            h: '861203a6fffffff',
-            v: 500,
-          },
-          {
-            h: '861203a4fffffff',
-            v: 1117,
-          },
-          {
-            h: '861203a5fffffff',
-            v: 617,
-          },
+          { h: '861203a6fffffff', v: 200 },
+          { h: '861203a4fffffff', v: 446.79999999999995 },
+          { h: '861203a5fffffff', v: 246.79999999999998 },
         ]),
       );
       expect(response.body.metadata).toEqual({
         quantiles: [
-          500, 539.0078, 578.0858000000001, 617, 783.6999999999999, 950.7, 1117,
+          200, 215.60312, 231.23432, 246.79999999999998, 313.47999999999996,
+          380.28, 446.79999999999995,
         ],
         unit: 'tonnes',
         indicatorDataYear: 2020,
@@ -235,18 +221,16 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          {
-            h: '861203a4fffffff',
-            v: 617,
-          },
-          {
-            h: '861203a5fffffff',
-            v: 617,
-          },
+          { h: '861203a4fffffff', v: 246.79999999999998 },
+          { h: '861203a5fffffff', v: 246.79999999999998 },
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [617, 617, 617, 617, 617, 617, 617],
+        quantiles: [
+          246.79999999999998, 246.79999999999998, 246.79999999999998,
+          246.79999999999998, 246.79999999999998, 246.79999999999998,
+          246.79999999999998,
+        ],
         unit: 'tonnes',
         indicatorDataYear: 2020,
         materialsH3DataYears: [
@@ -277,18 +261,16 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          {
-            h: '861203a4fffffff',
-            v: 617,
-          },
-          {
-            h: '861203a5fffffff',
-            v: 617,
-          },
+          { h: '861203a4fffffff', v: 246.79999999999998 },
+          { h: '861203a5fffffff', v: 246.79999999999998 },
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [617, 617, 617, 617, 617, 617, 617],
+        quantiles: [
+          246.79999999999998, 246.79999999999998, 246.79999999999998,
+          246.79999999999998, 246.79999999999998, 246.79999999999998,
+          246.79999999999998,
+        ],
         unit: 'tonnes',
         indicatorDataYear: 2020,
       });
@@ -307,18 +289,16 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          {
-            h: '861203a4fffffff',
-            v: 617,
-          },
-          {
-            h: '861203a5fffffff',
-            v: 617,
-          },
+          { h: '861203a4fffffff', v: 246.79999999999998 },
+          { h: '861203a5fffffff', v: 246.79999999999998 },
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [617, 617, 617, 617, 617, 617, 617],
+        quantiles: [
+          246.79999999999998, 246.79999999999998, 246.79999999999998,
+          246.79999999999998, 246.79999999999998, 246.79999999999998,
+          246.79999999999998,
+        ],
         unit: 'tonnes',
         indicatorDataYear: 2020,
       });
@@ -337,18 +317,16 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          {
-            h: '861203a4fffffff',
-            v: 617,
-          },
-          {
-            h: '861203a5fffffff',
-            v: 617,
-          },
+          { h: '861203a4fffffff', v: 246.79999999999998 },
+          { h: '861203a5fffffff', v: 246.79999999999998 },
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [617, 617, 617, 617, 617, 617, 617],
+        quantiles: [
+          246.79999999999998, 246.79999999999998, 246.79999999999998,
+          246.79999999999998, 246.79999999999998, 246.79999999999998,
+          246.79999999999998,
+        ],
         unit: 'tonnes',
         indicatorDataYear: 2020,
       });

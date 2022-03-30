@@ -29,7 +29,7 @@ import {
   MATERIAL_TO_H3_TYPE,
   MaterialToH3,
 } from 'modules/materials/material-to-h3.entity';
-import { h3BasicFixture } from './h3-fixtures';
+import { h3BasicFixtureForScaler } from './h3-fixtures';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 
 export interface ImpactMapMockData {
@@ -64,7 +64,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
   const harvestH3Data = await h3DataMock({
     h3TableName: 'harvestTable',
     h3ColumnName: 'harvestColumn',
-    additionalH3Data: h3BasicFixture,
+    additionalH3Data: h3BasicFixtureForScaler,
     indicatorId: indicator.id,
     year: 2020,
   });
@@ -72,7 +72,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
   const productionH3Data = await h3DataMock({
     h3TableName: 'productionTable',
     h3ColumnName: 'productionColumn',
-    additionalH3Data: h3BasicFixture,
+    additionalH3Data: h3BasicFixtureForScaler,
     indicatorId: indicator.id,
     year: 2020,
   });
@@ -125,6 +125,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
   await createIndicatorRecord({
     sourcingRecordId: sourcingRecordOne.id,
     indicatorId: indicator.id,
+    scaler: 10000,
     value: 1234,
   });
 
@@ -176,6 +177,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
   await createIndicatorRecord({
     sourcingRecordId: sourcingRecordTwo.id,
     indicatorId: indicator.id,
+    scaler: 10000,
     value: 1000,
   });
 
@@ -204,6 +206,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
   await createIndicatorRecord({
     sourcingRecordId: interventionSourcingRecord.id,
     indicatorId: indicator.id,
+    scaler: 2000,
     value: 2000,
   });
 

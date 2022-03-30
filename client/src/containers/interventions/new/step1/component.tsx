@@ -11,9 +11,9 @@ import Label from 'components/forms/label';
 import Textarea from 'components/forms/textarea';
 import Select from 'components/select';
 
-import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
-import Suppliers from 'containers/analysis-visualization/analysis-filters/suppliers/component';
-import OriginRegions from 'containers/analysis-visualization/analysis-filters/origin-regions/component';
+import Materials from 'containers/interventions/smart-filters/materials/component';
+import Suppliers from 'containers/interventions/smart-filters/suppliers/component';
+import OriginRegions from 'containers/interventions/smart-filters/origin-regions/component';
 
 // types
 import type { SelectOptions, SelectOption } from 'components/select/types';

@@ -19,7 +19,7 @@ export type SuppliersTreesParams = {
 
 export function useSuppliers(params): ResponseData {
   const query = useQuery(
-    ['suppliers'],
+    ['suppliers', JSON.stringify(params)],
     async () =>
       apiService
         .request({
@@ -47,7 +47,7 @@ export function useSuppliers(params): ResponseData {
 
 export function useSuppliersTrees(params: SuppliersTreesParams): ResponseData {
   const query = useQuery(
-    ['suppliers-trees'],
+    ['suppliers-trees', JSON.stringify(params)],
     async () =>
       apiService
         .request({
@@ -56,9 +56,7 @@ export function useSuppliersTrees(params: SuppliersTreesParams): ResponseData {
           params,
         })
         .then(({ data: responseData }) => responseData.data),
-    {
-      ...DEFAULT_QUERY_OPTIONS,
-    },
+    DEFAULT_QUERY_OPTIONS,
   );
 
   const { data, isError } = query;
@@ -73,9 +71,9 @@ export function useSuppliersTrees(params: SuppliersTreesParams): ResponseData {
   );
 }
 
-export function useSuppliersTypes(params): ResponseData {
+export function useSuppliersTypes(params: { type: 't1supplier' | 'producer' }): ResponseData {
   const query = useQuery(
-    ['suppliers'],
+    ['suppliers', JSON.stringify(params)],
     async () =>
       apiService
         .request({
@@ -84,9 +82,7 @@ export function useSuppliersTypes(params): ResponseData {
           params,
         })
         .then(({ data: responseData }) => responseData.data),
-    {
-      ...DEFAULT_QUERY_OPTIONS,
-    },
+    DEFAULT_QUERY_OPTIONS,
   );
 
   const { data, isError } = query;

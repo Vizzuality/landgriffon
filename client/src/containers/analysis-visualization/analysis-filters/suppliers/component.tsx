@@ -56,6 +56,7 @@ const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
       theme={theme}
       ellipsis={ellipsis}
       fitContent={fitContent}
+      checkedStrategy="ALL"
     />
   );
 };

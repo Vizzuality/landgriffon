@@ -59,6 +59,7 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
       theme={theme}
       ellipsis={ellipsis}
       fitContent={fitContent}
+      checkedStrategy="ALL"
     />
   );
 };

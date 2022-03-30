@@ -58,6 +58,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
       theme={theme}
       fitContent={fitContent}
       ellipsis={ellipsis}
+      checkedStrategy="ALL"
     />
   );
 };

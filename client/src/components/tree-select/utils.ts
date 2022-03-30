@@ -27,4 +27,23 @@ const CHILD = (checkedKeys: Key[], checkedNodes: DataNode[]): DataNode['key'][] 
   return onlyChildren;
 };
 
-export const CHECKED_STRATEGIES = { ALL, PARENT, CHILD };
+const PARENT_AND_CHILD = (checkedKeys: Key[], checkedNodes: DataNode[]): DataNode['key'][] => {
+  // 1. Extracting parents selected
+  const parentsWithChildren = checkedNodes.filter((node) => !!node?.children);
+  // 2. Extracting children ids from parents selected above
+  const childrenWithParents = [];
+  if (parentsWithChildren && parentsWithChildren.length) {
+    parentsWithChildren.forEach(({ children }) =>
+      children.forEach(({ key }) => childrenWithParents.push(key)),
+    );
+  }
+  // 3. Filtering checkedKeys with children ids to not send unnecessary values
+  const filteredValues =
+    childrenWithParents && childrenWithParents.length
+      ? checkedKeys.filter((key) => !childrenWithParents.includes(key))
+      : checkedKeys;
+
+  return filteredValues;
+};
+
+export const CHECKED_STRATEGIES = { ALL, PARENT, CHILD, PARENT_AND_CHILD };

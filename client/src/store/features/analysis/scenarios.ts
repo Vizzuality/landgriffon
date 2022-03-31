@@ -10,6 +10,31 @@ export type ScenariosState = {
   scenarioToCompare: Scenario['id'];
   scenarioCurrentTab: 'interventions' | 'growth';
   interventionsStep: 1 | 2;
+  newInterventionData: {
+    title: string;
+    interventionDescription?: string;
+    percentage: number;
+    materialsIds: string[];
+    businessUnitsIds: string;
+    startYear: number;
+    endYear: number;
+    type: 'new-supplier-location' | 'production-efficiency' | 'new-material';
+    suppliersIds: string[];
+    adminRegionsIds: string[];
+    newMaterialId: string;
+    newMaterialTonnageRatio: number;
+    newT1SupplierId: string;
+    newProducerId: string;
+    newLocationType: string;
+    newLocationCountryInput: string;
+    newLocationAddressInput: string;
+    newIndicatorCoefficients: {
+      DF_LUC_T: number;
+      UWU_T: number;
+      BL_LUC_T: number;
+      GHG_LUC_T: number;
+    };
+  };
   searchTerm: string;
   filter: 'all' | 'private' | 'public';
   sort: '-updatedAt' | 'title';
@@ -29,6 +54,31 @@ export const initialState: ScenariosState = {
   scenarioToCompare: null,
   scenarioCurrentTab: 'interventions',
   interventionsStep: 1,
+  newInterventionData: {
+    title: 'InterventionTitle',
+    interventionDescription: null,
+    percentage: 100,
+    materialsIds: null,
+    businessUnitsIds: null,
+    startYear: null,
+    endYear: null,
+    type: 'new-supplier-location',
+    suppliersIds: null,
+    adminRegionsIds: null,
+    newMaterialTonnageRatio: null,
+    newMaterialId: null,
+    newT1SupplierId: null,
+    newProducerId: null,
+    newLocationType: null,
+    newLocationCountryInput: null,
+    newLocationAddressInput: null,
+    newIndicatorCoefficients: {
+      DF_LUC_T: null,
+      UWU_T: null,
+      BL_LUC_T: null,
+      GHG_LUC_T: null,
+    },
+  },
   searchTerm: null,
   filter: 'all',
   sort: '-updatedAt',
@@ -81,6 +131,13 @@ export const analysisScenariosSlice = createSlice({
       ...state,
       searchTerm: action.payload,
     }),
+    setNewInterventionData: (
+      state,
+      action: PayloadAction<ScenariosState['newInterventionData']>,
+    ) => ({
+      ...state,
+      newInterventionData: action.payload,
+    }),
   },
 });
 
@@ -94,6 +151,7 @@ export const {
   setSort,
   setNewInterventionStep,
   setSearchTerm,
+  setNewInterventionData,
 } = analysisScenariosSlice.actions;
 
 export const scenarios = (state: FeatureState) => state['analysis/scenarios'];

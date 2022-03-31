@@ -20,10 +20,10 @@ import Suppliers from 'containers/interventions/smart-filters/suppliers/componen
 import OriginRegions from 'containers/interventions/smart-filters/origin-regions/component';
 
 // hooks
-import { setNewInterventionStep } from 'store/features/analysis/scenarios';
+import { setNewInterventionStep, setNewInterventionData } from 'store/features/analysis/scenarios';
 
 // form validation
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
@@ -44,11 +44,7 @@ const schemaValidation = yup.object({
   adminRegionsIds: yup.array().min(1).required(),
   endYear: yup
     .number()
-    .test(
-      'len',
-      'Must be exactly 4 digits',
-      (val) => Math.ceil(Math.log(val + 1) / Math.LN10) === 4,
-    )
+    .test('len', 'Must be a valid year', (val) => Math.ceil(Math.log(val + 1) / Math.LN10) === 4)
     .required('error'), // year completion
   type: yup.string().required(),
 });
@@ -70,10 +66,11 @@ const Step1: FC = () => {
     [],
   );
 
-  const currentInterventionType = useMemo<SelectOption>(
+  const currentInterventiontype = useMemo<SelectOption>(
     () => optionsInterventionType?.find((option) => option.value === interventionType),
     [optionsInterventionType, interventionType],
   );
+
   const { data: businesses, isLoading: isLoadingBusinesses } = useBusinessUnits();
 
   const optionsBusinesses: SelectOptions = useMemo(
@@ -94,28 +91,26 @@ const Step1: FC = () => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
+    mode: 'onChange',
+    reValidateMode: 'onSubmit',
   });
 
   const handleContinue = useCallback(
     (values) => {
       if (isEmpty(errors)) {
+        dispatch(setNewInterventionData(values));
         dispatch(setNewInterventionStep(2));
       }
     },
     [dispatch, errors],
   );
-
+  const holi = getValues();
+  console.log(holi, 'holi')
   const handleInterventionType = useCallback(
     ({ value }) => {
       setValue('type', value);
-      dispatch(
-        setFilter({
-          id: 'interventionType',
-          value,
-        }),
-      );
     },
-    [dispatch, setValue],
+    [setValue],
   );
 
   const handleDropdown = useCallback(
@@ -125,21 +120,14 @@ const Step1: FC = () => {
     },
     [setValue],
   );
-console.log(errors)
-  const handleYear = useDebounceCallback(
-    useCallback(
-      (values) => {
-        setValue('startYear', values);
-        setValue('endYear', values);
-      },
-      [],
-    ),
-    600,
-  );
+  const handleYear = useCallback((values) => {
+    console.log(values, 'valores')
+
+  }, []);
 
   const handleCancel = useCallback(() => {
     dispatch(setSubContentCollapsed(true));
-    dispatch(setNewInterventionStep(1));
+    dispatch(setNewInterventionStep(2));
   }, [dispatch]);
 
   return (
@@ -237,12 +225,11 @@ console.log(errors)
             <Input
               {...register('endYear')}
               type="number"
-              name="yearCompletion"
-              id="yearCompletion"
+              name="endYear"
+              id="endYear"
               defaultValue=""
               placeholder="Insert year"
               aria-label="year"
-              onChange={handleYear}
               error={errors?.endYear?.message}
             />
           </div>
@@ -257,7 +244,7 @@ console.log(errors)
             <Select
               {...register('type')}
               loading={!interventionType}
-              current={watch('type')}
+              current={currentInterventiontype}
               options={optionsInterventionType}
               placeholder="Select"
               onChange={handleInterventionType}

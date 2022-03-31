@@ -9,13 +9,13 @@ import Material from './material';
 import Supplier from './supplier';
 import SupplierImpact from './supplier-impact';
 
-import { analysisFilters } from 'store/features/analysis/filters';
+import { scenarios } from 'store/features/analysis/scenarios';
 
 const Step2: FC = () => {
   const dispatch = useAppDispatch();
 
-  const filters = useAppSelector(analysisFilters);
-  const { interventionType } = filters;
+  const { newInterventionData } = useAppSelector(scenarios);
+  const { type } = newInterventionData;
 
   const handleCancel = useCallback(() => {
     dispatch(setSubContentCollapsed(true));
@@ -28,10 +28,8 @@ const Step2: FC = () => {
 
   return (
     <>
-      {interventionType === 'new-material' && <Material />}
-      {(interventionType === 'new-supplier-location' || interventionType === 'new-material') && (
-        <Supplier />
-      )}
+      {type === 'new-material' && <Material />}
+      {(type === 'new-supplier-location' || type === 'new-material') && <Supplier />}
       <SupplierImpact />
       <div className="pt-5">
         <div className="flex justify-end">

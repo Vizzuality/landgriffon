@@ -80,6 +80,7 @@ resource "kubernetes_secret" "db_secret" {
     DB_DATABASE    = sensitive(local.postgres_secret_json.database)
     DB_SYNCHRONIZE = "true"
     REDIS_HOST     = "redis-master.default.svc.cluster.local"
+    REDIS_IMPORT_QUEUE_NAME = "excel-import-${var.namespace}"
   }
 }
 

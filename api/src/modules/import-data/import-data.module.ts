@@ -14,18 +14,18 @@ import { GeoCodingModule } from 'modules/geo-coding/geo-coding.module';
 import { GeoRegionsModule } from 'modules/geo-regions/geo-regions.module';
 import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
 import { BullModule } from '@nestjs/bull';
-import {
-  ImportDataProducer,
-  importQueueName,
-} from 'modules/import-data/workers/import-data.producer';
+import { ImportDataProducer } from 'modules/import-data/workers/import-data.producer';
 import { ImportDataConsumer } from 'modules/import-data/workers/import-data.consumer';
 import { ImportDataService } from 'modules/import-data/import-data.service';
 import { TasksModule } from 'modules/tasks/tasks.module';
+import * as config from 'config';
+
+const importQueueName: string = config.get('redis.importQueueName');
 
 @Module({
   imports: [
     BullModule.registerQueue({
-      name: importQueueName.value,
+      name: importQueueName,
     }),
     MaterialsModule,
     BusinessUnitsModule,

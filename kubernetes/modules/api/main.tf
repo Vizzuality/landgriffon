@@ -135,6 +135,16 @@ resource "kubernetes_deployment" "api_deployment" {
           }
 
           env {
+            name = "REDIS_IMPORT_QUEUE_NAME"
+            value_from {
+              secret_key_ref {
+                name = "db"
+                key  = "REDIS_IMPORT_QUEUE_NAME"
+              }
+            }
+          }
+
+          env {
             name = "JWT_SECRET"
             value_from {
               secret_key_ref {

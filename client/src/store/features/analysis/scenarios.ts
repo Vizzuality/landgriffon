@@ -31,7 +31,7 @@ export const initialState: ScenariosState = {
   interventionsStep: 1,
   searchTerm: null,
   filter: 'all',
-  sort: 'title',
+  sort: 'updatedAt',
   pagination: {
     page: 1,
     size: 300,
@@ -66,12 +66,20 @@ export const analysisScenariosSlice = createSlice({
       ...state,
       filter: action.payload,
     }),
+    setSort: (state, action: PayloadAction<ScenariosState['sort']>) => ({
+      ...state,
+      sort: action.payload,
+    }),
     setNewInterventionStep: (
       state,
       action: PayloadAction<ScenariosState['interventionsStep']>,
     ) => ({
       ...state,
       interventionsStep: action.payload,
+    }),
+    setSearchTerm: (state, action: PayloadAction<ScenariosState['searchTerm']>) => ({
+      ...state,
+      searchTerm: action.payload,
     }),
   },
 });
@@ -83,7 +91,9 @@ export const {
   setComparisonMode,
   setScenarioTab,
   setScenarioFilter,
+  setSort,
   setNewInterventionStep,
+  setSearchTerm,
 } = analysisScenariosSlice.actions;
 
 export const scenarios = (state: FeatureState) => state['analysis/scenarios'];

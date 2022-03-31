@@ -1,11 +1,10 @@
 import { MutableRefObject, useMemo, useCallback } from 'react';
-import { useRouter } from 'next/router';
 import Lottie from 'lottie-react';
 import { PlusIcon, XCircleIcon } from '@heroicons/react/solid';
 import toast from 'react-hot-toast';
 
-import { useAppDispatch } from 'store/hooks';
-import { setMode, setCurrentScenario } from 'store/features/analysis/scenarios';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { setMode, setCurrentScenario, scenarios } from 'store/features/analysis/scenarios';
 import { useInfiniteScenarios, useCreateScenario } from 'hooks/scenarios';
 import useBottomScrollListener from 'hooks/scroll';
 
@@ -21,11 +20,13 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
   scrollref,
 }) => {
   const dispatch = useAppDispatch();
-  const { query } = useRouter();
-  const params = query ? { sort: query.sortBy as string } : null;
-  const { fetchNextPage, hasNextPage, data, isLoading, error } = useInfiniteScenarios(params);
+  const { sort, searchTerm } = useAppSelector(scenarios);
+  const { fetchNextPage, hasNextPage, data, isLoading, error } = useInfiniteScenarios({
+    sort: `-${sort}` as string,
+    searchTerm,
+  });
 
-  const scenarios: Scenario[] = useMemo(() => {
+  const scenariosList: Scenario[] = useMemo(() => {
     const { pages } = data || {};
     return pages?.reduce((acc, { data }) => acc.concat(data?.data), []);
   }, [data]);
@@ -70,7 +71,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
       {isLoading && <p>Loading scenarios...</p>}
       {!isLoading && data && (
         <div className="flex-1 z-10 pb-4">
-          <ScenariosList data={scenarios} />
+          <ScenariosList data={scenariosList} />
         </div>
       )}
       {!isLoading && error && (
@@ -92,8 +93,8 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
           <PlusIcon className="-ml-5 mr-3 h-5 w-5" aria-hidden="true" />
           Create a new scenario
         </Button>
-        {!scenarios ||
-          (scenarios.length === 0 && (
+        {!scenariosList ||
+          (scenariosList.length === 0 && (
             <div className="p-7 space-y-8 text-center absolute z-20 bg-white">
               <p className="text-sm">
                 Scenarios let you simulate changes in sourcing to evaluate how they would affect

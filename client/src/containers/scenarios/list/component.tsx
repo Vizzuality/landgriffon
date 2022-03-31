@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useRouter } from 'next/router';
 import { RadioGroup } from '@headlessui/react';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
@@ -30,24 +29,9 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
   const { currentScenario } = useAppSelector(scenarios);
   const dispatch = useAppDispatch();
 
-  const router = useRouter();
-  const { query } = router;
-  const { scenario } = query;
-
   const [selected, setSelected] = useState(null);
 
-  const handleOnChange = useCallback(
-    ({ id }) => {
-      router.push({
-        pathname: '/analysis',
-        query: {
-          ...router.query,
-          scenario: id,
-        },
-      });
-    },
-    [router],
-  );
+  const handleOnChange = useCallback(({ id }) => dispatch(setCurrentScenario(id)), [dispatch]);
 
   useEffect(() => {
     if (data && !currentScenario) {
@@ -61,12 +45,6 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
       }
     }
   }, [data, currentScenario, dispatch]);
-
-  useEffect(() => {
-    if (scenario) {
-      dispatch(setCurrentScenario(scenario as string));
-    }
-  }, [dispatch, scenario]);
 
   return (
     <RadioGroup value={selected} onChange={handleOnChange}>
@@ -82,6 +60,7 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
               key={item.id}
               data={item}
               isSelected={isScenarioSelected(item.id, currentScenario)}
+              onClick={setSelected}
             />
           );
         })}

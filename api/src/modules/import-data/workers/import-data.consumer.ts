@@ -11,8 +11,9 @@ import { ImportDataService } from 'modules/import-data/import-data.service';
 import { ExcelImportJob } from 'modules/import-data/workers/import-data.producer';
 import { TasksService } from 'modules/tasks/tasks.service';
 import { Task, TASK_STATUS } from 'modules/tasks/task.entity';
+import { importQueueName } from 'modules/import-data/workers/import-queue.name';
 
-@Processor('excel-import')
+@Processor(importQueueName)
 export class ImportDataConsumer {
   logger: Logger = new Logger(ImportDataService.name);
   constructor(

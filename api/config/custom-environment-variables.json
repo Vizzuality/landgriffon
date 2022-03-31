@@ -23,7 +23,7 @@
   "redis": {
     "host": "REDIS_HOST",
     "port": "REDIS_PORT",
-    "importQueue": "REDIS_IMPORT_QUEUE_NAME"
+    "importQueueName": "REDIS_IMPORT_QUEUE_NAME"
   },
   "geocodingCache": {
     "enabled": "GEOCODING_CACHE_ENABLED",

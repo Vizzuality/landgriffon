@@ -22,7 +22,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
   const dispatch = useAppDispatch();
   const { sort, searchTerm } = useAppSelector(scenarios);
   const { fetchNextPage, hasNextPage, data, isLoading, error } = useInfiniteScenarios({
-    sort: `-${sort}` as string,
+    sort: sort as string,
     searchTerm,
   });
 

@@ -25,7 +25,7 @@ import { useDispatch } from 'react-redux';
 const SORT_OPTIONS = [
   {
     label: 'Recent',
-    value: 'updatedAt',
+    value: '-updatedAt',
   },
   {
     label: 'Title',

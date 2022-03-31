@@ -28,6 +28,7 @@ type ResponseDataScenario = UseQueryResult<Scenario>;
 type QueryParams = {
   sort?: string;
   pageParam?: number;
+  searchTerm?: string;
 };
 
 const DEFAULT_QUERY_OPTIONS = {
@@ -73,13 +74,15 @@ export function useScenarios(): ResponseData {
 }
 
 export function useInfiniteScenarios(QueryParams: QueryParams): ResponseInfiniteData {
+  const { searchTerm, ...restParams } = QueryParams;
   const fetchScenarios = ({ pageParam = 1 }) =>
     apiService.request({
       method: 'GET',
       url: '/scenarios',
       params: {
         'page[number]': pageParam,
-        ...QueryParams,
+        ...(!!searchTerm && { 'filter[title]': searchTerm }),
+        ...restParams,
       },
     });
 

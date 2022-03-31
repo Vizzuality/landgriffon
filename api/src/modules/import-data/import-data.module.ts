@@ -18,9 +18,7 @@ import { ImportDataProducer } from 'modules/import-data/workers/import-data.prod
 import { ImportDataConsumer } from 'modules/import-data/workers/import-data.consumer';
 import { ImportDataService } from 'modules/import-data/import-data.service';
 import { TasksModule } from 'modules/tasks/tasks.module';
-import * as config from 'config';
-
-const importQueueName: string = config.get('redis.importQueueName');
+import { importQueueName } from 'modules/import-data/workers/import-queue.name';
 
 @Module({
   imports: [

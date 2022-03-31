@@ -1,14 +1,12 @@
 import { InjectQueue } from '@nestjs/bull';
 import { Injectable } from '@nestjs/common';
 import { Queue } from 'bull';
-import * as config from 'config';
+import { importQueueName } from 'modules/import-data/workers/import-queue.name';
 
 export interface ExcelImportJob {
   xlsxFileData: Express.Multer.File;
   taskId: string;
 }
-
-const importQueueName: string = config.get('redis.importQueueName');
 
 @Injectable()
 export class ImportDataProducer {

@@ -12,6 +12,10 @@ import { usePopper } from 'react-popper';
 import { setMode } from 'store/features/analysis/scenarios';
 import { useAppDispatch } from 'store/hooks';
 
+import toast from 'react-hot-toast';
+
+import type { ErrorResponse } from 'types';
+
 type ScenariosItemProps = {
   data: Scenario;
   isComparisonAvailable: boolean;
@@ -49,7 +53,15 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
   const deleteScenario = useDeleteScenario();
 
   const handleDelete = useCallback(() => {
-    deleteScenario.mutate(data.id);
+    deleteScenario.mutate(data.id, {
+      onSuccess: () => {
+        toast.success('Scenario succesfully deleted.');
+      },
+      onError: (error: ErrorResponse) => {
+        const { errors } = error.response?.data;
+        errors.forEach(({ title }) => toast.error(title));
+      },
+    });
   }, [deleteScenario, data]);
 
   const handleShare = useCallback(() => {
@@ -155,7 +167,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                                   Delete
                                 </button>
                               </div>
-                              <div>
+                              {/* <div>
                                 <button
                                   type="button"
                                   className={classNames('text-gray-700', DROPDOWN_ITEM_CLASSNAME)}
@@ -163,7 +175,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                                 >
                                   Shared
                                 </button>
-                              </div>
+                              </div> */}
                             </div>
                           </Transition>
                         </Popover.Panel>,

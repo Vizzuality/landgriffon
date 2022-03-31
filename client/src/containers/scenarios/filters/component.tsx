@@ -1,14 +1,20 @@
-import { FC, Fragment, useCallback, useEffect, useState } from 'react';
+import {
+  FC,
+  // Fragment,
+  useCallback,
+  useEffect,
+  // useState
+} from 'react';
 import { useRouter } from 'next/router';
 import { SearchIcon } from '@heroicons/react/solid';
-import { Transition } from '@headlessui/react';
+// import { Transition } from '@headlessui/react';
 import { useDebounce } from '@react-hook/debounce';
 
-import classNames from 'classnames';
+// import classNames from 'classnames';
 import Select from 'components/select';
-import { useAppSelector } from 'store/hooks';
-import { scenarios, setScenarioFilter } from 'store/features/analysis/scenarios';
-import { useDispatch } from 'react-redux';
+// import { useAppSelector } from 'store/hooks';
+// import { scenarios, setScenarioFilter } from 'store/features/analysis/scenarios';
+// import { useDispatch } from 'react-redux';
 
 const SORT_OPTIONS = [
   {
@@ -21,32 +27,32 @@ const SORT_OPTIONS = [
   },
 ];
 
-const filtersItems = [
-  {
-    name: 'All',
-    filter: 'all',
-  },
-  {
-    name: 'My scenarios',
-    filter: 'private',
-  },
-  {
-    name: 'Shared',
-    filter: 'public',
-  },
-];
+// const filtersItems = [
+//   {
+//     name: 'All',
+//     filter: 'all',
+//   },
+//   {
+//     name: 'My scenarios',
+//     filter: 'private',
+//   },
+//   {
+//     name: 'Shared',
+//     filter: 'public',
+//   },
+// ];
 
 const ScenariosFilters: FC = () => {
-  const dispatch = useDispatch();
-  const handleFilter = useCallback((value) => dispatch(setScenarioFilter(value)), [dispatch]);
+  // const dispatch = useDispatch();
+  // const handleFilter = useCallback((value) => dispatch(setScenarioFilter(value)), [dispatch]);
 
   const router = useRouter();
 
   const { query } = router;
-  const [isSearchEnable, setSearchEnable] = useState(false);
-  const { filter } = useAppSelector(scenarios);
+  // const [isSearchEnable, setSearchEnable] = useState(false);
+  // const { filter } = useAppSelector(scenarios);
   const [term, setTerm] = useDebounce(null, 250); // wait 250ms before set term
-  const toggleSearch = useCallback(() => setSearchEnable(!isSearchEnable), [isSearchEnable]);
+  // const toggleSearch = useCallback(() => setSearchEnable(!isSearchEnable), [isSearchEnable]);
   const handleSort = useCallback(
     (selected) =>
       router.replace({

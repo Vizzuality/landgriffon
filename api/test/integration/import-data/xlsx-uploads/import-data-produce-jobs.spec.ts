@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from 'app.module';
 import { ImportDataModule } from 'modules/import-data/import-data.module';
 import { getQueueToken } from '@nestjs/bull';
-import { importQueueName } from 'modules/import-data/workers/import-data.producer';
+import { importQueueName } from 'modules/import-data/workers/import-queue.name';
 import { ImportDataService } from 'modules/import-data/import-data.service';
 import { TasksRepository } from 'modules/tasks/tasks.repository';
 import { Task } from 'modules/tasks/task.entity';
@@ -22,11 +22,11 @@ describe('XLSX Upload Feature Job Producer Tests', () => {
     moduleFixture = await Test.createTestingModule({
       imports: [AppModule, ImportDataModule],
     })
-      .overrideProvider(getQueueToken(importQueueName.value))
+      .overrideProvider(getQueueToken(importQueueName))
       .useValue(fakeQueue)
       .compile();
 
-    queue = moduleFixture.get(getQueueToken(importQueueName.value));
+    queue = moduleFixture.get(getQueueToken(importQueueName));
     importDataService = moduleFixture.get(ImportDataService);
     taskRepository = moduleFixture.get(TasksRepository);
   };

@@ -52,11 +52,11 @@ export class GoogleMapsGeocoder implements GeocoderInterface {
       );
     }
     // TODO: Improve validation of possible multiple results: Address can be not part of the provided Country.
-    if (response.data.results.length > 1) {
-      throw new GeoCodingError(
-        `Multiple results found for address: ${args.address}. Please make sure your Address info is correct`,
-      );
-    }
+    // if (response.data.results.length > 1) {
+    //   throw new GeoCodingError(
+    //     `Multiple results found for address: ${args.address}. Please make sure your Address info is correct`,
+    //   );
+    // }
     return response.data;
   }
 

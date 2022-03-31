@@ -441,70 +441,77 @@ export class H3DataRepository extends Repository<H3Data> {
     supplierIds?: string[],
     locationType?: LOCATION_TYPES_PARAMS[],
   ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
-    const queryBuilder: SelectQueryBuilder<any> = getManager()
+    const selectQueryBuilder: SelectQueryBuilder<any> = getManager()
       .createQueryBuilder()
       .select(`h3_to_parent((h3data.h3index), ${resolution})`, `h`)
       .addSelect(`sum(h3data.value)`, `v`)
       .from(SourcingLocation, 'sl')
       .innerJoin(SourcingRecord, 'sr', 'sl.id = sr.sourcingLocationId')
       .innerJoin(IndicatorRecord, 'ir', 'sr.id = ir.sourcingRecordId')
-      .innerJoin('material_to_h3', 'mth', 'mth.materialId = sl.materialId');
-
-    const query: string = queryBuilder.getSql();
-
-    const sqlQueryParams: any[] = [year, indicator.id];
-
-    let sqlQuery: string =
-      query +
-      `, LATERAL(SELECT h3index, ir.value/ir.scaler * value as value FROM get_h3_data_over_georegion(sl."geoRegionId", mth."h3DataId")) h3data
-      WHERE sr.year=$1
-      AND sl."scenarioInterventionId" IS NULL
-      AND sl."interventionType" IS NULL
-      AND ir."indicatorId"=$2`;
-
-    let numberOfParams: number = 2;
+      .innerJoin('material_to_h3', 'mth', 'mth.materialId = sl.materialId')
+      .where('sr.year = :year', { year })
+      .andWhere('sl."scenarioInterventionId" IS NULL')
+      .andWhere('sl."interventionType" IS NULL')
+      .andWhere('ir."indicatorId" = :indicatorId', {
+        indicatorId: indicator.id,
+      });
 
     if (materialIds) {
-      sqlQuery =
-        sqlQuery + ` AND sl."materialId" = ANY ($${numberOfParams + 1})`;
-      sqlQueryParams.push(materialIds);
-      numberOfParams += 1;
+      selectQueryBuilder.andWhere('sl.material IN (:...materialIds)', {
+        materialIds,
+      });
     }
 
     if (supplierIds) {
-      sqlQuery =
-        sqlQuery +
-        ` AND (sl."t1SupplierId" = ANY ($${
-          numberOfParams + 1
-        }) OR sl."producerId" = ANY ($${numberOfParams + 1}))`;
-      sqlQueryParams.push(supplierIds);
-      numberOfParams += 1;
+      selectQueryBuilder.andWhere(
+        new Brackets((qb: WhereExpressionBuilder) => {
+          qb.where('sl.t1SupplierId IN (:...supplierIds)', {
+            supplierIds,
+          }).orWhere('sl.producerId IN (:...supplierIds)', { supplierIds });
+        }),
+      );
     }
-
     if (originIds) {
-      sqlQuery =
-        sqlQuery + ` AND sl."adminRegionId" = ANY ($${numberOfParams + 1})`;
-      sqlQueryParams.push(originIds);
-      numberOfParams += 1;
+      selectQueryBuilder.andWhere('sl.adminRegionId IN (:...originIds)', {
+        originIds,
+      });
     }
-
-    sqlQuery = sqlQuery + ` GROUP by h`;
-
     if (locationType) {
       const sourcingLocationTypes: string[] = locationType.map(
         (el: LOCATION_TYPES_PARAMS) => {
           return el.replace(/-/g, ' ');
         },
       );
-      query.andWhere('sl.locationType IN (:...sourcingLocationTypes)', {
+      selectQueryBuilder.andWhere('sl.locationType IN (:...sourcingLocationTypes)', {
         sourcingLocationTypes,
       });
     }
 
+    selectQueryBuilder.groupBy('h');
+
+    // This query has everything except the LATERAL join not supported by typeorm, so we are getting the raw SQL string to manually insert the LATERAL string into it
+    const [selectQuery, selectQueryParams]: [string, any[]] =
+      selectQueryBuilder.getQueryAndParameters();
+
+    // Finding the position (index of a string) to insert LATERAL string - right before the first WHERE caluse
+    const positionToInsertLateral: number = selectQuery.indexOf('WHERE');
+
+    // The LATERAL SQL string that needs to be added to query
+    const sqlStringForLateral: string = `, LATERAL(SELECT h3index, ir.value/ir.scaler * value as value FROM get_h3_data_over_georegion(sl."geoRegionId", mth."h3DataId")) h3data `;
+
+    // Adding LATERAL SQL string to the main SQL string
+    const sqlQuery: string = [
+      selectQuery.slice(0, positionToInsertLateral),
+      sqlStringForLateral,
+      selectQuery.slice(positionToInsertLateral),
+    ].join('');
+
+
+
     const tmpTableName: string = H3DataRepository.generateRandomTableName();
     await getManager().query(
       `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${sqlQuery});`,
-      sqlQueryParams,
+      selectQueryParams,
     );
     const riskMap: any = await getManager().query(
       `SELECT *

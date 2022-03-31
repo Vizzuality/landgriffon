@@ -5,16 +5,9 @@ import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { scenarios, setCurrentScenario } from 'store/features/analysis/scenarios';
 
 import ScenarioItem from 'containers/scenarios/item';
+import { ACTUAL_DATA } from '../constants';
 
 import type { Scenario, Scenarios } from '../types';
-
-/**
- * Actual data to the data response
- */
-const ACTUAL_DATA: Scenario = {
-  id: 'actual-data', // reserved id only for actual-data
-  title: 'Actual data',
-};
 
 type ScenariosListProps = {
   data: Scenarios;
@@ -38,7 +31,7 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
       dispatch(setCurrentScenario(ACTUAL_DATA.id as string)); // first option of the list by default
     }
     if (data && currentScenario) {
-      if (currentScenario === 'actual-data') {
+      if (currentScenario === ACTUAL_DATA.id) {
         setSelected(ACTUAL_DATA);
       } else {
         setSelected(data.find(({ id }) => isScenarioSelected(id, currentScenario)));

@@ -3,18 +3,19 @@ import { format } from 'date-fns';
 import { Popover, RadioGroup, Switch, Transition } from '@headlessui/react';
 import { DotsVerticalIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
+import toast from 'react-hot-toast';
+import { createPortal } from 'react-dom';
+import { usePopper } from 'react-popper';
+
+import { setCurrentScenario, setMode, scenarios } from 'store/features/analysis/scenarios';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
 
 import ScenariosComparison from 'containers/scenarios/comparison';
 import { useDeleteScenario } from 'hooks/scenarios';
-import type { Scenario } from '../types';
-import { createPortal } from 'react-dom';
-import { usePopper } from 'react-popper';
-import { setCurrentScenario, setMode } from 'store/features/analysis/scenarios';
-import { useAppDispatch } from 'store/hooks';
-
-import toast from 'react-hot-toast';
+import { ACTUAL_DATA } from '../constants';
 
 import type { ErrorResponse } from 'types';
+import type { Scenario } from '../types';
 
 type ScenariosItemProps = {
   data: Scenario;
@@ -29,6 +30,7 @@ const DROPDOWN_ITEM_CLASSNAME =
 
 const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) => {
   const dispatch = useAppDispatch();
+  const { currentScenario } = useAppSelector(scenarios);
   const [referenceElement, setReferenceElement] = useState(null);
   const [popperElement, setPopperElement] = useState(null);
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
@@ -58,6 +60,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
   const handleDelete = useCallback(() => {
     deleteScenario.mutate(data.id, {
       onSuccess: () => {
+        if (currentScenario === data.id) dispatch(setCurrentScenario(ACTUAL_DATA.id));
         toast.success('Scenario succesfully deleted.');
       },
       onError: (error: ErrorResponse) => {
@@ -65,7 +68,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
         errors.forEach(({ title }) => toast.error(title));
       },
     });
-  }, [deleteScenario, data]);
+  }, [deleteScenario, data.id, currentScenario, dispatch]);
 
   // const handleShare = useCallback(() => {
   //   console.log('published scenarios');
@@ -106,10 +109,10 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                 <div className="flex-1 py-4 pr-4 truncate">
                   <h2 className="text-sm font-medium text-gray-900 truncate">{data.title}</h2>
                   <div className="text-sm text-gray-600">
-                    {data.id === 'actual-data' && (
+                    {data.id === ACTUAL_DATA.id && (
                       <span className="text-green-700">Based on your uploaded data</span>
                     )}
-                    {data.id !== 'actual-data' &&
+                    {data.id !== ACTUAL_DATA.id &&
                       data.updatedAt &&
                       `Last edited ${format(new Date(data.updatedAt), 'yyyy/MM/dd')}`}
                   </div>
@@ -117,7 +120,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
               </>
             )}
           </RadioGroup.Option>
-          {data.id !== 'actual-data' && (
+          {data.id !== ACTUAL_DATA.id && (
             <div className="flex-shrink-0 pr-2">
               <Popover as="div" className="relative inline-block text-left">
                 {({ open }) => (

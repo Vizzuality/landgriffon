@@ -12,7 +12,7 @@ export type ScenariosState = {
   interventionsStep: 1 | 2;
   searchTerm: string;
   filter: 'all' | 'private' | 'public';
-  sort: 'updatedAt' | 'title';
+  sort: '-updatedAt' | 'title';
   pagination: {
     page: number;
     size: number;
@@ -31,7 +31,7 @@ export const initialState: ScenariosState = {
   interventionsStep: 1,
   searchTerm: null,
   filter: 'all',
-  sort: 'updatedAt',
+  sort: '-updatedAt',
   pagination: {
     page: 1,
     size: 300,

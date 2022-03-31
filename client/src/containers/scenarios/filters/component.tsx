@@ -2,19 +2,25 @@ import {
   FC,
   // Fragment,
   useCallback,
-  useEffect,
-  // useState
+  // useEffect,
+  // useState,
+  useMemo,
 } from 'react';
-import { useRouter } from 'next/router';
 import { SearchIcon } from '@heroicons/react/solid';
 // import { Transition } from '@headlessui/react';
-import { useDebounce } from '@react-hook/debounce';
 
 // import classNames from 'classnames';
 import Select from 'components/select';
 // import { useAppSelector } from 'store/hooks';
-// import { scenarios, setScenarioFilter } from 'store/features/analysis/scenarios';
 // import { useDispatch } from 'react-redux';
+import { useAppSelector } from 'store/hooks';
+import {
+  scenarios,
+  // setScenarioFilter,
+  setSort,
+  setSearchTerm,
+} from 'store/features/analysis/scenarios';
+import { useDispatch } from 'react-redux';
 
 const SORT_OPTIONS = [
   {
@@ -43,41 +49,23 @@ const SORT_OPTIONS = [
 // ];
 
 const ScenariosFilters: FC = () => {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   // const handleFilter = useCallback((value) => dispatch(setScenarioFilter(value)), [dispatch]);
-
-  const router = useRouter();
-
-  const { query } = router;
   // const [isSearchEnable, setSearchEnable] = useState(false);
-  // const { filter } = useAppSelector(scenarios);
-  const [term, setTerm] = useDebounce(null, 250); // wait 250ms before set term
   // const toggleSearch = useCallback(() => setSearchEnable(!isSearchEnable), [isSearchEnable]);
-  const handleSort = useCallback(
-    (selected) =>
-      router.replace({
-        pathname: '/analysis',
-        query: {
-          ...query,
-          sortBy: selected.value,
-        },
-      }),
-    [],
+
+  const {
+    // filter,
+    sort,
+  } = useAppSelector(scenarios);
+
+  const handleSort = useCallback((selected) => dispatch(setSort(selected.value)), [dispatch]);
+  const handleSearchByTerm = useCallback(
+    (event) => dispatch(setSearchTerm(event.currentTarget.value)),
+    [dispatch],
   );
 
-  const handleSearchByTerm = useCallback((event) => setTerm(event.currentTarget.value), []);
-
-  useEffect(() => {
-    if (term) {
-      router.replace({
-        pathname: '/analysis',
-        query: {
-          ...query,
-          term,
-        },
-      });
-    }
-  }, [term]);
+  const currentSort = useMemo(() => SORT_OPTIONS.find(({ value }) => value === sort), [sort]);
 
   return (
     <div className="flex items-center">
@@ -128,7 +116,7 @@ const ScenariosFilters: FC = () => {
       <div className="absolute right-0 bg-white z-10 pl-5">
         <Select
           theme="default-bordernone"
-          current={SORT_OPTIONS[0]}
+          current={currentSort}
           options={SORT_OPTIONS}
           onChange={handleSort}
         />

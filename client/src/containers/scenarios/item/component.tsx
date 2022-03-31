@@ -9,7 +9,7 @@ import { useDeleteScenario } from 'hooks/scenarios';
 import type { Scenario } from '../types';
 import { createPortal } from 'react-dom';
 import { usePopper } from 'react-popper';
-import { setMode } from 'store/features/analysis/scenarios';
+import { setCurrentScenario, setMode } from 'store/features/analysis/scenarios';
 import { useAppDispatch } from 'store/hooks';
 
 import toast from 'react-hot-toast';
@@ -48,7 +48,10 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
   const { data, isSelected, isComparisonAvailable } = props;
   const [isComparisonEnabled, setComparisonEnabled] = useState<boolean>(false);
 
-  const handleEdit = useCallback(() => dispatch(setMode('edit')), [dispatch]);
+  const handleEdit = useCallback(() => {
+    dispatch(setCurrentScenario(data.id));
+    dispatch(setMode('edit'));
+  }, [dispatch, data.id]);
 
   const deleteScenario = useDeleteScenario();
 
@@ -64,9 +67,9 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
     });
   }, [deleteScenario, data]);
 
-  const handleShare = useCallback(() => {
-    console.log('published scenarios');
-  }, []);
+  // const handleShare = useCallback(() => {
+  //   console.log('published scenarios');
+  // }, []);
 
   useEffect(() => {
     // Disabling comparison when is not selected
@@ -83,7 +86,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
       >
         <div className="flex items-center">
           <RadioGroup.Option
-            key={data.title}
+            key={data.id}
             value={data}
             className="flex justify-between flex-1 truncate items-top"
           >

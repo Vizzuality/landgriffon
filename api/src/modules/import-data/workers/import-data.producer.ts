@@ -2,6 +2,7 @@ import { InjectQueue } from '@nestjs/bull';
 import { Injectable } from '@nestjs/common';
 import { Queue } from 'bull';
 import { TinyTypeOf } from 'tiny-types';
+import * as config from 'config';
 
 export interface ExcelImportJob {
   xlsxFileData: Express.Multer.File;
@@ -10,14 +11,12 @@ export interface ExcelImportJob {
 
 export class ImportQueueName extends TinyTypeOf<string>() {}
 
-export const importQueueName: ImportQueueName = new ImportQueueName(
-  'excel-import',
-);
+const importQueueName: string = config.get('redis.importQueueName');
 
 @Injectable()
 export class ImportDataProducer {
   constructor(
-    @InjectQueue(importQueueName.value) private readonly importQueue: Queue,
+    @InjectQueue(importQueueName) private readonly importQueue: Queue,
   ) {}
 
   async addExcelImportJob(

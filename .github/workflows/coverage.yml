@@ -25,6 +25,7 @@ jobs:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: API Tests
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          timeoutSeconds: 1200
 
       - name: Download API coverage report
         uses: dawidd6/action-download-artifact@v2

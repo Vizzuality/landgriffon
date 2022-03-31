@@ -39,7 +39,7 @@ const createCallback = (
 
 function useBottomScrollListener<T extends HTMLDivElement>(
   onBottom: () => void,
-  scrollRef?: MutableRefObject<HTMLDivElement | null>,
+  scrollref?: MutableRefObject<HTMLDivElement | null>,
   options?: {
     offset?: number;
     debounce?: number;
@@ -63,7 +63,7 @@ function useBottomScrollListener<T extends HTMLDivElement>(
   );
 
   const noRef = useRef<T>(null);
-  const containerRef = scrollRef || noRef;
+  const containerRef = scrollref || noRef;
   const handleOnScroll = useCallback(() => {
     if (containerRef.current != null) {
       const scrollNode = containerRef.current;

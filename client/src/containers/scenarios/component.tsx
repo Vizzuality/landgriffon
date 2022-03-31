@@ -17,8 +17,8 @@ import Button from 'components/button';
 import type { ErrorResponse } from 'types';
 import type { Scenario } from './types';
 
-const ScenariosComponent: React.FC<{ scrollRef?: MutableRefObject<HTMLDivElement> }> = ({
-  scrollRef,
+const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement> }> = ({
+  scrollref,
 }) => {
   const dispatch = useAppDispatch();
   const { query } = useRouter();
@@ -32,7 +32,7 @@ const ScenariosComponent: React.FC<{ scrollRef?: MutableRefObject<HTMLDivElement
 
   useBottomScrollListener(() => {
     if (hasNextPage) fetchNextPage();
-  }, scrollRef);
+  }, scrollref);
 
   const createScenario = useCreateScenario();
 

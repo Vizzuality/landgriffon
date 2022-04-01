@@ -60,7 +60,7 @@ const InterventionForm: FC = () => {
   return (
     <>
       <Steps steps={steps} current={interventionsStep} className="mb-10 z-20" />
-      <div className="mt-12">
+      <div className="space-y-8 mt-16">
         {interventionsStep === 1 && <Step1 />}
         {interventionsStep === 2 && <Step2 />}
       </div>

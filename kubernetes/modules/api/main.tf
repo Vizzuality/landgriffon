@@ -177,11 +177,11 @@ resource "kubernetes_deployment" "api_deployment" {
           resources {
             limits = {
               cpu    = "1"
-              memory = "2Gi"
+              memory = "4Gi"
             }
             requests = {
               cpu    = "500m"
-              memory = "2Gi"
+              memory = "4Gi"
             }
           }
 

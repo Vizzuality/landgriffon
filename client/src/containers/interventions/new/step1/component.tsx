@@ -1,9 +1,18 @@
 import { useCallback, useMemo, FC } from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { isEmpty } from 'lodash';
 
 // hooks
-import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { useAppDispatch } from 'store/hooks';
 import { useBusinessUnits } from 'hooks/business-units';
 import { setSubContentCollapsed } from 'store/features/analysis/ui';
+import {
+  setNewInterventionStep,
+  setNewInterventionData,
+  resetInterventionData,
+} from 'store/features/analysis/scenarios';
 
 // components
 import Input from 'components/forms/input';
@@ -17,20 +26,8 @@ import Materials from 'containers/interventions/smart-filters/materials/componen
 import Suppliers from 'containers/interventions/smart-filters/suppliers/component';
 import OriginRegions from 'containers/interventions/smart-filters/origin-regions/component';
 
-// hooks
-import { setNewInterventionStep, setNewInterventionData } from 'store/features/analysis/scenarios';
-
-// form validation
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-
-import { isArray, isEmpty } from 'lodash';
-
 // types
 import type { SelectOptions } from 'components/select/types';
-
-//import type { AnalysisState } from 'store/features/analysis';
 import { useInterventionTypes } from 'hooks/analysis';
 
 const schemaValidation = yup.object({
@@ -59,7 +56,7 @@ const Step1: FC = () => {
         label: title,
         value: slug,
       })),
-    [],
+    [interventionTypes],
   );
 
   const { data: businesses, isLoading: isLoadingBusinesses } = useBusinessUnits();
@@ -98,7 +95,7 @@ const Step1: FC = () => {
 
   const handleDropdown = useCallback(
     (id, values) => {
-      const valuesIds = isArray(values) ? values.map(({ value }) => value) : values;
+      const valuesIds = Array.isArray(values) ? values.map(({ value }) => value) : values;
       setValue(id, valuesIds);
       clearErrors(id);
     },
@@ -107,7 +104,8 @@ const Step1: FC = () => {
 
   const handleCancel = useCallback(() => {
     dispatch(setSubContentCollapsed(true));
-    dispatch(setNewInterventionStep(2));
+    dispatch(setNewInterventionStep(1));
+    dispatch(resetInterventionData());
   }, [dispatch]);
 
   return (

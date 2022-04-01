@@ -138,6 +138,10 @@ export const analysisScenariosSlice = createSlice({
       ...state,
       newInterventionData: action.payload,
     }),
+    resetInterventionData: (state) => ({
+      ...state,
+      newInterventionData: initialState.newInterventionData,
+    }),
   },
 });
 
@@ -152,6 +156,7 @@ export const {
   setNewInterventionStep,
   setSearchTerm,
   setNewInterventionData,
+  resetInterventionData,
 } = analysisScenariosSlice.actions;
 
 export const scenarios = (state: FeatureState) => state['analysis/scenarios'];

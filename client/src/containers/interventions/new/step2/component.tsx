@@ -14,13 +14,11 @@ import SupplierImpact from './supplier-impact';
 
 import { analysisFilters } from 'store/features/analysis/filters';
 import { setSubContentCollapsed } from 'store/features/analysis/ui';
-import {
-  scenarios,
-  setNewInterventionData,
-  setNewInterventionStep,
-} from 'store/features/analysis/scenarios';
+import { scenarios, setNewInterventionStep } from 'store/features/analysis/scenarios';
 
 import { useCreateNewIntervention } from 'hooks/interventions';
+
+import toast from 'react-hot-toast';
 
 const getSchemaValidation = (interventionType) => {
   switch (interventionType) {
@@ -74,6 +72,10 @@ const Step2: FC = () => {
     resolver: yupResolver(schemaValidation),
   });
 
+  // const {
+  //   getValues,
+  // } = methods;
+
   const { newInterventionData } = useAppSelector(scenarios);
 
   const createIntervention = useCreateNewIntervention();
@@ -85,6 +87,10 @@ const Step2: FC = () => {
         interventionDescription: newInterventionData.interventionDescription,
         percentage: newInterventionData.percentage,
         materialsIds: newInterventionData.materialsIds,
+        businessUnitsIds: newInterventionData.businessUnitsIds,
+        startYear: newInterventionData.endYear,
+        endYear: newInterventionData.endYear,
+        type: newInterventionData.type,
         suppliersIds: newInterventionData.suppliersIds,
         adminRegionsIds: newInterventionData.adminRegionsIds,
         newMaterialTonnageRatio: values.newMaterialTonnageRatio,
@@ -102,17 +108,16 @@ const Step2: FC = () => {
         },
       };
 
-      dispatch(setNewInterventionData(values));
       createIntervention.mutate(parsedData, {
-        onSuccess: (data) => {
-          console.log('onsucces', data);
+        onSuccess: () => {
+          toast.success('A new intervention has been created');
         },
-        onError: (error, variables, context) => {
-          console.log('error', error, variables, context);
+        onError: () => {
+          toast.success('There has been a problem creating the intervemtion');
         },
       });
     },
-    [dispatch, currentScenario, newInterventionData, createIntervention],
+    [currentScenario, newInterventionData, createIntervention],
   );
 
   const handleCancel = useCallback(() => {

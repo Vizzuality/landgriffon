@@ -86,7 +86,7 @@ export class SourcingLocationsService extends AppBaseService<
     );
 
     return await this.sourcingLocationRepository.save(sourcingLocation, {
-      chunk: 5000,
+      chunk: 1000,
     });
   }
 

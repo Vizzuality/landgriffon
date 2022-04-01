@@ -1,4 +1,4 @@
-import { useMemo, useState, FC } from 'react';
+import { useState, FC } from 'react';
 
 // components
 import Checkbox from 'components/forms/checkbox';
@@ -10,59 +10,13 @@ import { useFormContext } from 'react-hook-form';
 
 // containers
 import InfoTooltip from 'containers/info-tooltip';
-
-interface Indicator {
-  name: string;
-  value: number;
-  description: string;
-  id: string;
-  metadata: unknown;
-  unit: string;
-}
+import { useInterventionsIndicators } from 'hooks/interventions';
 
 const Step2: FC = () => {
   const [landgriffonEstimates, setLandgriffonEstimates] = useState(false);
-  // const { data: indicators, isFetching, isFetched, error } = useIndicators();
+  // const { data: indicators, isFetching, isFetched, error } = useInterventionsIndicators();
 
-  const data = useMemo<Indicator[]>(
-    () => [
-      {
-        description:
-          'The different terrestrial ecosystems play an important role storing carbon on the below-ground plant organic matter and soil. Particularly forest, through growth of trees and the increase of soil carbon, contain a large part of the carbon stored on land.\n\nActivities such us land use change or deforestation may affect carbon storage producing a disturbance of the carbon pools that may be released into the atmosphere.\n\nCarbon emissions due to land use change would therefore be the release of carbon into the atmosphere driven by the change from forest into a specific agriculture commodity.',
-        id: 'GHG_LUC_T',
-        metadata: {},
-        name: 'Carbon emissions',
-        value: 0,
-        unit: 'tCO2e',
-      },
-      {
-        description: 'Deforestation risk due to ...',
-        id: 'DF_LUC_T',
-        metadata: {},
-        name: 'Deforestation risk',
-        value: 0,
-        unit: 'Ha',
-      },
-      {
-        description: 'With the Unsustainable water use indicator...',
-        id: 'UWU_T',
-        metadata: {},
-        name: 'Water withdrawal',
-        value: 0,
-        unit: '100m3',
-      },
-      {
-        description: 'Land use and land use change...',
-        id: 'BL_LUC_T',
-        metadata: {},
-        name: 'Biodiversity impact',
-        value: 0,
-        unit: 'PDF',
-      },
-    ],
-    [],
-  );
-
+  const { data } = useInterventionsIndicators();
   const indicatorsValues = () =>
     data.reduce(
       (obj, indicator) => ({

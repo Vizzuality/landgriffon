@@ -136,7 +136,10 @@ export const analysisScenariosSlice = createSlice({
       action: PayloadAction<ScenariosState['newInterventionData']>,
     ) => ({
       ...state,
-      newInterventionData: action.payload,
+      newInterventionData: {
+        ...state.newInterventionData,
+        ...action.payload,
+      },
     }),
     resetInterventionData: (state) => ({
       ...state,

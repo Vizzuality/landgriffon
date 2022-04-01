@@ -1,20 +1,15 @@
-import { useMemo, useCallback, useState, FC } from 'react';
+import { useMemo, useState, FC } from 'react';
 
 // components
 import Checkbox from 'components/forms/checkbox';
 import Input from 'components/forms/input';
 import Label from 'components/forms/label';
 
-import { setFilter } from 'store/features/analysis/filters';
-
 // hooks
 import { useFormContext } from 'react-hook-form';
 
 // containers
 import InfoTooltip from 'containers/info-tooltip';
-
-// utils
-import { NUMBER_FORMAT } from 'containers/analysis-visualization/constants';
 
 interface Indicator {
   name: string;
@@ -77,14 +72,7 @@ const Step2: FC = () => {
       {},
     );
 
-  const { register, setValue } = useFormContext();
-
-  const handleDropdown = useCallback(
-    (id: string, value: string | string[] | number) => {
-      setValue(id, value);
-    },
-    [setValue],
-  );
+  const { register } = useFormContext();
 
   return (
     <>
@@ -114,10 +102,8 @@ const Step2: FC = () => {
               <Input
                 {...register(indicator.id)}
                 type="number"
-                name={indicator.name}
-                id={indicator.name}
                 unit={indicator.unit}
-                defaultValue={landgriffonEstimates ? indicator.value : ''}
+                defaultValue={landgriffonEstimates ? indicator.value : null}
                 value={landgriffonEstimates ? indicator.value : indicatorsValues[indicator.name]}
                 disabled={landgriffonEstimates}
               />

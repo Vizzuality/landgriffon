@@ -22,8 +22,6 @@ import {
 
 import { useCreateNewIntervention } from 'hooks/interventions';
 
-import { isEmpty } from 'lodash';
-
 const getSchemaValidation = (interventionType) => {
   switch (interventionType) {
     case 'new-supplier-location':
@@ -68,6 +66,7 @@ const Step2: FC = () => {
   const dispatch = useAppDispatch();
   const filters = useAppSelector(analysisFilters);
   const { interventionType } = filters;
+  const { currentScenario } = useAppSelector(scenarios);
 
   const schemaValidation = useMemo(() => getSchemaValidation(interventionType), [interventionType]);
 
@@ -75,52 +74,45 @@ const Step2: FC = () => {
     resolver: yupResolver(schemaValidation),
   });
 
-  const {
-    getValues,
-    formState: { isValid, errors },
-  } = methods;
-
   const { newInterventionData } = useAppSelector(scenarios);
 
   const createIntervention = useCreateNewIntervention();
   const handleStepsSubmissons = useCallback(
     (values) => {
-      console.log(values, 'submission')
       const parsedData = {
-        newIndicatorCoefficients: {
-          ...newInterventionData,
-        },
+        scenarioId: currentScenario,
         title: newInterventionData.title,
         interventionDescription: newInterventionData.interventionDescription,
         percentage: newInterventionData.percentage,
         materialsIds: newInterventionData.materialsIds,
         suppliersIds: newInterventionData.suppliersIds,
         adminRegionsIds: newInterventionData.adminRegionsIds,
-        newMaterialTonnageRatio: newInterventionData.newMaterialTonnageRatio,
-        newMaterialId: newInterventionData.newMaterialId,
-        newT1SupplierId: newInterventionData.newT1SupplierId,
-        newProducerId: newInterventionData.newProducerId,
-        newLocationType: newInterventionData.newLocationType,
-        newLocationCountryInput: newInterventionData.newLocationCountryInput,
-        newLocationAddressInput: newInterventionData.newLocationAddressInput,
+        newMaterialTonnageRatio: values.newMaterialTonnageRatio,
+        newMaterialId: values.newMaterialId,
+        newT1SupplierId: values.newT1SupplierId,
+        newProducerId: values.newProducerId,
+        newLocationType: values.newLocationType,
+        newLocationCountryInput: values.newLocationCountryInput,
+        newLocationAddressInput: values.newLocationAddressInput,
+        newIndicatorCoefficients: {
+          DF_LUC_T: values.DF_LUC_T,
+          UWU_T: values.UWU_T,
+          BL_LUC_T: values.BL_LUC_T,
+          GHG_LUC_T: values.GHG_LUC_T,
+        },
       };
 
-      if (!isEmpty(errors)) {
-        dispatch(setNewInterventionData(values));
-        createIntervention.mutate(
-          { ...parsedData },
-          {
-            onSuccess: (data) => {
-              console.log('onsucces', data);
-            },
-            onError: (error, variables, context) => {
-              console.log('error', error, variables, context);
-            },
-          },
-        );
-      }
+      dispatch(setNewInterventionData(values));
+      createIntervention.mutate(parsedData, {
+        onSuccess: (data) => {
+          console.log('onsucces', data);
+        },
+        onError: (error, variables, context) => {
+          console.log('error', error, variables, context);
+        },
+      });
     },
-    [dispatch, isValid, newInterventionData, createIntervention],
+    [dispatch, currentScenario, newInterventionData, createIntervention],
   );
 
   const handleCancel = useCallback(() => {

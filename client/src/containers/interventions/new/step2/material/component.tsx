@@ -13,8 +13,7 @@ import { useMaterials } from 'hooks/materials';
 import { useFormContext } from 'react-hook-form';
 
 // types
-import { SelectOptions, SelectOption } from 'components/select/types';
-import { watch } from 'fs';
+import type { SelectOptions } from 'components/select/types';
 
 const Material = () => {
   const { data: materials, isLoading: isLoadingMaterials } = useMaterials();

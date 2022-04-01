@@ -20,7 +20,6 @@ import Label from 'components/forms/label';
 import Textarea from 'components/forms/textarea';
 import Select from 'components/select';
 import Button from 'components/button';
-import Hint from 'components/forms/hint';
 
 import Materials from 'containers/interventions/smart-filters/materials/component';
 import Suppliers from 'containers/interventions/smart-filters/suppliers/component';
@@ -144,7 +143,8 @@ const Step1: FC = () => {
             theme="inline-primary"
             unit="%"
             className="whitespace-nowrap"
-            error={!!errors?.endYear?.message}
+            error={errors?.endYear?.message}
+            showHint={!!errors?.endYear?.message}
           />
 
           <span className="text-gray-700">of</span>
@@ -209,7 +209,7 @@ const Step1: FC = () => {
               defaultValue=""
               placeholder="Insert year"
               aria-label="year"
-              error={!!errors?.endYear?.message}
+              error={errors?.endYear?.message}
             />
           </div>
         </div>
@@ -231,7 +231,11 @@ const Step1: FC = () => {
         </div>
       </div>
       <div className="pt-10 flex justify-between items-center">
-        {!isEmpty(errors) && <Hint error={true}>{errorMessage}</Hint>}
+        {!isEmpty(errors) && (
+          <div className="mt-2 text-sm text-red-600">
+            <p className="first-letter:uppercase">{errorMessage}</p>
+          </div>
+        )}
         <div className="flex justify-end flex-1">
           <Button type="button" onClick={handleCancel} theme="secondary">
             Cancel

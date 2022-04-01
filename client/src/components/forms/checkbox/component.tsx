@@ -10,10 +10,11 @@ const THEMES = {
 type CheckboxProps = React.InputHTMLAttributes<HTMLInputElement> & {
   theme?: 'default';
   error?: string;
+  showHint?: boolean;
 };
 
 const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
-  ({ className, theme = 'default', error, children, ...props }, ref) => (
+  ({ className, theme = 'default', error, showHint = true, children, ...props }, ref) => (
     <div className={classnames('mt-1', className)}>
       <div className="flex items-center">
         <input
@@ -28,7 +29,7 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
           {children}
         </label>
       </div>
-      {error && <Hint>{error}</Hint>}
+      {error && showHint && <Hint>{error}</Hint>}
     </div>
   ),
 );

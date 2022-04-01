@@ -10,10 +10,11 @@ const THEMES = {
 type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
   theme?: 'default';
   error?: string;
+  showHint?: boolean;
 };
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ className, theme = 'default', error, ...props }, ref) => (
+  ({ className, theme = 'default', showHint = true, error, ...props }, ref) => (
     <>
       <div className={classnames('mt-1', className)}>
         <textarea
@@ -24,7 +25,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           {...props}
         />
       </div>
-      {error && <Hint>{error}</Hint>}
+      {error && showHint && <Hint>{error}</Hint>}
     </>
   ),
 );

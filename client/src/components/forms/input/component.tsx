@@ -22,13 +22,13 @@ type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   // https://github.com/tailwindlabs/heroicons/issues/64#issuecomment-859168741
   icon?: (props: React.ComponentProps<'svg'>) => JSX.Element;
   unit?: string;
-  error?: boolean;
-  errorMessage?: string;
+  error?: string | boolean;
+  showHint?: boolean;
 };
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
-    { className, type = 'text', theme = 'default', icon, unit, error, errorMessage, ...props },
+    { className, type = 'text', theme = 'default', icon, unit, error, showHint = true, ...props },
     ref,
   ) => {
     const Icon = icon;
@@ -57,7 +57,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           />
           {unit && <span className={THEMES[theme].unit}>{unit}</span>}
         </div>
-        {errorMessage && <Hint>{errorMessage}</Hint>}
+        {error && showHint && <Hint>{error}</Hint>}
       </div>
     );
   },

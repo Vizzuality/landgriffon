@@ -144,7 +144,7 @@ const Step1: FC = () => {
             unit="%"
             className="whitespace-nowrap"
             error={errors?.endYear?.message}
-            showHint={!!errors?.endYear?.message}
+            showHint={false}
           />
 
           <span className="text-gray-700">of</span>

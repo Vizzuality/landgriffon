@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useState, FC } from 'react';
+import { useMemo, useCallback, FC } from 'react';
 
 // components
 import Input from 'components/forms/input';
@@ -15,7 +15,7 @@ import { useAdminRegionsTrees } from 'hooks/admin-regions';
 import { useFormContext } from 'react-hook-form';
 
 // types
-import { SelectOptions, SelectOption } from 'components/select/types';
+import type { SelectOptions } from 'components/select/types';
 
 const Supplier: FC = () => {
   const { data: suppliers, isLoading: isLoadingSuppliers } = useSuppliersTypes({
@@ -52,7 +52,7 @@ const Supplier: FC = () => {
     [locationTypes],
   );
 
-  const { data: countries } = useAdminRegionsTrees({ depth: 0 });
+  const { data: countries, isLoading: isLoadingCountries } = useAdminRegionsTrees({ depth: 0 });
   const optionsCountries: SelectOptions = useMemo(
     () =>
       countries.map(({ name, id }) => ({
@@ -61,35 +61,6 @@ const Supplier: FC = () => {
       })),
     [countries],
   );
-
-  const [formData, setFormData] = useState({
-    newT1SupplierId: suppliers[0]?.id,
-    newProducerId: producers[0]?.id,
-    newLocationType: locationTypes[0],
-    newLocationCountryInput: countries[0]?.id,
-  });
-
-  // const currentSupplier = useMemo<SelectOption>(
-  //   () => optionsSuppliers?.find((option) => option.value === formData.newT1SupplierId),
-  //   [optionsSuppliers, formData.newT1SupplierId],
-  // );
-
-  // const currentProducer = useMemo<SelectOption>(
-  //   () => optionsProducers?.find((option) => option.value === formData.newProducerId),
-  //   [optionsProducers, formData.newProducerId],
-  // );
-
-  // const currentLocationType = useMemo<SelectOption>(
-  //   () => optionsLocationTypes?.find((option) => option.value === formData.newLocationType),
-  //   [optionsLocationTypes, formData.newLocationType],
-  // );
-
-  // const currentCountry = useMemo<SelectOption>(
-  //   () => optionsCountries?.find((option) => option.value === formData.newLocationCountryInput),
-  //   [optionsCountries, formData.newLocationCountryInput],
-  // );
-
-  const isLoadingCountries = false;
 
   const { register, setValue, watch } = useFormContext();
 
@@ -181,8 +152,6 @@ const Supplier: FC = () => {
           {...register('newLocationAddressInput')}
           className="w-full"
           type="text"
-          name="address"
-          id="address"
           autoComplete="given-address"
         />
       </fieldset>

@@ -52,6 +52,8 @@ import { IndicatorRecordsService } from 'modules/indicator-records/indicator-rec
 import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { MaterialRepository } from 'modules/materials/material.repository';
+import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
+import { ScenariosModule } from 'modules/scenarios/scenarios.module';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -97,6 +99,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
   let app: INestApplication;
   let scenarioInterventionRepository: ScenarioInterventionRepository;
+  let scenarioRepository: ScenarioRepository;
   let sourcingLocationRepository: SourcingLocationRepository;
   let sourcingRecordRepository: SourcingRecordRepository;
   let adminRegionRepository: AdminRegionRepository;
@@ -112,6 +115,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       imports: [
         AppModule,
         ScenarioInterventionsModule,
+        ScenariosModule,
         SourcingLocationsModule,
         SourcingRecordsModule,
         IndicatorRecordsModule,
@@ -127,6 +131,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       moduleFixture.get<ScenarioInterventionRepository>(
         ScenarioInterventionRepository,
       );
+
+    scenarioRepository =
+      moduleFixture.get<ScenarioRepository>(ScenarioRepository);
     sourcingLocationRepository = moduleFixture.get<SourcingLocationRepository>(
       SourcingLocationRepository,
     );
@@ -157,6 +164,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     await sourcingLocationRepository.delete({});
     await sourcingRecordRepository.delete({});
     await scenarioInterventionRepository.delete({});
+    await scenarioRepository.delete({});
     await adminRegionRepository.delete({});
     await geoRegionRepository.delete({});
     await materialRepository.delete({});
@@ -1441,6 +1449,46 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(response.body.data.id).toEqual(scenarioIntervention.id);
       expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
+    });
+  });
+
+  describe('Cascade delete os Scenario', () => {
+    test('When Scenario is deleted, related interventions must be deleted as well', async () => {
+      const scenarioIntervention: ScenarioIntervention =
+        await createScenarioIntervention();
+
+      const sourcingLocation: SourcingLocation = await createSourcingLocation({
+        scenarioInterventionId: scenarioIntervention.id,
+        interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+      });
+
+      await createSourcingRecord({ sourcingLocationId: sourcingLocation.id });
+
+      const scenarios: Scenario[] = await scenarioRepository.find();
+      const interventions: ScenarioIntervention[] =
+        await scenarioInterventionRepository.find();
+      const sourcingLocations: SourcingLocation[] =
+        await sourcingLocationRepository.find();
+      const sourcingRecords: SourcingRecord[] =
+        await sourcingRecordRepository.find();
+
+      expect(scenarios.length).toBe(1);
+      expect(interventions.length).toBe(1);
+      expect(sourcingLocations.length).toBe(1);
+      expect(sourcingRecords.length).toBe(1);
+
+      await scenarioRepository.delete(scenarioIntervention.scenarioId);
+
+      const interventionsAfterDelete: ScenarioIntervention[] =
+        await scenarioInterventionRepository.find();
+      const sourcingLocationsAfterDelete: SourcingLocation[] =
+        await sourcingLocationRepository.find();
+      const sourcingRecordsAfterDelete: SourcingRecord[] =
+        await sourcingRecordRepository.find();
+
+      expect(interventionsAfterDelete.length).toBe(0);
+      expect(sourcingLocationsAfterDelete.length).toBe(0);
+      expect(sourcingRecordsAfterDelete.length).toBe(0);
     });
   });
 });

@@ -23,4 +23,5 @@ export type SelectProps = {
   onChange?: (selected: SelectOption) => unknown;
   onSearch?: (query: string) => unknown;
   theme?: 'default' | 'default-bordernone' | 'inline-primary';
+  error?: boolean;
 };

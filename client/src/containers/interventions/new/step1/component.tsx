@@ -1,10 +1,8 @@
 import { useCallback, useMemo, FC } from 'react';
-import { useDebounceCallback } from '@react-hook/debounce';
 
 // hooks
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { useBusinessUnits } from 'hooks/business-units';
-import { setFilter, analysisFilters } from 'store/features/analysis/filters';
 import { setSubContentCollapsed } from 'store/features/analysis/ui';
 
 // components
@@ -23,14 +21,14 @@ import OriginRegions from 'containers/interventions/smart-filters/origin-regions
 import { setNewInterventionStep, setNewInterventionData } from 'store/features/analysis/scenarios';
 
 // form validation
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
-import { isEmpty } from 'lodash';
+import { isArray, isEmpty } from 'lodash';
 
 // types
-import type { SelectOptions, SelectOption } from 'components/select/types';
+import type { SelectOptions } from 'components/select/types';
 
 //import type { AnalysisState } from 'store/features/analysis';
 import { useInterventionTypes } from 'hooks/analysis';
@@ -49,13 +47,11 @@ const schemaValidation = yup.object({
   type: yup.string().required(),
 });
 
+const errorMessage = 'Please select all the missing fields';
+
 const Step1: FC = () => {
   const dispatch = useAppDispatch();
-  //const [isOpen, setIsOpen] = useState<boolean>(false);
   const interventionTypes = useInterventionTypes();
-  const filters = useAppSelector(analysisFilters);
-
-  const { interventionType } = filters;
 
   const optionsInterventionType: SelectOptions = useMemo(
     () =>
@@ -64,11 +60,6 @@ const Step1: FC = () => {
         value: slug,
       })),
     [],
-  );
-
-  const currentInterventiontype = useMemo<SelectOption>(
-    () => optionsInterventionType?.find((option) => option.value === interventionType),
-    [optionsInterventionType, interventionType],
   );
 
   const { data: businesses, isLoading: isLoadingBusinesses } = useBusinessUnits();
@@ -86,13 +77,13 @@ const Step1: FC = () => {
     register,
     handleSubmit,
     setValue,
-    getValues,
     watch,
+    clearErrors,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
-    mode: 'onChange',
-    reValidateMode: 'onSubmit',
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
   });
 
   const handleContinue = useCallback(
@@ -104,26 +95,15 @@ const Step1: FC = () => {
     },
     [dispatch, errors],
   );
-  const holi = getValues();
-  console.log(holi, 'holi')
-  const handleInterventionType = useCallback(
-    ({ value }) => {
-      setValue('type', value);
-    },
-    [setValue],
-  );
 
   const handleDropdown = useCallback(
     (id, values) => {
-      const valuesIds = values.map(({ value }) => value);
+      const valuesIds = isArray(values) ? values.map(({ value }) => value) : values;
       setValue(id, valuesIds);
+      clearErrors(id);
     },
-    [setValue],
+    [setValue, clearErrors],
   );
-  const handleYear = useCallback((values) => {
-    console.log(values, 'valores')
-
-  }, []);
 
   const handleCancel = useCallback(() => {
     dispatch(setSubContentCollapsed(true));
@@ -165,7 +145,8 @@ const Step1: FC = () => {
             defaultValue={100}
             theme="inline-primary"
             unit="%"
-            error={errors?.percentage?.message}
+            className="whitespace-nowrap"
+            error={!!errors?.endYear?.message}
           />
 
           <span className="text-gray-700">of</span>
@@ -178,6 +159,7 @@ const Step1: FC = () => {
               onChange={(values) => handleDropdown('materialsIds', values)}
               ellipsis
               theme="inline-primary"
+              error={!!errors?.materialsIds?.message}
             />
           </div>
           <span className="text-gray-700">for</span>
@@ -187,10 +169,9 @@ const Step1: FC = () => {
             current={watch('businessUnitsIds')}
             options={optionsBusinesses}
             placeholder="all businesses"
-            allowEmpty
             theme="inline-primary"
-            onChange={({ value }) => setValue('businessUnitsIds', value)}
-            // error={errors?.businessUnitsIds}
+            onChange={({ value }) => handleDropdown('businessUnitsIds', value)}
+            error={!!errors?.businessUnitsIds?.message}
           />
           <span className="text-gray-700 font-medium">from</span>
           <Suppliers
@@ -200,6 +181,7 @@ const Step1: FC = () => {
             current={watch('suppliers')}
             onChange={(values) => handleDropdown('suppliersIds', values)}
             theme="inline-primary"
+            error={!!errors?.suppliersIds?.message}
           />
           <span className="text-gray-700 font-medium">in</span>
           <OriginRegions
@@ -209,11 +191,10 @@ const Step1: FC = () => {
             current={watch('originRegions')}
             onChange={(values) => handleDropdown('adminRegionsIds', values)}
             theme="inline-primary"
+            error={!!errors?.adminRegionsIds?.message}
           />
           <span className="text-gray-700 font-medium">.</span>
         </div>
-        {errors &&
-          Object.values(errors).map(({ message, ref }) => <Hint key={ref}>{message}</Hint>)}
       </fieldset>
       <div className="mt-9 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
         <div className="text-sm font-medium text-gray-700">
@@ -230,7 +211,7 @@ const Step1: FC = () => {
               defaultValue=""
               placeholder="Insert year"
               aria-label="year"
-              error={errors?.endYear?.message}
+              error={!!errors?.endYear?.message}
             />
           </div>
         </div>
@@ -243,17 +224,17 @@ const Step1: FC = () => {
           <div className="mt-1">
             <Select
               {...register('type')}
-              loading={!interventionType}
-              current={currentInterventiontype}
+              current={watch('type')}
               options={optionsInterventionType}
               placeholder="Select"
-              onChange={handleInterventionType}
+              onChange={({ value }) => handleDropdown('type', value)}
             />
           </div>
         </div>
       </div>
-      <div className="pt-10">
-        <div className="flex justify-end">
+      <div className="pt-10 flex justify-between items-center">
+        {!isEmpty(errors) && <Hint error={true}>{errorMessage}</Hint>}
+        <div className="flex justify-end flex-1">
           <Button type="button" onClick={handleCancel} theme="secondary">
             Cancel
           </Button>

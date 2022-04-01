@@ -9,26 +9,28 @@ import type { TreeSelectProps } from 'components/tree-select/types';
 
 type MaterialsFilterProps = {
   current: TreeSelectProps['current'];
-  multiple?: TreeSelectProps['multiple'];
   /** Tree depth. Defaults to `1` */
+  currentOptions?: TreeSelectProps['current'];
   depth?: MaterialsTreesParams['depth'];
+  ellipsis?: TreeSelectProps['ellipsis'];
+  error?: TreeSelectProps['error'];
+  fitContent?: TreeSelectProps['fitContent'];
+  multiple?: TreeSelectProps['multiple'];
+  theme?: 'default' | 'inline-primary';
   /** Only materials with sourcing locations. */
   withSourcingLocations?: MaterialsTreesParams['withSourcingLocations'];
   onChange?: TreeSelectProps['onChange'];
-  theme?: 'default' | 'inline-primary';
-  currentOptions?: TreeSelectProps['current'];
-  ellipsis?: TreeSelectProps['ellipsis'];
-  fitContent?: TreeSelectProps['fitContent'];
 };
 
 const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
-  multiple,
   current,
   depth = 1,
-  withSourcingLocations, // Do not a default; backend will override depth if this is set at all
-  theme = 'inline-primary',
   ellipsis,
+  error,
   fitContent,
+  multiple,
+  theme = 'inline-primary',
+  withSourcingLocations, // Do not a default; backend will override depth if this is set at all
   onChange,
   ...props
 }) => {
@@ -54,12 +56,13 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
       showSearch
       loading={isFetching}
       options={treeOptions}
-      placeholder="Materials"
+      placeholder="materials"
       onChange={onChange}
       current={current}
       theme={theme}
       fitContent={fitContent}
       ellipsis={ellipsis}
+      error={error}
     />
   );
 };

@@ -56,6 +56,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   onSearch,
   theme = 'default',
   ellipsis = false,
+  error = false,
   fitContent = false,
   checkedStrategy = 'CHILD', // by default show child
 }) => {
@@ -203,7 +204,11 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   );
 
   const Arrow = () => (
-    <span className={classNames('absolute flex pointer-events-none', THEMES[theme].arrow)}>
+    <span
+      className={classNames('absolute flex pointer-events-none', THEMES[theme].arrow, {
+        'text-red-700': !!error,
+      })}
+    >
       {isOpen ? (
         <ChevronUpIcon className="h-4 w-4" aria-hidden="true" />
       ) : (
@@ -239,6 +244,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           <div
             className={classNames('flex', THEMES[theme].wrapper, {
               'ring-green-700 border-green-700': isOpen,
+              'border-red-600': !!error,
             })}
           >
             {currentOptions &&

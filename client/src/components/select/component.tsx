@@ -46,6 +46,7 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
     onChange,
     onSearch,
     theme = 'default',
+    error = false,
   } = props;
   const [selected, setSelected] = useState<SelectProps['current']>(current);
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -90,6 +91,7 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
               className={classNames(
                 THEMES[theme].base,
                 disabled ? 'cursor-default' : 'cursor-pointer',
+                { 'border-red-600': !!error },
               )}
             >
               {loading ? (
@@ -119,7 +121,11 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
               )}
             </Listbox.Button>
 
-            <span className={classNames('absolute flex pointer-events-none', THEMES[theme].arrow)}>
+            <span
+              className={classNames('absolute flex pointer-events-none', THEMES[theme].arrow, {
+                'text-red-600': !!error,
+              })}
+            >
               {open ? (
                 <ChevronUpIcon className="h-4 w-4" aria-hidden="true" />
               ) : (

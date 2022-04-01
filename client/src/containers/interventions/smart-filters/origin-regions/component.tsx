@@ -15,6 +15,7 @@ type OriginRegionsFilterProps = {
   onChange?: TreeSelectProps['onChange'];
   theme?: 'default' | 'inline-primary';
   ellipsis?: TreeSelectProps['ellipsis'];
+  error?: TreeSelectProps['error'];
   fitContent?: TreeSelectProps['fitContent'];
 };
 
@@ -26,6 +27,7 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
   onChange,
   theme,
   ellipsis,
+  error,
   fitContent,
   ...props
 }) => {
@@ -51,11 +53,12 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
       showSearch
       loading={isFetching}
       options={treeOptions}
-      placeholder="Sourcing regions"
+      placeholder="sourcing regions"
       onChange={onChange}
       current={current}
       theme={theme}
       ellipsis={ellipsis}
+      error={error}
       fitContent={fitContent}
     />
   );

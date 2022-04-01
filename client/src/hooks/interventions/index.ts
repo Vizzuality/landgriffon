@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useQuery, UseQueryResult, UseQueryOptions } from 'react-query';
+import { useQuery, UseQueryResult, UseQueryOptions, useMutation } from 'react-query';
 import type { Intervention } from 'containers/scenarios/types';
 import { apiService } from 'services/api';
 
@@ -53,6 +53,25 @@ export function useInterventions(queryParams = {}): ResponseInterventionsData {
       data,
     } as ResponseInterventionsData;
   }, [response]);
+}
+
+export function useCreateNewIntervention() {
+  const createIntervention = (data) =>
+    apiService.request({
+      method: 'POST',
+      url: '/scenario-interventions',
+      data,
+    });
+
+  return useMutation(createIntervention, {
+    mutationKey: 'addIntervention',
+    onSuccess: () => {
+      console.info('Success creating intervention');
+    },
+    onError: () => {
+      console.info('Error');
+    },
+  });
 }
 
 export function useLocationTypes() {

@@ -77,10 +77,20 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
     [onChange],
   );
 
-  // Update selected when current prop changes
   useEffect(() => {
-    allowEmpty && setSelected(current);
-  }, [current, allowEmpty]);
+    // Update selected when current prop changes
+    if (allowEmpty && current) {
+      setSelected(current);
+    }
+    // if allowEmpty is false, current is the first option
+    else if (!allowEmpty && !current) {
+      setSelected(options[0]);
+    }
+    // Fallback to set current as usual
+    else if (current) {
+      setSelected(current);
+    }
+  }, [current, allowEmpty, options]);
 
   return (
     <Listbox value={current} onChange={handleChange} disabled={disabled}>

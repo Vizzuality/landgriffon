@@ -10,9 +10,11 @@ import InfoTooltip from 'containers/info-tooltip';
 
 // hooks
 import { useMaterials } from 'hooks/materials';
+import { useFormContext } from 'react-hook-form';
 
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
+import { watch } from 'fs';
 
 const Material = () => {
   const { data: materials, isLoading: isLoadingMaterials } = useMaterials();
@@ -25,19 +27,19 @@ const Material = () => {
     [materials],
   );
 
-  const currentMaterial = useMemo<SelectOption>(
-    () => optionsMaterials?.find((option) => option.value === 'formData.material'),
-    [optionsMaterials],
-  );
+  const { register, setValue, watch } = useFormContext();
 
-  const onChange = useCallback((key: string, value: string | number) => {
-    console.log('onChange filter');
-  }, []);
+  const handleDropdown = useCallback(
+    (id: string, value: string | string[] | number) => {
+      setValue(id, value);
+    },
+    [setValue],
+  );
 
   return (
     <form>
-      <fieldset className="sm:col-span-3 text-sm mt-8">
-        <legend className="font-medium leading-5">
+      <fieldset className="sm:col-span-3 text-sm">
+        <legend className="font-medium leading-5 mt-8">
           New material
           <InfoTooltip className="ml-2" />
         </legend>
@@ -45,10 +47,12 @@ const Material = () => {
           <div className="block font-medium text-gray-700">
             <Label className="mb-1">Material</Label>
             <Select
+              {...register('newMaterialId')}
               loading={isLoadingMaterials}
-              current={currentMaterial}
+              current={watch('newMaterialId')}
               options={optionsMaterials}
               placeholder="Select"
+              onChange={({ value }) => handleDropdown('newMaterialId', value)}
             />
           </div>
 
@@ -57,6 +61,7 @@ const Material = () => {
               Tons of new material per ton
             </Label>
             <Input
+              {...register('materialTons')}
               type="number"
               name="materialTons"
               id="materialTons"

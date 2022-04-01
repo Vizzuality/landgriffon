@@ -12,6 +12,7 @@ import InfoTooltip from 'containers/info-tooltip';
 import { useSuppliersTypes } from 'hooks/suppliers';
 import { useLocationTypes } from 'hooks/interventions';
 import { useAdminRegionsTrees } from 'hooks/admin-regions';
+import { useFormContext } from 'react-hook-form';
 
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
@@ -68,35 +69,40 @@ const Supplier: FC = () => {
     newLocationCountryInput: countries[0]?.id,
   });
 
-  const currentSupplier = useMemo<SelectOption>(
-    () => optionsSuppliers?.find((option) => option.value === formData.newT1SupplierId),
-    [optionsSuppliers, formData.newT1SupplierId],
-  );
+  // const currentSupplier = useMemo<SelectOption>(
+  //   () => optionsSuppliers?.find((option) => option.value === formData.newT1SupplierId),
+  //   [optionsSuppliers, formData.newT1SupplierId],
+  // );
 
-  const currentProducer = useMemo<SelectOption>(
-    () => optionsProducers?.find((option) => option.value === formData.newProducerId),
-    [optionsProducers, formData.newProducerId],
-  );
+  // const currentProducer = useMemo<SelectOption>(
+  //   () => optionsProducers?.find((option) => option.value === formData.newProducerId),
+  //   [optionsProducers, formData.newProducerId],
+  // );
 
-  const currentLocationType = useMemo<SelectOption>(
-    () => optionsLocationTypes?.find((option) => option.value === formData.newLocationType),
-    [optionsLocationTypes, formData.newLocationType],
-  );
+  // const currentLocationType = useMemo<SelectOption>(
+  //   () => optionsLocationTypes?.find((option) => option.value === formData.newLocationType),
+  //   [optionsLocationTypes, formData.newLocationType],
+  // );
 
-  const currentCountry = useMemo<SelectOption>(
-    () => optionsCountries?.find((option) => option.value === formData.newLocationCountryInput),
-    [optionsCountries, formData.newLocationCountryInput],
-  );
+  // const currentCountry = useMemo<SelectOption>(
+  //   () => optionsCountries?.find((option) => option.value === formData.newLocationCountryInput),
+  //   [optionsCountries, formData.newLocationCountryInput],
+  // );
 
   const isLoadingCountries = false;
 
-  const onChange = useCallback((key: string, value: string | number) => {
-    console.log('onChange filter');
-  }, []);
+  const { register, setValue, watch } = useFormContext();
+
+  const handleDropdown = useCallback(
+    (id: string, value: string | string[] | number) => {
+      setValue(id, value);
+    },
+    [setValue],
+  );
 
   return (
     <>
-      <fieldset className="sm:col-span-3 text-sm">
+      <fieldset className="sm:col-span-3 text-sm mt-8">
         <legend className="flex font-medium leading-5">
           New supplier
           <InfoTooltip className="ml-2" />
@@ -108,11 +114,12 @@ const Supplier: FC = () => {
               Tier 1 supplier <span className="text-gray-500">(optional)</span>
             </Label>
             <Select
+              {...register('newT1SupplierId')}
               loading={isLoadingSuppliers}
-              current={currentSupplier}
+              current={watch('newT1SupplierId')}
               options={optionsSuppliers}
               placeholder="Select"
-              onChange={() => onChange('newT1SupplierId', currentSupplier.value)}
+              onChange={({ value }) => handleDropdown('newT1SupplierId', value)}
             />
           </div>
 
@@ -121,16 +128,17 @@ const Supplier: FC = () => {
               Producer <span className="text-gray-500">(optional)</span>
             </Label>
             <Select
+              {...register('newProducerId')}
               loading={isLoadingProducers}
-              current={currentProducer}
+              current={watch('newProducerId')}
               options={optionsProducers}
               placeholder="Select"
-              onChange={() => onChange('newProducerId', currentProducer.value)}
+              onChange={({ value }) => handleDropdown('newProducerId', value)}
             />
           </div>
         </div>
       </fieldset>
-      <fieldset className="sm:col-span-3 text-sm">
+      <fieldset className="sm:col-span-3 text-sm mt-8">
         <legend className="flex font-medium leading-5">
           Supplier location
           <InfoTooltip className="ml-2" />
@@ -141,11 +149,12 @@ const Supplier: FC = () => {
             <span>Location type</span>
             <div className="mt-1">
               <Select
+                {...register('newLocationType')}
                 loading={!locationTypes}
-                current={currentLocationType}
+                current={watch('newLocationType')}
                 options={optionsLocationTypes}
                 placeholder="all LocationTypes"
-                onChange={() => onChange('newLocationType', currentLocationType.value)}
+                onChange={({ value }) => handleDropdown('newLocationType', value)}
               />
             </div>
           </div>
@@ -154,11 +163,12 @@ const Supplier: FC = () => {
             <span>Country</span>
             <div className="mt-1">
               <Select
+                {...register('newLocationCountryInput')}
                 loading={isLoadingCountries}
-                current={currentCountry}
+                current={watch('newLocationCountryInput')}
                 options={optionsCountries}
                 placeholder="All Countries"
-                onChange={() => onChange('newLocationCountryInput', currentCountry.value)}
+                onChange={({ value }) => handleDropdown('newLocationCountryInput', value)}
               />
             </div>
           </div>
@@ -168,6 +178,7 @@ const Supplier: FC = () => {
           City / Address / Coordinates
         </Label>
         <Input
+          {...register('newLocationAddressInput')}
           className="w-full"
           type="text"
           name="address"

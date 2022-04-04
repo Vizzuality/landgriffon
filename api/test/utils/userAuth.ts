@@ -9,6 +9,14 @@ export async function saveUserAndGetToken(
   moduleFixture: TestingModule,
   app: INestApplication,
 ): Promise<string> {
+  const tokenWithUser = await saveUserAndGetTokenWithUserId(moduleFixture, app);
+  return tokenWithUser.jwtToken;
+}
+
+export async function saveUserAndGetTokenWithUserId(
+  moduleFixture: TestingModule,
+  app: INestApplication,
+): Promise<{ jwtToken: string; userId: string }> {
   const salt = await genSalt();
   const userRepository = moduleFixture.get<UserRepository>(UserRepository);
   await userRepository.save({
@@ -21,5 +29,5 @@ export async function saveUserAndGetToken(
   const response = await request(app.getHttpServer())
     .post('/auth/sign-in')
     .send(E2E_CONFIG.users.signIn);
-  return response.body.accessToken;
+  return { jwtToken: response.body.accessToken, userId: response.body.user.id };
 }

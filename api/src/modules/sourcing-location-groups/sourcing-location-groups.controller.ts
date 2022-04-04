@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -34,6 +35,7 @@ import {
 import { CreateSourcingLocationGroupDto } from 'modules/sourcing-location-groups/dto/create.sourcing-location-group.dto';
 import { UpdateSourcingLocationGroupDto } from 'modules/sourcing-location-groups/dto/update.sourcing-location-group.dto';
 import { PaginationMeta } from 'utils/app-base.service';
+import { SetUserInterceptor } from 'decorators/set-user.interceptor';
 
 @Controller(`/api/v1/sourcing-location-groups`)
 @ApiTags(sourcingLocationGroupResource.className)
@@ -105,6 +107,7 @@ export class SourcingLocationGroupsController {
   @ApiOperation({ description: 'Updates a sourcing location group' })
   @ApiOkResponse({ type: SourcingLocationGroup })
   @ApiNotFoundResponse({ description: 'Sourcing location group not found' })
+  @UseInterceptors(SetUserInterceptor)
   @Patch(':id')
   async update(
     @Body(new ValidationPipe()) dto: UpdateSourcingLocationGroupDto,

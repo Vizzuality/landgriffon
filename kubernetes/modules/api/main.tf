@@ -135,6 +135,16 @@ resource "kubernetes_deployment" "api_deployment" {
           }
 
           env {
+            name = "REDIS_IMPORT_QUEUE_NAME"
+            value_from {
+              secret_key_ref {
+                name = "db"
+                key  = "REDIS_IMPORT_QUEUE_NAME"
+              }
+            }
+          }
+
+          env {
             name = "JWT_SECRET"
             value_from {
               secret_key_ref {
@@ -167,11 +177,11 @@ resource "kubernetes_deployment" "api_deployment" {
           resources {
             limits = {
               cpu    = "1"
-              memory = "2Gi"
+              memory = "4Gi"
             }
             requests = {
-              cpu    = "500m"
-              memory = "2Gi"
+              cpu    = "1"
+              memory = "4Gi"
             }
           }
 

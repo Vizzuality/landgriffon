@@ -5,11 +5,16 @@ import Select from 'components/select';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisUI } from 'store/features/analysis/ui';
-import { analysisFilters, setLayer, AnalysisFiltersState } from 'store/features/analysis/filters';
+import {
+  analysisFilters,
+  resetFiltersAndOverride,
+  setLayer,
+  AnalysisFiltersState,
+} from 'store/features/analysis/filters';
 
-import type { SelectOptions } from 'components/select/types';
+import type { SelectOption } from 'components/select/types';
 
-const LAYERS_OPTIONS: SelectOptions = [
+const LAYERS_OPTIONS: SelectOption[] = [
   {
     value: 'material',
     label: 'Material production',
@@ -24,21 +29,31 @@ const LAYERS_OPTIONS: SelectOptions = [
   },
 ];
 
+const DEFAULT_LAYER = LAYERS_OPTIONS[2];
+
 const LayerControl: React.FC = () => {
   const { visualizationMode } = useAppSelector(analysisUI);
-  const { layer } = useAppSelector(analysisFilters);
+  const { layer, indicator } = useAppSelector(analysisFilters);
   const dispatch = useAppDispatch();
 
-  const handleChange = useCallback((selected) => dispatch(setLayer(selected.value)), [dispatch]);
+  const current = useMemo(() => LAYERS_OPTIONS.find(({ value }) => value === layer), [layer]);
+
+  const handleChange = useCallback(
+    (selected: SelectOption) => {
+      dispatch(
+        resetFiltersAndOverride({
+          layer: selected.value,
+          indicator,
+        } as Partial<AnalysisFiltersState>),
+      );
+      dispatch(setLayer(selected.value as AnalysisFiltersState['layer']));
+    },
+    [dispatch, indicator],
+  );
 
   useEffect(() => {
-    if (visualizationMode !== 'map') {
-      // set impact when visualization mode is not map
-      dispatch(setLayer(LAYERS_OPTIONS[2].value as AnalysisFiltersState['layer']));
-    }
-  }, [dispatch, visualizationMode]);
-
-  const current = useMemo(() => LAYERS_OPTIONS.find(({ value }) => value === layer), [layer]);
+    dispatch(setLayer(DEFAULT_LAYER.value as AnalysisFiltersState['layer']));
+  }, [dispatch]);
 
   return (
     <div className={classNames({ hidden: visualizationMode !== 'map' })}>

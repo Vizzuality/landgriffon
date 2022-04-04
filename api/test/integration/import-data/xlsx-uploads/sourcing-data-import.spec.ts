@@ -10,15 +10,23 @@ import { AdminRegionRepository } from 'modules/admin-regions/admin-region.reposi
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { SourcingLocationGroupRepository } from 'modules/sourcing-location-groups/sourcing-location-group.repository';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
-import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import {
+  SourcingLocation,
+  SOURCING_LOCATION_TYPE_BY_INTERVENTION,
+} from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
-import { createAdminRegion, createGeoRegion } from '../../../entity-mocks';
+import {
+  createAdminRegion,
+  createGeoRegion,
+  createScenarioIntervention,
+  createSourcingLocation,
+  createSourcingRecord,
+} from '../../../entity-mocks';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { UnknownLocationGeoCodingStrategy } from 'modules/geo-coding/strategies/unknown-location.geocoding.service';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
-import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 import {
   createMaterialTreeForXLSXImport,
   createIndicatorsForXLSXImport,
@@ -35,6 +43,11 @@ import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.servic
 import { h3BasicFixture } from '../../../e2e/h3-data/mocks/h3-fixtures';
 import { SourcingDataImportService } from 'modules/import-data/sourcing-data/sourcing-data-import.service';
 import { FileService } from 'modules/import-data/file.service';
+import { createWorldToCalculateIndicatorRecords } from '../../../utils/indicator-records-preconditions';
+import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
+import { Material } from 'modules/materials/material.entity';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 let tablesToDrop: string[] = [];
 
 let missingDataFallbackPolicy: string = 'error';
@@ -56,7 +69,7 @@ jest.mock('config', () => {
 });
 // TODO: Skipped tests due to hardcoded Indicator h3 table and column names in stored procedures. If the new Indicator Record calc approach gets validated,
 //       Make improve said procedures by getting Indicator h3 data by Indicator Id and restore tests
-describe.skip('Sourcing Data import', () => {
+describe('Sourcing Data import', () => {
   /**
    * @note: We are currently ignoring '#N/A' location type values in production code
    * so this mock filters them to avoid DB constraint errors for not be one of the allowed
@@ -137,7 +150,7 @@ describe.skip('Sourcing Data import', () => {
     })
       .overrideProvider(FileService)
       .useClass(MockFileService)
-      .overrideProvider(GeoCodingService)
+      .overrideProvider(GeoCodingAbstractClass)
       .useValue(geoCodingServiceMock)
       .overrideProvider(UnknownLocationGeoCodingStrategy)
       .useClass(UnknownLocationServiceMock)
@@ -214,7 +227,7 @@ describe.skip('Sourcing Data import', () => {
         'No Materials found present in the DB. Please check the LandGriffon installation manual',
       );
     }
-  });
+  }, 100000);
 
   test('When a file is processed by the API and its size is allowed then it should return a 201 code and the storage folder should be empty', async () => {
     const geoRegion: GeoRegion = await createGeoRegion();
@@ -222,9 +235,13 @@ describe.skip('Sourcing Data import', () => {
       isoA2: 'ABC',
       geoRegion,
     });
+
+    const indicatorPreconditions =
+      await createWorldToCalculateIndicatorRecords();
+
     tablesToDrop = [
       ...(await createMaterialTreeForXLSXImport()),
-      ...(await createIndicatorsForXLSXImport()),
+      ...indicatorPreconditions.h3tableNames,
     ];
 
     await sourcingDataImportService.importSourcingData(
@@ -239,16 +256,11 @@ describe.skip('Sourcing Data import', () => {
       geoRegion,
     });
 
-    await h3DataMock({
-      h3TableName: 'h3_grid_deforestation_global',
-      h3ColumnName: 'hansen_loss_2019',
-      additionalH3Data: h3BasicFixture,
-      year: 2019,
-    });
+    const indicatorPreconditions =
+      await createWorldToCalculateIndicatorRecords();
     tablesToDrop = [
       ...(await createMaterialTreeForXLSXImport()),
-      ...(await createIndicatorsForXLSXImport()),
-      'h3_grid_deforestation_global',
+      ...indicatorPreconditions.h3tableNames,
     ];
 
     await sourcingDataImportService.importSourcingData(
@@ -288,16 +300,12 @@ describe.skip('Sourcing Data import', () => {
       isoA2: 'ABC',
       geoRegion,
     });
-    await h3DataMock({
-      h3TableName: 'h3_grid_deforestation_global',
-      h3ColumnName: 'hansen_loss_2019',
-      additionalH3Data: h3BasicFixture,
-      year: 2019,
-    });
+
+    const indicatorPreconditions =
+      await createWorldToCalculateIndicatorRecords();
     tablesToDrop = [
       ...(await createMaterialTreeForXLSXImport()),
-      ...(await createIndicatorsForXLSXImport()),
-      'h3_grid_deforestation_global',
+      ...indicatorPreconditions.h3tableNames,
     ];
 
     await sourcingDataImportService.importSourcingData(
@@ -313,6 +321,55 @@ describe.skip('Sourcing Data import', () => {
 
     expect(sourcingRecords[0]).toMatchObject(new SourcingRecord());
     expect(sourcingLocation).toMatchObject(new SourcingLocation());
+  }, 100000);
+
+  test('Impact calculations of the import process must not be done for sourcing records, belonging to Scenario Interventions', async () => {
+    const geoRegion: GeoRegion = await createGeoRegion();
+    await createAdminRegion({
+      isoA2: 'ABC',
+      geoRegion,
+    });
+
+    await createMaterialTreeForXLSXImport();
+    await createWorldToCalculateIndicatorRecords();
+
+    const materials: Material[] = await materialRepository.find();
+
+    const scenarioIntervention: ScenarioIntervention =
+      await createScenarioIntervention();
+
+    const existingSouringLocation: SourcingLocation =
+      await createSourcingLocation({
+        materialId: materials[0].id,
+        geoRegionId: geoRegion.id,
+      });
+
+    const interventionSouringLocation: SourcingLocation =
+      await createSourcingLocation({
+        materialId: materials[1].id,
+        geoRegionId: geoRegion.id,
+        scenarioInterventionId: scenarioIntervention.id,
+        interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+      });
+    await createSourcingRecord({
+      sourcingLocationId: existingSouringLocation.id,
+      year: 2019,
+      tonnage: 1000,
+    });
+
+    await createSourcingRecord({
+      sourcingLocationId: interventionSouringLocation.id,
+      year: 2019,
+      tonnage: 500,
+    });
+
+    const indicatorRawDataForImport: SourcingRecordsWithIndicatorRawDataDto[] =
+      await sourcingRecordRepository.getIndicatorRawDataForAllSourcingRecords();
+
+    expect(indicatorRawDataForImport.length).toEqual(1);
+    expect(indicatorRawDataForImport[0].sourcingLocationId).toBe(
+      existingSouringLocation.id,
+    );
   }, 100000);
 
   describe.skip('Additional config values for missing data fallback strategy and incomplete material h3 data', () => {

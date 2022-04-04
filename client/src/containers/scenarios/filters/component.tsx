@@ -1,19 +1,31 @@
-import { FC, Fragment, useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import {
+  FC,
+  // Fragment,
+  useCallback,
+  // useEffect,
+  // useState,
+  useMemo,
+} from 'react';
 import { SearchIcon } from '@heroicons/react/solid';
-import { Transition } from '@headlessui/react';
-import { useDebounce } from '@react-hook/debounce';
+// import { Transition } from '@headlessui/react';
 
-import classNames from 'classnames';
+// import classNames from 'classnames';
 import Select from 'components/select';
+// import { useAppSelector } from 'store/hooks';
+// import { useDispatch } from 'react-redux';
 import { useAppSelector } from 'store/hooks';
-import { scenarios, setScenarioFilter } from 'store/features/analysis/scenarios';
+import {
+  scenarios,
+  // setScenarioFilter,
+  setSort,
+  setSearchTerm,
+} from 'store/features/analysis/scenarios';
 import { useDispatch } from 'react-redux';
 
 const SORT_OPTIONS = [
   {
     label: 'Recent',
-    value: 'updatedAt',
+    value: '-updatedAt',
   },
   {
     label: 'Title',
@@ -21,65 +33,47 @@ const SORT_OPTIONS = [
   },
 ];
 
-const filtersItems = [
-  {
-    name: 'All',
-    filter: 'all',
-  },
-  {
-    name: 'My scenarios',
-    filter: 'private',
-  },
-  {
-    name: 'Shared',
-    filter: 'public',
-  },
-];
+// const filtersItems = [
+//   {
+//     name: 'All',
+//     filter: 'all',
+//   },
+//   {
+//     name: 'My scenarios',
+//     filter: 'private',
+//   },
+//   {
+//     name: 'Shared',
+//     filter: 'public',
+//   },
+// ];
 
 const ScenariosFilters: FC = () => {
   const dispatch = useDispatch();
-  const handleFilter = useCallback((value) => dispatch(setScenarioFilter(value)), [dispatch]);
+  // const handleFilter = useCallback((value) => dispatch(setScenarioFilter(value)), [dispatch]);
+  // const [isSearchEnable, setSearchEnable] = useState(false);
+  // const toggleSearch = useCallback(() => setSearchEnable(!isSearchEnable), [isSearchEnable]);
 
-  const router = useRouter();
+  const {
+    // filter,
+    sort,
+  } = useAppSelector(scenarios);
 
-  const { query } = router;
-  const [isSearchEnable, setSearchEnable] = useState(false);
-  const { filter } = useAppSelector(scenarios);
-  const [term, setTerm] = useDebounce(null, 250); // wait 250ms before set term
-  const toggleSearch = useCallback(() => setSearchEnable(!isSearchEnable), [isSearchEnable]);
-  const handleSort = useCallback(
-    (selected) =>
-      router.replace({
-        pathname: '/analysis',
-        query: {
-          ...query,
-          sortBy: selected.value,
-        },
-      }),
-    [],
+  const handleSort = useCallback((selected) => dispatch(setSort(selected.value)), [dispatch]);
+  const handleSearchByTerm = useCallback(
+    (event) => dispatch(setSearchTerm(event.currentTarget.value)),
+    [dispatch],
   );
 
-  const handleSearchByTerm = useCallback((event) => setTerm(event.currentTarget.value), []);
-
-  useEffect(() => {
-    if (term) {
-      router.replace({
-        pathname: '/analysis',
-        query: {
-          ...query,
-          term,
-        },
-      });
-    }
-  }, [term]);
+  const currentSort = useMemo(() => SORT_OPTIONS.find(({ value }) => value === sort), [sort]);
 
   return (
     <div className="flex items-center">
-      <div className="relative flex">
+      <div className="relative flex items-center">
         {/* <button type="button" onClick={toggleSearch}> */}
         <SearchIcon className="w-4 h-4" />
         {/* </button> */}
-        {/* {isSearchEnable && ( 
+        {/* {isSearchEnable && (
           <Transition
             as={Fragment}
             enter="transition-opacity ease-linear duration-700"
@@ -93,14 +87,14 @@ const ScenariosFilters: FC = () => {
           id="search"
           name="search"
           placeholder="Search"
-          className="flex-1 appearance-none text-sm text-green-700 font-bold focus:border-0 focus:border-b-2 px-0 py-0 focus:outline-none focus:border-green-700 focus:ring-0 max-w-[86px]"
+          className="flex-1 ml-1 appearance-none text-sm text-green-700 border-0 border-b-2 border-white focus:border-0 focus:border-b-2 px-0 py-0 focus:outline-none focus:border-green-700 focus:ring-0 max-w-[86px]"
           type="search"
           onChange={handleSearchByTerm}
         />
         {/* </Transition>
          )} */}
       </div>
-      {/* 
+      {/*
       <ul className="relative flex flex-1 space-x-2 ml-3 justify-start whitespace-nowrap items-center">
         {filtersItems.map((item) => (
           <li key={item.filter}>
@@ -122,7 +116,7 @@ const ScenariosFilters: FC = () => {
       <div className="absolute right-0 bg-white z-10 pl-5">
         <Select
           theme="default-bordernone"
-          current={SORT_OPTIONS[0]}
+          current={currentSort}
           options={SORT_OPTIONS}
           onChange={handleSort}
         />

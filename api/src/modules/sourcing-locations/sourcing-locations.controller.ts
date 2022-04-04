@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -39,6 +40,7 @@ import { PaginationMeta } from 'utils/app-base.service';
 import { SourcingLocationsMaterialsResponseDto } from 'modules/sourcing-locations/dto/materials.sourcing-location.dto';
 import { GetSourcingMaterialsQueryDto } from 'modules/sourcing-locations/dto/materials-query.sourcing-location.dto';
 import { SourcingLocationsMaterialsService } from 'modules/sourcing-locations/sourcing-locations-materials.service';
+import { SetUserInterceptor } from 'decorators/set-user.interceptor';
 
 @Controller(`/api/v1/sourcing-locations`)
 @ApiTags(sourcingLocationResource.className)
@@ -147,6 +149,7 @@ export class SourcingLocationsController {
   @ApiOperation({ description: 'Updates a sourcing location' })
   @ApiOkResponse({ type: SourcingLocation })
   @ApiNotFoundResponse({ description: 'Sourcing location not found' })
+  @UseInterceptors(SetUserInterceptor)
   @Patch(':id')
   async update(
     @Body(new ValidationPipe()) dto: UpdateSourcingLocationDto,

@@ -15,7 +15,7 @@ import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update
 
 import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
 import { SourcingLocationWithRecord } from 'modules/sourcing-locations/dto/sourcing-location-with-record.interface';
-import { Brackets, WhereExpressionBuilder } from 'typeorm';
+import { Brackets, SelectQueryBuilder, WhereExpressionBuilder } from 'typeorm';
 
 @Injectable()
 export class SourcingLocationsService extends AppBaseService<
@@ -85,7 +85,9 @@ export class SourcingLocationsService extends AppBaseService<
       ),
     );
 
-    return await this.sourcingLocationRepository.save(sourcingLocation as any);
+    return await this.sourcingLocationRepository.save(sourcingLocation, {
+      chunk: 1000,
+    });
   }
 
   async findFilteredSourcingLocationsForIntervention(
@@ -128,5 +130,16 @@ export class SourcingLocationsService extends AppBaseService<
         .getRawMany();
 
     return sourcingLocations;
+  }
+
+  async extendFindAllQuery(
+    query: SelectQueryBuilder<SourcingLocation>,
+    fetchSpecification: Record<string, unknown>,
+  ): Promise<SelectQueryBuilder<SourcingLocation>> {
+    query
+      .where(`${this.alias}.scenarioInterventionId IS NULL`)
+      .andWhere(`${this.alias}.interventionType IS NULL`);
+
+    return query;
   }
 }

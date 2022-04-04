@@ -31,9 +31,9 @@ const INTERVENTIONS_DATA = [
 
 type ResponseInterventionsData = UseQueryResult<Intervention[]>;
 
-export function useInterventions(queryParams: { sort: string }): ResponseInterventionsData {
+export function useInterventions(queryParams = {}): ResponseInterventionsData {
   const response = useQuery(
-    ['interventionsList', queryParams],
+    ['interventionsList', JSON.stringify(queryParams)],
     async () =>
       apiService
         .request({
@@ -53,4 +53,10 @@ export function useInterventions(queryParams: { sort: string }): ResponseInterve
       data,
     } as ResponseInterventionsData;
   }, [response]);
+}
+
+export function useLocationTypes() {
+  return useMemo<string[]>(() => {
+    return ['Point of production', 'Aggregation point', 'Country of production', 'Unknown'];
+  }, []);
 }

@@ -12,8 +12,7 @@ export class UpdateTargetDto {
   @IsNumber()
   value?: number;
 
-  @ApiProperty()
   @IsOptional()
   @IsString()
-  lastEditedUserId?: string;
+  updatedById?: string;
 }

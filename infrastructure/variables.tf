@@ -74,7 +74,7 @@ variable "rds_backup_retention_period" {
 
 variable "default_node_group_instance_types" {
   type    = string
-  default = "m5a.large"
+  default = "m5a.xlarge"
 }
 
 variable "default_node_group_min_size" {

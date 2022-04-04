@@ -18,14 +18,17 @@ const THEMES = {
   default: {
     base: 'shadow-sm bg-white relative w-full flex align-center py-2 text-left text-sm font-medium border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 pl-3 pr-10',
     arrow: 'absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none',
+    placeholder: 'text-gray-300',
   },
   'default-bordernone': {
     base: 'inline-block relative pr-6 flex focus:outline-none shadow-none text-gray-500',
     arrow: 'absolute inset-y-0 right-0 flex items-center pointer-events-none',
+    placeholder: 'text-gray-300',
   },
   'inline-primary': {
     base: 'relative py-0.5 flex text-sm font-bold border-b-2 border-green-700 max-w-[190px] truncate text-ellipsis',
     arrow: 'absolute -bottom-3 transform left-1/2 -translate-x-1/2 text-green-700',
+    placeholder: 'text-green-700',
   },
 };
 
@@ -35,13 +38,15 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
     disabled = false,
     label,
     options = [],
-    current = options[0],
+    current = null,
+    allowEmpty = false,
     loading = false,
     placeholder = null,
     searchPlaceholder = 'Search',
     onChange,
     onSearch,
     theme = 'default',
+    error = false,
   } = props;
   const [selected, setSelected] = useState<SelectProps['current']>(current);
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -72,10 +77,20 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
     [onChange],
   );
 
-  // Update selected when current prop changes
   useEffect(() => {
-    setSelected(current);
-  }, [current]);
+    // Update selected when current prop changes
+    if (allowEmpty && current) {
+      setSelected(current);
+    }
+    // if allowEmpty is false, current is the first option
+    else if (!allowEmpty && !current) {
+      setSelected(options[0]);
+    }
+    // Fallback to set current as usual
+    else if (current) {
+      setSelected(current);
+    }
+  }, [current, allowEmpty, options]);
 
   return (
     <Listbox value={current} onChange={handleChange} disabled={disabled}>
@@ -86,6 +101,7 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
               className={classNames(
                 THEMES[theme].base,
                 disabled ? 'cursor-default' : 'cursor-pointer',
+                { 'border-red-600': !!error },
               )}
             >
               {loading ? (
@@ -98,7 +114,9 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
                     <span className="inline-block mr-1 text-gray-400 truncate">{label}</span>
                   )}
                   {placeholder && !selected?.label && (
-                    <span className="text-gray-300 truncate">{placeholder}</span>
+                    <span className={classNames('truncate', THEMES[theme].placeholder)}>
+                      {placeholder}
+                    </span>
                   )}
                   {selected && (
                     <span
@@ -113,7 +131,11 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
               )}
             </Listbox.Button>
 
-            <span className={classNames('absolute flex pointer-events-none', THEMES[theme].arrow)}>
+            <span
+              className={classNames('absolute flex pointer-events-none', THEMES[theme].arrow, {
+                'text-red-600': !!error,
+              })}
+            >
               {open ? (
                 <ChevronUpIcon className="h-4 w-4" aria-hidden="true" />
               ) : (

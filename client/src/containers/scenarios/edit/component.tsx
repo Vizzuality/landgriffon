@@ -1,24 +1,25 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useDebounceCallback } from '@react-hook/debounce';
 import { useForm } from 'react-hook-form';
-import cx from 'classnames';
-import { useRouter } from 'next/router';
-import toast from 'react-hot-toast';
-import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-
-import { useScenario, useUpdateScenario } from 'hooks/scenarios';
-import { useInterventions } from 'hooks/interventions';
+import * as yup from 'yup';
+import cx from 'classnames';
+import toast from 'react-hot-toast';
+import { PlusIcon } from '@heroicons/react/solid';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { setSubContentCollapsed } from 'store/features/analysis/ui';
-import { setScenarioTab, scenarios } from 'store/features/analysis/scenarios';
+import { useInterventions } from 'hooks/interventions';
+import { useScenario, useUpdateScenario } from 'hooks/scenarios';
 
+import { setSubContentCollapsed } from 'store/features/analysis/ui';
+import { scenarios, setScenarioTab } from 'store/features/analysis/scenarios';
+
+import GrowthList from 'containers/growth/list/component';
 import Button from 'components/button';
 import InterventionsList from 'containers/interventions/list';
-import { Label, Input, Textarea } from 'components/forms';
-import GrowthList from 'containers/growth/list/component';
-import { PlusIcon } from '@heroicons/react/solid';
+import Label from 'components/forms/label';
+import { Input } from 'components/forms';
+import Textarea from 'components/forms/textarea';
 
 import type { ErrorResponse } from 'types';
 
@@ -38,70 +39,70 @@ const items = [
 ];
 
 const schemaValidation = yup.object({
-  title: yup.string().min(2).required(),
+  title: yup.string().min(2).required('Title must have at least two characters'),
   description: yup.string(),
 });
 
 const ScenariosNewContainer: React.FC = () => {
-  const { query } = useRouter();
-
+  const { data: interventions } = useInterventions();
   const dispatch = useAppDispatch();
+  const handleNewScenarioFeature = useCallback(() => {
+    dispatch(setSubContentCollapsed(false));
+  }, [dispatch]);
+
   const { scenarioCurrentTab, currentScenario } = useAppSelector(scenarios);
 
   const {
     register,
     getValues,
-    formState: { isValid, errors },
+    formState: { isValid },
   } = useForm({
-    mode: 'onChange',
     resolver: yupResolver(schemaValidation),
   });
 
-  const { data: scenario, isLoading } = useScenario(currentScenario as string, { sort: 'title' });
-  const { data: interventions } = useInterventions({ sort: query.sortBy as string });
+  const handleTab = useCallback((step) => dispatch(setScenarioTab(step)), [dispatch]);
+  const [error, setError] = useState(null);
 
   const updateScenario = useUpdateScenario();
-
-  const handleNewScenarioFeature = useCallback(() => {
-    dispatch(setSubContentCollapsed(false));
-  }, [dispatch]);
-
-  const handleTab = useCallback((step) => dispatch(setScenarioTab(step)), [dispatch]);
-
   const handleChange = useDebounceCallback(
     useCallback(() => {
-      const { id } = scenario;
       if (isValid) {
         updateScenario.mutate(
-          { id, data: getValues() },
+          { id: currentScenario, data: getValues() },
           {
             onSuccess: () => {
               toast.success('Your changes were successfully saved.');
+              setError(null);
             },
             onError: (error: ErrorResponse) => {
               const { errors } = error.response?.data;
-              errors.forEach(({ title }) => toast.error(title));
+              errors.forEach(({ meta }) => setError(meta.rawError.response.message));
             },
           },
         );
       }
-    }, [scenario, isValid, updateScenario, getValues]),
-    500,
+    }, [currentScenario, isValid, getValues, updateScenario]),
+    600,
   );
 
+  const { data: scenarioData } = useScenario(currentScenario);
+  if (!scenarioData) return null;
+  const { title, description } = scenarioData;
   return (
     <>
-      <form className="z-20">
+      <form action="#" method="POST" className="z-20">
         <Input
-          type="text"
           {...register('title')}
+          type="text"
+          name="title"
+          id="title"
+          defaultValue={title}
           placeholder="Untitled"
-          defaultValue={scenario.title}
           aria-label="Scenario title"
-          className="flex-1 block w-full md:text-2xl sm:text-sm border-none text-gray-900 p-0 mb-6"
+          autoFocus
+          error={error}
+          className="flex-1 block w-full md:text-2xl sm:text-sm border-none text-gray-400 p-0 font-semibold mb-6"
           onInput={handleChange}
-          disabled={isLoading}
-          error={errors.title?.message}
         />
 
         <div className="sm:col-span-6">
@@ -110,11 +111,12 @@ const ScenariosNewContainer: React.FC = () => {
           </Label>
           <Textarea
             {...register('description')}
+            id="description"
+            name="description"
             rows={3}
             className="w-full"
-            defaultValue={scenario.description}
-            disabled={isLoading}
-            error={errors.description?.message}
+            defaultValue={description}
+            onChange={handleChange}
           />
         </div>
       </form>
@@ -126,7 +128,7 @@ const ScenariosNewContainer: React.FC = () => {
                 <button
                   type="button"
                   className={cx({
-                    'border-b-2 border-green-700': scenarioCurrentTab === 'interventions',
+                    'border-b-2 border-green-700': scenarioCurrentTab == 'interventions',
                   })}
                   onClick={() => handleTab('interventions')}
                 >
@@ -135,7 +137,7 @@ const ScenariosNewContainer: React.FC = () => {
 
                 <button
                   type="button"
-                  className={cx({ 'border-b-2 border-green-700': scenarioCurrentTab === 'growth' })}
+                  className={cx({ 'border-b-2 border-green-700': scenarioCurrentTab == 'growth' })}
                   onClick={() => handleTab('growth')}
                 >
                   Growth rates ({items.length})
@@ -147,8 +149,8 @@ const ScenariosNewContainer: React.FC = () => {
               </Button>
             </div>
           </div>
-          {scenarioCurrentTab === 'growth' && <InterventionsList items={interventions} />}
-          {scenarioCurrentTab === 'interventions' && <GrowthList items={items} />}
+          {scenarioCurrentTab == 'interventions' && <InterventionsList items={interventions} />}
+          {scenarioCurrentTab == 'growth' && <GrowthList items={items} />}
         </div>
       </div>
     </>

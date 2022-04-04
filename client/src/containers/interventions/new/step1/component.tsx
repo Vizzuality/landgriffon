@@ -1,97 +1,53 @@
-import { useCallback, useMemo, useState, FC } from 'react';
+import { useCallback, useMemo, FC } from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { isEmpty } from 'lodash';
 
 // hooks
-import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { setFilter, analysisFilters } from 'store/features/analysis/filters';
+import { useAppDispatch } from 'store/hooks';
+import { useBusinessUnits } from 'hooks/business-units';
+import { setSubContentCollapsed } from 'store/features/analysis/ui';
+import {
+  setNewInterventionStep,
+  setNewInterventionData,
+  resetInterventionData,
+} from 'store/features/analysis/scenarios';
 
 // components
 import Input from 'components/forms/input';
 import Label from 'components/forms/label';
 import Textarea from 'components/forms/textarea';
 import Select from 'components/select';
+import Button from 'components/button';
 
-import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
-import Suppliers from 'containers/analysis-visualization/analysis-filters/suppliers/component';
-import OriginRegions from 'containers/analysis-visualization/analysis-filters/origin-regions/component';
+import Materials from 'containers/interventions/smart-filters/materials/component';
+import Suppliers from 'containers/interventions/smart-filters/suppliers/component';
+import OriginRegions from 'containers/interventions/smart-filters/origin-regions/component';
 
 // types
-import type { SelectOptions, SelectOption } from 'components/select/types';
-import type { AnalysisFiltersState } from 'store/features/analysis/filters';
-
-//import type { AnalysisState } from 'store/features/analysis';
+import type { SelectOptions } from 'components/select/types';
 import { useInterventionTypes } from 'hooks/analysis';
 
-const businesses = ['business1', 'business2', 'business3'];
-const yearCompletions = [2001, 2015, 2020];
+const schemaValidation = yup.object({
+  interventionDescription: yup.string(),
+  percentage: yup.number().min(0).max(100).required(),
+  materialsIds: yup.array().min(1).required(),
+  businessUnitsIds: yup.string().required(),
+  suppliersIds: yup.array().min(1).required(),
+  adminRegionsIds: yup.array().min(1).required(),
+  endYear: yup
+    .number()
+    .test('len', 'Must be a valid year', (val) => Math.ceil(Math.log(val + 1) / Math.LN10) === 4)
+    .required('error'), // year completion
+  type: yup.string().required(),
+});
+
+const errorMessage = 'Please select all the missing fields';
 
 const Step1: FC = () => {
   const dispatch = useAppDispatch();
-  //const [isOpen, setIsOpen] = useState<boolean>(false);
   const interventionTypes = useInterventionTypes();
-  const filters = useAppSelector(analysisFilters);
-
-  const { materials, origins, suppliers } = filters;
-  const selectedFilters = useMemo(
-    () => ({ materials, origins, suppliers }),
-    [materials, origins, suppliers],
-  );
-
-  const [moreFilters, setMoreFilters] = useState(selectedFilters);
-  // const { data: sourcingRegions, isLoading: isLoadingSourcingRegions } = useSourcingRegions();
-
-  // const handleApply = useCallback(() => {
-  //   dispatch(
-  //     setFilters({
-  //       materials: moreFilters.materials || INITIAL_FILTERS.materials,
-  //       origins: moreFilters.origins || INITIAL_FILTERS.origins,
-  //       suppliers: moreFilters.suppliers || INITIAL_FILTERS.suppliers,
-  //     } as AnalysisFiltersState),
-  //   );
-  //   // setOpen(false);
-  // }, [dispatch, moreFilters]);
-
-  const handleChangeFilter = useCallback(
-    // only save ids on store
-    (key, values) => {
-      setMoreFilters({
-        ...moreFilters,
-        [key]: values,
-      } as AnalysisFiltersState);
-    },
-    [moreFilters],
-  );
-
-  const business = 'business2';
-  const yearCompletion = 2015;
-  const interventionType = '';
-
-  const optionsBusinesses: SelectOptions = useMemo(
-    () =>
-      businesses.map((business) => ({
-        label: business,
-        value: business,
-      })),
-    [],
-  );
-
-  const currentBusiness = useMemo<SelectOption>(
-    () => optionsBusinesses?.find((option) => option.value === business),
-    [optionsBusinesses],
-  );
-
-  const optionsYearCompletion: SelectOptions = useMemo(
-    () =>
-      yearCompletions.map((YearCompletion) => ({
-        label: YearCompletion.toString(),
-        value: YearCompletion,
-      })),
-    [],
-  );
-
-  const currentYearCompletion = useMemo<SelectOption>(
-    () => optionsYearCompletion?.find((option) => option.value === yearCompletion),
-    [optionsYearCompletion],
-  );
 
   const optionsInterventionType: SelectOptions = useMemo(
     () =>
@@ -99,38 +55,68 @@ const Step1: FC = () => {
         label: title,
         value: slug,
       })),
-    [],
+    [interventionTypes],
   );
 
-  const currentInterventionType = useMemo<SelectOption>(
-    () => optionsInterventionType?.find((option) => option.value === interventionType),
-    [optionsInterventionType],
+  const { data: businesses, isLoading: isLoadingBusinesses } = useBusinessUnits();
+
+  const optionsBusinesses: SelectOptions = useMemo(
+    () =>
+      businesses.map(({ name, id }) => ({
+        label: name,
+        value: id,
+      })),
+    [businesses],
   );
 
-  const isLoadingBusinesses = false;
-  const isLoadingYearCompletion = false;
-  const isLoadingInterventionTypes = false;
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    clearErrors,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schemaValidation),
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
+  });
 
-  const handleInterventionType = useCallback(
-    ({ value }) =>
-      dispatch(
-        setFilter({
-          id: 'interventionType',
-          value,
-        }),
-      ),
-    [dispatch],
+  const handleContinue = useCallback(
+    (values) => {
+      if (isEmpty(errors)) {
+        dispatch(setNewInterventionData(values));
+        dispatch(setNewInterventionStep(2));
+      }
+    },
+    [dispatch, errors],
   );
+
+  const handleDropdown = useCallback(
+    (id, values) => {
+      const valuesIds = Array.isArray(values) ? values.map(({ value }) => value) : values;
+      setValue(id, valuesIds);
+      clearErrors(id);
+    },
+    [setValue, clearErrors],
+  );
+
+  const handleCancel = useCallback(() => {
+    dispatch(setSubContentCollapsed(true));
+    dispatch(setNewInterventionStep(1));
+    dispatch(resetInterventionData());
+  }, [dispatch]);
 
   return (
-    <>
+    <form onSubmit={handleSubmit(handleContinue)}>
       <fieldset className="sm:col-span-3 text-sm">
         <div className="mt-6">
           <Label htmlFor="intervention_description">
             Intervention description <span className="text-gray-600">(optional)</span>
           </Label>
-          <div className="mt-1">
+          <div className="mt-3">
             <Textarea
+              {...register('interventionDescription')}
               id="intervention_description"
               name="intervention_description"
               rows={3}
@@ -141,10 +127,11 @@ const Step1: FC = () => {
         </div>
       </fieldset>
 
-      <fieldset className="mt-1 flex flex-col">
+      <fieldset className="mt-4 flex flex-col">
         <p className="font-medium leading-5 text-sm">Apply intervention to:</p>
-        <div className="flex items-center text-green-700 space-x-2">
+        <div className="flex items-center text-green-700 space-x-1">
           <Input
+            {...register('percentage')}
             type="number"
             name="percentage"
             id="percentage"
@@ -155,76 +142,110 @@ const Step1: FC = () => {
             defaultValue={100}
             theme="inline-primary"
             unit="%"
+            className="whitespace-nowrap"
+            error={errors?.endYear?.message}
+            showHint={!!errors?.endYear?.message}
           />
 
-          <span className="text-gray-700 font-medium">of</span>
+          <span className="text-gray-700">of</span>
           <div className="font-bold">
             <Materials
+              {...register('materialsIds')}
               multiple
               withSourcingLocations
-              current={filters.materials}
-              onChange={(values) => handleChangeFilter('materials', values)}
-              theme="inline-primary"
+              current={watch('materials')}
+              onChange={(values) => handleDropdown('materialsIds', values)}
               ellipsis
+              theme="inline-primary"
+              error={!!errors?.materialsIds?.message}
             />
           </div>
-          <span className="text-gray-700 font-medium">for</span>
+          <span className="text-gray-700">for</span>
           <Select
+            {...register('businessUnitsIds')}
             loading={isLoadingBusinesses}
-            current={currentBusiness}
+            current={watch('businessUnitsIds')}
             options={optionsBusinesses}
             placeholder="all businesses"
-            // onChange={() => onChange('businesses', currentBusiness.value)}
             theme="inline-primary"
+            onChange={({ value }) => handleDropdown('businessUnitsIds', value)}
+            error={!!errors?.businessUnitsIds?.message}
           />
           <span className="text-gray-700 font-medium">from</span>
           <Suppliers
+            {...register('suppliersIds')}
             multiple
             withSourcingLocations
-            current={filters.suppliers}
-            onChange={(values) => handleChangeFilter('suppliers', values)}
+            current={watch('suppliers')}
+            onChange={(values) => handleDropdown('suppliersIds', values)}
             theme="inline-primary"
+            error={!!errors?.suppliersIds?.message}
           />
           <span className="text-gray-700 font-medium">in</span>
           <OriginRegions
+            {...register('adminRegionsIds')}
             multiple
             withSourcingLocations
-            current={filters.origins}
-            onChange={(values) => handleChangeFilter('origins', values)}
+            current={watch('originRegions')}
+            onChange={(values) => handleDropdown('adminRegionsIds', values)}
             theme="inline-primary"
+            error={!!errors?.adminRegionsIds?.message}
           />
           <span className="text-gray-700 font-medium">.</span>
         </div>
       </fieldset>
-      <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
+      <div className="mt-9 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
         <div className="text-sm font-medium text-gray-700">
-          <span>Year of completion</span>
+          <span>
+            Year of completion
+            <sup>*</sup>
+          </span>
           <div className="mt-1">
-            <Select
-              loading={isLoadingYearCompletion}
-              current={currentYearCompletion}
-              options={optionsYearCompletion}
-              placeholder="Select"
-              // onChange={() => onChange('year_completion', currentYearCompletion.value)}
+            <Input
+              {...register('endYear')}
+              type="number"
+              name="endYear"
+              id="endYear"
+              defaultValue=""
+              placeholder="Insert year"
+              aria-label="year"
+              error={errors?.endYear?.message}
             />
           </div>
         </div>
 
         <div className="text-sm font-medium text-gray-700">
-          <span>Type of intervention</span>
+          <span>
+            Type of intervention
+            <sup>*</sup>
+          </span>
           <div className="mt-1">
             <Select
-              loading={isLoadingInterventionTypes}
-              current={currentInterventionType}
+              {...register('type')}
+              current={watch('type')}
               options={optionsInterventionType}
               placeholder="Select"
-              onChange={handleInterventionType}
-              // onChange={({ value }) => dispatch(setFilter({ id: 'interventionType', value: value }))}
+              onChange={({ value }) => handleDropdown('type', value)}
             />
           </div>
         </div>
       </div>
-    </>
+      <div className="pt-10 flex justify-between items-center">
+        {!isEmpty(errors) && (
+          <div className="mt-2 text-sm text-red-600">
+            <p className="first-letter:uppercase">{errorMessage}</p>
+          </div>
+        )}
+        <div className="flex justify-end flex-1">
+          <Button type="button" onClick={handleCancel} theme="secondary">
+            Cancel
+          </Button>
+          <Button type="submit" className="ml-3">
+            Continue
+          </Button>
+        </div>
+      </div>
+    </form>
   );
 };
 

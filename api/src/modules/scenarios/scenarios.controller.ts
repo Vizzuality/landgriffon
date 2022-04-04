@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
 import { ScenariosService } from 'modules/scenarios/scenarios.service';
@@ -30,6 +31,7 @@ import { Scenario, scenarioResource } from 'modules/scenarios/scenario.entity';
 import { CreateScenarioDto } from 'modules/scenarios/dto/create.scenario.dto';
 import { UpdateScenarioDto } from 'modules/scenarios/dto/update.scenario.dto';
 import { PaginationMeta } from 'utils/app-base.service';
+import { SetUserInterceptor } from 'decorators/set-user.interceptor';
 
 @Controller(`/api/v1/scenarios`)
 @ApiTags(scenarioResource.className)
@@ -81,6 +83,7 @@ export class ScenariosController {
   @ApiBadRequestResponse({
     description: 'Bad Request. Incorrect or missing parameters',
   })
+  @UseInterceptors(SetUserInterceptor)
   @Post()
   async create(@Body() dto: CreateScenarioDto): Promise<Scenario> {
     return await this.scenariosService.serialize(
@@ -91,6 +94,7 @@ export class ScenariosController {
   @ApiOperation({ description: 'Updates a scenario' })
   @ApiOkResponse({ type: Scenario })
   @ApiNotFoundResponse({ description: 'Scenario not found' })
+  @UseInterceptors(SetUserInterceptor)
   @Patch(':id')
   async update(
     @Body(new ValidationPipe()) dto: UpdateScenarioDto,

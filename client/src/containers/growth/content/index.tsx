@@ -79,7 +79,7 @@ const GowthForm: FC = () => {
 
       <fieldset className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2 text-sm font-medium text-gray-700">
         <div className="space-y-1">
-          <Label>Business unity</Label>
+          <Label>Business unit</Label>
           <Select
             loading={isLoadingBusinessUnity}
             current={currentBusinessUnity}

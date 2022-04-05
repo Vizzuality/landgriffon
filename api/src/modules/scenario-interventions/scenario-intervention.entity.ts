@@ -99,6 +99,7 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   @ManyToOne(
     () => Scenario,
     (scenario: Scenario) => scenario.scenarioInterventions,
+    { onDelete: 'CASCADE' },
   )
   @ApiProperty({ type: () => Scenario })
   @JoinColumn({ name: 'scenarioId' })
@@ -185,7 +186,7 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
     () => SourcingLocation,
     (sourcingLocations: SourcingLocation) =>
       sourcingLocations.scenarioIntervention,
-    { cascade: true, onDelete: 'CASCADE' },
+    { cascade: true },
   )
   newSourcingLocations?: SourcingLocation[];
 

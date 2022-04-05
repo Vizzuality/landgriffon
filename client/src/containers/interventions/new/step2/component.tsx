@@ -69,7 +69,7 @@ const Step2: FC = () => {
   const dispatch = useAppDispatch();
   const filters = useAppSelector(analysisFilters);
   const { interventionType } = filters;
-  const { currentScenario, interventionMode } = useAppSelector(scenarios);
+  const { currentScenario, interventionMode, currentIntervention } = useAppSelector(scenarios);
 
   const schemaValidation = useMemo(() => getSchemaValidation(interventionType), [interventionType]);
 
@@ -132,7 +132,7 @@ const Step2: FC = () => {
       if (interventionMode === 'edit') {
         updateIntervention.mutate(
           {
-            id: 'interventionID',
+            id: currentIntervention,
             data: {
               ...parsedData,
             },
@@ -150,6 +150,7 @@ const Step2: FC = () => {
     },
     [
       currentScenario,
+      currentIntervention,
       newInterventionData,
       type,
       createIntervention,

@@ -14,17 +14,8 @@ import { useInterventionsIndicators } from 'hooks/interventions';
 
 const Step2: FC = () => {
   const [landgriffonEstimates, setLandgriffonEstimates] = useState(false);
-  // const { data: indicators, isFetching, isFetched, error } = useInterventionsIndicators();
 
   const { data } = useInterventionsIndicators();
-  const indicatorsValues = () =>
-    data.reduce(
-      (obj, indicator) => ({
-        ...obj,
-        [indicator.name]: indicator.value,
-      }),
-      {},
-    );
 
   const {
     register,

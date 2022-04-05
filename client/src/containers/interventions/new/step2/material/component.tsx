@@ -26,7 +26,13 @@ const Material = () => {
     [materials],
   );
 
-  const { register, setValue, watch, clearErrors } = useFormContext();
+  const {
+    register,
+    setValue,
+    watch,
+    clearErrors,
+    formState: { errors },
+  } = useFormContext();
 
   const handleDropdown = useCallback(
     (id, values) => {
@@ -54,6 +60,7 @@ const Material = () => {
               options={optionsMaterials}
               placeholder="Select"
               onChange={({ value }) => handleDropdown('newMaterialId', value)}
+              error={!!errors?.newMaterialId}
             />
           </div>
 
@@ -67,6 +74,8 @@ const Material = () => {
               aria-label="material tons"
               placeholder="0"
               defaultValue={0}
+              error={errors?.materialTons}
+              showHint={false}
             />
           </div>
         </div>

@@ -124,7 +124,7 @@ const Step2: FC = () => {
             toast.success('A new intervention has been created');
           },
           onError: () => {
-            toast.success('There has been a problem creating the intervention');
+            toast.error('There has been a problem creating the intervention');
           },
         });
       }

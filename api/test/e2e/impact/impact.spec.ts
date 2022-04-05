@@ -36,6 +36,12 @@ import { SourcingLocationGroupRepository } from 'modules/sourcing-location-group
 import { UnitRepository } from 'modules/units/unit.repository';
 import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
+import {
+  groupByBusinessUnitResponseData,
+  groupByMaterialResponseData,
+  groupByOriginResponseData,
+  groupBySupplierResponseData,
+} from './response-mocks.impact';
 
 describe('Impact Table and Charts test suite (e2e)', () => {
   let app: INestApplication;
@@ -351,5 +357,368 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     expect(response.body.data.purchasedTonnes[1].value).toEqual(
       previousNonProjectedValue + (previousNonProjectedValue * 1.5) / 100,
     );
+  });
+
+  describe('Group By tests', () => {
+    test('Impact table grouped by Material should be successful', async () => {
+      const adminRegion: AdminRegion = await createAdminRegion({
+        name: 'Fake AdminRegion',
+      });
+      const unit: Unit = await createUnit({ shortName: 'fakeUnit' });
+      const indicator: Indicator = await createIndicator({
+        name: 'Fake Indicator',
+        unit,
+      });
+
+      const material1: Material = await createMaterial({
+        name: 'Fake Material 1',
+      });
+      const material2: Material = await createMaterial({
+        name: 'Fake Material 2',
+      });
+
+      const businessUnit: BusinessUnit = await createBusinessUnit({
+        name: 'Fake Business Unit',
+      });
+
+      const supplier: Supplier = await createSupplier({
+        name: 'Fake Supplier',
+      });
+
+      const sourcingLocation1: SourcingLocation = await createSourcingLocation({
+        material: material1,
+        businessUnit,
+        t1Supplier: supplier,
+        adminRegion,
+      });
+
+      const sourcingLocation2: SourcingLocation = await createSourcingLocation({
+        material: material2,
+        businessUnit,
+        t1Supplier: supplier,
+        adminRegion,
+      });
+
+      for await (const [index, year] of [2010, 2011, 2012].entries()) {
+        const startTonnage: number = 100;
+        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+          value: 1000 + index / 0.02,
+          indicator,
+        });
+
+        await createSourcingRecord({
+          tonnage: startTonnage + 100 * index,
+          year,
+          indicatorRecords: [indicatorRecord],
+          sourcingLocation: sourcingLocation1,
+        });
+      }
+
+      for await (const [index, year] of [2010, 2011, 2012].entries()) {
+        const startTonnage: number = 1000;
+        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+          value: 2000 + index / 0.02,
+          indicator,
+        });
+
+        await createSourcingRecord({
+          tonnage: startTonnage + 100 * index,
+          year,
+          indicatorRecords: [indicatorRecord],
+          sourcingLocation: sourcingLocation2,
+        });
+      }
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/impact/table')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [indicator.id],
+          endYear: 2013,
+          startYear: 2010,
+          groupBy: 'material',
+        })
+        .expect(HttpStatus.OK);
+
+      expect(response.body.data.impactTable[0].rows).toHaveLength(2);
+      expect(response.body.data.impactTable[0].rows).toEqual(
+        expect.arrayContaining(groupByMaterialResponseData.rows),
+      );
+      expect(response.body.data.impactTable[0].yearSum).toEqual(
+        expect.arrayContaining(groupByMaterialResponseData.yearSum),
+      );
+    });
+
+    test('Impact table grouped by Region should be successful', async () => {
+      const adminRegion1: AdminRegion = await createAdminRegion({
+        name: 'Fake AdminRegion 1',
+      });
+
+      const adminRegion2: AdminRegion = await createAdminRegion({
+        name: 'Fake AdminRegion 2',
+      });
+      const unit: Unit = await createUnit({ shortName: 'fakeUnit' });
+      const indicator: Indicator = await createIndicator({
+        name: 'Fake Indicator',
+        unit,
+      });
+
+      const material: Material = await createMaterial({
+        name: 'Fake Material',
+      });
+
+      const businessUnit: BusinessUnit = await createBusinessUnit({
+        name: 'Fake Business Unit',
+      });
+
+      const supplier: Supplier = await createSupplier({
+        name: 'Fake Supplier',
+      });
+
+      const sourcingLocation1: SourcingLocation = await createSourcingLocation({
+        material: material,
+        businessUnit,
+        t1Supplier: supplier,
+        adminRegion: adminRegion1,
+      });
+
+      const sourcingLocation2: SourcingLocation = await createSourcingLocation({
+        material: material,
+        businessUnit,
+        t1Supplier: supplier,
+        adminRegion: adminRegion2,
+      });
+
+      for await (const [index, year] of [2010, 2011, 2012].entries()) {
+        const startTonnage: number = 100;
+        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+          value: 600 + index / 0.02,
+          indicator,
+        });
+
+        await createSourcingRecord({
+          tonnage: startTonnage + 100 * index,
+          year,
+          indicatorRecords: [indicatorRecord],
+          sourcingLocation: sourcingLocation1,
+        });
+      }
+
+      for await (const [index, year] of [2010, 2011, 2012].entries()) {
+        const startTonnage: number = 1000;
+        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+          value: 500 + index / 0.02,
+          indicator,
+        });
+
+        await createSourcingRecord({
+          tonnage: startTonnage + 100 * index,
+          year,
+          indicatorRecords: [indicatorRecord],
+          sourcingLocation: sourcingLocation2,
+        });
+      }
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/impact/table')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [indicator.id],
+          endYear: 2013,
+          startYear: 2010,
+          groupBy: 'region',
+        })
+        .expect(HttpStatus.OK);
+
+      expect(response.body.data.impactTable[0].rows).toHaveLength(2);
+      expect(response.body.data.impactTable[0].rows).toEqual(
+        expect.arrayContaining(groupByOriginResponseData.rows),
+      );
+      expect(response.body.data.impactTable[0].yearSum).toEqual(
+        expect.arrayContaining(groupByOriginResponseData.yearSum),
+      );
+    });
+
+    test('Impact table grouped by Supplier should be successful', async () => {
+      const adminRegion: AdminRegion = await createAdminRegion({
+        name: 'Fake AdminRegion',
+      });
+
+      const unit: Unit = await createUnit({ shortName: 'fakeUnit' });
+      const indicator: Indicator = await createIndicator({
+        name: 'Fake Indicator',
+        unit,
+      });
+
+      const material: Material = await createMaterial({
+        name: 'Fake Material',
+      });
+
+      const businessUnit: BusinessUnit = await createBusinessUnit({
+        name: 'Fake Business Unit',
+      });
+
+      const supplier1: Supplier = await createSupplier({
+        name: 'Fake Supplier 1',
+      });
+
+      const supplier2: Supplier = await createSupplier({
+        name: 'Fake Supplier 2',
+      });
+
+      const sourcingLocation1: SourcingLocation = await createSourcingLocation({
+        material: material,
+        businessUnit,
+        t1Supplier: supplier1,
+        adminRegion: adminRegion,
+      });
+
+      const sourcingLocation2: SourcingLocation = await createSourcingLocation({
+        material: material,
+        businessUnit,
+        t1Supplier: supplier2,
+        adminRegion: adminRegion,
+      });
+
+      for await (const [index, year] of [2010, 2011, 2012].entries()) {
+        const startTonnage: number = 100;
+        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+          value: 100 + index / 0.02,
+          indicator,
+        });
+
+        await createSourcingRecord({
+          tonnage: startTonnage + 100 * index,
+          year,
+          indicatorRecords: [indicatorRecord],
+          sourcingLocation: sourcingLocation1,
+        });
+      }
+
+      for await (const [index, year] of [2010, 2011, 2012].entries()) {
+        const startTonnage: number = 1000;
+        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+          value: 300 + index / 0.02,
+          indicator,
+        });
+
+        await createSourcingRecord({
+          tonnage: startTonnage + 100 * index,
+          year,
+          indicatorRecords: [indicatorRecord],
+          sourcingLocation: sourcingLocation2,
+        });
+      }
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/impact/table')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [indicator.id],
+          endYear: 2013,
+          startYear: 2010,
+          groupBy: 'supplier',
+        })
+        .expect(HttpStatus.OK);
+
+      expect(response.body.data.impactTable[0].rows).toHaveLength(2);
+      expect(response.body.data.impactTable[0].rows).toEqual(
+        expect.arrayContaining(groupBySupplierResponseData.rows),
+      );
+      expect(response.body.data.impactTable[0].yearSum).toEqual(
+        expect.arrayContaining(groupBySupplierResponseData.yearSum),
+      );
+    });
+
+    test('Impact table grouped by Business Unit should be successful', async () => {
+      const adminRegion: AdminRegion = await createAdminRegion({
+        name: 'Fake AdminRegion',
+      });
+
+      const unit: Unit = await createUnit({ shortName: 'fakeUnit' });
+      const indicator: Indicator = await createIndicator({
+        name: 'Fake Indicator',
+        unit,
+      });
+
+      const material: Material = await createMaterial({
+        name: 'Fake Material',
+      });
+
+      const businessUnit1: BusinessUnit = await createBusinessUnit({
+        name: 'Fake BusinessUnit 1',
+      });
+
+      const businessUnit2: BusinessUnit = await createBusinessUnit({
+        name: 'Fake BusinessUnit 2',
+      });
+
+      const supplier1: Supplier = await createSupplier({
+        name: 'Fake Supplier 1',
+      });
+
+      const supplier2: Supplier = await createSupplier({
+        name: 'Fake Supplier 2',
+      });
+
+      const sourcingLocation1: SourcingLocation = await createSourcingLocation({
+        material: material,
+        businessUnit: businessUnit1,
+        t1Supplier: supplier1,
+        adminRegion: adminRegion,
+      });
+
+      const sourcingLocation2: SourcingLocation = await createSourcingLocation({
+        material: material,
+        businessUnit: businessUnit2,
+        t1Supplier: supplier2,
+        adminRegion: adminRegion,
+      });
+
+      for await (const [index, year] of [2010, 2011, 2012].entries()) {
+        const startTonnage: number = 100;
+        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+          value: 100 + index / 0.02,
+          indicator,
+        });
+
+        await createSourcingRecord({
+          tonnage: startTonnage + 100 * index,
+          year,
+          indicatorRecords: [indicatorRecord],
+          sourcingLocation: sourcingLocation1,
+        });
+      }
+
+      for await (const [index, year] of [2010, 2011, 2012].entries()) {
+        const startTonnage: number = 1000;
+        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+          value: 300 + index / 0.02,
+          indicator,
+        });
+
+        await createSourcingRecord({
+          tonnage: startTonnage + 100 * index,
+          year,
+          indicatorRecords: [indicatorRecord],
+          sourcingLocation: sourcingLocation2,
+        });
+      }
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/impact/table')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [indicator.id],
+          endYear: 2013,
+          startYear: 2010,
+          groupBy: 'business-unit',
+        })
+        .expect(HttpStatus.OK);
+
+      expect(response.body.data.impactTable[0].rows).toHaveLength(2);
+      expect(response.body.data.impactTable[0].rows).toEqual(
+        expect.arrayContaining(groupByBusinessUnitResponseData.rows),
+      );
+      expect(response.body.data.impactTable[0].yearSum).toEqual(
+        expect.arrayContaining(groupByBusinessUnitResponseData.yearSum),
+      );
+    });
   });
 });

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from 'store';
-import type { Scenario } from 'containers/scenarios/types';
+import type { Scenario, Intervention } from 'containers/scenarios/types';
 
 export type ScenariosState = {
   mode: 'list' | 'edit';
@@ -10,6 +10,8 @@ export type ScenariosState = {
   scenarioToCompare: Scenario['id'];
   scenarioCurrentTab: 'interventions' | 'growth';
   interventionsStep: 1 | 2;
+  interventionMode: 'edit' | 'create';
+  currentIntervention: Intervention['id'];
   newInterventionData: {
     title: string;
     interventionDescription?: string;
@@ -54,6 +56,8 @@ export const initialState: ScenariosState = {
   scenarioToCompare: null,
   scenarioCurrentTab: 'interventions',
   interventionsStep: 1,
+  interventionMode: 'create',
+  currentIntervention: null,
   newInterventionData: {
     title: 'InterventionTitle',
     interventionDescription: null,
@@ -127,6 +131,17 @@ export const analysisScenariosSlice = createSlice({
       ...state,
       interventionsStep: action.payload,
     }),
+    setCurrentIntervention: (
+      state,
+      action: PayloadAction<ScenariosState['currentIntervention']>,
+    ) => ({
+      ...state,
+      currentIntervention: action.payload,
+    }),
+    setInterventionMode: (state, action: PayloadAction<ScenariosState['interventionMode']>) => ({
+      ...state,
+      interventionMode: action.payload,
+    }),
     setSearchTerm: (state, action: PayloadAction<ScenariosState['searchTerm']>) => ({
       ...state,
       searchTerm: action.payload,
@@ -157,6 +172,8 @@ export const {
   setScenarioFilter,
   setSort,
   setNewInterventionStep,
+  setCurrentIntervention,
+  setInterventionMode,
   setSearchTerm,
   setNewInterventionData,
   resetInterventionData,

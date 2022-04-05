@@ -5,9 +5,23 @@ import { AppModule } from 'app.module';
 import { Scenario, SCENARIO_STATUS } from 'modules/scenarios/scenario.entity';
 import { ScenariosModule } from 'modules/scenarios/scenarios.module';
 import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
-import { createScenario } from '../../entity-mocks';
+import {
+  createScenario,
+  createScenarioIntervention,
+  createSourcingLocation,
+  createSourcingRecord,
+} from '../../entity-mocks';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
+import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
+import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
+import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import {
+  SourcingLocation,
+  SOURCING_LOCATION_TYPE_BY_INTERVENTION,
+} from 'modules/sourcing-locations/sourcing-location.entity';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -21,6 +35,9 @@ const expectedJSONAPIAttributes: string[] = [
 describe('ScenariosModule (e2e)', () => {
   let app: INestApplication;
   let scenarioRepository: ScenarioRepository;
+  let scenarioInterventionRepository: ScenarioInterventionRepository;
+  let sourcingLocationRepository: SourcingLocationRepository;
+  let sourcingRecordRepository: SourcingRecordRepository;
   let jwtToken: string;
   let userId: string;
 
@@ -31,6 +48,16 @@ describe('ScenariosModule (e2e)', () => {
 
     scenarioRepository =
       moduleFixture.get<ScenarioRepository>(ScenarioRepository);
+    scenarioInterventionRepository =
+      moduleFixture.get<ScenarioInterventionRepository>(
+        ScenarioInterventionRepository,
+      );
+    sourcingLocationRepository = moduleFixture.get<SourcingLocationRepository>(
+      SourcingLocationRepository,
+    );
+    sourcingRecordRepository = moduleFixture.get<SourcingRecordRepository>(
+      SourcingRecordRepository,
+    );
 
     app = getApp(moduleFixture);
     await app.init();
@@ -126,6 +153,45 @@ describe('ScenariosModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(await scenarioRepository.findOne(scenario.id)).toBeUndefined();
+    });
+  });
+
+  describe('Cascade delete os Scenario', () => {
+    test('When Scenario is deleted, related interventions must be deleted as well', async () => {
+      const scenario: Scenario = await createScenario();
+      const scenarioIntervention: ScenarioIntervention =
+        await createScenarioIntervention({ scenario });
+
+      const sourcingLocation: SourcingLocation = await createSourcingLocation({
+        scenarioInterventionId: scenarioIntervention.id,
+        interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+      });
+
+      await createSourcingRecord({ sourcingLocationId: sourcingLocation.id });
+
+      const interventions: ScenarioIntervention[] =
+        await scenarioInterventionRepository.find();
+      const sourcingLocations: SourcingLocation[] =
+        await sourcingLocationRepository.find();
+      const sourcingRecords: SourcingRecord[] =
+        await sourcingRecordRepository.find();
+
+      expect(interventions.length).toBe(1);
+      expect(sourcingLocations.length).toBe(1);
+      expect(sourcingRecords.length).toBe(1);
+
+      await scenarioRepository.delete(scenario.id);
+
+      const interventionsAfterDelete: ScenarioIntervention[] =
+        await scenarioInterventionRepository.find();
+      const sourcingLocationsAfterDelete: SourcingLocation[] =
+        await sourcingLocationRepository.find();
+      const sourcingRecordsAfterDelete: SourcingRecord[] =
+        await sourcingRecordRepository.find();
+
+      expect(interventionsAfterDelete.length).toBe(0);
+      expect(sourcingLocationsAfterDelete.length).toBe(0);
+      expect(sourcingRecordsAfterDelete.length).toBe(0);
     });
   });
 

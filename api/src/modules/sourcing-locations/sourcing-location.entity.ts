@@ -206,11 +206,11 @@ export class SourcingLocation extends TimestampedBaseEntity {
   @OneToMany(
     () => SourcingRecord,
     (sourcingRecords: SourcingRecord) => sourcingRecords.sourcingLocation,
-    { cascade: true, onDelete: 'CASCADE' },
+    { cascade: true },
   )
   sourcingRecords: SourcingRecord[];
 
-  @ManyToOne(() => ScenarioIntervention)
+  @ManyToOne(() => ScenarioIntervention, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'scenarioInterventionId' })
   scenarioIntervention: ScenarioIntervention;
   @Column({ nullable: true })

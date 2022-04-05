@@ -25,13 +25,16 @@ const InterventionsList: FC<ScenarioInterventionsGrowthItems> = ({
 }: ScenarioInterventionsGrowthItems) => {
   const dispatch = useAppDispatch();
   const [isOpen, setIsOpen] = useState({});
+  const [isDisabled, setDisabled] = useState({});
 
   const handleToggleOpen = useCallback(
-    (id) =>
+    (e, id) => {
+      e.preventDefault();
       setIsOpen((prev) => ({
         prev: false,
         [id]: !prev[id],
-      })),
+      }));
+    },
     [setIsOpen],
   );
 
@@ -64,24 +67,39 @@ const InterventionsList: FC<ScenarioInterventionsGrowthItems> = ({
   );
 
   const handleDisable = useCallback(
-    (id) =>
+    (e, id) => {
+      e.stopPropagation();
+      const status = !!isDisabled[id] ? 'active' : 'inactive';
+      const sucessMessage = {
+        active: 'The intervention has been disabled',
+        inactive: 'There intervention has been enabled',
+      };
+      const errorMessage = {
+        active: 'There was a problem enabling the intervention',
+        inactive: 'There was a problem disabling the intervention',
+      };
       updateIntervention.mutate(
         {
           id,
           data: {
-            status: 'inactive',
+            status,
           },
         },
         {
           onSuccess: () => {
-            toast.success('There intervention has been disabled');
+            toast.success(sucessMessage[status]);
           },
           onError: () => {
-            toast.error('There was a problem disabling the intervention');
+            toast.error(errorMessage[status]);
           },
         },
-      ),
-    [updateIntervention],
+      );
+      setDisabled((prev) => ({
+        prev: false,
+        [id]: !prev[id],
+      }));
+    },
+    [updateIntervention, isDisabled],
   );
 
   return items?.length > 0 ? (
@@ -89,27 +107,36 @@ const InterventionsList: FC<ScenarioInterventionsGrowthItems> = ({
       {items.map(({ id, title }, index) => (
         <li
           key={id}
-          className={classNames('px-4 py-4 sm:px-6 border first:rounded-t-md last:rounded-b-md', {
-            ' bg-green-50': isOpen[id],
-            'border-gray-30': !isOpen[id],
-            'border-y-green-700': isOpen[id] && index !== 0 && index !== items.length - 1,
-            'first:border-t-gray-30 first:border-b-green-700 last:border-t-green-700 last:border-t-gray-3':
-              isOpen[id] && (index === 0 || index === items.length - 1),
-          })}
-          onClick={() => handleToggleOpen(id)}
+          className={classNames(
+            'pointer-events-auto px-4 py-4 sm:px-6 border first:rounded-t-md last:rounded-b-md',
+            {
+              ' bg-green-50': isOpen[id] && !isDisabled[id],
+              'border-gray-30': !isOpen[id],
+              'border-y-green-700': isOpen[id] && index !== 0 && index !== items.length - 1,
+              'first:border-t-gray-30 first:border-b-green-700 last:border-t-green-700 last:border-t-gray-3':
+                isOpen[id] && (index === 0 || index === items.length - 1),
+              'bg-gray-100 text-gray-500': !!isDisabled[id],
+            },
+          )}
+          onClick={(e) => handleToggleOpen(e, id)}
         >
           {title}
           {isOpen[id] && (
             <>
-              <p className="text-sm text-green-700 py-4">
+              <p
+                className={classNames(
+                  'text-sm py-4',
+                  !!isDisabled[id] ? 'text-gray-500' : 'text-green-700',
+                )}
+              >
                 New contract with sustainability assesment.
               </p>
               <div className="flex justify-start space-x-2">
                 <Button theme="secondary" size="xs" onClick={() => handleDelete(id)}>
                   Delete
                 </Button>
-                <Button theme="secondary" size="xs" onClick={() => handleDisable(id)}>
-                  Disable
+                <Button theme="secondary" size="xs" onClick={(e) => handleDisable(e, id)}>
+                  {!!isDisabled[id] ? 'Enable' : 'Disable'}
                 </Button>
                 <Button size="xs" onClick={() => handleEdit(id)}>
                   Edit

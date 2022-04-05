@@ -26,13 +26,15 @@ const Material = () => {
     [materials],
   );
 
-  const { register, setValue, watch } = useFormContext();
+  const { register, setValue, watch, clearErrors } = useFormContext();
 
   const handleDropdown = useCallback(
-    (id: string, value: string | string[] | number) => {
-      setValue(id, value);
+    (id, values) => {
+      const valuesIds = Array.isArray(values) ? values.map(({ value }) => value) : values;
+      setValue(id, valuesIds);
+      clearErrors(id);
     },
-    [setValue],
+    [setValue, clearErrors],
   );
 
   return (
@@ -62,8 +64,6 @@ const Material = () => {
             <Input
               {...register('materialTons')}
               type="number"
-              name="materialTons"
-              id="materialTons"
               aria-label="material tons"
               placeholder="0"
               defaultValue={0}

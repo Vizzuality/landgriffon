@@ -31,6 +31,8 @@ export const {
   setComparisonMode,
   setScenarioTab,
   setNewInterventionStep,
+  setCurrentIntervention,
+  setInterventionMode,
 } = analysisScenariosSlice.actions;
 
 export const analysis = (state: FeatureState) => state.analysis;

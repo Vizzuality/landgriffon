@@ -16,7 +16,7 @@ import { analysisFilters } from 'store/features/analysis/filters';
 import { setSubContentCollapsed } from 'store/features/analysis/ui';
 import { scenarios, setNewInterventionStep } from 'store/features/analysis/scenarios';
 
-import { useCreateNewIntervention } from 'hooks/interventions';
+import { useCreateNewIntervention, useUpdateIntervention } from 'hooks/interventions';
 
 import toast from 'react-hot-toast';
 
@@ -69,7 +69,7 @@ const Step2: FC = () => {
   const dispatch = useAppDispatch();
   const filters = useAppSelector(analysisFilters);
   const { interventionType } = filters;
-  const { currentScenario } = useAppSelector(scenarios);
+  const { currentScenario, interventionMode } = useAppSelector(scenarios);
 
   const schemaValidation = useMemo(() => getSchemaValidation(interventionType), [interventionType]);
 
@@ -87,6 +87,8 @@ const Step2: FC = () => {
   const { type } = newInterventionData;
 
   const createIntervention = useCreateNewIntervention();
+  const updateIntervention = useUpdateIntervention();
+
   const handleStepsSubmissons = useCallback(
     (values) => {
       const parsedData = {
@@ -116,16 +118,45 @@ const Step2: FC = () => {
         },
       };
 
-      createIntervention.mutate(parsedData, {
-        onSuccess: () => {
-          toast.success('A new intervention has been created');
-        },
-        onError: () => {
-          toast.success('There has been a problem creating the intervention');
-        },
-      });
+      if (interventionMode === 'create') {
+        createIntervention.mutate(parsedData, {
+          onSuccess: () => {
+            toast.success('A new intervention has been created');
+          },
+          onError: () => {
+            toast.success('There has been a problem creating the intervention');
+          },
+        });
+      }
+
+      if (interventionMode === 'edit') {
+        updateIntervention.mutate(
+          {
+            id: '2364823',
+            data: {
+              updatedById: 'asds',
+              ...parsedData,
+            },
+          },
+          {
+            onSuccess: () => {
+              toast.success('The intervention has been updated');
+            },
+            onError: () => {
+              toast.error('There has been a problem creating the intervention');
+            },
+          },
+        );
+      }
     },
-    [currentScenario, newInterventionData, type, createIntervention],
+    [
+      currentScenario,
+      newInterventionData,
+      type,
+      createIntervention,
+      interventionMode,
+      updateIntervention,
+    ],
   );
 
   const handleCancel = useCallback(() => {

@@ -140,14 +140,14 @@ export function useDeleteScenario() {
 }
 
 export function useUpdateScenario() {
-  const updateProject = ({ id, data }) =>
+  const updateScenario = ({ id, data }) =>
     apiService.request({
       method: 'PATCH',
       data,
       url: `/scenarios/${decodeURIComponent(id)}`,
     });
 
-  return useMutation(updateProject, {
+  return useMutation(updateScenario, {
     mutationKey: 'editScenario',
   });
 }

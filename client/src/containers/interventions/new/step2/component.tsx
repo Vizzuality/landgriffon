@@ -132,9 +132,8 @@ const Step2: FC = () => {
       if (interventionMode === 'edit') {
         updateIntervention.mutate(
           {
-            id: '2364823',
+            id: 'interventionID',
             data: {
-              updatedById: 'asds',
               ...parsedData,
             },
           },

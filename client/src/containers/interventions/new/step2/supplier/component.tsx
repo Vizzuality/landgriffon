@@ -15,7 +15,7 @@ import { useAdminRegionsTrees } from 'hooks/admin-regions';
 import { useFormContext } from 'react-hook-form';
 
 // types
-import type { SelectOptions } from 'components/select/types';
+import type { SelectOption, SelectOptions } from 'components/select/types';
 
 const Supplier: FC = () => {
   const { data: suppliers, isLoading: isLoadingSuppliers } = useSuppliersTypes({
@@ -70,8 +70,8 @@ const Supplier: FC = () => {
   } = useFormContext();
 
   const handleDropdown = useCallback(
-    (id: string, value: string | string[] | number) => {
-      setValue(id, value);
+    (id: string, value: SelectOption) => {
+      setValue(id, value.value);
     },
     [setValue],
   );
@@ -92,10 +92,10 @@ const Supplier: FC = () => {
             <Select
               {...register('newT1SupplierId')}
               loading={isLoadingSuppliers}
-              current={watch('newT1SupplierId')}
+              current={optionsSuppliers.find((option) => option.value === watch('newT1SupplierId'))}
               options={optionsSuppliers}
               placeholder="Select"
-              onChange={({ value }) => handleDropdown('newT1SupplierId', value)}
+              onChange={(value) => handleDropdown('newT1SupplierId', value)}
               error={!!errors?.newT1SupplierId}
             />
           </div>
@@ -107,10 +107,10 @@ const Supplier: FC = () => {
             <Select
               {...register('newProducerId')}
               loading={isLoadingProducers}
-              current={watch('newProducerId')}
+              current={optionsProducers.find((option) => option.value === watch('newProducerId'))}
               options={optionsProducers}
               placeholder="Select"
-              onChange={({ value }) => handleDropdown('newProducerId', value)}
+              onChange={(value) => handleDropdown('newProducerId', value)}
               error={!!errors?.newProducerId}
             />
           </div>
@@ -129,10 +129,12 @@ const Supplier: FC = () => {
               <Select
                 {...register('newLocationType')}
                 loading={!locationTypes}
-                current={watch('newLocationType')}
+                current={optionsLocationTypes.find(
+                  (option) => option.value === watch('newLocationType'),
+                )}
                 options={optionsLocationTypes}
                 placeholder="all LocationTypes"
-                onChange={({ value }) => handleDropdown('newLocationType', value)}
+                onChange={(value) => handleDropdown('newLocationType', value)}
                 error={!!errors?.newLocationType}
               />
             </div>
@@ -144,10 +146,12 @@ const Supplier: FC = () => {
               <Select
                 {...register('newLocationCountryInput')}
                 loading={isLoadingCountries}
-                current={watch('newLocationCountryInput')}
+                current={optionsCountries.find(
+                  (option) => option.value === watch('newLocationCountryInput'),
+                )}
                 options={optionsCountries}
                 placeholder="All Countries"
-                onChange={({ value }) => handleDropdown('newLocationCountryInput', value)}
+                onChange={(value) => handleDropdown('newLocationCountryInput', value)}
                 error={!!errors?.newLocationCountryInput}
               />
             </div>

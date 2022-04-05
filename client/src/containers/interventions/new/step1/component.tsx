@@ -26,7 +26,7 @@ import Suppliers from 'containers/interventions/smart-filters/suppliers/componen
 import OriginRegions from 'containers/interventions/smart-filters/origin-regions/component';
 
 // types
-import type { SelectOptions } from 'components/select/types';
+import type { SelectOption, SelectOptions } from 'components/select/types';
 import { useInterventionTypes } from 'hooks/analysis';
 
 const schemaValidation = yup.object({
@@ -82,6 +82,18 @@ const Step1: FC = () => {
     reValidateMode: 'onChange',
   });
 
+  const currentBusinessId = watch('businessUnitsIds');
+  const selectedBusinessOption = useMemo(
+    () => optionsBusinesses.find(({ value }) => value === currentBusinessId),
+    [currentBusinessId, optionsBusinesses],
+  );
+
+  const currentInterventionType = watch('type');
+  const selectedInterventionOption = useMemo(
+    () => optionsInterventionType.find(({ value }) => value === currentInterventionType),
+    [currentInterventionType, optionsInterventionType],
+  );
+
   const handleContinue = useCallback(
     (values) => {
       if (isEmpty(errors)) {
@@ -93,8 +105,9 @@ const Step1: FC = () => {
   );
 
   const handleDropdown = useCallback(
-    (id, values) => {
-      const valuesIds = Array.isArray(values) ? values.map(({ value }) => value) : values;
+    (id, values: SelectOption | SelectOption[]) => {
+      const valuesIds = Array.isArray(values) ? values.map(({ value }) => value) : values.value;
+
       setValue(id, valuesIds);
       clearErrors(id);
     },
@@ -164,12 +177,13 @@ const Step1: FC = () => {
           <Select
             {...register('businessUnitsIds')}
             loading={isLoadingBusinesses}
-            current={watch('businessUnitsIds')}
+            current={selectedBusinessOption}
             options={optionsBusinesses}
             placeholder="all businesses"
             theme="inline-primary"
             onChange={(value) => handleDropdown('businessUnitsIds', value)}
             error={!!errors?.businessUnitsIds?.message}
+            allowEmpty
           />
           <span className="text-gray-700 font-medium">from</span>
           <Suppliers
@@ -222,7 +236,7 @@ const Step1: FC = () => {
           <div className="mt-1">
             <Select
               {...register('type')}
-              current={watch('type')}
+              current={selectedInterventionOption}
               options={optionsInterventionType}
               placeholder="Select"
               onChange={(value) => handleDropdown('type', value)}

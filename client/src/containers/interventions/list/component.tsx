@@ -10,7 +10,7 @@ import {
 } from 'store/features/analysis';
 
 // hooks
-import { useDeleteIntervention } from 'hooks/interventions';
+import { useDeleteIntervention, useUpdateIntervention } from 'hooks/interventions';
 
 import toast from 'react-hot-toast';
 
@@ -36,6 +36,7 @@ const InterventionsList: FC<ScenarioInterventionsGrowthItems> = ({
   );
 
   const deleteIntervention = useDeleteIntervention();
+  const updateIntervention = useUpdateIntervention();
 
   const handleDelete = useCallback(
     (id) => {
@@ -62,6 +63,27 @@ const InterventionsList: FC<ScenarioInterventionsGrowthItems> = ({
     [dispatch, isOpen],
   );
 
+  const handleDisable = useCallback(
+    (id) =>
+      updateIntervention.mutate(
+        {
+          id,
+          data: {
+            status: 'inactive',
+          },
+        },
+        {
+          onSuccess: () => {
+            toast.success('There intervention has been disabled');
+          },
+          onError: () => {
+            toast.error('There was a problem disabling the intervention');
+          },
+        },
+      ),
+    [updateIntervention],
+  );
+
   return items?.length > 0 ? (
     <ul className="text-sm bg-white rounded-md mt-4">
       {items.map(({ id, title }, index) => (
@@ -86,7 +108,7 @@ const InterventionsList: FC<ScenarioInterventionsGrowthItems> = ({
                 <Button theme="secondary" size="xs" onClick={() => handleDelete(id)}>
                   Delete
                 </Button>
-                <Button theme="secondary" size="xs">
+                <Button theme="secondary" size="xs" onClick={() => handleDisable(id)}>
                   Disable
                 </Button>
                 <Button size="xs" onClick={() => handleEdit(id)}>

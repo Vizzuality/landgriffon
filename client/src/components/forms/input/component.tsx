@@ -4,7 +4,7 @@ import classnames from 'classnames';
 
 const THEMES = {
   default: {
-    base: 'appearance-none block w-full px-3 py-2 border border-gray-200 rounded-md shadow-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-green-700 focus:border-green-700 text-sm',
+    base: 'appearance-none block w-full px-3 py-2 border rounded-md shadow-sm text-gray-900 placeholder-gray-500 focus:outline-none text-sm',
     icon: 'absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 top-1/2 left-3',
     unit: 'absolute right-3 text-sm text-gray-500',
   },
@@ -43,7 +43,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               'px-0': type === 'checkbox',
               'pl-10': !!icon && theme !== 'inline-primary',
               'pl-3': !!icon && theme === 'inline-primary',
-              'border-red-600 focus:border-red-600': !!error,
+              'border-gray-200 focus:ring-green-700 focus:border-green-700':
+                theme === 'default' && !error,
+              'border-red-600 focus:ring-red-600 focus:border-red-600': !!error,
             })}
             type={type}
             ref={ref}

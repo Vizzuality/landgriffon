@@ -26,7 +26,10 @@ const Step2: FC = () => {
       {},
     );
 
-  const { register } = useFormContext();
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext();
 
   return (
     <>
@@ -60,6 +63,8 @@ const Step2: FC = () => {
                 defaultValue={landgriffonEstimates ? indicator.value : null}
                 value={landgriffonEstimates ? indicator.value : indicatorsValues[indicator.name]}
                 disabled={landgriffonEstimates}
+                error={errors?.[indicator.id]}
+                showHint={false}
               />
             </div>
           ))}

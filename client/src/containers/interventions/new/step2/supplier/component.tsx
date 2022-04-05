@@ -62,7 +62,12 @@ const Supplier: FC = () => {
     [countries],
   );
 
-  const { register, setValue, watch } = useFormContext();
+  const {
+    register,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useFormContext();
 
   const handleDropdown = useCallback(
     (id: string, value: string | string[] | number) => {
@@ -91,6 +96,7 @@ const Supplier: FC = () => {
               options={optionsSuppliers}
               placeholder="Select"
               onChange={({ value }) => handleDropdown('newT1SupplierId', value)}
+              error={!!errors?.newT1SupplierId}
             />
           </div>
 
@@ -105,6 +111,7 @@ const Supplier: FC = () => {
               options={optionsProducers}
               placeholder="Select"
               onChange={({ value }) => handleDropdown('newProducerId', value)}
+              error={!!errors?.newProducerId}
             />
           </div>
         </div>
@@ -126,6 +133,7 @@ const Supplier: FC = () => {
                 options={optionsLocationTypes}
                 placeholder="all LocationTypes"
                 onChange={({ value }) => handleDropdown('newLocationType', value)}
+                error={!!errors?.newLocationType}
               />
             </div>
           </div>
@@ -140,6 +148,7 @@ const Supplier: FC = () => {
                 options={optionsCountries}
                 placeholder="All Countries"
                 onChange={({ value }) => handleDropdown('newLocationCountryInput', value)}
+                error={!!errors?.newLocationCountryInput}
               />
             </div>
           </div>
@@ -153,6 +162,8 @@ const Supplier: FC = () => {
           className="w-full"
           type="text"
           autoComplete="given-address"
+          error={errors?.newLocationAddressInput}
+          showHint={false}
         />
       </fieldset>
     </>

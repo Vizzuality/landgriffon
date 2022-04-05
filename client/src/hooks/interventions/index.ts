@@ -93,7 +93,7 @@ export function useInterventions(queryParams = {}): ResponseInterventionsData {
 
   return useMemo<ResponseInterventionsData>((): ResponseInterventionsData => {
     const data = response.isSuccess && response.data ? response.data : INTERVENTIONS_DATA;
-    //response.data;
+
     return {
       ...response,
       data,
@@ -113,6 +113,24 @@ export function useCreateNewIntervention() {
     mutationKey: 'addIntervention',
     onSuccess: () => {
       console.info('Success creating intervention');
+    },
+    onError: () => {
+      console.info('Error');
+    },
+  });
+}
+
+export function useDeleteIntervention() {
+  const deleteIntervention = (id) =>
+    apiService.request({
+      method: 'DELETE',
+      url: `/scenario-interventions/${id}`,
+    });
+
+  return useMutation(deleteIntervention, {
+    mutationKey: 'deleteIntervention',
+    onSuccess: () => {
+      console.info('The intervention has been deleted ');
     },
     onError: () => {
       console.info('Error');

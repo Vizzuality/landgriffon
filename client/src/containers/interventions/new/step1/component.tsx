@@ -222,10 +222,10 @@ const Step1: FC = () => {
           <div className="mt-1">
             <Select
               {...register('type')}
-              current={optionsInterventionType.find((option) => option.value === watch('type'))}
+              current={watch('type')}
               options={optionsInterventionType}
               placeholder="Select"
-              onChange={({ value }) => handleDropdown('type', value)}
+              onChange={(option) => handleDropdown('type', option)}
             />
           </div>
         </div>

@@ -138,6 +138,19 @@ export function useDeleteIntervention() {
   });
 }
 
+export function useUpdateIntervention() {
+  const updateIntervention = ({ id, data }) =>
+    apiService.request({
+      method: 'PATCH',
+      data,
+      url: `/scenario-interventions/${decodeURIComponent(id)}`,
+    });
+
+  return useMutation(updateIntervention, {
+    mutationKey: 'editIntervention',
+  });
+}
+
 export function useLocationTypes() {
   return useMemo<string[]>(() => {
     return ['Point of production', 'Aggregation point', 'Country of production', 'Unknown'];

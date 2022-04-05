@@ -48,6 +48,7 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
     theme = 'default',
     error = false,
   } = props;
+
   const [selected, setSelected] = useState<SelectProps['current']>(current);
   const [searchTerm, setSearchTerm] = useState<string>('');
 

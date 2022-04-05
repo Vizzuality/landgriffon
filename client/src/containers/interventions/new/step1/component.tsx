@@ -1,5 +1,5 @@
 import { useCallback, useMemo, FC } from 'react';
-import { useForm } from 'react-hook-form';
+import { FieldValues, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { isEmpty } from 'lodash';
@@ -77,6 +77,9 @@ const Step1: FC = () => {
     clearErrors,
     formState: { errors },
   } = useForm({
+    defaultValues: {
+      type: optionsInterventionType[0].value,
+    } as FieldValues,
     resolver: yupResolver(schemaValidation),
     mode: 'onSubmit',
     reValidateMode: 'onChange',
@@ -106,7 +109,9 @@ const Step1: FC = () => {
 
   const handleDropdown = useCallback(
     (id, values: SelectOption | SelectOption[]) => {
-      const valuesIds = Array.isArray(values) ? values.map(({ value }) => value) : values.value;
+      const valuesIds = Array.isArray(values)
+        ? values.map((option) => option?.value)
+        : values?.value;
 
       setValue(id, valuesIds);
       clearErrors(id);
@@ -238,7 +243,6 @@ const Step1: FC = () => {
               {...register('type')}
               current={selectedInterventionOption}
               options={optionsInterventionType}
-              placeholder="Select"
               onChange={(value) => handleDropdown('type', value)}
             />
           </div>

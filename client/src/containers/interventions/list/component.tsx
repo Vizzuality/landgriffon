@@ -1,4 +1,5 @@
 import { FC, useCallback, useState } from 'react';
+import classNames from 'classnames';
 
 import Button from 'components/button';
 
@@ -11,14 +12,12 @@ import {
 
 // hooks
 import { useDeleteIntervention, useUpdateIntervention } from 'hooks/interventions';
+import { useAppDispatch } from 'store/hooks';
 
 import toast from 'react-hot-toast';
 
 // types
 import type { ScenarioInterventionsGrowthItems } from 'containers/scenarios/types';
-import type { ErrorResponse } from 'types';
-import classNames from 'classnames';
-import { useAppDispatch } from 'store/hooks';
 
 const InterventionsList: FC<ScenarioInterventionsGrowthItems> = ({
   items,
@@ -47,9 +46,8 @@ const InterventionsList: FC<ScenarioInterventionsGrowthItems> = ({
         onSuccess: () => {
           toast.success('Intervention succesfully deleted.');
         },
-        onError: (error: ErrorResponse) => {
-          const { errors } = error.response?.data;
-          errors.forEach(({ title }) => toast.error(title));
+        onError: () => {
+          toast.error('There was a problem deleting the intervention.');
         },
       });
     },

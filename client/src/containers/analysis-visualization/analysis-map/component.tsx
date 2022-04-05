@@ -8,13 +8,13 @@ import { XCircleIcon } from '@heroicons/react/solid';
 import { useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
 
-import PopUp from 'components/map/popup';
-import Legend from 'components/map/legend';
-import LegendItem from 'components/map/legend/item';
-import LegendTypeChoropleth from 'components/map/legend/types/choropleth';
-import PageLoading from 'containers/page-loading';
-
 import { useH3MaterialData, useH3RiskData, useH3ImpactData } from 'hooks/h3-data';
+
+import PopUp from 'components/map/popup';
+import LegendItem from 'components/legend/item';
+import LegendTypeChoropleth from 'components/legend/types/choropleth';
+import PageLoading from 'containers/page-loading';
+import Legend from './legend';
 
 import { COLOR_RAMPS, NUMBER_FORMAT } from '../constants';
 
@@ -270,14 +270,14 @@ const AnalysisMap: React.FC = () => {
         </div>
       )}
       {legendItems?.length > 0 && (
-        <Legend
-          className="absolute z-10 bottom-10 right-6 w-72"
-          maxHeight={400}
-          onChangeOrder={() => null}
-        >
-          {legendItems.map((i) => (
-            <LegendItem key={i.id} {...i}>
-              <LegendTypeChoropleth className="text-sm text-gray-500" min={i.min} items={i.items} />
+        <Legend className="absolute z-10 bottom-10 right-6 w-72">
+          {legendItems.map((legendItem) => (
+            <LegendItem key={legendItem.id} {...legendItem}>
+              <LegendTypeChoropleth
+                className="text-sm text-gray-500 flex-1"
+                min={legendItem.min}
+                items={legendItem.items}
+              />
             </LegendItem>
           ))}
         </Legend>

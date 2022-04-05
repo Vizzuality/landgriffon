@@ -1,7 +1,7 @@
 import { useCallback, useMemo, FC } from 'react';
 
 // hooks
-import { useAppDispatch, useAppSelector } from 'store/hooks';
+// import { useAppDispatch, useAppSelector } from 'store/hooks';
 
 //import { analysis, setFilter } from 'store/features/analysis';
 
@@ -12,6 +12,7 @@ import Textarea from 'components/forms/textarea';
 
 // types
 import { SelectOptions, SelectOption } from 'components/select/types';
+import { useBusinessUnits } from 'hooks/business-units';
 
 const GowthForm: FC = () => {
   //const dispatch = useAppDispatch();
@@ -21,30 +22,29 @@ const GowthForm: FC = () => {
   const onChange = useCallback((key: string, value: string | number) => {
     console.log(key, value);
   }, []);
-  const businessUnities = ['business1', 'business2', 'business3'];
   const growthRates = ['growth1', 'growth2', 'growth3'];
 
   // const { data: materials, isLoading: isLoadingMaterials } = useMaterials();
-  // const { data: businesses, isLoading: isLoadingBusinesses } = useBusinesses();
+  const { data: businesses, isLoading: isLoadingBusinesses } = useBusinessUnits();
   // const { data: supliers, isLoading: isLoadingSupliers } = useSupliers();
   // const { data: sourcingRegions, isLoading: isLoadingSourcingRegions } = useSourcingRegions();
 
   const businessUnity = 'business1';
   const growthRate = 'growth3';
-  const isLoadingBusinessUnity = false;
   const isLoadingGrowth = false;
 
-  const optionsBusiness: SelectOptions = useMemo(
+  const optionsBusinesses: SelectOptions = useMemo(
     () =>
-      businessUnities.map((business) => ({
-        label: business,
-        value: business,
+      businesses.map(({ name, id }) => ({
+        label: name,
+        value: id,
       })),
-    [businessUnities],
+    [businesses],
   );
+
   const currentBusinessUnity = useMemo<SelectOption>(
-    () => optionsBusiness?.find((option) => option.value === businessUnity),
-    [optionsBusiness],
+    () => optionsBusinesses?.find((option) => option.value === businessUnity),
+    [optionsBusinesses],
   );
 
   const optionsGrowth: SelectOptions = useMemo(
@@ -81,9 +81,9 @@ const GowthForm: FC = () => {
         <div className="space-y-1">
           <Label>Business unit</Label>
           <Select
-            loading={isLoadingBusinessUnity}
+            loading={isLoadingBusinesses}
             current={currentBusinessUnity}
-            options={optionsBusiness}
+            options={optionsBusinesses}
             placeholder="Select"
             onChange={() => onChange('business_unity', currentBusinessUnity.value)}
           />

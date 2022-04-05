@@ -75,7 +75,7 @@ export class ImpactService {
         let rowValuesIndex: number = 0;
         for (const year of rangeOfYears) {
           const dataForYear: ImpactTableData | undefined = dataByIndicator.find(
-            (data: ImpactTableData) => data.year === year,
+            (data: ImpactTableData) => data.year === year && data.name === name,
           );
           //If the year requested by the users exist in the raw data, append its value. There will always be a first valid value to start with
           if (dataForYear) {

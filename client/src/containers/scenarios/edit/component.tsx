@@ -22,6 +22,7 @@ import { Input } from 'components/forms';
 import Textarea from 'components/forms/textarea';
 
 import type { ErrorResponse } from 'types';
+import { setCurrentIntervention } from 'store/features/analysis';
 
 const items = [
   {
@@ -47,6 +48,7 @@ const ScenariosNewContainer: React.FC = () => {
   const { data: interventions } = useInterventions();
   const dispatch = useAppDispatch();
   const handleNewScenarioFeature = useCallback(() => {
+    dispatch(setCurrentIntervention(null));
     dispatch(setSubContentCollapsed(false));
   }, [dispatch]);
 

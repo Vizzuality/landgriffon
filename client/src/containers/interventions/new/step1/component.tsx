@@ -168,7 +168,7 @@ const Step1: FC = () => {
             options={optionsBusinesses}
             placeholder="all businesses"
             theme="inline-primary"
-            onChange={({ value }) => handleDropdown('businessUnitsIds', value)}
+            onChange={(value) => handleDropdown('businessUnitsIds', value)}
             error={!!errors?.businessUnitsIds?.message}
           />
           <span className="text-gray-700 font-medium">from</span>
@@ -225,7 +225,7 @@ const Step1: FC = () => {
               current={watch('type')}
               options={optionsInterventionType}
               placeholder="Select"
-              onChange={(option) => handleDropdown('type', option)}
+              onChange={(value) => handleDropdown('type', value)}
             />
           </div>
         </div>

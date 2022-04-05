@@ -1,4 +1,4 @@
-import { useState, FC } from 'react';
+import { useState, FC, useCallback } from 'react';
 
 // components
 import Checkbox from 'components/forms/checkbox';
@@ -28,8 +28,14 @@ const Step2: FC = () => {
 
   const {
     register,
+    setValue,
     formState: { errors },
   } = useFormContext();
+
+  const handleValues = useCallback(() => {
+    setLandgriffonEstimates(!landgriffonEstimates);
+    data.map(({ id, value }) => setValue(id, value));
+  }, [landgriffonEstimates, setLandgriffonEstimates, data, setValue]);
 
   return (
     <>
@@ -43,7 +49,7 @@ const Step2: FC = () => {
             <Checkbox
               id="landgriffon_estimates"
               name="landgriffon_estimates"
-              onChange={() => setLandgriffonEstimates(!landgriffonEstimates)}
+              onChange={handleValues}
             />
             <Label htmlFor="landgriffon_estimates" className="ml-2 mt-1">
               Use LandGriffon location-based estimates.
@@ -61,7 +67,6 @@ const Step2: FC = () => {
                 type="number"
                 unit={indicator.unit}
                 defaultValue={landgriffonEstimates ? indicator.value : null}
-                value={landgriffonEstimates ? indicator.value : indicatorsValues[indicator.name]}
                 disabled={landgriffonEstimates}
                 error={errors?.[indicator.id]}
                 showHint={false}

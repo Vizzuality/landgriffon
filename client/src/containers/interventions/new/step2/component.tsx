@@ -22,7 +22,7 @@ import toast from 'react-hot-toast';
 
 const getSchemaValidation = (interventionType) => {
   switch (interventionType) {
-    case 'new-supplier-location':
+    case 'NEW_SUPPLIER':
       return yup.object({
         newT1SupplierId: yup.string(),
         newProducerId: yup.string(),
@@ -35,7 +35,7 @@ const getSchemaValidation = (interventionType) => {
         GHG_LUC_T: yup.number().required(),
       });
       break;
-    case 'production-efficiency':
+    case 'CHANGE_PRODUCTION_EFFICIENCY':
       return yup.object({
         DF_LUC_T: yup.number().required(),
         UWU_T: yup.number().required(),
@@ -45,7 +45,10 @@ const getSchemaValidation = (interventionType) => {
       break;
     default:
       return yup.object({
-        newMaterialId: yup.string().required(),
+        newMaterialId: yup.string().when('type', {
+          is: 'NEW_MATERIAL',
+          then: yup.string().required(),
+        }),
         newMaterialTonnageRatio: yup.number().required(),
         newT1SupplierId: yup.string(),
         newProducerId: yup.string(),
@@ -60,6 +63,8 @@ const getSchemaValidation = (interventionType) => {
   }
 };
 
+const errorMessage = 'Please complete all the missing fields';
+
 const Step2: FC = () => {
   const dispatch = useAppDispatch();
   const filters = useAppSelector(analysisFilters);
@@ -72,11 +77,14 @@ const Step2: FC = () => {
     resolver: yupResolver(schemaValidation),
   });
 
-  // const {
-  //   getValues,
-  // } = methods;
+  const {
+    formState: { errors },
+  } = methods;
+
+  const hasErrors = Object.keys(errors).length > 0;
 
   const { newInterventionData } = useAppSelector(scenarios);
+  const { type } = newInterventionData;
 
   const createIntervention = useCreateNewIntervention();
   const handleStepsSubmissons = useCallback(
@@ -90,7 +98,7 @@ const Step2: FC = () => {
         businessUnitsIds: newInterventionData.businessUnitsIds,
         startYear: newInterventionData.endYear,
         endYear: newInterventionData.endYear,
-        type: newInterventionData.type,
+        type,
         suppliersIds: newInterventionData.suppliersIds,
         adminRegionsIds: newInterventionData.adminRegionsIds,
         newMaterialTonnageRatio: values.newMaterialTonnageRatio,
@@ -113,11 +121,11 @@ const Step2: FC = () => {
           toast.success('A new intervention has been created');
         },
         onError: () => {
-          toast.success('There has been a problem creating the intervemtion');
+          toast.success('There has been a problem creating the intervention');
         },
       });
     },
-    [currentScenario, newInterventionData, createIntervention],
+    [currentScenario, newInterventionData, type, createIntervention],
   );
 
   const handleCancel = useCallback(() => {
@@ -128,13 +136,16 @@ const Step2: FC = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(handleStepsSubmissons)} className="mt-16">
-        {interventionType === 'new-material' && <Material />}
-        {(interventionType === 'new-supplier-location' || interventionType === 'new-material') && (
-          <Supplier />
-        )}
+        {type === 'NEW_MATERIAL' && <Material />}
+        {(type === 'NEW_SUPPLIER' || type === 'NEW_MATERIAL') && <Supplier />}
         <SupplierImpact />
-        <div className="mt-8">
-          <div className="flex justify-end">
+        <div className="pt-10 flex justify-between items-center">
+          {hasErrors && (
+            <div className="mt-2 text-sm text-red-600">
+              <p className="first-letter:uppercase">{errorMessage}</p>
+            </div>
+          )}
+          <div className="flex justify-end flex-1">
             <Button type="button" onClick={handleCancel} theme="secondary">
               Cancel
             </Button>

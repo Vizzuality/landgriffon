@@ -18,7 +18,7 @@ export type ScenariosState = {
     businessUnitsIds: string;
     startYear: number;
     endYear: number;
-    type: 'new-supplier-location' | 'production-efficiency' | 'new-material';
+    type: 'NEW_SUPPLIER' | 'CHANGE_PRODUCTION_EFFICIENCY' | 'NEW_MATERIAL';
     suppliersIds: string[];
     adminRegionsIds: string[];
     newMaterialId: string;
@@ -62,7 +62,7 @@ export const initialState: ScenariosState = {
     businessUnitsIds: null,
     startYear: null,
     endYear: null,
-    type: 'new-supplier-location',
+    type: 'NEW_SUPPLIER',
     suppliersIds: null,
     adminRegionsIds: null,
     newMaterialTonnageRatio: null,

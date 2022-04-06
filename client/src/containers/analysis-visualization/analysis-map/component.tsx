@@ -2,7 +2,7 @@ import type { PopUpProps } from 'components/map/popup/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import DeckGL from '@deck.gl/react';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
-import { StaticMap } from 'react-map-gl';
+import { StaticMap, NavigationControl } from 'react-map-gl';
 import { XCircleIcon } from '@heroicons/react/solid';
 
 import { useAppSelector } from 'store/hooks';
@@ -17,6 +17,7 @@ import PageLoading from 'containers/page-loading';
 import { useH3MaterialData, useH3RiskData, useH3ImpactData } from 'hooks/h3-data';
 
 import { COLOR_RAMPS, NUMBER_FORMAT } from '../constants';
+import ZoomControl from 'components/map/controls/zoom';
 
 const HEXAGON_HIGHLIGHT_COLOR = [0, 0, 0];
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
@@ -227,11 +228,25 @@ const AnalysisMap: React.FC = () => {
     }),
   ];
 
+  const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
+
+  const onZoomChange = useCallback(
+    (zoom) => {
+      setViewState((state) => ({ ...state, zoom }));
+    },
+    [setViewState],
+  );
+
   return (
     <>
       {(isFetching || isRendering) && <PageLoading />}
       <DeckGL
-        initialViewState={INITIAL_VIEW_STATE}
+        viewState={viewState}
+        onViewStateChange={({ viewState, ...x }) => {
+          console.log({ ...x, viewState });
+
+          setViewState(viewState);
+        }}
         controller
         layers={layers}
         onAfterRender={handleAfterRender}
@@ -239,7 +254,8 @@ const AnalysisMap: React.FC = () => {
         <StaticMap
           mapStyle="mapbox://styles/landgriffon/ckmdaj5gy08yx17me92nudkjd"
           mapboxApiAccessToken={MAPBOX_API_TOKEN}
-        />
+          className="-z-10"
+        ></StaticMap>
         {popUpInfo?.object && (
           <PopUp
             position={
@@ -269,19 +285,22 @@ const AnalysisMap: React.FC = () => {
           </div>
         </div>
       )}
-      {legendItems?.length > 0 && (
-        <Legend
-          className="absolute z-10 bottom-10 right-6 w-72"
-          maxHeight={400}
-          onChangeOrder={() => null}
-        >
-          {legendItems.map((i) => (
-            <LegendItem key={i.id} {...i}>
-              <LegendTypeChoropleth className="text-sm text-gray-500" min={i.min} items={i.items} />
-            </LegendItem>
-          ))}
-        </Legend>
-      )}
+      <div className="absolute z-10 bottom-10 right-6">
+        <ZoomControl viewport={viewState} onZoomChange={onZoomChange} />
+        {legendItems?.length > 0 && (
+          <Legend className="w-72" maxHeight={400} onChangeOrder={() => null}>
+            {legendItems.map((i) => (
+              <LegendItem key={i.id} {...i}>
+                <LegendTypeChoropleth
+                  className="text-sm text-gray-500"
+                  min={i.min}
+                  items={i.items}
+                />
+              </LegendItem>
+            ))}
+          </Legend>
+        )}
+      </div>
     </>
   );
 };

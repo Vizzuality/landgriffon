@@ -50,10 +50,6 @@ export const ZoomControl: React.FC<ZoomControlProps> = ({
     [zoom, minZoom, onZoomChange],
   );
 
-  useEffect(() => {
-    onZoomChange(zoom);
-  }, [onZoomChange, zoom]);
-
   return (
     <div
       className={cx(

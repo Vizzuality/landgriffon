@@ -169,3 +169,40 @@ export type ErrorResponse = AxiosError<{
     title: string;
   }[];
 }>;
+
+/**
+ * Layer
+ */
+export type Layer = {
+  id: string;
+  name: string;
+  order: number;
+  active: boolean;
+  opacity: number;
+};
+
+export type ImpactLayer = Layer & {
+  params: {
+    by: string;
+    indicatorId: Indicator['id'];
+    materialIds?: Material['id'][];
+    supplierIds?: Supplier['id'][];
+    originIds?: OriginRegion['id'][];
+    year: number;
+  };
+};
+
+export type MaterialLayer = Layer & {
+  params: {
+    indicatorId: Indicator['id'];
+    materialId: Material['id'];
+    year: number;
+  };
+};
+
+export type RiskLayer = Layer & {
+  params: {
+    indicatorId: Indicator['id'];
+    year: number;
+  };
+};

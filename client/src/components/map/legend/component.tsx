@@ -50,7 +50,7 @@ export const Legend: React.FC<LegendProps> = ({
 
       {active && (
         <div
-          className="relative flex flex-col flex-grow overflow-hidden rounded rounded-tr-none border border-gray-200 shadow-sm bg-white rounded"
+          className="relative flex flex-col flex-grow overflow-hidden rounded rounded-tr-none border border-gray-200 shadow-sm bg-white"
           style={{
             maxHeight,
           }}

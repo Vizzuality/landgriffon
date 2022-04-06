@@ -11,20 +11,27 @@ export interface ZoomControlProps {
   onZoomChange: (zoom: number) => void;
 }
 
-const HOVER_CLASSES = 'hover:bg-gray-300 active:bg-gray-200 cursor-pointer';
+const ENABLED_CLASSES = 'hover:bg-gray-300 active:bg-gray-200 cursor-pointer';
 const DISABLED_CLASSES = 'opacity-50 cursor-default';
 
 export const ZoomControl: React.FC<ZoomControlProps> = ({
   className,
-  viewport: { zoom, maxZoom, minZoom },
+  viewport: { zoom, maxZoom },
   onZoomChange,
 }) => {
+  // Something weird happens with zooms below 1, the maps's min zoom is 1.28.
+  // Values below 1 move the data as if the map were zoomed out, but it is not
+  // The minZoom we receive is 0, so we need to check for that.
+  const minZoom = 1.29;
+
   const increaseZoom = useCallback(
     (e) => {
       e.stopPropagation();
 
       if (zoom + 1 <= maxZoom) {
         onZoomChange(zoom + 1);
+      } else {
+        onZoomChange(maxZoom);
       }
     },
     [zoom, maxZoom, onZoomChange],
@@ -35,7 +42,9 @@ export const ZoomControl: React.FC<ZoomControlProps> = ({
       e.stopPropagation();
 
       if (zoom - 1 >= minZoom) {
-        onZoomChange(Math.ceil(zoom - 1));
+        onZoomChange(zoom - 1);
+      } else {
+        onZoomChange(minZoom);
       }
     },
     [zoom, minZoom, onZoomChange],
@@ -54,24 +63,24 @@ export const ZoomControl: React.FC<ZoomControlProps> = ({
     >
       <button
         className={cx('p-2', {
-          [HOVER_CLASSES]: zoom !== maxZoom,
-          [DISABLED_CLASSES]: zoom === maxZoom,
+          [ENABLED_CLASSES]: zoom < maxZoom,
+          [DISABLED_CLASSES]: zoom >= maxZoom,
         })}
         aria-label="Zoom in"
         type="button"
-        disabled={zoom === maxZoom}
+        disabled={zoom >= maxZoom}
         onClick={increaseZoom}
       >
         <PlusIcon className="w-5 h-5" />
       </button>
       <button
         className={cx('p-2', {
-          [HOVER_CLASSES]: zoom !== minZoom,
-          [DISABLED_CLASSES]: zoom === minZoom,
+          [ENABLED_CLASSES]: zoom > minZoom,
+          [DISABLED_CLASSES]: zoom <= minZoom,
         })}
         aria-label="Zoom out"
         type="button"
-        disabled={zoom === minZoom}
+        disabled={zoom <= minZoom}
         onClick={decreaseZoom}
       >
         <MinusIcon className="w-5 h-5" />

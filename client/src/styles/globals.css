@@ -95,12 +95,14 @@
   @apply bg-gray-50;
 }
 
-.ka-empty-cell {
-  /* @apply w-3 min-w-3; */
-  width: 12px;
-  min-width: 12px;;
+.ka-table .ka-empty-cell {
+  width: 0;
+  min-width: 0;
 }
 
+.ka-table .ka-cell {
+  line-height: normal;
+}
 .ka-table tr:first-child th:first-child {
   border-top-left-radius: 0.5rem; /* rounded-lg */
 }

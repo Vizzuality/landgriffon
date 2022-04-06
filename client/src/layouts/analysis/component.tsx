@@ -89,7 +89,7 @@ const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({
         >
           <div
             ref={scrollRef}
-            className="h-full lg:h-screen relative flex flex-col border-r border-gray-200 bg-white overflow-y-auto w-96 px-6"
+            className="h-full lg:h-screen relative flex flex-col border-r border-gray-200 bg-white overflow-y-auto w-[410px] px-6"
           >
             {clonedChildren}
           </div>

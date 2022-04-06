@@ -16,12 +16,13 @@ import { useAppDispatch } from 'store/hooks';
 
 import toast from 'react-hot-toast';
 
-// types
-import type { ScenarioInterventionsGrowthItems } from 'containers/scenarios/types';
+// utils
+import { listElementsJoiner } from 'utils';
 
-const InterventionsList: FC<ScenarioInterventionsGrowthItems> = ({
-  items,
-}: ScenarioInterventionsGrowthItems) => {
+// types
+import type { Intervention } from 'containers/scenarios/types';
+
+const InterventionsList: FC<{ items: Intervention[] }> = ({ items }: { items: Intervention[] }) => {
   const dispatch = useAppDispatch();
   const [isOpen, setIsOpen] = useState({});
   const [isDisabled, setDisabled] = useState({});
@@ -100,9 +101,73 @@ const InterventionsList: FC<ScenarioInterventionsGrowthItems> = ({
     [updateIntervention, isDisabled],
   );
 
+  const produccionEfficiencyTemplate = (props) => {
+    const { endYear } = props;
+    // TO DO - change newMaterial for material[] when API is ready
+    const materials = ['Palm oil'];
+    const materialsDisplay = listElementsJoiner(materials);
+    const suppliers = ['pep.a1', 'pep.a1', 'pep.a1'];
+    const suppliersDisplay = listElementsJoiner(suppliers);
+    const sourcingLocations = ['loc21', 'loc2'];
+    const sourcingLocationsDisplay =
+      sourcingLocations.length > 1 ? `${sourcingLocations?.length} regions` : sourcingLocations[0];
+
+    return (
+      <p>
+        Change production efficiency of <span className="font-bold">{materialsDisplay} </span>
+        for <span className="font-bold">{suppliersDisplay} </span>
+        in <span className="font-bold">{sourcingLocationsDisplay} </span>
+        by {endYear}.
+      </p>
+    );
+  };
+
+  const newSupplierTemplate = (props) => {
+    const { newT1Supplier, newProducer, newGeoRegion, endYear } = props;
+    // TO DO - change newMaterial for material[] when API is ready
+    const materials = ['Rubber', 'Rubber', 'Rubber'];
+
+    const suppliers = ['pep.a.1.001'];
+    const suppliersDisplay = listElementsJoiner(suppliers);
+    const sourcingLocations = ['Namazie International'];
+    const sourcingLocationsDisplay = sourcingLocations.join(',');
+    const newSourcingLocations = newGeoRegion.sourcingLocations;
+    const materialsDisplay = listElementsJoiner(materials);
+    const locations =
+      newSourcingLocations.length > 1
+        ? `${newSourcingLocations?.length} regions`
+        : sourcingLocations[0];
+    return (
+      <p>
+        Change supplier of <span className="font-bold">{materialsDisplay} </span>
+        for <span className="font-bold">{suppliersDisplay} </span>
+        in <span className="font-bold">{sourcingLocationsDisplay} </span>
+        to <span className="font-bold">{newT1Supplier.name} </span>
+        to <span className="font-bold">{newProducer.name} </span>
+        in <span className="font-bold">{locations} </span>
+        in {endYear}.
+      </p>
+    );
+  };
+
+  const newMaterialTemplate = (props) => {
+    const { percentage, newMaterial, endYear } = props;
+
+    // TO DO - change newMaterial for material[] when API is ready
+    const materials = ['Palm oil'];
+    const materialsDisplay = listElementsJoiner(materials);
+    return (
+      <p>
+        Replace {percentage}% of <span className="font-bold">{materialsDisplay} </span>
+        with <span className="font-bold">{newMaterial.name} </span>
+        by {endYear}.
+      </p>
+    );
+  };
+
   return items?.length > 0 ? (
     <ul className="text-sm bg-white rounded-md mt-4">
-      {items.map(({ id, title }, index) => (
+      {items.map(({ id, type, ...props }, index) => (
         <li
           key={id}
           className={classNames(
@@ -118,7 +183,9 @@ const InterventionsList: FC<ScenarioInterventionsGrowthItems> = ({
           )}
           onClick={(e) => handleToggleOpen(e, id)}
         >
-          {title}
+          {type === 'Change production efficiency' && produccionEfficiencyTemplate(props)}
+          {type === 'Source from a new supplier or location' && newSupplierTemplate(props)}
+          {type === 'Switch to a new material' && newMaterialTemplate(props)}
           {isOpen[id] && (
             <>
               <p

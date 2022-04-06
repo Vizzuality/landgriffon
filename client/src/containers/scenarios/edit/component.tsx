@@ -87,7 +87,9 @@ const ScenariosNewContainer: React.FC = () => {
     600,
   );
 
-  const { data: scenarioData } = useScenario(currentScenario);
+  const { data: scenarioData } = useScenario(currentScenario, {
+    include: 'scenario-interventions',
+  }); // TO DO - get interventions from here when API is ready
   if (!scenarioData) return null;
   const { title, description } = scenarioData;
   return (

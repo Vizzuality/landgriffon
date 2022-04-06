@@ -3,31 +3,14 @@ import { useQuery, UseQueryResult, UseQueryOptions, useMutation } from 'react-qu
 import type { Intervention } from 'containers/scenarios/types';
 import { apiService } from 'services/api';
 
+import { INTERVENTIONS_DATA } from './contants';
+
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   placeholderData: [],
   retry: false,
   keepPreviousData: true,
   refetchOnWindowFocus: false,
 };
-
-const INTERVENTIONS_DATA = [
-  {
-    id: 1,
-    title: 'Replace 50% of Palm Oil with Soybean Oil (RFA-certified) by 2025',
-  },
-  {
-    id: 2,
-    title: 'Change supplier of Rubber for pep.a.1.001 to Namazie International in 2022',
-  },
-  {
-    id: 3,
-    title: 'Change production efficiency of Palm oil for pep.a1 in 2 regions by 2025',
-  },
-  {
-    id: 4,
-    title: 'Change production efficiency of Cocoa for pep.a1 in 2 regions by 2025',
-  },
-];
 
 const INTERVENTIONS_INDICATORS_DATA = [
   {
@@ -96,7 +79,7 @@ export function useInterventions(queryParams = {}): ResponseInterventionsData {
 
     return {
       ...response,
-      data,
+      data: INTERVENTIONS_DATA,
     } as ResponseInterventionsData;
   }, [response]);
 }

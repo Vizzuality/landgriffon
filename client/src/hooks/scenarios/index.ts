@@ -29,6 +29,7 @@ type QueryParams = {
   sort?: string;
   pageParam?: number;
   searchTerm?: string;
+  include?: string;
 };
 
 const DEFAULT_QUERY_OPTIONS = {
@@ -99,7 +100,7 @@ export function useInfiniteScenarios(QueryParams: QueryParams): ResponseInfinite
   return useMemo<ResponseInfiniteData>((): ResponseInfiniteData => query, [query]);
 }
 
-export function useScenario(id: Scenario['id']): ResponseDataScenario {
+export function useScenario(id: Scenario['id'], queryParams: QueryParams): ResponseDataScenario {
   const { sort, filter, searchTerm } = useAppSelector(scenarios);
 
   const response: ResponseDataScenario = useQuery(
@@ -109,7 +110,7 @@ export function useScenario(id: Scenario['id']): ResponseDataScenario {
         .request({
           method: 'GET',
           url: `/scenarios/${id}`,
-          params: { sort, 'filter[title]': searchTerm, filter },
+          params: { sort, 'filter[title]': searchTerm, filter, ...queryParams },
         })
         .then(({ data: responseData }) => responseData.data),
     DEFAULT_QUERY_OPTIONS,

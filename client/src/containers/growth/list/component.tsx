@@ -1,10 +1,8 @@
 import { FC } from 'react';
 
-import { ScenarioInterventionsGrowthItems } from 'containers/scenarios/types';
+import { ScenarioGrowthItems } from 'containers/scenarios/types';
 
-const GrowthList: FC<ScenarioInterventionsGrowthItems> = ({
-  items,
-}: ScenarioInterventionsGrowthItems) => {
+const GrowthList: FC<ScenarioGrowthItems> = ({ items }: ScenarioGrowthItems) => {
   return items?.length > 0 ? (
     <div className="bg-white border border-gray-300 overflow-hidden rounded-md mt-4">
       <ul className="divide-y divide-gray-300">

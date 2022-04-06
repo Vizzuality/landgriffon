@@ -6,7 +6,7 @@ import { useDropzone } from 'react-dropzone';
 
 import { FILE_UPLOADER_MAX_SIZE } from 'constants/file-uploader-size-limits';
 import { apiService } from 'services/api';
-import { bytesToMegabytes } from 'utils/units';
+import { bytesToMegabytes } from 'utils';
 
 import Alerts, { AlertsItemProps } from 'components/alerts';
 

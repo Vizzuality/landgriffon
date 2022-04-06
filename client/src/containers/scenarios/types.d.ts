@@ -7,13 +7,13 @@ export type Scenario = {
 
 export type Scenarios = Scenario[];
 
-export type ScenarioInterventionsGrowthItem = Readonly<{
+export type ScenarioGrowthItem = Readonly<{
   id: number;
   title: string;
 }>;
 
-export type ScenarioInterventionsGrowthItems = Readonly<{
-  items: ScenarioInterventionsGrowthItem[];
+export type ScenarioGrowthItems = Readonly<{
+  items: ScenarioGrowthItem[];
 }>;
 
 export type Intervention = Readonly<{

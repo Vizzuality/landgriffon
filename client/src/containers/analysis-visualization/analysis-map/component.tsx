@@ -2,7 +2,7 @@ import type { PopUpProps } from 'components/map/popup/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import DeckGL from '@deck.gl/react';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
-import { StaticMap, NavigationControl } from 'react-map-gl';
+import { StaticMap } from 'react-map-gl';
 import { XCircleIcon } from '@heroicons/react/solid';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
@@ -243,9 +243,7 @@ const AnalysisMap: React.FC = () => {
       {(isFetching || isRendering) && <PageLoading />}
       <DeckGL
         viewState={viewState}
-        onViewStateChange={({ viewState, ...x }) => {
-          console.log({ ...x, viewState });
-
+        onViewStateChange={({ viewState }) => {
           setViewState(viewState);
         }}
         controller

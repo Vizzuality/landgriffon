@@ -5,9 +5,9 @@ import { updateData } from 'ka-table/actionCreators';
 import { ActionType, SortingMode as kaSortingMode, SortDirection } from 'ka-table/enums';
 import { DispatchFunc } from 'ka-table/types';
 
+import DataRow from 'containers/table/data-row';
 import GroupRow from 'containers/table/group-row';
 import HeadCellContent from 'containers/table/head-cell-content';
-import LineChartCell from 'containers/table/line-chart-cell';
 
 import Loading from 'components/loading';
 
@@ -148,6 +148,7 @@ const Table: React.FC<TableProps> = ({
           className: cx(classNames, {
             'text-center': !isFirstColumn,
             'sticky left-0 z-10 w-80': isSticky,
+            'w-48': !isSticky,
             'cursor-default': !isSortable,
             'cursor-pointer': isSortable,
             [SHADOW_CLASSNAMES]: isSticky,
@@ -175,6 +176,14 @@ const Table: React.FC<TableProps> = ({
       elementAttributes: () => ({
         className: DEFAULT_CLASSNAMES.dataRow,
       }),
+      content: (props) => (
+        <DataRow
+          {...props}
+          firstColumnKey={firstColumnKey}
+          isFirstColumnSticky={isFirstColumnSticky}
+          stickyColumnKey={stickyColumnKey}
+        />
+      ),
       ...props.childComponents?.dataRow,
     },
     noDataRow: {
@@ -182,36 +191,6 @@ const Table: React.FC<TableProps> = ({
         className: DEFAULT_CLASSNAMES.noDataRow,
       }),
       ...props.childComponents?.noDataRow,
-    },
-    cell: {
-      elementAttributes: (props) => {
-        const isFirstColumn = props.column.key === firstColumnKey;
-        const isSticky = isFirstColumnSticky && props.column.key === stickyColumnKey;
-        const classNames = DEFAULT_CLASSNAMES.cell;
-
-        return {
-          className: cx(classNames, {
-            'text-center': !isFirstColumn,
-            'sticky left-0 z-10 w-80': isSticky,
-            [SHADOW_CLASSNAMES]: isSticky,
-          }),
-        };
-      },
-      content: (props) => {
-        switch ((props.column as ColumnProps).type) {
-          case 'line-chart':
-            return <LineChartCell {...props} />;
-          default:
-            return;
-        }
-      },
-      ...props.childComponents?.cell,
-    },
-    cellText: {
-      elementAttributes: () => ({
-        className: DEFAULT_CLASSNAMES.cellText,
-      }),
-      ...props.childComponents?.cellText,
     },
     groupCell: {
       elementAttributes: () => ({

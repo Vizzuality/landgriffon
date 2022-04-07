@@ -81,7 +81,7 @@ const Step2: FC = () => {
         businessUnitsIds: newInterventionData.businessUnitsIds,
         startYear: newInterventionData.endYear,
         endYear: newInterventionData.endYear,
-        type: 'Switch to a new material',
+        type,
         suppliersIds: newInterventionData.suppliersIds,
         adminRegionsIds: newInterventionData.adminRegionsIds,
         newMaterialTonnageRatio: values.newMaterialTonnageRatio,

@@ -153,17 +153,7 @@ export function useUpdateIntervention() {
 
 export function useLocationTypes() {
   return useMemo<string[]>(() => {
-    return [
-      'production unit',
-      'processing facility',
-      'tier 1 Trade facility',
-      'tier 2 Trade facility',
-      'origin Country',
-      'unknown',
-      'aggregation point',
-      'point of production',
-      'country of production',
-    ];
+    return ['point of production', 'aggregation point', 'country of production', 'unknown'];
   }, []);
 }
 

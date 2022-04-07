@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
-import { ChevronDoubleLeftIcon, ChevronDoubleRightIcon } from '@heroicons/react/outline';
+import { ChevronDoubleLeftIcon } from '@heroicons/react/outline';
+import cx from 'classnames';
 
 import ImpactLegendItem from './impact-legend-item';
 import MaterialLegendItem from './material-legend-item';
@@ -63,11 +64,9 @@ export const Legend: React.FC = () => {
         className="bg-white border border-gray-100 p-2 rounded-lg"
         onClick={handleShowLegend}
       >
-        {showLegend ? (
-          <ChevronDoubleRightIcon className="w-5 h-5" />
-        ) : (
-          <ChevronDoubleLeftIcon className="w-5 h-5" />
-        )}
+        <ChevronDoubleLeftIcon
+          className={cx('w-5 h-5 transition-all', { 'rotate-180': showLegend })}
+        />
       </button>
     </div>
   );

@@ -2,7 +2,7 @@ export const INTERVENTIONS_DATA = [
   {
     createdAt: 'string',
     updatedAt: 'string',
-    id: 'string',
+    id: 'intervention1',
     title: 'string',
     description: 'string',
     status: 'string',
@@ -105,7 +105,7 @@ export const INTERVENTIONS_DATA = [
   {
     createdAt: 'string',
     updatedAt: 'string',
-    id: 'string',
+    id: 'intervention2',
     title: 'string',
     description: 'string',
     status: 'string',
@@ -208,7 +208,7 @@ export const INTERVENTIONS_DATA = [
   {
     createdAt: 'string',
     updatedAt: 'string',
-    id: 'string',
+    id: 'intervention3',
     title: 'string',
     description: 'string',
     status: 'string',
@@ -311,7 +311,7 @@ export const INTERVENTIONS_DATA = [
   {
     createdAt: 'string',
     updatedAt: 'string',
-    id: 'string',
+    id: 'intervention4',
     title: 'string',
     description: 'string',
     status: 'string',

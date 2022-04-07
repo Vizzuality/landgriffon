@@ -171,7 +171,7 @@ const InterventionsList: FC<{ items: Intervention[] }> = ({ items }: { items: In
         <li
           key={id}
           className={classNames(
-            'pointer-events-auto px-4 py-4 sm:px-6 border first:rounded-t-md last:rounded-b-md',
+            'pointer-events-auto px-4 py-4 sm:px-6 border first:rounded-t-md last:rounded-b-md cursor-pointer hover:bg-green-50',
             {
               ' bg-green-50': isOpen[id] && !isDisabled[id],
               'border-gray-30': !isOpen[id],

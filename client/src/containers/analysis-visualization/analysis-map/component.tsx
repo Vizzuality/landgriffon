@@ -89,18 +89,18 @@ const AnalysisMap: React.FC = () => {
     return unitMap[layer];
   }, [h3MaterialData, h3RiskData, h3ImpactData, layer]);
 
-  const legendName = useMemo(() => {
-    if (layer === 'material' && filters.materials?.length > 0) {
-      return `${filters.materials[0].label} in ${filters.startYear}`;
-    }
-    if (layer === 'risk' && filters.indicator && filters.materials?.length > 0) {
-      return `${filters.indicator.label}, for ${filters.materials[0].label} in ${filters.startYear}`;
-    }
-    if (layer === 'impact' && filters.indicator) {
-      return `${filters.indicator.label} in ${filters.startYear}`;
-    }
-    return null;
-  }, [layer, filters]);
+  // const legendName = useMemo(() => {
+  //   if (layer === 'material' && filters.materials?.length > 0) {
+  //     return `${filters.materials[0].label} in ${filters.startYear}`;
+  //   }
+  //   if (layer === 'risk' && filters.indicator && filters.materials?.length > 0) {
+  //     return `${filters.indicator.label}, for ${filters.materials[0].label} in ${filters.startYear}`;
+  //   }
+  //   if (layer === 'impact' && filters.indicator) {
+  //     return `${filters.indicator.label} in ${filters.startYear}`;
+  //   }
+  //   return null;
+  // }, [layer, filters]);
 
   const tooltipName = useMemo(() => {
     if (layer === 'material' && filters.materials?.length > 0) {
@@ -115,52 +115,52 @@ const AnalysisMap: React.FC = () => {
     return null;
   }, [layer, filters]);
 
-  useEffect(() => {
-    if (h3MaterialData?.data.length || h3RiskData?.data.length || h3ImpactData?.data.length) {
-      const nextLegendItems = [];
+  // useEffect(() => {
+  //   if (h3MaterialData?.data.length || h3RiskData?.data.length || h3ImpactData?.data.length) {
+  //     const nextLegendItems = [];
 
-      if (layer === 'material') {
-        nextLegendItems.push({
-          id: 'h3-legend-material',
-          name: legendName,
-          unit,
-          min: NUMBER_FORMAT(h3MaterialData.metadata.quantiles[0]),
-          items: h3MaterialData.metadata.quantiles.slice(1).map((v, index) => ({
-            value: NUMBER_FORMAT(v),
-            color: COLOR_RAMPS[layer][index],
-          })),
-        });
-      }
+  //     if (layer === 'material') {
+  //       nextLegendItems.push({
+  //         id: 'h3-legend-material',
+  //         name: legendName,
+  //         unit,
+  //         min: NUMBER_FORMAT(h3MaterialData.metadata.quantiles[0]),
+  //         items: h3MaterialData.metadata.quantiles.slice(1).map((v, index) => ({
+  //           value: NUMBER_FORMAT(v),
+  //           color: COLOR_RAMPS[layer][index],
+  //         })),
+  //       });
+  //     }
 
-      if (layer === 'risk') {
-        nextLegendItems.push({
-          id: 'h3-legend-risk',
-          name: legendName,
-          unit,
-          min: NUMBER_FORMAT(h3RiskData.metadata.quantiles[0]),
-          items: h3RiskData.metadata.quantiles.slice(1).map((v, index) => ({
-            value: NUMBER_FORMAT(v),
-            color: COLOR_RAMPS[layer][index],
-          })),
-        });
-      }
+  //     if (layer === 'risk') {
+  //       nextLegendItems.push({
+  //         id: 'h3-legend-risk',
+  //         name: legendName,
+  //         unit,
+  //         min: NUMBER_FORMAT(h3RiskData.metadata.quantiles[0]),
+  //         items: h3RiskData.metadata.quantiles.slice(1).map((v, index) => ({
+  //           value: NUMBER_FORMAT(v),
+  //           color: COLOR_RAMPS[layer][index],
+  //         })),
+  //       });
+  //     }
 
-      if (layer === 'impact') {
-        nextLegendItems.push({
-          id: 'h3-legend-impact',
-          name: legendName,
-          unit,
-          min: NUMBER_FORMAT(h3ImpactData.metadata.quantiles[0]),
-          items: h3ImpactData.metadata.quantiles.slice(1).map((v, index) => ({
-            value: NUMBER_FORMAT(v),
-            color: COLOR_RAMPS[layer][index],
-          })),
-        });
-      }
+  //     if (layer === 'impact') {
+  //       nextLegendItems.push({
+  //         id: 'h3-legend-impact',
+  //         name: legendName,
+  //         unit,
+  //         min: NUMBER_FORMAT(h3ImpactData.metadata.quantiles[0]),
+  //         items: h3ImpactData.metadata.quantiles.slice(1).map((v, index) => ({
+  //           value: NUMBER_FORMAT(v),
+  //           color: COLOR_RAMPS[layer][index],
+  //         })),
+  //       });
+  //     }
 
-      setLegendItems(nextLegendItems);
-    }
-  }, [h3MaterialData, h3RiskData, h3ImpactData, layer, filters, legendName, unit]);
+  //     setLegendItems(nextLegendItems);
+  //   }
+  // }, [h3MaterialData, h3RiskData, h3ImpactData, layer, filters, legendName, unit]);
 
   const layers = [
     new H3HexagonLayer({

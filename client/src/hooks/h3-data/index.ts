@@ -2,11 +2,9 @@ import { useMemo } from 'react';
 import { useQuery, UseQueryOptions, UseQueryResult } from 'react-query';
 import chroma from 'chroma-js';
 import { scaleThreshold } from 'd3-scale';
-import store from 'store';
 import { useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
 import { analysisMap } from 'store/features/analysis/map';
-import { filtersForH3API } from 'store/features/analysis/selector';
 
 import { apiRawService } from 'services/api';
 
@@ -59,20 +57,23 @@ export function useColors(): RGBColor[] {
 
 export function useH3MaterialData(): H3DataResponse {
   const { layers } = useAppSelector(analysisMap);
-  const filters = filtersForH3API(store.getState()) as MaterialH3APIParams;
-  const isEnable = !!(layers.material.active && layers.material.material && filters.year);
+  const filters = useAppSelector(analysisFilters);
+  const { startYear } = filters;
+  const isEnable = !!(layers.material.active && layers.material.material && startYear);
 
   const colors = useColors();
+  const params: MaterialH3APIParams = {
+    year: startYear,
+    materialId: layers.material.material && layers.material.material.value,
+    resolution: 4,
+  };
 
   const query = useQuery(
     ['h3-data-material', JSON.stringify(filters)],
     async () =>
       apiRawService
         .get('/h3/map/material', {
-          params: {
-            ...filters,
-            resolution: 4,
-          },
+          params,
         })
         // Adding color to the response
         .then((response) => responseParser(response, colors)),
@@ -95,27 +96,31 @@ export function useH3MaterialData(): H3DataResponse {
 }
 
 export function useH3RiskData(): H3DataResponse {
-  const { layer } = useAppSelector(analysisFilters);
-  const filters = filtersForH3API(store.getState()) as RiskH3APIParams;
-  const isEnable = !!(filters.materialId && filters.indicatorId && filters.year);
+  const { layers } = useAppSelector(analysisMap);
+  const filters = useAppSelector(analysisFilters);
+  const { startYear, indicator } = filters;
+  const isEnable = !!(layers.material.material && indicator && startYear);
 
   const colors = useColors();
+  const params: RiskH3APIParams = {
+    year: startYear,
+    indicatorId: indicator?.value,
+    materialId: layers.material.material && layers.material.material.value,
+    resolution: 4,
+  };
 
   const query = useQuery(
     ['h3-data-risk', JSON.stringify(filters)],
     async () =>
       apiRawService
         .get('/h3/map/risk', {
-          params: {
-            ...filters,
-            resolution: 4,
-          },
+          params,
         })
         // Adding color to the response
         .then((response) => responseParser(response, colors)),
     {
       ...DEFAULT_QUERY_OPTIONS,
-      enabled: layer === 'risk' && isEnable,
+      enabled: isEnable,
     },
   );
 
@@ -132,27 +137,32 @@ export function useH3RiskData(): H3DataResponse {
 }
 
 export function useH3ImpactData(): H3DataResponse {
-  const { layer } = useAppSelector(analysisFilters);
-  const filters = filtersForH3API(store.getState()) as ImpactH3APIParams;
-  const isEnable = !!(filters.indicatorId && filters.year);
+  const filters = useAppSelector(analysisFilters);
+  const { startYear, materials, indicator, suppliers, origins } = filters;
+  const isEnable = !!(indicator && startYear);
 
   const colors = useColors();
+  const params: ImpactH3APIParams = {
+    year: startYear,
+    indicatorId: indicator?.value && indicator?.value !== 'all' ? indicator?.value : null,
+    ...(materials?.length ? { materialIds: materials?.map(({ value }) => value) } : {}),
+    ...(suppliers?.length ? { supplierIds: suppliers?.map(({ value }) => value) } : {}),
+    ...(origins?.length ? { originIds: origins?.map(({ value }) => value) } : {}),
+    resolution: origins?.length ? 6 : 4,
+  };
 
   const query = useQuery(
     ['h3-data-impact', JSON.stringify(filters)],
     async () =>
       apiRawService
         .get('/h3/map/impact', {
-          params: {
-            ...filters,
-            resolution: filters.originIds && filters.originIds.length ? 6 : 4,
-          },
+          params,
         })
         // Adding color to the response
         .then((response) => responseParser(response, colors)),
     {
       ...DEFAULT_QUERY_OPTIONS,
-      enabled: layer === 'impact' && isEnable,
+      enabled: isEnable,
     },
   );
 

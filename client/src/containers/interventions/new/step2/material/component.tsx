@@ -13,7 +13,7 @@ import { useMaterials } from 'hooks/materials';
 import { useFormContext } from 'react-hook-form';
 
 // types
-import type { SelectOptions } from 'components/select/types';
+import type { SelectOption, SelectOptions } from 'components/select/types';
 
 const Material = () => {
   const { data: materials, isLoading: isLoadingMaterials } = useMaterials();
@@ -35,9 +35,8 @@ const Material = () => {
   } = useFormContext();
 
   const handleDropdown = useCallback(
-    (id, values) => {
-      const valuesIds = Array.isArray(values) ? values.map(({ value }) => value) : values;
-      setValue(id, valuesIds);
+    (id: string, values: SelectOption) => {
+      setValue(id, values.value);
       clearErrors(id);
     },
     [setValue, clearErrors],
@@ -59,8 +58,9 @@ const Material = () => {
               current={watch('newMaterialId')}
               options={optionsMaterials}
               placeholder="Select"
-              onChange={({ value }) => handleDropdown('newMaterialId', value)}
+              onChange={(values) => handleDropdown('newMaterialId', values)}
               error={!!errors?.newMaterialId}
+              allowEmpty
             />
           </div>
 

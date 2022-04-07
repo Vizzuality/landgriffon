@@ -40,9 +40,10 @@ type FeatureState = RootState & { 'analysis/map': AnalysisMapState };
 export const initialState: AnalysisMapState = {
   userLayers: [],
   layers: {
-    material: { ...DEFAULT_LAYER_ATTRIBUTES },
-    risk: { ...DEFAULT_LAYER_ATTRIBUTES },
+    material: { id: 'h3-layer-material', ...DEFAULT_LAYER_ATTRIBUTES },
+    risk: { id: 'h3-layer-risk', ...DEFAULT_LAYER_ATTRIBUTES },
     impact: {
+      id: 'h3-layer-impact',
       ...DEFAULT_LAYER_ATTRIBUTES,
       active: true,
     },
@@ -63,7 +64,7 @@ export const analysisMapSlice = createSlice({
       ...state,
       layers: {
         ...state.layers,
-        [action.payload.id]: action.payload.layer,
+        [action.payload.id]: { ...state.layers[action.payload.id], ...action.payload.layer },
       },
     }),
     // Add or update the user layer

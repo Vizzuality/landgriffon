@@ -30,16 +30,16 @@ const schemaValidation = yup.object({
   }),
   newT1SupplierId: yup.string(),
   newProducerId: yup.string(),
-  newLocationType: yup.string().when('type', {
-    is: 'Switch to a new material' || 'Source from a new supplier or location',
+  newLocationCountryInput: yup.string().when('type', {
+    is: 'Switch to a new material' || 'Source from new supplier or location',
     then: yup.string().required(),
   }),
-  newLocationCountryInput: yup.string().when('type', {
-    is: 'Switch to a new material' || 'Source from a new supplier or location',
+  newLocationType: yup.string().when('type', {
+    is: 'Switch to a new material' || 'Source from new supplier or location',
     then: yup.string().required(),
   }),
   newLocationAddressInput: yup.string().when('type', {
-    is: 'Switch to a new material' || 'Source from a new supplier or location',
+    is: 'Switch to a new material' || 'Source from new supplier or location',
     then: yup.string().required(),
   }),
   DF_LUC_T: yup.number().required(),
@@ -63,7 +63,6 @@ const Step2: FC = () => {
   } = methods;
 
   const hasErrors = Object.keys(errors).length > 0;
-
   const { newInterventionData } = useAppSelector(scenarios);
   const { type } = newInterventionData;
 
@@ -149,7 +148,7 @@ const Step2: FC = () => {
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(handleStepsSubmissons)} className="mt-16">
         {type === 'Switch to a new material' && <Material />}
-        {(type === 'Source from a new location or supplier' ||
+        {(type === 'Source from new supplier or location' ||
           type === 'Switch to a new material') && <Supplier />}
         <SupplierImpact />
         <div className="pt-10 flex justify-between items-center">

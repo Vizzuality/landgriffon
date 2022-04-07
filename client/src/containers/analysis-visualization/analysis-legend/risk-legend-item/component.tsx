@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
-import { setLayers } from 'store/features/analysis/map';
+import { setLayer } from 'store/features/analysis/map';
 
 import { useH3ImpactData } from 'hooks/h3-data';
 

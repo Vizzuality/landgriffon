@@ -18,9 +18,9 @@ import type { Legend, LegendItem as LegendItemProp } from 'types';
 const MaterialLegendItem = () => {
   const dispatch = useAppDispatch();
   const { indicator, startYear } = useAppSelector(analysisFilters);
-  const { layers } = useAppSelector(analysisMap);
-
-  const materialLayer = useMemo(() => layers.find(({ id }) => id === 'material-layer'), [layers]);
+  const {
+    layers: { material },
+  } = useAppSelector(analysisMap);
 
   const { data, isFetching } = useH3MaterialData();
 
@@ -43,9 +43,9 @@ const MaterialLegendItem = () => {
 
   const handleActive = useCallback(
     (active) => {
-      dispatch(setLayer({ ...materialLayer, active }));
+      dispatch(setLayer({ id: 'material', layer: { ...material, active } }));
     },
-    [dispatch, materialLayer],
+    [dispatch, material],
   );
 
   return (

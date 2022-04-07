@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import cx from 'classnames';
 
 import { MinusIcon, PlusIcon } from '@heroicons/react/solid';

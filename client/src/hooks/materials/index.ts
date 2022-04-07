@@ -15,6 +15,7 @@ type ResponseData = UseQueryResult<Material[]>;
 export type MaterialsTreesParams = {
   depth?: number;
   withSourcingLocations?: boolean;
+  businessUnitIds?: string[];
 };
 
 export function useMaterials(): ResponseData {

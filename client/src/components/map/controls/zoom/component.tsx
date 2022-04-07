@@ -16,23 +16,14 @@ const DISABLED_CLASSES = 'opacity-50 cursor-default';
 
 export const ZoomControl: React.FC<ZoomControlProps> = ({
   className,
-  viewport: { zoom, maxZoom },
+  viewport: { zoom, maxZoom, minZoom },
   onZoomChange,
 }) => {
-  // Something weird happens with zooms below 1, the maps's min zoom is 1.28.
-  // Values below 1 move the data as if the map were zoomed out, but it is not
-  // The minZoom we receive is 0, so we need to check for that.
-  const minZoom = 1.29;
-
   const increaseZoom = useCallback(
     (e) => {
       e.stopPropagation();
 
-      if (zoom + 1 <= maxZoom) {
-        onZoomChange(zoom + 1);
-      } else {
-        onZoomChange(maxZoom);
-      }
+      onZoomChange(zoom + 1 > maxZoom ? maxZoom : zoom + 1);
     },
     [zoom, maxZoom, onZoomChange],
   );
@@ -41,11 +32,7 @@ export const ZoomControl: React.FC<ZoomControlProps> = ({
     (e) => {
       e.stopPropagation();
 
-      if (zoom - 1 >= minZoom) {
-        onZoomChange(zoom - 1);
-      } else {
-        onZoomChange(minZoom);
-      }
+      onZoomChange(zoom - 1 < minZoom ? minZoom : zoom - 1);
     },
     [zoom, minZoom, onZoomChange],
   );

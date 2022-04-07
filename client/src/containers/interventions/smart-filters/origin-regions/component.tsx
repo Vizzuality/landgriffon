@@ -12,6 +12,9 @@ type OriginRegionsFilterProps = {
   depth?: AdminRegionsTreesParams['depth'];
   /** Only regions with sourcing locations. */
   withSourcingLocations?: AdminRegionsTreesParams['withSourcingLocations'];
+  businessUnitIds?: AdminRegionsTreesParams['businessUnitIds'];
+  supplierIds?: AdminRegionsTreesParams['supplierIds'];
+  materialIds?: AdminRegionsTreesParams['materialIds'];
   onChange?: TreeSelectProps['onChange'];
   theme?: 'default' | 'inline-primary';
   ellipsis?: TreeSelectProps['ellipsis'];
@@ -24,6 +27,9 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
   current,
   depth = 1,
   withSourcingLocations, // Do not a default; backend will override depth if this is set at all
+  materialIds,
+  supplierIds,
+  businessUnitIds,
   onChange,
   theme,
   ellipsis,
@@ -31,7 +37,13 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
   fitContent,
   ...props
 }) => {
-  const { data, isFetching } = useAdminRegionsTrees({ depth, withSourcingLocations });
+  const { data, isFetching } = useAdminRegionsTrees({
+    depth,
+    withSourcingLocations,
+    materialIds,
+    supplierIds,
+    businessUnitIds,
+  });
 
   const treeOptions: TreeSelectProps['options'] = useMemo(
     () =>

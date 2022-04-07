@@ -19,6 +19,9 @@ type BusinessUnitsFilterProps = {
   theme?: 'default' | 'inline-primary';
   /** Only materials with sourcing locations. */
   withSourcingLocations?: BusinessUnitsTreesParams['withSourcingLocations'];
+  materialIds?: BusinessUnitsTreesParams['materialIds'];
+  supplierIds?: BusinessUnitsTreesParams['supplierIds'];
+  originIds?: BusinessUnitsTreesParams['originIds'];
   onChange?: TreeSelectProps['onChange'];
 };
 
@@ -31,10 +34,19 @@ const BusinessUnitsFilter: React.FC<BusinessUnitsFilterProps> = ({
   multiple,
   theme = 'inline-primary',
   withSourcingLocations, // Do not a default; backend will override depth if this is set at all
+  supplierIds,
+  materialIds,
+  originIds,
   onChange,
   ...props
 }) => {
-  const { data, isFetching } = useBusinessUnitsTrees({ depth, withSourcingLocations });
+  const { data, isFetching } = useBusinessUnitsTrees({
+    depth,
+    withSourcingLocations,
+    supplierIds,
+    materialIds,
+    originIds,
+  });
 
   const treeOptions: TreeSelectProps['options'] = useMemo(
     () =>

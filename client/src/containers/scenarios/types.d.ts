@@ -43,7 +43,7 @@ export type Intervention = Readonly<{
 }>;
 
 export type InterventionTypes = Readonly<
-  | 'Source from a new location or supplier'
+  | 'Source from new supplier or location'
   | 'Switch to a new material'
   | 'Change production efficiency'
 >;

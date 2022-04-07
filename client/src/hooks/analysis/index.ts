@@ -127,17 +127,20 @@ export function useInterventionTypes(): Intervention[] {
     {
       slug: 'NEW_SUPPLIER',
       title: 'Source from a new supplier or location',
+      value: 'Source from new supplier or location',
       description:
         'Select a new location or supplier you want to source from in order to analyse changes.',
     },
     {
       slug: 'CHANGE_PRODUCTION_EFFICIENCY',
       title: 'Change production efficiency',
+      value: 'Change production efficiency',
       description: 'Setup new impacts in order to analyse the changes.',
     },
     {
       slug: 'NEW_MATERIAL',
       title: 'Switch to a new material',
+      value: 'Switch to a new material',
       description: 'Select a new material you want to source from in order to analyse changes.',
     },
   ];

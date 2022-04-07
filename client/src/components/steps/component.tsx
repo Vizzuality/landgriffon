@@ -16,7 +16,9 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
   const handleTab = useCallback((step) => dispatch(setNewInterventionStep(step)), [dispatch]);
 
   const stepDescription = useCallback(
-    (description: string) => <p className="text-left text-xs text-gray-500">{description}</p>,
+    (description: string) => (
+      <p className="text-left text-xs text-gray-500 leading-5 -tracking-tight">{description}</p>
+    ),
     [],
   );
 
@@ -35,10 +37,10 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
               )}
               onClick={() => handleTab(step.id)}
             >
-              <span className="text-xs text-indigo-600 font-semibold tracking-wide uppercase group-hover:text-indigo-800">
+              <span className="text-indigo-600 font-semibold tracking-wide uppercase group-hover:text-indigo-800 leading-4">
                 {step.title}
               </span>
-              <span className="text-sm font-medium text-left">{step.name}</span>
+              <span className="font-medium text-left leading-5">{step.name}</span>
               {!!step.description && step.id === current && stepDescription(step.description)}
             </button>
           )}
@@ -54,10 +56,10 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
               aria-current="step"
               onClick={() => handleTab(step.id)}
             >
-              <span className="text-xs text-indigo-600 font-semibold tracking-wide uppercase">
+              <span className="text-indigo-600 font-semibold tracking-wide uppercase leading-4">
                 {step.title}
               </span>
-              <span className="text-sm font-medium text-left">{step.name}</span>
+              <span className="font-medium text-left leading-5">{step.name}</span>
               {!!step.description && step.id === current && stepDescription(step.description)}
             </button>
           )}
@@ -72,10 +74,10 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
               )}
               onClick={() => handleTab(step.id)}
             >
-              <span className="text-xs text-gray-500 font-semibold tracking-wide uppercase group-hover:text-gray-700">
+              <span className="text-gray-500 font-semibold tracking-wide uppercase group-hover:text-gray-700 leading-4">
                 {step.title}
               </span>
-              <span className="text-sm font-medium text-left">{step.name}</span>
+              <span className="font-medium text-left leading-5">{step.name}</span>
               {!!step.description && step.id === current && stepDescription(step.description)}
             </button>
           )}

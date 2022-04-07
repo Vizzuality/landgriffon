@@ -19,39 +19,43 @@ const STEP1: Step = {
   status: 'current',
 };
 
-const STEPS2 = {
-  'Source from a new location or supplier': {
+const steps2 = [
+  {
     id: 2,
     title: 'Step 2',
     slug: 'step2',
     name: 'Source from a new supplier or location',
+    value: 'Source from new supplier or location',
     description:
       'Select a new location or supplier you want to source from in order to analyse changes.',
     status: 'upcoming',
   } as Step,
-  'Change production efficiency': {
+  {
     id: 2,
     slug: 'step2',
     title: 'Step 2',
     name: 'Change production efficiency',
+    value: 'Change production efficiency',
     description: 'Setup new impacts in order to analyse the changes.',
     status: 'upcoming',
   } as Step,
-  'Switch to a new material': {
+  {
     id: 2,
     slug: 'step2',
     title: 'Step 2',
     name: 'Switch to a new material',
+    value: 'Switch to a new material',
     description: 'Select a new material you want to source from in order to analyse changes.',
     status: 'upcoming',
   } as Step,
-};
+];
 
 const InterventionForm: FC = () => {
   const { interventionsStep, newInterventionData } = useAppSelector(scenarios);
   const { type } = newInterventionData;
 
-  const steps = useMemo<Step[]>(() => [STEP1, STEPS2[type]], [type]);
+  const STEP2 = useMemo(() => steps2.find(({ value }) => value === type), [type]);
+  const steps = useMemo<Step[]>(() => [STEP1, STEP2], [STEP2]);
 
   return (
     <>

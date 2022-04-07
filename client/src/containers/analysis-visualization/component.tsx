@@ -3,7 +3,6 @@ import classNames from 'classnames';
 
 import { analysisUI } from 'store/features/analysis/ui';
 
-import LayerControl from './layer-control';
 import ModeControl from './mode-control';
 import AnalysisChart from './analysis-chart';
 import AnalysisMap from './analysis-map';

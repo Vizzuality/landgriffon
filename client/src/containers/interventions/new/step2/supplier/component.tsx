@@ -18,6 +18,13 @@ import { useFormContext } from 'react-hook-form';
 import type { SelectOption, SelectOptions } from 'components/select/types';
 
 const Supplier: FC = () => {
+  const {
+    register,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useFormContext();
+
   const { data: suppliers, isLoading: isLoadingSuppliers } = useSuppliersTypes({
     type: 't1supplier',
   });
@@ -46,10 +53,15 @@ const Supplier: FC = () => {
   const optionsLocationTypes: SelectOptions = useMemo(
     () =>
       locationTypes.map((locationType) => ({
-        label: locationType,
+        label: locationType.charAt(0).toUpperCase() + locationType.slice(1),
         value: locationType,
       })),
     [locationTypes],
+  );
+  const currentLocationType = watch('newLocationType');
+  const selectedLocationTypeOption = useMemo(
+    () => optionsLocationTypes.find(({ value }) => value === currentLocationType),
+    [currentLocationType, optionsLocationTypes],
   );
 
   const { data: countries, isLoading: isLoadingCountries } = useAdminRegionsTrees({ depth: 0 });
@@ -61,13 +73,6 @@ const Supplier: FC = () => {
       })),
     [countries],
   );
-
-  const {
-    register,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useFormContext();
 
   const handleDropdown = useCallback(
     (id: string, value: SelectOption) => {
@@ -97,6 +102,7 @@ const Supplier: FC = () => {
               placeholder="Select"
               onChange={(value) => handleDropdown('newT1SupplierId', value)}
               error={!!errors?.newT1SupplierId}
+              allowEmpty
             />
           </div>
 
@@ -107,11 +113,12 @@ const Supplier: FC = () => {
             <Select
               {...register('newProducerId')}
               loading={isLoadingProducers}
-              current={optionsProducers.find((option) => option.value === watch('newProducerId'))}
+              current={watch('newProducerId')}
               options={optionsProducers}
               placeholder="Select"
               onChange={(value) => handleDropdown('newProducerId', value)}
               error={!!errors?.newProducerId}
+              allowEmpty
             />
           </div>
         </div>
@@ -129,13 +136,12 @@ const Supplier: FC = () => {
               <Select
                 {...register('newLocationType')}
                 loading={!locationTypes}
-                current={optionsLocationTypes.find(
-                  (option) => option.value === watch('newLocationType'),
-                )}
+                current={selectedLocationTypeOption}
                 options={optionsLocationTypes}
                 placeholder="all LocationTypes"
                 onChange={(value) => handleDropdown('newLocationType', value)}
                 error={!!errors?.newLocationType}
+                allowEmpty
               />
             </div>
           </div>
@@ -153,6 +159,7 @@ const Supplier: FC = () => {
                 placeholder="All Countries"
                 onChange={(value) => handleDropdown('newLocationCountryInput', value)}
                 error={!!errors?.newLocationCountryInput}
+                allowEmpty
               />
             </div>
           </div>

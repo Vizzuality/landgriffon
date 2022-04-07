@@ -6,7 +6,6 @@ import { isEmpty } from 'lodash';
 
 // hooks
 import { useAppDispatch } from 'store/hooks';
-import { useBusinessUnits } from 'hooks/business-units';
 import { setSubContentCollapsed } from 'store/features/analysis/ui';
 import {
   setNewInterventionStep,
@@ -28,12 +27,13 @@ import OriginRegions from 'containers/interventions/smart-filters/origin-regions
 // types
 import type { SelectOption, SelectOptions } from 'components/select/types';
 import { useInterventionTypes } from 'hooks/analysis';
+import BusinessUnits from 'containers/interventions/smart-filters/business-units';
 
 const schemaValidation = yup.object({
   interventionDescription: yup.string(),
   percentage: yup.number().min(0).max(100).required(),
   materialsIds: yup.array().min(1).required(),
-  businessUnitsIds: yup.string().required(),
+  businessUnitsIds: yup.array().min(1).required(),
   suppliersIds: yup.array().min(1).required(),
   adminRegionsIds: yup.array().min(1).required(),
   endYear: yup
@@ -58,17 +58,6 @@ const Step1: FC = () => {
     [interventionTypes],
   );
 
-  const { data: businesses, isLoading: isLoadingBusinesses } = useBusinessUnits();
-
-  const optionsBusinesses: SelectOptions = useMemo(
-    () =>
-      businesses.map(({ name, id }) => ({
-        label: name,
-        value: id,
-      })),
-    [businesses],
-  );
-
   const {
     register,
     handleSubmit,
@@ -84,12 +73,6 @@ const Step1: FC = () => {
     mode: 'onSubmit',
     reValidateMode: 'onChange',
   });
-
-  const currentBusinessId = watch('businessUnitsIds');
-  const selectedBusinessOption = useMemo(
-    () => optionsBusinesses.find(({ value }) => value === currentBusinessId),
-    [currentBusinessId, optionsBusinesses],
-  );
 
   const currentInterventionType = watch('type');
   const selectedInterventionOption = useMemo(
@@ -179,16 +162,15 @@ const Step1: FC = () => {
             />
           </div>
           <span className="text-gray-700">for</span>
-          <Select
+          <BusinessUnits
             {...register('businessUnitsIds')}
-            loading={isLoadingBusinesses}
-            current={selectedBusinessOption}
-            options={optionsBusinesses}
-            placeholder="all businesses"
+            multiple
+            withSourcingLocations
+            current={watch('businessUnits')}
+            onChange={(values) => handleDropdown('businessUnitsIds', values)}
+            ellipsis
             theme="inline-primary"
-            onChange={(value) => handleDropdown('businessUnitsIds', value)}
             error={!!errors?.businessUnitsIds?.message}
-            allowEmpty
           />
           <span className="text-gray-700 font-medium">from</span>
           <Suppliers
@@ -228,7 +210,7 @@ const Step1: FC = () => {
               defaultValue=""
               placeholder="Insert year"
               aria-label="year"
-              error={errors?.endYear?.message}
+              error={errors?.endYear?.message && 'Must be a valid year'}
             />
           </div>
         </div>

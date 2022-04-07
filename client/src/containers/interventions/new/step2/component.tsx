@@ -1,4 +1,4 @@
-import { useCallback, FC, useMemo } from 'react';
+import { useCallback, FC } from 'react';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 
 // form validation
@@ -12,7 +12,6 @@ import Material from './material';
 import Supplier from './supplier';
 import SupplierImpact from './supplier-impact';
 
-import { analysisFilters } from 'store/features/analysis/filters';
 import { setSubContentCollapsed } from 'store/features/analysis/ui';
 import { scenarios, setNewInterventionStep } from 'store/features/analysis/scenarios';
 
@@ -20,58 +19,40 @@ import { useCreateNewIntervention, useUpdateIntervention } from 'hooks/intervent
 
 import toast from 'react-hot-toast';
 
-const getSchemaValidation = (interventionType) => {
-  switch (interventionType) {
-    case 'NEW_SUPPLIER':
-      return yup.object({
-        newT1SupplierId: yup.string(),
-        newProducerId: yup.string(),
-        newLocationType: yup.string().required(),
-        newLocationCountryInput: yup.string().required(),
-        newLocationAddressInput: yup.string().required(),
-        DF_LUC_T: yup.number().required(),
-        UWU_T: yup.number().required(),
-        BL_LUC_T: yup.number().required(),
-        GHG_LUC_T: yup.number().required(),
-      });
-      break;
-    case 'CHANGE_PRODUCTION_EFFICIENCY':
-      return yup.object({
-        DF_LUC_T: yup.number().required(),
-        UWU_T: yup.number().required(),
-        BL_LUC_T: yup.number().required(),
-        GHG_LUC_T: yup.number().required(),
-      });
-      break;
-    default:
-      return yup.object({
-        newMaterialId: yup.string().when('type', {
-          is: 'NEW_MATERIAL',
-          then: yup.string().required(),
-        }),
-        newMaterialTonnageRatio: yup.number().required(),
-        newT1SupplierId: yup.string(),
-        newProducerId: yup.string(),
-        newLocationType: yup.string().required(),
-        newLocationCountryInput: yup.string().required(),
-        newLocationAddressInput: yup.string().required(),
-        DF_LUC_T: yup.number().required(),
-        UWU_T: yup.number().required(),
-        BL_LUC_T: yup.number().required(),
-        GHG_LUC_T: yup.number().required(),
-      });
-  }
-};
+const schemaValidation = yup.object({
+  newMaterialId: yup.string().when('type', {
+    is: 'NEW_MATERIAL',
+    then: yup.string().required(),
+  }),
+  newMaterialTonnageRatio: yup.number().when('type', {
+    is: 'NEW_MATERIAL',
+    then: yup.string().required(),
+  }),
+  newT1SupplierId: yup.string(),
+  newProducerId: yup.string(),
+  newLocationType: yup.string().when('type', {
+    is: 'NEW_MATERIAL' || 'NEW_SUPPLIER',
+    then: yup.string().required(),
+  }),
+  newLocationCountryInput: yup.string().when('type', {
+    is: 'NEW_MATERIAL' || 'NEW_SUPPLIER',
+    then: yup.string().required(),
+  }),
+  newLocationAddressInput: yup.string().when('type', {
+    is: 'NEW_MATERIAL' || 'NEW_SUPPLIER',
+    then: yup.string().required(),
+  }),
+  DF_LUC_T: yup.number().required(),
+  UWU_T: yup.number().required(),
+  BL_LUC_T: yup.number().required(),
+  GHG_LUC_T: yup.number().required(),
+});
 
 const errorMessage = 'Please complete all the missing fields';
 
 const Step2: FC = () => {
   const dispatch = useAppDispatch();
-  const filters = useAppSelector(analysisFilters);
-  const { interventionType } = filters;
   const { currentScenario, interventionMode, currentIntervention } = useAppSelector(scenarios);
-
-  const schemaValidation = useMemo(() => getSchemaValidation(interventionType), [interventionType]);
 
   const methods = useForm({
     resolver: yupResolver(schemaValidation),
@@ -100,7 +81,7 @@ const Step2: FC = () => {
         businessUnitsIds: newInterventionData.businessUnitsIds,
         startYear: newInterventionData.endYear,
         endYear: newInterventionData.endYear,
-        type,
+        type: 'Switch to a new material',
         suppliersIds: newInterventionData.suppliersIds,
         adminRegionsIds: newInterventionData.adminRegionsIds,
         newMaterialTonnageRatio: values.newMaterialTonnageRatio,

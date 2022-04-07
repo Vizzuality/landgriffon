@@ -18,9 +18,10 @@ export const Legend: React.FC<LegendProps> = ({ className = '' }: LegendProps) =
 
   return (
     <div
-      className={cx('flex flex-col flex-grow shadow-sm bg-white border border-gray-200 rounded', {
-        [className]: !!className,
-      })}
+      className={cx(
+        'flex flex-col flex-grow shadow-sm bg-white border border-gray-200 rounded',
+        className,
+      )}
     >
       <div className="flex items-center justify-between px-4 py-2">
         <div className="font-semibold text-gray-900 text-sm">Legend</div>
@@ -42,7 +43,7 @@ export const Legend: React.FC<LegendProps> = ({ className = '' }: LegendProps) =
         </div>
       )}
 
-      {/* Current layer */}
+      {/* Main layer: it will be always active */}
       <div
         className="relative flex flex-col flex-grow overflow-hidden border-t border-gray-100"
         style={{

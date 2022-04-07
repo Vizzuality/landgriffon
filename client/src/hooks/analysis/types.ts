@@ -1,3 +1,5 @@
+import type { InterventionTypes } from 'containers/scenarios/types';
+
 export interface AnalysisChartOptions {
   filters: Record<string, unknown>;
 }
@@ -57,5 +59,6 @@ export interface AnalysisChart {
 export type Intervention = Readonly<{
   slug: string;
   title: string;
+  value: InterventionTypes;
   description: string;
 }>;

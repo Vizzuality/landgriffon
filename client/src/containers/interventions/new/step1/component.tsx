@@ -12,6 +12,7 @@ import {
   setNewInterventionStep,
   setNewInterventionData,
   resetInterventionData,
+  ScenariosState,
 } from 'store/features/analysis/scenarios';
 
 // components
@@ -28,7 +29,6 @@ import BusinessUnits from 'containers/interventions/smart-filters/business-units
 
 // types
 import type { SelectOption, SelectOptions } from 'components/select/types';
-import type { InterventionTypes } from 'containers/scenarios/types';
 
 const schemaValidation = yup.object({
   interventionDescription: yup.string(),
@@ -52,9 +52,9 @@ const Step1: FC = () => {
 
   const optionsInterventionType: SelectOptions = useMemo(
     () =>
-      interventionTypes.map(({ title }) => ({
+      interventionTypes.map(({ title, value }) => ({
         label: title,
-        value: title,
+        value: value,
       })),
     [interventionTypes],
   );
@@ -108,11 +108,16 @@ const Step1: FC = () => {
   );
 
   const handleInterventionType = useCallback(
-    (id: string, values: SelectOption) => {
-      setValue(id, values.value);
+    (id: string, value: SelectOption) => {
+      dispatch(
+        setNewInterventionData({ type: value.value } as Partial<
+          ScenariosState['newInterventionData']
+        >),
+      );
+      setValue(id, value.value);
       clearErrors(id);
     },
-    [setValue, clearErrors],
+    [setValue, clearErrors, dispatch],
   );
 
   const handleCancel = useCallback(() => {

@@ -27,6 +27,7 @@ const INITIAL_VIEW_STATE = {
   zoom: 2,
   pitch: 0,
   bearing: 0,
+  minZoom: 2,
 };
 
 type PopUpInfoProps = {
@@ -232,7 +233,7 @@ const AnalysisMap: React.FC = () => {
 
   const onZoomChange = useCallback(
     (zoom) => {
-      setViewState((state) => ({ ...state, zoom }));
+      setViewState((state) => ({ ...state, zoom, transitionDuration: 250 }));
     },
     [setViewState],
   );
@@ -241,19 +242,17 @@ const AnalysisMap: React.FC = () => {
     <>
       {(isFetching || isRendering) && <PageLoading />}
       <DeckGL
-        viewState={viewState}
-        onViewStateChange={({ viewState }) => {
-          setViewState(viewState);
-        }}
+        initialViewState={viewState}
         controller
         layers={layers}
         onAfterRender={handleAfterRender}
       >
         <StaticMap
+          viewState={viewState}
           mapStyle="mapbox://styles/landgriffon/ckmdaj5gy08yx17me92nudkjd"
           mapboxApiAccessToken={MAPBOX_API_TOKEN}
           className="-z-10"
-        ></StaticMap>
+        />
         {popUpInfo?.object && (
           <PopUp
             position={

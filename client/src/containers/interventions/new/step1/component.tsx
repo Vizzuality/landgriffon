@@ -6,6 +6,7 @@ import { isEmpty } from 'lodash';
 
 // hooks
 import { useAppDispatch } from 'store/hooks';
+import { useInterventionTypes } from 'hooks/analysis';
 import { setSubContentCollapsed } from 'store/features/analysis/ui';
 import {
   setNewInterventionStep,
@@ -23,11 +24,11 @@ import Button from 'components/button';
 import Materials from 'containers/interventions/smart-filters/materials/component';
 import Suppliers from 'containers/interventions/smart-filters/suppliers/component';
 import OriginRegions from 'containers/interventions/smart-filters/origin-regions/component';
+import BusinessUnits from 'containers/interventions/smart-filters/business-units';
 
 // types
 import type { SelectOption, SelectOptions } from 'components/select/types';
-import { useInterventionTypes } from 'hooks/analysis';
-import BusinessUnits from 'containers/interventions/smart-filters/business-units';
+import type { InterventionTypes } from 'containers/scenarios/types';
 
 const schemaValidation = yup.object({
   interventionDescription: yup.string(),
@@ -51,9 +52,9 @@ const Step1: FC = () => {
 
   const optionsInterventionType: SelectOptions = useMemo(
     () =>
-      interventionTypes.map(({ title, slug }) => ({
+      interventionTypes.map(({ title }) => ({
         label: title,
-        value: slug,
+        value: title,
       })),
     [interventionTypes],
   );
@@ -91,12 +92,20 @@ const Step1: FC = () => {
   );
 
   const handleDropdown = useCallback(
-    (id, values: SelectOption | SelectOption[]) => {
+    (id: string, values: SelectOption | SelectOption[]) => {
       const valuesIds = Array.isArray(values)
         ? values.map((option) => option?.value)
         : values?.value;
 
       setValue(id, valuesIds);
+      clearErrors(id);
+    },
+    [setValue, clearErrors],
+  );
+
+  const handleInterventionType = useCallback(
+    (id: string, values: SelectOption) => {
+      setValue(id, values.value);
       clearErrors(id);
     },
     [setValue, clearErrors],
@@ -225,7 +234,7 @@ const Step1: FC = () => {
               {...register('type')}
               current={selectedInterventionOption}
               options={optionsInterventionType}
-              onChange={(value) => handleDropdown('type', value)}
+              onChange={(value) => handleInterventionType('type', value)}
             />
           </div>
         </div>

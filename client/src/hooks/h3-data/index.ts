@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useQuery, UseQueryOptions, UseQueryResult } from 'react-query';
+import { QueryOptions, useQuery, UseQueryOptions, UseQueryResult } from 'react-query';
 import chroma from 'chroma-js';
 import { scaleThreshold } from 'd3-scale';
 import store from 'store';

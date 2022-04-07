@@ -2,9 +2,9 @@ import cx from 'classnames';
 
 export type LegendTypeChoroplethProps = {
   className?: string;
-  min: number;
+  min: number | string;
   items: Array<{
-    value: number;
+    value: number | string;
     color: string;
   }>;
 };

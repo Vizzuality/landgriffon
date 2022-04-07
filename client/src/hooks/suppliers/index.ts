@@ -15,6 +15,9 @@ type ResponseData = UseQueryResult<Supplier[]>;
 export type SuppliersTreesParams = {
   depth?: number;
   withSourcingLocations?: boolean;
+  materialIds?: string[];
+  originIds?: string[];
+  businessUnitIds?: string[];
 };
 
 export function useSuppliers(params): ResponseData {

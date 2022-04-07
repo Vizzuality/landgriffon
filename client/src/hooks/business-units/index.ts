@@ -15,6 +15,9 @@ type ResponseData = UseQueryResult<BusinessUnits[]>;
 export type BusinessUnitsTreesParams = {
   depth?: number;
   withSourcingLocations?: boolean;
+  materialIds?: string[];
+  supplierIds?: string[];
+  originIds?: string[];
 };
 
 export function useBusinessUnits(): ResponseData {

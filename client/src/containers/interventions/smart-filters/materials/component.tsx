@@ -20,6 +20,8 @@ type MaterialsFilterProps = {
   /** Only materials with sourcing locations. */
   withSourcingLocations?: MaterialsTreesParams['withSourcingLocations'];
   businessUnitIds?: MaterialsTreesParams['businessUnitIds'];
+  supplierIds?: MaterialsTreesParams['supplierIds'];
+  originIds?: MaterialsTreesParams['originIds'];
   onChange?: TreeSelectProps['onChange'];
 };
 
@@ -33,10 +35,18 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
   theme = 'inline-primary',
   withSourcingLocations, // Do not a default; backend will override depth if this is set at all
   businessUnitIds,
+  supplierIds,
+  originIds,
   onChange,
   ...props
 }) => {
-  const { data, isFetching } = useMaterialsTrees({ depth, withSourcingLocations, businessUnitIds });
+  const { data, isFetching } = useMaterialsTrees({
+    depth,
+    withSourcingLocations,
+    businessUnitIds,
+    supplierIds,
+    originIds,
+  });
 
   const treeOptions: TreeSelectProps['options'] = useMemo(
     () =>

@@ -21,25 +21,25 @@ import toast from 'react-hot-toast';
 
 const schemaValidation = yup.object({
   newMaterialId: yup.string().when('type', {
-    is: 'NEW_MATERIAL',
+    is: 'Switch to a new material',
     then: yup.string().required(),
   }),
   newMaterialTonnageRatio: yup.number().when('type', {
-    is: 'NEW_MATERIAL',
+    is: 'Switch to a new material',
     then: yup.string().required(),
   }),
   newT1SupplierId: yup.string(),
   newProducerId: yup.string(),
   newLocationType: yup.string().when('type', {
-    is: 'NEW_MATERIAL' || 'NEW_SUPPLIER',
+    is: 'Switch to a new material' || 'Source from a new supplier or location',
     then: yup.string().required(),
   }),
   newLocationCountryInput: yup.string().when('type', {
-    is: 'NEW_MATERIAL' || 'NEW_SUPPLIER',
+    is: 'Switch to a new material' || 'Source from a new supplier or location',
     then: yup.string().required(),
   }),
   newLocationAddressInput: yup.string().when('type', {
-    is: 'NEW_MATERIAL' || 'NEW_SUPPLIER',
+    is: 'Switch to a new material' || 'Source from a new supplier or location',
     then: yup.string().required(),
   }),
   DF_LUC_T: yup.number().required(),
@@ -148,8 +148,9 @@ const Step2: FC = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(handleStepsSubmissons)} className="mt-16">
-        {type === 'NEW_MATERIAL' && <Material />}
-        {(type === 'NEW_SUPPLIER' || type === 'NEW_MATERIAL') && <Supplier />}
+        {type === 'Switch to a new material' && <Material />}
+        {(type === 'Source from a new location or supplier' ||
+          type === 'Switch to a new material') && <Supplier />}
         <SupplierImpact />
         <div className="pt-10 flex justify-between items-center">
           {hasErrors && (

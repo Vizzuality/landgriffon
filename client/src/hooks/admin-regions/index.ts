@@ -15,6 +15,9 @@ type ResponseData = UseQueryResult<OriginRegion[]>;
 export type AdminRegionsTreesParams = {
   depth?: number;
   withSourcingLocations?: boolean;
+  materialIds?: string[];
+  supplierIds?: string[];
+  businessUnitIds?: string[];
 };
 
 export function useAdminRegions(): ResponseData {

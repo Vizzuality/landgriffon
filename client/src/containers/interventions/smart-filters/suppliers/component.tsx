@@ -13,6 +13,9 @@ type SuppliersFilterProps = {
   depth?: SuppliersTreesParams['depth'];
   /** Only suppliers with sourcing locations. */
   withSourcingLocations?: SuppliersTreesParams['withSourcingLocations'];
+  materialIds?: SuppliersTreesParams['materialIds'];
+  businessUnitIds?: SuppliersTreesParams['businessUnitIds'];
+  originIds?: SuppliersTreesParams['originIds'];
   onChange?: TreeSelectProps['onChange'];
   theme?: 'default' | 'inline-primary';
   ellipsis?: TreeSelectProps['ellipsis'];
@@ -25,6 +28,9 @@ const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
   current,
   depth = 1,
   withSourcingLocations, // Do not a default; backend will override depth if this is set at all
+  materialIds,
+  businessUnitIds,
+  originIds,
   onChange,
   theme,
   ellipsis,
@@ -32,7 +38,13 @@ const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
   error,
   ...props
 }) => {
-  const { data, isFetching } = useSuppliersTrees({ depth, withSourcingLocations });
+  const { data, isFetching } = useSuppliersTrees({
+    depth,
+    withSourcingLocations,
+    materialIds,
+    businessUnitIds,
+    originIds,
+  });
 
   const treeOptions: TreeSelectProps['options'] = useMemo(
     () =>

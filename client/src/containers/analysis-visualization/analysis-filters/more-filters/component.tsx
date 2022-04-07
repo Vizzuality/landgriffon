@@ -25,39 +25,40 @@ const MoreFilters: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const { materials, origins, suppliers } = filters;
+
   const selectedFilters = useMemo(
     () => ({ materials, origins, suppliers }),
     [materials, origins, suppliers],
   );
 
-  // const [open, setOpen] = useState(false);
-  const [moreFilters, setMoreFilters] = useState(selectedFilters);
   const [counter, setCounter] = useState<number>(0);
 
   const handleApply = useCallback(() => {
     dispatch(
       setFilters({
-        materials: moreFilters.materials || INITIAL_FILTERS.materials,
-        origins: moreFilters.origins || INITIAL_FILTERS.origins,
-        suppliers: moreFilters.suppliers || INITIAL_FILTERS.suppliers,
+        materials: materials || INITIAL_FILTERS.materials,
+        origins: origins || INITIAL_FILTERS.origins,
+        suppliers: suppliers || INITIAL_FILTERS.suppliers,
       } as AnalysisFiltersState),
     );
     // setOpen(false);
-  }, [dispatch, moreFilters]);
+  }, [dispatch, materials, origins, suppliers]);
 
   const handleClearFilters = useCallback(() => {
-    setMoreFilters(INITIAL_FILTERS as AnalysisFiltersState); // reset filters
-  }, []);
+    dispatch(setFilters(INITIAL_FILTERS));
+  }, [dispatch]);
 
   const handleChangeFilter = useCallback(
     // only save ids on store
     (key, values) => {
-      setMoreFilters({
-        ...moreFilters,
-        [key]: values,
-      } as AnalysisFiltersState);
+      dispatch(
+        setFilters({
+          ...filters,
+          [key]: values,
+        }),
+      );
     },
-    [moreFilters],
+    [dispatch, filters],
   );
 
   useEffect(() => {
@@ -105,7 +106,7 @@ const MoreFilters: React.FC = () => {
                       <Materials
                         multiple
                         withSourcingLocations
-                        current={moreFilters.materials}
+                        current={materials}
                         fitContent
                         onChange={(values) => handleChangeFilter('materials', values)}
                       />
@@ -115,7 +116,7 @@ const MoreFilters: React.FC = () => {
                       <OriginRegions
                         multiple
                         withSourcingLocations
-                        current={moreFilters.origins}
+                        current={origins}
                         fitContent
                         onChange={(values) => handleChangeFilter('origins', values)}
                       />
@@ -125,7 +126,7 @@ const MoreFilters: React.FC = () => {
                       <Suppliers
                         multiple
                         withSourcingLocations
-                        current={moreFilters.suppliers}
+                        current={suppliers}
                         fitContent
                         onChange={(values) => handleChangeFilter('suppliers', values)}
                       />

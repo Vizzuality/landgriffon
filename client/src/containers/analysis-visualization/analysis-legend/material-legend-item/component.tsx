@@ -17,7 +17,7 @@ import type { Legend, LegendItem as LegendItemProp } from 'types';
 
 const MaterialLegendItem = () => {
   const dispatch = useAppDispatch();
-  const { indicator, startYear } = useAppSelector(analysisFilters);
+  const { materials, indicator, startYear } = useAppSelector(analysisFilters);
   const {
     layers: { material },
   } = useAppSelector(analysisMap);
@@ -30,6 +30,7 @@ const MaterialLegendItem = () => {
         name: `${indicator.label} in ${startYear}`,
         unit: data.metadata.unit,
         min: NUMBER_FORMAT(data.metadata.quantiles[0]),
+        current: materials,
         items: data.metadata.quantiles.slice(1).map(
           (v, index): LegendItemProp => ({
             value: NUMBER_FORMAT(v),
@@ -39,7 +40,7 @@ const MaterialLegendItem = () => {
       };
     }
     return null;
-  }, [data, indicator?.label, startYear]);
+  }, [data, indicator.label, materials, startYear]);
 
   const handleActive = useCallback(
     (active) => {

@@ -1,18 +1,30 @@
-/* This example requires Tailwind CSS v2.0+ */
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Switch } from '@headlessui/react';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function Toggle() {
-  const [enabled, setEnabled] = useState(false);
+type ToggleProps = {
+  defaultActive?: boolean;
+  onChange?: (active: boolean) => void;
+};
+
+export default function Toggle({ defaultActive = false, onChange }: ToggleProps) {
+  const [enabled, setEnabled] = useState<boolean>(defaultActive);
+
+  const handleChange = useCallback(
+    (status: boolean) => {
+      setEnabled(status);
+      if (onChange) onChange(status);
+    },
+    [onChange],
+  );
 
   return (
     <Switch
       checked={enabled}
-      onChange={setEnabled}
+      onChange={handleChange}
       className="flex-shrink-0 group relative rounded-full inline-flex items-center justify-center h-5 w-8 cursor-pointer focus:outline-none"
     >
       <span className="sr-only">Use setting</span>

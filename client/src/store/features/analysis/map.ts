@@ -25,7 +25,7 @@ export const analysisMapSlice = createSlice({
   initialState,
   reducers: {
     // Add or update the layer
-    setLayers: (state, action: PayloadAction<Layer>) => {
+    setLayer: (state, action: PayloadAction<Layer>) => {
       const layerExists = state.layers.find((layer) => layer.id === action.payload.id);
       const layers = layerExists
         ? state.layers.map((layer) => {
@@ -40,10 +40,17 @@ export const analysisMapSlice = createSlice({
         layers,
       };
     },
+    // Add and replace all the layers
+    setLayers: (state, action: PayloadAction<Layer[]>) => {
+      return {
+        ...state,
+        layers: action.payload?.map((layer) => ({ ...DEFAULT_LAYER_ATTRIBUTES, ...layer })),
+      };
+    },
   },
 });
 
-export const { setLayers } = analysisMapSlice.actions;
+export const { setLayer, setLayers } = analysisMapSlice.actions;
 
 export const analysisMap = (state: FeatureState) => state['analysis/map'];
 

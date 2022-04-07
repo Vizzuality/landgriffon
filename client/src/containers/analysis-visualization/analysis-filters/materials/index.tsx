@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { analysisFilters, setFilter, setFilters } from 'store/features/analysis/filters';
+import { analysisFilters, setFilter } from 'store/features/analysis/filters';
 
 import Component from './component';
 

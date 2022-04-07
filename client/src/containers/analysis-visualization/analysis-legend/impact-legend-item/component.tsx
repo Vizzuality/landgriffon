@@ -14,6 +14,8 @@ import { COLOR_RAMPS, NUMBER_FORMAT } from '../../constants';
 
 import type { Legend, LegendItem as LegendItemProp } from 'types';
 
+const LAYER_ID = 'impact';
+
 const ImpactLayer = () => {
   const dispatch = useAppDispatch();
   const { indicator, startYear } = useAppSelector(analysisFilters);
@@ -28,7 +30,7 @@ const ImpactLayer = () => {
         items: data.metadata.quantiles.slice(1).map(
           (v, index): LegendItemProp => ({
             value: NUMBER_FORMAT(v),
-            color: COLOR_RAMPS['impact'][index],
+            color: COLOR_RAMPS[LAYER_ID][index],
           }),
         ),
         active: true, // this layer is always active
@@ -40,7 +42,7 @@ const ImpactLayer = () => {
   return (
     <LegendItem {...legendData} showToggle={false}>
       {isFetching && <Loading />}
-      {legendData && (
+      {!isFetching && !!legendData?.items?.length && (
         <LegendTypeChoropleth
           className="text-sm text-gray-500 flex-1"
           min={legendData.min}

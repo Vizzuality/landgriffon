@@ -9,17 +9,27 @@ const DEFAULT_LAYER_ATTRIBUTES = {
   opacity: 1,
 };
 
+type MaterialLayer = Layer & {
+  material?: {
+    label: string;
+    value: Material['id'];
+  };
+};
+
+type RiskLayer = Layer & {
+  material?: {
+    label: string;
+    value: Material['id'];
+  };
+};
+
 export type AnalysisMapState = {
   // User layers; not used, but it's prepared for the future
   userLayers: Layer[];
   // Custom LG layers
   layers: {
-    material: Layer & {
-      materialId?: Material['id'];
-    };
-    risk: Layer & {
-      materialId?: Material['id'];
-    };
+    material: MaterialLayer;
+    risk: RiskLayer;
     impact: Layer;
   };
 };
@@ -45,7 +55,10 @@ export const analysisMapSlice = createSlice({
   reducers: {
     setLayer: (
       state,
-      action: PayloadAction<{ id: 'material' | 'risk' | 'impact'; layer: Layer }>,
+      action: PayloadAction<{
+        id: 'material' | 'risk' | 'impact';
+        layer: MaterialLayer | RiskLayer | Layer;
+      }>,
     ) => ({
       ...state,
       layers: {

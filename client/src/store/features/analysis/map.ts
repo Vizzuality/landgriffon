@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import type { RootState } from 'store';
-import type { Layer } from 'types';
+import type { Layer, Material } from 'types';
 
 const DEFAULT_LAYER_ATTRIBUTES = {
   order: 0,
@@ -11,6 +11,9 @@ const DEFAULT_LAYER_ATTRIBUTES = {
 
 export type AnalysisMapState = {
   layers: Layer[];
+  materialLayer: Layer & {
+    materialId: Material['id'];
+  };
 };
 
 type FeatureState = RootState & { 'analysis/map': AnalysisMapState };
@@ -18,6 +21,7 @@ type FeatureState = RootState & { 'analysis/map': AnalysisMapState };
 // Define the initial state using that type
 export const initialState: AnalysisMapState = {
   layers: [],
+  materialLayer: {},
 };
 
 export const analysisMapSlice = createSlice({

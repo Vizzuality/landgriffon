@@ -205,7 +205,6 @@ export type ImpactLayer = Layer & {
 
 export type MaterialLayer = Layer & {
   params: {
-    indicatorId: Indicator['id'];
     materialId: Material['id'];
     year: number;
   };
@@ -214,6 +213,7 @@ export type MaterialLayer = Layer & {
 export type RiskLayer = Layer & {
   params: {
     indicatorId: Indicator['id'];
+    materialId: Material['id'];
     year: number;
   };
 };

@@ -1,7 +1,6 @@
 import { useMemo, FC } from 'react';
 import { useAppSelector } from 'store/hooks';
 import { scenarios } from 'store/features/analysis/scenarios';
-import { analysisFilters } from 'store/features/analysis/filters';
 
 import Steps from 'components/steps';
 
@@ -21,7 +20,7 @@ const STEP1: Step = {
 };
 
 const STEPS2 = {
-  NEW_SUPPLIER: {
+  'Source from a new location or supplier': {
     id: 2,
     title: 'Step 2',
     slug: 'step2',
@@ -30,7 +29,7 @@ const STEPS2 = {
       'Select a new location or supplier you want to source from in order to analyse changes.',
     status: 'upcoming',
   } as Step,
-  CHANGE_PRODUCTION_EFFICIENCY: {
+  'Change production efficiency': {
     id: 2,
     slug: 'step2',
     title: 'Step 2',
@@ -38,7 +37,7 @@ const STEPS2 = {
     description: 'Setup new impacts in order to analyse the changes.',
     status: 'upcoming',
   } as Step,
-  NEW_MATERIAL: {
+  'Switch to a new material': {
     id: 2,
     slug: 'step2',
     title: 'Step 2',
@@ -49,11 +48,10 @@ const STEPS2 = {
 };
 
 const InterventionForm: FC = () => {
-  const filters = useAppSelector(analysisFilters);
-  const { interventionsStep } = useAppSelector(scenarios);
-  const { interventionType } = filters;
+  const { interventionsStep, newInterventionData } = useAppSelector(scenarios);
+  const { type } = newInterventionData;
 
-  const steps = useMemo<Step[]>(() => [STEP1, STEPS2[interventionType]], [interventionType]);
+  const steps = useMemo<Step[]>(() => [STEP1, STEPS2[type]], [type]);
 
   return (
     <>

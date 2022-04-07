@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import type { RootState } from 'store';
 import type { Indicator } from 'types';
+import type { InterventionTypes } from 'containers/scenarios/types';
 
 type Option = {
   label: string;
@@ -18,7 +19,7 @@ export type AnalysisFiltersState = {
   materials: Option[];
   origins: Option[];
   suppliers: Option[];
-  interventionType: 'NEW_SUPPLIER' | 'CHANGE_PRODUCTION_EFFICIENCY' | 'NEW_MATERIAL';
+  interventionType: InterventionTypes;
 };
 
 type FeatureState = RootState & { 'analysis/filters': AnalysisFiltersState };
@@ -34,7 +35,7 @@ export const initialState: AnalysisFiltersState = {
   materials: [],
   origins: [],
   suppliers: [],
-  interventionType: 'NEW_SUPPLIER',
+  interventionType: 'Source from a new location or supplier',
 };
 
 export const analysisFiltersSlice = createSlice({

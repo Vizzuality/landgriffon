@@ -41,3 +41,9 @@ export type Intervention = Readonly<{
   updatedBy: unknown;
   updatedById: string;
 }>;
+
+export type InterventionTypes = Readonly<
+  | 'Source from a new location or supplier'
+  | 'Switch to a new material'
+  | 'Change production efficiency'
+>;

@@ -285,7 +285,7 @@ const AnalysisMap: React.FC = () => {
       )}
       <div className="absolute z-10 bottom-10 right-6">
         <ZoomControl viewport={viewState} onZoomChange={onZoomChange} />
-        <Legend className="absolute z-10 bottom-10 right-6 w-72" />
+        <Legend />
       </div>
     </>
   );

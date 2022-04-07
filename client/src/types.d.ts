@@ -173,12 +173,23 @@ export type ErrorResponse = AxiosError<{
 /**
  * Layer
  */
+export type LegendItem = {
+  value: string | number;
+  color: string;
+};
+
+export type Legend = {
+  name: string;
+  unit: string;
+  min: LegendItem['value'];
+  items: LegendItem[];
+};
+
 export type Layer = {
   id: string;
-  name: string;
-  order: number;
-  active: boolean;
-  opacity: number;
+  order?: number;
+  active?: boolean;
+  opacity?: number;
 };
 
 export type ImpactLayer = Layer & {

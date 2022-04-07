@@ -1,14 +1,12 @@
-export const CONTEXTUAL_LAYERS = [
+export const LAYERS = [
   {
-    id: 'material-contextual-layer',
-    title: 'Material',
-    infoContent: 'Lorem ipsum',
-    defaultOpacity: 1,
+    id: 'impact-layer',
+    active: true,
   },
   {
-    id: 'risk-contextual-layer',
-    title: 'Risk',
-    infoContent: 'Lorem ipsum',
-    defaultOpacity: 1,
+    id: 'material-layer',
+  },
+  {
+    id: 'risk-layer',
   },
 ];

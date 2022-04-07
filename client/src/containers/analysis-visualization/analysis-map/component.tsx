@@ -5,8 +5,9 @@ import { H3HexagonLayer } from '@deck.gl/geo-layers';
 import { StaticMap } from 'react-map-gl';
 import { XCircleIcon } from '@heroicons/react/solid';
 
-import { useAppSelector } from 'store/hooks';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
+import { setLayers } from 'store/features/analysis/map';
 
 import { useH3MaterialData, useH3RiskData, useH3ImpactData } from 'hooks/h3-data';
 
@@ -14,9 +15,10 @@ import PopUp from 'components/map/popup';
 import LegendItem from 'components/legend/item';
 import LegendTypeChoropleth from 'components/legend/types/choropleth';
 import PageLoading from 'containers/page-loading';
-import Legend from './legend';
+import Legend from '../analysis-legend';
 
 import { COLOR_RAMPS, NUMBER_FORMAT } from '../constants';
+import { LAYERS } from './contants';
 
 const HEXAGON_HIGHLIGHT_COLOR = [0, 0, 0];
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
@@ -41,6 +43,7 @@ type PopUpInfoProps = {
 };
 
 const AnalysisMap: React.FC = () => {
+  const dispatch = useAppDispatch();
   const filters = useAppSelector(analysisFilters);
   const { layer } = filters;
   const [hoveredHexagon, setHoveredHexagon] = useState(null);
@@ -94,7 +97,7 @@ const AnalysisMap: React.FC = () => {
       return `${filters.indicator.label}, for ${filters.materials[0].label} in ${filters.startYear}`;
     }
     if (layer === 'impact' && filters.indicator) {
-      return `${filters.indicator.label}, ${filters.startYear}`;
+      return `${filters.indicator.label} in ${filters.startYear}`;
     }
     return null;
   }, [layer, filters]);
@@ -111,6 +114,12 @@ const AnalysisMap: React.FC = () => {
     }
     return null;
   }, [layer, filters]);
+
+  // At the beginning add all the layers in redux
+  useEffect(() => {
+    console.log('LAYERS', LAYERS);
+    dispatch(setLayers(LAYERS));
+  }, [dispatch]);
 
   useEffect(() => {
     if (h3MaterialData?.data.length || h3RiskData?.data.length || h3ImpactData?.data.length) {
@@ -269,7 +278,7 @@ const AnalysisMap: React.FC = () => {
           </div>
         </div>
       )}
-      {legendItems?.length > 0 && (
+      {/* {legendItems?.length > 0 && (
         <Legend className="absolute z-10 bottom-10 right-6 w-72">
           {legendItems.map((legendItem) => (
             <LegendItem key={legendItem.id} {...legendItem}>
@@ -281,7 +290,8 @@ const AnalysisMap: React.FC = () => {
             </LegendItem>
           ))}
         </Legend>
-      )}
+      )} */}
+      <Legend className="absolute z-10 bottom-10 right-6 w-72" />
     </>
   );
 };

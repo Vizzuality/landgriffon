@@ -10,9 +10,17 @@ const DEFAULT_LAYER_ATTRIBUTES = {
 };
 
 export type AnalysisMapState = {
-  layers: Layer[];
-  materialLayer: Layer & {
-    materialId: Material['id'];
+  // User layers; not used, but it's prepared for the future
+  userLayers: Layer[];
+  // Custom LG layers
+  layers: {
+    material: Layer & {
+      materialId?: Material['id'];
+    };
+    risk: Layer & {
+      materialId?: Material['id'];
+    };
+    impact: Layer;
   };
 };
 
@@ -20,41 +28,58 @@ type FeatureState = RootState & { 'analysis/map': AnalysisMapState };
 
 // Define the initial state using that type
 export const initialState: AnalysisMapState = {
-  layers: [],
-  materialLayer: {},
+  userLayers: [],
+  layers: {
+    material: { ...DEFAULT_LAYER_ATTRIBUTES },
+    risk: { ...DEFAULT_LAYER_ATTRIBUTES },
+    impact: {
+      ...DEFAULT_LAYER_ATTRIBUTES,
+      active: true,
+    },
+  },
 };
 
 export const analysisMapSlice = createSlice({
   name: 'analysisMap',
   initialState,
   reducers: {
-    // Add or update the layer
-    setLayer: (state, action: PayloadAction<Layer>) => {
-      const layerExists = state.layers.find((layer) => layer.id === action.payload.id);
-      const layers = layerExists
-        ? state.layers.map((layer) => {
+    setLayer: (
+      state,
+      action: PayloadAction<{ id: 'material' | 'risk' | 'impact'; layer: Layer }>,
+    ) => ({
+      ...state,
+      layers: {
+        ...state.layers,
+        [action.payload.id]: action.payload.layer,
+      },
+    }),
+    // Add or update the user layer
+    setUserLayer: (state, action: PayloadAction<Layer>) => {
+      const layerExists = state.userLayers.find((layer) => layer.id === action.payload.id);
+      const userLayers = layerExists
+        ? state.userLayers.map((layer) => {
             if (layer.id === action.payload.id) {
               return { ...DEFAULT_LAYER_ATTRIBUTES, ...layer, ...action.payload };
             }
             return layer;
           })
-        : [...state.layers, { ...DEFAULT_LAYER_ATTRIBUTES, ...action.payload }];
+        : [...state.userLayers, { ...DEFAULT_LAYER_ATTRIBUTES, ...action.payload }];
       return {
         ...state,
-        layers,
+        userLayers,
       };
     },
-    // Add and replace all the layers
-    setLayers: (state, action: PayloadAction<Layer[]>) => {
+    // Add and replace all the user layers
+    setUserLayers: (state, action: PayloadAction<Layer[]>) => {
       return {
         ...state,
-        layers: action.payload?.map((layer) => ({ ...DEFAULT_LAYER_ATTRIBUTES, ...layer })),
+        userLayers: action.payload?.map((layer) => ({ ...DEFAULT_LAYER_ATTRIBUTES, ...layer })),
       };
     },
   },
 });
 
-export const { setLayer, setLayers } = analysisMapSlice.actions;
+export const { setLayer, setUserLayer, setUserLayers } = analysisMapSlice.actions;
 
 export const analysisMap = (state: FeatureState) => state['analysis/map'];
 

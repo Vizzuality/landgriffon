@@ -7,7 +7,6 @@ import { XCircleIcon } from '@heroicons/react/solid';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
-import { setLayers } from 'store/features/analysis/map';
 
 import { useH3MaterialData, useH3RiskData, useH3ImpactData } from 'hooks/h3-data';
 
@@ -18,7 +17,6 @@ import PageLoading from 'containers/page-loading';
 import Legend from '../analysis-legend';
 
 import { COLOR_RAMPS, NUMBER_FORMAT } from '../constants';
-import { LAYERS } from './contants';
 
 const HEXAGON_HIGHLIGHT_COLOR = [0, 0, 0];
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
@@ -114,12 +112,6 @@ const AnalysisMap: React.FC = () => {
     }
     return null;
   }, [layer, filters]);
-
-  // At the beginning add all the layers in redux
-  useEffect(() => {
-    console.log('LAYERS', LAYERS);
-    dispatch(setLayers(LAYERS));
-  }, [dispatch]);
 
   useEffect(() => {
     if (h3MaterialData?.data.length || h3RiskData?.data.length || h3ImpactData?.data.length) {

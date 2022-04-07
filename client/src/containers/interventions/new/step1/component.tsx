@@ -64,6 +64,7 @@ const Step1: FC = () => {
     handleSubmit,
     setValue,
     watch,
+    getValues,
     clearErrors,
     formState: { errors },
   } = useForm({
@@ -74,6 +75,9 @@ const Step1: FC = () => {
     mode: 'onSubmit',
     reValidateMode: 'onChange',
   });
+
+  const formValues = getValues();
+  const { businessUnitsIds, supplierIds, originIds } = formValues;
 
   const currentInterventionType = watch('type');
   const selectedInterventionOption = useMemo(
@@ -163,6 +167,9 @@ const Step1: FC = () => {
               {...register('materialsIds')}
               multiple
               withSourcingLocations
+              businessUnitIds={businessUnitsIds}
+              supplierIds={supplierIds}
+              originIds={originIds}
               current={watch('materials')}
               onChange={(values) => handleDropdown('materialsIds', values)}
               ellipsis

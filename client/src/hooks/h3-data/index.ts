@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
-import { QueryOptions, useQuery, UseQueryOptions, UseQueryResult } from 'react-query';
+import { useQuery, UseQueryOptions, UseQueryResult } from 'react-query';
 import chroma from 'chroma-js';
 import { scaleThreshold } from 'd3-scale';
 import store from 'store';
 import { useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
+import { analysisMap } from 'store/features/analysis/map';
 import { filtersForH3API } from 'store/features/analysis/selector';
 
 import { apiRawService } from 'services/api';
@@ -57,9 +58,9 @@ export function useColors(): RGBColor[] {
 }
 
 export function useH3MaterialData(): H3DataResponse {
-  const { layer } = useAppSelector(analysisFilters);
+  const { layers } = useAppSelector(analysisMap);
   const filters = filtersForH3API(store.getState()) as MaterialH3APIParams;
-  const isEnable = !!(filters.materialId && filters.year);
+  const isEnable = !!(layers.material.active && layers.material.material && filters.year);
 
   const colors = useColors();
 
@@ -77,7 +78,7 @@ export function useH3MaterialData(): H3DataResponse {
         .then((response) => responseParser(response, colors)),
     {
       ...DEFAULT_QUERY_OPTIONS,
-      enabled: layer === 'material' && isEnable,
+      enabled: isEnable,
     },
   );
 

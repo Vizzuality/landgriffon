@@ -1,5 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { analysisFilters } from './filters';
+import { analysisMap, AnalysisMapState } from './map';
 
 import type { AnalysisFiltersState } from './filters';
 import type {
@@ -10,24 +11,25 @@ import type {
 } from 'types';
 
 export const filtersForH3API = createSelector(
-  [analysisFilters],
-  (analysisFiltersState: AnalysisFiltersState) => {
-    const { layer, startYear, materials, indicator, suppliers, origins } = analysisFiltersState;
+  [analysisFilters, analysisMap],
+  (analysisFiltersState: AnalysisFiltersState, analysisMapState: AnalysisMapState) => {
+    const { layers } = analysisMapState;
+    const { startYear, materials, indicator, suppliers, origins } = analysisFiltersState;
 
-    if (layer === 'material') {
+    if (layers.material.active) {
       const result: MaterialH3APIParams = {
         year: startYear,
-        materialId: materials && materials.length && materials[0].value,
+        materialId: layers.material.material && layers.material.material.value,
         resolution: 4,
       };
       return result;
     }
 
-    if (layer === 'risk') {
+    if (layers.risk.active) {
       const result: RiskH3APIParams = {
         year: startYear,
         indicatorId: indicator?.value,
-        materialId: materials && materials.length && materials[0].value,
+        materialId: layers.material.material && layers.material.material.value,
         resolution: 4,
       };
       return result;

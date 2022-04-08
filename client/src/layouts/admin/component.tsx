@@ -14,7 +14,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
   <ApplicationLayout>
     <section
       aria-labelledby="primary-heading"
-      className="min-w-0 flex-1 h-full flex flex-col overflow-y-auto p-6"
+      className="min-w-0 flex-1 h-screen flex flex-col overflow-y-auto p-6 pb-16 lg:pb-0"
     >
       {loading && <PageLoading />}
 

@@ -36,4 +36,9 @@ export class GetSupplierTreeWithOptions {
   @ApiPropertyOptional()
   @IsOptional()
   originIds?: string[];
+
+  @IsUUID('4', { each: true })
+  @ApiPropertyOptional()
+  @IsOptional()
+  supplierIds?: string[];
 }

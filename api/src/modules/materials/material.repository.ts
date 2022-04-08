@@ -27,7 +27,11 @@ export class MaterialRepository extends ExtendedTreeRepository<
       .select('m.id')
       .innerJoin(SourcingLocation, 'sl', 'sl.materialId = m.id')
       .distinct(true);
-
+    if (materialTreeOptions.materialIds) {
+      queryBuilder.andWhere('m.id IN (:...materialIds)', {
+        materialIds: materialTreeOptions.materialIds,
+      });
+    }
     if (materialTreeOptions.supplierIds) {
       queryBuilder.andWhere('sl.t1SupplierId IN (:...supplierIds)', {
         supplierIds: materialTreeOptions.supplierIds,

@@ -31,6 +31,12 @@ export class SupplierRepository extends ExtendedTreeRepository<
         '(s.id = sl.t1SupplierId OR s.id = sl.producerId)',
       )
       .distinct(true);
+
+    if (supplierTreeOptions.supplierIds) {
+      queryBuilder.andWhere('s.id IN (:...supplierIds)', {
+        supplierIds: supplierTreeOptions.supplierIds,
+      });
+    }
     if (supplierTreeOptions.materialIds) {
       queryBuilder.andWhere('sl.materialId IN (:...materialIds)', {
         materialIds: supplierTreeOptions.materialIds,

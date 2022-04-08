@@ -10,7 +10,14 @@ import {
   ImpactTableDataByIndicator,
   ImpactTablePurchasedTonnes,
   ImpactTableRows,
+  ImpactTableRowsValues,
 } from 'modules/impact/dto/response-impact-table.dto';
+import { BusinessUnitsService } from 'modules/business-units/business-units.service';
+import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
+import { SuppliersService } from 'modules/suppliers/suppliers.service';
+import { MaterialsService } from 'modules/materials/materials.service';
+import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
+import { ImpactTableEntityType } from 'types/impact-table-entity.type';
 
 @Injectable()
 export class ImpactService {
@@ -20,6 +27,10 @@ export class ImpactService {
 
   constructor(
     private readonly indicatorService: IndicatorsService,
+    private readonly businessUnitsService: BusinessUnitsService,
+    private readonly adminRegionsService: AdminRegionsService,
+    private readonly suppliersService: SuppliersService,
+    private readonly materialsService: MaterialsService,
     private readonly sourcingRecordService: SourcingRecordsService,
   ) {}
 
@@ -31,6 +42,57 @@ export class ImpactService {
         impactTableDto.indicatorIds,
       );
     this.logger.log('Retrieving data from DB to build Impact Table...');
+    let entities: ImpactTableEntityType[] = [];
+
+    switch (impactTableDto.groupBy) {
+      case GROUP_BY_VALUES.MATERIAL:
+        if (impactTableDto.materialIds) {
+          entities =
+            await this.materialsService.getMaterialsTreeWithSourcingLocations({
+              materialIds: impactTableDto.materialIds,
+            });
+          impactTableDto.materialIds = this.getIdsFromTree(entities);
+        } else {
+          entities =
+            await this.materialsService.getMaterialsTreeWithSourcingLocations(
+              {},
+            );
+        }
+        break;
+      case GROUP_BY_VALUES.REGION:
+        if (impactTableDto.originIds) {
+          entities =
+            await this.adminRegionsService.getAdminRegionTreeWithSourcingLocations(
+              { originIds: impactTableDto.originIds },
+            );
+          impactTableDto.originIds = this.getIdsFromTree(entities);
+        } else {
+          entities =
+            await this.adminRegionsService.getAdminRegionTreeWithSourcingLocations(
+              {},
+            );
+        }
+        break;
+      case GROUP_BY_VALUES.SUPPLIER:
+        if (impactTableDto.supplierIds) {
+          entities =
+            await this.suppliersService.getSuppliersWithSourcingLocations({
+              supplierIds: impactTableDto.supplierIds,
+            });
+          impactTableDto.supplierIds = this.getIdsFromTree(entities);
+        } else {
+          entities =
+            await this.suppliersService.getSuppliersWithSourcingLocations({});
+        }
+        break;
+      case GROUP_BY_VALUES.BUSINESS_UNIT:
+        entities =
+          await this.businessUnitsService.getBusinessUnitTreeWithSourcingLocations(
+            {},
+          );
+        break;
+      default:
+    }
 
     const dataForImpactTable: ImpactTableData[] =
       await this.sourcingRecordService.getDataForImpactTable(impactTableDto);
@@ -38,6 +100,7 @@ export class ImpactService {
       impactTableDto,
       indicators,
       dataForImpactTable,
+      this.buildImpactTableRowsSkeleton(entities),
     );
   }
 
@@ -45,6 +108,7 @@ export class ImpactService {
     queryDto: GetImpactTableDto,
     indicators: Indicator[],
     dataForImpactTable: ImpactTableData[],
+    entities: ImpactTableRows[],
   ): ImpactTable {
     this.logger.log('Building Impact Table...');
     const { groupBy, startYear, endYear } = queryDto;
@@ -53,6 +117,7 @@ export class ImpactService {
     const rangeOfYears: number[] = range(startYear, endYear + 1);
     // Append data by indicator and add its unit.symbol as metadata. We need awareness of this loop during the whole process
     indicators.forEach((indicator: Indicator, indicatorValuesIndex: number) => {
+      const calculatedData: ImpactTableRows[] = [];
       impactTable.push({
         indicatorShortName: indicator.shortName as string,
         indicatorId: indicator.id,
@@ -71,7 +136,11 @@ export class ImpactService {
       ];
       // For each unique name, append values by year
       for (const [namesByIndicatorIndex, name] of namesByIndicator.entries()) {
-        impactTable[indicatorValuesIndex].rows.push({ name, values: [] });
+        calculatedData.push({
+          name,
+          values: [],
+          children: [],
+        });
         let rowValuesIndex: number = 0;
         for (const year of rangeOfYears) {
           const dataForYear: ImpactTableData | undefined = dataByIndicator.find(
@@ -79,9 +148,7 @@ export class ImpactService {
           );
           //If the year requested by the users exist in the raw data, append its value. There will always be a first valid value to start with
           if (dataForYear) {
-            impactTable[indicatorValuesIndex].rows[
-              namesByIndicatorIndex
-            ].values.push({
+            calculatedData[namesByIndicatorIndex].values.push({
               year: dataForYear.year,
               value: dataForYear.impact,
               isProjected: false,
@@ -89,11 +156,9 @@ export class ImpactService {
             // If the year requested does no exist in the raw data, project its value getting the latest value (previous year which comes in ascendant order)
           } else {
             const lastYearsValue: number =
-              impactTable[indicatorValuesIndex].rows[namesByIndicatorIndex]
-                .values[rowValuesIndex - 1].value;
-            impactTable[indicatorValuesIndex].rows[
-              namesByIndicatorIndex
-            ].values.push({
+              calculatedData[namesByIndicatorIndex].values[rowValuesIndex - 1]
+                .value;
+            calculatedData[namesByIndicatorIndex].values.push({
               year: year,
               value: lastYearsValue + (lastYearsValue * this.growthRate) / 100,
               isProjected: true,
@@ -104,9 +169,7 @@ export class ImpactService {
       }
       // Once we have all data, projected or not, append the total sum of impact by year and indicator
       rangeOfYears.forEach((year: number, indexOfYear: number) => {
-        const totalSumByYear: number = impactTable[
-          indicatorValuesIndex
-        ].rows.reduce(
+        const totalSumByYear: number = calculatedData.reduce(
           (accumulator: number, currentValue: ImpactTableRows): number => {
             if (currentValue.values[indexOfYear].year === year)
               accumulator += currentValue.values[indexOfYear].value;
@@ -119,6 +182,14 @@ export class ImpactService {
           value: totalSumByYear,
         });
       });
+      const skeleton: ImpactTableRows[] = JSON.parse(JSON.stringify(entities));
+      skeleton.forEach((entity: any) => {
+        this.populateValuesRecursively(entity, calculatedData, rangeOfYears);
+      });
+      impactTable[indicatorValuesIndex].rows = skeleton.filter(
+        (item: ImpactTableRows) =>
+          item.children.length > 0 || item.values[0].value > 0,
+      );
     });
     const purchasedTonnes: ImpactTablePurchasedTonnes[] =
       this.getTotalPurchasedVolumeByYear(rangeOfYears, dataForImpactTable);
@@ -167,4 +238,66 @@ export class ImpactService {
    * @description Retrieve base estimates for all indicators
    */
   async getEstimates(): Promise<any> {}
+
+  private populateValuesRecursively(
+    entity: ImpactTableRows,
+    calculatedRows: ImpactTableRows[],
+    rangeOfYears: number[],
+  ): ImpactTableRowsValues[] {
+    entity.values = [];
+    for (const year of rangeOfYears) {
+      entity.values.push({
+        year: year,
+        value: 0,
+        isProjected: false,
+      });
+    }
+
+    const valuesToAggregate: ImpactTableRowsValues[][] = [];
+    const selfData: ImpactTableRows | undefined = calculatedRows.find(
+      (item: ImpactTableRows) => item.name === entity.name,
+    );
+    if (selfData) valuesToAggregate.push(selfData.values);
+    entity.children.forEach((childEntity: ImpactTableRows) => {
+      valuesToAggregate.push(
+        this.populateValuesRecursively(
+          childEntity,
+          calculatedRows,
+          rangeOfYears,
+        ),
+      );
+    });
+    for (const [valueIndex, ImpactTableRowsValues] of entity.values.entries()) {
+      valuesToAggregate.forEach((item: ImpactTableRowsValues[]) => {
+        entity.values[valueIndex].value =
+          ImpactTableRowsValues.value + item[valueIndex].value;
+        entity.values[valueIndex].isProjected =
+          item[valueIndex].isProjected || entity.values[valueIndex].isProjected;
+      });
+    }
+    return entity.values;
+  }
+
+  private buildImpactTableRowsSkeleton(
+    entities: ImpactTableEntityType[],
+  ): ImpactTableRows[] {
+    return entities.map((item: ImpactTableEntityType) => {
+      return {
+        name: item.name || '',
+        children:
+          item.children.length > 0
+            ? this.buildImpactTableRowsSkeleton(item.children)
+            : [],
+        values: [],
+      };
+    });
+  }
+
+  private getIdsFromTree(entities: ImpactTableEntityType[]): string[] {
+    return entities.reduce((ids: string[], entity: ImpactTableEntityType) => {
+      const childIds: string[] =
+        entity.children.length > 0 ? this.getIdsFromTree(entity.children) : [];
+      return [...ids, ...childIds, entity.id];
+    }, []);
+  }
 }

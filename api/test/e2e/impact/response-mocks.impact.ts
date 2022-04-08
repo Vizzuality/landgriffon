@@ -24,6 +24,7 @@ export const groupByMaterialResponseData = {
           isProjected: true,
         },
       ],
+      children: [],
     },
     {
       name: 'Fake Material 2',
@@ -47,6 +48,110 @@ export const groupByMaterialResponseData = {
           year: 2013,
           value: 2131.5,
           isProjected: true,
+        },
+      ],
+      children: [],
+    },
+  ],
+  yearSum: [
+    {
+      year: 2010,
+      value: 3000,
+    },
+    {
+      year: 2011,
+      value: 3100,
+    },
+    {
+      year: 2012,
+      value: 3200,
+    },
+    {
+      year: 2013,
+      value: 3248,
+    },
+  ],
+};
+
+export const groupByMaterialNestedResponseData = {
+  rows: [
+    {
+      name: 'Fake Material Parent',
+      values: [
+        {
+          year: 2010,
+          value: 3000,
+          isProjected: false,
+        },
+        {
+          year: 2011,
+          value: 3100,
+          isProjected: false,
+        },
+        {
+          year: 2012,
+          value: 3200,
+          isProjected: false,
+        },
+        {
+          year: 2013,
+          value: 3248,
+          isProjected: true,
+        },
+      ],
+      children: [
+        {
+          name: 'Fake Material Child',
+          values: [
+            {
+              year: 2010,
+              value: 3000,
+              isProjected: false,
+            },
+            {
+              year: 2011,
+              value: 3100,
+              isProjected: false,
+            },
+            {
+              year: 2012,
+              value: 3200,
+              isProjected: false,
+            },
+            {
+              year: 2013,
+              value: 3248,
+              isProjected: true,
+            },
+          ],
+          children: [
+            {
+              name: 'Fake Material Grandchild',
+              values: [
+                {
+                  year: 2010,
+                  value: 1000,
+                  isProjected: false,
+                },
+                {
+                  year: 2011,
+                  value: 1050,
+                  isProjected: false,
+                },
+                {
+                  year: 2012,
+                  value: 1100,
+                  isProjected: false,
+                },
+                {
+                  year: 2013,
+                  value: 1116.5,
+                  isProjected: true,
+                },
+              ],
+              children: [],
+            },
+          ],
         },
       ],
     },
@@ -81,6 +186,7 @@ export const groupByOriginResponseData = {
         { isProjected: false, value: 700, year: 2012 },
         { isProjected: true, value: 710.5, year: 2013 },
       ],
+      children: [],
     },
     {
       name: 'Fake AdminRegion 2',
@@ -90,6 +196,7 @@ export const groupByOriginResponseData = {
         { isProjected: false, value: 600, year: 2012 },
         { isProjected: true, value: 609, year: 2013 },
       ],
+      children: [],
     },
   ],
   yearSum: [
@@ -122,6 +229,7 @@ export const groupBySupplierResponseData = {
         { isProjected: false, value: 200, year: 2012 },
         { isProjected: true, value: 203, year: 2013 },
       ],
+      children: [],
     },
     {
       name: 'Fake Supplier 2',
@@ -131,6 +239,7 @@ export const groupBySupplierResponseData = {
         { isProjected: false, value: 400, year: 2012 },
         { isProjected: true, value: 406, year: 2013 },
       ],
+      children: [],
     },
   ],
   yearSum: [
@@ -151,6 +260,7 @@ export const groupByBusinessUnitResponseData = {
         { isProjected: false, value: 200, year: 2012 },
         { isProjected: true, value: 203, year: 2013 },
       ],
+      children: [],
     },
     {
       name: 'Fake BusinessUnit 2',
@@ -160,6 +270,7 @@ export const groupByBusinessUnitResponseData = {
         { isProjected: false, value: 400, year: 2012 },
         { isProjected: true, value: 406, year: 2013 },
       ],
+      children: [],
     },
   ],
   yearSum: [

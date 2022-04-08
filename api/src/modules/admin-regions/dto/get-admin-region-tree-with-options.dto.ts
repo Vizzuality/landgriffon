@@ -36,4 +36,9 @@ export class GetAdminRegionTreeWithOptionsDto {
   @ApiPropertyOptional()
   @IsOptional()
   businessUnitIds?: string[];
+
+  @IsUUID('4', { each: true })
+  @ApiPropertyOptional()
+  @IsOptional()
+  originIds?: string[];
 }

@@ -36,4 +36,9 @@ export class GetMaterialTreeWithOptionsDto {
   @ApiPropertyOptional()
   @IsOptional()
   originIds?: string[];
+
+  @IsUUID('4', { each: true })
+  @ApiPropertyOptional()
+  @IsOptional()
+  materialIds?: string[];
 }

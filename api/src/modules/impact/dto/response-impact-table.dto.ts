@@ -37,6 +37,8 @@ export class ImpactTableRows {
   name: string;
   @ApiProperty({ type: () => ImpactTableRowsValues, isArray: true })
   values: ImpactTableRowsValues[];
+  @ApiProperty({ type: () => ImpactTableRows, isArray: true })
+  children: ImpactTableRows[];
 }
 
 export class YearSumData {

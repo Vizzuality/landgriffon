@@ -1,10 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from 'store';
-<<<<<<< HEAD
-import type { Scenario, Intervention } from 'containers/scenarios/types';
-=======
-import type { Scenario, InterventionTypes } from 'containers/scenarios/types';
->>>>>>> 714366ab (intervention types changed)
+import type { Scenario, Intervention, InterventionTypes } from 'containers/scenarios/types';
 
 export type ScenariosState = {
   mode: 'list' | 'edit';
@@ -70,7 +66,7 @@ export const initialState: ScenariosState = {
     businessUnitsIds: null,
     startYear: null,
     endYear: null,
-    type: 'Source from new supplier or location',
+    type: 'Source from a new location or supplier',
     suppliersIds: null,
     adminRegionsIds: null,
     newMaterialTonnageRatio: null,
@@ -152,7 +148,7 @@ export const analysisScenariosSlice = createSlice({
     }),
     setNewInterventionData: (
       state,
-      action: PayloadAction<Partial<ScenariosState['newInterventionData']>>,
+      action: PayloadAction<ScenariosState['newInterventionData']>,
     ) => ({
       ...state,
       newInterventionData: {

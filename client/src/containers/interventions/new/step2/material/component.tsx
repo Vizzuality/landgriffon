@@ -55,7 +55,7 @@ const Material = () => {
             <Select
               {...register('newMaterialId')}
               loading={isLoadingMaterials}
-              current={watch('newMaterialId')}
+              current={optionsMaterials.find((option) => option.value === watch('newMaterialId'))}
               options={optionsMaterials}
               placeholder="Select"
               onChange={(values) => handleDropdown('newMaterialId', values)}

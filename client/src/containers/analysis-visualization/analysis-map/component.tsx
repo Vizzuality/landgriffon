@@ -1,11 +1,11 @@
 import type { PopUpProps } from 'components/map/popup/types';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import DeckGL from '@deck.gl/react';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
 import { StaticMap } from 'react-map-gl';
 import { XCircleIcon } from '@heroicons/react/solid';
 
-import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
 
 import { useH3MaterialData, useH3RiskData, useH3ImpactData } from 'hooks/h3-data';
@@ -17,7 +17,6 @@ import Legend from '../analysis-legend';
 import { NUMBER_FORMAT } from '../constants';
 import ZoomControl from 'components/map/controls/zoom';
 import { analysisMap } from 'store/features/analysis';
-import { setLayer, setUserLayers } from 'store/features/analysis/map';
 
 const HEXAGON_HIGHLIGHT_COLOR = [0, 0, 0];
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;

@@ -66,7 +66,7 @@ export const initialState: ScenariosState = {
     businessUnitsIds: null,
     startYear: null,
     endYear: null,
-    type: 'Source from a new location or supplier',
+    type: 'Source from new supplier or location',
     suppliersIds: null,
     adminRegionsIds: null,
     newMaterialTonnageRatio: null,
@@ -148,7 +148,7 @@ export const analysisScenariosSlice = createSlice({
     }),
     setNewInterventionData: (
       state,
-      action: PayloadAction<ScenariosState['newInterventionData']>,
+      action: PayloadAction<Partial<ScenariosState['newInterventionData']>>,
     ) => ({
       ...state,
       newInterventionData: {

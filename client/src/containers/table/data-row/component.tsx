@@ -32,7 +32,6 @@ const DataRow: React.FC<DataRowProps> = ({
   validation,
   firstColumnKey,
   isFirstColumnSticky,
-  stickyColumnKey,
 }: DataRowProps) => {
   const [isRowHovered, setIsRowHovered] = useState<boolean>(false);
 
@@ -95,7 +94,6 @@ const DataRow: React.FC<DataRowProps> = ({
             value={value}
             firstColumnKey={firstColumnKey}
             isFirstColumnSticky={isFirstColumnSticky}
-            stickyColumnKey={stickyColumnKey}
             onClick={handleClick}
             onMouseEnter={() => setIsRowHovered(true)}
             onMouseLeave={() => setIsRowHovered(false)}

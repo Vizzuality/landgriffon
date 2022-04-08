@@ -17,14 +17,13 @@ const Cell: React.FC<CellProps> = (props: CellProps) => {
     isEditableCell,
     firstColumnKey,
     isFirstColumnSticky,
-    stickyColumnKey,
     isRowHovered = false,
     onClick,
     onMouseEnter,
     onMouseLeave,
   } = props;
 
-  const isSticky = isFirstColumnSticky && props.column.key === stickyColumnKey;
+  const isSticky = isFirstColumnSticky && props.column.key === firstColumnKey;
   const isFirstColumn = props.column.key === firstColumnKey;
 
   const cellSpacingElements = () => {

@@ -158,4 +158,25 @@ export class AdminRegionsService extends AppBaseService<
   async getAdminRegionByIds(ids: string[]): Promise<AdminRegion[]> {
     return this.adminRegionRepository.findByIds(ids);
   }
+
+  async getAdminRegionDescendants(adminRegionIds: string[]): Promise<any> {
+    let adminRegions: AdminRegion[] = [];
+    for (const id of adminRegionIds) {
+      const adminRegion: AdminRegion | undefined =
+        await this.adminRegionRepository.findOne(id);
+
+      if (!adminRegion)
+        throw new NotFoundException(
+          `There is no Admin region for Material with ID: ${id}`,
+        );
+
+      const result: AdminRegion[] =
+        await this.adminRegionRepository.findDescendants(
+          adminRegion as AdminRegion,
+        );
+      adminRegions = [...adminRegions, ...result];
+    }
+
+    return adminRegions.map((adminRegion: AdminRegion) => adminRegion.id);
+  }
 }

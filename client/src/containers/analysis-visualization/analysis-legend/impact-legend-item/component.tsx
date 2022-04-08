@@ -1,8 +1,8 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
-import { setLayer } from 'store/features/analysis/map';
+import { analysisMap, setLayer } from 'store/features/analysis/map';
 
 import { useH3ImpactData } from 'hooks/h3-data';
 
@@ -17,8 +17,10 @@ import type { Legend, LegendItem as LegendItemProp } from 'types';
 const LAYER_ID = 'impact';
 
 const ImpactLayer = () => {
-  const dispatch = useAppDispatch();
   const { indicator, startYear } = useAppSelector(analysisFilters);
+  const {
+    layers: { impact },
+  } = useAppSelector(analysisMap);
   const { data, isFetching } = useH3ImpactData();
 
   const legendData = useMemo<Legend>(() => {
@@ -39,8 +41,21 @@ const ImpactLayer = () => {
     return null;
   }, [data, indicator?.label, startYear]);
 
+  const dispatch = useAppDispatch();
+  const onChangeOpacity = useCallback(
+    (opacity: number) => {
+      dispatch(setLayer({ id: LAYER_ID, layer: { opacity } }));
+    },
+    [dispatch],
+  );
+
   return (
-    <LegendItem {...legendData} showToggle={false}>
+    <LegendItem
+      {...legendData}
+      opacity={impact.opacity}
+      onChangeOpacity={onChangeOpacity}
+      showToggle={false}
+    >
       {isFetching && <Loading />}
       {!isFetching && !!legendData?.items?.length && (
         <LegendTypeChoropleth

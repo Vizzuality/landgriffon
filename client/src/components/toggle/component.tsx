@@ -10,7 +10,7 @@ type ToggleProps = {
   onChange?: (active: boolean) => void;
 };
 
-export default function Toggle({ defaultActive = false, onChange }: ToggleProps) {
+const Toggle: React.FC<ToggleProps> = ({ defaultActive = false, onChange }) => {
   const [enabled, setEnabled] = useState<boolean>(defaultActive);
 
   const handleChange = useCallback(
@@ -48,4 +48,6 @@ export default function Toggle({ defaultActive = false, onChange }: ToggleProps)
       />
     </Switch>
   );
-}
+};
+
+export default Toggle;

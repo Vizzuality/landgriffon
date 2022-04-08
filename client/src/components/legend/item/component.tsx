@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Toggle from 'components/toggle';
 import { InformationCircleIcon } from '@heroicons/react/outline';
+import OpacityControl from './opacityControl';
 
 export type LegendItemProps = {
   name: string | JSX.Element;
@@ -11,6 +12,8 @@ export type LegendItemProps = {
   showToggle?: boolean;
   children?: React.ReactNode;
   onActiveChange?: (active: boolean) => void;
+  opacity: number;
+  onChangeOpacity: (opacity: number) => void;
 };
 
 export const LegendItem: React.FC<LegendItemProps> = ({
@@ -21,7 +24,9 @@ export const LegendItem: React.FC<LegendItemProps> = ({
   showToggle = true,
   children,
   onActiveChange,
-}: LegendItemProps) => {
+  opacity,
+  onChangeOpacity,
+}) => {
   const [isActive, setActive] = useState<boolean>(active);
   const handleChange = useCallback(
     (active) => {
@@ -44,9 +49,7 @@ export const LegendItem: React.FC<LegendItemProps> = ({
             {showToolbar && (
               <div className="flex items-center">
                 <div className="flex-1 flex items-center space-x-1 mt-0.5">
-                  <button>
-                    <InformationCircleIcon className="w-4 h-4 text-gray-900" />
-                  </button>
+                  <OpacityControl opacity={opacity} onChange={onChangeOpacity} />
                   <button>
                     <InformationCircleIcon className="w-4 h-4 text-gray-900" />
                   </button>

@@ -105,7 +105,11 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
         .select('ar.id')
         .innerJoin(SourcingLocation, 'sl', 'sl.adminRegionId = ar.id')
         .distinct(true);
-
+    if (adminRegionTreeOptions.originIds) {
+      queryBuilder.andWhere('ar.id IN (:...originIds)', {
+        originIds: adminRegionTreeOptions.originIds,
+      });
+    }
     if (adminRegionTreeOptions.supplierIds) {
       queryBuilder.andWhere('sl.t1SupplierId IN (:...supplierIds)', {
         supplierIds: adminRegionTreeOptions.supplierIds,

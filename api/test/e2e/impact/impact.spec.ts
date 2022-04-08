@@ -38,6 +38,7 @@ import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 import {
   groupByBusinessUnitResponseData,
+  groupByMaterialNestedResponseData,
   groupByMaterialResponseData,
   groupByOriginResponseData,
   groupBySupplierResponseData,
@@ -445,6 +446,99 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       );
       expect(response.body.data.impactTable[0].yearSum).toEqual(
         expect.arrayContaining(groupByMaterialResponseData.yearSum),
+      );
+    });
+
+    test('Impact table grouped by Nested Materials should be successful', async () => {
+      const adminRegion: AdminRegion = await createAdminRegion({
+        name: 'Fake AdminRegion',
+      });
+      const unit: Unit = await createUnit({ shortName: 'fakeUnit' });
+      const indicator: Indicator = await createIndicator({
+        name: 'Fake Indicator',
+        unit,
+      });
+
+      const parentMaterial: Material = await createMaterial({
+        name: 'Fake Material Parent',
+      });
+      const childMaterial: Material = await createMaterial({
+        name: 'Fake Material Child',
+        parentId: parentMaterial.id,
+      });
+      const grandchildMaterial: Material = await createMaterial({
+        name: 'Fake Material Grandchild',
+        parentId: childMaterial.id,
+      });
+
+      const businessUnit: BusinessUnit = await createBusinessUnit({
+        name: 'Fake Business Unit',
+      });
+
+      const supplier: Supplier = await createSupplier({
+        name: 'Fake Supplier',
+      });
+
+      const sourcingLocation1: SourcingLocation = await createSourcingLocation({
+        material: childMaterial,
+        businessUnit,
+        t1Supplier: supplier,
+        adminRegion,
+      });
+      const sourcingLocation2: SourcingLocation = await createSourcingLocation({
+        material: grandchildMaterial,
+        businessUnit,
+        t1Supplier: supplier,
+        adminRegion,
+      });
+
+      for await (const [index, year] of [2010, 2011, 2012].entries()) {
+        const startTonnage: number = 100;
+        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+          value: 2000 + index / 0.02,
+          indicator,
+        });
+
+        await createSourcingRecord({
+          tonnage: startTonnage + 100 * index,
+          year,
+          indicatorRecords: [indicatorRecord],
+          sourcingLocation: sourcingLocation1,
+        });
+      }
+
+      for await (const [index, year] of [2010, 2011, 2012].entries()) {
+        const startTonnage: number = 100;
+        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+          value: 1000 + index / 0.02,
+          indicator,
+        });
+
+        await createSourcingRecord({
+          tonnage: startTonnage + 100 * index,
+          year,
+          indicatorRecords: [indicatorRecord],
+          sourcingLocation: sourcingLocation2,
+        });
+      }
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/impact/table')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [indicator.id],
+          endYear: 2013,
+          startYear: 2010,
+          groupBy: 'material',
+        })
+        .expect(HttpStatus.OK);
+
+      expect(response.body.data.impactTable[0].rows).toHaveLength(1);
+      expect(response.body.data.impactTable[0].rows).toEqual(
+        expect.arrayContaining(groupByMaterialNestedResponseData.rows),
+      );
+      expect(response.body.data.impactTable[0].yearSum).toEqual(
+        expect.arrayContaining(groupByMaterialNestedResponseData.yearSum),
       );
     });
 

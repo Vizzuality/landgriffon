@@ -160,7 +160,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       default:
     }
     impactDataQueryBuilder
-      .addGroupBy(`sourcingRecords.year, sourcingRecords.id, indicator.id`)
+      .addGroupBy(`sourcingRecords.year, indicator.id`)
       .orderBy('year', 'ASC')
       .orderBy('name');
     const dataForImpactTable: ImpactTableData[] =
@@ -209,7 +209,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
                       "interventionType"
                   FROM
                       sourcing_location
-                  WHERE "scenarioInterventionId" IS NULL 
+                  WHERE "scenarioInterventionId" IS NULL
                   AND "interventionType" IS NULL
               ) as sl
               on sr."sourcingLocationId" = sl.id`);

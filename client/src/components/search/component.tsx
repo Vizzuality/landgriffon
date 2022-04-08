@@ -24,7 +24,7 @@ export const Search: FC<SearchProps> = ({ ...props }: SearchProps) => {
         ref={ref}
         placeholder={placeholder}
         type="search"
-        className="h-full pr-8"
+        className="h-full"
       />
 
       {state.value !== '' && (

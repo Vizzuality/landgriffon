@@ -46,14 +46,21 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               'border-gray-200 focus:ring-green-700 focus:border-green-700':
                 theme === 'default' && !error,
               'border-red-600 focus:ring-red-600 focus:border-red-600': !!error,
+              'pr-8': type === 'search',
             })}
             type={type}
             ref={ref}
             // We need to make space for units. This is far from ideal, should be able to
             // approximate a padding based on the unit's character length to a good degree.
             // ~10px per character, + 14px for extra right padding.
+            // If the input is the 'search' type, we won't be displaying units, and we'll
+            // already be giving a right padding via TailwindCSS classes in order to make
+            // room for the "clear search" button.
             style={{
-              paddingRight: unit && unit?.length * 10 + (theme === 'inline-primary' ? 2 : 14),
+              paddingRight:
+                type !== 'search' &&
+                unit &&
+                unit?.length * 10 + (theme === 'inline-primary' ? 2 : 14),
             }}
             {...props}
           />

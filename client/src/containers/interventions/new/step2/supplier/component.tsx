@@ -138,7 +138,7 @@ const Supplier: FC = () => {
                 loading={!locationTypes}
                 current={selectedLocationTypeOption}
                 options={optionsLocationTypes}
-                placeholder="all LocationTypes"
+                placeholder="All location types"
                 onChange={(value) => handleDropdown('newLocationType', value)}
                 error={!!errors?.newLocationType}
                 allowEmpty

@@ -15,13 +15,6 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
   const dispatch = useAppDispatch();
   const handleTab = useCallback((step) => dispatch(setNewInterventionStep(step)), [dispatch]);
 
-  const stepDescription = useCallback(
-    (description: string) => (
-      <p className="text-left text-xs text-gray-500 leading-5 -tracking-tight">{description}</p>
-    ),
-    [],
-  );
-
   return (
     <ol className="space-y-4 md:flex md:space-y-0 md:space-x-8">
       {steps.map((step) => (
@@ -41,7 +34,11 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
                 {step.title}
               </span>
               <span className="font-medium text-left leading-5">{step.name}</span>
-              {!!step.description && step.id === current && stepDescription(step.description)}
+              {!!step.description && step.id === current && (
+                <p className="text-left text-xs text-gray-500 leading-5 -tracking-tight">
+                  {step.description}
+                </p>
+              )}
             </button>
           )}
           {step.status === 'current' && (
@@ -60,7 +57,11 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
                 {step.title}
               </span>
               <span className="font-medium text-left leading-5">{step.name}</span>
-              {!!step.description && step.id === current && stepDescription(step.description)}
+              {!!step.description && step.id === current && (
+                <p className="text-left text-xs text-gray-500 leading-5 -tracking-tight">
+                  {step.description}
+                </p>
+              )}
             </button>
           )}
           {step.status === 'upcoming' && (
@@ -78,7 +79,11 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
                 {step.title}
               </span>
               <span className="font-medium text-left leading-5">{step.name}</span>
-              {!!step.description && step.id === current && stepDescription(step.description)}
+              {!!step.description && step.id === current && (
+                <p className="text-left text-xs text-gray-500 leading-5 -tracking-tight">
+                  {step.description}
+                </p>
+              )}
             </button>
           )}
         </li>

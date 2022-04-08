@@ -77,7 +77,7 @@ const Step1: FC = () => {
   });
 
   const formValues = getValues();
-  const { businessUnitsIds, supplierIds, originIds } = formValues;
+  const { businessUnitsIds, supplierIds, originIds, materialIds } = formValues;
 
   const currentInterventionType = watch('type');
   const selectedInterventionOption = useMemo(
@@ -187,6 +187,9 @@ const Step1: FC = () => {
             {...register('businessUnitsIds')}
             multiple
             withSourcingLocations
+            materialIds={materialIds}
+            supplierIds={supplierIds}
+            originIds={originIds}
             current={watch('businessUnits')}
             onChange={(values) => handleDropdown('businessUnitsIds', values)}
             ellipsis
@@ -198,6 +201,9 @@ const Step1: FC = () => {
             {...register('suppliersIds')}
             multiple
             withSourcingLocations
+            materialIds={materialIds}
+            businessUnitIds={businessUnitsIds}
+            originIds={originIds}
             current={watch('suppliers')}
             onChange={(values) => handleDropdown('suppliersIds', values)}
             theme="inline-primary"
@@ -208,6 +214,9 @@ const Step1: FC = () => {
             {...register('adminRegionsIds')}
             multiple
             withSourcingLocations
+            materialIds={materialIds}
+            supplierIds={supplierIds}
+            businessUnitIds={businessUnitsIds}
             current={watch('originRegions')}
             onChange={(values) => handleDropdown('adminRegionsIds', values)}
             theme="inline-primary"

@@ -127,6 +127,14 @@ const Step2: FC = () => {
           },
         );
       }
+      createIntervention.mutate(parsedData, {
+        onSuccess: () => {
+          toast.success('A new intervention has been created');
+        },
+        onError: () => {
+          toast.error('There has been a problem creating the intervention');
+        },
+      });
     },
     [
       currentScenario,

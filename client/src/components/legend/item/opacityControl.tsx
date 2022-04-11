@@ -1,7 +1,6 @@
-import { CubeTransparentIcon } from '@heroicons/react/solid';
 import { Input } from 'components/forms';
+import OpacityIcon from 'components/icons/opacity';
 import ToolTip from 'components/tooltip';
-import { useState } from 'react';
 
 interface OpacityControlProps {
   opacity: number;
@@ -25,7 +24,9 @@ const OpacityControl: React.FC<OpacityControlProps> = ({ opacity, onChange }) =>
       }
       className="w-16 text-center"
     >
-      <CubeTransparentIcon className="w-4 h-4 text-gray-900" />
+      <span className="w-4 h-4 text-gray-900">
+        <OpacityIcon />
+      </span>
     </ToolTip>
   );
 };

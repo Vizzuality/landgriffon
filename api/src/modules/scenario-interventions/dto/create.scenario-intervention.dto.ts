@@ -119,7 +119,7 @@ export class CreateScenarioInterventionDto {
     type: [String],
     example: 'bc5e4933-cd9a-4afc-bd53-56941b8adca3',
   })
-  adminRegionsIds!: string[];
+  adminRegionIds!: string[];
 
   @IsOptional()
   @ApiPropertyOptional({

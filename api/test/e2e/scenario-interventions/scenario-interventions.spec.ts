@@ -240,7 +240,11 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         preconditions.material1Descendant.id,
       );
       expect(canceledSourcingLocations[0].adminRegionId).toEqual(
-        preconditions.adminRegion1.id,
+        preconditions.adminRegion1Descendant.id,
+      );
+
+      expect(canceledSourcingLocations[0].businessUnitId).toEqual(
+        preconditions.businessUnit1Descendant.id,
       );
 
       const canceledSourcingRecords: SourcingRecord[] =
@@ -265,7 +269,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         response.body.data.id,
       );
       expect(newSourcingLocations[0].adminRegionId).toEqual(
-        preconditions.adminRegion1.id,
+        preconditions.adminRegion1Descendant.id,
       );
 
       const newSourcingRecords: SourcingRecord[] =

@@ -1,15 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
 import { AppModule } from 'app.module';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
 import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
 import { createBusinessUnit } from '../../entity-mocks';
-import { getApp } from '../../utils/getApp';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 
 describe('BusinessUnits - Get descendants by BusinessUnit Ids', () => {
-  let app: INestApplication;
   let businessUnitRepository: BusinessUnitRepository;
   let businessUnitsService: BusinessUnitsService;
 
@@ -23,7 +20,6 @@ describe('BusinessUnits - Get descendants by BusinessUnit Ids', () => {
     );
     businessUnitsService = moduleFixture.get(BusinessUnitsService);
 
-    app = getApp(moduleFixture);
     await businessUnitRepository.delete({});
   });
 

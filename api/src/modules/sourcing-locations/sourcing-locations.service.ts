@@ -110,25 +110,25 @@ export class SourcingLocationsService extends AppBaseService<
         .addSelect('sr.tonnage', 'tonnage')
         .leftJoin('sourcing_records', 'sr', 'sr.sourcingLocationId = sl.id')
         .where('sl."materialId" IN (:...materialIds)', {
-          materialIds: createInterventionDto.materialsIds,
+          materialIds: createInterventionDto.materialIds,
         })
         .andWhere(
           new Brackets((qb: WhereExpressionBuilder) => {
             qb.where('sl."t1SupplierId" IN (:...suppliers)', {
-              suppliers: createInterventionDto.suppliersIds,
+              suppliers: createInterventionDto.supplierIds,
             }).orWhere('sl."producerId" IN (:...suppliers)', {
-              suppliers: createInterventionDto.suppliersIds,
+              suppliers: createInterventionDto.supplierIds,
             });
           }),
         )
         .andWhere('sl."businessUnitId" IN (:...businessUnits)', {
-          businessUnits: createInterventionDto.businessUnitsIds,
+          businessUnits: createInterventionDto.businessUnitIds,
         })
         .andWhere('sr.year=:startYear', {
           startYear: createInterventionDto.startYear,
         })
         .andWhere('sl.adminRegionId IN (:...adminRegion)', {
-          adminRegion: createInterventionDto.adminRegionsIds,
+          adminRegion: createInterventionDto.adminRegionIds,
         })
         .andWhere('sl.interventionType IS NULL')
         .getRawMany();

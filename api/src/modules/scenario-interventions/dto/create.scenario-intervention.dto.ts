@@ -91,7 +91,7 @@ export class CreateScenarioInterventionDto {
     type: [String],
     example: 'bc5e4933-cd9a-4afc-bd53-56941b816ef3',
   })
-  materialsIds!: string[];
+  materialIds!: string[];
 
   @IsUUID(4, { each: true })
   @IsNotEmpty()
@@ -100,7 +100,7 @@ export class CreateScenarioInterventionDto {
     type: [String],
     example: 'bc5e4933-cd9a-4afc-bd53-56941b812345',
   })
-  businessUnitsIds!: string[];
+  businessUnitIds!: string[];
 
   @IsUUID(4, { each: true })
   @IsNotEmpty()
@@ -110,7 +110,7 @@ export class CreateScenarioInterventionDto {
     type: [String],
     example: 'bc5e4933-cd9a-4afc-bd53-56941b865432',
   })
-  suppliersIds!: string[];
+  supplierIds!: string[];
 
   @IsUUID(4, { each: true })
   @IsNotEmpty()
@@ -119,7 +119,7 @@ export class CreateScenarioInterventionDto {
     type: [String],
     example: 'bc5e4933-cd9a-4afc-bd53-56941b8adca3',
   })
-  adminRegionsIds!: string[];
+  adminRegionIds!: string[];
 
   @IsOptional()
   @ApiPropertyOptional({
@@ -189,9 +189,9 @@ export class CreateScenarioInterventionDto {
 
   @ApiPropertyOptional({
     description: `
-    New Supplier Location address, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER} 
-    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT}. 
-    
+    New Supplier Location address, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER}
+    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT}.
+
     Must be NULL for New Supplier Locations of types: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}
     or if coordinates are provided for the relevant location types`,
     type: String,
@@ -201,9 +201,9 @@ export class CreateScenarioInterventionDto {
 
   @ApiPropertyOptional({
     description: `
-    New Supplier Location latitude, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER} 
-    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT}. 
-    
+    New Supplier Location latitude, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER}
+    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT}.
+
     Must be NULL for New Supplier Locations of types: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}
     or if address is provided for the relevant location types.`,
     type: Number,
@@ -215,9 +215,9 @@ export class CreateScenarioInterventionDto {
 
   @ApiPropertyOptional({
     description: `
-    New Supplier Location longitude, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER} 
-    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT}. 
-    
+    New Supplier Location longitude, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER}
+    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT}.
+
     Must be NULL for New Supplier Locations of type: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}
     or if address is provided for the relevant location types.`,
     type: Number,

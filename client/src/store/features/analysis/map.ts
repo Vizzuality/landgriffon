@@ -20,6 +20,7 @@ type MaterialLayer = Layer & {
     label: string;
     value: Material['id'];
   };
+  year?: number;
 };
 
 type RiskLayer = Layer & {
@@ -27,6 +28,7 @@ type RiskLayer = Layer & {
     label: string;
     value: Material['id'];
   };
+  year?: number;
 };
 
 export type AnalysisMapState = {

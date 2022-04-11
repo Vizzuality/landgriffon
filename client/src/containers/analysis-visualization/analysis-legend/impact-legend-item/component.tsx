@@ -13,32 +13,28 @@ const ImpactLayer = () => {
     layers: { impact },
   } = useAppSelector(analysisMap);
 
-  const onChangeOpacity = useCallback(
+  const handleOpacity = useCallback(
     (opacity: number) => {
       dispatch(setLayer({ id: 'impact', layer: { opacity } }));
     },
     [dispatch],
   );
 
-  const isFetching = false;
-
+  // TO-DO: add Loading component
   return (
     <LegendItem
       name={impact.legend.name}
       unit={impact.legend.unit}
       opacity={impact.opacity}
       active={impact.active}
-      onChangeOpacity={onChangeOpacity}
+      onChangeOpacity={handleOpacity}
       showToggle={false}
     >
-      {isFetching && <Loading />}
-      {!isFetching && !!impact.legend?.items?.length && (
-        <LegendTypeChoropleth
-          className="text-sm text-gray-500 flex-1"
-          min={impact.legend.min}
-          items={impact.legend.items}
-        />
-      )}
+      <LegendTypeChoropleth
+        className="text-sm text-gray-500 flex-1"
+        min={impact.legend.min}
+        items={impact.legend.items}
+      />
     </LegendItem>
   );
 };

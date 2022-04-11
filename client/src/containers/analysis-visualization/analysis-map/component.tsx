@@ -1,15 +1,14 @@
-import type { PopUpProps } from 'components/map/popup/types';
 import { useCallback, useMemo, useState } from 'react';
 import DeckGL from '@deck.gl/react';
-import { H3HexagonLayer } from '@deck.gl/geo-layers';
 import { StaticMap } from 'react-map-gl';
 import { XCircleIcon } from '@heroicons/react/solid';
 
 import { useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
 
-import { useH3MaterialData, useH3RiskData, useH3ImpactData } from 'hooks/h3-data';
 import { useImpactLayer } from 'hooks/layers/impact';
+import { useMaterialLayer } from 'hooks/layers/material';
+import { useRiskLayer } from 'hooks/layers/risk';
 
 import PopUp from 'components/map/popup';
 import PageLoading from 'containers/page-loading';
@@ -18,6 +17,8 @@ import Legend from '../analysis-legend';
 import { NUMBER_FORMAT } from '../constants';
 import ZoomControl from 'components/map/controls/zoom';
 import { analysisMap } from 'store/features/analysis';
+
+import type { PopUpProps } from 'components/map/popup/types';
 
 const HEXAGON_HIGHLIGHT_COLOR = [0, 0, 0];
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
@@ -51,23 +52,17 @@ const AnalysisMap: React.FC = () => {
   const [isRendering, setIsRendering] = useState(false);
 
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
+
+  // Loading layers
   const impactLayer = useImpactLayer();
-  const layers = useMemo(() => [impactLayer.layer], [impactLayer.layer]);
-
-  const {
-    data: h3MaterialData,
-    isFetching: isH3MaterialFetching,
-    isError: isH3MaterialError,
-  } = useH3MaterialData();
-
-  const {
-    data: h3RiskData,
-    isFetching: isH3RiskFetching,
-    isError: isH3RiskError,
-  } = useH3RiskData();
-
-  const isError = isH3MaterialError || isH3RiskError || impactLayer.isError;
-  const isFetching = isH3MaterialFetching || isH3RiskFetching || impactLayer.isFetching;
+  const materialLayer = useMaterialLayer();
+  const riskLayer = useRiskLayer();
+  const layers = useMemo(
+    () => [impactLayer.layer, materialLayer.layer, riskLayer.layer],
+    [impactLayer.layer, materialLayer.layer, riskLayer.layer],
+  );
+  const isError = materialLayer.isError || impactLayer.isError || riskLayer.isError;
+  const isFetching = materialLayer.isFetching || impactLayer.isFetching || riskLayer.isFetching;
 
   const handleAfterRender = useCallback(() => setIsRendering(false), []);
   // const handleHover = useCallback(({ object, x, y, viewport }) => {

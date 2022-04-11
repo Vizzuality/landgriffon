@@ -6,7 +6,7 @@ import { AnalysisState } from 'store/features/analysis';
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   placeholderData: [],
   retry: false,
-  keepPreviousData: true,
+  keepPreviousData: false,
   refetchOnWindowFocus: false,
 };
 
@@ -44,7 +44,10 @@ export function useYears(
           },
         })
         .then((response) => response.data),
-    DEFAULT_QUERY_OPTIONS,
+    {
+      ...DEFAULT_QUERY_OPTIONS,
+      enabled: !!indicator,
+    },
   );
 
   return result as YearsResponse;

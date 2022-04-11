@@ -171,7 +171,7 @@ resource "kubernetes_deployment" "api_deployment" {
 
           env {
             name = "REQUIRE_USER_AUTH"
-            value = "false"
+            value = "true"
           }
 
           env {

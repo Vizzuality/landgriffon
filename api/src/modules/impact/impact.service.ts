@@ -44,6 +44,11 @@ export class ImpactService {
     this.logger.log('Retrieving data from DB to build Impact Table...');
     let entities: ImpactTableEntityType[] = [];
 
+    /*
+     * Get full entity tree in cate ids are not passed,
+     * otherwise get trees based on given ids and add children and parent
+     * ids to them to get full data for aggregations
+     */
     switch (impactTableDto.groupBy) {
       case GROUP_BY_VALUES.MATERIAL:
         if (impactTableDto.materialIds) {
@@ -172,7 +177,11 @@ export class ImpactService {
         const totalSumByYear: number = calculatedData.reduce(
           (accumulator: number, currentValue: ImpactTableRows): number => {
             if (currentValue.values[indexOfYear].year === year)
-              accumulator += currentValue.values[indexOfYear].value;
+              accumulator += Number.isFinite(
+                currentValue.values[indexOfYear].value,
+              )
+                ? currentValue.values[indexOfYear].value
+                : 0;
             return accumulator;
           },
           0,
@@ -182,6 +191,7 @@ export class ImpactService {
           value: totalSumByYear,
         });
       });
+      // copy and populate tree skeleton for each indicator
       const skeleton: ImpactTableRows[] = JSON.parse(JSON.stringify(entities));
       skeleton.forEach((entity: any) => {
         this.populateValuesRecursively(entity, calculatedData, rangeOfYears);
@@ -207,7 +217,9 @@ export class ImpactService {
       const valueOfPurchasedTonnesByYear: number = dataForImpactTable.reduce(
         (accumulator: number, currentValue: ImpactTableData): number => {
           if (currentValue.year === year) {
-            accumulator += +currentValue.impact;
+            accumulator += Number.isFinite(+currentValue.impact)
+              ? +currentValue.impact
+              : 0;
           }
           return accumulator;
         },
@@ -239,6 +251,10 @@ export class ImpactService {
    */
   async getEstimates(): Promise<any> {}
 
+  /**
+   * @description Recursive function that populates and returns
+   * aggregated data of parent entity and all its children
+   */
   private populateValuesRecursively(
     entity: ImpactTableRows,
     calculatedRows: ImpactTableRows[],
@@ -260,6 +276,10 @@ export class ImpactService {
     if (selfData) valuesToAggregate.push(selfData.values);
     entity.children.forEach((childEntity: ImpactTableRows) => {
       valuesToAggregate.push(
+        /*
+         * first aggregate data of child entity and then add returned value for
+         * parents aggregation
+         */
         this.populateValuesRecursively(
           childEntity,
           calculatedRows,

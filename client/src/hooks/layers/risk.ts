@@ -65,6 +65,7 @@ export const useRiskLayer = () => {
         setLayer({
           id: LAYER_ID,
           layer: {
+            loading: query.isFetching,
             year: years.data && years.data[0],
             legend: {
               name: `${indicator.label} in ${years.data[0]}`,
@@ -81,7 +82,7 @@ export const useRiskLayer = () => {
         }),
       );
     }
-  }, [data, dispatch, indicator, years.data]);
+  }, [data, dispatch, indicator, query.isFetching, years.data]);
 
   return {
     ...query,

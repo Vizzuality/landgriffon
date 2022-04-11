@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
-import Toggle from 'components/toggle';
 import { InformationCircleIcon } from '@heroicons/react/outline';
+
+import Toggle from 'components/toggle';
+import Loading from 'components/loading';
 import OpacityControl from './opacityControl';
 
 export type LegendItemProps = {
@@ -8,6 +10,7 @@ export type LegendItemProps = {
   unit: string;
   description?: string;
   active?: boolean;
+  isLoading?: boolean;
   showToolbar?: boolean;
   showToggle?: boolean;
   children?: React.ReactNode;
@@ -20,6 +23,7 @@ export const LegendItem: React.FC<LegendItemProps> = ({
   name,
   unit,
   active = false,
+  isLoading = false,
   showToolbar = true,
   showToggle = true,
   children,
@@ -42,7 +46,8 @@ export const LegendItem: React.FC<LegendItemProps> = ({
 
   return (
     <div className="p-4 space-y-4">
-      {name && (
+      {isLoading && <Loading />}
+      {!isLoading && name && (
         <div className="flex text-sm text-gray-500 font-heading">
           <div className="flex-1 flex items-start justify-between">
             <div className="text-sm text-gray-500">{name}</div>
@@ -62,7 +67,7 @@ export const LegendItem: React.FC<LegendItemProps> = ({
           <div className="ml-1 w-8">{showToggle && <Toggle onChange={handleChange} />}</div>
         </div>
       )}
-      {isActive && children && (
+      {!isLoading && isActive && children && (
         <div className="flex">
           <div className="flex-1">{children}</div>
           <div className="w-8 text-xs text-gray-500 -m-1">{unit}</div>

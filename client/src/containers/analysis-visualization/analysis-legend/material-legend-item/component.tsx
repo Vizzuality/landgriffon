@@ -4,7 +4,6 @@ import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap, setLayer } from 'store/features/analysis/map';
 
 import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
-import Loading from 'components/loading';
 import LegendItem from 'components/legend/item';
 import LegendTypeChoropleth from 'components/legend/types/choropleth';
 
@@ -37,8 +36,6 @@ const MaterialLegendItem = () => {
     [dispatch, material],
   );
 
-  const isFetching = false;
-
   return (
     <LegendItem
       name={
@@ -60,15 +57,13 @@ const MaterialLegendItem = () => {
       active={material.active}
       onChangeOpacity={handleOpacity}
       onActiveChange={handleActive}
+      isLoading={material.loading}
     >
-      {isFetching && <Loading />}
-      {!isFetching && !!material.legend?.items?.length && (
-        <LegendTypeChoropleth
-          className="text-sm text-gray-500 flex-1"
-          min={material.legend.min}
-          items={material.legend.items}
-        />
-      )}
+      <LegendTypeChoropleth
+        className="text-sm text-gray-500 flex-1"
+        min={material.legend.min}
+        items={material.legend.items}
+      />
     </LegendItem>
   );
 };

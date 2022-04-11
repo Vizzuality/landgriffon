@@ -3,7 +3,6 @@ import { useCallback } from 'react';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap, setLayer } from 'store/features/analysis/map';
 
-import Loading from 'components/loading';
 import LegendItem from 'components/legend/item';
 import LegendTypeChoropleth from 'components/legend/types/choropleth';
 
@@ -29,6 +28,7 @@ const ImpactLayer = () => {
       active={impact.active}
       onChangeOpacity={handleOpacity}
       showToggle={false}
+      isLoading={impact.loading}
     >
       <LegendTypeChoropleth
         className="text-sm text-gray-500 flex-1"

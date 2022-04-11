@@ -7,6 +7,7 @@ const DEFAULT_LAYER_ATTRIBUTES = {
   order: 0,
   active: false,
   opacity: 1,
+  loading: false,
   legend: {
     name: null,
     unit: null,

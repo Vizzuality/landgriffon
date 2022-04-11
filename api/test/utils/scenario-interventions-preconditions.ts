@@ -18,9 +18,11 @@ export interface ScenarioInterventionPreconditions {
   scenario: Scenario;
   material2: Material;
   material1: Material;
+  material1Descendant: Material;
   supplier1: Supplier;
   supplier2: Supplier;
   adminRegion1: AdminRegion;
+  adminRegion1Descendant: AdminRegion;
   adminRegion2: AdminRegion;
   businessUnit1: BusinessUnit;
   businessUnit2: BusinessUnit;
@@ -32,8 +34,16 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
   const scenario: Scenario = await createScenario();
 
   const material1: Material = await createMaterial();
+  const material1Descendant = await createMaterial({
+    name: 'Descendant Material',
+    parent: material1,
+  });
   const supplier1: Supplier = await createSupplier();
   const adminRegion1: AdminRegion = await createAdminRegion();
+  const adminRegion1Descendant: AdminRegion = await createAdminRegion({
+    name: 'Descendant region',
+    parent: adminRegion1,
+  });
   const businessUnit1: BusinessUnit = await createBusinessUnit();
 
   const material2: Material = await createMaterial();
@@ -42,10 +52,10 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
   const businessUnit2: BusinessUnit = await createBusinessUnit();
 
   const sourcingLocation1: SourcingLocation = await createSourcingLocation({
-    materialId: material1.id,
+    materialId: material1Descendant.id,
     t1SupplierId: supplier1.id,
     businessUnitId: businessUnit1.id,
-    adminRegionId: adminRegion1.id,
+    adminRegionId: adminRegion1Descendant.id,
   });
 
   await createSourcingRecord({
@@ -70,10 +80,12 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
   return {
     scenario,
     material1,
+    material1Descendant,
     material2,
     supplier1,
     supplier2,
     adminRegion1,
+    adminRegion1Descendant,
     adminRegion2,
     businessUnit1,
     businessUnit2,

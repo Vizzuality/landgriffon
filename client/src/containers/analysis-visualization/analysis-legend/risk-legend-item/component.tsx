@@ -4,7 +4,6 @@ import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap, setLayer } from 'store/features/analysis/map';
 
 import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
-import Loading from 'components/loading';
 import LegendItem from 'components/legend/item';
 import LegendTypeChoropleth from 'components/legend/types/choropleth';
 
@@ -37,8 +36,6 @@ const RiskLegendItem = () => {
     [dispatch, risk],
   );
 
-  const isFetching = false;
-
   return (
     <LegendItem
       name={
@@ -60,15 +57,13 @@ const RiskLegendItem = () => {
       active={risk.active}
       onChangeOpacity={handleOpacity}
       onActiveChange={handleActive}
+      isLoading={risk.loading}
     >
-      {isFetching && <Loading />}
-      {!isFetching && !!risk.legend?.items?.length && (
-        <LegendTypeChoropleth
-          className="text-sm text-gray-500 flex-1"
-          min={risk.legend.min}
-          items={risk.legend.items}
-        />
-      )}
+      <LegendTypeChoropleth
+        className="text-sm text-gray-500 flex-1"
+        min={risk.legend.min}
+        items={risk.legend.items}
+      />
     </LegendItem>
   );
 };

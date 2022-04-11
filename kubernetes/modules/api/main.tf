@@ -155,6 +155,11 @@ resource "kubernetes_deployment" "api_deployment" {
           }
 
           env {
+            name = "JWT_EXPIRES_IN"
+            value = "2h"
+          }
+
+          env {
             name = "GMAPS_API_KEY"
             value_from {
               secret_key_ref {

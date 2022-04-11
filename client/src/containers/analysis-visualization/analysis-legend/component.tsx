@@ -48,12 +48,12 @@ export const Legend: React.FC = () => {
 
           {/* Main layer: it will be always active */}
           <div
-            className="relative flex flex-col flex-grow overflow-hidden border-t border-gray-100"
+            className="relative flex flex-col flex-grow border-t border-gray-100"
             style={{
               maxHeight: 400,
             }}
           >
-            <div className="overflow-x-hidden overflow-y-auto">
+            <div>
               <ImpactLegendItem />
             </div>
           </div>

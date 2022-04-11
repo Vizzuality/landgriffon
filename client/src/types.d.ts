@@ -190,4 +190,5 @@ export type Layer = {
   order?: number;
   active?: boolean;
   opacity?: number;
+  legend?: Legend;
 };

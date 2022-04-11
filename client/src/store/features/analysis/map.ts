@@ -7,6 +7,12 @@ const DEFAULT_LAYER_ATTRIBUTES = {
   order: 0,
   active: false,
   opacity: 1,
+  legend: {
+    name: null,
+    unit: null,
+    min: null,
+    items: [],
+  },
 };
 
 type MaterialLayer = Layer & {
@@ -45,7 +51,7 @@ export const initialState: AnalysisMapState = {
     impact: {
       id: 'h3-layer-impact',
       ...DEFAULT_LAYER_ATTRIBUTES,
-      active: true,
+      active: true, // this layers should be always active
     },
   },
 };

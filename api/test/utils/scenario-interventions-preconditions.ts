@@ -20,11 +20,13 @@ export interface ScenarioInterventionPreconditions {
   material1: Material;
   material1Descendant: Material;
   supplier1: Supplier;
+  supplier1Descendant: Supplier;
   supplier2: Supplier;
   adminRegion1: AdminRegion;
   adminRegion1Descendant: AdminRegion;
   adminRegion2: AdminRegion;
   businessUnit1: BusinessUnit;
+  businessUnit1Descendant: BusinessUnit;
   businessUnit2: BusinessUnit;
   sourcingLocation1: SourcingLocation;
   sourcingLocation2: SourcingLocation;
@@ -39,12 +41,20 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
     parent: material1,
   });
   const supplier1: Supplier = await createSupplier();
+  const supplier1Descendant: Supplier = await createSupplier({
+    name: 'Descendant Supplier',
+    parent: supplier1,
+  });
   const adminRegion1: AdminRegion = await createAdminRegion();
   const adminRegion1Descendant: AdminRegion = await createAdminRegion({
     name: 'Descendant region',
     parent: adminRegion1,
   });
   const businessUnit1: BusinessUnit = await createBusinessUnit();
+  const businessUnit1Descendant: BusinessUnit = await createBusinessUnit({
+    name: 'Descendant region',
+    parent: businessUnit1,
+  });
 
   const material2: Material = await createMaterial();
   const supplier2: Supplier = await createSupplier();
@@ -53,8 +63,8 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
 
   const sourcingLocation1: SourcingLocation = await createSourcingLocation({
     materialId: material1Descendant.id,
-    t1SupplierId: supplier1.id,
-    businessUnitId: businessUnit1.id,
+    t1SupplierId: supplier1Descendant.id,
+    businessUnitId: businessUnit1Descendant.id,
     adminRegionId: adminRegion1Descendant.id,
   });
 
@@ -83,11 +93,13 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
     material1Descendant,
     material2,
     supplier1,
+    supplier1Descendant,
     supplier2,
     adminRegion1,
     adminRegion1Descendant,
     adminRegion2,
     businessUnit1,
+    businessUnit1Descendant,
     businessUnit2,
     sourcingLocation1,
     sourcingLocation2,

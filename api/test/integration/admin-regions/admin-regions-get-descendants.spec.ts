@@ -1,15 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
 import { AppModule } from 'app.module';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
 import { createAdminRegion } from '../../entity-mocks';
-import { getApp } from '../../utils/getApp';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 
 describe('AdminRegions - Get descendants by Admin Region Ids', () => {
-  let app: INestApplication;
   let adminRegionRepository: AdminRegionRepository;
   let adminRegionService: AdminRegionsService;
 
@@ -23,7 +20,6 @@ describe('AdminRegions - Get descendants by Admin Region Ids', () => {
     );
     adminRegionService = moduleFixture.get(AdminRegionsService);
 
-    app = getApp(moduleFixture);
     await adminRegionRepository.delete({});
   });
 

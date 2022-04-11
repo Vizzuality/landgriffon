@@ -109,9 +109,9 @@ export class ScenarioInterventionsService extends AppBaseService<
       dto.materialIds,
     );
 
-    dto.adminRegionsIds =
+    dto.adminRegionIds =
       await this.adminRegionService.getAdminRegionDescendants(
-        dto.adminRegionsIds,
+        dto.adminRegionIds,
       );
 
     dto.supplierIds = await this.suppliersService.getSuppliersDescendants(

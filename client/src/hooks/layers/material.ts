@@ -72,7 +72,7 @@ export const useMaterialLayer = () => {
             legend: {
               name: `${indicator.label} in ${years.data[0]}`,
               unit: data.metadata.unit,
-              min: NUMBER_FORMAT(data.metadata.quantiles[0]),
+              min: data.metadata.quantiles[0] && NUMBER_FORMAT(data.metadata.quantiles[0]),
               items: data.metadata.quantiles.slice(1).map(
                 (v, index): LegendItemProp => ({
                   value: NUMBER_FORMAT(v),

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap, setLayer } from 'store/features/analysis/map';

@@ -1,15 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
 import { AppModule } from 'app.module';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { createSupplier } from '../../entity-mocks';
-import { getApp } from '../../utils/getApp';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
 
 describe('suppliers - Get descendants by supplier Ids', () => {
-  let app: INestApplication;
   let supplierRepository: SupplierRepository;
   let suppliersService: SuppliersService;
 
@@ -22,7 +19,6 @@ describe('suppliers - Get descendants by supplier Ids', () => {
       moduleFixture.get<SupplierRepository>(SupplierRepository);
     suppliersService = moduleFixture.get(SuppliersService);
 
-    app = getApp(moduleFixture);
     await supplierRepository.delete({});
   });
 

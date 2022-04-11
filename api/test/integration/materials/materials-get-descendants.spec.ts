@@ -1,15 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
 import { AppModule } from 'app.module';
 import { Material } from 'modules/materials/material.entity';
 import { MaterialsModule } from 'modules/materials/materials.module';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { createMaterial } from '../../entity-mocks';
-import { getApp } from '../../utils/getApp';
 import { MaterialsService } from 'modules/materials/materials.service';
 
 describe('materials - Get descendants by Material Ids', () => {
-  let app: INestApplication;
   let materialRepository: MaterialRepository;
   let materialsService: MaterialsService;
 
@@ -22,7 +19,6 @@ describe('materials - Get descendants by Material Ids', () => {
       moduleFixture.get<MaterialRepository>(MaterialRepository);
     materialsService = moduleFixture.get(MaterialsService);
 
-    app = getApp(moduleFixture);
     await materialRepository.delete({});
   });
 

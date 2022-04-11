@@ -159,7 +159,7 @@ export class AdminRegionsService extends AppBaseService<
     return this.adminRegionRepository.findByIds(ids);
   }
 
-  async getAdminRegionDescendants(adminRegionIds: string[]): Promise<any> {
+  async getAdminRegionDescendants(adminRegionIds: string[]): Promise<string[]> {
     let adminRegions: AdminRegion[] = [];
     for (const id of adminRegionIds) {
       const adminRegion: AdminRegion | undefined =

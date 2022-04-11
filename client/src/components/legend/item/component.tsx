@@ -64,7 +64,9 @@ export const LegendItem: React.FC<LegendItemProps> = ({
               </div>
             )}
           </div>
-          <div className="ml-1 w-8">{showToggle && <Toggle onChange={handleChange} />}</div>
+          <div className="ml-1 w-8">
+            {showToggle && <Toggle defaultActive={isActive} onChange={handleChange} />}
+          </div>
         </div>
       )}
       {!isLoading && isActive && children && (

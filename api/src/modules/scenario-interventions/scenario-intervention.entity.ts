@@ -111,19 +111,19 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   /**
    * Relationships with other entities - links of replaced relationships on this intervention
    */
-  @ManyToMany(() => Material)
+  @ManyToMany(() => Material, { eager: true })
   @JoinTable()
   replacedMaterials?: Material[];
 
-  @ManyToMany(() => BusinessUnit)
+  @ManyToMany(() => BusinessUnit, { eager: true })
   @JoinTable()
   replacedBusinessUnits?: BusinessUnit[];
 
-  @ManyToMany(() => Supplier)
+  @ManyToMany(() => Supplier, { eager: true })
   @JoinTable()
   replacedSuppliers?: Supplier[];
 
-  @ManyToMany(() => AdminRegion)
+  @ManyToMany(() => AdminRegion, { eager: true })
   @JoinTable()
   replacedAdminRegions?: AdminRegion[];
 
@@ -138,23 +138,23 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   /**
    * Relationships with other entities - list of "new" relationships
    */
-  @ManyToOne(() => Material)
+  @ManyToOne(() => Material, { eager: true })
   @ApiPropertyOptional({ type: () => Material })
   newMaterial?: Material;
 
-  @ManyToOne(() => BusinessUnit)
+  @ManyToOne(() => BusinessUnit, { eager: true })
   @ApiPropertyOptional()
   newBusinessUnit?: BusinessUnit;
 
-  @ManyToOne(() => Supplier)
+  @ManyToOne(() => Supplier, { eager: true })
   @ApiPropertyOptional()
   newT1Supplier?: Supplier;
 
-  @ManyToOne(() => Supplier)
+  @ManyToOne(() => Supplier, { eager: true })
   @ApiPropertyOptional()
   newProducer?: Supplier;
 
-  @ManyToOne(() => GeoRegion)
+  @ManyToOne(() => GeoRegion, { eager: true })
   @ApiPropertyOptional()
   newGeoRegion?: GeoRegion;
 

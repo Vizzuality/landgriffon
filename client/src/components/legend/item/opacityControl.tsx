@@ -1,5 +1,4 @@
 import { EyeIcon } from '@heroicons/react/solid';
-import { Tooltip } from '@visx/tooltip';
 import { Input } from 'components/forms';
 import { useState } from 'react';
 
@@ -22,7 +21,7 @@ const OpacityControl: React.FC<OpacityControlProps> = ({ opacity, onChange }) =>
         {isVisible && (
           <Input
             type="number"
-            defaultValue={opacity * 100}
+            defaultValue={Math.round(opacity * 100)}
             onChange={(e) => {
               if (Number.isNaN(e.target.valueAsNumber)) return;
               onChange(e.target.valueAsNumber / 100);

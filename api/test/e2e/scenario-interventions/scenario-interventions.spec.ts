@@ -166,7 +166,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           suppliersIds: [preconditions.supplier1.id],
           businessUnitsIds: [preconditions.businessUnit1.id],
           adminRegionsIds: [preconditions.adminRegion1.id],
-          newLocationCountryInput: 'TestCountry',
           type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           newIndicatorCoefficients: {
             GHG_LUC_T: 1,
@@ -195,6 +194,26 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         await sourcingLocationRepository.findAndCount();
       const allSourcingRecords: [SourcingRecord[], number] =
         await sourcingRecordRepository.findAndCount();
+
+      const canceledSourcingLocation: SourcingLocation | undefined =
+        allSourcingLocations[0].find(
+          (sl: SourcingLocation) =>
+            sl.interventionType ===
+            SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+        );
+
+      expect(canceledSourcingLocation?.locationCountryInput).toEqual('uvwxy');
+      expect(canceledSourcingLocation?.locationAddressInput).toEqual('pqrst');
+
+      const replacingSourcingLocation: SourcingLocation | undefined =
+        allSourcingLocations[0].find(
+          (sl: SourcingLocation) =>
+            sl.interventionType ===
+            SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+        );
+
+      expect(replacingSourcingLocation?.locationCountryInput).toEqual('uvwxy');
+      expect(replacingSourcingLocation?.locationAddressInput).toEqual('pqrst');
 
       expect(allSourcingLocations[1]).toEqual(4);
       expect(allSourcingRecords[1]).toEqual(4);

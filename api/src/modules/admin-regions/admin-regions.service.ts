@@ -49,7 +49,7 @@ export class AdminRegionsService extends AppBaseService<
     };
   }
 
-  async getAdminRegionById(id: number): Promise<AdminRegion> {
+  async getAdminRegionById(id: string): Promise<AdminRegion> {
     const found: AdminRegion | undefined =
       await this.adminRegionRepository.findOne(id);
 
@@ -57,6 +57,11 @@ export class AdminRegionsService extends AppBaseService<
       throw new NotFoundException(`Admin region with ID "${id}" not found`);
     }
 
+    return found;
+  }
+
+  async getAdminRegionsById(id: string[]): Promise<AdminRegion[]> {
+    const found: AdminRegion[] = await this.adminRegionRepository.findByIds(id);
     return found;
   }
 

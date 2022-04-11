@@ -82,6 +82,11 @@ export class SuppliersService extends AppBaseService<
     return found;
   }
 
+  async getSuppliersById(id: string[]): Promise<Supplier[]> {
+    const found: Supplier[] = await this.repository.findByIds(id);
+    return found;
+  }
+
   async saveMany(entityArray: Supplier[]): Promise<void> {
     await this.supplierRepository.save(entityArray);
   }

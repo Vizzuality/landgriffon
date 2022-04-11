@@ -39,7 +39,7 @@ export class BusinessUnitsService extends AppBaseService<
     };
   }
 
-  async getBusinessUnitById(id: number): Promise<BusinessUnit> {
+  async getBusinessUnitById(id: string): Promise<BusinessUnit> {
     const found: BusinessUnit | undefined =
       await this.businessUnitRepository.findOne(id);
 
@@ -47,6 +47,13 @@ export class BusinessUnitsService extends AppBaseService<
       throw new NotFoundException(`Business Unit with ID "${id}" not found`);
     }
 
+    return found;
+  }
+
+  async getBusinessUnitsById(ids: string[]): Promise<BusinessUnit[]> {
+    const found: BusinessUnit[] = await this.businessUnitRepository.findByIds(
+      ids,
+    );
     return found;
   }
 

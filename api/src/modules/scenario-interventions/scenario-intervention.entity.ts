@@ -22,7 +22,6 @@ import {
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
-import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 
 export enum SCENARIO_INTERVENTION_STATUS {
   ACTIVE = 'active',
@@ -154,9 +153,9 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   @ApiPropertyOptional()
   newProducer?: Supplier;
 
-  @ManyToOne(() => GeoRegion, { eager: true })
+  @ManyToOne(() => AdminRegion, { eager: true })
   @ApiPropertyOptional()
-  newGeoRegion?: GeoRegion;
+  newAdminRegion?: AdminRegion;
 
   /**
    * New sourcing data, if intervention type involves supplier change:

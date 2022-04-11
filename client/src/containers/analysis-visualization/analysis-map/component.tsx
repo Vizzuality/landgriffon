@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import DeckGL from '@deck.gl/react';
 import { StaticMap } from 'react-map-gl';
 import { XCircleIcon } from '@heroicons/react/solid';
@@ -19,6 +19,7 @@ import ZoomControl from 'components/map/controls/zoom';
 import { analysisMap } from 'store/features/analysis';
 
 import type { PopUpProps } from 'components/map/popup/types';
+import { ViewState } from 'react-map-gl/src/mapbox/mapbox';
 
 const HEXAGON_HIGHLIGHT_COLOR = [0, 0, 0];
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
@@ -43,6 +44,58 @@ type PopUpInfoProps = {
   };
 };
 
+interface HoverInfo {
+  object: any;
+  x: number;
+  y: number;
+  viewport: ViewState;
+  layer: { id: string };
+}
+
+const useHoveredLayers: () => [HoverInfo[], (info: HoverInfo) => void] = () => {
+  const [layersHoverInfo, setLayersHoverInfo] = useState<
+    Record<string, HoverInfo & { timestamp: number }>
+  >({});
+  const timeout = 200;
+
+  const onLayerHovered = useCallback((info: HoverInfo) => {
+    if (!info?.layer) return;
+    const timestamp = Date.now();
+    setLayersHoverInfo((prevLayers) => ({
+      ...prevLayers,
+      [info.layer.id]: { ...info, timestamp },
+    }));
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      setLayersHoverInfo((prevLayers) => {
+        if (
+          Object.values(prevLayers).filter(({ timestamp }) => now - timestamp < timeout).length ===
+          0
+        ) {
+          return prevLayers;
+        }
+
+        return Object.fromEntries(
+          Object.entries(prevLayers).filter(([, { timestamp }]) => now - timestamp < timeout),
+        );
+      });
+    }, timeout);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [layersHoverInfo]);
+
+  return [
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    Object.values(layersHoverInfo).map(({ timestamp, ...layerHoverInfo }) => layerHoverInfo),
+    onLayerHovered,
+  ];
+};
+
 const AnalysisMap: React.FC = () => {
   const filters = useAppSelector(analysisFilters);
   const { layers: layerOptions } = useAppSelector(analysisMap);
@@ -50,6 +103,8 @@ const AnalysisMap: React.FC = () => {
   const [hoveredHexagon, setHoveredHexagon] = useState(null);
   const [popUpInfo, setPopUpInfo] = useState<PopUpInfoProps>(null);
   const [isRendering, setIsRendering] = useState(false);
+
+  const [hoverInfo, onHoverLayer] = useHoveredLayers();
 
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
 
@@ -65,6 +120,7 @@ const AnalysisMap: React.FC = () => {
   const isFetching = materialLayer.isFetching || impactLayer.isFetching || riskLayer.isFetching;
 
   const handleAfterRender = useCallback(() => setIsRendering(false), []);
+
   // const handleHover = useCallback(({ object, x, y, viewport }) => {
   //   setPopUpInfo({
   //     object: object ? { v: object.v } : null,
@@ -115,6 +171,10 @@ const AnalysisMap: React.FC = () => {
         controller
         layers={layers}
         onAfterRender={handleAfterRender}
+        onHover={(info) => {
+          // console.log(info);
+          onHoverLayer(info);
+        }}
       >
         <StaticMap
           viewState={viewState}
@@ -122,7 +182,7 @@ const AnalysisMap: React.FC = () => {
           mapboxApiAccessToken={MAPBOX_API_TOKEN}
           className="-z-10"
         />
-        {/* {popUpInfo?.object && (
+        {popUpInfo?.object && (
           <PopUp
             position={
               {
@@ -139,7 +199,7 @@ const AnalysisMap: React.FC = () => {
               </div>
             </div>
           </PopUp>
-        )} */}
+        )}
       </DeckGL>
       {isError && (
         <div className="absolute z-10 top-20 left-12 rounded-md bg-red-50 p-4">

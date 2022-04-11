@@ -109,6 +109,9 @@ const AnalysisMap: React.FC = () => {
       {(isFetching || isRendering) && <PageLoading />}
       <DeckGL
         initialViewState={viewState}
+        onViewStateChange={({ viewState }) => {
+          setViewState(viewState);
+        }}
         controller
         layers={layers}
         onAfterRender={handleAfterRender}

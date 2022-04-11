@@ -191,4 +191,5 @@ export type Layer = {
   active?: boolean;
   opacity?: number;
   legend?: Legend;
+  loading?: boolean;
 };

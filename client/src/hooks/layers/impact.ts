@@ -54,6 +54,7 @@ export const useImpactLayer = () => {
         setLayer({
           id: LAYER_ID,
           layer: {
+            loading: query.isFetching,
             legend: {
               name: `${indicator.label} in ${startYear}`,
               unit: data.metadata.unit,
@@ -69,7 +70,7 @@ export const useImpactLayer = () => {
         }),
       );
     }
-  }, [data, dispatch, indicator, startYear]);
+  }, [data, dispatch, indicator, query.isFetching, startYear]);
 
   return {
     ...query,

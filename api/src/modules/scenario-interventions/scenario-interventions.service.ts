@@ -353,6 +353,10 @@ export class ScenarioInterventionsService extends AppBaseService<
       const newCancelledInterventionLocation: SourcingData = {
         materialId: location.materialId,
         locationType: location.locationType,
+        locationCountryInput: location.locationCountryInput,
+        locationAddressInput: location.locationAddressInput,
+        locationLatitude: location.locationLatitude,
+        locationLongitude: location.locationLongitude,
         t1SupplierId: location.t1SupplierId,
         producerId: location.producerId,
         businessUnitId: location.businessUnitId,

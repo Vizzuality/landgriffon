@@ -172,6 +172,10 @@ export class CreateScenarioInterventionDto {
   })
   newLocationType?: LOCATION_TYPES;
 
+  @ValidateIf(
+    (dto: CreateScenarioInterventionDto) =>
+      dto.type !== SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+  )
   @IsNotEmpty({
     message:
       'New Location Country input is required for the selected intervention and location type',

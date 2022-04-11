@@ -7,6 +7,10 @@ import { ScenarioInterventionsController } from 'modules/scenario-interventions/
 import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
+import { MaterialsModule } from 'modules/materials/materials.module';
+import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
+import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
+import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 
 @Module({
   imports: [
@@ -14,6 +18,10 @@ import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-reco
     IndicatorRecordsModule,
     GeoCodingModule,
     SourcingLocationsModule,
+    MaterialsModule,
+    BusinessUnitsModule,
+    AdminRegionsModule,
+    SuppliersModule,
   ],
   controllers: [ScenarioInterventionsController],
   providers: [ScenarioInterventionsService],

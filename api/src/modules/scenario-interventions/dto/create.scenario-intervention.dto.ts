@@ -113,13 +113,13 @@ export class CreateScenarioInterventionDto {
   suppliersIds!: string[];
 
   @IsUUID(4, { each: true })
-  @IsOptional()
+  @IsNotEmpty()
   @ApiProperty({
     description: 'Ids of Admin Regions that will be affected by intervention',
     type: [String],
     example: 'bc5e4933-cd9a-4afc-bd53-56941b8adca3',
   })
-  adminRegionsIds?: string[];
+  adminRegionsIds!: string[];
 
   @IsOptional()
   @ApiPropertyOptional({

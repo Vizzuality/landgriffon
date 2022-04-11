@@ -567,6 +567,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         .send();
 
       expect(HttpStatus.BAD_REQUEST);
+
       expect(response).toHaveErrorMessage(
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
@@ -590,6 +591,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           'each value in businessUnitsIds must be a UUID',
           'suppliersIds should not be empty',
           'each value in suppliersIds must be a UUID',
+          'adminRegionsIds should not be empty',
+          'each value in adminRegionsIds must be a UUID',
           'New Location Country input is required for the selected intervention and location type',
         ],
       );
@@ -599,6 +602,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const scenario: Scenario = await createScenario();
       const material: Material = await createMaterial();
       const supplier: Supplier = await createSupplier();
+      const adminRegion: AdminRegion = await createAdminRegion();
       const businessUnit: BusinessUnit = await createBusinessUnit();
       const response = await request(app.getHttpServer())
         .post('/api/v1/scenario-interventions')
@@ -611,6 +615,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           materialsIds: [material.id],
           suppliersIds: [supplier.id],
           businessUnitsIds: [businessUnit.id],
+          adminRegionsIds: [adminRegion.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           newIndicatorCoefficients: {
             GHG_LUC_T: 1,
@@ -637,6 +642,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const material: Material = await createMaterial();
       const supplier: Supplier = await createSupplier();
       const businessUnit: BusinessUnit = await createBusinessUnit();
+      const adminRegion: AdminRegion = await createAdminRegion();
       const response = await request(app.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -648,6 +654,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           materialsIds: [material.id],
           suppliersIds: [supplier.id],
           businessUnitsIds: [businessUnit.id],
+          adminRegionsIds: [adminRegion.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
         });
@@ -672,6 +679,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           materialsIds: [material.id],
           suppliersIds: [supplier.id],
           businessUnitsIds: [businessUnit.id],
+          adminRegionsIds: [adminRegion.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.ORIGIN_COUNTRY,
         });
@@ -749,6 +757,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const material: Material = await createMaterial();
       const supplier: Supplier = await createSupplier();
       const businessUnit: BusinessUnit = await createBusinessUnit();
+      const adminRegion: AdminRegion = await createAdminRegion();
       const response = await request(app.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -760,6 +769,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           materialsIds: [material.id],
           suppliersIds: [supplier.id],
           businessUnitsIds: [businessUnit.id],
+          adminRegionsIds: [adminRegion.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
           newLocationCountryInput: 'TestCountry',
         });

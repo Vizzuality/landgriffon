@@ -16,13 +16,13 @@ export type ScenariosState = {
     title: string;
     interventionDescription?: string;
     percentage: number;
-    materialsIds: string[];
-    businessUnitsIds: string;
+    materialIds: string[];
+    businessUnitIds: string;
     startYear: number;
     endYear: number;
     type: InterventionTypes;
-    suppliersIds: string[];
-    adminRegionsIds: string[];
+    supplierIds: string[];
+    adminRegionIds: string[];
     newMaterialId: string;
     newMaterialTonnageRatio: number;
     newT1SupplierId: string;
@@ -62,13 +62,13 @@ export const initialState: ScenariosState = {
     title: 'InterventionTitle',
     interventionDescription: null,
     percentage: 100,
-    materialsIds: null,
-    businessUnitsIds: null,
+    materialIds: null,
+    businessUnitIds: null,
     startYear: null,
     endYear: null,
     type: 'Source from new supplier or location',
-    suppliersIds: null,
-    adminRegionsIds: null,
+    supplierIds: null,
+    adminRegionIds: null,
     newMaterialTonnageRatio: null,
     newMaterialId: null,
     newT1SupplierId: null,

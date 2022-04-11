@@ -30,10 +30,10 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
               )}
               onClick={() => handleTab(step.id)}
             >
-              <span className="text-indigo-600 font-semibold tracking-wide uppercase group-hover:text-indigo-800 leading-4">
+              <span className="text-indigo-600 font-semibold tracking-wide uppercase group-hover:text-indigo-800 leading-4 text-xs">
                 {step.title}
               </span>
-              <span className="font-medium text-left leading-5">{step.name}</span>
+              <span className="font-medium text-left leading-5 text-sm">{step.name}</span>
               {!!step.description && step.id === current && (
                 <p className="text-left text-xs text-gray-500 leading-5 -tracking-tight">
                   {step.description}
@@ -53,10 +53,10 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
               aria-current="step"
               onClick={() => handleTab(step.id)}
             >
-              <span className="text-indigo-600 font-semibold tracking-wide uppercase leading-4">
+              <span className="text-indigo-600 font-semibold tracking-wide uppercase leading-4 text-xs">
                 {step.title}
               </span>
-              <span className="font-medium text-left leading-5">{step.name}</span>
+              <span className="font-medium text-left leading-5 text-sm">{step.name}</span>
               {!!step.description && step.id === current && (
                 <p className="text-left text-xs text-gray-500 leading-5 -tracking-tight">
                   {step.description}
@@ -75,10 +75,10 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
               )}
               onClick={() => handleTab(step.id)}
             >
-              <span className="text-gray-500 font-semibold tracking-wide uppercase group-hover:text-gray-700 leading-4">
+              <span className="text-gray-500 font-semibold tracking-wide uppercase group-hover:text-gray-700 leading-4 text-xs">
                 {step.title}
               </span>
-              <span className="font-medium text-left leading-5">{step.name}</span>
+              <span className="font-medium text-left leading-5 text-sm">{step.name}</span>
               {!!step.description && step.id === current && (
                 <p className="text-left text-xs text-gray-500 leading-5 -tracking-tight">
                   {step.description}

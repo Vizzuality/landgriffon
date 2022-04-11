@@ -1,5 +1,6 @@
-import { EyeIcon } from '@heroicons/react/solid';
+import { CubeTransparentIcon } from '@heroicons/react/solid';
 import { Input } from 'components/forms';
+import ToolTip from 'components/tooltip';
 import { useState } from 'react';
 
 interface OpacityControlProps {
@@ -8,28 +9,24 @@ interface OpacityControlProps {
 }
 
 const OpacityControl: React.FC<OpacityControlProps> = ({ opacity, onChange }) => {
-  const [isVisible, setIsVisible] = useState(false);
   return (
-    <>
-      <button>
-        <EyeIcon
-          className="w-4 h-4 text-gray-900"
-          onClick={() => {
-            setIsVisible((visible) => !visible);
+    <ToolTip
+      content={
+        <Input
+          unit="%"
+          type="number"
+          defaultValue={Math.round(opacity * 100)}
+          className="text-center"
+          onChange={(e) => {
+            if (Number.isNaN(e.target.valueAsNumber)) return;
+            onChange(e.target.valueAsNumber / 100);
           }}
         />
-        {isVisible && (
-          <Input
-            type="number"
-            defaultValue={Math.round(opacity * 100)}
-            onChange={(e) => {
-              if (Number.isNaN(e.target.valueAsNumber)) return;
-              onChange(e.target.valueAsNumber / 100);
-            }}
-          />
-        )}
-      </button>
-    </>
+      }
+      className="w-16 text-center"
+    >
+      <CubeTransparentIcon className="w-4 h-4 text-gray-900" />
+    </ToolTip>
   );
 };
 

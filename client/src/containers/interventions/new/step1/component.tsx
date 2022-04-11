@@ -33,10 +33,10 @@ import type { SelectOption, SelectOptions } from 'components/select/types';
 const schemaValidation = yup.object({
   interventionDescription: yup.string(),
   percentage: yup.number().min(0).max(100).required(),
-  materialsIds: yup.array().min(1).required(),
-  businessUnitsIds: yup.array().min(1).required(),
-  suppliersIds: yup.array().min(1).required(),
-  adminRegionsIds: yup.array().min(1).required(),
+  materialIds: yup.array().min(1).required(),
+  businessUnitIds: yup.array().min(1).required(),
+  supplierIds: yup.array().min(1).required(),
+  adminRegionIds: yup.array().min(1).required(),
   endYear: yup
     .number()
     .test('len', 'Must be a valid year', (val) => Math.ceil(Math.log(val + 1) / Math.LN10) === 4)
@@ -77,7 +77,7 @@ const Step1: FC = () => {
   });
 
   const formValues = getValues();
-  const { businessUnitsIds, supplierIds, originIds, materialIds } = formValues;
+  const { businessUnitIds, supplierIds, originIds, materialIds } = formValues;
 
   const currentInterventionType = watch('type');
   const selectedInterventionOption = useMemo(
@@ -169,58 +169,58 @@ const Step1: FC = () => {
           <span className="text-gray-700">of</span>
           <div className="font-bold">
             <Materials
-              {...register('materialsIds')}
+              {...register('materialIds')}
               multiple
               withSourcingLocations
-              businessUnitIds={businessUnitsIds}
+              businessUnitIds={businessUnitIds}
               supplierIds={supplierIds}
               originIds={originIds}
               current={watch('materials')}
-              onChange={(values) => handleDropdown('materialsIds', values)}
+              onChange={(values) => handleDropdown('materialIds', values)}
               ellipsis
               theme="inline-primary"
-              error={!!errors?.materialsIds?.message}
+              error={!!errors?.materialIds?.message}
             />
           </div>
           <span className="text-gray-700">for</span>
           <BusinessUnits
-            {...register('businessUnitsIds')}
+            {...register('businessUnitIds')}
             multiple
             withSourcingLocations
             materialIds={materialIds}
             supplierIds={supplierIds}
             originIds={originIds}
             current={watch('businessUnits')}
-            onChange={(values) => handleDropdown('businessUnitsIds', values)}
+            onChange={(values) => handleDropdown('businessUnitIds', values)}
             ellipsis
             theme="inline-primary"
-            error={!!errors?.businessUnitsIds?.message}
+            error={!!errors?.businessUnitIds?.message}
           />
           <span className="text-gray-700 font-medium">from</span>
           <Suppliers
-            {...register('suppliersIds')}
+            {...register('supplierIds')}
             multiple
             withSourcingLocations
             materialIds={materialIds}
-            businessUnitIds={businessUnitsIds}
+            businessUnitIds={businessUnitIds}
             originIds={originIds}
             current={watch('suppliers')}
-            onChange={(values) => handleDropdown('suppliersIds', values)}
+            onChange={(values) => handleDropdown('supplierIds', values)}
             theme="inline-primary"
-            error={!!errors?.suppliersIds?.message}
+            error={!!errors?.supplierIds?.message}
           />
           <span className="text-gray-700 font-medium">in</span>
           <OriginRegions
-            {...register('adminRegionsIds')}
+            {...register('adminRegionIds')}
             multiple
             withSourcingLocations
             materialIds={materialIds}
             supplierIds={supplierIds}
-            businessUnitIds={businessUnitsIds}
+            businessUnitIds={businessUnitIds}
             current={watch('originRegions')}
-            onChange={(values) => handleDropdown('adminRegionsIds', values)}
+            onChange={(values) => handleDropdown('adminRegionIds', values)}
             theme="inline-primary"
-            error={!!errors?.adminRegionsIds?.message}
+            error={!!errors?.adminRegionIds?.message}
           />
           <span className="text-gray-700 font-medium">.</span>
         </div>

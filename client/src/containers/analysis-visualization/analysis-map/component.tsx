@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import DeckGL from '@deck.gl/react';
 import { StaticMap } from 'react-map-gl';
 import { XCircleIcon } from '@heroicons/react/solid';
@@ -18,6 +18,7 @@ import ZoomControl from 'components/map/controls/zoom';
 import { analysisMap } from 'store/features/analysis';
 
 import type { PopUpProps } from 'components/map/popup/types';
+import { ViewState } from 'react-map-gl/src/mapbox/mapbox';
 
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
 const INITIAL_VIEW_STATE = {
@@ -32,6 +33,8 @@ const INITIAL_VIEW_STATE = {
 const AnalysisMap: React.FC = () => {
   const { tooltipData, tooltipPosition } = useAppSelector(analysisMap);
   const [isRendering, setIsRendering] = useState(false);
+
+  const [hoverInfo, onHoverLayer] = useHoveredLayers();
 
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
 
@@ -66,6 +69,10 @@ const AnalysisMap: React.FC = () => {
         controller
         layers={layers}
         onAfterRender={handleAfterRender}
+        onHover={(info) => {
+          // console.log(info);
+          onHoverLayer(info);
+        }}
       >
         <StaticMap
           viewState={viewState}

@@ -5,22 +5,33 @@ import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
 import { analysisMap, setLayer } from 'store/features/analysis/map';
 
-import { useH3ImpactData } from 'hooks/h3-data';
+import { useH3RiskData } from 'hooks/h3-data';
+import { useYears } from 'hooks/years';
 
 import { COLOR_RAMPS, NUMBER_FORMAT } from 'containers/analysis-visualization/constants';
 
 import type { LegendItem as LegendItemProp } from 'types';
 
-const LAYER_ID = 'impact'; // should match with redux
+const LAYER_ID = 'risk'; // should match with redux
 const HEXAGON_HIGHLIGHT_COLOR = [0, 0, 0];
 
-export const useImpactLayer = () => {
+export const useRiskLayer = () => {
   const dispatch = useAppDispatch();
-  const { indicator, startYear } = useAppSelector(analysisFilters);
+  const { indicator } = useAppSelector(analysisFilters);
   const {
-    layers: { impact: impactLayer },
+    layers: { risk: riskLayer },
   } = useAppSelector(analysisMap);
-  const query = useH3ImpactData();
+  const years = useYears('risk', riskLayer.material ? [riskLayer.material] : [], indicator);
+  const params = {
+    year: years.data && years.data[0],
+    materialId: riskLayer.material && riskLayer.material.value,
+    indicatorId: indicator?.value,
+  };
+  const options = {
+    enabled: !!(riskLayer.active && riskLayer.material && riskLayer.year && indicator),
+  };
+  console.log('options', options);
+  const query = useH3RiskData(params, options);
   const { data } = query;
 
   const layer = new H3HexagonLayer({
@@ -34,8 +45,8 @@ export const useImpactLayer = () => {
     pickable: true,
     coverage: 0.9,
     lineWidthMinPixels: 2,
-    opacity: impactLayer.opacity,
-    visible: true, // always active
+    opacity: riskLayer.opacity,
+    visible: riskLayer.active,
     getHexagon: (d) => d.h,
     getFillColor: (d) => d.c,
     getElevation: (d) => d.v,
@@ -54,8 +65,9 @@ export const useImpactLayer = () => {
         setLayer({
           id: LAYER_ID,
           layer: {
+            year: years.data && years.data[0],
             legend: {
-              name: `${indicator.label} in ${startYear}`,
+              name: `${indicator.label} in ${years.data[0]}`,
               unit: data.metadata.unit,
               min: NUMBER_FORMAT(data.metadata.quantiles[0]),
               items: data.metadata.quantiles.slice(1).map(
@@ -69,7 +81,7 @@ export const useImpactLayer = () => {
         }),
       );
     }
-  }, [data, dispatch, indicator, startYear]);
+  }, [data, dispatch, indicator, years.data]);
 
   return {
     ...query,

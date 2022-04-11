@@ -1,18 +1,12 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap, setLayer } from 'store/features/analysis/map';
-
-import { useH3MaterialData } from 'hooks/h3-data';
 
 import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
 import Loading from 'components/loading';
 import LegendItem from 'components/legend/item';
 import LegendTypeChoropleth from 'components/legend/types/choropleth';
-
-import { COLOR_RAMPS, NUMBER_FORMAT } from '../../constants';
-
-import type { Legend, LegendItem as LegendItemProp } from 'types';
 
 const LAYER_ID = 'material';
 
@@ -22,30 +16,18 @@ const MaterialLegendItem = () => {
     layers: { material },
   } = useAppSelector(analysisMap);
 
-  const { data, isFetching } = useH3MaterialData();
-
-  const legendData = useMemo<Legend>(() => {
-    if (data) {
-      return {
-        name: null,
-        unit: data.metadata.unit,
-        min: NUMBER_FORMAT(data.metadata.quantiles[0]),
-        items: data.metadata.quantiles.slice(1).map(
-          (v, index): LegendItemProp => ({
-            value: NUMBER_FORMAT(v),
-            color: COLOR_RAMPS[LAYER_ID][index],
-          }),
-        ),
-      };
-    }
-    return null;
-  }, [data]);
-
   const handleActive = useCallback(
     (active) => {
       dispatch(setLayer({ id: LAYER_ID, layer: { ...material, active } }));
     },
     [dispatch, material],
+  );
+
+  const handleOpacity = useCallback(
+    (opacity: number) => {
+      dispatch(setLayer({ id: 'impact', layer: { opacity } }));
+    },
+    [dispatch],
   );
 
   const handleMaterialChange = useCallback(
@@ -55,28 +37,36 @@ const MaterialLegendItem = () => {
     [dispatch, material],
   );
 
+  const isFetching = false;
+
   return (
     <LegendItem
-      {...legendData}
       name={
         material.active ? (
-          <Materials
-            current={material.material ? [material.material] : null}
-            onChange={handleMaterialChange}
-            multiple={false}
-          />
+          <div className="space-y-2 mr-2">
+            <div>Material Production {material.material ? `in ${material.year}` : null}</div>
+            <Materials
+              current={material.material ? [material.material] : null}
+              onChange={handleMaterialChange}
+              multiple={false}
+            />
+          </div>
         ) : (
           'Material Production'
         )
       }
+      unit={material.legend.unit}
+      opacity={material.opacity}
+      active={material.active}
+      onChangeOpacity={handleOpacity}
       onActiveChange={handleActive}
     >
       {isFetching && <Loading />}
-      {!isFetching && !!legendData?.items?.length && (
+      {!isFetching && !!material.legend?.items?.length && (
         <LegendTypeChoropleth
           className="text-sm text-gray-500 flex-1"
-          min={legendData.min}
-          items={legendData.items}
+          min={material.legend.min}
+          items={material.legend.items}
         />
       )}
     </LegendItem>

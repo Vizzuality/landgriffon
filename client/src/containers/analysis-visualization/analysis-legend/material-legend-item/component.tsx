@@ -24,7 +24,7 @@ const MaterialLegendItem = () => {
 
   const handleOpacity = useCallback(
     (opacity: number) => {
-      dispatch(setLayer({ id: 'impact', layer: { opacity } }));
+      dispatch(setLayer({ id: LAYER_ID, layer: { opacity } }));
     },
     [dispatch],
   );

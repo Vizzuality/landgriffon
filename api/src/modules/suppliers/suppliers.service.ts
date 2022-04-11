@@ -151,4 +151,22 @@ export class SuppliersService extends AppBaseService<
     }
     return queryBuilder.getMany();
   }
+
+  async getSuppliersDescendants(supplierIds: string[]): Promise<string[]> {
+    let suppliers: Supplier[] = [];
+    for (const id of supplierIds) {
+      const supplier: Supplier | undefined =
+        await this.supplierRepository.findOne(id);
+
+      if (!supplier)
+        throw new NotFoundException(`There is no Supplier with ID: ${id}`);
+
+      const result: Supplier[] = await this.supplierRepository.findDescendants(
+        supplier as Supplier,
+      );
+      suppliers = [...suppliers, ...result];
+    }
+
+    return suppliers.map((supplier: Supplier) => supplier.id);
+  }
 }

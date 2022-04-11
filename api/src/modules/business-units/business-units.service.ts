@@ -93,4 +93,25 @@ export class BusinessUnitsService extends AppBaseService<
       );
     return this.buildTree<BusinessUnit>(businessUnitsLineage, null);
   }
+
+  async getBusinessUnitsDescendants(
+    businessUnitIds: string[],
+  ): Promise<string[]> {
+    let businessUnits: BusinessUnit[] = [];
+    for (const id of businessUnitIds) {
+      const businessUnit: BusinessUnit | undefined =
+        await this.businessUnitRepository.findOne(id);
+
+      if (!businessUnit)
+        throw new NotFoundException(`There is no Business Unit with ID: ${id}`);
+
+      const result: BusinessUnit[] =
+        await this.businessUnitRepository.findDescendants(
+          businessUnit as BusinessUnit,
+        );
+      businessUnits = [...businessUnits, ...result];
+    }
+
+    return businessUnits.map((businessUnit: BusinessUnit) => businessUnit.id);
+  }
 }

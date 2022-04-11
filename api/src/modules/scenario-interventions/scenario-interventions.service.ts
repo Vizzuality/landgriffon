@@ -102,6 +102,27 @@ export class ScenarioInterventionsService extends AppBaseService<
     dto: CreateScenarioInterventionDto,
   ): Promise<ScenarioIntervention> {
     /**
+     *  Getting descendants of adminRegions, materials, suppliers adn businessUnits received as filters, if exists
+     */
+
+    dto.materialIds = await this.materialService.getMaterialsDescendants(
+      dto.materialIds,
+    );
+
+    dto.adminRegionsIds =
+      await this.adminRegionService.getAdminRegionDescendants(
+        dto.adminRegionsIds,
+      );
+
+    dto.supplierIds = await this.suppliersService.getSuppliersDescendants(
+      dto.supplierIds,
+    );
+
+    dto.businessUnitIds =
+      await this.businessUnitService.getBusinessUnitsDescendants(
+        dto.businessUnitIds,
+      );
+    /**
      *  Creating New Intervention to be saved in scenario_interventions table
      */
     const newScenarioIntervention: ScenarioIntervention =
@@ -135,7 +156,7 @@ export class ScenarioInterventionsService extends AppBaseService<
       newScenarioIntervention.replacedSuppliers =
         await this.suppliersService.getSuppliersById(dto.supplierIds);
     }
-    if (dto.adminRegionIds?.length) {
+    if (dto.adminRegionsIds?.length) {
       newScenarioIntervention.replacedAdminRegions =
         await this.adminRegionService.getAdminRegionsById(dto.adminRegionIds);
     }

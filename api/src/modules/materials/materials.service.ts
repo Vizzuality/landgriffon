@@ -169,4 +169,22 @@ export class MaterialsService extends AppBaseService<
       return this.getMaterialsTreeWithSourcingLocations(materialTreeOptions);
     return this.findTreesWithOptions({ depth: materialTreeOptions.depth });
   }
+
+  async getMaterialsDescendants(materialIds: string[]): Promise<any> {
+    let materials: Material[] = [];
+    for (const id of materialIds) {
+      const material: Material | undefined =
+        await this.materialRepository.findOne(id);
+
+      if (!material)
+        throw new NotFoundException(`There is no Material with ID: ${id}`);
+
+      const result: Material[] = await this.materialRepository.findDescendants(
+        material as Material,
+      );
+      materials = [...materials, ...result];
+    }
+
+    return materials.map((material: Material) => material.id);
+  }
 }

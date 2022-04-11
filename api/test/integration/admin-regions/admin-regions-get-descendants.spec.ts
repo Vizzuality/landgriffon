@@ -24,16 +24,11 @@ describe('AdminRegions - Get descendants by Admin Region Ids', () => {
     adminRegionService = moduleFixture.get(AdminRegionsService);
 
     app = getApp(moduleFixture);
-    await app.init();
     await adminRegionRepository.delete({});
   });
 
   afterEach(async () => {
     await adminRegionRepository.delete({});
-  });
-
-  afterAll(async () => {
-    await app.close();
   });
 
   test('Get Admin Region descendants ids service should return ids of the requested Admin regions and the ids of their descendants', async () => {

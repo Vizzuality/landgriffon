@@ -50,9 +50,11 @@ export const LegendItem: React.FC<LegendItemProps> = ({
               <div className="flex items-center">
                 <div className="flex-1 flex items-center space-x-1 mt-0.5">
                   <OpacityControl opacity={opacity} onChange={onChangeOpacity} />
-                  <button>
-                    <InformationCircleIcon className="w-4 h-4 text-gray-900" />
-                  </button>
+                  <div>
+                    <button>
+                      <InformationCircleIcon className="w-4 h-4 text-gray-900" />
+                    </button>
+                  </div>
                 </div>
               </div>
             )}

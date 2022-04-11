@@ -58,7 +58,7 @@ export const useImpactLayer = () => {
             legend: {
               name: `${indicator.label} in ${startYear}`,
               unit: data.metadata.unit,
-              min: NUMBER_FORMAT(data.metadata.quantiles[0]),
+              min: data && NUMBER_FORMAT(data.metadata.quantiles[0]),
               items: data.metadata.quantiles.slice(1).map(
                 (v, index): LegendItemProp => ({
                   value: NUMBER_FORMAT(v),

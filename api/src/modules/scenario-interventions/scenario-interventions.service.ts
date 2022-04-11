@@ -27,6 +27,10 @@ import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.se
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
+import { MaterialsService } from 'modules/materials/materials.service';
+import { BusinessUnitsService } from 'modules/business-units/business-units.service';
+import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
+import { SuppliersService } from 'modules/suppliers/suppliers.service';
 
 @Injectable()
 export class ScenarioInterventionsService extends AppBaseService<
@@ -41,6 +45,10 @@ export class ScenarioInterventionsService extends AppBaseService<
     protected readonly geoCodingService: GeoCodingAbstractClass,
     protected readonly sourcingLocationsService: SourcingLocationsService,
     protected readonly indicatorRecordsService: IndicatorRecordsService,
+    protected readonly materialService: MaterialsService,
+    protected readonly businessUnitService: BusinessUnitsService,
+    protected readonly adminRegionService: AdminRegionsService,
+    protected readonly suppliersService: SuppliersService,
   ) {
     super(
       scenarioInterventionRepository,
@@ -86,6 +94,7 @@ export class ScenarioInterventionsService extends AppBaseService<
     const newScenarioIntervention: ScenarioIntervention =
       new ScenarioIntervention();
     Object.assign(newScenarioIntervention, dto);
+
     /**
      * Getting Sourcing Locations and Sourcing Records for start year of all Materials of the intervention with applied filters
      */
@@ -96,6 +105,26 @@ export class ScenarioInterventionsService extends AppBaseService<
 
     if (!actualSourcingDataWithTonnage.length) {
       throw new BadRequestException('No actual data for requested filters');
+    }
+
+    // Add replaced organisational entity info to newly created Intervention
+    if (dto.materialIds.length) {
+      newScenarioIntervention.replacedMaterials =
+        await this.materialService.getMaterialsById(dto.materialIds);
+    }
+    if (dto.businessUnitIds.length) {
+      newScenarioIntervention.replacedBusinessUnits =
+        await this.businessUnitService.getBusinessUnitsById(
+          dto.businessUnitIds,
+        );
+    }
+    if (dto.supplierIds.length) {
+      newScenarioIntervention.replacedSuppliers =
+        await this.suppliersService.getSuppliersById(dto.supplierIds);
+    }
+    if (dto.adminRegionIds?.length) {
+      newScenarioIntervention.replacedAdminRegions =
+        await this.adminRegionService.getAdminRegionsById(dto.adminRegionIds);
     }
     /**
      * NEW SOURCING LOCATIONS #1 - Basically copies of the actual existing Sourcing Locations that will be replaced by intervention,

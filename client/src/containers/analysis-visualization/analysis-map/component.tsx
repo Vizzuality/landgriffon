@@ -9,6 +9,7 @@ import { useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
 
 import { useH3MaterialData, useH3RiskData, useH3ImpactData } from 'hooks/h3-data';
+import { useImpactLayer } from 'hooks/layers/impact';
 
 import PopUp from 'components/map/popup';
 import PageLoading from 'containers/page-loading';
@@ -49,155 +50,57 @@ const AnalysisMap: React.FC = () => {
   const [popUpInfo, setPopUpInfo] = useState<PopUpInfoProps>(null);
   const [isRendering, setIsRendering] = useState(false);
 
+  const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
+  const impactLayer = useImpactLayer();
+  const layers = useMemo(() => [impactLayer.layer], [impactLayer.layer]);
+
   const {
     data: h3MaterialData,
     isFetching: isH3MaterialFetching,
     isError: isH3MaterialError,
   } = useH3MaterialData();
+
   const {
     data: h3RiskData,
     isFetching: isH3RiskFetching,
     isError: isH3RiskError,
   } = useH3RiskData();
-  const {
-    data: h3ImpactData,
-    isFetching: isH3ImpactFetching,
-    isError: isH3ImpactError,
-  } = useH3ImpactData();
 
-  const dataByLayer = {
-    material: h3MaterialData.data,
-    risk: h3RiskData.data,
-    impact: h3ImpactData.data,
-  };
-
-  const isError = isH3MaterialError || isH3RiskError || isH3ImpactError;
-  const isFetching = isH3MaterialFetching || isH3RiskFetching || isH3ImpactFetching;
+  const isError = isH3MaterialError || isH3RiskError || impactLayer.isError;
+  const isFetching = isH3MaterialFetching || isH3RiskFetching || impactLayer.isFetching;
 
   const handleAfterRender = useCallback(() => setIsRendering(false), []);
-  const handleHover = useCallback(({ object, x, y, viewport }) => {
-    setPopUpInfo({
-      object: object ? { v: object.v } : null,
-      x,
-      y,
-      viewport: viewport ? { width: viewport.width, height: viewport.height } : null,
-    });
-    setHoveredHexagon(object ? object.h : null);
-  }, []);
+  // const handleHover = useCallback(({ object, x, y, viewport }) => {
+  //   setPopUpInfo({
+  //     object: object ? { v: object.v } : null,
+  //     x,
+  //     y,
+  //     viewport: viewport ? { width: viewport.width, height: viewport.height } : null,
+  //   });
+  //   setHoveredHexagon(object ? object.h : null);
+  // }, []);
 
-  const unit = useMemo(() => {
-    const unitMap = {
-      material: h3MaterialData.metadata.unit,
-      risk: h3RiskData.metadata.unit,
-      impact: h3ImpactData.metadata.unit,
-    };
-    return unitMap[layer];
-  }, [h3MaterialData, h3RiskData, h3ImpactData, layer]);
+  // const unit = useMemo(() => {
+  //   const unitMap = {
+  //     material: h3MaterialData.metadata.unit,
+  //     risk: h3RiskData.metadata.unit,
+  //     impact: h3ImpactData.metadata.unit,
+  //   };
+  //   return unitMap[layer];
+  // }, [h3MaterialData, h3RiskData, h3ImpactData, layer]);
 
-  // const legendName = useMemo(() => {
+  // const tooltipName = useMemo(() => {
   //   if (layer === 'material' && filters.materials?.length > 0) {
-  //     return `${filters.materials[0].label} in ${filters.startYear}`;
+  //     return `${filters.materials[0].label}`;
   //   }
   //   if (layer === 'risk' && filters.indicator && filters.materials?.length > 0) {
-  //     return `${filters.indicator.label}, for ${filters.materials[0].label} in ${filters.startYear}`;
+  //     return `${filters.indicator.label}, for ${filters.materials[0].label}`;
   //   }
   //   if (layer === 'impact' && filters.indicator) {
-  //     return `${filters.indicator.label} in ${filters.startYear}`;
+  //     return filters.indicator.label;
   //   }
   //   return null;
   // }, [layer, filters]);
-
-  const tooltipName = useMemo(() => {
-    if (layer === 'material' && filters.materials?.length > 0) {
-      return `${filters.materials[0].label}`;
-    }
-    if (layer === 'risk' && filters.indicator && filters.materials?.length > 0) {
-      return `${filters.indicator.label}, for ${filters.materials[0].label}`;
-    }
-    if (layer === 'impact' && filters.indicator) {
-      return filters.indicator.label;
-    }
-    return null;
-  }, [layer, filters]);
-
-  const commonLayerProps = useMemo(
-    () => ({
-      wireframe: false,
-      filled: true,
-      stroked: true,
-      extruded: false,
-      highPrecision: 'auto',
-      pickable: true,
-      coverage: 0.9,
-      lineWidthMinPixels: 2,
-      getHexagon: (d) => d.h,
-      getFillColor: (d) => d.c,
-      getElevation: (d) => d.v,
-      getLineColor: (d) => (d.h === hoveredHexagon ? HEXAGON_HIGHLIGHT_COLOR : d.c),
-      onHover: handleHover,
-      updateTriggers: {
-        getLineColor: hoveredHexagon,
-      },
-    }),
-    [handleHover, hoveredHexagon],
-  );
-
-  // useEffect(() => {
-  //   if (h3MaterialData?.data.length || h3RiskData?.data.length || h3ImpactData?.data.length) {
-  //     const nextLegendItems = [];
-
-  //     if (layer === 'material') {
-  //       nextLegendItems.push({
-  //         id: 'h3-legend-material',
-  //         name: legendName,
-  //         unit,
-  //         min: NUMBER_FORMAT(h3MaterialData.metadata.quantiles[0]),
-  //         items: h3MaterialData.metadata.quantiles.slice(1).map((v, index) => ({
-  //           value: NUMBER_FORMAT(v),
-  //           color: COLOR_RAMPS[layer][index],
-  //         })),
-  //       });
-  //     }
-
-  //     if (layer === 'risk') {
-  //       nextLegendItems.push({
-  //         id: 'h3-legend-risk',
-  //         name: legendName,
-  //         unit,
-  //         min: NUMBER_FORMAT(h3RiskData.metadata.quantiles[0]),
-  //         items: h3RiskData.metadata.quantiles.slice(1).map((v, index) => ({
-  //           value: NUMBER_FORMAT(v),
-  //           color: COLOR_RAMPS[layer][index],
-  //         })),
-  //       });
-  //     }
-
-  //     if (layer === 'impact') {
-  //       nextLegendItems.push({
-  //         id: 'h3-legend-impact',
-  //         name: legendName,
-  //         unit,
-  //         min: NUMBER_FORMAT(h3ImpactData.metadata.quantiles[0]),
-  //         items: h3ImpactData.metadata.quantiles.slice(1).map((v, index) => ({
-  //           value: NUMBER_FORMAT(v),
-  //           color: COLOR_RAMPS[layer][index],
-  //         })),
-  //       });
-  //     }
-
-  //     setLegendItems(nextLegendItems);
-  //   }
-  // }, [h3MaterialData, h3RiskData, h3ImpactData, layer, filters, legendName, unit]);
-
-  const layers = Object.entries(layerOptions).map(([key, value]) => {
-    return new H3HexagonLayer({
-      ...value,
-      data: dataByLayer[key],
-      ...commonLayerProps,
-    });
-  });
-
-  const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
 
   const onZoomChange = useCallback(
     (zoom) => {
@@ -221,7 +124,7 @@ const AnalysisMap: React.FC = () => {
           mapboxApiAccessToken={MAPBOX_API_TOKEN}
           className="-z-10"
         />
-        {popUpInfo?.object && (
+        {/* {popUpInfo?.object && (
           <PopUp
             position={
               {
@@ -238,7 +141,7 @@ const AnalysisMap: React.FC = () => {
               </div>
             </div>
           </PopUp>
-        )}
+        )} */}
       </DeckGL>
       {isError && (
         <div className="absolute z-10 top-20 left-12 rounded-md bg-red-50 p-4">

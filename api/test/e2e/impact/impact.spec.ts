@@ -168,18 +168,28 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     });
 
     const material: Material = await createMaterial({ name: 'Fake Material' });
+    const materialDescendant: Material = await createMaterial({
+      name: 'Fake Material Descendant',
+      parent: material,
+    });
+
     const businessUnit: BusinessUnit = await createBusinessUnit({
       name: 'Fake Business Unit',
     });
 
     const supplier: Supplier = await createSupplier({ name: 'Fake Supplier' });
+    const supplierDescendant: Supplier = await createSupplier({
+      name: 'Fake Supplier Descendant',
+      parent: supplier,
+    });
+
     const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
       indicator,
     });
     const sourcingLocation: SourcingLocation = await createSourcingLocation({
-      material,
+      material: materialDescendant,
       businessUnit,
-      t1Supplier: supplier,
+      t1Supplier: supplierDescendant,
       adminRegion,
     });
 
@@ -199,12 +209,29 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         endYear: 2012,
         startYear: 2010,
         groupBy: 'material',
+        'materialIds[]': [material.id],
       })
       .expect(HttpStatus.OK);
 
     expect(response1.body.data.impactTable[0].rows[0].name).toEqual(
       material.name,
     );
+    expect(response1.body.data.impactTable[0].rows[0].values).toEqual([
+      { year: 2010, value: 2000, isProjected: false },
+      { year: 2011, value: 2030, isProjected: true },
+      { year: 2012, value: 2060.45, isProjected: true },
+    ]);
+
+    expect(response1.body.data.impactTable[0].rows[0].children[0].name).toEqual(
+      materialDescendant.name,
+    );
+    expect(
+      response1.body.data.impactTable[0].rows[0].children[0].values,
+    ).toEqual([
+      { year: 2010, value: 2000, isProjected: false },
+      { year: 2011, value: 2030, isProjected: true },
+      { year: 2012, value: 2060.45, isProjected: true },
+    ]);
 
     const response2 = await request(app.getHttpServer())
       .get('/api/v1/impact/table')

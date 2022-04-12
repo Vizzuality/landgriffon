@@ -45,10 +45,33 @@ export class ImpactService {
     let entities: ImpactTableEntityType[] = [];
 
     /*
+     * Getting Descendants Ids for the filters, in case Parent Ids were received
+     */
+
+    if (impactTableDto.originIds)
+      impactTableDto.originIds =
+        await this.adminRegionsService.getAdminRegionDescendants(
+          impactTableDto.originIds,
+        );
+    if (impactTableDto.materialIds)
+      impactTableDto.materialIds =
+        await this.materialsService.getMaterialsDescendants(
+          impactTableDto.materialIds,
+        );
+    if (impactTableDto.supplierIds)
+      impactTableDto.supplierIds =
+        await this.suppliersService.getSuppliersDescendants(
+          impactTableDto.supplierIds,
+        );
+
+    /*
      * Get full entity tree in cate ids are not passed,
      * otherwise get trees based on given ids and add children and parent
      * ids to them to get full data for aggregations
      */
+
+    // TODO check if tree ids search is redundant
+
     switch (impactTableDto.groupBy) {
       case GROUP_BY_VALUES.MATERIAL:
         if (impactTableDto.materialIds) {

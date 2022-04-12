@@ -100,8 +100,6 @@ export function useInfiniteScenarios(QueryParams: QueryParams): ResponseInfinite
 }
 
 export function useScenario(id: Scenario['id']): ResponseDataScenario {
-  const { sort, filter, searchTerm } = useAppSelector(scenarios);
-
   const response: ResponseDataScenario = useQuery(
     ['scenario', id],
     async () =>
@@ -109,7 +107,6 @@ export function useScenario(id: Scenario['id']): ResponseDataScenario {
         .request({
           method: 'GET',
           url: `/scenarios/${id}`,
-          params: { sort, 'filter[title]': searchTerm, filter },
         })
         .then(({ data: responseData }) => responseData.data),
     DEFAULT_QUERY_OPTIONS,

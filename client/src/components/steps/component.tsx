@@ -66,7 +66,6 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
                   'border-green-700': step.id === current,
                 },
               )}
-              disabled={hasErrors}
               onClick={() => handleTab(step.id)}
             >
               <span className="text-indigo-600 font-semibold tracking-wide uppercase group-hover:text-indigo-800 leading-4 text-xs">
@@ -90,7 +89,6 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
                 },
               )}
               aria-current="step"
-              disabled={hasErrors}
               onClick={() => handleTab(step.id)}
             >
               <span className="text-indigo-600 font-semibold tracking-wide uppercase leading-4 text-xs">

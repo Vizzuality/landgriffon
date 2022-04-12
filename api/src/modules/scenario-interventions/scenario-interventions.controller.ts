@@ -40,7 +40,9 @@ import { SetUserInterceptor } from 'decorators/set-user.interceptor';
 @Controller(`/api/v1/scenario-interventions`)
 @ApiTags(scenarioResource.className)
 export class ScenarioInterventionsController {
-  constructor(public readonly scenariosService: ScenarioInterventionsService) {}
+  constructor(
+    public readonly scenarioInterventionsService: ScenarioInterventionsService,
+  ) {}
 
   @ApiOperation({
     description: 'Find all scenarios',
@@ -58,8 +60,13 @@ export class ScenarioInterventionsController {
     const results: {
       data: (Partial<ScenarioIntervention> | undefined)[];
       metadata: PaginationMeta | undefined;
-    } = await this.scenariosService.findAllPaginated(fetchSpecification);
-    return this.scenariosService.serialize(results.data, results.metadata);
+    } = await this.scenarioInterventionsService.findAllPaginated(
+      fetchSpecification,
+    );
+    return this.scenarioInterventionsService.serialize(
+      results.data,
+      results.metadata,
+    );
   }
 
   @ApiOperation({ description: 'Find scenario intervention by id' })
@@ -71,8 +78,8 @@ export class ScenarioInterventionsController {
     @Param('id') id: string,
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
   ): Promise<ScenarioIntervention> {
-    return await this.scenariosService.serialize(
-      await this.scenariosService.getById(id, fetchSpecification),
+    return await this.scenarioInterventionsService.serialize(
+      await this.scenarioInterventionsService.getById(id, fetchSpecification),
     );
   }
 
@@ -86,8 +93,8 @@ export class ScenarioInterventionsController {
   async create(
     @Body() dto: CreateScenarioInterventionDto,
   ): Promise<ScenarioIntervention> {
-    return this.scenariosService.serialize(
-      await this.scenariosService.createScenarioIntervention(dto),
+    return this.scenarioInterventionsService.serialize(
+      await this.scenarioInterventionsService.createScenarioIntervention(dto),
     );
   }
 
@@ -101,8 +108,8 @@ export class ScenarioInterventionsController {
     @Body(new ValidationPipe()) dto: UpdateScenarioInterventionDto,
     @Param('id') id: string,
   ): Promise<ScenarioIntervention> {
-    return await this.scenariosService.serialize(
-      await this.scenariosService.update(id, dto),
+    return await this.scenarioInterventionsService.serialize(
+      await this.scenarioInterventionsService.update(id, dto),
     );
   }
 
@@ -111,6 +118,6 @@ export class ScenarioInterventionsController {
   @ApiNotFoundResponse({ description: 'Scenario intervention not found' })
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
-    return await this.scenariosService.remove(id);
+    return await this.scenarioInterventionsService.remove(id);
   }
 }

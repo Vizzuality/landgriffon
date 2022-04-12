@@ -32,6 +32,7 @@ import { CreateScenarioDto } from 'modules/scenarios/dto/create.scenario.dto';
 import { UpdateScenarioDto } from 'modules/scenarios/dto/update.scenario.dto';
 import { PaginationMeta } from 'utils/app-base.service';
 import { SetUserInterceptor } from 'decorators/set-user.interceptor';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 
 @Controller(`/api/v1/scenarios`)
 @ApiTags(scenarioResource.className)
@@ -70,12 +71,42 @@ export class ScenariosController {
   @ApiOperation({ description: 'Find scenario by id' })
   @ApiOkResponse({ type: Scenario })
   @ApiNotFoundResponse({ description: 'Scenario not found' })
-  @JSONAPISingleEntityQueryParams()
+  @JSONAPISingleEntityQueryParams({
+    availableFilters: scenarioResource.columnsAllowedAsFilter.map(
+      (columnName: string) => ({
+        name: columnName,
+      }),
+    ),
+  })
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Scenario> {
+  async findOne(
+    @Param('id') id: string,
+    @ProcessFetchSpecification({
+      allowedFilters: scenarioResource.columnsAllowedAsFilter,
+    })
+    fetchSpecification: FetchSpecification,
+  ): Promise<Scenario> {
     return await this.scenariosService.serialize(
-      await this.scenariosService.getById(id),
+      await this.scenariosService.getById(id, fetchSpecification),
     );
+  }
+
+  /**
+   * @todo: I haven't founf a way to retrieve intervention relations
+   *        extending nestjs-base-service via extendGetByIdQuery.
+   *        this should be retrieved by /scenarios?include=scenarioInterventions
+   */
+  @ApiOperation({
+    description: 'Find all Interventions that belong to a given Scenario Id',
+  })
+  @ApiOkResponse({ type: Scenario })
+  @ApiNotFoundResponse({ description: 'Scenario not found' })
+  @JSONAPISingleEntityQueryParams()
+  @Get(':id/interventions')
+  async findInterventionsByScenario(
+    @Param('id') id: string,
+  ): Promise<ScenarioIntervention[]> {
+    return this.scenariosService.findInterventionsByScenario(id);
   }
 
   @ApiOperation({ description: 'Create a scenario' })

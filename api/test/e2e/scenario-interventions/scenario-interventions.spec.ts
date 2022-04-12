@@ -49,9 +49,9 @@ import { IndicatorRecordsService } from 'modules/indicator-records/indicator-rec
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
-  'type',
   'description',
   'status',
+  'type',
   'createdAt',
   'updatedAt',
 ];
@@ -189,7 +189,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'test scenario intervention',
       );
 
-      expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
+      expect(response).toHaveJSONAPIAttributes([
+        ...expectedJSONAPIAttributes,
+        'replacedMaterials',
+        'replacedBusinessUnits',
+        'replacedAdminRegions',
+        'replacedSuppliers',
+      ]);
 
       const allSourcingLocations: [SourcingLocation[], number] =
         await sourcingLocationRepository.findAndCount();
@@ -321,7 +327,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'scenario intervention supplier',
       );
 
-      expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
+      expect(response).toHaveJSONAPIAttributes([
+        ...expectedJSONAPIAttributes,
+        'replacedMaterials',
+        'replacedBusinessUnits',
+        'replacedAdminRegions',
+        'replacedSuppliers',
+      ]);
 
       const allSourcingLocations: [SourcingLocation[], number] =
         await sourcingLocationRepository.findAndCount();
@@ -446,7 +458,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'scenario intervention material',
       );
 
-      expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
+      expect(response).toHaveJSONAPIAttributes([
+        ...expectedJSONAPIAttributes,
+        'replacedMaterials',
+        'replacedBusinessUnits',
+        'replacedAdminRegions',
+        'replacedSuppliers',
+      ]);
 
       const allSourcingLocations: [SourcingLocation[], number] =
         await sourcingLocationRepository.findAndCount();
@@ -806,6 +824,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'updated test scenario intervention',
       );
 
+      // Note: Update response does not retrieve the related resources
       expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
     });
   });

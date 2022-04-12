@@ -6,11 +6,12 @@ import { InformationCircleIcon } from '@heroicons/react/solid';
 
 import { useImpactData } from 'hooks/impact';
 
-import { DATA_NUMBER_FORMAT } from 'containers/analysis-visualization/constants';
 import Table from 'containers/table';
 import SummaryRow from 'containers/table/summary-row';
 import Button from 'components/button';
 import Loading from 'components/loading';
+
+import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 
 import { ITableData } from './types';
 
@@ -55,7 +56,8 @@ const AnalysisTable: React.FC = () => {
     const result = [];
     const isMultipleIndicator = impactTable.length > 1;
 
-    impactTable.map((indicator) => {
+    // TO-DO: make it recursive to more levels, right now the max deep is 4
+    impactTable.forEach((indicator) => {
       const rowParentId = isMultipleIndicator ? indicator.indicatorId : null;
 
       if (isMultipleIndicator) {
@@ -72,8 +74,11 @@ const AnalysisTable: React.FC = () => {
       }
 
       // Indicator rows
-      indicator.rows.map((row) => {
+      indicator.rows.forEach((row, parentIndex) => {
+        const secondParentId = `${rowParentId}-${parentIndex}`;
+
         result.push({
+          id: secondParentId,
           parentId: rowParentId,
           name: row.name,
           datesRangeChart: datesRangeChartConfig(row.values),
@@ -81,6 +86,40 @@ const AnalysisTable: React.FC = () => {
             .map(({ year, value }) => ({ [year as string]: value }))
             .reduce((a, b) => ({ ...a, ...b })),
         });
+
+        const child = row.children;
+
+        if (child.length > 0) {
+          child.forEach((childRow, childIndex) => {
+            const thirdParentId = `${secondParentId}-${childIndex}`;
+
+            result.push({
+              id: thirdParentId,
+              parentId: secondParentId,
+              name: childRow.name,
+              datesRangeChart: datesRangeChartConfig(childRow.values),
+              ...childRow.values
+                .map(({ year, value }) => ({ [year as string]: value }))
+                .reduce((a, b) => ({ ...a, ...b })),
+            });
+
+            const grandChild = childRow.children;
+
+            if (grandChild.length > 0) {
+              grandChild.forEach((grandChildRow, childIndex) => {
+                result.push({
+                  id: `${thirdParentId}-${childIndex}`,
+                  parentId: thirdParentId,
+                  name: grandChildRow.name,
+                  datesRangeChart: datesRangeChartConfig(grandChildRow.values),
+                  ...grandChildRow.values
+                    .map(({ year, value }) => ({ [year as string]: value }))
+                    .reduce((a, b) => ({ ...a, ...b })),
+                });
+              });
+            }
+          });
+        }
       });
     });
 
@@ -145,7 +184,10 @@ const AnalysisTable: React.FC = () => {
       data: tableData,
       format: ({ value, column }) => {
         if (column.key !== 'datesRangeChart' && column.key !== 'name' && value) {
-          return DATA_NUMBER_FORMAT(value);
+          return BIG_NUMBER_FORMAT(value);
+        }
+        if (column.key !== 'datesRangeChart' && column.key !== 'name' && Number.isNaN(+value)) {
+          return '-';
         }
         return value;
       },

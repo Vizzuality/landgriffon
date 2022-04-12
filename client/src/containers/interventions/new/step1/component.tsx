@@ -1,4 +1,4 @@
-import { useCallback, useMemo, FC } from 'react';
+import { useCallback, useMemo, FC, useEffect, useState } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -50,6 +50,7 @@ const errorMessage = 'Please select all the missing fields';
 const Step1: FC = () => {
   const dispatch = useAppDispatch();
   const interventionTypes = useInterventionTypes();
+  const { newInterventionData } = useAppSelector(scenarios);
 
   const optionsInterventionType: SelectOptions = useMemo(
     () =>
@@ -59,6 +60,8 @@ const Step1: FC = () => {
       })),
     [interventionTypes],
   );
+
+  const [resolver, setResolver] = useState(schemaValidation);
 
   const {
     register,
@@ -73,13 +76,12 @@ const Step1: FC = () => {
     defaultValues: {
       type: optionsInterventionType[0].value,
     } as FieldValues,
-    resolver: yupResolver(schemaValidation),
+    resolver: yupResolver(resolver),
     mode: 'onSubmit',
     reValidateMode: 'onChange',
   });
 
   const formValues = getValues();
-
   const { businessUnitIds, supplierIds, originIds, materialIds } = formValues;
 
   const currentInterventionType = watch('type');
@@ -87,6 +89,14 @@ const Step1: FC = () => {
     () => optionsInterventionType.find(({ value }) => value === currentInterventionType),
     [currentInterventionType, optionsInterventionType],
   );
+
+  const {
+    businessUnitIds: businessUnitIdsStorage,
+    supplierIds: supplierIdsStorage,
+    adminRegionIds,
+    materialIds: materialIdsStorage,
+    endYear,
+  } = newInterventionData;
 
   const handleContinue = useCallback(
     (values) => {
@@ -97,6 +107,46 @@ const Step1: FC = () => {
     },
     [dispatch, errors],
   );
+
+  // To - Do - get rid of this use effect. Currently being used to preserve previous data
+  // when going back and fordward through steps
+  useEffect(() => {
+    if (
+      !!businessUnitIdsStorage &&
+      !!supplierIdsStorage &&
+      !!businessUnitIdsStorage &&
+      !!adminRegionIds &&
+      !!materialIdsStorage &&
+      !!endYear
+    ) {
+      const emptySchema = yup.object({
+        interventionDescription: yup.string(),
+        percentage: yup.number().min(0).max(100),
+        materialIds: yup.array().min(1),
+        businessUnitIds: yup.array().min(1),
+        supplierIds: yup.array().min(1),
+        adminRegionIds: yup.array().min(1),
+        endYear: yup
+          .number()
+          .test(
+            'len',
+            'Must be a valid year',
+            (val) => Math.ceil(Math.log(val + 1) / Math.LN10) === 4,
+          )
+          .required('error'), // year completion
+        type: yup.string(),
+      });
+      setResolver(emptySchema);
+      clearErrors();
+    }
+  }, [
+    clearErrors,
+    materialIdsStorage,
+    businessUnitIdsStorage,
+    supplierIdsStorage,
+    adminRegionIds,
+    endYear,
+  ]);
 
   const handleDropdown = useCallback(
     (id: string, values: SelectOption | SelectOption[]) => {
@@ -136,8 +186,6 @@ const Step1: FC = () => {
     resetField('materialIds');
     dispatch(setNewInterventionData(initialState.newInterventionData));
   }, [resetField, dispatch]);
-
-  const { newInterventionData } = useAppSelector(scenarios);
 
   return (
     <form onSubmit={handleSubmit(handleContinue)}>
@@ -255,7 +303,7 @@ const Step1: FC = () => {
               type="number"
               name="endYear"
               id="endYear"
-              defaultValue=""
+              defaultValue={newInterventionData.endYear}
               placeholder="Insert year"
               aria-label="year"
               error={errors?.endYear?.message && 'Must be a valid year'}

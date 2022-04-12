@@ -201,7 +201,7 @@ const Step1: FC = () => {
               businessUnitIds={businessUnitIds}
               supplierIds={supplierIds}
               originIds={originIds}
-              current={currentMaterials}
+              current={watch('materialIds') || newInterventionData.materialIds}
               onChange={(values) => handleDropdown('materialIds', values)}
               ellipsis
               theme="inline-primary"
@@ -251,7 +251,7 @@ const Step1: FC = () => {
           <span className="text-gray-700 font-medium">.</span>
         </div>
       </fieldset>
-      <div className="mt-9 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
+      <div className="my-9 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
         <div className="text-sm font-medium text-gray-700">
           <span>
             Year of completion
@@ -286,7 +286,7 @@ const Step1: FC = () => {
           </div>
         </div>
       </div>
-      <div className="pt-10 flex justify-between items-center">
+      <div className="flex justify-between items-center">
         {!isEmpty(errors) && (
           <div className="mt-2 text-sm text-red-600">
             <p className="first-letter:uppercase">{errorMessage}</p>

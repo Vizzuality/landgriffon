@@ -1,7 +1,7 @@
 import { Fragment, useCallback, useState, useMemo, useEffect, useRef } from 'react';
-import { useOutsideClick } from 'rooks';
 import classNames from 'classnames';
-import { Transition } from '@headlessui/react';
+import { Transition, Popover } from '@headlessui/react';
+import { usePopper } from 'react-popper';
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -60,7 +60,22 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   fitContent = false,
   checkedStrategy = 'CHILD', // by default show child
 }) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  // Popover positioning
+  const [referenceElement, setReferenceElement] = useState(null);
+  const [popperElement, setPopperElement] = useState(null);
+  const { styles, attributes } = usePopper(referenceElement, popperElement, {
+    placement: 'bottom-start',
+    strategy: 'fixed',
+    modifiers: [
+      {
+        name: 'offset',
+        options: {
+          offset: [2, 5],
+        },
+      },
+    ],
+  });
+
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selected, setSelected] = useState<TreeSelectOption>(null);
   const [selectedKeys, setSelectedKeys] = useState<TreeProps['selectedKeys']>([]);
@@ -93,8 +108,6 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     return <ChevronRightIcon className="h-4 w-4" />;
   }, []);
 
-  const handleToggleOpen = useCallback(() => setIsOpen(!isOpen), [isOpen]);
-
   const handleExpand: TreeProps['onExpand'] = useCallback((keys) => setExpandedKeys(keys), []);
 
   // Selection for non-multiple
@@ -104,9 +117,9 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
       setSelectedKeys(keys);
       setSelected(currentSelection);
       if (onChange) onChange(currentSelection);
-      if (!multiple) setIsOpen(false);
+      // if (!multiple) setIsOpen(false);
     },
-    [multiple, onChange],
+    [onChange],
   );
 
   // Selection for multiple
@@ -203,20 +216,6 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     [checkedKeys, onChange, options],
   );
 
-  const Arrow = () => (
-    <span
-      className={classNames('absolute flex pointer-events-none', THEMES[theme].arrow, {
-        'text-red-700': !!error,
-      })}
-    >
-      {isOpen ? (
-        <ChevronUpIcon className="h-4 w-4" aria-hidden="true" />
-      ) : (
-        <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
-      )}
-    </span>
-  );
-
   // Current selection
   useEffect(() => {
     // Clear selection when current is empty
@@ -233,145 +232,176 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     }
   }, [current]);
 
-  useOutsideClick(wrapperRef, () => {
-    setIsOpen(false);
-  });
-
   return (
-    <div ref={wrapperRef} className="relative">
-      {multiple ? (
-        <div className="flex align-center relative" onClick={handleToggleOpen}>
-          <div
-            className={classNames('flex', THEMES[theme].wrapper, {
-              'ring-green-700 border-green-700': isOpen,
-              'border-red-600': !!error,
-            })}
-          >
-            {currentOptions &&
-              !!currentOptions.length &&
-              !ellipsis &&
-              currentOptions.slice(0, maxBadges).map((option) => (
-                <Badge
-                  key={option.value}
-                  className={classNames('text-sm m-0.5', THEMES[theme].label)}
-                  data={option}
-                  onClick={handleRemoveBadget}
-                  removable={theme === 'inline-primary' ? false : true}
-                  theme={theme}
-                >
-                  {option.label}
-                </Badge>
-              ))}
-            {currentOptions && !!currentOptions.length && ellipsis && (
-              <Badge
-                key={currentOptions[0].value}
-                className={classNames('text-sm m-0.5', THEMES[theme].label)}
-                data={currentOptions[0]}
-                onClick={handleRemoveBadget}
-                removable={theme === 'inline-primary' ? false : true}
-                theme={theme}
+    <Popover ref={wrapperRef} className="relative">
+      {({ open }) => (
+        <>
+          {multiple ? (
+            <Popover.Button ref={setReferenceElement} className="w-full flex align-center relative">
+              <div
+                className={classNames('flex', THEMES[theme].wrapper, {
+                  'ring-green-700 border-green-700': open,
+                  'border-red-600': !!error,
+                })}
               >
-                {currentOptions[0].label}
-              </Badge>
-            )}
-            {currentOptions && currentOptions.length > maxBadges && (
-              <Badge className={classNames('text-sm m-0.5', THEMES[theme].label)} theme={theme}>
-                {currentOptions.length - maxBadges} more selected
-              </Badge>
-            )}
-            {(!currentOptions || currentOptions.length === 0) && (
-              <span className="inline-block truncate">
-                {placeholder && (
-                  <span className={classNames('text-sm', THEMES[theme].label)}>{placeholder}</span>
+                {currentOptions &&
+                  !!currentOptions.length &&
+                  !ellipsis &&
+                  currentOptions.slice(0, maxBadges).map((option) => (
+                    <Badge
+                      key={option.value}
+                      className={classNames('text-sm m-0.5', THEMES[theme].label)}
+                      data={option}
+                      onClick={handleRemoveBadget}
+                      removable={theme === 'inline-primary' ? false : true}
+                      theme={theme}
+                    >
+                      {option.label}
+                    </Badge>
+                  ))}
+                {currentOptions && !!currentOptions.length && ellipsis && (
+                  <Badge
+                    key={currentOptions[0].value}
+                    className={classNames('text-sm m-0.5', THEMES[theme].label)}
+                    data={currentOptions[0]}
+                    onClick={handleRemoveBadget}
+                    removable={theme === 'inline-primary' ? false : true}
+                    theme={theme}
+                  >
+                    {currentOptions[0].label}
+                  </Badge>
+                )}
+                {currentOptions && currentOptions.length > maxBadges && (
+                  <Badge className={classNames('text-sm m-0.5', THEMES[theme].label)} theme={theme}>
+                    {currentOptions.length - maxBadges} more selected
+                  </Badge>
+                )}
+                {(!currentOptions || currentOptions.length === 0) && (
+                  <span className="inline-block truncate">
+                    {placeholder && (
+                      <span className={classNames('text-sm', THEMES[theme].label)}>
+                        {placeholder}
+                      </span>
+                    )}
+                  </span>
+                )}
+              </div>
+              <span
+                className={classNames('absolute flex pointer-events-none', THEMES[theme].arrow, {
+                  'text-red-700': !!error,
+                })}
+              >
+                {open ? (
+                  <ChevronUpIcon className="h-4 w-4" aria-hidden="true" />
+                ) : (
+                  <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
                 )}
               </span>
-            )}
-          </div>
-          <Arrow />
-        </div>
-      ) : (
-        <button
-          type="button"
-          className={classNames(
-            'bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer',
-            { 'ring-green-700 border-green-700': isOpen },
-          )}
-          onClick={handleToggleOpen}
-        >
-          <span className="inline-block truncate">
-            {selected ? (
-              <span className="font-medium">{selected.label}</span>
-            ) : (
-              <span className="text-gray-300">{placeholder}</span>
-            )}
-          </span>
-          <Arrow />
-        </button>
-      )}
-      <Transition
-        show={isOpen}
-        as={Fragment}
-        enter="transition ease-out duration-200"
-        enterFrom="opacity-0 translate-y-1"
-        enterTo="opacity-100 translate-y-0"
-        leave="transition ease-in duration-150"
-        leaveFrom="opacity-100 translate-y-0"
-        leaveTo="opacity-0 translate-y-1"
-      >
-        <div
-          className={classNames(
-            'absolute z-20 min-w-full max-h-96 bg-white shadow-lg rounded-md mt-1 ring-1 ring-black ring-opacity-5 overflow-y-auto overflow-x-hidden',
-            { 'left-0 right-0': fitContent },
-          )}
-        >
-          {loading && (
-            <div className="p-4">
-              <Loading className="text-green-700 -ml-1 mr-3" />
-            </div>
-          )}
-          {!loading && showSearch && (
-            <div className="flex items-center border-b border-b-gray-400">
-              <div className="pl-2 py-1">
-                <SearchIcon className="block h-4 w-4 text-gray-400" />
-              </div>
-              <input
-                type="search"
-                value={searchTerm}
-                placeholder={searchPlaceholder}
-                className="block text-sm border-0 rounded-t-md focus:ring-0 focus:border-green-700 flex-1"
-                onChange={handleSearch}
-              />
-              {searchTerm && (
-                <button type="button" onClick={resetSearch} className="px-2 py-1">
-                  <XIcon className="h-4 w-4 text-gray-400" />
-                </button>
+            </Popover.Button>
+          ) : (
+            <Popover.Button
+              ref={setReferenceElement}
+              className={classNames(
+                'bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer',
+                { 'ring-green-700 border-green-700': open },
               )}
-            </div>
-          )}
-          {!loading && (
-            <Tree
-              autoExpandParent
-              checkStrictly={false}
-              checkable={multiple}
-              selectable={!multiple}
-              multiple={multiple}
-              selectedKeys={selectedKeys}
-              expandedKeys={expandedKeys}
-              checkedKeys={checkedKeys}
-              switcherIcon={customSwitcherIcon}
-              onExpand={handleExpand}
-              onSelect={handleSelect}
-              onCheck={handleCheck}
             >
-              {renderTreeNodes(optionsResult)}
-            </Tree>
+              <span className="inline-block truncate">
+                {selected ? (
+                  <span className="font-medium">{selected.label}</span>
+                ) : (
+                  <span className="text-gray-300">{placeholder}</span>
+                )}
+              </span>
+              <span
+                className={classNames('absolute flex pointer-events-none', THEMES[theme].arrow, {
+                  'text-red-700': !!error,
+                })}
+              >
+                {open ? (
+                  <ChevronUpIcon className="h-4 w-4" aria-hidden="true" />
+                ) : (
+                  <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
+                )}
+              </span>
+            </Popover.Button>
           )}
-          {optionsResult.length === 0 && searchTerm && (
-            <div className="p-2 text-sm">No results</div>
-          )}
-        </div>
-      </Transition>
-    </div>
+          <Transition
+            show={open}
+            enter="transition duration-100 ease-out"
+            enterFrom="transform opacity-0"
+            enterTo="transform opacity-100"
+            leave="transition duration-75 ease-out"
+            leaveFrom="transform opacity-100"
+            leaveTo="transform opacity-0"
+          >
+            <Popover.Panel
+              ref={setPopperElement}
+              static
+              style={{
+                ...styles.popper,
+                width: fitContent && referenceElement ? referenceElement.offsetWidth : 'inherit',
+              }}
+              {...attributes.popper}
+              className={classNames(
+                'z-20 bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 max-h-80 overflow-y-auto',
+                fitContent ? 'max-w-full' : 'max-w-md',
+              )}
+              // className={classNames(
+              //   'absolute z-20 min-w-full max-h-96 bg-white shadow-lg rounded-md mt-1 ring-1 ring-black ring-opacity-5 overflow-y-auto overflow-x-hidden',
+              //   { 'left-0 right-0': fitContent },
+              // )}
+            >
+              {loading && (
+                <div className="p-4">
+                  <Loading className="text-green-700 -ml-1 mr-3" />
+                </div>
+              )}
+              {!loading && showSearch && (
+                <div className="flex items-center border-b border-b-gray-400">
+                  <div className="pl-2 py-1">
+                    <SearchIcon className="block h-4 w-4 text-gray-400" />
+                  </div>
+                  <input
+                    type="search"
+                    value={searchTerm}
+                    placeholder={searchPlaceholder}
+                    className="block text-sm border-0 rounded-t-md focus:ring-0 focus:border-green-700 flex-1"
+                    onChange={handleSearch}
+                  />
+                  {searchTerm && (
+                    <button type="button" onClick={resetSearch} className="px-2 py-1">
+                      <XIcon className="h-4 w-4 text-gray-400" />
+                    </button>
+                  )}
+                </div>
+              )}
+              {!loading && (
+                <Tree
+                  autoExpandParent
+                  checkStrictly={false}
+                  checkable={multiple}
+                  selectable={!multiple}
+                  multiple={multiple}
+                  selectedKeys={selectedKeys}
+                  expandedKeys={expandedKeys}
+                  checkedKeys={checkedKeys}
+                  switcherIcon={customSwitcherIcon}
+                  onExpand={handleExpand}
+                  onSelect={handleSelect}
+                  onCheck={handleCheck}
+                >
+                  {renderTreeNodes(optionsResult)}
+                </Tree>
+              )}
+              {optionsResult.length === 0 && searchTerm && (
+                <div className="p-2 text-sm">No results</div>
+              )}
+            </Popover.Panel>
+          </Transition>
+        </>
+      )}
+    </Popover>
   );
 };
 

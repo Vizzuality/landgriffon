@@ -87,7 +87,7 @@ const useHoveredLayers: () => [HoverInfo[], (info: HoverInfo) => void] = () => {
     return () => {
       clearInterval(interval);
     };
-  }, [layersHoverInfo]);
+  }, []);
 
   return [
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

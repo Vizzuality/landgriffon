@@ -58,7 +58,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   ellipsis = false,
   error = false,
   fitContent = false,
-  checkedStrategy = 'CHILD', // by default show child
+  checkedStrategy = 'PARENT', // by default show child
 }) => {
   // Popover positioning
   const [referenceElement, setReferenceElement] = useState(null);

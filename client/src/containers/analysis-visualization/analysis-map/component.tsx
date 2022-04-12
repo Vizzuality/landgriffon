@@ -14,7 +14,7 @@ import PopUp from 'components/map/popup';
 import PageLoading from 'containers/page-loading';
 import Legend from '../analysis-legend';
 
-import { NUMBER_FORMAT } from '../constants';
+import { NUMBER_FORMAT } from 'utils/number-format';
 import ZoomControl from 'components/map/controls/zoom';
 import { analysisMap } from 'store/features/analysis';
 

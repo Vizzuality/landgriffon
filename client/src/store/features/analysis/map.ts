@@ -6,7 +6,7 @@ import type { Layer, Material } from 'types';
 const DEFAULT_LAYER_ATTRIBUTES = {
   order: 0,
   active: false,
-  opacity: 1,
+  opacity: 0.7,
   loading: false,
   legend: {
     name: null,

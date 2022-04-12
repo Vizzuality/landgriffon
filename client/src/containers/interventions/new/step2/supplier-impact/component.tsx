@@ -63,7 +63,9 @@ const Step2: FC = () => {
                 error={errors?.[indicator.id]}
                 showHint={false}
               />
-              <Hint>Current value {indicator.value} {indicator.unit}</Hint>
+              <Hint>
+                Current value {indicator.value} {indicator.unit}
+              </Hint>
             </div>
           ))}
         </div>

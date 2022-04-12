@@ -48,12 +48,14 @@ export const LegendItem: React.FC<LegendItemProps> = ({
     <div className="p-4 space-y-4">
       {isLoading && <Loading />}
       {!isLoading && name && (
-        <div className="flex text-sm text-gray-500 font-heading">
-          <div className="flex-1 flex items-start justify-between">
-            <div className="text-sm text-gray-500">{name}</div>
+        <div className="w-full flex">
+          <div className="grow flex items-start justify-between">
+            <div className="text-sm text-gray-500" style={{ maxWidth: '210px' }}>
+              {name}
+            </div>
             {showToolbar && (
               <div className="flex items-center">
-                <div className="flex-1 flex items-center space-x-1 mt-0.5">
+                <div className="flex items-center space-x-1 mt-0.5">
                   <OpacityControl opacity={opacity} onChange={onChangeOpacity} />
                   <div>
                     <button>

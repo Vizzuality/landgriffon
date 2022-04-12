@@ -9,6 +9,8 @@ import { AppInfoDTO } from 'dto/info.dto';
 import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
 import { CreateScenarioDto } from 'modules/scenarios/dto/create.scenario.dto';
 import { UpdateScenarioDto } from 'modules/scenarios/dto/update.scenario.dto';
+import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 
 @Injectable()
 export class ScenariosService extends AppBaseService<
@@ -20,6 +22,7 @@ export class ScenariosService extends AppBaseService<
   constructor(
     @InjectRepository(ScenarioRepository)
     protected readonly repository: ScenarioRepository,
+    protected readonly scenarioInterventionService: ScenarioInterventionsService,
   ) {
     super(
       repository,
@@ -51,5 +54,15 @@ export class ScenariosService extends AppBaseService<
     }
 
     return found;
+  }
+
+  async findInterventionsByScenario(
+    id: string,
+  ): Promise<ScenarioIntervention[]> {
+    const interventions: ScenarioIntervention[] =
+      await this.scenarioInterventionService.getScenarioInterventionsByScenarioId(
+        id,
+      );
+    return this.scenarioInterventionService.serialize(interventions);
   }
 }

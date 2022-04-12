@@ -89,7 +89,7 @@ const AnalysisTable: React.FC = () => {
 
         const child = row.children;
 
-        if (child.length > 0) {
+        if (child?.length > 0) {
           child.forEach((childRow, childIndex) => {
             const thirdParentId = `${secondParentId}-${childIndex}`;
 
@@ -105,7 +105,7 @@ const AnalysisTable: React.FC = () => {
 
             const grandChild = childRow.children;
 
-            if (grandChild.length > 0) {
+            if (grandChild?.length > 0) {
               grandChild.forEach((grandChildRow, childIndex) => {
                 result.push({
                   id: `${thirdParentId}-${childIndex}`,

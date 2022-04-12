@@ -540,6 +540,28 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       expect(response.body.data.impactTable[0].yearSum).toEqual(
         expect.arrayContaining(groupByMaterialNestedResponseData.yearSum),
       );
+      /*
+       * Even if we pass only one material id,
+       * full tree for that id shoudl be returned
+       */
+      const responseWithFilter = await request(app.getHttpServer())
+        .get('/api/v1/impact/table')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [indicator.id],
+          'materialIds[]': [grandchildMaterial.id],
+          endYear: 2013,
+          startYear: 2010,
+          groupBy: 'material',
+        })
+        .expect(HttpStatus.OK);
+      expect(responseWithFilter.body.data.impactTable[0].rows).toHaveLength(1);
+      expect(responseWithFilter.body.data.impactTable[0].rows).toEqual(
+        expect.arrayContaining(groupByMaterialNestedResponseData.rows),
+      );
+      expect(responseWithFilter.body.data.impactTable[0].yearSum).toEqual(
+        expect.arrayContaining(groupByMaterialNestedResponseData.yearSum),
+      );
     });
 
     test('Impact table grouped by Region should be successful', async () => {

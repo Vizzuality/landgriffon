@@ -7,10 +7,11 @@ import TreeSelect from 'components/tree-select';
 
 import type { TreeSelectProps } from 'components/tree-select/types';
 
+import { compact } from 'lodash';
+
 type MaterialsFilterProps = {
-  current: TreeSelectProps['current'];
   /** Tree depth. Defaults to `1` */
-  currentOptions?: TreeSelectProps['current'];
+  current?: string[];
   depth?: MaterialsTreesParams['depth'];
   ellipsis?: TreeSelectProps['ellipsis'];
   error?: TreeSelectProps['error'];
@@ -26,8 +27,8 @@ type MaterialsFilterProps = {
 };
 
 const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
-  current,
   depth = 1,
+  current,
   ellipsis,
   error,
   fitContent,
@@ -61,16 +62,28 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
     [data],
   );
 
+  const currentOptions = useMemo(
+    () =>
+      compact(
+        current?.map((c) => {
+          return treeOptions.find(
+            ({ value, children }) => value === c || children.find((child) => child.value === c),
+          );
+        }),
+      ),
+    [current, treeOptions],
+  );
+
   return (
     <TreeSelect
       {...props}
       multiple={multiple}
       showSearch
+      current={currentOptions}
       loading={isFetching}
       options={treeOptions}
       placeholder="materials"
       onChange={onChange}
-      current={current}
       theme={theme}
       fitContent={fitContent}
       ellipsis={ellipsis}

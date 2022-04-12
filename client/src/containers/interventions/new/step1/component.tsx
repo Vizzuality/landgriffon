@@ -5,10 +5,11 @@ import * as yup from 'yup';
 import { isEmpty } from 'lodash';
 
 // hooks
-import { useAppDispatch } from 'store/hooks';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { useInterventionTypes } from 'hooks/analysis';
 import { setSubContentCollapsed } from 'store/features/analysis/ui';
 import {
+  scenarios,
   setNewInterventionStep,
   setNewInterventionData,
   resetInterventionData,
@@ -77,6 +78,7 @@ const Step1: FC = () => {
   });
 
   const formValues = getValues();
+
   const { businessUnitIds, supplierIds, originIds, materialIds } = formValues;
 
   const currentInterventionType = watch('type');
@@ -125,6 +127,8 @@ const Step1: FC = () => {
     dispatch(setNewInterventionStep(1));
     dispatch(resetInterventionData());
   }, [dispatch]);
+
+  const { newInterventionData } = useAppSelector(scenarios);
 
   return (
     <form onSubmit={handleSubmit(handleContinue)}>
@@ -175,7 +179,7 @@ const Step1: FC = () => {
               businessUnitIds={businessUnitIds}
               supplierIds={supplierIds}
               originIds={originIds}
-              current={watch('materials')}
+              current={watch('materialIds') || newInterventionData.materialIds}
               onChange={(values) => handleDropdown('materialIds', values)}
               ellipsis
               theme="inline-primary"
@@ -190,7 +194,7 @@ const Step1: FC = () => {
             materialIds={materialIds}
             supplierIds={supplierIds}
             originIds={originIds}
-            current={watch('businessUnits')}
+            current={watch('businessUnitIds') || newInterventionData.businessUnitIds}
             onChange={(values) => handleDropdown('businessUnitIds', values)}
             ellipsis
             theme="inline-primary"
@@ -204,7 +208,7 @@ const Step1: FC = () => {
             materialIds={materialIds}
             businessUnitIds={businessUnitIds}
             originIds={originIds}
-            current={watch('suppliers')}
+            current={watch('supplierIds') || newInterventionData.supplierIds}
             onChange={(values) => handleDropdown('supplierIds', values)}
             theme="inline-primary"
             error={!!errors?.supplierIds?.message}
@@ -217,7 +221,7 @@ const Step1: FC = () => {
             materialIds={materialIds}
             supplierIds={supplierIds}
             businessUnitIds={businessUnitIds}
-            current={watch('originRegions')}
+            current={watch('adminRegionIds') || newInterventionData.adminRegionIds}
             onChange={(values) => handleDropdown('adminRegionIds', values)}
             theme="inline-primary"
             error={!!errors?.adminRegionIds?.message}

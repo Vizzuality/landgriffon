@@ -8,7 +8,7 @@ import { analysisFilters } from 'store/features/analysis/filters';
 
 import { apiRawService } from 'services/api';
 
-import { COLOR_RAMPS } from 'containers/analysis-visualization/constants';
+import { COLOR_RAMPS } from 'utils/colors';
 
 import type { AxiosResponse } from 'axios';
 import type {

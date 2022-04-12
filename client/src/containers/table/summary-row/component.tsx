@@ -1,6 +1,8 @@
 import classNames from 'classnames';
 import { times } from 'lodash';
 
+import { BIG_NUMBER_FORMAT } from 'utils/number-format';
+
 import { SummaryRowProps } from './types';
 
 const DEFAULT_CLASSNAMES =
@@ -44,7 +46,7 @@ const SummaryRow: React.FC<SummaryRowProps> = ({
               },
             )}
           >
-            {rowData[key]}
+            {Number.isNaN(+rowData[key]) ? rowData[key] : BIG_NUMBER_FORMAT(rowData[key])}
           </td>
         );
       })}

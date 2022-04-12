@@ -8,7 +8,8 @@ import { analysisMap, setLayer } from 'store/features/analysis/map';
 import { useH3MaterialData } from 'hooks/h3-data';
 import { useYears } from 'hooks/years';
 
-import { COLOR_RAMPS, NUMBER_FORMAT } from 'containers/analysis-visualization/constants';
+import { NUMBER_FORMAT } from 'utils/number-format';
+import { COLOR_RAMPS } from 'utils/colors';
 
 import type { LegendItem as LegendItemProp } from 'types';
 

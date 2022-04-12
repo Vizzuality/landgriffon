@@ -128,6 +128,7 @@ export type ImpactTableData = {
   rows: {
     name: string;
     values: Record<string, number | string | boolean>[];
+    children?: ImpactTableData['rows'];
   }[];
   yearSum: {
     year: number;

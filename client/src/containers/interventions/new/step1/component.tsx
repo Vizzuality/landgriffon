@@ -132,16 +132,12 @@ const Step1: FC = () => {
   const handleReset = useCallback(() => {
     resetField('businessUnitIds');
     resetField('supplierIds');
-    resetField('originIds');
+    resetField('adminRegionIds');
     resetField('materialIds');
     dispatch(setNewInterventionData(initialState.newInterventionData));
   }, [resetField, dispatch]);
 
   const { newInterventionData } = useAppSelector(scenarios);
-
-  const currentMaterials = useMemo(() => {
-    return newInterventionData.materialIds || watch('materialIds');
-  }, [newInterventionData.materialIds, watch]);
 
   return (
     <form onSubmit={handleSubmit(handleContinue)}>

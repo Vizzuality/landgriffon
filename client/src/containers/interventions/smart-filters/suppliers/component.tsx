@@ -6,8 +6,10 @@ import { useSuppliersTrees, SuppliersTreesParams } from 'hooks/suppliers';
 
 import type { TreeSelectProps } from 'components/tree-select/types';
 
+import { compact } from 'lodash';
+
 type SuppliersFilterProps = {
-  current: TreeSelectProps['current'];
+  current: string[];
   multiple?: TreeSelectProps['multiple'];
   /** Tree depth. Defaults to `1` */
   depth?: SuppliersTreesParams['depth'];
@@ -59,6 +61,18 @@ const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
     [data],
   );
 
+  const currentOptions = useMemo(
+    () =>
+      compact(
+        current?.map((c) => {
+          return treeOptions.find(
+            ({ value, children }) => value === c || children.find((child) => child.value === c),
+          );
+        }),
+      ),
+    [current, treeOptions],
+  );
+
   return (
     <TreeSelect
       {...props}
@@ -68,7 +82,7 @@ const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
       options={treeOptions}
       placeholder="suppliers"
       onChange={onChange}
-      current={current}
+      current={currentOptions}
       theme={theme}
       ellipsis={ellipsis}
       error={error}

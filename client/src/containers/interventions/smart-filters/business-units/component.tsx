@@ -7,8 +7,10 @@ import TreeSelect from 'components/tree-select';
 
 import type { TreeSelectProps } from 'components/tree-select/types';
 
+import { compact } from 'lodash';
+
 type BusinessUnitsFilterProps = {
-  current: TreeSelectProps['current'];
+  current: string[];
   /** Tree depth. Defaults to `1` */
   currentOptions?: TreeSelectProps['current'];
   depth?: BusinessUnitsTreesParams['depth'];
@@ -61,6 +63,18 @@ const BusinessUnitsFilter: React.FC<BusinessUnitsFilterProps> = ({
     [data],
   );
 
+  const currentOptions = useMemo(
+    () =>
+      compact(
+        current?.map((c) => {
+          return treeOptions.find(
+            ({ value, children }) => value === c || children.find((child) => child.value === c),
+          );
+        }),
+      ),
+    [current, treeOptions],
+  );
+
   return (
     <TreeSelect
       {...props}
@@ -70,7 +84,7 @@ const BusinessUnitsFilter: React.FC<BusinessUnitsFilterProps> = ({
       options={treeOptions}
       placeholder="all business"
       onChange={onChange}
-      current={current}
+      current={currentOptions}
       theme={theme}
       fitContent={fitContent}
       ellipsis={ellipsis}

@@ -5,8 +5,10 @@ import { sortBy } from 'lodash';
 import { useAdminRegionsTrees, AdminRegionsTreesParams } from 'hooks/admin-regions';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
+import { compact } from 'lodash';
+
 type OriginRegionsFilterProps = {
-  current: TreeSelectProps['current'];
+  current: string[];
   multiple?: TreeSelectProps['multiple'];
   /** Tree depth. Defaults to `1` */
   depth?: AdminRegionsTreesParams['depth'];
@@ -58,6 +60,18 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
     [data],
   );
 
+  const currentOptions = useMemo(
+    () =>
+      compact(
+        current?.map((c) => {
+          return treeOptions.find(
+            ({ value, children }) => value === c || children.find((child) => child.value === c),
+          );
+        }),
+      ),
+    [current, treeOptions],
+  );
+
   return (
     <TreeSelect
       {...props}
@@ -67,7 +81,7 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
       options={treeOptions}
       placeholder="sourcing regions"
       onChange={onChange}
-      current={current}
+      current={currentOptions}
       theme={theme}
       ellipsis={ellipsis}
       error={error}

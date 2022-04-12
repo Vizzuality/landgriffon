@@ -122,3 +122,8 @@
 .ka-table .ka-icon-sort {
   display: none;
 }
+
+/* Deck.gl multiply effect */
+#deckgl-overlay {
+  mix-blend-mode: multiply;
+}

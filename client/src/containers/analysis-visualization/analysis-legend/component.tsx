@@ -7,7 +7,7 @@ import MaterialLegendItem from './material-legend-item';
 import RiskLegendItem from './risk-legend-item';
 
 export const Legend: React.FC = () => {
-  const [showLegend, setShowLegend] = useState<boolean>(false);
+  const [showLegend, setShowLegend] = useState<boolean>(true); // by default the legend is not collapsed
   const [showContextualLayers, setShowContextualLayers] = useState<boolean>(false);
 
   const handleShowLegend = useCallback(() => {

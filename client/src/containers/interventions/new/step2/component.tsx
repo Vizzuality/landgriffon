@@ -154,7 +154,7 @@ const Step2: FC = () => {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(handleStepsSubmissons)} className="mt-16">
+      <form onSubmit={methods.handleSubmit(handleStepsSubmissons)} className="mt-10">
         {type === 'Switch to a new material' && <Material />}
         {(type === 'Source from new supplier or location' ||
           type === 'Switch to a new material') && <Supplier />}

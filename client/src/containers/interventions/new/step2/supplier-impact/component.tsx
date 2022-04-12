@@ -31,12 +31,12 @@ const Step2: FC = () => {
 
   return (
     <>
-      <fieldset className="sm:col-span-3 text-sm mt-8">
+      <fieldset className="sm:col-span-3 text-sm mt-4">
         <legend className="flex font-medium leading-5">
-          Supplier impacts per tone
-          <InfoTooltip className="ml-2" />
+          <span className="mr-2.5">Supplier impacts per tone</span>
+          <InfoTooltip />
         </legend>
-        <div className="flex items-center justify-between mt-5">
+        <div className="flex items-center justify-between mt-4">
           <div className="flex items-center">
             <Checkbox
               id="landgriffon_estimates"

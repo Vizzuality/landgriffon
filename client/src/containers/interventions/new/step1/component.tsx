@@ -81,10 +81,6 @@ const Step1: FC = () => {
   const formValues = getValues();
 
   const { businessUnitIds, supplierIds, originIds, materialIds } = formValues;
-  // const sentenceValues = useMemo(
-  //   () => [businessUnitIds, supplierIds, originIds, materialIds],
-  //   [businessUnitIds, supplierIds, originIds, materialIds],
-  // );
 
   const currentInterventionType = watch('type');
   const selectedInterventionOption = useMemo(

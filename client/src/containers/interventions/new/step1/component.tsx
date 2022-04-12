@@ -30,7 +30,7 @@ import BusinessUnits from 'containers/interventions/smart-filters/business-units
 
 // types
 import type { SelectOption, SelectOptions } from 'components/select/types';
-
+import { initialState } from 'store/features/analysis/scenarios';
 const schemaValidation = yup.object({
   interventionDescription: yup.string(),
   percentage: yup.number().min(0).max(100).required(),
@@ -66,6 +66,7 @@ const Step1: FC = () => {
     setValue,
     watch,
     getValues,
+    resetField,
     clearErrors,
     formState: { errors },
   } = useForm({
@@ -80,6 +81,10 @@ const Step1: FC = () => {
   const formValues = getValues();
 
   const { businessUnitIds, supplierIds, originIds, materialIds } = formValues;
+  // const sentenceValues = useMemo(
+  //   () => [businessUnitIds, supplierIds, originIds, materialIds],
+  //   [businessUnitIds, supplierIds, originIds, materialIds],
+  // );
 
   const currentInterventionType = watch('type');
   const selectedInterventionOption = useMemo(
@@ -128,7 +133,19 @@ const Step1: FC = () => {
     dispatch(resetInterventionData());
   }, [dispatch]);
 
+  const handleReset = useCallback(() => {
+    resetField('businessUnitIds');
+    resetField('supplierIds');
+    resetField('originIds');
+    resetField('materialIds');
+    dispatch(setNewInterventionData(initialState.newInterventionData));
+  }, [resetField, dispatch]);
+
   const { newInterventionData } = useAppSelector(scenarios);
+
+  const currentMaterials = useMemo(() => {
+    return newInterventionData.materialIds || watch('materialIds');
+  }, [newInterventionData.materialIds, watch]);
 
   return (
     <form onSubmit={handleSubmit(handleContinue)}>
@@ -151,7 +168,12 @@ const Step1: FC = () => {
       </fieldset>
 
       <fieldset className="mt-4 flex flex-col">
-        <p className="font-medium leading-5 text-sm">Apply intervention to:</p>
+        <div className="flex justify-between py-3">
+          <p className="font-medium leading-5 text-sm">Apply intervention to:</p>
+          <button type="button" onClick={handleReset} className="text-sm text-green-700">
+            Clear all
+          </button>
+        </div>
         <div className="flex items-center text-green-700 space-x-1">
           <Input
             {...register('percentage')}
@@ -179,7 +201,7 @@ const Step1: FC = () => {
               businessUnitIds={businessUnitIds}
               supplierIds={supplierIds}
               originIds={originIds}
-              current={watch('materialIds') || newInterventionData.materialIds}
+              current={currentMaterials}
               onChange={(values) => handleDropdown('materialIds', values)}
               ellipsis
               theme="inline-primary"

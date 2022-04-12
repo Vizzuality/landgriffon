@@ -11,6 +11,7 @@ import { useFormContext } from 'react-hook-form';
 // containers
 import InfoTooltip from 'containers/info-tooltip';
 import { useInterventionsIndicators } from 'hooks/interventions';
+import { Hint } from 'components/forms';
 
 const Step2: FC = () => {
   const [landgriffonEstimates, setLandgriffonEstimates] = useState(false);
@@ -62,6 +63,7 @@ const Step2: FC = () => {
                 error={errors?.[indicator.id]}
                 showHint={false}
               />
+              <Hint>Current value {indicator.value} {indicator.unit}</Hint>
             </div>
           ))}
         </div>

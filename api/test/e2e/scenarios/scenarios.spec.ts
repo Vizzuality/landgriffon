@@ -6,6 +6,9 @@ import { Scenario, SCENARIO_STATUS } from 'modules/scenarios/scenario.entity';
 import { ScenariosModule } from 'modules/scenarios/scenarios.module';
 import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
 import {
+  createAdminRegion,
+  createBusinessUnit,
+  createMaterial,
   createScenario,
   createScenarioIntervention,
   createSourcingLocation,
@@ -22,6 +25,7 @@ import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { ScenarioInterventionsModule } from '../../../src/modules/scenario-interventions/scenario-interventions.module';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -43,7 +47,7 @@ describe('ScenariosModule (e2e)', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, ScenariosModule],
+      imports: [AppModule, ScenariosModule, ScenarioInterventionsModule],
     }).compile();
 
     scenarioRepository =
@@ -68,6 +72,7 @@ describe('ScenariosModule (e2e)', () => {
 
   afterEach(async () => {
     await scenarioRepository.delete({});
+    await scenarioInterventionRepository.delete({});
   });
 
   afterAll(async () => {
@@ -294,5 +299,72 @@ describe('ScenariosModule (e2e)', () => {
 
       expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
     });
+    test(
+      'When I filter a Scenario by Id and I include its interventions in the query + ' +
+        'Then I should receive said Interventions in the response' +
+        'And they should include the replaced entity information',
+      async () => {
+        const replacedMaterial = await createMaterial({
+          name: ' replaced material',
+        });
+
+        const replacedBusinessUnit = await createBusinessUnit({
+          name: ' replaced business unit',
+        });
+
+        const replacedAdminRegion = await createAdminRegion({
+          name: ' replaced admin region',
+        });
+
+        const newMaterial = await createMaterial({
+          name: ' new material',
+        });
+
+        const newBusinessUnit = await createBusinessUnit({
+          name: ' new business unit',
+        });
+
+        const newAdminRegion = await createAdminRegion({
+          name: ' new admin region',
+        });
+
+        const scenarioIntervention = await createScenarioIntervention({
+          replacedMaterials: [replacedMaterial],
+          replacedBusinessUnits: [replacedBusinessUnit],
+          replacedAdminRegions: [replacedAdminRegion],
+          newMaterial,
+          newBusinessUnit,
+          newAdminRegion,
+        });
+
+        const scenario = await createScenario({
+          scenarioInterventions: [scenarioIntervention],
+        });
+
+        const response = await request(app.getHttpServer())
+          .get(`/api/v1/scenarios/${scenario.id}/interventions`)
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send();
+
+        expect(
+          response.body.data[0].attributes.replacedMaterials[0].id,
+        ).toEqual(replacedMaterial.id);
+        expect(
+          response.body.data[0].attributes.replacedAdminRegions[0].id,
+        ).toEqual(replacedAdminRegion.id);
+        expect(
+          response.body.data[0].attributes.replacedBusinessUnits[0].id,
+        ).toEqual(replacedBusinessUnit.id);
+        expect(response.body.data[0].attributes.newMaterial.id).toEqual(
+          newMaterial.id,
+        );
+        expect(response.body.data[0].attributes.newBusinessUnit.id).toEqual(
+          newBusinessUnit.id,
+        );
+        expect(response.body.data[0].attributes.newAdminRegion.id).toEqual(
+          newAdminRegion.id,
+        );
+      },
+    );
   });
 });

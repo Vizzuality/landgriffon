@@ -83,13 +83,13 @@ const Supplier: FC = () => {
 
   return (
     <>
-      <fieldset className="sm:col-span-3 text-sm mt-8">
+      <fieldset className="sm:col-span-3 text-sm mt-4">
         <legend className="flex font-medium leading-5">
-          New supplier
-          <InfoTooltip className="ml-2" />
+          <span className="mr-2.5">New supplier</span>
+          <InfoTooltip />
         </legend>
 
-        <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
+        <div className="mt-4 grid grid-cols-2 gap-y-4 gap-x-6 sm:grid-cols-2">
           <div className="block font-medium text-gray-700">
             <Label className="mb-1">
               Tier 1 supplier <span className="text-gray-500">(optional)</span>
@@ -123,13 +123,13 @@ const Supplier: FC = () => {
           </div>
         </div>
       </fieldset>
-      <fieldset className="sm:col-span-3 text-sm mt-8">
+      <fieldset className="sm:col-span-3 text-sm mt-4">
         <legend className="flex font-medium leading-5">
-          Supplier location
-          <InfoTooltip className="ml-2" />
+          <span className="mr-2.5">Supplier location</span>
+          <InfoTooltip />
         </legend>
 
-        <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
+        <div className="mt-4 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
           <div className="block font-medium text-gray-700">
             <span>Location type</span>
             <div className="mt-1">

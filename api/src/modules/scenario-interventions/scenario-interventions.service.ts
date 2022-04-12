@@ -156,7 +156,7 @@ export class ScenarioInterventionsService extends AppBaseService<
       newScenarioIntervention.replacedSuppliers =
         await this.suppliersService.getSuppliersById(dto.supplierIds);
     }
-    if (dto.adminRegionsIds?.length) {
+    if (dto.adminRegionIds?.length) {
       newScenarioIntervention.replacedAdminRegions =
         await this.adminRegionService.getAdminRegionsById(dto.adminRegionIds);
     }

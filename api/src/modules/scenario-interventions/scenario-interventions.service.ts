@@ -67,6 +67,13 @@ export class ScenarioInterventionsService extends AppBaseService<
         'createdAt',
         'updatedAt',
         'scenario',
+        'replacedMaterials',
+        'replacedBusinessUnits',
+        'replacedAdminRegions',
+        'replacedSuppliers',
+        'newMaterial',
+        'newBusinessUnit',
+        'newAdminRegion',
       ],
       keyForAttribute: 'camelCase',
     };
@@ -83,6 +90,12 @@ export class ScenarioInterventionsService extends AppBaseService<
     }
 
     return found;
+  }
+
+  async getScenarioInterventionsByScenarioId(
+    scenarioId: string,
+  ): Promise<ScenarioIntervention[]> {
+    return this.scenarioInterventionRepository.find({ scenarioId });
   }
 
   async createScenarioIntervention(

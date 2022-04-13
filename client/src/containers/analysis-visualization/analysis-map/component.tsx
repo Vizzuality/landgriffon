@@ -4,7 +4,6 @@ import { StaticMap } from 'react-map-gl';
 import { XCircleIcon } from '@heroicons/react/solid';
 
 import { useAppSelector } from 'store/hooks';
-import { analysisFilters } from 'store/features/analysis/filters';
 
 import { useImpactLayer } from 'hooks/layers/impact';
 import { useMaterialLayer } from 'hooks/layers/material';
@@ -20,7 +19,6 @@ import { analysisMap } from 'store/features/analysis';
 
 import type { PopUpProps } from 'components/map/popup/types';
 
-const HEXAGON_HIGHLIGHT_COLOR = [0, 0, 0];
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
 const INITIAL_VIEW_STATE = {
   longitude: 0,
@@ -31,24 +29,8 @@ const INITIAL_VIEW_STATE = {
   minZoom: 2,
 };
 
-type PopUpInfoProps = {
-  object?: {
-    v: number;
-  } | null;
-  x: number;
-  y: number;
-  viewport?: {
-    width: number;
-    height: number;
-  };
-};
-
 const AnalysisMap: React.FC = () => {
-  const filters = useAppSelector(analysisFilters);
-  const { layers: layerOptions } = useAppSelector(analysisMap);
-  const { layer } = filters;
-  const [hoveredHexagon, setHoveredHexagon] = useState(null);
-  const [popUpInfo, setPopUpInfo] = useState<PopUpInfoProps>(null);
+  const { tooltipData, tooltipPosition } = useAppSelector(analysisMap);
   const [isRendering, setIsRendering] = useState(false);
 
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
@@ -65,37 +47,6 @@ const AnalysisMap: React.FC = () => {
   const isFetching = materialLayer.isFetching || impactLayer.isFetching || riskLayer.isFetching;
 
   const handleAfterRender = useCallback(() => setIsRendering(false), []);
-  // const handleHover = useCallback(({ object, x, y, viewport }) => {
-  //   setPopUpInfo({
-  //     object: object ? { v: object.v } : null,
-  //     x,
-  //     y,
-  //     viewport: viewport ? { width: viewport.width, height: viewport.height } : null,
-  //   });
-  //   setHoveredHexagon(object ? object.h : null);
-  // }, []);
-
-  // const unit = useMemo(() => {
-  //   const unitMap = {
-  //     material: h3MaterialData.metadata.unit,
-  //     risk: h3RiskData.metadata.unit,
-  //     impact: h3ImpactData.metadata.unit,
-  //   };
-  //   return unitMap[layer];
-  // }, [h3MaterialData, h3RiskData, h3ImpactData, layer]);
-
-  // const tooltipName = useMemo(() => {
-  //   if (layer === 'material' && filters.materials?.length > 0) {
-  //     return `${filters.materials[0].label}`;
-  //   }
-  //   if (layer === 'risk' && filters.indicator && filters.materials?.length > 0) {
-  //     return `${filters.indicator.label}, for ${filters.materials[0].label}`;
-  //   }
-  //   if (layer === 'impact' && filters.indicator) {
-  //     return filters.indicator.label;
-  //   }
-  //   return null;
-  // }, [layer, filters]);
 
   const onZoomChange = useCallback(
     (zoom) => {
@@ -122,24 +73,28 @@ const AnalysisMap: React.FC = () => {
           mapboxApiAccessToken={MAPBOX_API_TOKEN}
           className="-z-10"
         />
-        {/* {popUpInfo?.object && (
+        {!!tooltipData.length && (
           <PopUp
             position={
               {
-                ...popUpInfo.viewport,
-                x: popUpInfo.x,
-                y: popUpInfo.y,
+                ...tooltipPosition.viewport,
+                x: tooltipPosition.x,
+                y: tooltipPosition.y,
               } as PopUpProps['position']
             }
           >
-            <div className="p-4 bg-white shadow-sm rounded-sm">
-              <h2 className="text-sm font-semibold whitespace-nowrap">{tooltipName}</h2>
-              <div className="whitespace-nowrap">
-                {NUMBER_FORMAT(popUpInfo.object.v)} ({unit})
-              </div>
+            <div className="py-2 px-4 space-y-2 bg-white shadow-sm rounded-md">
+              {tooltipData.map((data) => (
+                <div key={`tooltip-item-${data.id}`} className="whitespace-nowrap">
+                  <strong className="text-xs font-semibold">{data.name}</strong>:{' '}
+                  <span className="text-xs">
+                    {data.value ? NUMBER_FORMAT(data.value) : '-'} ({data.unit})
+                  </span>
+                </div>
+              ))}
             </div>
           </PopUp>
-        )} */}
+        )}
       </DeckGL>
       {isError && (
         <div className="absolute z-10 top-20 left-12 rounded-md bg-red-50 p-4">

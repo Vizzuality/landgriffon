@@ -11,11 +11,30 @@ import Loading from 'components/loading';
 import Chart from 'components/chart';
 import AreaStacked from 'components/chart/area-stacked';
 import Widget from 'components/widget';
+import { useMemo } from 'react';
+import { RANKING_LIMIT } from './constants';
 
 const AnalysisChart: React.FC = () => {
   const filters = useAppSelector(analysisFilters);
 
-  const { data: chartData, legend: legendData, isFetching } = useAnalysisChart();
+  const { data: allChartData, legend: legendData, isFetching } = useAnalysisChart();
+
+  const chartData = useMemo(() => {
+    const trimmed = allChartData.map((chart) => {
+      const firstDateValues = chart.values[0];
+      const sortedByValue = Object.entries(firstDateValues)
+        .filter(([key]) => !['id', 'date', 'current'].includes(key))
+        .sort(([, valueA], [, valueB]) => (valueB as number) - (valueA as number))
+        .slice(0, RANKING_LIMIT);
+
+      return {
+        ...chart,
+        keys: sortedByValue.map(([key]) => key),
+      };
+    });
+
+    return trimmed;
+  }, [allChartData]);
 
   return (
     <>
@@ -32,6 +51,7 @@ const AnalysisChart: React.FC = () => {
           >
             {chartData.map((d) => {
               const { id, indicator, keys, values, colors } = d;
+
               return (
                 <motion.div
                   key={`${id}-${JSON.stringify(filters)}`}

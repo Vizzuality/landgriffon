@@ -17,7 +17,7 @@ import { RANKING_LIMIT } from './constants';
 const AnalysisChart: React.FC = () => {
   const filters = useAppSelector(analysisFilters);
 
-  const { data: allChartData, legend: legendData, isFetching } = useAnalysisChart();
+  const { data: allChartData, legend: allLegendData, isFetching } = useAnalysisChart();
 
   const chartData = useMemo(() => {
     const trimmed = allChartData.map((chart) => {
@@ -60,8 +60,13 @@ const AnalysisChart: React.FC = () => {
                   key={`${id}-${JSON.stringify(filters)}`}
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
+                  className="bg-white rounded shadow-sm p-5"
                 >
-                  <Widget title={indicator} height={chartData.length > 1 ? 325 : 500}>
+                  <Widget
+                    title={indicator}
+                    height={chartData.length > 1 ? 325 : 500}
+                    className="bg-none rounded-none shadow-none"
+                  >
                     <Chart>
                       <AreaStacked
                         title={indicator}
@@ -78,12 +83,23 @@ const AnalysisChart: React.FC = () => {
                       />
                     </Chart>
                   </Widget>
+                  <ul className="flex flex-row flex-wrap gap-x-3">
+                    {keys.map((key) => (
+                      <li key={key} className="flex items-center space-x-1">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: d.colors[key] }}
+                        />
+                        <div>{key}</div>
+                      </li>
+                    ))}
+                  </ul>
                 </motion.div>
               );
             })}
           </div>
 
-          <motion.ul
+          {/* <motion.ul
             key={`analysis-legend-${JSON.stringify(filters)}`}
             className="flex mt-4 space-x-3"
             initial={{ opacity: 0, y: -20 }}
@@ -98,7 +114,7 @@ const AnalysisChart: React.FC = () => {
                 <div>{l.name}</div>
               </li>
             ))}
-          </motion.ul>
+          </motion.ul> */}
         </AnimatePresence>
       )}
     </>

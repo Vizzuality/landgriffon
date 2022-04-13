@@ -155,15 +155,9 @@ export class SuppliersService extends AppBaseService<
   async getSuppliersDescendants(supplierIds: string[]): Promise<string[]> {
     let suppliers: Supplier[] = [];
     for (const id of supplierIds) {
-      const supplier: Supplier | undefined =
-        await this.supplierRepository.findOne(id);
-
-      if (!supplier)
-        throw new NotFoundException(`There is no Supplier with ID: ${id}`);
-
-      const result: Supplier[] = await this.supplierRepository.findDescendants(
-        supplier as Supplier,
-      );
+      const result: Supplier[] = await this.supplierRepository.findDescendants({
+        id,
+      } as Supplier); // using type casting not to search for and provide the full entity, since only id is used by the method (to improve performance)
       suppliers = [...suppliers, ...result];
     }
 

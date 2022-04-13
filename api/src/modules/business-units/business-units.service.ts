@@ -99,16 +99,10 @@ export class BusinessUnitsService extends AppBaseService<
   ): Promise<string[]> {
     let businessUnits: BusinessUnit[] = [];
     for (const id of businessUnitIds) {
-      const businessUnit: BusinessUnit | undefined =
-        await this.businessUnitRepository.findOne(id);
-
-      if (!businessUnit)
-        throw new NotFoundException(`There is no Business Unit with ID: ${id}`);
-
       const result: BusinessUnit[] =
-        await this.businessUnitRepository.findDescendants(
-          businessUnit as BusinessUnit,
-        );
+        await this.businessUnitRepository.findDescendants({
+          id,
+        } as BusinessUnit); // using type casting not to search for and provide the full entity, since only id is used by the method (to improve performance)
       businessUnits = [...businessUnits, ...result];
     }
 

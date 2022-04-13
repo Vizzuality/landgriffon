@@ -60,13 +60,8 @@ const AnalysisChart: React.FC = () => {
                   key={`${id}-${JSON.stringify(filters)}`}
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded shadow-sm p-5"
                 >
-                  <Widget
-                    title={indicator}
-                    height={chartData.length > 1 ? 325 : 500}
-                    className="bg-none rounded-none shadow-none"
-                  >
+                  <Widget title={indicator} height={chartData.length > 1 ? 325 : 500}>
                     <Chart>
                       <AreaStacked
                         title={indicator}
@@ -83,7 +78,7 @@ const AnalysisChart: React.FC = () => {
                       />
                     </Chart>
                   </Widget>
-                  <ul className="flex flex-row flex-wrap gap-x-3">
+                  <ul className="flex flex-row flex-wrap gap-x-3 mt-2">
                     {keys.map((key) => (
                       <li key={key} className="flex items-center space-x-1">
                         <div

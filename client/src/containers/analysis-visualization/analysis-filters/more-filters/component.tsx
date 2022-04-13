@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useEffect, useState, useMemo, useRef } from 'react';
+import React, { Fragment, useCallback, useEffect, useState, useMemo } from 'react';
 import classNames from 'classnames';
 
 import { Popover, Transition } from '@headlessui/react';
@@ -12,101 +12,91 @@ import Materials from '../materials/component';
 import OriginRegions from '../origin-regions/component';
 import Suppliers from '../suppliers/component';
 
-import cx from 'classnames';
-
 import type { AnalysisFiltersState } from 'store/features/analysis/filters';
-import { useOutsideClick } from 'rooks';
 
-const INITIAL_FILTERS: Partial<AnalysisFiltersState> = {
+type MoreFiltersState = {
+  materials: AnalysisFiltersState['materials'];
+  origins: AnalysisFiltersState['origins'];
+  suppliers: AnalysisFiltersState['suppliers'];
+};
+
+const INITIAL_FILTERS: MoreFiltersState = {
   materials: [],
   origins: [],
   suppliers: [],
 };
 
 const MoreFilters: React.FC = () => {
-  const analysisState = useAppSelector(analysisFilters);
-  const filters = useMemo(() => {
-    const { materials, origins, suppliers } = analysisState;
-    return { materials, origins, suppliers };
-  }, [analysisState]);
   const dispatch = useAppDispatch();
+  const { materials, origins, suppliers } = useAppSelector(analysisFilters);
+  const moreFilters: MoreFiltersState = useMemo(
+    () => ({ materials, origins, suppliers }),
+    [materials, origins, suppliers],
+  );
 
-  const [selectedFilters, setSelectedFilters] = useState(filters);
-  const { materials, origins, suppliers } = selectedFilters;
-
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  // Initial state from redux
+  const [selectedFilters, setSelectedFilters] = useState<MoreFiltersState>(moreFilters);
 
   const [counter, setCounter] = useState<number>(0);
 
+  // Restoring state from initial state from redux
+  const handleClose = useCallback(() => {
+    setSelectedFilters(moreFilters);
+  }, [moreFilters]);
+
+  // Only the changes are applied when the user clicks on Apply
   const handleApply = useCallback(() => {
     dispatch(setFilters(selectedFilters));
   }, [dispatch, selectedFilters]);
 
+  // Restoring state from initial state only internally,
+  // the user have to apply the changes
   const handleClearFilters = useCallback(() => {
-    dispatch(setFilters(INITIAL_FILTERS));
-  }, [dispatch]);
+    setSelectedFilters(INITIAL_FILTERS);
+  }, []);
 
+  // Updating internal state from selectors
   const handleChangeFilter = useCallback((key, values) => {
     setSelectedFilters((filters) => ({ ...filters, [key]: values }));
   }, []);
 
   useEffect(() => {
-    const counters = Object.values(filters).map((value) => value.length);
+    const counters = Object.values(moreFilters).map((value) => value.length);
     const total = counters.reduce((a, b) => a + b);
     setCounter(total);
-  }, [filters]);
-
-  useEffect(() => {
-    setSelectedFilters(filters);
-  }, [filters, isPopoverOpen]);
-
-  const filtersRef = useRef();
-
-  useOutsideClick(
-    filtersRef,
-    (e) => {
-      e.stopPropagation();
-      setIsPopoverOpen(false);
-    },
-    isPopoverOpen,
-  );
+  }, [moreFilters]);
 
   return (
     <Popover className="relative">
-      {({ close }) => (
+      {({ open, close }) => (
         <>
-          <Popover.Button>
-            <div
-              onClick={() => {
-                setIsPopoverOpen((open) => !open);
-              }}
-              className={classNames(THEME.secondary, 'flex p-2 rounded-md')}
-            >
-              <span className="block h-5 truncate">
-                <FilterIcon className="w-5 h-5 text-gray-900" aria-hidden="true" />
+          <Popover.Button
+            className={classNames(THEME.default, THEME.secondary, 'flex p-2 rounded-md')}
+          >
+            <span className="block h-5 truncate">
+              <FilterIcon className="w-5 h-5 text-gray-900" aria-hidden="true" />
+            </span>
+            {counter !== 0 && (
+              <span className="flex items-center justify-center w-5 h-5 ml-1 text-xs font-semibold text-white bg-green-700 rounded-full">
+                {counter}
               </span>
-              {counter !== 0 && (
-                <span className="flex items-center justify-center w-5 h-5 ml-1 text-xs font-semibold text-white bg-green-700 rounded-full">
-                  {counter}
-                </span>
-              )}
-            </div>
+            )}
           </Popover.Button>
           <Transition
-            show={isPopoverOpen}
+            show={open}
             as={Fragment}
-            leave="transition ease-in duration-100"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
+            enter="transition duration-100 ease-out"
+            enterFrom="transform scale-95 opacity-0"
+            enterTo="transform scale-100 opacity-100"
+            leave="transition duration-75 ease-out"
+            leaveFrom="transform scale-100 opacity-100"
+            leaveTo="transform scale-95 opacity-0"
           >
             <Popover.Panel
               static
               className="absolute md:right-0 lg:left-0 lg:clear-right-0 mt-1 w-80 z-20"
             >
-              <div
-                className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 "
-                ref={filtersRef}
-              >
+              <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 ">
                 <div className="relative p-4 bg-white rounded-lg">
                   <div className="flex justify-between mb-4">
                     <div>Filter by</div>
@@ -120,7 +110,7 @@ const MoreFilters: React.FC = () => {
                       <Materials
                         multiple
                         withSourcingLocations
-                        current={materials}
+                        current={selectedFilters.materials}
                         fitContent
                         onChange={(values) => handleChangeFilter('materials', values)}
                       />
@@ -130,7 +120,7 @@ const MoreFilters: React.FC = () => {
                       <OriginRegions
                         multiple
                         withSourcingLocations
-                        current={origins}
+                        current={selectedFilters.origins}
                         fitContent
                         onChange={(values) => handleChangeFilter('origins', values)}
                       />
@@ -140,14 +130,21 @@ const MoreFilters: React.FC = () => {
                       <Suppliers
                         multiple
                         withSourcingLocations
-                        current={suppliers}
+                        current={selectedFilters.suppliers}
                         fitContent
                         onChange={(values) => handleChangeFilter('suppliers', values)}
                       />
                     </div>
                   </div>
                   <div className="flex gap-2 mt-6">
-                    <Button theme="secondary" className="px-9" onClick={() => close()}>
+                    <Button
+                      theme="secondary"
+                      className="px-9"
+                      onClick={() => {
+                        handleClose();
+                        close();
+                      }}
+                    >
                       Cancel
                     </Button>
                     <Button

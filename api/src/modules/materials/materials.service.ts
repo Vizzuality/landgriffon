@@ -173,15 +173,9 @@ export class MaterialsService extends AppBaseService<
   async getMaterialsDescendants(materialIds: string[]): Promise<any> {
     let materials: Material[] = [];
     for (const id of materialIds) {
-      const material: Material | undefined =
-        await this.materialRepository.findOne(id);
-
-      if (!material)
-        throw new NotFoundException(`There is no Material with ID: ${id}`);
-
-      const result: Material[] = await this.materialRepository.findDescendants(
-        material as Material,
-      );
+      const result: Material[] = await this.materialRepository.findDescendants({
+        id,
+      } as Material); // using type casting not to search for and provide the full entity, since only id is used by the method (to improve performance)
       materials = [...materials, ...result];
     }
 

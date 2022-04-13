@@ -162,18 +162,10 @@ export class AdminRegionsService extends AppBaseService<
   async getAdminRegionDescendants(adminRegionIds: string[]): Promise<string[]> {
     let adminRegions: AdminRegion[] = [];
     for (const id of adminRegionIds) {
-      const adminRegion: AdminRegion | undefined =
-        await this.adminRegionRepository.findOne(id);
-
-      if (!adminRegion)
-        throw new NotFoundException(
-          `There is no Admin region for Material with ID: ${id}`,
-        );
-
       const result: AdminRegion[] =
-        await this.adminRegionRepository.findDescendants(
-          adminRegion as AdminRegion,
-        );
+        await this.adminRegionRepository.findDescendants({
+          id,
+        } as AdminRegion); // using type casting not to search for and provide the full entity, since only id is used by the method (to improve performance)
       adminRegions = [...adminRegions, ...result];
     }
 

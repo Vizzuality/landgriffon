@@ -1,9 +1,14 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
-import { analysisMap, setLayer } from 'store/features/analysis/map';
+import {
+  analysisMap,
+  setLayer,
+  setTooltipData,
+  setTooltipPosition,
+} from 'store/features/analysis/map';
 
 import { useH3ImpactData } from 'hooks/h3-data';
 
@@ -13,7 +18,7 @@ import { COLOR_RAMPS } from 'utils/colors';
 import type { LegendItem as LegendItemProp } from 'types';
 
 const LAYER_ID = 'impact'; // should match with redux
-const HEXAGON_HIGHLIGHT_COLOR = [0, 0, 0];
+// const HEXAGON_HIGHLIGHT_COLOR = [0, 0, 0];
 
 export const useImpactLayer = () => {
   const dispatch = useAppDispatch();
@@ -23,6 +28,27 @@ export const useImpactLayer = () => {
   } = useAppSelector(analysisMap);
   const query = useH3ImpactData();
   const { data } = query;
+
+  const handleHover = useCallback(
+    ({ object, x, y, viewport }) => {
+      dispatch(
+        setTooltipPosition({
+          x,
+          y,
+          viewport: viewport ? { width: viewport.width, height: viewport.height } : null,
+        }),
+      );
+      dispatch(
+        setTooltipData({
+          id: LAYER_ID,
+          name: 'Impact',
+          value: object?.v,
+          unit: data.metadata?.unit,
+        }),
+      );
+    },
+    [data.metadata?.unit, dispatch],
+  );
 
   const layer = new H3HexagonLayer({
     id: LAYER_ID,
@@ -42,7 +68,7 @@ export const useImpactLayer = () => {
     getElevation: (d) => d.v,
     getLineColor: (d) => d.c,
     // getLineColor: (d) => (d.h === hoveredHexagon ? HEXAGON_HIGHLIGHT_COLOR : d.c),
-    // onHover: handleHover,
+    onHover: handleHover,
     // updateTriggers: {
     //   getLineColor: hoveredHexagon,
     // },

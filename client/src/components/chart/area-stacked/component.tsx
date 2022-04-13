@@ -59,7 +59,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
     projection: true,
     target: false,
   },
-}: AreaStackedProps) => {
+}) => {
   const { showTooltip, hideTooltip, tooltipData, tooltipTop, tooltipLeft } = useTooltip();
 
   const lastCurrentIndex = useMemo(() => {
@@ -370,6 +370,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
 
       {settings.tooltip && (
         <Tooltip
+          className="z-10"
           title={title}
           tooltipTop={tooltipTop}
           tooltipLeft={tooltipLeft + margin.left}

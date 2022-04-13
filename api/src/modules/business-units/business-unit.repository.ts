@@ -1,4 +1,9 @@
-import { EntityRepository, SelectQueryBuilder } from 'typeorm';
+import {
+  Brackets,
+  EntityRepository,
+  SelectQueryBuilder,
+  WhereExpressionBuilder,
+} from 'typeorm';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
@@ -28,12 +33,15 @@ export class BusinessUnitRepository extends ExtendedTreeRepository<
         .distinct(true);
 
     if (businessUnitTreeOptions.supplierIds) {
-      queryBuilder.andWhere('sl.t1SupplierId IN (:...supplierIds)', {
-        supplierIds: businessUnitTreeOptions.supplierIds,
-      });
-      queryBuilder.orWhere('sl.producerId IN (:...supplierIds)', {
-        supplierIds: businessUnitTreeOptions.supplierIds,
-      });
+      queryBuilder.andWhere(
+        new Brackets((qb: WhereExpressionBuilder) => {
+          qb.where('sl."t1SupplierId" IN (:...suppliers)', {
+            suppliers: businessUnitTreeOptions.supplierIds,
+          }).orWhere('sl."producerId" IN (:...suppliers)', {
+            suppliers: businessUnitTreeOptions.supplierIds,
+          });
+        }),
+      );
     }
     if (businessUnitTreeOptions.materialIds) {
       queryBuilder.andWhere('sl.materialId IN (:...materialIds)', {

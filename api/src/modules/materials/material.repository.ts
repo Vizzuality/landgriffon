@@ -1,4 +1,9 @@
-import { EntityRepository, SelectQueryBuilder } from 'typeorm';
+import {
+  Brackets,
+  EntityRepository,
+  SelectQueryBuilder,
+  WhereExpressionBuilder,
+} from 'typeorm';
 import { Material } from 'modules/materials/material.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
@@ -27,18 +32,22 @@ export class MaterialRepository extends ExtendedTreeRepository<
       .select('m.id')
       .innerJoin(SourcingLocation, 'sl', 'sl.materialId = m.id')
       .distinct(true);
+
     if (materialTreeOptions.materialIds) {
-      queryBuilder.andWhere('m.id IN (:...materialIds)', {
+      queryBuilder.andWhere('sl.materialId IN (:...materialIds)', {
         materialIds: materialTreeOptions.materialIds,
       });
     }
     if (materialTreeOptions.supplierIds) {
-      queryBuilder.andWhere('sl.t1SupplierId IN (:...supplierIds)', {
-        supplierIds: materialTreeOptions.supplierIds,
-      });
-      queryBuilder.orWhere('sl.producerId IN (:...supplierIds)', {
-        supplierIds: materialTreeOptions.supplierIds,
-      });
+      queryBuilder.andWhere(
+        new Brackets((qb: WhereExpressionBuilder) => {
+          qb.where('sl."t1SupplierId" IN (:...suppliers)', {
+            suppliers: materialTreeOptions.supplierIds,
+          }).orWhere('sl."producerId" IN (:...suppliers)', {
+            suppliers: materialTreeOptions.supplierIds,
+          });
+        }),
+      );
     }
     if (materialTreeOptions.businessUnitIds) {
       queryBuilder.andWhere('sl.businessUnitId IN (:...businessUnitIds)', {

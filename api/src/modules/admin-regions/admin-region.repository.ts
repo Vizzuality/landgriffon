@@ -1,4 +1,9 @@
-import { EntityRepository, SelectQueryBuilder } from 'typeorm';
+import {
+  Brackets,
+  EntityRepository,
+  SelectQueryBuilder,
+  WhereExpressionBuilder,
+} from 'typeorm';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-region.dto';
@@ -111,12 +116,15 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
       });
     }
     if (adminRegionTreeOptions.supplierIds) {
-      queryBuilder.andWhere('sl.t1SupplierId IN (:...supplierIds)', {
-        supplierIds: adminRegionTreeOptions.supplierIds,
-      });
-      queryBuilder.orWhere('sl.producerId IN (:...supplierIds)', {
-        supplierIds: adminRegionTreeOptions.supplierIds,
-      });
+      queryBuilder.andWhere(
+        new Brackets((qb: WhereExpressionBuilder) => {
+          qb.where('sl."t1SupplierId" IN (:...suppliers)', {
+            suppliers: adminRegionTreeOptions.supplierIds,
+          }).orWhere('sl."producerId" IN (:...suppliers)', {
+            suppliers: adminRegionTreeOptions.supplierIds,
+          });
+        }),
+      );
     }
     if (adminRegionTreeOptions.materialIds) {
       queryBuilder.andWhere('sl.materialId IN (:...materialIds)', {

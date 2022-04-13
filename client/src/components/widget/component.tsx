@@ -8,14 +8,8 @@ export type WidgetProps = {
   children: ReactChild | ReactChild[];
 };
 
-const Widget: React.FC<WidgetProps> = ({ title, className, height, children }: WidgetProps) => (
-  <div
-    className={cx({
-      'flex flex-col p-5 bg-white rounded shadow-sm': true,
-      [className]: !!className,
-    })}
-    style={{ height }}
-  >
+const Widget: React.FC<WidgetProps> = ({ title, className, height, children }) => (
+  <div className={cx('flex flex-col p-5 bg-white rounded shadow-sm', className)} style={{ height }}>
     <h2 className="flex-shrink-0">{title}</h2>
     <div className="relative flex-grow mt-2">{children}</div>
   </div>

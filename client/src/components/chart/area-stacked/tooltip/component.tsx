@@ -1,7 +1,7 @@
 import { TooltipWithBounds } from '@visx/tooltip';
 import { ReactNode } from 'react';
 
-import { PRECISE_NUMBER_FORMAT } from 'utils/number-format';
+import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 
 export type AreaStackedTooltipProps = {
   title: string | ReactNode;
@@ -32,7 +32,7 @@ const AreaStackedTooltip: React.FC<AreaStackedTooltipProps> = ({
   title,
   keys,
   colors,
-}: AreaStackedTooltipProps) => {
+}) => {
   if (!tooltipData) return null;
 
   return (
@@ -42,10 +42,13 @@ const AreaStackedTooltip: React.FC<AreaStackedTooltipProps> = ({
 
         <ul className="space-y-1">
           {keys.map((k) => (
-            <li key={k} className="flex items-center space-x-1">
-              <div className="w-2.5 h-2.5 rounded-full" style={{ background: colors[k] }} />
+            <li key={k} className="flex gap-x-1 items-start">
+              <div
+                className="w-2.5 mt-[2px] h-2.5 aspect-square rounded-full "
+                style={{ background: colors[k] }}
+              />
               <div>{k}:</div>
-              <div>{PRECISE_NUMBER_FORMAT(tooltipData[k])}</div>
+              <div>{BIG_NUMBER_FORMAT(tooltipData[k])}</div>
             </li>
           ))}
         </ul>

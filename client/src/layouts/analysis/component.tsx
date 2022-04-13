@@ -17,10 +17,7 @@ const AnalysisVisualizationNoSSR = dynamic(() => import('containers/analysis-vis
   ssr: false,
 });
 
-const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({
-  loading = false,
-  children,
-}: AnalysisLayoutProps) => {
+const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({ loading = false, children }) => {
   const asideRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<DOMRect>(null);
   const { visualizationMode, isSidebarCollapsed, isSubContentCollapsed } =

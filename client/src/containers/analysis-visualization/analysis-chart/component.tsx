@@ -17,7 +17,7 @@ import { RANKING_LIMIT } from './constants';
 const AnalysisChart: React.FC = () => {
   const filters = useAppSelector(analysisFilters);
 
-  const { data: allChartData, legend: allLegendData, isFetching } = useAnalysisChart();
+  const { data: allChartData, isFetching } = useAnalysisChart();
 
   const chartData = useMemo(() => {
     const trimmed = allChartData.map((chart) => {
@@ -80,7 +80,7 @@ const AnalysisChart: React.FC = () => {
                   </Widget>
                   <ul className="flex flex-row flex-wrap gap-x-3 mt-2">
                     {keys.map((key) => (
-                      <li key={key} className="flex items-center space-x-1">
+                      <li key={key} className="flex items-center gap-x-1">
                         <div
                           className="w-3 h-3 rounded-full"
                           style={{ backgroundColor: d.colors[key] }}
@@ -93,23 +93,6 @@ const AnalysisChart: React.FC = () => {
               );
             })}
           </div>
-
-          {/* <motion.ul
-            key={`analysis-legend-${JSON.stringify(filters)}`}
-            className="flex mt-4 space-x-3"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            {legendData.map((l) => (
-              <li
-                key={`${l.id}-${JSON.stringify(filters)}`}
-                className="flex items-center space-x-1"
-              >
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: l.color }} />
-                <div>{l.name}</div>
-              </li>
-            ))}
-          </motion.ul> */}
         </AnimatePresence>
       )}
     </>

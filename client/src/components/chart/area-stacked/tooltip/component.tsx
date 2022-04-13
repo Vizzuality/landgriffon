@@ -4,6 +4,7 @@ import { ReactNode } from 'react';
 import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 
 export type AreaStackedTooltipProps = {
+  className?: string;
   title: string | ReactNode;
   tooltipData:
     | {
@@ -32,11 +33,12 @@ const AreaStackedTooltip: React.FC<AreaStackedTooltipProps> = ({
   title,
   keys,
   colors,
+  className,
 }) => {
   if (!tooltipData) return null;
 
   return (
-    <TooltipWithBounds top={tooltipTop} left={tooltipLeft}>
+    <TooltipWithBounds className={className} top={tooltipTop} left={tooltipLeft}>
       <div className="flex flex-col p-2.5 space-y-2">
         <h3>{title}</h3>
 

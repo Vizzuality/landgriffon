@@ -21,15 +21,18 @@ const AnalysisChart: React.FC = () => {
 
   const chartData = useMemo(() => {
     const trimmed = allChartData.map((chart) => {
+      // Sort the first avaliable entry by value and get the keys of the top RANKING_LIMIT items
       const firstDateValues = chart.values[0];
-      const sortedByValue = Object.entries(firstDateValues)
+
+      const topValueKeys = Object.entries(firstDateValues)
         .filter(([key]) => !['id', 'date', 'current'].includes(key))
         .sort(([, valueA], [, valueB]) => (valueB as number) - (valueA as number))
-        .slice(0, RANKING_LIMIT);
+        .slice(0, RANKING_LIMIT)
+        .map(([key]) => key);
 
       return {
         ...chart,
-        keys: sortedByValue.map(([key]) => key),
+        keys: chart.keys.filter((key) => topValueKeys.includes(key)),
       };
     });
 

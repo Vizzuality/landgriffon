@@ -20,7 +20,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
   onChange = () => null,
   onStartYearSearch = () => null,
   onEndYearSearch = () => null,
-}: YearsRangeFilterProps) => {
+}) => {
   const wrapperRef = useRef();
 
   const [isOpen, setIsOpen] = useState<boolean>(false);

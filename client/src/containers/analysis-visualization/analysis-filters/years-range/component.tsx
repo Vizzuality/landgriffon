@@ -3,7 +3,7 @@ import { isFinite, toNumber } from 'lodash';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisUI } from 'store/features/analysis/ui';
-import { analysisFilters, setFilter } from 'store/features/analysis/filters';
+import { analysisFilters, setFilters } from 'store/features/analysis/filters';
 
 import { useYears } from 'hooks/years';
 
@@ -32,8 +32,7 @@ const YearsFilter: React.FC = () => {
   }, [data]);
 
   useEffect(() => {
-    dispatch(setFilter({ id: 'startYear', value: startYear }));
-    dispatch(setFilter({ id: 'endYear', value: endYear }));
+    dispatch(setFilters({ startYear, endYear }));
   }, [startYear, endYear, dispatch]);
 
   const handleOnEndYearSearch = (searchedYear) => {

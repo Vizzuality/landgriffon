@@ -43,7 +43,11 @@ export function useImpactData(): ImpactDataResponse {
   const filters = filtersForTabularAPI(store.getState());
 
   const isEnable =
-    !!filters?.indicatorId && !!indicators?.length && !!filters.startYear && !!filters.endYear;
+    !!filters?.indicatorId &&
+    !!indicators?.length &&
+    !!filters.startYear &&
+    !!filters.endYear &&
+    filters.endYear !== filters.startYear;
 
   const indicatorIds = indicators.map(({ id }) => id);
 

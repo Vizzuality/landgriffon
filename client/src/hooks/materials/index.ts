@@ -49,7 +49,7 @@ export function useMaterials(): ResponseData {
 
 export function useMaterialsTrees(params: MaterialsTreesParams): ResponseData {
   const query = useQuery(
-    ['materials-trees', params],
+    ['materials-trees', JSON.stringify(params)],
     async () =>
       apiService
         .request({

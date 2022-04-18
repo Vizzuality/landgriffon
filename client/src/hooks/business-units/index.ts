@@ -49,7 +49,7 @@ export function useBusinessUnits(): ResponseData {
 
 export function useBusinessUnitsTrees(params: BusinessUnitsTreesParams): ResponseData {
   const query = useQuery(
-    ['business-units-trees', params],
+    ['business-units-trees', JSON.stringify(params)],
     async () =>
       apiService
         .request({

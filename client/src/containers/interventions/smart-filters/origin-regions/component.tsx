@@ -77,11 +77,11 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
       {...props}
       multiple={multiple}
       showSearch
+      current={currentOptions}
       loading={isFetching}
       options={treeOptions}
       placeholder="sourcing regions"
       onChange={onChange}
-      current={currentOptions}
       theme={theme}
       ellipsis={ellipsis}
       error={error}

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { analysisFilters, setFilter } from 'store/features/analysis/filters';
+import { analysisFilters, setFilter, setFilters } from 'store/features/analysis/filters';
 
 import { useYears } from 'hooks/years';
 
@@ -25,15 +25,16 @@ const YearsFilter: React.FC = () => {
   );
 
   const handleChange: SelectProps['onChange'] = useCallback(
-    ({ value }) => dispatch(setFilter({ id: 'startYear', value: value })),
+    ({ value }) => {
+      dispatch(setFilter({ id: 'startYear', value: value }));
+    },
     [dispatch],
   );
 
   // Update filters when data changes
   useEffect(() => {
     if (years && !isLoading) {
-      dispatch(setFilter({ id: 'startYear', value: years[years.length - 1] }));
-      dispatch(setFilter({ id: 'endYear', value: null }));
+      dispatch(setFilters({ startYear: years[years.length - 1], endYear: null }));
     }
   }, [dispatch, isLoading, years]);
 

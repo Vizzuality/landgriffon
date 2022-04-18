@@ -75,7 +75,6 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
       },
     ],
   });
-
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selected, setSelected] = useState<TreeSelectOption>(null);
   const [selectedKeys, setSelectedKeys] = useState<TreeProps['selectedKeys']>([]);
@@ -192,7 +191,6 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     }
     return checkedOptions;
   }, [checkedKeys, options]);
-
   const handleRemoveBadget = useCallback(
     (option) => {
       const filteredKeys = (checkedKeys as string[]).filter((key) => option.value !== key);

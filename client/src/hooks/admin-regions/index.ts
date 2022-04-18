@@ -49,7 +49,7 @@ export function useAdminRegions(): ResponseData {
 
 export function useAdminRegionsTrees(params: AdminRegionsTreesParams): ResponseData {
   const query = useQuery(
-    ['admin-regions-trees'],
+    ['admin-regions-trees', JSON.stringify(params)],
     async () =>
       apiService
         .request({

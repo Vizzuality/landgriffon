@@ -56,7 +56,11 @@ const BusinessUnitsFilter: React.FC<BusinessUnitsFilterProps> = ({
         data?.map(({ name, id, children }) => ({
           label: name,
           value: id,
-          children: children?.map(({ name, id }) => ({ label: name, value: id })),
+          children: children?.map(({ name, id, children }) => ({
+            label: name,
+            value: id,
+            children: children?.map(({ name, id }) => ({ label: name, value: id })),
+          })),
         })),
         'label',
       ),

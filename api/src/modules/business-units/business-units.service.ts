@@ -97,12 +97,13 @@ export class BusinessUnitsService extends AppBaseService<
   async getBusinessUnitsDescendants(
     businessUnitIds: string[],
   ): Promise<string[]> {
+    // using type casting not to search for and provide the full entity, since only id is used by the method (to improve performance)
     let businessUnits: BusinessUnit[] = [];
     for (const id of businessUnitIds) {
       const result: BusinessUnit[] =
         await this.businessUnitRepository.findDescendants({
           id,
-        } as BusinessUnit); // using type casting not to search for and provide the full entity, since only id is used by the method (to improve performance)
+        } as BusinessUnit);
       businessUnits = [...businessUnits, ...result];
     }
 

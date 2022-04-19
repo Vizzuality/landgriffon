@@ -153,11 +153,12 @@ export class SuppliersService extends AppBaseService<
   }
 
   async getSuppliersDescendants(supplierIds: string[]): Promise<string[]> {
+    // using type casting not to search for and provide the full entity, since only id is used by the method (to improve performance)
     let suppliers: Supplier[] = [];
     for (const id of supplierIds) {
       const result: Supplier[] = await this.supplierRepository.findDescendants({
         id,
-      } as Supplier); // using type casting not to search for and provide the full entity, since only id is used by the method (to improve performance)
+      } as Supplier);
       suppliers = [...suppliers, ...result];
     }
 

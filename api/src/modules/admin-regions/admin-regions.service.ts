@@ -160,12 +160,13 @@ export class AdminRegionsService extends AppBaseService<
   }
 
   async getAdminRegionDescendants(adminRegionIds: string[]): Promise<string[]> {
+    // using type casting not to search for and provide the full entity, since only id is used by the method (to improve performance)
     let adminRegions: AdminRegion[] = [];
     for (const id of adminRegionIds) {
       const result: AdminRegion[] =
         await this.adminRegionRepository.findDescendants({
           id,
-        } as AdminRegion); // using type casting not to search for and provide the full entity, since only id is used by the method (to improve performance)
+        } as AdminRegion);
       adminRegions = [...adminRegions, ...result];
     }
 

@@ -7,8 +7,6 @@ import TreeSelect from 'components/tree-select';
 
 import type { TreeSelectProps } from 'components/tree-select/types';
 
-import { compact } from 'lodash';
-
 type MaterialsFilterProps = {
   /** Tree depth. Defaults to `1` */
   current?: string[];
@@ -66,17 +64,19 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
     [data],
   );
 
-  const currentOptions = useMemo(
-    () =>
-      compact(
-        current?.map((c) => {
-          return treeOptions.find(
-            ({ value, children }) => value === c || children.find((child) => child.value === c),
-          );
-        }),
-      ),
-    [current, treeOptions],
-  );
+  const currentOptions = useMemo(() => {
+    const checkedOptions = [];
+    current?.forEach((key) => {
+      const recursiveSearch = (arr) => {
+        arr.forEach((opt) => {
+          if (opt.value === key) checkedOptions.push(opt);
+          if (opt.children) recursiveSearch(opt.children);
+        });
+      };
+      recursiveSearch(treeOptions);
+    });
+    return checkedOptions;
+  }, [current, treeOptions]);
 
   return (
     <TreeSelect

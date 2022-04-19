@@ -80,7 +80,6 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   const [selectedKeys, setSelectedKeys] = useState<TreeProps['selectedKeys']>([]);
   const [expandedKeys, setExpandedKeys] = useState<TreeProps['expandedKeys']>([]);
   const [checkedKeys, setCheckedKeys] = useState<TreeProps['checkedKeys']>([]);
-
   const wrapperRef = useRef();
 
   const renderTreeNodes = useMemo(
@@ -191,6 +190,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     }
     return checkedOptions;
   }, [checkedKeys, options]);
+
   const handleRemoveBadget = useCallback(
     (option) => {
       const filteredKeys = (checkedKeys as string[]).filter((key) => option.value !== key);

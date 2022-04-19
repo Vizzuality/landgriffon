@@ -24,6 +24,8 @@ import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { Material } from 'modules/materials/material.entity';
+import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
+import { SuppliersService } from 'modules/suppliers/suppliers.service';
 
 /**
  * @debt: Check if we actually need extending nestjs-base-service over this module.
@@ -40,6 +42,8 @@ export class H3DataService {
     protected readonly h3DataRepository: H3DataRepository,
     protected readonly materialService: MaterialsService,
     protected readonly materialToH3Service: MaterialsToH3sService,
+    protected readonly adminRegionService: AdminRegionsService,
+    protected readonly supplierService: SuppliersService,
     private readonly indicatorService: IndicatorsService,
     private readonly unitConversionsService: UnitConversionsService,
     private readonly sourcingRecordService: SourcingRecordsService,
@@ -391,6 +395,27 @@ export class H3DataService {
       throw new NotFoundException(
         `Indicator with ID ${getImpactMapDto.indicatorId} has no unit`,
       );
+    }
+
+    if (getImpactMapDto.originIds) {
+      getImpactMapDto.originIds =
+        await this.adminRegionService.getAdminRegionDescendants(
+          getImpactMapDto.originIds,
+        );
+    }
+
+    if (getImpactMapDto.supplierIds) {
+      getImpactMapDto.supplierIds =
+        await this.supplierService.getSuppliersDescendants(
+          getImpactMapDto.supplierIds,
+        );
+    }
+
+    if (getImpactMapDto.materialIds) {
+      getImpactMapDto.materialIds =
+        await this.materialService.getMaterialsDescendants(
+          getImpactMapDto.materialIds,
+        );
     }
 
     this.logger.log(`Generating impact map for indicator ${indicator.name}...`);

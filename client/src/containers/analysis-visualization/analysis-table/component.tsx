@@ -177,7 +177,7 @@ const AnalysisTable: React.FC = () => {
         ...years.map((year) => ({
           key: year.toString(),
           title: year.toString(),
-          DataType: DataType.Number,
+          dataType: DataType.Number,
           width: 110,
         })),
       ],

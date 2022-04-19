@@ -237,7 +237,6 @@ const Step1: FC = () => {
             <Materials
               {...register('materialIds')}
               multiple
-              withSourcingLocations
               businessUnitIds={businessUnitIds}
               supplierIds={supplierIds}
               originIds={originIds}
@@ -252,7 +251,6 @@ const Step1: FC = () => {
           <BusinessUnits
             {...register('businessUnitIds')}
             multiple
-            withSourcingLocations
             materialIds={materialIds}
             supplierIds={supplierIds}
             originIds={originIds}
@@ -266,7 +264,6 @@ const Step1: FC = () => {
           <Suppliers
             {...register('supplierIds')}
             multiple
-            withSourcingLocations
             materialIds={materialIds}
             businessUnitIds={businessUnitIds}
             originIds={originIds}
@@ -279,7 +276,6 @@ const Step1: FC = () => {
           <OriginRegions
             {...register('adminRegionIds')}
             multiple
-            withSourcingLocations
             materialIds={materialIds}
             supplierIds={supplierIds}
             businessUnitIds={businessUnitIds}

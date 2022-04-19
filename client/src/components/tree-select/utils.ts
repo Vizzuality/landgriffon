@@ -18,7 +18,6 @@ const PARENT = (checkedKeys: Key[], checkedNodes: DataNode[]): DataNode['key'][]
     childrenWithParents && childrenWithParents.length
       ? checkedKeys.filter((key) => !childrenWithParents.includes(key))
       : checkedKeys;
-
   return filteredValues;
 };
 

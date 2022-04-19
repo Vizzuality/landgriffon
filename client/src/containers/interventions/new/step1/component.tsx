@@ -240,6 +240,7 @@ const Step1: FC = () => {
               businessUnitIds={businessUnitIds}
               supplierIds={supplierIds}
               originIds={originIds}
+              withSourcingLocations
               current={watch('materialIds') || newInterventionData.materialIds}
               onChange={(values) => handleDropdown('materialIds', values)}
               ellipsis
@@ -254,6 +255,7 @@ const Step1: FC = () => {
             materialIds={materialIds}
             supplierIds={supplierIds}
             originIds={originIds}
+            withSourcingLocations
             current={watch('businessUnitIds') || newInterventionData.businessUnitIds}
             onChange={(values) => handleDropdown('businessUnitIds', values)}
             ellipsis
@@ -267,6 +269,7 @@ const Step1: FC = () => {
             materialIds={materialIds}
             businessUnitIds={businessUnitIds}
             originIds={originIds}
+            withSourcingLocations
             current={watch('supplierIds') || newInterventionData.supplierIds}
             onChange={(values) => handleDropdown('supplierIds', values)}
             theme="inline-primary"
@@ -279,6 +282,7 @@ const Step1: FC = () => {
             materialIds={materialIds}
             supplierIds={supplierIds}
             businessUnitIds={businessUnitIds}
+            withSourcingLocations
             current={watch('adminRegionIds') || newInterventionData.adminRegionIds}
             onChange={(values) => handleDropdown('adminRegionIds', values)}
             theme="inline-primary"

@@ -139,7 +139,7 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   loading = false,
   ...restProps
-}: ButtonProps) => (
+}) => (
   <button
     type="button"
     className={buildClassName({

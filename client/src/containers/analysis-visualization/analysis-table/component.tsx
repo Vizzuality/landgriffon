@@ -8,12 +8,46 @@ import { useImpactData } from 'hooks/impact';
 
 import Table from 'containers/table';
 import SummaryRow from 'containers/table/summary-row';
-import Button from 'components/button';
 import Loading from 'components/loading';
 
 import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 
 import { ITableData } from './types';
+import LinkButton from 'components/button';
+
+const dataToCsv: (tableData: ITableData) => string = (tableData) => {
+  const LINE_SEPARATOR = '\r\n';
+
+  if (!tableData) return null;
+  let str = 'data:text/csv;charset=utf-8,';
+  str +=
+    tableData.columns
+      .filter(({ dataType }) => ['number', 'string'].includes(dataType))
+      .map((column) => column.title)
+      .join(';') + LINE_SEPARATOR;
+
+  tableData.data.forEach(
+    ({
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      id,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      parentId,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      datesRangeChart,
+      name,
+      ...yearValues
+    }) => {
+      const rowData: (string | number)[] = [name];
+      Object.values(yearValues).forEach((value) => {
+        rowData.push(value as number);
+      });
+
+      str += rowData.join(';') + LINE_SEPARATOR;
+    },
+  );
+
+  return str;
+};
 
 const AnalysisTable: React.FC = () => {
   const { data: impactData, isLoading, isFetching } = useImpactData();
@@ -201,6 +235,8 @@ const AnalysisTable: React.FC = () => {
     };
   }, [tableData, years, yearsSum]);
 
+  const csv = useMemo<string | null>(() => encodeURI(dataToCsv(tableProps)), [tableProps]);
+
   return (
     <>
       <div className="flex justify-between">
@@ -210,15 +246,17 @@ const AnalysisTable: React.FC = () => {
             Viewing absolute values for <b>Actual Data</b>
           </p>
         </div>
-        <Button
+        <LinkButton
+          href={csv}
           theme="secondary"
           size="base"
           className="flex-shrink-0"
-          onClick={() => console.info('onDownload')}
+          disabled={isLoading}
+          download="report.csv"
         >
           <DownloadIcon className="w-5 h-4 mr-2 text-black" />
           Download
-        </Button>
+        </LinkButton>
       </div>
       <div className="relative mt-2">
         {isLoading && <Loading className="text-green-700 -ml-1 mr-3" />}

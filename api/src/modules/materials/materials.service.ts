@@ -170,12 +170,13 @@ export class MaterialsService extends AppBaseService<
     return this.findTreesWithOptions({ depth: materialTreeOptions.depth });
   }
 
-  async getMaterialsDescendants(materialIds: string[]): Promise<any> {
+  async getMaterialsDescendants(materialIds: string[]): Promise<string[]> {
+    // using type casting not to search for and provide the full entity, since only id is used by the method (to improve performance)
     let materials: Material[] = [];
     for (const id of materialIds) {
       const result: Material[] = await this.materialRepository.findDescendants({
         id,
-      } as Material); // using type casting not to search for and provide the full entity, since only id is used by the method (to improve performance)
+      } as Material);
       materials = [...materials, ...result];
     }
 

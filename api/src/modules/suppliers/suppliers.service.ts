@@ -1,4 +1,10 @@
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
@@ -18,6 +24,9 @@ import { SelectQueryBuilder } from 'typeorm';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetSupplierByType } from 'modules/suppliers/dto/get-supplier-by-type.dto';
 import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-tree-with-options.dto';
+import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
+import { BusinessUnitsService } from 'modules/business-units/business-units.service';
+import { MaterialsService } from 'modules/materials/materials.service';
 
 @Injectable()
 export class SuppliersService extends AppBaseService<
@@ -29,6 +38,12 @@ export class SuppliersService extends AppBaseService<
   constructor(
     @InjectRepository(SupplierRepository)
     protected readonly supplierRepository: SupplierRepository,
+    @Inject(forwardRef(() => AdminRegionsService))
+    protected readonly adminRegionService: AdminRegionsService,
+    @Inject(forwardRef(() => BusinessUnitsService))
+    protected readonly businessUnitsService: BusinessUnitsService,
+    @Inject(forwardRef(() => MaterialsService))
+    protected readonly materialsService: MaterialsService,
     protected readonly sourcingLocationService: SourcingLocationsService,
   ) {
     super(
@@ -128,6 +143,24 @@ export class SuppliersService extends AppBaseService<
   async getSuppliersWithSourcingLocations(
     supplierTreeOptions: GetSupplierTreeWithOptions,
   ): Promise<any> {
+    if (supplierTreeOptions.originIds) {
+      supplierTreeOptions.originIds =
+        await this.adminRegionService.getAdminRegionDescendants(
+          supplierTreeOptions.originIds,
+        );
+    }
+    if (supplierTreeOptions.businessUnitIds) {
+      supplierTreeOptions.businessUnitIds =
+        await this.businessUnitsService.getBusinessUnitsDescendants(
+          supplierTreeOptions.businessUnitIds,
+        );
+    }
+    if (supplierTreeOptions.materialIds) {
+      supplierTreeOptions.materialIds =
+        await this.materialsService.getMaterialsDescendants(
+          supplierTreeOptions.materialIds,
+        );
+    }
     const supplierLineage: Supplier[] =
       await this.supplierRepository.getSourcingDataSuppliersWithAncestry(
         supplierTreeOptions,

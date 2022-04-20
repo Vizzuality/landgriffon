@@ -36,9 +36,11 @@ export class AdminRegionsService extends AppBaseService<
     protected readonly adminRegionRepository: AdminRegionRepository,
     @Inject(forwardRef(() => MaterialsService))
     protected readonly materialService: MaterialsService,
-    protected readonly sourcingLocationsService: SourcingLocationsService,
+    @Inject(forwardRef(() => SuppliersService))
     protected readonly supplierService: SuppliersService,
+    @Inject(forwardRef(() => BusinessUnitsService))
     protected readonly businessUnitService: BusinessUnitsService,
+    protected readonly sourcingLocationsService: SourcingLocationsService,
   ) {
     super(
       adminRegionRepository,

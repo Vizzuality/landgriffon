@@ -2,7 +2,14 @@ import { Controller, Get, Query, ValidationPipe } from '@nestjs/common';
 import { GetImpactTableDto } from 'modules/impact/dto/get-impact-table.dto';
 import { ImpactService } from 'modules/impact/impact.service';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ImpactTable } from 'modules/impact/dto/response-impact-table.dto';
+import {
+  ImpactTable,
+  PaginatedImpactTable,
+} from 'modules/impact/dto/response-impact-table.dto';
+import {
+  FetchSpecification,
+  ProcessFetchSpecification,
+} from 'nestjs-base-service';
 
 @Controller('/api/v1/impact')
 @ApiTags('Impact')
@@ -17,11 +24,12 @@ export class ImpactController {
   })
   @Get('table')
   async getImpactTable(
+    @ProcessFetchSpecification({}) fetchSpecification: FetchSpecification,
     @Query(ValidationPipe) impactTableDto: GetImpactTableDto,
-  ): Promise<{ data: ImpactTable }> {
-    const impactTable: ImpactTable = await this.impactService.getImpactTable(
+  ): Promise<PaginatedImpactTable> {
+    return await this.impactService.getImpactTable(
       impactTableDto,
+      fetchSpecification,
     );
-    return { data: impactTable };
   }
 }

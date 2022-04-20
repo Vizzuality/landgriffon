@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
@@ -13,6 +18,9 @@ import { BusinessUnitRepository } from 'modules/business-units/business-unit.rep
 import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
 import { UpdateBusinessUnitDto } from 'modules/business-units/dto/update.business-unit.dto';
 import { GetBusinessUnitTreeWithOptionsDto } from 'modules/business-units/dto/get-business-unit-tree-with-options.dto';
+import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
+import { SuppliersService } from 'modules/suppliers/suppliers.service';
+import { MaterialsService } from 'modules/materials/materials.service';
 
 @Injectable()
 export class BusinessUnitsService extends AppBaseService<
@@ -24,6 +32,12 @@ export class BusinessUnitsService extends AppBaseService<
   constructor(
     @InjectRepository(BusinessUnitRepository)
     protected readonly businessUnitRepository: BusinessUnitRepository,
+    @Inject(forwardRef(() => AdminRegionsService))
+    protected readonly adminRegionService: AdminRegionsService,
+    @Inject(forwardRef(() => MaterialsService))
+    protected readonly materialsService: MaterialsService,
+    @Inject(forwardRef(() => SuppliersService))
+    protected readonly suppliersService: SuppliersService,
   ) {
     super(
       businessUnitRepository,
@@ -87,6 +101,24 @@ export class BusinessUnitsService extends AppBaseService<
   async getBusinessUnitTreeWithSourcingLocations(
     businessUnitTreeOptions: GetBusinessUnitTreeWithOptionsDto,
   ): Promise<BusinessUnit[]> {
+    if (businessUnitTreeOptions.materialIds) {
+      businessUnitTreeOptions.materialIds =
+        await this.materialsService.getMaterialsDescendants(
+          businessUnitTreeOptions.materialIds,
+        );
+    }
+    if (businessUnitTreeOptions.supplierIds) {
+      businessUnitTreeOptions.supplierIds =
+        await this.suppliersService.getSuppliersDescendants(
+          businessUnitTreeOptions.supplierIds,
+        );
+    }
+    if (businessUnitTreeOptions.originIds) {
+      businessUnitTreeOptions.originIds =
+        await this.adminRegionService.getAdminRegionDescendants(
+          businessUnitTreeOptions.originIds,
+        );
+    }
     const businessUnitsLineage: BusinessUnit[] =
       await this.businessUnitRepository.getSourcingDataBusinessUnitssWithAncestry(
         businessUnitTreeOptions,

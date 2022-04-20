@@ -1,4 +1,10 @@
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
@@ -12,6 +18,7 @@ import { UpdateMaterialDto } from 'modules/materials/dto/update.material.dto';
 import { FindTreesWithOptionsArgs } from 'utils/tree.repository';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
+import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 
 @Injectable()
 export class MaterialsService extends AppBaseService<
@@ -23,6 +30,8 @@ export class MaterialsService extends AppBaseService<
   constructor(
     @InjectRepository(MaterialRepository)
     protected readonly materialRepository: MaterialRepository,
+    @Inject(forwardRef(() => AdminRegionsService))
+    protected readonly adminRegionService: AdminRegionsService,
     protected readonly sourcingLocationService: SourcingLocationsService,
   ) {
     super(

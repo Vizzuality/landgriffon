@@ -102,6 +102,7 @@ const Step2: FC = () => {
         createIntervention.mutate(parsedData, {
           onSuccess: () => {
             toast.success('A new intervention has been created');
+            dispatch(setSubContentCollapsed(true));
           },
           onError: () => {
             toast.error('There has been a problem creating the intervention');
@@ -120,6 +121,7 @@ const Step2: FC = () => {
           {
             onSuccess: () => {
               toast.success('The intervention has been updated');
+              dispatch(setSubContentCollapsed(true));
             },
             onError: () => {
               toast.error('There has been a problem creating the intervention');

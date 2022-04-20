@@ -8,8 +8,7 @@ import toast from 'react-hot-toast';
 import { PlusIcon } from '@heroicons/react/solid';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { useInterventions } from 'hooks/interventions';
-import { useScenario, useUpdateScenario } from 'hooks/scenarios';
+import { useScenario, useUpdateScenario, useScenarioInterventions } from 'hooks/scenarios';
 
 import { setSubContentCollapsed } from 'store/features/analysis/ui';
 import { scenarios, setScenarioTab } from 'store/features/analysis/scenarios';
@@ -45,7 +44,6 @@ const schemaValidation = yup.object({
 });
 
 const ScenariosNewContainer: React.FC = () => {
-  const { data: interventions } = useInterventions();
   const dispatch = useAppDispatch();
   const handleNewScenarioFeature = useCallback(() => {
     dispatch(setCurrentIntervention(null));
@@ -53,6 +51,8 @@ const ScenariosNewContainer: React.FC = () => {
   }, [dispatch]);
 
   const { scenarioCurrentTab, currentScenario } = useAppSelector(scenarios);
+  const { data: scenarioData } = useScenario(currentScenario);
+  const { data: interventions } = useScenarioInterventions(currentScenario);
 
   const {
     register,
@@ -87,7 +87,6 @@ const ScenariosNewContainer: React.FC = () => {
     600,
   );
 
-  const { data: scenarioData } = useScenario(currentScenario);
   if (!scenarioData) return null;
   const { title, description } = scenarioData;
   return (
@@ -134,7 +133,7 @@ const ScenariosNewContainer: React.FC = () => {
                   })}
                   onClick={() => handleTab('interventions')}
                 >
-                  Interventions ({interventions.length})
+                  Interventions ({interventions?.length})
                 </button>
 
                 <button

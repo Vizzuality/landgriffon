@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
@@ -15,6 +20,9 @@ import { UpdateAdminRegionDto } from 'modules/admin-regions/dto/update.admin-reg
 import { FindTreesWithOptionsArgs } from 'utils/tree.repository';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { GetAdminRegionTreeWithOptionsDto } from 'modules/admin-regions/dto/get-admin-region-tree-with-options.dto';
+import { MaterialsService } from 'modules/materials/materials.service';
+import { SuppliersService } from 'modules/suppliers/suppliers.service';
+import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 
 @Injectable()
 export class AdminRegionsService extends AppBaseService<
@@ -26,7 +34,11 @@ export class AdminRegionsService extends AppBaseService<
   constructor(
     @InjectRepository(AdminRegionRepository)
     protected readonly adminRegionRepository: AdminRegionRepository,
+    @Inject(forwardRef(() => MaterialsService))
+    protected readonly materialService: MaterialsService,
     protected readonly sourcingLocationsService: SourcingLocationsService,
+    protected readonly supplierService: SuppliersService,
+    protected readonly businessUnitService: BusinessUnitsService,
   ) {
     super(
       adminRegionRepository,
@@ -138,6 +150,24 @@ export class AdminRegionsService extends AppBaseService<
   async getAdminRegionTreeWithSourcingLocations(
     adminRegionTreeOptions: GetAdminRegionTreeWithOptionsDto,
   ): Promise<AdminRegion[]> {
+    if (adminRegionTreeOptions.businessUnitIds) {
+      adminRegionTreeOptions.businessUnitIds =
+        await this.businessUnitService.getBusinessUnitsDescendants(
+          adminRegionTreeOptions.businessUnitIds,
+        );
+    }
+    if (adminRegionTreeOptions.supplierIds) {
+      adminRegionTreeOptions.supplierIds =
+        await this.supplierService.getSuppliersDescendants(
+          adminRegionTreeOptions.supplierIds,
+        );
+    }
+    if (adminRegionTreeOptions.materialIds) {
+      adminRegionTreeOptions.materialIds =
+        await this.materialService.getMaterialsDescendants(
+          adminRegionTreeOptions.materialIds,
+        );
+    }
     const adminRegionLineage: AdminRegion[] =
       await this.adminRegionRepository.getSourcingDataAdminRegionsWithAncestry(
         adminRegionTreeOptions,

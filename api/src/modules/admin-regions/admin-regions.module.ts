@@ -11,10 +11,10 @@ import { BusinessUnitsModule } from 'modules/business-units/business-units.modul
 @Module({
   imports: [
     TypeOrmModule.forFeature([AdminRegionRepository]),
-    SourcingLocationsModule,
     forwardRef(() => MaterialsModule),
-    SuppliersModule,
-    BusinessUnitsModule,
+    forwardRef(() => SuppliersModule),
+    forwardRef(() => BusinessUnitsModule),
+    SourcingLocationsModule,
   ],
   controllers: [AdminRegionsController],
   providers: [AdminRegionsService],

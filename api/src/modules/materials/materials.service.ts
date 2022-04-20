@@ -19,6 +19,8 @@ import { FindTreesWithOptionsArgs } from 'utils/tree.repository';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
+import { BusinessUnitsService } from 'modules/business-units/business-units.service';
+import { SuppliersService } from 'modules/suppliers/suppliers.service';
 
 @Injectable()
 export class MaterialsService extends AppBaseService<
@@ -32,6 +34,10 @@ export class MaterialsService extends AppBaseService<
     protected readonly materialRepository: MaterialRepository,
     @Inject(forwardRef(() => AdminRegionsService))
     protected readonly adminRegionService: AdminRegionsService,
+    @Inject(forwardRef(() => BusinessUnitsService))
+    protected readonly businessUnitsService: BusinessUnitsService,
+    @Inject(forwardRef(() => SuppliersService))
+    protected readonly suppliersService: SuppliersService,
     protected readonly sourcingLocationService: SourcingLocationsService,
   ) {
     super(
@@ -164,6 +170,24 @@ export class MaterialsService extends AppBaseService<
   async getMaterialsTreeWithSourcingLocations(
     materialTreeOptions: GetMaterialTreeWithOptionsDto,
   ): Promise<Material[]> {
+    if (materialTreeOptions.originIds) {
+      materialTreeOptions.originIds =
+        await this.adminRegionService.getAdminRegionDescendants(
+          materialTreeOptions.originIds,
+        );
+    }
+    if (materialTreeOptions.businessUnitIds) {
+      materialTreeOptions.businessUnitIds =
+        await this.businessUnitsService.getBusinessUnitsDescendants(
+          materialTreeOptions.businessUnitIds,
+        );
+    }
+    if (materialTreeOptions.supplierIds) {
+      materialTreeOptions.supplierIds =
+        await this.suppliersService.getSuppliersDescendants(
+          materialTreeOptions.supplierIds,
+        );
+    }
     const materialLineage: Material[] =
       await this.materialRepository.getSourcingDataMaterialsWithAncestry(
         materialTreeOptions,

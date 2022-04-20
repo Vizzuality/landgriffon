@@ -1,20 +1,23 @@
 import { useMemo } from 'react';
 import {
   useQuery,
+  useQueryClient,
   useInfiniteQuery,
   UseQueryResult,
   useMutation,
   UseInfiniteQueryResult,
 } from 'react-query';
-import { useQueryClient } from 'react-query';
 
 import { useAppSelector } from 'store/hooks';
 
 import { scenarios } from 'store/features/analysis/scenarios';
 
 import { apiService } from 'services/api';
-import type { Scenario } from 'containers/scenarios/types';
 import { AxiosResponse } from 'axios';
+
+// types
+import type { Scenario } from 'containers/scenarios/types';
+import type { Intervention } from 'containers/scenarios/types';
 
 type ResponseData = UseQueryResult<Scenario[]>;
 type ResponseInfiniteData = UseInfiniteQueryResult<
@@ -25,6 +28,7 @@ type ResponseInfiniteData = UseInfiniteQueryResult<
 >;
 
 type ResponseDataScenario = UseQueryResult<Scenario>;
+type ResponseInterventionsData = UseQueryResult<Intervention[]>;
 type QueryParams = {
   sort?: string;
   pageParam?: number;
@@ -113,6 +117,21 @@ export function useScenario(id: Scenario['id']): ResponseDataScenario {
   );
 
   return useMemo<ResponseDataScenario>((): ResponseDataScenario => response, [response]);
+}
+
+export function useScenarioInterventions(id: Scenario['id']): ResponseInterventionsData {
+  const response: ResponseInterventionsData = useQuery(
+    ['interventions-by-scenario', id],
+    async () =>
+      apiService
+        .request({
+          method: 'GET',
+          url: `/scenarios/${id}/interventions`,
+        })
+        .then(({ data: responseData }) => responseData.data),
+    DEFAULT_QUERY_OPTIONS,
+  );
+  return useMemo<ResponseInterventionsData>((): ResponseInterventionsData => response, [response]);
 }
 
 export function useDeleteScenario() {

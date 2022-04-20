@@ -1,10 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { PaginationMeta } from 'utils/app-base.service';
 
 export class ImpactTable {
   @ApiProperty({ type: () => ImpactTableDataByIndicator, isArray: true })
   impactTable: ImpactTableDataByIndicator[];
   @ApiProperty({ type: () => ImpactTableDataByIndicator, isArray: true })
   purchasedTonnes: ImpactTablePurchasedTonnes[];
+}
+
+export class PaginatedImpactTable {
+  @ApiProperty({ type: () => ImpactTable })
+  data: ImpactTable;
+  @ApiProperty({ type: () => PaginationMeta })
+  metadata?: PaginationMeta;
 }
 
 export class ImpactTableDataByIndicator {

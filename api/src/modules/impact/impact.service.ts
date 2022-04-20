@@ -11,6 +11,7 @@ import {
   ImpactTablePurchasedTonnes,
   ImpactTableRows,
   ImpactTableRowsValues,
+  PaginatedImpactTable,
 } from 'modules/impact/dto/response-impact-table.dto';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
@@ -18,6 +19,9 @@ import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { ImpactTableEntityType } from 'types/impact-table-entity.type';
+import { DEFAULT_PAGINATION, FetchSpecification } from 'nestjs-base-service';
+import { PaginationMeta } from 'utils/app-base.service';
+import { PaginatedEntitiesDto } from 'modules/impact/dto/paginated-entities.dto';
 
 @Injectable()
 export class ImpactService {
@@ -36,14 +40,17 @@ export class ImpactService {
 
   async getImpactTable(
     impactTableDto: GetImpactTableDto,
-  ): Promise<ImpactTable> {
+    fetchSpecification: FetchSpecification,
+  ): Promise<PaginatedImpactTable> {
     const indicators: Indicator[] =
       await this.indicatorService.getIndicatorsById(
         impactTableDto.indicatorIds,
       );
     this.logger.log('Retrieving data from DB to build Impact Table...');
-    let entities: ImpactTableEntityType[] = [];
-
+    let entitiesWithPagination: PaginatedEntitiesDto = {
+      entities: [],
+      metadata: undefined,
+    };
     /*
      * Getting Descendants Ids for the filters, in case Parent Ids were received
      */
@@ -75,61 +82,86 @@ export class ImpactService {
     switch (impactTableDto.groupBy) {
       case GROUP_BY_VALUES.MATERIAL:
         if (impactTableDto.materialIds) {
-          entities =
+          entitiesWithPagination.entities =
             await this.materialsService.getMaterialsTreeWithSourcingLocations({
               materialIds: impactTableDto.materialIds,
             });
-          impactTableDto.materialIds = this.getIdsFromTree(entities);
         } else {
-          entities =
+          entitiesWithPagination.entities =
             await this.materialsService.getMaterialsTreeWithSourcingLocations(
               {},
             );
         }
+        entitiesWithPagination = ImpactService.paginateRootElements(
+          entitiesWithPagination.entities,
+          fetchSpecification,
+        );
+        impactTableDto.materialIds = this.getIdsFromTree(
+          entitiesWithPagination.entities,
+        );
         break;
       case GROUP_BY_VALUES.REGION:
         if (impactTableDto.originIds) {
-          entities =
+          entitiesWithPagination.entities =
             await this.adminRegionsService.getAdminRegionTreeWithSourcingLocations(
               { originIds: impactTableDto.originIds },
             );
-          impactTableDto.originIds = this.getIdsFromTree(entities);
         } else {
-          entities =
+          entitiesWithPagination.entities =
             await this.adminRegionsService.getAdminRegionTreeWithSourcingLocations(
               {},
             );
         }
+        entitiesWithPagination = ImpactService.paginateRootElements(
+          entitiesWithPagination.entities,
+          fetchSpecification,
+        );
+        impactTableDto.originIds = this.getIdsFromTree(
+          entitiesWithPagination.entities,
+        );
         break;
       case GROUP_BY_VALUES.SUPPLIER:
         if (impactTableDto.supplierIds) {
-          entities =
+          entitiesWithPagination.entities =
             await this.suppliersService.getSuppliersWithSourcingLocations({
               supplierIds: impactTableDto.supplierIds,
             });
-          impactTableDto.supplierIds = this.getIdsFromTree(entities);
         } else {
-          entities =
+          entitiesWithPagination.entities =
             await this.suppliersService.getSuppliersWithSourcingLocations({});
         }
+        entitiesWithPagination = ImpactService.paginateRootElements(
+          entitiesWithPagination.entities,
+          fetchSpecification,
+        );
+        impactTableDto.supplierIds = this.getIdsFromTree(
+          entitiesWithPagination.entities,
+        );
         break;
       case GROUP_BY_VALUES.BUSINESS_UNIT:
-        entities =
+        entitiesWithPagination.entities =
           await this.businessUnitsService.getBusinessUnitTreeWithSourcingLocations(
             {},
           );
+        entitiesWithPagination = ImpactService.paginateRootElements(
+          entitiesWithPagination.entities,
+          fetchSpecification,
+        );
         break;
       default:
     }
-
+    // Check if any ids are left after pagination, not to pass empty array
     const dataForImpactTable: ImpactTableData[] =
-      await this.sourcingRecordService.getDataForImpactTable(impactTableDto);
-    return this.buildImpactTable(
+      entitiesWithPagination.entities.length > 0
+        ? await this.sourcingRecordService.getDataForImpactTable(impactTableDto)
+        : [];
+    const impactTable: ImpactTable = this.buildImpactTable(
       impactTableDto,
       indicators,
       dataForImpactTable,
-      this.buildImpactTableRowsSkeleton(entities),
+      this.buildImpactTableRowsSkeleton(entitiesWithPagination.entities),
     );
+    return { data: impactTable, metadata: entitiesWithPagination.metadata };
   }
 
   private buildImpactTable(
@@ -258,7 +290,9 @@ export class ImpactService {
         // If it does not exist, get the previous value and project it
       } else {
         const tonnesToProject: number =
-          dataForImpactTable[dataForImpactTable.length - 1].impact;
+          dataForImpactTable.length > 0
+            ? dataForImpactTable[dataForImpactTable.length - 1].impact
+            : 0;
         purchasedTonnes.push({
           year,
           value: tonnesToProject + (tonnesToProject * this.growthRate) / 100,
@@ -342,5 +376,30 @@ export class ImpactService {
         entity.children.length > 0 ? this.getIdsFromTree(entity.children) : [];
       return [...ids, ...childIds, entity.id];
     }, []);
+  }
+  private static paginateRootElements(
+    entities: ImpactTableEntityType[],
+    fetchSpecification: FetchSpecification,
+  ): PaginatedEntitiesDto {
+    if (fetchSpecification.disablePagination) {
+      return {
+        entities,
+        metadata: undefined,
+      };
+    }
+    const totalItems: number = entities.length;
+    const pageSize: number =
+      fetchSpecification?.pageSize ?? DEFAULT_PAGINATION.pageSize ?? 25;
+    const page: number =
+      fetchSpecification?.pageNumber ?? DEFAULT_PAGINATION.pageNumber ?? 1;
+    return {
+      entities: entities.slice((page - 1) * pageSize, page * pageSize),
+      metadata: new PaginationMeta({
+        totalPages: Math.ceil(totalItems / pageSize),
+        totalItems,
+        size: pageSize,
+        page,
+      }),
+    };
   }
 }

@@ -1,14 +1,15 @@
 import {
-  Brackets,
   EntityRepository,
+  getManager,
   Repository,
   SelectQueryBuilder,
   WhereExpressionBuilder,
+  Brackets,
 } from 'typeorm';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import {
-  LOCATION_TYPES_PARAMS,
   SourcingLocation,
+  SOURCING_LOCATION_TYPE_BY_INTERVENTION,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetImpactTableDto } from 'modules/impact/dto/get-impact-table.dto';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
@@ -19,6 +20,9 @@ import { Supplier } from 'modules/suppliers/supplier.entity';
 import { Logger, NotFoundException } from '@nestjs/common';
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
+import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
+import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 
 export class ImpactTableData {
   year: number;
@@ -27,6 +31,8 @@ export class ImpactTableData {
   name: string;
   tonnes: string;
   impact: number;
+  scenarioInterventionId: string | null;
+  typeByIntervention: SOURCING_LOCATION_TYPE_BY_INTERVENTION | null;
 }
 
 @EntityRepository(SourcingRecord)
@@ -68,13 +74,16 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       groupBy,
       supplierIds,
       locationTypes,
+      scenarioId,
     } = getImpactTaleDto;
+
     const impactDataQueryBuilder: SelectQueryBuilder<SourcingRecord> =
       this.createQueryBuilder('sourcingRecords')
         .select('sourcingRecords.year', 'year')
         .addSelect('sum(sourcingRecords.tonnage)', 'tonnes')
         .addSelect('sum(indicatorRecord.value)', 'impact')
         .addSelect('indicator.id', 'indicatorId')
+        .addSelect('sourcingLocation.interventionType', 'type')
         .leftJoin(
           SourcingLocation,
           'sourcingLocation',
@@ -117,6 +126,36 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
         .andWhere('indicator.id IN (:...indicatorIds)', { indicatorIds });
 
     // FILTERS
+
+    // If Impact table is for scenario - scenarioId filter shall be added, else only SLs not belonging to interventions shall be chosen
+
+    let scenarioInterventionIds: string[] = [];
+    if (scenarioId) {
+      const scenarioInterventions: { id: string }[] = await getManager()
+        .createQueryBuilder()
+        .select('id')
+        .from('scenario_interventions', 'si')
+        .where('si."scenarioId" = :scenarioId', { scenarioId })
+        .getRawMany();
+
+      scenarioInterventionIds = scenarioInterventions.map((si) => si.id);
+    }
+
+    if (scenarioInterventionIds.length > 0) {
+      impactDataQueryBuilder.andWhere(
+        'sourcingLocation.scenarioInterventionId Id IN (:...scenarioInterventionIds)',
+        {
+          scenarioInterventionIds,
+        },
+      );
+    } else {
+      impactDataQueryBuilder.andWhere(
+        'sourcingLocation.scenarioInterventionId is null',
+      );
+    }
+
+    // User chosen Filters
+
     if (materialIds) {
       impactDataQueryBuilder.andWhere(
         'sourcingLocation.materialId IN (:...materialIds)',

@@ -68,7 +68,6 @@ export const useImpactLayer = () => {
     getElevation: (d) => d.v,
     getLineColor: (d) => d.c,
     // getLineColor: (d) => (d.h === hoveredHexagon ? HEXAGON_HIGHLIGHT_COLOR : d.c),
-    onHover: handleHover,
     // updateTriggers: {
     //   getLineColor: hoveredHexagon,
     // },

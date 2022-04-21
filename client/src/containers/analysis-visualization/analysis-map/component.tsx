@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import DeckGL from '@deck.gl/react';
 import { StaticMap } from 'react-map-gl';
 import { XCircleIcon } from '@heroicons/react/solid';
@@ -19,6 +19,7 @@ import { analysisMap } from 'store/features/analysis';
 
 import type { PopUpProps } from 'components/map/popup/types';
 import { ViewState } from 'react-map-gl/src/mapbox/mapbox';
+import { useDebounce } from 'rooks';
 
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
 const INITIAL_VIEW_STATE = {
@@ -33,9 +34,6 @@ const INITIAL_VIEW_STATE = {
 const AnalysisMap: React.FC = () => {
   const { tooltipData, tooltipPosition } = useAppSelector(analysisMap);
   const [isRendering, setIsRendering] = useState(false);
-
-  const [hoverInfo, onHoverLayer] = useHoveredLayers();
-
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
 
   // Loading layers
@@ -46,10 +44,49 @@ const AnalysisMap: React.FC = () => {
     () => [impactLayer.layer, materialLayer.layer, riskLayer.layer],
     [impactLayer.layer, materialLayer.layer, riskLayer.layer],
   );
+  const hoverTimestamps = useRef({});
+
+  const [hoveredInfo, setHoveredInfo] = useState({});
+
   const isError = materialLayer.isError || impactLayer.isError || riskLayer.isError;
   const isFetching = materialLayer.isFetching || impactLayer.isFetching || riskLayer.isFetching;
 
   const handleAfterRender = useCallback(() => setIsRendering(false), []);
+
+  const handleHover = useCallback((info) => {
+    if (!info.layer) {
+      setHoveredInfo({});
+      hoverTimestamps.current = {};
+      return;
+    }
+
+    if (!info.object) {
+      setHoveredInfo((hoverInfo) => ({ ...hoverInfo, [info.layer.id]: null }));
+      hoverTimestamps.current[info.layer.id] = null;
+      return;
+    }
+
+    const now = Date.now();
+
+    setHoveredInfo((hoverInfo) => {
+      hoverTimestamps.current[info.layer.id] = now;
+      return { ...hoverInfo, [info.layer.id]: info.object };
+    });
+
+    Object.entries(hoverTimestamps.current).forEach(([key, timestamp]) => {
+      if (!timestamp) return;
+      if (now - (timestamp as number) > 200) {
+        hoverTimestamps.current[key] = null;
+
+        setHoveredInfo((prevHoveredInfo) => ({
+          ...prevHoveredInfo,
+          [key]: null,
+        }));
+      }
+    });
+  }, []);
+
+  const debouncedHandleHover = useDebounce(handleHover, 200);
 
   const onZoomChange = useCallback(
     (zoom) => {
@@ -57,6 +94,8 @@ const AnalysisMap: React.FC = () => {
     },
     [setViewState],
   );
+
+  console.log(hoveredInfo);
 
   return (
     <>
@@ -69,10 +108,7 @@ const AnalysisMap: React.FC = () => {
         controller
         layers={layers}
         onAfterRender={handleAfterRender}
-        onHover={(info) => {
-          // console.log(info);
-          onHoverLayer(info);
-        }}
+        onHover={debouncedHandleHover}
       >
         <StaticMap
           viewState={viewState}

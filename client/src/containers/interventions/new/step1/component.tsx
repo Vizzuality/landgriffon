@@ -82,7 +82,7 @@ const Step1: FC = () => {
   });
 
   const formValues = getValues();
-  const { businessUnitIds, supplierIds, originIds, materialIds } = formValues;
+  const { businessUnitIds, supplierIds, adminRegionIds, materialIds } = formValues;
 
   const currentInterventionType = watch('type');
   const selectedInterventionOption = useMemo(
@@ -93,7 +93,7 @@ const Step1: FC = () => {
   const {
     businessUnitIds: businessUnitIdsStorage,
     supplierIds: supplierIdsStorage,
-    adminRegionIds,
+    adminRegionIds: adminRegionIdsStorage,
     materialIds: materialIdsStorage,
     endYear,
   } = newInterventionData;
@@ -115,7 +115,7 @@ const Step1: FC = () => {
       !!businessUnitIdsStorage &&
       !!supplierIdsStorage &&
       !!businessUnitIdsStorage &&
-      !!adminRegionIds &&
+      !!adminRegionIdsStorage &&
       !!materialIdsStorage &&
       !!endYear
     ) {
@@ -144,7 +144,7 @@ const Step1: FC = () => {
     materialIdsStorage,
     businessUnitIdsStorage,
     supplierIdsStorage,
-    adminRegionIds,
+    adminRegionIdsStorage,
     endYear,
   ]);
 
@@ -239,7 +239,7 @@ const Step1: FC = () => {
               multiple
               businessUnitIds={businessUnitIds}
               supplierIds={supplierIds}
-              originIds={originIds}
+              originIds={adminRegionIds}
               withSourcingLocations
               current={watch('materialIds') || newInterventionData.materialIds}
               onChange={(values) => handleDropdown('materialIds', values)}
@@ -254,7 +254,7 @@ const Step1: FC = () => {
             multiple
             materialIds={materialIds}
             supplierIds={supplierIds}
-            originIds={originIds}
+            originIds={adminRegionIds}
             withSourcingLocations
             current={watch('businessUnitIds') || newInterventionData.businessUnitIds}
             onChange={(values) => handleDropdown('businessUnitIds', values)}
@@ -268,7 +268,7 @@ const Step1: FC = () => {
             multiple
             materialIds={materialIds}
             businessUnitIds={businessUnitIds}
-            originIds={originIds}
+            originIds={adminRegionIds}
             withSourcingLocations
             current={watch('supplierIds') || newInterventionData.supplierIds}
             onChange={(values) => handleDropdown('supplierIds', values)}

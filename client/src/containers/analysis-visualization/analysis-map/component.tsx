@@ -31,6 +31,28 @@ const INITIAL_VIEW_STATE = {
   minZoom: 2,
 };
 
+type PopUpInfoProps = {
+  object?: {
+    v: number;
+  } | null;
+  x: number;
+  y: number;
+  viewport?: {
+    width: number;
+    height: number;
+  };
+};
+
+interface HoverInfo {
+  object: any;
+  x: number;
+  y: number;
+  viewport: ViewState;
+  layer: { id: string };
+}
+
+const HOVER_MAX_AGE = 200;
+
 const AnalysisMap: React.FC = () => {
   const { tooltipData, tooltipPosition } = useAppSelector(analysisMap);
   const [isRendering, setIsRendering] = useState(false);
@@ -75,7 +97,7 @@ const AnalysisMap: React.FC = () => {
 
     Object.entries(hoverTimestamps.current).forEach(([key, timestamp]) => {
       if (!timestamp) return;
-      if (now - (timestamp as number) > 200) {
+      if (now - (timestamp as number) > HOVER_MAX_AGE) {
         hoverTimestamps.current[key] = null;
 
         setHoveredInfo((prevHoveredInfo) => ({
@@ -86,7 +108,7 @@ const AnalysisMap: React.FC = () => {
     });
   }, []);
 
-  const debouncedHandleHover = useDebounce(handleHover, 200);
+  const debouncedHandleHover = useDebounce(handleHover, HOVER_MAX_AGE);
 
   const onZoomChange = useCallback(
     (zoom) => {

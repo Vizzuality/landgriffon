@@ -7,6 +7,9 @@ import Label from 'components/forms/label';
 
 // hooks
 import { useFormContext } from 'react-hook-form';
+import { useAppSelector } from 'store/hooks';
+
+import { scenarios } from 'store/features/analysis';
 
 // containers
 import InfoTooltip from 'containers/info-tooltip';
@@ -14,9 +17,11 @@ import { useInterventionsIndicators } from 'hooks/interventions';
 import { Hint } from 'components/forms';
 
 const Step2: FC = () => {
-  const [landgriffonEstimates, setLandgriffonEstimates] = useState(false);
+  const [landgriffonEstimates, setLandgriffonEstimates] = useState(true);
 
   const { data } = useInterventionsIndicators();
+  const { newInterventionData } = useAppSelector(scenarios);
+  const { type } = newInterventionData;
 
   const {
     register,
@@ -36,18 +41,20 @@ const Step2: FC = () => {
           <span className="mr-2.5">Supplier impacts per tone</span>
           <InfoTooltip />
         </legend>
-        <div className="flex items-center justify-between mt-4">
-          <div className="flex items-center">
-            <Checkbox
-              id="landgriffon_estimates"
-              name="landgriffon_estimates"
-              onChange={handleValues}
-            />
-            <Label htmlFor="landgriffon_estimates" className="ml-2 mt-1">
-              Use LandGriffon location-based estimates.
-            </Label>
+        {type !== 'Change production efficiency' && (
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex items-center">
+              <Checkbox
+                id="landgriffon_estimates"
+                name="landgriffon_estimates"
+                onChange={handleValues}
+              />
+              <Label htmlFor="landgriffon_estimates" className="ml-2 mt-1">
+                Use LandGriffon location-based estimates.
+              </Label>
+            </div>
           </div>
-        </div>
+        )}
         <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
           {data.map((indicator) => (
             <div key={indicator.name}>
@@ -63,9 +70,11 @@ const Step2: FC = () => {
                 error={errors?.[indicator.id]}
                 showHint={false}
               />
-              <Hint>
-                Current value {indicator.value} {indicator.unit}
-              </Hint>
+              {type === 'Change production efficiency' && (
+                <Hint>
+                  Current value {indicator.value} {indicator.unit}
+                </Hint>
+              )}
             </div>
           ))}
         </div>

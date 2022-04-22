@@ -45,6 +45,7 @@ const Step2: FC = () => {
           <div className="flex items-center justify-between mt-4">
             <div className="flex items-center">
               <Checkbox
+                {...register('landgriffonEstimates')}
                 id="landgriffon_estimates"
                 name="landgriffon_estimates"
                 onChange={handleValues}

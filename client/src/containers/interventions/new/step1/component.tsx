@@ -2,7 +2,6 @@ import { useCallback, useMemo, FC, useEffect, useState } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { isEmpty } from 'lodash';
 
 // hooks
 import { useAppDispatch, useAppSelector } from 'store/hooks';
@@ -15,6 +14,7 @@ import {
   resetInterventionData,
   ScenariosState,
 } from 'store/features/analysis/scenarios';
+import { useCreateNewIntervention, useUpdateIntervention } from 'hooks/interventions';
 
 // components
 import Input from 'components/forms/input';
@@ -27,6 +27,8 @@ import Materials from 'containers/interventions/smart-filters/materials/componen
 import Suppliers from 'containers/interventions/smart-filters/suppliers/component';
 import OriginRegions from 'containers/interventions/smart-filters/origin-regions/component';
 import BusinessUnits from 'containers/interventions/smart-filters/business-units';
+
+import toast from 'react-hot-toast';
 
 // types
 import type { SelectOption, SelectOptions } from 'components/select/types';
@@ -50,7 +52,10 @@ const errorMessage = 'Please select all the missing fields';
 const Step1: FC = () => {
   const dispatch = useAppDispatch();
   const interventionTypes = useInterventionTypes();
-  const { newInterventionData } = useAppSelector(scenarios);
+  const { currentScenario, interventionMode, currentIntervention, newInterventionData } =
+    useAppSelector(scenarios);
+
+  const { type } = newInterventionData;
 
   const optionsInterventionType: SelectOptions = useMemo(
     () =>
@@ -98,14 +103,74 @@ const Step1: FC = () => {
     endYear,
   } = newInterventionData;
 
+  const createIntervention = useCreateNewIntervention();
+  const updateIntervention = useUpdateIntervention();
+
+  const hasErrors = Object.keys(errors).length > 0;
+
   const handleContinue = useCallback(
     (values) => {
-      if (isEmpty(errors)) {
+      if (!hasErrors) {
         dispatch(setNewInterventionData(values));
         dispatch(setNewInterventionStep(2));
+        if (type === 'Change production efficiency') {
+          const parsedData = {
+            scenarioId: currentScenario,
+            title: values.title || newInterventionData.title,
+            interventionDescription:
+              values.interventionDescription || newInterventionData.interventionDescription,
+            percentage: Number(values.percentage) || Number(newInterventionData.percentage),
+            materialIds: values.materialIds || newInterventionData.materialIds,
+            businessUnitIds: values.businessUnitIds || newInterventionData.businessUnitIds,
+            startYear: Number(values.endYear) || Number(newInterventionData.endYear),
+            endYear: Number(values.endYear) || Number(newInterventionData.endYear),
+            type,
+            supplierIds: values.supplierIds || newInterventionData.supplierIds,
+            adminRegionIds: values.adminRegionIds || newInterventionData.adminRegionIds,
+          };
+          if (interventionMode === 'create') {
+            createIntervention.mutate(parsedData, {
+              onSuccess: () => {
+                console.info('Pre-calculating LG estimated values for this intervention');
+              },
+              onError: () => {
+                toast.error('There has been a problem, try again');
+              },
+            });
+          }
+
+          if (interventionMode === 'edit') {
+            updateIntervention.mutate(
+              {
+                id: currentIntervention,
+                data: {
+                  ...parsedData,
+                },
+              },
+              {
+                onSuccess: () => {
+                  console.info('Pre-calculating LG estimated values for this intervention');
+                },
+                onError: () => {
+                  toast.error('There has been a problem, try again');
+                },
+              },
+            );
+          }
+        }
       }
     },
-    [dispatch, errors],
+    [
+      dispatch,
+      errors,
+      currentIntervention,
+      currentScenario,
+      newInterventionData,
+      type,
+      createIntervention,
+      interventionMode,
+      updateIntervention,
+    ],
   );
 
   // To - Do - get rid of this use effect. Currently being used to preserve previous data
@@ -327,7 +392,7 @@ const Step1: FC = () => {
         </div>
       </div>
       <div className="flex justify-between items-center">
-        {!isEmpty(errors) && (
+        {hasErrors && (
           <div className="mt-2 text-sm text-red-600">
             <p className="first-letter:uppercase">{errorMessage}</p>
           </div>

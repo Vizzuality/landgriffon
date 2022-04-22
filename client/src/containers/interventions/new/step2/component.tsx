@@ -42,10 +42,22 @@ const schemaValidation = yup.object({
     is: 'Switch to a new material' || 'Source from new supplier or location',
     then: yup.string().required(),
   }),
-  DF_LUC_T: yup.number().required(),
-  UWU_T: yup.number().required(),
-  BL_LUC_T: yup.number().required(),
-  GHG_LUC_T: yup.number().required(),
+  DF_LUC_T: yup.number().when('landgriffonEstimates', {
+    is: 'true',
+    then: yup.number().required(),
+  }),
+  UWU_T: yup.number().when('landgriffonEstimates', {
+    is: 'true',
+    then: yup.number().required(),
+  }),
+  BL_LUC_T: yup.number().when('landgriffonEstimates', {
+    is: 'true',
+    then: yup.number().required(),
+  }),
+  GHG_LUC_T: yup.number().when('landgriffonEstimates', {
+    is: 'true',
+    then: yup.number().required(),
+  }),
 });
 
 const errorMessage = 'Please complete all the missing fields';
@@ -129,16 +141,9 @@ const Step2: FC = () => {
           },
         );
       }
-      createIntervention.mutate(parsedData, {
-        onSuccess: () => {
-          toast.success('A new intervention has been created');
-        },
-        onError: () => {
-          toast.error('There has been a problem creating the intervention');
-        },
-      });
     },
     [
+      dispatch,
       currentScenario,
       currentIntervention,
       newInterventionData,

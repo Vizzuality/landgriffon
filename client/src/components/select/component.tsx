@@ -1,6 +1,6 @@
 import { Fragment, useCallback, useEffect, useState, useMemo } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
-import { ChevronDownIcon, ChevronUpIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
+import { ChevronUpIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
 import Fuse from 'fuse.js';
 
@@ -32,23 +32,21 @@ const THEMES = {
   },
 };
 
-const Select: React.FC<SelectProps> = (props: SelectProps) => {
-  const {
-    showSearch = false,
-    disabled = false,
-    label,
-    options = [],
-    current = null,
-    allowEmpty = false,
-    loading = false,
-    placeholder = null,
-    searchPlaceholder = 'Search',
-    onChange,
-    onSearch,
-    theme = 'default',
-    error = false,
-  } = props;
-
+const Select: React.FC<SelectProps> = ({
+  showSearch = false,
+  disabled = false,
+  label,
+  options = [],
+  current = null,
+  allowEmpty = false,
+  loading = false,
+  placeholder = null,
+  searchPlaceholder = 'Search',
+  onChange,
+  onSearch,
+  theme = 'default',
+  error = false,
+}) => {
   const [selected, setSelected] = useState<SelectProps['current']>(current);
   const [searchTerm, setSearchTerm] = useState<string>('');
 
@@ -57,7 +55,7 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
   const handleSearch = useCallback(
     (e) => {
       setSearchTerm(e.currentTarget.value);
-      if (onSearch) onSearch(e.currentTarget.value);
+      onSearch?.(e.currentTarget.value);
     },
     [onSearch],
   );
@@ -137,11 +135,10 @@ const Select: React.FC<SelectProps> = (props: SelectProps) => {
                 'text-red-600': !!error,
               })}
             >
-              {open ? (
-                <ChevronUpIcon className="h-4 w-4" aria-hidden="true" />
-              ) : (
-                <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
-              )}
+              <ChevronUpIcon
+                className={classNames('h-4 w-4', { 'rotate-180': open })}
+                aria-hidden="true"
+              />
             </span>
 
             <Transition

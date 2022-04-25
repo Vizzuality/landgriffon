@@ -176,6 +176,109 @@ export const groupByMaterialNestedResponseData = {
   ],
 };
 
+export const groupByMaterialNestedResponseDataForGrandchild = {
+  rows: [
+    {
+      name: 'Fake Material Parent',
+      values: [
+        {
+          year: 2010,
+          value: 1000,
+          isProjected: false,
+        },
+        {
+          year: 2011,
+          value: 1050,
+          isProjected: false,
+        },
+        {
+          year: 2012,
+          value: 1100,
+          isProjected: false,
+        },
+        {
+          year: 2013,
+          value: 1116.5,
+          isProjected: true,
+        },
+      ],
+      children: [
+        {
+          name: 'Fake Material Child',
+          values: [
+            {
+              year: 2010,
+              value: 1000,
+              isProjected: false,
+            },
+            {
+              year: 2011,
+              value: 1050,
+              isProjected: false,
+            },
+            {
+              year: 2012,
+              value: 1100,
+              isProjected: false,
+            },
+            {
+              year: 2013,
+              value: 1116.5,
+              isProjected: true,
+            },
+          ],
+          children: [
+            {
+              name: 'Fake Material Grandchild',
+              values: [
+                {
+                  year: 2010,
+                  value: 1000,
+                  isProjected: false,
+                },
+                {
+                  year: 2011,
+                  value: 1050,
+                  isProjected: false,
+                },
+                {
+                  year: 2012,
+                  value: 1100,
+                  isProjected: false,
+                },
+                {
+                  year: 2013,
+                  value: 1116.5,
+                  isProjected: true,
+                },
+              ],
+              children: [],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  yearSum: [
+    {
+      year: 2010,
+      value: 1000,
+    },
+    {
+      year: 2011,
+      value: 1050,
+    },
+    {
+      year: 2012,
+      value: 1100,
+    },
+    {
+      year: 2013,
+      value: 1116.5,
+    },
+  ],
+};
+
 export const groupByOriginResponseData = {
   rows: [
     {

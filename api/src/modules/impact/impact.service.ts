@@ -101,14 +101,10 @@ export class ImpactService {
          * Filter out ids to only include descendants of
          * paginated root elements
          */
-        const materialIds: string[] = this.getIdsFromTree(
+        impactTableDto.materialIds = this.getIdsFromTree(
           entitiesWithPagination.entities,
+          impactTableDto.materialIds,
         );
-        impactTableDto.materialIds = impactTableDto.materialIds
-          ? impactTableDto.materialIds.filter((value: string) =>
-              materialIds.includes(value),
-            )
-          : materialIds;
         break;
       case GROUP_BY_VALUES.REGION:
         if (impactTableDto.originIds) {
@@ -126,14 +122,10 @@ export class ImpactService {
           entitiesWithPagination.entities,
           fetchSpecification,
         );
-        const originIds: string[] = this.getIdsFromTree(
+        impactTableDto.originIds = this.getIdsFromTree(
           entitiesWithPagination.entities,
+          impactTableDto.originIds,
         );
-        impactTableDto.originIds = impactTableDto.originIds
-          ? impactTableDto.originIds.filter((value: string) =>
-              originIds.includes(value),
-            )
-          : originIds;
         break;
       case GROUP_BY_VALUES.SUPPLIER:
         if (impactTableDto.supplierIds) {
@@ -151,15 +143,8 @@ export class ImpactService {
         );
         impactTableDto.supplierIds = this.getIdsFromTree(
           entitiesWithPagination.entities,
+          impactTableDto.supplierIds,
         );
-        const supplierIds: string[] = this.getIdsFromTree(
-          entitiesWithPagination.entities,
-        );
-        impactTableDto.supplierIds = impactTableDto.supplierIds
-          ? impactTableDto.supplierIds.filter((value: string) =>
-              supplierIds.includes(value),
-            )
-          : supplierIds;
         break;
       case GROUP_BY_VALUES.BUSINESS_UNIT:
         entitiesWithPagination.entities =
@@ -394,12 +379,23 @@ export class ImpactService {
     });
   }
 
-  private getIdsFromTree(entities: ImpactTableEntityType[]): string[] {
-    return entities.reduce((ids: string[], entity: ImpactTableEntityType) => {
-      const childIds: string[] =
-        entity.children.length > 0 ? this.getIdsFromTree(entity.children) : [];
-      return [...ids, ...childIds, entity.id];
-    }, []);
+  private getIdsFromTree(
+    entities: ImpactTableEntityType[],
+    entityIds?: string[],
+  ): string[] {
+    const idsFromTree: string[] = entities.reduce(
+      (ids: string[], entity: ImpactTableEntityType) => {
+        const childIds: string[] =
+          entity.children.length > 0
+            ? this.getIdsFromTree(entity.children)
+            : [];
+        return [...ids, ...childIds, entity.id];
+      },
+      [],
+    );
+    return entityIds
+      ? entityIds.filter((value: string) => idsFromTree.includes(value))
+      : idsFromTree;
   }
 
   private static paginateRootElements(

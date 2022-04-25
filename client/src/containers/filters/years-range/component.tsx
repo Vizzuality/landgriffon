@@ -1,7 +1,8 @@
-import React, { useRef, useEffect, useState, Fragment } from 'react';
+import React, { useRef, useEffect, useState, Fragment, useCallback, useMemo } from 'react';
 import { useOutsideClick } from 'rooks';
 import { Transition } from '@headlessui/react';
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
+import { ChevronUpIcon } from '@heroicons/react/solid';
+import cx from 'classnames';
 
 import Select from 'components/select';
 import type { SelectOption } from 'components/select/types';
@@ -66,8 +67,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
   useEffect(() => {
     if (!startYearOption || !endYearOption) return;
     if (startYear === startYearOption.value && endYear === endYearOption.value) return;
-    onChange &&
-      onChange({ startYear: Number(startYearOption.value), endYear: Number(endYearOption.value) });
+    onChange?.({ startYear: Number(startYearOption.value), endYear: Number(endYearOption.value) });
   }, [
     startYear,
     endYear,
@@ -84,6 +84,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
 
   // Prevent display when not loaded
   if (!isLoaded) return null;
+
   return (
     <div ref={wrapperRef} className="relative">
       <button
@@ -99,11 +100,12 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
           </span>
         </span>
         <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-          {isOpen ? (
-            <ChevronUpIcon className="w-5 h-5 text-gray-900" aria-hidden="true" />
-          ) : (
-            <ChevronDownIcon className="w-5 h-5 text-gray-900" aria-hidden="true" />
-          )}
+          <ChevronUpIcon
+            className={cx('w-5 h-5 text-gray-900', {
+              'rotate-180': isOpen,
+            })}
+            aria-hidden="true"
+          />
         </span>
       </button>
       <Transition
@@ -137,6 +139,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
                   current={endYearOption}
                   onChange={setEndYearOption}
                   onSearch={onEndYearSearch}
+                  searchPlaceholder="Search or create"
                 />
               </div>
             </div>

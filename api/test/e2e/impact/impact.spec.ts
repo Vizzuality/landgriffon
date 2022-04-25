@@ -39,6 +39,7 @@ import { getApp } from '../../utils/getApp';
 import {
   groupByBusinessUnitResponseData,
   groupByMaterialNestedResponseData,
+  groupByMaterialNestedResponseDataForGrandchild,
   groupByMaterialResponseData,
   groupByOriginResponseData,
   groupBySupplierResponseData,
@@ -492,11 +493,11 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       });
       const childMaterial: Material = await createMaterial({
         name: 'Fake Material Child',
-        parentId: parentMaterial.id,
+        parent: parentMaterial,
       });
       const grandchildMaterial: Material = await createMaterial({
         name: 'Fake Material Grandchild',
-        parentId: childMaterial.id,
+        parent: childMaterial,
       });
 
       const businessUnit: BusinessUnit = await createBusinessUnit({
@@ -577,7 +578,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           'indicatorIds[]': [indicator.id],
-          'materialIds[]': [grandchildMaterial.id],
+          'materialIds[]': [childMaterial.id],
           endYear: 2013,
           startYear: 2010,
           groupBy: 'material',
@@ -589,6 +590,36 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       );
       expect(responseWithFilter.body.data.impactTable[0].yearSum).toEqual(
         expect.arrayContaining(groupByMaterialNestedResponseData.yearSum),
+      );
+
+      const responseWithGrandchildFilter = await request(app.getHttpServer())
+        .get('/api/v1/impact/table')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [indicator.id],
+          'materialIds[]': [grandchildMaterial.id],
+          endYear: 2013,
+          startYear: 2010,
+          groupBy: 'material',
+        })
+        .expect(HttpStatus.OK);
+
+      expect(
+        responseWithGrandchildFilter.body.data.impactTable[0].rows,
+      ).toHaveLength(1);
+      expect(
+        responseWithGrandchildFilter.body.data.impactTable[0].rows,
+      ).toEqual(
+        expect.arrayContaining(
+          groupByMaterialNestedResponseDataForGrandchild.rows,
+        ),
+      );
+      expect(
+        responseWithGrandchildFilter.body.data.impactTable[0].yearSum,
+      ).toEqual(
+        expect.arrayContaining(
+          groupByMaterialNestedResponseDataForGrandchild.yearSum,
+        ),
       );
     });
 

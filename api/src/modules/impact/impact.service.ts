@@ -96,9 +96,19 @@ export class ImpactService {
           entitiesWithPagination.entities,
           fetchSpecification,
         );
-        impactTableDto.materialIds = this.getIdsFromTree(
+
+        /*
+         * Filter out ids to only include descendants of
+         * paginated root elements
+         */
+        const materialIds: string[] = this.getIdsFromTree(
           entitiesWithPagination.entities,
         );
+        impactTableDto.materialIds = impactTableDto.materialIds
+          ? impactTableDto.materialIds.filter((value: string) =>
+              materialIds.includes(value),
+            )
+          : materialIds;
         break;
       case GROUP_BY_VALUES.REGION:
         if (impactTableDto.originIds) {
@@ -116,9 +126,14 @@ export class ImpactService {
           entitiesWithPagination.entities,
           fetchSpecification,
         );
-        impactTableDto.originIds = this.getIdsFromTree(
+        const originIds: string[] = this.getIdsFromTree(
           entitiesWithPagination.entities,
         );
+        impactTableDto.originIds = impactTableDto.originIds
+          ? impactTableDto.originIds.filter((value: string) =>
+              originIds.includes(value),
+            )
+          : originIds;
         break;
       case GROUP_BY_VALUES.SUPPLIER:
         if (impactTableDto.supplierIds) {
@@ -137,6 +152,14 @@ export class ImpactService {
         impactTableDto.supplierIds = this.getIdsFromTree(
           entitiesWithPagination.entities,
         );
+        const supplierIds: string[] = this.getIdsFromTree(
+          entitiesWithPagination.entities,
+        );
+        impactTableDto.supplierIds = impactTableDto.supplierIds
+          ? impactTableDto.supplierIds.filter((value: string) =>
+              supplierIds.includes(value),
+            )
+          : supplierIds;
         break;
       case GROUP_BY_VALUES.BUSINESS_UNIT:
         entitiesWithPagination.entities =
@@ -150,6 +173,7 @@ export class ImpactService {
         break;
       default:
     }
+
     // Check if any ids are left after pagination, not to pass empty array
     const dataForImpactTable: ImpactTableData[] =
       entitiesWithPagination.entities.length > 0
@@ -377,6 +401,7 @@ export class ImpactService {
       return [...ids, ...childIds, entity.id];
     }, []);
   }
+
   private static paginateRootElements(
     entities: ImpactTableEntityType[],
     fetchSpecification: FetchSpecification,

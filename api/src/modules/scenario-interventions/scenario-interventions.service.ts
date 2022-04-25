@@ -141,25 +141,6 @@ export class ScenarioInterventionsService extends AppBaseService<
       throw new BadRequestException('No actual data for requested filters');
     }
 
-    // Add replaced organisational entity info to newly created Intervention
-    if (dto.materialIds.length) {
-      newScenarioIntervention.replacedMaterials =
-        await this.materialService.getMaterialsById(dto.materialIds);
-    }
-    if (dto.businessUnitIds.length) {
-      newScenarioIntervention.replacedBusinessUnits =
-        await this.businessUnitService.getBusinessUnitsById(
-          dto.businessUnitIds,
-        );
-    }
-    if (dto.supplierIds.length) {
-      newScenarioIntervention.replacedSuppliers =
-        await this.suppliersService.getSuppliersById(dto.supplierIds);
-    }
-    if (dto.adminRegionIds?.length) {
-      newScenarioIntervention.replacedAdminRegions =
-        await this.adminRegionService.getAdminRegionsById(dto.adminRegionIds);
-    }
     /**
      * NEW SOURCING LOCATIONS #1 - Basically copies of the actual existing Sourcing Locations that will be replaced by intervention,
      * saved one more time but with the scenarioInterventionId and type 'CANCELED' related to intervention
@@ -168,7 +149,7 @@ export class ScenarioInterventionsService extends AppBaseService<
     // Creating array for new locations with intervention type CANCELED and reference to the new Intervention Id
 
     const newCancelledByInterventionLocationsData: CreateSourcingLocationDto[] =
-      await this.createSourcingLocationsObjectsForIntervention(
+      await this.createNewSourcingLocationsForIntervention(
         actualSourcingDataWithTonnage,
         SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
       );
@@ -183,6 +164,21 @@ export class ScenarioInterventionsService extends AppBaseService<
     newScenarioIntervention.replacedSourcingLocations =
       cancelledInterventionSourcingLocations;
 
+    // Add replaced Entities to new Scenario Intervention
+    cancelledInterventionSourcingLocations.forEach(
+      (cancelledSourcingLocation: SourcingLocation) => {
+        newScenarioIntervention.replacedAdminRegions?.push(
+          cancelledSourcingLocation.adminRegion,
+        );
+        newScenarioIntervention.replacedBusinessUnits?.push(
+          cancelledSourcingLocation.businessUnit,
+        );
+        newScenarioIntervention.replacedMaterials?.push(
+          cancelledSourcingLocation.material,
+        );
+      },
+    );
+
     /**
      * NEW SOURCING LOCATIONS #2 - The ones of the Intervention, will replace the CANCELED ones
      * Depending on the intervention type
@@ -193,7 +189,7 @@ export class ScenarioInterventionsService extends AppBaseService<
     switch (dto.type) {
       case SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL:
         const newMaterialInterventionLocation: SourcingData[] =
-          await this.createSourcingLocationsDataForNewMaterialIntervention(
+          await this.createNewReplacingSourcingLocationsForNewMaterialIntervention(
             dto,
             actualSourcingDataWithTonnage,
           );
@@ -223,7 +219,7 @@ export class ScenarioInterventionsService extends AppBaseService<
 
       case SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER:
         const newSupplerInterventionLocations: SourcingData[] =
-          await this.createSourcingLocationsDataForNewSupplierIntervention(
+          await this.createNewReplacingSourcingLocationsForNewSupplierIntervention(
             dto,
             actualSourcingDataWithTonnage,
           );
@@ -251,7 +247,7 @@ export class ScenarioInterventionsService extends AppBaseService<
 
       case SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY:
         const newEfficiencyChangeInterventionLocations: CreateSourcingLocationDto[] =
-          await this.createSourcingLocationsObjectsForIntervention(
+          await this.createNewSourcingLocationsForIntervention(
             actualSourcingDataWithTonnage,
             SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
           );
@@ -279,6 +275,24 @@ export class ScenarioInterventionsService extends AppBaseService<
         break;
     }
 
+    // Add new replaced Entities to new Scenario Intervention
+
+    newScenarioIntervention.newSourcingLocations?.forEach(
+      (newSourcingLocation: SourcingLocation) => {
+        newScenarioIntervention.newMaterial = newSourcingLocation.material;
+
+        newScenarioIntervention.newBusinessUnit =
+          newSourcingLocation.businessUnit;
+
+        newScenarioIntervention.newT1Supplier = newSourcingLocation.t1Supplier;
+
+        newScenarioIntervention.newProducer = newSourcingLocation.producer;
+
+        newScenarioIntervention.newAdminRegion =
+          newSourcingLocation.adminRegion;
+      },
+    );
+
     /**
      * After both sets of new Sourcing Locations with Sourcing Record (and Impact Records in the future) for the start year has been created
      * and added as relations to the new Scenario Intervention, saving the new Scenario intervention in database
@@ -299,7 +313,7 @@ export class ScenarioInterventionsService extends AppBaseService<
    * received from user in create-intervention dto. However, the tonnage of the New Intervention must be taken as a sum of all tonnages of the Sourcing Locations
    * that are being canceled by the Intervention, and multiplied by the percentage selected by the user
    */
-  async createSourcingLocationsDataForNewMaterialIntervention(
+  async createNewReplacingSourcingLocationsForNewMaterialIntervention(
     dto: CreateScenarioInterventionDto,
     sourcingData: SourcingLocationWithRecord[],
   ): Promise<SourcingData[]> {
@@ -348,7 +362,7 @@ export class ScenarioInterventionsService extends AppBaseService<
    * (received from dto and geocoded to add new AdminRegion and GeoRegion)
    */
 
-  async createSourcingLocationsDataForNewSupplierIntervention(
+  async createNewReplacingSourcingLocationsForNewSupplierIntervention(
     dto: CreateScenarioInterventionDto,
     sourcingData: SourcingLocationWithRecord[],
   ): Promise<SourcingData[]> {
@@ -406,7 +420,7 @@ export class ScenarioInterventionsService extends AppBaseService<
    * do not affect material, neither supplier location - changes of coefficients will be applied in the moment of calculating new impact of the Intervention
    */
 
-  async createSourcingLocationsObjectsForIntervention(
+  async createNewSourcingLocationsForIntervention(
     sourcingData: SourcingLocationWithRecord[],
     canceledOrReplacing: SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   ): Promise<SourcingData[]> {

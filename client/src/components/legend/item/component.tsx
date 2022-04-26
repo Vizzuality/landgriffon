@@ -4,6 +4,7 @@ import { InformationCircleIcon } from '@heroicons/react/outline';
 import Toggle from 'components/toggle';
 import Loading from 'components/loading';
 import OpacityControl from './opacityControl';
+import DragHandle from './dragHandle';
 
 export type LegendItemProps = {
   name: string | JSX.Element;
@@ -47,6 +48,8 @@ export const LegendItem: React.FC<LegendItemProps> = ({
   return (
     <div className="p-4 space-y-4">
       {isLoading && <Loading />}
+      <DragHandle />
+
       {!isLoading && name && (
         <div className="w-full flex">
           <div className="grow flex items-start justify-between">

@@ -21,7 +21,9 @@ import type { LegendItem as LegendItemProp } from 'types';
 const LAYER_ID = 'material'; // should match with redux
 // const HEXAGON_HIGHLIGHT_COLOR = [0, 0, 0];
 
-export const useMaterialLayer = () => {
+export const useMaterialLayer: () => ReturnType<typeof useH3MaterialData> & {
+  layer: H3HexagonLayer;
+} = () => {
   const dispatch = useAppDispatch();
   const { indicator } = useAppSelector(analysisFilters);
   const {

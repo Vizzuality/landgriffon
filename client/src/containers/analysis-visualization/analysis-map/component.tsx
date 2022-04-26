@@ -30,7 +30,7 @@ const INITIAL_VIEW_STATE = {
 };
 
 const AnalysisMap: React.FC = () => {
-  const { tooltipData, tooltipPosition } = useAppSelector(analysisMap);
+  const { tooltipData, tooltipPosition, layers: layerProps } = useAppSelector(analysisMap);
   const [isRendering, setIsRendering] = useState(false);
 
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
@@ -39,10 +39,13 @@ const AnalysisMap: React.FC = () => {
   const impactLayer = useImpactLayer();
   const materialLayer = useMaterialLayer();
   const riskLayer = useRiskLayer();
-  const layers = useMemo(
-    () => [impactLayer.layer, materialLayer.layer, riskLayer.layer],
-    [impactLayer.layer, materialLayer.layer, riskLayer.layer],
-  );
+
+  const layers = useMemo(() => {
+    return [impactLayer, materialLayer, riskLayer]
+      .sort((a, b) => layerProps[b.layer.id].order - layerProps[a.layer.id].order)
+      .map((layer) => layer.layer);
+  }, [impactLayer, layerProps, materialLayer, riskLayer]);
+
   const isError = materialLayer.isError || impactLayer.isError || riskLayer.isError;
   const isFetching = materialLayer.isFetching || impactLayer.isFetching || riskLayer.isFetching;
 

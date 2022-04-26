@@ -27,10 +27,7 @@ import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.se
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
-import { MaterialsService } from 'modules/materials/materials.service';
-import { BusinessUnitsService } from 'modules/business-units/business-units.service';
-import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
-import { SuppliersService } from 'modules/suppliers/suppliers.service';
+import { InterventionGeneratorService } from 'modules/scenario-interventions/services/intervention-generator.service';
 
 @Injectable()
 export class ScenarioInterventionsService extends AppBaseService<
@@ -42,13 +39,10 @@ export class ScenarioInterventionsService extends AppBaseService<
   constructor(
     @InjectRepository(ScenarioInterventionRepository)
     protected readonly scenarioInterventionRepository: ScenarioInterventionRepository,
+    protected readonly interventionGenerator: InterventionGeneratorService,
     protected readonly geoCodingService: GeoCodingAbstractClass,
     protected readonly sourcingLocationsService: SourcingLocationsService,
     protected readonly indicatorRecordsService: IndicatorRecordsService,
-    protected readonly materialService: MaterialsService,
-    protected readonly businessUnitService: BusinessUnitsService,
-    protected readonly adminRegionService: AdminRegionsService,
-    protected readonly suppliersService: SuppliersService,
   ) {
     super(
       scenarioInterventionRepository,
@@ -104,37 +98,15 @@ export class ScenarioInterventionsService extends AppBaseService<
     /**
      *  Getting descendants of adminRegions, materials, suppliers adn businessUnits received as filters, if exists
      */
-
-    dto.materialIds = await this.materialService.getMaterialsDescendants(
-      dto.materialIds,
-    );
-
-    dto.adminRegionIds =
-      await this.adminRegionService.getAdminRegionDescendants(
-        dto.adminRegionIds,
-      );
-
-    dto.supplierIds = await this.suppliersService.getSuppliersDescendants(
-      dto.supplierIds,
-    );
-
-    dto.businessUnitIds =
-      await this.businessUnitService.getBusinessUnitsDescendants(
-        dto.businessUnitIds,
-      );
-    /**
-     *  Creating New Intervention to be saved in scenario_interventions table
-     */
-    const newScenarioIntervention: ScenarioIntervention =
-      new ScenarioIntervention();
-    Object.assign(newScenarioIntervention, dto);
+    const dtoWithDescendants: CreateScenarioInterventionDto =
+      await this.interventionGenerator.addDescendantsEntitiesForFiltering(dto);
 
     /**
      * Getting Sourcing Locations and Sourcing Records for start year of all Materials of the intervention with applied filters
      */
     const actualSourcingDataWithTonnage: SourcingLocationWithRecord[] =
       await this.sourcingLocationsService.findFilteredSourcingLocationsForIntervention(
-        dto,
+        dtoWithDescendants,
       );
 
     if (!actualSourcingDataWithTonnage.length) {
@@ -161,23 +133,22 @@ export class ScenarioInterventionsService extends AppBaseService<
         newCancelledByInterventionLocationsData,
       );
 
-    newScenarioIntervention.replacedSourcingLocations =
-      cancelledInterventionSourcingLocations;
+    /**
+     *  Creating New Intervention to be saved in scenario_interventions table
+     */
+
+    const newScenarioIntervention: ScenarioIntervention =
+      await this.interventionGenerator.createInterventionInstance(
+        dtoWithDescendants,
+      );
 
     // Add replaced Entities to new Scenario Intervention
-    cancelledInterventionSourcingLocations.forEach(
-      (cancelledSourcingLocation: SourcingLocation) => {
-        newScenarioIntervention.replacedAdminRegions?.push(
-          cancelledSourcingLocation.adminRegion,
-        );
-        newScenarioIntervention.replacedBusinessUnits?.push(
-          cancelledSourcingLocation.businessUnit,
-        );
-        newScenarioIntervention.replacedMaterials?.push(
-          cancelledSourcingLocation.material,
-        );
-      },
-    );
+
+    const newInterventionWithReplacedElements: ScenarioIntervention =
+      await this.interventionGenerator.addReplacedElementsToIntervention(
+        newScenarioIntervention,
+        cancelledInterventionSourcingLocations,
+      );
 
     /**
      * NEW SOURCING LOCATIONS #2 - The ones of the Intervention, will replace the CANCELED ones
@@ -212,7 +183,7 @@ export class ScenarioInterventionsService extends AppBaseService<
           );
         }
 
-        newScenarioIntervention.newSourcingLocations =
+        newInterventionWithReplacedElements.newSourcingLocations =
           newInterventionSourcingLocations;
 
         break;
@@ -243,6 +214,9 @@ export class ScenarioInterventionsService extends AppBaseService<
             dto.newIndicatorCoefficients,
           );
         }
+
+        newScenarioIntervention.newSourcingLocations =
+          newInterventionSourcingLocations;
         break;
 
       case SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY:
@@ -277,28 +251,13 @@ export class ScenarioInterventionsService extends AppBaseService<
 
     // Add new replaced Entities to new Scenario Intervention
 
-    newScenarioIntervention.newSourcingLocations?.forEach(
-      (newSourcingLocation: SourcingLocation) => {
-        newScenarioIntervention.newMaterial = newSourcingLocation.material;
-
-        newScenarioIntervention.newBusinessUnit =
-          newSourcingLocation.businessUnit;
-
-        newScenarioIntervention.newT1Supplier = newSourcingLocation.t1Supplier;
-
-        newScenarioIntervention.newProducer = newSourcingLocation.producer;
-
-        newScenarioIntervention.newAdminRegion =
-          newSourcingLocation.adminRegion;
-      },
-    );
-
     /**
      * After both sets of new Sourcing Locations with Sourcing Record (and Impact Records in the future) for the start year has been created
      * and added as relations to the new Scenario Intervention, saving the new Scenario intervention in database
      */
-
     return this.scenarioInterventionRepository.save(newScenarioIntervention);
+
+    //return this.scenarioInterventionRepository.save(newScenarioIntervention);
   }
 
   /**

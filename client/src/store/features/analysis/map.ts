@@ -66,7 +66,7 @@ type FeatureState = RootState & { 'analysis/map': AnalysisMapState };
 export const initialState: AnalysisMapState = {
   userLayers: [],
   layers: {
-    material: { id: 'h3-layer-material', ...DEFAULT_LAYER_ATTRIBUTES },
+    material: { id: 'h3-layer-material', ...DEFAULT_LAYER_ATTRIBUTES, order: 3 },
     risk: { id: 'h3-layer-risk', ...DEFAULT_LAYER_ATTRIBUTES },
     impact: {
       id: 'h3-layer-impact',
@@ -99,6 +99,12 @@ export const analysisMapSlice = createSlice({
         [action.payload.id]: { ...state.layers[action.payload.id], ...action.payload.layer },
       },
     }),
+    setLayerOrder: (state, action: PayloadAction<Layer['id'][]>) => {
+      Object.values(state.layers).forEach((layer) => {
+        layer.order = action.payload.indexOf(layer.id);
+      });
+      return state;
+    },
     // Add or update the user layer
     setUserLayer: (state, action: PayloadAction<Layer>) => {
       const layerExists = state.userLayers.find((layer) => layer.id === action.payload.id);
@@ -161,8 +167,14 @@ export const analysisMapSlice = createSlice({
   },
 });
 
-export const { setLayer, setUserLayer, setUserLayers, setTooltipData, setTooltipPosition } =
-  analysisMapSlice.actions;
+export const {
+  setLayer,
+  setUserLayer,
+  setUserLayers,
+  setTooltipData,
+  setTooltipPosition,
+  setLayerOrder,
+} = analysisMapSlice.actions;
 
 export const analysisMap = (state: FeatureState) => state['analysis/map'];
 

@@ -16,6 +16,8 @@ import {
   createMaterial,
   createScenario,
   createScenarioIntervention,
+  createSourcingLocation,
+  createSourcingRecord,
   createSupplier,
 } from '../../entity-mocks';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
@@ -46,6 +48,9 @@ import {
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
+import { BusinessUnitRepository } from '../../../src/modules/business-units/business-unit.repository';
+import { SupplierRepository } from '../../../src/modules/suppliers/supplier.repository';
+import { MaterialRepository } from '../../../src/modules/materials/material.repository';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -94,6 +99,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   let sourcingLocationRepository: SourcingLocationRepository;
   let sourcingRecordRepository: SourcingRecordRepository;
   let adminRegionRepository: AdminRegionRepository;
+  let businessUnitRepository: BusinessUnitRepository;
+  let supplierRepository: SupplierRepository;
+  let materialRepository: MaterialRepository;
   let geoRegionRepository: GeoRegionRepository;
   let jwtToken: string;
   let userId: string;
@@ -129,6 +137,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     );
     geoRegionRepository =
       moduleFixture.get<GeoRegionRepository>(GeoRegionRepository);
+    businessUnitRepository = moduleFixture.get<BusinessUnitRepository>(
+      BusinessUnitRepository,
+    );
+    supplierRepository =
+      moduleFixture.get<SupplierRepository>(SupplierRepository);
+    materialRepository =
+      moduleFixture.get<MaterialRepository>(MaterialRepository);
 
     app = getApp(moduleFixture);
     await app.init();
@@ -143,6 +158,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     await scenarioInterventionRepository.delete({});
     await adminRegionRepository.delete({});
     await geoRegionRepository.delete({});
+    await materialRepository.delete({});
+    await businessUnitRepository.delete({});
+    await supplierRepository.delete({});
   });
 
   afterAll(async () => {
@@ -189,13 +207,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'test scenario intervention',
       );
 
-      expect(response).toHaveJSONAPIAttributes([
-        ...expectedJSONAPIAttributes,
-        'replacedMaterials',
-        'replacedBusinessUnits',
-        'replacedAdminRegions',
-        'replacedSuppliers',
-      ]);
+      expect(response).toHaveJSONAPIAttributes([...expectedJSONAPIAttributes]);
 
       const allSourcingLocations: [SourcingLocation[], number] =
         await sourcingLocationRepository.findAndCount();
@@ -331,13 +343,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'scenario intervention supplier',
       );
 
-      expect(response).toHaveJSONAPIAttributes([
-        ...expectedJSONAPIAttributes,
-        'replacedMaterials',
-        'replacedBusinessUnits',
-        'replacedAdminRegions',
-        'replacedSuppliers',
-      ]);
+      expect(response).toHaveJSONAPIAttributes([...expectedJSONAPIAttributes]);
 
       const allSourcingLocations: [SourcingLocation[], number] =
         await sourcingLocationRepository.findAndCount();
@@ -462,13 +468,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'scenario intervention material',
       );
 
-      expect(response).toHaveJSONAPIAttributes([
-        ...expectedJSONAPIAttributes,
-        'replacedMaterials',
-        'replacedBusinessUnits',
-        'replacedAdminRegions',
-        'replacedSuppliers',
-      ]);
+      expect(response).toHaveJSONAPIAttributes([...expectedJSONAPIAttributes]);
 
       const allSourcingLocations: [SourcingLocation[], number] =
         await sourcingLocationRepository.findAndCount();
@@ -935,6 +935,124 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       ]);
       expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
     });
+  });
+
+  describe('Scenario Interventions - Only replacing / replaced elements as part of a Intervention', () => {
+    test(
+      'When I create an Intervention, But I receive as filters only Parent Element Ids' +
+        'And these Parent Element Ids are not present in Sourcing Locations' +
+        'Then the created Interventions should only have as replaced' +
+        'Those Elements that are present in Sourcing Locations',
+      async () => {
+        // ARRANGE
+
+        // Not included in Sourcing Locations
+        const parentAdminRegion: AdminRegion = await createAdminRegion({
+          name: 'parent admin region',
+        });
+        // Included in Sourcing Locations
+        const childAdminRegion: AdminRegion = await createAdminRegion({
+          name: 'child admin region',
+          parent: parentAdminRegion,
+        });
+        // Included in Sourcing Locations
+        const grandChildAdminRegion: AdminRegion = await createAdminRegion({
+          name: 'grand child admin region',
+          parent: childAdminRegion,
+        });
+        // Not included in Sourcing Locations
+        const parentMaterial: Material = await createMaterial({
+          name: 'parent material',
+        });
+        // Included in Sourcing Locations
+        const childMaterial: Material = await createMaterial({
+          name: 'child material',
+          parent: parentMaterial,
+        });
+        // Included in Sourcing Locations
+        const grandChildMaterial: Material = await createMaterial({
+          name: 'grand child material',
+          parent: childMaterial,
+        });
+        // Not included in Sourcing Locations
+        const parentBusinessUnit: BusinessUnit = await createBusinessUnit({
+          name: 'parent business unit',
+        });
+        // Included in Sourcing Locations
+        const childBusinessUnit: BusinessUnit = await createBusinessUnit({
+          name: 'child business unit',
+          parent: parentBusinessUnit,
+        });
+        // Not included in Sourcing Locations
+        const parentSupplier: Supplier = await createSupplier({
+          name: 'parent supplier',
+        });
+
+        const childSupplier: Supplier = await createSupplier({
+          name: 'child supplier',
+          parent: parentSupplier,
+        });
+
+        const sourcingRecord1: SourcingRecord = await createSourcingRecord({
+          year: 2020,
+        });
+        const sourcingRecord2: SourcingRecord = await createSourcingRecord({
+          year: 2020,
+        });
+
+        await createSourcingLocation({
+          adminRegion: grandChildAdminRegion,
+          material: grandChildMaterial,
+          businessUnit: childBusinessUnit,
+          t1Supplier: childSupplier,
+          sourcingRecords: [sourcingRecord1],
+        });
+
+        await createSourcingLocation({
+          adminRegion: childAdminRegion,
+          material: childMaterial,
+          businessUnit: childBusinessUnit,
+          t1Supplier: childSupplier,
+          sourcingRecords: [sourcingRecord2],
+        });
+        const scenario: Scenario = await createScenario();
+
+        // ACT
+        const response = await request(app.getHttpServer())
+          .post('/api/v1/scenario-interventions')
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send({
+            title: 'test scenario intervention',
+            startYear: 2020,
+            percentage: 50,
+            scenarioId: scenario.id,
+            materialIds: [parentMaterial.id],
+            supplierIds: [parentSupplier.id],
+            businessUnitIds: [parentBusinessUnit.id],
+            adminRegionIds: [parentAdminRegion.id],
+            type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          });
+
+        const intervention: ScenarioIntervention | undefined =
+          await scenarioInterventionRepository.findOne(response.body.data.id);
+
+        // ASSERT
+        expect(intervention).toBeTruthy();
+        expect(intervention?.replacedAdminRegions).toHaveLength(2);
+        expect(
+          intervention?.replacedAdminRegions
+            .map((el: AdminRegion) => el.id)
+            .sort(),
+        ).toEqual([childAdminRegion.id, grandChildAdminRegion.id].sort());
+        expect(
+          intervention?.replacedMaterials.map((el: Material) => el.id).sort(),
+        ).toEqual([childMaterial.id, grandChildMaterial.id].sort());
+        expect(intervention?.replacedBusinessUnits[0].id).toEqual(
+          childBusinessUnit.id,
+        );
+        expect(intervention?.replacedSuppliers[0].id).toEqual(childSupplier.id);
+      },
+    );
   });
 
   describe('Scenario interventions - Get by id', () => {

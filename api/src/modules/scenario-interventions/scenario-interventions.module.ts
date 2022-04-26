@@ -11,6 +11,7 @@ import { MaterialsModule } from 'modules/materials/materials.module';
 import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
 import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
+import { InterventionGeneratorService } from 'modules/scenario-interventions/services/intervention-generator.service';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { SuppliersModule } from 'modules/suppliers/suppliers.module';
     SuppliersModule,
   ],
   controllers: [ScenarioInterventionsController],
-  providers: [ScenarioInterventionsService],
+  providers: [ScenarioInterventionsService, InterventionGeneratorService],
   exports: [ScenarioInterventionsService],
 })
 export class ScenarioInterventionsModule {}

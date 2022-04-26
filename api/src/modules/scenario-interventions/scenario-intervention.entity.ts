@@ -93,7 +93,7 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
 
   @Column({ type: 'jsonb', nullable: true })
   @ApiProperty()
-  newIndicatorCoefficients!: JSON;
+  newIndicatorCoefficients?: JSON;
 
   @ManyToOne(
     () => Scenario,
@@ -112,19 +112,19 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
    */
   @ManyToMany(() => Material, { eager: true })
   @JoinTable()
-  replacedMaterials?: Material[];
+  replacedMaterials: Material[];
 
   @ManyToMany(() => BusinessUnit, { eager: true })
   @JoinTable()
-  replacedBusinessUnits?: BusinessUnit[];
+  replacedBusinessUnits: BusinessUnit[];
 
   @ManyToMany(() => Supplier, { eager: true })
   @JoinTable()
-  replacedSuppliers?: Supplier[];
+  replacedSuppliers: Supplier[];
 
   @ManyToMany(() => AdminRegion, { eager: true })
   @JoinTable()
-  replacedAdminRegions?: AdminRegion[];
+  replacedAdminRegions: AdminRegion[];
 
   @OneToMany(
     () => SourcingLocation,
@@ -135,27 +135,27 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   replacedSourcingLocations?: SourcingLocation[];
 
   /**
-   * Relationships with other entities - list of "new" relationships
+   * Relationships with other entities - list of "ne" relationships
    */
   @ManyToOne(() => Material, { eager: true })
   @ApiPropertyOptional({ type: () => Material })
-  newMaterial?: Material;
+  newMaterial: Material;
 
   @ManyToOne(() => BusinessUnit, { eager: true })
   @ApiPropertyOptional()
-  newBusinessUnit?: BusinessUnit;
+  newBusinessUnit: BusinessUnit;
 
   @ManyToOne(() => Supplier, { eager: true })
   @ApiPropertyOptional()
-  newT1Supplier?: Supplier;
+  newT1Supplier: Supplier;
 
   @ManyToOne(() => Supplier, { eager: true })
   @ApiPropertyOptional()
-  newProducer?: Supplier;
+  newProducer: Supplier;
 
   @ManyToOne(() => AdminRegion, { eager: true })
   @ApiPropertyOptional()
-  newAdminRegion?: AdminRegion;
+  newAdminRegion: AdminRegion;
 
   /**
    * New sourcing data, if intervention type involves supplier change:

@@ -141,7 +141,7 @@ export class SourcingLocation extends TimestampedBaseEntity {
 
   @Column({ nullable: true })
   @ApiPropertyOptional()
-  adminRegionId?: string;
+  adminRegionId: string;
 
   @ManyToOne(() => BusinessUnit, (bu: BusinessUnit) => bu.sourcingLocations, {
     eager: false,

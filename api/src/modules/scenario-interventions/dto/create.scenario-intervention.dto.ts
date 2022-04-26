@@ -170,7 +170,7 @@ export class CreateScenarioInterventionDto {
     enum: Object.values(LOCATION_TYPES),
     example: LOCATION_TYPES.POINT_OF_PRODUCTION,
   })
-  newLocationType?: LOCATION_TYPES;
+  newLocationType!: LOCATION_TYPES;
 
   @ValidateIf(
     (dto: CreateScenarioInterventionDto) =>

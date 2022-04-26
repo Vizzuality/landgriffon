@@ -207,7 +207,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'test scenario intervention',
       );
 
-      expect(response).toHaveJSONAPIAttributes([...expectedJSONAPIAttributes]);
+      expect(response).toHaveJSONAPIAttributes([
+        ...expectedJSONAPIAttributes,
+        'replacedMaterials',
+        'replacedBusinessUnits',
+        'replacedAdminRegions',
+        'replacedSuppliers',
+      ]);
 
       const allSourcingLocations: [SourcingLocation[], number] =
         await sourcingLocationRepository.findAndCount();
@@ -343,7 +349,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'scenario intervention supplier',
       );
 
-      expect(response).toHaveJSONAPIAttributes([...expectedJSONAPIAttributes]);
+      expect(response).toHaveJSONAPIAttributes([
+        ...expectedJSONAPIAttributes,
+        'replacedMaterials',
+        'replacedBusinessUnits',
+        'replacedAdminRegions',
+        'replacedSuppliers',
+      ]);
 
       const allSourcingLocations: [SourcingLocation[], number] =
         await sourcingLocationRepository.findAndCount();
@@ -468,7 +480,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'scenario intervention material',
       );
 
-      expect(response).toHaveJSONAPIAttributes([...expectedJSONAPIAttributes]);
+      expect(response).toHaveJSONAPIAttributes([
+        ...expectedJSONAPIAttributes,
+        'replacedMaterials',
+        'replacedBusinessUnits',
+        'replacedAdminRegions',
+        'replacedSuppliers',
+      ]);
 
       const allSourcingLocations: [SourcingLocation[], number] =
         await sourcingLocationRepository.findAndCount();

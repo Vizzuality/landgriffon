@@ -1,14 +1,27 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { ChevronDoubleLeftIcon } from '@heroicons/react/outline';
 import cx from 'classnames';
 
 import ImpactLegendItem from './impact-legend-item';
 import MaterialLegendItem from './material-legend-item';
 import RiskLegendItem from './risk-legend-item';
+import Sortable from 'containers/sortable';
+import { SortableItem } from 'containers/sortable/component';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { analysisMap, setLayerOrder } from 'store/features/analysis/map';
 
 export const Legend: React.FC = () => {
   const [showLegend, setShowLegend] = useState<boolean>(true); // by default the legend is not collapsed
   const [showContextualLayers, setShowContextualLayers] = useState<boolean>(false);
+
+  const dispatch = useAppDispatch();
+  const layers = useAppSelector(analysisMap).layers;
+
+  const orderedLayers = useMemo(() => {
+    return Object.values(layers)
+      .filter((legend) => legend.id !== 'h3-layer-impact')
+      .sort((a, b) => a.order - b.order);
+  }, [layers]);
 
   const handleShowLegend = useCallback(() => {
     setShowLegend(!showLegend);
@@ -17,6 +30,11 @@ export const Legend: React.FC = () => {
   const onToggleActive = useCallback(() => {
     setShowContextualLayers(!showContextualLayers);
   }, [showContextualLayers]);
+
+  const legends = useMemo(
+    () => ({ 'h3-layer-material': <MaterialLegendItem />, 'h3-layer-risk': <RiskLegendItem /> }),
+    [],
+  );
 
   return (
     <div className="relative">
@@ -36,14 +54,18 @@ export const Legend: React.FC = () => {
 
           {/* Contextual layers */}
           {showContextualLayers && (
-            <div className="relative flex flex-col flex-grow">
-              <div className="border-t border-gray-100">
-                <MaterialLegendItem />
-              </div>
-              <div className="border-t border-gray-100">
-                <RiskLegendItem />
-              </div>
-            </div>
+            <Sortable
+              items={orderedLayers.map((layer) => layer.id)}
+              onChangeOrder={(orderedIds) => {
+                dispatch(setLayerOrder([...orderedIds, 'h3-impact-layer']));
+              }}
+            >
+              {orderedLayers.map(({ id }) => (
+                <SortableItem key={id} id={id}>
+                  <div className="border-t border-gray-100">{legends[id]}</div>
+                </SortableItem>
+              ))}
+            </Sortable>
           )}
 
           {/* Main layer: it will be always active */}

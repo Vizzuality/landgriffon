@@ -45,7 +45,7 @@ export class CreateScenarioInterventionDto {
     enum: Object.values(SCENARIO_INTERVENTION_TYPE),
     example: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
   })
-  type!: string;
+  type!: SCENARIO_INTERVENTION_TYPE;
 
   @IsNumber()
   @IsNotEmpty()

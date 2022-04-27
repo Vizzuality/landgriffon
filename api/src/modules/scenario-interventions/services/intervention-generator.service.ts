@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import {
+  SCENARIO_INTERVENTION_TYPE,
+  ScenarioIntervention,
+} from 'modules/scenario-interventions/scenario-intervention.entity';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
@@ -10,6 +13,7 @@ import { Material } from 'modules/materials/material.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
+import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 
 /**
  * @description: Utility wrapper to encapsulate some logics regarding new intervention generation
@@ -119,8 +123,40 @@ export class InterventionGeneratorService {
 
   async addReplacingElementsToIntervention(
     newIntervention: ScenarioIntervention,
-    replacingSourcingLocations: SourcingLocation[],
+    newSourcingLocations: SourcingData[],
+    type: SCENARIO_INTERVENTION_TYPE,
   ): Promise<ScenarioIntervention> {
+    if (type === SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL) {
+      newIntervention.newMaterial = await this.materialService.getMaterialById(
+        newSourcingLocations[0].materialId,
+      );
+      newIntervention.newAdminRegion =
+        await this.adminRegionService.getAdminRegionById(
+          newSourcingLocations[0].adminRegionId!,
+        );
+    }
+    if (type === SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER) {
+      if (newSourcingLocations[0].producerId) {
+        newIntervention.newProducer =
+          await this.suppliersService.getSupplierById(
+            newSourcingLocations[0].producerId,
+          );
+        newIntervention.newAdminRegion =
+          await this.adminRegionService.getAdminRegionById(
+            newSourcingLocations[0].adminRegionId!,
+          );
+      }
+      if (newSourcingLocations[0].t1SupplierId) {
+        newIntervention.newT1Supplier =
+          await this.suppliersService.getSupplierById(
+            newSourcingLocations[0].t1SupplierId,
+          );
+        newIntervention.newAdminRegion =
+          await this.adminRegionService.getAdminRegionById(
+            newSourcingLocations[0].adminRegionId!,
+          );
+      }
+    }
     return newIntervention;
   }
 }

@@ -93,8 +93,8 @@ export class SourcingLocationsService extends AppBaseService<
   async findFilteredSourcingLocationsForIntervention(
     createInterventionDto: CreateScenarioInterventionDto,
   ): Promise<SourcingLocationWithRecord[]> {
-    const sourcingLocations: SourcingLocationWithRecord[] =
-      await this.sourcingLocationRepository
+    const queryBuilder: SelectQueryBuilder<SourcingLocation> =
+      this.sourcingLocationRepository
         .createQueryBuilder('sl')
         .select('sl.materialId', 'materialId')
         .addSelect('sl.businessUnitId', 'businessUnitId')
@@ -112,15 +112,6 @@ export class SourcingLocationsService extends AppBaseService<
         .where('sl."materialId" IN (:...materialIds)', {
           materialIds: createInterventionDto.materialIds,
         })
-        .andWhere(
-          new Brackets((qb: WhereExpressionBuilder) => {
-            qb.where('sl."t1SupplierId" IN (:...suppliers)', {
-              suppliers: createInterventionDto.supplierIds,
-            }).orWhere('sl."producerId" IN (:...suppliers)', {
-              suppliers: createInterventionDto.supplierIds,
-            });
-          }),
-        )
         .andWhere('sl."businessUnitId" IN (:...businessUnits)', {
           businessUnits: createInterventionDto.businessUnitIds,
         })
@@ -130,10 +121,22 @@ export class SourcingLocationsService extends AppBaseService<
         .andWhere('sl.adminRegionId IN (:...adminRegion)', {
           adminRegion: createInterventionDto.adminRegionIds,
         })
-        .andWhere('sl.interventionType IS NULL')
-        .getRawMany();
+        .andWhere('sl.interventionType IS NULL');
 
-    return sourcingLocations;
+    // Filter by suppliers if are provided. A user might not know from which provider gets some material
+    if (createInterventionDto.supplierIds) {
+      queryBuilder.andWhere(
+        new Brackets((qb: WhereExpressionBuilder) => {
+          qb.where('sl."t1SupplierId" IN (:...suppliers)', {
+            suppliers: createInterventionDto.supplierIds,
+          }).orWhere('sl."producerId" IN (:...suppliers)', {
+            suppliers: createInterventionDto.supplierIds,
+          });
+        }),
+      );
+    }
+
+    return queryBuilder.getRawMany();
   }
 
   async extendFindAllQuery(

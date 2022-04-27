@@ -20,11 +20,6 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 
 export enum LOCATION_TYPES {
-  PRODUCTION_UNIT = 'production unit',
-  PROCESSING_FACILITY = 'processing facility',
-  TIER1_TRADE_FACILITY = 'tier 1 Trade facility',
-  TIER2_TRADE_FACILITY = 'tier 2 Trade facility',
-  ORIGIN_COUNTRY = 'origin Country',
   UNKNOWN = 'unknown',
   AGGREGATION_POINT = 'aggregation point',
   POINT_OF_PRODUCTION = 'point of production',

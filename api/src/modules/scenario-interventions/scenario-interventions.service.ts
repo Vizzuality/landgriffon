@@ -156,6 +156,7 @@ export class ScenarioInterventionsService extends AppBaseService<
      */
 
     let newInterventionSourcingLocations: SourcingLocation[];
+    let newInterventionWithReplacingElements: ScenarioIntervention;
 
     switch (dto.type) {
       case SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL:
@@ -168,6 +169,13 @@ export class ScenarioInterventionsService extends AppBaseService<
         newInterventionSourcingLocations =
           await this.sourcingLocationsService.save(
             newMaterialInterventionLocation,
+          );
+
+        newInterventionWithReplacingElements =
+          await this.interventionGenerator.addReplacingElementsToIntervention(
+            newInterventionWithReplacedElements,
+            newMaterialInterventionLocation,
+            SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
           );
 
         for await (const sourcingLocation of newInterventionSourcingLocations) {
@@ -200,7 +208,14 @@ export class ScenarioInterventionsService extends AppBaseService<
             newSupplerInterventionLocations,
           );
 
-        newScenarioIntervention.newSourcingLocations =
+        newInterventionWithReplacingElements =
+          await this.interventionGenerator.addReplacingElementsToIntervention(
+            newInterventionWithReplacedElements,
+            newSupplerInterventionLocations,
+            SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          );
+
+        newInterventionWithReplacedElements.newSourcingLocations =
           newInterventionSourcingLocations;
         for await (const sourcingLocation of newInterventionSourcingLocations) {
           const [sourcingRecord] = sourcingLocation.sourcingRecords;
@@ -215,7 +230,7 @@ export class ScenarioInterventionsService extends AppBaseService<
           );
         }
 
-        newScenarioIntervention.newSourcingLocations =
+        newInterventionWithReplacedElements.newSourcingLocations =
           newInterventionSourcingLocations;
         break;
 
@@ -230,7 +245,7 @@ export class ScenarioInterventionsService extends AppBaseService<
           await this.sourcingLocationsService.save(
             newEfficiencyChangeInterventionLocations,
           );
-        newScenarioIntervention.newSourcingLocations =
+        newInterventionWithReplacedElements.newSourcingLocations =
           newInterventionSourcingLocations;
 
         for await (const sourcingLocation of newInterventionSourcingLocations) {
@@ -248,8 +263,6 @@ export class ScenarioInterventionsService extends AppBaseService<
 
         break;
     }
-
-    // Add new replaced Entities to new Scenario Intervention
 
     /**
      * After both sets of new Sourcing Locations with Sourcing Record (and Impact Records in the future) for the start year has been created

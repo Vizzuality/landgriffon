@@ -9,10 +9,6 @@ import { BusinessUnitsService } from 'modules/business-units/business-units.serv
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { Material } from 'modules/materials/material.entity';
-import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
-import { BusinessUnit } from 'modules/business-units/business-unit.entity';
-import { Supplier } from 'modules/suppliers/supplier.entity';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 
 /**
@@ -60,14 +56,16 @@ export class InterventionGeneratorService {
         dto.adminRegionIds,
       );
 
-    dto.supplierIds = await this.suppliersService.getSuppliersDescendants(
-      dto.supplierIds,
-    );
-
     dto.businessUnitIds =
       await this.businessUnitService.getBusinessUnitsDescendants(
         dto.businessUnitIds,
       );
+
+    if (dto.supplierIds) {
+      dto.supplierIds = await this.suppliersService.getSuppliersDescendants(
+        dto.supplierIds,
+      );
+    }
 
     return dto;
   }
@@ -99,22 +97,19 @@ export class InterventionGeneratorService {
       }
     }
 
-    const replacedMaterials: Material[] =
+    newIntervention.replacedMaterials =
       await this.materialService.getMaterialsById(materialIds);
 
-    const replacedAdminRegions: AdminRegion[] =
+    newIntervention.replacedAdminRegions =
       await this.adminRegionService.getAdminRegionsById(adminRegionsIds);
 
-    const replacedBusinessUnits: BusinessUnit[] =
+    newIntervention.replacedBusinessUnits =
       await this.businessUnitService.getBusinessUnitsById(businessUnitIds);
 
-    const replacedSuppliers: Supplier[] =
-      await this.suppliersService.getSuppliersById(supplierIds);
-
-    newIntervention.replacedMaterials = replacedMaterials;
-    newIntervention.replacedAdminRegions = replacedAdminRegions;
-    newIntervention.replacedBusinessUnits = replacedBusinessUnits;
-    newIntervention.replacedSuppliers = replacedSuppliers;
+    if (supplierIds.length) {
+      newIntervention.replacedSuppliers =
+        await this.suppliersService.getSuppliersById(supplierIds);
+    }
 
     newIntervention.replacedSourcingLocations = cancelledSourcingLocations;
 

@@ -48,9 +48,9 @@ import {
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
-import { BusinessUnitRepository } from '../../../src/modules/business-units/business-unit.repository';
-import { SupplierRepository } from '../../../src/modules/suppliers/supplier.repository';
-import { MaterialRepository } from '../../../src/modules/materials/material.repository';
+import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
+import { SupplierRepository } from 'modules/suppliers/supplier.repository';
+import { MaterialRepository } from 'modules/materials/material.repository';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -534,6 +534,58 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       expect(newSourcingRecords.length).toBe(1);
       expect(newSourcingRecords[0].tonnage).toEqual('550');
     });
+
+    test(
+      'When I create a new Intervention, But I dont supply any suppliers for filtering' +
+        'Then the API should filter all available suppliers matching the rest of the filters' +
+        'And the Intervention should be created successfully',
+      async () => {
+        const preconditions: ScenarioInterventionPreconditions =
+          await createInterventionPreconditions();
+
+        const geoRegion: GeoRegion = await createGeoRegion();
+        await createAdminRegion({
+          isoA2: 'ABC',
+          geoRegion,
+        });
+
+        const replacingMaterial: Material = await createMaterial();
+
+        await request(app.getHttpServer())
+          .post('/api/v1/scenario-interventions')
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send({
+            title: 'scenario intervention material',
+            startYear: 2018,
+            percentage: 50,
+            scenarioId: preconditions.scenario.id,
+            materialIds: [
+              preconditions.material1.id,
+              preconditions.material2.id,
+            ],
+            businessUnitIds: [
+              preconditions.businessUnit1.id,
+              preconditions.businessUnit2.id,
+            ],
+            adminRegionIds: [
+              preconditions.adminRegion1.id,
+              preconditions.adminRegion2.id,
+            ],
+            type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+            newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+            newLocationCountryInput: 'Spain',
+            newMaterialId: replacingMaterial.id,
+            newIndicatorCoefficients: {
+              GHG_LUC_T: 1,
+              DF_LUC_T: 10,
+              UWU_T: 5,
+              BL_LUC_T: 3,
+            },
+          });
+
+        expect(HttpStatus.CREATED);
+      },
+    );
   });
 
   describe('Scenario interventions - Missing data for requested filters', () => {
@@ -626,8 +678,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           'each value in materialIds must be a UUID',
           'businessUnitIds should not be empty',
           'each value in businessUnitIds must be a UUID',
-          'supplierIds should not be empty',
-          'each value in supplierIds must be a UUID',
           'adminRegionIds should not be empty',
           'each value in adminRegionIds must be a UUID',
           'New Location Country input is required for the selected intervention and location type',
@@ -667,7 +717,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
         [
-          'Available columns for new location type: production unit, processing facility, tier 1 Trade facility, tier 2 Trade facility, origin Country, unknown, aggregation point, point of production, country of production',
+          'Available columns for new location type: unknown, aggregation point, point of production, country of production',
           'New location type input is required for the selected intervention type',
           'New Location Country input is required for the selected intervention and location type',
         ],
@@ -718,7 +768,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitIds: [businessUnit.id],
           adminRegionIds: [adminRegion.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-          newLocationType: LOCATION_TYPES.ORIGIN_COUNTRY,
+          newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
         });
 
       expect(HttpStatus.BAD_REQUEST);
@@ -816,7 +866,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
         [
-          'Available columns for new location type: production unit, processing facility, tier 1 Trade facility, tier 2 Trade facility, origin Country, unknown, aggregation point, point of production, country of production',
+          'Available columns for new location type: unknown, aggregation point, point of production, country of production',
           'newMaterialId must be a UUID',
           'New Material is required for the selected intervention type',
           'New location type input is required for the selected intervention type',

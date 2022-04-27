@@ -103,8 +103,8 @@ export class CreateScenarioInterventionDto {
   businessUnitIds!: string[];
 
   @IsUUID(4, { each: true })
-  @IsNotEmpty()
-  @ApiProperty({
+  @IsOptional()
+  @ApiPropertyOptional({
     description:
       'Ids of Suppliers or Producers that will be affected by intervention',
     type: [String],

@@ -31,6 +31,9 @@ export class ImpactTableData {
   name: string;
   tonnes: string;
   impact: number;
+  interventionImpact?: number;
+  absoluteDifference?: number;
+  percentageDifference?: number;
   scenarioInterventionId: string | null;
   typeByIntervention: SOURCING_LOCATION_TYPE_BY_INTERVENTION | null;
 }
@@ -83,7 +86,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
         .addSelect('sum(sourcingRecords.tonnage)', 'tonnes')
         .addSelect('sum(indicatorRecord.value)', 'impact')
         .addSelect('indicator.id', 'indicatorId')
-        .addSelect('sourcingLocation.interventionType', 'type')
+        .addSelect('sourcingLocation.interventionType', 'typeByIntervention')
         .leftJoin(
           SourcingLocation,
           'sourcingLocation',
@@ -134,7 +137,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       const scenarioInterventions: { id: string }[] = await getManager()
         .createQueryBuilder()
         .select('id')
-        .from('scenario_interventions', 'si')
+        .from('scenario_intervention', 'si')
         .where('si."scenarioId" = :scenarioId', { scenarioId })
         .getRawMany();
 
@@ -143,7 +146,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
 
     if (scenarioInterventionIds.length > 0) {
       impactDataQueryBuilder.andWhere(
-        'sourcingLocation.scenarioInterventionId Id IN (:...scenarioInterventionIds)',
+        'sourcingLocation.scenarioInterventionId IN (:...scenarioInterventionIds)',
         {
           scenarioInterventionIds,
         },
@@ -228,9 +231,11 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       default:
     }
     impactDataQueryBuilder
-      .addGroupBy(`sourcingRecords.year, indicator.id`)
+      .addGroupBy(
+        `sourcingRecords.year, indicator.id, sourcingLocation.interventionType`,
+      )
       .orderBy('year', 'ASC')
-      .orderBy('name');
+      .addOrderBy('name');
     const dataForImpactTable: ImpactTableData[] =
       await impactDataQueryBuilder.getRawMany();
     if (!dataForImpactTable.length) {

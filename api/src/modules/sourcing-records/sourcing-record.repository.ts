@@ -22,7 +22,6 @@ import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 
 export class ImpactTableData {
   year: number;
@@ -141,7 +140,9 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
         .where('si."scenarioId" = :scenarioId', { scenarioId })
         .getRawMany();
 
-      scenarioInterventionIds = scenarioInterventions.map((si) => si.id);
+      scenarioInterventionIds = scenarioInterventions.map(
+        (si: { id: string }) => si.id,
+      );
     }
 
     if (scenarioInterventionIds.length > 0) {

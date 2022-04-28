@@ -160,7 +160,7 @@ describe('Indicator Records Service', () => {
       );
     });
 
-    it("When creating indicator record with no provided coefficients, and there's no H3 data for the given material, it should throw an error it should create corresponding CANCELLED Sourcing Locations, with the appropiate Sourcing Records and Indicator Records", async () => {
+    test("When creating indicator record with no provided coefficients, and there's no H3 data for the given material, it should throw an error it should create corresponding CANCELLED Sourcing Locations, with the appropiate Sourcing Records and Indicator Records", async () => {
       //ARRANGE
       const sourcingData = {
         sourcingRecordId: UUIDv4(),
@@ -186,7 +186,7 @@ describe('Indicator Records Service', () => {
       );
     });
 
-    it('When creating indicators without provided coefficients and the material has H3 data, it should create the indicator records properly', async () => {
+    test('When creating indicators without provided coefficients and the material has H3 data, it should create the indicator records properly', async () => {
       //ARRANGE
       const indicatorPreconditions = await createPreconditions();
 

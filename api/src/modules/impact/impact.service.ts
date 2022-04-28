@@ -324,13 +324,61 @@ export class ImpactService {
     }
   }
 
-  private getDataForImpactTable(
-    impactTableDto: GetImpactTableDto,
-    entities: ImpactTableEntityType[],
-  ): Promise<ImpactTableData[]> {
-    return entities.length > 0
-      ? this.sourcingRecordService.getDataForImpactTable(impactTableDto)
-      : Promise.resolve([]);
+    // Check if any ids are left after pagination, not to pass empty array
+    const dataForImpactTable: ImpactTableData[] =
+      entitiesWithPagination.entities.length > 0
+        ? await this.sourcingRecordService.getDataForImpactTable(impactTableDto)
+        : [];
+
+    /* If impact table is for scenario, we need to add additional properties to the table data: 
+      - impact before intervention (impact)
+      - impact of intervention (interventionImpact)
+      - calculate differences - absolute and in percentage   
+      */
+    if (impactTableDto.scenarioId) {
+      const dataForScenarioImpactTable: ImpactTableData[] = [];
+
+      for (const dto of dataForImpactTable) {
+        if (
+          dto.typeByIntervention ===
+          SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED
+        ) {
+          const replacingDto: ImpactTableData | undefined =
+            dataForImpactTable.find(
+              (replacingDto: ImpactTableData) =>
+                replacingDto.name === dto.name &&
+                replacingDto.typeByIntervention ===
+                  SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+            );
+
+          dto.interventionImpact = replacingDto?.impact;
+          dto.percentageDifference =
+            ((dto.interventionImpact as number) / dto.impact) * 100;
+          dto.absoluteDifference =
+            (dto.interventionImpact as number) - dto.impact;
+          dto.typeByIntervention = null;
+          dataForScenarioImpactTable.push(dto);
+        }
+      }
+
+      const scenarioImpactTable: ImpactTable = this.buildImpactTable(
+        impactTableDto,
+        indicators,
+        dataForScenarioImpactTable,
+        this.buildImpactTableRowsSkeleton(entitiesWithPagination.entities),
+      );
+      return {
+        data: scenarioImpactTable,
+        metadata: entitiesWithPagination.metadata,
+      };
+    }
+    const impactTable: ImpactTable = this.buildImpactTable(
+      impactTableDto,
+      indicators,
+      dataForImpactTable,
+      this.buildImpactTableRowsSkeleton(entitiesWithPagination.entities),
+    );
+    return { data: impactTable, metadata: entitiesWithPagination.metadata };
   }
 
   private buildImpactTable(

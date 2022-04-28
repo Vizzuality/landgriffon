@@ -22,6 +22,7 @@ const Supplier: FC = () => {
     register,
     setValue,
     watch,
+    clearErrors,
     formState: { errors },
   } = useFormContext();
 
@@ -76,20 +77,37 @@ const Supplier: FC = () => {
 
   const handleDropdown = useCallback(
     (id: string, value: SelectOption) => {
+      clearErrors(id);
       setValue(id, value.value);
     },
-    [setValue],
+    [setValue, clearErrors],
+  );
+
+  const handleOnChange = useCallback(
+    (e) => {
+      clearErrors(e.currentTarget.name);
+    },
+    [clearErrors],
+  );
+
+  // just these types of location need the extra input for location
+  // for the rest of them is enough eith the country
+  const isLocationInputEnabled = useMemo(
+    () =>
+      selectedLocationTypeOption?.value === 'point of production' ||
+      selectedLocationTypeOption?.value === 'aggregation point',
+    [selectedLocationTypeOption],
   );
 
   return (
     <>
-      <fieldset className="sm:col-span-3 text-sm mt-4">
+      <fieldset className="sm:col-span-3 text-sm mt-8">
         <legend className="flex font-medium leading-5">
           <span className="mr-2.5">New supplier</span>
           <InfoTooltip />
         </legend>
 
-        <div className="mt-4 grid grid-cols-2 gap-y-4 gap-x-6 sm:grid-cols-2">
+        <div className="mt-5 grid grid-cols-2 gap-y-4 gap-x-6 sm:grid-cols-2">
           <div className="block font-medium text-gray-700">
             <Label className="mb-1">
               Tier 1 supplier <span className="text-gray-500">(optional)</span>
@@ -123,13 +141,13 @@ const Supplier: FC = () => {
           </div>
         </div>
       </fieldset>
-      <fieldset className="sm:col-span-3 text-sm mt-4">
+      <fieldset className="sm:col-span-3 text-sm mt-8">
         <legend className="flex font-medium leading-5">
           <span className="mr-2.5">Supplier location</span>
           <InfoTooltip />
         </legend>
 
-        <div className="mt-4 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
+        <div className="mt-5 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
           <div className="block font-medium text-gray-700">
             <span>Location type</span>
             <div className="mt-1">
@@ -169,12 +187,14 @@ const Supplier: FC = () => {
           City / Address / Coordinates
         </Label>
         <Input
-          {...register('newLocationAddressInput')}
+          {...register('newLocationInput')}
           className="w-full"
           type="text"
           autoComplete="given-address"
-          error={errors?.newLocationAddressInput}
-          showHint={false}
+          placeholder="Insert city, address or coordinates (lat, lon)"
+          disabled={!isLocationInputEnabled}
+          onChange={handleOnChange}
+          error={errors?.newLocationInput?.message}
         />
       </fieldset>
     </>

@@ -49,7 +49,7 @@ const Material = () => {
           <span className="mr-2.5">New material</span>
           <InfoTooltip />
         </legend>
-        <div className="mt-4 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
+        <div className="mt-5 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
           <div className="block font-medium text-gray-700">
             <Label className="mb-1">Material</Label>
             <Select

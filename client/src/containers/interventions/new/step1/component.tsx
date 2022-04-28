@@ -37,9 +37,9 @@ const schemaValidation = yup.object({
   interventionDescription: yup.string(),
   percentage: yup.number().min(0).max(100).required(),
   materialIds: yup.array().min(1).required(),
-  businessUnitIds: yup.array().min(1).required(),
-  supplierIds: yup.array().min(1).required(),
-  adminRegionIds: yup.array().min(1).required(),
+  businessUnitIds: yup.array().min(1),
+  supplierIds: yup.array().min(1),
+  adminRegionIds: yup.array().min(1),
   endYear: yup
     .number()
     .test('len', 'Must be a valid year', (val) => Math.ceil(Math.log(val + 1) / Math.LN10) === 4)
@@ -113,6 +113,9 @@ const Step1: FC = () => {
       if (!hasErrors) {
         dispatch(setNewInterventionData(values));
         dispatch(setNewInterventionStep(2));
+
+        // sendind data to API if intervention type is 'Change production efficiency',
+        // API need values from step 1 to precalculate Landgriffon estimated values in step 2
         if (type === 'Change production efficiency') {
           const parsedData = {
             scenarioId: currentScenario,
@@ -125,7 +128,10 @@ const Step1: FC = () => {
             startYear: Number(values.endYear) || Number(newInterventionData.endYear),
             endYear: Number(values.endYear) || Number(newInterventionData.endYear),
             type,
-            supplierIds: values.supplierIds || newInterventionData.supplierIds,
+            // don't send field if intervention is applicable to all suppliers
+            ...((values.supplierIds || newInterventionData.supplierIds) && {
+              supplierIds: values.supplierIds || newInterventionData.supplierIds,
+            }),
             adminRegionIds: values.adminRegionIds || newInterventionData.adminRegionIds,
           };
           if (interventionMode === 'create') {
@@ -162,7 +168,7 @@ const Step1: FC = () => {
     },
     [
       dispatch,
-      errors,
+      hasErrors,
       currentIntervention,
       currentScenario,
       newInterventionData,

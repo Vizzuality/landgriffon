@@ -37,7 +37,7 @@ const INTERVENTIONS_INDICATORS_DATA = [
     metadata: {},
     name: 'Carbon emissions',
     value: 0,
-    unit: 'tCO2e',
+    unit: 'tCO2e/T',
   },
   {
     description: 'Deforestation risk due to ...',
@@ -45,7 +45,7 @@ const INTERVENTIONS_INDICATORS_DATA = [
     metadata: {},
     name: 'Deforestation risk',
     value: 0,
-    unit: 'Ha',
+    unit: 'Ha/T',
   },
   {
     description: 'With the Unsustainable water use indicator...',
@@ -53,7 +53,7 @@ const INTERVENTIONS_INDICATORS_DATA = [
     metadata: {},
     name: 'Water withdrawal',
     value: 0,
-    unit: '100m3',
+    unit: '100m3/T',
   },
   {
     description: 'Land use and land use change...',
@@ -61,7 +61,7 @@ const INTERVENTIONS_INDICATORS_DATA = [
     metadata: {},
     name: 'Biodiversity impact',
     value: 0,
-    unit: 'PDF',
+    unit: 'PDF/T',
   },
 ];
 

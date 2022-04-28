@@ -84,7 +84,7 @@ const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
       showSearch
       loading={isFetching}
       options={treeOptions}
-      placeholder="suppliers"
+      placeholder="all suppliers"
       onChange={onChange}
       current={currentOptions}
       theme={theme}

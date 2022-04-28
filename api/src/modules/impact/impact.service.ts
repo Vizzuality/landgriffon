@@ -16,6 +16,7 @@ import {
   ImpactTableRows,
   ImpactTableRowsValues,
   PaginatedImpactTable,
+  YearSumData,
 } from 'modules/impact/dto/response-impact-table.dto';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
@@ -30,6 +31,7 @@ import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-t
 import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
 import { GetAdminRegionTreeWithOptionsDto } from 'modules/admin-regions/dto/get-admin-region-tree-with-options.dto';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
+import { SOURCING_LOCATION_TYPE_BY_INTERVENTION } from 'modules/sourcing-locations/sourcing-location.entity';
 
 @Injectable()
 export class ImpactService {
@@ -378,6 +380,7 @@ export class ImpactService {
             calculatedData[namesByIndicatorIndex].values.push({
               year: dataForYear.year,
               value: dataForYear.impact,
+              interventionValue: dataForYear.interventionImpact,
               isProjected: false,
             });
             // If the year requested does no exist in the raw data, project its value getting the latest value (previous year which comes in ascendant order)
@@ -385,15 +388,22 @@ export class ImpactService {
             const lastYearsValue: number =
               calculatedData[namesByIndicatorIndex].values[rowValuesIndex - 1]
                 .value;
+            const lastYearsInterventionValue: number =
+              calculatedData[namesByIndicatorIndex].values[rowValuesIndex - 1]
+                .interventionValue || 0;
             calculatedData[namesByIndicatorIndex].values.push({
               year: year,
               value: lastYearsValue + (lastYearsValue * this.growthRate) / 100,
+              interventionValue:
+                lastYearsInterventionValue +
+                (lastYearsInterventionValue * this.growthRate) / 100,
               isProjected: true,
             });
           }
           ++rowValuesIndex;
         }
       }
+
       // Once we have all data, projected or not, append the total sum of impact by year and indicator
       rangeOfYears.forEach((year: number, indexOfYear: number) => {
         const totalSumByYear: number = calculatedData.reduce(
@@ -408,15 +418,39 @@ export class ImpactService {
           },
           0,
         );
+
+        let totalInterventionSumByYear: number | null = null;
+        if (queryDto.scenarioId) {
+          totalInterventionSumByYear = calculatedData.reduce(
+            (accumulator: number, currentValue: ImpactTableRows): number => {
+              if (currentValue.values[indexOfYear].year === year)
+                accumulator += Number.isFinite(
+                  currentValue.values[indexOfYear].interventionValue,
+                )
+                  ? currentValue.values[indexOfYear].interventionValue || 0
+                  : 0;
+              return accumulator;
+            },
+            0,
+          );
+        }
         impactTable[indicatorValuesIndex].yearSum.push({
           year,
           value: totalSumByYear,
+          ...(totalInterventionSumByYear && {
+            interventionValue: totalInterventionSumByYear,
+          }),
         });
       });
       // copy and populate tree skeleton for each indicator
       const skeleton: ImpactTableRows[] = JSON.parse(JSON.stringify(entities));
       skeleton.forEach((entity: any) => {
-        this.populateValuesRecursively(entity, calculatedData, rangeOfYears);
+        this.populateValuesRecursively(
+          entity,
+          calculatedData,
+          rangeOfYears,
+          queryDto.scenarioId,
+        );
       });
       impactTable[indicatorValuesIndex].rows = skeleton.filter(
         (item: ImpactTableRows) =>
@@ -483,6 +517,7 @@ export class ImpactService {
     entity: ImpactTableRows,
     calculatedRows: ImpactTableRows[],
     rangeOfYears: number[],
+    scenarioId?: string,
   ): ImpactTableRowsValues[] {
     entity.values = [];
     for (const year of rangeOfYears) {
@@ -490,6 +525,7 @@ export class ImpactService {
         year: year,
         value: 0,
         isProjected: false,
+        ...(scenarioId && { interventionValue: 0 }),
       });
     }
 
@@ -508,6 +544,7 @@ export class ImpactService {
           childEntity,
           calculatedRows,
           rangeOfYears,
+          scenarioId,
         ),
       );
     });
@@ -517,6 +554,18 @@ export class ImpactService {
           ImpactTableRowsValues.value + item[valueIndex].value;
         entity.values[valueIndex].isProjected =
           item[valueIndex].isProjected || entity.values[valueIndex].isProjected;
+        if (scenarioId) {
+          entity.values[valueIndex].interventionValue =
+            (ImpactTableRowsValues.interventionValue ?? 0) +
+            (item[valueIndex].interventionValue || 0);
+          entity.values[valueIndex].absoluteDifference =
+            (entity.values[valueIndex].interventionValue || 0) -
+            entity.values[valueIndex].value;
+          entity.values[valueIndex].percentageDifference =
+            ((entity.values[valueIndex].interventionValue || 0) /
+              entity.values[valueIndex].value) *
+            100;
+        }
       });
     }
     return entity.values;

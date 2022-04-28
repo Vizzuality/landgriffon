@@ -77,6 +77,12 @@ export class ImpactTableRowsValues {
   year: number;
   @ApiProperty()
   value: number;
+  @ApiPropertyOptional()
+  interventionValue?: number;
+  @ApiPropertyOptional()
+  absoluteDifference?: number;
+  @ApiPropertyOptional()
+  percentageDifference?: number;
   @ApiProperty()
   isProjected: boolean;
 }

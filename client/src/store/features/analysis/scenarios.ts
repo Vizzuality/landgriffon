@@ -30,6 +30,8 @@ export type ScenariosState = {
     newLocationType: string;
     newLocationCountryInput: string;
     newLocationAddressInput: string;
+    newLocationLatitude: number;
+    newLocationLongitude: number;
     newIndicatorCoefficients: {
       DF_LUC_T: number;
       UWU_T: number;
@@ -76,6 +78,8 @@ export const initialState: ScenariosState = {
     newLocationType: null,
     newLocationCountryInput: null,
     newLocationAddressInput: null,
+    newLocationLatitude: null,
+    newLocationLongitude: null,
     newIndicatorCoefficients: {
       DF_LUC_T: null,
       UWU_T: null,

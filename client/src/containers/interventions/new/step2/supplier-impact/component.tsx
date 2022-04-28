@@ -31,24 +31,26 @@ const Step2: FC = () => {
 
   const handleValues = useCallback(() => {
     setLandgriffonEstimates(!landgriffonEstimates);
+    setValue('landgriffonEstimates', !landgriffonEstimates);
     data.map(({ id, value }) => setValue(id, value));
   }, [landgriffonEstimates, setLandgriffonEstimates, data, setValue]);
 
   return (
     <>
-      <fieldset className="sm:col-span-3 text-sm mt-4">
+      <fieldset className="sm:col-span-3 text-sm mt-8">
         <legend className="flex font-medium leading-5">
-          <span className="mr-2.5">Supplier impacts per tone</span>
+          <span className="mr-2.5">Supplier impacts per ton</span>
           <InfoTooltip />
         </legend>
         {type !== 'Change production efficiency' && (
-          <div className="flex items-center justify-between mt-4">
+          <div className="flex items-center justify-between mt-6">
             <div className="flex items-center">
               <Checkbox
                 {...register('landgriffonEstimates')}
                 id="landgriffon_estimates"
                 name="landgriffon_estimates"
                 onChange={handleValues}
+                defaultChecked={true}
               />
               <Label htmlFor="landgriffon_estimates" className="ml-2 mt-1">
                 Use LandGriffon location-based estimates.
@@ -56,7 +58,8 @@ const Step2: FC = () => {
             </div>
           </div>
         )}
-        <div className="mt-6 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
+
+        <div className="mt-5 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
           {data.map((indicator) => (
             <div key={indicator.name}>
               <Label htmlFor={indicator.name} key={indicator.id}>

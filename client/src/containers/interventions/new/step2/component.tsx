@@ -1,4 +1,4 @@
-import { useCallback, FC } from 'react';
+import { useCallback, useMemo, useState, FC } from 'react';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 
 // form validation
@@ -19,6 +19,10 @@ import { useCreateNewIntervention, useUpdateIntervention } from 'hooks/intervent
 
 import toast from 'react-hot-toast';
 
+const addressRegExp = /(\d{1,}) [a-zA-Z0-9\s]+(\.)? [a-zA-Z]+(\,)? [A-Z]{2} [0-9]{5,6}/;
+const coordinatesRegExp = /^[-]?\d+[\.]?\d*, [-]?\d+[\.]?\d*$/;
+const cityRegExp = /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/;
+
 const schemaValidation = yup.object({
   newMaterialId: yup.string().when('type', {
     is: 'Switch to a new material',
@@ -38,24 +42,30 @@ const schemaValidation = yup.object({
     is: 'Switch to a new material' || 'Source from new supplier or location',
     then: yup.string().required(),
   }),
-  newLocationAddressInput: yup.string().when('type', {
-    is: 'Switch to a new material' || 'Source from new supplier or location',
-    then: yup.string().required(),
-  }),
+  newLocationInput: yup
+    .string()
+    .matches(
+      cityRegExp || addressRegExp || coordinatesRegExp,
+      'Please enter a valid addres, city or coordinates (lat, lon)',
+    )
+    .when('newLocationType', {
+      is: 'point of production' || 'aggregation point',
+      then: yup.string().required(),
+    }),
   DF_LUC_T: yup.number().when('landgriffonEstimates', {
-    is: 'true',
+    is: 'false',
     then: yup.number().required(),
   }),
   UWU_T: yup.number().when('landgriffonEstimates', {
-    is: 'true',
+    is: 'false',
     then: yup.number().required(),
   }),
   BL_LUC_T: yup.number().when('landgriffonEstimates', {
-    is: 'true',
+    is: 'false',
     then: yup.number().required(),
   }),
   GHG_LUC_T: yup.number().when('landgriffonEstimates', {
-    is: 'true',
+    is: 'false',
     then: yup.number().required(),
   }),
 });
@@ -72,6 +82,7 @@ const Step2: FC = () => {
 
   const {
     formState: { errors },
+    getValues,
   } = methods;
 
   const hasErrors = Object.keys(errors).length > 0;
@@ -80,6 +91,23 @@ const Step2: FC = () => {
 
   const createIntervention = useCreateNewIntervention();
   const updateIntervention = useUpdateIntervention();
+  const values = getValues();
+
+  const location = useMemo(() => {
+    if (!values.newLocationInput) return null;
+    if (values.newLocationInput.match(coordinatesRegExp)) {
+      const coordinates = values.newLocationInput.split(',', 2);
+      return {
+        newLocationLatitude: Number(coordinates[0].trim()),
+        newLocationLongitude: Number(coordinates[1].trim()),
+      };
+    }
+
+    if (values.newLocationInput.match(cityRegExp) || values.newLocationInput.match(addressRegExp)) {
+      return { newLocationAddressInput: values.newLocationAddressInput };
+    }
+    return null;
+  }, [values.newLocationAddressInput, values.newLocationInput]);
 
   const handleStepsSubmissons = useCallback(
     (values) => {
@@ -101,13 +129,16 @@ const Step2: FC = () => {
         newProducerId: values.newProducerId,
         newLocationType: values.newLocationType,
         newLocationCountryInput: values.newLocationCountryInput,
-        newLocationAddressInput: values.newLocationAddressInput,
-        newIndicatorCoefficients: {
-          DF_LUC_T: values.DF_LUC_T,
-          UWU_T: values.UWU_T,
-          BL_LUC_T: values.BL_LUC_T,
-          GHG_LUC_T: values.GHG_LUC_T,
-        },
+        ...location,
+        // values needed if checkbox for LG estimates values is not checked
+        ...(!values.landgriffonEstimates && {
+          newIndicatorCoefficients: {
+            DF_LUC_T: values.DF_LUC_T,
+            UWU_T: values.UWU_T,
+            BL_LUC_T: values.BL_LUC_T,
+            GHG_LUC_T: values.GHG_LUC_T,
+          },
+        }),
       };
 
       if (interventionMode === 'create') {
@@ -144,6 +175,7 @@ const Step2: FC = () => {
     },
     [
       dispatch,
+      location,
       currentScenario,
       currentIntervention,
       newInterventionData,
@@ -161,7 +193,7 @@ const Step2: FC = () => {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(handleStepsSubmissons)} className="mt-10">
+      <form onSubmit={methods.handleSubmit(handleStepsSubmissons)} className="mt-12">
         {type === 'Switch to a new material' && <Material />}
         {(type === 'Source from new supplier or location' ||
           type === 'Switch to a new material') && <Supplier />}

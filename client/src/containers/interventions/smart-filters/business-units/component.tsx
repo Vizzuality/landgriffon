@@ -86,7 +86,7 @@ const BusinessUnitsFilter: React.FC<BusinessUnitsFilterProps> = ({
       showSearch
       loading={isFetching}
       options={treeOptions}
-      placeholder="all business"
+      placeholder="all businesses"
       onChange={onChange}
       current={currentOptions}
       theme={theme}

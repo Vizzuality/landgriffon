@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../../../src/app.module';
-import { IndicatorRecordRepository } from '../../../src/modules/indicator-records/indicator-record.repository';
-import { IndicatorRecordsService } from '../../../src/modules/indicator-records/indicator-records.service';
+import { AppModule } from 'app.module';
+import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
+import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 import {
   createAdminRegion,
   createBusinessUnit,
@@ -11,30 +11,30 @@ import {
   createSourcingRecord,
   createSupplier,
 } from '../../entity-mocks';
-import { INDICATOR_TYPES } from '../../../src/modules/indicators/indicator.entity';
-import { INDICATOR_RECORD_STATUS } from '../../../src/modules/indicator-records/indicator-record.entity';
-import { SourcingRecordRepository } from '../../../src/modules/sourcing-records/sourcing-record.repository';
-import { MaterialsToH3sService } from '../../../src/modules/materials/materials-to-h3s.service';
-import { IndicatorCoefficientsDto } from '../../../src/modules/indicator-coefficients/dto/indicator-coefficients.dto';
-import { MissingH3DataError } from '../../../src/modules/indicator-records/errors/missing-h3-data.error';
-import { IndicatorRepository } from '../../../src/modules/indicators/indicator.repository';
-import { H3DataRepository } from '../../../src/modules/h3-data/h3-data.repository';
-import { Material } from '../../../src/modules/materials/material.entity';
-import { Supplier } from '../../../src/modules/suppliers/supplier.entity';
-import { AdminRegion } from '../../../src/modules/admin-regions/admin-region.entity';
-import { BusinessUnit } from '../../../src/modules/business-units/business-unit.entity';
-import { SourcingLocation } from '../../../src/modules/sourcing-locations/sourcing-location.entity';
-import { AdminRegionRepository } from '../../../src/modules/admin-regions/admin-region.repository';
-import { BusinessUnitRepository } from '../../../src/modules/business-units/business-unit.repository';
-import { SupplierRepository } from '../../../src/modules/suppliers/supplier.repository';
-import { GeoRegion } from '../../../src/modules/geo-regions/geo-region.entity';
-import { IndicatorRecordsModule } from '../../../src/modules/indicator-records/indicator-records.module';
-import { GeoRegionRepository } from '../../../src/modules/geo-regions/geo-region.repository';
-import { MaterialRepository } from '../../../src/modules/materials/material.repository';
+import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
+import { INDICATOR_RECORD_STATUS } from 'modules/indicator-records/indicator-record.entity';
+import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
+import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
+import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
+import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
+import { IndicatorRepository } from 'modules/indicators/indicator.repository';
+import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
+import { Material } from 'modules/materials/material.entity';
+import { Supplier } from 'modules/suppliers/supplier.entity';
+import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
+import { BusinessUnit } from 'modules/business-units/business-unit.entity';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
+import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
+import { SupplierRepository } from 'modules/suppliers/supplier.repository';
+import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
+import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
+import { MaterialRepository } from 'modules/materials/material.repository';
 import { createWorldToCalculateIndicatorRecords } from '../../utils/indicator-records-preconditions';
-import { getManager } from 'typeorm';
 import { v4 as UUIDv4 } from 'uuid';
-import { H3Data } from '../../../src/modules/h3-data/h3-data.entity';
+import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { dropH3GridTables } from '../../utils/database-test-helper';
 
 describe('Indicator Records Service', () => {
   let indicatorRecordRepository: IndicatorRecordRepository;
@@ -97,7 +97,7 @@ describe('Indicator Records Service', () => {
     await geoRegionRepository.delete({});
     await materialRepository.delete({});
 
-    await deleteH3GridTables();
+    await dropH3GridTables();
   });
 
   describe('createIndicatorRecordsBySourcingRecords', () => {
@@ -169,7 +169,9 @@ describe('Indicator Records Service', () => {
         tonnage: 10000,
       };
 
-      jest.spyOn(materialsToH3sService, 'findOne').mockResolvedValue(undefined);
+      jest
+        .spyOn(materialsToH3sService, 'findOne')
+        .mockResolvedValueOnce(undefined);
 
       const testStatement = async (): Promise<any> => {
         await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
@@ -207,7 +209,7 @@ describe('Indicator Records Service', () => {
           indicatorRecordRepository,
           'getIndicatorRawDataByGeoRegionAndMaterial',
         )
-        .mockResolvedValue({
+        .mockResolvedValueOnce({
           production: 10,
           harvestedArea: 100,
           rawBiodiversity: 10,
@@ -256,6 +258,14 @@ describe('Indicator Records Service', () => {
     });
   });
 
+  /**
+   * Does expect checks on all relevant fields of IndicatorRecord
+   * @param indicatorType
+   * @param h3Data
+   * @param sourcingData
+   * @param recordValue
+   * @param scalerValue
+   */
   async function checkCreatedIndicatorRecord(
     indicatorType: INDICATOR_TYPES,
     h3Data: H3Data,
@@ -274,17 +284,7 @@ describe('Indicator Records Service', () => {
     expect(indicatorRecords[0].value).toEqual(recordValue);
     expect(indicatorRecords[0].scaler).toEqual(scalerValue);
     expect(indicatorRecords[0].h3DataId).toEqual(h3Data.id);
-    //Inidicator Coefficientes are not checked because it's not used
-  }
-
-  async function deleteH3GridTables(): Promise<void> {
-    const tableList: any[] = await getManager().query(`select table_name
-                                                       from information_schema.tables
-                                                       where table_name like '%h3_grid_%'`);
-    if (tableList.length) {
-      const tableNameList = tableList.map((table: any) => table.table_name);
-      await getManager().query(`DROP TABLE ${tableNameList.join(', ')}`);
-    }
+    //Inidicator Coefficients are not checked because it's not used
   }
 
   async function createPreconditions(): Promise<any> {

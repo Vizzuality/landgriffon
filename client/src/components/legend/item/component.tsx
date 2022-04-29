@@ -51,11 +51,10 @@ export const LegendItem: React.FC<LegendItemProps> = ({
       {!isLoading && name && (
         <div className="w-full flex">
           <div className="grow flex items-start justify-between">
-            <div
-              className="text-sm text-gray-500 flex flex-row gap-x-1"
-              style={{ maxWidth: '210px' }}
-            >
-              <DragHandle />
+            <div className="max-w-[210px] text-sm text-gray-500 flex flex-row justify-start gap-x-1">
+              <div>
+                <DragHandle />
+              </div>
               <div>{name}</div>
             </div>
             {showToolbar && (

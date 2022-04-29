@@ -24,8 +24,11 @@ all:
 crop:
 	make -j 2 convert-mapspam-crop-production convert-earthstat-crop-production convert-earthstat-crop-harvest convert-mapspam-crop-harvest convert-cropland convert-pasture
 
+# NOTE: The ingestion below is commented in order to avoid ingesting data, we don't have indicator for in the database yet
+# once the new indicators have been defined and ingested we will need to update the indicator code in for each on the indicator commented below and allow the ingestion.
+# convert-speciesRichness convert-aboveGroundBiomass convert-satDeforestation
 indicators:
-	make -j 2 convert-water-footprint convert-biodiversity convert-carbon convert-speciesRichness convert-aboveGroundBiomass convert-satDeforestation
+	make -j 2 convert-water-footprint convert-biodiversity convert-carbon
 	# Processing deforestation data is quite intensive, so we do it separately, so we can allocate all threads to it
 		# There is probably a better way to do this, that future me will learn about - in the future.
 	make convert-deforestation

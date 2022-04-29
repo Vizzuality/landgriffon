@@ -353,7 +353,7 @@ export class IndicatorRecordsService extends AppBaseService<
       tonnage: number;
     },
     providedCoefficients?: IndicatorCoefficientsDto,
-  ): Promise<any> {
+  ): Promise<IndicatorRecord[]> {
     const { geoRegionId, materialId } = sourcingData;
     let calculatedIndicatorRecordValues: IndicatorRecordCalculatedValuesDto;
     if (providedCoefficients) {
@@ -362,13 +362,6 @@ export class IndicatorRecordsService extends AppBaseService<
         sourcingData,
       );
     } else {
-      const materialH3Data: MaterialToH3 | undefined =
-        await this.materialsToH3sService.findOne({ where: { materialId } });
-      if (!materialH3Data) {
-        throw new MissingH3DataError(
-          `No H3 Data required for calculate Impact for Material with ID: ${materialId}`,
-        );
-      }
       const rawData: IndicatorComputedRawDataDto =
         await this.indicatorRecordRepository.getIndicatorRawDataByGeoRegionAndMaterial(
           geoRegionId as string,
@@ -381,20 +374,24 @@ export class IndicatorRecordsService extends AppBaseService<
       });
     }
 
+    const materialH3Data: MaterialToH3 | undefined =
+      await this.materialsToH3sService.findOne({ where: { materialId } });
+
+    if (!materialH3Data) {
+      throw new MissingH3DataError(
+        `No H3 Data required for calculate Impact for Material with ID: ${materialId}`,
+      );
+    }
+
     // Create the Indicator Records entities from the calculated indicator values
     const indicatorMapper: Record<string, any> = await this.getIndicatorMap();
-    const indicatorTypes: INDICATOR_TYPES[] = [
-      INDICATOR_TYPES.DEFORESTATION,
-      INDICATOR_TYPES.CARBON_EMISSIONS,
-      INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
-      INDICATOR_TYPES.BIODIVERSITY_LOSS,
-    ];
-
+    const indicatorTypes: INDICATOR_TYPES[] = Object.values(INDICATOR_TYPES);
     const indicatorRecords: IndicatorRecord[] = indicatorTypes.map(
       (indicatorType: INDICATOR_TYPES) => {
         return IndicatorRecordsService.createIndicatorRecord(
           indicatorType,
           calculatedIndicatorRecordValues,
+          materialH3Data.h3DataId,
           indicatorMapper,
         );
       },
@@ -407,12 +404,14 @@ export class IndicatorRecordsService extends AppBaseService<
    * Creates an IndicatorRecord object instance from the given input (type, calculated values, and h3data)
    * @param indicatorType
    * @param calculatedValues
+   * @param materialH3dataId
    * @param indicatorMapper
    * @private
    */
   private static createIndicatorRecord(
     indicatorType: INDICATOR_TYPES,
     calculatedValues: IndicatorRecordCalculatedValuesDto,
+    materialH3dataId: string,
     indicatorMapper: Record<string, any>,
   ): IndicatorRecord {
     return IndicatorRecord.merge(new IndicatorRecord(), {
@@ -421,13 +420,15 @@ export class IndicatorRecordsService extends AppBaseService<
       status: INDICATOR_RECORD_STATUS.SUCCESS,
       sourcingRecordId: calculatedValues.sourcingRecordId,
       scaler: calculatedValues.production,
-      h3DataId: indicatorMapper[indicatorType].h3DataId,
+      h3DataId: materialH3dataId,
     });
   }
 
   /**
    * @description Consumes Indicator Raw Data from the DB to calculate final values for Indicator Records
    */
+
+  // TODO: Extract the logic of equaling to 0 all falsy values to some other place
 
   private calculateIndicatorValues(
     sourcingRecordData: IndicatorComputedRawDataDto & {
@@ -467,6 +468,9 @@ export class IndicatorRecordsService extends AppBaseService<
 
     return calculatedIndicatorValues;
   }
+
+  // TODO: Check what is actually needed from this indicator mapper
+  //       i.e bringing and relating H3 data is not
 
   /**
    * @description Get a Indicator Hashmap to relate Indicator Records with Indicators by the Name Code

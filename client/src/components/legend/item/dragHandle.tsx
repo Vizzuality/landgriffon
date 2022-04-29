@@ -1,5 +1,6 @@
 import { SortableListenersContext } from 'containers/sortable/component';
 import { useContext } from 'react';
+import cx from 'classnames';
 
 const DragHandle: React.FC = () => {
   const sortableListeners = useContext(SortableListenersContext);
@@ -10,10 +11,19 @@ const DragHandle: React.FC = () => {
 
   return (
     <div
-      className="w-5 h-5 bg-gray-600 flex flex-row m-2"
+      className={cx('grid grid-cols-2 grid-rows-3 w-3 h-4', {
+        'cursor-grab': !sortableListeners.isDragging,
+        'cursor-grabbing': sortableListeners.isDragging,
+      })}
       {...sortableListeners.attributes}
       {...sortableListeners.listeners}
-    ></div>
+    >
+      {Array(6)
+        .fill(true)
+        .map((_, i) => (
+          <div className="rounded-full bg-gray-400 w-[3px] h-[3px] m-auto" key={i} />
+        ))}
+    </div>
   );
 };
 

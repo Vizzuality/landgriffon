@@ -471,7 +471,6 @@ export class IndicatorRecordsService extends AppBaseService<
 
   // TODO: Check what is actually needed from this indicator mapper
   //       i.e bringing and relating H3 data is not
-
   /**
    * @description Get a Indicator Hashmap to relate Indicator Records with Indicators by the Name Code
    */

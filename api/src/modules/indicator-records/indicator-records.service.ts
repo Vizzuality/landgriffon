@@ -167,7 +167,8 @@ export class IndicatorRecordsService extends AppBaseService<
             status: INDICATOR_RECORD_STATUS.SUCCESS,
             sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
             scaler: calculatedIndicatorRecords.production,
-            h3DataId: indicatorMap[INDICATOR_TYPES.DEFORESTATION].h3DataId,
+            materialH3DataId:
+              indicatorMap[INDICATOR_TYPES.DEFORESTATION].h3DataId,
           });
         const indicatorRecordBiodiversity: IndicatorRecord =
           IndicatorRecord.merge(new IndicatorRecord(), {
@@ -177,7 +178,8 @@ export class IndicatorRecordsService extends AppBaseService<
             status: INDICATOR_RECORD_STATUS.SUCCESS,
             sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
             scaler: calculatedIndicatorRecords.production,
-            h3DataId: indicatorMap[INDICATOR_TYPES.BIODIVERSITY_LOSS].h3DataId,
+            materialH3DataId:
+              indicatorMap[INDICATOR_TYPES.BIODIVERSITY_LOSS].h3DataId,
           });
         const indicatorRecordCarbonEmissions: IndicatorRecord =
           IndicatorRecord.merge(new IndicatorRecord(), {
@@ -186,7 +188,8 @@ export class IndicatorRecordsService extends AppBaseService<
             status: INDICATOR_RECORD_STATUS.SUCCESS,
             sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
             scaler: calculatedIndicatorRecords.production,
-            h3DataId: indicatorMap[INDICATOR_TYPES.CARBON_EMISSIONS].h3DataId,
+            materialH3DataId:
+              indicatorMap[INDICATOR_TYPES.CARBON_EMISSIONS].h3DataId,
           });
         const indicatorRecordUnsustainableWater: IndicatorRecord =
           IndicatorRecord.merge(new IndicatorRecord(), {
@@ -199,7 +202,7 @@ export class IndicatorRecordsService extends AppBaseService<
             status: INDICATOR_RECORD_STATUS.SUCCESS,
             sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
             scaler: calculatedIndicatorRecords.production,
-            h3DataId:
+            materialH3DataId:
               indicatorMap[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE].h3DataId,
           });
         indicatorRecords.push(
@@ -294,7 +297,7 @@ export class IndicatorRecordsService extends AppBaseService<
       status: INDICATOR_RECORD_STATUS.SUCCESS,
       sourcingRecordId: calculatedValues.sourcingRecordId,
       scaler: calculatedValues.production,
-      h3DataId: materialH3dataId,
+      materialH3DataId: materialH3dataId,
     });
   }
 

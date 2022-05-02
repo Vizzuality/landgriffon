@@ -14,7 +14,6 @@ import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create
 import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update.sourcing-location.dto';
 
 import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
-import { SourcingLocationWithRecord } from 'modules/sourcing-locations/dto/sourcing-location-with-record.interface';
 import { Brackets, SelectQueryBuilder, WhereExpressionBuilder } from 'typeorm';
 
 @Injectable()
@@ -92,30 +91,34 @@ export class SourcingLocationsService extends AppBaseService<
 
   async findFilteredSourcingLocationsForIntervention(
     createInterventionDto: CreateScenarioInterventionDto,
-  ): Promise<SourcingLocationWithRecord[]> {
+  ): Promise<SourcingLocation[]> {
     const queryBuilder: SelectQueryBuilder<SourcingLocation> =
       this.sourcingLocationRepository
         .createQueryBuilder('sl')
-        .select('sl.materialId', 'materialId')
-        .addSelect('sl.businessUnitId', 'businessUnitId')
-        .addSelect('sl.t1SupplierId', 't1SupplierId')
-        .addSelect('sl.producerId', 'producerId')
-        .addSelect('sl.geoRegionId', 'geoRegionId')
-        .addSelect('sl.adminRegionId', 'adminRegionId')
-        .addSelect('sl.locationCountryInput', 'locationCountryInput')
-        .addSelect('sl.locationAddressInput', 'locationAddressInput')
-        .addSelect('sl.locationLongitude', 'locationLongitude')
-        .addSelect('sl.locationLatitude', 'locationLatitude')
-        .addSelect('sr.year', 'year')
-        .addSelect('sr.tonnage', 'tonnage')
-        .leftJoin('sourcing_records', 'sr', 'sr.sourcingLocationId = sl.id')
+        .select([
+          'sl.materialId',
+          'sl.businessUnitId',
+          'sl.t1SupplierId',
+          'sl.t1SupplierId',
+          'sl.producerId',
+          'sl.geoRegionId',
+          'sl.adminRegionId',
+          'sl.locationCountryInput',
+          'sl.locationAddressInput',
+          'sl.locationAddressInput',
+          'sl.locationLongitude',
+          'sl.locationLatitude',
+          'sr.year',
+          'sr.tonnage',
+        ])
+        .leftJoin('sl.sourcingRecords', 'sr')
         .where('sl."materialId" IN (:...materialIds)', {
           materialIds: createInterventionDto.materialIds,
         })
         .andWhere('sl."businessUnitId" IN (:...businessUnits)', {
           businessUnits: createInterventionDto.businessUnitIds,
         })
-        .andWhere('sr.year=:startYear', {
+        .andWhere('sr.year >= :startYear', {
           startYear: createInterventionDto.startYear,
         })
         .andWhere('sl.adminRegionId IN (:...adminRegion)', {
@@ -136,7 +139,7 @@ export class SourcingLocationsService extends AppBaseService<
       );
     }
 
-    return queryBuilder.getRawMany();
+    return queryBuilder.getMany();
   }
 
   async extendFindAllQuery(

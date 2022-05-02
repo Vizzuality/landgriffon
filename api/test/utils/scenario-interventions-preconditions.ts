@@ -105,3 +105,21 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
     sourcingLocation2,
   };
 }
+
+export async function createInterventionPreconditionsWithMultipleYearRecords(): Promise<ScenarioInterventionPreconditions> {
+  const scenarioInterventionPreconditions: ScenarioInterventionPreconditions =
+    await createInterventionPreconditions();
+  await createSourcingRecord({
+    sourcingLocationId: scenarioInterventionPreconditions.sourcingLocation1.id,
+    year: 2019,
+    tonnage: 550,
+  });
+
+  await createSourcingRecord({
+    sourcingLocationId: scenarioInterventionPreconditions.sourcingLocation2.id,
+    year: 2019,
+    tonnage: 650,
+  });
+
+  return scenarioInterventionPreconditions;
+}

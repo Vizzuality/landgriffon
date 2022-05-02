@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { isFinite, toNumber } from 'lodash';
+import React, { useEffect, useMemo, useState } from 'react';
+import { isFinite, toNumber, range } from 'lodash';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisUI } from 'store/features/analysis/ui';
@@ -19,7 +19,7 @@ const YearsFilter: React.FC = () => {
   const { data, isLoading } = useYears(layer, materials, indicator);
 
   const { startYear, endYear, yearsGap, setYearsRange } = useYearsRange({
-    years: years,
+    years,
     yearsGap: 5,
     // Map mode only makes use of the endYear and will display the Select,
     // not the YearsRangeFilter.
@@ -35,13 +35,15 @@ const YearsFilter: React.FC = () => {
     dispatch(setFilters({ startYear, endYear }));
   }, [startYear, endYear, dispatch]);
 
+  const lastYearWithData = useMemo(() => data[data.length - 1], [data]);
+
   const handleOnEndYearSearch = (searchedYear) => {
     if (!isFinite(toNumber(searchedYear)) || toNumber(searchedYear) <= data[0]) {
       return;
     }
 
     if (!years.includes(toNumber(searchedYear))) {
-      setYears([toNumber(searchedYear), ...data]);
+      setYears([...range(data[data.length - 1] + 1, toNumber(searchedYear) + 1), ...data]);
     }
   };
 
@@ -55,6 +57,7 @@ const YearsFilter: React.FC = () => {
       showEndYearSearch={true}
       onChange={setYearsRange}
       onEndYearSearch={handleOnEndYearSearch}
+      lastYearWithData={lastYearWithData}
     />
   );
 };

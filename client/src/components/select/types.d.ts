@@ -1,6 +1,7 @@
 export type SelectOption = {
   label: string;
   value: string | number;
+  extraInfo?: string;
   disabled?: boolean;
 };
 

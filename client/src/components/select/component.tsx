@@ -162,7 +162,7 @@ const Select: React.FC<SelectProps> = ({
                 )}
               >
                 {showSearch && (
-                  <div className="relative flex items-center border-b border-b-gray-400">
+                  <div className="sticky top-0 left-0 z-20 bg-white flex items-center border-b border-b-gray-400">
                     <div className="py-1 pl-2">
                       <SearchIcon className="block w-4 h-4 text-gray-400" />
                     </div>
@@ -185,6 +185,7 @@ const Select: React.FC<SelectProps> = ({
                     key={option.value}
                     className={({ active, selected, disabled }) =>
                       classNames(
+                        'z-10',
                         active ? 'bg-green-50 text-green-700' : 'text-gray-900',
                         selected && 'bg-green-50 text-green-700',
                         'cursor-pointer select-none relative py-2 pl-4 pr-4',

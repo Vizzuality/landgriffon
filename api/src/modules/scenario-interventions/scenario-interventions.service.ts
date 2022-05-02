@@ -28,6 +28,8 @@ import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 import { InterventionGeneratorService } from 'modules/scenario-interventions/services/intervention-generator.service';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
 
 @Injectable()
 export class ScenarioInterventionsService extends AppBaseService<
@@ -104,7 +106,7 @@ export class ScenarioInterventionsService extends AppBaseService<
     /**
      * Getting Sourcing Locations and Sourcing Records for start year of all Materials of the intervention with applied filters
      */
-    const actualSourcingDataWithTonnage: SourcingLocationWithRecord[] =
+    const actualSourcingDataWithTonnage: SourcingLocation[] =
       await this.sourcingLocationsService.findFilteredSourcingLocationsForIntervention(
         dtoWithDescendants,
       );
@@ -166,11 +168,6 @@ export class ScenarioInterventionsService extends AppBaseService<
             actualSourcingDataWithTonnage,
           );
 
-        newInterventionSourcingLocations =
-          await this.sourcingLocationsService.save(
-            newMaterialInterventionLocation,
-          );
-
         newInterventionWithReplacingElements =
           await this.interventionGenerator.addReplacingElementsToIntervention(
             newInterventionWithReplacedElements,
@@ -178,21 +175,11 @@ export class ScenarioInterventionsService extends AppBaseService<
             SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
           );
 
-        for await (const sourcingLocation of newInterventionSourcingLocations) {
-          const [sourcingRecord] = sourcingLocation.sourcingRecords;
-          await this.indicatorRecordsService.createIndicatorRecordsBySourcingRecords(
-            {
-              sourcingRecordId: sourcingRecord.id,
-              tonnage: sourcingRecord.tonnage,
-              geoRegionId: sourcingLocation.geoRegionId,
-              materialId: sourcingLocation.materialId,
-            },
-            dto.newIndicatorCoefficients,
-          );
-        }
-
-        newInterventionWithReplacedElements.newSourcingLocations =
-          newInterventionSourcingLocations;
+        await this.replaceCanceledSourcingLocations(
+          newMaterialInterventionLocation,
+          dto.newIndicatorCoefficients,
+          newInterventionWithReplacedElements,
+        );
 
         break;
 
@@ -203,11 +190,6 @@ export class ScenarioInterventionsService extends AppBaseService<
             actualSourcingDataWithTonnage,
           );
 
-        newInterventionSourcingLocations =
-          await this.sourcingLocationsService.save(
-            newSupplerInterventionLocations,
-          );
-
         newInterventionWithReplacingElements =
           await this.interventionGenerator.addReplacingElementsToIntervention(
             newInterventionWithReplacedElements,
@@ -215,23 +197,11 @@ export class ScenarioInterventionsService extends AppBaseService<
             SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           );
 
-        newInterventionWithReplacedElements.newSourcingLocations =
-          newInterventionSourcingLocations;
-        for await (const sourcingLocation of newInterventionSourcingLocations) {
-          const [sourcingRecord] = sourcingLocation.sourcingRecords;
-          await this.indicatorRecordsService.createIndicatorRecordsBySourcingRecords(
-            {
-              sourcingRecordId: sourcingRecord.id,
-              tonnage: sourcingRecord.tonnage,
-              geoRegionId: sourcingLocation.geoRegionId,
-              materialId: sourcingLocation.materialId,
-            },
-            dto.newIndicatorCoefficients,
-          );
-        }
-
-        newInterventionWithReplacedElements.newSourcingLocations =
-          newInterventionSourcingLocations;
+        await this.replaceCanceledSourcingLocations(
+          newSupplerInterventionLocations,
+          dto.newIndicatorCoefficients,
+          newInterventionWithReplacedElements,
+        );
         break;
 
       case SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY:
@@ -241,25 +211,11 @@ export class ScenarioInterventionsService extends AppBaseService<
             SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
           );
 
-        newInterventionSourcingLocations =
-          await this.sourcingLocationsService.save(
-            newEfficiencyChangeInterventionLocations,
-          );
-        newInterventionWithReplacedElements.newSourcingLocations =
-          newInterventionSourcingLocations;
-
-        for await (const sourcingLocation of newInterventionSourcingLocations) {
-          const [sourcingRecord] = sourcingLocation.sourcingRecords;
-          await this.indicatorRecordsService.createIndicatorRecordsBySourcingRecords(
-            {
-              sourcingRecordId: sourcingRecord.id,
-              tonnage: sourcingRecord.tonnage,
-              geoRegionId: sourcingLocation.geoRegionId,
-              materialId: sourcingLocation.materialId,
-            },
-            dto.newIndicatorCoefficients,
-          );
-        }
+        await this.replaceCanceledSourcingLocations(
+          newEfficiencyChangeInterventionLocations,
+          dto.newIndicatorCoefficients,
+          newInterventionWithReplacedElements,
+        );
 
         break;
     }
@@ -287,14 +243,33 @@ export class ScenarioInterventionsService extends AppBaseService<
    */
   async createNewReplacingSourcingLocationsForNewMaterialIntervention(
     dto: CreateScenarioInterventionDto,
-    sourcingData: SourcingLocationWithRecord[],
+    sourcingData: SourcingLocation[],
   ): Promise<SourcingData[]> {
-    const tonnage: number =
-      sourcingData.reduce(
-        (previous: any, current: any) => previous + Number(current.tonnage),
-        0,
-      ) *
-      (dto.percentage / 100);
+    const sourcingRecords: { year: number; tonnage: number }[] = [];
+    sourcingData.forEach((sourcingLocation: SourcingLocation) => {
+      sourcingLocation.sourcingRecords.forEach(
+        (sourcingRecord: SourcingRecord) => {
+          const sr: { year: number; tonnage: number } | undefined =
+            sourcingRecords.find(
+              (elem: { year: number; tonnage: number }) =>
+                elem.year === sourcingRecord.year,
+            );
+          if (sr) sr.tonnage += Number(sourcingRecord.tonnage);
+          else
+            sourcingRecords.push({
+              year: sourcingRecord.year,
+              tonnage: Number(sourcingRecord.tonnage),
+            });
+        },
+      );
+    });
+
+    sourcingRecords.forEach(
+      (sourcingRecord: { year: number; tonnage: number }) => {
+        sourcingRecord.tonnage =
+          sourcingRecord.tonnage * (dto.percentage / 100);
+      },
+    );
 
     const newInterventionLocationDataForGeoCoding: SourcingData[] = [
       {
@@ -307,7 +282,7 @@ export class ScenarioInterventionsService extends AppBaseService<
         t1SupplierId: dto.newT1SupplierId,
         producerId: dto.newProducerId,
         businessUnitId: sourcingData[0].businessUnitId,
-        sourcingRecords: [{ year: dto.startYear, tonnage }],
+        sourcingRecords,
       },
     ];
 
@@ -336,7 +311,7 @@ export class ScenarioInterventionsService extends AppBaseService<
 
   async createNewReplacingSourcingLocationsForNewSupplierIntervention(
     dto: CreateScenarioInterventionDto,
-    sourcingData: SourcingLocationWithRecord[],
+    sourcingData: SourcingLocation[],
   ): Promise<SourcingData[]> {
     const locationSampleForGeoCoding: SourcingData[] = [
       {
@@ -349,12 +324,7 @@ export class ScenarioInterventionsService extends AppBaseService<
         t1SupplierId: dto.newT1SupplierId,
         producerId: dto.newProducerId,
         businessUnitId: sourcingData[0].businessUnitId,
-        sourcingRecords: [
-          {
-            year: dto.startYear,
-            tonnage: sourcingData[0].tonnage,
-          },
-        ],
+        sourcingRecords: sourcingData[0].sourcingRecords,
       },
     ];
 
@@ -375,7 +345,9 @@ export class ScenarioInterventionsService extends AppBaseService<
         businessUnitId: location.businessUnitId,
         geoRegionId: geoCodedLocationSample[0].geoRegionId,
         adminRegionId: geoCodedLocationSample[0].adminRegionId,
-        sourcingRecords: [{ year: location.year, tonnage: location.tonnage }],
+        sourcingRecords: location.sourcingRecords.map((elem: any) => {
+          return { year: elem.year, tonnage: elem.tonnage };
+        }),
         interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
       };
 
@@ -393,7 +365,7 @@ export class ScenarioInterventionsService extends AppBaseService<
    */
 
   async createNewSourcingLocationsForIntervention(
-    sourcingData: SourcingLocationWithRecord[],
+    sourcingData: SourcingLocation[],
     canceledOrReplacing: SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   ): Promise<SourcingData[]> {
     const newSourcingLocationData: SourcingData[] = [];
@@ -411,12 +383,9 @@ export class ScenarioInterventionsService extends AppBaseService<
         businessUnitId: location.businessUnitId,
         geoRegionId: location.geoRegionId,
         adminRegionId: location.adminRegionId,
-        sourcingRecords: [
-          {
-            year: location.year,
-            tonnage: location.tonnage,
-          },
-        ],
+        sourcingRecords: location.sourcingRecords.map((elem: any) => {
+          return { year: elem.year, tonnage: elem.tonnage };
+        }),
         interventionType: canceledOrReplacing,
       };
 
@@ -424,6 +393,32 @@ export class ScenarioInterventionsService extends AppBaseService<
     }
 
     return newSourcingLocationData;
+  }
+
+  private async replaceCanceledSourcingLocations(
+    newInterventionLocation: CreateSourcingLocationDto[],
+    newIndicatorCoefficients: IndicatorCoefficientsDto | undefined,
+    newScenarioIntervention: ScenarioIntervention,
+  ): Promise<void> {
+    const newInterventionSourcingLocations: SourcingLocation[] =
+      await this.sourcingLocationsService.save(newInterventionLocation);
+
+    for (const sourcingLocation of newInterventionSourcingLocations) {
+      for await (const sourcingRecord of sourcingLocation.sourcingRecords) {
+        await this.indicatorRecordsService.createIndicatorRecordsBySourcingRecords(
+          {
+            sourcingRecordId: sourcingRecord.id,
+            tonnage: sourcingRecord.tonnage,
+            geoRegionId: sourcingLocation.geoRegionId,
+            materialId: sourcingLocation.materialId,
+          },
+          newIndicatorCoefficients,
+        );
+      }
+    }
+
+    newScenarioIntervention.newSourcingLocations =
+      newInterventionSourcingLocations;
   }
 
   static createInterventionInstance(

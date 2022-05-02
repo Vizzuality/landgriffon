@@ -49,7 +49,6 @@ export class IndicatorRecordsService extends AppBaseService<
     private readonly h3DataService: H3DataService,
     private readonly materialsToH3sService: MaterialsToH3sService,
     private readonly h3DataYearsService: H3DataYearsService,
-    private readonly sourcingRecordsService: SourcingRecordsService,
   ) {
     super(
       indicatorRecordRepository,
@@ -151,7 +150,7 @@ export class IndicatorRecordsService extends AppBaseService<
 
   async createIndicatorRecordsForAllSourcingRecords(): Promise<void> {
     const rawData: SourcingRecordsWithIndicatorRawDataDto[] =
-      await this.sourcingRecordsService.getSourcingRecordDataToCalculateIndicatorRecords();
+      await this.indicatorRecordRepository.getIndicatorRawDataForAllSourcingRecords();
     const calculatedData: IndicatorRecordCalculatedValuesDto[] = rawData.map(
       (sourcingRecordData: SourcingRecordsWithIndicatorRawDataDto) =>
         this.calculateIndicatorValues(sourcingRecordData),

@@ -43,6 +43,7 @@ import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import {
   createInterventionPreconditions,
+  createInterventionPreconditionsWithMultipleYearRecords,
   ScenarioInterventionPreconditions,
 } from '../../utils/scenario-interventions-preconditions';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
@@ -421,6 +422,129 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(newSourcingRecords.length).toBe(1);
       expect(newSourcingRecords[0].tonnage).toEqual('500');
+    });
+
+    test('Create a scenario intervention of type Change of supplier location, with correct data and multiple year sourcing records should be successful', async () => {
+      const preconditions: ScenarioInterventionPreconditions =
+        await createInterventionPreconditionsWithMultipleYearRecords();
+
+      const geoRegion: GeoRegion = await createGeoRegion();
+      await createAdminRegion({
+        isoA2: 'ABC',
+        geoRegion,
+      });
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'scenario intervention supplier',
+          startYear: 2018,
+          percentage: 50,
+          scenarioId: preconditions.scenario.id,
+          materialIds: [preconditions.material1.id],
+          supplierIds: [preconditions.supplier1.id],
+          businessUnitIds: [preconditions.businessUnit1.id],
+          adminRegionIds: [preconditions.adminRegion1.id],
+          type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+          newLocationCountryInput: 'Spain',
+          newIndicatorCoefficients: {
+            GHG_LUC_T: 1,
+            DF_LUC_T: 10,
+            UWU_T: 5,
+            BL_LUC_T: 3,
+          },
+        });
+
+      expect(HttpStatus.CREATED);
+
+      const createdScenarioIntervention =
+        await scenarioInterventionRepository.findOne(response.body.data.id);
+
+      if (!createdScenarioIntervention) {
+        throw new Error('Error loading created Scenario intervention');
+      }
+
+      expect(createdScenarioIntervention.title).toEqual(
+        'scenario intervention supplier',
+      );
+
+      expect(response).toHaveJSONAPIAttributes([
+        ...expectedJSONAPIAttributes,
+        'replacedMaterials',
+        'replacedBusinessUnits',
+        'replacedAdminRegions',
+        'replacedSuppliers',
+      ]);
+
+      const allSourcingLocations: [SourcingLocation[], number] =
+        await sourcingLocationRepository.findAndCount();
+      const allSourcingRecords: [SourcingRecord[], number] =
+        await sourcingRecordRepository.findAndCount();
+
+      expect(allSourcingLocations[1]).toEqual(4);
+      expect(allSourcingRecords[1]).toEqual(8);
+
+      const canceledSourcingLocations: SourcingLocation[] =
+        await sourcingLocationRepository.find({
+          where: {
+            interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+          },
+        });
+
+      expect(canceledSourcingLocations.length).toBe(1);
+      expect(canceledSourcingLocations[0].scenarioInterventionId).toEqual(
+        response.body.data.id,
+      );
+      expect(canceledSourcingLocations[0].materialId).toEqual(
+        preconditions.material1Descendant.id,
+      );
+      expect(canceledSourcingLocations[0].adminRegionId).toEqual(
+        preconditions.adminRegion1Descendant.id,
+      );
+
+      const canceledSourcingRecords: SourcingRecord[] =
+        await sourcingRecordRepository.find({
+          where: {
+            sourcingLocationId: canceledSourcingLocations[0].id,
+          },
+        });
+
+      expect(canceledSourcingRecords.length).toBe(2);
+      expect(canceledSourcingRecords[0].tonnage).toEqual('500');
+      expect(canceledSourcingRecords[1].tonnage).toEqual('550');
+
+      const newSourcingLocations: SourcingLocation[] =
+        await sourcingLocationRepository.find({
+          where: {
+            interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+          },
+        });
+
+      expect(newSourcingLocations.length).toBe(1);
+      expect(newSourcingLocations[0].scenarioInterventionId).toEqual(
+        response.body.data.id,
+      );
+      expect(newSourcingLocations[0].materialId).toEqual(
+        preconditions.material1Descendant.id,
+      );
+      expect(newSourcingLocations[0].adminRegionId).not.toEqual(
+        preconditions.adminRegion1Descendant.id,
+      );
+      expect(newSourcingLocations[0].geoRegionId).toEqual(geoRegion.id);
+
+      const newSourcingRecords: SourcingRecord[] =
+        await sourcingRecordRepository.find({
+          where: {
+            sourcingLocationId: canceledSourcingLocations[0].id,
+          },
+        });
+
+      expect(newSourcingRecords.length).toBe(2);
+      expect(newSourcingRecords[0].tonnage).toEqual('500');
+      expect(newSourcingRecords[0].year).toEqual(2018);
+      expect(newSourcingRecords[1].year).toEqual(2019);
     });
   });
 

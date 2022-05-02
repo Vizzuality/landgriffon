@@ -68,62 +68,6 @@ export class H3DataService {
     return await this.h3DataRepository.findOne({ indicatorId });
   }
 
-  async getWaterRiskIndicatorRecordValue(
-    producerH3Table: H3Data,
-    harvestH3Table: H3Data,
-    indicatorH3Table: H3Data,
-    sourcingRecordId: string,
-  ): Promise<number | null> {
-    return this.h3DataRepository.getWaterRiskIndicatorRecordValue(
-      producerH3Table,
-      harvestH3Table,
-      indicatorH3Table,
-      sourcingRecordId,
-    );
-  }
-
-  async getDeforestationLossIndicatorRecordValue(
-    producerH3Table: H3Data,
-    harvestH3Table: H3Data,
-    indicatorH3Table: H3Data,
-    sourcingRecordId: string,
-  ): Promise<number | null> {
-    return this.h3DataRepository.getDeforestationLossIndicatorRecordValue(
-      producerH3Table,
-      harvestH3Table,
-      indicatorH3Table,
-      sourcingRecordId,
-    );
-  }
-
-  async getBiodiversityLossIndicatorRecordValue(
-    producerH3Table: H3Data,
-    harvestH3Table: H3Data,
-    indicatorH3Table: H3Data,
-    sourcingRecordId: string,
-  ): Promise<number | null> {
-    return this.h3DataRepository.getBiodiversityLossIndicatorRecordValue(
-      producerH3Table,
-      harvestH3Table,
-      indicatorH3Table,
-      sourcingRecordId,
-    );
-  }
-
-  async getCarbonIndicatorRecordValue(
-    producerH3Table: H3Data,
-    harvestH3Table: H3Data,
-    indicatorH3Table: H3Data,
-    sourcingRecordId: string,
-  ): Promise<number | null> {
-    return this.h3DataRepository.getCarbonIndicatorRecordValue(
-      producerH3Table,
-      harvestH3Table,
-      indicatorH3Table,
-      sourcingRecordId,
-    );
-  }
-
   async getMaterialMapByResolution(
     materialId: string,
     resolution: number,

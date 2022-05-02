@@ -283,7 +283,7 @@ describe('Indicator Records Service', () => {
     expect(indicatorRecords[0].status).toEqual(INDICATOR_RECORD_STATUS.SUCCESS);
     expect(indicatorRecords[0].value).toEqual(recordValue);
     expect(indicatorRecords[0].scaler).toEqual(scalerValue);
-    expect(indicatorRecords[0].h3DataId).toEqual(h3Data.id);
+    expect(indicatorRecords[0].materialH3DataId).toEqual(h3Data.id);
     //Inidicator Coefficients are not checked because it's not used
   }
 

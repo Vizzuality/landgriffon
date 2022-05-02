@@ -171,10 +171,8 @@ export class SourcingDataImportService {
   /**
    * @note: Deletes DB content from required entities
    * to ensure DB is prune prior loading a XLSX dataset
-   * TODO: Check if we need to clean admin-regions up (plus geo-regions)
-   * The latter should be loaded as part of the data-pipeline importing GADM
    */
-  private async cleanDataBeforeImport(): Promise<void> {
+  async cleanDataBeforeImport(): Promise<void> {
     this.logger.log('Cleaning database before import...');
     try {
       await this.indicatorRecordsService.clearTable();
@@ -182,6 +180,7 @@ export class SourcingDataImportService {
       await this.supplierService.clearTable();
       await this.sourcingLocationService.clearTable();
       await this.sourcingRecordService.clearTable();
+      await this.geoRegionsService.deleteGeoRegionsCreatedByUser();
     } catch ({ message }) {
       throw new Error(
         `Database could not been cleaned before loading new dataset: ${message}`,

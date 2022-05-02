@@ -75,4 +75,8 @@ export class GeoRegionsService extends AppBaseService<
       newGeroRegionValues,
     );
   }
+
+  async deleteGeoRegionsCreatedByUser(): Promise<void> {
+    await this.geoRegionRepository.delete({ isCreatedByUser: true });
+  }
 }

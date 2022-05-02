@@ -18,7 +18,6 @@ import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sou
 import { GetImpactTableDto } from 'modules/impact/dto/get-impact-table.dto';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
-import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 
 export interface SourcingRecordDataForImpact {
   id: string;
@@ -130,11 +129,5 @@ export class SourcingRecordsService extends AppBaseService<
         'sourcingLocations.geoRegionId = geoRegions.id',
       )
       .getRawMany();
-  }
-
-  async getSourcingRecordDataToCalculateIndicatorRecords(): Promise<
-    SourcingRecordsWithIndicatorRawDataDto[]
-  > {
-    return this.sourcingRecordRepository.getIndicatorRawDataForAllSourcingRecords();
   }
 }

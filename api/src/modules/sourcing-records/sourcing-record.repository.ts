@@ -1,10 +1,10 @@
 import {
+  Brackets,
   EntityRepository,
   getManager,
   Repository,
   SelectQueryBuilder,
   WhereExpressionBuilder,
-  Brackets,
 } from 'typeorm';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import {
@@ -237,8 +237,10 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       )
       .orderBy('year', 'ASC')
       .addOrderBy('name');
+
     const dataForImpactTable: ImpactTableData[] =
       await impactDataQueryBuilder.getRawMany();
+
     if (!dataForImpactTable.length) {
       throw new NotFoundException(
         'Data required for building Impact Table could not been retrieved from DB',

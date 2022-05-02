@@ -15,6 +15,7 @@ import type { HTMLAttributes } from 'react';
 import React from 'react';
 import { CSS } from '@dnd-kit/utilities';
 import { SortableListenersContextProps, SortableProps } from './types';
+import classNames from 'classnames';
 
 export const SortableListenersContext = React.createContext<SortableListenersContextProps | null>(
   null,
@@ -53,7 +54,12 @@ interface SortableItemProps extends HTMLAttributes<HTMLDivElement> {
   id: string;
 }
 
-export const SortableItem: React.FC<SortableItemProps> = ({ children, id, ...props }) => {
+export const SortableItem: React.FC<SortableItemProps> = ({
+  children,
+  id,
+  className,
+  ...props
+}) => {
   const {
     attributes,
     listeners = {},
@@ -67,7 +73,12 @@ export const SortableItem: React.FC<SortableItemProps> = ({ children, id, ...pro
 
   return (
     <SortableListenersContext.Provider value={{ isDragging, listeners, attributes }}>
-      <div ref={setNodeRef} style={style} {...props}>
+      <div
+        ref={setNodeRef}
+        className={classNames(className, { 'opacity-50': isDragging })}
+        style={style}
+        {...props}
+      >
         {children}
       </div>
     </SortableListenersContext.Provider>

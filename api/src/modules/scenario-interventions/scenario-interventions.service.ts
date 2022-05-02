@@ -138,9 +138,7 @@ export class ScenarioInterventionsService extends AppBaseService<
      */
 
     const newScenarioIntervention: ScenarioIntervention =
-      await this.interventionGenerator.createInterventionInstance(
-        dtoWithDescendants,
-      );
+      ScenarioIntervention.createInterventionInstance(dtoWithDescendants);
 
     // Add replaced Entities to new Scenario Intervention
 

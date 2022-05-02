@@ -58,7 +58,7 @@ export class InterventionGeneratorService {
     const adminRegionsIds: string[] = [];
     const businessUnitIds: string[] = [];
     const supplierIds: string[] = [];
-    for await (const sourcingLocation of cancelledSourcingLocations) {
+    for (const sourcingLocation of cancelledSourcingLocations) {
       if (sourcingLocation.materialId) {
         materialIds.push(sourcingLocation.materialId);
       }

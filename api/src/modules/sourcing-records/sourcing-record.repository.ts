@@ -19,8 +19,6 @@ import { Supplier } from 'modules/suppliers/supplier.entity';
 import { Logger, NotFoundException } from '@nestjs/common';
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
-import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
-import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 
 export class ImpactTableData {
   year: number;
@@ -202,66 +200,5 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       );
     }
     return dataForImpactTable;
-  }
-
-  /**
-   * @description Retrieves data to calculate Indicator Records for all Sourcing Records present in the DB
-   * Uses stored functions created with migration: 1645259040554-ImpactStoredFunctions.ts
-   */
-  async getIndicatorRawDataForAllSourcingRecords(): Promise<
-    SourcingRecordsWithIndicatorRawDataDto[]
-  > {
-    try {
-      const response: any = await this.query(`
-      SELECT
-          sr.id as "sourcingRecordId",
-          sr.tonnage,
-          sr.year,
-          sl.id as "sourcingLocationId",
-          sl.production,
-          sl."harvestedArea",
-          sl."rawDeforestation",
-          sl."rawBiodiversity",
-          sl."rawCarbon",
-          sl."rawWater",
-          m."h3DataId" as "materialH3DataId"
-      FROM
-          sourcing_records sr
-          INNER JOIN
-              (
-                  SELECT
-                      id,
-                      sum_material_over_georegion("geoRegionId", "materialId", 'producer') as production,
-                      sum_material_over_georegion("geoRegionId", "materialId", 'harvest') as "harvestedArea",
-                      sum_weighted_deforestation_over_georegion("geoRegionId", "materialId", 'harvest') as "rawDeforestation",
-                      sum_weighted_biodiversity_over_georegion("geoRegionId", "materialId", 'harvest') as "rawBiodiversity",
-                      sum_weighted_carbon_over_georegion("geoRegionId", "materialId", 'harvest') as "rawCarbon",
-                      sum_weighted_water_over_georegion("geoRegionId") as "rawWater",
-                      "scenarioInterventionId",
-                      "interventionType"
-                  FROM
-                      sourcing_location
-                  INNER JOIN
-                    material_to_h3
-                  ON
-                    material_to_h3."materialId" = sourcing_location."materialId"
-                  WHERE "scenarioInterventionId" IS NULL
-                  AND "interventionType" IS NULL
-              ) as sl
-              on sr."sourcingLocationId" = sl.id`);
-      if (!response.length)
-        this.logger.warn(
-          `Could not retrieve Sourcing Records with weighted indicator values`,
-        );
-
-      return response;
-    } catch (err: any) {
-      this.logger.error(
-        `Error querying data from DB to calculate Indicator Records: ${err.message}`,
-      );
-      throw new MissingH3DataError(
-        `Could net retrieve Indicator Raw data from Sourcing Locations: ${err}`,
-      );
-    }
   }
 }

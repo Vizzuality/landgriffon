@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, Fragment, useCallback, useMemo } from 'react';
+import React, { useRef, useEffect, useState, Fragment } from 'react';
 import { useOutsideClick } from 'rooks';
 import { Transition } from '@headlessui/react';
 import { ChevronUpIcon } from '@heroicons/react/solid';
@@ -21,6 +21,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
   onChange = () => null,
   onStartYearSearch = () => null,
   onEndYearSearch = () => null,
+  lastYearWithData,
 }) => {
   const wrapperRef = useRef();
 
@@ -135,7 +136,13 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
                 <Select
                   loading={loading}
                   showSearch={showSearch ?? showEndYearSearch}
-                  options={endYearOptions}
+                  options={endYearOptions.map((option) => ({
+                    ...option,
+                    extraInfo:
+                      lastYearWithData && option.value > lastYearWithData
+                        ? 'projected data'
+                        : undefined,
+                  }))}
                   current={endYearOption}
                   onChange={setEndYearOption}
                   onSearch={onEndYearSearch}

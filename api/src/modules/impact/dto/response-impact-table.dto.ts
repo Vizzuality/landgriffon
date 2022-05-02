@@ -70,6 +70,12 @@ export class YearSumData {
   year: number;
   @ApiProperty()
   value: number;
+  @ApiPropertyOptional()
+  interventionValue?: number;
+  @ApiPropertyOptional()
+  absoluteDifference?: number;
+  @ApiPropertyOptional()
+  percentageDifference?: number;
 }
 
 export class ImpactTableRowsValues {

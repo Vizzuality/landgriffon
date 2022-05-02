@@ -500,6 +500,9 @@ export class ImpactService {
           value: totalSumByYear,
           ...(totalInterventionSumByYear && {
             interventionValue: totalInterventionSumByYear,
+            absoluteDifference: totalInterventionSumByYear - totalSumByYear,
+            percentageDifference:
+              (totalInterventionSumByYear / totalSumByYear) * 100,
           }),
         });
       });
@@ -522,7 +525,11 @@ export class ImpactService {
           );
     });
     const purchasedTonnes: ImpactTablePurchasedTonnes[] =
-      this.getTotalPurchasedVolumeByYear(rangeOfYears, dataForImpactTable);
+      this.getTotalPurchasedVolumeByYear(
+        rangeOfYears,
+        dataForImpactTable,
+        queryDto.scenarioId,
+      );
     this.logger.log('Impact Table built');
 
     return { impactTable, purchasedTonnes };
@@ -531,6 +538,7 @@ export class ImpactService {
   private getTotalPurchasedVolumeByYear(
     rangeOfYears: number[],
     dataForImpactTable: ImpactTableData[],
+    scenarioId?: string,
   ): ImpactTablePurchasedTonnes[] {
     const purchasedTonnes: ImpactTablePurchasedTonnes[] = [];
     rangeOfYears.forEach((year: number) => {
@@ -565,6 +573,9 @@ export class ImpactService {
         });
       }
     });
+    if (scenarioId)
+      purchasedTonnes.map((el: ImpactTablePurchasedTonnes) => (el.value /= 2));
+
     return purchasedTonnes;
   }
 

@@ -138,7 +138,9 @@ export class ScenarioInterventionsService extends AppBaseService<
      */
 
     const newScenarioIntervention: ScenarioIntervention =
-      ScenarioIntervention.createInterventionInstance(dtoWithDescendants);
+      ScenarioInterventionsService.createInterventionInstance(
+        dtoWithDescendants,
+      );
 
     // Add replaced Entities to new Scenario Intervention
 
@@ -422,5 +424,26 @@ export class ScenarioInterventionsService extends AppBaseService<
     }
 
     return newSourcingLocationData;
+  }
+
+  static createInterventionInstance(
+    dto: CreateScenarioInterventionDto,
+  ): ScenarioIntervention {
+    const scenarioIntervention: ScenarioIntervention =
+      new ScenarioIntervention();
+    scenarioIntervention.title = dto.title;
+    scenarioIntervention.description = dto.description;
+    scenarioIntervention.scenarioId = dto.scenarioId;
+    scenarioIntervention.startYear = dto.startYear;
+    scenarioIntervention.percentage = dto.percentage;
+    scenarioIntervention.endYear = dto.endYear;
+    scenarioIntervention.type = dto.type;
+    scenarioIntervention.newIndicatorCoefficients =
+      dto.newIndicatorCoefficients as unknown as JSON;
+    scenarioIntervention.newLocationType = dto.newLocationType;
+    scenarioIntervention.newLocationCountryInput = dto.newLocationCountryInput;
+    scenarioIntervention.newLocationAddressInput = dto.newLocationAddressInput;
+
+    return scenarioIntervention;
   }
 }

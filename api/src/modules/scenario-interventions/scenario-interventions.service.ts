@@ -22,7 +22,6 @@ import {
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
-import { SourcingLocationWithRecord } from 'modules/sourcing-locations/dto/sourcing-location-with-record.interface';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
@@ -175,7 +174,7 @@ export class ScenarioInterventionsService extends AppBaseService<
             SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
           );
 
-        await this.replaceCanceledSourcingLocations(
+        await this.createReplacingSourcingLocationsForIntervention(
           newMaterialInterventionLocation,
           dto.newIndicatorCoefficients,
           newInterventionWithReplacedElements,
@@ -197,7 +196,7 @@ export class ScenarioInterventionsService extends AppBaseService<
             SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           );
 
-        await this.replaceCanceledSourcingLocations(
+        await this.createReplacingSourcingLocationsForIntervention(
           newSupplerInterventionLocations,
           dto.newIndicatorCoefficients,
           newInterventionWithReplacedElements,
@@ -211,7 +210,7 @@ export class ScenarioInterventionsService extends AppBaseService<
             SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
           );
 
-        await this.replaceCanceledSourcingLocations(
+        await this.createReplacingSourcingLocationsForIntervention(
           newEfficiencyChangeInterventionLocations,
           dto.newIndicatorCoefficients,
           newInterventionWithReplacedElements,
@@ -246,6 +245,9 @@ export class ScenarioInterventionsService extends AppBaseService<
     sourcingData: SourcingLocation[],
   ): Promise<SourcingData[]> {
     const sourcingRecords: { year: number; tonnage: number }[] = [];
+    /**
+     * For each year in SourcingRecords, sum up all tonnages for that year
+     */
     sourcingData.forEach((sourcingLocation: SourcingLocation) => {
       sourcingLocation.sourcingRecords.forEach(
         (sourcingRecord: SourcingRecord) => {
@@ -264,12 +266,15 @@ export class ScenarioInterventionsService extends AppBaseService<
       );
     });
 
-    sourcingRecords.forEach(
-      (sourcingRecord: { year: number; tonnage: number }) => {
-        sourcingRecord.tonnage =
-          sourcingRecord.tonnage * (dto.percentage / 100);
-      },
-    );
+    const intervenedSourcingRecords: { year: number; tonnage: number }[] =
+      sourcingRecords.map(
+        (sourcingRecord: { year: number; tonnage: number }) => {
+          return {
+            year: sourcingRecord.year,
+            tonnage: sourcingRecord.tonnage * (dto.percentage / 100),
+          };
+        },
+      );
 
     const newInterventionLocationDataForGeoCoding: SourcingData[] = [
       {
@@ -282,7 +287,7 @@ export class ScenarioInterventionsService extends AppBaseService<
         t1SupplierId: dto.newT1SupplierId,
         producerId: dto.newProducerId,
         businessUnitId: sourcingData[0].businessUnitId,
-        sourcingRecords,
+        sourcingRecords: intervenedSourcingRecords,
       },
     ];
 
@@ -395,7 +400,7 @@ export class ScenarioInterventionsService extends AppBaseService<
     return newSourcingLocationData;
   }
 
-  private async replaceCanceledSourcingLocations(
+  private async createReplacingSourcingLocationsForIntervention(
     newInterventionLocation: CreateSourcingLocationDto[],
     newIndicatorCoefficients: IndicatorCoefficientsDto | undefined,
     newScenarioIntervention: ScenarioIntervention,

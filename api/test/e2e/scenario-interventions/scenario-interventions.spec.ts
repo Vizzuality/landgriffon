@@ -424,7 +424,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       expect(newSourcingRecords[0].tonnage).toEqual('500');
     });
 
-    test('Create a scenario intervention of type Change of supplier location, with correct data and multiple year sourcing records should be successful', async () => {
+    test('Create a scenario intervention of type Change of supplier location with start year for which there are multiple years, should be successful', async () => {
       const preconditions: ScenarioInterventionPreconditions =
         await createInterventionPreconditionsWithMultipleYearRecords();
 

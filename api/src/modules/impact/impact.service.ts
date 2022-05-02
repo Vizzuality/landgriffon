@@ -351,14 +351,27 @@ export class ImpactService {
                   SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
             );
 
-          dto.interventionImpact = replacingDto?.impact;
-          dto.percentageDifference =
-            ((dto.interventionImpact as number) / dto.impact) * 100;
-          dto.absoluteDifference =
-            (dto.interventionImpact as number) - dto.impact;
-          dto.typeByIntervention = null;
-          dataForScenarioImpactTable.push(dto);
+          dto.interventionImpact = replacingDto?.impact || 0;
+        } else if (
+          dto.typeByIntervention ===
+          SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING
+        ) {
+          const cancelledDto: ImpactTableData | undefined =
+            dataForImpactTable.find(
+              (replacingDto: ImpactTableData) =>
+                replacingDto.name === dto.name &&
+                replacingDto.typeByIntervention ===
+                  SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+            );
+
+          if (!cancelledDto) {
+            dto.interventionImpact = dto.impact;
+            dto.impact = 0;
+          }
         }
+
+        dto.typeByIntervention = null;
+        dataForScenarioImpactTable.push(dto);
       }
 
       const scenarioImpactTable: ImpactTable = this.buildImpactTable(
@@ -500,10 +513,13 @@ export class ImpactService {
           queryDto.scenarioId,
         );
       });
-      impactTable[indicatorValuesIndex].rows = skeleton.filter(
-        (item: ImpactTableRows) =>
-          item.children.length > 0 || item.values[0].value > 0,
-      );
+
+      impactTable[indicatorValuesIndex].rows = queryDto.scenarioId
+        ? skeleton
+        : skeleton.filter(
+            (item: ImpactTableRows) =>
+              item.children.length > 0 || item.values[0].value > 0,
+          );
     });
     const purchasedTonnes: ImpactTablePurchasedTonnes[] =
       this.getTotalPurchasedVolumeByYear(rangeOfYears, dataForImpactTable);

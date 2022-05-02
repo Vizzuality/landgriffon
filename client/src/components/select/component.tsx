@@ -195,14 +195,21 @@ const Select: React.FC<SelectProps> = ({
                     value={option}
                   >
                     {({ selected }) => (
-                      <span
-                        className={classNames(
-                          selected ? 'font-semibold' : 'font-normal',
-                          'block text-sm truncate',
+                      <div className="flex flex-row gap-x-2">
+                        <div
+                          className={classNames(
+                            selected ? 'font-semibold' : 'font-normal',
+                            'block text-sm truncate',
+                          )}
+                        >
+                          {option.label}
+                        </div>
+                        {option.extraInfo && (
+                          <div>
+                            <i className="text-gray-600 text-sm">{option.extraInfo}</i>
+                          </div>
                         )}
-                      >
-                        {option.label}
-                      </span>
+                      </div>
                     )}
                   </Listbox.Option>
                 ))}

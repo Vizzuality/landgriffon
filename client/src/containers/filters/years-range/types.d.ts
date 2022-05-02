@@ -35,6 +35,8 @@ export type YearsRangeFilterProps = YearsRangeParams & {
   onStartYearSearch?: SelectProps['onSearch'];
   /** Callback when the end year is searched */
   onEndYearSearch?: SelectProps['onSearch'];
+  /** Last year with avaliable data. Years greater than this will have the message `projected data` */
+  lastYearWithData?: number;
 };
 
 export type UseYearsRangeProps = Partial<YearsRangeParams> & {

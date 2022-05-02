@@ -22,6 +22,9 @@ import {
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
+// TODO: Making this import absolute creates some circular dependency. Fix it once we refactor the createScenatioIntervention process
+// eslint-disable-next-line no-restricted-imports
+import { CreateScenarioInterventionDto } from './dto/create.scenario-intervention.dto';
 
 export enum SCENARIO_INTERVENTION_STATUS {
   ACTIVE = 'active',
@@ -204,4 +207,25 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   @Column({ nullable: true })
   @ApiPropertyOptional()
   updatedById?: string;
+
+  static createInterventionInstance(
+    dto: CreateScenarioInterventionDto,
+  ): ScenarioIntervention {
+    const scenarioIntervention: ScenarioIntervention =
+      new ScenarioIntervention();
+    scenarioIntervention.title = dto.title;
+    scenarioIntervention.description = dto.description;
+    scenarioIntervention.scenarioId = dto.scenarioId;
+    scenarioIntervention.startYear = dto.startYear;
+    scenarioIntervention.percentage = dto.percentage;
+    scenarioIntervention.endYear = dto.endYear;
+    scenarioIntervention.type = dto.type;
+    scenarioIntervention.newIndicatorCoefficients =
+      dto.newIndicatorCoefficients as unknown as JSON;
+    scenarioIntervention.newLocationType = dto.newLocationType;
+    scenarioIntervention.newLocationCountryInput = dto.newLocationCountryInput;
+    scenarioIntervention.newLocationAddressInput = dto.newLocationAddressInput;
+
+    return scenarioIntervention;
+  }
 }

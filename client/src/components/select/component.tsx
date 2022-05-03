@@ -70,10 +70,11 @@ const Select: React.FC<SelectProps> = ({
   // On change
   const handleChange = useCallback(
     (currentOption) => {
-      if (onChange) onChange(currentOption);
+      onChange?.(currentOption);
       setSelected(currentOption);
+      resetSearch();
     },
-    [onChange],
+    [onChange, resetSearch],
   );
 
   useEffect(() => {
@@ -90,10 +91,6 @@ const Select: React.FC<SelectProps> = ({
       setSelected(current);
     }
   }, [current, allowEmpty, options]);
-
-  useEffect(() => {
-    resetSearch();
-  }, [current?.value, resetSearch]);
 
   return (
     <Listbox value={current} onChange={handleChange} disabled={disabled}>

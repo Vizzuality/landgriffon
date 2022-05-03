@@ -2,7 +2,7 @@ export const newSupplierScenarioInterventionTable = {
   impactTable: [
     {
       indicatorShortName: null,
-      indicatorId: '72c085b2-94de-4537-b3a6-7bc6a9da1082',
+      indicatorId: '22fd15f2-6a5c-4b62-8358-f3befdb98362',
       groupBy: 'supplier',
       rows: [
         {
@@ -15,7 +15,7 @@ export const newSupplierScenarioInterventionTable = {
               isProjected: false,
               interventionValue: 0,
               absoluteDifference: -2400,
-              percentageDifference: 0,
+              percentageDifference: -100,
             },
             {
               year: 2021,
@@ -23,7 +23,7 @@ export const newSupplierScenarioInterventionTable = {
               isProjected: true,
               interventionValue: 0,
               absoluteDifference: -2436,
-              percentageDifference: 0,
+              percentageDifference: -100,
             },
             {
               year: 2022,
@@ -31,7 +31,7 @@ export const newSupplierScenarioInterventionTable = {
               isProjected: true,
               interventionValue: 0,
               absoluteDifference: -2472.54,
-              percentageDifference: 0,
+              percentageDifference: -100,
             },
             {
               year: 2023,
@@ -39,7 +39,7 @@ export const newSupplierScenarioInterventionTable = {
               isProjected: true,
               interventionValue: 0,
               absoluteDifference: -2509.6281,
-              percentageDifference: 0,
+              percentageDifference: -100,
             },
           ],
         },
@@ -87,21 +87,29 @@ export const newSupplierScenarioInterventionTable = {
           year: 2020,
           value: 2400,
           interventionValue: 1900,
+          absoluteDifference: -500,
+          percentageDifference: -20.833333333333336,
         },
         {
           year: 2021,
           value: 2436,
           interventionValue: 1928.5,
+          absoluteDifference: -507.5,
+          percentageDifference: -20.833333333333336,
         },
         {
           year: 2022,
           value: 2472.54,
           interventionValue: 1957.4275,
+          absoluteDifference: -515.1125,
+          percentageDifference: -20.833333333333332,
         },
         {
           year: 2023,
           value: 2509.6281,
           interventionValue: 1986.7889125,
+          absoluteDifference: -522.8391875,
+          percentageDifference: -20.833333333333336,
         },
       ],
       metadata: {

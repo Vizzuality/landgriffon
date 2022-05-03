@@ -28,8 +28,7 @@ export class IndicatorRecordRepository extends Repository<IndicatorRecord> {
           sl."rawDeforestation",
           sl."rawBiodiversity",
           sl."rawCarbon",
-          sl."rawWater",
-          m."h3DataId" as "materialH3DataId"
+          sl."rawWater"
       FROM
           sourcing_records sr
           INNER JOIN
@@ -46,10 +45,6 @@ export class IndicatorRecordRepository extends Repository<IndicatorRecord> {
                       "interventionType"
                   FROM
                       sourcing_location
-                  INNER JOIN
-                    material_to_h3
-                  ON
-                    material_to_h3."materialId" = sourcing_location."materialId"
                   WHERE "scenarioInterventionId" IS NULL
                   AND "interventionType" IS NULL
               ) as sl

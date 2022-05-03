@@ -27,6 +27,9 @@ import { newCoefficientsScenarioInterventionTable } from './scenario-impact-resp
 import { newMaterialScenarioInterventionTable } from './scenario-impact-responses/new-materials-intervention.response';
 import { createNewSupplierInterventionPreconditions } from './scenario-impact-preconditions/new-supplier-intervention.preconditions';
 import { newSupplierScenarioInterventionTable } from './scenario-impact-responses/new-supplier-intervention.response';
+import { createMultipleInterventionsPreconditions } from './scenario-impact-preconditions/mixed-interventions-scenario.preconditions';
+import { Scenario } from 'modules/scenarios/scenario.entity';
+import { mixedInterventionsScenarioTable } from './scenario-impact-responses/mixed-interventions-scenario.response';
 
 describe('Impact Table and Charts test suite (e2e)', () => {
   let app: INestApplication;
@@ -105,7 +108,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     await app.close();
   });
 
-  test('Impact table for Scenario intervention of type New Coefficients should return expected results', async () => {
+  test('When I request data for Impact table for a Scenario with Intervention of type New Coefficients I should get the expected results', async () => {
     const preconditions: {
       indicator: Indicator;
       scenarioIntervention: ScenarioIntervention;
@@ -128,7 +131,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     );
   });
 
-  test('Impact table for Scenario intervention of type New Material should return expected results', async () => {
+  test('When I request data for Impact table for a Scenario with Intervention of type New Material I should get the expected results', async () => {
     const preconditions: {
       indicator: Indicator;
       scenarioIntervention: ScenarioIntervention;
@@ -151,7 +154,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     );
   });
 
-  test('Impact table for Scenario intervention of type New Supplier should return expected results', async () => {
+  test('When I request data for Impact table for a Scenario with Intervention of type New Supplier I should get the expected results', async () => {
     const preconditions: {
       indicator: Indicator;
       scenarioIntervention: ScenarioIntervention;
@@ -171,6 +174,29 @@ describe('Impact Table and Charts test suite (e2e)', () => {
 
     expect(response.body.data.impactTable[0].rows).toEqual(
       newSupplierScenarioInterventionTable.impactTable[0].rows,
+    );
+  });
+
+  test('When I request data for Impact table for a Scenario with various Interventions of different types I should get the expected results', async () => {
+    const preconditions: {
+      indicator: Indicator;
+      newScenario: Scenario;
+    } = await createMultipleInterventionsPreconditions();
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/impact/table')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .query({
+        'indicatorIds[]': [preconditions.indicator.id],
+        endYear: 2023,
+        startYear: 2020,
+        groupBy: 'material',
+        scenarioId: preconditions.newScenario.id,
+      })
+      .expect(HttpStatus.OK);
+
+    expect(response.body.data.impactTable[0].rows).toEqual(
+      mixedInterventionsScenarioTable.impactTable[0].rows,
     );
   });
 });

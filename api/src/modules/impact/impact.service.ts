@@ -502,7 +502,8 @@ export class ImpactService {
             interventionValue: totalInterventionSumByYear,
             absoluteDifference: totalInterventionSumByYear - totalSumByYear,
             percentageDifference:
-              (totalInterventionSumByYear / totalSumByYear) * 100,
+              ((totalInterventionSumByYear - totalSumByYear) / totalSumByYear) *
+              100,
           }),
         });
       });
@@ -637,7 +638,8 @@ export class ImpactService {
             (entity.values[valueIndex].interventionValue || 0) -
             entity.values[valueIndex].value;
           entity.values[valueIndex].percentageDifference =
-            ((entity.values[valueIndex].interventionValue || 0) /
+            (((entity.values[valueIndex].interventionValue || 0) -
+              entity.values[valueIndex].value) /
               entity.values[valueIndex].value) *
             100;
         }

@@ -93,7 +93,7 @@ const Select: React.FC<SelectProps> = ({
 
   useEffect(() => {
     resetSearch();
-  }, [current, resetSearch]);
+  }, [current?.value, resetSearch]);
 
   return (
     <Listbox value={current} onChange={handleChange} disabled={disabled}>

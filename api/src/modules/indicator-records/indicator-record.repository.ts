@@ -19,36 +19,42 @@ export class IndicatorRecordRepository extends Repository<IndicatorRecord> {
     try {
       const response: any = await this.query(`
       SELECT
-          sr.id as "sourcingRecordId",
+          slwithmaterialh3data.id as "sourcingRecordId",
           sr.tonnage,
           sr.year,
-          sl.id as "sourcingLocationId",
-          sl.production,
-          sl."harvestedArea",
-          sl."rawDeforestation",
-          sl."rawBiodiversity",
-          sl."rawCarbon",
-          sl."rawWater"
+          sr.id as "sourcingLocationId",
+          slwithmaterialh3data.production,
+          slwithmaterialh3data."harvestedArea",
+          slwithmaterialh3data."rawDeforestation",
+          slwithmaterialh3data."rawBiodiversity",
+          slwithmaterialh3data."rawCarbon",
+          slwithmaterialh3data."rawWater",
+          slwithmaterialh3data."materialH3DataId"
       FROM
           sourcing_records sr
           INNER JOIN
               (
                   SELECT
-                      id,
-                      sum_material_over_georegion("geoRegionId", "materialId", 'producer') as production,
-                      sum_material_over_georegion("geoRegionId", "materialId", 'harvest') as "harvestedArea",
-                      sum_weighted_deforestation_over_georegion("geoRegionId", "materialId", 'harvest') as "rawDeforestation",
-                      sum_weighted_biodiversity_over_georegion("geoRegionId", "materialId", 'harvest') as "rawBiodiversity",
-                      sum_weighted_carbon_over_georegion("geoRegionId", "materialId", 'harvest') as "rawCarbon",
-                      sum_weighted_water_over_georegion("geoRegionId") as "rawWater",
+                      sourcing_location.id,
+                      sum_material_over_georegion(sourcing_location."geoRegionId", sourcing_location."materialId", 'producer') as production,
+                      sum_material_over_georegion(sourcing_location."geoRegionId", sourcing_location."materialId", 'harvest') as "harvestedArea",
+                      sum_weighted_deforestation_over_georegion(sourcing_location."geoRegionId", sourcing_location."materialId", 'harvest') as "rawDeforestation",
+                      sum_weighted_biodiversity_over_georegion(sourcing_location."geoRegionId", sourcing_location."materialId", 'harvest') as "rawBiodiversity",
+                      sum_weighted_carbon_over_georegion(sourcing_location."geoRegionId", sourcing_location."materialId", 'harvest') as "rawCarbon",
+                      sum_weighted_water_over_georegion(sourcing_location."geoRegionId") as "rawWater",
                       "scenarioInterventionId",
-                      "interventionType"
+                      "interventionType",
+                      mth."h3DataId" as "materialH3DataId"
                   FROM
                       sourcing_location
+                  inner join
+                    material_to_h3 mth
+                  on
+                    mth."materialId" = sourcing_location."materialId"
                   WHERE "scenarioInterventionId" IS NULL
                   AND "interventionType" IS NULL
-              ) as sl
-              on sr."sourcingLocationId" = sl.id`);
+              ) as slwithmaterialh3data
+              on sr."sourcingLocationId" = slwithmaterialh3data.id`);
       if (!response.length)
         this.logger.warn(
           `Could not retrieve Sourcing Records with weighted indicator values`,

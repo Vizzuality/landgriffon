@@ -187,7 +187,6 @@ export class H3DataRepository extends Repository<H3Data> {
       .from(SourcingLocation, 'sl')
       .innerJoin(SourcingRecord, 'sr', 'sl.id = sr.sourcingLocationId')
       .innerJoin(IndicatorRecord, 'ir', 'sr.id = ir.sourcingRecordId')
-      .innerJoin('material_to_h3', 'mth', 'mth.materialId = sl.materialId')
       .where('sr.year = :year', { year })
       .andWhere('sl."scenarioInterventionId" IS NULL')
       .andWhere('sl."interventionType" IS NULL')
@@ -226,17 +225,20 @@ export class H3DataRepository extends Repository<H3Data> {
       });
     }
 
+    selectQueryBuilder.andWhere('ir.scaler > 0');
+    selectQueryBuilder.andWhere('ir.value > 0');
+
     selectQueryBuilder.groupBy('h');
 
     // This query has everything except the LATERAL join not supported by typeorm, so we are getting the raw SQL string to manually insert the LATERAL string into it
     const [selectQuery, selectQueryParams]: [string, any[]] =
       selectQueryBuilder.getQueryAndParameters();
 
-    // Finding the position (index of a string) to insert LATERAL string - right before the first WHERE caluse
+    // Finding the position (index of a string) to insert LATERAL string - right before the first WHERE clause
     const positionToInsertLateral: number = selectQuery.indexOf('WHERE');
 
     // The LATERAL SQL string that needs to be added to query
-    const sqlStringForLateral: string = `, LATERAL(SELECT h3index, ir.value/ir.scaler * value as value FROM get_h3_data_over_georegion(sl."geoRegionId", mth."h3DataId")) h3data `;
+    const sqlStringForLateral: string = `, LATERAL(SELECT h3index, ir.value/ir.scaler * value as value FROM get_h3_data_over_georegion(sl."geoRegionId", ir."materialH3DataId")) h3data `;
 
     // Adding LATERAL SQL string to the main SQL string
     const sqlQuery: string = [

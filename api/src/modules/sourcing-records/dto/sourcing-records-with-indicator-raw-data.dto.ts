@@ -17,5 +17,5 @@ export class SourcingRecordsWithIndicatorRawDataDto {
   rawCarbon: number;
   rawWater: number;
 
-  materialH3Id: string;
+  materialH3DataId: string;
 }

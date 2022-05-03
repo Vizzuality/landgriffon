@@ -8,6 +8,7 @@ import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
 export class IndicatorRecordCalculatedValuesDto {
   sourcingRecordId: string;
   production: number;
+  materialH3DataId: string;
 
   landPerTon: number;
   landUse: number;

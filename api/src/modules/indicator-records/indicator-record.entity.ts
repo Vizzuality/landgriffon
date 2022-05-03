@@ -3,7 +3,6 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -95,7 +94,10 @@ export class IndicatorRecord extends TimestampedBaseEntity {
   @Column({ type: 'float', nullable: true })
   scaler: number;
 
-  @OneToOne(() => H3Data, (h3Data: H3Data) => h3Data.id)
-  @Column({ type: 'text', nullable: true })
+  @ManyToOne(() => H3Data, (h3Data: H3Data) => h3Data.indicatorRecord)
+  @JoinColumn({ name: 'materialH3DataId' })
+  materialH3Data: H3Data;
+
+  @Column({ nullable: false })
   materialH3DataId: string;
 }

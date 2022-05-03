@@ -6,7 +6,9 @@ import {
   createAdminRegion,
   createBusinessUnit,
   createGeoRegion,
+  createH3Data,
   createMaterial,
+  createMaterialToH3,
   createSourcingLocation,
   createSourcingRecord,
   createSupplier,
@@ -35,6 +37,10 @@ import { createWorldToCalculateIndicatorRecords } from '../../utils/indicator-re
 import { v4 as UUIDv4 } from 'uuid';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { dropH3GridTables } from '../../utils/database-test-helper';
+import {
+  MATERIAL_TO_H3_TYPE,
+  MaterialToH3,
+} from '../../../src/modules/materials/material-to-h3.entity';
 
 describe('Indicator Records Service', () => {
   let indicatorRecordRepository: IndicatorRecordRepository;
@@ -93,6 +99,7 @@ describe('Indicator Records Service', () => {
     await adminRegionRepository.delete({});
     await supplierRepository.delete({});
     await businessUnitRepository.delete({});
+    await materialsToH3sService.delete({});
     await h3DataRepository.delete({});
     await geoRegionRepository.delete({});
     await materialRepository.delete({});
@@ -104,6 +111,18 @@ describe('Indicator Records Service', () => {
     test('When creating Indicator Records providing indicator coefficients, it should create the records properly', async () => {
       // ARRANGE
       const indicatorPreconditions = await createPreconditions();
+      const material = await createMaterial();
+      const fakeH3Data = await createH3Data();
+      const materialH3Data = await createMaterialToH3(
+        material.id,
+        fakeH3Data.id,
+        MATERIAL_TO_H3_TYPE.HARVEST,
+      );
+
+      // The original function only expects for one MaterialTo3 data, the values don't matter
+      jest
+        .spyOn(materialsToH3sService, 'findOne')
+        .mockResolvedValueOnce(materialH3Data);
 
       const sourcingData = {
         sourcingRecordId: indicatorPreconditions.sourcingRecord1.id,
@@ -133,6 +152,7 @@ describe('Indicator Records Service', () => {
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.DEFORESTATION,
         indicatorPreconditions.deforestation,
+        materialH3Data,
         sourcingData,
         350,
         null,
@@ -140,6 +160,7 @@ describe('Indicator Records Service', () => {
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.BIODIVERSITY_LOSS,
         indicatorPreconditions.biodiversityLoss,
+        materialH3Data,
         sourcingData,
         100,
         null,
@@ -147,6 +168,7 @@ describe('Indicator Records Service', () => {
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.CARBON_EMISSIONS,
         indicatorPreconditions.carbonEmissions,
+        materialH3Data,
         sourcingData,
         400,
         null,
@@ -154,6 +176,7 @@ describe('Indicator Records Service', () => {
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
         indicatorPreconditions.waterRisk,
+        materialH3Data,
         sourcingData,
         200,
         null,
@@ -197,13 +220,18 @@ describe('Indicator Records Service', () => {
         materialId: indicatorPreconditions.sourcingLocation2.materialId,
       };
 
+      const material = await createMaterial();
+      const fakeH3Data = await createH3Data();
+      const materialH3Data = await createMaterialToH3(
+        material.id,
+        fakeH3Data.id,
+        MATERIAL_TO_H3_TYPE.HARVEST,
+      );
+
       // The original function only expects for one MaterialTo3 data, the values don't matter
-      jest.spyOn(materialsToH3sService, 'findOne').mockResolvedValue({
-        materialId: UUIDv4(),
-        id: UUIDv4(),
-        h3DataId: UUIDv4(),
-        ...({} as any),
-      });
+      jest
+        .spyOn(materialsToH3sService, 'findOne')
+        .mockResolvedValueOnce(materialH3Data);
       jest
         .spyOn(
           indicatorRecordRepository,
@@ -230,6 +258,7 @@ describe('Indicator Records Service', () => {
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.DEFORESTATION,
         indicatorPreconditions.deforestation,
+        materialH3Data,
         sourcingData,
         1000,
         10,
@@ -237,6 +266,7 @@ describe('Indicator Records Service', () => {
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.BIODIVERSITY_LOSS,
         indicatorPreconditions.biodiversityLoss,
+        materialH3Data,
         sourcingData,
         500,
         10,
@@ -244,6 +274,7 @@ describe('Indicator Records Service', () => {
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.CARBON_EMISSIONS,
         indicatorPreconditions.carbonEmissions,
+        materialH3Data,
         sourcingData,
         250,
         10,
@@ -251,6 +282,7 @@ describe('Indicator Records Service', () => {
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
         indicatorPreconditions.waterRisk,
+        materialH3Data,
         sourcingData,
         12500,
         10,
@@ -262,6 +294,7 @@ describe('Indicator Records Service', () => {
    * Does expect checks on all relevant fields of IndicatorRecord
    * @param indicatorType
    * @param h3Data
+   * @param materialH3Data
    * @param sourcingData
    * @param recordValue
    * @param scalerValue
@@ -269,6 +302,7 @@ describe('Indicator Records Service', () => {
   async function checkCreatedIndicatorRecord(
     indicatorType: INDICATOR_TYPES,
     h3Data: H3Data,
+    materialH3Data: MaterialToH3,
     sourcingData: any,
     recordValue: number,
     scalerValue: number | null,
@@ -283,7 +317,9 @@ describe('Indicator Records Service', () => {
     expect(indicatorRecords[0].status).toEqual(INDICATOR_RECORD_STATUS.SUCCESS);
     expect(indicatorRecords[0].value).toEqual(recordValue);
     expect(indicatorRecords[0].scaler).toEqual(scalerValue);
-    expect(indicatorRecords[0].materialH3DataId).toEqual(h3Data.id);
+    expect(indicatorRecords[0].materialH3DataId).toEqual(
+      materialH3Data.h3DataId,
+    );
     //Inidicator Coefficients are not checked because it's not used
   }
 

@@ -19,7 +19,7 @@ export class IndicatorRecordRepository extends Repository<IndicatorRecord> {
     try {
       const response: any = await this.query(`
       SELECT
-          slwithmaterialh3data.id as "sourcingRecordId",
+          sr.id as "sourcingRecordId",
           sr.tonnage,
           sr.year,
           sr.id as "sourcingLocationId",
@@ -53,6 +53,7 @@ export class IndicatorRecordRepository extends Repository<IndicatorRecord> {
                     mth."materialId" = sourcing_location."materialId"
                   WHERE "scenarioInterventionId" IS NULL
                   AND "interventionType" IS NULL
+                  and mth."type" = 'harvest'
               ) as slwithmaterialh3data
               on sr."sourcingLocationId" = slwithmaterialh3data.id`);
       if (!response.length)

@@ -173,6 +173,11 @@ const Select: React.FC<SelectProps> = ({
                       placeholder={searchPlaceholder}
                       className="flex-1 block w-24 text-sm border-0 rounded-t-md focus:ring-0 focus:border-green-700"
                       onChange={handleSearch}
+                      onKeyDown={({ currentTarget, code }) => {
+                        if (code === 'Enter') {
+                          (currentTarget.parentElement.nextSibling as HTMLElement).focus();
+                        }
+                      }}
                     />
                     {searchTerm && (
                       <button type="button" onClick={resetSearch} className="px-2 py-1">

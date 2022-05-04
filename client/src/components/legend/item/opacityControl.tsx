@@ -1,4 +1,4 @@
-import { Input } from 'components/forms';
+import RangeSlider from 'components/forms/range';
 import OpacityIcon from 'components/icons/opacity';
 import ToolTip from 'components/tooltip';
 import { useEffect, useState } from 'react';
@@ -20,20 +20,18 @@ const OpacityControl: React.FC<OpacityControlProps> = ({ opacity, onChange }) =>
   return (
     <ToolTip
       content={
-        <Input
-          unit={`${rangeValue} %`}
-          type="range"
-          min={0}
-          max={100}
-          step={1}
-          value={rangeValue}
-          className="appearance-none bg-yellow-700 w-full ring-2"
-          onChange={(e) => {
-            // if (Number.isNaN(e.target.valueAsNumber)) return;
-            setRangeValue(e.currentTarget.valueAsNumber);
-            // debouncedChange(e.target.valueAsNumber / 100);
-          }}
-        />
+        <div className="bg-white p-2 rounded-md shadow-md">
+          <RangeSlider
+            unit="%"
+            min={0}
+            max={100}
+            value={rangeValue}
+            className="rounded-md w-full"
+            onChange={(value) => {
+              setRangeValue(value);
+            }}
+          />
+        </div>
       }
       className="w-48 text-center"
     >

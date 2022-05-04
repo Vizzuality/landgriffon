@@ -41,6 +41,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             className={classnames([THEMES[theme].base], {
               // The Checkbox component should be used instead, but just in case.
               'px-0': type === 'checkbox',
+              'bg-gray-400 h-1 appearance-none': type === 'range',
               'pl-10': !!icon && theme !== 'inline-primary',
               'pl-3': !!icon && theme === 'inline-primary',
               'border-gray-200 focus:ring-green-700 focus:border-green-700':
@@ -57,7 +58,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             // already be giving a right padding via TailwindCSS classes in order to make
             // room for the "clear search" button.
             style={{
-              paddingRight:
+              marginRight:
                 type !== 'search' &&
                 unit &&
                 unit?.length * 10 + (theme === 'inline-primary' ? 2 : 14),

@@ -441,8 +441,10 @@ export class ImpactService {
             calculatedData[namesByIndicatorIndex].values.push({
               year: dataForYear.year,
               value: dataForYear.impact,
-              interventionValue: dataForYear.interventionImpact,
               isProjected: false,
+              ...(queryDto.scenarioId && {
+                interventionValue: dataForYear.interventionImpact,
+              }),
             });
             // If the year requested does no exist in the raw data, project its value getting the latest value (previous year which comes in ascendant order)
           } else {
@@ -455,10 +457,12 @@ export class ImpactService {
             calculatedData[namesByIndicatorIndex].values.push({
               year: year,
               value: lastYearsValue + (lastYearsValue * this.growthRate) / 100,
-              interventionValue:
-                lastYearsInterventionValue +
-                (lastYearsInterventionValue * this.growthRate) / 100,
               isProjected: true,
+              ...(queryDto.scenarioId && {
+                interventionValue:
+                  lastYearsInterventionValue +
+                  (lastYearsInterventionValue * this.growthRate) / 100,
+              }),
             });
           }
           ++rowValuesIndex;

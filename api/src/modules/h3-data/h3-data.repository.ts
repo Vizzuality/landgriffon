@@ -17,7 +17,10 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { Indicator } from 'modules/indicators/indicator.entity';
-import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import {
+  LOCATION_TYPES,
+  SourcingLocation,
+} from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
@@ -437,6 +440,7 @@ export class H3DataRepository extends Repository<H3Data> {
     materialIds?: string[],
     originIds?: string[],
     supplierIds?: string[],
+    locationTypes?: LOCATION_TYPES[],
   ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
     const query: SelectQueryBuilder<any> = getManager()
       .createQueryBuilder()
@@ -471,6 +475,12 @@ export class H3DataRepository extends Repository<H3Data> {
     }
     if (originIds) {
       query.andWhere('sl.adminRegionId IN (:...originIds)', { originIds });
+    }
+
+    if (locationTypes) {
+      query.andWhere('sl.locationType IN (:...locationTypes)', {
+        locationTypes,
+      });
     }
 
     const tmpTableName: string = H3DataRepository.generateRandomTableName();

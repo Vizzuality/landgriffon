@@ -12,7 +12,7 @@ type FeatureState = RootState & { 'analysis/ui': AnalysisUIState };
 // Define the initial state using that type
 export const initialState: AnalysisUIState = {
   visualizationMode: 'map',
-  isSidebarCollapsed: true,
+  isSidebarCollapsed: false,
   isSubContentCollapsed: true,
 };
 

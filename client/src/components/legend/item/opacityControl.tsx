@@ -19,8 +19,10 @@ const OpacityControl: React.FC<OpacityControlProps> = ({ opacity, onChange }) =>
 
   return (
     <ToolTip
+      arrow
       content={
-        <div className="bg-white p-2 rounded-md shadow-md">
+        <div className="bg-white px-4 py-1 rounded-md w-52">
+          <div className="text-left text-gray-700">Opacity</div>
           <RangeSlider
             unit="%"
             min={0}
@@ -31,6 +33,10 @@ const OpacityControl: React.FC<OpacityControlProps> = ({ opacity, onChange }) =>
               setRangeValue(value);
             }}
           />
+          <div className="flex flex-row justify-between w-full text-gray-400">
+            <div>0%</div>
+            <div>100%</div>
+          </div>
         </div>
       }
       className="w-48 text-center"

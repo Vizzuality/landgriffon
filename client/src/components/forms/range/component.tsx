@@ -31,7 +31,7 @@ const RangeSlider: React.FC<RangeSliderProps> = ({ min, max, step = 1, value, on
     <div>
       <Range
         renderTrack={({ props, children }) => (
-          <div {...props} className="relative h-6 w-full my-2">
+          <div {...props} className="relative h-6 w-full">
             {children}
             <div className="w-full h-0.5 flex flex-row top-1/2 relative -z-10">
               <div className="h-full bg-gray-600" style={{ width: `${fillPercentage}%` }} />
@@ -51,8 +51,11 @@ const RangeSlider: React.FC<RangeSliderProps> = ({ min, max, step = 1, value, on
             )}
           >
             {isDragged && (
-              <div className="absolute w-14 bottom-0 -translate-y-[calc(50%+.5rem)] text-white bg-black p-2 left-1/2 -translate-x-1/2 rounded-md">
-                {value} {unit}
+              <div className="absolute top-2 -translate-y-full left-1/2 -translate-x-1/2">
+                <div className="w-16 text-white bg-black p-2 rounded-md">
+                  {value} {unit}
+                </div>
+                <div className="bg-black w-4 h-4 relative left-1/2 -translate-x-1/2 bottom-3 rotate-45 rounded-sm" />
               </div>
             )}
           </div>

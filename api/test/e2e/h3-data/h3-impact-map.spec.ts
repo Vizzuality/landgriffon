@@ -11,6 +11,7 @@ import {
 } from './mocks/h3-impact-map.mock';
 import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
+import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 
 /**
  * Tests for the h3 impact map.
@@ -330,6 +331,66 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         .query({
           indicatorId: impactMapMockData.indicatorId,
           'supplierIds[]': [impactMapMockData.producerOneId],
+          year: 2020,
+          resolution: 6,
+        });
+
+      expect(response.body.data).toEqual(
+        expect.arrayContaining([
+          {
+            h: '861203a4fffffff',
+            v: 617,
+          },
+          {
+            h: '861203a5fffffff',
+            v: 617,
+          },
+        ]),
+      );
+      expect(response.body.metadata).toEqual({
+        quantiles: [617, 617, 617, 617, 617, 617, 617],
+        unit: 'tonnes',
+        indicatorDataYear: 2020,
+      });
+    });
+
+    test('When I get a calculated H3 Water Impact Map with the necessary input values and supplier (producer) filter, then I should get the correct h3 data', async () => {
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/h3/map/impact`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          indicatorId: impactMapMockData.indicatorId,
+          'supplierIds[]': [impactMapMockData.producerOneId],
+          year: 2020,
+          resolution: 6,
+        });
+
+      expect(response.body.data).toEqual(
+        expect.arrayContaining([
+          {
+            h: '861203a4fffffff',
+            v: 617,
+          },
+          {
+            h: '861203a5fffffff',
+            v: 617,
+          },
+        ]),
+      );
+      expect(response.body.metadata).toEqual({
+        quantiles: [617, 617, 617, 617, 617, 617, 617],
+        unit: 'tonnes',
+        indicatorDataYear: 2020,
+      });
+    });
+
+    test('When I get a calculated H3 Water Impact Map with the necessary input values and Location Type filter, then I should get the correct h3 data', async () => {
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/h3/map/impact`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          indicatorId: impactMapMockData.indicatorId,
+          'locationTypes[]': [LOCATION_TYPES.AGGREGATION_POINT],
           year: 2020,
           resolution: 6,
         });

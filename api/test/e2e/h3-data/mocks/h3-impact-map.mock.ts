@@ -16,6 +16,7 @@ import {
 } from '../../../entity-mocks';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import {
+  LOCATION_TYPES,
   SourcingLocation,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
 } from 'modules/sourcing-locations/sourcing-location.entity';
@@ -114,6 +115,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
     material: materialOne,
     t1Supplier: t1SupplierOne,
     producer: producerOne,
+    locationType: LOCATION_TYPES.AGGREGATION_POINT,
   });
 
   const sourcingRecordOne: SourcingRecord = await createSourcingRecord({

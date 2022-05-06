@@ -11,6 +11,7 @@ import Button, { THEME } from 'components/button/component';
 import Materials from '../materials/component';
 import OriginRegions from '../origin-regions/component';
 import Suppliers from '../suppliers/component';
+import LocationType from '../location-types/component';
 
 import type { AnalysisFiltersState } from 'store/features/analysis/filters';
 
@@ -18,20 +19,22 @@ type MoreFiltersState = {
   materials: AnalysisFiltersState['materials'];
   origins: AnalysisFiltersState['origins'];
   suppliers: AnalysisFiltersState['suppliers'];
+  locationTypes: AnalysisFiltersState['locationTypes'];
 };
 
 const INITIAL_FILTERS: MoreFiltersState = {
   materials: [],
   origins: [],
   suppliers: [],
+  locationTypes: [],
 };
 
 const MoreFilters: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { materials, origins, suppliers } = useAppSelector(analysisFilters);
+  const { materials, origins, suppliers, locationTypes } = useAppSelector(analysisFilters);
   const moreFilters: MoreFiltersState = useMemo(
-    () => ({ materials, origins, suppliers }),
-    [materials, origins, suppliers],
+    () => ({ materials, origins, suppliers, locationTypes }),
+    [materials, origins, suppliers, locationTypes],
   );
 
   // Initial state from redux
@@ -65,7 +68,6 @@ const MoreFilters: React.FC = () => {
     const total = counters.reduce((a, b) => a + b);
     setCounter(total);
   }, [moreFilters]);
-
   return (
     <Popover className="relative">
       {({ open, close }) => (
@@ -135,7 +137,17 @@ const MoreFilters: React.FC = () => {
                         onChange={(values) => handleChangeFilter('suppliers', values)}
                       />
                     </div>
+                    <div>
+                      <div className="mb-1">Location type</div>
+                      <LocationType
+                        multiple
+                        current={selectedFilters.locationTypes}
+                        fitContent
+                        onChange={(values) => handleChangeFilter('locationTypes', values)}
+                      />
+                    </div>
                   </div>
+
                   <div className="flex gap-2 mt-6">
                     <Button
                       theme="secondary"

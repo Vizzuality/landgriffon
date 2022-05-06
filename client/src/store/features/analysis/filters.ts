@@ -18,6 +18,7 @@ export type AnalysisFiltersState = {
   materials: Option[];
   origins: Option[];
   suppliers: Option[];
+  locationTypes: Option[];
 };
 
 type FeatureState = RootState & { 'analysis/filters': AnalysisFiltersState };
@@ -33,6 +34,7 @@ export const initialState: AnalysisFiltersState = {
   materials: [],
   origins: [],
   suppliers: [],
+  locationTypes: [],
 };
 
 export const analysisFiltersSlice = createSlice({

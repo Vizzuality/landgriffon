@@ -22,7 +22,10 @@ import { Unit } from 'modules/units/unit.entity';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Material } from 'modules/materials/material.entity';
-import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import {
+  LOCATION_TYPES,
+  SourcingLocation,
+} from 'modules/sourcing-locations/sourcing-location.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
@@ -39,6 +42,7 @@ import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 import {
   groupByBusinessUnitResponseData,
+  groupByLocationTypeResponseData,
   groupByMaterialNestedResponseData,
   groupByMaterialNestedResponseDataForGrandchild,
   groupByMaterialResponseData,
@@ -142,7 +146,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       'startYear must be a number conforming to the specified constraints',
       'endYear should not be empty',
       'endYear must be a number conforming to the specified constraints',
-      'Available options: material,business_unit,region,supplier',
+      'Available options: material,business_unit,region,supplier,location_type',
       'groupBy should not be empty',
       'groupBy must be a string',
     ]);
@@ -780,7 +784,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
   });
 
   describe('Group By tests', () => {
-    test('Impact table grouped by Material should be successful', async () => {
+    test('When I query the API for a Impact table grouped by material Then I should get the correct data', async () => {
       const adminRegion: AdminRegion = await createAdminRegion({
         name: 'Fake AdminRegion',
       });
@@ -868,7 +872,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       );
     });
 
-    test('Impact table grouped by Nested Materials should be successful', async () => {
+    test('When I query the API for a Impact table grouped by material Then I should get the correct data', async () => {
       const adminRegion: AdminRegion = await createAdminRegion({
         name: 'Fake AdminRegion',
       });
@@ -1013,7 +1017,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       );
     });
 
-    test('Impact table grouped by Region should be successful', async () => {
+    test('When I query the API for a Impact table grouped by region Then I should get the correct data', async () => {
       const adminRegion1: AdminRegion = await createAdminRegion({
         name: 'Fake AdminRegion 1',
       });
@@ -1192,7 +1196,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       );
     });
 
-    test('Impact table grouped by Business Unit should be successful', async () => {
+    test('When I query the API for a Impact table grouped by business unit Then I should get the correct data', async () => {
       const adminRegion: AdminRegion = await createAdminRegion({
         name: 'Fake AdminRegion',
       });
@@ -1283,6 +1287,94 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       );
       expect(response.body.data.impactTable[0].yearSum).toEqual(
         expect.arrayContaining(groupByBusinessUnitResponseData.yearSum),
+      );
+    });
+
+    test('When I query the API for a Impact table grouped by location type Then I should get the correct data', async () => {
+      const adminRegion: AdminRegion = await createAdminRegion({
+        name: 'Fake AdminRegion',
+      });
+
+      const unit: Unit = await createUnit({ shortName: 'fakeUnit' });
+      const indicator: Indicator = await createIndicator({
+        name: 'Fake Indicator',
+        unit,
+      });
+
+      const material: Material = await createMaterial({
+        name: 'Fake Material',
+      });
+
+      const businessUnit1: BusinessUnit = await createBusinessUnit({
+        name: 'Fake BusinessUnit 1',
+      });
+
+      const supplier1: Supplier = await createSupplier({
+        name: 'Fake Supplier 1',
+      });
+
+      const sourcingLocation1: SourcingLocation = await createSourcingLocation({
+        material: material,
+        businessUnit: businessUnit1,
+        t1Supplier: supplier1,
+        adminRegion: adminRegion,
+        locationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+      });
+
+      const sourcingLocation2: SourcingLocation = await createSourcingLocation({
+        material: material,
+        businessUnit: businessUnit1,
+        t1Supplier: supplier1,
+        adminRegion: adminRegion,
+        locationType: LOCATION_TYPES.AGGREGATION_POINT,
+      });
+
+      for await (const [index, year] of [2010, 2011, 2012].entries()) {
+        const startTonnage: number = 100;
+        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+          value: 100 + index / 0.02,
+          indicator,
+        });
+
+        await createSourcingRecord({
+          tonnage: startTonnage + 100 * index,
+          year,
+          indicatorRecords: [indicatorRecord],
+          sourcingLocation: sourcingLocation1,
+        });
+      }
+
+      for await (const [index, year] of [2010, 2011, 2012].entries()) {
+        const startTonnage: number = 1000;
+        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+          value: 300 + index / 0.02,
+          indicator,
+        });
+
+        await createSourcingRecord({
+          tonnage: startTonnage + 100 * index,
+          year,
+          indicatorRecords: [indicatorRecord],
+          sourcingLocation: sourcingLocation2,
+        });
+      }
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/impact/table')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [indicator.id],
+          endYear: 2013,
+          startYear: 2010,
+          groupBy: 'location-type',
+        })
+        .expect(HttpStatus.OK);
+
+      expect(response.body.data.impactTable[0].rows).toHaveLength(2);
+      expect(response.body.data.impactTable[0].rows).toEqual(
+        expect.arrayContaining(groupByLocationTypeResponseData.rows),
+      );
+      expect(response.body.data.impactTable[0].yearSum).toEqual(
+        expect.arrayContaining(groupByLocationTypeResponseData.yearSum),
       );
     });
   });

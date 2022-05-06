@@ -311,6 +311,18 @@ export class ImpactService {
           impactTableDto.materialIds,
         );
         break;
+
+      case GROUP_BY_VALUES.LOCATION_TYPE:
+        entitiesWithPagination.entities = Object.values(LOCATION_TYPES).map(
+          (el) => {
+            return { name: el, children: [] };
+          },
+        );
+        entitiesWithPagination = ImpactService.paginateRootElements(
+          entitiesWithPagination.entities,
+          fetchSpecification,
+        );
+        break;
       default:
     }
   }

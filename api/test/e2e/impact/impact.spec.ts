@@ -41,6 +41,7 @@ import { UnitRepository } from 'modules/units/unit.repository';
 import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 import {
+  filteredByLocationTypeResponseData,
   groupByBusinessUnitResponseData,
   groupByLocationTypeResponseData,
   groupByMaterialNestedResponseData,
@@ -152,7 +153,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     ]);
   });
 
-  test('When I query the API for a Impact Table with correct params but there are not indicators to retrieve in the DB, then I should get a proper erros message ', async () => {
+  test('When I query the API for a Impact Table with correct params but there are not indicators to retrieve in the DB, then I should get a proper errors message ', async () => {
     await createIndicatorRecord();
     const response = await request(app.getHttpServer())
       .get('/api/v1/impact/table')
@@ -1494,6 +1495,97 @@ describe('Impact Table and Charts test suite (e2e)', () => {
 
       expect(response.body.data.impactTable[0].yearSum[0].value).toEqual(
         groupByMaterialResponseData.rows[0].values[0].value,
+      );
+    });
+  });
+
+  describe('Filters Tests', () => {
+    test('When I query the API for a Impact table with Location Type filters Then I should get the correct data', async () => {
+      const adminRegion: AdminRegion = await createAdminRegion({
+        name: 'Fake AdminRegion',
+      });
+
+      const unit: Unit = await createUnit({ shortName: 'fakeUnit' });
+      const indicator: Indicator = await createIndicator({
+        name: 'Fake Indicator',
+        unit,
+      });
+
+      const material: Material = await createMaterial({
+        name: 'Fake Material',
+      });
+
+      const businessUnit1: BusinessUnit = await createBusinessUnit({
+        name: 'Fake BusinessUnit 1',
+      });
+
+      const supplier1: Supplier = await createSupplier({
+        name: 'Fake Supplier 1',
+      });
+
+      const sourcingLocation1: SourcingLocation = await createSourcingLocation({
+        material: material,
+        businessUnit: businessUnit1,
+        t1Supplier: supplier1,
+        adminRegion: adminRegion,
+        locationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+      });
+
+      const sourcingLocation2: SourcingLocation = await createSourcingLocation({
+        material: material,
+        businessUnit: businessUnit1,
+        t1Supplier: supplier1,
+        adminRegion: adminRegion,
+        locationType: LOCATION_TYPES.AGGREGATION_POINT,
+      });
+
+      for await (const [index, year] of [2010, 2011, 2012].entries()) {
+        const startTonnage: number = 100;
+        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+          value: 100 + index / 0.02,
+          indicator,
+        });
+
+        await createSourcingRecord({
+          tonnage: startTonnage + 100 * index,
+          year,
+          indicatorRecords: [indicatorRecord],
+          sourcingLocation: sourcingLocation1,
+        });
+      }
+
+      for await (const [index, year] of [2010, 2011, 2012].entries()) {
+        const startTonnage: number = 1000;
+        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+          value: 300 + index / 0.02,
+          indicator,
+        });
+
+        await createSourcingRecord({
+          tonnage: startTonnage + 100 * index,
+          year,
+          indicatorRecords: [indicatorRecord],
+          sourcingLocation: sourcingLocation2,
+        });
+      }
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/impact/table')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [indicator.id],
+          endYear: 2013,
+          startYear: 2010,
+          groupBy: 'material',
+          'locationTypes[]': [LOCATION_TYPES.AGGREGATION_POINT],
+        })
+        .expect(HttpStatus.OK);
+
+      expect(response.body.data.impactTable[0].rows).toHaveLength(1);
+      expect(response.body.data.impactTable[0].rows).toEqual(
+        expect.arrayContaining(filteredByLocationTypeResponseData.rows),
+      );
+      expect(response.body.data.impactTable[0].yearSum).toEqual(
+        expect.arrayContaining(filteredByLocationTypeResponseData.yearSum),
       );
     });
   });

@@ -17,6 +17,7 @@ export enum GROUP_BY_VALUES {
   BUSINESS_UNIT = 'business-unit',
   REGION = 'region',
   SUPPLIER = 'supplier',
+  LOCATION_TYPE = 'location-type',
 }
 
 export class GetImpactMapDto {

@@ -383,3 +383,66 @@ export const groupByBusinessUnitResponseData = {
     { value: 609, year: 2013 },
   ],
 };
+
+export const groupByLocationTypeResponseData = {
+  rows: [
+    {
+      name: 'aggregation point',
+      children: [],
+      values: [
+        {
+          year: 2010,
+          value: 300,
+          isProjected: false,
+        },
+        {
+          year: 2011,
+          value: 350,
+          isProjected: false,
+        },
+        {
+          year: 2012,
+          value: 400,
+          isProjected: false,
+        },
+        {
+          year: 2013,
+          value: 406,
+          isProjected: true,
+        },
+      ],
+    },
+    {
+      name: 'country of production',
+      children: [],
+      values: [
+        {
+          year: 2010,
+          value: 100,
+          isProjected: false,
+        },
+        {
+          year: 2011,
+          value: 150,
+          isProjected: false,
+        },
+        {
+          year: 2012,
+          value: 200,
+          isProjected: false,
+        },
+        {
+          year: 2013,
+          value: 203,
+          isProjected: true,
+        },
+      ],
+    },
+  ],
+  yearSum: [
+    { value: 400, year: 2010 },
+    { value: 500, year: 2011 },
+    { value: 600, year: 2012 },
+    { value: 609, year: 2013 },
+  ],
+};

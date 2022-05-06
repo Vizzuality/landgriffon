@@ -3,6 +3,15 @@ import { useQuery, UseQueryResult, UseQueryOptions, useMutation } from 'react-qu
 import type { Intervention } from 'containers/scenarios/types';
 import { apiService } from 'services/api';
 
+export type LocationTypeParams = {
+  depth?: number;
+  withSourcingLocations?: boolean;
+  materialIds?: string[];
+  supplierIds?: string[];
+  businessUnitIds?: string[];
+  originIds?: string[];
+};
+
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   placeholderData: [],
   retry: false,

@@ -1,4 +1,10 @@
-import { EntityRepository, Repository, SelectQueryBuilder } from 'typeorm';
+import {
+  Brackets,
+  EntityRepository,
+  Repository,
+  SelectQueryBuilder,
+  WhereExpressionBuilder,
+} from 'typeorm';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetImpactTableDto } from 'modules/impact/dto/get-impact-table.dto';
@@ -60,6 +66,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       originIds,
       groupBy,
       supplierIds,
+      locationTypes,
     } = getImpactTaleDto;
     const impactDataQueryBuilder: SelectQueryBuilder<SourcingRecord> =
       this.createQueryBuilder('sourcingRecords')
@@ -126,13 +133,25 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       );
     }
     if (supplierIds) {
-      impactDataQueryBuilder
-        .andWhere('sourcingLocation.producerId IN (:...supplierIds)', {
-          supplierIds,
-        })
-        .orWhere('sourcingLocation.t1SupplierId IN (:...supplierIds)', {
-          supplierIds,
-        });
+      impactDataQueryBuilder;
+      impactDataQueryBuilder.andWhere(
+        new Brackets((qb: WhereExpressionBuilder) => {
+          qb.where('sourcingLocation.t1SupplierId IN (:...supplierIds)', {
+            supplierIds,
+          }).orWhere('sourcingLocation.producerId IN (:...supplierIds)', {
+            supplierIds,
+          });
+        }),
+      );
+    }
+
+    if (locationTypes) {
+      impactDataQueryBuilder.andWhere(
+        'sourcingLocation.locationType IN (:...locationTypes)',
+        {
+          locationTypes,
+        },
+      );
     }
     //GROUPING BY
     switch (groupBy) {
@@ -156,6 +175,11 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
         impactDataQueryBuilder
           .addSelect('businessUnit.name', 'name')
           .groupBy('businessUnit.name');
+        break;
+      case GROUP_BY_VALUES.LOCATION_TYPE:
+        impactDataQueryBuilder
+          .addSelect('sourcingLocation.locationType', 'name')
+          .groupBy('sourcingLocation.locationType');
         break;
       default:
     }

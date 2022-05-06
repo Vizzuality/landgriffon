@@ -314,7 +314,7 @@ export class ImpactService {
 
       case GROUP_BY_VALUES.LOCATION_TYPE:
         entitiesWithPagination.entities = Object.values(LOCATION_TYPES).map(
-          (el) => {
+          (el: LOCATION_TYPES) => {
             return { name: el, children: [] };
           },
         );

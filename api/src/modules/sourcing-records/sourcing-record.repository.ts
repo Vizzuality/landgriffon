@@ -6,7 +6,10 @@ import {
   WhereExpressionBuilder,
 } from 'typeorm';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
-import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import {
+  LOCATION_TYPES_PARAMS,
+  SourcingLocation,
+} from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetImpactTableDto } from 'modules/impact/dto/get-impact-table.dto';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { Indicator } from 'modules/indicators/indicator.entity';
@@ -66,7 +69,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       originIds,
       groupBy,
       supplierIds,
-      locationTypes,
+      locationType,
     } = getImpactTaleDto;
     const impactDataQueryBuilder: SelectQueryBuilder<SourcingRecord> =
       this.createQueryBuilder('sourcingRecords')
@@ -145,11 +148,16 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       );
     }
 
-    if (locationTypes) {
+    if (locationType) {
+      const sourcingLocationTypes: string[] = locationType.map(
+        (el: LOCATION_TYPES_PARAMS) => {
+          return el.replace('-', ' ');
+        },
+      );
       impactDataQueryBuilder.andWhere(
-        'sourcingLocation.locationType IN (:...locationTypes)',
+        'sourcingLocation.locationType IN (:...sourcingLocationTypes)',
         {
-          locationTypes,
+          sourcingLocationTypes,
         },
       );
     }

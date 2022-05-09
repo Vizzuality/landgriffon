@@ -24,6 +24,7 @@ import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Material } from 'modules/materials/material.entity';
 import {
   LOCATION_TYPES,
+  LOCATION_TYPES_PARAMS,
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
@@ -1576,9 +1577,9 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           endYear: 2013,
           startYear: 2010,
           groupBy: 'material',
-          'locationTypes[]': [LOCATION_TYPES.AGGREGATION_POINT],
-        })
-        .expect(HttpStatus.OK);
+          'locationType[]': [LOCATION_TYPES_PARAMS.AGGREGATION_POINT],
+        });
+      //.expect(HttpStatus.OK);
 
       expect(response.body.data.impactTable[0].rows).toHaveLength(1);
       expect(response.body.data.impactTable[0].rows).toEqual(

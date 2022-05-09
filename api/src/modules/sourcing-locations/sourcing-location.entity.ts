@@ -26,6 +26,13 @@ export enum LOCATION_TYPES {
   COUNTRY_OF_PRODUCTION = 'country of production',
 }
 
+export enum LOCATION_TYPES_PARAMS {
+  UNKNOWN = 'unknown',
+  AGGREGATION_POINT = 'aggregation-point',
+  POINT_OF_PRODUCTION = 'point-of-production',
+  COUNTRY_OF_PRODUCTION = 'country-of-production',
+}
+
 export enum LOCATION_ACCURACY {
   LOW = 'LOW',
   MID = 'MID',

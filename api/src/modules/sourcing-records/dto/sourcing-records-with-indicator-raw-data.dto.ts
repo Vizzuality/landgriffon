@@ -16,4 +16,6 @@ export class SourcingRecordsWithIndicatorRawDataDto {
   rawBiodiversity: number;
   rawCarbon: number;
   rawWater: number;
+
+  materialH3DataId: string;
 }

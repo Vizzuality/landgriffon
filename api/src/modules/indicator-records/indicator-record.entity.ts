@@ -98,6 +98,8 @@ export class IndicatorRecord extends TimestampedBaseEntity {
   @JoinColumn({ name: 'materialH3DataId' })
   materialH3Data: H3Data;
 
-  @Column({ nullable: false })
+  //TODO: Hack to deploy the fixed relation in Staging to import new data to share with Data.
+  // Make this non-nullable and update tests as soon as a new dump is shared
+  @Column({ nullable: true })
   materialH3DataId: string;
 }

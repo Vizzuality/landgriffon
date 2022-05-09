@@ -11,7 +11,7 @@ import Button, { THEME } from 'components/button/component';
 import Materials from '../materials/component';
 import OriginRegions from '../origin-regions/component';
 import Suppliers from '../suppliers/component';
-import LocationType from '../location-types/component';
+import LocationTypes from '../location-types/component';
 
 import type { AnalysisFiltersState } from 'store/features/analysis/filters';
 
@@ -139,7 +139,7 @@ const MoreFilters: React.FC = () => {
                     </div>
                     <div>
                       <div className="mb-1">Location type</div>
-                      <LocationType
+                      <LocationTypes
                         multiple
                         current={selectedFilters.locationTypes}
                         fitContent

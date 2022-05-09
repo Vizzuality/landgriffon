@@ -151,7 +151,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
     if (locationType) {
       const sourcingLocationTypes: string[] = locationType.map(
         (el: LOCATION_TYPES_PARAMS) => {
-          return el.replace('-', ' ');
+          return el.replace(/-/g, ' ');
         },
       );
       impactDataQueryBuilder.andWhere(

@@ -26,9 +26,10 @@ import { ImpactTableEntityType } from 'types/impact-table-entity.type';
 import { DEFAULT_PAGINATION, FetchSpecification } from 'nestjs-base-service';
 import { PaginationMeta } from 'utils/app-base.service';
 import { PaginatedEntitiesDto } from 'modules/impact/dto/paginated-entities.dto';
-import { GetSupplierTreeWithOptions } from '../suppliers/dto/get-supplier-tree-with-options.dto';
-import { GetMaterialTreeWithOptionsDto } from '../materials/dto/get-material-tree-with-options.dto';
-import { GetAdminRegionTreeWithOptionsDto } from '../admin-regions/dto/get-admin-region-tree-with-options.dto';
+import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-tree-with-options.dto';
+import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
+import { GetAdminRegionTreeWithOptionsDto } from 'modules/admin-regions/dto/get-admin-region-tree-with-options.dto';
+import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 
 @Injectable()
 export class ImpactService {
@@ -276,6 +277,12 @@ export class ImpactService {
         return this.businessUnitsService.getBusinessUnitTreeWithSourcingLocations(
           {},
         );
+
+      case GROUP_BY_VALUES.LOCATION_TYPE:
+        return Object.values(LOCATION_TYPES).map((entity: LOCATION_TYPES) => {
+          return { name: entity, children: [] };
+        });
+
       default:
         return [];
     }
@@ -309,18 +316,6 @@ export class ImpactService {
         impactTableDto.supplierIds = this.getIdsFromTree(
           entities,
           impactTableDto.materialIds,
-        );
-        break;
-
-      case GROUP_BY_VALUES.LOCATION_TYPE:
-        entitiesWithPagination.entities = Object.values(LOCATION_TYPES).map(
-          (el: LOCATION_TYPES) => {
-            return { name: el, children: [] };
-          },
-        );
-        entitiesWithPagination = ImpactService.paginateRootElements(
-          entitiesWithPagination.entities,
-          fetchSpecification,
         );
         break;
       default:
@@ -444,8 +439,8 @@ export class ImpactService {
       const valueOfPurchasedTonnesByYear: number = dataForImpactTable.reduce(
         (accumulator: number, currentValue: ImpactTableData): number => {
           if (currentValue.year === year) {
-            accumulator += Number.isFinite(+currentValue.impact)
-              ? +currentValue.impact // TODO!!!!!!!!!!!!!!!!!!
+            accumulator += Number.isFinite(+currentValue.tonnes)
+              ? +currentValue.tonnes // TODO!!!!!!!!!!!!!!!!!!
               : 0;
           }
           return accumulator;
@@ -463,7 +458,7 @@ export class ImpactService {
       } else {
         const tonnesToProject: number =
           dataForImpactTable.length > 0
-            ? dataForImpactTable[dataForImpactTable.length - 1].impact
+            ? purchasedTonnes[purchasedTonnes.length - 1].value
             : 0;
         purchasedTonnes.push({
           year,

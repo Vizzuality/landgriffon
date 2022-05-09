@@ -63,7 +63,12 @@ export class GetImpactTableDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsEnum(LOCATION_TYPES_PARAMS, { each: true })
+  @IsEnum(LOCATION_TYPES_PARAMS, {
+    each: true,
+    message:
+      'Available options: ' +
+      Object.values(LOCATION_TYPES_PARAMS).toString().toLowerCase(),
+  })
   @Type(() => String)
   locationType?: LOCATION_TYPES_PARAMS[];
 }

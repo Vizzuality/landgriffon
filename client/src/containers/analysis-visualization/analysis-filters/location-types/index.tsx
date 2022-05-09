@@ -5,7 +5,7 @@ import { analysisFilters, setFilter } from 'store/features/analysis/filters';
 
 import Component from './component';
 
-const LocationTypesFilter: React.FC<{ multiple?: boolean }> = ({ multiple = false }) => {
+const LocationTypesFilter: React.FC = () => {
   const dispatch = useAppDispatch();
   const { locationTypes } = useAppSelector(analysisFilters);
   const handleChange = useCallback(
@@ -15,7 +15,7 @@ const LocationTypesFilter: React.FC<{ multiple?: boolean }> = ({ multiple = fals
     [dispatch],
   );
 
-  return <Component current={locationTypes} multiple={multiple} onChange={handleChange} />;
+  return <Component current={locationTypes} onChange={handleChange} />;
 };
 
 export default LocationTypesFilter;

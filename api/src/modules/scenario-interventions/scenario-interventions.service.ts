@@ -37,6 +37,12 @@ export class ScenarioInterventionsService extends AppBaseService<
   UpdateScenarioInterventionDto,
   AppInfoDTO
 > {
+  private basicUpdateColumns: string[] = [
+    'title',
+    'description',
+    'updatedById',
+  ];
+
   constructor(
     @InjectRepository(ScenarioInterventionRepository)
     protected readonly scenarioInterventionRepository: ScenarioInterventionRepository,
@@ -141,6 +147,7 @@ export class ScenarioInterventionsService extends AppBaseService<
     const newScenarioIntervention: ScenarioIntervention =
       ScenarioInterventionsService.createInterventionInstance(
         dtoWithDescendants,
+        dto,
       );
 
     // Add replaced Entities to new Scenario Intervention
@@ -428,6 +435,7 @@ export class ScenarioInterventionsService extends AppBaseService<
 
   static createInterventionInstance(
     dto: CreateScenarioInterventionDto,
+    initialDto: CreateScenarioInterventionDto,
   ): ScenarioIntervention {
     const scenarioIntervention: ScenarioIntervention =
       new ScenarioIntervention();
@@ -443,7 +451,53 @@ export class ScenarioInterventionsService extends AppBaseService<
     scenarioIntervention.newLocationType = dto.newLocationType;
     scenarioIntervention.newLocationCountryInput = dto.newLocationCountryInput;
     scenarioIntervention.newLocationAddressInput = dto.newLocationAddressInput;
+    scenarioIntervention.createDto = initialDto as unknown as JSON;
 
     return scenarioIntervention;
+  }
+
+  async updateIntervention(
+    id: string,
+    dto: UpdateScenarioInterventionDto,
+  ): Promise<ScenarioIntervention> {
+    const currentScenarioIntervention: ScenarioIntervention =
+      await this.repository.findOneOrFail({ id });
+
+    // If intervention was created before breaking changes,
+    // use previous update method
+    if (!currentScenarioIntervention.createDto) {
+      return await this.update(id, dto);
+    }
+
+    for (const k of Object.keys(dto)) {
+      if (!this.basicUpdateColumns.includes(k)) {
+        return await this.replaceScenarioIntervention(id, dto);
+      }
+    }
+    return await this.update(id, dto);
+  }
+
+  /**
+   * This method is used when we need to update intervention in a way that will cause recalculation.
+   * New Scenario intervention is created and old one with all related data is deleted
+   */
+  async replaceScenarioIntervention(
+    id: string,
+    dto: UpdateScenarioInterventionDto,
+  ): Promise<ScenarioIntervention> {
+    const currentScenarioIntervention: ScenarioIntervention =
+      await this.repository.findOneOrFail({ id });
+    const createScenarioDto: CreateScenarioInterventionDto = {
+      ...(currentScenarioIntervention.createDto as unknown as CreateScenarioInterventionDto),
+      ...dto,
+    };
+    const newScenario: ScenarioIntervention =
+      await this.createScenarioIntervention(createScenarioDto);
+
+    await this.repository.remove(currentScenarioIntervention);
+    // since we create new intervention, updatedBy must be set manually
+    newScenario.updatedById = dto.updatedById;
+    await this.repository.save(newScenario);
+    return newScenario;
   }
 }

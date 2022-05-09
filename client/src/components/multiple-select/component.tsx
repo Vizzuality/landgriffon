@@ -13,24 +13,12 @@ import Badge from 'components/badge';
 import Loading from 'components/loading';
 
 // types
-import type { MultipleSelectOption, MultipleSelectProps } from 'components/multiple-select/types';
+import type {
+  MultipleSelectOption,
+  MultipleSelectProps,
+  MultipleSelectFilterProps,
+} from 'components/multiple-select/types';
 
-type MultipleSelectFilterProps = {
-  loading?: MultipleSelectProps['loading'];
-  error?: MultipleSelectProps['error'];
-  maxBadges?: MultipleSelectProps['maxBadges'];
-  current: MultipleSelectProps['current'];
-  multiple?: MultipleSelectProps['multiple'];
-  onChange?: MultipleSelectProps['onChange'];
-  theme?: 'default' | 'inline-primary';
-  placeholder?: MultipleSelectProps['placeholder'];
-  showSearch?: MultipleSelectProps['showSearch'];
-  options?: MultipleSelectProps['options'];
-  ellipsis?: MultipleSelectProps['ellipsis'];
-  fitContent?: MultipleSelectProps['fitContent'];
-  searchPlaceholder?: MultipleSelectProps['searchPlaceholder'];
-  onSearch?: MultipleSelectProps['onSearch'];
-};
 const THEMES = {
   default: {
     label: 'text-sm text-gray-300',
@@ -92,7 +80,7 @@ const MultipleSelect: React.FC<MultipleSelectFilterProps> = ({
   // Selection for non-multiple
   const handleSelect: MultipleSelectProps['onSelect'] = useCallback(
     (selection) => {
-      const position = selectedKeys.indexOf(selection.currentTarget.name);
+      const position = selectedKeys.indexOf(selection.currentTarget.value);
       let updatedSelection;
       if (position === -1) {
         updatedSelection = [...selectedKeys, selection.currentTarget.name];
@@ -137,23 +125,10 @@ const MultipleSelect: React.FC<MultipleSelectFilterProps> = ({
 
   const handleRemoveBadget = useCallback(
     (option) => {
-      const filteredKeys = (selectedKeys as string[]).filter((key) => option.value !== key);
-      // TO-DO: this function is repeated
-      const checkedOptions = [];
-      if (filteredKeys) {
-        (filteredKeys as string[]).forEach((key) => {
-          const recursiveSearch = (arr) => {
-            arr.forEach((opt) => {
-              if (opt.value === key) checkedOptions.push(opt);
-            });
-          };
-          recursiveSearch(options);
-        });
-      }
-
-      if (onChange) onChange(checkedOptions);
+      const filteredKeys = selected.filter((key) => option.label !== key.label);
+      if (onChange) onChange(filteredKeys);
     },
-    [onChange, options, selectedKeys],
+    [onChange, selected],
   );
 
   // Current selection
@@ -164,11 +139,11 @@ const MultipleSelect: React.FC<MultipleSelectFilterProps> = ({
       setSelectedKeys([]);
     }
     if (current && current.length) {
-      const currentKeys = current.map(({ value }) => value);
+      const currentKeys = current.map(({ label }) => label);
       setSelected(current);
       setSelectedKeys(currentKeys);
     }
-  }, [current]);
+  }, [current, selected]);
 
   return (
     <Popover ref={wrapperRef} className="relative">
@@ -306,6 +281,7 @@ const MultipleSelect: React.FC<MultipleSelectFilterProps> = ({
                   )}
                 </div>
               )}
+
               {!loading &&
                 optionsResult.map((option) => (
                   <div
@@ -316,6 +292,7 @@ const MultipleSelect: React.FC<MultipleSelectFilterProps> = ({
                       id={option.label}
                       name={option.label}
                       value={option.value}
+                      checked={!!selected?.find((s) => s.value === option.value)}
                       onChange={handleSelect}
                     />
                     <Label htmlFor={option.label} className="ml-2 mt-1">

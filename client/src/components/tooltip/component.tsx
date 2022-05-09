@@ -17,8 +17,8 @@ export const ToolTip: React.FC<TooltipProps> = ({
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
     placement: 'top',
     modifiers: [
-      { name: 'arrow', options: { element: arrowElement } },
-      { name: 'offset', options: { offset: [0, 15] } },
+      arrow && { name: 'arrow', options: { element: arrowElement } },
+      { name: 'offset', options: { offset: [0, arrow ? 15 : 5] } },
     ],
   });
 

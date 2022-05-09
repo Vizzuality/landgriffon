@@ -12,7 +12,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
-import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
+import { LOCATION_TYPES_PARAMS } from 'modules/sourcing-locations/sourcing-location.entity';
 
 export class GetImpactTableDto {
   @ApiProperty()
@@ -63,9 +63,9 @@ export class GetImpactTableDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsEnum(LOCATION_TYPES, { each: true })
+  @IsEnum(LOCATION_TYPES_PARAMS, { each: true })
   @Type(() => String)
-  locationTypes?: LOCATION_TYPES[];
+  locationType?: LOCATION_TYPES_PARAMS[];
 }
 
 export class GetRankedImpactTableDto extends GetImpactTableDto {

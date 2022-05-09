@@ -12,6 +12,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
+import { H3Data } from 'modules/h3-data/h3-data.entity';
 
 export const indicatorRecordResource: BaseServiceResource = {
   className: 'IndicatorRecord',
@@ -93,7 +94,10 @@ export class IndicatorRecord extends TimestampedBaseEntity {
   @Column({ type: 'float', nullable: true })
   scaler: number;
 
-  // Points to related H3 Data for indicator. Not a relation for the time being
-  @Column({ type: 'text', nullable: true })
-  h3DataId: string;
+  @ManyToOne(() => H3Data, (h3Data: H3Data) => h3Data.indicatorRecord)
+  @JoinColumn({ name: 'materialH3DataId' })
+  materialH3Data: H3Data;
+
+  @Column({ nullable: false })
+  materialH3DataId: string;
 }

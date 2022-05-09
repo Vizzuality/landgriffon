@@ -1000,7 +1000,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   });
 
   describe('Scenario interventions - Update', () => {
-    test('Update a scenario intervention should be successful (happy case)', async () => {
+    test('Update a scenario intervention basic properties should be successful (happy case)', async () => {
       const scenarioIntervention: ScenarioIntervention =
         await createScenarioIntervention();
 
@@ -1024,6 +1024,68 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       // Note: Update response does not retrieve the related resources
       expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
+    });
+
+    test('Update a scenario intervention needing recalculation should be successful', async () => {
+      const preconditions: ScenarioInterventionPreconditions =
+        await createInterventionPreconditionsWithMultipleYearRecords();
+
+      const responseOnCreate = await request(app.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'test scenario intervention',
+          startYear: 2018,
+          percentage: 50,
+          scenarioId: preconditions.scenario.id,
+          materialIds: [preconditions.material1.id],
+          supplierIds: [preconditions.supplier1.id],
+          businessUnitIds: [preconditions.businessUnit1.id],
+          adminRegionIds: [preconditions.adminRegion1.id],
+          newLocationCountryInput: 'TestCountry',
+          type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          newIndicatorCoefficients: {
+            GHG_LUC_T: 1,
+            DF_LUC_T: 10,
+            UWU_T: 5,
+            BL_LUC_T: 3,
+          },
+        });
+
+      expect(HttpStatus.CREATED);
+      const scenarioIntervention =
+        await scenarioInterventionRepository.findOneOrFail(
+          responseOnCreate.body.data.id,
+        );
+      const sourcingRecordsCountBeforeUpdate: number =
+        await sourcingRecordRepository.count();
+      expect(sourcingRecordsCountBeforeUpdate).toEqual(8);
+
+      const response = await request(app.getHttpServer())
+        .patch(`/api/v1/scenario-interventions/${scenarioIntervention.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          startYear: 2019,
+        })
+        .expect(HttpStatus.OK);
+
+      const updatedScenarioIntervention =
+        await scenarioInterventionRepository.findOneOrFail(
+          response.body.data.id,
+        );
+      expect(updatedScenarioIntervention.updatedById).toEqual(userId);
+
+      // Note: Update response does not retrieve the related resources
+      expect(response).toHaveJSONAPIAttributes([
+        ...expectedJSONAPIAttributes,
+        'replacedMaterials',
+        'replacedBusinessUnits',
+        'replacedAdminRegions',
+        'replacedSuppliers',
+      ]);
+      const sourcingRecordsCountAfterUpdate: number =
+        await sourcingRecordRepository.count();
+      expect(sourcingRecordsCountAfterUpdate).toEqual(6);
     });
   });
 

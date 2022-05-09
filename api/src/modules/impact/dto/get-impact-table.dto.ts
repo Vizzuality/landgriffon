@@ -32,7 +32,9 @@ export class GetImpactTableDto {
   @IsNotEmpty()
   endYear!: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    enum: Object.values(GROUP_BY_VALUES),
+  })
   @Type(() => String)
   @IsString()
   @IsNotEmpty()
@@ -61,7 +63,10 @@ export class GetImpactTableDto {
   @Type(() => String)
   supplierIds?: string[];
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'Type of Sourcing Location, written with hyphens',
+    enum: Object.values(LOCATION_TYPES_PARAMS),
+  })
   @IsOptional()
   @IsEnum(LOCATION_TYPES_PARAMS, {
     each: true,

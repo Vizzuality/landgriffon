@@ -10,7 +10,6 @@ export type MultipleSelectProps = {
   placeholder?: string;
   searchPlaceholder?: string;
   showSearch?: boolean;
-  multiple?: boolean;
   loading?: boolean;
   options: MultipleSelectOptions;
   current: MultipleSelectOptions;
@@ -28,7 +27,6 @@ type MultipleSelectFilterProps = {
   error?: MultipleSelectProps['error'];
   maxBadges?: MultipleSelectProps['maxBadges'];
   current: MultipleSelectProps['current'];
-  multiple?: MultipleSelectProps['multiple'];
   onChange?: MultipleSelectProps['onChange'];
   theme?: 'default' | 'inline-primary';
   placeholder?: MultipleSelectProps['placeholder'];

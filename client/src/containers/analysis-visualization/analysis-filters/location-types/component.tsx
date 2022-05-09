@@ -11,7 +11,6 @@ import type { MultipleSelectProps } from 'components/multiple-select/types';
 
 type LocationTypeFilterProps = {
   current: MultipleSelectProps['current'];
-  multiple?: MultipleSelectProps['multiple'];
   onChange?: MultipleSelectProps['onChange'];
   theme?: 'default' | 'inline-primary';
   optionsLocationTypes?: MultipleSelectProps['current'];
@@ -20,7 +19,6 @@ type LocationTypeFilterProps = {
 };
 
 const LocationTypesFilter: React.FC<LocationTypeFilterProps> = ({
-  multiple,
   current,
   onChange,
   theme,
@@ -33,7 +31,7 @@ const LocationTypesFilter: React.FC<LocationTypeFilterProps> = ({
     () =>
       sortBy(
         data?.map((d) => ({
-          label: d[0].toUpperCase() + d.substring(1),
+          label: d,
           value: d,
         })),
         'label',
@@ -43,7 +41,6 @@ const LocationTypesFilter: React.FC<LocationTypeFilterProps> = ({
 
   return (
     <MultipleSelect
-      multiple={multiple}
       showSearch
       options={options}
       placeholder="Location types"

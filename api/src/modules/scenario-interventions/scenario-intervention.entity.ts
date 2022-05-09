@@ -95,6 +95,9 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   @ApiProperty()
   newIndicatorCoefficients?: JSON;
 
+  @Column({ type: 'jsonb', nullable: true })
+  createDto?: JSON;
+
   @ManyToOne(
     () => Scenario,
     (scenario: Scenario) => scenario.scenarioInterventions,

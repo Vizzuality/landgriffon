@@ -109,7 +109,7 @@ export class ScenarioInterventionsController {
     @Param('id') id: string,
   ): Promise<ScenarioIntervention> {
     return await this.scenarioInterventionsService.serialize(
-      await this.scenarioInterventionsService.update(id, dto),
+      await this.scenarioInterventionsService.updateIntervention(id, dto),
     );
   }
 

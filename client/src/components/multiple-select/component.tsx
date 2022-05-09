@@ -44,7 +44,6 @@ const MultipleSelect: React.FC<MultipleSelectFilterProps> = ({
   current,
   loading = false,
   maxBadges = 5,
-  multiple = false,
   options = [],
   placeholder,
   searchPlaceholder = 'Search',
@@ -149,92 +148,63 @@ const MultipleSelect: React.FC<MultipleSelectFilterProps> = ({
     <Popover ref={wrapperRef} className="relative">
       {({ open }) => (
         <>
-          {multiple ? (
-            <Popover.Button ref={setReferenceElement} className="w-full align-center relative">
-              <div
-                className={classNames('flex', THEMES[theme].wrapper, {
-                  'ring-green-700 border-green-700': open,
-                  'border-red-600': !!error,
-                })}
-              >
-                {selected &&
-                  !!selected.length &&
-                  !ellipsis &&
-                  selected.slice(0, maxBadges).map((option) => (
-                    <Badge
-                      key={option.value}
-                      className={classNames('m-0.5', THEMES[theme].label)}
-                      data={option}
-                      onClick={handleRemoveBadget}
-                      removable={theme === 'inline-primary' ? false : true}
-                      theme={theme}
-                    >
-                      {option.label}
-                    </Badge>
-                  ))}
-                {selected && !!selected.length && ellipsis && (
+          <Popover.Button ref={setReferenceElement} className="w-full align-center relative">
+            <div
+              className={classNames('flex', THEMES[theme].wrapper, {
+                'ring-green-700 border-green-700': open,
+                'border-red-600': !!error,
+              })}
+            >
+              {selected &&
+                !!selected.length &&
+                !ellipsis &&
+                selected.slice(0, maxBadges).map((option) => (
                   <Badge
-                    key={selected[0].value}
+                    key={option.value}
                     className={classNames('m-0.5', THEMES[theme].label)}
-                    data={selected[0]}
+                    data={option}
                     onClick={handleRemoveBadget}
                     removable={theme === 'inline-primary' ? false : true}
                     theme={theme}
                   >
-                    {selected[0].label}
+                    {option.label}
                   </Badge>
-                )}
-                {selected && selected.length > maxBadges && (
-                  <Badge className={classNames('m-0.5', THEMES[theme].label)} theme={theme}>
-                    {selected.length - maxBadges} more selected
-                  </Badge>
-                )}
-                {(!selected || selected.length === 0) && (
-                  <span className="inline-block truncate">
-                    {placeholder && <span className={THEMES[theme].label}>{placeholder}</span>}
-                  </span>
-                )}
-              </div>
-              <span
-                className={classNames('absolute flex pointer-events-none', THEMES[theme].arrow, {
-                  'text-red-700': !!error,
-                })}
-              >
-                {open ? (
-                  <ChevronUpIcon className="h-4 w-4" aria-hidden="true" />
-                ) : (
-                  <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
-                )}
-              </span>
-            </Popover.Button>
-          ) : (
-            <Popover.Button
-              ref={setReferenceElement}
-              className={classNames(
-                'bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 cursor-pointer',
-                { 'ring-green-700 border-green-700': open },
+                ))}
+              {selected && !!selected.length && ellipsis && (
+                <Badge
+                  key={selected[0].value}
+                  className={classNames('m-0.5', THEMES[theme].label)}
+                  data={selected[0]}
+                  onClick={handleRemoveBadget}
+                  removable={theme === 'inline-primary' ? false : true}
+                  theme={theme}
+                >
+                  {selected[0].label}
+                </Badge>
               )}
+              {selected && selected.length > maxBadges && (
+                <Badge className={classNames('m-0.5', THEMES[theme].label)} theme={theme}>
+                  {selected.length - maxBadges} more selected
+                </Badge>
+              )}
+              {(!selected || selected.length === 0) && (
+                <span className="inline-block truncate">
+                  {placeholder && <span className={THEMES[theme].label}>{placeholder}</span>}
+                </span>
+              )}
+            </div>
+            <span
+              className={classNames('absolute flex pointer-events-none', THEMES[theme].arrow, {
+                'text-red-700': !!error,
+              })}
             >
-              <span className="inline-block truncate">
-                {selected ? (
-                  <span className="font-medium">{'selected.label'}</span>
-                ) : (
-                  <span className="text-gray-300">{'Placeholder'}</span>
-                )}
-              </span>
-              <span
-                className={classNames('absolute flex pointer-events-none', THEMES[theme].arrow, {
-                  'text-red-700': !!error,
-                })}
-              >
-                {open ? (
-                  <ChevronUpIcon className="h-4 w-4" aria-hidden="true" />
-                ) : (
-                  <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
-                )}
-              </span>
-            </Popover.Button>
-          )}
+              {open ? (
+                <ChevronUpIcon className="h-4 w-4" aria-hidden="true" />
+              ) : (
+                <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
+              )}
+            </span>
+          </Popover.Button>
           <Transition
             show={open}
             enter="transition duration-100 ease-out"
@@ -295,7 +265,7 @@ const MultipleSelect: React.FC<MultipleSelectFilterProps> = ({
                       checked={!!selected?.find((s) => s.value === option.value)}
                       onChange={handleSelect}
                     />
-                    <Label htmlFor={option.label} className="ml-2 mt-1">
+                    <Label htmlFor={option.label} className="ml-2 mt-1 first-letter:uppercase">
                       {option.label}
                     </Label>
                   </div>

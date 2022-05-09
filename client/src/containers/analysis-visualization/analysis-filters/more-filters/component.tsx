@@ -140,7 +140,6 @@ const MoreFilters: React.FC = () => {
                     <div>
                       <div className="mb-1">Location type</div>
                       <LocationTypes
-                        multiple
                         current={selectedFilters.locationTypes}
                         fitContent
                         onChange={(values) => handleChangeFilter('locationTypes', values)}

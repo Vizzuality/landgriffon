@@ -5,6 +5,7 @@ import Toggle from 'components/toggle';
 import Loading from 'components/loading';
 import OpacityControl from './opacityControl';
 import DragHandle from './dragHandle';
+import Tooltip from 'components/tooltip';
 
 export type LegendItemProps = {
   name: string | JSX.Element;
@@ -62,9 +63,9 @@ export const LegendItem: React.FC<LegendItemProps> = ({
                 <div className="flex items-center space-x-1 mt-0.5">
                   <OpacityControl opacity={opacity} onChange={onChangeOpacity} />
                   <div>
-                    <button>
+                    <Tooltip arrow color="black" content={<div>asd</div>}>
                       <InformationCircleIcon className="w-4 h-4 text-gray-900" />
-                    </button>
+                    </Tooltip>
                   </div>
                 </div>
               </div>

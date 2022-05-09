@@ -20,7 +20,7 @@ const OpacityControl: React.FC<OpacityControlProps> = ({ opacity, onChange }) =>
   return (
     <ToolTip
       content={
-        <div className="bg-white px-4 py-1 rounded-md w-52">
+        <div className="px-2 w-44">
           <div className="text-left text-gray-700">Opacity</div>
           <RangeSlider
             unit="%"

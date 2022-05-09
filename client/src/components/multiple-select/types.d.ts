@@ -22,3 +22,20 @@ export type MultipleSelectProps = {
   error?: boolean;
   fitContent?: boolean;
 };
+
+type MultipleSelectFilterProps = {
+  loading?: MultipleSelectProps['loading'];
+  error?: MultipleSelectProps['error'];
+  maxBadges?: MultipleSelectProps['maxBadges'];
+  current: MultipleSelectProps['current'];
+  multiple?: MultipleSelectProps['multiple'];
+  onChange?: MultipleSelectProps['onChange'];
+  theme?: 'default' | 'inline-primary';
+  placeholder?: MultipleSelectProps['placeholder'];
+  showSearch?: MultipleSelectProps['showSearch'];
+  options?: MultipleSelectProps['options'];
+  ellipsis?: MultipleSelectProps['ellipsis'];
+  fitContent?: MultipleSelectProps['fitContent'];
+  searchPlaceholder?: MultipleSelectProps['searchPlaceholder'];
+  onSearch?: MultipleSelectProps['onSearch'];
+};

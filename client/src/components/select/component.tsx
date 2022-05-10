@@ -2,11 +2,11 @@ import { Fragment, useCallback, useEffect, useState, useMemo } from 'react';
 import { Combobox, Transition } from '@headlessui/react';
 import { ChevronUpIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
-import Fuse from 'fuse.js';
 
 import Loading from 'components/loading';
 
 import type { SelectProps } from './types';
+import useFuse from 'hooks/fuse';
 
 const SEARCH_OPTIONS = {
   includeScore: false,
@@ -46,55 +46,38 @@ const Select: React.FC<SelectProps> = ({
   theme = 'default',
   error = false,
 }) => {
-  const [selected, setSelected] = useState<SelectProps['current']>(current);
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const {
+    result: optionsResult,
+    search: setSearchTerm,
+    term: searchTerm,
+    reset: resetSearch,
+  } = useFuse(options, SEARCH_OPTIONS);
 
-  // Search capability
-  const fuse = useMemo(() => new Fuse(options, SEARCH_OPTIONS), [options]);
+  const enabledOptionsResult = useMemo(
+    () => optionsResult.filter((option) => !option.disabled),
+    [optionsResult],
+  );
+
+  useEffect(() => {
+    resetSearch();
+    if (searchTerm) setSearchTerm(searchTerm);
+  }, [resetSearch, searchTerm, setSearchTerm]);
+
   const handleSearch = useCallback(
     (e) => {
-      setSearchTerm(e.currentTarget.value);
       onSearch?.(e.currentTarget.value);
+      // resetSearch();
+      setSearchTerm(e.currentTarget.value);
     },
-    [onSearch],
+    [onSearch, setSearchTerm],
   );
-  const resetSearch = useCallback(() => setSearchTerm(''), []);
-  const optionsResult: SelectProps['options'] = useMemo(() => {
-    if (searchTerm && searchTerm !== '') {
-      return fuse
-        .search(searchTerm)
-        .filter(({ item }) => !item.disabled)
-        .map(({ item }) => item);
-    }
-    return options;
-  }, [fuse, options, searchTerm]);
 
-  // On change
   const handleChange = useCallback(
     (currentOption) => {
       onChange?.(currentOption);
-      // setSelected(currentOption);
-      resetSearch();
     },
-    [onChange, resetSearch],
+    [onChange],
   );
-
-  // useEffect(() => {
-  //   // Update selected when current prop changes
-  //   if (allowEmpty && current) {
-  //     setSelected(current);
-  //   }
-  //   // if allowEmpty is false, current is the first option
-  //   else if (!allowEmpty && !current) {
-  //     setSelected(options[0]);
-  //   }
-  //   // Fallback to set current as usual
-  //   else if (current) {
-  //     setSelected(current);
-  //   }
-  // }, [current, allowEmpty, options]);
-
-  const [firstOptionRef, setFirstOptionRef] = useState<HTMLElement>(null);
 
   return (
     <Combobox value={current} onChange={handleChange} disabled={disabled}>
@@ -103,7 +86,7 @@ const Select: React.FC<SelectProps> = ({
           <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
             <Combobox.Input
               className="text-ellipsis"
-              displayValue={(option: SelectProps['current']) => option?.label || ''}
+              displayValue={(option: SelectProps['current']) => searchTerm || option?.label || ''}
               onChange={handleSearch}
             />
             <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
@@ -123,7 +106,7 @@ const Select: React.FC<SelectProps> = ({
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-0 translate-y-1"
             afterLeave={() => {
-              setSearchTerm('');
+              resetSearch();
             }}
           >
             <Combobox.Options
@@ -132,7 +115,7 @@ const Select: React.FC<SelectProps> = ({
                 'absolute z-20 mt-1 min-w-min w-full bg-white shadow-lg max-h-60 rounded-md ring-1 ring-black ring-opacity-5 overflow-y-auto overflow-x-hidden focus:outline-none text-sm',
               )}
             >
-              {optionsResult.map((option, i) => (
+              {enabledOptionsResult.map((option, i) => (
                 <Combobox.Option
                   key={option.value}
                   className={({ active, selected, disabled }) =>
@@ -148,7 +131,7 @@ const Select: React.FC<SelectProps> = ({
                   value={option}
                 >
                   {({ selected }) => (
-                    <div className="flex flex-row gap-x-2" ref={i === 0 ? setFirstOptionRef : null}>
+                    <div className="flex flex-row gap-x-2">
                       <div
                         className={classNames(
                           selected ? 'font-semibold' : 'font-normal',
@@ -166,7 +149,7 @@ const Select: React.FC<SelectProps> = ({
                   )}
                 </Combobox.Option>
               ))}
-              {optionsResult.length === 0 && searchTerm && (
+              {enabledOptionsResult.length === 0 && searchTerm && (
                 <div className="p-2 text-sm">No results</div>
               )}
             </Combobox.Options>

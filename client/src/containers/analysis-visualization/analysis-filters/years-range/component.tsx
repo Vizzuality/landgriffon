@@ -42,6 +42,7 @@ const YearsFilter: React.FC = () => {
       return;
     }
 
+    // TODO: set max number of years, otherwise an extra number la va a liar parda
     if (!years.includes(toNumber(searchedYear))) {
       setYears([...range(data[data.length - 1] + 1, toNumber(searchedYear) + 1), ...data]);
     }

@@ -19,6 +19,7 @@ export type LegendItemProps = {
   onActiveChange?: (active: boolean) => void;
   opacity: number;
   onChangeOpacity: (opacity: number) => void;
+  legendInfo: string;
 };
 
 export const LegendItem: React.FC<LegendItemProps> = ({
@@ -32,6 +33,7 @@ export const LegendItem: React.FC<LegendItemProps> = ({
   onActiveChange,
   opacity,
   onChangeOpacity,
+  legendInfo,
 }) => {
   const [isActive, setActive] = useState<boolean>(active);
   const handleChange = useCallback(
@@ -63,7 +65,7 @@ export const LegendItem: React.FC<LegendItemProps> = ({
                 <div className="flex items-center space-x-1 mt-0.5">
                   <OpacityControl opacity={opacity} onChange={onChangeOpacity} />
                   <div>
-                    <Tooltip arrow color="black" content={<div>asd</div>}>
+                    <Tooltip arrow color="black" content={<div className="w-40">{legendInfo}</div>}>
                       <InformationCircleIcon className="w-4 h-4 text-gray-900" />
                     </Tooltip>
                   </div>

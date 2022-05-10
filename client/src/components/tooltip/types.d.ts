@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type TooltipProps = PropsWithChildren<{
+export type TooltipProps = React.PropsWithChildren<{
   className?: string;
   content: React.ReactNode;
   arrow?: boolean;

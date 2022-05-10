@@ -51,7 +51,7 @@ export const ToolTip: React.FC<TooltipProps> = ({
             'bg-white': color === 'white',
           })}
         >
-          <div className="z-10 min-w-[3rem] w-fit text-center">{content}</div>
+          <div className="z-10 min-w-[3rem] min-h-[1rem] w-fit text-center">{content}</div>
           <div
             className={classNames('-z-10', { hidden: !arrow })}
             style={{

@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useState, useMemo, useEffect, useRef } from 'react';
+import { Fragment, useCallback, useState, useMemo, useEffect } from 'react';
 import classNames from 'classnames';
 import { Transition, Popover } from '@headlessui/react';
 import { usePopper } from 'react-popper';
@@ -65,12 +65,11 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   const [popperElement, setPopperElement] = useState(null);
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
     placement: 'bottom-start',
-    strategy: 'fixed',
     modifiers: [
       {
         name: 'offset',
         options: {
-          offset: [2, 5],
+          offset: [2, 0],
         },
       },
     ],
@@ -80,7 +79,6 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   const [selectedKeys, setSelectedKeys] = useState<TreeProps['selectedKeys']>([]);
   const [expandedKeys, setExpandedKeys] = useState<TreeProps['expandedKeys']>([]);
   const [checkedKeys, setCheckedKeys] = useState<TreeProps['checkedKeys']>([]);
-  const wrapperRef = useRef();
 
   const renderTreeNodes = useMemo(
     () =>
@@ -230,11 +228,14 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   }, [current]);
 
   return (
-    <Popover ref={wrapperRef} className="relative">
+    <Popover className="relative">
       {({ open }) => (
         <>
           {multiple ? (
-            <Popover.Button ref={setReferenceElement} className="w-full flex align-center relative">
+            <Popover.Button
+              ref={setReferenceElement}
+              className="w-full flex align-center relative min-h-0"
+            >
               <div
                 className={classNames('flex', THEMES[theme].wrapper, {
                   'ring-green-700 border-green-700': open,

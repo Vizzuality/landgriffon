@@ -94,7 +94,7 @@ export class IndicatorRecord extends TimestampedBaseEntity {
   @Column({ type: 'float', nullable: true })
   scaler: number;
 
-  @ManyToOne(() => H3Data, (h3Data: H3Data) => h3Data.indicatorRecord)
+  @ManyToOne(() => H3Data, (h3Data: H3Data) => h3Data.indicatorRecords)
   @JoinColumn({ name: 'materialH3DataId' })
   materialH3Data: H3Data;
 

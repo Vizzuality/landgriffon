@@ -206,7 +206,7 @@ export class IndicatorRecordsService extends AppBaseService<
       },
     );
     await this.indicatorRecordRepository.save(indicatorRecords, {
-      chunk: 1000,
+      chunk: 10,
     });
   }
 

@@ -11,7 +11,9 @@ import useBottomScrollListener from 'hooks/scroll';
 import noScenariosAnimationData from 'containers/scenarios/animations/noScenariosAnimationData.json';
 import ScenariosFilters from 'containers/scenarios/filters';
 import ScenariosList from 'containers/scenarios/list';
+
 import Button from 'components/button';
+import Loading from 'components/loading';
 
 import type { ErrorResponse } from 'types';
 import type { Scenario } from './types';
@@ -59,7 +61,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
 
   return (
     <div className="bg-white overscroll-contain text-gray-900">
-      <div className="sticky top-0 z-20 bg-white pb-4 pt-10 text-sm after:bg-gradient-to-b after:from-white after:w-full after:h-4 after:content after:-bottom-4 after:left-0 after:absolute">
+      <div className="sticky top-0 z-20 bg-white pb-4 pt-10 text-sm after:bg-gradient-to-b after:from-white after:w-full after:h-3 after:content after:-bottom-3 after:left-0 after:absolute">
         <h1>Scenarios</h1>
         <p className="my-2">Select the scenario you want to analyse</p>
         {!isLoading && data && (
@@ -68,7 +70,11 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
           </div>
         )}
       </div>
-      {isLoading && <p>Loading scenarios...</p>}
+      {isLoading && (
+        <div className=" p-6 flex justify-center">
+          <Loading className="text-green-700" />
+        </div>
+      )}
       {!isLoading && data && (
         <div className="flex-1 relative z-10 pb-4 overflow-hidden">
           <ScenariosList data={scenariosList} />

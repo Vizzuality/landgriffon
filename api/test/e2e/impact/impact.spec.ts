@@ -46,6 +46,7 @@ import {
   groupBySupplierResponseData,
 } from './response-mocks.impact';
 import { PaginationMeta } from '../../../src/utils/app-base.service';
+import { range } from 'lodash';
 import { SourcingRecord } from '../../../src/modules/sourcing-records/sourcing-record.entity';
 
 describe('Impact Table and Charts test suite (e2e)', () => {

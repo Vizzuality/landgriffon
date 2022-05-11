@@ -479,8 +479,9 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       });
 
       // Create a small tree of Materials and their childs
+      const numberOfTopMaterials = 4;
       const materialParents = await Promise.all(
-        range(4).map(
+        range(numberOfTopMaterials).map(
           async (index: number) =>
             await createMaterial({ name: `Fake Material ${index}` }),
         ),
@@ -567,7 +568,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         500,
       );
 
-      const maxRankingEntities = 20;
+      const maxRankingEntities = 2;
 
       //////////// ACT
       const response1 = await request(app.getHttpServer())
@@ -585,16 +586,17 @@ describe('Impact Table and Charts test suite (e2e)', () => {
 
       //////////// ASSERT
       // Check aggregation for each indicator
+      //Number of aggregated entities should be 2 because it's the top level entities, not counting children
       checkAggregatedInformation(
         response1.body.impactTable[0].others,
-        2, //Number of aggregated entities should be 2 because it's the top level entities, not counting children
+        numberOfTopMaterials - maxRankingEntities,
         170,
         'DES',
       );
 
       checkAggregatedInformation(
         response1.body.impactTable[1].others,
-        2, //Number of aggregated entities should be 2 because it's the top level entities, not counting children
+        numberOfTopMaterials - maxRankingEntities,
         305,
         'DES',
       );

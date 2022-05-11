@@ -9,7 +9,10 @@ import {
   sourcingRecordResource,
 } from 'modules/sourcing-records/sourcing-record.entity';
 import { AppInfoDTO } from 'dto/info.dto';
-import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
+import {
+  ImpactTableData,
+  SourcingRecordRepository,
+} from 'modules/sourcing-records/sourcing-record.repository';
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sourcing-record.dto';
 import { GetImpactTableDto } from 'modules/impact/dto/get-impact-table.dto';
@@ -88,7 +91,7 @@ export class SourcingRecordsService extends AppBaseService<
 
   async getDataForImpactTable(
     getImpactTableDto: GetImpactTableDto,
-  ): Promise<any> {
+  ): Promise<ImpactTableData[]> {
     return this.sourcingRecordRepository.getDataForImpactTable(
       getImpactTableDto,
     );

@@ -7,6 +7,7 @@ import {
   createBusinessUnit,
   createIndicator,
   createIndicatorRecord,
+  createIndicatorRecordV2,
   createMaterial,
   createSourcingLocation,
   createSourcingRecord,
@@ -45,6 +46,7 @@ import {
   groupBySupplierResponseData,
 } from './response-mocks.impact';
 import { PaginationMeta } from '../../../src/utils/app-base.service';
+import { SourcingRecord } from '../../../src/modules/sourcing-records/sourcing-record.entity';
 
 describe('Impact Table and Charts test suite (e2e)', () => {
   let app: INestApplication;
@@ -387,6 +389,349 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     expect(response.body.data.purchasedTonnes[1].value).toEqual(
       previousNonProjectedValue + (previousNonProjectedValue * 1.5) / 100,
     );
+  });
+
+  describe('Ranking', () => {
+    test('When I query the API for an Impact Table Ranking with an invalid sort order, a proper validation error should be returned', async () => {
+      const invalidResponse = await request(app.getHttpServer())
+        .get('/api/v1/impact/ranking')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [uuidv4()],
+          startYear: 2010,
+          endYear: 2012,
+          groupBy: 'material',
+          maxRankingEntities: 420,
+          sort: 'Condescending',
+        })
+        //ASSERT
+        .expect(HttpStatus.BAD_REQUEST);
+
+      //ASSERT
+      expect(
+        invalidResponse.body.errors[0].meta.rawError.response.message,
+      ).toContain(
+        `sort property must be either 'ASC' (Ascendant) or 'DES' (Descendent)`,
+      );
+    });
+
+    test('When I query the API for an Impact Table Ranking with an invalid maxRankingEntities (missing or non positive), a proper validation error should be returned', async () => {
+      // ARRANGE / ACT
+      const missingResponse = await request(app.getHttpServer())
+        .get('/api/v1/impact/ranking')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [uuidv4()],
+          startYear: 2010,
+          groupBy: 'material',
+        })
+        //ASSERT
+        .expect(HttpStatus.BAD_REQUEST);
+
+      const nonPositivegResponse = await request(app.getHttpServer())
+        .get('/api/v1/impact/ranking')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [uuidv4()],
+          startYear: 2010,
+          groupBy: 'material',
+          maxRankingEntities: 0,
+        })
+        //ASSERT
+        .expect(HttpStatus.BAD_REQUEST);
+
+      //ASSERT
+      expect(
+        missingResponse.body.errors[0].meta.rawError.response.message,
+      ).toContain('maxRankingEntities should not be empty');
+      expect(
+        nonPositivegResponse.body.errors[0].meta.rawError.response.message,
+      ).toContain('maxRankingEntities must be a positive number');
+    });
+
+    test('When I query the API for a Impact Table Ranking, then I should see all the data grouped by the requested entity and properly ordered, up to a MAX amount, with the rest being aggregated to a number', async () => {
+      //////////// ARRANGE
+      const adminRegion: AdminRegion = await createAdminRegion({
+        name: 'Fake AdminRegion',
+      });
+      const unit: Unit = await createUnit({ shortName: 'fakeUnit' });
+      const indicator: Indicator = await createIndicator({
+        name: 'Fake Indicator',
+        unit,
+      });
+
+      const indicator2: Indicator = await createIndicator({
+        name: 'Fake Indicator 2',
+        unit,
+      });
+
+      const businessUnit: BusinessUnit = await createBusinessUnit({
+        name: 'Fake Business Unit',
+      });
+
+      const supplier: Supplier = await createSupplier({
+        name: 'Fake Supplier',
+      });
+      const supplierDescendant: Supplier = await createSupplier({
+        name: 'Fake Supplier Descendant',
+        parent: supplier,
+      });
+
+      // Create a small tree of Materials and their childs
+      const materialParents = await Promise.all(
+        range(4).map(
+          async (index: number) =>
+            await createMaterial({ name: `Fake Material ${index}` }),
+        ),
+      );
+      for (const materialParent of materialParents) {
+        materialParent.children = await Promise.all(
+          range(2).map(
+            async (index: number) =>
+              await createMaterial({
+                name: `${materialParent.name} - Child ${index}`,
+                parent: materialParent,
+              }),
+          ),
+        );
+      }
+
+      //Helper function to create sourcing location and related entities (indicator and sourcing records)
+      //with behaviour specific to this test
+      const buildSourcingLocation = async (
+        material: Material,
+        baseImpactValue: number,
+        baseImpactValue2: number,
+      ): Promise<SourcingLocation> => {
+        const sourcingRecords: SourcingRecord[] = await Promise.all(
+          range(2010, 2013).map(async (year: number) => {
+            const sourcingRecord = await createSourcingRecord({
+              year,
+              tonnage: 100 + 10 * (year - 2010),
+            });
+
+            await createIndicatorRecordV2({
+              indicator,
+              value: baseImpactValue + 50 * (year - 2010),
+              sourcingRecord,
+            });
+
+            await createIndicatorRecordV2({
+              indicator: indicator2,
+              value: baseImpactValue2 + 20 * (year - 2010),
+              sourcingRecord,
+            });
+
+            return sourcingRecord;
+          }),
+        );
+
+        return await createSourcingLocation({
+          material: material,
+          businessUnit,
+          t1Supplier: supplierDescendant,
+          adminRegion,
+          sourcingRecords,
+        });
+      };
+
+      const sourcingLocation0 = await buildSourcingLocation(
+        materialParents[0],
+        100,
+        90,
+      );
+      const sourcingLocation00 = await buildSourcingLocation(
+        materialParents[0].children[0],
+        30,
+        80,
+      );
+      const sourcingLocation10 = await buildSourcingLocation(
+        materialParents[1].children[0],
+        100,
+        45,
+      );
+      const sourcingLocation11 = await buildSourcingLocation(
+        materialParents[1].children[1],
+        70,
+        90,
+      );
+      const sourcingLocation20 = await buildSourcingLocation(
+        materialParents[2].children[0],
+        1000,
+        200,
+      );
+      const sourcingLocation3 = await buildSourcingLocation(
+        materialParents[3],
+        40,
+        500,
+      );
+
+      const maxRankingEntities = 20;
+
+      //////////// ACT
+      const response1 = await request(app.getHttpServer())
+        .get('/api/v1/impact/ranking')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [indicator.id, indicator2.id],
+          endYear: 2012,
+          startYear: 2010,
+          groupBy: 'material',
+          maxRankingEntities: maxRankingEntities,
+          sort: 'DES',
+        })
+        .expect(HttpStatus.OK);
+
+      //////////// ASSERT
+      // Check aggregation for each indicator
+      checkAggregatedInformation(
+        response1.body.impactTable[0].others,
+        2, //Number of aggregated entities should be 2 because it's the top level entities, not counting children
+        170,
+        'DES',
+      );
+
+      checkAggregatedInformation(
+        response1.body.impactTable[1].others,
+        2, //Number of aggregated entities should be 2 because it's the top level entities, not counting children
+        305,
+        'DES',
+      );
+
+      // Check that each indicator only has the expected number of maxRankingEntities and sorted appropriately
+      expect(response1.body.impactTable[0].rows).toHaveLength(
+        maxRankingEntities,
+      );
+      expect(response1.body.impactTable[1].rows).toHaveLength(
+        maxRankingEntities,
+      );
+
+      //Check order and values of ranked entities  for each indicator
+      //Inidicator1
+      expect(response1.body.impactTable[0].rows[0].name).toEqual(
+        materialParents[2].name,
+      );
+      expect(response1.body.impactTable[0].rows[1].name).toEqual(
+        materialParents[1].name,
+      );
+      expect(response1.body.impactTable[0].rows[0].values[0]).toEqual({
+        year: 2010,
+        value: 1000,
+        isProjected: false,
+      });
+      expect(response1.body.impactTable[0].rows[1].values[0]).toEqual({
+        year: 2010,
+        value: 170,
+        isProjected: false,
+      });
+
+      //Inidicator2
+      expect(response1.body.impactTable[1].rows[0].name).toEqual(
+        materialParents[3].name,
+      );
+      expect(response1.body.impactTable[1].rows[1].name).toEqual(
+        materialParents[2].name,
+      );
+      expect(response1.body.impactTable[1].rows[0].values[0]).toEqual({
+        year: 2010,
+        value: 500,
+        isProjected: false,
+      });
+      expect(response1.body.impactTable[1].rows[1].values[0]).toEqual({
+        year: 2010,
+        value: 200,
+        isProjected: false,
+      });
+    });
+
+    test('When I query the API for a Impact Table Ranking, and there is not enough entities to exceed the maxRankingEntities, then the aggregated value and number of entities should be 0', async () => {
+      //ARRANGE
+      const adminRegion: AdminRegion = await createAdminRegion({
+        name: 'Fake AdminRegion',
+      });
+      const unit: Unit = await createUnit({ shortName: 'fakeUnit' });
+      const indicator: Indicator = await createIndicator({
+        name: 'Fake Indicator',
+        unit,
+      });
+
+      const businessUnit: BusinessUnit = await createBusinessUnit({
+        name: 'Fake Business Unit',
+      });
+
+      const supplier: Supplier = await createSupplier({
+        name: 'Fake Supplier',
+      });
+      const supplierDescendant: Supplier = await createSupplier({
+        name: 'Fake Supplier Descendant',
+        parent: supplier,
+      });
+
+      const material = await createMaterial({ name: `Fake Material ` });
+
+      const sourcingRecord = await createSourcingRecord({
+        year: 2010,
+        tonnage: 100,
+      });
+
+      await createIndicatorRecordV2({
+        indicator,
+        value: 50,
+        sourcingRecord,
+      });
+
+      await createSourcingLocation({
+        material: material,
+        businessUnit,
+        t1Supplier: supplierDescendant,
+        adminRegion,
+        sourcingRecords: [sourcingRecord],
+      });
+
+      const maxRankingEntities = 5;
+
+      //ACT
+      const response1 = await request(app.getHttpServer())
+        .get('/api/v1/impact/ranking')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [indicator.id],
+          endYear: 2012,
+          startYear: 2010,
+          groupBy: 'material',
+          maxRankingEntities: maxRankingEntities,
+          sort: 'DES',
+        })
+        .expect(HttpStatus.OK);
+
+      //ASSERT
+      // Number of aggregated entities and aggregated value should be 0 because there's not enough entities
+      // that result the current data/criteria that go over the maxRankingEntities
+      checkAggregatedInformation(
+        response1.body.impactTable[0].others,
+        0,
+        0,
+        'DES',
+      );
+
+      // Check that each indicator has the expected number of entities
+      expect(response1.body.impactTable[0].rows).toHaveLength(1);
+    });
+
+    function checkAggregatedInformation(
+      others: any,
+      numberAggregatedEntities: number,
+      aggregatedValue: number,
+      sort: string,
+    ): void {
+      expect(others).toBeTruthy();
+
+      expect(others.numberOfAggregatedEntities).toEqual(
+        numberAggregatedEntities,
+      );
+      expect(others.aggregatedValue).toEqual(aggregatedValue);
+      expect(others.sort).toEqual(sort);
+    }
   });
 
   describe('Group By tests', () => {

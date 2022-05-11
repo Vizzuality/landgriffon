@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationMeta } from 'utils/app-base.service';
 
 export class ImpactTable {
@@ -30,6 +30,16 @@ export class ImpactTableDataByIndicator {
   metadata: { unit: string };
   @ApiProperty({ type: () => ImpactTableRowsValues, isArray: true })
   values?: ImpactTableRowsValues[];
+
+  @ApiPropertyOptional({
+    description:
+      'Extra information used for Ranked ImpactTable requests. Missing on normal ImpactTable requests',
+  })
+  others?: {
+    aggregatedValue: number;
+    numberOfAggregatedEntities: number;
+    sort: string;
+  };
 }
 
 export class ImpactTablePurchasedTonnes {

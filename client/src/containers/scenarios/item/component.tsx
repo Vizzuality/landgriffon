@@ -5,7 +5,6 @@ import { DotsVerticalIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
 import toast from 'react-hot-toast';
 import { createPortal } from 'react-dom';
-import { usePopper } from 'react-popper';
 
 import { setCurrentScenario, setMode, scenarios } from 'store/features/analysis/scenarios';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
@@ -16,6 +15,7 @@ import { ACTUAL_DATA } from '../constants';
 
 import type { ErrorResponse } from 'types';
 import type { Scenario } from '../types';
+import { offset, useFloating } from '@floating-ui/react-dom';
 
 type ScenariosItemProps = {
   data: Scenario;
@@ -31,20 +31,10 @@ const DROPDOWN_ITEM_CLASSNAME =
 const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) => {
   const dispatch = useAppDispatch();
   const { currentScenario } = useAppSelector(scenarios);
-  const [referenceElement, setReferenceElement] = useState(null);
-  const [popperElement, setPopperElement] = useState(null);
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    placement: 'right-start',
-    strategy: 'absolute',
-    modifiers: [
-      {
-        name: 'offset',
 
-        options: {
-          offset: [-20, 20],
-        },
-      },
-    ],
+  const { x, y, reference, floating, strategy } = useFloating({
+    placement: 'right',
+    middleware: [offset({ mainAxis: 10 })],
   });
 
   const { data, isSelected, isComparisonAvailable } = props;
@@ -126,10 +116,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                 {({ open }) => (
                   <>
                     <div>
-                      <Popover.Button
-                        ref={setReferenceElement}
-                        className={DROPDOWN_BUTTON_CLASSNAME}
-                      >
+                      <Popover.Button ref={reference} className={DROPDOWN_BUTTON_CLASSNAME}>
                         <span className="sr-only">Open options</span>
                         <DotsVerticalIcon className="w-5 h-5" aria-hidden="true" />
                       </Popover.Button>
@@ -138,9 +125,12 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                     {open &&
                       createPortal(
                         <Popover.Panel
-                          ref={setPopperElement}
-                          style={styles.popper}
-                          {...attributes.popper}
+                          ref={floating}
+                          style={{
+                            position: strategy,
+                            top: y ?? '',
+                            left: x ?? '',
+                          }}
                           static
                           className="z-10 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                         >

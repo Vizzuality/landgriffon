@@ -1,7 +1,7 @@
 import { Fragment, useCallback, useState, useMemo, useEffect } from 'react';
 import classNames from 'classnames';
 import { Transition, Popover } from '@headlessui/react';
-import { usePopper } from 'react-popper';
+import { autoPlacement, offset, useFloating } from '@floating-ui/react-dom';
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -60,20 +60,18 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   fitContent = false,
   checkedStrategy = 'PARENT', // by default show child
 }) => {
-  // Popover positioning
-  const [referenceElement, setReferenceElement] = useState(null);
-  const [popperElement, setPopperElement] = useState(null);
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
+  const {
+    x,
+    y,
+    reference,
+    floating,
+    strategy,
+    refs: { reference: referenceElement },
+  } = useFloating({
     placement: 'bottom-start',
-    modifiers: [
-      {
-        name: 'offset',
-        options: {
-          offset: [2, 0],
-        },
-      },
-    ],
+    middleware: [offset({ mainAxis: 4 })],
   });
+
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selected, setSelected] = useState<TreeSelectOption>(null);
   const [selectedKeys, setSelectedKeys] = useState<TreeProps['selectedKeys']>([]);
@@ -232,10 +230,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
       {({ open }) => (
         <>
           {multiple ? (
-            <Popover.Button
-              ref={setReferenceElement}
-              className="w-full flex align-center relative min-h-0"
-            >
+            <Popover.Button ref={reference} className="w-full flex align-center relative">
               <div
                 className={classNames('flex', THEMES[theme].wrapper, {
                   'ring-green-700 border-green-700': open,
@@ -298,7 +293,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
             </Popover.Button>
           ) : (
             <Popover.Button
-              ref={setReferenceElement}
+              ref={reference}
               className={classNames(
                 'bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer',
                 { 'ring-green-700 border-green-700': open },
@@ -324,79 +319,87 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
               </span>
             </Popover.Button>
           )}
-          <Transition
-            show={open}
-            enter="transition duration-100 ease-out"
-            enterFrom="transform opacity-0"
-            enterTo="transform opacity-100"
-            leave="transition duration-75 ease-out"
-            leaveFrom="transform opacity-100"
-            leaveTo="transform opacity-0"
+          <div
+            style={{
+              position: strategy,
+              top: y ?? '',
+              left: x ?? '',
+              width:
+                fitContent && reference
+                  ? (referenceElement.current as HTMLElement)?.offsetWidth
+                  : 'inherit',
+            }}
+            className="z-10"
+            ref={floating}
           >
-            <Popover.Panel
-              ref={setPopperElement}
-              static
-              style={{
-                ...styles.popper,
-                width: fitContent && referenceElement ? referenceElement.offsetWidth : 'inherit',
-              }}
-              {...attributes.popper}
-              className={classNames(
-                'z-20 bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 max-h-80 overflow-y-auto',
-                fitContent ? 'max-w-full' : 'max-w-md',
-              )}
-              // className={classNames(
-              //   'absolute z-20 min-w-full max-h-96 bg-white shadow-lg rounded-md mt-1 ring-1 ring-black ring-opacity-5 overflow-y-auto overflow-x-hidden',
-              //   { 'left-0 right-0': fitContent },
-              // )}
+            <Transition
+              show={open}
+              enter="transition duration-100 ease-out"
+              enterFrom="transform opacity-0"
+              enterTo="transform opacity-100"
+              leave="transition duration-75 ease-out"
+              leaveFrom="transform opacity-100"
+              leaveTo="transform opacity-0"
             >
-              {loading && (
-                <div className="p-4">
-                  <Loading className="text-green-700 -ml-1 mr-3" />
-                </div>
-              )}
-              {!loading && showSearch && (
-                <div className="flex items-center border-b border-b-gray-400">
-                  <div className="pl-2 py-1">
-                    <SearchIcon className="block h-4 w-4 text-gray-400" />
+              <Popover.Panel
+                static
+                className={classNames(
+                  'z-20 bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 max-h-80 overflow-y-auto',
+                  fitContent ? 'max-w-full' : 'max-w-md',
+                )}
+                // className={classNames(
+                //   'absolute z-20 min-w-full max-h-96 bg-white shadow-lg rounded-md mt-1 ring-1 ring-black ring-opacity-5 overflow-y-auto overflow-x-hidden',
+                //   { 'left-0 right-0': fitContent },
+                // )}
+              >
+                {loading && (
+                  <div className="p-4">
+                    <Loading className="text-green-700 -ml-1 mr-3" />
                   </div>
-                  <input
-                    type="search"
-                    value={searchTerm}
-                    placeholder={searchPlaceholder}
-                    className="block text-sm border-0 rounded-t-md focus:ring-0 focus:border-green-700 flex-1"
-                    onChange={handleSearch}
-                  />
-                  {searchTerm && (
-                    <button type="button" onClick={resetSearch} className="px-2 py-1">
-                      <XIcon className="h-4 w-4 text-gray-400" />
-                    </button>
-                  )}
-                </div>
-              )}
-              {!loading && (
-                <Tree
-                  autoExpandParent
-                  checkStrictly={false}
-                  checkable={multiple}
-                  selectable={!multiple}
-                  multiple={multiple}
-                  selectedKeys={selectedKeys}
-                  expandedKeys={expandedKeys}
-                  checkedKeys={checkedKeys}
-                  switcherIcon={customSwitcherIcon}
-                  onExpand={handleExpand}
-                  onSelect={handleSelect}
-                  onCheck={handleCheck}
-                >
-                  {renderTreeNodes(optionsResult)}
-                </Tree>
-              )}
-              {optionsResult.length === 0 && searchTerm && (
-                <div className="p-2 text-sm">No results</div>
-              )}
-            </Popover.Panel>
-          </Transition>
+                )}
+                {!loading && showSearch && (
+                  <div className="flex items-center border-b border-b-gray-400">
+                    <div className="pl-2 py-1">
+                      <SearchIcon className="block h-4 w-4 text-gray-400" />
+                    </div>
+                    <input
+                      type="search"
+                      value={searchTerm}
+                      placeholder={searchPlaceholder}
+                      className="block text-sm border-0 rounded-t-md focus:ring-0 focus:border-green-700 flex-1"
+                      onChange={handleSearch}
+                    />
+                    {searchTerm && (
+                      <button type="button" onClick={resetSearch} className="px-2 py-1">
+                        <XIcon className="h-4 w-4 text-gray-400" />
+                      </button>
+                    )}
+                  </div>
+                )}
+                {!loading && (
+                  <Tree
+                    autoExpandParent
+                    checkStrictly={false}
+                    checkable={multiple}
+                    selectable={!multiple}
+                    multiple={multiple}
+                    selectedKeys={selectedKeys}
+                    expandedKeys={expandedKeys}
+                    checkedKeys={checkedKeys}
+                    switcherIcon={customSwitcherIcon}
+                    onExpand={handleExpand}
+                    onSelect={handleSelect}
+                    onCheck={handleCheck}
+                  >
+                    {renderTreeNodes(optionsResult)}
+                  </Tree>
+                )}
+                {optionsResult.length === 0 && searchTerm && (
+                  <div className="p-2 text-sm">No results</div>
+                )}
+              </Popover.Panel>
+            </Transition>
+          </div>
         </>
       )}
     </Popover>

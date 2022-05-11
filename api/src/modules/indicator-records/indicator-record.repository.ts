@@ -18,11 +18,11 @@ export class IndicatorRecordRepository extends Repository<IndicatorRecord> {
   > {
     try {
       const response: any = await this.query(`
-      SELECT
+        SELECT
           sr.id as "sourcingRecordId",
           sr.tonnage,
           sr.year,
-          sr.id as "sourcingLocationId",
+          slwithmaterialh3data.id as "sourcingLocationId",
           slwithmaterialh3data.production,
           slwithmaterialh3data."harvestedArea",
           slwithmaterialh3data."rawDeforestation",

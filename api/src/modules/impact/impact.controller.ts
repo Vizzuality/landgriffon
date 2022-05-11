@@ -1,8 +1,14 @@
 import { Controller, Get, Query, ValidationPipe } from '@nestjs/common';
-import { GetImpactTableDto } from 'modules/impact/dto/get-impact-table.dto';
+import {
+  GetImpactTableDto,
+  GetRankedImpactTableDto,
+} from 'modules/impact/dto/get-impact-table.dto';
 import { ImpactService } from 'modules/impact/impact.service';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { PaginatedImpactTable } from 'modules/impact/dto/response-impact-table.dto';
+import {
+  ImpactTable,
+  PaginatedImpactTable,
+} from 'modules/impact/dto/response-impact-table.dto';
 import {
   FetchSpecification,
   ProcessFetchSpecification,
@@ -30,5 +36,20 @@ export class ImpactController {
       impactTableDto,
       fetchSpecification,
     );
+  }
+
+  @ApiOperation({
+    description:
+      'Get Ranked Impact Table, up to maxRankingEntities, aggregating the rest of entities, for each indicator ',
+  })
+  @ApiOkResponse({
+    type: ImpactTable,
+  })
+  @JSONAPIPaginationQueryParams()
+  @Get('ranking')
+  async getRankedImpactTable(
+    @Query(ValidationPipe) rankedImpactTableDto: GetRankedImpactTableDto,
+  ): Promise<ImpactTable> {
+    return await this.impactService.getRankedImpactTable(rankedImpactTableDto);
   }
 }

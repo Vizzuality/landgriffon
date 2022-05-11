@@ -120,6 +120,21 @@ async function createIndicatorRecord(
   return indicatorRecord.save();
 }
 
+// Alternate version that doesn't crete a Matching Sourcing Record
+async function createIndicatorRecordV2(
+  additionalData: Partial<IndicatorRecord> = {},
+): Promise<IndicatorRecord> {
+  const indicatorRecord = IndicatorRecord.merge(
+    new IndicatorRecord(),
+    {
+      value: 2000,
+    },
+    additionalData,
+  );
+
+  return indicatorRecord.save();
+}
+
 async function createIndicatorSource(
   additionalData: Partial<IndicatorSource> = {},
 ): Promise<IndicatorSource> {
@@ -360,6 +375,7 @@ export {
   createIndicator,
   createIndicatorCoefficient,
   createIndicatorRecord,
+  createIndicatorRecordV2,
   createIndicatorSource,
   createMaterial,
   createMaterialToH3,

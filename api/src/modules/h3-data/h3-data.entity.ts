@@ -75,9 +75,6 @@ export class H3Data extends BaseEntity {
   )
   materialToH3s: MaterialToH3[];
 
-  @OneToMany(
-    () => IndicatorRecord,
-    (ir: IndicatorRecord) => ir.materialH3DataId,
-  )
+  @OneToMany(() => IndicatorRecord, (ir: IndicatorRecord) => ir.materialH3Data)
   indicatorRecords: IndicatorRecord[];
 }

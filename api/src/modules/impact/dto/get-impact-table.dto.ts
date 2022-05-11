@@ -1,8 +1,10 @@
 import {
   IsEnum,
+  IsIn,
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsPositive,
   IsString,
   IsUUID,
 } from 'class-validator';
@@ -57,4 +59,28 @@ export class GetImpactTableDto {
   @IsUUID(4, { each: true })
   @Type(() => String)
   supplierIds?: string[];
+}
+
+export class GetRankedImpactTableDto extends GetImpactTableDto {
+  @ApiProperty({
+    description:
+      'The maximum number of entities to show in the Impact Table. If the result includes more than that, they will be' +
+      'aggregated into the "other" field in the response',
+  })
+  @Type(() => Number)
+  @IsNumber()
+  @IsPositive()
+  @IsNotEmpty()
+  maxRankingEntities: number;
+
+  @ApiProperty({
+    description: `The sort order for the resulting entities. Can be 'ASC' (Ascendant) or 'DES' (Descendent), with the default being 'DES'`,
+  })
+  @Type(() => String)
+  @IsString()
+  @IsOptional()
+  @IsIn(['ASC', 'DES'], {
+    message: `sort property must be either 'ASC' (Ascendant) or 'DES' (Descendent)`,
+  })
+  sort?: string; // ASC or DESC, will be DESC by default
 }

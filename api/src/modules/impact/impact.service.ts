@@ -1,5 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { GetImpactTableDto } from 'modules/impact/dto/get-impact-table.dto';
+import {
+  GetImpactTableDto,
+  GetRankedImpactTableDto,
+} from 'modules/impact/dto/get-impact-table.dto';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import { ImpactTableData } from 'modules/sourcing-records/sourcing-record.repository';
@@ -22,6 +25,9 @@ import { ImpactTableEntityType } from 'types/impact-table-entity.type';
 import { DEFAULT_PAGINATION, FetchSpecification } from 'nestjs-base-service';
 import { PaginationMeta } from 'utils/app-base.service';
 import { PaginatedEntitiesDto } from 'modules/impact/dto/paginated-entities.dto';
+import { GetSupplierTreeWithOptions } from '../suppliers/dto/get-supplier-tree-with-options.dto';
+import { GetMaterialTreeWithOptionsDto } from '../materials/dto/get-material-tree-with-options.dto';
+import { GetAdminRegionTreeWithOptionsDto } from '../admin-regions/dto/get-admin-region-tree-with-options.dto';
 
 @Injectable()
 export class ImpactService {
@@ -47,14 +53,166 @@ export class ImpactService {
         impactTableDto.indicatorIds,
       );
     this.logger.log('Retrieving data from DB to build Impact Table...');
-    let entitiesWithPagination: PaginatedEntitiesDto = {
-      entities: [],
-      metadata: undefined,
-    };
-    /*
-     * Getting Descendants Ids for the filters, in case Parent Ids were received
-     */
 
+    //Getting Descendants Ids for the filters, in case Parent Ids were received
+    await this.loadDescendantEntityIds(impactTableDto);
+
+    // Get full entity tree in cate ids are not passed, otherwise get trees based on
+    // given ids and add children and parent ids to them to get full data for aggregations
+    // TODO check if tree ids search is redundant
+    const entities: ImpactTableEntityType[] = await this.getEntityTree(
+      impactTableDto,
+    );
+
+    const paginatedEntities: PaginatedEntitiesDto =
+      ImpactService.paginateRootEntities(entities, fetchSpecification);
+
+    this.updateGroupByCriteriaFromEntityTree(
+      impactTableDto,
+      paginatedEntities.entities,
+    );
+
+    const dataForImpactTable: ImpactTableData[] =
+      await this.getDataForImpactTable(
+        impactTableDto,
+        paginatedEntities.entities,
+      );
+
+    const impactTable: ImpactTable = this.buildImpactTable(
+      impactTableDto,
+      indicators,
+      dataForImpactTable,
+      this.buildImpactTableRowsSkeleton(paginatedEntities.entities),
+    );
+
+    return { data: impactTable, metadata: paginatedEntities.metadata };
+  }
+
+  /**
+   * Returns an ImpactTable with results ranked according to the dto's sort property
+   * and showing a max of maxRankingEntities, with the rest aggregated into an "others" property
+   * for each indicator
+   * The process is very similar to that of the original getImpactTable function, with the
+   * difference that the root entities are not paginated, and the ranking postprocessing
+   * @param rankedImpactTableDto
+   */
+  async getRankedImpactTable(
+    rankedImpactTableDto: GetRankedImpactTableDto,
+  ): Promise<ImpactTable> {
+    const indicators: Indicator[] =
+      await this.indicatorService.getIndicatorsById(
+        rankedImpactTableDto.indicatorIds,
+      );
+    this.logger.log('Retrieving data from DB to build Impact Table...');
+
+    // Load Entities
+    await this.loadDescendantEntityIds(rankedImpactTableDto);
+
+    // TODO check if tree ids search is redundant
+    const entities: ImpactTableEntityType[] = await this.getEntityTree(
+      rankedImpactTableDto,
+    );
+
+    this.updateGroupByCriteriaFromEntityTree(rankedImpactTableDto, entities);
+
+    // Construct Impact Data Table
+    const dataForImpactTable: ImpactTableData[] =
+      await this.getDataForImpactTable(rankedImpactTableDto, entities);
+
+    const impactTable: ImpactTable = this.buildImpactTable(
+      rankedImpactTableDto,
+      indicators,
+      dataForImpactTable,
+      this.buildImpactTableRowsSkeleton(entities),
+    );
+
+    // Cap the results to the Ranking Max, and aggregate the rest of the results
+    return await this.applyRankingProcessing(rankedImpactTableDto, impactTable);
+  }
+
+  /**
+   * Modifies the incoming ImpactTable in-place, by sorting and then aggregating entities into an "others" field
+   * for each Indicator, with these properties
+   *   aggregatedValue: The sum of impact values of the entities that exceed maxRankingEntities
+   *   numberOAggregatedEntities: The number entities that exceed maxRankingEntities
+   * If the number of entities for an indicator is less than the maxRankingEntities, both aggregatedValue
+   * and numberOAggregatedEntities will be 0
+   * @param rankedImpactTableDto
+   * @param impactTable
+   */
+  async applyRankingProcessing(
+    rankedImpactTableDto: GetRankedImpactTableDto,
+    impactTable: ImpactTable,
+  ): Promise<ImpactTable> {
+    // Since it's a TOP ranking, DESCENDENT sort will be the default if no sort option is provided
+    const sort: string = rankedImpactTableDto.sort
+      ? rankedImpactTableDto.sort
+      : 'DES';
+    const { startYear, maxRankingEntities } = rankedImpactTableDto;
+
+    // Helper function used in sorting the entities later, defined here for readability
+    // Gets the impact value of the dto.startYear, if not found, the minimum possible integer is returned
+    const getStartYearImpact = (impactTableRows: ImpactTableRows): number => {
+      const earliestYearValue: ImpactTableRowsValues | undefined =
+        impactTableRows.values.find(
+          (value: ImpactTableRowsValues) => value.year === startYear,
+        );
+
+      return earliestYearValue
+        ? earliestYearValue.value
+        : Number.MIN_SAFE_INTEGER;
+    };
+
+    //For each indicator, Sort and limit the number of impact data for entity rows
+    //and aggregate impact data over the max Ranking
+    for (const impactTableDataByIndicator of impactTable.impactTable) {
+      //Sort the impact data rows by the most impact on the starYear
+      impactTableDataByIndicator.rows = impactTableDataByIndicator.rows?.sort(
+        (a: ImpactTableRows, b: ImpactTableRows) => {
+          if (sort === 'ASC') {
+            return getStartYearImpact(a) - getStartYearImpact(b);
+          } else {
+            // return DESCENDENT order by default
+            return getStartYearImpact(b) - getStartYearImpact(a);
+          }
+        },
+      );
+
+      // extract the entities that are over the maxRankingEntities threshold
+      const discardedEntities: ImpactTableRows[] =
+        impactTableDataByIndicator.rows.splice(maxRankingEntities);
+
+      // Aggregate the values of the entities over the maxRankingEntities
+      const aggregateInfo: any = discardedEntities.reduce(
+        (previousValue: any, currentValue: ImpactTableRows) => {
+          return {
+            aggregatedValue:
+              previousValue.aggregatedValue + getStartYearImpact(currentValue),
+            aggregatedEntities: previousValue.aggregatedEntities + 1,
+          };
+        },
+        { aggregatedValue: 0, aggregatedEntities: 0 } as any,
+      );
+
+      impactTableDataByIndicator.others = {
+        aggregatedValue: aggregateInfo.aggregatedValue,
+        numberOfAggregatedEntities: aggregateInfo.aggregatedEntities,
+        sort,
+      };
+    }
+
+    return impactTable;
+  }
+
+  /**
+   * Modifies the ImpactTabledto such that, for each entityIds that is populated,
+   * the ids of their descendants are added, in-place
+   * @param impactTableDto
+   * @private
+   */
+  private async loadDescendantEntityIds(
+    impactTableDto: GetImpactTableDto,
+  ): Promise<GetImpactTableDto> {
     if (impactTableDto.originIds)
       impactTableDto.originIds =
         await this.adminRegionsService.getAdminRegionDescendants(
@@ -71,106 +229,110 @@ export class ImpactService {
           impactTableDto.supplierIds,
         );
 
-    /*
-     * Get full entity tree in cate ids are not passed,
-     * otherwise get trees based on given ids and add children and parent
-     * ids to them to get full data for aggregations
-     */
+    return impactTableDto;
+  }
 
-    // TODO check if tree ids search is redundant
+  /**
+   * Returns an array of ImpactTable Entities, determined by the grouBy field and properties
+   * of the GetImpactTableDto
+   * @param impactTableDto
+   * @private
+   */
+  private async getEntityTree(
+    impactTableDto: GetImpactTableDto,
+  ): Promise<ImpactTableEntityType[]> {
+    let entities: ImpactTableEntityType[] = [];
 
     switch (impactTableDto.groupBy) {
-      case GROUP_BY_VALUES.MATERIAL:
-        if (impactTableDto.materialIds) {
-          entitiesWithPagination.entities =
-            await this.materialsService.getMaterialsTreeWithSourcingLocations({
-              materialIds: impactTableDto.materialIds,
-            });
-        } else {
-          entitiesWithPagination.entities =
-            await this.materialsService.getMaterialsTreeWithSourcingLocations(
-              {},
-            );
-        }
-        entitiesWithPagination = ImpactService.paginateRootElements(
-          entitiesWithPagination.entities,
-          fetchSpecification,
-        );
+      case GROUP_BY_VALUES.MATERIAL: {
+        const treeOptions: GetMaterialTreeWithOptionsDto =
+          impactTableDto.materialIds
+            ? { materialIds: impactTableDto.materialIds }
+            : {};
 
-        /*
-         * Filter out ids to only include descendants of
-         * paginated root elements
-         */
-        impactTableDto.materialIds = this.getIdsFromTree(
-          entitiesWithPagination.entities,
-          impactTableDto.materialIds,
-        );
+        entities =
+          await this.materialsService.getMaterialsTreeWithSourcingLocations(
+            treeOptions,
+          );
         break;
-      case GROUP_BY_VALUES.REGION:
-        if (impactTableDto.originIds) {
-          entitiesWithPagination.entities =
-            await this.adminRegionsService.getAdminRegionTreeWithSourcingLocations(
-              { originIds: impactTableDto.originIds },
-            );
-        } else {
-          entitiesWithPagination.entities =
-            await this.adminRegionsService.getAdminRegionTreeWithSourcingLocations(
-              {},
-            );
-        }
-        entitiesWithPagination = ImpactService.paginateRootElements(
-          entitiesWithPagination.entities,
-          fetchSpecification,
-        );
-        impactTableDto.originIds = this.getIdsFromTree(
-          entitiesWithPagination.entities,
-          impactTableDto.originIds,
-        );
+      }
+      case GROUP_BY_VALUES.REGION: {
+        const treeOptions: GetAdminRegionTreeWithOptionsDto =
+          impactTableDto.originIds
+            ? { originIds: impactTableDto.originIds }
+            : {};
+
+        entities =
+          await this.adminRegionsService.getAdminRegionTreeWithSourcingLocations(
+            treeOptions,
+          );
         break;
-      case GROUP_BY_VALUES.SUPPLIER:
-        if (impactTableDto.supplierIds) {
-          entitiesWithPagination.entities =
-            await this.suppliersService.getSuppliersWithSourcingLocations({
-              supplierIds: impactTableDto.supplierIds,
-            });
-        } else {
-          entitiesWithPagination.entities =
-            await this.suppliersService.getSuppliersWithSourcingLocations({});
-        }
-        entitiesWithPagination = ImpactService.paginateRootElements(
-          entitiesWithPagination.entities,
-          fetchSpecification,
-        );
-        impactTableDto.supplierIds = this.getIdsFromTree(
-          entitiesWithPagination.entities,
-          impactTableDto.supplierIds,
-        );
+      }
+      case GROUP_BY_VALUES.SUPPLIER: {
+        const treeOptions: GetSupplierTreeWithOptions =
+          impactTableDto.supplierIds
+            ? { supplierIds: impactTableDto.supplierIds }
+            : {};
+
+        entities =
+          await this.suppliersService.getSuppliersWithSourcingLocations(
+            treeOptions,
+          );
         break;
+      }
       case GROUP_BY_VALUES.BUSINESS_UNIT:
-        entitiesWithPagination.entities =
+        entities =
           await this.businessUnitsService.getBusinessUnitTreeWithSourcingLocations(
             {},
           );
-        entitiesWithPagination = ImpactService.paginateRootElements(
-          entitiesWithPagination.entities,
-          fetchSpecification,
-        );
         break;
       default:
     }
 
-    // Check if any ids are left after pagination, not to pass empty array
-    const dataForImpactTable: ImpactTableData[] =
-      entitiesWithPagination.entities.length > 0
-        ? await this.sourcingRecordService.getDataForImpactTable(impactTableDto)
-        : [];
-    const impactTable: ImpactTable = this.buildImpactTable(
-      impactTableDto,
-      indicators,
-      dataForImpactTable,
-      this.buildImpactTableRowsSkeleton(entitiesWithPagination.entities),
-    );
-    return { data: impactTable, metadata: entitiesWithPagination.metadata };
+    return entities;
+  }
+
+  /**
+   * Modifies the impactTableDto in-place, to put the ids of the entity tree into the
+   * corresponding entity Ids field according to the groupBy
+   * @param impactTableDto
+   * @param entities
+   * @private
+   */
+  private updateGroupByCriteriaFromEntityTree(
+    impactTableDto: GetImpactTableDto,
+    entities: ImpactTableEntityType[],
+  ): void {
+    switch (impactTableDto.groupBy) {
+      case GROUP_BY_VALUES.MATERIAL:
+        impactTableDto.materialIds = this.getIdsFromTree(
+          entities,
+          impactTableDto.materialIds,
+        );
+        break;
+      case GROUP_BY_VALUES.REGION:
+        impactTableDto.originIds = this.getIdsFromTree(
+          entities,
+          impactTableDto.originIds,
+        );
+        break;
+      case GROUP_BY_VALUES.SUPPLIER:
+        impactTableDto.supplierIds = this.getIdsFromTree(
+          entities,
+          impactTableDto.materialIds,
+        );
+        break;
+      default:
+    }
+  }
+
+  private getDataForImpactTable(
+    impactTableDto: GetImpactTableDto,
+    entities: ImpactTableEntityType[],
+  ): Promise<ImpactTableData[]> {
+    return entities.length > 0
+      ? this.sourcingRecordService.getDataForImpactTable(impactTableDto)
+      : Promise.resolve([]);
   }
 
   private buildImpactTable(
@@ -282,7 +444,7 @@ export class ImpactService {
         (accumulator: number, currentValue: ImpactTableData): number => {
           if (currentValue.year === year) {
             accumulator += Number.isFinite(+currentValue.impact)
-              ? +currentValue.impact
+              ? +currentValue.impact // TODO!!!!!!!!!!!!!!!!!!
               : 0;
           }
           return accumulator;
@@ -398,7 +560,7 @@ export class ImpactService {
       : idsFromTree;
   }
 
-  private static paginateRootElements(
+  private static paginateRootEntities(
     entities: ImpactTableEntityType[],
     fetchSpecification: FetchSpecification,
   ): PaginatedEntitiesDto {

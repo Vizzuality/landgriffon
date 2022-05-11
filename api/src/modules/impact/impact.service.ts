@@ -336,43 +336,35 @@ export class ImpactService {
       - calculate differences - absolute and in percentage   
       */
     if (impactTableDto.scenarioId) {
-      const dataForScenarioImpactTable: ImpactTableData[] = [];
+      const dataForScenario: any = dataForImpactTable.reduce(
+        (total: any, item: any) => {
+          const { impact, typeByIntervention, ...commonProperties } = item;
+          const key: string = Object.values(commonProperties).join('-');
+          const prevItem = total[key] || {};
+          const {
+            impact: prevImpact = 0,
+            interventionImpact: prevInterventionImpact = 0,
+          } = prevItem;
 
-      for (const dto of dataForImpactTable) {
-        if (
-          dto.typeByIntervention ===
-          SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED
-        ) {
-          const replacingDto: ImpactTableData | undefined =
-            dataForImpactTable.find(
-              (replacingDto: ImpactTableData) =>
-                replacingDto.name === dto.name &&
-                replacingDto.typeByIntervention ===
-                  SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
-            );
+          total[key] = {
+            ...item,
+            impact:
+              typeByIntervention ===
+              SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED
+                ? impact
+                : prevImpact,
+            interventionImpact:
+              typeByIntervention ===
+              SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING
+                ? impact
+                : prevInterventionImpact,
+          };
+          return total;
+        },
+        {},
+      );
 
-          dto.interventionImpact = replacingDto?.impact || 0;
-        } else if (
-          dto.typeByIntervention ===
-          SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING
-        ) {
-          const cancelledDto: ImpactTableData | undefined =
-            dataForImpactTable.find(
-              (replacingDto: ImpactTableData) =>
-                replacingDto.name === dto.name &&
-                replacingDto.typeByIntervention ===
-                  SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
-            );
-
-          if (!cancelledDto) {
-            dto.interventionImpact = dto.impact;
-            dto.impact = 0;
-          }
-        }
-
-        dto.typeByIntervention = null;
-        dataForScenarioImpactTable.push(dto);
-      }
+      const dataForScenarioImpactTable: any = Object.values(dataForScenario);
 
       const scenarioImpactTable: ImpactTable = this.buildImpactTable(
         impactTableDto,

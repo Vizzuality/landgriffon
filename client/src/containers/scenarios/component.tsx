@@ -59,7 +59,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
 
   return (
     <div className="bg-white overscroll-contain text-gray-900">
-      <div className="sticky top-0 z-10 bg-white py-4 text-sm">
+      <div className="sticky top-0 z-20 bg-white pb-4 pt-10 text-sm after:bg-gradient-to-b after:from-white after:w-full after:h-4 after:content after:-bottom-4 after:left-0 after:absolute">
         <h1>Scenarios</h1>
         <p className="my-2">Select the scenario you want to analyse</p>
         {!isLoading && data && (
@@ -70,7 +70,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
       </div>
       {isLoading && <p>Loading scenarios...</p>}
       {!isLoading && data && (
-        <div className="flex-1 z-10 pb-4">
+        <div className="flex-1 relative z-10 pb-4 overflow-hidden">
           <ScenariosList data={scenariosList} />
         </div>
       )}
@@ -88,7 +88,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
           </div>
         </div>
       )}
-      <div className="bg-white z-20 sticky bottom-0 left-0 w-full py-6">
+      <div className="bg-white z-20 sticky bottom-0 left-0 w-full pb-6 before:bg-gradient-to-t before:from-white before:w-full before:h-16 before:content before:-top-16 before:left-0 before:absolute">
         <Button size="xl" className="block w-full" onClick={handleClick}>
           <PlusIcon className="-ml-5 mr-3 h-5 w-5" aria-hidden="true" />
           Create a new scenario

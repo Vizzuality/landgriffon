@@ -1,30 +1,21 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import Link from 'next/link';
 import { createPortal } from 'react-dom';
 import { signOut, useSession } from 'next-auth/react';
 import { Popover } from '@headlessui/react';
-import { usePopper } from 'react-popper';
 import StringAvatar from 'containers/string-avatar';
 import Avatar from 'components/avatar';
 import Loading from 'components/loading';
+import { offset, useFloating } from '@floating-ui/react-dom';
+import { shift } from '@floating-ui/core';
 
 const MENU_ITEM_CLASSNAME =
   'block w-full py-2 px-4 text-sm text-left text-gray-900 h-9 hover:bg-green-50';
 
 const UserDropdown: React.FC = () => {
-  const [referenceElement, setReferenceElement] = useState(null);
-  const [popperElement, setPopperElement] = useState(null);
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    placement: 'top-end',
-    strategy: 'fixed',
-    modifiers: [
-      {
-        name: 'offset',
-        options: {
-          offset: [20, 10],
-        },
-      },
-    ],
+  const { x, y, reference, floating, strategy } = useFloating({
+    placement: 'top-start',
+    middleware: [offset({ crossAxis: 20, mainAxis: 10 }), shift()],
   });
 
   const { data: session, status } = useSession(); // TO-DO: replace by useMe
@@ -46,14 +37,17 @@ const UserDropdown: React.FC = () => {
     <Popover as="div" className="flex justify-center w-full mb-5">
       <div>
         {(!session || status === 'loading') && <Loading className="text-white" />}
-        <Popover.Button ref={setReferenceElement}>{renderAvatar()}</Popover.Button>
+        <Popover.Button ref={reference}>{renderAvatar()}</Popover.Button>
       </div>
       {session &&
         createPortal(
           <Popover.Panel
-            ref={setPopperElement}
-            style={styles.popper}
-            {...attributes.popper}
+            ref={floating}
+            style={{
+              position: strategy,
+              top: y ?? '',
+              left: x ?? '',
+            }}
             className="p-6 bg-white shadow-lg rounded-md focus:outline-none z-40"
           >
             <div className="flex mb-3">

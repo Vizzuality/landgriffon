@@ -38,7 +38,7 @@ const OpacityControl: React.FC<OpacityControlProps> = ({ opacity, onChange }) =>
           </div>
         </div>
       }
-      className="w-48 text-center"
+      className="w-54 text-center"
     >
       <span className="w-4 h-4 text-gray-900">
         <OpacityIcon />

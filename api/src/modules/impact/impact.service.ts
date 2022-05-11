@@ -337,16 +337,19 @@ export class ImpactService {
       */
     if (impactTableDto.scenarioId) {
       const dataForScenario: any = dataForImpactTable.reduce(
-        (total: any, item: any) => {
+        (
+          result: { [index: string]: ImpactTableData },
+          item: ImpactTableData,
+        ) => {
           const { impact, typeByIntervention, ...commonProperties } = item;
           const key: string = Object.values(commonProperties).join('-');
-          const prevItem = total[key] || {};
+          const prevItem = result[key] || {};
           const {
             impact: prevImpact = 0,
             interventionImpact: prevInterventionImpact = 0,
           } = prevItem;
 
-          total[key] = {
+          result[key] = {
             ...item,
             impact:
               typeByIntervention ===
@@ -359,7 +362,7 @@ export class ImpactService {
                 ? impact
                 : prevInterventionImpact,
           };
-          return total;
+          return result;
         },
         {},
       );

@@ -19,19 +19,34 @@ type MaterialsFilterProps = {
   currentOptions?: TreeSelectProps['current'];
   ellipsis?: TreeSelectProps['ellipsis'];
   fitContent?: TreeSelectProps['fitContent'];
+  businessUnitIds?: MaterialsTreesParams['businessUnitIds'];
+  supplierIds?: MaterialsTreesParams['supplierIds'];
+  originIds?: MaterialsTreesParams['originIds'];
+  locationTypeIds?: MaterialsTreesParams['locationTypeIds'];
 };
 
 const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
   multiple,
   current,
   depth = 1,
+  supplierIds,
+  businessUnitIds,
+  originIds,
+  locationTypeIds,
   withSourcingLocations, // Do not a default; backend will override depth if this is set at all
   onChange,
   theme,
   ellipsis,
   fitContent,
 }) => {
-  const { data, isFetching } = useMaterialsTrees({ depth, withSourcingLocations });
+  const { data, isFetching } = useMaterialsTrees({
+    depth,
+    supplierIds,
+    businessUnitIds,
+    originIds,
+    locationTypeIds,
+    withSourcingLocations,
+  });
 
   const treeOptions: TreeSelectProps['options'] = useMemo(
     () =>

@@ -18,6 +18,7 @@ export type BusinessUnitsTreesParams = {
   materialIds?: string[];
   supplierIds?: string[];
   originIds?: string[];
+  locationTypeIds?: string[];
 };
 
 export function useBusinessUnits(): ResponseData {

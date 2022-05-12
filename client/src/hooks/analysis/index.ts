@@ -5,7 +5,7 @@ import uniq from 'lodash/uniq';
 import chroma from 'chroma-js';
 
 import { useAppSelector } from 'store/hooks';
-import { useImpactData } from 'hooks/impact';
+import { useImpactRanking } from 'hooks/impact';
 import { analysisFilters } from 'store/features/analysis/filters';
 
 import type { RGBColor } from 'types';
@@ -30,30 +30,33 @@ export function useColors(): RGBColor[] {
   return colors;
 }
 
-export function useAnalysisChart(): AnalysisChart {
+export function useAnalysisChart(params): AnalysisChart {
   const filters = useAppSelector(analysisFilters);
-
-  const {
-    data: { data },
-    isLoading,
-  } = useImpactData();
-
-  const parsedImpact = data?.impactTable.map((data) => ({
-    id: data.indicatorId,
-    indicator: data.indicatorShortName,
-    unit: data.metadata.unit,
-    values: data.yearSum,
-    children: data.rows.map((row) => ({
-      id: row.name,
-      name: row.name,
-      values: row.values,
-    })),
-  }));
+  const { data, isLoading } = useImpactRanking(params);
+  const parsedImpact = data?.impactTable.map((data) => {
+    return {
+      id: data.indicatorId,
+      indicator: data.indicatorShortName,
+      unit: data.metadata.unit,
+      values: data.yearSum,
+      children: flatten([
+        data.rows.map((row) => ({
+          id: row.name,
+          name: row.name,
+          values: row.values,
+        })),
+        {
+          id: data.others.numberOfAggregatedEntities === 1 ? 'Other' : 'Others',
+          name: data.others.numberOfAggregatedEntities === 1 ? 'Other' : 'Others',
+          values: data.others.aggregatedValues,
+        },
+      ]),
+    };
+  });
 
   return useMemo(() => {
     const parsedData = parsedImpact.map((d) => {
       const { id, indicator: indicatorName, children, unit: indicatorUnit } = d;
-
       const years = uniq(
         flatten(
           children.map((c) => {
@@ -63,7 +66,6 @@ export function useAnalysisChart(): AnalysisChart {
       );
 
       const keys = uniq(flatten(children.map((c) => c.id)));
-
       const values = years.map((y, i) => {
         const chs = children.reduce((acc, c) => {
           const v = c.values.find((vl) => vl.year === y);
@@ -124,7 +126,6 @@ export function useAnalysisChart(): AnalysisChart {
       ...d,
       colors,
     }));
-
     return {
       isLoading,
       isFetching: false,

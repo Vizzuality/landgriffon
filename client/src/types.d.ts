@@ -124,12 +124,18 @@ type Metadata = {
   unit: string;
 };
 
+type AggregatedValues = Readonly<{
+  aggregatedValues: { year: number; value: number }[];
+  numberOfAggregatedEntities: number;
+  sort: 'DES' | 'ASC';
+}>;
+
 export type ImpactTableData = {
   groupBy: string;
   indicatorId: string;
-  // unit: string;
   indicatorShortName: string;
   metadata: Record<string, unknown, Metadata>;
+  others: AggregatedValues;
   rows: {
     name: string;
     values: Record<string, number | string | boolean>[];
@@ -141,11 +147,22 @@ export type ImpactTableData = {
   }[];
 };
 
+export type PurchasedTonnesData = {
+  year: number;
+  value: number;
+  isProjected: boolean;
+};
+
 export type ImpactData = {
   data: {
     impactTable: ImpactTableData[];
   };
   meta: Record<string, unknown>;
+};
+
+export type ImpactRanking = {
+  impactTable: ImpactTableData[];
+  purchasedTonnes: PurchasedTonnesData[];
 };
 
 /**

@@ -11,7 +11,7 @@ import {
 } from './mocks/h3-impact-map.mock';
 import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
-import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
+import { LOCATION_TYPES_PARAMS } from 'modules/sourcing-locations/sourcing-location.entity';
 
 /**
  * Tests for the h3 impact map.
@@ -390,7 +390,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           indicatorId: impactMapMockData.indicatorId,
-          'locationTypes[]': [LOCATION_TYPES.AGGREGATION_POINT],
+          'locationType[]': [LOCATION_TYPES_PARAMS.AGGREGATION_POINT],
           year: 2020,
           resolution: 6,
         });

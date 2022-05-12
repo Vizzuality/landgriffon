@@ -65,11 +65,7 @@ jobs:
           sudo apt-get install -y kubectl
 
       - name: Config kubectl
-        run: |
-          mkdir ~/.kube
-          echo $KUBE_CONFIG_DATA | base64 --decode > ~/.kube/config
-        env:
-          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+        run: aws eks update-kubeconfig --name ${{ secrets.EKS_NAME }}
 
       - name: Creating SSH tunnel
         run: |

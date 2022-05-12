@@ -10,7 +10,7 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { AvailableResolutions } from 'modules/h3-data/dto/get-material-h3-by-resolution.dto';
-import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
+import { LOCATION_TYPES_PARAMS } from 'modules/sourcing-locations/sourcing-location.entity';
 
 export enum GROUP_BY_VALUES {
   MATERIAL = 'material',
@@ -62,7 +62,12 @@ export class GetImpactMapDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsEnum(LOCATION_TYPES, { each: true })
+  @IsEnum(LOCATION_TYPES_PARAMS, {
+    each: true,
+    message:
+      'Available options: ' +
+      Object.values(LOCATION_TYPES_PARAMS).toString().toLowerCase(),
+  })
   @Type(() => String)
-  locationTypes?: LOCATION_TYPES[];
+  locationType?: LOCATION_TYPES_PARAMS[];
 }

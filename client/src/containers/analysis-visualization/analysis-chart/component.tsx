@@ -11,33 +11,14 @@ import Loading from 'components/loading';
 import Chart from 'components/chart';
 import AreaStacked from 'components/chart/area-stacked';
 import Widget from 'components/widget';
-import { useMemo } from 'react';
-import { RANKING_LIMIT } from './constants';
 
 const AnalysisChart: React.FC = () => {
   const filters = useAppSelector(analysisFilters);
 
-  const { data: allChartData, isFetching } = useAnalysisChart();
-
-  const chartData = useMemo(() => {
-    const trimmed = allChartData.map((chart) => {
-      // Sort the first avaliable entry by value and get the keys of the top RANKING_LIMIT items
-      const firstDateValues = chart.values[0];
-
-      const topValueKeys = Object.entries(firstDateValues)
-        .filter(([key]) => !['id', 'date', 'current'].includes(key))
-        .sort(([, valueA], [, valueB]) => (valueB as number) - (valueA as number))
-        .slice(0, RANKING_LIMIT)
-        .map(([key]) => key);
-
-      return {
-        ...chart,
-        keys: chart.keys.filter((key) => topValueKeys.includes(key)),
-      };
-    });
-
-    return trimmed;
-  }, [allChartData]);
+  const { data: chartData, isFetching } = useAnalysisChart({
+    maxRankingEntities: 5,
+    sort: 'DES',
+  });
 
   return (
     <>

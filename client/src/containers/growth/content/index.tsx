@@ -14,6 +14,11 @@ import Textarea from 'components/forms/textarea';
 import { SelectOptions, SelectOption } from 'components/select/types';
 import { useBusinessUnits } from 'hooks/business-units';
 
+const growthRates = ['growth1', 'growth2', 'growth3'];
+const businessUnity = 'business1';
+const growthRate = 'growth3';
+const isLoadingGrowth = false;
+
 const GowthForm: FC = () => {
   //const dispatch = useAppDispatch();
   //const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -22,16 +27,11 @@ const GowthForm: FC = () => {
   const onChange = useCallback((key: string, value: string | number) => {
     console.log(key, value);
   }, []);
-  const growthRates = ['growth1', 'growth2', 'growth3'];
 
   // const { data: materials, isLoading: isLoadingMaterials } = useMaterials();
   const { data: businesses, isLoading: isLoadingBusinesses } = useBusinessUnits();
   // const { data: supliers, isLoading: isLoadingSupliers } = useSupliers();
   // const { data: sourcingRegions, isLoading: isLoadingSourcingRegions } = useSourcingRegions();
-
-  const businessUnity = 'business1';
-  const growthRate = 'growth3';
-  const isLoadingGrowth = false;
 
   const optionsBusinesses: SelectOptions = useMemo(
     () =>
@@ -53,7 +53,7 @@ const GowthForm: FC = () => {
         label: business,
         value: business,
       })),
-    [growthRates],
+    [],
   );
 
   const currentGrowth = useMemo<SelectOption>(

@@ -11,7 +11,7 @@ import { analysisFilters } from 'store/features/analysis/filters';
 import { apiRawService } from 'services/api';
 import { useIndicators } from 'hooks/indicators';
 
-import type { RGBColor, ImpactData } from 'types';
+import type { RGBColor, ImpactData, ImpactRanking } from 'types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   placeholderData: {
@@ -27,6 +27,16 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   keepPreviousData: true,
   refetchOnWindowFocus: false,
 };
+
+const DEFAULT_QUERY_RANKING_OPTIONS: UseQueryOptions = {
+  placeholderData: {
+    impactTable: [],
+    purchasedTonnes: [],
+  },
+  retry: false,
+  keepPreviousData: true,
+  refetchOnWindowFocus: false,
+};
 const COLOR_SCALE = chroma.scale(['#8DD3C7', '#BEBADA', '#FDB462']);
 
 export function useColors(): RGBColor[] {
@@ -36,6 +46,7 @@ export function useColors(): RGBColor[] {
 }
 
 type ImpactDataResponse = UseQueryResult<ImpactData, unknown>;
+type ImpactRankingResponse = UseQueryResult<ImpactRanking, unknown>;
 
 export function useImpactData(): ImpactDataResponse {
   const { data: indicators } = useIndicators();
@@ -79,6 +90,57 @@ export function useImpactData(): ImpactDataResponse {
         ...query,
         data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as ImpactData,
       } as ImpactDataResponse),
+    [query, isError, data],
+  );
+}
+
+export function useImpactRanking(
+  params = { maxRankingEntities: 5, sort: 'ASC' },
+): ImpactRankingResponse {
+  const { data: indicators } = useIndicators();
+  const { layer } = useAppSelector(analysisFilters);
+  const filters = filtersForTabularAPI(store.getState());
+
+  const isEnable =
+    !!filters?.indicatorId &&
+    !!indicators?.length &&
+    !!filters.startYear &&
+    !!filters.endYear &&
+    filters.endYear !== filters.startYear;
+
+  const indicatorIds = indicators.map(({ id }) => id);
+
+  const query = useQuery(
+    ['impact-ranking', layer, JSON.stringify({ layer, ...filters, indicatorIds, ...params })],
+    async () =>
+      apiRawService
+        .get('/impact/ranking', {
+          params: {
+            indicatorIds: filters.indicatorId === 'all' ? indicatorIds : [filters.indicatorId],
+            startYear: filters.startYear,
+            endYear: filters.endYear,
+            groupBy: filters.groupBy,
+            ...filters,
+            ...params,
+          },
+        })
+        .then((response) => {
+          return response.data;
+        }),
+    {
+      ...DEFAULT_QUERY_RANKING_OPTIONS,
+      enabled: layer === 'impact' && isEnable,
+    },
+  );
+
+  const { data, isError } = query;
+
+  return useMemo<ImpactRankingResponse>(
+    () =>
+      ({
+        ...query,
+        data: (isError ? DEFAULT_QUERY_RANKING_OPTIONS.placeholderData : data) as ImpactData,
+      } as ImpactRankingResponse),
     [query, isError, data],
   );
 }

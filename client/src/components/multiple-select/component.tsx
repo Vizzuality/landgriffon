@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import Label from 'components/forms/label';
 import Checkbox from 'components/forms/checkbox';
 import { Transition, Popover } from '@headlessui/react';
-import { usePopper } from 'react-popper';
 import { ChevronDownIcon, ChevronUpIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
 
 import Fuse from 'fuse.js';
@@ -18,6 +17,7 @@ import type {
   MultipleSelectProps,
   MultipleSelectFilterProps,
 } from 'components/multiple-select/types';
+import { offset, useFloating } from '@floating-ui/react-dom';
 
 const THEMES = {
   default: {
@@ -57,23 +57,20 @@ const MultipleSelect: React.FC<MultipleSelectFilterProps> = ({
 }) => {
   const wrapperRef = useRef();
 
-  // Popover positioning
-  const [referenceElement, setReferenceElement] = useState(null);
-  const [popperElement, setPopperElement] = useState(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selected, setSelected] = useState<MultipleSelectOption[]>(null);
   const [selectedKeys, setSelectedKeys] = useState<(string | number)[]>([]);
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
+
+  const {
+    x,
+    y,
+    reference,
+    floating,
+    strategy,
+    refs: { reference: referenceElement },
+  } = useFloating({
     placement: 'bottom-start',
-    strategy: 'fixed',
-    modifiers: [
-      {
-        name: 'offset',
-        options: {
-          offset: [2, 5],
-        },
-      },
-    ],
+    middleware: [offset({ mainAxis: 4 })],
   });
 
   // Selection for non-multiple
@@ -148,7 +145,7 @@ const MultipleSelect: React.FC<MultipleSelectFilterProps> = ({
     <Popover ref={wrapperRef} className="relative">
       {({ open }) => (
         <>
-          <Popover.Button ref={setReferenceElement} className="w-full align-center relative">
+          <Popover.Button ref={reference} className="w-full align-center relative">
             <div
               className={classNames('flex', THEMES[theme].wrapper, {
                 'ring-green-700 border-green-700': open,
@@ -205,76 +202,85 @@ const MultipleSelect: React.FC<MultipleSelectFilterProps> = ({
               )}
             </span>
           </Popover.Button>
-          <Transition
-            show={open}
-            enter="transition duration-100 ease-out"
-            enterFrom="transform opacity-0"
-            enterTo="transform opacity-100"
-            leave="transition duration-75 ease-out"
-            leaveFrom="transform opacity-100"
-            leaveTo="transform opacity-0"
+          <div
+            style={{
+              position: strategy,
+              top: y ?? '',
+              left: x ?? '',
+              width:
+                fitContent && reference
+                  ? (referenceElement.current as HTMLElement)?.offsetWidth
+                  : 'inherit',
+            }}
+            className="z-10"
+            ref={floating}
           >
-            <Popover.Panel
-              ref={setPopperElement}
-              static
-              style={{
-                ...styles.popper,
-                width: fitContent && referenceElement ? referenceElement.offsetWidth : 'inherit',
-              }}
-              {...attributes.popper}
-              className={classNames(
-                'z-20 bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 max-h-80 overflow-y-auto',
-                fitContent ? 'max-w-full' : 'max-w-md',
-              )}
+            <Transition
+              show={open}
+              enter="transition duration-100 ease-out"
+              enterFrom="transform opacity-0"
+              enterTo="transform opacity-100"
+              leave="transition duration-75 ease-out"
+              leaveFrom="transform opacity-100"
+              leaveTo="transform opacity-0"
             >
-              {loading && (
-                <div className="p-4">
-                  <Loading className="text-green-700 -ml-1 mr-3" />
-                </div>
-              )}
-              {!loading && showSearch && (
-                <div className="flex items-center border-b border-b-gray-400">
-                  <div className="pl-2 py-1">
-                    <SearchIcon className="block h-4 w-4 text-gray-400" />
+              <Popover.Panel
+                static
+                style={{}}
+                className={classNames(
+                  'z-20 bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 max-h-80 overflow-y-auto',
+                  fitContent ? 'max-w-full' : 'max-w-md',
+                )}
+              >
+                {loading && (
+                  <div className="p-4">
+                    <Loading className="text-green-700 -ml-1 mr-3" />
                   </div>
-                  <input
-                    type="search"
-                    value={searchTerm}
-                    placeholder={searchPlaceholder}
-                    className="block text-sm border-0 rounded-t-md focus:ring-0 focus:border-green-700 flex-1"
-                    onChange={handleSearch}
-                  />
-                  {searchTerm && (
-                    <button type="button" onClick={resetSearch} className="px-2 py-1">
-                      <XIcon className="h-4 w-4 text-gray-400" />
-                    </button>
-                  )}
-                </div>
-              )}
-
-              {!loading &&
-                optionsResult.map((option) => (
-                  <div
-                    key={option.label}
-                    className="flex items-center space-x-2 py-2 px-4 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700"
-                  >
-                    <Checkbox
-                      id={option.label}
-                      name={option.label}
-                      value={option.value}
-                      checked={!!selected?.find((s) => s.value === option.value)}
-                      onChange={handleSelect}
+                )}
+                {!loading && showSearch && (
+                  <div className="flex items-center border-b border-b-gray-400">
+                    <div className="pl-2 py-1">
+                      <SearchIcon className="block h-4 w-4 text-gray-400" />
+                    </div>
+                    <input
+                      type="search"
+                      value={searchTerm}
+                      placeholder={searchPlaceholder}
+                      className="block text-sm border-0 rounded-t-md focus:ring-0 focus:border-green-700 flex-1"
+                      onChange={handleSearch}
                     />
-                    <Label htmlFor={option.label} className="ml-2 mt-1 first-letter:uppercase">
-                      {option.label}
-                    </Label>
+                    {searchTerm && (
+                      <button type="button" onClick={resetSearch} className="px-2 py-1">
+                        <XIcon className="h-4 w-4 text-gray-400" />
+                      </button>
+                    )}
                   </div>
-                ))}
-              {optionsResult.length === 0 && searchTerm && (
-                <div className="p-2 text-sm">No results</div>
-              )}
-            </Popover.Panel>
-          </Transition>
+                )}
+
+                {!loading &&
+                  optionsResult.map((option) => (
+                    <div
+                      key={option.label}
+                      className="flex items-center space-x-2 py-2 px-4 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700"
+                    >
+                      <Checkbox
+                        id={option.label}
+                        name={option.label}
+                        value={option.value}
+                        checked={!!selected?.find((s) => s.value === option.value)}
+                        onChange={handleSelect}
+                      />
+                      <Label htmlFor={option.label} className="ml-2 mt-1 first-letter:uppercase">
+                        {option.label}
+                      </Label>
+                    </div>
+                  ))}
+                {optionsResult.length === 0 && searchTerm && (
+                  <div className="p-2 text-sm">No results</div>
+                )}
+              </Popover.Panel>
+            </Transition>
+          </div>
         </>
       )}
     </Popover>

@@ -430,7 +430,7 @@ export class H3DataService {
       getImpactMapDto.materialIds,
       getImpactMapDto.originIds,
       getImpactMapDto.supplierIds,
-      getImpactMapDto.locationTypes,
+      getImpactMapDto.locationType,
     );
 
     const materialsH3DataYears: MaterialsH3DataYears[] = [];

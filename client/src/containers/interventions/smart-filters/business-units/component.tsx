@@ -22,6 +22,7 @@ type BusinessUnitsFilterProps = {
   materialIds?: BusinessUnitsTreesParams['materialIds'];
   supplierIds?: BusinessUnitsTreesParams['supplierIds'];
   originIds?: BusinessUnitsTreesParams['originIds'];
+  locationTypeIds?: BusinessUnitsTreesParams['locationTypeIds'];
   onChange?: TreeSelectProps['onChange'];
 };
 
@@ -37,6 +38,7 @@ const BusinessUnitsFilter: React.FC<BusinessUnitsFilterProps> = ({
   supplierIds,
   materialIds,
   originIds,
+  locationTypeIds,
   onChange,
   ...props
 }) => {
@@ -46,6 +48,7 @@ const BusinessUnitsFilter: React.FC<BusinessUnitsFilterProps> = ({
     supplierIds,
     materialIds,
     originIds,
+    locationTypeIds,
   });
 
   const treeOptions: TreeSelectProps['options'] = useMemo(

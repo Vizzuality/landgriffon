@@ -18,6 +18,7 @@ export type MaterialsTreesParams = {
   supplierIds?: string[];
   businessUnitIds?: string[];
   originIds?: string[];
+  locationTypeIds?: string[];
 };
 
 export function useMaterials(): ResponseData {

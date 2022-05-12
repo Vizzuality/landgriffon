@@ -1,14 +1,8 @@
 import { Fragment, useCallback, useState, useMemo, useEffect } from 'react';
 import classNames from 'classnames';
 import { Transition, Popover } from '@headlessui/react';
-import { autoPlacement, offset, useFloating } from '@floating-ui/react-dom';
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  ChevronRightIcon,
-  XIcon,
-  SearchIcon,
-} from '@heroicons/react/solid';
+import { offset, useFloating } from '@floating-ui/react-dom';
+import { ChevronDownIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
 import Tree, { TreeNode, TreeProps } from 'rc-tree';
 import Fuse from 'fuse.js';
 
@@ -77,6 +71,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   const [selectedKeys, setSelectedKeys] = useState<TreeProps['selectedKeys']>([]);
   const [expandedKeys, setExpandedKeys] = useState<TreeProps['expandedKeys']>([]);
   const [checkedKeys, setCheckedKeys] = useState<TreeProps['checkedKeys']>([]);
+  const [filteredKeys, setFilteredKeys] = useState([]);
 
   const renderTreeNodes = useMemo(
     () =>
@@ -86,6 +81,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
             key={item.value}
             title={item.label}
             className={classNames(THEMES[theme].treeNodes, {
+              hidden: searchTerm !== '' && !filteredKeys.includes(item.value),
               'bg-green-50 text-green-700 font-semibold': selectedKeys.includes(item.value),
             })}
             style={{ paddingLeft: 16 * counter }}
@@ -93,13 +89,13 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
             {item.children && renderTreeNodes(item.children, counter + 1)}
           </TreeNode>
         )),
-    [selectedKeys, theme],
+    [filteredKeys, searchTerm, selectedKeys, theme],
   );
 
   const customSwitcherIcon = useCallback(({ isLeaf, expanded }) => {
     if (isLeaf) return <span className="block w-4" />;
-    if (expanded) return <ChevronDownIcon className="h-4 w-4" />;
-    return <ChevronRightIcon className="h-4 w-4" />;
+
+    return <ChevronDownIcon className={classNames('h-4 w-4', { '-rotate-90': !expanded })} />;
   }, []);
 
   const handleExpand: TreeProps['onExpand'] = useCallback((keys) => setExpandedKeys(keys), []);
@@ -110,8 +106,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
       const currentSelection = { label: node.title as string, value: node.key };
       setSelectedKeys(keys);
       setSelected(currentSelection);
-      if (onChange) onChange(currentSelection);
-      // if (!multiple) setIsOpen(false);
+      onChange?.(currentSelection);
     },
     [onChange],
   );
@@ -138,7 +133,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
         });
       }
 
-      if (onChange) onChange(checkedOptions);
+      onChange?.(checkedOptions);
       setCheckedKeys(filteredValues);
     },
     [checkedStrategy, onChange, options],
@@ -149,15 +144,15 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   const handleSearch = useCallback(
     (e) => {
       setSearchTerm(e.currentTarget.value);
-      if (onSearch) onSearch(e.currentTarget.value);
+      onSearch?.(e.currentTarget.value);
     },
     [onSearch],
   );
   const resetSearch = useCallback(() => setSearchTerm(''), []);
-  const optionsResult: TreeSelectProps['options'] = useMemo(() => {
+  useEffect(() => {
     if (searchTerm && searchTerm !== '') {
       // TO-DO: investigate if there is a better way for nesting search and Fuse.js
-      return fuse.search(searchTerm).map(({ item }) => {
+      const filteredOptions = fuse.search(searchTerm).map(({ item }) => {
         if (!item.children || item.children.length === 0) return item;
         const fuseChildren = new Fuse(item.children, SEARCH_OPTIONS);
         const childrenResult = fuseChildren.search(searchTerm);
@@ -166,8 +161,8 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           children: childrenResult.map(({ item: itemChildren }) => itemChildren),
         };
       });
+      setFilteredKeys(filteredOptions.flatMap(flattenKeys));
     }
-    return options;
   }, [fuse, options, searchTerm]);
 
   // Only for multiple, find options depending on checked keys
@@ -203,7 +198,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
         });
       }
 
-      if (onChange) onChange(checkedOptions);
+      onChange?.(checkedOptions);
       setCheckedKeys(filteredKeys);
     },
     [checkedKeys, onChange, options],
@@ -284,11 +279,10 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                   'text-red-700': !!error,
                 })}
               >
-                {open ? (
-                  <ChevronUpIcon className="h-4 w-4" aria-hidden="true" />
-                ) : (
-                  <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
-                )}
+                <ChevronDownIcon
+                  className={classNames('h-4 w-4', { 'rotate-180': open })}
+                  aria-hidden="true"
+                />
               </span>
             </Popover.Button>
           ) : (
@@ -311,11 +305,10 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                   'text-red-700': !!error,
                 })}
               >
-                {open ? (
-                  <ChevronUpIcon className="h-4 w-4" aria-hidden="true" />
-                ) : (
-                  <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
-                )}
+                <ChevronDownIcon
+                  className={classNames('h-4 w-4', { 'rotate-180': open })}
+                  aria-hidden="true"
+                />
               </span>
             </Popover.Button>
           )}
@@ -347,10 +340,6 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                   'z-20 bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 max-h-80 overflow-y-auto',
                   fitContent ? 'max-w-full' : 'max-w-md',
                 )}
-                // className={classNames(
-                //   'absolute z-20 min-w-full max-h-96 bg-white shadow-lg rounded-md mt-1 ring-1 ring-black ring-opacity-5 overflow-y-auto overflow-x-hidden',
-                //   { 'left-0 right-0': fitContent },
-                // )}
               >
                 {loading && (
                   <div className="p-4">
@@ -390,11 +379,18 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                     onExpand={handleExpand}
                     onSelect={handleSelect}
                     onCheck={handleCheck}
+                    // filterTreeNode={(node) => {
+                    //   if (!searchTerm || searchTerm === '') {
+                    //     return true;
+                    //   }
+
+                    //   return Math.random() > 0.5;
+                    // }}
                   >
-                    {renderTreeNodes(optionsResult)}
+                    {renderTreeNodes(options)}
                   </Tree>
                 )}
-                {optionsResult.length === 0 && searchTerm && (
+                {filteredKeys.length === 0 && searchTerm && (
                   <div className="p-2 text-sm">No results</div>
                 )}
               </Popover.Panel>
@@ -404,6 +400,15 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
       )}
     </Popover>
   );
+};
+
+const flattenKeys: (root: TreeSelectOption) => TreeSelectOption['value'][] = (root) => {
+  const keys: TreeSelectOption['value'][] = [root.value];
+  if (root.children) {
+    keys.push(...root.children.flatMap(flattenKeys));
+  }
+
+  return keys;
 };
 
 export default TreeSelect;

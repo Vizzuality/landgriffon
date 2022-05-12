@@ -18,7 +18,7 @@ import {
 } from '@nestjs/common';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import {
-  LOCATION_TYPES,
+  LOCATION_TYPES_PARAMS,
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
@@ -440,7 +440,7 @@ export class H3DataRepository extends Repository<H3Data> {
     materialIds?: string[],
     originIds?: string[],
     supplierIds?: string[],
-    locationTypes?: LOCATION_TYPES[],
+    locationType?: LOCATION_TYPES_PARAMS[],
   ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
     const query: SelectQueryBuilder<any> = getManager()
       .createQueryBuilder()
@@ -477,9 +477,14 @@ export class H3DataRepository extends Repository<H3Data> {
       query.andWhere('sl.adminRegionId IN (:...originIds)', { originIds });
     }
 
-    if (locationTypes) {
-      query.andWhere('sl.locationType IN (:...locationTypes)', {
-        locationTypes,
+    if (locationType) {
+      const sourcingLocationTypes: string[] = locationType.map(
+        (el: LOCATION_TYPES_PARAMS) => {
+          return el.replace(/-/g, ' ');
+        },
+      );
+      query.andWhere('sl.locationType IN (:...sourcingLocationTypes)', {
+        sourcingLocationTypes,
       });
     }
 

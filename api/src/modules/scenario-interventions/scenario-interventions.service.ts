@@ -460,15 +460,6 @@ export class ScenarioInterventionsService extends AppBaseService<
     id: string,
     dto: UpdateScenarioInterventionDto,
   ): Promise<ScenarioIntervention> {
-    const currentScenarioIntervention: ScenarioIntervention =
-      await this.repository.findOneOrFail({ id });
-
-    // If intervention was created before breaking changes,
-    // use previous update method
-    if (!currentScenarioIntervention.createDto) {
-      return await this.update(id, dto);
-    }
-
     for (const k of Object.keys(dto)) {
       if (!this.basicUpdateColumns.includes(k)) {
         return await this.replaceScenarioIntervention(id, dto);
@@ -491,13 +482,13 @@ export class ScenarioInterventionsService extends AppBaseService<
       ...(currentScenarioIntervention.createDto as unknown as CreateScenarioInterventionDto),
       ...dto,
     };
-    const newScenario: ScenarioIntervention =
+    const newScenarioIntervention: ScenarioIntervention =
       await this.createScenarioIntervention(createScenarioDto);
 
     await this.repository.remove(currentScenarioIntervention);
     // since we create new intervention, updatedBy must be set manually
-    newScenario.updatedById = dto.updatedById;
-    await this.repository.save(newScenario);
-    return newScenario;
+    newScenarioIntervention.updatedById = dto.updatedById;
+    await this.repository.save(newScenarioIntervention);
+    return newScenarioIntervention;
   }
 }

@@ -48,6 +48,10 @@ import {
 import { PaginationMeta } from '../../../src/utils/app-base.service';
 import { range } from 'lodash';
 import { SourcingRecord } from '../../../src/modules/sourcing-records/sourcing-record.entity';
+import {
+  ImpactTableDataAggregatedValue,
+  ImpactTableDataAggregationInfo,
+} from '../../../src/modules/impact/dto/response-impact-table.dto';
 
 describe('Impact Table and Charts test suite (e2e)', () => {
   let app: INestApplication;
@@ -450,7 +454,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       ).toContain('maxRankingEntities must be a positive number');
     });
 
-    test('When I query the API for a Impact Table Ranking, then I should see all the data grouped by the requested entity and properly ordered, up to a MAX amount, with the rest being aggregated to a number', async () => {
+    test('When I query the API for a Impact Table Ranking, then I should see all the data grouped by the requested entity and properly ordered, up to a MAX amount, with the rest being aggregated per year', async () => {
       //////////// ARRANGE
       const adminRegion: AdminRegion = await createAdminRegion({
         name: 'Fake AdminRegion',
@@ -590,14 +594,40 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       checkAggregatedInformation(
         response1.body.impactTable[0].others,
         numberOfTopMaterials - maxRankingEntities,
-        170,
+        [
+          {
+            value: 170,
+            year: 2010,
+          },
+          {
+            value: 320,
+            year: 2011,
+          },
+          {
+            value: 470,
+            year: 2012,
+          },
+        ],
         'DES',
       );
 
       checkAggregatedInformation(
         response1.body.impactTable[1].others,
         numberOfTopMaterials - maxRankingEntities,
-        305,
+        [
+          {
+            value: 305,
+            year: 2010,
+          },
+          {
+            value: 385,
+            year: 2011,
+          },
+          {
+            value: 465,
+            year: 2012,
+          },
+        ],
         'DES',
       );
 
@@ -713,7 +743,20 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       checkAggregatedInformation(
         response1.body.impactTable[0].others,
         0,
-        0,
+        [
+          {
+            value: 0,
+            year: 2010,
+          },
+          {
+            value: 0,
+            year: 2011,
+          },
+          {
+            value: 0,
+            year: 2012,
+          },
+        ],
         'DES',
       );
 
@@ -722,17 +765,16 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     });
 
     function checkAggregatedInformation(
-      others: any,
+      others: ImpactTableDataAggregationInfo,
       numberAggregatedEntities: number,
-      aggregatedValue: number,
+      aggregatedValues: ImpactTableDataAggregatedValue[],
       sort: string,
     ): void {
       expect(others).toBeTruthy();
-
       expect(others.numberOfAggregatedEntities).toEqual(
         numberAggregatedEntities,
       );
-      expect(others.aggregatedValue).toEqual(aggregatedValue);
+      expect(others.aggregatedValues).toEqual(aggregatedValues);
       expect(others.sort).toEqual(sort);
     }
   });

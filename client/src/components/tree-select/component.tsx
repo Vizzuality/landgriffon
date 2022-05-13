@@ -379,13 +379,6 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                     onExpand={handleExpand}
                     onSelect={handleSelect}
                     onCheck={handleCheck}
-                    // filterTreeNode={(node) => {
-                    //   if (!searchTerm || searchTerm === '') {
-                    //     return true;
-                    //   }
-
-                    //   return Math.random() > 0.5;
-                    // }}
                   >
                     {renderTreeNodes(options)}
                   </Tree>

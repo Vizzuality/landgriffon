@@ -10,6 +10,7 @@ import { Indicator } from 'modules/indicators/indicator.entity';
 import { range } from 'lodash';
 import {
   ImpactTable,
+  ImpactTableDataAggregatedValue,
   ImpactTableDataByIndicator,
   ImpactTablePurchasedTonnes,
   ImpactTableRows,
@@ -133,9 +134,9 @@ export class ImpactService {
   /**
    * Modifies the incoming ImpactTable in-place, by sorting and then aggregating entities into an "others" field
    * for each Indicator, with these properties
-   *   aggregatedValue: The sum of impact values of the entities that exceed maxRankingEntities
+   *   aggregatedValues: An array with the sum of impact values per year, of the entities that exceed maxRankingEntities
    *   numberOAggregatedEntities: The number entities that exceed maxRankingEntities
-   * If the number of entities for an indicator is less than the maxRankingEntities, both aggregatedValue
+   * If the number of entities for an indicator is less than the maxRankingEntities, both the aggregatedValues
    * and numberOAggregatedEntities will be 0
    * @param rankedImpactTableDto
    * @param impactTable
@@ -148,19 +149,16 @@ export class ImpactService {
     const sort: string = rankedImpactTableDto.sort
       ? rankedImpactTableDto.sort
       : 'DES';
-    const { startYear, maxRankingEntities } = rankedImpactTableDto;
+    const { startYear, endYear, maxRankingEntities } = rankedImpactTableDto;
 
     // Helper function used in sorting the entities later, defined here for readability
-    // Gets the impact value of the dto.startYear, if not found, the minimum possible integer is returned
-    const getStartYearImpact = (impactTableRows: ImpactTableRows): number => {
-      const earliestYearValue: ImpactTableRowsValues | undefined =
-        impactTableRows.values.find(
-          (value: ImpactTableRowsValues) => value.year === startYear,
-        );
+    // Gets the impact value of the given year, if not found, 0 is returned
+    const getYearImpact = (row: ImpactTableRows, year: number): number => {
+      const yearValue: ImpactTableRowsValues | undefined = row.values.find(
+        (value: ImpactTableRowsValues) => value.year === year,
+      );
 
-      return earliestYearValue
-        ? earliestYearValue.value
-        : Number.MIN_SAFE_INTEGER;
+      return yearValue ? yearValue.value : 0;
     };
 
     //For each indicator, Sort and limit the number of impact data for entity rows
@@ -170,10 +168,10 @@ export class ImpactService {
       impactTableDataByIndicator.rows = impactTableDataByIndicator.rows?.sort(
         (a: ImpactTableRows, b: ImpactTableRows) => {
           if (sort === 'ASC') {
-            return getStartYearImpact(a) - getStartYearImpact(b);
+            return getYearImpact(a, startYear) - getYearImpact(b, startYear);
           } else {
             // return DESCENDENT order by default
-            return getStartYearImpact(b) - getStartYearImpact(a);
+            return getYearImpact(b, startYear) - getYearImpact(a, startYear);
           }
         },
       );
@@ -182,21 +180,23 @@ export class ImpactService {
       const discardedEntities: ImpactTableRows[] =
         impactTableDataByIndicator.rows.splice(maxRankingEntities);
 
-      // Aggregate the values of the entities over the maxRankingEntities
-      const aggregateInfo: any = discardedEntities.reduce(
-        (previousValue: any, currentValue: ImpactTableRows) => {
-          return {
-            aggregatedValue:
-              previousValue.aggregatedValue + getStartYearImpact(currentValue),
-            aggregatedEntities: previousValue.aggregatedEntities + 1,
-          };
-        },
-        { aggregatedValue: 0, aggregatedEntities: 0 } as any,
-      );
+      // Aggregate the values of the entities over the maxRankingEntities for each year
+      const aggregatedValuesPerYear: ImpactTableDataAggregatedValue[] = range(
+        startYear,
+        endYear + 1,
+      ).map((year: number) => {
+        const value: number = discardedEntities.reduce(
+          (aggregate: number, current: ImpactTableRows) =>
+            aggregate + getYearImpact(current, year),
+          0,
+        );
+
+        return { year, value: value };
+      });
 
       impactTableDataByIndicator.others = {
-        aggregatedValue: aggregateInfo.aggregatedValue,
-        numberOfAggregatedEntities: aggregateInfo.aggregatedEntities,
+        aggregatedValues: aggregatedValuesPerYear,
+        numberOfAggregatedEntities: discardedEntities.length,
         sort,
       };
     }
@@ -241,8 +241,6 @@ export class ImpactService {
   private async getEntityTree(
     impactTableDto: GetImpactTableDto,
   ): Promise<ImpactTableEntityType[]> {
-    let entities: ImpactTableEntityType[] = [];
-
     switch (impactTableDto.groupBy) {
       case GROUP_BY_VALUES.MATERIAL: {
         const treeOptions: GetMaterialTreeWithOptionsDto =
@@ -250,11 +248,9 @@ export class ImpactService {
             ? { materialIds: impactTableDto.materialIds }
             : {};
 
-        entities =
-          await this.materialsService.getMaterialsTreeWithSourcingLocations(
-            treeOptions,
-          );
-        break;
+        return this.materialsService.getMaterialsTreeWithSourcingLocations(
+          treeOptions,
+        );
       }
       case GROUP_BY_VALUES.REGION: {
         const treeOptions: GetAdminRegionTreeWithOptionsDto =
@@ -262,11 +258,9 @@ export class ImpactService {
             ? { originIds: impactTableDto.originIds }
             : {};
 
-        entities =
-          await this.adminRegionsService.getAdminRegionTreeWithSourcingLocations(
-            treeOptions,
-          );
-        break;
+        return this.adminRegionsService.getAdminRegionTreeWithSourcingLocations(
+          treeOptions,
+        );
       }
       case GROUP_BY_VALUES.SUPPLIER: {
         const treeOptions: GetSupplierTreeWithOptions =
@@ -274,22 +268,17 @@ export class ImpactService {
             ? { supplierIds: impactTableDto.supplierIds }
             : {};
 
-        entities =
-          await this.suppliersService.getSuppliersWithSourcingLocations(
-            treeOptions,
-          );
-        break;
+        return this.suppliersService.getSuppliersWithSourcingLocations(
+          treeOptions,
+        );
       }
       case GROUP_BY_VALUES.BUSINESS_UNIT:
-        entities =
-          await this.businessUnitsService.getBusinessUnitTreeWithSourcingLocations(
-            {},
-          );
-        break;
+        return this.businessUnitsService.getBusinessUnitTreeWithSourcingLocations(
+          {},
+        );
       default:
+        return [];
     }
-
-    return entities;
   }
 
   /**

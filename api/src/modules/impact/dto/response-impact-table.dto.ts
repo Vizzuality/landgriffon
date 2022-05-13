@@ -15,6 +15,16 @@ export class PaginatedImpactTable {
   metadata?: PaginationMeta;
 }
 
+export class ImpactTableDataAggregationInfo {
+  aggregatedValues: ImpactTableDataAggregatedValue[];
+  numberOfAggregatedEntities: number;
+  sort: string;
+}
+export class ImpactTableDataAggregatedValue {
+  year: number;
+  value: number;
+}
+
 export class ImpactTableDataByIndicator {
   @ApiProperty()
   indicatorShortName: string;
@@ -35,11 +45,7 @@ export class ImpactTableDataByIndicator {
     description:
       'Extra information used for Ranked ImpactTable requests. Missing on normal ImpactTable requests',
   })
-  others?: {
-    aggregatedValue: number;
-    numberOfAggregatedEntities: number;
-    sort: string;
-  };
+  others?: ImpactTableDataAggregationInfo;
 }
 
 export class ImpactTablePurchasedTonnes {

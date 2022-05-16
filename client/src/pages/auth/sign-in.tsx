@@ -59,6 +59,7 @@ const SignIn: React.FC = () => {
                   type="email"
                   id="email"
                   error={errors.email?.message}
+                  data-cy="username"
                 />
               </div>
 
@@ -69,6 +70,7 @@ const SignIn: React.FC = () => {
                   type="password"
                   id="password"
                   error={errors.password?.message}
+                  data-cy="password"
                 />
               </div>
 
@@ -89,7 +91,13 @@ const SignIn: React.FC = () => {
               </div>
 
               <div>
-                <Button type="submit" theme="primary" className="w-full" loading={isLoading}>
+                <Button
+                  type="submit"
+                  theme="primary"
+                  className="w-full"
+                  loading={isLoading}
+                  data-cy="sign-in"
+                >
                   Sign in
                 </Button>
               </div>

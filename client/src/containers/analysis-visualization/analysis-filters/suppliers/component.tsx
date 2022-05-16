@@ -46,6 +46,7 @@ const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
 
   return (
     <TreeSelect
+      name="suppliers"
       multiple={multiple}
       showSearch
       loading={isFetching}

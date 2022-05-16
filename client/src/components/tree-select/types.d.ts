@@ -29,4 +29,5 @@ export type TreeSelectProps = {
    */
   checkedStrategy?: 'ALL' | 'PARENT' | 'CHILD';
   checkedStrategyDisplay?: 'ONLY_CHILD';
+  name?: string;
 };

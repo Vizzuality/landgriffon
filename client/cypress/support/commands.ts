@@ -23,3 +23,21 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.addAll({
+  dataCy(id) {
+    return cy.get(`[data-cy=${id}]`);
+  },
+  login() {
+    cy.intercept({ method: 'POST', url: '/api/auth/callback/credentials*' }).as('login');
+    const username = Cypress.env('USERNAME');
+    const password = Cypress.env('PASSWORD');
+    cy.session([username, username], () => {
+      cy.visit('/');
+      cy.dataCy('username').type(username);
+      cy.dataCy('password').type(password);
+      cy.dataCy('sign-in').click();
+      cy.wait('@login');
+    });
+  },
+});

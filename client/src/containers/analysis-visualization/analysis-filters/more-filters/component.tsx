@@ -73,6 +73,7 @@ const MoreFilters: React.FC = () => {
       {({ open, close }) => (
         <>
           <Popover.Button
+            data-cy="open-more-filters"
             className={classNames(THEME.default, THEME.secondary, 'flex p-2 rounded-md')}
           >
             <span className="block h-5 truncate">
@@ -97,6 +98,7 @@ const MoreFilters: React.FC = () => {
             <Popover.Panel
               static
               className="absolute md:right-0 lg:left-0 lg:clear-right-0 mt-1 w-80 z-20"
+              data-cy="more-filters"
             >
               <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 ">
                 <div className="relative p-4 bg-white rounded-lg">

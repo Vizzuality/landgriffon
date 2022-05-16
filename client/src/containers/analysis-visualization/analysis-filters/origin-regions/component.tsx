@@ -49,6 +49,7 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
 
   return (
     <TreeSelect
+      name="origins"
       multiple={multiple}
       showSearch
       loading={isFetching}

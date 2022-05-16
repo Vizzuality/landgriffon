@@ -53,6 +53,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   error = false,
   fitContent = false,
   checkedStrategy = 'PARENT', // by default show child
+  name,
 }) => {
   const {
     x,
@@ -78,6 +79,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
       (data, counter = 0) =>
         data.map((item) => (
           <TreeNode
+            data-cy="tree-node"
             key={item.value}
             title={item.label}
             className={classNames(THEMES[theme].treeNodes, {
@@ -221,11 +223,15 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   }, [current]);
 
   return (
-    <Popover className="relative">
+    <Popover className="relative" data-cy={name ? `${name}-select` : null}>
       {({ open }) => (
         <>
           {multiple ? (
-            <Popover.Button ref={reference} className="w-full flex align-center relative">
+            <Popover.Button
+              data-cy={name ? `${name}-select-button` : null}
+              ref={reference}
+              className="w-full flex align-center relative"
+            >
               <div
                 className={classNames('flex', THEMES[theme].wrapper, {
                   'ring-green-700 border-green-700': open,
@@ -287,6 +293,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
             </Popover.Button>
           ) : (
             <Popover.Button
+              data-cy={name ? `${name}-select-button` : null}
               ref={reference}
               className={classNames(
                 'bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer',
@@ -335,6 +342,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
               leaveTo="transform opacity-0"
             >
               <Popover.Panel
+                data-cy={name ? `${name}-select-content` : null}
                 static
                 className={classNames(
                   'z-20 bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 max-h-80 overflow-y-auto',

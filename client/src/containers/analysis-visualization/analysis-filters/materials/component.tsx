@@ -48,6 +48,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
 
   return (
     <TreeSelect
+      name="materials"
       multiple={multiple}
       showSearch
       loading={isFetching}

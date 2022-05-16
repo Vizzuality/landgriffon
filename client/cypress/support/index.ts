@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-namespace */
+
 // ***********************************************************
 // This example support/index.js is processed and
 // loaded automatically before your test files.
@@ -14,8 +16,29 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import '@cypress/code-coverage/support'
+import '@cypress/code-coverage/support';
 import './commands';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+const resizeObserverLoopErrRe = /^[^(ResizeObserver loop limit exceeded)]/;
+Cypress.on('uncaught:exception', (err) => {
+  /* returning false here prevents Cypress from failing the test */
+  if (resizeObserverLoopErrRe.test(err.message)) {
+    return false;
+  }
+});
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      /**
+       * Custom command to select DOM element by data-cy attribute.
+       * @example cy.dataCy('greeting')
+       */
+      dataCy(value: string): Chainable<Element>;
+      login(): Chainable<Element>;
+    }
+  }
+}

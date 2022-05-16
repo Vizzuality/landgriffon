@@ -10,3 +10,5 @@ node_modules
 ## Data
 /data/datasets/**
 /data/h3_raster_importer/data
+
+cypress.env.json

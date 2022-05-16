@@ -18,13 +18,25 @@ const ModeControl: React.FC = () => {
 
   return (
     <ButtonGroup>
-      <ButtonGroupItem active={visualizationMode === 'map'} onClick={() => handleClick('map')}>
+      <ButtonGroupItem
+        data-cy="navigate-map"
+        active={visualizationMode === 'map'}
+        onClick={() => handleClick('map')}
+      >
         <MapIcon className="h-6 w-6" aria-hidden="true" />
       </ButtonGroupItem>
-      <ButtonGroupItem active={visualizationMode === 'table'} onClick={() => handleClick('table')}>
+      <ButtonGroupItem
+        data-cy="navigate-table"
+        active={visualizationMode === 'table'}
+        onClick={() => handleClick('table')}
+      >
         <TableIcon className="h-6 w-6" aria-hidden="true" />
       </ButtonGroupItem>
-      <ButtonGroupItem active={visualizationMode === 'chart'} onClick={() => handleClick('chart')}>
+      <ButtonGroupItem
+        data-cy="navigate-charts"
+        active={visualizationMode === 'chart'}
+        onClick={() => handleClick('chart')}
+      >
         <ChartPieIcon className="h-6 w-6" aria-hidden="true" />
       </ButtonGroupItem>
     </ButtonGroup>

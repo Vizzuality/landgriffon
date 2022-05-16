@@ -9,8 +9,10 @@
     "lint": "next lint",
     "check-types": "tsc --noemit -p tsconfig.json",
     "prettier": "prettier --config .prettierrc.json --check --write \"./src/**/*.{tsx,jsx,ts,js}\"",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run --headless --browser chrome",
+    "cypress:open:local": "cypress open --config-file cypress/config/cypress.local.json",
+    "cypress:open": "cypress open --config-file cypress/config/cypress.json",
+    "cypress:run": "cypress run --headless --browser chrome --config-file cypress/config/cypress.json",
+    "cypress:run:local": "cypress run --headless --browser chrome --config-file cypress/config/cypress.local.json",
     "test": "start-server-and-test 'yarn build && yarn start' http://localhost:3000/auth/sign-in 'nyc --reporter nyc-report-lcov-absolute yarn cypress:run'"
   },
   "dependencies": {
@@ -108,7 +110,7 @@
     "@types/react": "17.0.5",
     "@typescript-eslint/eslint-plugin": "5.13.0",
     "@typescript-eslint/parser": "5.13.0",
-    "cypress": "8.7.0",
+    "cypress": "^9.6.1",
     "eslint": "7.23.0",
     "eslint-config-next": "12.0.2",
     "eslint-config-prettier": "8.3.0",

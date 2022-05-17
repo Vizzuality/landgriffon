@@ -825,9 +825,10 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         adminRegion,
       });
 
+      // Creating Sourcing Records and Indicator Records for previously created Sourcing locations with different Materials
       for await (const [index, year] of [2010, 2011, 2012].entries()) {
         const startTonnage: number = 100;
-        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+        const indicatorRecord1: IndicatorRecord = await createIndicatorRecord({
           value: 1000 + index / 0.02,
           indicator,
         });
@@ -835,14 +836,11 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         await createSourcingRecord({
           tonnage: startTonnage + 100 * index,
           year,
-          indicatorRecords: [indicatorRecord],
+          indicatorRecords: [indicatorRecord1],
           sourcingLocation: sourcingLocation1,
         });
-      }
 
-      for await (const [index, year] of [2010, 2011, 2012].entries()) {
-        const startTonnage: number = 1000;
-        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+        const indicatorRecord2: IndicatorRecord = await createIndicatorRecord({
           value: 2000 + index / 0.02,
           indicator,
         });
@@ -850,10 +848,11 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         await createSourcingRecord({
           tonnage: startTonnage + 100 * index,
           year,
-          indicatorRecords: [indicatorRecord],
+          indicatorRecords: [indicatorRecord2],
           sourcingLocation: sourcingLocation2,
         });
       }
+
       const response = await request(app.getHttpServer())
         .get('/api/v1/impact/table')
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -917,9 +916,10 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         adminRegion,
       });
 
+      // Creating Sourcing Records and Indicator Records for previously created Sourcing locations with different Materials
       for await (const [index, year] of [2010, 2011, 2012].entries()) {
         const startTonnage: number = 100;
-        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+        const indicatorRecord1: IndicatorRecord = await createIndicatorRecord({
           value: 2000 + index / 0.02,
           indicator,
         });
@@ -927,14 +927,11 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         await createSourcingRecord({
           tonnage: startTonnage + 100 * index,
           year,
-          indicatorRecords: [indicatorRecord],
+          indicatorRecords: [indicatorRecord1],
           sourcingLocation: sourcingLocation1,
         });
-      }
 
-      for await (const [index, year] of [2010, 2011, 2012].entries()) {
-        const startTonnage: number = 100;
-        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+        const indicatorRecord2: IndicatorRecord = await createIndicatorRecord({
           value: 1000 + index / 0.02,
           indicator,
         });
@@ -942,7 +939,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         await createSourcingRecord({
           tonnage: startTonnage + 100 * index,
           year,
-          indicatorRecords: [indicatorRecord],
+          indicatorRecords: [indicatorRecord2],
           sourcingLocation: sourcingLocation2,
         });
       }
@@ -1059,9 +1056,10 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         adminRegion: adminRegion2,
       });
 
+      // Creating Sourcing Records and Indicator Records for previously created Sourcing locations with different Admin Regions
       for await (const [index, year] of [2010, 2011, 2012].entries()) {
         const startTonnage: number = 100;
-        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+        const indicatorRecord1: IndicatorRecord = await createIndicatorRecord({
           value: 600 + index / 0.02,
           indicator,
         });
@@ -1069,14 +1067,11 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         await createSourcingRecord({
           tonnage: startTonnage + 100 * index,
           year,
-          indicatorRecords: [indicatorRecord],
+          indicatorRecords: [indicatorRecord1],
           sourcingLocation: sourcingLocation1,
         });
-      }
 
-      for await (const [index, year] of [2010, 2011, 2012].entries()) {
-        const startTonnage: number = 1000;
-        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+        const indicatorRecord2: IndicatorRecord = await createIndicatorRecord({
           value: 500 + index / 0.02,
           indicator,
         });
@@ -1084,10 +1079,11 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         await createSourcingRecord({
           tonnage: startTonnage + 100 * index,
           year,
-          indicatorRecords: [indicatorRecord],
+          indicatorRecords: [indicatorRecord2],
           sourcingLocation: sourcingLocation2,
         });
       }
+
       const response = await request(app.getHttpServer())
         .get('/api/v1/impact/table')
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -1149,9 +1145,10 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         adminRegion: adminRegion,
       });
 
+      // Creating Sourcing Records and Indicator Records for previously created Sourcing locations with different Suppliers
       for await (const [index, year] of [2010, 2011, 2012].entries()) {
         const startTonnage: number = 100;
-        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+        const indicatorRecord1: IndicatorRecord = await createIndicatorRecord({
           value: 100 + index / 0.02,
           indicator,
         });
@@ -1159,13 +1156,10 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         await createSourcingRecord({
           tonnage: startTonnage + 100 * index,
           year,
-          indicatorRecords: [indicatorRecord],
+          indicatorRecords: [indicatorRecord1],
           sourcingLocation: sourcingLocation1,
         });
-      }
 
-      for await (const [index, year] of [2010, 2011, 2012].entries()) {
-        const startTonnage: number = 1000;
         const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
           value: 300 + index / 0.02,
           indicator,
@@ -1178,6 +1172,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           sourcingLocation: sourcingLocation2,
         });
       }
+
       const response = await request(app.getHttpServer())
         .get('/api/v1/impact/table')
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -1243,9 +1238,10 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         adminRegion: adminRegion,
       });
 
+      // Creating Sourcing Records and Indicator Records for previously created Sourcing locations with different Business Units
       for await (const [index, year] of [2010, 2011, 2012].entries()) {
         const startTonnage: number = 100;
-        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+        const indicatorRecord1: IndicatorRecord = await createIndicatorRecord({
           value: 100 + index / 0.02,
           indicator,
         });
@@ -1253,14 +1249,11 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         await createSourcingRecord({
           tonnage: startTonnage + 100 * index,
           year,
-          indicatorRecords: [indicatorRecord],
+          indicatorRecords: [indicatorRecord1],
           sourcingLocation: sourcingLocation1,
         });
-      }
 
-      for await (const [index, year] of [2010, 2011, 2012].entries()) {
-        const startTonnage: number = 1000;
-        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+        const indicatorRecord2: IndicatorRecord = await createIndicatorRecord({
           value: 300 + index / 0.02,
           indicator,
         });
@@ -1268,10 +1261,11 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         await createSourcingRecord({
           tonnage: startTonnage + 100 * index,
           year,
-          indicatorRecords: [indicatorRecord],
+          indicatorRecords: [indicatorRecord2],
           sourcingLocation: sourcingLocation2,
         });
       }
+
       const response = await request(app.getHttpServer())
         .get('/api/v1/impact/table')
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -1331,9 +1325,13 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         locationType: LOCATION_TYPES.AGGREGATION_POINT,
       });
 
+      // Creating Sourcing Records and Indicator Records for previously created Sourcing Locations of different location types
+
       for await (const [index, year] of [2010, 2011, 2012].entries()) {
         const startTonnage: number = 100;
-        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+
+        // Indicator and Sourcing Records for 'Country of Production' location type
+        const indicatorRecord1: IndicatorRecord = await createIndicatorRecord({
           value: 100 + index / 0.02,
           indicator,
         });
@@ -1341,14 +1339,12 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         await createSourcingRecord({
           tonnage: startTonnage + 100 * index,
           year,
-          indicatorRecords: [indicatorRecord],
+          indicatorRecords: [indicatorRecord1],
           sourcingLocation: sourcingLocation1,
         });
-      }
 
-      for await (const [index, year] of [2010, 2011, 2012].entries()) {
-        const startTonnage: number = 1000;
-        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+        // Indicator and Sourcing Records for 'Aggregation Point' location type
+        const indicatorRecord2: IndicatorRecord = await createIndicatorRecord({
           value: 300 + index / 0.02,
           indicator,
         });
@@ -1356,10 +1352,11 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         await createSourcingRecord({
           tonnage: startTonnage + 100 * index,
           year,
-          indicatorRecords: [indicatorRecord],
+          indicatorRecords: [indicatorRecord2],
           sourcingLocation: sourcingLocation2,
         });
       }
+
       const response = await request(app.getHttpServer())
         .get('/api/v1/impact/table')
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -1421,9 +1418,10 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         adminRegion,
       });
 
+      // Creating Sourcing Records and Indicator Records for previously created Sourcing Locations for Fake Material 1 and Fake Material 2
       for await (const [index, year] of [2010, 2011, 2012].entries()) {
         const startTonnage: number = 100;
-        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+        const indicatorRecord1: IndicatorRecord = await createIndicatorRecord({
           value: 1000 + index / 0.02,
           indicator,
         });
@@ -1431,14 +1429,11 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         await createSourcingRecord({
           tonnage: startTonnage + 100 * index,
           year,
-          indicatorRecords: [indicatorRecord],
+          indicatorRecords: [indicatorRecord1],
           sourcingLocation: sourcingLocation1,
         });
-      }
 
-      for await (const [index, year] of [2010, 2011, 2012].entries()) {
-        const startTonnage: number = 1000;
-        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+        const indicatorRecord2: IndicatorRecord = await createIndicatorRecord({
           value: 2000 + index / 0.02,
           indicator,
         });
@@ -1446,10 +1441,11 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         await createSourcingRecord({
           tonnage: startTonnage + 100 * index,
           year,
-          indicatorRecords: [indicatorRecord],
+          indicatorRecords: [indicatorRecord2],
           sourcingLocation: sourcingLocation2,
         });
       }
+
       const response = await request(app.getHttpServer())
         .get('/api/v1/impact/table')
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -1540,24 +1536,24 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         locationType: LOCATION_TYPES.AGGREGATION_POINT,
       });
 
+      // Creating Sourcing Records and Indicator Records for previously created Sourcing Locations of different Location Types
       for await (const [index, year] of [2010, 2011, 2012].entries()) {
         const startTonnage: number = 100;
-        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+
+        // Indicator Records and Sourcing Records for 'Country of Production' type
+        const indicatorRecord1: IndicatorRecord = await createIndicatorRecord({
           value: 100 + index / 0.02,
           indicator,
         });
-
         await createSourcingRecord({
           tonnage: startTonnage + 100 * index,
           year,
-          indicatorRecords: [indicatorRecord],
+          indicatorRecords: [indicatorRecord1],
           sourcingLocation: sourcingLocation1,
         });
-      }
 
-      for await (const [index, year] of [2010, 2011, 2012].entries()) {
-        const startTonnage: number = 1000;
-        const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+        // Indicator Records and Sourcing Records for 'Aggregation point' type
+        const indicatorRecord2: IndicatorRecord = await createIndicatorRecord({
           value: 300 + index / 0.02,
           indicator,
         });
@@ -1565,10 +1561,11 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         await createSourcingRecord({
           tonnage: startTonnage + 100 * index,
           year,
-          indicatorRecords: [indicatorRecord],
+          indicatorRecords: [indicatorRecord2],
           sourcingLocation: sourcingLocation2,
         });
       }
+
       const response = await request(app.getHttpServer())
         .get('/api/v1/impact/table')
         .set('Authorization', `Bearer ${jwtToken}`)

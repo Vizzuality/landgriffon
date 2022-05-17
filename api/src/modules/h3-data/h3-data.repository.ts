@@ -232,7 +232,7 @@ export class H3DataRepository extends Repository<H3Data> {
     subqueryBuilder.groupBy('ir.materialH3DataId, sl.geoRegionId, ir.scaler');
     const selectQueryBuilder: SelectQueryBuilder<any> = getManager()
       .createQueryBuilder()
-      .select(`h3data.h3index`, `h`)
+      .select(`h3_to_parent(3data.h3index, ${resolution}`, `h`)
       .addSelect(`sum(h3data.value)`, `v`)
       .from('(' + subqueryBuilder.getQuery() + ')', 'subtable')
       .setParameters(subqueryBuilder.getParameters());
@@ -254,7 +254,7 @@ export class H3DataRepository extends Repository<H3Data> {
       selectQueryParams,
     );
     const impactMap: any = await getManager().query(
-      `SELECT h3_to_parent(h, ${resolution}) as h, v
+      `SELECT *
        FROM "${tmpTableName}";`,
     );
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);

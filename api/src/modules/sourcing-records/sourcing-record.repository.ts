@@ -136,7 +136,6 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       );
     }
     if (supplierIds) {
-      impactDataQueryBuilder;
       impactDataQueryBuilder.andWhere(
         new Brackets((qb: WhereExpressionBuilder) => {
           qb.where('sourcingLocation.t1SupplierId IN (:...supplierIds)', {

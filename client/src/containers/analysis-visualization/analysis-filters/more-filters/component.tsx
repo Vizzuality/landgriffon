@@ -68,6 +68,13 @@ const MoreFilters: React.FC = () => {
     const total = counters.reduce((a, b) => a + b);
     setCounter(total);
   }, [moreFilters]);
+
+  // Check difference between current selection of filters and filters already applied
+  const hasChangesToApply = useMemo(
+    () => JSON.stringify(selectedFilters) !== JSON.stringify(moreFilters),
+    [selectedFilters, moreFilters],
+  );
+
   return (
     <Popover className="relative">
       {({ open, close }) => (
@@ -165,6 +172,7 @@ const MoreFilters: React.FC = () => {
                         handleApply();
                         close();
                       }}
+                      disabled={!hasChangesToApply}
                     >
                       Apply
                     </Button>

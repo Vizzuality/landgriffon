@@ -19,6 +19,9 @@ export class IndicatorRecordRepository extends Repository<IndicatorRecord> {
     try {
       const response: any = await this.query(`
         SELECT
+          -- TODO: Hack to retrieve 1 materialH3Id for each sourcingRecord. This should include a year fallback strategy in the stored procedures
+          --       used below
+          distinct on (sr.id)
           sr.id as "sourcingRecordId",
           sr.tonnage,
           sr.year,

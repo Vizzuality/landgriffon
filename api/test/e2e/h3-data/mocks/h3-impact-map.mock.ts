@@ -31,6 +31,7 @@ import {
 } from 'modules/materials/material-to-h3.entity';
 import { h3BasicFixtureForScaler } from './h3-fixtures';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 
 export interface ImpactMapMockData {
   indicatorId: string;
@@ -125,6 +126,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
   await createIndicatorRecord({
     sourcingRecordId: sourcingRecordOne.id,
     indicatorId: indicator.id,
+    materialH3DataId: harvestH3Data.id,
     scaler: 10000,
     value: 1234,
   });
@@ -177,6 +179,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
   await createIndicatorRecord({
     sourcingRecordId: sourcingRecordTwo.id,
     indicatorId: indicator.id,
+    materialH3DataId: harvestH3Data.id,
     scaler: 10000,
     value: 1000,
   });
@@ -206,6 +209,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
   await createIndicatorRecord({
     sourcingRecordId: interventionSourcingRecord.id,
     indicatorId: indicator.id,
+    materialH3DataId: harvestH3Data.id,
     scaler: 2000,
     value: 2000,
   });
@@ -228,6 +232,7 @@ export const deleteImpactMapMockData = async (): Promise<void> => {
   await getManager().delete(Material, {});
   await getManager().delete(H3Data, {});
   await getManager().delete(Indicator, {});
+  await getManager().delete(IndicatorRecord, {});
   await getManager().delete(UnitConversion, {});
   await getManager().delete(Unit, {});
 };

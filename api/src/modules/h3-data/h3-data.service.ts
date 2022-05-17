@@ -365,7 +365,7 @@ export class H3DataService {
     this.logger.log(`Generating impact map for indicator ${indicator.name}...`);
 
     const impactMap: {
-      riskMap: H3IndexValueData[];
+      impactMap: H3IndexValueData[];
       quantiles: number[];
     } = await this.h3DataRepository.getImpactMap(
       indicator,
@@ -412,7 +412,7 @@ export class H3DataService {
       }
     }
     return {
-      data: impactMap.riskMap,
+      data: impactMap.impactMap,
       metadata: {
         quantiles: impactMap.quantiles,
         unit: indicator.unit.symbol,

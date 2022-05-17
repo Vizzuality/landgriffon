@@ -167,9 +167,10 @@ export class H3DataRepository extends Repository<H3Data> {
   /**
    * @param indicator Indicator data of a Indicator
    * @param resolution Integer value that represent the resolution which the h3 response should be calculated
-   * @param groupBy
    * @param year
    * @param materialIds
+   * @param originIds
+   * @param supplierIds
    */
   async getImpactMap(
     indicator: Indicator,
@@ -179,29 +180,32 @@ export class H3DataRepository extends Repository<H3Data> {
     originIds?: string[],
     supplierIds?: string[],
     locationType?: LOCATION_TYPES_PARAMS[],
-  ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
-    const selectQueryBuilder: SelectQueryBuilder<any> = getManager()
+  ): Promise<{ impactMap: H3IndexValueData[]; quantiles: number[] }> {
+    const subqueryBuilder: SelectQueryBuilder<any> = getManager()
       .createQueryBuilder()
-      .select(`h3_to_parent((h3data.h3index), ${resolution})`, `h`)
-      .addSelect(`sum(h3data.value)`, `v`)
+      .select(`sum(ir.value)`, `sum`)
+      .addSelect(`ir.scaler`, `scaler`)
+      .addSelect('sl.geoRegionId', 'geoRegionId')
+      .addSelect('ir.materialH3DataId', 'materialH3DataId')
       .from(SourcingLocation, 'sl')
       .innerJoin(SourcingRecord, 'sr', 'sl.id = sr.sourcingLocationId')
-      .innerJoin(IndicatorRecord, 'ir', 'sr.id = ir.sourcingRecordId')
+      .innerJoin(IndicatorRecord, 'ir', 'sr.id = ir.sourcingRecordId');
+    subqueryBuilder
       .where('sr.year = :year', { year })
       .andWhere('sl."scenarioInterventionId" IS NULL')
       .andWhere('sl."interventionType" IS NULL')
+      .andWhere('ir.scaler > 0')
+      .andWhere('ir.value > 0')
       .andWhere('ir."indicatorId" = :indicatorId', {
         indicatorId: indicator.id,
       });
-
     if (materialIds) {
-      selectQueryBuilder.andWhere('sl.material IN (:...materialIds)', {
+      subqueryBuilder.andWhere('sl.material IN (:...materialIds)', {
         materialIds,
       });
     }
-
     if (supplierIds) {
-      selectQueryBuilder.andWhere(
+      subqueryBuilder.andWhere(
         new Brackets((qb: WhereExpressionBuilder) => {
           qb.where('sl.t1SupplierId IN (:...supplierIds)', {
             supplierIds,
@@ -210,7 +214,7 @@ export class H3DataRepository extends Repository<H3Data> {
       );
     }
     if (originIds) {
-      selectQueryBuilder.andWhere('sl.adminRegionId IN (:...originIds)', {
+      subqueryBuilder.andWhere('sl.adminRegionId IN (:...originIds)', {
         originIds,
       });
     }
@@ -220,48 +224,45 @@ export class H3DataRepository extends Repository<H3Data> {
           return el.replace(/-/g, ' ');
         },
       );
-      selectQueryBuilder.andWhere('sl.locationType IN (:...sourcingLocationTypes)', {
+      subqueryBuilder.andWhere('sl.locationType IN (:...sourcingLocationTypes)', {
         sourcingLocationTypes,
       });
     }
 
-    selectQueryBuilder.andWhere('ir.scaler > 0');
-    selectQueryBuilder.andWhere('ir.value > 0');
+    subqueryBuilder.groupBy('ir.materialH3DataId, sl.geoRegionId, ir.scaler');
+    const selectQueryBuilder: SelectQueryBuilder<any> = getManager()
+      .createQueryBuilder()
+      .select(`h3data.h3index`, `h`)
+      .addSelect(`sum(h3data.value)`, `v`)
+      .from('(' + subqueryBuilder.getQuery() + ')', 'subtable')
+      .setParameters(subqueryBuilder.getParameters());
 
-    selectQueryBuilder.groupBy('h');
-
-    // This query has everything except the LATERAL join not supported by typeorm, so we are getting the raw SQL string to manually insert the LATERAL string into it
+    //This query has everything except the LATERAL join not supported by typeorm, so we are getting the raw SQL string to manually insert the LATERAL string into it
     const [selectQuery, selectQueryParams]: [string, any[]] =
       selectQueryBuilder.getQueryAndParameters();
 
-    // Finding the position (index of a string) to insert LATERAL string - right before the first WHERE clause
-    const positionToInsertLateral: number = selectQuery.indexOf('WHERE');
-
     // The LATERAL SQL string that needs to be added to query
-    const sqlStringForLateral: string = `, LATERAL(SELECT h3index, ir.value/ir.scaler * value as value FROM get_h3_data_over_georegion(sl."geoRegionId", ir."materialH3DataId")) h3data `;
-
-    // Adding LATERAL SQL string to the main SQL string
-    const sqlQuery: string = [
-      selectQuery.slice(0, positionToInsertLateral),
-      sqlStringForLateral,
-      selectQuery.slice(positionToInsertLateral),
-    ].join('');
+    const fullQuery: string =
+      selectQuery +
+      `, LATERAL(SELECT h3index, subtable.sum/subtable.scaler as value FROM get_h3_data_over_georegion(subtable."geoRegionId", subtable."materialH3DataId")) h3data GROUP BY h3data.h3index`;
 
 
 
     const tmpTableName: string = H3DataRepository.generateRandomTableName();
     await getManager().query(
-      `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${sqlQuery});`,
+      `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${fullQuery});`,
       selectQueryParams,
     );
-    const riskMap: any = await getManager().query(
-      `SELECT *
+    const impactMap: any = await getManager().query(
+      `SELECT h3_to_parent(h, ${resolution}) as h, v
        FROM "${tmpTableName}";`,
     );
-    this.logger.log('Impact Map generated');
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
     await getManager().query(`DROP TABLE "${tmpTableName}";`);
-    return { riskMap, quantiles };
+    this.logger.log('Impact Map generated');
+    console.log(impactMap.length);
+    //return { impactMap, quantiles };
+    return [] as any;
   }
 
   /**

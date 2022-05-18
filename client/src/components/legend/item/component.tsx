@@ -65,7 +65,12 @@ export const LegendItem: React.FC<LegendItemProps> = ({
                 <div className="flex items-center space-x-1 mt-0.5">
                   <OpacityControl opacity={opacity} onChange={onChangeOpacity} />
                   <div>
-                    <Tooltip arrow color="black" content={<div className="w-40">{legendInfo}</div>}>
+                    <Tooltip
+                      arrow
+                      placement="top"
+                      color="black"
+                      content={<div className="w-56 p-2 text-left">{legendInfo}</div>}
+                    >
                       <InformationCircleIcon className="w-4 h-4 text-gray-900" />
                     </Tooltip>
                   </div>

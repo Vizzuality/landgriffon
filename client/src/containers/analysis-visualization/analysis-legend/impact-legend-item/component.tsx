@@ -31,7 +31,7 @@ const ImpactLayer = () => {
     },
     [dispatch],
   );
-  const legendIndicator = useAppSelector(analysisFilters).indicator.label;
+  const legendIndicator = useAppSelector(analysisFilters)?.indicator?.label;
 
   // TO-DO: add Loading component
   return (

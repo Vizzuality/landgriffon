@@ -246,29 +246,7 @@ export class H3DataRepository extends Repository<H3Data> {
       selectQuery +
       `, LATERAL( SELECT h3index, t.sum/t.scaler * value as value FROM get_h3_data_over_georegion(t."geoRegionId", t."materialH3DataId")) h3data GROUP BY h3data.h3index`;
 
-    const testQuery: any = `SELECT h3_to_parent(q.h3index, 1) as h, sum(q.sum) as v
-            FROM (SELECT h3data.h3index, sum(h3data.value) FROM (
-                SELECT
-                sum(ir.value), ir.scaler, sl."geoRegionId", ir."materialH3DataId"
-                FROM sourcing_location sl
-                INNER JOIN sourcing_records sr ON sr."sourcingLocationId" = sl.id
-                INNER JOIN indicator_record ir ON ir."sourcingRecordId" = sr.id
-                WHERE sr.year=2020 AND sl."interventionType" IS NULL AND ir."indicatorId" = '633cf928-7c4f-41a3-99c5-e8c1bda0b323'
-                AND "ir"."scaler" > 0
-                AND "ir"."value" > 0
-                GROUP BY ir.scaler, sl."geoRegionId", ir."materialH3DataId"
-            ) t,
-            LATERAL (
-                SELECT
-                    h3index,
-                    t.sum /t.scaler * value as value
-                FROM get_h3_data_over_georegion(t."geoRegionId", t."materialH3DataId")
-            ) h3data
-            GROUP BY h3data.h3index) q
-            GROUP BY h
-    `;
-
-    const fullQueryL: any = getManager()
+    const withDynamicResolution: any = getManager()
       .createQueryBuilder()
       .addSelect(`h3_to_parent(q.h3index, ${resolution})`, `h`)
       .addSelect(`sum(q.sum)`, `v`)
@@ -278,26 +256,17 @@ export class H3DataRepository extends Repository<H3Data> {
 
 
     const tmpTableName: string = H3DataRepository.generateRandomTableName();
-    console.log('BADQUERY', fullQuery);
-
     await getManager().query(
-      `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${fullQueryL.getQuery()});`,
+      `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${withDynamicResolution.getQuery()});`,
       selectQueryParams,
     );
     const impactMap: any = await getManager().query(
       `SELECT * FROM "${tmpTableName}"`,
     );
-
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
     await getManager().query(`DROP TABLE "${tmpTableName}";`);
     this.logger.log('Impact Map generated');
-    console.log(impactMap.length, impactMap[1]);
-    console.log(quantiles);
-    // return { impactMap, quantiles };
-    return [] as unknown as {
-      impactMap: H3IndexValueData[];
-      quantiles: number[];
-    };
+    return { impactMap, quantiles };
   }
 
   /**

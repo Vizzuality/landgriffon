@@ -181,6 +181,7 @@ export type LegendItem = {
 
 export type Legend = {
   name: string;
+  id: string;
   unit: string;
   min: LegendItem['value'];
   items: LegendItem[];
@@ -193,4 +194,24 @@ export type Layer = {
   opacity?: number;
   legend?: Legend;
   loading?: boolean;
+};
+
+// Metadata info
+
+export type METADATA_LAYERS = {
+  material: string;
+  'Livestock distribution': string;
+  risk: string;
+  'impact-e2c00251-fe31-4330-8c38-604535d795dc': string;
+  'impact-633cf928-7c4f-41a3-99c5-e8c1bda0b323': string;
+  'impact-c71eb531-2c8e-40d2-ae49-1049543be4d1': string;
+  'impact-0594aba7-70a5-460c-9b58-fc1802d264ea': string;
+  'Land impact': string;
+};
+
+export type METADATA_INTERVENTIONS = {
+  supplier: string;
+  location: string;
+  impacts: string;
+  material: string;
 };

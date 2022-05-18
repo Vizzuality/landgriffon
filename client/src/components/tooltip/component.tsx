@@ -6,7 +6,18 @@ import type { TooltipProps } from './types';
 import { shift } from '@floating-ui/core';
 import classNames from 'classnames';
 
-export const ToolTip: React.FC<TooltipProps> = ({ className, children, content, arrow = true }) => {
+const THEME = {
+  light: 'bg-white',
+  dark: 'bg-gray-900',
+};
+
+export const ToolTip: React.FC<TooltipProps> = ({
+  className,
+  children,
+  content,
+  arrow = true,
+  theme = 'light',
+}) => {
   const arrowRef = useRef(null);
 
   const {
@@ -49,7 +60,7 @@ export const ToolTip: React.FC<TooltipProps> = ({ className, children, content, 
               left: arrowX ?? '',
             }}
           >
-            <div className="w-5 h-5 bg-white rotate-45 -translate-y-1/2 bottom-0" />
+            <div className={`w-4 h-4 rotate-45 -translate-y-1/2 bottom-0 ${THEME[theme]}`} />
           </div>
         </div>
       </Popover.Panel>

@@ -99,6 +99,7 @@ export const useMaterialLayer: () => ReturnType<typeof useH3MaterialData> & {
             loading: query.isFetching,
             year: years.data && years.data[0],
             legend: {
+              id: LAYER_ID,
               name: `${indicator.label} in ${years.data[0]}`,
               unit: data.metadata.unit,
               min: data.metadata.quantiles[0] && NUMBER_FORMAT(data.metadata.quantiles[0]),

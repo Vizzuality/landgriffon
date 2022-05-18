@@ -84,6 +84,7 @@ export const useImpactLayer: () => ReturnType<typeof useH3ImpactData> & { layer:
             layer: {
               loading: query.isFetching,
               legend: {
+                id: `${LAYER_ID}-${indicator.value}`,
                 name: `${indicator.label} in ${startYear}`,
                 unit: data.metadata.unit,
                 min: !!data.metadata.quantiles.length && NUMBER_FORMAT(data.metadata.quantiles[0]),

@@ -1,14 +1,17 @@
 import { useCallback, useEffect, useState } from 'react';
-import { InformationCircleIcon } from '@heroicons/react/outline';
+
+import { useMetadataLayerInfo } from 'hooks/metadata-info';
 
 import Toggle from 'components/toggle';
 import Loading from 'components/loading';
 import OpacityControl from './opacityControl';
 import DragHandle from './dragHandle';
+import InfoToolTip from 'containers/info-tooltip/component';
 
 export type LegendItemProps = {
   name: string | JSX.Element;
   unit: string;
+  id: string;
   description?: string;
   active?: boolean;
   isLoading?: boolean;
@@ -23,6 +26,7 @@ export type LegendItemProps = {
 export const LegendItem: React.FC<LegendItemProps> = ({
   name,
   unit,
+  id,
   active = false,
   isLoading = false,
   showToolbar = true,
@@ -45,6 +49,8 @@ export const LegendItem: React.FC<LegendItemProps> = ({
     setActive(active);
   }, [active]);
 
+  const info = useMetadataLayerInfo();
+
   return (
     <div className="p-4 space-y-4">
       {isLoading && <Loading />}
@@ -61,11 +67,7 @@ export const LegendItem: React.FC<LegendItemProps> = ({
               <div className="flex items-center">
                 <div className="flex items-center space-x-1 mt-0.5">
                   <OpacityControl opacity={opacity} onChange={onChangeOpacity} />
-                  <div>
-                    <button>
-                      <InformationCircleIcon className="w-4 h-4 text-gray-900" />
-                    </button>
-                  </div>
+                  <InfoToolTip icon="outline" info={info[id]} />
                 </div>
               </div>
             )}

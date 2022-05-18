@@ -1,19 +1,32 @@
 import React from 'react';
-import { InformationCircleIcon } from '@heroicons/react/solid';
+import { InformationCircleIcon as Outline } from '@heroicons/react/outline';
+import { InformationCircleIcon as Solid } from '@heroicons/react/solid';
 
 import Tooltip from 'components/tooltip';
 
 import { InfoTooltipProps } from './types';
 
-export const InfoToolTip: React.FC<InfoTooltipProps> = ({ ...props }: InfoTooltipProps) => {
+export const InfoToolTip: React.FC<InfoTooltipProps> = ({
+  icon = 'solid',
+  info,
+  ...props
+}: InfoTooltipProps) => {
   const mergeProps = {
     placement: 'right',
     ...props,
   };
 
   return (
-    <Tooltip {...mergeProps}>
-      <InformationCircleIcon className="block h-5 w-5" />
+    <Tooltip
+      content={
+        <div className="bg-gray-900 p-4 rounded-md w-52 text-white text-left text-xs">{info}</div>
+      }
+      className="w-54 text-center"
+      theme="dark"
+      {...mergeProps}
+    >
+      {icon === 'outline' && <Outline className="w-4 h-4 text-gray-900" />}
+      {icon === 'solid' && <Solid className="w-4 h-4 text-gray-900" />}
     </Tooltip>
   );
 };

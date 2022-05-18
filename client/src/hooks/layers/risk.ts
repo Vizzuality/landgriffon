@@ -39,7 +39,6 @@ export const useRiskLayer: () => ReturnType<typeof useH3RiskData> & { layer: H3H
     };
     const query = useH3RiskData(params, options);
     const { data } = query;
-
     const handleHover = useCallback(
       ({ object, x, y, viewport }) => {
         dispatch(
@@ -95,6 +94,7 @@ export const useRiskLayer: () => ReturnType<typeof useH3RiskData> & { layer: H3H
               loading: query.isFetching,
               year: years.data && years.data[0],
               legend: {
+                id: LAYER_ID,
                 name: `${indicator.label} in ${years.data[0]}`,
                 unit: data.metadata.unit,
                 min: !!data.metadata.quantiles.length && NUMBER_FORMAT(data.metadata.quantiles[0]),

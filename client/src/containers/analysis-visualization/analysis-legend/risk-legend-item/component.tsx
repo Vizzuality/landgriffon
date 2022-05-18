@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap, setLayer } from 'store/features/analysis/map';
@@ -53,6 +53,7 @@ const RiskLegendItem = () => {
         )
       }
       unit={risk.legend.unit}
+      id={risk.legend.id}
       opacity={risk.opacity}
       active={risk.active}
       onChangeOpacity={handleOpacity}

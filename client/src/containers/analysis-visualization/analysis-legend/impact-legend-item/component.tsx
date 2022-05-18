@@ -6,15 +6,16 @@ import { analysisMap, setLayer } from 'store/features/analysis/map';
 import LegendItem from 'components/legend/item';
 import LegendTypeChoropleth from 'components/legend/types/choropleth';
 
+const LAYER_ID = 'impact';
+
 const ImpactLayer = () => {
   const dispatch = useAppDispatch();
   const {
     layers: { impact },
   } = useAppSelector(analysisMap);
-
   const handleOpacity = useCallback(
     (opacity: number) => {
-      dispatch(setLayer({ id: 'impact', layer: { opacity } }));
+      dispatch(setLayer({ id: LAYER_ID, layer: { opacity } }));
     },
     [dispatch],
   );
@@ -23,6 +24,7 @@ const ImpactLayer = () => {
   return (
     <LegendItem
       name={impact.legend.name}
+      id={impact.legend.id}
       unit={impact.legend.unit}
       opacity={impact.opacity}
       active={impact.active}

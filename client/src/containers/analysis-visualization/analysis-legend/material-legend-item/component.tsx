@@ -35,7 +35,6 @@ const MaterialLegendItem = () => {
     },
     [dispatch, material],
   );
-
   return (
     <LegendItem
       name={
@@ -53,6 +52,7 @@ const MaterialLegendItem = () => {
         )
       }
       unit={material.legend.unit}
+      id={material.legend.id}
       opacity={material.opacity}
       active={material.active}
       onChangeOpacity={handleOpacity}

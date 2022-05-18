@@ -4,4 +4,5 @@ export type TooltipProps = PropsWithChildren<{
   className?: string;
   content: React.ReactNode;
   arrow?: boolean;
+  theme?: 'light' | 'dark';
 }>;

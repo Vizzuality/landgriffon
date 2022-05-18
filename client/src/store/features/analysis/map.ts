@@ -10,6 +10,7 @@ const DEFAULT_LAYER_ATTRIBUTES = {
   loading: false,
   legend: {
     name: null,
+    id: null,
     unit: null,
     min: null,
     items: [],
@@ -131,7 +132,6 @@ export const analysisMapSlice = createSlice({
     // Tooltip
     setTooltipData: (state, action: PayloadAction<TooltipData>) => {
       const exists = !!state.tooltipData.find(({ id }) => action.payload.id === id);
-
       // Remove tooltip is value is undefined but not zero
       if (exists && !action.payload.value && action.payload.value !== 0) {
         return {

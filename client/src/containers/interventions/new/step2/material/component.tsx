@@ -11,6 +11,7 @@ import InfoTooltip from 'containers/info-tooltip';
 // hooks
 import { useMaterials } from 'hooks/materials';
 import { useFormContext } from 'react-hook-form';
+import { useMetadataInterventionsInfo } from 'hooks/metadata-info';
 
 // types
 import type { SelectOption, SelectOptions } from 'components/select/types';
@@ -42,12 +43,14 @@ const Material = () => {
     [setValue, clearErrors],
   );
 
+  const { material } = useMetadataInterventionsInfo();
+
   return (
     <form>
       <fieldset className="sm:col-span-3 text-sm">
         <legend className="flex font-medium leading-5">
           <span className="mr-2.5">New material</span>
-          <InfoTooltip />
+          <InfoTooltip info={material} />
         </legend>
         <div className="mt-5 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">
           <div className="block font-medium text-gray-700">

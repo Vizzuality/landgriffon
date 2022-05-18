@@ -13,6 +13,7 @@ import { useSuppliersTypes } from 'hooks/suppliers';
 import { useLocationTypes } from 'hooks/interventions';
 import { useAdminRegionsTrees } from 'hooks/admin-regions';
 import { useFormContext } from 'react-hook-form';
+import { useMetadataInterventionsInfo } from 'hooks/metadata-info';
 
 // types
 import type { SelectOption, SelectOptions } from 'components/select/types';
@@ -99,12 +100,14 @@ const Supplier: FC = () => {
     [selectedLocationTypeOption],
   );
 
+  const { supplier, location } = useMetadataInterventionsInfo();
+
   return (
     <>
       <fieldset className="sm:col-span-3 text-sm mt-8">
         <legend className="flex font-medium leading-5">
           <span className="mr-2.5">New supplier</span>
-          <InfoTooltip />
+          <InfoTooltip info={supplier} />
         </legend>
 
         <div className="mt-5 grid grid-cols-2 gap-y-4 gap-x-6 sm:grid-cols-2">
@@ -144,7 +147,7 @@ const Supplier: FC = () => {
       <fieldset className="sm:col-span-3 text-sm mt-8">
         <legend className="flex font-medium leading-5">
           <span className="mr-2.5">Supplier location</span>
-          <InfoTooltip />
+          <InfoTooltip info={location} />
         </legend>
 
         <div className="mt-5 grid grid-cols-2 gap-y-6 gap-x-6 sm:grid-cols-2">

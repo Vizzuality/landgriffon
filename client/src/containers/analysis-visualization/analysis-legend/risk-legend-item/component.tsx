@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap, setLayer } from 'store/features/analysis/map';
@@ -58,6 +58,7 @@ const RiskLegendItem = () => {
       onChangeOpacity={handleOpacity}
       onActiveChange={handleActive}
       isLoading={risk.loading}
+      legendInfo="Environmental impact associated with the provision of a product or service"
     >
       <LegendTypeChoropleth
         className="text-sm text-gray-500 flex-1"

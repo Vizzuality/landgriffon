@@ -58,6 +58,7 @@ const MaterialLegendItem = () => {
       onChangeOpacity={handleOpacity}
       onActiveChange={handleActive}
       isLoading={material.loading}
+      legendInfo="The material production layers displayed on the map reflect the total commodity production in tonnes for all irrigation technologies in 2010, regardless of the timeframe selected."
     >
       <LegendTypeChoropleth
         className="text-sm text-gray-500 flex-1"

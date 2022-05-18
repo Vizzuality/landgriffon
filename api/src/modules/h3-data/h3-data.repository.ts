@@ -232,9 +232,9 @@ export class H3DataRepository extends Repository<H3Data> {
     subqueryBuilder.groupBy('ir.materialH3DataId, sl.geoRegionId, ir.scaler');
     const selectQueryBuilder: SelectQueryBuilder<any> = getManager()
       .createQueryBuilder()
-      .select(`h3_to_parent(3data.h3index, ${resolution}`, `h`)
-      .addSelect(`sum(h3data.value)`, `v`)
-      .from('(' + subqueryBuilder.getQuery() + ')', 'subtable')
+      .select(`h3data.h3index`, `h3index`)
+      .addSelect(`sum(h3data.value)`, `sum`)
+      .from('(' + subqueryBuilder.getQuery() + ')', 't')
       .setParameters(subqueryBuilder.getParameters());
 
     //This query has everything except the LATERAL join not supported by typeorm, so we are getting the raw SQL string to manually insert the LATERAL string into it
@@ -244,25 +244,60 @@ export class H3DataRepository extends Repository<H3Data> {
     // The LATERAL SQL string that needs to be added to query
     const fullQuery: string =
       selectQuery +
-      `, LATERAL(SELECT h3index, subtable.sum/subtable.scaler as value FROM get_h3_data_over_georegion(subtable."geoRegionId", subtable."materialH3DataId")) h3data GROUP BY h3data.h3index`;
+      `, LATERAL( SELECT h3index, t.sum/t.scaler * value as value FROM get_h3_data_over_georegion(t."geoRegionId", t."materialH3DataId")) h3data GROUP BY h3data.h3index`;
+
+    const testQuery: any = `SELECT h3_to_parent(q.h3index, 1) as h, sum(q.sum) as v
+            FROM (SELECT h3data.h3index, sum(h3data.value) FROM (
+                SELECT
+                sum(ir.value), ir.scaler, sl."geoRegionId", ir."materialH3DataId"
+                FROM sourcing_location sl
+                INNER JOIN sourcing_records sr ON sr."sourcingLocationId" = sl.id
+                INNER JOIN indicator_record ir ON ir."sourcingRecordId" = sr.id
+                WHERE sr.year=2020 AND sl."interventionType" IS NULL AND ir."indicatorId" = '633cf928-7c4f-41a3-99c5-e8c1bda0b323'
+                AND "ir"."scaler" > 0
+                AND "ir"."value" > 0
+                GROUP BY ir.scaler, sl."geoRegionId", ir."materialH3DataId"
+            ) t,
+            LATERAL (
+                SELECT
+                    h3index,
+                    t.sum /t.scaler * value as value
+                FROM get_h3_data_over_georegion(t."geoRegionId", t."materialH3DataId")
+            ) h3data
+            GROUP BY h3data.h3index) q
+            GROUP BY h
+    `;
+
+    const fullQueryL: any = getManager()
+      .createQueryBuilder()
+      .addSelect(`h3_to_parent(q.h3index, ${resolution})`, `h`)
+      .addSelect(`sum(q.sum)`, `v`)
+      .from(`( ${fullQuery} )`, `q`)
+      .groupBy(`h`);
 
 
 
     const tmpTableName: string = H3DataRepository.generateRandomTableName();
+    console.log('BADQUERY', fullQuery);
+
     await getManager().query(
-      `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${fullQuery});`,
+      `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${fullQueryL.getQuery()});`,
       selectQueryParams,
     );
     const impactMap: any = await getManager().query(
-      `SELECT *
-       FROM "${tmpTableName}";`,
+      `SELECT * FROM "${tmpTableName}"`,
     );
+
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
     await getManager().query(`DROP TABLE "${tmpTableName}";`);
     this.logger.log('Impact Map generated');
-    console.log(impactMap.length);
-    //return { impactMap, quantiles };
-    return [] as any;
+    console.log(impactMap.length, impactMap[1]);
+    console.log(quantiles);
+    // return { impactMap, quantiles };
+    return [] as unknown as {
+      impactMap: H3IndexValueData[];
+      quantiles: number[];
+    };
   }
 
   /**
@@ -457,7 +492,7 @@ export class H3DataRepository extends Repository<H3Data> {
   async calculateQuantiles(tmpTableName: string): Promise<number[]> {
     try {
       const resultArray: number[] = await getManager().query(
-        `select min(v)                                            as min,
+        `select min(v)                                      as min,
                 percentile_cont(0.1667) within group (order by v) as per16,
                 percentile_cont(0.3337) within group (order by v) as per33,
                 percentile_cont(0.50) within group (order by v)   as per50,

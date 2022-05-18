@@ -60,6 +60,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     reference,
     floating,
     strategy,
+    update,
     refs: { reference: referenceElement },
   } = useFloating({
     placement: 'bottom-start',
@@ -72,6 +73,11 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   const [expandedKeys, setExpandedKeys] = useState<TreeProps['expandedKeys']>([]);
   const [checkedKeys, setCheckedKeys] = useState<TreeProps['checkedKeys']>([]);
   const [filteredKeys, setFilteredKeys] = useState([]);
+
+  useEffect(() => {
+    // Update tooltip position when selection changes
+    update();
+  }, [checkedKeys, update]);
 
   const renderTreeNodes = useMemo(
     () =>
@@ -225,7 +231,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
       {({ open }) => (
         <>
           {multiple ? (
-            <Popover.Button ref={reference} className="w-full flex align-center relative">
+            <Popover.Button as="div" ref={reference} className="w-full flex align-center relative">
               <div
                 className={classNames('flex', THEMES[theme].wrapper, {
                   'ring-green-700 border-green-700': open,
@@ -264,12 +270,25 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                     {currentOptions.length - maxBadges} more selected
                   </Badge>
                 )}
-                {(!currentOptions || currentOptions.length === 0) && (
-                  <span className="inline-block truncate">
-                    {placeholder && (
-                      <span className={classNames('text-sm', THEMES[theme].label)}>
-                        {placeholder}
-                      </span>
+                <SearchIcon className="block h-4 w-4 text-gray-400 my-auto" />
+                {showSearch && (
+                  <span>
+                    <input
+                      onClick={(e) => {
+                        e.preventDefault();
+                        (referenceElement.current as HTMLElement).click();
+                        e.currentTarget.focus();
+                      }}
+                      type="search"
+                      value={searchTerm}
+                      placeholder={currentOptions.length === 0 ? searchPlaceholder : null}
+                      className="border-none focus:ring-0 min-w-0 truncate flex-1"
+                      onChange={handleSearch}
+                    />
+                    {searchTerm && (
+                      <button type="button" onClick={resetSearch} className="px-2 py-1">
+                        <XIcon className="h-4 w-4 text-gray-400" />
+                      </button>
                     )}
                   </span>
                 )}
@@ -287,6 +306,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
             </Popover.Button>
           ) : (
             <Popover.Button
+              as="div"
               ref={reference}
               className={classNames(
                 'bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer',
@@ -312,7 +332,14 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
               </span>
             </Popover.Button>
           )}
-          <div
+          <Transition
+            show={open}
+            enter="transition duration-100 ease-out"
+            enterFrom="transform opacity-0"
+            enterTo="transform opacity-100"
+            leave="transition duration-75 ease-out"
+            leaveFrom="transform opacity-100"
+            leaveTo="transform opacity-0"
             style={{
               position: strategy,
               top: y ?? '',
@@ -325,70 +352,41 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
             className="z-10"
             ref={floating}
           >
-            <Transition
-              show={open}
-              enter="transition duration-100 ease-out"
-              enterFrom="transform opacity-0"
-              enterTo="transform opacity-100"
-              leave="transition duration-75 ease-out"
-              leaveFrom="transform opacity-100"
-              leaveTo="transform opacity-0"
+            <Popover.Panel
+              static
+              className={classNames(
+                'z-20 bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 max-h-80 overflow-y-auto',
+                fitContent ? 'max-w-full' : 'max-w-md',
+              )}
             >
-              <Popover.Panel
-                static
-                className={classNames(
-                  'z-20 bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 max-h-80 overflow-y-auto',
-                  fitContent ? 'max-w-full' : 'max-w-md',
-                )}
-              >
-                {loading && (
-                  <div className="p-4">
-                    <Loading className="text-green-700 -ml-1 mr-3" />
-                  </div>
-                )}
-                {!loading && showSearch && (
-                  <div className="flex items-center border-b border-b-gray-400">
-                    <div className="pl-2 py-1">
-                      <SearchIcon className="block h-4 w-4 text-gray-400" />
-                    </div>
-                    <input
-                      type="search"
-                      value={searchTerm}
-                      placeholder={searchPlaceholder}
-                      className="block text-sm border-0 rounded-t-md focus:ring-0 focus:border-green-700 flex-1"
-                      onChange={handleSearch}
-                    />
-                    {searchTerm && (
-                      <button type="button" onClick={resetSearch} className="px-2 py-1">
-                        <XIcon className="h-4 w-4 text-gray-400" />
-                      </button>
-                    )}
-                  </div>
-                )}
-                {!loading && (
-                  <Tree
-                    autoExpandParent
-                    checkStrictly={false}
-                    checkable={multiple}
-                    selectable={!multiple}
-                    multiple={multiple}
-                    selectedKeys={selectedKeys}
-                    expandedKeys={expandedKeys}
-                    checkedKeys={checkedKeys}
-                    switcherIcon={customSwitcherIcon}
-                    onExpand={handleExpand}
-                    onSelect={handleSelect}
-                    onCheck={handleCheck}
-                  >
-                    {renderTreeNodes(options)}
-                  </Tree>
-                )}
-                {filteredKeys.length === 0 && searchTerm && (
-                  <div className="p-2 text-sm">No results</div>
-                )}
-              </Popover.Panel>
-            </Transition>
-          </div>
+              {loading && (
+                <div className="p-4">
+                  <Loading className="text-green-700 -ml-1 mr-3" />
+                </div>
+              )}
+              {!loading && (
+                <Tree
+                  autoExpandParent
+                  checkStrictly={false}
+                  checkable={multiple}
+                  selectable={!multiple}
+                  multiple={multiple}
+                  selectedKeys={selectedKeys}
+                  expandedKeys={expandedKeys}
+                  checkedKeys={checkedKeys}
+                  switcherIcon={customSwitcherIcon}
+                  onExpand={handleExpand}
+                  onSelect={handleSelect}
+                  onCheck={handleCheck}
+                >
+                  {renderTreeNodes(options)}
+                </Tree>
+              )}
+              {filteredKeys.length === 0 && searchTerm && (
+                <div className="p-2 text-sm">No results</div>
+              )}
+            </Popover.Panel>
+          </Transition>
         </>
       )}
     </Popover>

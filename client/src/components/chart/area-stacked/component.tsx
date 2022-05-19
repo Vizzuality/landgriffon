@@ -27,6 +27,7 @@ export type AreaStackedProps = {
     current: boolean;
     date: string;
   }[];
+  yAxisLabel?: string;
   width?: number;
   height?: number;
   margin?: {
@@ -48,9 +49,10 @@ export type AreaStackedProps = {
 const AreaStacked: React.FC<AreaStackedProps> = ({
   title,
   data,
+  yAxisLabel,
   width = 400,
   height = 200,
-  margin = { top: 40, right: 30, bottom: 50, left: 40 },
+  margin = { top: 16, right: 0, bottom: 16, left: 40 },
   keys = [],
   colors,
   target,
@@ -140,6 +142,11 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
     [xScale, data, keys, showTooltip, yScale],
   );
 
+  const xOffset = useCallback(
+    (index) => (index < data.length - 1 ? '-0.2rem' : '-0.5rem'),
+    [data.length],
+  );
+
   if (!width || !height) return null;
 
   return (
@@ -202,7 +209,6 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
               ))
             }
           </AreaStack>
-
           {/* Tooltip Area */}
           <Bar
             width={xRangeMax}
@@ -256,9 +262,10 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
             hideTicks
             hideAxisLine
             tickValues={xScale.ticks(timeYear)}
-            tickLabelProps={() => ({
+            tickLabelProps={(props, index) => ({
               dy: '0.5em',
-              fill: '#222',
+              dx: xOffset(index),
+              fill: '#AEB1B5', // text-gray-400
               fontFamily: 'Arial',
               fontSize: 10,
               textAnchor: 'middle',
@@ -269,14 +276,19 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
           <Axis
             orientation={Orientation.left}
             scale={yScale}
+            label={yAxisLabel}
+            labelClassName="text-gray-500 text-[10px]"
+            labelOffset={37}
+            axisClassName="p-6"
+            left={4}
             hideTicks
             hideAxisLine
             numTicks={4}
-            tickFormat={format('.3~s')}
+            tickFormat={format('.1')}
             tickLabelProps={() => ({
               dx: '-0.25em',
-              dy: '-0.25em',
-              fill: '#222',
+              dy: '0.25em',
+              fill: '#AEB1B5', // text-gray-400
               fontFamily: 'Arial',
               fontSize: 10,
               textAnchor: 'end',

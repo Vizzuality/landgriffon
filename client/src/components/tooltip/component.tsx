@@ -17,6 +17,7 @@ export const ToolTip: React.FC<TooltipProps> = ({
   content,
   arrow = true,
   theme = 'light',
+  placement = 'top',
 }) => {
   const arrowRef = useRef(null);
 
@@ -28,11 +29,11 @@ export const ToolTip: React.FC<TooltipProps> = ({
     strategy,
     middlewareData: { arrow: { x: arrowX, y: arrowY } = {} },
   } = useFloating({
-    placement: 'top',
+    placement,
     middleware: [
       offset({ mainAxis: arrow ? 15 : 10 }),
-      shift(),
-      arrowMiddleware({ element: arrowRef }),
+      shift({ padding: 4 }),
+      arrowMiddleware({ element: arrowRef, padding: 5 }),
     ],
   });
 

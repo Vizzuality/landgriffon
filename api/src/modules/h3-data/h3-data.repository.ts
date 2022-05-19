@@ -35,7 +35,7 @@ import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 export class H3DataRepository extends Repository<H3Data> {
   logger: Logger = new Logger(H3DataRepository.name);
 
-  private static generateRandomTableName(): string {
+  static generateRandomTableName(): string {
     return (Math.random() + 1).toString(36).substring(2);
   }
 

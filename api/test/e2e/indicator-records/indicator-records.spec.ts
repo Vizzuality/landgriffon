@@ -46,7 +46,7 @@ describe('IndicatorRecordsModule (e2e)', () => {
     await app.close();
   });
 
-  describe('Indicator record - Create', () => {
+  describe.skip('Indicator record - Create', () => {
     test('Create an indicator record should be successful (happy case)', async () => {
       const sourcingRecord: SourcingRecord = await createSourcingRecord();
       const indicator: Indicator = await createIndicator();

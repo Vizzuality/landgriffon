@@ -1,3 +1,4 @@
+import { Placement } from '@floating-ui/react-dom';
 import React from 'react';
 
 export type TooltipProps = PropsWithChildren<{
@@ -5,4 +6,5 @@ export type TooltipProps = PropsWithChildren<{
   content: React.ReactNode;
   arrow?: boolean;
   theme?: 'light' | 'dark';
+  placement?: Placement;
 }>;

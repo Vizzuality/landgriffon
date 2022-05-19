@@ -53,7 +53,7 @@ const AnalysisChart: React.FC = () => {
             })}
           >
             {chartData.map((d) => {
-              const { id, indicator, keys, values, colors } = d;
+              const { id, indicator, keys, values, colors, unit } = d;
 
               return (
                 <motion.div
@@ -61,12 +61,13 @@ const AnalysisChart: React.FC = () => {
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
-                  <Widget title={indicator} height={chartData.length > 1 ? 325 : 500}>
+                  <Widget title={indicator} unit={unit} height={chartData.length > 1 ? 325 : 500}>
                     <Chart>
                       <AreaStacked
                         title={indicator}
+                        yAxisLabel={unit}
                         data={values}
-                        margin={{ top: 12, right: 12, bottom: 30, left: 30 }}
+                        margin={{ top: 12, right: 8, bottom: 30, left: 50 }}
                         keys={keys}
                         colors={colors}
                         // target={120}
@@ -78,14 +79,20 @@ const AnalysisChart: React.FC = () => {
                       />
                     </Chart>
                   </Widget>
-                  <ul className="flex flex-row flex-wrap gap-x-3 mt-2">
+                  {/* Widget Legend */}
+                  <ul className="flex flex-row flex-wrap gap-x-3 gap-y-1 mt-2">
                     {keys.map((key) => (
                       <li key={key} className="flex items-center gap-x-1">
                         <div
                           className="w-3 h-3 rounded-full"
                           style={{ backgroundColor: d.colors[key] }}
                         />
-                        <div>{key}</div>
+                        <span
+                          title={key}
+                          className="text-xs text-gray-500 max-w-[74px] truncate text-ellipsis"
+                        >
+                          {key}
+                        </span>
                       </li>
                     ))}
                   </ul>

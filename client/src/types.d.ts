@@ -120,11 +120,16 @@ export type BusinessUnits = {
   attributes: BusinessUnitsAtributes;
 };
 
+type Metadata = {
+  unit: string;
+};
+
 export type ImpactTableData = {
   groupBy: string;
   indicatorId: string;
+  // unit: string;
   indicatorShortName: string;
-  metadata: Record<string, unknown>;
+  metadata: Record<string, unknown, Metadata>;
   rows: {
     name: string;
     values: Record<string, number | string | boolean>[];

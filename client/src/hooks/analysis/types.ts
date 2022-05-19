@@ -40,6 +40,7 @@ type ChartData = Readonly<{
   id: string;
   indicator: string;
   keys: string[];
+  unit: string;
   values: ChartValues[];
 }>;
 

@@ -5,10 +5,12 @@ import { AppModule } from 'app.module';
 import {
   createAdminRegion,
   createBusinessUnit,
+  createH3Data,
   createIndicator,
   createIndicatorRecord,
   createIndicatorRecordV2,
   createMaterial,
+  createMaterialToH3,
   createSourcingLocation,
   createSourcingRecord,
   createSupplier,
@@ -52,6 +54,13 @@ import {
   groupBySupplierResponseData,
 } from './response-mocks.impact';
 import { PaginationMeta } from '../../../src/utils/app-base.service';
+import {
+  MATERIAL_TO_H3_TYPE,
+  MaterialToH3,
+} from '../../../src/modules/materials/material-to-h3.entity';
+import { MaterialsToH3sService } from '../../../src/modules/materials/materials-to-h3s.service';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { H3Data } from '../../../src/modules/h3-data/h3-data.entity';
 import { range } from 'lodash';
 import { SourcingRecord } from '../../../src/modules/sourcing-records/sourcing-record.entity';
 import {
@@ -64,6 +73,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
   let indicatorRecordRepository: IndicatorRecordRepository;
   let businessUnitRepository: BusinessUnitRepository;
   let materialRepository: MaterialRepository;
+  let materialToH3Service: MaterialsToH3sService;
   let supplierRepository: SupplierRepository;
   let adminRegionRepository: AdminRegionRepository;
   let geoRegionRepository: GeoRegionRepository;
@@ -89,6 +99,10 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     );
     materialRepository =
       moduleFixture.get<MaterialRepository>(MaterialRepository);
+
+    materialToH3Service = moduleFixture.get<MaterialsToH3sService>(
+      MaterialsToH3sService,
+    );
 
     supplierRepository =
       moduleFixture.get<SupplierRepository>(SupplierRepository);
@@ -119,6 +133,8 @@ describe('Impact Table and Charts test suite (e2e)', () => {
   });
 
   afterEach(async () => {
+    await clearEntityTables([IndicatorRecord, MaterialToH3, H3Data, Material]);
+    await materialToH3Service.delete({});
     await materialRepository.delete({});
     await indicatorRepository.delete({});
     await unitRepositoruy.delete({});
@@ -173,6 +189,11 @@ describe('Impact Table and Charts test suite (e2e)', () => {
   });
 
   test('When I query the API for a Impact Table, then I should see all the data grouped by the requested entity', async () => {
+    const material: Material = await createMaterial({ name: 'Fake Material' });
+    const materialDescendant: Material = await createMaterial({
+      name: 'Fake Material Descendant',
+      parent: material,
+    });
     const adminRegion: AdminRegion = await createAdminRegion({
       name: 'Fake AdminRegion',
     });
@@ -180,12 +201,6 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     const indicator: Indicator = await createIndicator({
       name: 'Fake Indicator',
       unit,
-    });
-
-    const material: Material = await createMaterial({ name: 'Fake Material' });
-    const materialDescendant: Material = await createMaterial({
-      name: 'Fake Material Descendant',
-      parent: material,
     });
 
     const businessUnit: BusinessUnit = await createBusinessUnit({
@@ -294,6 +309,8 @@ describe('Impact Table and Charts test suite (e2e)', () => {
   });
 
   test('When I query the API for a Impact table, but requested range of years is not available, then I should get these years as projected values', async () => {
+    const material: Material = await createMaterial({ name: 'Fake Material' });
+
     const adminRegion: AdminRegion = await createAdminRegion({
       name: 'Fake AdminRegion',
     });
@@ -303,7 +320,6 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       unit,
     });
 
-    const material: Material = await createMaterial({ name: 'Fake Material' });
     const businessUnit: BusinessUnit = await createBusinessUnit({
       name: 'Fake Business Unit',
     });
@@ -350,6 +366,8 @@ describe('Impact Table and Charts test suite (e2e)', () => {
   });
 
   test('When I query the API for a Impact table Then I should get the calculated total purchased values', async () => {
+    const material: Material = await createMaterial({ name: 'Fake Material' });
+
     const adminRegion: AdminRegion = await createAdminRegion({
       name: 'Fake AdminRegion',
     });
@@ -359,7 +377,6 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       unit,
     });
 
-    const material: Material = await createMaterial({ name: 'Fake Material' });
     const businessUnit: BusinessUnit = await createBusinessUnit({
       name: 'Fake Business Unit',
     });
@@ -786,6 +803,11 @@ describe('Impact Table and Charts test suite (e2e)', () => {
   });
 
   describe('Group By tests', () => {
+    test('Impact table grouped by Material should be successful', async () => {
+      const material: Material = await createMaterial({
+        name: 'Fake Material',
+      });
+
     test('When I query the API for a Impact table grouped by material Then I should get the correct data', async () => {
       const adminRegion: AdminRegion = await createAdminRegion({
         name: 'Fake AdminRegion',
@@ -828,9 +850,17 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       // Creating Sourcing Records and Indicator Records for previously created Sourcing locations with different Materials
       for await (const [index, year] of [2010, 2011, 2012].entries()) {
         const startTonnage: number = 100;
+        const fakeH3: H3Data = await createH3Data();
+        const materialToH3: MaterialToH3 = await createMaterialToH3(
+          material.id,
+          fakeH3.id,
+          MATERIAL_TO_H3_TYPE.HARVEST,
+        );
+
         const indicatorRecord1: IndicatorRecord = await createIndicatorRecord({
           value: 1000 + index / 0.02,
           indicator,
+          materialH3DataId: materialToH3.h3DataId,
         });
 
         await createSourcingRecord({
@@ -843,6 +873,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         const indicatorRecord2: IndicatorRecord = await createIndicatorRecord({
           value: 2000 + index / 0.02,
           indicator,
+          materialH3DataId: materialToH3.h3DataId,
         });
 
         await createSourcingRecord({
@@ -874,6 +905,16 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     });
 
     test('When I query the API for a Impact table grouped by material Then I should get the correct data', async () => {
+    test('Impact table grouped by Nested Materials should be successful', async () => {
+      const material: Material = await createMaterial({
+        name: 'Fake Material',
+      });
+      const fakeH3 = await createH3Data();
+      const materiaLToH3 = await createMaterialToH3(
+        material.id,
+        fakeH3.id,
+        MATERIAL_TO_H3_TYPE.HARVEST,
+      );
       const adminRegion: AdminRegion = await createAdminRegion({
         name: 'Fake AdminRegion',
       });
@@ -922,6 +963,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         const indicatorRecord1: IndicatorRecord = await createIndicatorRecord({
           value: 2000 + index / 0.02,
           indicator,
+          materialH3DataId: materiaLToH3.h3DataId,
         });
 
         await createSourcingRecord({
@@ -934,6 +976,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         const indicatorRecord2: IndicatorRecord = await createIndicatorRecord({
           value: 1000 + index / 0.02,
           indicator,
+          materialH3DataId: materiaLToH3.h3DataId,
         });
 
         await createSourcingRecord({
@@ -1017,6 +1060,16 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     });
 
     test('When I query the API for a Impact table grouped by region Then I should get the correct data', async () => {
+    test('Impact table grouped by Region should be successful', async () => {
+      const material: Material = await createMaterial({
+        name: 'Fake Material',
+      });
+      const fakeH3 = await createH3Data();
+      const materiaLToH3 = await createMaterialToH3(
+        material.id,
+        fakeH3.id,
+        MATERIAL_TO_H3_TYPE.HARVEST,
+      );
       const adminRegion1: AdminRegion = await createAdminRegion({
         name: 'Fake AdminRegion 1',
       });
@@ -1028,10 +1081,6 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       const indicator: Indicator = await createIndicator({
         name: 'Fake Indicator',
         unit,
-      });
-
-      const material: Material = await createMaterial({
-        name: 'Fake Material',
       });
 
       const businessUnit: BusinessUnit = await createBusinessUnit({
@@ -1062,6 +1111,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         const indicatorRecord1: IndicatorRecord = await createIndicatorRecord({
           value: 600 + index / 0.02,
           indicator,
+          materialH3DataId: materiaLToH3.h3DataId,
         });
 
         await createSourcingRecord({
@@ -1074,6 +1124,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         const indicatorRecord2: IndicatorRecord = await createIndicatorRecord({
           value: 500 + index / 0.02,
           indicator,
+          materialH3DataId: materiaLToH3.h3DataId,
         });
 
         await createSourcingRecord({

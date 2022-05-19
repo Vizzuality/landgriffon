@@ -133,10 +133,18 @@ async function createIndicatorRecord(
 async function createIndicatorRecordV2(
   additionalData: Partial<IndicatorRecord> = {},
 ): Promise<IndicatorRecord> {
+  const basicMaterial: Material = await createMaterial();
+  const basicH3: H3Data = await createH3Data();
+  const basicMaterialToH3: MaterialToH3 = await createMaterialToH3(
+    basicMaterial.id,
+    basicH3.id,
+    MATERIAL_TO_H3_TYPE.HARVEST,
+  );
   const indicatorRecord = IndicatorRecord.merge(
     new IndicatorRecord(),
     {
       value: 2000,
+      materialH3DataId: basicMaterialToH3.h3DataId,
     },
     additionalData,
   );

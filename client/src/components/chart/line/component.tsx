@@ -7,7 +7,6 @@ import { LineChartProps } from './types';
 
 const LineChart: FC<LineChartProps> = ({
   width = 200,
-  height = 50,
   margin = {
     left: 5,
     top: 5,

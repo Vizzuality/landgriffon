@@ -2,8 +2,8 @@ import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-c
 import { IndicatorSource } from 'modules/indicator-sources/indicator-source.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import {
-  ScenarioIntervention,
   SCENARIO_INTERVENTION_TYPE,
+  ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { Material } from 'modules/materials/material.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
@@ -27,6 +27,7 @@ import {
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Task, TASK_STATUS, TASK_TYPE } from 'modules/tasks/task.entity';
 import { Target } from 'modules/targets/target.entity';
+import { H3DataRepository } from '../src/modules/h3-data/h3-data.repository';
 
 async function createAdminRegion(
   additionalData: Partial<AdminRegion> = {},
@@ -60,8 +61,8 @@ async function createH3Data(
   const h3Data = H3Data.merge(
     new H3Data(),
     {
-      h3tableName: 'h3tableName',
-      h3columnName: 'h3columnName',
+      h3tableName: H3DataRepository.generateRandomTableName(),
+      h3columnName: H3DataRepository.generateRandomTableName(),
       h3resolution: 6,
       year: 2020,
     },
@@ -108,11 +109,19 @@ async function createIndicatorRecord(
   additionalData: Partial<IndicatorRecord> = {},
 ): Promise<IndicatorRecord> {
   const sourcingRecord: SourcingRecord = await createSourcingRecord();
+  const basicMaterial: Material = await createMaterial();
+  const basicH3: H3Data = await createH3Data();
+  const basicMaterialToH3: MaterialToH3 = await createMaterialToH3(
+    basicMaterial.id,
+    basicH3.id,
+    MATERIAL_TO_H3_TYPE.HARVEST,
+  );
   const indicatorRecord = IndicatorRecord.merge(
     new IndicatorRecord(),
     {
       value: 2000,
       sourcingRecordId: sourcingRecord.id,
+      materialH3DataId: basicMaterialToH3.h3DataId,
     },
     additionalData,
   );

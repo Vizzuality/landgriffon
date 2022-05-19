@@ -16,7 +16,6 @@ import {
   ImpactTableRows,
   ImpactTableRowsValues,
   PaginatedImpactTable,
-  YearSumData,
 } from 'modules/impact/dto/response-impact-table.dto';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
@@ -25,13 +24,13 @@ import { MaterialsService } from 'modules/materials/materials.service';
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { ImpactTableEntityType } from 'types/impact-table-entity.type';
 import { DEFAULT_PAGINATION, FetchSpecification } from 'nestjs-base-service';
-import { PaginationMeta } from 'utils/app-base.service';
 import { PaginatedEntitiesDto } from 'modules/impact/dto/paginated-entities.dto';
 import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-tree-with-options.dto';
 import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
 import { GetAdminRegionTreeWithOptionsDto } from 'modules/admin-regions/dto/get-admin-region-tree-with-options.dto';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SOURCING_LOCATION_TYPE_BY_INTERVENTION } from 'modules/sourcing-locations/sourcing-location.entity';
+import { PaginationMeta } from 'utils/app-base.service';
 
 @Injectable()
 export class ImpactService {
@@ -82,6 +81,21 @@ export class ImpactService {
         paginatedEntities.entities,
       );
 
+    // If Impact table is for Scenario Comparison, data for Impact table shall be processed accordingly
+
+    if (impactTableDto.scenarioId) {
+      const dataForScenarioImpactTable =
+        ImpactService.processDataForScenarioImpactTable(dataForImpactTable);
+
+      const impactTable: ImpactTable = this.buildImpactTable(
+        impactTableDto,
+        indicators,
+        dataForScenarioImpactTable,
+        this.buildImpactTableRowsSkeleton(paginatedEntities.entities),
+      );
+
+      return { data: impactTable, metadata: paginatedEntities.metadata };
+    }
     const impactTable: ImpactTable = this.buildImpactTable(
       impactTableDto,
       indicators,
@@ -324,69 +338,13 @@ export class ImpactService {
     }
   }
 
-    // Check if any ids are left after pagination, not to pass empty array
-    const dataForImpactTable: ImpactTableData[] =
-      entitiesWithPagination.entities.length > 0
-        ? await this.sourcingRecordService.getDataForImpactTable(impactTableDto)
-        : [];
-
-    /* If impact table is for scenario, we need to add additional properties to the table data: 
-      - impact before intervention (impact)
-      - impact of intervention (interventionImpact)
-      - calculate differences - absolute and in percentage   
-      */
-    if (impactTableDto.scenarioId) {
-      const dataForScenario: any = dataForImpactTable.reduce(
-        (
-          result: { [index: string]: ImpactTableData },
-          item: ImpactTableData,
-        ) => {
-          const { impact, typeByIntervention, ...commonProperties } = item;
-          const key: string = Object.values(commonProperties).join('-');
-          const prevItem = result[key] || {};
-          const {
-            impact: prevImpact = 0,
-            interventionImpact: prevInterventionImpact = 0,
-          } = prevItem;
-
-          result[key] = {
-            ...item,
-            impact:
-              typeByIntervention ===
-              SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED
-                ? impact
-                : prevImpact,
-            interventionImpact:
-              typeByIntervention ===
-              SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING
-                ? impact
-                : prevInterventionImpact,
-          };
-          return result;
-        },
-        {},
-      );
-
-      const dataForScenarioImpactTable: any = Object.values(dataForScenario);
-
-      const scenarioImpactTable: ImpactTable = this.buildImpactTable(
-        impactTableDto,
-        indicators,
-        dataForScenarioImpactTable,
-        this.buildImpactTableRowsSkeleton(entitiesWithPagination.entities),
-      );
-      return {
-        data: scenarioImpactTable,
-        metadata: entitiesWithPagination.metadata,
-      };
-    }
-    const impactTable: ImpactTable = this.buildImpactTable(
-      impactTableDto,
-      indicators,
-      dataForImpactTable,
-      this.buildImpactTableRowsSkeleton(entitiesWithPagination.entities),
-    );
-    return { data: impactTable, metadata: entitiesWithPagination.metadata };
+  private getDataForImpactTable(
+    impactTableDto: GetImpactTableDto,
+    entities: ImpactTableEntityType[],
+  ): Promise<ImpactTableData[]> {
+    return entities.length > 0
+      ? this.sourcingRecordService.getDataForImpactTable(impactTableDto)
+      : Promise.resolve([]);
   }
 
   private buildImpactTable(
@@ -705,5 +663,43 @@ export class ImpactService {
         page,
       }),
     };
+  }
+
+  private static processDataForScenarioImpactTable(
+    dataForImpactTable: ImpactTableData[],
+  ): ImpactTableData[] {
+    const dataForScenarioImpactTable: { [index: string]: ImpactTableData } =
+      dataForImpactTable.reduce(
+        (
+          result: { [index: string]: ImpactTableData },
+          item: ImpactTableData,
+        ) => {
+          const { impact, typeByIntervention, ...commonProperties } = item;
+          const key: string = Object.values(commonProperties).join('-');
+          const prevItem = result[key] || {};
+          const {
+            impact: prevImpact = 0,
+            interventionImpact: prevInterventionImpact = 0,
+          } = prevItem;
+
+          result[key] = {
+            ...item,
+            impact:
+              typeByIntervention ===
+              SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED
+                ? impact
+                : prevImpact,
+            interventionImpact:
+              typeByIntervention ===
+              SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING
+                ? impact
+                : prevInterventionImpact,
+          };
+          return result;
+        },
+        {},
+      );
+
+    return Object.values(dataForScenarioImpactTable);
   }
 }

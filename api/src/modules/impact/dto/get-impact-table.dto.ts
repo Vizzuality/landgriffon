@@ -76,6 +76,11 @@ export class GetImpactTableDto {
   })
   @Type(() => String)
   locationTypes?: LOCATION_TYPES_PARAMS[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID(4)
+  scenarioId?: string;
 }
 
 export class GetRankedImpactTableDto extends GetImpactTableDto {
@@ -100,8 +105,4 @@ export class GetRankedImpactTableDto extends GetImpactTableDto {
     message: `sort property must be either 'ASC' (Ascendant) or 'DES' (Descendent)`,
   })
   sort?: string; // ASC or DESC, will be DESC by default
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsUUID(4)
-  scenarioId?: string;
 }

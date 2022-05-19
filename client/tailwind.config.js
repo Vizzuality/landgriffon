@@ -13,6 +13,7 @@ module.exports = {
         sans: ['Public Sans', 'sans-serif'],
       },
       fontSize: {
+        xs: '12px',
         '2xs': '0.625rem',
       },
       height: {

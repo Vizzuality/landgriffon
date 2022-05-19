@@ -19,6 +19,7 @@ const OpacityControl: React.FC<OpacityControlProps> = ({ opacity, onChange }) =>
 
   return (
     <ToolTip
+      arrow={false}
       content={
         <div className="bg-white px-4 py-1 rounded-md w-52">
           <div className="text-left text-gray-700">Opacity</div>

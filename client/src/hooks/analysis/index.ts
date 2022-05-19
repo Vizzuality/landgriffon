@@ -12,7 +12,17 @@ import type { RGBColor } from 'types';
 import type { AnalysisChart } from './types';
 import type { Intervention } from './types';
 
-const COLOR_SCALE = chroma.scale(['#8DD3C7', '#BEBADA', '#FDB462']);
+const COLOR_SCALE = chroma.scale([
+  '#E1E1E1',
+  '#AAD463',
+  '#FDB462',
+  '#9CBB97',
+  '#80B1D3',
+  '#FB968A',
+  '#BEBADA',
+  '#FFFFB3',
+  '#8DD3C7',
+]);
 
 export function useColors(): RGBColor[] {
   const { layer } = useAppSelector(analysisFilters);
@@ -31,6 +41,7 @@ export function useAnalysisChart(): AnalysisChart {
   const parsedImpact = data?.impactTable.map((data) => ({
     id: data.indicatorId,
     indicator: data.indicatorShortName,
+    unit: data.metadata.unit,
     values: data.yearSum,
     children: data.rows.map((row) => ({
       id: row.name,
@@ -41,7 +52,7 @@ export function useAnalysisChart(): AnalysisChart {
 
   return useMemo(() => {
     const parsedData = parsedImpact.map((d) => {
-      const { id, indicator: indicatorName, children } = d;
+      const { id, indicator: indicatorName, children, unit: indicatorUnit } = d;
 
       const years = uniq(
         flatten(
@@ -78,6 +89,7 @@ export function useAnalysisChart(): AnalysisChart {
 
       return {
         id,
+        unit: indicatorUnit,
         indicator: indicatorName,
         keys,
         values,

@@ -3,5 +3,7 @@
   "screenshotOnRunFailure": false,
   "video": false,
   "videoUploadOnPasses": false,
-  "ignoreTestFiles": "*.ts"
+  "experimentalSessionAndOrigin": true,
+  "viewportWidth": 1600,
+  "viewportHeight": 1000
 }

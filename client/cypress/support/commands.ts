@@ -32,7 +32,7 @@ Cypress.Commands.addAll({
     cy.intercept({ method: 'POST', url: '/api/auth/callback/credentials*' }).as('login');
     const username = Cypress.env('USERNAME');
     const password = Cypress.env('PASSWORD');
-    cy.session([username, username], () => {
+    cy.session([username, password], () => {
       cy.visit('/');
       cy.dataCy('username').type(username);
       cy.dataCy('password').type(password);

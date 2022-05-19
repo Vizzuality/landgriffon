@@ -1,7 +1,0 @@
-{
-  "baseUrl": "http://localhost:3000",
-  "watchForFileChanges": true,
-  "experimentalSessionAndOrigin": true,
-  "viewportWidth": 1600,
-  "viewportHeight": 1200
-}

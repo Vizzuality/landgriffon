@@ -6,24 +6,15 @@ import Tooltip from 'components/tooltip';
 
 import { InfoTooltipProps } from './types';
 
-export const InfoToolTip: React.FC<InfoTooltipProps> = ({
-  icon = 'solid',
-  info,
-  ...props
-}: InfoTooltipProps) => {
-  const mergeProps = {
-    placement: 'right',
-    ...props,
-  };
-
+export const InfoToolTip: React.FC<InfoTooltipProps> = ({ icon = 'solid', info, ...props }) => {
   return (
     <Tooltip
       content={
-        <div className="bg-gray-900 p-4 rounded-md w-52 text-white text-left text-xs">{info}</div>
+        <div className="bg-gray-900 p-4 rounded-md w-52 text-xs text-white text-left">{info}</div>
       }
       className="w-54 text-center"
       theme="dark"
-      {...mergeProps}
+      {...props}
     >
       {icon === 'outline' && <Outline className="w-4 h-4 text-gray-900" />}
       {icon === 'solid' && <Solid className="w-4 h-4 text-gray-900" />}

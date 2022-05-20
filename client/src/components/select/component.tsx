@@ -1,11 +1,42 @@
 import { useCallback } from 'react';
 import classNames from 'classnames';
-import ReactSelect from 'react-select';
+import ReactSelect, { Theme, defaultTheme } from 'react-select';
+import { ChevronDownIcon } from '@heroicons/react/outline';
+import tw from 'twin.macro';
+
+import useFuse from 'hooks/fuse';
 
 import Loading from 'components/loading';
+// import defaultTheme from './themes/default';
 
 import type { SelectProps } from './types';
-import useFuse from 'hooks/fuse';
+
+/**
+ * Overriding default React Select theme
+ * https://react-select.com/styles#overriding-the-theme
+ */
+const DEFAULT_THEME: Theme = {
+  ...defaultTheme,
+  borderRadius: 6,
+  colors: {
+    ...defaultTheme.colors,
+    primary: '#00634A',
+    primary25: '#EBF6F1',
+  },
+  spacing: {
+    ...defaultTheme.spacing,
+    controlHeight: 40,
+  },
+};
+
+const customStyles = {
+  // control: (provided)
+  option: (provided, state) => ({
+    ...provided,
+    ...tw`text-gray-900 text-sm cursor-pointer hover:bg-green-50`,
+    ...(state.isDisabled && tw`bg-green-700`),
+  }),
+};
 
 const SEARCH_OPTIONS = {
   includeScore: false,
@@ -64,6 +95,7 @@ const Select: React.FC<SelectProps> = ({
 
   return (
     <ReactSelect
+      styles={customStyles}
       placeholder={placeholder}
       onInputChange={handleSearch}
       onChange={handleChange}
@@ -77,43 +109,46 @@ const Select: React.FC<SelectProps> = ({
       isClearable={allowEmpty}
       isSearchable={showSearch}
       noOptionsMessage={() => <div className="p-2 text-sm">No results</div>}
+      theme={(theme) => ({ ...theme, ...DEFAULT_THEME })}
       components={{
-        Option: ({
-          innerProps,
-          innerRef,
-          isSelected,
-          isFocused,
-          isDisabled,
-          data: { label, extraInfo },
-        }) => (
-          <div {...innerProps} ref={innerRef}>
-            <div
-              className={classNames(
-                isFocused ? 'bg-green-50 text-green-700' : 'text-gray-900',
-                isSelected && 'bg-green-50 text-green-700',
-                'cursor-pointer select-none relative py-2 pl-4 pr-4',
-                isDisabled && 'text-opacity-50 cursor-default',
-              )}
-            >
-              <div className="flex flex-row gap-x-2">
-                <div
-                  className={classNames(
-                    isSelected ? 'font-semibold' : 'font-normal',
-                    'block text-sm truncate',
-                  )}
-                >
-                  {label}
-                </div>
-                {extraInfo && (
-                  <div>
-                    <i className="text-gray-600 text-sm">{extraInfo}</i>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        ),
-        LoadingIndicator: () => <Loading />,
+        // Option: ({
+        //   innerProps,
+        //   innerRef,
+        //   isSelected,
+        //   isFocused,
+        //   isDisabled,
+        //   data: { label, extraInfo },
+        // }) => (
+        //   <div {...innerProps} ref={innerRef}>
+        //     <div
+        //       className={classNames(
+        //         isFocused ? 'bg-green-50 text-green-700' : 'text-gray-900',
+        //         isSelected && 'bg-green-50 text-green-700',
+        //         'cursor-pointer select-none relative py-2 pl-4 pr-4',
+        //         isDisabled && 'text-opacity-50 cursor-default',
+        //       )}
+        //     >
+        //       <div className="flex flex-row gap-x-2">
+        //         <div
+        //           className={classNames(
+        //             isSelected ? 'font-semibold' : 'font-normal',
+        //             'block text-sm truncate',
+        //           )}
+        //         >
+        //           {label}
+        //         </div>
+        //         {extraInfo && (
+        //           <div>
+        //             <i className="text-gray-600 text-sm">{extraInfo}</i>
+        //           </div>
+        //         )}
+        //       </div>
+        //     </div>
+        //   </div>
+        // ),
+        IndicatorSeparator: null,
+        LoadingIndicator: () => <Loading className="text-green-700" />,
+        DropdownIndicator: () => <ChevronDownIcon className="h-4 w-4 mx-4 text-gray-900" />,
       }}
     />
   );

@@ -52,5 +52,9 @@
   },
   "geolocation": {
     "gmapsApiKey": null
+  },
+
+  "map": {
+    "distributed": true
   }
 }

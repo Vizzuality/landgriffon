@@ -20,5 +20,8 @@
     "host": "localhost",
     "port": 6379,
     "importQueueName": "excel-import"
+  },
+  "map": {
+    "distributed": true
   }
 }

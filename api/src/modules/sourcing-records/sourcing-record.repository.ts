@@ -232,7 +232,6 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       .orderBy('year', 'ASC')
       .addOrderBy('name');
 
-    console.log(impactDataQueryBuilder.getSql());
     const dataForImpactTable: ImpactTableData[] =
       await impactDataQueryBuilder.getRawMany();
 

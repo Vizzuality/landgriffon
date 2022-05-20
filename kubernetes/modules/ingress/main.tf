@@ -45,7 +45,7 @@ resource "aws_route53_record" "api-landgriffon-com" {
   name    = local.api_domain
   type    = "CNAME"
   ttl     = "300"
-  records = [kubernetes_ingress.landgriffon.status[0].load_balancer[0].ingress[0].hostname]
+  records = [kubernetes_ingress_v1.landgriffon.status[0].load_balancer[0].ingress[0].hostname]
 }
 
 resource "aws_route53_record" "client-landgriffon-com" {
@@ -53,7 +53,7 @@ resource "aws_route53_record" "client-landgriffon-com" {
   name    = local.client_domain
   type    = "CNAME"
   ttl     = "300"
-  records = [kubernetes_ingress.landgriffon.status[0].load_balancer[0].ingress[0].hostname]
+  records = [kubernetes_ingress_v1.landgriffon.status[0].load_balancer[0].ingress[0].hostname]
 }
 
 resource "aws_acm_certificate_validation" "aws_env_resourcewatch_org_domain_cert_validation" {
@@ -61,7 +61,7 @@ resource "aws_acm_certificate_validation" "aws_env_resourcewatch_org_domain_cert
   validation_record_fqdns = [for record in aws_route53_record.landgriffon-com-record : record.fqdn]
 }
 
-resource "kubernetes_ingress" "landgriffon" {
+resource "kubernetes_ingress_v1" "landgriffon" {
   wait_for_load_balancer = true
 
   metadata {
@@ -85,9 +85,15 @@ resource "kubernetes_ingress" "landgriffon" {
       secret_name = "landgriffon-certificate"
     }
 
-    backend {
-      service_name = "api"
-      service_port = 3000
+    default_backend {
+      service {
+        name = "api"
+        port {
+          number = 3000
+        }
+      }
+
+
     }
 
     rule {
@@ -95,8 +101,12 @@ resource "kubernetes_ingress" "landgriffon" {
       http {
         path {
           backend {
-            service_name = "api"
-            service_port = 3000
+            service {
+              name = "api"
+              port {
+                number = 3000
+              }
+            }
           }
         }
       }
@@ -107,8 +117,12 @@ resource "kubernetes_ingress" "landgriffon" {
       http {
         path {
           backend {
-            service_name = "client"
-            service_port = 3000
+            service {
+              name = "client"
+              port {
+                number = 3000
+              }
+            }
           }
         }
       }

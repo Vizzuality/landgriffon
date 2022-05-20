@@ -170,6 +170,11 @@ resource "kubernetes_deployment" "api_deployment" {
           }
 
           env {
+            name = "DISTRIBUTED_MAP"
+            value = "true"
+          }
+
+          env {
             name = "REQUIRE_USER_AUTH"
             value = "true"
           }

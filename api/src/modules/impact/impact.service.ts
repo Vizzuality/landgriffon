@@ -84,7 +84,7 @@ export class ImpactService {
     // If Impact table is for Scenario Comparison, data for Impact table shall be processed accordingly
 
     if (impactTableDto.scenarioId) {
-      const dataForScenarioImpactTable =
+      const dataForScenarioImpactTable: ImpactTableData[] =
         ImpactService.processDataForScenarioImpactTable(dataForImpactTable);
 
       const impactTable: ImpactTable = this.buildImpactTable(
@@ -538,11 +538,6 @@ export class ImpactService {
   }
 
   /**
-   * @description Retrieve base estimates for all indicators
-   */
-  async getEstimates(): Promise<any> {}
-
-  /**
    * @description Recursive function that populates and returns
    * aggregated data of parent entity and all its children
    */
@@ -665,6 +660,13 @@ export class ImpactService {
     };
   }
 
+  /**
+   * @description Function that processes impact data for a Scenario, retrieved from DB,
+   * finds 2 objects with same groupBy name (material, supplier, etc) and year, sbut with different
+   * intervention type (replacing or canceled) and reduces it to 1 object with impact value 'before Intervention',
+   * impact value of the Intervention and absolute / percentage differences between them
+   */
+
   private static processDataForScenarioImpactTable(
     dataForImpactTable: ImpactTableData[],
   ): ImpactTableData[] {
@@ -676,7 +678,7 @@ export class ImpactService {
         ) => {
           const { impact, typeByIntervention, ...commonProperties } = item;
           const key: string = Object.values(commonProperties).join('-');
-          const prevItem = result[key] || {};
+          const prevItem: ImpactTableData = result[key] || {};
           const {
             impact: prevImpact = 0,
             interventionImpact: prevInterventionImpact = 0,

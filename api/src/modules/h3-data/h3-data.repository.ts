@@ -187,7 +187,7 @@ export class H3DataRepository extends Repository<H3Data> {
     // TODO: Feature toggle to switch between distributed / non-distributed impact map
     //       delete when M.Views are set with proper performance
     const distributed: boolean =
-      config.get<string>('map.distributed').toLowerCase() === 'true';
+      `${config.get('map.distributed')}`.toLowerCase() === 'true';
 
     if (!distributed) {
       const query: SelectQueryBuilder<any> = getManager()

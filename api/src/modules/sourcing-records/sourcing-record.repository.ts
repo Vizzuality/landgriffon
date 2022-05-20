@@ -1,7 +1,6 @@
 import {
   Brackets,
   EntityRepository,
-  getManager,
   Repository,
   SelectQueryBuilder,
   WhereExpressionBuilder,
@@ -23,6 +22,8 @@ import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
+import { Scenario } from 'modules/scenarios/scenario.entity';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 
 export class ImpactTableData {
   year: number;
@@ -132,27 +133,19 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
 
     // If Impact table is for scenario - scenarioId filter shall be added, else only SLs not belonging to interventions shall be chosen
 
-    let scenarioInterventionIds: string[] = [];
     if (scenarioId) {
-      const scenarioInterventions: { id: string }[] = await getManager()
-        .createQueryBuilder()
-        .select('id')
-        .from('scenario_intervention', 'si')
-        .where('si."scenarioId" = :scenarioId', { scenarioId })
-        .getRawMany();
-
-      scenarioInterventionIds = scenarioInterventions.map(
-        (si: { id: string }) => si.id,
-      );
-    }
-
-    if (scenarioInterventionIds.length > 0) {
-      impactDataQueryBuilder.andWhere(
-        'sourcingLocation.scenarioInterventionId IN (:...scenarioInterventionIds)',
-        {
-          scenarioInterventionIds,
-        },
-      );
+      impactDataQueryBuilder
+        .innerJoin(
+          ScenarioIntervention,
+          'scenarioIntervention',
+          'sourcingLocation.scenarioInterventionId = scenarioIntervention.id',
+        )
+        .innerJoin(
+          Scenario,
+          'scenario',
+          'scenarioIntervention.scenarioId = scenario.id',
+        )
+        .andWhere('scenario.id = :scenarioId', { scenarioId });
     } else {
       impactDataQueryBuilder.andWhere(
         'sourcingLocation.scenarioInterventionId is null',
@@ -239,6 +232,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       .orderBy('year', 'ASC')
       .addOrderBy('name');
 
+    console.log(impactDataQueryBuilder.getSql());
     const dataForImpactTable: ImpactTableData[] =
       await impactDataQueryBuilder.getRawMany();
 

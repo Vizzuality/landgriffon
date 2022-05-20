@@ -75,7 +75,7 @@ export class ImpactService {
       paginatedEntities.entities,
     );
 
-    const dataForImpactTable: ImpactTableData[] =
+    let dataForImpactTable: ImpactTableData[] =
       await this.getDataForImpactTable(
         impactTableDto,
         paginatedEntities.entities,
@@ -84,18 +84,10 @@ export class ImpactService {
     // If Impact table is for Scenario Comparison, data for Impact table shall be processed accordingly
 
     if (impactTableDto.scenarioId) {
-      const dataForScenarioImpactTable: ImpactTableData[] =
+      dataForImpactTable =
         ImpactService.processDataForScenarioImpactTable(dataForImpactTable);
-
-      const impactTable: ImpactTable = this.buildImpactTable(
-        impactTableDto,
-        indicators,
-        dataForScenarioImpactTable,
-        this.buildImpactTableRowsSkeleton(paginatedEntities.entities),
-      );
-
-      return { data: impactTable, metadata: paginatedEntities.metadata };
     }
+
     const impactTable: ImpactTable = this.buildImpactTable(
       impactTableDto,
       indicators,

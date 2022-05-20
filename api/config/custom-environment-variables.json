@@ -44,5 +44,8 @@
   },
   "geolocation": {
     "gmapsApiKey": "GMAPS_API_KEY"
+  },
+  "map": {
+    "distributed": "DISTRIBUTED_MAP"
   }
 }

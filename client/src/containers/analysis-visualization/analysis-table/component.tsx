@@ -51,6 +51,7 @@ const dataToCsv: (tableData: ITableData) => string = (tableData) => {
 
 const AnalysisTable: React.FC = () => {
   const { data: impactData, isLoading, isFetching } = useImpactData();
+  const { meta } = impactData;
   const {
     data: { impactTable },
   } = impactData;
@@ -246,20 +247,23 @@ const AnalysisTable: React.FC = () => {
             Viewing absolute values for <b>Actual Data</b>
           </p>
         </div>
-        <LinkButton
-          href={csv}
-          theme="secondary"
-          size="base"
-          className="flex-shrink-0"
-          disabled={isLoading}
-          download="report.csv"
-        >
-          <DownloadIcon className="w-5 h-4 mr-2 text-black" />
-          Download
-        </LinkButton>
+        <div>
+          <LinkButton
+            href={csv}
+            theme="secondary"
+            size="base"
+            className="flex-shrink-0"
+            disabled={isLoading}
+            download="report.csv"
+          >
+            <DownloadIcon className="w-5 h-4 mr-2 text-black" />
+            Download
+          </LinkButton>
+          <p className="mt-2">TOTAL {meta.totalItems} ROWS</p>
+        </div>
       </div>
       <div className="relative mt-2">
-        {isLoading && <Loading className="text-green-700 -ml-1 mr-3" />}
+        {isLoading && <Loading className="mr-3 -ml-1 text-green-700" />}
 
         <Table isLoading={isFetching} {...tableProps} />
       </div>

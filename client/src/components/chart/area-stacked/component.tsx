@@ -284,7 +284,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
             hideTicks
             hideAxisLine
             numTicks={4}
-            tickFormat={format('.1')}
+            tickFormat={format('.1s')}
             tickLabelProps={() => ({
               dx: '-0.25em',
               dy: '0.25em',

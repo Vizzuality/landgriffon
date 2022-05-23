@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChevronDoubleLeftIcon } from '@heroicons/react/outline';
 import cx from 'classnames';
 
@@ -17,14 +17,6 @@ export const Legend: React.FC = () => {
   const dispatch = useAppDispatch();
   const layers = useAppSelector(analysisMap).layers;
 
-  const orderedLayers = useMemo(() => {
-    return (
-      Object.values(layers)
-        // .filter((legend) => legend.id !== 'h3-layer-impact')
-        .sort((a, b) => a.order - b.order)
-    );
-  }, [layers]);
-
   const handleShowLegend = useCallback(() => {
     setShowLegend(!showLegend);
   }, [showLegend]);
@@ -42,10 +34,24 @@ export const Legend: React.FC = () => {
     [],
   );
 
+  useEffect(() => {
+    dispatch(setLayerOrder(Object.keys(legends)));
+  }, [dispatch, legends]);
+
+  const orderedLayers = useMemo(() => {
+    const ordered = Object.values(layers)
+      // .filter((legend) => legend.id !== 'h3-layer-impact')
+      .sort((a, b) => a.order - b.order);
+
+    if (showContextualLayers) return ordered;
+
+    return ordered.filter((legend) => legend.id === 'h3-layer-impact');
+  }, [layers, showContextualLayers]);
+
   return (
     <div className="relative">
       {showLegend && (
-        <div className="absolute z-10 bottom-0 right-12 flex flex-col flex-grow shadow-sm bg-white border border-gray-200 rounded-lg w-80 max-w-xs">
+        <div className="absolute z-10 bottom-0 right-12 flex flex-col flex-grow shadow-sm bg-white border border-gray-200 rounded-lg overflow-hidden w-80 max-w-xs">
           <div className="flex items-center justify-between px-4 py-2">
             <div className="font-semibold text-gray-900 text-sm">Legend</div>
             <button
@@ -57,34 +63,18 @@ export const Legend: React.FC = () => {
               <span>{showContextualLayers ? 'Hide' : 'Show'} contextual layers</span>
             </button>
           </div>
-
-          {/* Contextual layers */}
-          {showContextualLayers && (
-            <Sortable
-              items={orderedLayers.map((layer) => layer.id)}
-              onChangeOrder={(orderedIds) => {
-                dispatch(setLayerOrder([...orderedIds]));
-              }}
-            >
-              {orderedLayers.map(({ id }) => (
-                <SortableItem key={id} id={id}>
-                  <div className="border-t border-gray-100">{legends[id]}</div>
-                </SortableItem>
-              ))}
-            </Sortable>
-          )}
-
-          {/* Main layer: it will be always active */}
-          <div
-            className="relative flex flex-col flex-grow border-t border-gray-100"
-            style={{
-              maxHeight: 400,
+          <Sortable
+            items={orderedLayers.map((layer) => layer.id)}
+            onChangeOrder={(orderedIds) => {
+              dispatch(setLayerOrder([...orderedIds]));
             }}
           >
-            <div>
-              <ImpactLegendItem />
-            </div>
-          </div>
+            {orderedLayers.map(({ id }) => (
+              <SortableItem key={id} id={id}>
+                <div className="border-t border-gray-100">{legends[id]}</div>
+              </SortableItem>
+            ))}
+          </Sortable>
         </div>
       )}
       <button

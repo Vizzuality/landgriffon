@@ -53,7 +53,7 @@ export const LegendItem: React.FC<LegendItemProps> = ({
   const info = useMetadataLayerInfo();
 
   return (
-    <div className={classNames('p-4 space-y-4 group', { 'bg-gray-50': !main })}>
+    <div className={classNames('pl-1 pr-4 py-4 space-y-4 group', { 'bg-gray-50': !main })}>
       {isLoading && <Loading />}
       {!isLoading && name && (
         <div className="w-full flex">
@@ -79,7 +79,7 @@ export const LegendItem: React.FC<LegendItemProps> = ({
         </div>
       )}
       {!isLoading && isActive && children && (
-        <div className="flex">
+        <div className="flex ml-2">
           <div className="flex-1">{children}</div>
           {unit && <div className="w-8 text-xs text-gray-500 -m-1">{unit}</div>}
         </div>

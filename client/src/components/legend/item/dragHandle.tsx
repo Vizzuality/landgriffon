@@ -21,7 +21,7 @@ const DragHandle: React.FC = () => {
       {Array(6)
         .fill(true)
         .map((_, i) => (
-          <div className="rounded-full bg-gray-400 w-[3px] h-[3px] m-auto" key={i} />
+          <div className="rounded-full bg-gray-300 w-[3px] h-[3px] m-auto" key={i} />
         ))}
     </div>
   );

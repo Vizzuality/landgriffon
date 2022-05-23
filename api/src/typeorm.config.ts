@@ -1,5 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as config from 'config';
+import { ImpactMaterializedView } from 'modules/impact/views/impact.materialized-view.entity';
 
 const dbConfig: any = config.get('db');
 
@@ -21,4 +22,5 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
     migrationsDir: 'migrations',
   },
   uuidExtension: 'pgcrypto',
+  entities: [ImpactMaterializedView],
 };

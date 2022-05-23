@@ -41,7 +41,7 @@ const LocationTypesFilter: React.FC<LocationTypeFilterProps> = ({
 
   return (
     <MultipleSelect
-      showSearch
+      showSearch={false}
       options={options}
       placeholder="Location types"
       onChange={onChange}

@@ -110,7 +110,7 @@ const MoreFilters: React.FC = () => {
                     <div>
                       <div className="mb-1">Material</div>
                       <Materials
-                        // multiple
+                        multiple
                         withSourcingLocations
                         current={selectedFilters.materials}
                         fitContent

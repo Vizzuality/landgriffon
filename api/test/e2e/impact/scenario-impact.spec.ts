@@ -2,24 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
-
-import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
 import { ImpactModule } from 'modules/impact/impact.module';
 import { Indicator } from 'modules/indicators/indicator.entity';
-
-import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
-import { MaterialRepository } from 'modules/materials/material.repository';
-import { SupplierRepository } from 'modules/suppliers/supplier.repository';
-import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
-import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
-import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
-import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
-import { IndicatorRepository } from 'modules/indicators/indicator.repository';
-import { SourcingLocationGroupRepository } from 'modules/sourcing-location-groups/sourcing-location-group.repository';
-import { UnitRepository } from 'modules/units/unit.repository';
 import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
-
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { createNewMaterialInterventionPreconditions } from './scenario-impact-preconditions/new-material-intervention.preconditions';
 import { createNewCoefficientsInterventionPreconditions } from './scenario-impact-preconditions/new-coefficients-intervention.preconditions';
@@ -30,20 +16,22 @@ import { newSupplierScenarioInterventionTable } from './scenario-impact-response
 import { createMultipleInterventionsPreconditions } from './scenario-impact-preconditions/mixed-interventions-scenario.preconditions';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { mixedInterventionsScenarioTable } from './scenario-impact-responses/mixed-interventions-scenario.response';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
+import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
+import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { Material } from 'modules/materials/material.entity';
+import { Unit } from 'modules/units/unit.entity';
+import { BusinessUnit } from 'modules/business-units/business-unit.entity';
+import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
+import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { Supplier } from 'modules/suppliers/supplier.entity';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 
 describe('Impact Table and Charts test suite (e2e)', () => {
   let app: INestApplication;
-  let indicatorRecordRepository: IndicatorRecordRepository;
-  let businessUnitRepository: BusinessUnitRepository;
-  let materialRepository: MaterialRepository;
-  let supplierRepository: SupplierRepository;
-  let adminRegionRepository: AdminRegionRepository;
-  let geoRegionRepository: GeoRegionRepository;
-  let sourcingLocationRepository: SourcingLocationRepository;
-  let sourcingRecordRepository: SourcingRecordRepository;
-  let indicatorRepository: IndicatorRepository;
-  let sourcingLocationGroupRepository: SourcingLocationGroupRepository;
-  let unitRepositoruy: UnitRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
@@ -51,57 +39,27 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       imports: [AppModule, ImpactModule],
     }).compile();
 
-    unitRepositoruy = moduleFixture.get<UnitRepository>(UnitRepository);
-
-    indicatorRecordRepository = moduleFixture.get<IndicatorRecordRepository>(
-      IndicatorRecordRepository,
-    );
-    businessUnitRepository = moduleFixture.get<BusinessUnitRepository>(
-      BusinessUnitRepository,
-    );
-    materialRepository =
-      moduleFixture.get<MaterialRepository>(MaterialRepository);
-
-    supplierRepository =
-      moduleFixture.get<SupplierRepository>(SupplierRepository);
-    adminRegionRepository = moduleFixture.get<AdminRegionRepository>(
-      AdminRegionRepository,
-    );
-    sourcingLocationRepository = moduleFixture.get<SourcingLocationRepository>(
-      SourcingLocationRepository,
-    );
-    sourcingRecordRepository = moduleFixture.get<SourcingRecordRepository>(
-      SourcingRecordRepository,
-    );
-    sourcingLocationGroupRepository =
-      moduleFixture.get<SourcingLocationGroupRepository>(
-        SourcingLocationGroupRepository,
-      );
-    geoRegionRepository =
-      moduleFixture.get<GeoRegionRepository>(GeoRegionRepository);
-    indicatorRecordRepository = moduleFixture.get<IndicatorRecordRepository>(
-      IndicatorRecordRepository,
-    );
-    indicatorRepository =
-      moduleFixture.get<IndicatorRepository>(IndicatorRepository);
-
     app = getApp(moduleFixture);
     await app.init();
     jwtToken = await saveUserAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {
-    await materialRepository.delete({});
-    await indicatorRepository.delete({});
-    await unitRepositoruy.delete({});
-    await businessUnitRepository.delete({});
-    await adminRegionRepository.delete({});
-    await geoRegionRepository.delete({});
-    await supplierRepository.delete({});
-    await indicatorRecordRepository.delete({});
-    await sourcingRecordRepository.delete({});
-    await sourcingLocationRepository.delete({});
-    await sourcingLocationGroupRepository.delete({});
+    await clearEntityTables([
+      IndicatorRecord,
+      MaterialToH3,
+      H3Data,
+      Material,
+      Indicator,
+      Unit,
+      BusinessUnit,
+      AdminRegion,
+      GeoRegion,
+      Supplier,
+      SourcingRecord,
+      SourcingLocation,
+      SourcingLocationGroup,
+    ]);
   });
 
   afterAll(async () => {

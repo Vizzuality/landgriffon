@@ -7,6 +7,7 @@ import Loading from 'components/loading';
 import OpacityControl from './opacityControl';
 import DragHandle from './dragHandle';
 import InfoToolTip from 'containers/info-tooltip/component';
+import classNames from 'classnames';
 
 export type LegendItemProps = {
   name: string | JSX.Element;
@@ -20,6 +21,7 @@ export type LegendItemProps = {
   onActiveChange?: (active: boolean) => void;
   opacity: number;
   onChangeOpacity: (opacity: number) => void;
+  main?: boolean;
 };
 
 export const LegendItem: React.FC<LegendItemProps> = ({
@@ -33,6 +35,7 @@ export const LegendItem: React.FC<LegendItemProps> = ({
   onActiveChange,
   opacity,
   onChangeOpacity,
+  main = false,
 }) => {
   const [isActive, setActive] = useState<boolean>(active);
   const handleChange = useCallback(
@@ -50,7 +53,7 @@ export const LegendItem: React.FC<LegendItemProps> = ({
   const info = useMetadataLayerInfo();
 
   return (
-    <div className="p-4 space-y-4">
+    <div className={classNames('p-4 space-y-4', { 'bg-gray-50': !main })}>
       {isLoading && <Loading />}
       {!isLoading && name && (
         <div className="w-full flex">

@@ -30,7 +30,7 @@ const Toggle: React.FC<ToggleProps> = ({ defaultActive = false, onChange }) => {
       <span className="sr-only">Use setting</span>
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute bg-white w-full h-full rounded-md"
+        className="pointer-events-none absolute bg-none w-full h-full rounded-md"
       />
       <span
         aria-hidden="true"

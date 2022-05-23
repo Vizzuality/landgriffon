@@ -16,7 +16,6 @@ export type LegendItemProps = {
   active?: boolean;
   isLoading?: boolean;
   showToolbar?: boolean;
-  showToggle?: boolean;
   children?: React.ReactNode;
   onActiveChange?: (active: boolean) => void;
   opacity: number;
@@ -30,7 +29,6 @@ export const LegendItem: React.FC<LegendItemProps> = ({
   active = false,
   isLoading = false,
   showToolbar = true,
-  showToggle = true,
   children,
   onActiveChange,
   opacity,
@@ -73,7 +71,7 @@ export const LegendItem: React.FC<LegendItemProps> = ({
             )}
           </div>
           <div className="ml-1 w-8">
-            {showToggle && <Toggle defaultActive={isActive} onChange={handleChange} />}
+            <Toggle defaultActive={isActive} onChange={handleChange} />
           </div>
         </div>
       )}

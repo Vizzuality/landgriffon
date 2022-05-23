@@ -157,7 +157,12 @@ export type ImpactData = {
   data: {
     impactTable: ImpactTableData[];
   };
-  metadata: Record<string, unknown>;
+  metadata: {
+    page?: number;
+    size?: number;
+    totalItems?: number;
+    totalPages?: number;
+  };
 };
 
 export type ImpactRanking = {

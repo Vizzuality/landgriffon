@@ -18,9 +18,11 @@ export const Legend: React.FC = () => {
   const layers = useAppSelector(analysisMap).layers;
 
   const orderedLayers = useMemo(() => {
-    return Object.values(layers)
-      .filter((legend) => legend.id !== 'h3-layer-impact')
-      .sort((a, b) => a.order - b.order);
+    return (
+      Object.values(layers)
+        // .filter((legend) => legend.id !== 'h3-layer-impact')
+        .sort((a, b) => a.order - b.order)
+    );
   }, [layers]);
 
   const handleShowLegend = useCallback(() => {
@@ -32,14 +34,18 @@ export const Legend: React.FC = () => {
   }, [showContextualLayers]);
 
   const legends = useMemo(
-    () => ({ 'h3-layer-material': <MaterialLegendItem />, 'h3-layer-risk': <RiskLegendItem /> }),
+    () => ({
+      'h3-layer-material': <MaterialLegendItem />,
+      'h3-layer-risk': <RiskLegendItem />,
+      'h3-layer-impact': <ImpactLegendItem />,
+    }),
     [],
   );
 
   return (
     <div className="relative">
       {showLegend && (
-        <div className="absolute z-10 bottom-0 right-12 flex flex-col flex-grow shadow-sm bg-white border border-gray-200 rounded w-80 max-w-xs">
+        <div className="absolute z-10 bottom-0 right-12 flex flex-col flex-grow shadow-sm bg-white border border-gray-200 rounded-lg w-80 max-w-xs">
           <div className="flex items-center justify-between px-4 py-2">
             <div className="font-semibold text-gray-900 text-sm">Legend</div>
             <button
@@ -57,7 +63,7 @@ export const Legend: React.FC = () => {
             <Sortable
               items={orderedLayers.map((layer) => layer.id)}
               onChangeOrder={(orderedIds) => {
-                dispatch(setLayerOrder([...orderedIds, 'h3-impact-layer']));
+                dispatch(setLayerOrder([...orderedIds]));
               }}
             >
               {orderedLayers.map(({ id }) => (

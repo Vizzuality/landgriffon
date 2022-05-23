@@ -30,6 +30,7 @@ const ImpactLayer = () => {
       active={impact.active}
       onChangeOpacity={handleOpacity}
       isLoading={impact.loading}
+      main
     >
       <LegendTypeChoropleth
         className="text-sm text-gray-500 flex-1"

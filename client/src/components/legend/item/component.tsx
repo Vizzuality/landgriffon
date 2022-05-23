@@ -53,13 +53,13 @@ export const LegendItem: React.FC<LegendItemProps> = ({
   const info = useMetadataLayerInfo();
 
   return (
-    <div className={classNames('p-4 space-y-4', { 'bg-gray-50': !main })}>
+    <div className={classNames('p-4 space-y-4 group', { 'bg-gray-50': !main })}>
       {isLoading && <Loading />}
       {!isLoading && name && (
         <div className="w-full flex">
           <div className="grow flex items-start justify-between">
             <div className="max-w-[210px] text-sm text-gray-500 flex flex-row justify-start gap-x-1">
-              <div>
+              <div className="invisible group-hover:visible">
                 <DragHandle />
               </div>
               <div>{name}</div>

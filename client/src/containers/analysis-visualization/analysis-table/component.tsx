@@ -259,7 +259,9 @@ const AnalysisTable: React.FC = () => {
             <DownloadIcon className="w-5 h-4 mr-2 text-black" />
             Download
           </LinkButton>
-          <p className="mt-2">TOTAL {metadata.totalItems} ROWS</p>
+          <div className="mt-3 font-sans text-xs font-bold leading-4 text-center text-gray-500 uppercase">
+            Total {metadata.totalItems} Rows
+          </div>
         </div>
       </div>
       <div className="relative mt-2">

@@ -29,7 +29,6 @@ const ImpactLayer = () => {
       opacity={impact.opacity}
       active={impact.active}
       onChangeOpacity={handleOpacity}
-      showToggle={false}
       isLoading={impact.loading}
     >
       <LegendTypeChoropleth

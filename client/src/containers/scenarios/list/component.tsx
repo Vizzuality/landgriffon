@@ -1,13 +1,15 @@
 import { useEffect, useState, useCallback } from 'react';
 import { RadioGroup } from '@headlessui/react';
 
-import { useAppSelector, useAppDispatch } from 'store/hooks';
-import { scenarios, setCurrentScenario } from 'store/features/analysis/scenarios';
+import { useAppDispatch } from 'store/hooks';
+import { setCurrentScenario } from 'store/features/analysis/scenarios';
 
 import ScenarioItem from 'containers/scenarios/item';
 import { ACTUAL_DATA } from '../constants';
 
 import type { Scenario, Scenarios } from '../types';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 type ScenariosListProps = {
   data: Scenarios;
@@ -19,42 +21,62 @@ const isScenarioSelected: (scenarioId: Scenario['id'], currentId: Scenario['id']
 ): boolean => scenarioId.toString() === currentId?.toString();
 
 const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProps) => {
-  const { currentScenario } = useAppSelector(scenarios);
   const dispatch = useAppDispatch();
-
   const [selected, setSelected] = useState(null);
-
   const handleOnChange = useCallback(({ id }) => dispatch(setCurrentScenario(id)), [dispatch]);
 
+  const {
+    query: { id },
+  } = useRouter();
+
   useEffect(() => {
-    if (data && !currentScenario) {
+    if (data && !id) {
       dispatch(setCurrentScenario(ACTUAL_DATA.id as string)); // first option of the list by default
     }
-    if (data && currentScenario) {
-      if (currentScenario === ACTUAL_DATA.id) {
+    if (data && id) {
+      if (id === ACTUAL_DATA.id) {
         setSelected(ACTUAL_DATA);
       } else {
-        setSelected(data.find(({ id }) => isScenarioSelected(id, currentScenario)));
+        setSelected(data.find(({ id: dataId }) => isScenarioSelected(dataId, id as string)));
       }
     }
-  }, [data, currentScenario, dispatch]);
+  }, [data, id, dispatch]);
 
   return (
     <RadioGroup value={selected} onChange={handleOnChange}>
       <RadioGroup.Label className="sr-only">Scenarios</RadioGroup.Label>
       <ul className="overflow-auto my-2 grid grid-cols-1 gap-5 sm:gap-2 sm:grid-cols-2 lg:grid-cols-1 relative">
-        <ScenarioItem
-          data={ACTUAL_DATA}
-          isSelected={isScenarioSelected(ACTUAL_DATA.id, currentScenario)}
-        />
+        <Link
+          href={{ pathname: '/analysis', query: { name: '/scenarios', id: `${id}` } }}
+          key={ACTUAL_DATA.id}
+          as="/analysis"
+          shallow
+          passHref
+        >
+          <a href={`/analysis`}>
+            <ScenarioItem
+              data={ACTUAL_DATA}
+              isSelected={isScenarioSelected(ACTUAL_DATA.id, id as string)}
+            />
+          </a>
+        </Link>
         {data.map((item) => {
           return (
-            <ScenarioItem
+            <Link
+              href={{ pathname: '/analysis', query: { name: '/scenarios', id: `${item.id}` } }}
               key={item.id}
-              data={item}
-              isSelected={isScenarioSelected(item.id, currentScenario)}
-              onClick={setSelected}
-            />
+              as={`/analysis/scenarios/${item.id}`}
+              shallow
+              passHref
+            >
+              <a href={`/analysis/scenarios/${item.id}`}>
+                <ScenarioItem
+                  key={item.id}
+                  data={item}
+                  isSelected={isScenarioSelected(item.id, id as string)}
+                />
+              </a>
+            </Link>
           );
         })}
       </ul>

@@ -51,8 +51,8 @@ const dataToCsv: (tableData: ITableData) => string = (tableData) => {
 
 const AnalysisTable: React.FC = () => {
   const { data: impactData, isLoading, isFetching } = useImpactData();
-  const { meta } = impactData;
   const {
+    metadata,
     data: { impactTable },
   } = impactData;
 
@@ -259,7 +259,7 @@ const AnalysisTable: React.FC = () => {
             <DownloadIcon className="w-5 h-4 mr-2 text-black" />
             Download
           </LinkButton>
-          <p className="mt-2">TOTAL {meta.totalItems} ROWS</p>
+          <p className="mt-2">TOTAL {metadata.totalItems} ROWS</p>
         </div>
       </div>
       <div className="relative mt-2">

@@ -24,8 +24,7 @@ import {
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
-import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
-import * as config from 'config';
+import { ImpactMaterializedView } from 'modules/impact/views/impact.materialized-view.entity';
 
 /**
  * @note: Column aliases are marked as 'h' and 'v' so that DB returns data in the format the consumer needs to be
@@ -184,92 +183,21 @@ export class H3DataRepository extends Repository<H3Data> {
     supplierIds?: string[],
     locationTypes?: LOCATION_TYPES_PARAMS[],
   ): Promise<{ impactMap: H3IndexValueData[]; quantiles: number[] }> {
-    // TODO: Feature toggle to switch between distributed / non-distributed impact map
-    //       delete when M.Views are set with proper performance
-    const distributed: boolean =
-      `${config.get('map.distributed')}`.toLowerCase() === 'true';
-
-    if (!distributed) {
-      const query: SelectQueryBuilder<any> = getManager()
-        .createQueryBuilder()
-        .select(
-          `h3_to_parent(unnest(gr."h3Flat"::h3index[]), ${resolution})`,
-          'h',
-        )
-        .addSelect('sum(ir.value/gr."h3FlatLength")', 'v')
-        .from(SourcingLocation, 'sl')
-        .innerJoin(SourcingRecord, 'sr', 'sl.id = sr.sourcingLocationId')
-        .innerJoin(IndicatorRecord, 'ir', 'sr.id = ir.sourcingRecordId')
-        .innerJoin(GeoRegion, 'gr', 'sl.geoRegionId = gr.id')
-        .where('sl.scenarioInterventionId IS NULL')
-        .andWhere('sl.interventionType IS NULL')
-        .andWhere('ir.indicatorId = :indicatorId', {
-          indicatorId: indicator.id,
-        })
-        .andWhere('sr.year = :year', { year })
-        .andWhere('gr."h3FlatLength" > 0')
-        .groupBy('h');
-
-      if (materialIds) {
-        query.andWhere('sl.material IN (:...materialIds)', { materialIds });
-      }
-
-      if (supplierIds) {
-        query.andWhere(
-          new Brackets((qb: WhereExpressionBuilder) => {
-            qb.where('sl.t1SupplierId IN (:...supplierIds)', {
-              supplierIds,
-            }).orWhere('sl.producerId IN (:...supplierIds)', { supplierIds });
-          }),
-        );
-      }
-      if (originIds) {
-        query.andWhere('sl.adminRegionId IN (:...originIds)', { originIds });
-      }
-
-      if (locationTypes) {
-        const sourcingLocationTypes: string[] = locationTypes.map(
-          (el: LOCATION_TYPES_PARAMS) => {
-            return el.replace(/-/g, ' ');
-          },
-        );
-        query.andWhere('sl.locationType IN (:...sourcingLocationTypes)', {
-          sourcingLocationTypes,
-        });
-      }
-      const tmpTableName: string = H3DataRepository.generateRandomTableName();
-      const [queryString, params] = query.getQueryAndParameters();
-      await getManager().query(
-        `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${queryString});`,
-        params,
-      );
-      const impactMap: any = await getManager().query(
-        `SELECT *
-       FROM "${tmpTableName}";`,
-      );
-      this.logger.log('Impact Map generated');
-      const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
-      await getManager().query(`DROP TABLE "${tmpTableName}";`);
-      return { impactMap, quantiles };
-    }
     const subqueryBuilder: SelectQueryBuilder<any> = getManager()
       .createQueryBuilder()
-      .select(`sum(ir.value)`, `sum`)
-      .addSelect(`ir.scaler`, `scaler`)
-      .addSelect('sl.geoRegionId', 'geoRegionId')
+      .select('sl.geoRegionId', 'geoRegionId')
       .addSelect('ir.materialH3DataId', 'materialH3DataId')
+      .addSelect('sum(ir.value)', 'scaled_value')
       .from(SourcingLocation, 'sl')
-      .innerJoin(SourcingRecord, 'sr', 'sl.id = sr.sourcingLocationId')
-      .innerJoin(IndicatorRecord, 'ir', 'sr.id = ir.sourcingRecordId');
-    subqueryBuilder
-      .where('sr.year = :year', { year })
-      .andWhere('sl."scenarioInterventionId" IS NULL')
-      .andWhere('sl."interventionType" IS NULL')
+      .leftJoin(SourcingRecord, 'sr', 'sl.id = sr.sourcingLocationId')
+      .leftJoin(IndicatorRecord, 'ir', 'sr.id = ir.sourcingRecordId')
+      .where('ir.value > 0')
       .andWhere('ir.scaler > 0')
-      .andWhere('ir.value > 0')
-      .andWhere('ir."indicatorId" = :indicatorId', {
-        indicatorId: indicator.id,
-      });
+      .andWhere('sl.scenarioInterventionId IS NULL')
+      .andWhere('ir.indicatorId = :indicatorId', { indicatorId: indicator.id })
+      .andWhere('sr.year = :year', { year })
+      .groupBy('sl.geoRegionId')
+      .addGroupBy('ir.materialH3DataId');
     if (materialIds) {
       subqueryBuilder.andWhere('sl.material IN (:...materialIds)', {
         materialIds,
@@ -303,34 +231,32 @@ export class H3DataRepository extends Repository<H3Data> {
       );
     }
 
-    subqueryBuilder.groupBy('ir.materialH3DataId, sl.geoRegionId, ir.scaler');
     const selectQueryBuilder: SelectQueryBuilder<any> = getManager()
       .createQueryBuilder()
-      .select(`h3data.h3index`, `h3index`)
-      .addSelect(`sum(h3data.value)`, `sum`)
-      .from('(' + subqueryBuilder.getQuery() + ')', 't')
+      .select(`impactview.h3index`, `h3index`)
+      .addSelect(`sum(impactview.value * reduced.scaled_value)`, `sum`)
+      .from('(' + subqueryBuilder.getSql() + ')', 'reduced')
+      .leftJoin(
+        ImpactMaterializedView,
+        'impactview',
+        '(impactview."geoRegionId" = reduced."geoRegionId" AND impactview."h3DataId" = reduced."materialH3DataId")',
+      )
+      .groupBy('impactview.h3index')
       .setParameters(subqueryBuilder.getParameters());
 
-    //This query has everything except the LATERAL join not supported by typeorm, so we are getting the raw SQL string to manually insert the LATERAL string into it
-    const [selectQuery, selectQueryParams]: [string, any[]] =
-      selectQueryBuilder.getQueryAndParameters();
-
-    // The LATERAL SQL string that needs to be added to query
-    const fullQuery: string =
-      selectQuery +
-      `, LATERAL( SELECT h3index, t.sum/t.scaler * value as value FROM get_h3_data_over_georegion(t."geoRegionId", t."materialH3DataId")) h3data GROUP BY h3data.h3index`;
-
-    const withDynamicResolution: any = getManager()
+    const withDynamicResolution: SelectQueryBuilder<any> = getManager()
       .createQueryBuilder()
       .addSelect(`h3_to_parent(q.h3index, ${resolution})`, `h`)
-      .addSelect(`sum(q.sum)`, `v`)
-      .from(`( ${fullQuery} )`, `q`)
-      .groupBy(`h`);
+      .addSelect(`sum(sum)`, `v`)
+      .from(`( ${selectQueryBuilder.getSql()} )`, `q`)
+      .groupBy('h');
+
+    const [queryString, params] = subqueryBuilder.getQueryAndParameters();
 
     const tmpTableName: string = H3DataRepository.generateRandomTableName();
     await getManager().query(
-      `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${withDynamicResolution.getQuery()});`,
-      selectQueryParams,
+      `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${withDynamicResolution.getSql()})`,
+      params,
     );
     const impactMap: any = await getManager().query(
       `SELECT * FROM "${tmpTableName}"`,

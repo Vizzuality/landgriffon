@@ -47,3 +47,9 @@ storybook-static
 
 # typescript
 *.tsbuildinfo
+
+# Yarn
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+.pnp.*

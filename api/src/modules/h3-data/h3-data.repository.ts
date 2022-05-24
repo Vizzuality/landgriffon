@@ -182,7 +182,7 @@ export class H3DataRepository extends Repository<H3Data> {
     materialIds?: string[],
     originIds?: string[],
     supplierIds?: string[],
-    locationType?: LOCATION_TYPES_PARAMS[],
+    locationTypes?: LOCATION_TYPES_PARAMS[],
   ): Promise<{ impactMap: H3IndexValueData[]; quantiles: number[] }> {
     // TODO: Feature toggle to switch between distributed / non-distributed impact map
     //       delete when M.Views are set with proper performance
@@ -227,8 +227,8 @@ export class H3DataRepository extends Repository<H3Data> {
         query.andWhere('sl.adminRegionId IN (:...originIds)', { originIds });
       }
 
-      if (locationType) {
-        const sourcingLocationTypes: string[] = locationType.map(
+      if (locationTypes) {
+        const sourcingLocationTypes: string[] = locationTypes.map(
           (el: LOCATION_TYPES_PARAMS) => {
             return el.replace(/-/g, ' ');
           },
@@ -289,8 +289,8 @@ export class H3DataRepository extends Repository<H3Data> {
         originIds,
       });
     }
-    if (locationType) {
-      const sourcingLocationTypes: string[] = locationType.map(
+    if (locationTypes) {
+      const sourcingLocationTypes: string[] = locationTypes.map(
         (el: LOCATION_TYPES_PARAMS) => {
           return el.replace(/-/g, ' ');
         },

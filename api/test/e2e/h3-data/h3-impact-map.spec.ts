@@ -13,6 +13,8 @@ import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 import { LOCATION_TYPES_PARAMS } from 'modules/sourcing-locations/sourcing-location.entity';
 
+import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
+
 /**
  * Tests for the h3 impact map.
  */
@@ -34,6 +36,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     jwtToken = await saveUserAndGetToken(moduleFixture, app);
 
     impactMapMockData = await createImpactMapMockData();
+    await IndicatorRecord.updateImpactView();
   });
 
   afterAll(async () => {

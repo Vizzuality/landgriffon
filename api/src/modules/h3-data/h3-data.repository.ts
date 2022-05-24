@@ -187,7 +187,7 @@ export class H3DataRepository extends Repository<H3Data> {
       .createQueryBuilder()
       .select('sl.geoRegionId', 'geoRegionId')
       .addSelect('ir.materialH3DataId', 'materialH3DataId')
-      .addSelect('sum(ir.value)', 'scaled_value')
+      .addSelect('sum(ir.value/ir.scaler)', 'scaled_value')
       .from(SourcingLocation, 'sl')
       .leftJoin(SourcingRecord, 'sr', 'sl.id = sr.sourcingLocationId')
       .leftJoin(IndicatorRecord, 'ir', 'sr.id = ir.sourcingRecordId')

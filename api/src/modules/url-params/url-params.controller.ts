@@ -28,7 +28,8 @@ export class UrlParamsController {
   })
   @Post()
   async create(@Body() dto: Record<string, any>): Promise<string> {
-    return this.urlParamService.saveUrlParams(dto);
+    const savedParamsId: string = await this.urlParamService.saveUrlParams(dto);
+    return savedParamsId;
   }
 
   @ApiOperation({ description: 'Deletes a set of URL Params' })

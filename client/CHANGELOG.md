@@ -5,7 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## 0.3.0 [Unreleased]
+## [Unreleased]
+
+### Added
+- [Storybook](https://storybook.js.org/) for documentation of UI components
+- Added `Select` component to Storybook
+- [Twin.macro](https://github.com/ben-rogerson/twin.macro) babel plugin for Tailwind and Styled-components integration
+
+### Changed
+- Upgrade Tailwind to version 3.0.24
+- Upgrade to Yarn version 3.2.1
+
+### Removed
+
+## 0.3.0 - 2021-09-01
 ### Added
 * First version of table mode
 * Block search spiders: added robots.txt
@@ -23,13 +36,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 * Migrated requests from containers to react hooks
 * By default analysis have the scenarios/interventions panel collapsed
 
-## 0.2.0 - August 2021
+## 0.2.0 - 2021-08-01
 ### Added
 * Scenario dropdown for edition and remove [LANDGRIF-156](https://vizzuality.atlassian.net/browse/LANDGRIF-156)
 * Filters and sortable to scenarios list [LANDGRIF-168](https://vizzuality.atlassian.net/browse/LANDGRIF-168)
 * Updated analysis documentation and needs [LANDGRIF-195](https://vizzuality.atlassian.net/browse/LANDGRIF-195)
 
-## 0.1.0 - July 2021
+## 0.1.0 - 2021-07-01
 ### Added
 * Show visualization mode in the URL (map, table or chart) [LANDGRIF-119](https://vizzuality.atlassian.net/browse/LANDGRIF-119)
 * Show selected scenario in the URL [LANDGRIF-159](https://vizzuality.atlassian.net/browse/LANDGRIF-159)

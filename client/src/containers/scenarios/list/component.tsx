@@ -22,15 +22,15 @@ const isScenarioSelected: (scenarioId: Scenario['id'], currentId: Scenario['id']
 
 const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProps) => {
   const dispatch = useAppDispatch();
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState(ACTUAL_DATA);
   const handleOnChange = useCallback(({ id }) => dispatch(setCurrentScenario(id)), [dispatch]);
-
   const {
     query: { id },
   } = useRouter();
 
   useEffect(() => {
     if (data && !id) {
+      setSelected(ACTUAL_DATA);
       dispatch(setCurrentScenario(ACTUAL_DATA.id as string)); // first option of the list by default
     }
     if (data && id) {
@@ -47,7 +47,7 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
       <RadioGroup.Label className="sr-only">Scenarios</RadioGroup.Label>
       <ul className="overflow-auto my-2 grid grid-cols-1 gap-5 sm:gap-2 sm:grid-cols-2 lg:grid-cols-1 relative">
         <Link
-          href={{ pathname: '/analysis', query: { name: '/scenarios', id: `${id}` } }}
+          href={{ pathname: '/analysis', query: { name: '/scenarios', id: `${ACTUAL_DATA.id}` } }}
           key={ACTUAL_DATA.id}
           as="/analysis"
           shallow
@@ -56,7 +56,7 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
           <a href={`/analysis`}>
             <ScenarioItem
               data={ACTUAL_DATA}
-              isSelected={isScenarioSelected(ACTUAL_DATA.id, id as string)}
+              isSelected={isScenarioSelected(ACTUAL_DATA.id, selected.id as string)}
             />
           </a>
         </Link>
@@ -73,7 +73,7 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
                 <ScenarioItem
                   key={item.id}
                   data={item}
-                  isSelected={isScenarioSelected(item.id, id as string)}
+                  isSelected={isScenarioSelected(item.id, selected.id as string)}
                 />
               </a>
             </Link>

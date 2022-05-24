@@ -5,6 +5,7 @@ import { setMode, scenarios } from 'store/features/analysis/scenarios';
 import { setSubContentCollapsed } from 'store/features/analysis';
 
 import type { Page } from './types';
+import { useRouter } from 'next/router';
 
 export type BreadcrumbProps = {
   pages: Page[];
@@ -16,13 +17,20 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ pages }: BreadcrumbProps) => {
   const dispatch = useAppDispatch();
   const { mode } = useAppSelector(scenarios);
   const middlePages = [...pages].slice(1, pages.length);
+  const router = useRouter();
 
   const handleClick = useCallback(() => {
     if (pages[0].mode === 'list') {
       dispatch(setSubContentCollapsed(true));
     }
+
+    if (pages[0].href === 'analysis') {
+      router.push('/analysis');
+    } else {
+      router.replace(`${router.pathname}/${pages[0].href}`);
+    }
     dispatch(setMode(pages[0].mode));
-  }, [dispatch, pages]);
+  }, [dispatch, router, pages]);
 
   return (
     <nav className="flex" aria-label="Breadcrumb">

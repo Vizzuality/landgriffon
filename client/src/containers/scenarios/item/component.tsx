@@ -5,6 +5,7 @@ import { DotsVerticalIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
 import toast from 'react-hot-toast';
 import { createPortal } from 'react-dom';
+import { useRouter } from 'next/router';
 
 import { setCurrentScenario, setMode, scenarios } from 'store/features/analysis/scenarios';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
@@ -40,10 +41,11 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
   const { data, isSelected, isComparisonAvailable } = props;
   const [isComparisonEnabled, setComparisonEnabled] = useState<boolean>(false);
 
+  const router = useRouter();
   const handleEdit = useCallback(() => {
-    dispatch(setCurrentScenario(data.id));
     dispatch(setMode('edit'));
-  }, [dispatch, data.id]);
+    router.push(`/analysis/scenarios/edit/${data.id}`, undefined, { shallow: true });
+  }, [dispatch, router, data.id]);
 
   const deleteScenario = useDeleteScenario();
 

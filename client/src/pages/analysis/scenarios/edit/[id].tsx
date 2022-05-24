@@ -5,7 +5,7 @@ import { scenarios } from 'store/features/analysis/scenarios';
 
 import AnalysisLayout from 'layouts/analysis';
 import Breadcrumb from 'components/breadcrumb';
-import Scenarios from 'containers/scenarios';
+import ScenarioEdit from 'containers/scenarios/edit';
 import type { Page } from 'components/breadcrumb/types';
 
 const AnalysisPage: React.FC = () => {
@@ -27,7 +27,7 @@ const AnalysisPage: React.FC = () => {
         <Breadcrumb pages={pages} />
       </div>
 
-      <Scenarios />
+      <ScenarioEdit />
     </AnalysisLayout>
   );
 };

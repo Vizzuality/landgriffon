@@ -6,20 +6,15 @@ import { scenarios } from 'store/features/analysis/scenarios';
 import AnalysisLayout from 'layouts/analysis';
 import Breadcrumb from 'components/breadcrumb';
 import Scenarios from 'containers/scenarios';
-import ScenarioEdit from 'containers/scenarios/edit';
 import type { Page } from 'components/breadcrumb/types';
 
 const AnalysisPage: React.FC = () => {
   const { mode } = useAppSelector(scenarios);
-  const analysisContent = () => {
-    if (mode === 'edit') return <ScenarioEdit />;
-    return <Scenarios />;
-  };
 
   // Breadcrumbs
-  let pages: Page[] = [{ name: 'Analysis', mode: 'list' }]; // Default
+  let pages: Page[] = [{ name: 'Analysis', mode: 'list', href: 'analysis' }]; // Default
   if (mode === 'edit') {
-    pages = [...pages, { name: 'Edit scenario', mode: 'edit' }];
+    pages = [...pages, { name: 'Edit scenario', mode: 'edit', href: 'edit' }];
   }
 
   return (
@@ -28,11 +23,11 @@ const AnalysisPage: React.FC = () => {
         <title>Analysis - Landgriffon</title>
       </Head>
 
-      <div className="py-6">
+      <div className="py-16">
         <Breadcrumb pages={pages} />
       </div>
 
-      {analysisContent()}
+      <Scenarios />
     </AnalysisLayout>
   );
 };

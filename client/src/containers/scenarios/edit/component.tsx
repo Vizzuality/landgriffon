@@ -9,6 +9,7 @@ import { PlusIcon } from '@heroicons/react/solid';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { useScenario, useUpdateScenario, useScenarioInterventions } from 'hooks/scenarios';
+import { useRouter } from 'next/router';
 
 import { setSubContentCollapsed } from 'store/features/analysis/ui';
 import { scenarios, setScenarioTab } from 'store/features/analysis/scenarios';
@@ -50,9 +51,13 @@ const ScenariosNewContainer: React.FC = () => {
     dispatch(setSubContentCollapsed(false));
   }, [dispatch]);
 
-  const { scenarioCurrentTab, currentScenario } = useAppSelector(scenarios);
-  const { data: scenarioData } = useScenario(currentScenario);
-  const { data: interventions } = useScenarioInterventions(currentScenario);
+  const {
+    query: { id },
+  } = useRouter();
+
+  const { scenarioCurrentTab } = useAppSelector(scenarios);
+  const { data: scenarioData } = useScenario(id as string);
+  const { data: interventions } = useScenarioInterventions(id as string);
 
   const {
     register,
@@ -70,7 +75,7 @@ const ScenariosNewContainer: React.FC = () => {
     useCallback(() => {
       if (isValid) {
         updateScenario.mutate(
-          { id: currentScenario, data: getValues() },
+          { id, data: getValues() },
           {
             onSuccess: () => {
               toast.success('Your changes were successfully saved.');
@@ -83,7 +88,7 @@ const ScenariosNewContainer: React.FC = () => {
           },
         );
       }
-    }, [currentScenario, isValid, getValues, updateScenario]),
+    }, [id, isValid, getValues, updateScenario]),
     600,
   );
 

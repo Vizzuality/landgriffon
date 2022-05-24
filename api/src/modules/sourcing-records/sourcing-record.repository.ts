@@ -67,7 +67,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       originIds,
       groupBy,
       supplierIds,
-      locationType,
+      locationTypes,
     } = getImpactTaleDto;
     const impactDataQueryBuilder: SelectQueryBuilder<SourcingRecord> =
       this.createQueryBuilder('sourcingRecords')
@@ -145,8 +145,8 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       );
     }
 
-    if (locationType) {
-      const sourcingLocationTypes: string[] = locationType.map(
+    if (locationTypes) {
+      const sourcingLocationTypes: string[] = locationTypes.map(
         (el: LOCATION_TYPES_PARAMS) => {
           return el.replace(/-/g, ' ');
         },

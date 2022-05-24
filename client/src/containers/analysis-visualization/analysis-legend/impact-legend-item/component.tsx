@@ -20,6 +20,13 @@ const ImpactLayer = () => {
     [dispatch],
   );
 
+  const handleActive = useCallback(
+    (active) => {
+      dispatch(setLayer({ id: LAYER_ID, layer: { ...impact, active } }));
+    },
+    [dispatch, impact],
+  );
+
   // TO-DO: add Loading component
   return (
     <LegendItem
@@ -29,6 +36,7 @@ const ImpactLayer = () => {
       opacity={impact.opacity}
       active={impact.active}
       onChangeOpacity={handleOpacity}
+      onActiveChange={handleActive}
       isLoading={impact.loading}
       main
     >

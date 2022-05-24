@@ -63,7 +63,7 @@ export const useImpactLayer: () => ReturnType<typeof useH3ImpactData> & { layer:
       coverage: 0.9,
       lineWidthMinPixels: 2,
       opacity: impactLayer.opacity,
-      visible: true, // always active
+      visible: impactLayer.active,
       getHexagon: (d) => d.h,
       getFillColor: (d) => d.c,
       getElevation: (d) => d.v,

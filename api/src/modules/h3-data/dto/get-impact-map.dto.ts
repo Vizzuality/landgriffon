@@ -60,7 +60,10 @@ export class GetImpactMapDto {
   @Type(() => String)
   supplierIds?: string[];
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'Type of Sourcing Location, written with hyphens',
+    enum: Object.values(LOCATION_TYPES_PARAMS),
+  })
   @IsOptional()
   @IsEnum(LOCATION_TYPES_PARAMS, {
     each: true,
@@ -69,5 +72,5 @@ export class GetImpactMapDto {
       Object.values(LOCATION_TYPES_PARAMS).toString().toLowerCase(),
   })
   @Type(() => String)
-  locationType?: LOCATION_TYPES_PARAMS[];
+  locationTypes?: LOCATION_TYPES_PARAMS[];
 }

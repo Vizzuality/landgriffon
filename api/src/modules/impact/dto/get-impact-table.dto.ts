@@ -64,7 +64,7 @@ export class GetImpactTableDto {
   supplierIds?: string[];
 
   @ApiPropertyOptional({
-    description: 'Type of Sourcing Location, written with hyphens',
+    description: 'Types of Sourcing Locations, written with hyphens',
     enum: Object.values(LOCATION_TYPES_PARAMS),
   })
   @IsOptional()

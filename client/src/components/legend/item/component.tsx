@@ -18,7 +18,7 @@ export type LegendItemProps = {
   isLoading?: boolean;
   showToolbar?: boolean;
   children?: React.ReactNode;
-  onActiveChange?: (active: boolean) => void;
+  onActiveChange: (active: boolean) => void;
   opacity: number;
   onChangeOpacity: (opacity: number) => void;
   main?: boolean;

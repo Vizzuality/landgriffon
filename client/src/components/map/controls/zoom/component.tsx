@@ -40,7 +40,7 @@ export const ZoomControl: React.FC<ZoomControlProps> = ({
   return (
     <div
       className={cx(
-        'bg-white text-gray-900 w-fit ml-auto text-4xl flex flex-col justify-center select-none divide-y-[1.5px] rounded-lg border border-gray-200 overflow-hidden',
+        'bg-white text-gray-900 ml-auto text-4xl flex flex-col justify-center select-none divide-y-[1.5px] rounded-lg border border-gray-200 overflow-hidden',
         className,
       )}
     >

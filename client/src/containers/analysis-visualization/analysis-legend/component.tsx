@@ -83,7 +83,7 @@ export const Legend: React.FC = () => {
       )}
       <button
         type="button"
-        className="bg-white border border-gray-100 w-10 h-10 rounded-lg relative flex items-center justify-center"
+        className="bg-white border border-gray-100 h-10 w-full rounded-lg relative flex items-center justify-center"
         onClick={handleShowLegend}
       >
         {activeLayerCount !== 0 && (

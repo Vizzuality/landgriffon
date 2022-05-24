@@ -18,6 +18,11 @@ import ZoomControl from 'components/map/controls/zoom';
 import { analysisMap } from 'store/features/analysis';
 
 import type { PopUpProps } from 'components/map/popup/types';
+import BasemapControl from 'components/map/controls/basemap';
+
+import DefaultMapStyle from './styles/map-style.json';
+import SatelliteMapStyle from './styles/map-style-satellite.json';
+import { BasemapValue } from 'components/map/controls/basemap/types';
 
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
 const INITIAL_VIEW_STATE = {
@@ -29,11 +34,18 @@ const INITIAL_VIEW_STATE = {
   minZoom: 2,
 };
 
+const MAP_SYTLES = {
+  terrain: DefaultMapStyle,
+  satellite: SatelliteMapStyle,
+};
+
 const AnalysisMap: React.FC = () => {
   const { tooltipData, tooltipPosition, layers: layerProps } = useAppSelector(analysisMap);
   const [isRendering, setIsRendering] = useState(false);
 
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
+
+  const [mapStyle, setMapStyle] = useState<BasemapValue>('terrain');
 
   // Loading layers
   const impactLayer = useImpactLayer();
@@ -58,6 +70,10 @@ const AnalysisMap: React.FC = () => {
     [setViewState],
   );
 
+  const handleMapStyleChange = useCallback((newStyle: BasemapValue) => {
+    setMapStyle(newStyle);
+  }, []);
+
   return (
     <>
       {(isFetching || isRendering) && <PageLoading />}
@@ -72,7 +88,7 @@ const AnalysisMap: React.FC = () => {
       >
         <StaticMap
           viewState={viewState}
-          mapStyle="mapbox://styles/landgriffon/ckmdaj5gy08yx17me92nudkjd"
+          mapStyle={MAP_SYTLES[mapStyle]}
           mapboxApiAccessToken={MAPBOX_API_TOKEN}
           className="-z-10"
         />
@@ -109,7 +125,8 @@ const AnalysisMap: React.FC = () => {
           </div>
         </div>
       )}
-      <div className="absolute z-10 bottom-10 right-6 space-y-2">
+      <div className="absolute z-10 bottom-10 right-6 space-y-2 w-10">
+        <BasemapControl value={mapStyle} onChange={handleMapStyleChange} />
         <ZoomControl viewport={viewState} onZoomChange={onZoomChange} />
         <Legend />
       </div>

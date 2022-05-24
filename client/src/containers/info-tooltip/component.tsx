@@ -10,6 +10,7 @@ import type { InfoTooltipProps } from './types';
 export const InfoToolTip: React.FC<InfoTooltipProps> = ({ icon = 'solid', info, ...props }) => {
   return (
     <Tooltip
+      arrow
       content={
         <div className="bg-gray-900 p-4 rounded-md w-52 text-xs text-white text-left">{info}</div>
       }

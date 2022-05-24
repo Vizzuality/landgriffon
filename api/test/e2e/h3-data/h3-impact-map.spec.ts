@@ -366,7 +366,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           indicatorId: impactMapMockData.indicatorId,
-          'locationType[]': [LOCATION_TYPES_PARAMS.AGGREGATION_POINT],
+          'locationTypes[]': [LOCATION_TYPES_PARAMS.AGGREGATION_POINT],
           year: 2020,
           resolution: 6,
         });

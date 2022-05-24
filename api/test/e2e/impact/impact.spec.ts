@@ -1504,7 +1504,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           endYear: 2013,
           startYear: 2010,
           groupBy: 'material',
-          'locationType[]': [LOCATION_TYPES_PARAMS.AGGREGATION_POINT],
+          'locationTypes[]': [LOCATION_TYPES_PARAMS.AGGREGATION_POINT],
         });
       //.expect(HttpStatus.OK);
 

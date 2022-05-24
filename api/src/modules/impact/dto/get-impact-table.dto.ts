@@ -75,7 +75,7 @@ export class GetImpactTableDto {
       Object.values(LOCATION_TYPES_PARAMS).toString().toLowerCase(),
   })
   @Type(() => String)
-  locationType?: LOCATION_TYPES_PARAMS[];
+  locationTypes?: LOCATION_TYPES_PARAMS[];
 }
 
 export class GetRankedImpactTableDto extends GetImpactTableDto {

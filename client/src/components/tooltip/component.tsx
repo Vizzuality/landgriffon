@@ -30,6 +30,7 @@ export const ToolTip: React.FC<TooltipProps> = ({
     middlewareData: { arrow: { x: arrowX, y: arrowY } = {} },
   } = useFloating({
     placement,
+    strategy: 'fixed',
     middleware: [
       offset({ mainAxis: arrow ? 15 : 10 }),
       shift({ padding: 4 }),

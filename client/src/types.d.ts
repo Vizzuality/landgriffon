@@ -57,11 +57,19 @@ export type ImpactTabularAPIParams = {
   supplierIds?: string[];
 };
 
+type Unit = {
+  description: string;
+  id: string;
+  name: string;
+  shortName: string;
+  symbol: string;
+};
+
 export type Indicator = {
   id: string;
   name: string;
   value?: number;
-  unit?: string;
+  unit?: Unit;
 };
 
 export type Group = {

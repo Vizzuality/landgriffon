@@ -8,6 +8,7 @@ import AnalysisChart from './analysis-chart';
 import AnalysisMap from './analysis-map';
 import AnalysisFilters from './analysis-filters';
 import AnalysisTable from './analysis-table';
+import AnalysisDynamicMetadata from './analysis-dynamic-metadata';
 
 const AnalysisVisualization: React.FC = () => {
   const { visualizationMode } = useAppSelector(analysisUI);
@@ -37,6 +38,7 @@ const AnalysisVisualization: React.FC = () => {
 
       {visualizationMode === 'chart' && (
         <div className="flex flex-col pr-6 pl-12">
+          <AnalysisDynamicMetadata className="my-4" />
           <AnalysisChart />
         </div>
       )}

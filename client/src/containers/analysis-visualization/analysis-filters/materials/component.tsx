@@ -22,7 +22,7 @@ type MaterialsFilterProps = {
   businessUnitIds?: MaterialsTreesParams['businessUnitIds'];
   supplierIds?: MaterialsTreesParams['supplierIds'];
   originIds?: MaterialsTreesParams['originIds'];
-  locationTypeIds?: MaterialsTreesParams['locationTypeIds'];
+  locationTypes?: MaterialsTreesParams['locationTypes'];
 };
 
 const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
@@ -32,7 +32,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
   supplierIds,
   businessUnitIds,
   originIds,
-  locationTypeIds,
+  locationTypes,
   withSourcingLocations, // Do not a default; backend will override depth if this is set at all
   onChange,
   theme,
@@ -44,7 +44,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
     supplierIds,
     businessUnitIds,
     originIds,
-    locationTypeIds,
+    locationTypes,
     withSourcingLocations,
   });
 

@@ -2187,7 +2187,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/template@npm:^7.0.0, @babel/template@npm:^7.12.13, @babel/template@npm:^7.12.7, @babel/template@npm:^7.14.5, @babel/template@npm:^7.16.7, @babel/template@npm:^7.4.4":
+"@babel/template@npm:^7.0.0, @babel/template@npm:^7.12.7, @babel/template@npm:^7.14.5, @babel/template@npm:^7.16.7, @babel/template@npm:^7.4.4":
   version: 7.16.7
   resolution: "@babel/template@npm:7.16.7"
   dependencies:
@@ -8379,15 +8379,6 @@ __metadata:
   version: 6.18.0
   resolution: "babel-plugin-syntax-jsx@npm:6.18.0"
   checksum: 0c7ce5b81d6cfc01a7dd7a76a9a8f090ee02ba5c890310f51217ef1a7e6163fb7848994bbc14fd560117892e82240df9c7157ad0764da67ca5f2afafb73a7d27
-  languageName: node
-  linkType: hard
-
-"babel-plugin-twin@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "babel-plugin-twin@npm:1.0.2"
-  dependencies:
-    "@babel/template": ^7.12.13
-  checksum: 091bbcd83d938060c6a959d47ecad09043ca80a95076905c0ef24212348a19466879de71dfa93243c2cd6f11eef005e8ff2a97a49fe0894cd4c559298976b8a8
   languageName: node
   linkType: hard
 
@@ -15291,7 +15282,6 @@ __metadata:
     axios: 0.21.1
     babel-loader: ^8.2.5
     babel-plugin-macros: ^3.1.0
-    babel-plugin-twin: ^1.0.2
     chroma-js: 2.1.2
     classnames: 2.3.1
     cypress: 8.7.0

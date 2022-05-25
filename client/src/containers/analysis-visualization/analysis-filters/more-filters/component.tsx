@@ -129,7 +129,7 @@ const MoreFilters: React.FC = () => {
                         withSourcingLocations
                         originIds={originIds}
                         supplierIds={supplierIds}
-                        locationTypeIds={locationTypesIds}
+                        locationTypes={locationTypesIds}
                         current={selectedFilters.materials}
                         fitContent
                         onChange={(values) => handleChangeFilter('materials', values)}
@@ -142,7 +142,7 @@ const MoreFilters: React.FC = () => {
                         withSourcingLocations
                         materialIds={materialIds}
                         supplierIds={supplierIds}
-                        locationTypeIds={locationTypesIds}
+                        locationTypes={locationTypesIds}
                         current={selectedFilters.origins}
                         fitContent
                         onChange={(values) => handleChangeFilter('origins', values)}
@@ -155,7 +155,7 @@ const MoreFilters: React.FC = () => {
                         withSourcingLocations
                         materialIds={materialIds}
                         originIds={originIds}
-                        locationTypeIds={locationTypesIds}
+                        locationTypes={locationTypesIds}
                         current={selectedFilters.suppliers}
                         fitContent
                         onChange={(values) => handleChangeFilter('suppliers', values)}

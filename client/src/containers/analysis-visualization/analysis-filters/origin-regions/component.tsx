@@ -19,7 +19,7 @@ type OriginRegionsFilterProps = {
   businessUnitIds?: AdminRegionsTreesParams['businessUnitIds'];
   supplierIds?: AdminRegionsTreesParams['supplierIds'];
   materialIds?: AdminRegionsTreesParams['materialIds'];
-  locationTypeIds?: AdminRegionsTreesParams['locationTypeIds'];
+  locationTypes?: AdminRegionsTreesParams['locationTypes'];
 };
 
 const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
@@ -30,7 +30,7 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
   supplierIds,
   businessUnitIds,
   materialIds,
-  locationTypeIds,
+  locationTypes,
   onChange,
   theme,
   ellipsis,
@@ -42,7 +42,7 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
     supplierIds,
     businessUnitIds,
     materialIds,
-    locationTypeIds,
+    locationTypes,
   });
 
   const treeOptions: TreeSelectProps['options'] = useMemo(

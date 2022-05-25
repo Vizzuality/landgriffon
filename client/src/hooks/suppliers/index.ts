@@ -18,7 +18,7 @@ export type SuppliersTreesParams = {
   materialIds?: string[];
   originIds?: string[];
   businessUnitIds?: string[];
-  locationTypeIds?: string[];
+  locationTypes?: string[];
 };
 
 export function useSuppliers(params): ResponseData {

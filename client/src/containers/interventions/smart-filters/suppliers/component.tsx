@@ -16,7 +16,7 @@ type SuppliersFilterProps = {
   materialIds?: SuppliersTreesParams['materialIds'];
   businessUnitIds?: SuppliersTreesParams['businessUnitIds'];
   originIds?: SuppliersTreesParams['originIds'];
-  locationTypeIds?: SuppliersTreesParams['locationTypeIds'];
+  locationTypes?: SuppliersTreesParams['locationTypes'];
   onChange?: TreeSelectProps['onChange'];
   theme?: 'default' | 'inline-primary';
   ellipsis?: TreeSelectProps['ellipsis'];

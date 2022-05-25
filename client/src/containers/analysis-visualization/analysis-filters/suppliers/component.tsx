@@ -16,7 +16,7 @@ type SuppliersFilterProps = {
   originIds?: SuppliersTreesParams['originIds'];
   businessUnitIds?: SuppliersTreesParams['businessUnitIds'];
   materialIds?: SuppliersTreesParams['materialIds'];
-  locationTypeIds?: SuppliersTreesParams['locationTypeIds'];
+  locationTypes?: SuppliersTreesParams['locationTypes'];
   onChange?: TreeSelectProps['onChange'];
   theme?: 'default' | 'inline-primary';
   ellipsis?: TreeSelectProps['ellipsis'];
@@ -31,7 +31,7 @@ const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
   originIds,
   businessUnitIds,
   materialIds,
-  locationTypeIds,
+  locationTypes,
   onChange,
   theme,
   ellipsis,
@@ -42,7 +42,7 @@ const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
     originIds,
     businessUnitIds,
     materialIds,
-    locationTypeIds,
+    locationTypes,
     withSourcingLocations,
   });
 

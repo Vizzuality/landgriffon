@@ -18,7 +18,7 @@ export type AdminRegionsTreesParams = {
   materialIds?: string[];
   supplierIds?: string[];
   businessUnitIds?: string[];
-  locationTypeIds?: string[];
+  locationTypes?: string[];
 };
 
 export function useAdminRegions(): ResponseData {

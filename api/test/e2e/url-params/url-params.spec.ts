@@ -2,9 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
-import { BusinessUnit } from 'modules/business-units/business-unit.entity';
-import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
-import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
 import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 import { UrlParamRepository } from 'modules/url-params/url-param.repository';
@@ -14,7 +11,7 @@ import { UrlParamsModule } from 'modules/url-params/url-params.module';
  * Tests for the BusinessUnitsModule.
  */
 
-describe('BusinessUnitsModule (e2e)', () => {
+describe('UrlParamsModule (e2e)', () => {
   let app: INestApplication;
   let urlParamRepository: UrlParamRepository;
   let jwtToken: string;
@@ -50,13 +47,15 @@ describe('BusinessUnitsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const savedParam = await urlParamRepository.findOne(response.body.data);
+      const savedParam = await urlParamRepository.findOne(
+        response.body.data.id,
+      );
 
       if (!savedParam) {
         throw new Error('Error loading saved URL Param');
       }
 
-      expect(savedParam).toEqual(response.body.data);
+      expect(savedParam.id).toEqual(response.body.data.id);
     });
 
     test('Saving URL params that has been saved before should return the initial id', async () => {
@@ -76,7 +75,50 @@ describe('BusinessUnitsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      expect(secondResponse).toEqual(initialResponse.body.data);
+      expect(secondResponse.body.data.id).toEqual(initialResponse.body.data.id);
+    });
+  });
+
+  describe('Url Params - Get by id', () => {
+    test('Getting saved URL Params by id as json should be successful (happy case)', async () => {
+      const saveResponse = await request(app.getHttpServer())
+        .post('/api/v1/url-params')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          'save-param': 'test param 2',
+        })
+        .expect(HttpStatus.CREATED);
+
+      const findResponse = await request(app.getHttpServer())
+        .get(`/api/v1/url-params/${saveResponse.body.data.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send();
+
+      expect(findResponse.body.data).toEqual({
+        'save-param': 'test param 2',
+      });
+    });
+  });
+
+  describe('Url Params - Delete', () => {
+    test('Deleting URL Params by id should be successful', async () => {
+      const saveResponse = await request(app.getHttpServer())
+        .post('/api/v1/url-params')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          'save-param': 'test param 2',
+        })
+        .expect(HttpStatus.CREATED);
+
+      await request(app.getHttpServer())
+        .delete(`/api/v1/url-params/${saveResponse.body.data.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send()
+        .expect(HttpStatus.OK);
+
+      expect(
+        await urlParamRepository.findOne(saveResponse.body.data.id),
+      ).toBeUndefined();
     });
   });
 });

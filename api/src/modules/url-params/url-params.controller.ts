@@ -27,9 +27,10 @@ export class UrlParamsController {
     description: 'Bad Request. Incorrect or missing parameters',
   })
   @Post()
-  async create(@Body() dto: Record<string, any>): Promise<string> {
-    const savedParamsId: string = await this.urlParamService.saveUrlParams(dto);
-    return savedParamsId;
+  async create(@Body() dto: Record<string, any>): Promise<Partial<UrlParam>> {
+    return await this.urlParamService.serialize(
+      await this.urlParamService.saveUrlParams(dto),
+    );
   }
 
   @ApiOperation({ description: 'Deletes a set of URL Params' })

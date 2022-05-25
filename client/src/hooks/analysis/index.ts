@@ -74,7 +74,6 @@ export function useAnalysisChart(params): AnalysisChart {
       ]),
     };
   });
-
   return useMemo(() => {
     const parsedData = parsedImpact.map((d) => {
       const { id, indicator: indicatorName, children, projection, unit: indicatorUnit } = d;
@@ -114,9 +113,9 @@ export function useAnalysisChart(params): AnalysisChart {
         id,
         unit: indicatorUnit,
         indicator: indicatorName,
+        projection,
         keys,
         values,
-        projection,
         filters,
       };
     });
@@ -143,7 +142,6 @@ export function useAnalysisChart(params): AnalysisChart {
       }),
       {},
     );
-
     const dataWithColors = parsedData.map((d) => ({
       ...d,
       colors,

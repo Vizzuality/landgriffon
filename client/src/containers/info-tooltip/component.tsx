@@ -1,5 +1,4 @@
 import React from 'react';
-import classnames from 'classnames';
 
 import { InformationCircleIcon as Outline } from '@heroicons/react/outline';
 import { InformationCircleIcon as Solid } from '@heroicons/react/solid';
@@ -8,12 +7,7 @@ import Tooltip from 'components/tooltip';
 
 import type { InfoTooltipProps } from './types';
 
-export const InfoToolTip: React.FC<InfoTooltipProps> = ({
-  icon = 'solid',
-  info,
-  className,
-  ...props
-}) => {
+export const InfoToolTip: React.FC<InfoTooltipProps> = ({ icon = 'solid', info, ...props }) => {
   return (
     <Tooltip
       content={
@@ -23,10 +17,8 @@ export const InfoToolTip: React.FC<InfoTooltipProps> = ({
       theme="dark"
       {...props}
     >
-      {icon === 'outline' && (
-        <Outline className={classnames(`w-4 h-4 text-gray-900 ${className}`)} />
-      )}
-      {icon === 'solid' && <Solid className={classnames(`w-4 h-4 text-gray-900 ${className}`)} />}
+      {icon === 'outline' && <Outline className="w-4 h-4 text-gray-900" />}
+      {icon === 'solid' && <Solid className="w-4 h-4 text-gray-900" />}
     </Tooltip>
   );
 };

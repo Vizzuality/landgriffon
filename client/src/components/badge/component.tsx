@@ -31,8 +31,8 @@ const Badge: React.FC<BadgeProps> = ({
       className={classNames(
         'inline-flex items-center py-0.5 font-medium  text-green-700 overflow-hidden',
         THEMES[theme]?.wrapper,
-        removable ? 'pl-2 pr-0.5' : 'px-2',
         className,
+        removable ? 'pl-2 pr-0.5' : 'px-2',
       )}
     >
       <span className="truncate text-ellipsis text-green-900">{children}</span>

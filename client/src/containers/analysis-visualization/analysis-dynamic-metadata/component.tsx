@@ -1,15 +1,15 @@
 import { FC, useMemo, useCallback } from 'react';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { useScenario } from 'hooks/scenarios';
+import { useIndicator } from 'hooks/indicators';
 
+import { InformationCircleIcon } from '@heroicons/react/solid';
 import { scenarios } from 'store/features/analysis/scenarios';
 import { analysisFilters, setFilters } from 'store/features/analysis/filters';
-import InfoTooltip from 'containers/info-tooltip';
-import { useIndicator } from 'hooks/indicators';
 
 import Badge from 'components/badge/component';
 
-const values = <span className="px-0.5">absolute</span>;
+const values = 'absolute';
 const materialArticle = 'of';
 const originArticle = 'in';
 const supplierArticle = 'from';
@@ -47,14 +47,15 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
   } = useIndicator(indicator.value);
   const indicatorsTemplate = <span className="font-bold">{unit?.symbol}</span>;
   const compareTemplate = <span className="font-bold whitespace-nowrap">{scenarioToCompare}</span>;
-  const materialTemplate = (
-    <ul className="inline-flex">
+  const materialTemplate = !!materials.length && (
+    <ul className="inline-flex pl-1">
       {materials.map((material) => (
         <li key={material.value}>
           <Badge
             key={material.value}
             data={material}
             onClick={() => handleRemoveBadget('materials', materials, material)}
+            className="pl-0"
             removable
           >
             {material.label}
@@ -63,14 +64,15 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
       ))}
     </ul>
   );
-  const originTemplate = (
-    <ul className="inline-flex">
+  const originTemplate = !!origins.length && (
+    <ul className="inline-flex pl-1">
       {origins.map((origin) => (
         <li key={origin.value}>
           <Badge
             key={origin.value}
             data={origin}
             onClick={() => handleRemoveBadget('origins', origins, origin)}
+            className="pl-0"
             removable
           >
             {origin.label}
@@ -79,14 +81,15 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
       ))}
     </ul>
   );
-  const supplierTemplate = (
-    <ul className="inline-flex">
+  const supplierTemplate = !!suppliers.length && (
+    <ul className="inline-flex pl-1">
       {suppliers.map((supplier) => (
         <li key={supplier.value}>
           <Badge
             key={supplier.value}
             data={supplier}
             onClick={() => handleRemoveBadget('suppliers', suppliers, supplier)}
+            className="pl-0"
             removable
           >
             {supplier.label}
@@ -95,14 +98,15 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
       ))}
     </ul>
   );
-  const locationTypeTemplate = (
-    <ul className="inline-flex">
+  const locationTypeTemplate = !!locationTypes.length && (
+    <ul className="inline-flex pl-1">
       {locationTypes.map((locationType) => (
         <li key={locationType.value}>
           <Badge
             key={locationType.value}
             data={locationType}
             onClick={() => handleRemoveBadget('locationTypes', locationTypes, locationType)}
+            className="pl-0"
             removable
           >
             {locationType.label}
@@ -113,26 +117,27 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
   );
 
   return (
-    <div className={`flex items-center text-sm ${className}`}>
-      <InfoTooltip info="metadata info" className="mr-1.5 flex mt-1.5" />
+    <div className={`flex items-start justify-start text-sm ${className}`}>
+      <div className="items-start mr-1.5 mt-1">
+        <InformationCircleIcon className="shrink-0 w-4 h-4 text-gray-900" />
+      </div>
       {!!scenarioToCompare && (
         <p>
-          Viewing {values} Impact values for{' '}
-          <span className="font-bold whitespace-nowrap px-0.5">{scenario1}</span>${' '}
+          Viewing {values} Impact values for
+          <span className="font-bold whitespace-nowrap">{scenario1}</span>
           <span className="font-bold whitespace-nowrap">
-            {' '}
             {!!compareTemplate && 'compared to'} {compareTemplate}
           </span>
         </p>
       )}
       {!scenarioToCompare && (
         <p className="flex-wrap items-center">
-          Viewing {values} <span className="whitespace-nowrap px-0.5">Impact values for</span>
-          <span className="font-bold whitespace-nowrap px-0.5"> {scenario1} </span>
-          {indicator?.value !== 'all' && indicatorsTemplate} {!!materials.length && materialArticle}{' '}
-          {materialTemplate} {!!origins.length && originArticle} {originTemplate}{' '}
-          {!!suppliers.length && supplierArticle} {supplierTemplate}{' '}
-          {!!locationTypes.length && locationTypeArticle} {locationTypeTemplate}{' '}
+          Viewing {values} <span className="whitespace-nowrap">Impact values for</span>
+          <span className="font-bold whitespace-nowrap"> {scenario1} </span>
+          {indicator?.value !== 'all' && indicatorsTemplate} {!!materials.length && materialArticle}
+          {materialTemplate} {!!origins.length && originArticle} {originTemplate}
+          {!!suppliers.length && supplierArticle} {supplierTemplate}
+          {!!locationTypes.length && locationTypeArticle} {locationTypeTemplate}
         </p>
       )}
     </div>

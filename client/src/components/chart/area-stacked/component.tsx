@@ -299,7 +299,6 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
               textAnchor: 'end',
             })}
           />
-
           {/* Target */}
           {typeof target !== 'undefined' && target !== null && settings.target && (
             <Annotation y={yScale(target)}>

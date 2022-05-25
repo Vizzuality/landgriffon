@@ -17,7 +17,8 @@
     "test:watch": "jest --config test/jest-config.json --watch",
     "test:cov": "NODE_OPTIONS=\"--max-old-space-size=5120\" node ./node_modules/.bin/jest --config test/jest-config.json --coverage -i --logHeapUsage --detectOpenHandles --forceExit",
     "test:debug": "node --inspect-brk --expose-gc -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --config test/jest-config.json --runInBand --detectOpenHandles --forceExit",
-    "migration:revert": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert --config src/migration.config.ts"
+    "migration:revert": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert --config src/migration.config.ts",
+    "test:ci": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run --config src/migration.config.ts && test:cov"
   },
   "engines": {
     "node": "^16.13"

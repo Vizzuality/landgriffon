@@ -5,4 +5,5 @@ import React from 'react';
 export interface InfoTooltipProps extends UseFloatingProps {
   icon?: 'solid' | 'outline';
   info: React.ReactNode;
+  className?: string;
 }

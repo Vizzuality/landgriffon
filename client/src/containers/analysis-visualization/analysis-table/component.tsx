@@ -2,18 +2,18 @@ import { useMemo } from 'react';
 import { uniq } from 'lodash';
 import { DataType, SortingMode } from 'ka-table/enums';
 import { DownloadIcon } from '@heroicons/react/outline';
-import { InformationCircleIcon } from '@heroicons/react/solid';
 
 import { useImpactData } from 'hooks/impact';
 
 import Table from 'containers/table';
 import SummaryRow from 'containers/table/summary-row';
+import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
 import Loading from 'components/loading';
+import LinkButton from 'components/button';
 
 import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 
-import { ITableData } from './types';
-import LinkButton from 'components/button';
+import type { ITableData } from './types';
 
 const dataToCsv: (tableData: ITableData) => string = (tableData) => {
   const LINE_SEPARATOR = '\r\n';
@@ -241,31 +241,28 @@ const AnalysisTable: React.FC = () => {
   return (
     <>
       <div className="flex justify-between">
-        <div className="flex items-center">
-          <p className="m-0">
-            <InformationCircleIcon className="inline w-5 h-4 mr-2 text-black" />
-            Viewing absolute values for <b>Actual Data</b>
-          </p>
-        </div>
-        <div>
-          <LinkButton
-            href={csv}
-            theme="secondary"
-            size="base"
-            className="flex-shrink-0"
-            disabled={isLoading}
-            download="report.csv"
-          >
-            <DownloadIcon className="w-5 h-4 mr-2 text-black" />
-            Download
-          </LinkButton>
-          <div className="mt-3 font-sans text-xs font-bold leading-4 text-center text-gray-500 uppercase">
-            Total {metadata.totalItems} {metadata.totalItems === 1 ? 'row' : 'rows'}
+        <div className="w-full flex items-end justify-between">
+          <AnalysisDynamicMetadata />
+          <div>
+            <LinkButton
+              href={csv}
+              theme="secondary"
+              size="base"
+              className="flex-shrink-0"
+              disabled={isLoading}
+              download="report.csv"
+            >
+              <DownloadIcon className="w-5 h-4 mr-2 text-black" />
+              Download
+            </LinkButton>
+            <div className="mt-3 font-sans text-xs font-bold leading-4 text-center text-gray-500 uppercase">
+              Total {metadata.totalItems} {metadata.totalItems === 1 ? 'row' : 'rows'}
+            </div>
           </div>
         </div>
       </div>
-      <div className="relative mt-2">
-        {isLoading && <Loading className="mr-3 -ml-1 text-green-700" />}
+      <div className="relative">
+        {isLoading && <Loading className="text-green-700 -ml-1 mr-3" />}
 
         <Table isLoading={isFetching} {...tableProps} />
       </div>

@@ -46,10 +46,10 @@ export class UrlParamsService extends AppBaseService<
       encodedResult.encodedParams,
     );
 
-    return decodedParams;
+    return { data: decodedParams };
   }
 
-  async saveUrlParams(dto: Record<string, any>): Promise<string> {
+  async saveUrlParams(dto: Record<string, any>): Promise<Partial<UrlParam>> {
     const encodedParams: string = JSON.stringify(dto);
 
     const savedParams: UrlParam | undefined =
@@ -61,10 +61,10 @@ export class UrlParamsService extends AppBaseService<
       const newParams: UrlParam = await this.urlParamRepository.save({
         encodedParams,
       });
-      return newParams.id;
+      return { id: newParams.id };
     }
 
-    return savedParams.id;
+    return { id: savedParams.id };
   }
 
   async deleteUrlParams(id: string) {

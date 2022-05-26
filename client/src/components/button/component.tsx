@@ -1,15 +1,21 @@
 import cx from 'classnames';
 import { forwardRef } from 'react';
 import Loading from 'components/loading';
+import { PlusIcon } from '@heroicons/react/solid';
+import { MailIcon } from '@heroicons/react/outline';
 
 const COMMON_CLASSNAMES = 'inline-flex items-center justify-center rounded-md cursor-pointer';
+const PRIMARY =
+  'border-transparent shadow-sm text-white bg-green-700 hover:bg-green-800 focus:outline-offset-2 focus:outline focus:outline-green-600';
+const SECONDARY =
+  'border border-gray-300 focus:border-green-700 shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-green-700';
 
 export const THEME = {
   default: COMMON_CLASSNAMES,
-  primary:
-    'border-transparent shadow-sm text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-1 focus:ring-green-700',
-  secondary:
-    'border border-gray-300 focus:border-green-700 shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-green-700',
+  primary: PRIMARY,
+  secondary: SECONDARY,
+  add: PRIMARY,
+  mail: SECONDARY,
   textLight: 'bg-transparent text-gray-500 focus:outline-none focus:text-black',
 };
 
@@ -21,9 +27,10 @@ const SIZE = {
 };
 
 export type AnchorButtonProps = {
-  theme?: 'primary' | 'secondary' | 'textLight';
+  theme?: 'primary' | 'secondary' | 'textLight' | 'mail' | 'add';
   size?: 'xs' | 'base' | 'xl' | 'text';
   loading?: boolean;
+  icon?: boolean;
 };
 
 // Button props
@@ -152,6 +159,8 @@ export const Button: React.FC<ButtonProps> = ({
     disabled={loading || disabled}
     {...restProps}
   >
+    {theme === 'mail' ? <MailIcon /> : null}
+    {theme === 'add' ? <PlusIcon /> : null}
     {loading ? <Loading className="text-white" /> : children}
   </button>
 );

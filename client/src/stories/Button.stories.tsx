@@ -7,7 +7,7 @@ export default {
   argTypes: {
     theme: {
       defaultValue: 'primary',
-      options: ['primary', 'secondary', 'textLight'],
+      options: ['primary', 'secondary', 'mail', 'add'],
       control: { type: 'select' },
     },
     size: {
@@ -20,20 +20,35 @@ export default {
       control: { type: 'text' },
     },
     disabled: {
-       defaultValue: false,
-       control: { type: 'boolean' },
+      defaultValue: false,
+      control: { type: 'boolean' },
     },
   },
 } as ButtonProps & AnchorProps;
 
-const Template = (args: ButtonProps & AnchorProps) => <Button {...args} />;
+const Template = (args: ButtonProps & AnchorProps) => {
+  return (
+    <div className="flex space-x-4">
+      <Button {...args} />
+      <Button {...args} disabled />
+      <Button {...args} autoFocus />
+    </div>
+  );
+};
 
-export const Default = Template.bind({});
-export const Hover = Template.bind({});
-export const Focus = Template.bind({});
-export const Disabled = Template.bind({});
+export const Primary = Template.bind({});
+export const Secondary = Template.bind({});
+export const Mail = Template.bind({});
+export const Add = Template.bind({});
 
+Secondary.args = {
+  theme: 'secondary',
+};
 
-Hover.parameters = { pseudo: { hover: true } };
-Focus.parameters = { pseudo: { focus: true } };
-Disabled.args = { disabled: true};
+Mail.args = {
+  theme: 'mail',
+};
+
+Add.args = {
+  theme: 'add',
+};

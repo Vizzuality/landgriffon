@@ -1,8 +1,10 @@
 /**
  * @description: Materialized View to perform queries to retrieve Impact Maps
- *               Should trigger a refresh AfterInsert and AfterUpdate on Indicator Records
+ *               Should trigger a refresh AfterInsert on Indicator Records
  *
- * @note: Parameter binding is not supported by TypeORM so
+ * @note: Synchronize set to false because this view relies on previous migrations, and those are run after mapping the model
+ *        via ActiveRecord. This entity is a definition for the API but it is actually created in the DB by:
+ *        migrations/1653487015795-ImpactMaterializedView.ts
  */
 import { Index, ViewColumn, ViewEntity } from 'typeorm';
 export const IMPACT_VIEW_NAME: string = 'impact_materialized_view';
@@ -20,6 +22,7 @@ FROM (
     FROM sourcing_location sl
     LEFT JOIN sourcing_records sr ON sr."sourcingLocationId" = sl."id"
     LEFT JOIN indicator_record ir ON ir."sourcingRecordId" = sr."id"
+    WHERE sl."scenarioInterventionId" IS NULL
 ) reduced,
 LATERAL (
     SELECT

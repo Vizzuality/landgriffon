@@ -5,8 +5,6 @@
  * @note: Parameter binding is not supported by TypeORM so
  */
 import { Index, ViewColumn, ViewEntity } from 'typeorm';
-import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
-
 export const IMPACT_VIEW_NAME: string = 'impact_materialized_view';
 
 @ViewEntity({
@@ -31,7 +29,7 @@ LATERAL (
 ) h3data;`,
   materialized: true,
   name: IMPACT_VIEW_NAME,
-  dependsOn: [IndicatorRecord],
+  synchronize: false,
 })
 @Index(['h3index', 'value', 'geoRegionId', 'h3DataId'])
 export class ImpactMaterializedView {

@@ -1,3 +1,4 @@
+import { FC, useCallback, useState } from 'react';
 import cx from 'classnames';
 
 import { useAppSelector } from 'store/hooks';
@@ -12,13 +13,24 @@ import Chart from 'components/chart';
 import AreaStacked from 'components/chart/area-stacked';
 import Widget from 'components/widget';
 
-const AnalysisChart: React.FC = () => {
+const AnalysisChart: FC = () => {
   const filters = useAppSelector(analysisFilters);
+
+  const [activeArea, setActiveArea] = useState(null);
 
   const { data: chartData, isFetching } = useAnalysisChart({
     maxRankingEntities: 5,
     sort: 'DES',
   });
+
+  const handleActiveArea = useCallback(
+    (key, indicator) => {
+      if (!activeArea) {
+        setActiveArea(`${key}-${indicator}`);
+      } else setActiveArea(null);
+    },
+    [activeArea],
+  );
 
   return (
     <>
@@ -51,6 +63,7 @@ const AnalysisChart: React.FC = () => {
                         margin={{ top: 12, right: 8, bottom: 30, left: 60 }}
                         keys={keys}
                         colors={colors}
+                        activeArea={activeArea}
                         // target={120}
                         projection={projection}
                         settings={{
@@ -65,16 +78,23 @@ const AnalysisChart: React.FC = () => {
                   <ul className="flex flex-row flex-wrap gap-x-3 gap-y-1 mt-2">
                     {keys.map((key) => (
                       <li key={key} className="flex items-center gap-x-1">
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: d.colors[key] }}
-                        />
-                        <span
-                          title={key}
-                          className="text-xs text-gray-500 max-w-[74px] truncate text-ellipsis"
-                        >
-                          {key}
-                        </span>
+                        <button type="button" onClick={() => handleActiveArea(key, indicator)}>
+                          <span
+                            className="w-3 h-3 rounded-full"
+                            style={{ backgroundColor: d.colors[key] }}
+                          />
+                          <span
+                            title={key}
+                            className={cx('text-xs', {
+                              'truncate text-ellipsis text-gray-500 max-w-[74px]':
+                                activeArea !== `${key}-${indicator}`,
+                              'opacity-70 text-gray-900':
+                                activeArea && activeArea !== `${key}-${indicator}`,
+                            })}
+                          >
+                            {key}
+                          </span>
+                        </button>
                       </li>
                     ))}
                   </ul>

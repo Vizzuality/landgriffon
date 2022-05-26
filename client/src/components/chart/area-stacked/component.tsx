@@ -39,6 +39,7 @@ export type AreaStackedProps = {
   };
   keys?: string[];
   colors?: Record<string, string>;
+  activeArea: string;
   target?: number;
   projection?: number;
   settings?: {
@@ -59,6 +60,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
   colors,
   target,
   projection,
+  activeArea,
   settings = {
     tooltip: true,
     projection: true,
@@ -66,7 +68,6 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
   },
 }) => {
   const { showTooltip, hideTooltip, tooltipData, tooltipTop, tooltipLeft } = useTooltip();
-
   const lastCurrentIndex = useMemo(() => {
     const i = data.findIndex((d) => !d.current);
     if (i > -1 && i !== data.length - 1) return i;
@@ -184,6 +185,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
                   strokeOpacity={0.25}
                   strokeWidth={0.5}
                   fill={colors[stack.key]}
+                  opacity={activeArea && `${stack.key}-${title}` === activeArea ? 1 : 0.3}
                 />
               ))
             }

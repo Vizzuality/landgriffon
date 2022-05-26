@@ -16,7 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Upgrade Tailwind to version 3.0.24
 - Upgrade to Yarn version 3.2.1
 
-### Removed
+### Fixed
+- `nyc` was not working running `yarn test`
 
 ## 0.3.0 - 2021-09-01
 ### Added

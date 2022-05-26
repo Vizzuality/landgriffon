@@ -34,7 +34,7 @@ const AnalysisChart: React.FC = () => {
             })}
           >
             {chartData.map((d) => {
-              const { id, indicator, keys, values, colors, unit } = d;
+              const { id, indicator, keys, values, colors, unit, projection } = d;
 
               return (
                 <motion.div
@@ -48,10 +48,11 @@ const AnalysisChart: React.FC = () => {
                         title={indicator}
                         yAxisLabel={unit}
                         data={values}
-                        margin={{ top: 12, right: 8, bottom: 30, left: 50 }}
+                        margin={{ top: 12, right: 8, bottom: 30, left: 60 }}
                         keys={keys}
                         colors={colors}
                         // target={120}
+                        projection={projection}
                         settings={{
                           tooltip: true,
                           projection: true,

@@ -11,7 +11,8 @@ import { localPoint } from '@visx/event';
 
 import { bisector } from 'd3-array';
 import { timeYear } from 'd3-time';
-import { format } from 'd3-format';
+
+import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 
 import Tooltip from 'components/chart/area-stacked/tooltip';
 
@@ -53,7 +54,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
   yAxisLabel,
   width = 400,
   height = 200,
-  margin = { top: 16, right: 0, bottom: 16, left: 40 },
+  margin = { top: 16, right: 0, bottom: 16, left: 60 },
   keys = [],
   colors,
   target,
@@ -269,7 +270,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
               dx: xOffset(index),
               fill: '#AEB1B5', // text-gray-400
               fontFamily: 'Arial',
-              fontSize: 10,
+              fontSize: 9,
               textAnchor: 'middle',
             })}
           />
@@ -280,19 +281,19 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
             scale={yScale}
             label={yAxisLabel}
             labelClassName="text-gray-500 text-[10px]"
-            labelOffset={37}
+            labelOffset={50}
             axisClassName="p-6"
-            left={4}
+            left={6}
             hideTicks
             hideAxisLine
             numTicks={4}
-            tickFormat={format('.1s')}
+            tickFormat={BIG_NUMBER_FORMAT}
             tickLabelProps={() => ({
               dx: '-0.25em',
               dy: '0.25em',
               fill: '#AEB1B5', // text-gray-400
               fontFamily: 'Arial',
-              fontSize: 10,
+              fontSize: 9,
               textAnchor: 'end',
             })}
           />

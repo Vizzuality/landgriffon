@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 
 import flatten from 'lodash/flatten';
 import uniq from 'lodash/uniq';
+import compact from 'lodash/compact';
 import chroma from 'chroma-js';
 
 import { useAppSelector } from 'store/hooks';
@@ -33,12 +34,29 @@ export function useColors(): RGBColor[] {
 export function useAnalysisChart(params): AnalysisChart {
   const filters = useAppSelector(analysisFilters);
   const { data, isLoading } = useImpactRanking(params);
+
   const parsedImpact = data?.impactTable.map((data) => {
+    const projectedYears = uniq(
+      flatten(
+        data.rows.map((row) =>
+          compact(
+            row.values.map((v) => {
+              if (v.isProjected) {
+                return v.year;
+              }
+            }),
+          ),
+        ),
+      ),
+    ) as number[];
+
+    const projection = !!projectedYears.length && Math.min(...projectedYears);
     return {
       id: data.indicatorId,
       indicator: data.indicatorShortName,
       unit: data.metadata.unit,
       values: data.yearSum,
+      projection,
       children: flatten([
         data.rows.map((row) => ({
           id: row.name,
@@ -48,7 +66,10 @@ export function useAnalysisChart(params): AnalysisChart {
         {
           id: data.others.numberOfAggregatedEntities === 1 ? 'Other' : 'Others',
           name: data.others.numberOfAggregatedEntities === 1 ? 'Other' : 'Others',
-          values: data.others.aggregatedValues,
+          values: data.others.aggregatedValues.map((aggregated) => ({
+            ...aggregated,
+            isProjected: projectedYears.includes(aggregated.year),
+          })),
         },
       ]),
     };
@@ -56,7 +77,7 @@ export function useAnalysisChart(params): AnalysisChart {
 
   return useMemo(() => {
     const parsedData = parsedImpact.map((d) => {
-      const { id, indicator: indicatorName, children, unit: indicatorUnit } = d;
+      const { id, indicator: indicatorName, children, projection, unit: indicatorUnit } = d;
       const years = uniq(
         flatten(
           children.map((c) => {
@@ -78,7 +99,7 @@ export function useAnalysisChart(params): AnalysisChart {
 
         const calculated = children.every((c) => {
           const v = c.values.find((vl) => vl.year === y);
-          return v.calculated;
+          return v.isProjected;
         });
 
         return {
@@ -95,6 +116,7 @@ export function useAnalysisChart(params): AnalysisChart {
         indicator: indicatorName,
         keys,
         values,
+        projection,
         filters,
       };
     });
@@ -126,6 +148,7 @@ export function useAnalysisChart(params): AnalysisChart {
       ...d,
       colors,
     }));
+
     return {
       isLoading,
       isFetching: false,

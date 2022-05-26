@@ -39,6 +39,7 @@ export type AreaStackedProps = {
   keys?: string[];
   colors?: Record<string, string>;
   target?: number;
+  projection?: number;
   settings?: {
     tooltip: boolean;
     projection: boolean;
@@ -56,6 +57,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
   keys = [],
   colors,
   target,
+  projection,
   settings = {
     tooltip: true,
     projection: true,
@@ -118,12 +120,12 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
       const { x } = localPoint(event) || { x: 0 };
       const x0 = xScale.invert(x);
       const index = bisectDate(data, x0, 1);
-      const d0 = data[index - 1];
+      const d0 = data[index - 1 < 0 ? 0 : index - 1];
       const d1 = data[index];
       let d = d0;
 
       if (d1 && getDate(d1)) {
-        d = x0.valueOf() - getDate(d0).valueOf() > getDate(d1).valueOf() - x0.valueOf() ? d1 : d0;
+        d = getDate(d0).valueOf() - x0.valueOf() > getDate(d1).valueOf() - x0.valueOf() ? d1 : d0;
       }
 
       const y = keys.reduce((acc, k) => {
@@ -204,7 +206,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
                   strokeOpacity={0.25}
                   strokeWidth={0.5}
                   fill={colors[stack.key]}
-                  fillOpacity={0.75}
+                  fillOpacity={0.4}
                 />
               ))
             }
@@ -324,7 +326,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
                   rx: 4,
                   stroke: '#656565',
                   strokeOpacity: 0.5,
-                  strokeWidth: 0.5,
+                  strokeWidth: 0.2,
                 }}
                 titleFontSize={8}
                 titleFontWeight={400}
@@ -340,7 +342,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
           {typeof lastCurrentIndex !== 'undefined' &&
             lastCurrentIndex !== null &&
             settings.projection && (
-              <Annotation x={xScale(new Date(data[lastCurrentIndex].date).valueOf())}>
+              <Annotation x={xScale(getDate({ date: `01/01/${projection}` }))}>
                 <LineSubject
                   orientation="vertical"
                   stroke="#999"
@@ -348,7 +350,6 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
                   min={0}
                   max={yRangeMax}
                 />
-
                 <Label
                   width={51}
                   y={5}
@@ -366,7 +367,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
                     rx: 4,
                     stroke: '#656565',
                     strokeOpacity: 0.5,
-                    strokeWidth: 0.5,
+                    strokeWidth: 0.2,
                   }}
                   titleFontSize={8}
                   titleFontWeight={400}

@@ -39,6 +39,7 @@ type ChartData = Readonly<{
   filters: Filters;
   id: string;
   indicator: string;
+  projection: number;
   keys: string[];
   unit: string;
   values: ChartValues[];

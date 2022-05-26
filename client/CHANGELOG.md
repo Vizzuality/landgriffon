@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 - Upgrade Tailwind to version 3.0.24
 - Upgrade to Yarn version 3.2.1
+- Upgrade to Node LTS 16.15.0
 
 ### Fixed
 - `nyc` was not working running `yarn test`

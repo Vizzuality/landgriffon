@@ -1,6 +1,5 @@
 import {
   AfterInsert,
-  AfterUpdate,
   Column,
   Entity,
   getManager,
@@ -106,7 +105,6 @@ export class IndicatorRecord extends TimestampedBaseEntity {
   materialH3DataId: string;
 
   @AfterInsert()
-  @AfterUpdate()
   static async updateImpactView(): Promise<void> {
     await getManager().query(
       `REFRESH MATERIALIZED VIEW ${IMPACT_VIEW_NAME} WITH DATA`,

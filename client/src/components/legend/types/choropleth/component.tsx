@@ -18,7 +18,7 @@ export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
 
   return (
     <div
-      className={cx('px-4', {
+      className={cx('px-4 w-full max-w-full', {
         [className]: !!className,
       })}
     >
@@ -38,7 +38,7 @@ export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
       <ul className="flex w-full m-0">
         {min && (
           <li className="text-xs flex justify-start w-0">
-            <span className="transform -translate-x-1/2 break-normal whitespace-nowrap">{min}</span>
+            <span className="transform -translate-x-1/2">{min}</span>
           </li>
         )}
         {items.map(({ value }) => (
@@ -49,7 +49,10 @@ export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
               width: `${100 / items.length}%`,
             }}
           >
-            <span className="transform translate-x-1/2 break-normal whitespace-nowrap">
+            <span
+              title={`${value}`}
+              className="transform translate-x-1/2 truncate w-full text-center"
+            >
               {value}
             </span>
           </li>

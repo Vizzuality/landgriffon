@@ -80,7 +80,7 @@ export const LegendItem: React.FC<LegendItemProps> = ({
       )}
       {!isLoading && isActive && children && (
         <div className="flex ml-2">
-          <div className="flex-1">{children}</div>
+          <div className="flex-1 w-[90%]">{children}</div>
           {unit && <div className="w-8 text-xs text-gray-500 -m-1">{unit}</div>}
         </div>
       )}

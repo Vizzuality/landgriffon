@@ -185,7 +185,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
                   strokeOpacity={0.25}
                   strokeWidth={0.5}
                   fill={colors[stack.key]}
-                  opacity={activeArea && `${stack.key}-${title}` === activeArea ? 1 : 0.3}
+                  opacity={!activeArea || `${stack.key}-${title}` === activeArea ? 1 : 0.3}
                 />
               ))
             }

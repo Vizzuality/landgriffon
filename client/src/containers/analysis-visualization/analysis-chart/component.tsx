@@ -78,9 +78,13 @@ const AnalysisChart: FC = () => {
                   <ul className="flex flex-row flex-wrap gap-x-3 gap-y-1 mt-2">
                     {keys.map((key) => (
                       <li key={key} className="flex items-center gap-x-1">
-                        <button type="button" onClick={() => handleActiveArea(key, indicator)}>
+                        <button
+                          type="button"
+                          className="flex items-center"
+                          onClick={() => handleActiveArea(key, indicator)}
+                        >
                           <span
-                            className="w-3 h-3 rounded-full"
+                            className="w-2.5 h-2.5 rounded-full mr-1"
                             style={{ backgroundColor: d.colors[key] }}
                           />
                           <span

@@ -17,8 +17,10 @@ export class UrlParamsController {
   @ApiOkResponse({ type: UrlParam })
   @ApiNotFoundResponse({ description: 'URL params not found' })
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Record<string, any>> {
-    return this.urlParamService.getUrlParamsById(id);
+  async findOne(@Param('id') id: string): Promise<Partial<UrlParam>> {
+    return this.urlParamService.serialize(
+      await this.urlParamService.getById(id),
+    );
   }
 
   @ApiOperation({ description: 'Save URL params set' })
@@ -28,7 +30,7 @@ export class UrlParamsController {
   })
   @Post()
   async create(@Body() dto: Record<string, any>): Promise<Partial<UrlParam>> {
-    return await this.urlParamService.serialize(
+    return this.urlParamService.serialize(
       await this.urlParamService.saveUrlParams(dto),
     );
   }

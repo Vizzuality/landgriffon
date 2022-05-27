@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { UrlParamRepository } from './url-param.repository';
@@ -29,37 +29,20 @@ export class UrlParamsService extends AppBaseService<
 
   get serializerConfig(): JSONAPISerializerConfig<UrlParam> {
     return {
-      attributes: ['encodedParams', 'id'],
+      attributes: ['params'],
       keyForAttribute: 'camelCase',
     };
   }
 
-  async getUrlParamsById(id: string): Promise<Record<string, any>> {
-    const encodedResult: UrlParam | undefined =
-      await this.urlParamRepository.findOne(id);
-
-    if (!encodedResult) {
-      throw new NotFoundException(` URL APrams set with ID "${id}" not found`);
-    }
-
-    const decodedParams: Record<string, any> = JSON.parse(
-      encodedResult.encodedParams,
-    );
-
-    return { data: decodedParams };
-  }
-
   async saveUrlParams(dto: Record<string, any>): Promise<Partial<UrlParam>> {
-    const encodedParams: string = JSON.stringify(dto);
-
     const savedParams: UrlParam | undefined =
       await this.urlParamRepository.findOne({
-        encodedParams,
+        params: dto,
       });
 
     if (!savedParams) {
       const newParams: UrlParam = await this.urlParamRepository.save({
-        encodedParams,
+        params: dto,
       });
       return { id: newParams.id };
     }

@@ -18,7 +18,7 @@ export class UrlParam extends BaseEntity {
   @ApiProperty()
   id!: string;
 
-  @Column()
+  @Column({ type: 'jsonb' })
   @ApiProperty()
-  encodedParams!: string;
+  params!: JSON;
 }

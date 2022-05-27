@@ -94,7 +94,7 @@ describe('UrlParamsModule (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .send();
 
-      expect(findResponse.body.data).toEqual({
+      expect(findResponse.body.data.attributes.params).toEqual({
         'save-param': 'test param 2',
       });
     });

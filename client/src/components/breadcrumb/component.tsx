@@ -2,6 +2,8 @@ import { useCallback } from 'react';
 import classNames from 'classnames';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { setMode, scenarios } from 'store/features/analysis/scenarios';
+import { setSubContentCollapsed } from 'store/features/analysis';
+
 import type { Page } from './types';
 
 export type BreadcrumbProps = {
@@ -15,7 +17,12 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ pages }: BreadcrumbProps) => {
   const { mode } = useAppSelector(scenarios);
   const middlePages = [...pages].slice(1, pages.length);
 
-  const handleClick = useCallback(() => dispatch(setMode(pages[0].mode)), [dispatch, pages]);
+  const handleClick = useCallback(() => {
+    if (pages[0].mode === 'list') {
+      dispatch(setSubContentCollapsed(true));
+    }
+    dispatch(setMode(pages[0].mode));
+  }, [dispatch, pages]);
 
   return (
     <nav className="flex" aria-label="Breadcrumb">

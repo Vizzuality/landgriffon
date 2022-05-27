@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Fixed
 - `nyc` was not working running `yarn test`
 - Collapsed button sometimes appears in the middle [LANDGRIF-678](https://vizzuality.atlassian.net/browse/LANDGRIF-678)
+- Interventions pannel should close when navigating to "Analysis" throught breadcrumbs [LANDGRIF-657](https://vizzuality.atlassian.net/browse/LANDGRIF-657)
 
 ## 0.3.0 - 2021-09-01
 ### Added

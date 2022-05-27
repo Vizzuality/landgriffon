@@ -4,7 +4,8 @@ import Loading from 'components/loading';
 import { PlusIcon } from '@heroicons/react/solid';
 import { MailIcon } from '@heroicons/react/outline';
 
-const COMMON_CLASSNAMES = 'inline-flex items-center justify-center rounded-md cursor-pointer';
+const COMMON_CLASSNAMES =
+  'inline-flex items-center overflow-hidden justify-center rounded-md cursor-pointer';
 const PRIMARY =
   'border-transparent shadow-sm text-white bg-green-700 hover:bg-green-800 focus:outline-offset-2 focus:outline focus:outline-green-600';
 const SECONDARY =
@@ -159,8 +160,14 @@ export const Button: React.FC<ButtonProps> = ({
     disabled={loading || disabled}
     {...restProps}
   >
-    {theme === 'mail' ? <MailIcon /> : null}
-    {theme === 'add' ? <PlusIcon /> : null}
+    <span>
+      {theme === 'mail' ? (
+        <MailIcon className="w-5 h-5 mr-4" />
+      ) : theme === 'add' ? (
+        <PlusIcon className="w-5 h-5 mr-4" />
+      ) : null}
+    </span>
+
     {loading ? <Loading className="text-white" /> : children}
   </button>
 );

@@ -400,6 +400,8 @@ download-deforestation: download-deforestation-list
 	mkdir -p $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear
 	cat $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear.txt | xargs -P $(PARALLELIZATION_FACTOR) -I {} /bin/bash -c 'make transform-deforestation-file FILE={}'
 
+#todo: change resampling method by sum and ingest density when updating methodology for calculating deforestation
+# divide by 111111.1111111111 for getting the density
 transform-deforestation-file:
 	@echo "Transforming deforestation file $(FILE) ... "
 	table_name=`basename -s .tif $(FILE) | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \

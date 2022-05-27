@@ -53,6 +53,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   error = false,
   fitContent = false,
   checkedStrategy = 'PARENT', // by default show child
+  autoFocus = false,
 }) => {
   const {
     x,
@@ -274,6 +275,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                 {showSearch && (
                   <span>
                     <input
+                      autoFocus={autoFocus}
                       onClick={(e) => {
                         e.preventDefault();
                         (referenceElement.current as HTMLElement).click();

@@ -15326,7 +15326,6 @@ __metadata:
     rooks: 5.10.0
     sharp: 0.29.3
     start-server-and-test: 1.14.0
-    storybook-addon-pseudo-states: ^1.14.0
     tailwindcss: 3.0.24
     twin.macro: 2.8.2
     typescript: 4.4.4
@@ -20719,26 +20718,6 @@ __metadata:
   version: 2.13.2
   resolution: "store2@npm:2.13.2"
   checksum: 9e760ea2a7f56eae47d5bafe507511b25ad983bba901e1e0c5f65713e631c15aafb8e031c658047af53c2008a5d21cb6c43f2383673b3493144e8e1ead5c8f91
-  languageName: node
-  linkType: hard
-
-"storybook-addon-pseudo-states@npm:^1.14.0":
-  version: 1.14.0
-  resolution: "storybook-addon-pseudo-states@npm:1.14.0"
-  peerDependencies:
-    "@storybook/addons": ^6.4.19
-    "@storybook/api": ^6.4.19
-    "@storybook/components": ^6.4.19
-    "@storybook/core-events": ^6.4.19
-    "@storybook/theming": ^6.4.19
-    react: ^16.8.0 || ^17.0.0
-    react-dom: ^16.8.0 || ^17.0.0
-  peerDependenciesMeta:
-    react:
-      optional: true
-    react-dom:
-      optional: true
-  checksum: 3c8c8e8cd5f69774eb1c2cee43c5551099d0f78b2f3d99925c953a0806225506a7aea86667dc12d154cde917ca27d7b09796fb2fb3a93b12a92da0f999725348
   languageName: node
   linkType: hard
 

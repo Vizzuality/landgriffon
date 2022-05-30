@@ -9,6 +9,12 @@ import Sortable from 'containers/sortable';
 import { SortableItem } from 'containers/sortable/component';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisMap, setLayerOrder } from 'store/features/analysis/map';
+import { Layer } from 'types';
+import classNames from 'classnames';
+
+const sortByOrder: (layers: Record<string, Layer>) => Layer[] = (layers) => {
+  return Object.values(layers).sort((a, b) => a.order - b.order);
+};
 
 export const Legend: React.FC = () => {
   const [showLegend, setShowLegend] = useState<boolean>(true); // by default the legend is not collapsed
@@ -18,8 +24,8 @@ export const Legend: React.FC = () => {
   const layers = useAppSelector(analysisMap).layers;
 
   const handleShowLegend = useCallback(() => {
-    setShowLegend(!showLegend);
-  }, [showLegend]);
+    setShowLegend((show) => !show);
+  }, []);
 
   const onToggleActive = useCallback(() => {
     setShowContextualLayers(!showContextualLayers);
@@ -34,19 +40,20 @@ export const Legend: React.FC = () => {
     [],
   );
 
+  const allLayerCount = Object.keys(length).length;
+  const activeLayerCount = Object.values(layers).filter((layer) => layer.active).length;
+
   useEffect(() => {
     dispatch(setLayerOrder(Object.keys(legends)));
   }, [dispatch, legends]);
 
+  const allOrderedLayers = useMemo(() => sortByOrder(layers), [layers]);
+
   const orderedLayers = useMemo(() => {
-    const ordered = Object.values(layers)
-      // .filter((legend) => legend.id !== 'h3-layer-impact')
-      .sort((a, b) => a.order - b.order);
+    if (showContextualLayers) return allOrderedLayers;
 
-    if (showContextualLayers) return ordered;
-
-    return ordered.filter((legend) => legend.id === 'h3-layer-impact');
-  }, [layers, showContextualLayers]);
+    return allOrderedLayers.filter((legend) => legend.id === 'h3-layer-impact');
+  }, [allOrderedLayers, showContextualLayers]);
 
   return (
     <div className="relative">
@@ -79,12 +86,29 @@ export const Legend: React.FC = () => {
       )}
       <button
         type="button"
-        className="bg-white border border-gray-100 p-2 rounded-lg"
+        className="bg-white border border-gray-100 p-2 rounded-lg relative"
         onClick={handleShowLegend}
       >
-        <ChevronDoubleLeftIcon
+        {activeLayerCount !== 0 && (
+          <div className="absolute rounded-full text-xs text-white bg-black w-4 h-4 top-0 right-0 translate-x-1/3 -translate-y-1/3 font-bold">
+            <span className="relative my-auto">{activeLayerCount}</span>
+          </div>
+        )}
+        <div className="mt-2">
+          {allOrderedLayers.map((layer, i) => (
+            <div
+              key={layer.id}
+              className={classNames(
+                'relative border-[1px] border-white skew-x-[45deg] skew-y-[-20deg] w-4 h-4 -mt-2 rounded-sm',
+                { 'bg-black': layer.active, 'bg-gray-600': !layer.active },
+              )}
+              style={{ zIndex: allOrderedLayers.length - i }}
+            />
+          ))}
+        </div>
+        {/* <ChevronDoubleLeftIcon
           className={cx('w-5 h-5 transition-all', { 'rotate-180': showLegend })}
-        />
+        /> */}
       </button>
     </div>
   );

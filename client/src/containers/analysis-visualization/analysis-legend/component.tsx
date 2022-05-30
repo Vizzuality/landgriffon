@@ -90,11 +90,11 @@ export const Legend: React.FC = () => {
       >
         {activeLayerCount !== 0 && (
           <div className="absolute rounded-full text-xs text-white bg-black w-4 h-4 top-0 right-0 translate-x-1/3 -translate-y-1/3 font-bold">
-            <span className="relative my-auto">{activeLayerCount}</span>
+            <span className="relative my-auto h-fit">{activeLayerCount}</span>
           </div>
         )}
         <div className="mt-2">
-          {allOrderedLayers.map((layer, i) => (
+          {allOrderedLayers.map((layer) => (
             <div
               key={layer.id}
               className={classNames(
@@ -106,7 +106,7 @@ export const Legend: React.FC = () => {
                   '-mt-0.5': showLegend,
                 },
               )}
-              style={{ zIndex: allOrderedLayers.length - i }}
+              style={{ zIndex: allOrderedLayers.length - layer.order }}
             />
           ))}
         </div>

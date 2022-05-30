@@ -42,19 +42,19 @@ export class GetImpactMapDto {
   @IsEnum(AvailableResolutions, { message: 'Available resolutions: 1 to 6' })
   resolution!: number;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ name: 'materialIds[]' })
   @IsOptional()
   @IsString({ each: true })
   @Type(() => String)
   materialIds?: string[];
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ name: 'originIds[]' })
   @IsOptional()
   @IsString({ each: true })
   @Type(() => String)
   originIds?: string[];
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ name: 'supplierIds[]' })
   @IsOptional()
   @IsString({ each: true })
   @Type(() => String)
@@ -63,6 +63,7 @@ export class GetImpactMapDto {
   @ApiPropertyOptional({
     description: 'Types of Sourcing Locations, written with hyphens',
     enum: Object.values(LOCATION_TYPES_PARAMS),
+    name: 'locationTypes[]',
   })
   @IsOptional()
   @IsEnum(LOCATION_TYPES_PARAMS, {

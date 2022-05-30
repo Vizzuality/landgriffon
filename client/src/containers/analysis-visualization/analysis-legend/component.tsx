@@ -40,9 +40,6 @@ export const Legend: React.FC = () => {
     [],
   );
 
-  const allLayerCount = Object.keys(length).length;
-  const activeLayerCount = Object.values(layers).filter((layer) => layer.active).length;
-
   useEffect(() => {
     dispatch(setLayerOrder(Object.keys(legends)));
   }, [dispatch, legends]);
@@ -54,6 +51,8 @@ export const Legend: React.FC = () => {
 
     return allOrderedLayers.filter((legend) => legend.id === 'h3-layer-impact');
   }, [allOrderedLayers, showContextualLayers]);
+
+  const activeLayerCount = Object.values(layers).filter((layer) => layer.active).length;
 
   return (
     <div className="relative">
@@ -99,8 +98,13 @@ export const Legend: React.FC = () => {
             <div
               key={layer.id}
               className={classNames(
-                'relative border-[1px] border-white skew-x-[45deg] skew-y-[-20deg] w-4 h-4 -mt-2 rounded-sm',
-                { 'bg-black': layer.active, 'bg-gray-600': !layer.active },
+                'relative border-[1px] border-white skew-x-[45deg] skew-y-[-20deg] w-4 h-3 rounded-sm transition-all',
+                {
+                  'bg-black': layer.active,
+                  'bg-gray-600': !layer.active,
+                  '-mt-2': !showLegend,
+                  '-mt-1': showLegend,
+                },
               )}
               style={{ zIndex: allOrderedLayers.length - i }}
             />

@@ -96,6 +96,10 @@ export class SourcingLocation extends TimestampedBaseEntity {
   @ApiProperty()
   locationAccuracy!: LOCATION_ACCURACY;
 
+  @ApiPropertyOptional()
+  @Column({ type: 'text', nullable: true })
+  locationWarning?: string;
+
   @ManyToOne(
     () => GeoRegion,
     (geoRegion: GeoRegion) => geoRegion.sourcingLocations,

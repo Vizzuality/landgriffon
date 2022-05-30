@@ -35,11 +35,21 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
       /**
        * Get closest AdminRegion given the same point
        */
-      const { adminRegionId } =
-        await this.adminRegionService.getClosestAdminRegionByCoordinates({
-          lng: sourcingData.locationLongitude,
-          lat: sourcingData.locationLatitude,
-        });
+      let adminRegionId: string;
+      try {
+        adminRegionId = (
+          await this.adminRegionService.getClosestAdminRegionByCoordinates(
+            {
+              lng: sourcingData.locationLongitude,
+              lat: sourcingData.locationLatitude,
+            },
+            sourcingData.locationCountryInput,
+          )
+        ).adminRegionId;
+      } catch (e) {
+        await this.geoRegionService.remove(geoRegionId as unknown as string);
+        throw e;
+      }
 
       return {
         ...sourcingData,
@@ -51,7 +61,10 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
      * if address, geocode the address
      */
     if (sourcingData.locationAddressInput) {
-      const geocodedResponseData: GeocodeResponse = await this.geoCodeByAddress(
+      const geocodedResponseData: {
+        data: GeocodeResponse;
+        warning: string | undefined;
+      } = await this.geoCodeByAddress(
         sourcingData.locationAddressInput,
         sourcingData.locationCountryInput as string,
       );
@@ -59,7 +72,7 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
       /**
        * if given address is country type, raise and exception. it should be an address within a country
        */
-      if (this.isAddressACountry(geocodedResponseData.results[0].types))
+      if (this.isAddressACountry(geocodedResponseData.data.results[0].types))
         throw new GeoCodingError(
           `${sourcingData.locationAddressInput} is a country, should be an address within a country
           `,
@@ -67,30 +80,43 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
       /**
        * if address is a level 1 admin-area, intersect the geocoding resultant coordinates to confirm which admin-area belongs to
        */
-      if (this.isAddressAdminLevel1(geocodedResponseData.results[0].types)) {
+      if (
+        this.isAddressAdminLevel1(geocodedResponseData.data.results[0].types)
+      ) {
         const { adminRegionId, geoRegionId } =
-          await this.adminRegionService.getAdminRegionIdByCoordinatesAndLevel({
-            lng: geocodedResponseData?.results[0]?.geometry.location.lng,
-            lat: geocodedResponseData?.results[0]?.geometry.location.lat,
-            level: 1,
-          });
+          await this.adminRegionService.getAdminRegionIdByCoordinatesAndLevel(
+            {
+              lng: geocodedResponseData?.data.results[0]?.geometry.location.lng,
+              lat: geocodedResponseData?.data.results[0]?.geometry.location.lat,
+              level: 1,
+            },
+            sourcingData.locationCountryInput,
+          );
         return {
           ...sourcingData,
           adminRegionId,
           geoRegionId,
         };
       }
-      if (this.isAddressAdminLevel2(geocodedResponseData.results[0].types)) {
+      if (
+        this.isAddressAdminLevel2(geocodedResponseData.data.results[0].types)
+      ) {
         const { adminRegionId, geoRegionId } =
-          await this.adminRegionService.getAdminRegionIdByCoordinatesAndLevel({
-            lng: geocodedResponseData?.results[0]?.geometry.location.lng,
-            lat: geocodedResponseData?.results[0]?.geometry.location.lat,
-            level: 2,
-          });
+          await this.adminRegionService.getAdminRegionIdByCoordinatesAndLevel(
+            {
+              lng: geocodedResponseData?.data?.results[0]?.geometry.location
+                .lng,
+              lat: geocodedResponseData?.data?.results[0]?.geometry.location
+                .lat,
+              level: 2,
+            },
+            sourcingData.locationCountryInput,
+          );
         return {
           ...sourcingData,
           adminRegionId,
           geoRegionId,
+          locationWarning: geocodedResponseData.warning,
         };
       } else {
         /**
@@ -102,23 +128,29 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
           await this.geoRegionService.saveGeoRegionAsRadius({
             name: sourcingData.locationCountryInput,
             coordinates: {
-              lat: geocodedResponseData.results[0].geometry.location.lat,
-              lng: geocodedResponseData.results[0].geometry.location.lng,
+              lat: geocodedResponseData.data.results[0].geometry.location.lat,
+              lng: geocodedResponseData.data.results[0].geometry.location.lng,
             },
           });
         /**
          * Get closest AdminRegion given the same point
          */
         const { adminRegionId } =
-          await this.adminRegionService.getClosestAdminRegionByCoordinates({
-            lng: geocodedResponseData?.results[0]?.geometry.location.lng,
-            lat: geocodedResponseData?.results[0]?.geometry.location.lat,
-          });
+          await this.adminRegionService.getClosestAdminRegionByCoordinates(
+            {
+              lng: geocodedResponseData?.data?.results[0]?.geometry.location
+                .lng,
+              lat: geocodedResponseData?.data?.results[0]?.geometry.location
+                .lat,
+            },
+            sourcingData.locationCountryInput,
+          );
 
         return {
           ...sourcingData,
           adminRegionId,
           geoRegionId,
+          locationWarning: geocodedResponseData.warning,
         };
       }
     }

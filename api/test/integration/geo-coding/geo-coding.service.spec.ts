@@ -180,7 +180,10 @@ describe('GeoCoding Service (Integration Testing)', () => {
     test('When a location is sent to the service, and its address geocode response is a country, then a error should be shown', async () => {
       jest
         .spyOn(aggregationPointService, 'geoCodeByAddress')
-        .mockResolvedValue(geocodeResponses[2] as GeocodeResponseData);
+        .mockResolvedValue({
+          data: geocodeResponses[2] as GeocodeResponseData,
+          warning: undefined,
+        });
       const sourcingData = {
         locationAddressInput: true,
         locationCountryInput: true,
@@ -203,7 +206,10 @@ describe('GeoCoding Service (Integration Testing)', () => {
       };
       jest
         .spyOn(aggregationPointService, 'geoCodeByAddress')
-        .mockResolvedValue(geocodeResponses[0] as GeocodeResponseData);
+        .mockResolvedValue({
+          data: geocodeResponses[0] as GeocodeResponseData,
+          warning: undefined,
+        });
       jest
         .spyOn(adminRegionService, 'getAdminRegionIdByCoordinatesAndLevel')
         .mockResolvedValue(fakeIds);

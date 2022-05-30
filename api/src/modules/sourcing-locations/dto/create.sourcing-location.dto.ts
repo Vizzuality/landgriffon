@@ -92,6 +92,9 @@ export class CreateSourcingLocationDto {
   @ApiPropertyOptional()
   metadata?: JSON;
 
+  @IsOptional()
+  locationWarning?: string;
+
   @IsString()
   @IsOptional()
   @ApiPropertyOptional()

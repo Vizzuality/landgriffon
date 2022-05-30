@@ -125,22 +125,30 @@ export class AdminRegionsService extends AppBaseService<
     return adminRegion;
   }
 
-  async getAdminRegionIdByCoordinatesAndLevel(searchParams: {
-    lng: number;
-    lat: number;
-    level: number;
-  }): Promise<{ adminRegionId: string; geoRegionId: string }> {
+  async getAdminRegionIdByCoordinatesAndLevel(
+    searchParams: {
+      lng: number;
+      lat: number;
+      level: number;
+    },
+    country?: string,
+  ): Promise<{ adminRegionId: string; geoRegionId: string }> {
     return this.adminRegionRepository.getAdminRegionAndGeoRegionIdByCoordinatesAndLevel(
       searchParams,
+      country,
     );
   }
 
-  async getClosestAdminRegionByCoordinates(coordinates: {
-    lng: number;
-    lat: number;
-  }): Promise<any> {
+  async getClosestAdminRegionByCoordinates(
+    coordinates: {
+      lng: number;
+      lat: number;
+    },
+    country?: string,
+  ): Promise<any> {
     return this.adminRegionRepository.getClosestAdminRegionByCoordinates(
       coordinates,
+      country,
     );
   }
 

@@ -9,6 +9,7 @@ import {
   GeocoderInterface,
 } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { AddressComponent } from '@googlemaps/google-maps-services-js';
+import { GeocodeResult } from '@googlemaps/google-maps-services-js/dist/common';
 
 /**
  * @note: Landgriffon Geocoding strategy doc:
@@ -34,11 +35,36 @@ export abstract class BaseStrategy {
   async geoCodeByAddress(
     locationAddress: string,
     locationCountry: string,
-  ): Promise<GeocodeResponse> {
+  ): Promise<{
+    data: GeocodeResponse;
+    warning: string | undefined;
+  }> {
+    let warning: string | undefined;
     const geocodeResponseData: GeocodeResponse = await this.geocoder.geocode({
       address: `${locationAddress}, ${locationCountry}`,
     });
-    return geocodeResponseData;
+    this.validateGeoCodeResponse(
+      geocodeResponseData,
+      locationAddress,
+      locationCountry,
+    );
+
+    if (geocodeResponseData.results.length > 1) {
+      // Take the most accurate location within the response, and add a warning
+      geocodeResponseData.results = [
+        geocodeResponseData.results.reduce(
+          (prev: GeocodeResult, current: GeocodeResult) => {
+            return prev.address_components.length >
+              current.address_components.length
+              ? prev
+              : current;
+          },
+        ),
+      ];
+      warning = `${locationAddress},${locationCountry} is ambiguous, taking most accurate interpretation.`;
+    }
+
+    return { data: geocodeResponseData, warning };
   }
 
   isAddressACountry(locationTypes: string[]): boolean {
@@ -61,6 +87,31 @@ export abstract class BaseStrategy {
       );
     if (country) return country.short_name;
     throw new Error(`Could not find ISO2 code`);
+  }
+
+  getCountryNameFromGeocodeResult(geocodeResult: GeocodeResult): string {
+    const country: AddressComponent | undefined =
+      geocodeResult.address_components.find((address: any) =>
+        address.types.includes('country'),
+      );
+    if (country) return country.long_name;
+    throw new Error(`Address not inside provided country `);
+  }
+
+  validateGeoCodeResponse(
+    geoCodedResponse: GeocodeResponse,
+    address: string,
+    country: string,
+  ): void {
+    const countrySet: Set<string> = new Set();
+    geoCodedResponse.results.forEach((result: GeocodeResult) => {
+      countrySet.add(this.getCountryNameFromGeocodeResult(result));
+    });
+    if (countrySet.size > 1) {
+      throw new Error(
+        `Address outside provided country: ${address}, ${country}`,
+      );
+    }
   }
 
   hasBothAddressAndCoordinates(sourcingData: SourcingData): boolean {

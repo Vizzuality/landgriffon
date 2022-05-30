@@ -57,6 +57,7 @@ export class ImportDataService {
   async processImportJob(job: Job<ExcelImportJob>): Promise<void> {
     await this.sourcingDataImportService.importSourcingData(
       job.data.xlsxFileData.path,
+      job.data.taskId,
     );
   }
 }

@@ -98,12 +98,12 @@ export const Legend: React.FC = () => {
             <div
               key={layer.id}
               className={classNames(
-                'relative border-[1px] border-white skew-x-[45deg] skew-y-[-20deg] w-4 h-3 rounded-sm transition-all',
+                'relative border-[1px] border-white skew-x-[45deg] skew-y-[-20deg] w-4 h-[10px] rounded-sm transition-[margin]',
                 {
                   'bg-black': layer.active,
                   'bg-gray-600': !layer.active,
-                  '-mt-2': !showLegend,
-                  '-mt-1': showLegend,
+                  'mt-[-6px]': !showLegend,
+                  '-mt-0.5': showLegend,
                 },
               )}
               style={{ zIndex: allOrderedLayers.length - i }}

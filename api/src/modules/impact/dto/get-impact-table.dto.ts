@@ -15,7 +15,9 @@ import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { LOCATION_TYPES_PARAMS } from 'modules/sourcing-locations/sourcing-location.entity';
 
 export class GetImpactTableDto {
-  @ApiProperty()
+  @ApiProperty({
+    name: 'indicatorIds[]',
+  })
   @IsUUID(4, { each: true })
   @Type(() => String)
   indicatorIds!: string[];
@@ -45,19 +47,19 @@ export class GetImpactTableDto {
   })
   groupBy!: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ name: 'materialIds[]' })
   @IsOptional()
   @IsUUID(4, { each: true })
   @Type(() => String)
   materialIds?: string[];
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ name: 'originIds[]' })
   @IsOptional()
   @IsUUID(4, { each: true })
   @Type(() => String)
   originIds?: string[];
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ name: 'supplierIds[]' })
   @IsOptional()
   @IsUUID(4, { each: true })
   @Type(() => String)
@@ -66,6 +68,7 @@ export class GetImpactTableDto {
   @ApiPropertyOptional({
     description: 'Types of Sourcing Locations, written with hyphens',
     enum: Object.values(LOCATION_TYPES_PARAMS),
+    name: 'locationTypes[]',
   })
   @IsOptional()
   @IsEnum(LOCATION_TYPES_PARAMS, {

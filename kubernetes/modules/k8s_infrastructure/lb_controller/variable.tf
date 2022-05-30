@@ -11,13 +11,13 @@ variable "aws_region" {
 variable "aws_load_balancer_controller_version" {
   description = "The AWS Load Balancer Controller version to use. See https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases for available versions"
   type        = string
-  default     = "v2.2.0"
+  default     = "v2.4.2"
 }
 
 variable "aws_load_balancer_controller_chart_version" {
   description = "The AWS Load Balancer Controller chart version to use. See https://artifacthub.io/packages/helm/aws/aws-load-balancer-controller for available versions"
   type        = string
-  default     = "1.2.0"
+  default     = "1.4.2"
 }
 
 variable "k8s_namespace" {

@@ -357,6 +357,7 @@ export class ScenarioInterventionsService extends AppBaseService<
         businessUnitId: location.businessUnitId,
         geoRegionId: geoCodedLocationSample[0].geoRegionId,
         adminRegionId: geoCodedLocationSample[0].adminRegionId,
+        locationWarning: geoCodedLocationSample[0].locationWarning,
         sourcingRecords: location.sourcingRecords.map((elem: any) => {
           return { year: elem.year, tonnage: elem.tonnage };
         }),

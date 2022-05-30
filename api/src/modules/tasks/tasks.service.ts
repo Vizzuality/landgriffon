@@ -75,6 +75,7 @@ export class TasksService extends AppBaseService<
     newStatus?: TASK_STATUS;
     newData?: Record<string, any>;
     newErrors?: Error;
+    newLogs?: string[];
   }): Promise<Task> {
     /**
      * @debt
@@ -84,7 +85,7 @@ export class TasksService extends AppBaseService<
      * @todo: Make this work nicely in distributed systems.
      *
      */
-    const { taskId, newStatus, newData, newErrors } = updateTask;
+    const { taskId, newStatus, newData, newErrors, newLogs } = updateTask;
     const task: Task | undefined = await this.taskRepository.findOne(taskId);
     if (!task) {
       throw new NotFoundException(`Could not found Task with ID: ${taskId}`);
@@ -97,6 +98,14 @@ export class TasksService extends AppBaseService<
 
     if (newErrors) {
       task.errors.push({ [newErrors.name]: newErrors.message });
+    }
+
+    if (newLogs) {
+      task.logs.push(
+        ...newLogs.map((warning: string): Record<string, string> => {
+          return { warning };
+        }),
+      );
     }
 
     if (newStatus) task.status = newStatus;

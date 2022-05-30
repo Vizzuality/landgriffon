@@ -226,6 +226,7 @@ describe('Sourcing Data import', () => {
     try {
       await sourcingDataImportService.importSourcingData(
         __dirname + '/base-dataset.xlsx',
+        '',
       );
     } catch (err: any) {
       expect(err.message).toEqual(
@@ -253,6 +254,7 @@ describe('Sourcing Data import', () => {
 
     await sourcingDataImportService.importSourcingData(
       __dirname + '/base-dataset.xlsx',
+      '',
     );
   }, 100000);
 
@@ -274,6 +276,7 @@ describe('Sourcing Data import', () => {
 
     await sourcingDataImportService.importSourcingData(
       __dirname + '/base-dataset.xlsx',
+      '',
     );
 
     const businessUnits: BusinessUnit[] = await businessUnitRepository.find();
@@ -321,6 +324,7 @@ describe('Sourcing Data import', () => {
 
     await sourcingDataImportService.importSourcingData(
       __dirname + '/base-dataset.xlsx',
+      '',
     );
 
     const sourcingRecords: SourcingRecord[] =
@@ -409,6 +413,7 @@ describe('Sourcing Data import', () => {
       try {
         await sourcingDataImportService.importSourcingData(
           __dirname + '/base-dataset-one-material.xlsx',
+          '',
         );
       } catch (err: any) {
         expect(err.message).toEqual(
@@ -439,6 +444,7 @@ describe('Sourcing Data import', () => {
 
       await sourcingDataImportService.importSourcingData(
         __dirname + '/base-dataset.xlsx',
+        '',
       );
 
       const businessUnits: BusinessUnit[] = await businessUnitRepository.find();
@@ -490,6 +496,7 @@ describe('Sourcing Data import', () => {
 
       await sourcingDataImportService.importSourcingData(
         __dirname + '/base-dataset.xlsx',
+        '',
       );
 
       const businessUnits: BusinessUnit[] = await businessUnitRepository.find();

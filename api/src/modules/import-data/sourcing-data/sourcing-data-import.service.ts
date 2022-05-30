@@ -26,6 +26,7 @@ import { IndicatorRecordsService } from 'modules/indicator-records/indicator-rec
 import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
+import { TasksService } from 'modules/tasks/tasks.service';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -69,9 +70,10 @@ export class SourcingDataImportService {
     protected readonly dtoProcessor: SourcingRecordsDtoProcessorService,
     protected readonly geoCodingService: GeoCodingAbstractClass,
     protected readonly indicatorRecordsService: IndicatorRecordsService,
+    protected readonly tasksService: TasksService,
   ) {}
 
-  async importSourcingData(filePath: string): Promise<any> {
+  async importSourcingData(filePath: string, taskId: string): Promise<any> {
     this.logger.log(`Starting import process`);
     await this.fileService.isFilePresentInFs(filePath);
     try {
@@ -112,13 +114,21 @@ export class SourcingDataImportService {
           materials,
           dtoMatchedData.sourcingData,
         );
-
       // TODO: TBD What to do when there is some location where we cannot determine its admin-region: i.e coordinates
       //       in the middle of the sea
       const geoCodedSourcingData: SourcingData[] =
         await this.geoCodingService.geoCodeLocations(
           sourcingDataWithOrganizationalEntities,
         );
+      const warnings: string[] = [];
+      geoCodedSourcingData.forEach((elem: SourcingData) => {
+        if (elem.locationWarning) warnings.push(elem.locationWarning);
+      });
+      warnings.length > 0 &&
+        (await this.tasksService.updateImportJobEvent({
+          taskId,
+          newLogs: warnings,
+        }));
 
       await this.sourcingLocationService.save(geoCodedSourcingData);
 

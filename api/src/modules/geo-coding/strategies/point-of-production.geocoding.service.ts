@@ -25,12 +25,22 @@ export class PointOfProductionGeocodingStrategy extends BaseStrategy {
             lng: sourcingData.locationLongitude,
           },
         });
+      let adminRegionId: string;
 
-      const { adminRegionId } =
-        await this.adminRegionService.getClosestAdminRegionByCoordinates({
-          lng: sourcingData.locationLongitude,
-          lat: sourcingData.locationLatitude,
-        });
+      try {
+        adminRegionId = (
+          await this.adminRegionService.getClosestAdminRegionByCoordinates(
+            {
+              lng: sourcingData.locationLongitude,
+              lat: sourcingData.locationLatitude,
+            },
+            sourcingData.locationCountryInput,
+          )
+        ).adminRegionId;
+      } catch (e) {
+        await this.geoRegionService.remove(geoRegionId as unknown as string);
+        throw e;
+      }
 
       return {
         ...sourcingData,
@@ -42,30 +52,40 @@ export class PointOfProductionGeocodingStrategy extends BaseStrategy {
       sourcingData.locationAddressInput &&
       sourcingData.locationCountryInput
     ) {
-      const geoCodeResponseData: GeocodeResponse = await this.geoCodeByAddress(
+      const geoCodeResponseData: {
+        data: GeocodeResponse;
+        warning: string | undefined;
+      } = await this.geoCodeByAddress(
         sourcingData.locationAddressInput,
         sourcingData.locationCountryInput,
       );
-
       const geoRegionId: Pick<GeoRegion, 'id'> =
         await this.geoRegionService.saveGeoRegionAsPoint({
           name: sourcingData.locationCountryInput,
           coordinates: {
-            lat: geoCodeResponseData.results[0].geometry.location.lat,
-            lng: geoCodeResponseData.results[0].geometry.location.lng,
+            lat: geoCodeResponseData.data.results[0].geometry.location.lat,
+            lng: geoCodeResponseData.data.results[0].geometry.location.lng,
           },
         });
-
-      const { adminRegionId } =
-        await this.adminRegionService.getClosestAdminRegionByCoordinates({
-          lng: geoCodeResponseData?.results[0]?.geometry.location.lng,
-          lat: geoCodeResponseData?.results[0]?.geometry.location.lat,
-        });
-
+      let adminRegionId: string;
+      try {
+        adminRegionId =
+          await this.adminRegionService.getClosestAdminRegionByCoordinates(
+            {
+              lng: geoCodeResponseData?.data?.results[0]?.geometry.location.lng,
+              lat: geoCodeResponseData?.data?.results[0]?.geometry.location.lat,
+            },
+            sourcingData.locationCountryInput,
+          );
+      } catch (e) {
+        await this.geoRegionService.remove(geoRegionId as unknown as string);
+        throw e;
+      }
       return {
         ...sourcingData,
         adminRegionId,
         geoRegionId,
+        locationWarning: geoCodeResponseData.warning,
       };
     }
   }

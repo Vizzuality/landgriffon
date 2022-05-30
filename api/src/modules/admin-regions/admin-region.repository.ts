@@ -18,11 +18,14 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
 > {
   logger: Logger = new Logger(AdminRegionRepository.name);
 
-  async getAdminRegionAndGeoRegionIdByCoordinatesAndLevel(searchParams: {
-    lng: number;
-    lat: number;
-    level: number;
-  }): Promise<{ adminRegionId: string; geoRegionId: string }> {
+  async getAdminRegionAndGeoRegionIdByCoordinatesAndLevel(
+    searchParams: {
+      lng: number;
+      lat: number;
+      level: number;
+    },
+    country?: string,
+  ): Promise<{ adminRegionId: string; geoRegionId: string }> {
     const res: any = await this.query(
       `
         SELECT a.id AS "adminRegionId", g.id AS "geoRegionId"
@@ -46,6 +49,17 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
         `No Admin Region where Coordinates: LAT: ${searchParams.lat}, LONG: ${searchParams.lng} are could been found`,
       );
     }
+    if (country) {
+      const adminRegion: AdminRegion = await this.findOneOrFail({
+        id: res[0].adminRegionId,
+      });
+      const ancestor: AdminRegion = await this.findAncestorsTree(adminRegion);
+      if (ancestor.name !== country)
+        throw new NotFoundException(
+          `coordinates ${searchParams.lng}, ${searchParams.lat} are not inside ${country}`,
+        );
+    }
+
     return res[0];
   }
 
@@ -60,10 +74,13 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
   //      level 1 or 2, and depending on coordinates, level 0.
   //      Check how to properly perform this
 
-  async getClosestAdminRegionByCoordinates(coordinates: {
-    lng: number;
-    lat: number;
-  }): Promise<any> {
+  async getClosestAdminRegionByCoordinates(
+    coordinates: {
+      lng: number;
+      lat: number;
+    },
+    country?: string,
+  ): Promise<any> {
     const res: any = await this.query(
       `SELECT a.id AS "adminRegionId" , a."name", a."level" , g."name" , g.id AS "geoRegionId"
         FROM admin_region a
@@ -91,10 +108,21 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
      * In this case we can get an Intersection with the radius created by this sourcing location so we get the highest level
      * as doing this is more performant that getting the geometry and intersecting with it
      */
-
-    return res.reduce(function (previous: any, current: any) {
+    const result: any = res.reduce(function (previous: any, current: any) {
       return previous.level > current.level ? previous : current;
     });
+    if (country) {
+      const adminRegion: AdminRegion = await this.findOneOrFail({
+        id: result.adminRegionId,
+      });
+      const ancestor: AdminRegion = await this.findAncestorsTree(adminRegion);
+      if (ancestor.name !== country)
+        throw new NotFoundException(
+          `coordinates ${coordinates.lng}, ${coordinates.lat} are not inside ${country}`,
+        );
+    }
+
+    return result;
   }
 
   /**

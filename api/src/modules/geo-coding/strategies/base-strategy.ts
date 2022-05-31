@@ -95,7 +95,7 @@ export abstract class BaseStrategy {
         address.types.includes('country'),
       );
     if (country) return country.long_name;
-    throw new Error(`Address not inside provided country `);
+    throw new Error(`Could not get country`);
   }
 
   validateGeoCodeResponse(

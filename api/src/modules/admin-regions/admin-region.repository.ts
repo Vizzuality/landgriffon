@@ -7,7 +7,7 @@ import {
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-region.dto';
-import { Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetAdminRegionTreeWithOptionsDto } from 'modules/admin-regions/dto/get-admin-region-tree-with-options.dto';
 
@@ -117,7 +117,7 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
       });
       const ancestor: AdminRegion = await this.findAncestorsTree(adminRegion);
       if (ancestor.name !== country)
-        throw new NotFoundException(
+        throw new BadRequestException(
           `coordinates ${coordinates.lng}, ${coordinates.lat} are not inside ${country}`,
         );
     }

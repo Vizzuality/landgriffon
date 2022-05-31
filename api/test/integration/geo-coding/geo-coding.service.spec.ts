@@ -349,5 +349,25 @@ describe('GeoCoding Service (Integration Testing)', () => {
       expect(geoRegion[0].h3FlatLength).toEqual(1);
       expect(geoRegion[0].h3Flat).toEqual(['866094407ffffff']);
     });
+
+    test('When invalid Point of production location with coordinates is sent, geo-region point should not be saved', async () => {
+      jest
+        .spyOn(adminRegionService, 'getClosestAdminRegionByCoordinates')
+        .mockRejectedValue({});
+      jest
+        .spyOn(pointOfProductionService, 'geoCodeByCountry')
+        .mockResolvedValue(geocodeResponses[3] as GeocodeResponseData);
+      const sourcingData = {
+        locationCountryInput: true,
+        locationLongitude: 1,
+        locationLatitude: 1,
+      } as unknown as SourcingData;
+      try {
+        await geoCodingService.geoCodePointOfProduction(sourcingData);
+      } catch (e) {}
+
+      const geoRegion = await geoRegionRepository.find({});
+      expect(geoRegion.length).toEqual(0);
+    });
   });
 });

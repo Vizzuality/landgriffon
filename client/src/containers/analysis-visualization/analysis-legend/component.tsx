@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ChevronDoubleLeftIcon } from '@heroicons/react/outline';
-import cx from 'classnames';
 
 import ImpactLegendItem from './impact-legend-item';
 import MaterialLegendItem from './material-legend-item';
@@ -85,11 +83,11 @@ export const Legend: React.FC = () => {
       )}
       <button
         type="button"
-        className="bg-white border border-gray-100 p-2 rounded-lg relative"
+        className="bg-white border border-gray-100 w-10 h-10 rounded-lg relative flex items-center justify-center"
         onClick={handleShowLegend}
       >
         {activeLayerCount !== 0 && (
-          <div className="absolute rounded-full text-xs text-white bg-black w-4 h-4 top-0 right-0 translate-x-1/3 -translate-y-1/3 font-bold">
+          <div className="absolute rounded-full text-xs text-white bg-green-700 w-4 h-4 bottom-0 right-0 translate-x-1/2 translate-y-1/2 font-bold">
             <span className="relative my-auto h-fit">{activeLayerCount}</span>
           </div>
         )}
@@ -98,21 +96,16 @@ export const Legend: React.FC = () => {
             <div
               key={layer.id}
               className={classNames(
-                'relative border-[1px] border-white skew-x-[45deg] skew-y-[-20deg] w-4 h-[10px] rounded-sm transition-[margin]',
+                'relative border-[1px] border-white skew-x-[45deg] skew-y-[-20deg] w-[18px] h-[10px] rounded-sm transition-[margin] -mb-[6px] first:-mt-[6px] last:mb-0',
                 {
-                  'bg-black': layer.active,
-                  'bg-gray-600': !layer.active,
-                  'mt-[-6px]': !showLegend,
-                  '-mt-0.5': showLegend,
+                  'bg-gray-900': layer.active,
+                  'bg-gray-500': !layer.active,
                 },
               )}
               style={{ zIndex: allOrderedLayers.length - layer.order }}
             />
           ))}
         </div>
-        {/* <ChevronDoubleLeftIcon
-          className={cx('w-5 h-5 transition-all', { 'rotate-180': showLegend })}
-        /> */}
       </button>
     </div>
   );

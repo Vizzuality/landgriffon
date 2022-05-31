@@ -38,7 +38,7 @@ describe('UrlParamsModule (e2e)', () => {
   });
 
   describe('Url Params - Create', () => {
-    test('Saving URL params received as json should be successful (happy case)', async () => {
+    test('When I send POST request with url params in json format, Then those params should be saved in the database and uuid should be returned', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/url-params')
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -58,21 +58,23 @@ describe('UrlParamsModule (e2e)', () => {
       expect(savedParam.id).toEqual(response.body.data.id);
     });
 
-    test('Saving URL params that has been saved before should return the initial id', async () => {
+    test('Given url params in json format have been previously saved in the database, When I try to save same params again, Then the uuid of initially saved params should be returned', async () => {
+      const testPayload: Record<string, any> = {
+        param1: 'test param 1',
+        param2: 4,
+        'param-3': 'Test param 4',
+        param4: ['test1', 'test2'],
+      };
       const initialResponse = await request(app.getHttpServer())
         .post('/api/v1/url-params')
         .set('Authorization', `Bearer ${jwtToken}`)
-        .send({
-          param: 'test param',
-        })
+        .send(testPayload)
         .expect(HttpStatus.CREATED);
 
       const secondResponse = await request(app.getHttpServer())
         .post('/api/v1/url-params')
         .set('Authorization', `Bearer ${jwtToken}`)
-        .send({
-          param: 'test param',
-        })
+        .send(testPayload)
         .expect(HttpStatus.CREATED);
 
       expect(secondResponse.body.data.id).toEqual(initialResponse.body.data.id);
@@ -80,7 +82,7 @@ describe('UrlParamsModule (e2e)', () => {
   });
 
   describe('Url Params - Get by id', () => {
-    test('Getting saved URL Params by id as json should be successful (happy case)', async () => {
+    test('Given url params in json format have been previously saved in the database, when I request them by the id, Then those params in json format should be returned', async () => {
       const saveResponse = await request(app.getHttpServer())
         .post('/api/v1/url-params')
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -101,7 +103,7 @@ describe('UrlParamsModule (e2e)', () => {
   });
 
   describe('Url Params - Delete', () => {
-    test('Deleting URL Params by id should be successful', async () => {
+    test('Given url params in json format have been previously saved in the database, when I request to delete them by the id, Then those params should be removed from database', async () => {
       const saveResponse = await request(app.getHttpServer())
         .post('/api/v1/url-params')
         .set('Authorization', `Bearer ${jwtToken}`)

@@ -28,4 +28,3 @@ In CI, testing, staging and production environments, microservices are orchestra
 * `/marketing`: The current static site, available at [https://vizzuality.github.io/landgriffon/](https://vizzuality.github.io/landgriffon/).
 * `/infrastructure`: Contains the [infrastructure as code](https://en.wikipedia.org/wiki/Infrastructure_as_code) to set up the project on [AWS](https://aws.amazon.com/) using [Terraform](https://www.terraform.io/)
 * `/api`: An API will live here at some point. It will include its own README.md for specific information on it.
-

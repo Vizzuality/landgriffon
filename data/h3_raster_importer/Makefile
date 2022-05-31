@@ -22,9 +22,9 @@ all:
 	make clean
 	make -j 2 crop indicators
 
-#TODO: add the convert-glw3-livestock in the ingetsion when the new update of materials has been done
+
 crop:
-	make -j 2 convert-mapspam-crop-production convert-earthstat-crop-production convert-earthstat-crop-harvest convert-mapspam-crop-harvest convert-cropland convert-pasture
+	make -j 2 convert-mapspam-crop-production convert-earthstat-crop-production convert-earthstat-crop-harvest convert-mapspam-crop-harvest convert-cropland convert-pasture convert-glw3-livestock
 
 # NOTE: The ingestion below is commented in order to avoid ingesting data, we don't have indicator for in the database yet
 # once the new indicators have been defined and ingested we will need to update the indicator code in for each on the indicator commented below and allow the ingestion.
@@ -211,8 +211,8 @@ convert-pasture: rasterize-pasture
 # download the area-weighted (AW) data as are free of any influence of spatial predictor variables. MOre information here: https://dataverse.harvard.edu/file.xhtml?persistentId=doi:10.7910/DVN/GIVQ75/3QWTTI&version=3.0
 # download area pixel to obtain total number of animals per pixel
 download-glw3-data: extract-gadm
-	mkdir -p $(WORKDIR_GLW3)/cattle/harvestArea $(WORKDIR_GLW3)/chickens/harvestArea $(WORKDIR_GLW3)/horses/harvestArea $(WORKDIR_GLW3)/goats/harvestArea $(WORKDIR_GLW3)/sheep/harvestArea \
-	$(WORKDIR_GLW3)/cattle/production $(WORKDIR_GLW3)/chickens/production $(WORKDIR_GLW3)/horses/production $(WORKDIR_GLW3)/goats/production $(WORKDIR_GLW3)/sheep/production
+	mkdir -p $(WORKDIR_GLW3)/cattle/harvestArea $(WORKDIR_GLW3)/chickens/harvestArea $(WORKDIR_GLW3)/horses/harvestArea $(WORKDIR_GLW3)/goats/harvestArea $(WORKDIR_GLW3)/sheep/harvestArea $(WORKDIR_GLW3)/pasture/harvestArea \
+	$(WORKDIR_GLW3)/cattle/production $(WORKDIR_GLW3)/chickens/production $(WORKDIR_GLW3)/horses/production $(WORKDIR_GLW3)/goats/production $(WORKDIR_GLW3)/sheep/production $(WORKDIR_GLW3)/pasture/production
 	wget -q -O $(WORKDIR_GLW3)/cattle/6_Ct_2010_Aw.tif https://dataverse.harvard.edu/api/access/datafile/:persistentId?persistentId=doi:10.7910/DVN/GIVQ75/I5CUJS
 	wget -q -O $(WORKDIR_GLW3)/chickens/6_Ch_2010_Aw.tif https://dataverse.harvard.edu/api/access/datafile/:persistentId?persistentId=doi:10.7910/DVN/SUFASB/AP1LHN
 	wget -q -O $(WORKDIR_GLW3)/horses/6_Ho_2010_Aw.tif https://dataverse.harvard.edu/api/access/datafile/:persistentId?persistentId=doi:10.7910/DVN/7Q52MV/UAWH3Z
@@ -273,18 +273,36 @@ rasterize-glw3-livestock: preprocess-FAO-livestock
 	$(WORKDIR_GLW3)/goats/harvestArea/FAOSTAT_2010_goats_LSU_ha.tif $(WORKDIR_GLW3)/sheep/harvestArea/FAOSTAT_2010_sheep_LSU_ha.tif $(WORKDIR_GLW3)/cattle/6_Ct_2010_Aw.tif $(WORKDIR_GLW3)/chickens/6_Ch_2010_Aw.tif $(WORKDIR_GLW3)/horses/6_Ho_2010_Aw.tif $(WORKDIR_GLW3)/goats/6_Gt_2010_Aw.tif \
 	$(WORKDIR_GLW3)/sheep/6_Sh_2010_Aw.tif
 
+rasterize-glw3-livestock-pasture: rasterize-glw3-livestock
+	gdal_calc.py --calc "A+B+C+D+E" --format GTiff --type Float32 --NoDataValue 0.0 \
+	-A $(WORKDIR_GLW3)/cattle/harvestArea/GLW3_2010_harvestArea_cattle_ha.tif --A_band 1 \
+	-B $(WORKDIR_GLW3)/chickens/harvestArea/GLW3_2010_harvestArea_chickens_ha.tif \
+	-C $(WORKDIR_GLW3)/horses/harvestArea/GLW3_2010_harvestArea_horses_ha.tif \
+	-D $(WORKDIR_GLW3)/goats/harvestArea/GLW3_2010_harvestArea_goats_ha.tif \
+	-E $(WORKDIR_GLW3)/sheep/harvestArea/GLW3_2010_harvestArea_sheep_ha.tif \
+	--outfile $(WORKDIR_GLW3)/pasture/harvestArea/GLW3_2010_harvestArea_pasture_ha.tif;
+	gdal_calc.py --calc "A+B+C+D+E" --format GTiff --type Float32 --NoDataValue 0.0 \
+	-A $(WORKDIR_GLW3)/cattle/production/GLW3_2010_cattle_LSU.tif --A_band 1 \
+	-B $(WORKDIR_GLW3)/chickens/production/GLW3_2010_chickens_LSU.tif \
+	-C $(WORKDIR_GLW3)/horses/production/GLW3_2010_horses_LSU.tif \
+	-D $(WORKDIR_GLW3)/goats/production/GLW3_2010_goats_LSU.tif \
+	-E $(WORKDIR_GLW3)/sheep/production/GLW3_2010_sheep_LSU.tif \
+	--outfile $(WORKDIR_GLW3)/pasture/production/GLW3_2010_pasture_LSU.tif;
+
 #Ingest livetock data- harvest area and production
-convert-glw3-livestock: rasterize-glw3-livestock
+convert-glw3-livestock: rasterize-glw3-livestock-pasture
 	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/cattle/harvestArea h3_grid_cattle_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/chickens/harvestArea h3_grid_chickens_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/horses/harvestArea h3_grid_horses_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/goats/harvestArea h3_grid_goats_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/sheep/harvestArea h3_grid_sheep_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/pasture/harvestArea h3_grid_pasture_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/cattle/production h3_grid_cattle_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/chickens/production h3_grid_chickens_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/horses/production h3_grid_horses_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/goats/production h3_grid_goats_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/sheep/production h3_grid_sheep_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/pasture/production h3_grid_pasture_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 
 #######################################

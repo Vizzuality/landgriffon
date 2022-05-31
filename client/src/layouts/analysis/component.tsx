@@ -99,12 +99,12 @@ const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({ loading = false, childr
         createPortal(
           <div
             className={classNames(
-              'absolute hidden lg:block top-5 transform -translate-x-1/2 z-20',
+              'absolute hidden lg:block top-5 transform -translate-x-1/2 z-20 ease-in-out duration-300',
               {
                 'lg:hidden': !isSubContentCollapsed,
               },
             )}
-            style={{ left: position.x + position.width }}
+            style={{ left: isSidebarCollapsed ? position.x : position.x + position.width }}
           >
             <CollapseButton />
           </div>,

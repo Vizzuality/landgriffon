@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import classNames from 'classnames';
 import ReactSelect, {
   Theme,
@@ -16,7 +16,7 @@ import useFuse from 'hooks/fuse';
 import Loading from 'components/loading';
 
 import type { SelectProps } from './types';
-import { offset, useFloating } from '@floating-ui/react-dom';
+import { inline, offset, useFloating } from '@floating-ui/react-dom';
 
 /**
  * Overriding default React Select theme
@@ -36,24 +36,33 @@ const DEFAULT_THEME: Theme = {
   },
 };
 
-const customStyles: StylesConfig = {
-  option: (provided, { isDisabled, isSelected }) => ({
-    ...provided,
-    ...tw`text-gray-900 text-sm cursor-pointer hover:bg-green-50`,
-    ...(isDisabled && tw`bg-green-700`),
-    ...(isSelected && tw`text-white hover:bg-green-700`),
-  }),
-  control: (provided) => ({
-    ...provided,
-    ...tw`w-full rounded-md`,
-    boxShadow: 'none',
-  }),
-  indicatorSeparator: () => tw`hidden`,
-  menu: (provided) => ({
-    ...provided,
-    ...tw`overflow-hidden h-auto shadow-md rounded-md my-0`,
-  }),
-  menuList: (provided) => ({ ...provided, ...tw`py-0` }),
+const customStyles: (theme: SelectProps['theme']) => StylesConfig = (theme) => {
+  return {
+    option: (provided, { isDisabled, isSelected }) => ({
+      ...provided,
+      ...tw`text-gray-900 text-sm cursor-pointer hover:bg-green-50`,
+      ...(isDisabled && tw`bg-green-700`),
+      ...(isSelected && tw`text-white hover:bg-green-700`),
+    }),
+    control: (provided) => ({
+      ...provided,
+      boxShadow: 'none',
+      ...(theme === 'inline-primary' &&
+        tw`border border-l-0 border-r-0 border-t-0 border-b-2 border-b-green-700 shadow-none rounded-none min-w-[30px]`),
+      ...(theme === 'default-bordernone' && tw``),
+      ...(theme === 'default' && tw`w-full rounded-md`),
+    }),
+    valueContainer: (provided) => ({
+      ...provided,
+      ...(theme === 'inline-primary' && tw`px-0`),
+    }),
+    indicatorSeparator: () => tw`hidden`,
+    menu: (provided) => ({
+      ...provided,
+      ...tw`overflow-hidden h-auto shadow-md rounded-md my-0`,
+    }),
+    menuList: (provided) => ({ ...provided, ...tw`py-0` }),
+  };
 };
 
 const SEARCH_OPTIONS = {
@@ -120,8 +129,8 @@ const Select: React.FC<SelectProps> = ({
     refs: { reference: referenceElement },
   } = useFloating({
     // TODO: placement style dependent, also look into adding autoplacement so it goes up if there's no space
-    placement: 'bottom',
-    middleware: [offset({ mainAxis: 4 })],
+    placement: 'bottom-start',
+    middleware: [offset({ mainAxis: 4 }), theme === 'inline-primary' && inline()],
   });
 
   const Menu: React.FC<MenuProps> = useCallback(
@@ -132,89 +141,100 @@ const Select: React.FC<SelectProps> = ({
           position: strategy,
           top: y ?? '',
           left: x ?? '',
-          width: (referenceElement.current as HTMLElement)?.offsetWidth,
+          width:
+            theme === 'inline-primary'
+              ? '300px'
+              : (referenceElement.current as HTMLElement)?.offsetWidth,
         }}
       >
         <components.Menu {...rest}>{children}</components.Menu>
       </div>
     ),
-    [floating, referenceElement, strategy, x, y],
+    [floating, referenceElement, strategy, theme, x, y],
   );
 
   const Control: React.FC<ControlProps> = useCallback(
     ({ children, ...rest }) => (
-      <components.Control {...rest} innerRef={reference}>
+      <components.Control {...rest} innerRef={reference} className="w-fit h-min">
         {children}
       </components.Control>
     ),
     [reference],
   );
 
+  const styles = useMemo(() => customStyles(theme), [theme]);
+
   return (
-    <ReactSelect
-      styles={customStyles}
-      placeholder={placeholder}
-      onInputChange={handleSearch}
-      onChange={handleChange}
-      options={optionsResult.map(({ disabled, ...option }) => ({
-        ...option,
-        isDisabled: disabled,
-      }))}
-      value={current}
-      isDisabled={disabled}
-      isLoading={loading}
-      isClearable={allowEmpty}
-      isSearchable={showSearch}
-      noOptionsMessage={() => <div className="p-2 text-sm">No results</div>}
-      theme={DEFAULT_THEME}
-      components={{
-        // Option: ({
-        //   innerProps,
-        //   innerRef,
-        //   isSelected,
-        //   isFocused,
-        //   isDisabled,
-        //   data: { label, extraInfo },
-        // }) => (
-        //   <div {...innerProps} ref={innerRef}>
-        //     <div
-        //       className={classNames(
-        //         isFocused ? 'bg-green-50 text-green-700' : 'text-gray-900',
-        //         isSelected && 'bg-green-50 text-green-700',
-        //         'cursor-pointer select-none relative py-2 pl-4 pr-4',
-        //         isDisabled && 'text-opacity-50 cursor-default',
-        //       )}
-        //     >
-        //       <div className="flex flex-row gap-x-2">
-        //         <div
-        //           className={classNames(
-        //             isSelected ? 'font-semibold' : 'font-normal',
-        //             'block text-sm truncate',
-        //           )}
-        //         >
-        //           {label}
-        //         </div>
-        //         {extraInfo && (
-        //           <div>
-        //             <i className="text-gray-600 text-sm">{extraInfo}</i>
-        //           </div>
-        //         )}
-        //       </div>
-        //     </div>
-        //   </div>
-        // ),
-        IndicatorSeparator: null,
-        LoadingIndicator: () => <Loading className="text-green-700" />,
-        DropdownIndicator: ({ selectProps: { menuIsOpen } }) => (
-          <ChevronDownIcon
-            className={classNames('h-4 w-4 mx-4 text-gray-900', { 'rotate-180': menuIsOpen })}
-          />
-        ),
-        // MenuList,
-        Menu,
-        Control,
-      }}
-    />
+    <div>
+      <ReactSelect
+        styles={styles}
+        placeholder={placeholder}
+        onInputChange={handleSearch}
+        onChange={handleChange}
+        options={optionsResult.map(({ disabled, ...option }) => ({
+          ...option,
+          isDisabled: disabled,
+        }))}
+        value={current}
+        isDisabled={disabled}
+        isLoading={loading}
+        isClearable={allowEmpty}
+        isSearchable={showSearch}
+        noOptionsMessage={() => <div className="p-2 text-sm">No results</div>}
+        theme={DEFAULT_THEME}
+        components={{
+          // Option: ({
+          //   innerProps,
+          //   innerRef,
+          //   isSelected,
+          //   isFocused,
+          //   isDisabled,
+          //   data: { label, extraInfo },
+          // }) => (
+          //   <div {...innerProps} ref={innerRef}>
+          //     <div
+          //       className={classNames(
+          //         isFocused ? 'bg-green-50 text-green-700' : 'text-gray-900',
+          //         isSelected && 'bg-green-50 text-green-700',
+          //         'cursor-pointer select-none relative py-2 pl-4 pr-4',
+          //         isDisabled && 'text-opacity-50 cursor-default',
+          //       )}
+          //     >
+          //       <div className="flex flex-row gap-x-2">
+          //         <div
+          //           className={classNames(
+          //             isSelected ? 'font-semibold' : 'font-normal',
+          //             'block text-sm truncate',
+          //           )}
+          //         >
+          //           {label}
+          //         </div>
+          //         {extraInfo && (
+          //           <div>
+          //             <i className="text-gray-600 text-sm">{extraInfo}</i>
+          //           </div>
+          //         )}
+          //       </div>
+          //     </div>
+          //   </div>
+          // ),
+          IndicatorSeparator: null,
+          LoadingIndicator: () => <Loading className="text-green-700" />,
+          DropdownIndicator:
+            theme === 'default'
+              ? ({ selectProps: { menuIsOpen } }) => (
+                  <ChevronDownIcon
+                    className={classNames('h-4 w-4 mx-4 text-gray-900', {
+                      'rotate-180': menuIsOpen,
+                    })}
+                  />
+                )
+              : null,
+          Menu,
+          Control,
+        }}
+      />
+    </div>
   );
 };
 

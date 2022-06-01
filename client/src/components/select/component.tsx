@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import classNames from 'classnames';
 import ReactSelect, {
   Theme,
@@ -6,6 +6,8 @@ import ReactSelect, {
   StylesConfig,
   components,
   MenuProps,
+  ControlProps,
+  OptionProps,
 } from 'react-select';
 import { ChevronDownIcon } from '@heroicons/react/outline';
 import tw from 'twin.macro';
@@ -130,11 +132,15 @@ const Select: React.FC<SelectProps> = ({
     y,
     strategy,
     refs: { reference: referenceElement },
+    update,
   } = useFloating({
-    // TODO: placement style dependent, also look into adding autoplacement so it goes up if there's no space
     placement: 'bottom-start',
-    middleware: [offset({ mainAxis: 4 }), flip(), shift(), theme === 'inline-primary' && inline()],
+    middleware: [offset({ mainAxis: 4 }), flip(), shift()],
   });
+
+  useEffect(() => {
+    update();
+  }, [theme, update]);
 
   const Menu: React.FC<MenuProps> = useCallback(
     ({ children, ...rest }) => (
@@ -156,10 +162,51 @@ const Select: React.FC<SelectProps> = ({
     [floating, referenceElement, strategy, theme, x, y],
   );
 
+  const Control: React.FC<ControlProps> = useCallback(
+    ({ children, ...rest }) => (
+      <div ref={reference}>
+        <components.Control {...rest}>{children}</components.Control>
+      </div>
+    ),
+    [reference],
+  );
+
+  const Option: React.FC<OptionProps<{ extraInfo?: React.ReactNode; label: string }>> = useCallback(
+    ({ innerProps, innerRef, isSelected, isFocused, isDisabled, data: { label, extraInfo } }) => (
+      <div {...innerProps} ref={innerRef}>
+        <div
+          className={classNames(
+            isFocused ? 'bg-green-50 text-green-700' : 'text-gray-900',
+            isSelected && 'bg-green-50 text-green-700',
+            'cursor-pointer select-none relative py-2 pl-4 pr-4',
+            isDisabled && 'text-opacity-50 cursor-default',
+          )}
+        >
+          <div className="flex flex-row gap-x-2">
+            <div
+              className={classNames(
+                isSelected ? 'font-semibold' : 'font-normal',
+                'block text-sm truncate',
+              )}
+            >
+              {label}
+            </div>
+            {extraInfo && (
+              <div>
+                <i className="text-gray-600 text-sm">{extraInfo}</i>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    ),
+    [],
+  );
+
   const styles = useMemo(() => customStyles(theme), [theme]);
 
   return (
-    <div className={classNames({ 'w-fit': theme === 'inline-primary' })} ref={reference}>
+    <div className={classNames({ 'w-fit': theme === 'inline-primary' })}>
       <ReactSelect
         styles={styles}
         placeholder={placeholder}
@@ -177,41 +224,7 @@ const Select: React.FC<SelectProps> = ({
         noOptionsMessage={() => <div className="p-2 text-sm">No results</div>}
         theme={DEFAULT_THEME}
         components={{
-          // Option: ({
-          //   innerProps,
-          //   innerRef,
-          //   isSelected,
-          //   isFocused,
-          //   isDisabled,
-          //   data: { label, extraInfo },
-          // }) => (
-          //   <div {...innerProps} ref={innerRef}>
-          //     <div
-          //       className={classNames(
-          //         isFocused ? 'bg-green-50 text-green-700' : 'text-gray-900',
-          //         isSelected && 'bg-green-50 text-green-700',
-          //         'cursor-pointer select-none relative py-2 pl-4 pr-4',
-          //         isDisabled && 'text-opacity-50 cursor-default',
-          //       )}
-          //     >
-          //       <div className="flex flex-row gap-x-2">
-          //         <div
-          //           className={classNames(
-          //             isSelected ? 'font-semibold' : 'font-normal',
-          //             'block text-sm truncate',
-          //           )}
-          //         >
-          //           {label}
-          //         </div>
-          //         {extraInfo && (
-          //           <div>
-          //             <i className="text-gray-600 text-sm">{extraInfo}</i>
-          //           </div>
-          //         )}
-          //       </div>
-          //     </div>
-          //   </div>
-          // ),
+          Option,
           IndicatorSeparator: null,
           LoadingIndicator: () => <Loading className="text-green-700" />,
           DropdownIndicator:
@@ -225,6 +238,7 @@ const Select: React.FC<SelectProps> = ({
                 )
               : null,
           Menu,
+          Control,
         }}
       />
       {theme === 'inline-primary' && (

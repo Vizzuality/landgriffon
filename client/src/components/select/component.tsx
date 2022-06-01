@@ -62,7 +62,7 @@ const customStyles: (theme: SelectProps['theme']) => StylesConfig = (theme) => {
     indicatorSeparator: () => tw`hidden`,
     menu: (provided) => ({
       ...provided,
-      ...tw`overflow-hidden h-auto shadow-md rounded-md my-0`,
+      ...tw`overflow-hidden h-auto shadow-md rounded-md my-0 border border-gray-50`,
     }),
     menuList: (provided) => ({ ...provided, ...tw`py-0` }),
   };

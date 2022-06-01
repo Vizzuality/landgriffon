@@ -220,6 +220,7 @@ const Select: React.FC<SelectProps> = ({
   return (
     <div className={classNames({ 'w-fit': theme === 'inline-primary' })}>
       <ReactSelect
+        className="z-50 relative"
         styles={styles}
         placeholder={placeholder}
         onInputChange={handleSearch}

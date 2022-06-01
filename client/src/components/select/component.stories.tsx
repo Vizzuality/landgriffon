@@ -11,7 +11,7 @@ export default {
   argTypes: {
     theme: {
       options: ['default', 'default-bordernone', 'inline-primary'],
-      control: { type: 'radio', default: 'default' },
+      control: { type: 'radio' },
     },
     options: { table: { disable: true } },
   },

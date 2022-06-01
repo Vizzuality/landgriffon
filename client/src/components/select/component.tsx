@@ -6,7 +6,6 @@ import ReactSelect, {
   StylesConfig,
   components,
   MenuProps,
-  ControlProps,
 } from 'react-select';
 import { ChevronDownIcon } from '@heroicons/react/outline';
 import tw from 'twin.macro';
@@ -16,7 +15,7 @@ import useFuse from 'hooks/fuse';
 import Loading from 'components/loading';
 
 import type { SelectProps } from './types';
-import { inline, offset, useFloating } from '@floating-ui/react-dom';
+import { flip, inline, offset, shift, useFloating } from '@floating-ui/react-dom';
 
 /**
  * Overriding default React Select theme
@@ -40,7 +39,7 @@ const customStyles: (theme: SelectProps['theme']) => StylesConfig = (theme) => {
   return {
     option: (provided, { isDisabled, isSelected }) => ({
       ...provided,
-      ...tw`text-gray-900 text-sm cursor-pointer hover:bg-green-50`,
+      ...tw`text-gray-900 text-sm cursor-pointer hover:bg-green-50 truncate`,
       ...(isDisabled && tw`bg-green-700`),
       ...(isSelected && tw`text-white hover:bg-green-700`),
     }),
@@ -48,13 +47,17 @@ const customStyles: (theme: SelectProps['theme']) => StylesConfig = (theme) => {
       ...provided,
       boxShadow: 'none',
       ...(theme === 'inline-primary' &&
-        tw`border border-l-0 border-r-0 border-t-0 border-b-2 border-b-green-700 shadow-none rounded-none min-w-[30px]`),
+        tw`border border-l-0 border-r-0 border-t-0 border-b-2 border-b-green-700 shadow-none rounded-none min-w-[30px] p-0 min-h-0`),
       ...(theme === 'default-bordernone' && tw``),
       ...(theme === 'default' && tw`w-full rounded-md`),
     }),
     valueContainer: (provided) => ({
       ...provided,
-      ...(theme === 'inline-primary' && tw`px-0`),
+      ...(theme === 'inline-primary' && tw`p-0`),
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      ...(theme === 'inline-primary' && tw`text-green-700 font-bold`),
     }),
     indicatorSeparator: () => tw`hidden`,
     menu: (provided) => ({
@@ -130,7 +133,7 @@ const Select: React.FC<SelectProps> = ({
   } = useFloating({
     // TODO: placement style dependent, also look into adding autoplacement so it goes up if there's no space
     placement: 'bottom-start',
-    middleware: [offset({ mainAxis: 4 }), theme === 'inline-primary' && inline()],
+    middleware: [offset({ mainAxis: 4 }), flip(), shift(), theme === 'inline-primary' && inline()],
   });
 
   const Menu: React.FC<MenuProps> = useCallback(
@@ -153,19 +156,10 @@ const Select: React.FC<SelectProps> = ({
     [floating, referenceElement, strategy, theme, x, y],
   );
 
-  const Control: React.FC<ControlProps> = useCallback(
-    ({ children, ...rest }) => (
-      <components.Control {...rest} innerRef={reference} className="w-fit h-min">
-        {children}
-      </components.Control>
-    ),
-    [reference],
-  );
-
   const styles = useMemo(() => customStyles(theme), [theme]);
 
   return (
-    <div>
+    <div className={classNames({ 'w-fit': theme === 'inline-primary' })} ref={reference}>
       <ReactSelect
         styles={styles}
         placeholder={placeholder}
@@ -231,9 +225,11 @@ const Select: React.FC<SelectProps> = ({
                 )
               : null,
           Menu,
-          Control,
         }}
       />
+      {theme === 'inline-primary' && (
+        <div className="mt-0.5 border-t-green-700 border-t-4 border-x-4 border-x-transparent mx-auto w-0 h-0" />
+      )}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import Select from './component';
@@ -8,13 +8,20 @@ export default {
   title: 'Components/Select',
   component: Select,
   // More on argTypes: https://storybook.js.org/docs/react/api/argtypes
-  // argTypes: {
-  //   backgroundColor: { control: 'color' },
-  // },
+  argTypes: {
+    theme: {
+      options: ['default', 'default-bordernone', 'inline-primary'],
+      control: { type: 'radio', default: 'default' },
+    },
+    options: { table: { disable: true } },
+  },
 } as ComponentMeta<typeof Select>;
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
-const Template: ComponentStory<typeof Select> = (args) => <Select {...args} />;
+const Template: ComponentStory<typeof Select> = (args) => {
+  const [value, setValue] = useState(null);
+  return <Select {...args} current={value} onChange={setValue} />;
+};
 
 export const Default = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
@@ -33,4 +40,7 @@ Default.args = {
   ],
   multiple: false,
   loading: false,
+  disabled: false,
+  showSearch: false,
+  theme: 'default',
 };

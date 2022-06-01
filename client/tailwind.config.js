@@ -53,6 +53,7 @@ module.exports = {
         100: '#D1FAE5',
         50: '#EBF6F1',
       },
+      transparent: '#00000000',
     },
   },
   variants: {

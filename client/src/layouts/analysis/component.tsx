@@ -99,7 +99,7 @@ const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({ loading = false, childr
         createPortal(
           <div
             className={classNames(
-              'absolute hidden lg:block top-5 transform -translate-x-1/2 z-20 ease-in-out duration-300',
+              'absolute hidden lg:block top-5 transform -translate-x-1/2 z-20 ease-in-out duration-75',
               {
                 'lg:hidden': !isSubContentCollapsed,
               },

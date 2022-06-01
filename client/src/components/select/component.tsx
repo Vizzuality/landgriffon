@@ -8,6 +8,7 @@ import ReactSelect, {
   MenuProps,
   ControlProps,
   OptionProps,
+  InputProps,
 } from 'react-select';
 import { ChevronDownIcon } from '@heroicons/react/outline';
 import tw from 'twin.macro';
@@ -92,6 +93,17 @@ const THEMES = {
     arrow: 'absolute -bottom-3 transform left-1/2 -translate-x-1/2 text-green-700',
     placeholder: 'text-green-700',
   },
+};
+
+const Input: React.FC<InputProps> = ({ children, ...rest }) => {
+  return (
+    <components.Input
+      {...rest}
+      inputClassName="ring-0 focus:ring-0 outline-none focus:outline-none focus:outline-0"
+    >
+      {children}
+    </components.Input>
+  );
 };
 
 const Select: React.FC<SelectProps> = ({
@@ -239,6 +251,7 @@ const Select: React.FC<SelectProps> = ({
               : null,
           Menu,
           Control,
+          Input,
         }}
       />
       {theme === 'inline-primary' && (

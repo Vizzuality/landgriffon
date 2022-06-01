@@ -13,7 +13,7 @@ import Button from 'components/button';
 
 type ITableData = ITableProps;
 
-const TableNoSSR = dynamic(() => import('containers/table'), { ssr: false });
+const TableNoSSR = dynamic(() => import('components/table'), { ssr: false });
 
 const AdminTargetsPage: React.FC = () => {
   const {

@@ -21,7 +21,7 @@ import {
   DataType,
   SortingMode,
   ApiSortingType,
-} from 'containers/table';
+} from 'components/table';
 
 const AdminDataPage: React.FC = () => {
   const [searchText, setSearchText] = useDebounce('', 250);

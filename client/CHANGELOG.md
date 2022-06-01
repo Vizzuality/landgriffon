@@ -32,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - `nyc` was not working running `yarn test`
 - Collapsed button sometimes appears in the middle [LANDGRIF-678](https://vizzuality.atlassian.net/browse/LANDGRIF-678)
 - Interventions pannel should close when navigating to "Analysis" throught breadcrumbs [LANDGRIF-657](https://vizzuality.atlassian.net/browse/LANDGRIF-657)
+- Arrow icon in the tables also toggle collapse the rows
+- Fixed issues related to duplicated keys in the table rendering
 
 ## 0.3.0 - 2021-09-01
 

@@ -5,9 +5,9 @@ import { updateData } from 'ka-table/actionCreators';
 import { ActionType, SortingMode as kaSortingMode, SortDirection } from 'ka-table/enums';
 import { DispatchFunc } from 'ka-table/types';
 
-import DataRow from 'containers/table/data-row';
-import GroupRow from 'containers/table/group-row';
-import HeadCellContent from 'containers/table/head-cell-content';
+import DataRow from 'components/table/data-row';
+import GroupRow from 'components/table/group-row';
+import HeadCellContent from 'components/table/head-cell-content';
 
 import Loading from 'components/loading';
 

@@ -19,7 +19,7 @@ const schemaValidation = yup.object({
 
 const SignIn: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { query } = useRouter();
+  const { query, push } = useRouter();
 
   const {
     register,
@@ -32,9 +32,18 @@ const SignIn: React.FC = () => {
   const handleSignIn = useCallback(
     (data) => {
       setIsLoading(true);
-      signIn('credentials', { ...data, callbackUrl: query.callbackUrl || '/analysis' });
+      signIn('credentials', {
+        redirect: false,
+        ...data,
+      }).then((res) => {
+        if (res.ok) {
+          query.callbackUrl || push('/analysis');
+        } else {
+          console.log(res.error);
+        }
+      });
     },
-    [query.callbackUrl],
+    [push, query.callbackUrl],
   );
 
   return (

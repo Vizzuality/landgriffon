@@ -1,9 +1,7 @@
-import { useState } from 'react';
-
+import { useCallback, useState } from 'react';
 import cx from 'classnames';
-
+import { ChevronRightIcon, ChevronDownIcon } from '@heroicons/react/outline';
 import { updateTreeGroupsExpanded } from 'ka-table/actionCreators';
-import defaultOptions from 'ka-table/defaultOptions';
 import { getEditableCell } from 'ka-table/Utils/CellUtils';
 import { getField } from 'ka-table/Utils/ColumnUtils';
 import { getValueByColumn } from 'ka-table/Utils/DataUtils';
@@ -15,7 +13,6 @@ import { DataRowProps } from './types';
 const DataRow: React.FC<DataRowProps> = ({
   childComponents,
   columns,
-  groupColumnsCount,
   treeDeep,
   dispatch,
   editingMode,
@@ -37,21 +34,24 @@ const DataRow: React.FC<DataRowProps> = ({
 
   const arrow = isTreeGroup
     ? [
-        <div
-          key={rowKeyValue}
-          className={
-            isTreeExpanded
-              ? defaultOptions.css.iconTreeArrowExpanded
-              : defaultOptions.css.iconTreeArrowCollapsed
-          }
-        />,
+        isTreeExpanded ? (
+          <ChevronDownIcon
+            key={rowKeyValue}
+            className="shrink-0 mt-0.5 mr-2 w-4 h-4 text-gray-900"
+          />
+        ) : (
+          <ChevronRightIcon
+            key={rowKeyValue}
+            className="shrink-0 mt-0.5 mr-2 w-4 h-4 text-gray-900"
+          />
+        ),
       ]
     : undefined;
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     if (!isTreeGroup) return;
     dispatch(updateTreeGroupsExpanded(rowKeyValue));
-  };
+  }, [dispatch, isTreeGroup, rowKeyValue]);
 
   return (
     <>
@@ -66,6 +66,7 @@ const DataRow: React.FC<DataRowProps> = ({
           <Cell
             className={cx({
               'cursor-pointer': isTreeGroup,
+              'font-semibold': isTreeExpanded && treeDeep === 0 && index === 0,
             })}
             treeArrowElement={arrow?.pop()}
             childComponents={childComponents}

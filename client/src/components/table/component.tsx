@@ -173,8 +173,10 @@ const Table: React.FC<TableProps> = ({
       ...props.childComponents?.headCellContent,
     },
     dataRow: {
-      elementAttributes: () => ({
-        className: DEFAULT_CLASSNAMES.dataRow,
+      elementAttributes: (props) => ({
+        className: cx(DEFAULT_CLASSNAMES.dataRow, {
+          'border-l-2 border-green-700': props.isTreeExpanded || props.treeDeep > 0,
+        }),
       }),
       content: (props) => (
         <DataRow

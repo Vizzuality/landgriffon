@@ -1,5 +1,7 @@
 import { Button } from '../components/button';
 import { ButtonProps, AnchorProps } from 'components/button/component';
+import { PlusIcon } from '@heroicons/react/solid';
+import { MailIcon } from '@heroicons/react/outline';
 
 export default {
   title: 'Button',
@@ -46,9 +48,10 @@ Secondary.args = {
 };
 
 Mail.args = {
-  theme: 'mail',
+  theme: 'secondary',
+  icon: <MailIcon />,
 };
 
 Add.args = {
-  theme: 'add',
+  icon: <PlusIcon />,
 };

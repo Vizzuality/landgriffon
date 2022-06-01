@@ -8,7 +8,7 @@ import { getEditableCell } from 'ka-table/Utils/CellUtils';
 import { getField } from 'ka-table/Utils/ColumnUtils';
 import { getValueByColumn } from 'ka-table/Utils/DataUtils';
 
-import Cell from 'containers/table/cell';
+import Cell from 'components/table/cell';
 
 import { DataRowProps } from './types';
 
@@ -38,8 +38,7 @@ const DataRow: React.FC<DataRowProps> = ({
   const arrow = isTreeGroup
     ? [
         <div
-          key={0}
-          onClick={() => dispatch(updateTreeGroupsExpanded(rowKeyValue))}
+          key={rowKeyValue}
           className={
             isTreeExpanded
               ? defaultOptions.css.iconTreeArrowExpanded
@@ -56,9 +55,6 @@ const DataRow: React.FC<DataRowProps> = ({
 
   return (
     <>
-      {[...Array(groupColumnsCount)].map((index) => (
-        <td key={index} className="ka-empty-cell"></td>
-      ))}
       {columns.map((column, index) => {
         const editableCell = getEditableCell(column, rowEditableCells);
         const hasEditorValue = editableCell && editableCell.hasOwnProperty('editorValue');
@@ -84,7 +80,7 @@ const DataRow: React.FC<DataRowProps> = ({
             isDetailsRowShown={isDetailsRowShown}
             isEditableCell={!!editableCell}
             isSelectedRow={isSelectedRow}
-            key={column.key}
+            key={`${rowKeyValue}-${column.key}-${index}`}
             rowData={rowData}
             rowKeyField={rowKeyField}
             rowKeyValue={rowKeyValue}

@@ -3,8 +3,8 @@ import cx from 'classnames';
 import CellEditor from 'ka-table/Components/CellEditor/CellEditor';
 import CellText from 'ka-table/Components/CellText/CellText';
 
-import LineChartCell from 'containers/table/cell/line-chart-cell';
-import { DEFAULT_CLASSNAMES, SHADOW_CLASSNAMES } from 'containers/table/constants';
+import LineChartCell from 'components/table/cell/line-chart-cell';
+import { DEFAULT_CLASSNAMES, SHADOW_CLASSNAMES } from 'components/table/constants';
 
 import { CellProps } from './types';
 
@@ -21,6 +21,7 @@ const Cell: React.FC<CellProps> = (props: CellProps) => {
     onClick,
     onMouseEnter,
     onMouseLeave,
+    rowKeyValue,
   } = props;
 
   const isSticky = isFirstColumnSticky && props.column.key === firstColumnKey;
@@ -28,7 +29,9 @@ const Cell: React.FC<CellProps> = (props: CellProps) => {
 
   const cellSpacingElements = () => {
     const numSpaces = treeDeep ? treeDeep - (treeArrowElement ? 0 : 1) : 0;
-    return [...Array(numSpaces)].map((index) => <div key={index} className="w-5" />);
+    return [...Array(numSpaces)].map((value, index) => (
+      <div key={`${rowKeyValue}-${props.column.key}-cell-spacing-${index}`} className="w-5" />
+    ));
   };
 
   const cellElement = () => {

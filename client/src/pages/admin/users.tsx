@@ -12,7 +12,7 @@ import Search from 'components/search';
 
 type ITableData = ITableProps;
 
-const TableNoSSR = dynamic(() => import('containers/table'), { ssr: false });
+const TableNoSSR = dynamic(() => import('components/table'), { ssr: false });
 
 const AdminUsersPage: React.FC = () => {
   const [searchText, setSearchText] = useDebounce('', 250);

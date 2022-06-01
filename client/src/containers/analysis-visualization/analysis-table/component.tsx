@@ -5,9 +5,9 @@ import { DownloadIcon } from '@heroicons/react/outline';
 
 import { useImpactData } from 'hooks/impact';
 
-import Table from 'containers/table';
-import SummaryRow from 'containers/table/summary-row';
 import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
+import Table from 'components/table';
+import SummaryRow from 'components/table/summary-row';
 import Loading from 'components/loading';
 import LinkButton from 'components/button';
 

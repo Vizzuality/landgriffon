@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - [Storybook](https://storybook.js.org/) for documentation of UI components
 - Added `Select` component to Storybook
 - [Twin.macro](https://github.com/ben-rogerson/twin.macro) babel plugin for Tailwind and Styled-components integration
+- Forcing desktop version in mobile devices [LANDGRIF-676](https://vizzuality.atlassian.net/browse/LANDGRIF-676)
 
 ### Changed
 - Upgrade Tailwind to version 3.0.24

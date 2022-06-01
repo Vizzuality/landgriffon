@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import classNames from 'classnames';
 import ReactSelect, {
   Theme,
@@ -6,7 +6,6 @@ import ReactSelect, {
   StylesConfig,
   components,
   MenuProps,
-  MenuListProps,
   ControlProps,
 } from 'react-select';
 import { ChevronDownIcon } from '@heroicons/react/outline';
@@ -18,7 +17,6 @@ import Loading from 'components/loading';
 
 import type { SelectProps } from './types';
 import { offset, useFloating } from '@floating-ui/react-dom';
-import { useMergeRefs } from 'rooks';
 
 /**
  * Overriding default React Select theme
@@ -55,6 +53,7 @@ const customStyles: StylesConfig = {
     ...provided,
     ...tw`overflow-hidden h-auto border border-gray-700 rounded-md my-0`,
   }),
+  menuList: (provided) => ({ ...provided, ...tw`py-0` }),
 };
 
 const SEARCH_OPTIONS = {

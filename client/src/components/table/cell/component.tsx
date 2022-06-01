@@ -60,17 +60,20 @@ const Cell: React.FC<CellProps> = (props: CellProps) => {
       onMouseLeave={onMouseLeave}
     >
       <div
-        className={cx({
-          'w-full flex py-3 px-3 items-center break-all text-center transition-colors duration-200 h-full':
-            true,
-          'justify-center': !isFirstColumn,
-          'bg-green-50': isRowHovered,
-          [className]: !!className,
-        })}
+        className={cx(
+          'w-full flex py-3 px-4 items-center break-all transition-colors duration-200 h-full',
+          {
+            'justify-center': !isFirstColumn,
+            'bg-green-50': isRowHovered,
+            [className]: !!className,
+          },
+        )}
       >
-        {cellSpacingElements()}
-        {treeArrowElement}
-        {cellElement()}
+        <div className="flex items-start">
+          {cellSpacingElements()}
+          {treeArrowElement}
+          {cellElement()}
+        </div>
       </div>
     </td>
   );

@@ -5,7 +5,7 @@ export const DEFAULT_CLASSNAMES = {
   tableWrapper: 'rounded-lg w-full',
   tableHead: 'border-b border-gray-300',
   tableFoot: 'border-t border-gray-300',
-  headCell: 'h-auto py-3',
+  headCell: 'h-auto py-3 px-4',
   headCellContent: 'font-bold uppercase whitespace-nowrap text-xs leading-4 text-gray-600',
   dataRow: 'border-0 group even:bg-gray-50 odd:bg-white',
   noDataRow: 'h-44 md:h-96',

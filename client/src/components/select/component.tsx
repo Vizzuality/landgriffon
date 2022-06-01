@@ -1,15 +1,24 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import classNames from 'classnames';
-import ReactSelect, { Theme, defaultTheme } from 'react-select';
+import ReactSelect, {
+  Theme,
+  defaultTheme,
+  StylesConfig,
+  components,
+  MenuProps,
+  MenuListProps,
+  ControlProps,
+} from 'react-select';
 import { ChevronDownIcon } from '@heroicons/react/outline';
 import tw from 'twin.macro';
 
 import useFuse from 'hooks/fuse';
 
 import Loading from 'components/loading';
-// import defaultTheme from './themes/default';
 
 import type { SelectProps } from './types';
+import { offset, useFloating } from '@floating-ui/react-dom';
+import { useMergeRefs } from 'rooks';
 
 /**
  * Overriding default React Select theme
@@ -29,12 +38,22 @@ const DEFAULT_THEME: Theme = {
   },
 };
 
-const customStyles = {
-  // control: (provided)
-  option: (provided, state) => ({
+const customStyles: StylesConfig = {
+  option: (provided, { isDisabled, isSelected }) => ({
     ...provided,
     ...tw`text-gray-900 text-sm cursor-pointer hover:bg-green-50`,
-    ...(state.isDisabled && tw`bg-green-700`),
+    ...(isDisabled && tw`bg-green-700`),
+    ...(isSelected && tw`text-white hover:bg-green-700`),
+  }),
+  control: (provided) => ({
+    ...provided,
+    ...tw`w-full rounded-md`,
+    boxShadow: 'none',
+  }),
+  indicatorSeparator: () => tw`hidden`,
+  menu: (provided) => ({
+    ...provided,
+    ...tw`overflow-hidden h-auto border border-gray-700 rounded-md my-0`,
   }),
 };
 
@@ -88,9 +107,50 @@ const Select: React.FC<SelectProps> = ({
 
   const handleChange = useCallback(
     (option) => {
+      console.log({ option });
+
       onChange?.(option);
     },
     [onChange],
+  );
+
+  const {
+    floating,
+    reference,
+    x,
+    y,
+    strategy,
+    refs: { reference: referenceElement },
+  } = useFloating({
+    // TODO: placement style dependent, also look into adding autoplacement so it goes up if there's no space
+    placement: 'bottom',
+    middleware: [offset({ mainAxis: 2 })],
+  });
+
+  const Menu: React.FC<MenuProps> = useCallback(
+    ({ children, ...rest }) => (
+      <div
+        ref={floating}
+        style={{
+          position: strategy,
+          top: y ?? '',
+          left: x ?? '',
+          width: (referenceElement.current as HTMLElement)?.offsetWidth,
+        }}
+      >
+        <components.Menu {...rest}>{children}</components.Menu>
+      </div>
+    ),
+    [floating, referenceElement, strategy, x, y],
+  );
+
+  const Control: React.FC<ControlProps> = useCallback(
+    ({ children, ...rest }) => (
+      <components.Control {...rest} innerRef={reference}>
+        {children}
+      </components.Control>
+    ),
+    [reference],
   );
 
   return (
@@ -109,7 +169,7 @@ const Select: React.FC<SelectProps> = ({
       isClearable={allowEmpty}
       isSearchable={showSearch}
       noOptionsMessage={() => <div className="p-2 text-sm">No results</div>}
-      theme={(theme) => ({ ...theme, ...DEFAULT_THEME })}
+      theme={DEFAULT_THEME}
       components={{
         // Option: ({
         //   innerProps,
@@ -148,7 +208,14 @@ const Select: React.FC<SelectProps> = ({
         // ),
         IndicatorSeparator: null,
         LoadingIndicator: () => <Loading className="text-green-700" />,
-        DropdownIndicator: () => <ChevronDownIcon className="h-4 w-4 mx-4 text-gray-900" />,
+        DropdownIndicator: ({ selectProps: { menuIsOpen } }) => (
+          <ChevronDownIcon
+            className={classNames('h-4 w-4 mx-4 text-gray-900', { 'rotate-180': menuIsOpen })}
+          />
+        ),
+        // MenuList,
+        Menu,
+        Control,
       }}
     />
   );

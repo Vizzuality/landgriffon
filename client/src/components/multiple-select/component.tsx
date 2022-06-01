@@ -226,7 +226,6 @@ const MultipleSelect: React.FC<MultipleSelectFilterProps> = ({
             >
               <Popover.Panel
                 static
-                style={{}}
                 className={classNames(
                   'z-20 bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 max-h-80 overflow-y-auto',
                   fitContent ? 'max-w-full' : 'max-w-md',

@@ -16,7 +16,7 @@ const THEMES = {
   default: {
     label: 'text-gray-300',
     wrapper:
-      'flex-wrap w-full bg-white relative border border-gray-300 rounded-md shadow-sm py-2 pr-10 pl-3 cursor-pointer',
+      'flex-wrap w-full bg-white relative border border-gray-300 rounded-md shadow-sm  pr-10 pl-3 cursor-pointer',
     arrow: 'inset-y-0 right-0 items-center pr-2  text-gray-900',
     treeNodes:
       'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
@@ -79,22 +79,21 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     update();
   }, [checkedKeys, update]);
 
-  const renderTreeNodes = useMemo(
-    () =>
-      (data, counter = 0) =>
-        data.map((item) => (
-          <TreeNode
-            key={item.value}
-            title={item.label}
-            className={classNames(THEMES[theme].treeNodes, {
-              hidden: searchTerm !== '' && !filteredKeys.includes(item.value),
-              'bg-green-50 text-green-700 font-semibold': selectedKeys.includes(item.value),
-            })}
-            style={{ paddingLeft: 16 * counter }}
-          >
-            {item.children && renderTreeNodes(item.children, counter + 1)}
-          </TreeNode>
-        )),
+  const renderTreeNodes = useCallback(
+    (data, counter = 0) =>
+      data.map((item) => (
+        <TreeNode
+          key={item.value}
+          title={item.label}
+          className={classNames(THEMES[theme].treeNodes, {
+            hidden: searchTerm !== '' && !filteredKeys.includes(item.value),
+            'bg-green-50 text-green-700 font-semibold': selectedKeys.includes(item.value),
+          })}
+          style={{ paddingLeft: 16 * counter }}
+        >
+          {item.children && renderTreeNodes(item.children, counter + 1)}
+        </TreeNode>
+      )),
     [filteredKeys, searchTerm, selectedKeys, theme],
   );
 
@@ -309,7 +308,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
               as="div"
               ref={reference}
               className={classNames(
-                'bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer',
+                'bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm text-left focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer',
                 { 'ring-green-700 border-green-700': open },
               )}
             >

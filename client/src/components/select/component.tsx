@@ -51,7 +51,7 @@ const customStyles: StylesConfig = {
   indicatorSeparator: () => tw`hidden`,
   menu: (provided) => ({
     ...provided,
-    ...tw`overflow-hidden h-auto border border-gray-700 rounded-md my-0`,
+    ...tw`overflow-hidden h-auto shadow-md rounded-md my-0`,
   }),
   menuList: (provided) => ({ ...provided, ...tw`py-0` }),
 };
@@ -106,8 +106,6 @@ const Select: React.FC<SelectProps> = ({
 
   const handleChange = useCallback(
     (option) => {
-      console.log({ option });
-
       onChange?.(option);
     },
     [onChange],
@@ -123,7 +121,7 @@ const Select: React.FC<SelectProps> = ({
   } = useFloating({
     // TODO: placement style dependent, also look into adding autoplacement so it goes up if there's no space
     placement: 'bottom',
-    middleware: [offset({ mainAxis: 2 })],
+    middleware: [offset({ mainAxis: 4 })],
   });
 
   const Menu: React.FC<MenuProps> = useCallback(

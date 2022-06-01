@@ -1,5 +1,5 @@
 import cx from 'classnames';
-import { forwardRef } from 'react';
+import { forwardRef, SVGProps } from 'react';
 import Loading from 'components/loading';
 import { PlusIcon } from '@heroicons/react/solid';
 import { MailIcon } from '@heroicons/react/outline';
@@ -15,8 +15,6 @@ export const THEME = {
   default: COMMON_CLASSNAMES,
   primary: PRIMARY,
   secondary: SECONDARY,
-  add: PRIMARY,
-  mail: SECONDARY,
   textLight: 'bg-transparent text-gray-500 focus:outline-none focus:text-black',
 };
 
@@ -28,10 +26,10 @@ const SIZE = {
 };
 
 export type AnchorButtonProps = {
-  theme?: 'primary' | 'secondary' | 'textLight' | 'mail' | 'add';
+  theme?: 'primary' | 'secondary' | 'textLight';
   size?: 'xs' | 'base' | 'xl' | 'text';
   loading?: boolean;
-  icon?: boolean;
+  icon?: SVGProps<SVGElement>;
 };
 
 // Button props
@@ -146,6 +144,7 @@ export const Button: React.FC<ButtonProps> = ({
   className,
   disabled,
   loading = false,
+  icon,
   ...restProps
 }) => (
   <button
@@ -160,14 +159,7 @@ export const Button: React.FC<ButtonProps> = ({
     disabled={loading || disabled}
     {...restProps}
   >
-    <span>
-      {theme === 'mail' ? (
-        <MailIcon className="w-5 h-5 mr-4" />
-      ) : theme === 'add' ? (
-        <PlusIcon className="w-5 h-5 mr-4" />
-      ) : null}
-    </span>
-
+    {icon && <span className="w-5 h-5 mr-4">{icon}</span>}
     {loading ? <Loading className="text-white" /> : children}
   </button>
 );

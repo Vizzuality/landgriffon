@@ -9,10 +9,14 @@ import {
   IsUUID,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
-import { LOCATION_TYPES_PARAMS } from 'modules/sourcing-locations/sourcing-location.entity';
+import {
+  LOCATION_TYPES,
+  LOCATION_TYPES_PARAMS,
+} from 'modules/sourcing-locations/sourcing-location.entity';
+import { transformLocationType } from 'utils/transform-location-type.util';
 
 export class GetImpactTableDto {
   @ApiProperty({
@@ -71,12 +75,13 @@ export class GetImpactTableDto {
     name: 'locationTypes[]',
   })
   @IsOptional()
-  @IsEnum(LOCATION_TYPES_PARAMS, {
+  @IsEnum(LOCATION_TYPES, {
     each: true,
     message:
       'Available options: ' +
       Object.values(LOCATION_TYPES_PARAMS).toString().toLowerCase(),
   })
+  @Transform(({ value }) => transformLocationType(value))
   @Type(() => String)
   locationTypes?: LOCATION_TYPES_PARAMS[];
 

@@ -181,15 +181,10 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
     }
 
     if (locationTypes) {
-      const sourcingLocationTypes: string[] = locationTypes.map(
-        (el: LOCATION_TYPES_PARAMS) => {
-          return el.replace(/-/g, ' ');
-        },
-      );
       impactDataQueryBuilder.andWhere(
-        'sourcingLocation.locationType IN (:...sourcingLocationTypes)',
+        'sourcingLocation.locationType IN (:...locationTypes)',
         {
-          sourcingLocationTypes,
+          locationTypes,
         },
       );
     }

@@ -11,6 +11,8 @@ _Link to the related design prototypes (if applicable)_
 
 _Provide minimal instructions on how to test this PR._
 
+- Apart from the added feature / bug fix, check overall performance, styling...
+
 ## Checklist before merging
 
 - [ ] Branch name / PR includes the related Jira ticket Id.
@@ -18,4 +20,4 @@ _Provide minimal instructions on how to test this PR._
 - [ ] All checks in Continuous Integration workflow pass.
 - [ ] Feature functionally tested by reviewer(s).
 - [ ] Code reviewed by reviewer(s).
-- [ ] Documentation updated (if required)
+- [ ] Documentation updated (README, CHANGELOG...) (if required)

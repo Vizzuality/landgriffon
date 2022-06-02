@@ -17,7 +17,7 @@ const THEMES = {
   default: {
     label: 'text-gray-300',
     wrapper:
-      'flex-wrap flex-row w-full bg-white relative border border-gray-300 rounded-md shadow-sm px-3 cursor-pointer min-h-[2.5rem]',
+      'flex-wrap flex-row w-full bg-white relative border border-gray-300 rounded-md shadow-sm px-3 cursor-pointer min-h-[40px] box-content',
     arrow: 'inset-y-0 right-0 items-center pr-2  text-gray-900',
     treeNodes:
       'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',

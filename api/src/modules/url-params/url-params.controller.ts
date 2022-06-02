@@ -12,6 +12,7 @@ import {
   urlParamResource,
 } from 'modules/url-params/url-param.entity';
 import { UrlParamsService } from 'modules/url-params/url-params.service';
+import { SerializedUrlResponseDto } from './dto/url-param.response.dto';
 
 @Controller(`/api/v1/url-params`)
 @ApiTags(urlParamResource.className)
@@ -19,7 +20,7 @@ export class UrlParamsController {
   constructor(public readonly urlParamService: UrlParamsService) {}
 
   @ApiOperation({ description: 'Find URL params set by id' })
-  @ApiOkResponse({ type: UrlParam })
+  @ApiOkResponse({ type: SerializedUrlResponseDto })
   @ApiNotFoundResponse({ description: 'URL params not found' })
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Partial<UrlParam>> {
@@ -29,7 +30,7 @@ export class UrlParamsController {
   }
 
   @ApiOperation({ description: 'Save URL params set' })
-  @ApiOkResponse()
+  @ApiOkResponse({ type: SerializedUrlResponseDto })
   @ApiBadRequestResponse({
     description: 'Bad Request. Incorrect or missing parameters',
   })

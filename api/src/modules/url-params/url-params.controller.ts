@@ -4,12 +4,17 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiTags,
 } from '@nestjs/swagger';
 
-import { UrlParam } from 'modules/url-params/url-param.entity';
+import {
+  UrlParam,
+  urlParamResource,
+} from 'modules/url-params/url-param.entity';
 import { UrlParamsService } from 'modules/url-params/url-params.service';
 
 @Controller(`/api/v1/url-params`)
+@ApiTags(urlParamResource.className)
 export class UrlParamsController {
   constructor(public readonly urlParamService: UrlParamsService) {}
 

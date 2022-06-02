@@ -86,7 +86,7 @@ const MoreFilters: React.FC = () => {
 
   const { reference, floating, strategy, x, y } = useFloating({
     placement: 'bottom-start',
-    middleware: [offset({ mainAxis: 4 }), shift()],
+    middleware: [offset({ mainAxis: 4 }), shift({ padding: 4 })],
   });
 
   return (

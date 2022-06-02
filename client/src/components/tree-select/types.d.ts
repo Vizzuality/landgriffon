@@ -21,6 +21,7 @@ export type TreeSelectProps = {
   error?: boolean;
   fitContent?: boolean;
   label?: string;
+  error?: boolean;
   /**
    * ALL: show all ids in the values (default by tree-select component)
    * PARENT: if parent is selected and also all children are selected, only parent id is in the values

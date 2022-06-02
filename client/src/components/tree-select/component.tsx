@@ -243,20 +243,23 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
               className={classNames('align-middle relative', {
                 [THEMES[theme].wrapper]: theme === 'default',
                 'flex flex-row justify-between': theme === 'default',
+                'border-2 border-red-600': theme === 'default' && error,
                 'w-fit': theme === 'inline-primary',
               })}
             >
               <div
                 className={classNames('flex gap-1 h-max my-auto', {
                   'ring-green-700 border-green-700': open,
-                  'border-red-600': !!error,
+                  'border-red-600': theme === 'inline-primary' && error,
                   [THEMES[theme].wrapper]: theme === 'inline-primary',
                 })}
               >
                 {multiple ? (
                   <>
                     {(!currentOptions || !currentOptions.length) && !showSearch && (
-                      <span className="text-gray-500">{placeholder}</span>
+                      <span className="text-gray-500 inline-block truncate my-auto">
+                        {placeholder}
+                      </span>
                     )}
                     {currentOptions &&
                       !!currentOptions.length &&
@@ -332,7 +335,12 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                 })}
               >
                 {theme === 'inline-primary' ? (
-                  <div className="mt-0.5 border-t-green-700 border-t-4 border-x-4 border-x-transparent mx-auto w-0 h-0" />
+                  <div
+                    className={classNames(
+                      'mt-0.5 border-t-green-700 border-t-4 border-x-4 border-x-transparent mx-auto w-0 h-0',
+                      { 'border-t-red-600': error },
+                    )}
+                  />
                 ) : (
                   <ChevronDownIcon
                     className={classNames('h-4 w-4', { 'rotate-180': open })}

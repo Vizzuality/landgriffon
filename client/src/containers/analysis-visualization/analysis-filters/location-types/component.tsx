@@ -1,21 +1,20 @@
 import React, { useMemo } from 'react';
 import { sortBy } from 'lodash';
 
-import MultipleSelect from 'components/multiple-select';
+import TreeSelect from 'components/tree-select';
 
 // hooks
 import { useLocationTypes } from 'hooks/interventions';
-
-// types
-import type { MultipleSelectProps } from 'components/multiple-select/types';
+import type { TreeSelectProps } from 'components/tree-select/types';
+import { firstLetterUppercase } from 'utils/string';
 
 type LocationTypeFilterProps = {
-  current: MultipleSelectProps['current'];
-  onChange?: MultipleSelectProps['onChange'];
-  theme?: 'default' | 'inline-primary';
-  optionsLocationTypes?: MultipleSelectProps['current'];
-  ellipsis?: MultipleSelectProps['ellipsis'];
-  fitContent?: MultipleSelectProps['fitContent'];
+  current: TreeSelectProps['current'];
+  onChange?: TreeSelectProps['onChange'];
+  theme?: TreeSelectProps['theme'];
+  optionsLocationTypes?: TreeSelectProps['current'];
+  ellipsis?: TreeSelectProps['ellipsis'];
+  fitContent?: TreeSelectProps['fitContent'];
 };
 
 const LocationTypesFilter: React.FC<LocationTypeFilterProps> = ({
@@ -27,11 +26,11 @@ const LocationTypesFilter: React.FC<LocationTypeFilterProps> = ({
 }) => {
   const data = useLocationTypes();
 
-  const options: MultipleSelectProps['options'] = useMemo(
+  const options: TreeSelectProps['options'] = useMemo(
     () =>
       sortBy(
         data?.map((d) => ({
-          label: d,
+          label: firstLetterUppercase(d),
           value: d,
         })),
         'label',
@@ -40,7 +39,7 @@ const LocationTypesFilter: React.FC<LocationTypeFilterProps> = ({
   );
 
   return (
-    <MultipleSelect
+    <TreeSelect
       showSearch={false}
       options={options}
       placeholder="Location types"

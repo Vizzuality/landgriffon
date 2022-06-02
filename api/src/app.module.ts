@@ -32,7 +32,8 @@ import { ImpactModule } from 'modules/impact/impact.module';
 import { TasksModule } from 'modules/tasks/tasks.module';
 import { TargetsModule } from 'modules/targets/targets.module';
 import { CommandModule } from 'nestjs-command';
-import { UrlParamsModule } from './modules/url-params/url-params.module';
+import { UrlParamsModule } from 'modules/url-params/url-params.module';
+import { ContextualLayersModule } from 'modules/contextual-layers/contextual-layers.module';
 import * as config from 'config';
 
 const redisConfig: any = config.get('redis');
@@ -75,6 +76,7 @@ const redisConfig: any = config.get('redis');
     TargetsModule,
     CommandModule,
     UrlParamsModule,
+    ContextualLayersModule,
   ],
   providers: [
     {

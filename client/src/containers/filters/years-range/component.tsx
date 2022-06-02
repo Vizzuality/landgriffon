@@ -146,7 +146,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
                   current={endYearOption}
                   onChange={setEndYearOption}
                   onSearch={onEndYearSearch}
-                  searchPlaceholder="Search or create"
+                  placeholder="Search or create"
                 />
               </div>
             </div>

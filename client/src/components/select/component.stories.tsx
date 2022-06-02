@@ -43,4 +43,5 @@ Default.args = {
   disabled: false,
   showSearch: false,
   theme: 'default',
+  error: false,
 };

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Popover } from '@headlessui/react';
 import { offset, useFloating, arrow as arrowMiddleware, flip } from '@floating-ui/react-dom';
 
@@ -58,16 +58,12 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
     left: 'translate-x-1/2 right-0',
   };
 
+  const handleMouseEnter = useCallback(() => setIsHovered(true), []);
+  const handleMouseLeave = useCallback(() => setIsHovered(false), []);
+
   return (
     <Popover className="relative">
-      <Popover.Button
-        onMouseEnter={() => {
-          setIsHovered(true);
-        }}
-        onMouseLeave={() => {
-          setIsHovered(false);
-        }}
-      >
+      <Popover.Button onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         <div ref={reference}>{children}</div>
       </Popover.Button>
       <div>

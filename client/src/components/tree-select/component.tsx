@@ -24,7 +24,7 @@ const THEMES = {
   'inline-primary': {
     label: 'truncate text-ellipsis font-bold cursor-pointer px-0 py-0',
     wrapper:
-      'min-h-[2.5rem] border-b-2 flex-col border-green-700 max-w-[190px] min-w-[30px] overflow-x-hidden truncate text-ellipsis',
+      'min-h-[2rem] border-b-2 flex-col border-green-700 max-w-[190px] min-w-[30px] overflow-x-hidden truncate text-ellipsis',
     arrow: 'mx-auto w-fit', // '-bottom-3  transform left-1/2 -translate-x-1/2 text-green-700',
     treeNodes:
       'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
@@ -244,7 +244,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
               })}
             >
               <div
-                className={classNames('flex gap-1 h-max', {
+                className={classNames('flex gap-1 h-max my-auto', {
                   'ring-green-700 border-green-700': open,
                   'border-red-600': !!error,
                   [THEMES[theme].wrapper]: theme === 'inline-primary',
@@ -252,6 +252,9 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
               >
                 {multiple ? (
                   <>
+                    {(!currentOptions || !currentOptions.length) && !showSearch && (
+                      <span className="text-gray-500">{placeholder}</span>
+                    )}
                     {currentOptions &&
                       !!currentOptions.length &&
                       !ellipsis &&

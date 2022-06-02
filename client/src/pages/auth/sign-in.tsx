@@ -19,11 +19,12 @@ const schemaValidation = yup.object({
 
 const SignIn: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { query, push } = useRouter();
+  const router = useRouter();
 
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
@@ -33,17 +34,20 @@ const SignIn: React.FC = () => {
     (data) => {
       setIsLoading(true);
       signIn('credentials', {
-        redirect: false,
         ...data,
-      }).then((res) => {
-        if (res.ok) {
-          query.callbackUrl || push('/analysis');
+        redirect: false,
+      }).then(({ error }) => {
+        if (error) {
+          setIsLoading(false);
+          setError('password', {
+            message: 'login failed. incorrect password',
+          });
         } else {
-          console.log(res.error);
+          router.push('/analysis');
         }
       });
     },
-    [push, query.callbackUrl],
+    [router, setError],
   );
 
   return (

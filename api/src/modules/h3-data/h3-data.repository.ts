@@ -218,17 +218,9 @@ export class H3DataRepository extends Repository<H3Data> {
       });
     }
     if (locationTypes) {
-      const sourcingLocationTypes: string[] = locationTypes.map(
-        (el: LOCATION_TYPES_PARAMS) => {
-          return el.replace(/-/g, ' ');
-        },
-      );
-      subqueryBuilder.andWhere(
-        'sl.locationType IN (:...sourcingLocationTypes)',
-        {
-          sourcingLocationTypes,
-        },
-      );
+      subqueryBuilder.andWhere('sl.locationType IN (:...locationTypes)', {
+        locationTypes,
+      });
     }
 
     const selectQueryBuilder: SelectQueryBuilder<any> = getManager()

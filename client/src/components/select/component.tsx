@@ -18,7 +18,7 @@ import useFuse from 'hooks/fuse';
 import Loading from 'components/loading';
 
 import type { SelectProps } from './types';
-import { flip, inline, offset, shift, useFloating } from '@floating-ui/react-dom';
+import { flip, offset, shift, useFloating } from '@floating-ui/react-dom';
 
 /**
  * Overriding default React Select theme

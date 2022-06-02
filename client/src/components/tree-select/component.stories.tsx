@@ -34,6 +34,7 @@ export const Default = Template.bind({});
 Default.args = {
   multiple: false,
   fitContent: false,
+  placeholder: 'Select...',
   options: [
     {
       value: 'ocean',

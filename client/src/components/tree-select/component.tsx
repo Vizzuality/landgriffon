@@ -77,7 +77,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   useEffect(() => {
     // Update tooltip position when selection changes
     update();
-  }, [checkedKeys, update]);
+  }, [checkedKeys, update, multiple, fitContent]);
 
   const renderTreeNodes = useCallback(
     (data, counter = 0) =>
@@ -186,7 +186,8 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     }
     return checkedOptions;
   }, [checkedKeys, options]);
-  const handleRemoveBadget = useCallback(
+
+  const handleRemoveBadge = useCallback(
     (option) => {
       const filteredKeys = (checkedKeys as string[]).filter((key) => option.value !== key);
       // TO-DO: this function is repeated
@@ -230,9 +231,13 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
       {({ open }) => (
         <>
           {multiple ? (
-            <Popover.Button as="div" ref={reference} className="w-full flex align-center relative">
+            <Popover.Button
+              as="div"
+              ref={reference}
+              className="w-full flex align-center relative min-h-[2.5rem]"
+            >
               <div
-                className={classNames('flex', THEMES[theme].wrapper, {
+                className={classNames('flex gap-1', THEMES[theme].wrapper, {
                   'ring-green-700 border-green-700': open,
                   'border-red-600': !!error,
                 })}
@@ -243,9 +248,9 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                   currentOptions.slice(0, maxBadges).map((option) => (
                     <Badge
                       key={option.value}
-                      className={classNames('text-sm m-0.5', THEMES[theme].label)}
+                      className={classNames('text-sm h-fit my-auto', THEMES[theme].label)}
                       data={option}
-                      onClick={handleRemoveBadget}
+                      onClick={handleRemoveBadge}
                       removable={theme === 'inline-primary' ? false : true}
                       theme={theme}
                     >
@@ -257,7 +262,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                     key={currentOptions[0].value}
                     className={classNames('text-sm m-0.5', THEMES[theme].label)}
                     data={currentOptions[0]}
-                    onClick={handleRemoveBadget}
+                    onClick={handleRemoveBadge}
                     removable={theme === 'inline-primary' ? false : true}
                     theme={theme}
                   >
@@ -269,9 +274,9 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                     {currentOptions.length - maxBadges} more selected
                   </Badge>
                 )}
-                <SearchIcon className="block h-4 w-4 text-gray-400 my-auto" />
                 {showSearch && (
-                  <span>
+                  <div className="inline-flex flex-row">
+                    <SearchIcon className="block h-4 w-4 text-gray-400 my-auto" />
                     <input
                       onClick={(e) => {
                         e.preventDefault();
@@ -289,7 +294,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                         <XIcon className="h-4 w-4 text-gray-400" />
                       </button>
                     )}
-                  </span>
+                  </div>
                 )}
               </div>
               <span
@@ -308,7 +313,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
               as="div"
               ref={reference}
               className={classNames(
-                'bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm text-left focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer',
+                'bg-white relative w-full flex align-center border border-gray-300 rounded-md shadow-sm text-left focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 text-sm cursor-pointer min-h-[2.5rem]',
                 { 'ring-green-700 border-green-700': open },
               )}
             >

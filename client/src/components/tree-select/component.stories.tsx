@@ -35,6 +35,7 @@ Default.args = {
   multiple: false,
   fitContent: false,
   placeholder: 'Select...',
+  label: 'Label',
   options: [
     {
       value: 'ocean',

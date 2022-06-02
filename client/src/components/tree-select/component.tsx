@@ -11,6 +11,7 @@ import Loading from 'components/loading';
 import { CHECKED_STRATEGIES } from './utils';
 
 import type { TreeSelectProps, TreeSelectOption } from './types';
+import { Label } from 'components/forms';
 
 const THEMES = {
   default: {
@@ -53,6 +54,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   error = false,
   fitContent = false,
   checkedStrategy = 'PARENT', // by default show child
+  label,
 }) => {
   const {
     x,
@@ -236,6 +238,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
             ref={reference}
             className={classNames({ 'w-fit': theme === 'inline-primary' })}
           >
+            {label && <Label>{label}</Label>}
             <div
               className={classNames('align-middle relative', {
                 [THEMES[theme].wrapper]: theme === 'default',

@@ -18,7 +18,7 @@ const THEMES = {
     label: 'text-gray-300',
     wrapper:
       'flex-wrap flex-row max-w-full bg-white relative border border-gray-300 rounded-md shadow-sm px-3 cursor-pointer min-h-[2.5rem] box-content',
-    arrow: 'inset-y-0 right-0 items-center pr-2  text-gray-900',
+    arrow: 'inset-y-0 right-0 items-center  text-gray-900',
     treeNodes:
       'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
   },

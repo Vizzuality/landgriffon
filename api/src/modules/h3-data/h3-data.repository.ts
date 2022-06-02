@@ -183,69 +183,6 @@ export class H3DataRepository extends Repository<H3Data> {
     supplierIds?: string[],
     locationTypes?: LOCATION_TYPES_PARAMS[],
   ): Promise<{ impactMap: H3IndexValueData[]; quantiles: number[] }> {
-    // TODO: Feature toggle to switch between distributed / non-distributed impact map
-    //       delete when M.Views are set with proper performance
-    const distributed: boolean =
-      `${config.get('map.distributed')}`.toLowerCase() === 'true';
-
-    if (!distributed) {
-      const query: SelectQueryBuilder<any> = getManager()
-        .createQueryBuilder()
-        .select(
-          `h3_to_parent(unnest(gr."h3Flat"::h3index[]), ${resolution})`,
-          'h',
-        )
-        .addSelect('sum(ir.value/gr."h3FlatLength")', 'v')
-        .from(SourcingLocation, 'sl')
-        .innerJoin(SourcingRecord, 'sr', 'sl.id = sr.sourcingLocationId')
-        .innerJoin(IndicatorRecord, 'ir', 'sr.id = ir.sourcingRecordId')
-        .innerJoin(GeoRegion, 'gr', 'sl.geoRegionId = gr.id')
-        .where('sl.scenarioInterventionId IS NULL')
-        .andWhere('sl.interventionType IS NULL')
-        .andWhere('ir.indicatorId = :indicatorId', {
-          indicatorId: indicator.id,
-        })
-        .andWhere('sr.year = :year', { year })
-        .andWhere('gr."h3FlatLength" > 0')
-        .groupBy('h');
-
-      if (materialIds) {
-        query.andWhere('sl.material IN (:...materialIds)', { materialIds });
-      }
-
-      if (supplierIds) {
-        query.andWhere(
-          new Brackets((qb: WhereExpressionBuilder) => {
-            qb.where('sl.t1SupplierId IN (:...supplierIds)', {
-              supplierIds,
-            }).orWhere('sl.producerId IN (:...supplierIds)', { supplierIds });
-          }),
-        );
-      }
-      if (originIds) {
-        query.andWhere('sl.adminRegionId IN (:...originIds)', { originIds });
-      }
-
-      if (locationTypes) {
-        query.andWhere('sl.locationType IN (:...locationTypes)', {
-          locationTypes,
-        });
-      }
-      const tmpTableName: string = H3DataRepository.generateRandomTableName();
-      const [queryString, params] = query.getQueryAndParameters();
-      await getManager().query(
-        `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${queryString});`,
-        params,
-      );
-      const impactMap: any = await getManager().query(
-        `SELECT *
-       FROM "${tmpTableName}";`,
-      );
-      this.logger.log('Impact Map generated');
-      const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
-      await getManager().query(`DROP TABLE "${tmpTableName}";`);
-      return { impactMap, quantiles };
-    }
     const subqueryBuilder: SelectQueryBuilder<any> = getManager()
       .createQueryBuilder()
       .select('sl.geoRegionId', 'geoRegionId')

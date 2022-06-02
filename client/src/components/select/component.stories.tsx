@@ -38,6 +38,7 @@ Default.args = {
     { value: 'slate', label: 'Slate', color: '#253858' },
     { value: 'silver', label: 'Silver', color: '#666666' },
   ],
+  label: 'The label',
   multiple: false,
   loading: false,
   disabled: false,

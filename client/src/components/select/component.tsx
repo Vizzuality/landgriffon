@@ -19,6 +19,7 @@ import Loading from 'components/loading';
 
 import type { SelectProps } from './types';
 import { flip, offset, shift, useFloating } from '@floating-ui/react-dom';
+import { Label } from 'components/forms';
 
 /**
  * Overriding default React Select theme
@@ -223,6 +224,7 @@ const Select: React.FC<SelectProps> = ({
 
   return (
     <div className={classNames({ 'w-fit': theme === 'inline-primary' })}>
+      {label && <Label>{label}</Label>}
       <ReactSelect
         className="z-50 relative"
         styles={styles}

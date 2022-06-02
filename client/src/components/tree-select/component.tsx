@@ -1,7 +1,7 @@
 import { Fragment, useCallback, useState, useMemo, useEffect } from 'react';
 import classNames from 'classnames';
 import { Transition, Popover } from '@headlessui/react';
-import { offset, useFloating } from '@floating-ui/react-dom';
+import { offset, shift, useFloating } from '@floating-ui/react-dom';
 import { ChevronDownIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
 import Tree, { TreeNode, TreeProps } from 'rc-tree';
 import Fuse from 'fuse.js';
@@ -17,7 +17,7 @@ const THEMES = {
   default: {
     label: 'text-gray-300',
     wrapper:
-      'flex-wrap flex-row w-full bg-white relative border border-gray-300 rounded-md shadow-sm px-3 cursor-pointer min-h-[40px] box-content',
+      'flex-wrap flex-row max-w-full bg-white relative border border-gray-300 rounded-md shadow-sm px-3 cursor-pointer min-h-[2.5rem] box-content',
     arrow: 'inset-y-0 right-0 items-center pr-2  text-gray-900',
     treeNodes:
       'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
@@ -66,7 +66,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     refs: { reference: referenceElement },
   } = useFloating({
     placement: 'bottom-start',
-    middleware: [offset({ mainAxis: 4 })],
+    middleware: [offset({ mainAxis: 4 }), shift({ padding: 4 })],
   });
 
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -233,121 +233,121 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     <Popover className="relative">
       {({ open }) => (
         <>
+          {label && <Label>{label}</Label>}
           <Popover.Button
             as="div"
             ref={reference}
-            className={classNames({ 'w-fit': theme === 'inline-primary' })}
-          >
-            {label && <Label>{label}</Label>}
-            <div
-              className={classNames('align-middle relative', {
+            className={classNames(
+              'align-middle relative',
+              {
                 [THEMES[theme].wrapper]: theme === 'default',
                 'flex flex-row justify-between': theme === 'default',
                 'border-2 border-red-600': theme === 'default' && error,
                 'w-fit': theme === 'inline-primary',
+              },
+              { 'w-fit': theme === 'inline-primary' },
+            )}
+          >
+            <div
+              className={classNames('flex gap-1 h-max my-auto', {
+                'ring-green-700 border-green-700': open,
+                'border-red-600': theme === 'inline-primary' && error,
+                [THEMES[theme].wrapper]: theme === 'inline-primary',
               })}
             >
-              <div
-                className={classNames('flex gap-1 h-max my-auto', {
-                  'ring-green-700 border-green-700': open,
-                  'border-red-600': theme === 'inline-primary' && error,
-                  [THEMES[theme].wrapper]: theme === 'inline-primary',
-                })}
-              >
-                {multiple ? (
-                  <>
-                    {(!currentOptions || !currentOptions.length) && !showSearch && (
-                      <span className="text-gray-500 inline-block truncate my-auto">
-                        {placeholder}
-                      </span>
-                    )}
-                    {currentOptions &&
-                      !!currentOptions.length &&
-                      !ellipsis &&
-                      currentOptions.slice(0, maxBadges).map((option) => (
-                        <Badge
-                          key={option.value}
-                          className={classNames('text-sm h-fit my-auto', THEMES[theme].label)}
-                          data={option}
-                          onClick={handleRemoveBadge}
-                          removable={theme !== 'inline-primary'}
-                          theme={theme}
-                        >
-                          {option.label}
-                        </Badge>
-                      ))}
-                    {currentOptions && !!currentOptions.length && ellipsis && (
+              {multiple ? (
+                <>
+                  {(!currentOptions || !currentOptions.length) && !showSearch && (
+                    <span className="text-gray-500 inline-block truncate my-auto">
+                      {placeholder}
+                    </span>
+                  )}
+                  {currentOptions &&
+                    !!currentOptions.length &&
+                    !ellipsis &&
+                    currentOptions.slice(0, maxBadges).map((option) => (
                       <Badge
-                        key={currentOptions[0].value}
+                        key={option.value}
                         className={classNames('text-sm h-fit my-auto', THEMES[theme].label)}
-                        data={currentOptions[0]}
+                        data={option}
                         onClick={handleRemoveBadge}
                         removable={theme !== 'inline-primary'}
                         theme={theme}
                       >
-                        {currentOptions[0].label}
+                        {option.label}
                       </Badge>
-                    )}
-                    {currentOptions && currentOptions.length > maxBadges && (
-                      <Badge
-                        className={classNames('text-sm h-fit my-auto', THEMES[theme].label)}
-                        theme={theme}
-                      >
-                        {currentOptions.length - maxBadges} more selected
-                      </Badge>
-                    )}
-                    {showSearch && (
-                      <div className="inline-flex flex-row align-middle">
-                        <SearchIcon className="block h-4 w-4 text-gray-400 my-auto" />
-                        <input
-                          onClick={(e) => {
-                            e.preventDefault();
-                            (referenceElement.current as HTMLElement).click();
-                            e.currentTarget.focus();
-                          }}
-                          type="search"
-                          value={searchTerm}
-                          placeholder={currentOptions.length === 0 ? placeholder : null}
-                          className="border-none focus:ring-0 min-w-0 truncate flex-1"
-                          onChange={handleSearch}
-                        />
-                        {searchTerm && (
-                          <button type="button" onClick={resetSearch} className="px-2 py-0">
-                            <XIcon className="h-4 w-4 text-gray-400" />
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <span className="inline-block truncate my-auto">
-                    {selected ? (
-                      <span className="font-medium">{selected.label}</span>
-                    ) : (
-                      <span className="text-gray-500">{placeholder}</span>
-                    )}
-                  </span>
-                )}
-              </div>
-              <div
-                className={classNames('flex pointer-events-none', THEMES[theme].arrow, {
-                  'text-red-700': !!error,
-                })}
-              >
-                {theme === 'inline-primary' ? (
-                  <div
-                    className={classNames(
-                      'mt-0.5 border-t-green-700 border-t-4 border-x-4 border-x-transparent mx-auto w-0 h-0',
-                      { 'border-t-red-600': error },
-                    )}
-                  />
-                ) : (
-                  <ChevronDownIcon
-                    className={classNames('h-4 w-4', { 'rotate-180': open })}
-                    aria-hidden="true"
-                  />
-                )}
-              </div>
+                    ))}
+                  {currentOptions && !!currentOptions.length && ellipsis && (
+                    <Badge
+                      key={currentOptions[0].value}
+                      className={classNames('text-sm h-fit my-auto', THEMES[theme].label)}
+                      data={currentOptions[0]}
+                      onClick={handleRemoveBadge}
+                      removable={theme !== 'inline-primary'}
+                      theme={theme}
+                    >
+                      {currentOptions[0].label}
+                    </Badge>
+                  )}
+                  {currentOptions && currentOptions.length > maxBadges && (
+                    <Badge
+                      className={classNames('text-sm h-fit my-auto', THEMES[theme].label)}
+                      theme={theme}
+                    >
+                      {currentOptions.length - maxBadges} more selected
+                    </Badge>
+                  )}
+                  {showSearch && (
+                    <div className="inline-flex flex-row flex-shrink gap-x-1 align-middle">
+                      <SearchIcon className="block h-4 w-4 text-gray-400 my-auto" />
+                      <input
+                        onClick={(e) => {
+                          e.preventDefault();
+                          (referenceElement.current as HTMLElement).click();
+                          e.currentTarget.focus();
+                        }}
+                        type="search"
+                        value={searchTerm}
+                        placeholder={currentOptions.length === 0 ? placeholder : null}
+                        className="border-none focus:ring-0 min-w-0 truncate flex-1 py-0 px-0"
+                        onChange={handleSearch}
+                      />
+                      {searchTerm && (
+                        <button type="button" onClick={resetSearch} className="px-2 py-0">
+                          <XIcon className="h-4 w-4 text-gray-400" />
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <span className="inline-block truncate my-auto">
+                  {selected ? (
+                    <span className="font-medium">{selected.label}</span>
+                  ) : (
+                    <span className="text-gray-500">{placeholder}</span>
+                  )}
+                </span>
+              )}
+            </div>
+            <div
+              className={classNames('flex pointer-events-none', THEMES[theme].arrow, {
+                'text-red-700': !!error,
+              })}
+            >
+              {theme === 'inline-primary' ? (
+                <div
+                  className={classNames(
+                    'mt-0.5 border-t-green-700 border-t-4 border-x-4 border-x-transparent mx-auto w-0 h-0',
+                    { 'border-t-red-600': error },
+                  )}
+                />
+              ) : (
+                <ChevronDownIcon
+                  className={classNames('h-4 w-4', { 'rotate-180': open })}
+                  aria-hidden="true"
+                />
+              )}
             </div>
           </Popover.Button>
           <Transition
@@ -373,8 +373,8 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
             <Popover.Panel
               static
               className={classNames(
-                'z-20 bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 max-h-80 overflow-y-auto min-w-fit pr-3',
-                fitContent ? 'max-w-full' : 'max-w-md',
+                'z-20 bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 max-h-80 overflow-y-auto pr-3',
+                fitContent ? 'max-w-full w-full' : 'max-w-md',
               )}
             >
               {loading && (

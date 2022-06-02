@@ -77,23 +77,21 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
             left: x ?? '',
           }}
         >
-          <div className="drop-shadow-md w-fit">
+          <div className="drop-shadow-md w-fit relative">
             <div className="z-10">{content}</div>
             <div
-              className={classNames('-z-10 absolute', { hidden: !arrow })}
+              className={classNames(
+                '-z-10 absolute',
+                { hidden: !arrow },
+                arrowPositionClasses[floatingPlacement],
+              )}
               ref={arrowRef}
               style={{
                 top: arrowY ?? '',
                 left: arrowX ?? '',
               }}
             >
-              <div
-                className={classNames(
-                  'w-4 h-4 rotate-45',
-                  THEME[theme],
-                  arrowPositionClasses[floatingPlacement],
-                )}
-              />
+              <div className={classNames('w-4 h-4 rotate-45', THEME[theme])} />
             </div>
           </div>
         </Popover.Panel>

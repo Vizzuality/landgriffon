@@ -38,7 +38,10 @@ const DEFAULT_THEME: Theme = {
   },
 };
 
-const customStyles: (theme: SelectProps['theme']) => StylesConfig = (theme) => {
+const customStyles: (theme: SelectProps['theme'], error?: boolean) => StylesConfig = (
+  theme,
+  error = false,
+) => {
   return {
     option: (provided, { isDisabled, isSelected }) => ({
       ...provided,
@@ -49,6 +52,7 @@ const customStyles: (theme: SelectProps['theme']) => StylesConfig = (theme) => {
     control: (provided) => ({
       ...provided,
       boxShadow: 'none',
+      ...(error && tw`border-red-600 border-2`),
       ...(theme === 'inline-primary' &&
         tw`border border-l-0 border-r-0 border-t-0 border-b-2 border-b-green-700 shadow-none rounded-none min-w-[30px] p-0 min-h-0`),
       ...(theme === 'default-bordernone' && tw``),
@@ -215,7 +219,7 @@ const Select: React.FC<SelectProps> = ({
     [],
   );
 
-  const styles = useMemo(() => customStyles(theme), [theme]);
+  const styles = useMemo(() => customStyles(theme, error), [error, theme]);
 
   return (
     <div className={classNames({ 'w-fit': theme === 'inline-primary' })}>
@@ -235,7 +239,11 @@ const Select: React.FC<SelectProps> = ({
         isClearable={allowEmpty}
         isSearchable={showSearch}
         noOptionsMessage={() => <div className="p-2 text-sm">No results</div>}
-        theme={DEFAULT_THEME}
+        theme={
+          error
+            ? { ...DEFAULT_THEME, colors: { ...DEFAULT_THEME.colors, primary25: 'red' } }
+            : DEFAULT_THEME
+        }
         components={{
           Option,
           IndicatorSeparator: null,

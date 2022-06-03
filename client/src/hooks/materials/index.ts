@@ -65,7 +65,6 @@ export function useMaterialsTrees(params: MaterialsTreesParams): ResponseData {
   );
 
   const { data, isError } = query;
-
   return useMemo<ResponseData>(
     () =>
       ({

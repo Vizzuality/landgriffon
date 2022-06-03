@@ -36,6 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Arrow icon in the tables also toggle collapse the rows
 - Fixed issues related to duplicated keys in the table rendering [LANDGRIF-650](https://vizzuality.atlassian.net/browse/LANDGRIF-650)
 
+- Location types params standarized
+- Location types params added to "/h3/map/impact" endpoint
 
 ## 0.3.0 - 2021-09-01
 

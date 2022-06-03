@@ -132,7 +132,7 @@ export function useH3ImpactData(
   options: Partial<UseQueryOptions> = {},
 ): H3DataResponse {
   const filters = useAppSelector(analysisFilters);
-  const { startYear, materials, indicator, suppliers, origins } = filters;
+  const { startYear, materials, indicator, suppliers, origins, locationTypes } = filters;
   const isEnable = !!(indicator && startYear);
 
   const colors = useColors('impact');
@@ -142,6 +142,7 @@ export function useH3ImpactData(
     ...(materials?.length ? { materialIds: materials?.map(({ value }) => value) } : {}),
     ...(suppliers?.length ? { supplierIds: suppliers?.map(({ value }) => value) } : {}),
     ...(origins?.length ? { originIds: origins?.map(({ value }) => value) } : {}),
+    ...(locationTypes?.length ? { locationTypes: locationTypes?.map(({ value }) => value) } : {}),
     ...params,
     resolution: origins?.length ? 6 : 4,
   };

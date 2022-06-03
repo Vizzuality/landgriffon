@@ -17,7 +17,6 @@ import { useMetadataInterventionsInfo } from 'hooks/metadata-info';
 
 // types
 import type { SelectOption, SelectOptions } from 'components/select/types';
-import { firstLetterUppercase } from 'utils/string';
 
 const Supplier: FC = () => {
   const {
@@ -55,9 +54,9 @@ const Supplier: FC = () => {
   const locationTypes = useLocationTypes();
   const optionsLocationTypes: SelectOptions = useMemo(
     () =>
-      locationTypes.map((locationType) => ({
-        label: firstLetterUppercase(locationType),
-        value: locationType,
+      locationTypes.map(({ label, value }) => ({
+        label,
+        value,
       })),
     [locationTypes],
   );

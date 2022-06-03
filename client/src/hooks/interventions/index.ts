@@ -76,6 +76,17 @@ interface Indicator {
 
 type ResponseInterventionsData = UseQueryResult<Intervention[]>;
 type ResponseInterventionsIndicators = UseQueryResult<Indicator[]>;
+type LocationTypes =
+  | 'Point of production'
+  | 'Aggregation point'
+  | 'Country of production'
+  | 'Unknown';
+
+type LocationTypesValues =
+  | 'point-of-production'
+  | 'aggregation-point'
+  | 'country-of-production'
+  | 'unknown';
 
 export function useInterventions(queryParams = {}): ResponseInterventionsData {
   const response = useQuery(
@@ -152,8 +163,13 @@ export function useUpdateIntervention() {
 }
 
 export function useLocationTypes() {
-  return useMemo<string[]>(() => {
-    return ['point of production', 'aggregation point', 'country of production', 'unknown'];
+  return useMemo<{ label: LocationTypes; value: LocationTypesValues }[]>(() => {
+    return [
+      { label: 'Point of production', value: 'point-of-production' },
+      { label: 'Aggregation point', value: 'aggregation-point' },
+      { label: 'Country of production', value: 'country-of-production' },
+      { label: 'Unknown', value: 'unknown' },
+    ];
   }, []);
 }
 

@@ -6,7 +6,6 @@ import TreeSelect from 'components/tree-select';
 // hooks
 import { useLocationTypes } from 'hooks/interventions';
 import type { TreeSelectProps } from 'components/tree-select/types';
-import { firstLetterUppercase } from 'utils/string';
 
 type LocationTypeFilterProps = {
   current: TreeSelectProps['current'];
@@ -29,9 +28,9 @@ const LocationTypesFilter: React.FC<LocationTypeFilterProps> = ({
   const options: TreeSelectProps['options'] = useMemo(
     () =>
       sortBy(
-        data?.map((d) => ({
-          label: firstLetterUppercase(d),
-          value: d,
+        data?.map(({ label, value }) => ({
+          label,
+          value,
         })),
         'label',
       ),

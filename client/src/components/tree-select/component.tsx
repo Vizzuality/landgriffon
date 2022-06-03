@@ -408,7 +408,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                   {renderTreeNodes(options)}
                 </Tree>
               )}
-              {filteredKeys.length === 0 && (
+              {(options.length === 0 || (searchTerm && filteredKeys.length === 0)) && (
                 <div className="p-2 text-gray-700 text-sm opacity-60 w-fit mx-auto">No results</div>
               )}
             </Popover.Panel>

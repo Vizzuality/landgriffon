@@ -1,5 +1,5 @@
-import React, { useCallback, useRef, useState } from 'react';
-import { Popover } from '@headlessui/react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Popover, Transition } from '@headlessui/react';
 import { offset, useFloating, arrow as arrowMiddleware, flip } from '@floating-ui/react-dom';
 
 import { Placement, shift } from '@floating-ui/core';
@@ -38,6 +38,7 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
     strategy,
     middlewareData: { arrow: { x: arrowX, y: arrowY } = {} },
     placement: floatingPlacement,
+    update,
   } = useFloating({
     placement,
     strategy: 'fixed',
@@ -51,10 +52,14 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
 
   const [isHovered, setIsHovered] = useState(false);
 
+  useEffect(() => {
+    update();
+  }, [content, update]);
+
   const arrowPositionClasses = {
-    top: '-translate-y-1/2 bottom-0',
+    top: 'translate-y-1/2 bottom-0',
     right: '-translate-x-1/2 left-0',
-    bottom: 'translate-y-1/2 top-0',
+    bottom: '-translate-y-1/2 top-0',
     left: 'translate-x-1/2 right-0',
   };
 
@@ -66,15 +71,16 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
       <Popover.Button onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         <div ref={reference}>{children}</div>
       </Popover.Button>
-      <div>
+      <Transition show={hoverTrigger ? isHovered : undefined}>
         <Popover.Panel
-          static={hoverTrigger && isHovered}
+          static={hoverTrigger}
           ref={floating}
           className={className}
           style={{
             position: strategy,
             top: y ?? '',
             left: x ?? '',
+            zIndex: 100,
           }}
         >
           <div className="drop-shadow-md w-fit relative">
@@ -91,11 +97,11 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
                 left: arrowX ?? '',
               }}
             >
-              <div className={classNames('w-4 h-4 rotate-45', THEME[theme])} />
+              <div className={classNames('w-3 h-3 rotate-45 rounded-sm', THEME[theme])} />
             </div>
           </div>
         </Popover.Panel>
-      </div>
+      </Transition>
     </Popover>
   );
 };

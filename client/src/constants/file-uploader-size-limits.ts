@@ -6,4 +6,4 @@
  * 'react-dropzone' which we are using in the uploaders expects Bytes.
  */
 
-export const FILE_UPLOADER_MAX_SIZE = 1500000; // 1.5MB (backend says 1.51, let's keep it a round number)
+export const FILE_UPLOADER_MAX_SIZE = 2000000;

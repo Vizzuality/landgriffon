@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Interactivity added to chart legend to highlight areas in the graph [LANDGRIF-688](https://vizzuality.atlassian.net/browse/LANDGRIF-688)
 - Active pills showing selected filters on table and chart view [LANDGRIF-616](https://vizzuality.atlassian.net/browse/LANDGRIF-616)
 
+### Changed
+- Increased allowed file size for upload from 1.5MB to 2.0MB
+
 ### Added
 - [Storybook](https://storybook.js.org/) for documentation of UI components
 - Added `Select` component to Storybook

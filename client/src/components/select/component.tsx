@@ -184,9 +184,12 @@ const Select: React.FC<SelectProps> = ({
     ({ children, ...rest }) => (
       <div ref={reference}>
         <components.Control {...rest}>{children}</components.Control>
+        {theme === 'inline-primary' && (
+          <div className="mt-0.5 border-t-green-700 border-t-4 border-x-4 border-x-transparent mx-auto w-0 h-0" />
+        )}
       </div>
     ),
-    [reference],
+    [reference, theme],
   );
 
   const ValueContainer: React.FC<ValueContainerProps> = useCallback(
@@ -278,9 +281,6 @@ const Select: React.FC<SelectProps> = ({
           ValueContainer,
         }}
       />
-      {theme === 'inline-primary' && (
-        <div className="mt-0.5 border-t-green-700 border-t-4 border-x-4 border-x-transparent mx-auto w-0 h-0" />
-      )}
     </div>
   );
 };

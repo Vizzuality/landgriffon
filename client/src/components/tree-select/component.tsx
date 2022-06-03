@@ -11,14 +11,13 @@ import Loading from 'components/loading';
 import { CHECKED_STRATEGIES } from './utils';
 
 import type { TreeSelectProps, TreeSelectOption } from './types';
-import { Label } from 'components/forms';
 
 const THEMES = {
   default: {
     label: 'text-gray-300',
     wrapper:
-      'flex-row max-w-[90%] bg-white relative border border-gray-300 rounded-md shadow-sm px-3 cursor-pointer min-h-[2.5rem] box-content',
-    arrow: 'inset-y-0 right-0 items-center  text-gray-900',
+      'flex-row max-w-[90%] bg-white relative border border-gray-300 rounded-md shadow-sm px-3 cursor-pointer min-h-[2.5rem] h-min box-content py-1',
+    arrow: 'items-center  text-gray-900',
     treeNodes:
       'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
   },
@@ -240,7 +239,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
               'align-middle relative',
               {
                 [THEMES[theme].wrapper]: theme === 'default',
-                'flex flex-row justify-between': theme === 'default',
+                'flex flex-row justify-between items-center': theme === 'default',
                 'border-2 border-red-600': theme === 'default' && error,
                 'w-fit': theme === 'inline-primary',
               },
@@ -248,19 +247,17 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
             )}
           >
             <div
-              className={classNames('flex gap-1 h-max my-auto flex-wrap max-w-full', {
+              className={classNames('flex gap-1 h-min flex-wrap max-w-full', {
                 'ring-green-700 border-green-700': open,
                 'border-red-600': theme === 'inline-primary' && error,
                 [THEMES[theme].wrapper]: theme === 'inline-primary',
               })}
             >
-              {true && <span className={classNames(THEMES[theme].label)}>{'by'}</span>}
+              {label && <span className={classNames(THEMES[theme].label)}>{label}</span>}
               {multiple ? (
                 <>
                   {(!currentOptions || !currentOptions.length) && !showSearch && (
-                    <span className="text-gray-500 inline-block truncate my-auto">
-                      {placeholder}
-                    </span>
+                    <span className="text-gray-500 inline-block truncate">{placeholder}</span>
                   )}
                   {currentOptions &&
                     !!currentOptions.length &&
@@ -301,7 +298,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                     </Badge>
                   )}
                   {showSearch && (
-                    <div className="inline-flex flex-row flex-shrink gap-x-1 align-middle">
+                    <div className="inline-flex flex-row flex-grow h-min gap-x-1 align-middle">
                       <SearchIcon className="block h-4 w-4 text-gray-400 my-auto" />
                       <input
                         onClick={(e) => {
@@ -316,7 +313,9 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                         onChange={handleSearch}
                         autoComplete="off"
                         style={{
-                          width: `${Math.min(searchTerm.length || placeholder.length, 10) + 1}ch`,
+                          minWidth: searchTerm ? '4ch' : `${placeholder.length}ch`,
+                          maxWidth: '10ch',
+                          width: `${searchTerm.length}ch`,
                         }}
                       />
                       {searchTerm && (
@@ -338,7 +337,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
               )}
             </div>
             <div
-              className={classNames('flex pointer-events-none', THEMES[theme].arrow, {
+              className={classNames('flex pointer-events-none h-fit', THEMES[theme].arrow, {
                 'text-red-700': !!error,
               })}
             >
@@ -369,6 +368,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
               position: strategy,
               top: y ?? '',
               left: x ?? '',
+              minWidth: multiple ? 150 : 100,
               width:
                 fitContent && reference
                   ? (referenceElement.current as HTMLElement)?.offsetWidth

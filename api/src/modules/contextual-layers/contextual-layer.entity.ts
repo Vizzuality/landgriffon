@@ -55,6 +55,8 @@ export class ContextualLayer extends BaseEntity {
     enumName: 'contextual_layer_category',
     default: CONTEXTUAL_LAYER_CATEGORY.DEFAULT,
   })
+  category: CONTEXTUAL_LAYER_CATEGORY;
+
   @ManyToOne(() => H3Data, (h3Data: H3Data) => h3Data.contextualLayers)
   h3Data: H3Data;
 }

@@ -24,8 +24,6 @@ export default {
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
 const Template: ComponentStory<typeof TreeSelect> = (args) => {
   const [value, setValue] = useState(null);
-  console.log(value);
-
   return <TreeSelect {...args} current={value} onChange={setValue} />;
 };
 

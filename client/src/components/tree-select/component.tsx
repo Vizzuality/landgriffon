@@ -1,7 +1,7 @@
 import { Fragment, useCallback, useState, useMemo, useEffect } from 'react';
 import classNames from 'classnames';
 import { Transition, Popover } from '@headlessui/react';
-import { offset, shift, useFloating } from '@floating-ui/react-dom';
+import { flip, offset, shift, useFloating } from '@floating-ui/react-dom';
 import { ChevronDownIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
 import Tree, { TreeNode, TreeProps } from 'rc-tree';
 import Fuse from 'fuse.js';
@@ -65,7 +65,8 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     refs: { reference: referenceElement },
   } = useFloating({
     placement: 'bottom-start',
-    middleware: [offset({ mainAxis: 4 }), shift({ padding: 4 })],
+    strategy: 'fixed',
+    middleware: [offset({ mainAxis: 4 }), shift({ padding: 4 }), flip()],
   });
 
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -380,8 +381,8 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
             <Popover.Panel
               static
               className={classNames(
-                'z-20 bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 max-h-80 overflow-y-auto pr-3',
-                fitContent ? 'max-w-full w-full' : 'max-w-md',
+                'z-20 bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 max-h-80 overflow-y-auto',
+                fitContent ? 'max-w-full w-full' : 'max-w-xs',
               )}
             >
               {loading && (

@@ -87,7 +87,7 @@ const Input: React.FC<InputProps> = ({ children, ...rest }) => {
   return (
     <components.Input
       {...rest}
-      inputClassName="ring-0 focus:ring-0 outline-none focus:outline-none focus:outline-0"
+      inputClassName="ring-0 focus:ring-0 outline-none focus:outline-none focus:outline-0 truncate"
     >
       {children}
     </components.Input>

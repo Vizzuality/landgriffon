@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useState, useMemo, useEffect } from 'react';
+import { Fragment, useCallback, useState, useMemo, useEffect, useLayoutEffect } from 'react';
 import classNames from 'classnames';
 import { Transition, Popover } from '@headlessui/react';
 import { flip, offset, shift, useFloating } from '@floating-ui/react-dom';
@@ -19,7 +19,7 @@ const THEMES = {
       'flex-row max-w-full bg-white relative border border-gray-300 rounded-md shadow-sm px-3 cursor-pointer min-h-[2.5rem] h-min py-1',
     arrow: 'items-center text-gray-900',
     treeNodes:
-      'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
+      'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700 z-[100]',
   },
   'inline-primary': {
     label: 'truncate text-ellipsis font-bold cursor-pointer px-0 py-0',
@@ -76,7 +76,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   const [checkedKeys, setCheckedKeys] = useState<TreeProps['checkedKeys']>([]);
   const [filteredKeys, setFilteredKeys] = useState([]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Update tooltip position when selection changes
     update();
   }, [checkedKeys, update, multiple, fitContent]);
@@ -375,13 +375,13 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                   ? (referenceElement.current as HTMLElement)?.offsetWidth
                   : 'inherit',
             }}
-            className="z-10"
+            className="relative z-20"
             ref={floating}
           >
             <Popover.Panel
               static
               className={classNames(
-                'z-20 bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 max-h-80 overflow-y-auto',
+                'bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 max-h-80 overflow-y-auto',
                 fitContent ? 'max-w-full w-full' : 'max-w-xs',
               )}
             >

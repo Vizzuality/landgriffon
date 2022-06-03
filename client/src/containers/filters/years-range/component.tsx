@@ -89,7 +89,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
   return (
     <div ref={wrapperRef} className="relative">
       <button
-        className="relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-300 rounded-md shadow-sm cursor-pointer focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 sm:text-sm"
+        className="relative w-full py-2 pl-3 pr-10 text-left bg-white border-0.5 min-h-[2.5rem] border-gray-300 rounded-md shadow-sm cursor-pointer focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 sm:text-sm"
         onClick={() => {
           setIsOpen(!isOpen);
         }}

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo } from 'react';
 import classNames from 'classnames';
 import ReactSelect, {
   Theme,
@@ -135,10 +135,11 @@ const Select: React.FC<SelectProps> = ({
     update,
   } = useFloating({
     placement: 'bottom-start',
+    strategy: 'fixed',
     middleware: [offset({ mainAxis: 4 }), flip(), shift()],
   });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     update();
   }, [theme, update]);
 
@@ -146,6 +147,7 @@ const Select: React.FC<SelectProps> = ({
     ({ children, ...rest }) => (
       <div
         ref={floating}
+        className="z-20"
         style={{
           position: strategy,
           top: y ?? '',
@@ -223,7 +225,7 @@ const Select: React.FC<SelectProps> = ({
   return (
     <div className={classNames({ 'w-fit': theme === 'inline-primary' })}>
       <ReactSelect
-        className="z-50 relative"
+        className=""
         styles={styles}
         placeholder={placeholder}
         onInputChange={handleSearch}

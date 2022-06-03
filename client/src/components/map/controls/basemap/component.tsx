@@ -25,8 +25,8 @@ const BasemapControl: React.FC<BasemapControlProps> = ({ value, onChange }) => {
       placement="left"
       theme="dark"
       content={
-        <div className="bg-gray-900 text-white rounded-lg p-2">
-          Change basemap to {basemapToToggleTo}
+        <div className="bg-gray-900 text-white rounded-lg p-2 text-xs">
+          Change to {basemapToToggleTo} basemap
         </div>
       }
     >
@@ -34,9 +34,9 @@ const BasemapControl: React.FC<BasemapControlProps> = ({ value, onChange }) => {
         className="bg-white cursor-pointer aspect-square shadow-lg rounded-lg transition-colors duration-200 ease-in-out border-white border hover:border-black"
         onClick={handleClick}
       >
-        <div className="p-0.5 w-full h-full pointer-events-none">
+        <div className="p-px w-full h-full pointer-events-none">
           <div className="w-full h-full rounded-md overflow-hidden">
-            <Image src={image} alt={`Change basemap to ${basemapToToggleTo}`} />
+            <Image src={image} alt={`Change to ${basemapToToggleTo} basemap`} />
           </div>
         </div>
       </div>

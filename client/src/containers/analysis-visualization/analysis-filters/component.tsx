@@ -14,8 +14,8 @@ const AnalysisFilters: React.FC = () => {
     <div className="inline-flex gap-2 flex-wrap fixed z-20">
       <IndicatorsFilter />
       {visualizationMode !== 'map' && <GroupByFilter />}
-      {visualizationMode !== 'map' && <YearsRangeFilter />}
       {visualizationMode === 'map' && <YearsFilter />}
+      {visualizationMode !== 'map' && <YearsRangeFilter />}
       <MoreFilters />
     </div>
   );

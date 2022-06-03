@@ -39,14 +39,16 @@ const YearsFilter: React.FC = () => {
   }, [dispatch, isLoading, years]);
 
   return (
-    <Select
-      loading={isLoading}
-      current={yearSelected}
-      options={yearOptions}
-      placeholder="Year"
-      showSearch
-      onChange={handleChange}
-    />
+    <div className="w-32">
+      <Select
+        loading={isLoading}
+        current={yearSelected}
+        options={yearOptions}
+        placeholder="Year"
+        showSearch
+        onChange={handleChange}
+      />
+    </div>
   );
 };
 

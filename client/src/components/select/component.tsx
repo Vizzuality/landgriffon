@@ -9,6 +9,7 @@ import ReactSelect, {
   ControlProps,
   OptionProps,
   InputProps,
+  ValueContainerProps,
 } from 'react-select';
 import { ChevronDownIcon } from '@heroicons/react/outline';
 import tw from 'twin.macro';
@@ -19,7 +20,6 @@ import Loading from 'components/loading';
 
 import type { SelectProps } from './types';
 import { flip, offset, shift, useFloating } from '@floating-ui/react-dom';
-import { Label } from 'components/forms';
 
 /**
  * Overriding default React Select theme
@@ -65,6 +65,7 @@ const customStyles: (theme: SelectProps['theme'], error?: boolean) => StylesConf
     }),
     singleValue: (provided) => ({
       ...provided,
+      ...tw`my-auto`,
       ...(theme === 'inline-primary' && tw`text-green-700 font-bold`),
     }),
     indicatorSeparator: () => tw`hidden`,
@@ -236,7 +237,6 @@ const Select: React.FC<SelectProps> = ({
 
   return (
     <div className={classNames({ 'w-fit': theme === 'inline-primary' })}>
-      {label && <Label>{label}</Label>}
       <ReactSelect
         className="z-50 relative"
         styles={styles}

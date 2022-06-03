@@ -39,7 +39,6 @@ Default.args = {
     { value: 'silver', label: 'Silver', color: '#666666' },
   ],
   label: 'The label',
-  multiple: false,
   loading: false,
   disabled: false,
   showSearch: false,

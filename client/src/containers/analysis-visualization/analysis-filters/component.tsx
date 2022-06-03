@@ -11,11 +11,11 @@ const AnalysisFilters: React.FC = () => {
   const { visualizationMode } = useAppSelector(analysisUI);
 
   return (
-    <div className="inline-flex gap-2 flex-wrap">
+    <div className="inline-flex gap-2 flex-wrap fixed z-20">
       <IndicatorsFilter />
       {visualizationMode !== 'map' && <GroupByFilter />}
-      {visualizationMode === 'map' && <YearsFilter />}
       {visualizationMode !== 'map' && <YearsRangeFilter />}
+      {visualizationMode === 'map' && <YearsFilter />}
       <MoreFilters />
     </div>
   );

@@ -24,7 +24,9 @@ const AnalysisVisualization: React.FC = () => {
           'flex gap-2 flex-wrap justify-between',
         )}
       >
-        <AnalysisFilters />
+        <div>
+          <AnalysisFilters />
+        </div>
         <ModeControl />
       </div>
 

@@ -109,12 +109,12 @@ const MoreFilters: React.FC = () => {
 
           <Transition
             as="div"
-            className="z-20"
             ref={floating}
             style={{
               position: strategy,
               top: y ?? '',
               left: x ?? '',
+              zIndex: 100,
             }}
             show={open}
             enter="transition duration-100 ease-out"
@@ -124,7 +124,7 @@ const MoreFilters: React.FC = () => {
             leaveFrom="transform scale-100 opacity-100"
             leaveTo="transform scale-95 opacity-0"
           >
-            <Popover.Panel static className="w-80 z-20">
+            <Popover.Panel static className="w-80">
               <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 ">
                 <div className="relative p-4 bg-white rounded-lg">
                   <div className="flex justify-between mb-4">

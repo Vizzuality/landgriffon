@@ -17,7 +17,7 @@ const THEMES = {
   default: {
     label: 'text-gray-300',
     wrapper:
-      'flex-wrap flex-row max-w-full bg-white relative border border-gray-300 rounded-md shadow-sm px-3 cursor-pointer min-h-[2.5rem] box-content',
+      'flex-row max-w-[90%] bg-white relative border border-gray-300 rounded-md shadow-sm px-3 cursor-pointer min-h-[2.5rem] box-content',
     arrow: 'inset-y-0 right-0 items-center  text-gray-900',
     treeNodes:
       'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
@@ -233,7 +233,6 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     <Popover className="relative">
       {({ open }) => (
         <>
-          {label && <Label>{label}</Label>}
           <Popover.Button
             as="div"
             ref={reference}
@@ -249,12 +248,13 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
             )}
           >
             <div
-              className={classNames('flex gap-1 h-max my-auto', {
+              className={classNames('flex gap-1 h-max my-auto flex-wrap max-w-full', {
                 'ring-green-700 border-green-700': open,
                 'border-red-600': theme === 'inline-primary' && error,
                 [THEMES[theme].wrapper]: theme === 'inline-primary',
               })}
             >
+              {true && <span className={classNames(THEMES[theme].label)}>{'by'}</span>}
               {multiple ? (
                 <>
                   {(!currentOptions || !currentOptions.length) && !showSearch && (
@@ -268,7 +268,10 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                     currentOptions.slice(0, maxBadges).map((option) => (
                       <Badge
                         key={option.value}
-                        className={classNames('text-sm h-fit my-auto', THEMES[theme].label)}
+                        className={classNames(
+                          'text-sm h-fit my-auto max-w-full',
+                          THEMES[theme].label,
+                        )}
                         data={option}
                         onClick={handleRemoveBadge}
                         removable={theme !== 'inline-primary'}
@@ -309,8 +312,12 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                         type="search"
                         value={searchTerm}
                         placeholder={currentOptions.length === 0 ? placeholder : null}
-                        className="border-none focus:ring-0 min-w-0 truncate flex-1 py-0 px-0"
+                        className="border-none focus:ring-0 truncate py-0 px-0"
                         onChange={handleSearch}
+                        autoComplete="off"
+                        style={{
+                          width: `${Math.min(searchTerm.length || placeholder.length, 10) + 1}ch`,
+                        }}
                       />
                       {searchTerm && (
                         <button type="button" onClick={resetSearch} className="px-2 py-0">

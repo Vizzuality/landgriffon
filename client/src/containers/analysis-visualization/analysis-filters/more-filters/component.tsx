@@ -95,7 +95,11 @@ const MoreFilters: React.FC = () => {
         <>
           <Popover.Button
             ref={reference}
-            className={classNames(THEME.default, THEME.secondary, 'flex p-2 rounded-md')}
+            className={classNames(
+              THEME.default,
+              THEME.secondary,
+              'flex p-2 rounded-md min-h-[2.5rem] aspect-square border border-gray-300',
+            )}
           >
             <span className="block h-5 truncate">
               <FilterIcon className="w-5 h-5 text-gray-900" aria-hidden="true" />

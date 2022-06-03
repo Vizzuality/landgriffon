@@ -16,8 +16,8 @@ const THEMES = {
   default: {
     label: 'text-gray-300',
     wrapper:
-      'flex-row max-w-[90%] bg-white relative border border-gray-300 rounded-md shadow-sm px-3 cursor-pointer min-h-[2.5rem] h-min box-content py-1',
-    arrow: 'items-center  text-gray-900',
+      'flex-row max-w-full bg-white relative border border-gray-300 rounded-md shadow-sm px-3 cursor-pointer min-h-[2.5rem] h-min py-1',
+    arrow: 'items-center text-gray-900',
     treeNodes:
       'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
   },
@@ -25,7 +25,7 @@ const THEMES = {
     label: 'truncate text-ellipsis font-bold cursor-pointer px-0 py-0',
     wrapper:
       'min-h-[2rem] border-b-2 flex-col border-green-700 max-w-[190px] min-w-[30px] overflow-x-hidden truncate text-ellipsis',
-    arrow: 'mx-auto w-fit', // '-bottom-3  transform left-1/2 -translate-x-1/2 text-green-700',
+    arrow: 'mx-auto w-fit',
     treeNodes:
       'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
     treeContent: 'max-w-xl',
@@ -236,10 +236,10 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
             as="div"
             ref={reference}
             className={classNames(
-              'align-middle relative',
+              'relative',
               {
                 [THEMES[theme].wrapper]: theme === 'default',
-                'flex flex-row justify-between items-center': theme === 'default',
+                'flex flex-row justify-between items-center gap-1': theme === 'default',
                 'border-2 border-red-600': theme === 'default' && error,
                 'w-fit': theme === 'inline-primary',
               },
@@ -247,7 +247,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
             )}
           >
             <div
-              className={classNames('flex gap-1 h-min flex-wrap max-w-full', {
+              className={classNames('flex gap-1 h-min flex-wrap overflow-hidden', {
                 'ring-green-700 border-green-700': open,
                 'border-red-600': theme === 'inline-primary' && error,
                 [THEMES[theme].wrapper]: theme === 'inline-primary',
@@ -298,7 +298,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                     </Badge>
                   )}
                   {showSearch && (
-                    <div className="inline-flex flex-row flex-grow h-min gap-x-1 align-middle">
+                    <div className="inline-flex flex-row flex-grow h-min gap-x-1">
                       <SearchIcon className="block h-4 w-4 text-gray-400 my-auto" />
                       <input
                         onClick={(e) => {

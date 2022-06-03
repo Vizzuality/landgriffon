@@ -188,6 +188,18 @@ const Select: React.FC<SelectProps> = ({
     [reference],
   );
 
+  const ValueContainer: React.FC<ValueContainerProps> = useCallback(
+    ({ children, ...rest }) => (
+      <components.ValueContainer {...rest}>
+        <div className="flex flex-row justify-start gap-x-0.5">
+          {label && <span className="text-sm text-gray-600 h-min my-auto">{label}</span>}
+          {children}
+        </div>
+      </components.ValueContainer>
+    ),
+    [label],
+  );
+
   const Option: React.FC<OptionProps<{ extraInfo?: React.ReactNode; label: string }>> = useCallback(
     ({ innerProps, innerRef, isSelected, isFocused, isDisabled, data: { label, extraInfo } }) => (
       <div {...innerProps} ref={innerRef}>
@@ -263,6 +275,7 @@ const Select: React.FC<SelectProps> = ({
           Menu,
           Control,
           Input,
+          ValueContainer,
         }}
       />
       {theme === 'inline-primary' && (

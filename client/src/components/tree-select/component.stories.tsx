@@ -62,3 +62,6 @@ Default.args = {
   theme: 'default',
   error: false,
 };
+
+export const Empty = Template.bind({});
+Empty.args = { ...Default.args, options: [] };

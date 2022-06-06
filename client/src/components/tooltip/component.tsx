@@ -1,6 +1,15 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Popover, Transition } from '@headlessui/react';
-import { offset, useFloating, arrow as arrowMiddleware, flip } from '@floating-ui/react-dom';
+import React, { useLayoutEffect, useRef, useState } from 'react';
+import {
+  offset,
+  useFloating,
+  arrow as arrowMiddleware,
+  flip,
+  useInteractions,
+  useHover,
+  useClick,
+  safePolygon,
+  useDismiss,
+} from '@floating-ui/react-dom-interactions';
 
 import { Placement, shift } from '@floating-ui/core';
 import classNames from 'classnames';
@@ -36,6 +45,7 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
   hoverTrigger = false,
 }) => {
   const arrowRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   const {
     x,
@@ -46,7 +56,10 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
     middlewareData: { arrow: { x: arrowX, y: arrowY } = {} },
     placement: floatingPlacement,
     update,
+    context,
   } = useFloating({
+    open: isOpen,
+    onOpenChange: setIsOpen,
     placement,
     strategy: 'fixed',
     middleware: [
@@ -57,68 +70,53 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
     ],
   });
 
-  const [isHovered, setIsHovered] = useState(false);
+  const { getReferenceProps, getFloatingProps } = useInteractions([
+    useHover(context, {
+      enabled: hoverTrigger,
+      handleClose: safePolygon({ restMs: 50 }),
+    }),
+    useClick(context, { enabled: !hoverTrigger, toggle: true }),
+    useDismiss(context),
+  ]);
 
-  useEffect(() => {
-    console.log('update');
-
+  useLayoutEffect(() => {
     update();
-  }, [content, update]);
-
-  const handleMouseEnter = useCallback(() => setIsHovered(true), []);
-  const handleMouseLeave = useCallback(() => setIsHovered(false), []);
+  }, [content, update, isOpen]);
 
   return (
-    <Popover className="relative">
-      <Popover.Button onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-        <div ref={reference}>{children}</div>
-      </Popover.Button>
-      <Transition show={hoverTrigger ? isHovered : undefined}>
-        <Popover.Panel
-          static={hoverTrigger}
-          ref={floating}
-          className={className}
-          style={{
-            position: strategy,
-            top: y ?? '',
-            left: x ?? '',
-            zIndex: 100,
-          }}
+    <button {...getReferenceProps({ ref: reference, className: 'relative' })}>
+      {children}
+      {isOpen && (
+        <div
+          {...getFloatingProps({
+            className: classNames(className, 'drop-shadow-md w-fit relative'),
+            ref: floating,
+            style: {
+              position: strategy,
+              top: y ?? '',
+              left: x ?? '',
+              zIndex: 100,
+            },
+          })}
         >
-          <div className="drop-shadow-md w-fit relative">
-            <div className="z-10">{content}</div>
-            <div
-              ref={arrowRef}
-              style={{
-                top: arrowY ?? '',
-                left: arrowX ?? '',
-              }}
-              className={classNames(
-                '-z-10 absolute',
-                { hidden: !arrow },
-                ARROW_POSITION_CLASSES[floatingPlacement],
-                'w-3 h-3 rotate-45',
-                THEME[theme],
-              )}
-            ></div>
-            {/* <div
-              className={classNames(
-                '-z-10 absolute',
-                { hidden: !arrow },
-                ARROW_POSITION_CLASSES[floatingPlacement],
-              )}
-              ref={arrowRef}
-              style={{
-                top: arrowY ?? '',
-                left: arrowX ?? '',
-              }}
-            >
-              <div className={classNames('w-3 h-3 rotate-45', THEME[theme])} />
-            </div> */}
-          </div>
-        </Popover.Panel>
-      </Transition>
-    </Popover>
+          <div className="z-10">{content}</div>
+          <div
+            ref={arrowRef}
+            style={{
+              top: arrowY ?? '',
+              left: arrowX ?? '',
+            }}
+            className={classNames(
+              '-z-10 absolute',
+              { hidden: !arrow },
+              ARROW_POSITION_CLASSES[floatingPlacement],
+              'w-3 h-3 rotate-45',
+              THEME[theme],
+            )}
+          />
+        </div>
+      )}
+    </button>
   );
 };
 

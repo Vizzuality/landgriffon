@@ -1,4 +1,12 @@
-import { Fragment, useCallback, useState, useMemo, useEffect, useLayoutEffect } from 'react';
+import {
+  Fragment,
+  useCallback,
+  useState,
+  useMemo,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+} from 'react';
 import classNames from 'classnames';
 import { Transition, Popover } from '@headlessui/react';
 import { flip, offset, shift, useFloating } from '@floating-ui/react-dom';
@@ -54,6 +62,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   fitContent = false,
   checkedStrategy = 'PARENT', // by default show child
   label,
+  autoFocus = false,
 }) => {
   const {
     x,
@@ -229,6 +238,14 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     }
   }, [current]);
 
+  const buttonRef = useRef(null);
+
+  useEffect(() => {
+    if (!autoFocus || !buttonRef.current) return;
+
+    buttonRef.current.click();
+  }, [buttonRef, autoFocus]);
+
   return (
     <Popover className="relative">
       {({ open }) => (
@@ -248,6 +265,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
             )}
           >
             <div
+              ref={buttonRef}
               className={classNames('flex gap-1 h-min flex-wrap overflow-hidden', {
                 'ring-green-700 border-green-700': open,
                 'border-red-600': theme === 'inline-primary' && error,

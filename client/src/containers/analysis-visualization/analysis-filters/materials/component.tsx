@@ -63,6 +63,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
 
   return (
     <TreeSelect
+      autoFocus
       multiple={multiple}
       showSearch
       loading={isFetching}

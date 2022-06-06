@@ -43,6 +43,7 @@ const RiskLegendItem = () => {
           <div className="space-y-2 mr-2">
             <div>Risk {risk.material ? `in ${risk.year}` : null}</div>
             <Materials
+              defaultOpen
               current={risk.material ? [risk.material] : null}
               onChange={handleMaterialChange}
               multiple={false}

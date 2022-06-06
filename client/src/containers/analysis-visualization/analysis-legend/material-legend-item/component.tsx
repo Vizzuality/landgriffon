@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap, setLayer } from 'store/features/analysis/map';
@@ -35,23 +35,25 @@ const MaterialLegendItem = () => {
     },
     [dispatch, material],
   );
+
+  const Selector = useMemo(
+    () => (
+      <div className="space-y-2 mr-2">
+        <div>Material Production {material.material ? `in ${material.year}` : null}</div>
+        <Materials
+          defaultOpen
+          current={material.material ? [material.material] : null}
+          onChange={handleMaterialChange}
+          multiple={false}
+        />
+      </div>
+    ),
+    [handleMaterialChange, material.material, material.year],
+  );
+
   return (
     <LegendItem
-      name={
-        material.active ? (
-          <div className="space-y-2 mr-2">
-            <div>Material Production {material.material ? `in ${material.year}` : null}</div>
-            <Materials
-              defaultOpen
-              current={material.material ? [material.material] : null}
-              onChange={handleMaterialChange}
-              multiple={false}
-            />
-          </div>
-        ) : (
-          'Material Production'
-        )
-      }
+      name={material.active ? Selector : 'Material Production'}
       unit={material.legend.unit}
       id={material.legend.id}
       opacity={material.opacity}

@@ -124,6 +124,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
       setSelectedKeys(keys);
       setSelected(currentSelection);
       onChange?.(currentSelection);
+      buttonRef.current?.click();
     },
     [onChange],
   );

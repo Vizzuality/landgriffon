@@ -1,0 +1,6 @@
+.next
+.vercel
+docs
+node_modules
+cypress
+public

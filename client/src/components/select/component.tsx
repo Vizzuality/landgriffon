@@ -56,7 +56,6 @@ const customStyles: (theme: SelectProps['theme'], error?: boolean) => StylesConf
       ...(error && tw`border-red-600 border-2`),
       ...(theme === 'inline-primary' &&
         tw`border border-l-0 border-r-0 border-t-0 border-b-2 border-b-green-700 shadow-none rounded-none min-w-[30px] p-0 min-h-0`),
-      ...(theme === 'default-bordernone' && tw``),
       ...(theme === 'default' && tw`w-full rounded-md`),
     }),
     valueContainer: (provided) => ({

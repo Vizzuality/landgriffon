@@ -62,7 +62,7 @@ export const LegendItem: React.FC<LegendItemProps> = ({
               <div className="invisible group-hover:visible pl-1 pr-0.5">
                 <DragHandle />
               </div>
-              <div>{name}</div>
+              <div className="max-w-full">{name}</div>
             </div>
             {showToolbar && (
               <div className="flex items-center">

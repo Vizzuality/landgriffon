@@ -33,7 +33,7 @@ export function useColors(): RGBColor[] {
 
 export function useAnalysisChart(params): AnalysisChart {
   const filters = useAppSelector(analysisFilters);
-  const { data, isLoading } = useImpactRanking(params);
+  const { data, isLoading, isFetching } = useImpactRanking(params);
 
   const parsedImpact = data?.impactTable.map((data) => {
     const projectedYears = uniq(
@@ -149,11 +149,11 @@ export function useAnalysisChart(params): AnalysisChart {
 
     return {
       isLoading,
-      isFetching: false,
+      isFetching,
       data: dataWithColors,
       legend: legendData,
     };
-  }, [filters, parsedImpact, isLoading]);
+  }, [filters, isFetching, parsedImpact, isLoading]);
 }
 
 export function useInterventionTypes(): Intervention[] {

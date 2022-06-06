@@ -34,7 +34,7 @@ type ChartValues = Readonly<{
   id: string;
 }>;
 
-type ChartData = Readonly<{
+export type ChartData = Readonly<{
   colors: ColorsChart;
   filters: Filters;
   id: string;

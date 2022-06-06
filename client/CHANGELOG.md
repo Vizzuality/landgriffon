@@ -61,6 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Migrated requests from containers to react hooks
 - By default analysis have the scenarios/interventions panel collapsed
+- Tooltip redesigned in charts view, legend included inside chart card
 
 ## 0.2.0 - 2021-08-01
 

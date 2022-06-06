@@ -55,8 +55,8 @@ export const LegendItem: React.FC<LegendItemProps> = ({
   return (
     <div className={classNames('pr-4 py-4 space-y-4 group', { 'bg-gray-50': !main })}>
       {isLoading && <Loading />}
-      {!isLoading && name && (
-        <div className="w-full flex">
+      {name && (
+        <div className={classNames('w-full flex', { hidden: isLoading })}>
           <div className="grow flex items-start justify-between">
             <div className="max-w-[210px] text-sm text-gray-500 flex flex-row justify-start gap-x-1">
               <div className="invisible group-hover:visible pl-1 pr-0.5">

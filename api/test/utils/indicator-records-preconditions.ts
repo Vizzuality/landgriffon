@@ -48,7 +48,7 @@ export const createWorldToCalculateIndicatorRecords =
     });
     const waterRiskH3Data = await createH3Data({
       h3tableName: 'h3_grid_wf_global',
-      h3columnName: 'wfBltotMmyr',
+      h3columnName: 'wfBltotMmyrT',
       year: 2000,
       indicatorId: waterIndicator.id,
     });

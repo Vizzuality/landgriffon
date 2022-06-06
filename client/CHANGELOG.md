@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Active pills showing selected filters on table and chart view [LANDGRIF-616](https://vizzuality.atlassian.net/browse/LANDGRIF-616)
 - Select and TreeSelect components redo according to design [LANDGRIF-686](https://vizzuality.atlassian.net/browse/LANDGRIF-686)
 - Removed multiply blend mode from the map
+- Added basemap selector, allowing to toggle between satellite and terrain [LANDGRIF-662](https://vizzuality.atlassian.net/browse/LANDGRIF-662)
 
 ### Added
 
@@ -36,9 +37,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Interventions pannel should close when navigating to "Analysis" throught breadcrumbs [LANDGRIF-657](https://vizzuality.atlassian.net/browse/LANDGRIF-657)
 - Arrow icon in the tables also toggle collapse the rows
 - Fixed issues related to duplicated keys in the table rendering [LANDGRIF-650](https://vizzuality.atlassian.net/browse/LANDGRIF-650)
-
 - Location types params standarized
 - Location types params added to "/h3/map/impact" endpoint
+- Legend selects now automatically close when choosing a value
 
 ## 0.3.0 - 2021-09-01
 

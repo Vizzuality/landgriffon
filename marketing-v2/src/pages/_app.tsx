@@ -7,7 +7,6 @@ import { Hydrate } from 'react-query/hydration';
 import { SessionProvider } from 'next-auth/react';
 import store from 'store';
 
-import 'ka-table/style.css';
 import 'styles/globals.css';
 
 const queryClient = new QueryClient();

@@ -1,25 +1,9 @@
 import React, { useCallback } from 'react';
 import Router from 'next/router';
-import { NavigationList } from 'containers/navigation/types';
-import NavigationError from 'containers/navigation/error';
-import Logo from 'containers/logo';
 
 import Image from 'next/image';
 
-import {
-  CollectionIcon,
-  CogIcon,
-  QuestionMarkCircleIcon,
-  ArrowLeftIcon,
-  HomeIcon,
-} from '@heroicons/react/outline';
-
-const navigationItems: NavigationList = [
-  { name: 'Overview', href: '/', icon: HomeIcon },
-  { name: 'Analysis', href: '/analysis', icon: CollectionIcon },
-  { name: 'Admin', href: '#', icon: CogIcon },
-  { name: 'Help', href: '#', icon: QuestionMarkCircleIcon },
-];
+import { ArrowLeftIcon } from '@heroicons/react/outline';
 
 const Page404: React.FC = () => {
   const handleGoBack = useCallback(() => Router.back(), []);
@@ -27,8 +11,6 @@ const Page404: React.FC = () => {
   return (
     <div className="flex justify-center h-screen place-items-center">
       <div className="flex-col space-y-44">
-        <Logo />
-
         <div>
           <h1 className="mb-2 text-5xl font-semibold text-gray-900">Page not found</h1>
 
@@ -45,8 +27,6 @@ const Page404: React.FC = () => {
             Go back
           </button>
         </div>
-
-        <NavigationError items={navigationItems} />
       </div>
 
       <div className="ml-32">

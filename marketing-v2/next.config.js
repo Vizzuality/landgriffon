@@ -6,20 +6,6 @@ const nextConfig = {
   eslint: {
     dirs: ['src'],
   },
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/analysis',
-        permanent: false,
-      },
-      {
-        source: '/admin',
-        destination: '/admin/data',
-        permanent: false,
-      },
-    ];
-  },
 };
 
 module.exports = nextConfig;

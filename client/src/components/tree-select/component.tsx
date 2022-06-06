@@ -1,15 +1,14 @@
-import {
-  Fragment,
-  useCallback,
-  useState,
-  useMemo,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-} from 'react';
+import { Fragment, useCallback, useState, useMemo, useEffect, useLayoutEffect } from 'react';
 import classNames from 'classnames';
-import { Transition, Popover } from '@headlessui/react';
-import { flip, offset, shift, useFloating } from '@floating-ui/react-dom';
+import {
+  flip,
+  offset,
+  shift,
+  useClick,
+  useDismiss,
+  useFloating,
+  useInteractions,
+} from '@floating-ui/react-dom-interactions';
 import { ChevronDownIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
 import Tree, { TreeNode, TreeProps } from 'rc-tree';
 import Fuse from 'fuse.js';
@@ -64,6 +63,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   label,
   autoFocus = false,
 }) => {
+  const [isOpen, setIsOpen] = useState(false);
   const {
     x,
     y,
@@ -72,11 +72,19 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     strategy,
     update,
     refs: { reference: referenceElement },
+    context,
   } = useFloating({
+    open: isOpen,
+    onOpenChange: setIsOpen,
     placement: 'bottom-start',
     strategy: 'fixed',
     middleware: [offset({ mainAxis: 4 }), shift({ padding: 4 }), flip()],
   });
+
+  const { getReferenceProps, getFloatingProps } = useInteractions([
+    useClick(context),
+    useDismiss(context),
+  ]);
 
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selected, setSelected] = useState<TreeSelectOption>(null);
@@ -124,7 +132,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
       setSelectedKeys(keys);
       setSelected(currentSelection);
       onChange?.(currentSelection);
-      buttonRef.current?.click();
+      setIsOpen(false);
     },
     [onChange],
   );
@@ -239,152 +247,139 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     }
   }, [current]);
 
-  const buttonRef = useRef(null);
-
   useEffect(() => {
-    if (!autoFocus || !buttonRef.current) return;
-
-    buttonRef.current.click();
-  }, [buttonRef, autoFocus]);
+    if (!autoFocus) return;
+    setIsOpen(true);
+  }, [autoFocus]);
 
   return (
-    <Popover className="relative">
-      {({ open }) => (
-        <>
-          <Popover.Button
-            as="div"
-            ref={reference}
-            className={classNames(
-              'relative',
-              {
-                [THEMES[theme].wrapper]: theme === 'default',
-                'flex flex-row justify-between items-center gap-1': theme === 'default',
-                'border-2 border-red-600': theme === 'default' && error,
-                'w-fit': theme === 'inline-primary',
-              },
-              { 'w-fit': theme === 'inline-primary' },
-            )}
-          >
-            <div
-              ref={buttonRef}
-              className={classNames('flex gap-1 h-min flex-wrap overflow-hidden', {
-                'ring-green-700 border-green-700': open,
-                'border-red-600': theme === 'inline-primary' && error,
-                [THEMES[theme].wrapper]: theme === 'inline-primary',
-              })}
-            >
-              {label && <span className={classNames(THEMES[theme].label)}>{label}</span>}
-              {multiple ? (
-                <>
-                  {(!currentOptions || !currentOptions.length) && !showSearch && (
-                    <span className="text-gray-500 inline-block truncate">{placeholder}</span>
-                  )}
-                  {currentOptions &&
-                    !!currentOptions.length &&
-                    !ellipsis &&
-                    currentOptions.slice(0, maxBadges).map((option) => (
-                      <Badge
-                        key={option.value}
-                        className={classNames(
-                          'text-sm h-fit my-auto max-w-full',
-                          THEMES[theme].label,
-                        )}
-                        data={option}
-                        onClick={handleRemoveBadge}
-                        removable={theme !== 'inline-primary'}
-                        theme={theme}
-                      >
-                        {option.label}
-                      </Badge>
-                    ))}
-                  {currentOptions && !!currentOptions.length && ellipsis && (
-                    <Badge
-                      key={currentOptions[0].value}
-                      className={classNames('text-sm h-fit my-auto', THEMES[theme].label)}
-                      data={currentOptions[0]}
-                      onClick={handleRemoveBadge}
-                      removable={theme !== 'inline-primary'}
-                      theme={theme}
-                    >
-                      {currentOptions[0].label}
-                    </Badge>
-                  )}
-                  {currentOptions && currentOptions.length > maxBadges && (
-                    <Badge
-                      className={classNames('text-sm h-fit my-auto', THEMES[theme].label)}
-                      theme={theme}
-                    >
-                      {currentOptions.length - maxBadges} more selected
-                    </Badge>
-                  )}
-                  {showSearch && (
-                    <div className="inline-flex flex-row flex-grow h-min gap-x-1">
-                      <SearchIcon className="block h-4 w-4 text-gray-400 my-auto" />
-                      <input
-                        onClick={(e) => {
-                          e.preventDefault();
-                          (referenceElement.current as HTMLElement).click();
-                          e.currentTarget.focus();
-                        }}
-                        type="search"
-                        value={searchTerm}
-                        placeholder={currentOptions.length === 0 ? placeholder : null}
-                        className="border-none focus:ring-0 truncate py-0 px-0"
-                        onChange={handleSearch}
-                        autoComplete="off"
-                        style={{
-                          minWidth: searchTerm ? '4ch' : `${placeholder.length}ch`,
-                          maxWidth: '10ch',
-                          width: `${searchTerm.length}ch`,
-                        }}
-                      />
-                      {searchTerm && (
-                        <button type="button" onClick={resetSearch} className="px-2 py-0">
-                          <XIcon className="h-4 w-4 text-gray-400" />
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <span className="inline-block truncate my-auto">
-                  {selected ? (
-                    <span className="font-medium">{selected.label}</span>
-                  ) : (
-                    <span className="text-gray-500">{placeholder}</span>
-                  )}
-                </span>
+    <div>
+      <div
+        {...getReferenceProps({
+          ref: reference,
+        })}
+        className={classNames(
+          'relative',
+          {
+            [THEMES[theme].wrapper]: theme === 'default',
+            'flex flex-row justify-between items-center gap-1': theme === 'default',
+            'border-2 border-red-600': theme === 'default' && error,
+            'w-fit': theme === 'inline-primary',
+          },
+          { 'w-fit': theme === 'inline-primary' },
+        )}
+      >
+        <div
+          className={classNames('flex gap-1 h-min flex-wrap overflow-hidden', {
+            'ring-green-700 border-green-700': isOpen,
+            'border-red-600': theme === 'inline-primary' && error,
+            [THEMES[theme].wrapper]: theme === 'inline-primary',
+          })}
+        >
+          {label && <span className={classNames(THEMES[theme].label)}>{label}</span>}
+          {multiple ? (
+            <>
+              {(!currentOptions || !currentOptions.length) && !showSearch && (
+                <span className="text-gray-500 inline-block truncate">{placeholder}</span>
               )}
-            </div>
-            <div
-              className={classNames('flex pointer-events-none h-fit', THEMES[theme].arrow, {
-                'text-red-700': !!error,
-              })}
-            >
-              {theme === 'inline-primary' ? (
-                <div
-                  className={classNames(
-                    'mt-0.5 border-t-green-700 border-t-4 border-x-4 border-x-transparent mx-auto w-0 h-0',
-                    { 'border-t-red-600': error },
-                  )}
-                />
-              ) : (
-                <ChevronDownIcon
-                  className={classNames('h-4 w-4', { 'rotate-180': open })}
-                  aria-hidden="true"
-                />
+              {currentOptions &&
+                !!currentOptions.length &&
+                !ellipsis &&
+                currentOptions.slice(0, maxBadges).map((option) => (
+                  <Badge
+                    key={option.value}
+                    className={classNames('text-sm h-fit my-auto max-w-full', THEMES[theme].label)}
+                    data={option}
+                    onClick={handleRemoveBadge}
+                    removable={theme !== 'inline-primary'}
+                    theme={theme}
+                  >
+                    {option.label}
+                  </Badge>
+                ))}
+              {currentOptions && !!currentOptions.length && ellipsis && (
+                <Badge
+                  key={currentOptions[0].value}
+                  className={classNames('text-sm h-fit my-auto', THEMES[theme].label)}
+                  data={currentOptions[0]}
+                  onClick={handleRemoveBadge}
+                  removable={theme !== 'inline-primary'}
+                  theme={theme}
+                >
+                  {currentOptions[0].label}
+                </Badge>
               )}
-            </div>
-          </Popover.Button>
-          <Transition
-            show={open}
-            enter="transition duration-100 ease-out"
-            enterFrom="transform opacity-0"
-            enterTo="transform opacity-100"
-            leave="transition duration-75 ease-out"
-            leaveFrom="transform opacity-100"
-            leaveTo="transform opacity-0"
-            style={{
+              {currentOptions && currentOptions.length > maxBadges && (
+                <Badge
+                  className={classNames('text-sm h-fit my-auto', THEMES[theme].label)}
+                  theme={theme}
+                >
+                  {currentOptions.length - maxBadges} more selected
+                </Badge>
+              )}
+              {showSearch && (
+                <div className="inline-flex flex-row flex-grow h-min gap-x-1">
+                  <SearchIcon className="block h-4 w-4 text-gray-400 my-auto" />
+                  <input
+                    onClick={(e) => {
+                      e.preventDefault();
+                      (referenceElement.current as HTMLElement).click();
+                      e.currentTarget.focus();
+                    }}
+                    type="search"
+                    value={searchTerm}
+                    placeholder={currentOptions.length === 0 ? placeholder : null}
+                    className="border-none focus:ring-0 truncate py-0 px-0"
+                    onChange={handleSearch}
+                    autoComplete="off"
+                    style={{
+                      minWidth: searchTerm ? '4ch' : `${placeholder.length}ch`,
+                      maxWidth: '10ch',
+                      width: `${searchTerm.length}ch`,
+                    }}
+                  />
+                  {searchTerm && (
+                    <button type="button" onClick={resetSearch} className="px-2 py-0">
+                      <XIcon className="h-4 w-4 text-gray-400" />
+                    </button>
+                  )}
+                </div>
+              )}
+            </>
+          ) : (
+            <span className="inline-block truncate my-auto">
+              {selected ? (
+                <span className="font-medium">{selected.label}</span>
+              ) : (
+                <span className="text-gray-500">{placeholder}</span>
+              )}
+            </span>
+          )}
+        </div>
+        <div
+          className={classNames('flex pointer-events-none h-fit', THEMES[theme].arrow, {
+            'text-red-700': !!error,
+          })}
+        >
+          {theme === 'inline-primary' ? (
+            <div
+              className={classNames(
+                'mt-0.5 border-t-green-700 border-t-4 border-x-4 border-x-transparent mx-auto w-0 h-0',
+                { 'border-t-red-600': error },
+              )}
+            />
+          ) : (
+            <ChevronDownIcon
+              className={classNames('h-4 w-4', { 'rotate-180': isOpen })}
+              aria-hidden="true"
+            />
+          )}
+        </div>
+      </div>
+      {isOpen && (
+        <div
+          {...getFloatingProps({
+            style: {
               position: strategy,
               top: y ?? '',
               left: x ?? '',
@@ -393,48 +388,47 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                 fitContent && reference
                   ? (referenceElement.current as HTMLElement)?.offsetWidth
                   : 'inherit',
-            }}
-            className="relative z-20"
-            ref={floating}
+            },
+            className: 'relative z-20',
+            ref: floating,
+          })}
+        >
+          <div
+            className={classNames(
+              'bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 max-h-80 overflow-y-auto',
+              fitContent ? 'max-w-full w-full' : 'max-w-xs',
+            )}
           >
-            <Popover.Panel
-              static
-              className={classNames(
-                'bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 max-h-80 overflow-y-auto',
-                fitContent ? 'max-w-full w-full' : 'max-w-xs',
-              )}
-            >
-              {loading && (
-                <div className="p-4">
-                  <Loading className="text-green-700 -ml-1 mr-3" />
-                </div>
-              )}
-              {!loading && (
-                <Tree
-                  autoExpandParent
-                  checkStrictly={false}
-                  checkable={multiple}
-                  selectable={!multiple}
-                  multiple={multiple}
-                  selectedKeys={selectedKeys}
-                  expandedKeys={expandedKeys}
-                  checkedKeys={checkedKeys}
-                  switcherIcon={customSwitcherIcon}
-                  onExpand={handleExpand}
-                  onSelect={handleSelect}
-                  onCheck={handleCheck}
-                >
-                  {renderTreeNodes(options)}
-                </Tree>
-              )}
-              {(options.length === 0 || (searchTerm && filteredKeys.length === 0)) && (
-                <div className="p-2 text-gray-700 text-sm opacity-60 w-fit mx-auto">No results</div>
-              )}
-            </Popover.Panel>
-          </Transition>
-        </>
+            {loading && (
+              <div className="p-4">
+                <Loading className="text-green-700 -ml-1 mr-3" />
+              </div>
+            )}
+            {!loading && (
+              <Tree
+                autoExpandParent
+                checkStrictly={false}
+                checkable={multiple}
+                selectable={!multiple}
+                multiple={multiple}
+                selectedKeys={selectedKeys}
+                expandedKeys={expandedKeys}
+                checkedKeys={checkedKeys}
+                switcherIcon={customSwitcherIcon}
+                onExpand={handleExpand}
+                onSelect={handleSelect}
+                onCheck={handleCheck}
+              >
+                {renderTreeNodes(options)}
+              </Tree>
+            )}
+            {(options.length === 0 || (searchTerm && filteredKeys.length === 0)) && (
+              <div className="p-2 text-gray-700 text-sm opacity-60 w-fit mx-auto">No results</div>
+            )}
+          </div>
+        </div>
       )}
-    </Popover>
+    </div>
   );
 };
 

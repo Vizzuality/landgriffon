@@ -389,13 +389,14 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                   ? (referenceElement.current as HTMLElement)?.offsetWidth
                   : 'inherit',
             },
-            className: 'relative z-20',
+            className:
+              'relative z-20 rounded-md overflow-hidden shadow-lg ring-1 ring-black ring-opacity-5',
             ref: floating,
           })}
         >
           <div
             className={classNames(
-              'bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 max-h-80 overflow-y-auto',
+              'bg-white max-h-80 overflow-y-auto',
               fitContent ? 'max-w-full w-full' : 'max-w-xs',
             )}
           >

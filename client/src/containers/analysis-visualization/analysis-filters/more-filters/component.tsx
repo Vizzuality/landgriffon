@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import classNames from 'classnames';
 import { FilterIcon } from '@heroicons/react/solid';
 
@@ -106,7 +106,7 @@ const MoreFilters: React.FC = () => {
   ]);
 
   return (
-    <>
+    <div className="relative">
       <div
         className={classNames(
           THEME.default,
@@ -214,7 +214,7 @@ const MoreFilters: React.FC = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

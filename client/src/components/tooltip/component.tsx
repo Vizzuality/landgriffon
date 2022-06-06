@@ -53,6 +53,8 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
+    console.log('update');
+
     update();
   }, [content, update]);
 

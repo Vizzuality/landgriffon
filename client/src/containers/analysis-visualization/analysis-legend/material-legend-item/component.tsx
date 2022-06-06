@@ -42,6 +42,7 @@ const MaterialLegendItem = () => {
           <div className="space-y-2 mr-2">
             <div>Material Production {material.material ? `in ${material.year}` : null}</div>
             <Materials
+              defaultOpen
               current={material.material ? [material.material] : null}
               onChange={handleMaterialChange}
               multiple={false}

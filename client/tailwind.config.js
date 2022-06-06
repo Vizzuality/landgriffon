@@ -29,6 +29,7 @@ module.exports = {
       white: colors.white,
       red: colors.red,
       yellow: colors.yellow,
+      transparent: colors.transparent,
       gray: {
         900: '#15181F',
         800: '#2D2F32',
@@ -53,7 +54,6 @@ module.exports = {
         100: '#D1FAE5',
         50: '#EBF6F1',
       },
-      transparent: '#00000000',
     },
   },
   variants: {

@@ -12,6 +12,7 @@ import Loading from 'components/loading';
 import Chart from 'components/chart';
 import AreaStacked from 'components/chart/area-stacked';
 import Widget from 'components/widget';
+import Legend from './analysis-chart-legend';
 
 const AnalysisChart: FC = () => {
   const filters = useAppSelector(analysisFilters);
@@ -24,9 +25,9 @@ const AnalysisChart: FC = () => {
   });
 
   const handleActiveArea = useCallback(
-    (key, indicator) => {
+    (key, indicatorId) => {
       if (!activeArea) {
-        setActiveArea(`${key}-${indicator}`);
+        setActiveArea(`${key}-${indicatorId}`);
       } else setActiveArea(null);
     },
     [activeArea],
@@ -40,8 +41,7 @@ const AnalysisChart: FC = () => {
         <AnimatePresence>
           <div
             key="analysis-chart"
-            className={cx({
-              'grid grid-cols-1 gap-5': true,
+            className={cx('grid grid-cols-1 gap-5', {
               'md:grid-cols-2': chartData.length > 1,
             })}
           >
@@ -53,10 +53,12 @@ const AnalysisChart: FC = () => {
                   key={`${id}-${JSON.stringify(filters)}`}
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
+                  className="bg-white rounded shadow-sm p-4"
                 >
                   <Widget title={indicator} unit={unit} height={chartData.length > 1 ? 325 : 500}>
                     <Chart>
                       <AreaStacked
+                        id={id}
                         title={indicator}
                         yAxisLabel={unit}
                         data={values}
@@ -75,33 +77,7 @@ const AnalysisChart: FC = () => {
                     </Chart>
                   </Widget>
                   {/* Widget Legend */}
-                  <ul className="flex flex-row flex-wrap gap-x-3 gap-y-1 mt-2">
-                    {keys.map((key) => (
-                      <li key={key} className="flex items-center gap-x-1">
-                        <button
-                          type="button"
-                          className="flex items-center"
-                          onClick={() => handleActiveArea(key, indicator)}
-                        >
-                          <span
-                            className="w-2.5 h-2.5 rounded-full mr-1"
-                            style={{ backgroundColor: d.colors[key] }}
-                          />
-                          <span
-                            title={key}
-                            className={cx('text-xs', {
-                              'truncate text-ellipsis text-gray-500 max-w-[74px]':
-                                activeArea !== `${key}-${indicator}`,
-                              'opacity-70 text-gray-900':
-                                activeArea && activeArea !== `${key}-${indicator}`,
-                            })}
-                          >
-                            {key}
-                          </span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
+                  <Legend activeArea={activeArea} indicatorData={d} onClick={handleActiveArea} />
                 </motion.div>
               );
             })}

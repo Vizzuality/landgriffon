@@ -10,7 +10,6 @@ import { useTooltip } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
 
 import { bisector } from 'd3-array';
-import { timeYear } from 'd3-time';
 
 import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 
@@ -20,8 +19,10 @@ const getDate = (d) => new Date(d.date).valueOf();
 const getY0 = (d) => d[0];
 const getY1 = (d) => d[1];
 const bisectDate = bisector((d) => new Date(d.date)).center;
+const yNumTicks = 5;
 
 export type AreaStackedProps = {
+  id: string;
   title: string;
   data: {
     id: string;
@@ -50,6 +51,7 @@ export type AreaStackedProps = {
 };
 
 const AreaStacked: React.FC<AreaStackedProps> = ({
+  id,
   title,
   data,
   yAxisLabel,
@@ -109,7 +111,6 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
       }, 0),
     ),
   );
-
   // Y: scale
   const yScale = scaleLinear<number>({
     range: [yRangeMax, 0],
@@ -125,7 +126,6 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
       const d0 = data[index - 1 < 0 ? 0 : index - 1];
       const d1 = data[index];
       let d = d0;
-
       if (d1 && getDate(d1)) {
         d = getDate(d0).valueOf() - x0.valueOf() > getDate(d1).valueOf() - x0.valueOf() ? d1 : d0;
       }
@@ -146,10 +146,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
     [xScale, data, keys, showTooltip, yScale],
   );
 
-  const xOffset = useCallback(
-    (index) => (index < data.length - 1 ? '-0.2rem' : '-0.5rem'),
-    [data.length],
-  );
+  const xOffset = useCallback((index) => (index < yNumTicks ? '0.5rem' : '-0.2rem'), []);
 
   if (!width || !height) return null;
 
@@ -185,7 +182,7 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
                   strokeOpacity={0.25}
                   strokeWidth={0.5}
                   fill={colors[stack.key]}
-                  opacity={!activeArea || `${stack.key}-${title}` === activeArea ? 1 : 0.3}
+                  opacity={!activeArea || `${stack.key}-${id}` === activeArea ? 1 : 0.3}
                 />
               ))
             }
@@ -266,15 +263,15 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
             scale={xScale}
             hideTicks
             hideAxisLine
-            tickValues={xScale.ticks(timeYear)}
             tickLabelProps={(props, index) => ({
-              dy: '0.5em',
+              dy: -1,
               dx: xOffset(index),
               fill: '#AEB1B5', // text-gray-400
               fontFamily: 'Arial',
               fontSize: 9,
               textAnchor: 'middle',
             })}
+            numTicks={yNumTicks}
           />
 
           {/* Y Axis */}

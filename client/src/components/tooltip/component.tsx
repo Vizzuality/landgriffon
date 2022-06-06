@@ -19,6 +19,13 @@ const THEME: Record<TooltipProps['theme'], string> = {
   dark: 'bg-gray-900',
 };
 
+const ARROW_POSITION_CLASSES = {
+  top: 'translate-y-1/2 bottom-0 rounded-r-sm',
+  right: '-translate-x-1/2 left-0 rounded-b-sm',
+  bottom: '-translate-y-1/2 top-0 rounded-l-sm',
+  left: 'translate-x-1/2 right-0 rounded-t-sm',
+};
+
 export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
   className,
   children,
@@ -58,13 +65,6 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
     update();
   }, [content, update]);
 
-  const arrowPositionClasses = {
-    top: 'translate-y-1/2 bottom-0',
-    right: '-translate-x-1/2 left-0',
-    bottom: '-translate-y-1/2 top-0',
-    left: 'translate-x-1/2 right-0',
-  };
-
   const handleMouseEnter = useCallback(() => setIsHovered(true), []);
   const handleMouseLeave = useCallback(() => setIsHovered(false), []);
 
@@ -88,10 +88,24 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
           <div className="drop-shadow-md w-fit relative">
             <div className="z-10">{content}</div>
             <div
+              ref={arrowRef}
+              style={{
+                top: arrowY ?? '',
+                left: arrowX ?? '',
+              }}
               className={classNames(
                 '-z-10 absolute',
                 { hidden: !arrow },
-                arrowPositionClasses[floatingPlacement],
+                ARROW_POSITION_CLASSES[floatingPlacement],
+                'w-3 h-3 rotate-45',
+                THEME[theme],
+              )}
+            ></div>
+            {/* <div
+              className={classNames(
+                '-z-10 absolute',
+                { hidden: !arrow },
+                ARROW_POSITION_CLASSES[floatingPlacement],
               )}
               ref={arrowRef}
               style={{
@@ -99,8 +113,8 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
                 left: arrowX ?? '',
               }}
             >
-              <div className={classNames('w-3 h-3 rotate-45 rounded-sm', THEME[theme])} />
-            </div>
+              <div className={classNames('w-3 h-3 rotate-45', THEME[theme])} />
+            </div> */}
           </div>
         </Popover.Panel>
       </Transition>

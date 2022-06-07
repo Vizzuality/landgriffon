@@ -41,6 +41,7 @@ import { SourcingLocationsMaterialsResponseDto } from 'modules/sourcing-location
 import { GetSourcingMaterialsQueryDto } from 'modules/sourcing-locations/dto/materials-query.sourcing-location.dto';
 import { SourcingLocationsMaterialsService } from 'modules/sourcing-locations/sourcing-locations-materials.service';
 import { SetUserInterceptor } from 'decorators/set-user.interceptor';
+import { LocationTypesDto } from 'modules/sourcing-locations/dto/location-type.sourcing-locations.dto';
 
 @Controller(`/api/v1/sourcing-locations`)
 @ApiTags(sourcingLocationResource.className)
@@ -112,6 +113,13 @@ export class SourcingLocationsController {
       results.data,
       results.metadata,
     );
+  }
+
+  @ApiOperation({ description: 'Gets available location types' })
+  @ApiOkResponse({ type: LocationTypesDto })
+  @Get('/location-types')
+  async getLocationTypes(): Promise<LocationTypesDto> {
+    return this.sourcingLocationsService.getLocationTypes();
   }
 
   @ApiOperation({ description: 'Find sourcing location by id' })

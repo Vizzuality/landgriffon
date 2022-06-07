@@ -5,6 +5,7 @@ import {
   JSONAPISerializerConfig,
 } from 'utils/app-base.service';
 import {
+  LOCATION_TYPES_PARAMS,
   SourcingLocation,
   sourcingLocationResource,
 } from 'modules/sourcing-locations/sourcing-location.entity';
@@ -15,6 +16,10 @@ import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update
 
 import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
 import { Brackets, SelectQueryBuilder, WhereExpressionBuilder } from 'typeorm';
+import {
+  LocationTypesDto,
+  LocationTypeWithLabel,
+} from 'modules/sourcing-locations/dto/location-type.sourcing-locations.dto';
 
 @Injectable()
 export class SourcingLocationsService extends AppBaseService<
@@ -137,6 +142,20 @@ export class SourcingLocationsService extends AppBaseService<
     }
 
     return queryBuilder.getMany();
+  }
+
+  getLocationTypes(): LocationTypesDto {
+    const locationTypes: LocationTypeWithLabel[] = [];
+
+    Object.values(LOCATION_TYPES_PARAMS).forEach((locationType) => {
+      locationTypes.push({
+        label:
+          locationType.replace(/-/g, ' ').charAt(0).toUpperCase() +
+          locationType.replace(/-/g, ' ').slice(1),
+        value: locationType,
+      });
+    });
+    return { data: locationTypes };
   }
 
   async extendFindAllQuery(

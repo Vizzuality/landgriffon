@@ -23,7 +23,7 @@ const THEMES = {
   default: {
     label: 'text-gray-300',
     wrapper:
-      'flex-row max-w-full bg-white relative border border-gray-300 rounded-md shadow-sm px-3 cursor-pointer min-h-[2.5rem] h-min py-1',
+      'flex-row max-w-full bg-white relative border border-gray-300 rounded-md shadow-sm px-3 cursor-pointer min-h-[2.5rem] h-min py-1 text-sm',
     arrow: 'items-center text-gray-900',
     treeNodes:
       'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700 z-[100]',
@@ -280,7 +280,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           {multiple ? (
             <>
               {(!currentOptions || !currentOptions.length) && !showSearch && (
-                <span className="text-gray-500 inline-block truncate">{placeholder}</span>
+                <span className="text-gray-500 inline-block truncate text-sm">{placeholder}</span>
               )}
               {currentOptions &&
                 !!currentOptions.length &&
@@ -329,7 +329,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                     type="search"
                     value={searchTerm}
                     placeholder={currentOptions.length === 0 ? placeholder : null}
-                    className="border-none focus:ring-0 truncate py-0 px-0"
+                    className="border-none focus:ring-0 truncate py-0 px-0 text-sm"
                     onChange={handleSearch}
                     autoComplete="off"
                     style={{

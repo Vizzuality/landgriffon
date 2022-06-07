@@ -44,9 +44,10 @@ const customStyles: (theme: SelectProps['theme'], error?: boolean) => StylesConf
   error = false,
 ) => {
   return {
+    container: (provided) => ({ ...provided, ...tw`text-sm` }),
     option: (provided, { isDisabled, isSelected }) => ({
       ...provided,
-      ...tw`text-gray-900 text-sm cursor-pointer hover:bg-green-50 truncate`,
+      ...tw`text-gray-900 cursor-pointer hover:bg-green-50 truncate`,
       ...(isDisabled && tw`bg-green-700`),
       ...(isSelected && tw`text-white hover:bg-green-700`),
     }),
@@ -179,7 +180,7 @@ const Select: React.FC<SelectProps> = ({
     ({ children, ...rest }) => (
       <components.ValueContainer {...rest}>
         <div className="flex flex-row justify-start gap-x-0.5">
-          {label && <span className="text-sm text-gray-600 h-min my-auto">{label}</span>}
+          {label && <span className="text-gray-600 h-min my-auto">{label}</span>}
           {children}
         </div>
       </components.ValueContainer>
@@ -200,16 +201,13 @@ const Select: React.FC<SelectProps> = ({
         >
           <div className="flex flex-row gap-x-2">
             <div
-              className={classNames(
-                isSelected ? 'font-semibold' : 'font-normal',
-                'block text-sm truncate',
-              )}
+              className={classNames(isSelected ? 'font-semibold' : 'font-normal', 'block truncate')}
             >
               {label}
             </div>
             {extraInfo && (
               <div>
-                <i className="text-gray-600 text-sm">{extraInfo}</i>
+                <i className="text-gray-600 text-xs">{extraInfo}</i>
               </div>
             )}
           </div>
@@ -238,7 +236,7 @@ const Select: React.FC<SelectProps> = ({
         isLoading={loading}
         isClearable={allowEmpty}
         isSearchable={showSearch}
-        noOptionsMessage={() => <div className="p-2 text-sm">No results</div>}
+        noOptionsMessage={() => <div className="p-2">No results</div>}
         theme={
           error
             ? { ...DEFAULT_THEME, colors: { ...DEFAULT_THEME.colors, primary25: 'red' } }

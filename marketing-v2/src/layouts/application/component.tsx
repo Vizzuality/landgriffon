@@ -1,6 +1,5 @@
-import Sidebar from 'containers/sidebar';
-import HeaderMobile from 'containers/mobile-header';
-import { Toaster } from 'react-hot-toast';
+import Header from 'containers/header';
+import Footer from 'containers/footer';
 
 type ApplicationLayoutProps = {
   children: React.ReactNode;
@@ -10,20 +9,15 @@ const ApplicationLayout: React.FC<ApplicationLayoutProps> = (props: ApplicationL
   const { children } = props;
 
   return (
-    <div className="h-full lg:min-h-screen flex">
-      {/* Navigation */}
-      <Sidebar />
+    <div className="h-full lg:min-h-screen">
+      <Header />
 
-      <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
-        {/* Mobile top navigation */}
-        <HeaderMobile />
-        <main className="flex-1 flex overflow-hidden">
-          {/* Content */}
-          {children}
-        </main>
-      </div>
+      <main>
+        {/* Content */}
+        {children}
+      </main>
 
-      <Toaster position="bottom-center" />
+      <Footer />
     </div>
   );
 };

@@ -67,6 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Migrated requests from containers to react hooks
 - By default analysis have the scenarios/interventions panel collapsed
+- Table and chart have are able to show a minimun of two years [LANDGRIF-699](https://vizzuality.atlassian.net/browse/LANDGRIF-699)
 
 ## 0.2.0 - 2021-08-01
 

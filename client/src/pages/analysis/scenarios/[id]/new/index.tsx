@@ -5,7 +5,6 @@ import { scenarios } from 'store/features/analysis/scenarios';
 
 import AnalysisLayout from 'layouts/analysis';
 import Breadcrumb from 'components/breadcrumb';
-import ScenarioEdit from 'containers/scenarios/edit';
 import type { Page } from 'components/breadcrumb/types';
 
 const AnalysisPage: React.FC = () => {
@@ -14,7 +13,7 @@ const AnalysisPage: React.FC = () => {
   // Breadcrumbs
   let pages: Page[] = [{ name: 'Analysis', mode: 'list', href: 'analysis' }]; // Default
   if (mode === 'edit') {
-    pages = [...pages, { name: 'Edit scenario', mode: 'edit', href: 'edit' }];
+    pages = [...pages, { name: 'New scenario', mode: 'new', href: 'new' }];
   }
 
   return (
@@ -22,12 +21,9 @@ const AnalysisPage: React.FC = () => {
       <Head>
         <title>Analysis - Landgriffon</title>
       </Head>
-
       <div className="py-6">
         <Breadcrumb pages={pages} />
       </div>
-
-      <ScenarioEdit />
     </AnalysisLayout>
   );
 };

@@ -27,7 +27,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ pages }: BreadcrumbProps) => {
     if (pages[0].href === 'analysis') {
       router.push('/analysis');
     } else {
-      router.replace(`${router.pathname}/${pages[0].href}`);
+      // router.replace(`${router.pathname}/${pages[0].href}`);
     }
     dispatch(setMode(pages[0].mode));
   }, [dispatch, router, pages]);

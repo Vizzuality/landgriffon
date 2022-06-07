@@ -17,6 +17,7 @@ import Loading from 'components/loading';
 
 import type { ErrorResponse } from 'types';
 import type { Scenario } from './types';
+import { useRouter } from 'next/router';
 
 const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement> }> = ({
   scrollref,
@@ -38,6 +39,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
   }, scrollref);
 
   const createScenario = useCreateScenario();
+  const router = useRouter();
 
   const handleClick = useCallback(() => {
     createScenario.mutate(
@@ -49,6 +51,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
           } = data;
           dispatch(setCurrentScenario(scenarioId));
           dispatch(setMode('edit'));
+          router.replace(`/analysis/scenarios/${scenarioId}/edit`, undefined, { shallow: true });
           toast.success('A new scenario has been created');
         },
         onError: (error: ErrorResponse) => {
@@ -57,7 +60,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
         },
       },
     );
-  }, [createScenario, dispatch]);
+  }, [createScenario, dispatch, router]);
 
   return (
     <div className="bg-white overscroll-contain text-gray-900">

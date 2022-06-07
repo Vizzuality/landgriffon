@@ -3,7 +3,7 @@ import type { RootState } from 'store';
 import type { Scenario, Intervention, InterventionTypes } from 'containers/scenarios/types';
 
 export type ScenariosState = {
-  mode: 'list' | 'edit';
+  mode: 'list' | 'edit' | 'new';
   comparisonMode: 'percentage' | 'absolute' | 'both';
   // Scenario ID for selected, edition and creation
   currentScenario: Scenario['id'];

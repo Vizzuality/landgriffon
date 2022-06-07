@@ -24,11 +24,13 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
   const dispatch = useAppDispatch();
   const [selected, setSelected] = useState(ACTUAL_DATA);
   const handleOnChange = useCallback(({ id }) => dispatch(setCurrentScenario(id)), [dispatch]);
-  const {
-    query: { id },
-  } = useRouter();
+
+  // get id from url
+  const router = useRouter();
+  const { asPath } = router;
 
   useEffect(() => {
+    const id = asPath.split('/analysis/scenarios/', 2)[1];
     if (data && !id) {
       setSelected(ACTUAL_DATA);
       dispatch(setCurrentScenario(ACTUAL_DATA.id as string)); // first option of the list by default
@@ -40,7 +42,7 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
         setSelected(data.find(({ id: dataId }) => isScenarioSelected(dataId, id as string)));
       }
     }
-  }, [data, id, dispatch]);
+  }, [data, asPath, router, selected, dispatch]);
 
   return (
     <RadioGroup value={selected} onChange={handleOnChange}>
@@ -63,7 +65,7 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
         {data.map((item) => {
           return (
             <Link
-              href={{ pathname: '/analysis', query: { name: '/scenarios', id: `${item.id}` } }}
+              href={{ pathname: '/analysis' }}
               key={item.id}
               as={`/analysis/scenarios/${item.id}`}
               shallow

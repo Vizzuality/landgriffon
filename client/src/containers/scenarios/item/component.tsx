@@ -42,10 +42,15 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
   const [isComparisonEnabled, setComparisonEnabled] = useState<boolean>(false);
 
   const router = useRouter();
-  const handleEdit = useCallback(() => {
-    dispatch(setMode('edit'));
-    router.push(`/analysis/scenarios/edit/${data.id}`, undefined, { shallow: true });
-  }, [dispatch, router, data.id]);
+  const handleEdit = useCallback(
+    (e) => {
+      e.preventDefault();
+      dispatch(setMode('edit'));
+      // window.history.replaceState(window.history.state, '', `/analysis/scenarios/${data.id}/edit`);
+      router.replace(`/analysis/scenarios/${data.id}/edit`, undefined, { shallow: true });
+    },
+    [dispatch, router, data.id],
+  );
 
   const deleteScenario = useDeleteScenario();
 
@@ -151,7 +156,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                                 <button
                                   type="button"
                                   className={classNames('text-gray-700', DROPDOWN_ITEM_CLASSNAME)}
-                                  onClick={handleEdit}
+                                  onClick={(e) => handleEdit(e)}
                                 >
                                   Edit
                                 </button>

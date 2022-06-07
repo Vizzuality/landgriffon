@@ -39,6 +39,7 @@ const LocationTypesFilter: React.FC<LocationTypeFilterProps> = ({
 
   return (
     <TreeSelect
+      multiple
       showSearch={false}
       options={options}
       placeholder="Location types"

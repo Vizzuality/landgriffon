@@ -26,14 +26,14 @@ const YearsFilter: React.FC = () => {
 
   const handleChange: SelectProps['onChange'] = useCallback(
     ({ value }) => {
-      dispatch(setFilter({ id: 'startYear', value: value }));
+      dispatch(setFilter({ id: 'startYear', value }));
     },
     [dispatch],
   );
 
   // Update filters when data changes
   useEffect(() => {
-    if (years && !isLoading) {
+    if (years?.length && !isLoading) {
       dispatch(setFilters({ startYear: years[years.length - 1], endYear: null }));
     }
   }, [dispatch, isLoading, years]);

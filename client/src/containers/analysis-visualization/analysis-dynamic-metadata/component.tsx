@@ -34,7 +34,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
   const { materials, origins, suppliers, locationTypes, indicator } =
     useAppSelector(analysisFilters);
 
-  const handleRemoveBadget = useCallback(
+  const handleRemoveBadge = useCallback(
     (id, list, option) => {
       const filteredKeys = list.filter((key) => option.label !== key.label);
       dispatch(setFilters({ [id]: filteredKeys }));
@@ -54,7 +54,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
           <Badge
             key={material.value}
             data={material}
-            onClick={() => handleRemoveBadget('materials', materials, material)}
+            onClick={() => handleRemoveBadge('materials', materials, material)}
             className="pl-0"
             removable
           >
@@ -71,7 +71,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
           <Badge
             key={origin.value}
             data={origin}
-            onClick={() => handleRemoveBadget('origins', origins, origin)}
+            onClick={() => handleRemoveBadge('origins', origins, origin)}
             className="pl-0"
             removable
           >
@@ -88,7 +88,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
           <Badge
             key={supplier.value}
             data={supplier}
-            onClick={() => handleRemoveBadget('suppliers', suppliers, supplier)}
+            onClick={() => handleRemoveBadge('suppliers', suppliers, supplier)}
             className="pl-0"
             removable
           >
@@ -105,7 +105,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
           <Badge
             key={locationType.value}
             data={locationType}
-            onClick={() => handleRemoveBadget('locationTypes', locationTypes, locationType)}
+            onClick={() => handleRemoveBadge('locationTypes', locationTypes, locationType)}
             className="pl-0"
             removable
           >

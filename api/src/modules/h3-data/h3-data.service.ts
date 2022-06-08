@@ -311,6 +311,11 @@ export class H3DataService {
     materialIds?: string[],
     indicatorId?: string,
   ): Promise<number[]> {
+    if (materialIds) {
+      materialIds = await this.materialService.getMaterialsDescendants(
+        materialIds,
+      );
+    }
     return this.h3DataYearsService.getYearsByLayerType(
       layerType,
       materialIds,

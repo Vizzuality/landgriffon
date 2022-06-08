@@ -85,7 +85,7 @@ export class H3DataYearsService {
   }
 
   /**
-   * Return all available years in Sourcing-Locations, which represent available years for Impact Layer
+   * Return all available years in Sourcing-Records, which represent available years for Impact Layer
    */
   async getAvailableYearsForImpactLayer(
     materialIds?: string[],

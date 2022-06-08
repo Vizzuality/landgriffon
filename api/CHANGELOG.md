@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+##  2022-08-01
+### Added
+Fixed [LANDGRIF-713](https://vizzuality.atlassian.net/browse/LANDGRIF-713)
+Filter available years for a impact layer by the received Material Id's children
+
+
+
 ##  2022-06-01
 ### Added
 [LANDGRIF-683](https://vizzuality.atlassian.net/browse/LANDGRIF-683)

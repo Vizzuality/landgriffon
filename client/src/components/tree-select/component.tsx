@@ -317,43 +317,44 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                   {currentOptions.length - maxBadges} more selected
                 </Badge>
               )}
-              {showSearch && (
-                <div className="inline-flex flex-row flex-grow h-min gap-x-1">
-                  <SearchIcon className="block h-4 w-4 text-gray-400 my-auto" />
-                  <input
-                    onClick={(e) => {
-                      e.preventDefault();
-                      (referenceElement.current as HTMLElement).click();
-                      e.currentTarget.focus();
-                    }}
-                    type="search"
-                    value={searchTerm}
-                    placeholder={currentOptions.length === 0 ? placeholder : null}
-                    className="border-none focus:ring-0 truncate py-0 px-0 text-sm"
-                    onChange={handleSearch}
-                    autoComplete="off"
-                    style={{
-                      minWidth: searchTerm ? '4ch' : `${placeholder.length}ch`,
-                      maxWidth: '10ch',
-                      width: `${searchTerm.length}ch`,
-                    }}
-                  />
-                  {searchTerm && (
-                    <button type="button" onClick={resetSearch} className="px-2 py-0">
-                      <XIcon className="h-4 w-4 text-gray-400" />
-                    </button>
-                  )}
-                </div>
-              )}
             </>
           ) : (
             <span className="inline-block truncate my-auto">
               {selected ? (
                 <span className="font-medium">{selected.label}</span>
               ) : (
-                <span className="text-gray-500">{placeholder}</span>
+                // the placeholder is in the search input already
+                showSearch || <span className="text-gray-500">{placeholder}</span>
               )}
             </span>
+          )}
+          {showSearch && (
+            <div className="inline-flex flex-row flex-grow h-min gap-x-1">
+              <SearchIcon className="block h-4 w-4 text-gray-400 my-auto" />
+              <input
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsOpen(true);
+                }}
+                type="search"
+                value={searchTerm}
+                placeholder={currentOptions.length === 0 ? placeholder : null}
+                className="border-none focus:ring-0 truncate py-0 px-0 text-sm"
+                onChange={handleSearch}
+                autoComplete="off"
+                style={{
+                  minWidth:
+                    searchTerm || currentOptions.length !== 0 ? '4ch' : `${placeholder.length}ch`,
+                  maxWidth: '10ch',
+                  width: `${searchTerm.length}ch`,
+                }}
+              />
+              {searchTerm && (
+                <button type="button" onClick={resetSearch} className="px-2 py-0">
+                  <XIcon className="h-4 w-4 text-gray-400" />
+                </button>
+              )}
+            </div>
           )}
         </div>
         <div

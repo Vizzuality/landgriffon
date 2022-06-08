@@ -25,6 +25,8 @@ import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.servic
 import { h3BasicFixture } from './mocks/h3-fixtures';
 import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
+import { Material } from 'modules/materials/material.entity';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 
 /**
  * Tests for the H3DataModule.
@@ -201,7 +203,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
     expect(response.body.data).toEqual([...new Set([...years, ...years2])]);
   });
 
-  test(' When I query available years for a Material layer filtering by more than one Material, then I should get a proper erros message', async () => {
+  test(' When I query available years for a Material layer filtering by more than one Material, then I should get a proper error message', async () => {
     const material = await createMaterial();
 
     const response = await request(app.getHttpServer())
@@ -339,5 +341,78 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
     expect(response.body.errors[0].meta.rawError.response.message).toEqual([
       'Available layers types: impact, risk, material',
     ]);
+  });
+  test('When I query the API for available years by a Material and a Impact layer, then I should receive available years for the child Materials too', async () => {
+    // Material that is not part of any Sourcing Location
+    const parentMaterial: Material = await createMaterial({
+      name: 'parent material',
+    });
+    // Child Material that is present in Sourcing Locations
+    const childMaterial1: Material = await createMaterial({
+      name: 'childMaterial',
+      parent: parentMaterial,
+    });
+    // Child Material that is present in Sourcing Locations
+    const childMaterial2: Material = await createMaterial({
+      name: 'grandChildMaterial',
+      parent: parentMaterial,
+    });
+    // Record for childMaterial1
+    const sourcingRecord1: SourcingRecord = await createSourcingRecord({
+      year: 2010,
+    });
+    // Record for childMaterial2
+    const sourcingRecord2: SourcingRecord = await createSourcingRecord({
+      year: 2020,
+    });
+    await createSourcingLocation({
+      material: childMaterial1,
+      sourcingRecords: [sourcingRecord1],
+    });
+    await createSourcingLocation({
+      material: childMaterial2,
+      sourcingRecords: [sourcingRecord2],
+    });
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/h3/years')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .query({ layer: 'impact', 'materialIds[]': [childMaterial1.id] });
+
+    expect(response.body.data).toEqual([2010]);
+
+    const response2 = await request(app.getHttpServer())
+      .get('/api/v1/h3/years')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .query({ layer: 'impact', 'materialIds[]': [childMaterial2.id] });
+
+    expect(response2.body.data).toEqual([2020]);
+
+    const response3 = await request(app.getHttpServer())
+      .get('/api/v1/h3/years')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .query({ layer: 'impact', 'materialIds[]': [parentMaterial.id] });
+
+    expect(response3.body.data).toEqual([2010, 2020]);
+
+    const grandChildMaterial: Material = await createMaterial({
+      name: 'grandChildMaterial',
+      parent: childMaterial1,
+    });
+    const sourcingRecord3: SourcingRecord = await createSourcingRecord({
+      year: 2022,
+    });
+
+    await createSourcingLocation({
+      material: grandChildMaterial,
+      sourcingRecords: [sourcingRecord3],
+    });
+
+    const response4 = await request(app.getHttpServer())
+      .get('/api/v1/h3/years')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .query({ layer: 'impact', 'materialIds[]': [childMaterial1.id] });
+
+    expect(response4.body.data).toEqual([2010, 2022]);
   });
 });

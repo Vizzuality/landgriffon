@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Upgrade Tailwind to version 3.0.24
 - Upgrade to Yarn version 3.2.1
 - Upgrade to Node LTS 16.15.0
+- Tooltip redesigned in charts view, legend included inside chart card [LANDGRIF-702](https://vizzuality.atlassian.net/browse/LANDGRIF-702)
 
 ### Fixed
 
@@ -61,7 +62,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Migrated requests from containers to react hooks
 - By default analysis have the scenarios/interventions panel collapsed
-- Tooltip redesigned in charts view, legend included inside chart card
 
 ## 0.2.0 - 2021-08-01
 

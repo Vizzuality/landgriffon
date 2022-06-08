@@ -63,7 +63,8 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   label,
   autoFocus = false,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(autoFocus && (!current || current.length === 0));
+
   const {
     x,
     y,
@@ -247,135 +248,128 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     }
   }, [current]);
 
-  useEffect(() => {
-    if (!autoFocus) return;
-    setIsOpen(true);
-  }, [autoFocus]);
-
   return (
-    <div>
+    <div
+      {...getReferenceProps({
+        ref: reference,
+      })}
+      className={classNames(
+        'relative',
+        {
+          [THEMES[theme].wrapper]: theme === 'default',
+          'flex flex-row justify-between items-center gap-1': theme === 'default',
+          'border-2 border-red-600': theme === 'default' && error,
+          'w-fit': theme === 'inline-primary',
+        },
+        { 'w-fit': theme === 'inline-primary' },
+      )}
+    >
       <div
-        {...getReferenceProps({
-          ref: reference,
+        className={classNames('flex gap-1 h-min flex-wrap overflow-hidden', {
+          'ring-green-700 border-green-700': isOpen,
+          'border-red-600': theme === 'inline-primary' && error,
+          [THEMES[theme].wrapper]: theme === 'inline-primary',
         })}
-        className={classNames(
-          'relative',
-          {
-            [THEMES[theme].wrapper]: theme === 'default',
-            'flex flex-row justify-between items-center gap-1': theme === 'default',
-            'border-2 border-red-600': theme === 'default' && error,
-            'w-fit': theme === 'inline-primary',
-          },
-          { 'w-fit': theme === 'inline-primary' },
-        )}
       >
-        <div
-          className={classNames('flex gap-1 h-min flex-wrap overflow-hidden', {
-            'ring-green-700 border-green-700': isOpen,
-            'border-red-600': theme === 'inline-primary' && error,
-            [THEMES[theme].wrapper]: theme === 'inline-primary',
-          })}
-        >
-          {label && <span className={classNames(THEMES[theme].label)}>{label}</span>}
-          {multiple ? (
-            <>
-              {(!currentOptions || !currentOptions.length) && !showSearch && (
-                <span className="text-gray-500 inline-block truncate text-sm">{placeholder}</span>
-              )}
-              {currentOptions &&
-                !!currentOptions.length &&
-                !ellipsis &&
-                currentOptions.slice(0, maxBadges).map((option) => (
-                  <Badge
-                    key={option.value}
-                    className={classNames('text-sm h-fit my-auto max-w-full', THEMES[theme].label)}
-                    data={option}
-                    onClick={handleRemoveBadge}
-                    removable={theme !== 'inline-primary'}
-                    theme={theme}
-                  >
-                    {option.label}
-                  </Badge>
-                ))}
-              {currentOptions && !!currentOptions.length && ellipsis && (
+        {label && <span className={classNames(THEMES[theme].label)}>{label}</span>}
+        {multiple ? (
+          <>
+            {(!currentOptions || !currentOptions.length) && !showSearch && (
+              <span className="text-gray-500 inline-block truncate text-sm">{placeholder}</span>
+            )}
+            {currentOptions &&
+              !!currentOptions.length &&
+              !ellipsis &&
+              currentOptions.slice(0, maxBadges).map((option) => (
                 <Badge
-                  key={currentOptions[0].value}
-                  className={classNames('text-sm h-fit my-auto', THEMES[theme].label)}
-                  data={currentOptions[0]}
+                  key={option.value}
+                  className={classNames('text-sm h-fit my-auto max-w-full', THEMES[theme].label)}
+                  data={option}
                   onClick={handleRemoveBadge}
                   removable={theme !== 'inline-primary'}
                   theme={theme}
                 >
-                  {currentOptions[0].label}
+                  {option.label}
                 </Badge>
-              )}
-              {currentOptions && currentOptions.length > maxBadges && (
-                <Badge
-                  className={classNames('text-sm h-fit my-auto', THEMES[theme].label)}
-                  theme={theme}
-                >
-                  {currentOptions.length - maxBadges} more selected
-                </Badge>
-              )}
-            </>
-          ) : (
-            <span className="inline-block truncate my-auto">
-              {selected ? (
-                <span className="font-medium">{selected.label}</span>
-              ) : (
-                // the placeholder is in the search input already
-                showSearch || <span className="text-gray-500">{placeholder}</span>
-              )}
-            </span>
-          )}
-          {showSearch && (
-            <div className="inline-flex flex-row flex-grow h-min gap-x-1">
-              <SearchIcon className="block h-4 w-4 text-gray-400 my-auto" />
-              <input
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsOpen(true);
-                }}
-                type="search"
-                value={searchTerm}
-                placeholder={currentOptions.length === 0 ? placeholder : null}
-                className="border-none focus:ring-0 truncate py-0 px-0 text-sm"
-                onChange={handleSearch}
-                autoComplete="off"
-                style={{
-                  minWidth:
-                    searchTerm || currentOptions.length !== 0 ? '4ch' : `${placeholder.length}ch`,
-                  maxWidth: '10ch',
-                  width: `${searchTerm.length}ch`,
-                }}
-              />
-              {searchTerm && (
-                <button type="button" onClick={resetSearch} className="px-2 py-0">
-                  <XIcon className="h-4 w-4 text-gray-400" />
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-        <div
-          className={classNames('flex pointer-events-none h-fit', THEMES[theme].arrow, {
-            'text-red-700': !!error,
-          })}
-        >
-          {theme === 'inline-primary' ? (
-            <div
-              className={classNames(
-                'mt-0.5 border-t-green-700 border-t-4 border-x-4 border-x-transparent mx-auto w-0 h-0',
-                { 'border-t-red-600': error },
-              )}
+              ))}
+            {currentOptions && !!currentOptions.length && ellipsis && (
+              <Badge
+                key={currentOptions[0].value}
+                className={classNames('text-sm h-fit my-auto', THEMES[theme].label)}
+                data={currentOptions[0]}
+                onClick={handleRemoveBadge}
+                removable={theme !== 'inline-primary'}
+                theme={theme}
+              >
+                {currentOptions[0].label}
+              </Badge>
+            )}
+            {currentOptions && currentOptions.length > maxBadges && (
+              <Badge
+                className={classNames('text-sm h-fit my-auto', THEMES[theme].label)}
+                theme={theme}
+              >
+                {currentOptions.length - maxBadges} more selected
+              </Badge>
+            )}
+          </>
+        ) : (
+          <span className="inline-block truncate my-auto">
+            {selected ? (
+              <span className="font-medium">{selected.label}</span>
+            ) : (
+              // the placeholder is in the search input already
+              showSearch || <span className="text-gray-500">{placeholder}</span>
+            )}
+          </span>
+        )}
+        {showSearch && (
+          <div className="inline-flex flex-row flex-grow h-min gap-x-1">
+            <SearchIcon className="block h-4 w-4 text-gray-400 my-auto" />
+            <input
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsOpen(true);
+              }}
+              type="search"
+              value={searchTerm}
+              placeholder={currentOptions.length === 0 ? placeholder : null}
+              className="border-none focus:ring-0 truncate py-0 px-0 text-sm"
+              onChange={handleSearch}
+              autoComplete="off"
+              style={{
+                minWidth:
+                  searchTerm || currentOptions.length !== 0 ? '4ch' : `${placeholder.length}ch`,
+                maxWidth: '10ch',
+                width: `${searchTerm.length}ch`,
+              }}
             />
-          ) : (
-            <ChevronDownIcon
-              className={classNames('h-4 w-4', { 'rotate-180': isOpen })}
-              aria-hidden="true"
-            />
-          )}
-        </div>
+            {searchTerm && (
+              <button type="button" onClick={resetSearch} className="px-2 py-0">
+                <XIcon className="h-4 w-4 text-gray-400" />
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+      <div
+        className={classNames('flex pointer-events-none h-fit', THEMES[theme].arrow, {
+          'text-red-700': !!error,
+        })}
+      >
+        {theme === 'inline-primary' ? (
+          <div
+            className={classNames(
+              'mt-0.5 border-t-green-700 border-t-4 border-x-4 border-x-transparent mx-auto w-0 h-0',
+              { 'border-t-red-600': error },
+            )}
+          />
+        ) : (
+          <ChevronDownIcon
+            className={classNames('h-4 w-4', { 'rotate-180': isOpen })}
+            aria-hidden="true"
+          />
+        )}
       </div>
       {isOpen && (
         <div

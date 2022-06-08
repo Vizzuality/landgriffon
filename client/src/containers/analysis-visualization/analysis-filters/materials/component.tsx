@@ -23,7 +23,6 @@ type MaterialsFilterProps = {
   supplierIds?: MaterialsTreesParams['supplierIds'];
   originIds?: MaterialsTreesParams['originIds'];
   locationTypes?: MaterialsTreesParams['locationTypes'];
-  defaultOpen?: boolean;
 };
 
 const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
@@ -39,7 +38,6 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
   theme,
   ellipsis,
   fitContent,
-  defaultOpen = false,
 }) => {
   const { data, isFetching } = useMaterialsTrees({
     depth,

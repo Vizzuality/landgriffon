@@ -144,18 +144,38 @@ export class SourcingLocationsService extends AppBaseService<
     return queryBuilder.getMany();
   }
 
-  getLocationTypes(): LocationTypesDto {
-    const locationTypes: LocationTypeWithLabel[] = [];
+  async getLocationTypes(): Promise<LocationTypesDto> {
+    const locationTypesObjectsInDatabase:
+      | { locationType: string }[]
+      | undefined = await this.sourcingLocationRepository
+      .createQueryBuilder()
+      .select(['"locationType"'])
+      .distinct()
+      .getRawMany();
 
-    Object.values(LOCATION_TYPES_PARAMS).forEach((locationType) => {
-      locationTypes.push({
-        label:
-          locationType.replace(/-/g, ' ').charAt(0).toUpperCase() +
-          locationType.replace(/-/g, ' ').slice(1),
-        value: locationType,
+    if (!locationTypesObjectsInDatabase) {
+      throw new NotFoundException(
+        `No Sourcing Locations with Location Types found`,
+      );
+    }
+
+    const locationTypesStringsInDatabase = locationTypesObjectsInDatabase.map(
+      (locationObject) => {
+        return locationObject.locationType;
+      },
+    );
+
+    const locationTypesResponse: LocationTypeWithLabel[] =
+      locationTypesStringsInDatabase.map((locationType) => {
+        return {
+          label:
+            locationType.replace(/-/g, ' ').charAt(0).toUpperCase() +
+            locationType.replace(/-/g, ' ').slice(1),
+          value: locationType.replace(/ /g, '-') as LOCATION_TYPES_PARAMS,
+        };
       });
-    });
-    return { data: locationTypes };
+
+    return { data: locationTypesResponse };
   }
 
   async extendFindAllQuery(

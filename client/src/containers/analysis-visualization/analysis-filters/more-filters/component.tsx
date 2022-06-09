@@ -43,33 +43,25 @@ const MoreFilters: React.FC = () => {
     [materials, origins, suppliers, locationTypes],
   );
 
-  const materialIds: string[] = useMemo(() => materials.map(({ value }) => value), [materials]);
-  const originIds: string[] = useMemo(() => origins.map(({ value }) => value), [origins]);
-  const supplierIds: string[] = useMemo(() => suppliers.map(({ value }) => value), [suppliers]);
-  const locationTypesIds: string[] = useMemo(
-    () => locationTypes.map(({ value }) => value),
-    [locationTypes],
-  );
-
   // Initial state from redux
   const [selectedFilters, setSelectedFilters] = useState<MoreFiltersState>(moreFilters);
 
-  const selectedMaterialIds = useMemo(
+  const materialIds = useMemo(
     () => selectedFilters.materials.map(({ value }) => value),
     [selectedFilters.materials],
   );
 
-  const selectedOriginIds = useMemo(
+  const originIds = useMemo(
     () => selectedFilters.origins.map(({ value }) => value),
     [selectedFilters.origins],
   );
 
-  const selectedSuppliersIds = useMemo(
+  const supplierIds = useMemo(
     () => selectedFilters.suppliers.map(({ value }) => value),
     [selectedFilters.suppliers],
   );
 
-  const selectedLocationTypesIds = useMemo(
+  const locationTypesIds = useMemo(
     () => selectedFilters.locationTypes.map(({ value }) => value),
     [selectedFilters.locationTypes],
   );
@@ -173,9 +165,9 @@ const MoreFilters: React.FC = () => {
                   <Materials
                     multiple
                     withSourcingLocations
-                    originIds={selectedOriginIds}
-                    supplierIds={selectedSuppliersIds}
-                    locationTypes={selectedLocationTypesIds}
+                    originIds={originIds}
+                    supplierIds={supplierIds}
+                    locationTypes={locationTypesIds}
                     current={selectedFilters.materials}
                     fitContent
                     onChange={(values) => handleChangeFilter('materials', values)}
@@ -186,9 +178,9 @@ const MoreFilters: React.FC = () => {
                   <OriginRegions
                     multiple
                     withSourcingLocations
-                    materialIds={selectedMaterialIds}
-                    supplierIds={selectedSuppliersIds}
-                    locationTypes={selectedLocationTypesIds}
+                    materialIds={materialIds}
+                    supplierIds={supplierIds}
+                    locationTypes={locationTypesIds}
                     current={selectedFilters.origins}
                     fitContent
                     onChange={(values) => handleChangeFilter('origins', values)}
@@ -199,9 +191,9 @@ const MoreFilters: React.FC = () => {
                   <Suppliers
                     multiple
                     withSourcingLocations
-                    materialIds={selectedMaterialIds}
-                    originIds={selectedOriginIds}
-                    locationTypes={selectedLocationTypesIds}
+                    materialIds={materialIds}
+                    originIds={originIds}
+                    locationTypes={locationTypesIds}
                     current={selectedFilters.suppliers}
                     fitContent
                     onChange={(values) => handleChangeFilter('suppliers', values)}

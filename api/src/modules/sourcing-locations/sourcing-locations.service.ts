@@ -76,15 +76,19 @@ export class SourcingLocationsService extends AppBaseService<
     sourcingLocationDTOs: CreateSourcingLocationDto[],
   ): Promise<SourcingLocation[]> {
     this.logger.log(`Saving ${sourcingLocationDTOs.length} nodes`);
-    const sourcingLocation: SourcingLocation[] = await Promise.all(
+    let sourcingLocations: SourcingLocation[] = await Promise.all(
       sourcingLocationDTOs.map(
         async (sourcingLocationDto: CreateSourcingLocationDto) => {
           return await this.setDataCreate(sourcingLocationDto);
         },
       ),
     );
-
-    return await this.sourcingLocationRepository.saveChunks(sourcingLocation);
+    sourcingLocations = sourcingLocations.map((data: SourcingLocation) => {
+      const sourcingLocation: SourcingLocation = new SourcingLocation();
+      Object.assign(sourcingLocation, data);
+      return sourcingLocation;
+    });
+    return await this.sourcingLocationRepository.saveChunks(sourcingLocations);
   }
 
   async findFilteredSourcingLocationsForIntervention(

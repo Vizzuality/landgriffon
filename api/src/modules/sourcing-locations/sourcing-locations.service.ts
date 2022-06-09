@@ -173,7 +173,7 @@ export class SourcingLocationsService extends AppBaseService<
     }
 
     if (locationTypesOptions.materialIds) {
-      locationTypesOptions.originIds =
+      locationTypesOptions.materialIds =
         await this.materialsService.getMaterialsDescendants(
           locationTypesOptions.materialIds,
         );
@@ -190,6 +190,7 @@ export class SourcingLocationsService extends AppBaseService<
           locationTypesOptions.supplierIds,
         );
     }
+
     const locationTypesObjectsInDatabase: { locationType: string }[] =
       await this.sourcingLocationRepository.getAvailableLocationTypes(
         locationTypesOptions,

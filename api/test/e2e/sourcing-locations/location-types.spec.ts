@@ -6,8 +6,22 @@ import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-loc
 import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
-import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
-import { createSourcingLocation } from '../../entity-mocks';
+import {
+  LOCATION_TYPES,
+  SourcingLocation,
+} from 'modules/sourcing-locations/sourcing-location.entity';
+import {
+  createAdminRegion,
+  createBusinessUnit,
+  createMaterial,
+  createSourcingLocation,
+  createSupplier,
+} from '../../entity-mocks';
+import { Material } from 'modules/materials/material.entity';
+import { Supplier } from 'modules/suppliers/supplier.entity';
+import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
+import { BusinessUnit } from 'modules/business-units/business-unit.entity';
+import { clearEntityTables } from '../../utils/database-test-helper';
 
 describe('SourcingLocationsModule (e2e)', () => {
   let app: INestApplication;
@@ -29,15 +43,21 @@ describe('SourcingLocationsModule (e2e)', () => {
   });
 
   afterEach(async () => {
-    await sourcingLocationRepository.delete({});
+    await clearEntityTables([
+      Material,
+      BusinessUnit,
+      AdminRegion,
+      Supplier,
+      SourcingLocation,
+    ]);
   });
 
   afterAll(async () => {
     await app.close();
   });
 
-  describe('Sourcing locations - Location Types Endpoint', () => {
-    test('Given there are Sourcing Locations with location Types in the Database, When I request the available location Types for filtering, Then I should get results in the correct format ', async () => {
+  describe('Sourcing locations - No filters', () => {
+    test('Given there are Sourcing Locations with Location Types in the Database, When I request the available location Types, Then I should get results in the correct format ', async () => {
       await Promise.all(
         Object.values(LOCATION_TYPES).map((locationType: LOCATION_TYPES) => {
           createSourcingLocation({ locationType });
@@ -57,6 +77,150 @@ describe('SourcingLocationsModule (e2e)', () => {
           { label: 'Aggregation point', value: 'aggregation-point' },
           { label: 'Point of production', value: 'point-of-production' },
           { label: 'Unknown', value: 'unknown' },
+        ]),
+      );
+    });
+  });
+
+  describe('Sourcing locations - Smart Filters', () => {
+    test('Given there are Sourcing Locations with Location Types in the Database, When I request the available location Types with additional filters, Then I should get Location Types in accordance with filters', async () => {
+      // Creating pre-conditions - Materials, Suppliers, Admin Regions, Business Units
+
+      const parentMaterial: Material = await createMaterial();
+      const childMaterialOne: Material = await createMaterial({
+        parent: parentMaterial,
+      });
+      const childMaterialTwo: Material = await createMaterial({
+        parent: parentMaterial,
+      });
+
+      const supplierOne: Supplier = await createSupplier();
+      const supplierTwo: Supplier = await createSupplier();
+
+      const adminRegionOne: AdminRegion = await createAdminRegion();
+      const adminRegionTwo: AdminRegion = await createAdminRegion();
+
+      const businessUnitOne: BusinessUnit = await createBusinessUnit();
+      const businessUnitTwo: BusinessUnit = await createBusinessUnit();
+
+      // Creating pre-conditions - Sourcing Locations
+
+      await createSourcingLocation({
+        locationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+        materialId: parentMaterial.id,
+        t1SupplierId: supplierOne.id,
+        adminRegionId: adminRegionOne.id,
+        businessUnitId: businessUnitOne.id,
+      });
+
+      await createSourcingLocation({
+        locationType: LOCATION_TYPES.AGGREGATION_POINT,
+        materialId: childMaterialOne.id,
+        t1SupplierId: supplierOne.id,
+        adminRegionId: adminRegionOne.id,
+        businessUnitId: businessUnitOne.id,
+      });
+
+      await createSourcingLocation({
+        locationType: LOCATION_TYPES.UNKNOWN,
+        materialId: childMaterialTwo.id,
+        t1SupplierId: supplierTwo.id,
+        adminRegionId: adminRegionOne.id,
+        businessUnitId: businessUnitOne.id,
+      });
+
+      await createSourcingLocation({
+        locationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
+        materialId: childMaterialTwo.id,
+        t1SupplierId: supplierTwo.id,
+        adminRegionId: adminRegionTwo.id,
+        businessUnitId: businessUnitTwo.id,
+      });
+
+      // Materials Filters
+
+      const responseParentMaterialFilter = await request(app.getHttpServer())
+        .get(`/api/v1/sourcing-locations/location-types`)
+        .query({ 'materialIds[]': parentMaterial.id })
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .expect(HttpStatus.OK);
+
+      expect(responseParentMaterialFilter.body.data.length).toEqual(4);
+      expect(responseParentMaterialFilter.body.data).toEqual(
+        expect.arrayContaining([
+          { label: 'Country of production', value: 'country-of-production' },
+          { label: 'Aggregation point', value: 'aggregation-point' },
+          { label: 'Point of production', value: 'point-of-production' },
+          { label: 'Unknown', value: 'unknown' },
+        ]),
+      );
+
+      const responseChildMaterialFilter = await request(app.getHttpServer())
+        .get(`/api/v1/sourcing-locations/location-types`)
+        .query({ 'materialIds[]': childMaterialTwo.id })
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .expect(HttpStatus.OK);
+
+      expect(responseChildMaterialFilter.body.data.length).toEqual(2);
+      expect(responseChildMaterialFilter.body.data).toEqual(
+        expect.arrayContaining([
+          { label: 'Point of production', value: 'point-of-production' },
+          { label: 'Unknown', value: 'unknown' },
+        ]),
+      );
+
+      // Supplier filter
+
+      const responseSupplierFilter = await request(app.getHttpServer())
+        .get(`/api/v1/sourcing-locations/location-types`)
+        .query({
+          'supplierIds[]': supplierOne.id,
+        })
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .expect(HttpStatus.OK);
+
+      expect(responseSupplierFilter.body.data.length).toEqual(2);
+      expect(responseSupplierFilter.body.data).toEqual(
+        expect.arrayContaining([
+          { label: 'Country of production', value: 'country-of-production' },
+          { label: 'Aggregation point', value: 'aggregation-point' },
+        ]),
+      );
+
+      // Business Unit Filter
+
+      const responseBusinessUnitFilter = await request(app.getHttpServer())
+        .get(`/api/v1/sourcing-locations/location-types`)
+        .query({
+          'businessUnitIds[]': businessUnitOne.id,
+        })
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .expect(HttpStatus.OK);
+
+      expect(responseBusinessUnitFilter.body.data.length).toEqual(3);
+      expect(responseBusinessUnitFilter.body.data).toEqual(
+        expect.arrayContaining([
+          { label: 'Country of production', value: 'country-of-production' },
+          { label: 'Aggregation point', value: 'aggregation-point' },
+          { label: 'Unknown', value: 'unknown' },
+        ]),
+      );
+
+      // Mixed Filter
+
+      const responseMixedFilter = await request(app.getHttpServer())
+        .get(`/api/v1/sourcing-locations/location-types`)
+        .query({
+          'materialIds[]': childMaterialTwo.id,
+          'originIds[]': adminRegionTwo.id,
+        })
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .expect(HttpStatus.OK);
+
+      expect(responseMixedFilter.body.data.length).toEqual(1);
+      expect(responseMixedFilter.body.data).toEqual(
+        expect.arrayContaining([
+          { label: 'Point of production', value: 'point-of-production' },
         ]),
       );
     });

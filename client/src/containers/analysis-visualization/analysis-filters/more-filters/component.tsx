@@ -67,12 +67,13 @@ const MoreFilters: React.FC = () => {
   );
 
   const [counter, setCounter] = useState<number>(0);
+  const [isOpen, setIsOpen] = useState(false);
 
   // Restoring state from initial state from redux
-  const handleClose = useCallback(() => {
+  useEffect(() => {
+    if (isOpen) return;
     setSelectedFilters(moreFilters);
-    setIsOpen(false);
-  }, [moreFilters]);
+  }, [isOpen, moreFilters]);
 
   // Only the changes are applied when the user clicks on Apply
   const handleApply = useCallback(() => {
@@ -102,8 +103,6 @@ const MoreFilters: React.FC = () => {
     () => JSON.stringify(selectedFilters) !== JSON.stringify(moreFilters),
     [selectedFilters, moreFilters],
   );
-
-  const [isOpen, setIsOpen] = useState(false);
 
   const { reference, floating, strategy, x, y, context } = useFloating({
     open: isOpen,
@@ -210,7 +209,7 @@ const MoreFilters: React.FC = () => {
               </div>
 
               <div className="flex gap-2 mt-6">
-                <Button theme="secondary" className="px-9" onClick={handleClose}>
+                <Button theme="secondary" className="px-9">
                   Cancel
                 </Button>
                 <Button

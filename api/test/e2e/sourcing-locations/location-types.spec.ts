@@ -38,10 +38,12 @@ describe('SourcingLocationsModule (e2e)', () => {
 
   describe('Sourcing locations - Location Types Endpoint', () => {
     test('Given there are Sourcing Locations with location Types in the Database, When I request the available location Types for filtering, Then I should get results in the correct format ', async () => {
-      for (const locationType of Object.values(LOCATION_TYPES)) {
-        await createSourcingLocation({ locationType });
-        await createSourcingLocation({ locationType });
-      }
+      await Promise.all(
+        Object.values(LOCATION_TYPES).map((locationType: LOCATION_TYPES) => {
+          createSourcingLocation({ locationType });
+          createSourcingLocation({ locationType });
+        }),
+      );
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/sourcing-locations/location-types`)

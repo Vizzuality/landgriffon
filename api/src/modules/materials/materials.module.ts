@@ -15,7 +15,7 @@ import { SuppliersModule } from 'modules/suppliers/suppliers.module';
     forwardRef(() => AdminRegionsModule),
     forwardRef(() => BusinessUnitsModule),
     forwardRef(() => SuppliersModule),
-    SourcingLocationsModule,
+    forwardRef(() => SourcingLocationsModule),
   ],
   controllers: [MaterialsController],
   providers: [MaterialsService],

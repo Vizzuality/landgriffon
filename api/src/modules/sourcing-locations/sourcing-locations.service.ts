@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
@@ -20,6 +25,11 @@ import {
   LocationTypesDto,
   LocationTypeWithLabel,
 } from 'modules/sourcing-locations/dto/location-type.sourcing-locations.dto';
+import { LocationTypesOptionsDto } from './dto/location-types-options.sourcing-locations.dto';
+import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
+import { BusinessUnitsService } from 'modules/business-units/business-units.service';
+import { SuppliersService } from 'modules/suppliers/suppliers.service';
+import { MaterialsService } from 'modules/materials/materials.service';
 
 @Injectable()
 export class SourcingLocationsService extends AppBaseService<
@@ -31,6 +41,14 @@ export class SourcingLocationsService extends AppBaseService<
   constructor(
     @InjectRepository(SourcingLocationRepository)
     protected readonly sourcingLocationRepository: SourcingLocationRepository,
+    @Inject(forwardRef(() => AdminRegionsService))
+    protected readonly adminRegionService: AdminRegionsService,
+    @Inject(forwardRef(() => BusinessUnitsService))
+    protected readonly businessUnitsService: BusinessUnitsService,
+    @Inject(forwardRef(() => SuppliersService))
+    protected readonly suppliersService: SuppliersService,
+    @Inject(forwardRef(() => MaterialsService))
+    protected readonly materialsService: MaterialsService,
   ) {
     super(
       sourcingLocationRepository,
@@ -144,34 +162,52 @@ export class SourcingLocationsService extends AppBaseService<
     return queryBuilder.getMany();
   }
 
-  async getLocationTypes(): Promise<LocationTypesDto> {
-    const locationTypesObjectsInDatabase:
-      | { locationType: string }[]
-      | undefined = await this.sourcingLocationRepository
-      .createQueryBuilder()
-      .select(['"locationType"'])
-      .distinct()
-      .getRawMany();
-
-    if (!locationTypesObjectsInDatabase) {
-      throw new NotFoundException(
-        `No Sourcing Locations with Location Types found`,
-      );
+  async getLocationTypes(
+    locationTypesOptions: LocationTypesOptionsDto,
+  ): Promise<LocationTypesDto> {
+    if (locationTypesOptions.originIds) {
+      locationTypesOptions.originIds =
+        await this.adminRegionService.getAdminRegionDescendants(
+          locationTypesOptions.originIds,
+        );
     }
 
-    const locationTypesStringsInDatabase = locationTypesObjectsInDatabase.map(
-      (locationObject) => {
-        return locationObject.locationType;
-      },
-    );
+    if (locationTypesOptions.materialIds) {
+      locationTypesOptions.originIds =
+        await this.materialsService.getMaterialsDescendants(
+          locationTypesOptions.materialIds,
+        );
+    }
+    if (locationTypesOptions.businessUnitIds) {
+      locationTypesOptions.businessUnitIds =
+        await this.businessUnitsService.getBusinessUnitsDescendants(
+          locationTypesOptions.businessUnitIds,
+        );
+    }
+    if (locationTypesOptions.supplierIds) {
+      locationTypesOptions.supplierIds =
+        await this.suppliersService.getSuppliersDescendants(
+          locationTypesOptions.supplierIds,
+        );
+    }
+    const locationTypesObjectsInDatabase: { locationType: string }[] =
+      await this.sourcingLocationRepository.getAvailableLocationTypes(
+        locationTypesOptions,
+      );
 
     const locationTypesResponse: LocationTypeWithLabel[] =
-      locationTypesStringsInDatabase.map((locationType) => {
+      locationTypesObjectsInDatabase.map((locationObject) => {
         return {
           label:
-            locationType.replace(/-/g, ' ').charAt(0).toUpperCase() +
-            locationType.replace(/-/g, ' ').slice(1),
-          value: locationType.replace(/ /g, '-') as LOCATION_TYPES_PARAMS,
+            locationObject.locationType
+              .replace(/-/g, ' ')
+              .charAt(0)
+              .toUpperCase() +
+            locationObject.locationType.replace(/-/g, ' ').slice(1),
+          value: locationObject.locationType.replace(
+            / /g,
+            '-',
+          ) as LOCATION_TYPES_PARAMS,
         };
       });
 

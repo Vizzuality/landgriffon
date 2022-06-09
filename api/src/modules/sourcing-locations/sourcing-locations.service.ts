@@ -84,9 +84,7 @@ export class SourcingLocationsService extends AppBaseService<
       ),
     );
 
-    return await this.sourcingLocationRepository.save(sourcingLocation, {
-      chunk: 1000,
-    });
+    return await this.sourcingLocationRepository.saveChunks(sourcingLocation);
   }
 
   async findFilteredSourcingLocationsForIntervention(

@@ -36,7 +36,8 @@
     "password": "DB_PASSWORD",
     "database": "DB_DATABASE",
     "synchronize": "DB_SYNCHRONIZE",
-    "migrationsRun": "DB_MIGRATIONS_RUN"
+    "migrationsRun": "DB_MIGRATIONS_RUN",
+    "batchChunkSize": "CHUNK_SIZE_FOR_BATCH_DB_OPERATIONS"
   },
   "fileUploads": {
     "sizeLimit": "FILE_SIZE_LIMIT",

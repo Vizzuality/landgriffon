@@ -44,7 +44,8 @@
     "synchronize": false,
     "migrationsRun": true,
     "dropSchema": false,
-    "logging": true
+    "logging": true,
+    "batchChunkSize": 1000
   },
   "fileUploads": {
     "sizeLimit": 5e6,

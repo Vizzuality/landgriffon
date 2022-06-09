@@ -35,6 +35,12 @@ export class H3DataYearsService {
   ): Promise<number[]> {
     switch (layerType) {
       case LAYER_TYPES.IMPACT:
+        // If any material Id is provided, get all the de offspring to filter by
+        if (materialIds) {
+          materialIds = await this.materialService.getMaterialsDescendants(
+            materialIds,
+          );
+        }
         return this.getAvailableYearsForImpactLayer(materialIds);
       case LAYER_TYPES.MATERIAL:
         return this.getAvailableYearsForMaterialLayer(materialIds);

@@ -8,6 +8,7 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   retry: false,
   keepPreviousData: true,
   refetchOnWindowFocus: false,
+  staleTime: 2 * 60 * 1000, // 2 minutes max stale time
 };
 
 type ResponseData = UseQueryResult<Material[]>;
@@ -48,7 +49,10 @@ export function useMaterials(): ResponseData {
   );
 }
 
-export function useMaterialsTrees(params: MaterialsTreesParams): ResponseData {
+export function useMaterialsTrees(
+  params: MaterialsTreesParams,
+  options: UseQueryOptions = {},
+): ResponseData {
   const query = useQuery(
     ['materials-trees', JSON.stringify(params)],
     async () =>
@@ -61,6 +65,7 @@ export function useMaterialsTrees(params: MaterialsTreesParams): ResponseData {
         .then(({ data: responseData }) => responseData.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
+      ...options,
     },
   );
 

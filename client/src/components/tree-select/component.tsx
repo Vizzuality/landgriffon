@@ -403,25 +403,29 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
               </div>
             )}
             {!loading && (
-              <Tree
-                autoExpandParent
-                checkStrictly={false}
-                checkable={multiple}
-                selectable={!multiple}
-                multiple={multiple}
-                selectedKeys={selectedKeys}
-                expandedKeys={expandedKeys}
-                checkedKeys={checkedKeys}
-                switcherIcon={customSwitcherIcon}
-                onExpand={handleExpand}
-                onSelect={handleSelect}
-                onCheck={handleCheck}
-              >
-                {renderTreeNodes(options)}
-              </Tree>
-            )}
-            {(options.length === 0 || (searchTerm && filteredKeys.length === 0)) && (
-              <div className="p-2 text-gray-700 text-sm opacity-60 w-fit mx-auto">No results</div>
+              <>
+                <Tree
+                  autoExpandParent
+                  checkStrictly={false}
+                  checkable={multiple}
+                  selectable={!multiple}
+                  multiple={multiple}
+                  selectedKeys={selectedKeys}
+                  expandedKeys={expandedKeys}
+                  checkedKeys={checkedKeys}
+                  switcherIcon={customSwitcherIcon}
+                  onExpand={handleExpand}
+                  onSelect={handleSelect}
+                  onCheck={handleCheck}
+                >
+                  {renderTreeNodes(options)}
+                </Tree>
+                {(options.length === 0 || (searchTerm && filteredKeys.length === 0)) && (
+                  <div className="p-2 text-gray-700 text-sm opacity-60 w-fit mx-auto">
+                    No results
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

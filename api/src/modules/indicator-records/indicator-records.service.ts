@@ -205,9 +205,7 @@ export class IndicatorRecordsService extends AppBaseService<
         );
       },
     );
-    await this.indicatorRecordRepository.save(indicatorRecords, {
-      chunk: 10,
-    });
+    await this.indicatorRecordRepository.saveChunks(indicatorRecords);
   }
 
   /**

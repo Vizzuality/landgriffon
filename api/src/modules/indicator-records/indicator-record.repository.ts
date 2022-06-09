@@ -1,12 +1,13 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository } from 'typeorm';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { Logger, ServiceUnavailableException } from '@nestjs/common';
 import { IndicatorComputedRawDataDto } from 'modules/indicators/dto/indicator-computed-raw-data.dto';
 import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
+import { AppBaseRepository } from 'utils/app-base.repository';
 
 @EntityRepository(IndicatorRecord)
-export class IndicatorRecordRepository extends Repository<IndicatorRecord> {
+export class IndicatorRecordRepository extends AppBaseRepository<IndicatorRecord> {
   logger: Logger = new Logger(IndicatorRecordRepository.name);
 
   /**

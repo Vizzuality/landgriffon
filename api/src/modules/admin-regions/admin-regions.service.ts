@@ -40,6 +40,7 @@ export class AdminRegionsService extends AppBaseService<
     protected readonly supplierService: SuppliersService,
     @Inject(forwardRef(() => BusinessUnitsService))
     protected readonly businessUnitService: BusinessUnitsService,
+    @Inject(forwardRef(() => SourcingLocationsService))
     protected readonly sourcingLocationsService: SourcingLocationsService,
   ) {
     super(

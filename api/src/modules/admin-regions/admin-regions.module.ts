@@ -14,7 +14,7 @@ import { BusinessUnitsModule } from 'modules/business-units/business-units.modul
     forwardRef(() => MaterialsModule),
     forwardRef(() => SuppliersModule),
     forwardRef(() => BusinessUnitsModule),
-    SourcingLocationsModule,
+    forwardRef(() => SourcingLocationsModule),
   ],
   controllers: [AdminRegionsController],
   providers: [AdminRegionsService],

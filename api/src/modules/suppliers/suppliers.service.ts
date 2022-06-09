@@ -44,6 +44,7 @@ export class SuppliersService extends AppBaseService<
     protected readonly businessUnitsService: BusinessUnitsService,
     @Inject(forwardRef(() => MaterialsService))
     protected readonly materialsService: MaterialsService,
+    @Inject(forwardRef(() => SourcingLocationsService))
     protected readonly sourcingLocationService: SourcingLocationsService,
   ) {
     super(

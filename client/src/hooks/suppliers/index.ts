@@ -49,7 +49,10 @@ export function useSuppliers(params): ResponseData {
   );
 }
 
-export function useSuppliersTrees(params: SuppliersTreesParams): ResponseData {
+export function useSuppliersTrees(
+  params: SuppliersTreesParams,
+  options: UseQueryOptions = {},
+): ResponseData {
   const query = useQuery(
     ['suppliers-trees', JSON.stringify(params)],
     async () =>
@@ -60,7 +63,7 @@ export function useSuppliersTrees(params: SuppliersTreesParams): ResponseData {
           params,
         })
         .then(({ data: responseData }) => responseData.data),
-    DEFAULT_QUERY_OPTIONS,
+    { ...DEFAULT_QUERY_OPTIONS, ...options },
   );
 
   const { data, isError } = query;

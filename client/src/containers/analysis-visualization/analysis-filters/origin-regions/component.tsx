@@ -36,14 +36,20 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
   ellipsis,
   fitContent,
 }) => {
-  const { data, isFetching } = useAdminRegionsTrees({
-    depth,
-    withSourcingLocations,
-    supplierIds,
-    businessUnitIds,
-    materialIds,
-    locationTypes,
-  });
+  const { data, isFetching } = useAdminRegionsTrees(
+    {
+      depth,
+      withSourcingLocations,
+      supplierIds,
+      businessUnitIds,
+      materialIds,
+      locationTypes,
+    },
+    {
+      // 2 minutes stale time
+      staleTime: 2 * 60 * 1000,
+    },
+  );
 
   const treeOptions: TreeSelectProps['options'] = useMemo(
     () =>

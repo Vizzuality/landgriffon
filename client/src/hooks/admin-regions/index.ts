@@ -48,7 +48,10 @@ export function useAdminRegions(): ResponseData {
   );
 }
 
-export function useAdminRegionsTrees(params: AdminRegionsTreesParams): ResponseData {
+export function useAdminRegionsTrees(
+  params: AdminRegionsTreesParams,
+  options: UseQueryOptions = {},
+): ResponseData {
   const query = useQuery(
     ['admin-regions-trees', JSON.stringify(params)],
     async () =>
@@ -61,6 +64,7 @@ export function useAdminRegionsTrees(params: AdminRegionsTreesParams): ResponseD
         .then(({ data: responseData }) => responseData.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
+      ...options,
     },
   );
 

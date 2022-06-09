@@ -37,14 +37,20 @@ const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
   ellipsis,
   fitContent,
 }) => {
-  const { data, isFetching } = useSuppliersTrees({
-    depth,
-    originIds,
-    businessUnitIds,
-    materialIds,
-    locationTypes,
-    withSourcingLocations,
-  });
+  const { data, isFetching } = useSuppliersTrees(
+    {
+      depth,
+      originIds,
+      businessUnitIds,
+      materialIds,
+      locationTypes,
+      withSourcingLocations,
+    },
+    {
+      // 2 minutes stale time
+      staleTime: 2 * 60 * 1000,
+    },
+  );
 
   const treeOptions: TreeSelectProps['options'] = useMemo(
     () =>

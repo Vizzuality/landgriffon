@@ -39,14 +39,20 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
   ellipsis,
   fitContent,
 }) => {
-  const { data, isFetching } = useMaterialsTrees({
-    depth,
-    supplierIds,
-    businessUnitIds,
-    originIds,
-    locationTypes,
-    withSourcingLocations,
-  });
+  const { data, isFetching } = useMaterialsTrees(
+    {
+      depth,
+      supplierIds,
+      businessUnitIds,
+      originIds,
+      locationTypes,
+      withSourcingLocations,
+    },
+    {
+      // 2 minutes stale time
+      staleTime: 2 * 60 * 1000,
+    },
+  );
 
   const treeOptions: TreeSelectProps['options'] = useMemo(
     () =>

@@ -15,8 +15,9 @@ export class SourcingLocationRepository extends AppBaseRepository<SourcingLocati
     locationTypesOptions: LocationTypesOptionsDto,
   ): Promise<{ locationType: string }[]> {
     const queryBuilder: SelectQueryBuilder<SourcingLocation> =
-      this.createQueryBuilder().select(['"locationType"']);
-
+      this.createQueryBuilder('sl')
+        .select('sl.locationType', 'locationType')
+        .distinct();
     if (locationTypesOptions.materialIds) {
       queryBuilder.andWhere('sl.materialId IN (:...materialIds)', {
         materialIds: locationTypesOptions.materialIds,
@@ -43,8 +44,6 @@ export class SourcingLocationRepository extends AppBaseRepository<SourcingLocati
         originIds: locationTypesOptions.originIds,
       });
     }
-
-    queryBuilder.distinct();
 
     const locationTypesObjectsInDatabase: { locationType: string }[] =
       await queryBuilder.getRawMany();

@@ -334,7 +334,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                 }}
                 type="search"
                 value={searchTerm}
-                placeholder={currentOptions.length === 0 ? placeholder : null}
+                placeholder={currentOptions.length === 0 && selected === null ? placeholder : null}
                 className="border-none focus:ring-0 truncate py-0 px-0 text-sm"
                 onChange={handleSearch}
                 autoComplete="off"

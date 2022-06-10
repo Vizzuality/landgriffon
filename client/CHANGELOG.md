@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Forcing desktop version in mobile devices [LANDGRIF-676](https://vizzuality.atlassian.net/browse/LANDGRIF-676)
 - In tables, added border on the left when parent is expanded [LANDGRIF-650](https://vizzuality.atlassian.net/browse/LANDGRIF-650)
 - Better error response for failed logins [LANDGRIF-685](https://vizzuality.atlassian.net/browse/LANDGRIF-685)
+- Added UI state in the URL params [LANDGRIF-638](https://vizzuality.atlassian.net/browse/LANDGRIF-638)
 
 ### Changed
 

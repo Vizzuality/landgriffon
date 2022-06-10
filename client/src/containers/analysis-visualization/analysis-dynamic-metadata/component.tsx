@@ -44,7 +44,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
 
   const {
     data: { unit },
-  } = useIndicator(indicator.value);
+  } = useIndicator(indicator?.value);
   const indicatorsTemplate = <span className="font-bold">{unit?.symbol}</span>;
   const compareTemplate = <span className="font-bold whitespace-nowrap">{scenarioToCompare}</span>;
   const materialTemplate = !!materials.length && (

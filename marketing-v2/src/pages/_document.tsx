@@ -9,7 +9,7 @@ class MyDocument extends Document {
 
   render(): JSX.Element {
     return (
-      <Html className="h-full bg-gray-100">
+      <Html className="bg-gray-100">
         <Head>
           <meta
             name="description"

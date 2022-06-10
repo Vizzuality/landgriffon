@@ -11,6 +11,7 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ['Public Sans', 'sans-serif'],
+        display: ['Geomanist', 'sans-serif'],
       },
       fontSize: {
         xs: '12px',

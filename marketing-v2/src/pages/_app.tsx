@@ -8,6 +8,7 @@ import { SessionProvider } from 'next-auth/react';
 import store from 'store';
 
 import 'styles/globals.css';
+import 'styles/fonts.css';
 
 const queryClient = new QueryClient();
 

@@ -13,7 +13,10 @@ const Home: FC = () => {
           <link rel="icon" href="/favicon.ico" />
           <meta name="viewport" content="width=1024" />
         </Head>
-        Home
+
+        <h1 className="font-black uppercase font-display text-9xl">
+          Unlock the sustainability of your supply chain
+        </h1>
       </>
     </ApplicationLayout>
   );

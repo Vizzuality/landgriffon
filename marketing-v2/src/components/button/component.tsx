@@ -1,8 +1,6 @@
 import cx from 'classnames';
 import { forwardRef, SVGProps } from 'react';
 import Loading from 'components/loading';
-import { PlusIcon } from '@heroicons/react/solid';
-import { MailIcon } from '@heroicons/react/outline';
 
 const COMMON_CLASSNAMES =
   'inline-flex items-center overflow-hidden justify-center rounded-md cursor-pointer';

@@ -11,7 +11,7 @@ const Header: React.FC = () => {
     <header className="flex items-center justify-between font-semibold">
       <div className="px-12 shrink-0">
         <Link href="/">
-          <a href="/">
+          <a>
             <Image src="/images/logo.svg" alt="Landgriffon" width={180} height={14} priority />
           </a>
         </Link>
@@ -28,7 +28,6 @@ const Header: React.FC = () => {
                   'after:content-[""] after:absolute after:top-0 after:left-0 after:h-1 after:w-full after:bg-green-700':
                     pathname === '/the-service',
                 })}
-                href="/the-service"
               >
                 The service
               </a>
@@ -43,7 +42,6 @@ const Header: React.FC = () => {
                   'after:content-[""] after:absolute after:top-0 after:left-0 after:h-1 after:w-full after:bg-green-700':
                     pathname === '/methodology',
                 })}
-                href="/methodology"
               >
                 Methodology
               </a>
@@ -58,7 +56,6 @@ const Header: React.FC = () => {
                   'after:content-[""] after:absolute after:top-0 after:left-0 after:h-1 after:w-full after:bg-green-700':
                     pathname === '/about',
                 })}
-                href="/about"
               >
                 About
               </a>
@@ -73,7 +70,6 @@ const Header: React.FC = () => {
                   'after:content-[""] after:absolute after:top-0 after:left-0 after:h-1 after:w-full after:bg-green-700':
                     pathname === '/team',
                 })}
-                href="/team"
               >
                 Team
               </a>
@@ -88,7 +84,6 @@ const Header: React.FC = () => {
                   'after:content-[""] after:absolute after:top-0 after:left-0 after:h-1 after:w-full after:bg-green-700':
                     pathname === '/faq',
                 })}
-                href="/faq"
               >
                 FAQ
               </a>
@@ -101,7 +96,6 @@ const Header: React.FC = () => {
                   'relative block py-7 hover:text-green-700': true,
                   'text-green-700': pathname === '/blog',
                 })}
-                href="/"
               >
                 Blog
               </a>

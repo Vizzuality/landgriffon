@@ -12,7 +12,12 @@ const ModeControl: React.FC = () => {
   const { layer } = useAppSelector(analysisFilters);
   const dispatch = useAppDispatch();
 
-  const handleClick = useCallback((mode) => dispatch(setVisualizationMode(mode)), [dispatch]);
+  const handleClick = useCallback(
+    (mode) => {
+      dispatch(setVisualizationMode(mode));
+    },
+    [dispatch],
+  );
 
   if (layer !== 'impact' && visualizationMode !== 'map') return null;
 

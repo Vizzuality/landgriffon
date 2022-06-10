@@ -3,7 +3,6 @@ import { useQuery, UseQueryOptions, UseQueryResult } from 'react-query';
 
 import chroma from 'chroma-js';
 
-import store from 'store';
 import { useAppSelector } from 'store/hooks';
 import { filtersForTabularAPI } from 'store/features/analysis/selector';
 import { analysisFilters } from 'store/features/analysis/filters';
@@ -12,6 +11,7 @@ import { apiRawService } from 'services/api';
 import { useIndicators } from 'hooks/indicators';
 
 import type { RGBColor, ImpactData, ImpactRanking } from 'types';
+import { useStore } from 'react-redux';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   placeholderData: {
@@ -49,6 +49,7 @@ type ImpactDataResponse = UseQueryResult<ImpactData, unknown>;
 type ImpactRankingResponse = UseQueryResult<ImpactRanking, unknown>;
 
 export function useImpactData(): ImpactDataResponse {
+  const store = useStore();
   const { data: indicators } = useIndicators();
   const { layer } = useAppSelector(analysisFilters);
   const filters = filtersForTabularAPI(store.getState());
@@ -97,6 +98,7 @@ export function useImpactData(): ImpactDataResponse {
 export function useImpactRanking(
   params = { maxRankingEntities: 5, sort: 'ASC' },
 ): ImpactRankingResponse {
+  const store = useStore();
   const { data: indicators } = useIndicators();
   const { layer } = useAppSelector(analysisFilters);
   const filters = filtersForTabularAPI(store.getState());

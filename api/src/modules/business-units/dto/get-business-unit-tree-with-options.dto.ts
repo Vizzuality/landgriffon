@@ -1,9 +1,20 @@
 /**
  * Get Supplier with options:
  */
-import { IsBoolean, IsNumber, IsOptional, IsUUID } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsUUID,
+} from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
+import {
+  LOCATION_TYPES,
+  LOCATION_TYPES_PARAMS,
+} from 'modules/sourcing-locations/sourcing-location.entity';
+import { transformLocationType } from 'utils/transform-location-type.util';
 
 export class GetBusinessUnitTreeWithOptionsDto {
   @ApiPropertyOptional({
@@ -36,4 +47,20 @@ export class GetBusinessUnitTreeWithOptionsDto {
   @ApiPropertyOptional()
   @IsOptional()
   originIds?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Types of Sourcing Locations, written with hyphens',
+    enum: Object.values(LOCATION_TYPES_PARAMS),
+    name: 'locationTypes[]',
+  })
+  @IsOptional()
+  @IsEnum(LOCATION_TYPES, {
+    each: true,
+    message:
+      'Available options: ' +
+      Object.values(LOCATION_TYPES_PARAMS).toString().toLowerCase(),
+  })
+  @Transform(({ value }) => transformLocationType(value))
+  @Type(() => String)
+  locationTypes?: LOCATION_TYPES_PARAMS[];
 }

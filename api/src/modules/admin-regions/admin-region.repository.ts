@@ -179,6 +179,12 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
       });
     }
 
+    if (adminRegionTreeOptions.locationTypes) {
+      queryBuilder.andWhere('sl.locationType IN (:...locationTypes)', {
+        locationTypes: adminRegionTreeOptions.locationTypes,
+      });
+    }
+
     const [subQuery, subQueryParams]: [string, any[]] =
       queryBuilder.getQueryAndParameters();
 

@@ -32,6 +32,12 @@ export abstract class BaseStrategy {
     return geocodeResponseData;
   }
 
+  /**
+   ** @description Geocodes address and retrieves most accurate response.
+   * Geocoding results have address_components array which contains all parent
+   * geographical components, so in order to take most accurate result it takes the
+   * one with most elements.
+   */
   async geoCodeByAddress(
     locationAddress: string,
     locationCountry: string,
@@ -98,6 +104,12 @@ export abstract class BaseStrategy {
     throw new Error(`Could not get country`);
   }
 
+  /**
+   ** @description Validate Geocode response.
+   * When address is outside provided country, Geocoding will return
+   * several results, one for country and one for address. In case of
+   * several countries in result set, raise an error.
+   */
   validateGeoCodeResponse(
     geoCodedResponse: GeocodeResponse,
     address: string,

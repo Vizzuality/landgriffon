@@ -4,19 +4,19 @@ import Head from 'next/head';
 
 import ApplicationLayout from 'layouts/application';
 
-const Home: FC = () => {
+const Methodology: FC = () => {
   return (
     <ApplicationLayout>
       <>
         <Head>
-          <title>Welcome - Landgriffon</title>
+          <title>Methodology - Landgriffon</title>
           <link rel="icon" href="/favicon.ico" />
           <meta name="viewport" content="width=1024" />
         </Head>
-        Home
+        Methodology
       </>
     </ApplicationLayout>
   );
 };
 
-export default Home;
+export default Methodology;

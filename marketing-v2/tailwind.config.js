@@ -2,7 +2,7 @@
 const forms = require('@tailwindcss/forms');
 const typography = require('@tailwindcss/typography');
 const colors = require('tailwindcss/colors');
-const lineClamp = require('./src/lib/tailwind/line-clamp');
+const lineClamp = require('@tailwindcss/line-clamp');
 
 module.exports = {
   content: ['./**/*.ts', './**/*.tsx'],
@@ -15,9 +15,6 @@ module.exports = {
       fontSize: {
         xs: '12px',
         '2xs': '0.625rem',
-      },
-      height: {
-        'screen-minus-header': "calc(100vh - theme('spacing.16'))",
       },
       spacing: {
         125: '30.875rem',
@@ -45,7 +42,7 @@ module.exports = {
       green: {
         900: '#003D2D',
         800: '#00543F',
-        700: '#00634A', // primary
+        700: '#078A3C', // primary
         600: '#059669',
         500: '#10B981',
         400: '#34D399',

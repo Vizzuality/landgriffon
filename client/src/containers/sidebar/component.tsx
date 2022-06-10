@@ -34,7 +34,7 @@ const Sidebar: React.FC = () => {
         <Dialog
           as="div"
           static
-          className="fixed inset-0 z-40 flex lg:hidden"
+          className="fixed inset-0 z-40 flex hidden"
           open={isMenuMobileOpen}
           onClose={handleOnClose}
         >
@@ -102,7 +102,7 @@ const Sidebar: React.FC = () => {
       </Transition.Root>
 
       {/* Static sidebar for desktop */}
-      <div className="hidden lg:flex lg:flex-shrink-0">
+      <div className="flex lg:flex-shrink-0">
         <div className="flex flex-col w-28">
           <div className="flex-1 flex flex-col min-h-0 overflow-y-auto bg-green-700">
             <div className="flex-1">

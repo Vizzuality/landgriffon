@@ -50,14 +50,11 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
       );
     }
     if (country) {
-      const adminRegion: AdminRegion = await this.findOneOrFail({
-        id: res[0].adminRegionId,
-      });
-      const ancestor: AdminRegion = await this.findAncestorsTree(adminRegion);
-      if (ancestor.name !== country)
-        throw new NotFoundException(
-          `coordinates ${searchParams.lng}, ${searchParams.lat} are not inside ${country}`,
-        );
+      await this.validateAdminRegion(
+        res[0].adminRegionId,
+        country,
+        searchParams,
+      );
     }
 
     return res[0];
@@ -112,17 +109,34 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
       return previous.level > current.level ? previous : current;
     });
     if (country) {
-      const adminRegion: AdminRegion = await this.findOneOrFail({
-        id: result.adminRegionId,
-      });
-      const ancestor: AdminRegion = await this.findAncestorsTree(adminRegion);
-      if (ancestor.name !== country)
-        throw new BadRequestException(
-          `coordinates ${coordinates.lng}, ${coordinates.lat} are not inside ${country}`,
-        );
+      await this.validateAdminRegion(
+        result.adminRegionId,
+        country,
+        coordinates,
+      );
     }
 
     return result;
+  }
+
+  /**
+   ** @description Retrieves Admin Region and its ancestor and checks if it's inside provided country
+   */
+  async validateAdminRegion(
+    adminRegionId: string,
+    country: string,
+    coordinates: {
+      lng: number;
+      lat: number;
+    },
+  ): Promise<void> {
+    const ancestor: AdminRegion = await this.findAncestorsTree({
+      id: adminRegionId,
+    } as AdminRegion);
+    if (ancestor.name !== country)
+      throw new BadRequestException(
+        `coordinates ${coordinates.lng}, ${coordinates.lat} are not inside ${country}`,
+      );
   }
 
   /**

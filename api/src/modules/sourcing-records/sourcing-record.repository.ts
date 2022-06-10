@@ -7,7 +7,6 @@ import {
 } from 'typeorm';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import {
-  LOCATION_TYPES_PARAMS,
   SourcingLocation,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
 } from 'modules/sourcing-locations/sourcing-location.entity';

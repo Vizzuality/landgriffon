@@ -25,7 +25,7 @@ import {
   LocationTypesDto,
   LocationTypeWithLabel,
 } from 'modules/sourcing-locations/dto/location-type.sourcing-locations.dto';
-import { LocationTypesOptionsDto } from './dto/location-types-options.sourcing-locations.dto';
+import { LocationTypesOptionsDto } from 'modules/sourcing-locations/dto/location-types-options.sourcing-locations.dto';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
@@ -197,20 +197,22 @@ export class SourcingLocationsService extends AppBaseService<
       );
 
     const locationTypesResponse: LocationTypeWithLabel[] =
-      locationTypesObjectsInDatabase.map((locationObject) => {
-        return {
-          label:
-            locationObject.locationType
-              .replace(/-/g, ' ')
-              .charAt(0)
-              .toUpperCase() +
-            locationObject.locationType.replace(/-/g, ' ').slice(1),
-          value: locationObject.locationType.replace(
-            / /g,
-            '-',
-          ) as LOCATION_TYPES_PARAMS,
-        };
-      });
+      locationTypesObjectsInDatabase.map(
+        (locationObject: { locationType: string }) => {
+          return {
+            label:
+              locationObject.locationType
+                .replace(/-/g, ' ')
+                .charAt(0)
+                .toUpperCase() +
+              locationObject.locationType.replace(/-/g, ' ').slice(1),
+            value: locationObject.locationType.replace(
+              / /g,
+              '-',
+            ) as LOCATION_TYPES_PARAMS,
+          };
+        },
+      );
 
     return { data: locationTypesResponse };
   }

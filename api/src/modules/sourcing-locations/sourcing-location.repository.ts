@@ -5,8 +5,8 @@ import {
   WhereExpressionBuilder,
 } from 'typeorm';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { AppBaseRepository } from 'utils/app-base.repository';
 import { LocationTypesOptionsDto } from 'modules/sourcing-locations/dto/location-types-options.sourcing-locations.dto';
+import { AppBaseRepository } from 'utils/app-base.repository';
 import { NotFoundException } from '@nestjs/common';
 
 @EntityRepository(SourcingLocation)

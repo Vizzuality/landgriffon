@@ -65,7 +65,9 @@ export class GetAdminRegionTreeWithOptionsDto {
       'Available options: ' +
       Object.values(LOCATION_TYPES_PARAMS).toString().toLowerCase(),
   })
-  @Transform(({ value }) => transformLocationType(value))
+  @Transform(({ value }: { value: LOCATION_TYPES_PARAMS[] }) =>
+    transformLocationType(value),
+  )
   @Type(() => String)
   locationTypes?: LOCATION_TYPES_PARAMS[];
 }

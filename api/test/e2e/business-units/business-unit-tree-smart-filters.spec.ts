@@ -15,6 +15,10 @@ import { BusinessUnitsModule } from 'modules/business-units/business-units.modul
 import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
+import {
+  LOCATION_TYPES,
+  LOCATION_TYPES_PARAMS,
+} from 'modules/sourcing-locations/sourcing-location.entity';
 
 describe('Business Units - Get trees - Smart Filters', () => {
   let app: INestApplication;
@@ -97,6 +101,60 @@ describe('Business Units - Get trees - Smart Filters', () => {
         .query({
           withSourcingLocations: true,
           'originIds[]': [adminRegion1.id],
+        })
+        .set('Authorization', `Bearer ${jwtToken}`);
+
+      expect(HttpStatus.OK);
+      expect(response.body.data[0].id).toEqual(parentBusinessUnit.id);
+      expect(response.body.data[0].attributes.children[0].name).toEqual(
+        childBusinessUnit.name,
+      );
+      expect(
+        response.body.data.find(
+          (businessUnit: BusinessUnit) =>
+            businessUnit.id === parentBusinessUnit2.id,
+        ),
+      ).toBe(undefined);
+    },
+  );
+
+  test(
+    'When I query a Business Unit Tree endpoint ' +
+      'And I query the ones with sourcing locations' +
+      'And I filter them by a related Location Types' +
+      'Then I should receive a tree list of Business Units where there are sourcing-locations for',
+    async () => {
+      const parentBusinessUnit: BusinessUnit = await createBusinessUnit({
+        name: 'parentBusinessUnit',
+      });
+      const childBusinessUnit: BusinessUnit = await createBusinessUnit({
+        name: 'childBusinessUnit',
+        parent: parentBusinessUnit,
+      });
+
+      const parentBusinessUnit2: BusinessUnit = await createBusinessUnit({
+        name: 'parentBusinessUnit2',
+      });
+      const childBusinessUnit2: BusinessUnit = await createBusinessUnit({
+        name: 'childBusinessUnit2',
+        parent: parentBusinessUnit2,
+      });
+
+      await createSourcingLocation({
+        businessUnitId: childBusinessUnit.id,
+        locationType: LOCATION_TYPES.UNKNOWN,
+      });
+
+      await createSourcingLocation({
+        businessUnitId: childBusinessUnit2.id,
+        locationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+      });
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/business-units/trees')
+        .query({
+          withSourcingLocations: true,
+          'locationTypes[]': [LOCATION_TYPES_PARAMS.UNKNOWN],
         })
         .set('Authorization', `Bearer ${jwtToken}`);
 

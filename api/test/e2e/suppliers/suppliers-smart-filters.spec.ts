@@ -15,6 +15,10 @@ import { getApp } from '../../utils/getApp';
 import { Material } from 'modules/materials/material.entity';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { MaterialRepository } from 'modules/materials/material.repository';
+import {
+  LOCATION_TYPES,
+  LOCATION_TYPES_PARAMS,
+} from 'modules/sourcing-locations/sourcing-location.entity';
 
 describe('Suppliers - Get trees - Smart Filters', () => {
   let app: INestApplication;
@@ -116,6 +120,65 @@ describe('Suppliers - Get trees - Smart Filters', () => {
         response.body.data.find(
           (supplier: Supplier) =>
             supplier.id === supplierWithRelatedMaterial3.id,
+        ),
+      ).toBe(undefined);
+    },
+  );
+
+  test(
+    'When I query a Supplier Tree endpoint ' +
+      'And I query the ones with sourcing locations' +
+      'And I filter them by a related Location Types' +
+      'Then I should receive a tree list of suppliers where there are sourcing-locations for',
+    async () => {
+      const parentSupplier: Supplier = await createSupplier({
+        name: 'parentSupplier',
+      });
+      const childSupplier: Supplier = await createSupplier({
+        name: 'childSupplierWithRelatedMaterial',
+        parent: parentSupplier,
+      });
+
+      const supplier2: Supplier = await createSupplier({
+        name: 'supplierWithRelatedMaterial2',
+      });
+
+      const supplier3: Supplier = await createSupplier({
+        name: 'supplierWithRelatedMaterial3',
+      });
+
+      await createSourcingLocation({
+        t1SupplierId: childSupplier.id,
+        locationType: LOCATION_TYPES.AGGREGATION_POINT,
+      });
+
+      await createSourcingLocation({
+        producerId: supplier2.id,
+        locationType: LOCATION_TYPES.AGGREGATION_POINT,
+      });
+
+      await createSourcingLocation({
+        t1SupplierId: supplier3.id,
+        locationType: LOCATION_TYPES.UNKNOWN,
+      });
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/suppliers/trees')
+        .query({
+          withSourcingLocations: true,
+          'locationTypes[]': [LOCATION_TYPES_PARAMS.AGGREGATION_POINT],
+        })
+        .set('Authorization', `Bearer ${jwtToken}`);
+
+      expect(HttpStatus.OK);
+      expect(response.body.data[0].id).toEqual(parentSupplier.id);
+      expect(response.body.data[0].attributes.children[0].name).toEqual(
+        childSupplier.name,
+      );
+      expect(response.body.data[1].id).toEqual(supplier2.id);
+      expect(
+        response.body.data.find(
+          (supplier: Supplier) => supplier.id === supplier3.id,
         ),
       ).toBe(undefined);
     },

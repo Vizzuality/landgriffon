@@ -1,4 +1,13 @@
-import { Fragment, useCallback, useState, useMemo, useEffect, useLayoutEffect } from 'react';
+import {
+  Fragment,
+  useCallback,
+  useState,
+  useMemo,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  ChangeEventHandler,
+} from 'react';
 import classNames from 'classnames';
 import {
   flip,
@@ -8,6 +17,8 @@ import {
   useDismiss,
   useFloating,
   useInteractions,
+  useListNavigation,
+  useRole,
 } from '@floating-ui/react-dom-interactions';
 import { ChevronDownIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
 import Tree, { TreeNode, TreeProps } from 'rc-tree';
@@ -82,9 +93,14 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     middleware: [offset({ mainAxis: 4 }), shift({ padding: 4 }), flip()],
   });
 
+  const [activeIndex, setActiveIndex] = useState(null);
+  const listRef = useRef([]);
+
   const { getReferenceProps, getFloatingProps } = useInteractions([
     useClick(context),
-    useDismiss(context),
+    useDismiss(context, {}),
+    useRole(context, { role: 'listbox' }),
+    useListNavigation(context, { activeIndex, listRef, onNavigate: setActiveIndex }),
   ]);
 
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -168,10 +184,13 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
 
   // Search capability
   const fuse = useMemo(() => new Fuse(options, SEARCH_OPTIONS), [options]);
-  const handleSearch = useCallback(
+  const handleSearch: ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
+      e.stopPropagation();
       setSearchTerm(e.currentTarget.value);
       onSearch?.(e.currentTarget.value);
+      setIsOpen(true);
+      e.currentTarget.focus();
     },
     [onSearch],
   );
@@ -250,12 +269,16 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
 
   return (
     <div>
-      <div
+      {/*
+        Button instead of div so the select doesn't toggle on space key press,
+        allowing spaces in the search
+      */}
+      <button
         {...getReferenceProps({
           ref: reference,
         })}
         className={classNames(
-          'relative',
+          'relative w-full',
           {
             [THEMES[theme].wrapper]: theme === 'default',
             'flex flex-row justify-between items-center gap-1': theme === 'default',
@@ -372,7 +395,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
             />
           )}
         </div>
-      </div>
+      </button>
       {isOpen && (
         <div
           {...getFloatingProps({

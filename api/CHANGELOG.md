@@ -26,3 +26,9 @@ Filter available years for a impact layer by the received Material Id's children
 [LANDGRIF-683](https://vizzuality.atlassian.net/browse/LANDGRIF-683)
 Add new Entity: ContextualLayers to keep track of magic h3 tables representing 
 contextual layers. Related N to 1 to H3Data (H3 Master table)
+
+##  2022-06-10
+### Added
+[LANDGRIF-705](https://vizzuality.atlassian.net/browse/LANDGRIF-705)
+Add endpoint for location types with smart filters. Add location types options to
+other smart filter endpoints.

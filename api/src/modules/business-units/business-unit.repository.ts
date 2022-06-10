@@ -54,6 +54,12 @@ export class BusinessUnitRepository extends ExtendedTreeRepository<
       });
     }
 
+    if (businessUnitTreeOptions.locationTypes) {
+      queryBuilder.andWhere('sl.locationType IN (:...locationTypes)', {
+        locationTypes: businessUnitTreeOptions.locationTypes,
+      });
+    }
+
     const [subQuery, subQueryParams]: [string, any[]] =
       queryBuilder.getQueryAndParameters();
 

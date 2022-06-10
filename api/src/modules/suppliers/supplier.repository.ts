@@ -53,6 +53,12 @@ export class SupplierRepository extends ExtendedTreeRepository<
       });
     }
 
+    if (supplierTreeOptions.locationTypes) {
+      queryBuilder.andWhere('sl.locationType IN (:...locationTypes)', {
+        locationTypes: supplierTreeOptions.locationTypes,
+      });
+    }
+
     const [subQuery, subQueryParams]: [string, any[]] =
       queryBuilder.getQueryAndParameters();
 

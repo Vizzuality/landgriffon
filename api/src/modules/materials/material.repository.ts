@@ -60,6 +60,12 @@ export class MaterialRepository extends ExtendedTreeRepository<
       });
     }
 
+    if (materialTreeOptions.locationTypes) {
+      queryBuilder.andWhere('sl.locationType IN (:...locationTypes)', {
+        locationTypes: materialTreeOptions.locationTypes,
+      });
+    }
+
     const [subQuery, subQueryParams]: [string, any[]] =
       queryBuilder.getQueryAndParameters();
 

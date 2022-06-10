@@ -25,17 +25,12 @@ import { clearEntityTables } from '../../utils/database-test-helper';
 
 describe('SourcingLocationsModule (e2e)', () => {
   let app: INestApplication;
-  let sourcingLocationRepository: SourcingLocationRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule, SourcingLocationsModule],
     }).compile();
-
-    sourcingLocationRepository = moduleFixture.get<SourcingLocationRepository>(
-      SourcingLocationRepository,
-    );
 
     app = getApp(moduleFixture);
     await app.init();

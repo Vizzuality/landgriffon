@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { UrlParamRepository } from './url-param.repository';
-import { UrlParam, urlParamResource } from './url-param.entity';
+import { UrlParamRepository } from 'modules/url-params/url-param.repository';
+import {
+  UrlParam,
+  urlParamResource,
+} from 'modules/url-params/url-param.entity';
 import { AppInfoDTO } from 'dto/info.dto';
 import {
   AppBaseService,
@@ -50,7 +53,7 @@ export class UrlParamsService extends AppBaseService<
     return { id: savedParams.id };
   }
 
-  async deleteUrlParams(id: string) {
+  async deleteUrlParams(id: string): Promise<void> {
     await this.urlParamRepository.delete({ id });
   }
 }

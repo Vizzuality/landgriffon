@@ -12,7 +12,7 @@ import {
   urlParamResource,
 } from 'modules/url-params/url-param.entity';
 import { UrlParamsService } from 'modules/url-params/url-params.service';
-import { SerializedUrlResponseDto } from './dto/url-param.response.dto';
+import { SerializedUrlResponseDto } from 'modules/url-params/dto/url-param.response.dto';
 
 @Controller(`/api/v1/url-params`)
 @ApiTags(urlParamResource.className)

@@ -27,10 +27,10 @@ export abstract class AppBaseRepository<Entity> extends Repository<Entity> {
         this.logger.debug(
           `Inserting chunk #${index} (${dataChunk.length} items)...`,
         );
-        const saved: Entity[] = await queryRunner.manager.save(
-          dataChunk,
-          options,
+        const promises: Promise<Entity>[] = dataChunk.map((row: Entity) =>
+          queryRunner.manager.save(row, options),
         );
+        const saved: Entity[] = await Promise.all(promises);
         result.push(saved);
       }
 

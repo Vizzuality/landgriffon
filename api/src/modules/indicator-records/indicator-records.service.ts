@@ -14,14 +14,14 @@ import { AppInfoDTO } from 'dto/info.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
-import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
+import {
+  Indicator,
+  INDICATOR_TYPES,
+} from 'modules/indicators/indicator.entity';
 import { H3DataService } from 'modules/h3-data/h3-data.service';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
-import {
-  MATERIAL_TO_H3_TYPE,
-  MaterialToH3,
-} from 'modules/materials/material-to-h3.entity';
+import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import * as config from 'config';
 import { H3DataYearsService } from 'modules/h3-data/services/h3-data-years.service';
@@ -144,7 +144,7 @@ export class IndicatorRecordsService extends AppBaseService<
   /**
    * @description Creates Indicator Records from all existing Sourcing Records in the DB
    */
-
+  // TODO still not adapted to modular indicators, because the performance gets hit drastically on the source import. Pending to be worked on
   async createIndicatorRecordsForAllSourcingRecords(): Promise<void> {
     const rawData: SourcingRecordsWithIndicatorRawDataDto[] =
       await this.indicatorRecordRepository.getIndicatorRawDataForAllSourcingRecords();
@@ -158,7 +158,9 @@ export class IndicatorRecordsService extends AppBaseService<
       (calculatedIndicatorRecords: IndicatorRecordCalculatedValuesDto) => {
         const indicatorRecordDeforestation: IndicatorRecord =
           IndicatorRecord.merge(new IndicatorRecord(), {
-            value: calculatedIndicatorRecords[INDICATOR_TYPES.DEFORESTATION],
+            value: calculatedIndicatorRecords.values.get(
+              INDICATOR_TYPES.DEFORESTATION,
+            ),
             indicatorId: indicatorMap[INDICATOR_TYPES.DEFORESTATION].id,
             status: INDICATOR_RECORD_STATUS.SUCCESS,
             sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
@@ -167,8 +169,9 @@ export class IndicatorRecordsService extends AppBaseService<
           });
         const indicatorRecordBiodiversity: IndicatorRecord =
           IndicatorRecord.merge(new IndicatorRecord(), {
-            value:
-              calculatedIndicatorRecords[INDICATOR_TYPES.BIODIVERSITY_LOSS],
+            value: calculatedIndicatorRecords.values.get(
+              INDICATOR_TYPES.BIODIVERSITY_LOSS,
+            ),
             indicatorId: indicatorMap[INDICATOR_TYPES.BIODIVERSITY_LOSS].id,
             status: INDICATOR_RECORD_STATUS.SUCCESS,
             sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
@@ -177,7 +180,9 @@ export class IndicatorRecordsService extends AppBaseService<
           });
         const indicatorRecordCarbonEmissions: IndicatorRecord =
           IndicatorRecord.merge(new IndicatorRecord(), {
-            value: calculatedIndicatorRecords[INDICATOR_TYPES.CARBON_EMISSIONS],
+            value: calculatedIndicatorRecords.values.get(
+              INDICATOR_TYPES.CARBON_EMISSIONS,
+            ),
             indicatorId: indicatorMap[INDICATOR_TYPES.CARBON_EMISSIONS].id,
             status: INDICATOR_RECORD_STATUS.SUCCESS,
             sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
@@ -186,10 +191,9 @@ export class IndicatorRecordsService extends AppBaseService<
           });
         const indicatorRecordUnsustainableWater: IndicatorRecord =
           IndicatorRecord.merge(new IndicatorRecord(), {
-            value:
-              calculatedIndicatorRecords[
-                INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE
-              ],
+            value: calculatedIndicatorRecords.values.get(
+              INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+            ),
             indicatorId:
               indicatorMap[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE].id,
             status: INDICATOR_RECORD_STATUS.SUCCESS,
@@ -218,48 +222,58 @@ export class IndicatorRecordsService extends AppBaseService<
       geoRegionId: string;
       materialId: string;
       tonnage: number;
+      year: number;
     },
     providedCoefficients?: IndicatorCoefficientsDto,
   ): Promise<IndicatorRecord[]> {
-    const { geoRegionId, materialId } = sourcingData;
-    const materialH3Data: MaterialToH3 | undefined =
-      await this.materialsToH3sService.findOne({ where: { materialId } });
+    // TODO: This Harvest Material reference is stored later in the Indicator Record in order to optimize queries regarding
+    // maps, because, so far, all indicator use it for their calculations. Will potentially need to be reworked
+    // as more indicators with different formulas are introduced
+    const materialH3Data: H3Data | undefined =
+      await this.h3DataService.getMaterialH3ByClosestYear(
+        sourcingData.materialId,
+        MATERIAL_TO_H3_TYPE.HARVEST,
+        sourcingData.year,
+      );
 
     if (!materialH3Data) {
       throw new MissingH3DataError(
-        `No H3 Data required for calculate Impact for Material with ID: ${materialId}`,
+        `No H3 Data required to calculate Impact for Material with ID: ${sourcingData.materialId}`,
       );
     }
+
+    const indicators: Indicator[] =
+      await this.indicatorService.getAllIndicators();
+
     let calculatedIndicatorRecordValues: IndicatorRecordCalculatedValuesDto;
     if (providedCoefficients) {
       calculatedIndicatorRecordValues = this.useProvidedIndicatorCoefficients(
         providedCoefficients,
         sourcingData,
+        indicators,
+        materialH3Data.id,
       );
     } else {
       const rawData: IndicatorComputedRawDataDto =
-        await this.indicatorRecordRepository.getIndicatorRawDataByGeoRegionAndMaterial(
-          geoRegionId as string,
-          materialId,
+        await this.getIndicatorRawDataByGeoRegionAndMaterial(
+          sourcingData.geoRegionId,
+          sourcingData.materialId,
+          sourcingData.year,
         );
-      calculatedIndicatorRecordValues = this.calculateIndicatorValues({
-        sourcingRecordId: sourcingData.sourcingRecordId,
-        tonnage: sourcingData.tonnage,
-        ...rawData,
-        materialH3DataId: materialH3Data.h3DataId,
-      });
+      calculatedIndicatorRecordValues = this.calculateIndicatorValuesV2(
+        sourcingData.sourcingRecordId,
+        sourcingData.tonnage,
+        materialH3Data.id,
+        rawData,
+      );
     }
 
     // Create the Indicator Records entities from the calculated indicator values
-    const indicatorMapper: Record<string, any> = await this.getIndicatorMap();
-    const indicatorTypes: INDICATOR_TYPES[] = Object.values(INDICATOR_TYPES);
-    const indicatorRecords: IndicatorRecord[] = indicatorTypes.map(
-      (indicatorType: INDICATOR_TYPES) => {
+    const indicatorRecords: IndicatorRecord[] = indicators.map(
+      (indicator: Indicator) => {
         return IndicatorRecordsService.createIndicatorRecord(
-          indicatorType,
+          indicator,
           calculatedIndicatorRecordValues,
-          materialH3Data.h3DataId,
-          indicatorMapper,
         );
       },
     );
@@ -269,79 +283,120 @@ export class IndicatorRecordsService extends AppBaseService<
 
   /**
    * Creates an IndicatorRecord object instance from the given input (type, calculated values, and h3data)
-   * @param indicatorType
+   * @param indicator
    * @param calculatedValues
-   * @param materialH3DataId
-   * @param indicatorMapper
    * @private
    */
   private static createIndicatorRecord(
-    indicatorType: INDICATOR_TYPES,
+    indicator: Indicator,
     calculatedValues: IndicatorRecordCalculatedValuesDto,
-    materialH3DataId: string,
-    indicatorMapper: Record<string, any>,
   ): IndicatorRecord {
     return IndicatorRecord.merge(new IndicatorRecord(), {
-      value: calculatedValues[indicatorType],
-      indicatorId: indicatorMapper[indicatorType].id,
+      value: calculatedValues.values.get(indicator.nameCode as INDICATOR_TYPES),
+      indicatorId: indicator.id,
       status: INDICATOR_RECORD_STATUS.SUCCESS,
       sourcingRecordId: calculatedValues.sourcingRecordId,
       scaler: calculatedValues.production,
-      materialH3DataId,
+      materialH3DataId: calculatedValues.materialH3DataId,
     });
   }
 
   /**
    * @description Consumes Indicator Raw Data from the DB to calculate final values for Indicator Records
    */
-
   // TODO: Extract the logic of equaling to 0 all falsy values to some other place
+  // TODO: Although refactored, this is kept for compatibility with the calculation of all sourcing records on sourcing import
+  private calculateIndicatorValues(
+    sourcingRecordData: SourcingRecordsWithIndicatorRawDataDto,
+  ): IndicatorRecordCalculatedValuesDto {
+    const {
+      sourcingRecordId,
+      tonnage,
+      production,
+      harvestedArea,
+      materialH3DataId,
+    } = sourcingRecordData;
 
-  private calculateIndicatorValues(sourcingRecordData: {
-    sourcingRecordId: string;
-    tonnage: number;
-
-    production: number;
-    harvestedArea: number;
-
-    rawDeforestation: number;
-    rawBiodiversity: number;
-    rawCarbon: number;
-    rawWater: number;
-
-    materialH3DataId: string;
-  }): IndicatorRecordCalculatedValuesDto {
     const calculatedIndicatorValues: IndicatorRecordCalculatedValuesDto =
       new IndicatorRecordCalculatedValuesDto();
-    calculatedIndicatorValues.sourcingRecordId =
-      sourcingRecordData.sourcingRecordId;
-    calculatedIndicatorValues.materialH3DataId =
-      sourcingRecordData.materialH3DataId;
-    calculatedIndicatorValues.production = sourcingRecordData.production;
-    calculatedIndicatorValues.landPerTon =
-      sourcingRecordData.harvestedArea / sourcingRecordData.production || 0;
-    calculatedIndicatorValues.deforestationPerHarvestedAreaLandUse =
-      sourcingRecordData.rawDeforestation / sourcingRecordData.harvestedArea ||
-      0;
-    calculatedIndicatorValues.biodiversityLossPerHarvestedAreaLandUse =
-      sourcingRecordData.rawBiodiversity / sourcingRecordData.harvestedArea ||
-      0;
-    calculatedIndicatorValues.carbonLossPerHarvestedAreaLandUse =
-      sourcingRecordData.rawCarbon / sourcingRecordData.harvestedArea || 0;
-    calculatedIndicatorValues.landUse =
-      calculatedIndicatorValues.landPerTon * sourcingRecordData.tonnage || 0;
 
-    calculatedIndicatorValues[INDICATOR_TYPES.DEFORESTATION] =
-      calculatedIndicatorValues.deforestationPerHarvestedAreaLandUse *
-      calculatedIndicatorValues.landUse;
-    calculatedIndicatorValues[INDICATOR_TYPES.BIODIVERSITY_LOSS] =
-      calculatedIndicatorValues.biodiversityLossPerHarvestedAreaLandUse *
-      calculatedIndicatorValues.landUse;
-    calculatedIndicatorValues[INDICATOR_TYPES.CARBON_EMISSIONS] =
-      calculatedIndicatorValues.carbonLossPerHarvestedAreaLandUse *
-      calculatedIndicatorValues.landUse;
-    calculatedIndicatorValues[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE] =
-      sourcingRecordData.rawWater * sourcingRecordData.tonnage;
+    const deforestationPerHarvestedAreaLandUse: number =
+      sourcingRecordData.rawDeforestation / harvestedArea || 0;
+    const biodiversityLossPerHarvestedAreaLandUse: number =
+      sourcingRecordData.rawBiodiversity / harvestedArea || 0;
+    const carbonLossPerHarvestedAreaLandUse: number =
+      sourcingRecordData.rawCarbon / harvestedArea || 0;
+
+    calculatedIndicatorValues.sourcingRecordId = sourcingRecordId;
+    calculatedIndicatorValues.materialH3DataId = materialH3DataId;
+    calculatedIndicatorValues.production = production;
+    calculatedIndicatorValues.landPerTon = harvestedArea / production || 0;
+    const landUse: number = calculatedIndicatorValues.landPerTon * tonnage || 0;
+    calculatedIndicatorValues.landUse = landUse;
+
+    calculatedIndicatorValues.values = new Map();
+    calculatedIndicatorValues.values.set(
+      INDICATOR_TYPES.DEFORESTATION,
+      deforestationPerHarvestedAreaLandUse * landUse,
+    );
+    calculatedIndicatorValues.values.set(
+      INDICATOR_TYPES.BIODIVERSITY_LOSS,
+      biodiversityLossPerHarvestedAreaLandUse * landUse,
+    );
+    calculatedIndicatorValues.values.set(
+      INDICATOR_TYPES.CARBON_EMISSIONS,
+      carbonLossPerHarvestedAreaLandUse * landUse,
+    );
+    calculatedIndicatorValues.values.set(
+      INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+      sourcingRecordData.rawWater * tonnage,
+    );
+
+    return calculatedIndicatorValues;
+  }
+
+  /**
+   * Consumes Indicator Raw Data from the DB to calculate final values for Indicator Records
+   * @param sourcingRecordId
+   * @param tonnage
+   * @param materialH3DataId
+   * @param indicatorComputedRawData
+   * @private
+   */
+  private calculateIndicatorValuesV2(
+    sourcingRecordId: string,
+    tonnage: number,
+    materialH3DataId: string,
+    indicatorComputedRawData: IndicatorComputedRawDataDto,
+  ): IndicatorRecordCalculatedValuesDto {
+    const { production, harvestedArea } = indicatorComputedRawData;
+    const calculatedIndicatorValues: IndicatorRecordCalculatedValuesDto =
+      new IndicatorRecordCalculatedValuesDto();
+
+    calculatedIndicatorValues.sourcingRecordId = sourcingRecordId;
+    calculatedIndicatorValues.materialH3DataId = materialH3DataId;
+    calculatedIndicatorValues.production = production;
+    calculatedIndicatorValues.landPerTon = harvestedArea / production || 0;
+    const landUse: number = calculatedIndicatorValues.landPerTon * tonnage || 0;
+    calculatedIndicatorValues.landUse = landUse;
+
+    //calculate final value for each indicator raw value included in indicatorComputedRawData
+    calculatedIndicatorValues.values = new Map();
+    indicatorComputedRawData.indicatorValues.forEach(
+      (value: number, indicatorType: INDICATOR_TYPES) => {
+        //TODO provisional simple version, might need refactoring to strategy pattern as indicators expand
+        if (indicatorType === INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE) {
+          calculatedIndicatorValues.values.set(indicatorType, value * tonnage);
+        } else {
+          const indicatorPerHarvestedAreaLandUse: number =
+            value / harvestedArea || 0;
+          calculatedIndicatorValues.values.set(
+            indicatorType,
+            indicatorPerHarvestedAreaLandUse * landUse,
+          );
+        }
+      },
+    );
 
     return calculatedIndicatorValues;
   }
@@ -365,27 +420,102 @@ export class IndicatorRecordsService extends AppBaseService<
 
   /**
    * @description: Calculates Indicator values by the tonnage of the impact and estimates (coefficients) provided
-   * by the user
+   * by the user, for each possible indicator passed in an array
    */
-  useProvidedIndicatorCoefficients(
+  private useProvidedIndicatorCoefficients(
     newIndicatorCoefficients: IndicatorCoefficientsDto,
     sourcingData: { sourcingRecordId: string; tonnage: number },
+    indicators: Indicator[],
+    materialH3DataId: string,
   ): IndicatorRecordCalculatedValuesDto {
     const calculatedIndicatorValues: IndicatorRecordCalculatedValuesDto =
       new IndicatorRecordCalculatedValuesDto();
     calculatedIndicatorValues.sourcingRecordId = sourcingData.sourcingRecordId;
-    calculatedIndicatorValues[INDICATOR_TYPES.DEFORESTATION] =
-      newIndicatorCoefficients[INDICATOR_TYPES.DEFORESTATION] *
-      sourcingData.tonnage;
-    calculatedIndicatorValues[INDICATOR_TYPES.BIODIVERSITY_LOSS] =
-      newIndicatorCoefficients[INDICATOR_TYPES.BIODIVERSITY_LOSS] *
-      sourcingData.tonnage;
-    calculatedIndicatorValues[INDICATOR_TYPES.CARBON_EMISSIONS] =
-      newIndicatorCoefficients[INDICATOR_TYPES.CARBON_EMISSIONS] *
-      sourcingData.tonnage;
-    calculatedIndicatorValues[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE] =
-      newIndicatorCoefficients[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE] *
-      sourcingData.tonnage;
+    calculatedIndicatorValues.materialH3DataId = materialH3DataId;
+    calculatedIndicatorValues.values = new Map();
+
+    for (const indicator of indicators) {
+      const type: INDICATOR_TYPES = indicator.nameCode as INDICATOR_TYPES;
+      if (!newIndicatorCoefficients[type]) {
+        throw new NotFoundException(
+          `Required coefficient for indicator ${type} was not provided`,
+        );
+      }
+
+      const value: number =
+        newIndicatorCoefficients[type] * sourcingData.tonnage;
+      calculatedIndicatorValues.values.set(type, value);
+    }
     return calculatedIndicatorValues;
+  }
+
+  async getIndicatorRawDataByGeoRegionAndMaterial(
+    geoRegionId: string,
+    materialId: string,
+    year: number,
+  ): Promise<IndicatorComputedRawDataDto> {
+    // It is assumed that the indicators that enabled/valid, are the ones that are present on the DB since
+    // the initial seeding import. So a simple getAll is sufficient
+    const indicators: Indicator[] =
+      await this.indicatorService.getAllIndicators();
+
+    //load materials h3 data (producer and harvest)
+    const materialH3s: Map<MATERIAL_TO_H3_TYPE, H3Data> =
+      await this.h3DataService.getAllMaterialH3sByClosestYear(materialId, year);
+
+    //Calculate material related values
+    // TODO potential to change/refactor once there more types of material per H3
+    const materialValues: Map<MATERIAL_TO_H3_TYPE, number> = new Map();
+
+    for (const materialType of Object.values(MATERIAL_TO_H3_TYPE)) {
+      const materialH3: H3Data | undefined = materialH3s.get(materialType);
+      if (!materialH3) {
+        throw new NotFoundException(
+          `No H3 Data could be found the material ${materialId} type ${materialType}`,
+        );
+      }
+
+      const value: number =
+        await this.indicatorRecordRepository.getH3SumOverGeoRegionSQL(
+          geoRegionId,
+          materialH3,
+        );
+
+      materialValues.set(materialType, value);
+    }
+
+    //Calculate value for each indicator
+    const indicatorValues: Map<INDICATOR_TYPES, number> = new Map();
+    for (const indicator of indicators) {
+      const indicatorDependencies: INDICATOR_TYPES[] =
+        Indicator.getIndicatorCalculationDependencies(
+          indicator.nameCode as INDICATOR_TYPES,
+          true,
+        );
+      const indicatorH3s: Map<INDICATOR_TYPES, H3Data> =
+        await this.h3DataService.getIndicatorH3sByTypeAndClosestYear(
+          indicatorDependencies,
+          year,
+        );
+
+      const impactRawValue: number =
+        await this.indicatorRecordRepository.getIndicatorRecordRawValue(
+          geoRegionId,
+          indicator.nameCode as INDICATOR_TYPES,
+          indicatorH3s,
+          materialH3s,
+        );
+
+      indicatorValues.set(
+        indicator.nameCode as INDICATOR_TYPES,
+        impactRawValue,
+      );
+    }
+
+    return {
+      production: materialValues.get(MATERIAL_TO_H3_TYPE.PRODUCER)!,
+      harvestedArea: materialValues.get(MATERIAL_TO_H3_TYPE.HARVEST)!,
+      indicatorValues: indicatorValues,
+    };
   }
 }

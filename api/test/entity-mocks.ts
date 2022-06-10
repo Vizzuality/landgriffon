@@ -330,6 +330,7 @@ async function createTarget(
 ): Promise<Target> {
   const indicator: Indicator = await createIndicator({
     name: (Math.random() + 1).toString(30).substring(6),
+    nameCode: (Math.random() + 1).toString(30).substring(6),
   });
   const target: Target = Target.merge(
     new Target(),

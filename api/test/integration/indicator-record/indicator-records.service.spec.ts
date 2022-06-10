@@ -41,6 +41,12 @@ import {
   MATERIAL_TO_H3_TYPE,
   MaterialToH3,
 } from '../../../src/modules/materials/material-to-h3.entity';
+import { h3MaterialExampleDataFixture } from '../../e2e/h3-data/mocks/h3-fixtures';
+import {
+  dropH3DataMock,
+  h3DataMock,
+} from '../../e2e/h3-data/mocks/h3-data.mock';
+import { NotFoundException } from '@nestjs/common';
 
 describe('Indicator Records Service', () => {
   let indicatorRecordRepository: IndicatorRecordRepository;
@@ -105,30 +111,67 @@ describe('Indicator Records Service', () => {
     await materialRepository.delete({});
 
     await dropH3GridTables();
+
+    await dropH3DataMock(['fake_material_table2002']);
   });
 
   describe('createIndicatorRecordsBySourcingRecords', () => {
-    test('When creating Indicator Records providing indicator coefficients, it should create the records properly', async () => {
+    test('When creating Indicator Records providing indicator coefficients, and one of the indicator coefficients is missing on the DTO, it should throw error', async () => {
       // ARRANGE
       const indicatorPreconditions = await createPreconditions();
-      const material = await createMaterial();
       const fakeH3Data = await createH3Data();
       const materialH3Data = await createMaterialToH3(
-        material.id,
+        indicatorPreconditions.material1.id,
         fakeH3Data.id,
         MATERIAL_TO_H3_TYPE.HARVEST,
       );
-
-      // The original function only expects for one MaterialTo3 data, the values don't matter
-      jest
-        .spyOn(materialsToH3sService, 'findOne')
-        .mockResolvedValueOnce(materialH3Data);
 
       const sourcingData = {
         sourcingRecordId: indicatorPreconditions.sourcingRecord1.id,
         tonnage: indicatorPreconditions.sourcingRecord1.tonnage,
         geoRegionId: indicatorPreconditions.sourcingLocation1.geoRegionId,
         materialId: indicatorPreconditions.sourcingLocation1.materialId,
+        year: indicatorPreconditions.sourcingRecord1.year,
+      };
+
+      const providedCoefficients: IndicatorCoefficientsDto = {
+        [INDICATOR_TYPES.BIODIVERSITY_LOSS]: 0.1,
+        [INDICATOR_TYPES.CARBON_EMISSIONS]: 0.4,
+        [INDICATOR_TYPES.DEFORESTATION]: 0.35,
+        ...({} as any),
+      };
+
+      //ACT
+      const testStatement = async (): Promise<any> => {
+        await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
+          sourcingData,
+          providedCoefficients,
+        );
+      };
+
+      //ASSERT
+      await expect(testStatement).rejects.toThrow(NotFoundException);
+      await expect(testStatement).rejects.toThrow(
+        `Required coefficient for indicator ${INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE} was not provided`,
+      );
+    });
+
+    test('When creating Indicator Records providing indicator coefficients, it should create the records properly', async () => {
+      // ARRANGE
+      const indicatorPreconditions = await createPreconditions();
+      const fakeH3Data = await createH3Data();
+      const materialH3Data = await createMaterialToH3(
+        indicatorPreconditions.material1.id,
+        fakeH3Data.id,
+        MATERIAL_TO_H3_TYPE.HARVEST,
+      );
+
+      const sourcingData = {
+        sourcingRecordId: indicatorPreconditions.sourcingRecord1.id,
+        tonnage: indicatorPreconditions.sourcingRecord1.tonnage,
+        geoRegionId: indicatorPreconditions.sourcingLocation1.geoRegionId,
+        materialId: indicatorPreconditions.sourcingLocation1.materialId,
+        year: indicatorPreconditions.sourcingRecord1.year,
       };
 
       const providedCoefficients: IndicatorCoefficientsDto = {
@@ -183,13 +226,14 @@ describe('Indicator Records Service', () => {
       );
     });
 
-    test("When creating indicator record with no provided coefficients, and there's no H3 data for the given material, it should throw an error it should create corresponding CANCELLED Sourcing Locations, with the appropiate Sourcing Records and Indicator Records", async () => {
+    test("When creating indicator record with no provided coefficients, and there's no H3 data for the given material, it should throw an error", async () => {
       //ARRANGE
       const sourcingData = {
         sourcingRecordId: UUIDv4(),
         geoRegionId: UUIDv4(),
         materialId: UUIDv4(),
         tonnage: 10000,
+        year: 2010,
       };
 
       jest
@@ -205,7 +249,91 @@ describe('Indicator Records Service', () => {
       //ACT/ASSERT
       await expect(testStatement).rejects.toThrow(MissingH3DataError);
       await expect(testStatement).rejects.toThrow(
-        `No H3 Data required for calculate Impact for Material with ID: ${sourcingData.materialId}`,
+        `No H3 Data required to calculate Impact for Material with ID: ${sourcingData.materialId}`,
+      );
+    });
+
+    test('When creating Indicator Records without providing indicator coefficients, and one of the Material H3 is not available for any year, it should throw error', async () => {
+      //ARRANGE
+      const indicatorPreconditions = await createPreconditions();
+
+      const sourcingData = {
+        sourcingRecordId: indicatorPreconditions.sourcingRecord2.id,
+        tonnage: indicatorPreconditions.sourcingRecord2.tonnage,
+        geoRegionId: indicatorPreconditions.sourcingLocation2.geoRegionId,
+        materialId: indicatorPreconditions.sourcingLocation2.materialId,
+        year: indicatorPreconditions.sourcingRecord2.year,
+      };
+
+      const h3Material = await h3DataMock({
+        h3TableName: 'fakeMaterialTable2002',
+        h3ColumnName: 'fakeMaterialColumn2002',
+        additionalH3Data: h3MaterialExampleDataFixture,
+        year: 2002,
+      });
+      const materialH3DataHarvest = await createMaterialToH3(
+        indicatorPreconditions.material2.id,
+        h3Material.id,
+        MATERIAL_TO_H3_TYPE.HARVEST,
+      );
+
+      //ACT
+      const testStatement = async (): Promise<any> => {
+        await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
+          sourcingData,
+        );
+      };
+
+      //ASSERT
+      await expect(testStatement).rejects.toThrow(NotFoundException);
+      await expect(testStatement).rejects.toThrow(
+        `No H3 Data could be found the material ${indicatorPreconditions.material2.id} type ${MATERIAL_TO_H3_TYPE.PRODUCER}`,
+      );
+    });
+
+    test('When creating Indicator Records without providing indicator coefficients, and one of the Indicator H3 is not available for any year, it should throw error', async () => {
+      //ARRANGE
+      const indicatorPreconditions = await createPreconditions();
+
+      const sourcingData = {
+        sourcingRecordId: indicatorPreconditions.sourcingRecord2.id,
+        tonnage: indicatorPreconditions.sourcingRecord2.tonnage,
+        geoRegionId: indicatorPreconditions.sourcingLocation2.geoRegionId,
+        materialId: indicatorPreconditions.sourcingLocation2.materialId,
+        year: indicatorPreconditions.sourcingRecord2.year,
+      };
+
+      const h3Material = await h3DataMock({
+        h3TableName: 'fakeMaterialTable2002',
+        h3ColumnName: 'fakeMaterialColumn2002',
+        additionalH3Data: h3MaterialExampleDataFixture,
+        year: 2002,
+      });
+      await createMaterialToH3(
+        indicatorPreconditions.material2.id,
+        h3Material.id,
+        MATERIAL_TO_H3_TYPE.HARVEST,
+      );
+      await createMaterialToH3(
+        indicatorPreconditions.material2.id,
+        h3Material.id,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
+      await h3DataRepository.delete({
+        id: indicatorPreconditions.deforestation.id,
+      });
+
+      //ACT
+      const testStatement = async (): Promise<any> => {
+        await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
+          sourcingData,
+        );
+      };
+
+      //ASSERT
+      await expect(testStatement).rejects.toThrow(NotFoundException);
+      await expect(testStatement).rejects.toThrow(
+        `H3 Data of required Indicator of type ${INDICATOR_TYPES.DEFORESTATION} missing for ${INDICATOR_TYPES.DEFORESTATION} Indicator Record value calculations`,
       );
     });
 
@@ -218,33 +346,25 @@ describe('Indicator Records Service', () => {
         tonnage: indicatorPreconditions.sourcingRecord2.tonnage,
         geoRegionId: indicatorPreconditions.sourcingLocation2.geoRegionId,
         materialId: indicatorPreconditions.sourcingLocation2.materialId,
+        year: indicatorPreconditions.sourcingRecord2.year,
       };
 
-      const material = await createMaterial();
-      const fakeH3Data = await createH3Data();
-      const materialH3Data = await createMaterialToH3(
-        material.id,
-        fakeH3Data.id,
+      const h3Material = await h3DataMock({
+        h3TableName: 'fakeMaterialTable2002',
+        h3ColumnName: 'fakeMaterialColumn2002',
+        additionalH3Data: h3MaterialExampleDataFixture,
+        year: 2002,
+      });
+      const materialH3DataProducer = await createMaterialToH3(
+        indicatorPreconditions.material2.id,
+        h3Material.id,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
+      const materialH3DataHarvest = await createMaterialToH3(
+        indicatorPreconditions.material2.id,
+        h3Material.id,
         MATERIAL_TO_H3_TYPE.HARVEST,
       );
-
-      // The original function only expects for one MaterialTo3 data, the values don't matter
-      jest
-        .spyOn(materialsToH3sService, 'findOne')
-        .mockResolvedValueOnce(materialH3Data);
-      jest
-        .spyOn(
-          indicatorRecordRepository,
-          'getIndicatorRawDataByGeoRegionAndMaterial',
-        )
-        .mockResolvedValueOnce({
-          production: 10,
-          harvestedArea: 100,
-          rawBiodiversity: 10,
-          rawCarbon: 5,
-          rawDeforestation: 20,
-          rawWater: 25,
-        });
 
       //ACT
       await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
@@ -258,34 +378,34 @@ describe('Indicator Records Service', () => {
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.DEFORESTATION,
         indicatorPreconditions.deforestation,
-        materialH3Data,
+        materialH3DataProducer,
         sourcingData,
-        1000,
-        10,
+        80.74534161490683,
+        1610,
       );
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.BIODIVERSITY_LOSS,
         indicatorPreconditions.biodiversityLoss,
-        materialH3Data,
+        materialH3DataProducer,
         sourcingData,
-        500,
-        10,
+        148944.0999601198,
+        1610,
       );
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.CARBON_EMISSIONS,
         indicatorPreconditions.carbonEmissions,
-        materialH3Data,
+        materialH3DataProducer,
         sourcingData,
-        250,
-        10,
+        14.894409937888199,
+        1610,
       );
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
         indicatorPreconditions.waterRisk,
-        materialH3Data,
+        materialH3DataProducer,
         sourcingData,
-        12500,
-        10,
+        0.07700000181794166,
+        1610,
       );
     });
   });
@@ -337,9 +457,40 @@ describe('Indicator Records Service', () => {
       name: 'businessUnit2',
     });
 
-    const material2: Material = await createMaterial({ name: 'Dilithium' });
+    const material2: Material = await createMaterial({
+      name: 'Dilithium',
+    });
     const supplier2: Supplier = await createSupplier({ name: 'Starfleet' });
-    const geoRegion2: GeoRegion = await createGeoRegion({ name: 'geoRegion2' });
+    const geoRegion2: GeoRegion = await createGeoRegion({
+      name: 'geoRegion2',
+      h3Compact: [
+        '861080007ffffff',
+        '861080017ffffff',
+        '86108001fffffff',
+        '861080027ffffff',
+        '86108002fffffff',
+
+        '8610b6d97ffffff',
+        '8610b6d9fffffff',
+        '8610b6da7ffffff',
+        '8610b6dafffffff',
+        '8610b6db7ffffff',
+      ],
+      h3Flat: [
+        '861080007ffffff',
+        '861080017ffffff',
+        '86108001fffffff',
+        '861080027ffffff',
+        '86108002fffffff',
+
+        '8610b6d97ffffff',
+        '8610b6d9fffffff',
+        '8610b6da7ffffff',
+        '8610b6dafffffff',
+        '8610b6db7ffffff',
+      ],
+      h3FlatLength: 10,
+    });
     const adminRegion2: AdminRegion = await createAdminRegion({
       name: 'Sector 001',
       geoRegionId: geoRegion2.id,
@@ -353,6 +504,7 @@ describe('Indicator Records Service', () => {
       t1SupplierId: supplier1.id,
       businessUnitId: businessUnit1.id,
       adminRegionId: adminRegion1.id,
+      geoRegionId: geoRegion1.id,
     });
 
     const sourcingRecord1 = await createSourcingRecord({
@@ -366,6 +518,7 @@ describe('Indicator Records Service', () => {
       t1SupplierId: supplier2.id,
       businessUnitId: businessUnit2.id,
       adminRegionId: adminRegion2.id,
+      geoRegionId: geoRegion2.id,
     });
 
     const sourcingRecord2 = await createSourcingRecord({

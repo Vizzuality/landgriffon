@@ -2,7 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
-import { Indicator } from 'modules/indicators/indicator.entity';
+import {
+  Indicator,
+  INDICATOR_TYPES,
+} from 'modules/indicators/indicator.entity';
 import { IndicatorsModule } from 'modules/indicators/indicators.module';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { saveUserAndGetToken } from '../../utils/userAuth';
@@ -45,6 +48,7 @@ describe('IndicatorsModule (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           name: 'test indicator',
+          nameCode: INDICATOR_TYPES.DEFORESTATION,
         })
         .expect(HttpStatus.CREATED);
 
@@ -75,6 +79,8 @@ describe('IndicatorsModule (e2e)', () => {
         'name must be shorter than or equal to 40 characters',
         'name must be longer than or equal to 2 characters',
         'name must be a string',
+        'nameCode must be a string',
+        'nameCode must be a valid enum value',
       ],
     );
   });
@@ -83,6 +89,7 @@ describe('IndicatorsModule (e2e)', () => {
     test('Update a indicator should be successful (happy case)', async () => {
       const indicator: Indicator = new Indicator();
       indicator.name = 'test indicator';
+      indicator.nameCode = 'Midiclorian';
       await indicator.save();
 
       const response = await request(app.getHttpServer())
@@ -103,6 +110,7 @@ describe('IndicatorsModule (e2e)', () => {
     test('Delete a indicator should be successful (happy case)', async () => {
       const indicator: Indicator = new Indicator();
       indicator.name = 'test indicator';
+      indicator.nameCode = 'Midiclorian';
       await indicator.save();
 
       await request(app.getHttpServer())
@@ -120,6 +128,7 @@ describe('IndicatorsModule (e2e)', () => {
     test('Get all indicators should be successful (happy case)', async () => {
       const indicator: Indicator = new Indicator();
       indicator.name = 'test indicator';
+      indicator.nameCode = 'Midiclorian';
       await indicator.save();
 
       const response = await request(app.getHttpServer())
@@ -136,6 +145,7 @@ describe('IndicatorsModule (e2e)', () => {
     test('Get a indicator by id should be successful (happy case)', async () => {
       const indicator: Indicator = new Indicator();
       indicator.name = 'test indicator';
+      indicator.nameCode = 'Midiclorian';
       await indicator.save();
 
       const response = await request(app.getHttpServer())

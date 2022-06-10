@@ -424,6 +424,7 @@ export class ScenarioInterventionsService extends AppBaseService<
             tonnage: sourcingRecord.tonnage,
             geoRegionId: sourcingLocation.geoRegionId,
             materialId: sourcingLocation.materialId,
+            year: sourcingRecord.year,
           },
           newIndicatorCoefficients,
         );

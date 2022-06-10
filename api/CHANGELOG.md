@@ -13,6 +13,11 @@ Added [LANDGRIF-697](https://vizzuality.atlassian.net/browse/LANDGRIF-697)
 Added class with custom chunk save method for large inserts to avoid blocking
 event loop
 
+##  2022-06-10
+### Added
+Fixed [LANDGRIF-656](https://vizzuality.atlassian.net/browse/LANDGRIF-656)
+Refactors code in order to allow indicator calculations to be treated more easily and in a modular way
+
 
 ##  2022-06-08
 ### Fixed

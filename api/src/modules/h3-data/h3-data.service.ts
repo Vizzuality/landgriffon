@@ -106,206 +106,6 @@ export class H3DataService {
     };
   }
 
-  async getRiskMapByResolution(
-    materialId: string,
-    indicatorId: string,
-    resolution: number,
-    year: number,
-  ): Promise<H3MapResponse> {
-    /**
-     * @note To generate a Risk Map, harvest data and h3Data by indicatorId are required
-     */
-
-    const indicatorDataYear: number | undefined =
-      await this.h3DataYearsService.getClosestAvailableYearForIndicatorH3(
-        indicatorId,
-        year,
-      );
-
-    if (!indicatorDataYear)
-      throw new NotFoundException(
-        `There is no H3 Data registered for Indicator with ID ${indicatorId} for year ${year} or any other year`,
-      );
-    const indicatorH3Data: H3Data | undefined =
-      await this.h3DataRepository.findOne({
-        where: { indicatorId, year: indicatorDataYear },
-      });
-
-    if (!indicatorH3Data)
-      throw new NotFoundException(
-        `There is no H3 Data for Indicator with ID ${indicatorId} and year ${year}`,
-      );
-
-    const material: Material = await this.materialService.getMaterialById(
-      materialId,
-    );
-
-    const materialsH3DataYears: MaterialsH3DataYears[] = [];
-
-    const harvestDataYear: number | undefined =
-      await this.h3DataYearsService.getClosestAvailableYearForMaterialH3(
-        materialId,
-        MATERIAL_TO_H3_TYPE.HARVEST,
-        year,
-      );
-
-    if (!harvestDataYear)
-      throw new NotFoundException(
-        `There is no H3 Harvest data registered for Material with ID ${materialId} for year ${year} or any other year`,
-      );
-
-    const harvestMaterialH3Data: H3Data | undefined =
-      await this.materialToH3Service.findH3DataForMaterial({
-        materialId,
-        year: harvestDataYear,
-        type: MATERIAL_TO_H3_TYPE.HARVEST,
-      });
-    if (!harvestMaterialH3Data) {
-      throw new NotFoundException(
-        `There is no H3 harvest data for Material with ID ${materialId} and year ${year}`,
-      );
-    }
-
-    const producerDataYear: number | undefined =
-      await this.h3DataYearsService.getClosestAvailableYearForMaterialH3(
-        materialId,
-        MATERIAL_TO_H3_TYPE.PRODUCER,
-        year,
-      );
-
-    if (!producerDataYear)
-      throw new NotFoundException(
-        `There is no H3 Producer data registered for Material with ID ${materialId} for year ${year} or any other year`,
-      );
-
-    const producerMaterialH3Data: H3Data | undefined =
-      await this.materialToH3Service.findH3DataForMaterial({
-        materialId,
-        year: producerDataYear,
-        type: MATERIAL_TO_H3_TYPE.PRODUCER,
-      });
-    if (!producerMaterialH3Data) {
-      throw new NotFoundException(
-        `There is no H3 producer data for Material with ID ${materialId} and year ${year}`,
-      );
-    }
-
-    const indicator: Indicator = await this.indicatorService.getIndicatorById(
-      indicatorId,
-    );
-
-    if (!indicator.unit) {
-      throw new NotFoundException(
-        `Indicator with ID ${indicatorId} has no unit`,
-      );
-    }
-
-    const { factor } =
-      await this.unitConversionsService.getUnitConversionByUnitId(
-        indicator.unit.id,
-      );
-
-    if (!factor) {
-      throw new NotFoundException(
-        `Conversion Unit with ID ${indicator.unit.id} has no 'factor' value`,
-      );
-    }
-
-    let riskMap: H3IndexValueData[];
-    let quantiles: number[] = [];
-    switch (indicator.nameCode) {
-      case INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE:
-        const waterRiskmapResponse: {
-          riskMap: H3IndexValueData[];
-          quantiles: number[];
-        } = await this.h3DataRepository.getWaterRiskMapByResolution(
-          indicatorH3Data,
-          producerMaterialH3Data as H3Data,
-          factor as number,
-          resolution,
-        );
-        riskMap = waterRiskmapResponse.riskMap;
-        quantiles = waterRiskmapResponse.quantiles;
-        break;
-      case INDICATOR_TYPES.DEFORESTATION:
-        const deforestationRiskmapResponse: {
-          riskMap: H3IndexValueData[];
-          quantiles: number[];
-        } = await this.h3DataRepository.getDeforestationLossRiskMapByResolution(
-          indicatorH3Data,
-          producerMaterialH3Data as H3Data,
-          harvestMaterialH3Data as H3Data,
-          resolution,
-        );
-        riskMap = deforestationRiskmapResponse.riskMap;
-        quantiles = deforestationRiskmapResponse.quantiles;
-        break;
-      case INDICATOR_TYPES.CARBON_EMISSIONS:
-        const deforestationH3DataForCarbonEmissions: H3Data =
-          await this.indicatorService.getDeforestationH3Data();
-        const carbonEmissionRiskmapResponse: {
-          riskMap: H3IndexValueData[];
-          quantiles: number[];
-        } = await this.h3DataRepository.getCarbonEmissionsRiskMapByResolution(
-          indicatorH3Data,
-          producerMaterialH3Data as H3Data,
-          harvestMaterialH3Data as H3Data,
-          deforestationH3DataForCarbonEmissions,
-          factor as number,
-          resolution,
-        );
-        riskMap = carbonEmissionRiskmapResponse.riskMap;
-        quantiles = carbonEmissionRiskmapResponse.quantiles;
-
-        break;
-      case INDICATOR_TYPES.BIODIVERSITY_LOSS:
-        const deforestationH3DataForBiodiversityLoss: H3Data =
-          await this.indicatorService.getDeforestationH3Data();
-        const biodiversityRiskmapResponse: {
-          riskMap: H3IndexValueData[];
-          quantiles: number[];
-        } = await this.h3DataRepository.getBiodiversityLossRiskMapByResolution(
-          indicatorH3Data,
-          producerMaterialH3Data as H3Data,
-          harvestMaterialH3Data as H3Data,
-          deforestationH3DataForBiodiversityLoss,
-          factor as number,
-          resolution,
-        );
-        riskMap = biodiversityRiskmapResponse.riskMap;
-        quantiles = biodiversityRiskmapResponse.quantiles;
-
-        break;
-      default:
-        throw new ServiceUnavailableException(
-          `Risk map for indicator ${indicator.name} (indicator nameCode ${indicator.nameCode}) not currently supported`,
-        );
-    }
-
-    materialsH3DataYears.push(
-      {
-        materialName: material.name,
-        materialDataYear: harvestDataYear,
-        materialDataType: MATERIAL_TO_H3_TYPE.HARVEST,
-      },
-      {
-        materialName: material.name,
-        materialDataYear: producerDataYear,
-        materialDataType: MATERIAL_TO_H3_TYPE.PRODUCER,
-      },
-    );
-
-    return {
-      data: riskMap,
-      metadata: {
-        quantiles: quantiles,
-        unit: indicator.unit.symbol,
-        indicatorDataYear,
-        materialsH3DataYears,
-      },
-    };
-  }
-
   async getYearsByLayerType(
     layerType: string,
     materialIds?: string[],
@@ -420,5 +220,168 @@ export class H3DataService {
         ...(materialsH3DataYears.length ? { materialsH3DataYears } : {}),
       },
     };
+  }
+
+  async getRiskMapByResolution(
+    materialId: string,
+    indicatorId: string,
+    resolution: number,
+    year: number,
+  ): Promise<H3MapResponse> {
+    const indicator: Indicator | undefined =
+      await this.indicatorService.getIndicatorById(indicatorId);
+
+    if (!indicator) {
+      throw new NotFoundException(
+        `There is no Indicator with ID ${indicatorId}`,
+      );
+    }
+    if (!indicator.unit) {
+      throw new NotFoundException(
+        `Indicator with ID ${indicatorId} has no unit`,
+      );
+    }
+
+    // load indicator H3 data
+    const indicatorTypeDependencies: INDICATOR_TYPES[] =
+      Indicator.getIndicatorCalculationDependencies(
+        indicator.nameCode as INDICATOR_TYPES,
+        true,
+      );
+
+    const indicatorH3s: Map<INDICATOR_TYPES, H3Data> =
+      await this.getIndicatorH3sByTypeAndClosestYear(
+        indicatorTypeDependencies,
+        year,
+      );
+
+    //load materials h3 data (producer and harvest)
+    const material: Material = await this.materialService.getMaterialById(
+      materialId,
+    );
+
+    const materialH3s: Map<MATERIAL_TO_H3_TYPE, H3Data> =
+      await this.getAllMaterialH3sByClosestYear(materialId, year);
+
+    if (!materialH3s.get(MATERIAL_TO_H3_TYPE.HARVEST)) {
+      throw new NotFoundException(
+        `There is no H3 Harvest data registered for Material with ID ${materialId} for year ${year} or any other year`,
+      );
+    }
+
+    if (!materialH3s.get(MATERIAL_TO_H3_TYPE.PRODUCER)) {
+      throw new NotFoundException(
+        `There is no H3 Producer data registered for Material with ID ${materialId} for year ${year} or any other year`,
+      );
+    }
+
+    const { factor } =
+      await this.unitConversionsService.getUnitConversionByUnitId(
+        indicator.unit.id,
+      );
+    if (!factor) {
+      throw new NotFoundException(
+        `Conversion Unit with ID ${indicator.unit.id} has no 'factor' value`,
+      );
+    }
+
+    const { riskMap, quantiles } =
+      await this.h3DataRepository.getRiskMapByResolution(
+        indicator.nameCode as INDICATOR_TYPES,
+        indicatorH3s,
+        materialH3s,
+        resolution,
+        factor,
+      );
+
+    const materialsH3DataYears: MaterialsH3DataYears[] = [
+      {
+        materialName: material.name,
+        materialDataYear: materialH3s.get(MATERIAL_TO_H3_TYPE.HARVEST)!.year,
+        materialDataType: MATERIAL_TO_H3_TYPE.HARVEST,
+      },
+      {
+        materialName: material.name,
+        materialDataYear: materialH3s.get(MATERIAL_TO_H3_TYPE.PRODUCER)!.year,
+        materialDataType: MATERIAL_TO_H3_TYPE.PRODUCER,
+      },
+    ];
+
+    return {
+      data: riskMap,
+      metadata: {
+        quantiles: quantiles,
+        unit: indicator.unit.symbol,
+        indicatorDataYear: indicatorH3s.get(
+          indicator.nameCode as INDICATOR_TYPES,
+        )!.year,
+        materialsH3DataYears,
+      },
+    };
+  }
+
+  getMaterialH3ByClosestYear(
+    materialId: string,
+    type: MATERIAL_TO_H3_TYPE,
+    year: number,
+  ): Promise<H3Data | undefined> {
+    return this.h3DataRepository.getMaterialH3ByTypeAndClosestYear(
+      materialId,
+      type,
+      year,
+    );
+  }
+
+  getIndicatorH3sByTypeAndClosestYear(
+    indicatorTypes: INDICATOR_TYPES[],
+    year: number,
+  ): Promise<Map<INDICATOR_TYPES, H3Data>> {
+    return indicatorTypes.reduce(
+      async (
+        previousValue: Promise<Map<INDICATOR_TYPES, H3Data>>,
+        currentValue: INDICATOR_TYPES,
+      ) => {
+        const h3data: H3Data | undefined =
+          await this.h3DataRepository.getIndicatorH3ByTypeAndClosestYear(
+            currentValue,
+            year,
+          );
+        const map: Map<INDICATOR_TYPES, H3Data> = await previousValue;
+
+        if (h3data) {
+          map.set(currentValue, h3data);
+        }
+
+        return map;
+      },
+      Promise.resolve(new Map()),
+    );
+  }
+
+  getAllMaterialH3sByClosestYear(
+    materialId: string,
+    year: number,
+  ): Promise<Map<MATERIAL_TO_H3_TYPE, H3Data>> {
+    return Object.values(MATERIAL_TO_H3_TYPE).reduce(
+      async (
+        previousValue: Promise<Map<MATERIAL_TO_H3_TYPE, H3Data>>,
+        currentValue: MATERIAL_TO_H3_TYPE,
+      ) => {
+        const h3data: H3Data | undefined =
+          await this.h3DataRepository.getMaterialH3ByTypeAndClosestYear(
+            materialId,
+            currentValue,
+            year,
+          );
+        const map: Map<MATERIAL_TO_H3_TYPE, H3Data> = await previousValue;
+
+        if (h3data) {
+          map.set(currentValue, h3data);
+        }
+
+        return map;
+      },
+      Promise.resolve(new Map()),
+    );
   }
 }

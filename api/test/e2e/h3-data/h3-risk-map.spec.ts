@@ -130,6 +130,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
     test('When I get a calculated H3 Risk Map without a year value, then I should get a proper error message', async () => {
       const indicator: Indicator = new Indicator();
+      indicator.nameCode = INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE;
       indicator.name = 'test indicator';
       await indicator.save();
 
@@ -152,6 +153,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
     test('When I get a calculated H3 Risk Map without a material id value, then I should get a proper error message', async () => {
       const indicator: Indicator = new Indicator();
+      indicator.nameCode = INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE;
       indicator.name = 'test indicator';
       await indicator.save();
 
@@ -171,6 +173,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
 
     test('When I get a calculated H3 Risk Map without a resolution value, then I should get a proper error message', async () => {
       const indicator: Indicator = new Indicator();
+      indicator.nameCode = INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE;
       indicator.name = 'test indicator';
       await indicator.save();
 
@@ -210,7 +213,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
           materialId: material.id,
         });
       expect(response.body.errors[0].title).toEqual(
-        `There is no H3 Data registered for Indicator with ID ${indicator.id} for year 2020 or any other year`,
+        `H3 Data of Indicator dependency of type ${indicator.nameCode} missing for ${INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE} Risk Map calculation`,
       );
     });
 
@@ -219,6 +222,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       const indicator = await createIndicator({
         unit,
         name: 'Indicator Name',
+        nameCode: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
       });
       await h3DataMock({
         h3TableName: 'fakeIndicatorTable',
@@ -251,6 +255,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       const indicator = await createIndicator({
         unit,
         name: 'Indicator Name',
+        nameCode: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
       });
       await h3DataMock({
         h3TableName: 'fakeIndicatorTable',
@@ -724,7 +729,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       });
 
     expect(response.body.errors[0].meta.rawError.response.message).toEqual(
-      'No Deforestation Indicator data found in database',
+      `H3 Data of Indicator dependency of type ${INDICATOR_TYPES.DEFORESTATION} missing for ${INDICATOR_TYPES.BIODIVERSITY_LOSS} Risk Map calculation`,
     );
   });
 
@@ -759,7 +764,7 @@ describe('H3 Data Module (e2e) - Risk map', () => {
       });
 
     expect(response.body.errors[0].meta.rawError.response.message).toEqual(
-      'No Deforestation Indicator H3 data found in database, required to retrieve Biodiversity Loss and Carbon Risk-Maps',
+      `H3 Data of Indicator dependency of type ${INDICATOR_TYPES.DEFORESTATION} missing for ${INDICATOR_TYPES.BIODIVERSITY_LOSS} Risk Map calculation`,
     );
   });
 });

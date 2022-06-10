@@ -50,7 +50,9 @@ describe('Tasks Module (e2e)', () => {
 
   describe('Targets - Create', () => {
     test('Creating a new target (happy case)', async () => {
-      const indicator: Indicator = await createIndicator();
+      const indicator: Indicator = await createIndicator({
+        nameCode: 'GAMMA_RADIATION',
+      });
 
       const response = await request(app.getHttpServer())
         .post('/api/v1/targets')

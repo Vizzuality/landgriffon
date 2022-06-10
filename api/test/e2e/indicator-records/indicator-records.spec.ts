@@ -49,7 +49,9 @@ describe('IndicatorRecordsModule (e2e)', () => {
   describe.skip('Indicator record - Create', () => {
     test('Create an indicator record should be successful (happy case)', async () => {
       const sourcingRecord: SourcingRecord = await createSourcingRecord();
-      const indicator: Indicator = await createIndicator();
+      const indicator: Indicator = await createIndicator({
+        nameCode: 'GAMMA_RADIATION',
+      });
       const response = await request(app.getHttpServer())
         .post('/api/v1/indicator-records')
         .set('Authorization', `Bearer ${jwtToken}`)

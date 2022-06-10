@@ -27,6 +27,7 @@ import {
   createSupplier,
   createUnit,
 } from '../../../entity-mocks';
+import { INDICATOR_TYPES } from '../../../../src/modules/indicators/indicator.entity';
 
 export async function createMultipleInterventionsPreconditions(): Promise<{
   indicator: Indicator;
@@ -39,6 +40,7 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
   const indicator: Indicator = await createIndicator({
     name: 'Deforestation',
     unit,
+    nameCode: INDICATOR_TYPES.DEFORESTATION,
   });
 
   const textile: Material = await createMaterial({ name: 'Textile' });

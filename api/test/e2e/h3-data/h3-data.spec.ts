@@ -8,6 +8,7 @@ import {
   h3DataMock,
   createRandomNamesForH3TableAndColumns,
   dropH3DataMock,
+  createRandomIndicatorNameCode,
 } from './mocks/h3-data.mock';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import {
@@ -19,7 +20,10 @@ import {
   createSourcingRecord,
 } from '../../entity-mocks';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
-import { Indicator } from 'modules/indicators/indicator.entity';
+import {
+  Indicator,
+  INDICATOR_TYPES,
+} from 'modules/indicators/indicator.entity';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { h3BasicFixture } from './mocks/h3-fixtures';
@@ -290,6 +294,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
     const fakeH3MasterData: Array<Partial<H3Data>> = [];
     for await (const year of years) {
       const { id } = await createIndicator({
+        nameCode: createRandomIndicatorNameCode(),
         name: createRandomNamesForH3TableAndColumns(),
       });
       fakeH3MasterData.push({
@@ -311,7 +316,9 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
   });
   test('Given there is material H3 data, When I query available years providing a indicator id, then I should get all available years for that indicator', async () => {
     const years = [2001, 2001, 2002, 2003, 2007];
-    const savedIndicator: Indicator = await createIndicator();
+    const savedIndicator: Indicator = await createIndicator({
+      nameCode: 'GAMMA_RADIATION',
+    });
     const fakeH3MasterData: Array<Partial<H3Data>> = [];
     for await (const year of years) {
       fakeH3MasterData.push({

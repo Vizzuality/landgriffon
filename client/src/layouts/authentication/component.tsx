@@ -1,3 +1,4 @@
+import { Toaster } from 'react-hot-toast';
 import LandgriffonLogo from 'containers/logo/component';
 
 const AuthenticationLayout: React.FC = ({ children }) => (
@@ -6,6 +7,7 @@ const AuthenticationLayout: React.FC = ({ children }) => (
       <LandgriffonLogo />
     </div>
     <div className="flex-1 flex flex-col justify-center pt-12">{children}</div>
+    <Toaster position="bottom-center" />
   </div>
 );
 

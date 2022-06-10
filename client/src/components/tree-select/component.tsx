@@ -76,6 +76,8 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(autoFocus && (!current || current.length === 0));
 
+  const badgesToShow = ellipsis ? 1 : maxBadges;
+
   const {
     x,
     y,
@@ -301,10 +303,8 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
               {(!currentOptions || !currentOptions.length) && !showSearch && (
                 <span className="text-gray-500 inline-block truncate text-sm">{placeholder}</span>
               )}
-              {currentOptions &&
-                !!currentOptions.length &&
-                !ellipsis &&
-                currentOptions.slice(0, maxBadges).map((option) => (
+              {!!currentOptions?.length &&
+                currentOptions.slice(0, badgesToShow).map((option) => (
                   <Badge
                     key={option.value}
                     className={classNames('text-sm h-fit my-auto max-w-full', THEMES[theme].label)}
@@ -316,24 +316,12 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                     {option.label}
                   </Badge>
                 ))}
-              {currentOptions && !!currentOptions.length && ellipsis && (
-                <Badge
-                  key={currentOptions[0].value}
-                  className={classNames('text-sm h-fit my-auto', THEMES[theme].label)}
-                  data={currentOptions[0]}
-                  onClick={handleRemoveBadge}
-                  removable={theme !== 'inline-primary'}
-                  theme={theme}
-                >
-                  {currentOptions[0].label}
-                </Badge>
-              )}
-              {currentOptions && currentOptions.length > maxBadges && (
+              {currentOptions?.length > badgesToShow && (
                 <Badge
                   className={classNames('text-sm h-fit my-auto', THEMES[theme].label)}
                   theme={theme}
                 >
-                  {currentOptions.length - maxBadges} more selected
+                  {currentOptions.length - badgesToShow} more selected
                 </Badge>
               )}
             </>

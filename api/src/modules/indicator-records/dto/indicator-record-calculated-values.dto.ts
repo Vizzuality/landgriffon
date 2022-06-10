@@ -12,13 +12,5 @@ export class IndicatorRecordCalculatedValuesDto {
 
   landPerTon: number;
   landUse: number;
-  deforestationPerHarvestedAreaLandUse: number;
-  biodiversityLossPerHarvestedAreaLandUse: number;
-  carbonLossPerHarvestedAreaLandUse: number;
-
-  // Indicator name codes:
-  [INDICATOR_TYPES.DEFORESTATION]: number;
-  [INDICATOR_TYPES.BIODIVERSITY_LOSS]: number;
-  [INDICATOR_TYPES.CARBON_EMISSIONS]: number;
-  [INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE]: number;
+  values: Map<INDICATOR_TYPES, number>;
 }

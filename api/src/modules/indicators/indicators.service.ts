@@ -42,6 +42,15 @@ export class IndicatorsService extends AppBaseService<
     };
   }
 
+  /**
+   * Returns all available valid indicators
+   */
+  async getAllIndicators(): Promise<Indicator[]> {
+    // It is assumed that the indicators that are enabled/valid, are the ones that are present on the DB since
+    // the initial seeding import. So a simple getAll is sufficient
+    return this.findAllUnpaginated();
+  }
+
   async getIndicatorById(id: string): Promise<Indicator> {
     const found: Indicator | undefined = await this.indicatorRepository.findOne(
       id,

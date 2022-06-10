@@ -18,7 +18,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { ImpactModule } from 'modules/impact/impact.module';
 import { Unit } from 'modules/units/unit.entity';
-import { Indicator } from 'modules/indicators/indicator.entity';
+import {
+  Indicator,
+  INDICATOR_TYPES,
+} from 'modules/indicators/indicator.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Material } from 'modules/materials/material.entity';
 import {
@@ -138,6 +141,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     const indicator: Indicator = await createIndicator({
       name: 'Fake Indicator',
       unit,
+      nameCode: INDICATOR_TYPES.DEFORESTATION,
     });
 
     const businessUnit: BusinessUnit = await createBusinessUnit({
@@ -255,6 +259,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     const indicator: Indicator = await createIndicator({
       name: 'Fake Indicator',
       unit,
+      nameCode: INDICATOR_TYPES.DEFORESTATION,
     });
 
     const businessUnit: BusinessUnit = await createBusinessUnit({
@@ -312,6 +317,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     const indicator: Indicator = await createIndicator({
       name: 'Fake Indicator',
       unit,
+      nameCode: INDICATOR_TYPES.DEFORESTATION,
     });
 
     const businessUnit: BusinessUnit = await createBusinessUnit({
@@ -423,11 +429,13 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       const indicator: Indicator = await createIndicator({
         name: 'Fake Indicator',
         unit,
+        nameCode: INDICATOR_TYPES.DEFORESTATION,
       });
 
       const indicator2: Indicator = await createIndicator({
         name: 'Fake Indicator 2',
         unit,
+        nameCode: INDICATOR_TYPES.CARBON_EMISSIONS,
       });
 
       const businessUnit: BusinessUnit = await createBusinessUnit({
@@ -622,6 +630,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       const indicator: Indicator = await createIndicator({
         name: 'Fake Indicator',
         unit,
+        nameCode: INDICATOR_TYPES.DEFORESTATION,
       });
 
       const businessUnit: BusinessUnit = await createBusinessUnit({
@@ -724,6 +733,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       const indicator: Indicator = await createIndicator({
         name: 'Fake Indicator',
         unit,
+        nameCode: INDICATOR_TYPES.DEFORESTATION,
       });
 
       const material1: Material = await createMaterial({
@@ -811,6 +821,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       const indicator: Indicator = await createIndicator({
         name: 'Fake Indicator',
         unit,
+        nameCode: INDICATOR_TYPES.DEFORESTATION,
       });
 
       const parentMaterial: Material = await createMaterial({
@@ -958,6 +969,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       const indicator: Indicator = await createIndicator({
         name: 'Fake Indicator',
         unit,
+        nameCode: INDICATOR_TYPES.DEFORESTATION,
       });
 
       const material: Material = await createMaterial({
@@ -1043,6 +1055,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       const indicator: Indicator = await createIndicator({
         name: 'Fake Indicator',
         unit,
+        nameCode: INDICATOR_TYPES.DEFORESTATION,
       });
 
       const material: Material = await createMaterial({
@@ -1132,6 +1145,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       const indicator: Indicator = await createIndicator({
         name: 'Fake Indicator',
         unit,
+        nameCode: INDICATOR_TYPES.DEFORESTATION,
       });
 
       const material: Material = await createMaterial({
@@ -1225,6 +1239,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       const indicator: Indicator = await createIndicator({
         name: 'Fake Indicator',
         unit,
+        nameCode: INDICATOR_TYPES.DEFORESTATION,
       });
 
       const material: Material = await createMaterial({
@@ -1317,6 +1332,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       const indicator: Indicator = await createIndicator({
         name: 'Fake Indicator',
         unit,
+        nameCode: INDICATOR_TYPES.DEFORESTATION,
       });
 
       const material1: Material = await createMaterial({
@@ -1436,6 +1452,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       const indicator: Indicator = await createIndicator({
         name: 'Fake Indicator',
         unit,
+        nameCode: INDICATOR_TYPES.DEFORESTATION,
       });
 
       const material: Material = await createMaterial({

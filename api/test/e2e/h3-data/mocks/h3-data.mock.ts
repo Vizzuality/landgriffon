@@ -48,3 +48,6 @@ export const dropH3DataMock = async (h3TableNames: string[]): Promise<void> => {
 
 export const createRandomNamesForH3TableAndColumns = (): string =>
   (Math.random() + 1).toString(36).substring(2);
+
+export const createRandomIndicatorNameCode = (): string =>
+  `${Math.random() + 1}_${Math.random() + 1}`;

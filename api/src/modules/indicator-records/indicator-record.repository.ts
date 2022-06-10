@@ -1,9 +1,21 @@
-import { EntityRepository } from 'typeorm';
+import {
+  EntityRepository,
+  getManager,
+  Repository,
+  SelectQueryBuilder,
+} from 'typeorm';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
-import { Logger, ServiceUnavailableException } from '@nestjs/common';
-import { IndicatorComputedRawDataDto } from 'modules/indicators/dto/indicator-computed-raw-data.dto';
+import {
+  Logger,
+  NotFoundException,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
+import { H3Data } from '../h3-data/h3-data.entity';
+import { Indicator, INDICATOR_TYPES } from '../indicators/indicator.entity';
+import { MATERIAL_TO_H3_TYPE } from '../materials/material-to-h3.entity';
+import { IndicatorRecordValueSQLStrategies } from './strategies/indicator-record-value.strategies';
 import { AppBaseRepository } from 'utils/app-base.repository';
 
 @EntityRepository(IndicatorRecord)
@@ -18,6 +30,8 @@ export class IndicatorRecordRepository extends AppBaseRepository<IndicatorRecord
     SourcingRecordsWithIndicatorRawDataDto[]
   > {
     try {
+      // TODO due to possible performance issues this query that makes use of the stored procedures for
+      // indicator value calculation has not been refactored. It remains to be reworked
       const response: any = await this.query(`
         SELECT
           -- TODO: Hack to retrieve 1 materialH3Id for each sourcingRecord. This should include a year fallback strategy in the stored procedures
@@ -77,32 +91,61 @@ export class IndicatorRecordRepository extends AppBaseRepository<IndicatorRecord
   }
 
   /**
-   * @description Calculate Raw Indicator values given a GeoRegion Id and Material Id:
+   * Calculates the impact raw value for the given indicator type and georegion, and basing the calculations
+   * on the provided H3 Data of materials and indicators (since the calculation might have dependencies on other
+   * indicators)
+   * @param geoRegionId
+   * @param indicatorType
+   * @param indicatorH3s
+   * @param materialH3s
    */
-  async getIndicatorRawDataByGeoRegionAndMaterial(
+  async getIndicatorRecordRawValue(
     geoRegionId: string,
-    materialId: string,
-  ): Promise<IndicatorComputedRawDataDto> {
+    indicatorType: INDICATOR_TYPES,
+    indicatorH3s: Map<INDICATOR_TYPES, H3Data>,
+    materialH3s: Map<MATERIAL_TO_H3_TYPE, H3Data>,
+  ): Promise<number> {
+    const query: SelectQueryBuilder<any> = IndicatorRecordValueSQLStrategies[
+      indicatorType
+    ](geoRegionId, indicatorH3s, materialH3s);
+
     try {
-      const res: IndicatorComputedRawDataDto[] = await this.query(
-        `
-                 SELECT
-                      sum_material_over_georegion($1, $2, 'producer') as production,
-                      sum_material_over_georegion($1, $2, 'harvest') as "harvestedArea",
-                      sum_weighted_deforestation_over_georegion($1, $2, 'harvest') as "rawDeforestation",
-                      sum_weighted_biodiversity_over_georegion($1, $2, 'harvest') as "rawBiodiversity",
-                      sum_weighted_carbon_over_georegion($1, $2, 'harvest') as "rawCarbon",
-                      sum_weighted_water_over_georegion($1) as "rawWater"
-                 `,
-        [geoRegionId, materialId],
-      );
-      return res[0];
+      const res: { sum: number }[] = await query.getRawMany();
+      return res[0].sum;
     } catch (error: any) {
       this.logger.error(
-        `Could not calculate raw Indicator values for GeoRegion Id: ${geoRegionId} and Material Id: ${materialId} `,
+        `Could not calculate raw Indicator values for GeoRegion Id: ${geoRegionId} and Indicator ${indicatorType} - ${error}`,
       );
       throw new ServiceUnavailableException(
         `Could not calculate Raw Indicator values for new Scenario: ${error.message}`,
+      );
+    }
+  }
+
+  /**
+   * Returns the sum of h3 value of a given H3 Data over a georegion
+   * @param geoRegionId
+   * @param h3Data
+   */
+  async getH3SumOverGeoRegionSQL(
+    geoRegionId: string,
+    h3Data: H3Data,
+  ): Promise<number> {
+    const query: string = `SELECT sum(h3Table."${h3Data.h3columnName}")
+      FROM
+        get_h3_uncompact_geo_region('${geoRegionId}', ${h3Data.h3resolution}) geo_region
+      INNER JOIN
+        "${h3Data.h3tableName}" h3Table ON geo_region.h3index = h3Table.h3index`;
+
+    try {
+      const res: any[] = await this.query(query);
+      return res[0].sum;
+    } catch (error: any) {
+      this.logger.error(
+        `Could not calculate raw Indicator values for GeoRegion Id: ${geoRegionId} and H3 Data Id: ${h3Data.id} `,
+      );
+      throw new ServiceUnavailableException(
+        `Could not calculate H3 sum over georegion: ${error.message}`,
       );
     }
   }

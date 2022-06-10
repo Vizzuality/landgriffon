@@ -6,6 +6,7 @@ import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import toast from 'react-hot-toast';
 
 import AuthenticationLayout from 'layouts/authentication';
 import { Label, Input, Checkbox } from 'components/forms';
@@ -24,7 +25,6 @@ const SignIn: React.FC = () => {
   const {
     register,
     handleSubmit,
-    setError,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
@@ -39,15 +39,13 @@ const SignIn: React.FC = () => {
       }).then(({ error }) => {
         if (error) {
           setIsLoading(false);
-          setError('password', {
-            message: 'login failed. incorrect password',
-          });
+          toast.error('Login failed. Your emails or password is incorrect.');
         } else {
           router.push('/analysis');
         }
       });
     },
-    [router, setError],
+    [router],
   );
 
   return (

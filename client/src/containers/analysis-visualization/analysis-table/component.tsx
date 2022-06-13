@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { uniq } from 'lodash';
 import { DataType, SortingMode } from 'ka-table/enums';
 import { DownloadIcon } from '@heroicons/react/outline';
@@ -52,9 +52,13 @@ const dataToCsv: (tableData: ITableData) => string = (tableData) => {
 const AnalysisTable: React.FC = () => {
   const { data: impactData, isLoading, isFetching } = useImpactData();
   const {
-    metadata,
     data: { impactTable },
   } = impactData;
+
+  const totalIndicators = useMemo(() => {
+    return !isLoading && impactTable.length === 1 ? impactTable[0].rows.length : impactTable.length;
+  }, [isLoading, impactTable]);
+  const [totalRows, setTotalRows] = useState(totalIndicators);
 
   const datesRangeChartConfig = (data) => {
     const chartData = data.map(({ year, value }) => ({
@@ -94,28 +98,37 @@ const AnalysisTable: React.FC = () => {
     // TO-DO: make it recursive to more levels, right now the max deep is 4
     impactTable.forEach((indicator) => {
       const rowParentId = isMultipleIndicator ? indicator.indicatorId : null;
-
       if (isMultipleIndicator) {
         // Indicators (top tree level)
         result.push({
           id: indicator.indicatorId,
           parentId: null,
           name: indicator.indicatorShortName,
+          indicatorRows: indicator.rows.length,
+          indicatorChildrenRows: indicator.rows.map((r) => ({
+            id: `${rowParentId}`,
+            name: r.name,
+            childrenRows: r.children.length,
+          })),
           datesRangeChart: datesRangeChartConfig(indicator.yearSum),
           ...indicator.yearSum
             .map(({ year, value }) => ({ [year]: value }))
             .reduce((a, b) => ({ ...a, ...b })),
         });
       }
-
       // Indicator rows
       indicator.rows.forEach((row, parentIndex) => {
         const secondParentId = `${rowParentId}-${parentIndex}`;
-
         result.push({
           id: secondParentId,
           parentId: rowParentId,
           name: row.name,
+          indicatorRows: indicator.rows.length,
+          indicatorChildrenRows: indicator.rows.map((r) => ({
+            id: `${rowParentId}-${parentIndex}`,
+            name: r.name,
+            childrenRows: r.children.length,
+          })),
           datesRangeChart: datesRangeChartConfig(row.values),
           ...row.values
             .map(({ year, value }) => ({ [year as string]: value }))
@@ -201,6 +214,7 @@ const AnalysisTable: React.FC = () => {
       treeGroupKeyField: 'parentId',
       treeGroupsExpanded: [],
       sortingMode: SortingMode.Single,
+      total: totalIndicators,
       columns: [
         { key: 'name', title: 'Name', dataType: DataType.String },
         {
@@ -234,8 +248,11 @@ const AnalysisTable: React.FC = () => {
         },
       },
     };
-  }, [tableData, years, yearsSum]);
+  }, [tableData, years, yearsSum, totalIndicators]);
 
+  const handleIndicatorRows = useCallback((total) => {
+    setTotalRows(total);
+  }, []);
   const csv = useMemo<string | null>(() => encodeURI(dataToCsv(tableProps)), [tableProps]);
 
   return (
@@ -256,7 +273,7 @@ const AnalysisTable: React.FC = () => {
               Download
             </LinkButton>
             <div className="mt-3 font-sans text-xs font-bold leading-4 text-center text-gray-500 uppercase">
-              Total {metadata.totalItems} {metadata.totalItems === 1 ? 'row' : 'rows'}
+              Total {totalRows} {totalRows === 1 ? 'row' : 'rows'}
             </div>
           </div>
         </div>
@@ -264,7 +281,7 @@ const AnalysisTable: React.FC = () => {
       <div className="relative">
         {isLoading && <Loading className="text-green-700 -ml-1 mr-3" />}
 
-        <Table isLoading={isFetching} {...tableProps} />
+        <Table isLoading={isFetching} {...tableProps} handleIndicatorRows={handleIndicatorRows} />
       </div>
     </>
   );

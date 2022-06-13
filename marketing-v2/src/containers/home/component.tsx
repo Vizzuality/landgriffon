@@ -1,14 +1,14 @@
 import React from 'react';
 
-import { Scroll } from 'scrollex';
-
 import Hero from 'containers/home/hero';
+import Features from 'containers/home/features';
 
 const Home: React.FC = () => {
   return (
-    <Scroll.Container scrollAxis="y" className="h-screen">
+    <>
       <Hero />
-    </Scroll.Container>
+      <Features />
+    </>
   );
 };
 

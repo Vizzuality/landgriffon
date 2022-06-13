@@ -13143,10 +13143,10 @@ __metadata:
     react: 17.0.2
     react-dom: 17.0.2
     react-hook-form: 7.27.1
+    react-intersection-observer: ^9.2.2
     react-query: 3.34.16
     react-redux: 7.2.4
     rooks: 5.10.0
-    scrollex: 1.1.0
     sharp: 0.29.3
     start-server-and-test: 1.14.0
     tailwindcss: 3.0.24
@@ -13400,13 +13400,6 @@ __metadata:
   version: 4.7.0
   resolution: "lodash.sortby@npm:4.7.0"
   checksum: db170c9396d29d11fe9a9f25668c4993e0c1331bcb941ddbd48fb76f492e732add7f2a47cfdf8e9d740fa59ac41bbfaf931d268bc72aab3ab49e9f89354d718c
-  languageName: node
-  linkType: hard
-
-"lodash.throttle@npm:4.1.1":
-  version: 4.1.1
-  resolution: "lodash.throttle@npm:4.1.1"
-  checksum: 129c0a28cee48b348aef146f638ef8a8b197944d4e9ec26c1890c19d9bf5a5690fe11b655c77a4551268819b32d27f4206343e30c78961f60b561b8608c8c805
   languageName: node
   linkType: hard
 
@@ -16331,6 +16324,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-intersection-observer@npm:^9.2.2":
+  version: 9.2.2
+  resolution: "react-intersection-observer@npm:9.2.2"
+  peerDependencies:
+    react: ^15.0.0 || ^16.0.0 || ^17.0.0|| ^18.0.0
+  checksum: b9fa5b5504d9e6334bac0f5068e33cfcac2ebc87f716584fde7ae7411632cf9472e98acb5a01bc109ce5282bf6b2be97eabbf02813b2c11dd89a4dacc73e52ae
+  languageName: node
+  linkType: hard
+
 "react-is@npm:17.0.2, react-is@npm:^17.0.1, react-is@npm:^17.0.2":
   version: 17.0.2
   resolution: "react-is@npm:17.0.2"
@@ -17210,20 +17212,6 @@ __metadata:
     ajv: ^6.12.5
     ajv-keywords: ^3.5.2
   checksum: fb73f3d759d43ba033c877628fe9751620a26879f6301d3dbeeb48cf2a65baec5cdf99da65d1bf3b4ff5444b2e59cbe4f81c2456b5e0d2ba7d7fd4aed5da29ce
-  languageName: node
-  linkType: hard
-
-"scrollex@npm:1.1.0":
-  version: 1.1.0
-  resolution: "scrollex@npm:1.1.0"
-  dependencies:
-    lodash.throttle: 4.1.1
-    popmotion: 11.0.3
-  peerDependencies:
-    framer-motion: ">=6.0.0"
-    react: ">=17.0.0"
-    react-dom: ">=17.0.0"
-  checksum: 859c8b52ca30b32a484ec36520c887cd27c882656d93bba8dd96fe00432cac195238ca95861862ef4d1ef6e8f0fcd194cbd5500ef10682a5380dabfeb0404fa4
   languageName: node
   linkType: hard
 

@@ -47,7 +47,7 @@ const redisConfig: any = config.get('redis');
         host: redisConfig.host,
         port: redisConfig.port,
       },
-      settings: { lockDuration: 10000000 },
+      settings: { lockDuration: 10000000, maxStalledCount: 0 },
     }),
     AdminRegionsModule,
     AuthenticationModule,

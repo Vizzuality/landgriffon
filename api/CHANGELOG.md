@@ -7,8 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-##  2022-08-01
+##  2022-06-12
 ### Added
+Added [LANDGRIF-697](https://vizzuality.atlassian.net/browse/LANDGRIF-697)
+Added class with custom chunk save method for large inserts to avoid blocking
+event loop
+
+
+##  2022-06-08
+### Fixed
 Fixed [LANDGRIF-713](https://vizzuality.atlassian.net/browse/LANDGRIF-713)
 Filter available years for a impact layer by the received Material Id's children
 

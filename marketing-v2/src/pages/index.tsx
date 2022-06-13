@@ -4,7 +4,9 @@ import Head from 'next/head';
 
 import ApplicationLayout from 'layouts/application';
 
-const Home: FC = () => {
+import Home from 'containers/home';
+
+const HomePage: FC = () => {
   return (
     <ApplicationLayout>
       <>
@@ -14,12 +16,10 @@ const Home: FC = () => {
           <meta name="viewport" content="width=1024" />
         </Head>
 
-        <h1 className="font-black uppercase font-display text-9xl">
-          Unlock the sustainability of your supply chain
-        </h1>
+        <Home />
       </>
     </ApplicationLayout>
   );
 };
 
-export default Home;
+export default HomePage;

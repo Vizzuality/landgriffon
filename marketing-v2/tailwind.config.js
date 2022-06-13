@@ -14,8 +14,7 @@ module.exports = {
         display: ['Geomanist', 'sans-serif'],
       },
       fontSize: {
-        xs: '12px',
-        '2xs': '0.625rem',
+        '10xl': ['7.8125rem', '5.6875rem'],
       },
       spacing: {
         125: '30.875rem',
@@ -28,6 +27,9 @@ module.exports = {
       red: colors.red,
       yellow: colors.yellow,
       transparent: colors.transparent,
+      blue: {
+        500: '#0C1063',
+      },
       gray: {
         900: '#15181F',
         800: '#2D2F32',

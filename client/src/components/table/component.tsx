@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import cx from 'classnames';
 import { Table as KaTable, kaReducer } from 'ka-table';
 import { updateData } from 'ka-table/actionCreators';
@@ -9,6 +9,9 @@ import DataRow from 'components/table/data-row';
 import GroupRow from 'components/table/group-row';
 import HeadCellContent from 'components/table/head-cell-content';
 
+import { useAppSelector } from 'store/hooks';
+import { analysisFilters } from 'store/features/analysis/filters';
+
 import Loading from 'components/loading';
 
 import { DEFAULT_CLASSNAMES, SHADOW_CLASSNAMES } from './constants';
@@ -18,6 +21,7 @@ import { SortingMode, ApiSortingDirection } from './enums';
 const defaultProps: TableProps = {
   columns: [],
   data: [],
+  total: null,
   rowKeyField: 'id',
   sortingMode: SortingMode.None,
 };
@@ -29,24 +33,56 @@ const Table: React.FC<TableProps> = ({
   sortingMode,
   defaultSorting,
   onSortingChange,
+  handleIndicatorRows,
   ...props
 }: TableProps) => {
   const firstColumnKey = props.columns[0]?.key;
   const stickyColumnKey = isFirstColumnSticky && firstColumnKey;
-
   const [tableProps, setTableProps] = useState({ ...defaultProps, ...props });
+  const { indicator } = useAppSelector(analysisFilters);
+
   const [apiSorting, setApiSorting] = useState<ApiSortingType>({
     orderBy: defaultSorting?.orderBy || firstColumnKey,
     order: defaultSorting?.order || ApiSortingDirection.Ascending,
   });
+
+  const indicatorsExpanded = useMemo(
+    () => tableProps.data.filter(({ id }) => tableProps.treeGroupsExpanded.find((d) => d === id)),
+    [tableProps.data, tableProps.treeGroupsExpanded],
+  );
+
+  const indicatorRows = useMemo(
+    () =>
+      indicatorsExpanded.filter(
+        (indicator) =>
+          !indicator.parentId ||
+          (!!indicator.parentId &&
+            indicatorsExpanded.map((i) => i.id).includes(indicator.parentId)),
+      ),
+    [indicatorsExpanded],
+  );
+
+  const totalRows = useMemo(
+    () =>
+      indicatorRows.reduce((acc, i) => {
+        if (!i.parentId && indicator.value === 'all') {
+          return acc + i.indicatorRows;
+        } else {
+          return acc + i.indicatorChildrenRows.find((c) => c.name === i.name)?.childrenRows;
+        }
+      }, 0),
+    [indicatorRows, indicator.value],
+  );
 
   const updateTableProps = useCallback(
     (action) => {
       // Data is loading; let's retain the existing props for now.
       if (isLoading) return;
       setTableProps((prevState) => kaReducer(prevState, action));
+      const total = totalRows + props.total;
+      handleIndicatorRows(total);
     },
-    [isLoading],
+    [isLoading, handleIndicatorRows, props.total, totalRows],
   );
 
   const handleApiSorting = useCallback(

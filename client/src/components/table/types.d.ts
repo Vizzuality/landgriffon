@@ -27,6 +27,10 @@ export interface TableProps extends ITableProps {
   defaultSorting?: ApiSortingType;
   /** Callback when sorting changes. Applicable to `Api` sorting only. */
   onSortingChange?: func;
+  /** Callback to update table visible rows. */
+  handleIndicatorRows?: func;
+  /** Number of total indicators shown in the table. */
+  total?: number;
 }
 
 export type ApiSortingType = {

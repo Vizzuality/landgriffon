@@ -45,7 +45,7 @@ export class ImportDataConsumer {
   @OnQueueCompleted()
   async onJobComplete(job: Job<ExcelImportJob>): Promise<void> {
     this.logger.log(
-      `Import XLSX with TASK ID: ${job.data.taskId} completed succesfully`,
+      `Import XLSX with TASK ID: ${job.data.taskId} completed successfully`,
     );
     await this.tasksService.updateImportJobEvent({
       taskId: job.data.taskId,

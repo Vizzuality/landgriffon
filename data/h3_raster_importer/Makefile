@@ -6,7 +6,6 @@
 #########################
 PARALLELIZATION_FACTOR=10
 
-WORKDIR_GADM=data/gadm
 WORKDIR_MAPSPAM=data/mapspam
 WORKDIR_EARTHSTAT=data/earthstat
 WORKDIR_GLW3=data/glw3
@@ -153,54 +152,21 @@ convert-earthstat-crop-production: extract-earthstat-crop-production
 convert-earthstat-crop-harvest: extract-earthstat-crop-harvest
 	python tiff_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha h3_grid_earthstat2000_global_ha harvest_area es 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
-## DOWNLOAD PASTURE AND CROPLAND DATASET
-#https://s3.us-east-2.amazonaws.com/earthstatdata/CroplandPastureArea2000_Geotiff.zip
-download-cropland:
-	mkdir -p $(WORKDIR_EARTHSTAT)
-	wget -q -O $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_Geotiff.zip https://s3.us-east-2.amazonaws.com/earthstatdata/CroplandPastureArea2000_Geotiff.zip
+# DOWNLOAD PASTURE AND CROPLAND DATASET
+ #https://s3.us-east-2.amazonaws.com/earthstatdata/CroplandPastureArea2000_Geotiff.zip
+download-pasture:
+	mkdir -p $(WORKDIR_GLW3)/cattle/harvestArea $(WORKDIR_GLW3)/chickens/harvestArea $(WORKDIR_GLW3)/horses/harvestArea $(WORKDIR_GLW3)/goats/harvestArea $(WORKDIR_GLW3)/sheep/harvestArea $(WORKDIR_GLW3)/pasture/harvestArea $(WORKDIR_GLW3)/pigs/harvestArea
+	wget -q -O $(WORKDIR_GLW3)/pasture/harvestArea/CroplandPastureArea2000_Geotiff.zip https://s3.us-east-2.amazonaws.com/earthstatdata/CroplandPastureArea2000_Geotiff.zip
 
 #unzip
-extract-cropland: download-cropland
-	mkdir -p $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha
-	unzip -j -o -u $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_Geotiff.zip */Pasture2000_5m.tif -d $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha
-	gdal_translate -a_nodata 0 -of GTiff $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/Pasture2000_5m.tif \
-	$(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/es_pasture_global.tif
-	rm -f $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/Pasture2000_5m.tif
-	gdal_calc.py --calc "A*10000*(A>0)" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/es_pasture_global.tif \
-	 --A_band 1 --outfile $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/global2000_pasture_ha.tif;
-	rm -f $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha/es_pasture_global.tif
-
-# and import to a table called "h3_grid_earthstat2000_global_ha"
-convert-cropland: extract-cropland
-	python tiff_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/CroplandPastureArea2000_global_ha h3_grid_pasture_ha harvest_area es 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
-
-
-#download gadm data
-download-gadm:
-	mkdir -p $(WORKDIR_GADM)
-	wget -q -O $(WORKDIR_GADM)/gadm36_levels_shp.zip https://data.biogeo.ucdavis.edu/data/gadm3.6/gadm36_levels_shp.zip
-
-extract-gadm: download-gadm
-	unzip -u $(WORKDIR_GADM)/gadm36_levels_shp.zip gadm36_0* -d $(WORKDIR_GADM)
-
-#PASTURE PRODUCTION - value for 2010
-#merge with admin areas country level -join $< keys=NAME_0,Area
-preprocess-pasture: extract-gadm
-	mapshaper $(WORKDIR_GADM)/gadm36_0.shp -simplify 10% planar keep-shapes \
-	-clean \
-	-each 'COUNT=this.area/100000000' \
-	-join ./FAOSTATS/FAOSTAT_cattle_production.csv keys=NAME_0,Area \
-	-o $(WORKDIR_EARTHSTAT)/FAOSTATS/FAOSTAT_data.shp force
-
-rasterize-pasture: preprocess-pasture
-	gdal_rasterize -l FAOSTAT_data -a Value -tr 0.083333 0.083333 -a_nodata -1.0 -te -180.0 -89.99928 179.99856 90.0 -ot Float32 -of GTiff $(WORKDIR_EARTHSTAT)/FAOSTATS/FAOSTAT_data.shp $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_production_t.tif
-	gdal_rasterize -l FAOSTAT_data -a COUNT -tr 0.083333 0.083333 -a_nodata -1.0 -te -180.0 -89.99928 179.99856 90.0 -ot Float32 -of GTiff $(WORKDIR_EARTHSTAT)/FAOSTATS/FAOSTAT_data.shp $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_count.tif
-	gdal_calc.py --calc "A/B" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_production_t.tif --A_band 1 -B $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_count.tif --outfile $(WORKDIR_EARTHSTAT)/FAOSTATS/FAOSTAT_pasture_production.tif
-	rm -f $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_production_t.tif
-	rm -f $(WORKDIR_EARTHSTAT)/FAOSTATS/pasture_contry_count.tif
-
-convert-pasture: rasterize-pasture
-	python tiff_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/FAOSTATS h3_grid_pasture_production production es 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+extract-pasture: download-pasture
+	unzip -j -o -u $(WORKDIR_GLW3)/pasture/harvestArea/CroplandPastureArea2000_Geotiff.zip */Pasture2000_5m.tif -d $(WORKDIR_GLW3)/pasture/harvestArea
+	gdal_translate -a_nodata 0 -of GTiff $(WORKDIR_GLW3)/pasture/harvestArea/Pasture2000_5m.tif \
+	$(WORKDIR_GLW3)/pasture/harvestArea/es_pasture_global.tif
+	rm -f $(WORKDIR_GLW3)/pasture/harvestArea/Pasture2000_5m.tif
+	gdal_calc.py --calc "A*10000*(A>0)" --format GTiff --type Float32 -A $(WORKDIR_GLW3)/pasture/harvestArea/es_pasture_global.tif \
+	 --A_band 1 --outfile $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif;
+	rm -f $(WORKDIR_GLW3)/pasture/harvestArea/es_pasture_global.tif
 
 ##########################################
 #  Gridded Livestock of the World (GLW3) #
@@ -210,99 +176,61 @@ convert-pasture: rasterize-pasture
 # download livestock data
 # download the area-weighted (AW) data as are free of any influence of spatial predictor variables. MOre information here: https://dataverse.harvard.edu/file.xhtml?persistentId=doi:10.7910/DVN/GIVQ75/3QWTTI&version=3.0
 # download area pixel to obtain total number of animals per pixel
-download-glw3-data: extract-gadm
-	mkdir -p $(WORKDIR_GLW3)/cattle/harvestArea $(WORKDIR_GLW3)/chickens/harvestArea $(WORKDIR_GLW3)/horses/harvestArea $(WORKDIR_GLW3)/goats/harvestArea $(WORKDIR_GLW3)/sheep/harvestArea $(WORKDIR_GLW3)/pasture/harvestArea \
-	$(WORKDIR_GLW3)/cattle/production $(WORKDIR_GLW3)/chickens/production $(WORKDIR_GLW3)/horses/production $(WORKDIR_GLW3)/goats/production $(WORKDIR_GLW3)/sheep/production $(WORKDIR_GLW3)/pasture/production
+download-glw3-data: extract-pasture
+	mkdir -p $(WORKDIR_GLW3)/cattle/harvestArea $(WORKDIR_GLW3)/chickens/harvestArea $(WORKDIR_GLW3)/horses/harvestArea $(WORKDIR_GLW3)/goats/harvestArea $(WORKDIR_GLW3)/sheep/harvestArea $(WORKDIR_GLW3)/pasture/harvestArea $(WORKDIR_GLW3)/pigs/harvestArea \
+	$(WORKDIR_GLW3)/cattle/production $(WORKDIR_GLW3)/chickens/production $(WORKDIR_GLW3)/horses/production $(WORKDIR_GLW3)/goats/production $(WORKDIR_GLW3)/sheep/production $(WORKDIR_GLW3)/pasture/production $(WORKDIR_GLW3)/pigs/production
 	wget -q -O $(WORKDIR_GLW3)/cattle/6_Ct_2010_Aw.tif https://dataverse.harvard.edu/api/access/datafile/:persistentId?persistentId=doi:10.7910/DVN/GIVQ75/I5CUJS
 	wget -q -O $(WORKDIR_GLW3)/chickens/6_Ch_2010_Aw.tif https://dataverse.harvard.edu/api/access/datafile/:persistentId?persistentId=doi:10.7910/DVN/SUFASB/AP1LHN
 	wget -q -O $(WORKDIR_GLW3)/horses/6_Ho_2010_Aw.tif https://dataverse.harvard.edu/api/access/datafile/:persistentId?persistentId=doi:10.7910/DVN/7Q52MV/UAWH3Z
 	wget -q -O $(WORKDIR_GLW3)/goats/6_Gt_2010_Aw.tif https://dataverse.harvard.edu/api/access/datafile/:persistentId?persistentId=doi:10.7910/DVN/OCPH42/ZMVOOW
 	wget -q -O $(WORKDIR_GLW3)/sheep/6_Sh_2010_Aw.tif https://dataverse.harvard.edu/api/access/datafile/:persistentId?persistentId=doi:10.7910/DVN/BLWPZN/XDIRM4
-	wget -q -O $(WORKDIR_GLW3)/8_AreaKm.tif https://dataverse.harvard.edu/api/access/datafile/:persistentId?persistentId=doi:10.7910/DVN/GIVQ75/Y34VBF
-
-# get cattle per aggricultural land area from FAO for translating the cattle data into harvest area which is needed for the impact calculations
-preprocess-FAO-livestock: download-glw3-data
-	mapshaper $(WORKDIR_GADM)/gadm36_0.shp -simplify 10% planar keep-shapes \
-	-clean \
-	-each 'COUNT=this.area/100000000' \
-	-join ./FAOSTATS/FAOSTAT_2010_cattle_LSU_ha.csv keys=NAME_0,Area \
-	-o $(WORKDIR_GLW3)/cattle/harvestArea/FAOSTAT_2010_cattle_LSU_ha.shp force;
-	mapshaper $(WORKDIR_GADM)/gadm36_0.shp -simplify 10% planar keep-shapes \
-	-clean \
-	-each 'COUNT=this.area/100000000' \
-	-join ./FAOSTATS/FAOSTAT_2010_chickens_LSU_ha.csv keys=NAME_0,Area \
-	-o $(WORKDIR_GLW3)/chickens/harvestArea/FAOSTAT_2010_chickens_LSU_ha.shp force;
-	mapshaper $(WORKDIR_GADM)/gadm36_0.shp -simplify 10% planar keep-shapes \
-	-clean \
-	-each 'COUNT=this.area/100000000' \
-	-join ./FAOSTATS/FAOSTAT_2010_horses_LSU_ha.csv keys=NAME_0,Area \
-	-o $(WORKDIR_GLW3)/horses/harvestArea/FAOSTAT_2010_horses_LSU_ha.shp force;
-	mapshaper $(WORKDIR_GADM)/gadm36_0.shp -simplify 10% planar keep-shapes \
-	-clean \
-	-each 'COUNT=this.area/100000000' \
-	-join ./FAOSTATS/FAOSTAT_2010_goats_LSU_ha.csv keys=NAME_0,Area \
-	-o $(WORKDIR_GLW3)/goats/harvestArea/FAOSTAT_2010_goats_LSU_ha.shp force;
-	mapshaper $(WORKDIR_GADM)/gadm36_0.shp -simplify 10% planar keep-shapes \
-	-clean \
-	-each 'COUNT=this.area/100000000' \
-	-join ./FAOSTATS/FAOSTAT_2010_sheeps_LSU_ha.csv keys=NAME_0,Area \
-	-o $(WORKDIR_GLW3)/sheep/harvestArea/FAOSTAT_2010_sheep_LSU_ha.shp force;
+	wget -q -O $(WORKDIR_GLW3)/pigs/6_Pg_2010_Aw.tif https://dataverse.harvard.edu/api/access/datafile/:persistentId?persistentId=doi:10.7910/DVN/33N0JG/9LGGBS
+	wget -q -O $(WORKDIR_GLW3)/8_AreaKm.tif https://dataverse.harvard.edu/api/access/datafile/:persistentId?persistentId=doi:10.7910/DVN/33N0JG/OMPXVT
 
 # rasterize livetock per aggricultural land from FAO to get harvest area
 # multiply glw3 cattle (number of animals per km2) by the raster area to get the total number of animals per pixel (LSU)
-# filter the GLW3 cattle raster where cattle per aggricultural land from FAO is grater than 0 to avoid infinitive results
-# devide annimals per pixel by animals per piel per hectare to get the harvested area required (ha)
-rasterize-glw3-livestock: preprocess-FAO-livestock
-	gdal_rasterize -l FAOSTAT_2010_cattle_LSU_ha -a Value -tr 0.083333 0.083333 -a_nodata 0 -te -180.0 -89.99928 179.99856 90.0 -ot Float32 -of GTiff $(WORKDIR_GLW3)/cattle/harvestArea/FAOSTAT_2010_cattle_LSU_ha.shp $(WORKDIR_GLW3)/cattle/harvestArea/FAOSTAT_2010_cattle_LSU_ha.tif
-	gdal_rasterize -l FAOSTAT_2010_chickens_LSU_ha -a Value -tr 0.083333 0.083333 -a_nodata 0 -te -180.0 -89.99928 179.99856 90.0 -ot Float32 -of GTiff $(WORKDIR_GLW3)/chickens/harvestArea/FAOSTAT_2010_chickens_LSU_ha.shp $(WORKDIR_GLW3)/chickens/harvestArea/FAOSTAT_2010_chickens_LSU_ha.tif
-	gdal_rasterize -l FAOSTAT_2010_horses_LSU_ha -a Value -tr 0.083333 0.083333 -a_nodata 0 -te -180.0 -89.99928 179.99856 90.0 -ot Float32 -of GTiff $(WORKDIR_GLW3)/horses/harvestArea/FAOSTAT_2010_horses_LSU_ha.shp $(WORKDIR_GLW3)/horses/harvestArea/FAOSTAT_2010_horses_LSU_ha.tif
-	gdal_rasterize -l FAOSTAT_2010_goats_LSU_ha -a Value -tr 0.083333 0.083333 -a_nodata 0 -te -180.0 -89.99928 179.99856 90.0 -ot Float32 -of GTiff $(WORKDIR_GLW3)/goats/harvestArea/FAOSTAT_2010_goats_LSU_ha.shp $(WORKDIR_GLW3)/goats/harvestArea/FAOSTAT_2010_goats_LSU_ha.tif
-	gdal_rasterize -l FAOSTAT_2010_sheep_LSU_ha -a Value -tr 0.083333 0.083333 -a_nodata 0 -te -180.0 -89.99928 179.99856 90.0 -ot Float32 -of GTiff $(WORKDIR_GLW3)/sheep/harvestArea/FAOSTAT_2010_sheep_LSU_ha.shp $(WORKDIR_GLW3)/sheep/harvestArea/FAOSTAT_2010_sheep_LSU_ha.tif
+rasterize-glw3-livestock: download-glw3-data
 	gdal_calc.py --calc "A*B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/cattle/6_Ct_2010_Aw.tif --A_band 1 -B $(WORKDIR_GLW3)/8_AreaKm.tif --outfile $(WORKDIR_GLW3)/cattle/production/GLW3_2010_cattle_LSU.tif
 	gdal_calc.py --calc "A*B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/chickens/6_Ch_2010_Aw.tif --A_band 1 -B $(WORKDIR_GLW3)/8_AreaKm.tif --outfile $(WORKDIR_GLW3)/chickens/production/GLW3_2010_chickens_LSU.tif
 	gdal_calc.py --calc "A*B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/horses/6_Ho_2010_Aw.tif --A_band 1 -B $(WORKDIR_GLW3)/8_AreaKm.tif --outfile $(WORKDIR_GLW3)/horses/production/GLW3_2010_horses_LSU.tif
 	gdal_calc.py --calc "A*B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/goats/6_Gt_2010_Aw.tif --A_band 1 -B $(WORKDIR_GLW3)/8_AreaKm.tif --outfile $(WORKDIR_GLW3)/goats/production/GLW3_2010_goats_LSU.tif
 	gdal_calc.py --calc "A*B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/sheep/6_Sh_2010_Aw.tif --A_band 1 -B $(WORKDIR_GLW3)/8_AreaKm.tif --outfile $(WORKDIR_GLW3)/sheep/production/GLW3_2010_sheep_LSU.tif
-	gdal_calc.py --calc "((B>0)*A)/B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/cattle/production/GLW3_2010_cattle_LSU.tif --A_band 1 -B $(WORKDIR_GLW3)/cattle/harvestArea/FAOSTAT_2010_cattle_LSU_ha.tif --outfile $(WORKDIR_GLW3)/cattle/harvestArea/GLW3_2010_harvestArea_cattle_ha.tif
-	gdal_calc.py --calc "((B>0)*A)/B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/chickens/production/GLW3_2010_chickens_LSU.tif --A_band 1 -B $(WORKDIR_GLW3)/chickens/harvestArea/FAOSTAT_2010_chickens_LSU_ha.tif --outfile $(WORKDIR_GLW3)/chickens/harvestArea/GLW3_2010_harvestArea_chickens_ha.tif
-	gdal_calc.py --calc "((B>0)*A)/B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/horses/production/GLW3_2010_horses_LSU.tif --A_band 1 -B $(WORKDIR_GLW3)/horses/harvestArea/FAOSTAT_2010_horses_LSU_ha.tif --outfile $(WORKDIR_GLW3)/horses/harvestArea/GLW3_2010_harvestArea_horses_ha.tif
-	gdal_calc.py --calc "((B>0)*A)/B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/goats/production/GLW3_2010_goats_LSU.tif --A_band 1 -B $(WORKDIR_GLW3)/goats/harvestArea/FAOSTAT_2010_goats_LSU_ha.tif --outfile $(WORKDIR_GLW3)/goats/harvestArea/GLW3_2010_harvestArea_goats_ha.tif
-	gdal_calc.py --calc "((B>0)*A)/B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/sheep/production/GLW3_2010_sheep_LSU.tif --A_band 1 -B $(WORKDIR_GLW3)/sheep/harvestArea/FAOSTAT_2010_sheep_LSU_ha.tif --outfile $(WORKDIR_GLW3)/sheep/harvestArea/GLW3_2010_harvestArea_sheep_ha.tif
-	rm -f $(WORKDIR_GLW3)/cattle/harvestArea/FAOSTAT_2010_cattle_LSU_ha.shp $(WORKDIR_GLW3)/chickens/harvestArea/FAOSTAT_2010_chickens_LSU_ha.shp $(WORKDIR_GLW3)/horses/harvestArea/FAOSTAT_2010_horses_LSU_ha.shp $(WORKDIR_GLW3)/goats/harvestArea/FAOSTAT_2010_goats_LSU_ha.shp \
-	$(WORKDIR_GLW3)/sheep/harvestArea/FAOSTAT_2010_sheep_LSU_ha.shp $(WORKDIR_GLW3)/cattle/harvestArea/FAOSTAT_2010_cattle_LSU_ha.tif $(WORKDIR_GLW3)/chickens/harvestArea/FAOSTAT_2010_chickens_LSU_ha.tif $(WORKDIR_GLW3)/horses/harvestArea/FAOSTAT_2010_horses_LSU_ha.tif \
-	$(WORKDIR_GLW3)/goats/harvestArea/FAOSTAT_2010_goats_LSU_ha.tif $(WORKDIR_GLW3)/sheep/harvestArea/FAOSTAT_2010_sheep_LSU_ha.tif $(WORKDIR_GLW3)/cattle/6_Ct_2010_Aw.tif $(WORKDIR_GLW3)/chickens/6_Ch_2010_Aw.tif $(WORKDIR_GLW3)/horses/6_Ho_2010_Aw.tif $(WORKDIR_GLW3)/goats/6_Gt_2010_Aw.tif \
-	$(WORKDIR_GLW3)/sheep/6_Sh_2010_Aw.tif
+	gdal_calc.py --calc "A*B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/pigs/6_Pg_2010_Aw.tif --A_band 1 -B $(WORKDIR_GLW3)/8_AreaKm.tif --outfile $(WORKDIR_GLW3)/pigs/production/GLW3_2010_pigs_LSU.tif
+	gdal_calc.py --calc "A*(B>0)" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif --A_band 1 -B $(WORKDIR_GLW3)/cattle/6_Ct_2010_Aw.tif --outfile $(WORKDIR_GLW3)/cattle/harvestArea/GLW3_2010_cattle_ha.tif
+	gdal_calc.py --calc "A*(B>0)" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif --A_band 1 -B $(WORKDIR_GLW3)/chickens/6_Ch_2010_Aw.tif --outfile $(WORKDIR_GLW3)/chickens/harvestArea/GLW3_2010_chickens_ha.tif
+	gdal_calc.py --calc "A*(B>0)" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif --A_band 1 -B $(WORKDIR_GLW3)/horses/6_Ho_2010_Aw.tif --outfile $(WORKDIR_GLW3)/horses/harvestArea/GLW3_2010_horses_ha.tif
+	gdal_calc.py --calc "A*(B>0)" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif --A_band 1 -B $(WORKDIR_GLW3)/goats/6_Gt_2010_Aw.tif --outfile $(WORKDIR_GLW3)/goats/harvestArea/GLW3_2010_goats_ha.tif
+	gdal_calc.py --calc "A*(B>0)" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif --A_band 1 -B $(WORKDIR_GLW3)/sheep/6_Sh_2010_Aw.tif --outfile $(WORKDIR_GLW3)/sheep/harvestArea/GLW3_2010_sheep_ha.tif
+	gdal_calc.py --calc "A*(B>0)" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif --A_band 1 -B $(WORKDIR_GLW3)/pigs/6_Pg_2010_Aw.tif --outfile $(WORKDIR_GLW3)/pigs/harvestArea/GLW3_2010_pigs_ha.tif
+	rm -f $(WORKDIR_GLW3)/cattle/6_Ct_2010_Aw.tif $(WORKDIR_GLW3)/chickens/6_Ch_2010_Aw.tif $(WORKDIR_GLW3)/horses/6_Ho_2010_Aw.tif $(WORKDIR_GLW3)/goats/6_Gt_2010_Aw.tif \
+	$(WORKDIR_GLW3)/sheep/6_Sh_2010_Aw.tif $(WORKDIR_GLW3)/8_AreaKm.tif
 
 rasterize-glw3-livestock-pasture: rasterize-glw3-livestock
-	gdal_calc.py --calc "A+B+C+D+E" --format GTiff --type Float32 --NoDataValue 0.0 \
-	-A $(WORKDIR_GLW3)/cattle/harvestArea/GLW3_2010_harvestArea_cattle_ha.tif --A_band 1 \
-	-B $(WORKDIR_GLW3)/chickens/harvestArea/GLW3_2010_harvestArea_chickens_ha.tif \
-	-C $(WORKDIR_GLW3)/horses/harvestArea/GLW3_2010_harvestArea_horses_ha.tif \
-	-D $(WORKDIR_GLW3)/goats/harvestArea/GLW3_2010_harvestArea_goats_ha.tif \
-	-E $(WORKDIR_GLW3)/sheep/harvestArea/GLW3_2010_harvestArea_sheep_ha.tif \
-	--outfile $(WORKDIR_GLW3)/pasture/harvestArea/GLW3_2010_harvestArea_pasture_ha.tif;
-	gdal_calc.py --calc "A+B+C+D+E" --format GTiff --type Float32 --NoDataValue 0.0 \
+	gdal_calc.py --calc "A+B+C+D+E+F" --format GTiff --type Float32 --NoDataValue 0.0 \
 	-A $(WORKDIR_GLW3)/cattle/production/GLW3_2010_cattle_LSU.tif --A_band 1 \
 	-B $(WORKDIR_GLW3)/chickens/production/GLW3_2010_chickens_LSU.tif \
 	-C $(WORKDIR_GLW3)/horses/production/GLW3_2010_horses_LSU.tif \
 	-D $(WORKDIR_GLW3)/goats/production/GLW3_2010_goats_LSU.tif \
 	-E $(WORKDIR_GLW3)/sheep/production/GLW3_2010_sheep_LSU.tif \
+	-F $(WORKDIR_GLW3)/pigs/production/GLW3_2010_pigs_LSU.tif \
 	--outfile $(WORKDIR_GLW3)/pasture/production/GLW3_2010_pasture_LSU.tif;
 
 #Ingest livetock data- harvest area and production
 convert-glw3-livestock: rasterize-glw3-livestock-pasture
-	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/cattle/harvestArea h3_grid_cattle_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
-	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/chickens/harvestArea h3_grid_chickens_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
-	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/horses/harvestArea h3_grid_horses_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
-	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/goats/harvestArea h3_grid_goats_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
-	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/sheep/harvestArea h3_grid_sheep_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
-	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/pasture/harvestArea h3_grid_pasture_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/cattle/production h3_grid_cattle_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/chickens/production h3_grid_chickens_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/horses/production h3_grid_horses_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/goats/production h3_grid_goats_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/sheep/production h3_grid_sheep_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/pigs/production h3_grid_pigs_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/pasture/production h3_grid_pasture_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/cattle/harvestArea h3_grid_cattle_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/chickens/harvestArea h3_grid_chickens_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/horses/harvestArea h3_grid_horses_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/goats/harvestArea h3_grid_goats_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/sheep/harvestArea h3_grid_sheep_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/pigs/harvestArea h3_grid_pigs_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python tiff_folder_to_h3_table.py $(WORKDIR_GLW3)/pasture/harvestArea h3_grid_pasture_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 
 #######################################

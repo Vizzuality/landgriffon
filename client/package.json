@@ -59,7 +59,7 @@
     "@visx/tooltip": "2.1.0",
     "@visx/xychart": "2.9.0",
     "autoprefixer": "10.2.5",
-    "axios": "0.21.1",
+    "axios": "^0.27.2",
     "chroma-js": "2.1.2",
     "classnames": "2.3.1",
     "d3-array": "3.0.2",

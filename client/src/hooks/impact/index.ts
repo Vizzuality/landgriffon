@@ -64,7 +64,7 @@ export function useImpactData(): ImpactDataResponse {
   const indicatorIds = indicators.map(({ id }) => id);
 
   const query = useQuery(
-    ['impact-data', layer, JSON.stringify({ layer, ...filters, indicatorIds })],
+    ['impact-data', layer, indicatorIds, filters],
     async () =>
       apiRawService
         .get('/impact/table', {
@@ -113,7 +113,7 @@ export function useImpactRanking(
   const indicatorIds = indicators.map(({ id }) => id);
 
   const query = useQuery(
-    ['impact-ranking', layer, JSON.stringify({ layer, ...filters, indicatorIds, ...params })],
+    ['impact-ranking', layer, indicatorIds, filters, params],
     async () =>
       apiRawService
         .get('/impact/ranking', {

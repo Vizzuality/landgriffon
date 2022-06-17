@@ -54,7 +54,7 @@ export function useMaterialsTrees(
   options: UseQueryOptions = {},
 ): ResponseData {
   const query = useQuery(
-    ['materials-trees', JSON.stringify(params)],
+    ['materials-trees', params],
     async () =>
       apiService
         .request({

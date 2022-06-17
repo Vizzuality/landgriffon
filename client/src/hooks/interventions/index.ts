@@ -90,7 +90,7 @@ type LocationTypesValues =
 
 export function useInterventions(queryParams = {}): ResponseInterventionsData {
   const response = useQuery(
-    ['interventionsList', JSON.stringify(queryParams)],
+    ['interventionsList', queryParams],
     async () =>
       apiService
         .request({
@@ -175,7 +175,7 @@ export function useLocationTypes() {
 
 export function useInterventionsIndicators(queryParams = {}): ResponseInterventionsIndicators {
   const response = useQuery(
-    ['interventionsIndicators', JSON.stringify(queryParams)],
+    ['interventionsIndicators', queryParams],
     async () =>
       apiService
         .request({

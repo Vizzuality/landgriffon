@@ -42,7 +42,7 @@ export function useIndicators(): ResponseData {
 
 export function useIndicator(id: Indicator['id']): RespondeIndicatorData {
   const query = useQuery(
-    ['indicators', JSON.stringify(id)],
+    ['indicators', id],
     async () =>
       apiService
         .request({

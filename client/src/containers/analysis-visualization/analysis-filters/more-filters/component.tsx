@@ -20,6 +20,7 @@ import {
   useFloating,
   useInteractions,
 } from '@floating-ui/react-dom-interactions';
+import { Transition } from '@headlessui/react';
 
 type MoreFiltersState = {
   materials: AnalysisFiltersState['materials'];
@@ -137,94 +138,98 @@ const MoreFilters: React.FC = () => {
           </span>
         )}
       </div>
-      {isOpen && (
-        <div
-          {...getFloatingProps({
-            className: 'w-80',
-            ref: floating,
-            style: {
-              position: strategy,
-              top: y ?? '',
-              left: x ?? '',
-              zIndex: 100,
-            },
-          })}
-        >
-          <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 ">
-            <div className="relative p-4 bg-white rounded-lg">
-              <div className="flex justify-between mb-4">
-                <div>Filter by</div>
-                <Button theme="textLight" size="text" onClick={handleClearFilters}>
-                  Clear all
-                </Button>
+      <Transition
+        show={isOpen}
+        enter="transition ease-out duration-200"
+        enterFrom="opacity-0 translate-y-1"
+        enterTo="opacity-100 translate-y-0"
+        leave="transition ease-in duration-150"
+        leaveFrom="opacity-100 translate-y-0"
+        leaveTo="opacity-0 translate-y-1"
+        {...getFloatingProps({
+          ref: floating,
+          style: {
+            position: strategy,
+            top: y ?? '',
+            left: x ?? '',
+            zIndex: 100,
+          },
+        })}
+      >
+        <div className="w-80 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 ">
+          <div className="relative p-4 bg-white rounded-lg">
+            <div className="flex justify-between mb-4">
+              <div>Filter by</div>
+              <Button theme="textLight" size="text" onClick={handleClearFilters}>
+                Clear all
+              </Button>
+            </div>
+            <div className="flex flex-col gap-3">
+              <div>
+                <div className="mb-1">Material</div>
+                <Materials
+                  multiple
+                  withSourcingLocations
+                  originIds={originIds}
+                  supplierIds={supplierIds}
+                  locationTypes={locationTypesIds}
+                  current={selectedFilters.materials}
+                  fitContent
+                  onChange={(values) => handleChangeFilter('materials', values)}
+                />
               </div>
-              <div className="flex flex-col gap-3">
-                <div>
-                  <div className="mb-1">Material</div>
-                  <Materials
-                    multiple
-                    withSourcingLocations
-                    originIds={originIds}
-                    supplierIds={supplierIds}
-                    locationTypes={locationTypesIds}
-                    current={selectedFilters.materials}
-                    fitContent
-                    onChange={(values) => handleChangeFilter('materials', values)}
-                  />
-                </div>
-                <div>
-                  <div className="mb-1">Origins</div>
-                  <OriginRegions
-                    multiple
-                    withSourcingLocations
-                    materialIds={materialIds}
-                    supplierIds={supplierIds}
-                    locationTypes={locationTypesIds}
-                    current={selectedFilters.origins}
-                    fitContent
-                    onChange={(values) => handleChangeFilter('origins', values)}
-                  />
-                </div>
-                <div>
-                  <div className="mb-1">Suppliers</div>
-                  <Suppliers
-                    multiple
-                    withSourcingLocations
-                    materialIds={materialIds}
-                    originIds={originIds}
-                    locationTypes={locationTypesIds}
-                    current={selectedFilters.suppliers}
-                    fitContent
-                    onChange={(values) => handleChangeFilter('suppliers', values)}
-                  />
-                </div>
-                <div>
-                  <div className="mb-1">Location type</div>
-                  <LocationTypes
-                    current={selectedFilters.locationTypes}
-                    fitContent
-                    onChange={(values) => handleChangeFilter('locationTypes', values)}
-                  />
-                </div>
+              <div>
+                <div className="mb-1">Origins</div>
+                <OriginRegions
+                  multiple
+                  withSourcingLocations
+                  materialIds={materialIds}
+                  supplierIds={supplierIds}
+                  locationTypes={locationTypesIds}
+                  current={selectedFilters.origins}
+                  fitContent
+                  onChange={(values) => handleChangeFilter('origins', values)}
+                />
               </div>
+              <div>
+                <div className="mb-1">Suppliers</div>
+                <Suppliers
+                  multiple
+                  withSourcingLocations
+                  materialIds={materialIds}
+                  originIds={originIds}
+                  locationTypes={locationTypesIds}
+                  current={selectedFilters.suppliers}
+                  fitContent
+                  onChange={(values) => handleChangeFilter('suppliers', values)}
+                />
+              </div>
+              <div>
+                <div className="mb-1">Location type</div>
+                <LocationTypes
+                  current={selectedFilters.locationTypes}
+                  fitContent
+                  onChange={(values) => handleChangeFilter('locationTypes', values)}
+                />
+              </div>
+            </div>
 
-              <div className="flex gap-2 mt-6">
-                <Button theme="secondary" className="px-9">
-                  Cancel
-                </Button>
-                <Button
-                  theme="primary"
-                  className="flex-grow"
-                  onClick={handleApply}
-                  disabled={!hasChangesToApply}
-                >
-                  Apply
-                </Button>
-              </div>
+            <div className="flex gap-2 mt-6">
+              <Button theme="secondary" className="px-9">
+                Cancel
+              </Button>
+              <Button
+                theme="primary"
+                className="flex-grow"
+                onClick={handleApply}
+                disabled={!hasChangesToApply}
+              >
+                Apply
+              </Button>
             </div>
           </div>
         </div>
-      )}
+      </Transition>
     </div>
   );
 };

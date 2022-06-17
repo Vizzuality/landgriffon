@@ -5,7 +5,6 @@ import {
   useMemo,
   useEffect,
   useLayoutEffect,
-  useRef,
   ChangeEventHandler,
 } from 'react';
 import classNames from 'classnames';
@@ -17,7 +16,6 @@ import {
   useDismiss,
   useFloating,
   useInteractions,
-  useListNavigation,
   useRole,
 } from '@floating-ui/react-dom-interactions';
 import { ChevronDownIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
@@ -29,6 +27,7 @@ import Loading from 'components/loading';
 import { CHECKED_STRATEGIES } from './utils';
 
 import type { TreeSelectProps, TreeSelectOption } from './types';
+import { Transition } from '@headlessui/react';
 
 const THEMES = {
   default: {
@@ -95,14 +94,10 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     middleware: [offset({ mainAxis: 4 }), shift({ padding: 4 }), flip()],
   });
 
-  const [activeIndex, setActiveIndex] = useState(null);
-  const listRef = useRef([]);
-
   const { getReferenceProps, getFloatingProps } = useInteractions([
     useClick(context),
     useDismiss(context, {}),
     useRole(context, { role: 'listbox' }),
-    useListNavigation(context, { activeIndex, listRef, onNavigate: setActiveIndex }),
   ]);
 
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -384,63 +379,66 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           )}
         </div>
       </button>
-      {isOpen && (
+      <Transition
+        show={isOpen}
+        enter="transition ease-out duration-200"
+        enterFrom="opacity-0 translate-y-1"
+        enterTo="opacity-100 translate-y-0"
+        leave="transition ease-in duration-150"
+        leaveFrom="opacity-100 translate-y-0"
+        leaveTo="opacity-0 translate-y-1"
+        {...getFloatingProps({
+          style: {
+            position: strategy,
+            top: y ?? '',
+            left: x ?? '',
+            minWidth: multiple ? 150 : 100,
+            width:
+              fitContent && reference
+                ? (referenceElement.current as HTMLElement)?.offsetWidth
+                : 'inherit',
+          },
+          className:
+            'relative z-20 rounded-md overflow-hidden shadow-lg ring-1 ring-black ring-opacity-5',
+          ref: floating,
+        })}
+      >
         <div
-          {...getFloatingProps({
-            style: {
-              position: strategy,
-              top: y ?? '',
-              left: x ?? '',
-              minWidth: multiple ? 150 : 100,
-              width:
-                fitContent && reference
-                  ? (referenceElement.current as HTMLElement)?.offsetWidth
-                  : 'inherit',
-            },
-            className:
-              'relative z-20 rounded-md overflow-hidden shadow-lg ring-1 ring-black ring-opacity-5',
-            ref: floating,
-          })}
+          className={classNames(
+            'bg-white max-h-80 overflow-y-auto',
+            fitContent ? 'max-w-full w-full' : 'max-w-xs',
+          )}
         >
-          <div
-            className={classNames(
-              'bg-white max-h-80 overflow-y-auto',
-              fitContent ? 'max-w-full w-full' : 'max-w-xs',
-            )}
-          >
-            {loading && (
-              <div className="p-4">
-                <Loading className="text-green-700 -ml-1 mr-3" />
-              </div>
-            )}
-            {!loading && (
-              <>
-                <Tree
-                  autoExpandParent
-                  checkStrictly={false}
-                  checkable={multiple}
-                  selectable={!multiple}
-                  multiple={multiple}
-                  selectedKeys={selectedKeys}
-                  expandedKeys={expandedKeys}
-                  checkedKeys={checkedKeys}
-                  switcherIcon={customSwitcherIcon}
-                  onExpand={handleExpand}
-                  onSelect={handleSelect}
-                  onCheck={handleCheck}
-                >
-                  {renderTreeNodes(options)}
-                </Tree>
-                {(options.length === 0 || (searchTerm && filteredKeys.length === 0)) && (
-                  <div className="p-2 text-gray-700 text-sm opacity-60 w-fit mx-auto">
-                    No results
-                  </div>
-                )}
-              </>
-            )}
-          </div>
+          {loading && (
+            <div className="p-4">
+              <Loading className="text-green-700 -ml-1 mr-3" />
+            </div>
+          )}
+          {!loading && (
+            <>
+              <Tree
+                autoExpandParent
+                checkStrictly={false}
+                checkable={multiple}
+                selectable={!multiple}
+                multiple={multiple}
+                selectedKeys={selectedKeys}
+                expandedKeys={expandedKeys}
+                checkedKeys={checkedKeys}
+                switcherIcon={customSwitcherIcon}
+                onExpand={handleExpand}
+                onSelect={handleSelect}
+                onCheck={handleCheck}
+              >
+                {renderTreeNodes(options)}
+              </Tree>
+              {(options.length === 0 || (searchTerm && filteredKeys.length === 0)) && (
+                <div className="p-2 text-gray-700 text-sm opacity-60 w-fit mx-auto">No results</div>
+              )}
+            </>
+          )}
         </div>
-      )}
+      </Transition>
     </div>
   );
 };

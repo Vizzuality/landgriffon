@@ -1,5 +1,4 @@
-import React, { useRef, useEffect, useState, Fragment } from 'react';
-import { useOutsideClick } from 'rooks';
+import React, { useEffect, useState, Fragment } from 'react';
 import { Transition } from '@headlessui/react';
 import { ChevronUpIcon } from '@heroicons/react/solid';
 import cx from 'classnames';
@@ -8,6 +7,15 @@ import Select from 'components/select';
 import type { SelectOption } from 'components/select/types';
 
 import { YearsRangeFilterProps } from './types';
+import {
+  flip,
+  offset,
+  shift,
+  useClick,
+  useDismiss,
+  useFloating,
+  useInteractions,
+} from '@floating-ui/react-dom-interactions';
 
 export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
   startYear,
@@ -23,8 +31,6 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
   onEndYearSearch = () => null,
   lastYearWithData,
 }) => {
-  const wrapperRef = useRef();
-
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [startYearOptions, setStartYearOptions] = useState<SelectOption[]>();
@@ -79,20 +85,29 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
     onChange,
   ]);
 
-  useOutsideClick(wrapperRef, () => {
-    setIsOpen(false);
+  const { reference, floating, x, y, context, strategy } = useFloating({
+    open: isOpen,
+    onOpenChange: setIsOpen,
+    placement: 'bottom-start',
+    strategy: 'fixed',
+    middleware: [offset({ mainAxis: 4 }), shift({ padding: 4 }), flip()],
   });
+
+  const { getReferenceProps, getFloatingProps } = useInteractions([
+    useClick(context),
+    useDismiss(context),
+  ]);
 
   // Prevent display when not loaded
   if (!isLoaded) return null;
 
   return (
-    <div ref={wrapperRef} className="relative">
+    <div>
       <button
+        {...getReferenceProps({
+          ref: reference,
+        })}
         className="relative w-full py-2 pl-3 pr-10 text-left bg-white border-0.5 min-h-[2.5rem] border-gray-300 rounded-md shadow-sm cursor-pointer focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 sm:text-sm"
-        onClick={() => {
-          setIsOpen(!isOpen);
-        }}
       >
         <span className="block h-5 truncate">
           <span className="mr-1 text-gray-600">from</span>
@@ -118,6 +133,14 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
         leave="transition ease-in duration-150"
         leaveFrom="opacity-100 translate-y-0"
         leaveTo="opacity-0 translate-y-1"
+        {...getFloatingProps({
+          ref: floating,
+          style: {
+            top: y ?? '',
+            left: x ?? '',
+            position: strategy,
+          },
+        })}
       >
         <div className="absolute z-20 mt-1 w-60">
           <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">

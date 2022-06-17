@@ -5,7 +5,6 @@ import { AppModule } from 'app.module';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
-import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import {
   LOCATION_TYPES,
   SourcingLocation,
@@ -54,10 +53,12 @@ describe('SourcingLocationsModule (e2e)', () => {
   describe('Sourcing locations - No filters', () => {
     test('Given there are Sourcing Locations with Location Types in the Database, When I request the available location Types, Then I should get results in the correct format ', async () => {
       await Promise.all(
-        Object.values(LOCATION_TYPES).map((locationType: LOCATION_TYPES) => {
-          createSourcingLocation({ locationType });
-          createSourcingLocation({ locationType });
-        }),
+        Object.values(LOCATION_TYPES).map(
+          async (locationType: LOCATION_TYPES) => {
+            await createSourcingLocation({ locationType });
+            await createSourcingLocation({ locationType });
+          },
+        ),
       );
 
       const response = await request(app.getHttpServer())

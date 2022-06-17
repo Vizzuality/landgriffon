@@ -23,7 +23,7 @@ export type SuppliersTreesParams = {
 
 export function useSuppliers(params): ResponseData {
   const query = useQuery(
-    ['suppliers', JSON.stringify(params)],
+    ['suppliers', params],
     async () =>
       apiService
         .request({
@@ -54,7 +54,7 @@ export function useSuppliersTrees(
   options: UseQueryOptions = {},
 ): ResponseData {
   const query = useQuery(
-    ['suppliers-trees', JSON.stringify(params)],
+    ['suppliers-trees', params],
     async () =>
       apiService
         .request({
@@ -80,7 +80,7 @@ export function useSuppliersTrees(
 
 export function useSuppliersTypes(params: { type: 't1supplier' | 'producer' }): ResponseData {
   const query = useQuery(
-    ['suppliers', JSON.stringify(params)],
+    ['suppliers', params],
     async () =>
       apiService
         .request({

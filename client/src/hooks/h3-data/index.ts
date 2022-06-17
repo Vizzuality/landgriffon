@@ -63,7 +63,7 @@ export function useH3MaterialData(
 ): H3DataResponse {
   const colors = useColors('material');
   const query = useQuery(
-    ['h3-data-material', JSON.stringify(params)],
+    ['h3-data-material', params],
     async () =>
       apiRawService
         .get('/h3/map/material', {
@@ -98,7 +98,7 @@ export function useH3RiskData(
 ): H3DataResponse {
   const colors = useColors('risk');
   const query = useQuery(
-    ['h3-data-risk', JSON.stringify(params)],
+    ['h3-data-risk', params],
     async () =>
       apiRawService
         .get('/h3/map/risk', {
@@ -148,7 +148,7 @@ export function useH3ImpactData(
   };
 
   const query = useQuery(
-    ['h3-data-impact', JSON.stringify(filters)],
+    ['h3-data-impact', filters],
     async () =>
       apiRawService
         .get('/h3/map/impact', {

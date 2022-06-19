@@ -3,7 +3,6 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { Supplier } from 'modules/suppliers/supplier.entity';
-import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import {
   createMaterial,
   createSourcingLocation,
@@ -13,18 +12,15 @@ import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 import { Material } from 'modules/materials/material.entity';
 import { MaterialsModule } from 'modules/materials/materials.module';
-import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
-import { MaterialRepository } from 'modules/materials/material.repository';
 import {
   LOCATION_TYPES,
   LOCATION_TYPES_PARAMS,
+  SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
+import { clearEntityTables } from '../../utils/database-test-helper';
 
 describe('Materials - Get trees - Smart Filters', () => {
   let app: INestApplication;
-  let supplierRepository: SupplierRepository;
-  let sourcingLocationsRepository: SourcingLocationRepository;
-  let materialRepository: MaterialRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
@@ -32,23 +28,13 @@ describe('Materials - Get trees - Smart Filters', () => {
       imports: [AppModule, MaterialsModule],
     }).compile();
 
-    supplierRepository =
-      moduleFixture.get<SupplierRepository>(SupplierRepository);
-    sourcingLocationsRepository = moduleFixture.get<SourcingLocationRepository>(
-      SourcingLocationRepository,
-    );
-    materialRepository =
-      moduleFixture.get<MaterialRepository>(MaterialRepository);
-
     app = getApp(moduleFixture);
     await app.init();
     jwtToken = await saveUserAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {
-    await supplierRepository.delete({});
-    await materialRepository.delete({});
-    await sourcingLocationsRepository.delete({});
+    await clearEntityTables([Supplier, Material, SourcingLocation]);
   });
 
   afterAll(async () => {

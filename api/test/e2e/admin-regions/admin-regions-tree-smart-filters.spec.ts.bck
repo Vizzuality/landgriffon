@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
-import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import {
   createAdminRegion,
   createMaterial,
@@ -10,21 +9,20 @@ import {
 } from '../../entity-mocks';
 import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
-import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
-import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { Material } from 'modules/materials/material.entity';
 import {
   LOCATION_TYPES,
   LOCATION_TYPES_PARAMS,
+  SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { BusinessUnit } from 'modules/business-units/business-unit.entity';
+import { Supplier } from 'modules/suppliers/supplier.entity';
 
 describe('Admin Regions - Get trees - Smart Filters', () => {
   let app: INestApplication;
-  let supplierRepository: SupplierRepository;
-  let sourcingLocationsRepository: SourcingLocationRepository;
-  let businessUnitRepository: BusinessUnitRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
@@ -32,24 +30,13 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
       imports: [AppModule, BusinessUnitsModule],
     }).compile();
 
-    supplierRepository =
-      moduleFixture.get<SupplierRepository>(SupplierRepository);
-    sourcingLocationsRepository = moduleFixture.get<SourcingLocationRepository>(
-      SourcingLocationRepository,
-    );
-    businessUnitRepository = moduleFixture.get<BusinessUnitRepository>(
-      BusinessUnitRepository,
-    );
-
     app = getApp(moduleFixture);
     await app.init();
     jwtToken = await saveUserAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {
-    await supplierRepository.delete({});
-    await businessUnitRepository.delete({});
-    await sourcingLocationsRepository.delete({});
+    await clearEntityTables([Supplier, BusinessUnit, SourcingLocation]);
   });
 
   afterAll(async () => {

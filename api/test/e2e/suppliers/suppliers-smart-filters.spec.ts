@@ -125,7 +125,7 @@ describe('Suppliers - Get trees - Smart Filters', () => {
     },
   );
 
-  test(
+  test.skip(
     'When I query a Supplier Tree endpoint ' +
       'And I query the ones with sourcing locations' +
       'And I filter them by a related Location Types' +

@@ -32,5 +32,5 @@
     "<rootDir>/node_modules/",
     "<rootDir>/test/"
   ],
-  "testTimeout": 30000
+  "testTimeout": 50000
 }

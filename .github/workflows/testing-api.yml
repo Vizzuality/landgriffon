@@ -43,9 +43,6 @@ jobs:
         with:
           node-version: '16.13'
 
-      - name: Set Swap Space
-        uses: pierotofy/set-swap-space@v1.0
-
       - name: Install API dependencies
         working-directory: api
         run: yarn install

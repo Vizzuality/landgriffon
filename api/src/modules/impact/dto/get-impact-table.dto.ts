@@ -47,7 +47,7 @@ export class GetImpactTableDto {
   @IsEnum(GROUP_BY_VALUES, {
     message:
       'Available options: ' +
-      Object.keys(GROUP_BY_VALUES).toString().toLowerCase(),
+      Object.values(GROUP_BY_VALUES).toString().toLowerCase(),
   })
   groupBy!: string;
 

@@ -13,9 +13,9 @@
     "start:prod": "NODE_OPTIONS=\"--max-old-space-size=4096\" NODE_PATH=dist/src node dist/src/main",
     "build": "rm -rf dist && tsc",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "NODE_OPTIONS=\"--max-old-space-size=4096\" node ./node_modules/.bin/jest --config test/jest-config.json -i --logHeapUsage --detectOpenHandles --forceExit",
+    "test": "NODE_OPTIONS=\"--max-old-space-size=5135\" node ./node_modules/.bin/jest --config test/jest-config.json -i --logHeapUsage --detectOpenHandles --forceExit",
     "test:watch": "jest --config test/jest-config.json --watch",
-    "test:cov": "NODE_OPTIONS=\"--max-old-space-size=6044\" node ./node_modules/.bin/jest --config test/jest-config.json --coverage -i --logHeapUsage --detectOpenHandles --forceExit",
+    "test:cov": "NODE_OPTIONS=\"--max-old-space-size=7189\" node ./node_modules/.bin/jest --config test/jest-config.json --coverage -i --logHeapUsage --detectOpenHandles --forceExit",
     "test:debug": "node --inspect-brk --expose-gc -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --config test/jest-config.json --runInBand --detectOpenHandles --forceExit",
     "migration:revert": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert --config src/migration.config.ts"
   },

@@ -58,7 +58,6 @@ jobs:
 #          path: ${{github.workspace}}/api/coverage/lcov.info
 
 
-
   testing-api-integration:
     name: Integration Tests
     runs-on: ubuntu-20.04
@@ -95,7 +94,6 @@ jobs:
       - name: Run API tests + coverage
         working-directory: api
         run: yarn test:integration
-
 
 #      - name: Generate API coverage artifact
 #        uses: actions/upload-artifact@v2

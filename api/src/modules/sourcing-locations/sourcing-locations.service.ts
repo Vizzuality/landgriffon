@@ -25,7 +25,7 @@ import {
   LocationTypesDto,
   LocationTypeWithLabel,
 } from 'modules/sourcing-locations/dto/location-type.sourcing-locations.dto';
-import { LocationTypesOptionsDto } from 'modules/sourcing-locations/dto/location-types-options.sourcing-locations.dto';
+import { GetLocationTypesDto } from 'modules/sourcing-locations/dto/location-types-options.sourcing-locations.dto';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
@@ -163,7 +163,7 @@ export class SourcingLocationsService extends AppBaseService<
   }
 
   async getLocationTypes(
-    locationTypesOptions: LocationTypesOptionsDto,
+    locationTypesOptions: GetLocationTypesDto,
   ): Promise<LocationTypesDto> {
     if (locationTypesOptions.originIds) {
       locationTypesOptions.originIds =
@@ -191,30 +191,29 @@ export class SourcingLocationsService extends AppBaseService<
         );
     }
 
-    const locationTypesObjectsInDatabase: { locationType: string }[] =
+    const locationTypes: { locationType: string }[] =
       await this.sourcingLocationRepository.getAvailableLocationTypes(
         locationTypesOptions,
       );
 
-    const locationTypesResponse: LocationTypeWithLabel[] =
-      locationTypesObjectsInDatabase.map(
-        (locationObject: { locationType: string }) => {
-          return {
-            label:
-              locationObject.locationType
-                .replace(/-/g, ' ')
-                .charAt(0)
-                .toUpperCase() +
-              locationObject.locationType.replace(/-/g, ' ').slice(1),
-            value: locationObject.locationType.replace(
-              / /g,
-              '-',
-            ) as LOCATION_TYPES_PARAMS,
-          };
-        },
-      );
+    const parsedLocationTypes: LocationTypeWithLabel[] = locationTypes.map(
+      (locationType: { locationType: string }) => {
+        return {
+          label:
+            locationType.locationType
+              .replace(/-/g, ' ')
+              .charAt(0)
+              .toUpperCase() +
+            locationType.locationType.replace(/-/g, ' ').slice(1),
+          value: locationType.locationType.replace(
+            / /g,
+            '-',
+          ) as LOCATION_TYPES_PARAMS,
+        };
+      },
+    );
 
-    return { data: locationTypesResponse };
+    return { data: parsedLocationTypes };
   }
 
   async extendFindAllQuery(

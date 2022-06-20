@@ -101,7 +101,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       'startYear must be a number conforming to the specified constraints',
       'endYear should not be empty',
       'endYear must be a number conforming to the specified constraints',
-      'Available options: material,business_unit,region,supplier,location_type',
+      'Available options: material,business-unit,region,supplier,location-type',
       'groupBy should not be empty',
       'groupBy must be a string',
     ]);

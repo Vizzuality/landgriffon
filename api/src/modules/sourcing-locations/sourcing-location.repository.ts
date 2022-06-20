@@ -5,14 +5,14 @@ import {
   WhereExpressionBuilder,
 } from 'typeorm';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { LocationTypesOptionsDto } from 'modules/sourcing-locations/dto/location-types-options.sourcing-locations.dto';
+import { GetLocationTypesDto } from 'modules/sourcing-locations/dto/location-types-options.sourcing-locations.dto';
 import { AppBaseRepository } from 'utils/app-base.repository';
 import { NotFoundException } from '@nestjs/common';
 
 @EntityRepository(SourcingLocation)
 export class SourcingLocationRepository extends AppBaseRepository<SourcingLocation> {
   async getAvailableLocationTypes(
-    locationTypesOptions: LocationTypesOptionsDto,
+    locationTypesOptions: GetLocationTypesDto,
   ): Promise<{ locationType: string }[]> {
     const queryBuilder: SelectQueryBuilder<SourcingLocation> =
       this.createQueryBuilder('sl')
@@ -45,15 +45,13 @@ export class SourcingLocationRepository extends AppBaseRepository<SourcingLocati
       });
     }
 
-    const locationTypesObjectsInDatabase: { locationType: string }[] =
+    const locationTypes: { locationType: string }[] =
       await queryBuilder.getRawMany();
 
-    if (!locationTypesObjectsInDatabase) {
-      throw new NotFoundException(
-        `No Sourcing Locations with Location Types found`,
-      );
+    if (!locationTypes) {
+      throw new NotFoundException(`No Location Types were found`);
     }
 
-    return locationTypesObjectsInDatabase;
+    return locationTypes;
   }
 }

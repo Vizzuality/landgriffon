@@ -13146,6 +13146,7 @@ __metadata:
     react-intersection-observer: ^9.2.2
     react-query: 3.34.16
     react-redux: 7.2.4
+    react-scroll-percentage: 4.2.0
     rooks: 5.10.0
     sharp: 0.29.3
     start-server-and-test: 1.14.0
@@ -16324,6 +16325,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-intersection-observer@npm:^8.25.1":
+  version: 8.34.0
+  resolution: "react-intersection-observer@npm:8.34.0"
+  peerDependencies:
+    react: ^15.0.0 || ^16.0.0 || ^17.0.0|| ^18.0.0
+  checksum: 7713fecfd1512c7f5a60f9f0bf15403b8f8bbd4110bcafaeaea6de36a0e0eb60368c3638f99e9c97b75ad8fc787ea48c241dcb5c694f821d7f2976f709082cc5
+  languageName: node
+  linkType: hard
+
 "react-intersection-observer@npm:^9.2.2":
   version: 9.2.2
   resolution: "react-intersection-observer@npm:9.2.2"
@@ -16442,6 +16452,18 @@ __metadata:
   peerDependencies:
     react: ">=16.8"
   checksum: 7be673f5e72104be01e6ab274516bdb932efd93305243170690f6560e3bd1035dd1df3d3c9ce1e0f452638a2529f43a1e77dcf0934fc8031c4783da657be13ca
+  languageName: node
+  linkType: hard
+
+"react-scroll-percentage@npm:4.2.0":
+  version: 4.2.0
+  resolution: "react-scroll-percentage@npm:4.2.0"
+  dependencies:
+    "@babel/runtime": ^7.7.2
+    react-intersection-observer: ^8.25.1
+  peerDependencies:
+    react: ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: f5f58054fa70f2a8ed6a96e244688bd99b73e2267160e53e1f0dfab958c1aa573f737820b8dacfff3a36708764a365674cfc8a5022fd75dd3fb0196882bfcfa9
   languageName: node
   linkType: hard
 

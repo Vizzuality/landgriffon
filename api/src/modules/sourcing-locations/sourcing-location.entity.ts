@@ -26,6 +26,9 @@ export enum LOCATION_TYPES {
   COUNTRY_OF_PRODUCTION = 'country of production',
 }
 
+//TODO Refactor to use the dash version also in the DB, to"
+//     1. Avoid using strings with empty spaces
+//     2. Avoid duplicating types (with dash/ with no dash)
 export enum LOCATION_TYPES_PARAMS {
   UNKNOWN = 'unknown',
   AGGREGATION_POINT = 'aggregation-point',

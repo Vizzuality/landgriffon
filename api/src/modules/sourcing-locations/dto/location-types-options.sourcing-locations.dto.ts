@@ -1,7 +1,7 @@
 import { IsOptional, IsUUID } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
-export class LocationTypesOptionsDto {
+export class GetLocationTypesDto {
   @IsUUID('4', { each: true })
   @ApiPropertyOptional()
   @IsOptional()

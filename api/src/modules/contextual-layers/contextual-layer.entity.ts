@@ -41,9 +41,9 @@ export class ContextualLayer extends BaseEntity {
 
   @Column({
     type: 'jsonb',
-    nullable: false,
+    nullable: true,
   })
-  metadata: JSON;
+  metadata?: JSON;
 
   @Column({
     type: 'enum',

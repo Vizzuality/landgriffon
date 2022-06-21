@@ -120,3 +120,7 @@
 .ka-table .ka-icon-sort {
   display: none;
 }
+
+.ka-cell-text::first-letter {
+  text-transform: uppercase;
+}

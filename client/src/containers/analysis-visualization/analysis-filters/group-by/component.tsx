@@ -13,7 +13,7 @@ const GROUP_BY_OPTIONS: Group[] = [
     name: 'Material',
   },
   {
-    id: 'businessUnit',
+    id: 'business-unit',
     name: 'Business Unit',
   },
   {
@@ -25,7 +25,7 @@ const GROUP_BY_OPTIONS: Group[] = [
     name: 'Supplier',
   },
   {
-    id: 'locationType',
+    id: 'location-type',
     name: 'Location type',
   },
 ];

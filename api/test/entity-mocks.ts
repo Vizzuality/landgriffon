@@ -28,6 +28,10 @@ import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Task, TASK_STATUS, TASK_TYPE } from 'modules/tasks/task.entity';
 import { Target } from 'modules/targets/target.entity';
 import { H3DataRepository } from '../src/modules/h3-data/h3-data.repository';
+import {
+  CONTEXTUAL_LAYER_CATEGORY,
+  ContextualLayer,
+} from '../src/modules/contextual-layers/contextual-layer.entity';
 
 async function createAdminRegion(
   additionalData: Partial<AdminRegion> = {},
@@ -55,6 +59,22 @@ async function createBusinessUnit(
   );
   return businessUnit.save();
 }
+
+async function createContextualLayer(
+  additionalData: Partial<ContextualLayer> = {},
+): Promise<ContextualLayer> {
+  const businessUnit = ContextualLayer.merge(
+    new ContextualLayer(),
+    {
+      name: 'A fake Contextual Layer',
+      description: 'Description of the fake Contextual Layer',
+      category: CONTEXTUAL_LAYER_CATEGORY.ENVIRONMENTAL_DATASETS,
+    },
+    additionalData,
+  );
+  return businessUnit.save();
+}
+
 async function createH3Data(
   additionalData: Partial<H3Data> = {},
 ): Promise<H3Data> {
@@ -389,6 +409,7 @@ async function createUnitConversion(
 export {
   createAdminRegion,
   createBusinessUnit,
+  createContextualLayer,
   createH3Data,
   createIndicator,
   createIndicatorCoefficient,

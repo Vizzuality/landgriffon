@@ -44,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Location types params added to "/h3/map/impact" endpoint
 - Legend selects now automatically close when choosing a value
 - Standarized values for group by in analysis section [LANDGRIF-710](https://vizzuality.atlassian.net/browse/LANDGRIF-710)
+- Tooltip not showing last date in chart [LANDGRIF-709](https://vizzuality.atlassian.net/browse/LANDGRIF-709)
 
 ## 0.3.0 - 2021-09-01
 

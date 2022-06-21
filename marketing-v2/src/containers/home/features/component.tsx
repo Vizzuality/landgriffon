@@ -11,14 +11,14 @@ const Features: React.FC = () => {
   return (
     <section className="relative py-32 bg-white">
       <Wrapper>
-        <div className="space-y-20 py">
+        <div className="space-y-10 md:space-y-20">
           <FadeIn>
-            <h2 className="w-5/12 text-6xl font-black uppercase font-display">
+            <h2 className="text-6xl font-black uppercase md:w-5/12 font-display">
               LandGriffon is built with you in mind.
             </h2>
           </FadeIn>
 
-          <ul className="grid grid-cols-2 gap-y-20 gap-x-64">
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-y-10 md:gap-y-20 md:gap-x-32 lg:gap-x-64">
             <li>
               <FadeIn className="space-y-10">
                 <div className="space-y-5">

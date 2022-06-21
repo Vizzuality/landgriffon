@@ -22,19 +22,19 @@ Options:
     --h3-res=<res>    h3 resolution to use [default: 6].
 """
 import os
+import json
 import logging
 from io import StringIO
 from pathlib import Path
 from re import sub
-import json
 
+import fiona
 import geopandas as gpd
 import pandas as pd
 import psycopg2
 from docopt import docopt
 from h3ronpy import vector
 from psycopg2.pool import ThreadedConnectionPool
-import fiona
 
 DTYPES_TO_PG = {
     "object": "text",
@@ -145,11 +145,7 @@ def insert_to_h3_data_and_contextual_layer_tables(
     )
     cursor.execute(f"""DELETE FROM "h3_data" WHERE "h3tableName" = '{table}';""")
     connection.commit()
-    # Don't know we are putting away the connection and getting it back again but this is how it is done
-    # in `tiff_folder_to_h3_table.load_raster_list_to_h3_table`
-    postgres_thread_pool.putconn(connection)
-    connection = postgres_thread_pool.getconn()
-    cursor = connection.cursor()
+
 
     # insert new entries
     logging.info("Inserting record into h3_data table...")

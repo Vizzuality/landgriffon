@@ -5,21 +5,30 @@ import {
   ApiOperation,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { ContextualLayer } from 'modules/contextual-layers/contextual-layer.entity';
+import { ContextualLayerByCategory } from 'modules/contextual-layers/contextual-layer.entity';
+import { ContextualLayersService } from 'modules/contextual-layers/contextual-layers.service';
 
 @Controller('api/v1/contextual-layers')
 export class ContextualLayersController {
+  constructor(
+    private readonly contextualLayerService: ContextualLayersService,
+  ) {}
   @ApiOperation({
-    description: 'Get all Contextual Layer info ordered by Category',
+    description: 'Get all Contextual Layer info grouped by Category',
   })
   @ApiOkResponse({
-    type: ContextualLayer,
+    type: ContextualLayerByCategory,
     isArray: true,
   })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
   @Get('/categories')
-  async getContextualLayerByCategory(): Promise<any> {
-    return;
+  async getContextualLayersByCategory(): Promise<{
+    data: ContextualLayerByCategory[];
+  }> {
+    const contextualLayersByCategory: ContextualLayerByCategory[] =
+      await this.contextualLayerService.getContextualLayersByCategory();
+
+    return { data: contextualLayersByCategory };
   }
 }

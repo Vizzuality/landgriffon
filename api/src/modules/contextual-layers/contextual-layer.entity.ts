@@ -56,3 +56,9 @@ export class ContextualLayer extends BaseEntity {
   @OneToMany(() => H3Data, (h3Data: H3Data) => h3Data.contextualLayer)
   h3Data: H3Data[];
 }
+
+export class ContextualLayerByCategory {
+  category: CONTEXTUAL_LAYER_CATEGORY;
+
+  layer: ContextualLayer;
+}

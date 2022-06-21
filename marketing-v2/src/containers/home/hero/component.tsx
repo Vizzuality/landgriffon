@@ -6,7 +6,7 @@ const Hero: React.FC = () => {
   return (
     <section
       className="relative flex flex-col items-center justify-center h-screen bg-blue-500 bg-right bg-no-repeat"
-      style={{ backgroundImage: `url('/images/hero/bg_circles.svg')` }}
+      style={{ backgroundImage: `url('/images/home/hero/bg_circles.svg')` }}
     >
       <Wrapper>
         <div className="space-y-5">

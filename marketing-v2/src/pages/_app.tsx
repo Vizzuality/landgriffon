@@ -9,6 +9,7 @@ import store from 'store';
 
 import 'styles/globals.css';
 import 'styles/fonts.css';
+import 'styles/flicking.css';
 
 const queryClient = new QueryClient();
 

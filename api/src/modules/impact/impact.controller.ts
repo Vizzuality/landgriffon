@@ -50,6 +50,25 @@ export class ImpactController {
   }
 
   @ApiOperation({
+    description: 'Get data for comparing Impacts of 2 Scenarios',
+  })
+  @ApiOkResponse({
+    type: PaginatedImpactTable,
+  })
+  @JSONAPIPaginationQueryParams()
+  @Get('scenarios-table')
+  async getTwoScenariosImpactTable(
+    @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
+    @Query(ValidationPipe)
+    twoScenariosImpactTableDto: GetTwoScenariosImpactTableDto,
+  ): Promise<PaginatedImpactTable> {
+    return await this.impactService.getImpactTable(
+      twoScenariosImpactTableDto,
+      fetchSpecification,
+    );
+  }
+
+  @ApiOperation({
     description:
       'Get data for comapring Actual data with Scenario in form of Impact Table',
   })

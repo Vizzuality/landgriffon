@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import ReactSelect, {
   Theme,
@@ -10,6 +10,7 @@ import ReactSelect, {
   OptionProps,
   InputProps,
   ValueContainerProps,
+  PlaceholderProps,
 } from 'react-select';
 import { ChevronDownIcon } from '@heroicons/react/outline';
 import tw from 'twin.macro';
@@ -47,33 +48,36 @@ const customStyles: (theme: SelectProps['theme'], error?: boolean) => StylesConf
     container: (provided) => ({ ...provided, ...tw`text-sm` }),
     option: (provided, { isDisabled, isSelected }) => ({
       ...provided,
-      ...tw`text-gray-900 cursor-pointer hover:bg-green-50 truncate`,
+      ...tw`text-gray-900 truncate cursor-pointer hover:bg-green-50`,
       ...(isDisabled && tw`bg-green-700`),
       ...(isSelected && tw`text-white hover:bg-green-700`),
     }),
     control: (provided) => ({
       ...provided,
       boxShadow: 'none',
-      ...(error && tw`border-red-600 border-2`),
+      ...(error && tw`border-2 border-red-600`),
       ...(theme === 'inline-primary' &&
         tw`border border-l-0 border-r-0 border-t-0 border-b-2 border-b-green-700 shadow-none rounded-none min-w-[30px] p-0 min-h-0`),
       ...(theme === 'default' && tw`w-full rounded-md`),
     }),
     valueContainer: (provided) => ({
       ...provided,
+      ...tw`flex justify-start`,
       ...(theme === 'inline-primary' && tw`p-0`),
     }),
     singleValue: (provided) => ({
       ...provided,
       ...tw`my-auto`,
-      ...(theme === 'inline-primary' && tw`text-green-700 font-bold`),
+      ...(theme === 'inline-primary' && tw`font-bold text-green-700`),
     }),
+    // placeholder: (provided) => ({ ...provided, ...tw`my-auto` }),
     indicatorSeparator: () => tw`hidden`,
     menu: (provided) => ({
       ...provided,
-      ...tw`overflow-hidden h-auto shadow-md rounded-md my-0 border border-gray-50`,
+      ...tw`h-auto my-0 overflow-hidden border rounded-md shadow-md border-gray-50`,
     }),
     menuList: (provided) => ({ ...provided, ...tw`py-0` }),
+    input: (provided) => ({ ...tw`flex` }),
   };
 };
 
@@ -107,8 +111,10 @@ const Select: React.FC<SelectProps> = ({
   theme = 'default',
   error = false,
   showSearch = false,
+  hideValueWhenMenuOpen = false,
 }) => {
   const { result: optionsResult, search: setSearchTerm } = useFuse(options, SEARCH_OPTIONS);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleSearch = useCallback(
     (term: string) => {
@@ -177,14 +183,16 @@ const Select: React.FC<SelectProps> = ({
   );
 
   const ValueContainer: React.FC<ValueContainerProps> = useCallback(
-    ({ children, ...rest }) => (
-      <components.ValueContainer {...rest}>
-        <div className="flex flex-row justify-start gap-x-0.5">
-          {label && <span className="text-gray-600 h-min my-auto">{label}</span>}
-          {children}
-        </div>
-      </components.ValueContainer>
-    ),
+    ({ children, ...rest }) => {
+      return (
+        <components.ValueContainer {...rest}>
+          <div className="flex flex-row justify-start gap-x-0.5 align-middle">
+            {label && <span className="my-auto text-gray-600 h-min">{label}</span>}
+            {children}
+          </div>
+        </components.ValueContainer>
+      );
+    },
     [label],
   );
 
@@ -207,7 +215,7 @@ const Select: React.FC<SelectProps> = ({
             </div>
             {extraInfo && (
               <div>
-                <i className="text-gray-600 text-xs">{extraInfo}</i>
+                <i className="text-xs text-gray-600">{extraInfo}</i>
               </div>
             )}
           </div>
@@ -222,7 +230,8 @@ const Select: React.FC<SelectProps> = ({
   return (
     <div className={classNames({ 'w-fit': theme === 'inline-primary' })}>
       <ReactSelect
-        className=""
+        onMenuOpen={() => setIsMenuOpen(true)}
+        onMenuClose={() => setIsMenuOpen(false)}
         styles={styles}
         placeholder={placeholder}
         onInputChange={handleSearch}
@@ -231,7 +240,7 @@ const Select: React.FC<SelectProps> = ({
           ...option,
           isDisabled: disabled,
         }))}
-        value={current}
+        value={hideValueWhenMenuOpen && isMenuOpen ? null : current}
         isDisabled={disabled}
         isLoading={loading}
         isClearable={allowEmpty}

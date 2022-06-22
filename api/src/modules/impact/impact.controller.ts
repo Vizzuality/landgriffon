@@ -2,6 +2,7 @@ import { Controller, Get, Query, ValidationPipe } from '@nestjs/common';
 import {
   GetImpactTableDto,
   GetRankedImpactTableDto,
+  GetTwoScenariosImpactTableDto,
 } from 'modules/impact/dto/get-impact-table.dto';
 import { ImpactService } from 'modules/impact/impact.service';
 import {
@@ -40,6 +41,25 @@ export class ImpactController {
   ): Promise<PaginatedImpactTable> {
     return await this.impactService.getImpactTable(
       impactTableDto,
+      fetchSpecification,
+    );
+  }
+
+  @ApiOperation({
+    description: 'Get data for comparing Impacts of 2 Scenarios',
+  })
+  @ApiOkResponse({
+    type: PaginatedImpactTable,
+  })
+  @JSONAPIPaginationQueryParams()
+  @Get('scenarios-table')
+  async getTwoScenariosImpactTable(
+    @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
+    @Query(ValidationPipe)
+    twoScenariosImpactTableDto: GetTwoScenariosImpactTableDto,
+  ): Promise<PaginatedImpactTable> {
+    return await this.impactService.getImpactTable(
+      twoScenariosImpactTableDto,
       fetchSpecification,
     );
   }

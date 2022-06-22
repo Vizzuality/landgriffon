@@ -93,6 +93,18 @@ export class GetImpactTableDto {
   scenarioId?: string;
 }
 
+export class GetTwoScenariosImpactTableDto extends GetImpactTableDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID(4)
+  scenarioOneId: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID(4)
+  scenarioTwoId: string;
+}
+
 export class GetRankedImpactTableDto extends GetImpactTableDto {
   @ApiProperty({
     description:

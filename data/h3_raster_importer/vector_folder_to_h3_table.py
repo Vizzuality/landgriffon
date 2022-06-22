@@ -53,7 +53,7 @@ DTYPES_TO_PG = {
 
 logging.basicConfig(level=logging.INFO)
 
-postgres_thread_pool = ThreadedConnectionPool(  # TODO: use os.getenv
+postgres_thread_pool = ThreadedConnectionPool(
     1,
     50,
     host=os.getenv('API_POSTGRES_HOST'),
@@ -88,9 +88,27 @@ def vector_file_to_h3dataframe(
 ) -> gpd.GeoDataFrame:
     """Converts a vector file to a GeoDataFrame"""
     logging.info(f"Reading {str(filename)} and converting geometry to H3...")
-    gdf = gpd.GeoDataFrame.from_features(records(filename, [column]))
-    h3df = vector.geodataframe_to_h3(gdf, h3_res)
-    h3df = h3df.set_index("h3index")
+    gdf = gpd.GeoDataFrame.from_features(records(filename, [column])).set_crs("EPSG:4326")
+    h3df = vector.geodataframe_to_h3(gdf, h3_res).set_index("h3index")
+    # check for duplicated h3 indices since the aqueduct data set generates duplicated h3 indices
+    # we currently don't know why this happens and further investigation is needed
+    # but for now we just drop the duplicates if it is safe to do so (i.e. the dupes have the same value)
+    if h3df.index.duplicated().any():
+        logging.warning(f"Duplicated H3 indexes found in {filename}. Checking if it safe to drop...")
+        dupe_idx = h3df.index[h3df.index.duplicated()]
+        # check that the duplicated values are the same and drop them if they are
+        # if not, raise an error and stop ingestion to encourage manual data validation check
+        for idx in dupe_idx:
+            values = h3df.loc[idx]
+            if any(values[col].is_unique for col in values.columns):
+                logging.error(
+                    f"Duplicated H3 index {idx} found in {filename} with different values."
+                    " Data ingestion will stop. Please check the data."
+                )
+                raise ValueError(f"Duplicated H3 index {idx} found in {filename} with different values.")
+        h3df = h3df.drop(dupe_idx)
+        logging.info(f"Dropped {len(dupe_idx)} duplicated H3 indexes")
+
     if not h3df.empty:
         # we want h3index as hex, do we?
         h3df.index = pd.Series(h3df.index).apply(lambda x: hex(x))
@@ -145,7 +163,6 @@ def insert_to_h3_data_and_contextual_layer_tables(
     )
     cursor.execute(f"""DELETE FROM "h3_data" WHERE "h3tableName" = '{table}';""")
     connection.commit()
-
 
     # insert new entries
     logging.info("Inserting record into h3_data table...")

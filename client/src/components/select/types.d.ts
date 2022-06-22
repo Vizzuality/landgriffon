@@ -24,4 +24,5 @@ export type SelectProps = {
   onSearch?: (query: string) => unknown;
   theme?: 'default' | 'default-bordernone' | 'inline-primary';
   error?: boolean;
+  hideValueWhenMenuOpen?: boolean;
 };

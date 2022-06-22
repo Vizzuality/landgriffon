@@ -296,7 +296,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           {multiple ? (
             <>
               {(!currentOptions || !currentOptions.length) && !showSearch && (
-                <span className="text-gray-500 inline-block truncate text-sm">{placeholder}</span>
+                <span className="inline-block text-sm text-gray-500 truncate">{placeholder}</span>
               )}
               {!!currentOptions?.length &&
                 currentOptions.slice(0, badgesToShow).map((option) => (
@@ -321,7 +321,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
               )}
             </>
           ) : (
-            <span className="inline-block truncate my-auto">
+            <span className="inline-block my-auto truncate">
               {selected ? (
                 <span className="font-medium">{selected.label}</span>
               ) : (
@@ -332,7 +332,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           )}
           {showSearch && (
             <div className="inline-flex flex-row flex-grow h-min gap-x-1">
-              <SearchIcon className="block h-4 w-4 text-gray-400 my-auto" />
+              <SearchIcon className="block w-4 h-4 my-auto text-gray-400" />
               <input
                 onClick={(e) => {
                   e.stopPropagation();
@@ -341,7 +341,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                 type="search"
                 value={searchTerm}
                 placeholder={currentOptions.length === 0 && selected === null ? placeholder : null}
-                className="border-none focus:ring-0 truncate py-0 px-0 text-sm"
+                className="px-0 py-0 text-sm truncate border-none focus:ring-0"
                 onChange={handleSearch}
                 autoComplete="off"
                 style={{
@@ -353,7 +353,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
               />
               {searchTerm && (
                 <button type="button" onClick={resetSearch} className="px-2 py-0">
-                  <XIcon className="h-4 w-4 text-gray-400" />
+                  <XIcon className="w-4 h-4 text-gray-400" />
                 </button>
               )}
             </div>
@@ -411,7 +411,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
         >
           {loading && (
             <div className="p-4">
-              <Loading className="text-green-700 -ml-1 mr-3" />
+              <Loading className="mr-3 -ml-1 text-green-700" />
             </div>
           )}
           {!loading && (
@@ -433,7 +433,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
                 {renderTreeNodes(options)}
               </Tree>
               {(options.length === 0 || (searchTerm && filteredKeys.length === 0)) && (
-                <div className="p-2 text-gray-700 text-sm opacity-60 w-fit mx-auto">No results</div>
+                <div className="p-2 mx-auto text-sm text-gray-700 opacity-60 w-fit">No results</div>
               )}
             </>
           )}

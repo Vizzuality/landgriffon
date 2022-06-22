@@ -16,10 +16,11 @@ WORKDIR_DEFORESTATION=data/hansen_loss
 WORKDIR_SPECIESRICHNESS=data/satelligence/species_richness
 WORKDIR_ABOVEGROUNDBIOMASS=data/satelligence/above_ground_biomass
 WORKDIR_SATDEFORESTATION=data/satelligence/deforestation
+WORKDIR_AQUEDUCT=data/contextual/aqueduct
 
 all:
 	make clean
-	make -j 2 crop indicators
+	make -j 2 crop indicators contextual
 
 
 crop:
@@ -33,6 +34,9 @@ indicators:
 	# Processing deforestation data is quite intensive, so we do it separately, so we can allocate all threads to it
 		# There is probably a better way to do this, that future me will learn about - in the future.
 	make convert-deforestation
+
+contextual:
+	make -j 2 convert-aqueduct-contextual
 
 ############################################
 # MapSPAM crop production and harvest area #
@@ -438,6 +442,23 @@ preprocess-satDeforestation: download-satDeforestation
 #TODO update with the reference of a new satelligence indicator
 convert-satDeforestation: preprocess-satDeforestation
 	python tiff_folder_to_h3_table.py $(WORKDIR_SATDEFORESTATION)/ h3_grid_deforestation_ind_density indicator DF_LUC_T 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+
+###################
+# Contextual data #
+###################
+
+# Aqueduct Global water risk contextual data
+download-aqueduct-contextual:
+	mkdir -p $(WORKDIR_AQUEDUCT)
+	wget --show-progress -q -O $(WORKDIR_AQUEDUCT)/Y2019M07D12_Aqueduct30_V01.zip https://wri-projects.s3.amazonaws.com/Aqueduct30/finalData/Y2019M07D12_Aqueduct30_V01.zip
+
+extract-aqueduct-contextual: download-aqueduct-contextual
+	mkdir -p $(WORKDIR_AQUEDUCT)/Y2019M07D12_Aqueduct30_V01
+	unzip -u $(WORKDIR_AQUEDUCT)/Y2019M07D12_Aqueduct30_V01.zip  -d $(WORKDIR_AQUEDUCT)/
+
+convert-aqueduct-contextual: # extract-aqueduct-contextual
+	python vector_folder_to_h3_table.py $(WORKDIR_AQUEDUCT)/Y2019M07D12_Aqueduct30_V01/baseline/annual h3_grid_aqueduct_global bws_cat aqueduct "Environmental datasets" 2019 --h3-res=6
+
 
 clean:
 	rm -rf data/*

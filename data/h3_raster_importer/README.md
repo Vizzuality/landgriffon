@@ -46,7 +46,7 @@ Usage:
 
 Arguments:
     <folder>          Folder containing GeoTiffs.
-    <table>           Postgresql table to overwrite.
+    <table>           Postgresql table to overwrite (must be lower case).
 
 Options:
     -h                Show help

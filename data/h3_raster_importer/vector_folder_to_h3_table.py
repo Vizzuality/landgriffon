@@ -95,7 +95,8 @@ def vector_file_to_h3dataframe(
     # but for now we just drop the duplicates if it is safe to do so (i.e. the dupes have the same value)
     if h3df.index.duplicated().any():
         logging.warning(f"Duplicated H3 indexes found in {filename}. Checking if it safe to drop...")
-        dupe_idx = h3df.index[h3df.index.duplicated()]
+        dupes = h3df.index.duplicated(keep="first")
+        dupe_idx = h3df.index[dupes]
         # check that the duplicated values are the same and drop them if they are
         # if not, raise an error and stop ingestion to encourage manual data validation check
         for idx in dupe_idx:
@@ -106,7 +107,7 @@ def vector_file_to_h3dataframe(
                     " Data ingestion will stop. Please check the data."
                 )
                 raise ValueError(f"Duplicated H3 index {idx} found in {filename} with different values.")
-        h3df = h3df.drop(dupe_idx)
+        h3df = h3df[~dupes]  # drop the duplicates
         logging.info(f"Dropped {len(dupe_idx)} duplicated H3 indexes")
 
     if not h3df.empty:

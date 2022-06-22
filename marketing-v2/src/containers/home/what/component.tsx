@@ -148,7 +148,14 @@ const What: React.FC = () => {
               })}
             </div>
 
-            <Carousel slide={slide} slides={SLIDES} onChange={(i) => setSlide(i)} autoplay />
+            <Carousel
+              slide={slide}
+              slides={SLIDES}
+              onChange={(i) => {
+                setSlide(i);
+              }}
+              autoplay
+            />
           </FadeIn>
         </Wrapper>
       </div>

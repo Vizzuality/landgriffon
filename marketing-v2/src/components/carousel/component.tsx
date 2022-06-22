@@ -9,6 +9,7 @@ export interface CarouselProps {
     content?: ReactElement;
   }[];
   autoplay?: boolean;
+  options?: Record<string, any>;
   onChange?: (slide: number) => void;
 }
 
@@ -16,6 +17,10 @@ export const Carousel: React.FC<CarouselProps> = ({
   slide,
   slides,
   autoplay,
+  options = {
+    duration: 500,
+    circular: true,
+  },
   onChange,
 }: CarouselProps) => {
   const slider = useRef(null);
@@ -88,11 +93,10 @@ export const Carousel: React.FC<CarouselProps> = ({
       >
         <Flicking
           ref={slider}
-          duration={500}
-          circular
           onWillChange={({ index }) => {
             if (onChange) onChange(index);
           }}
+          {...options}
         >
           {slides.map((sl) => {
             return (

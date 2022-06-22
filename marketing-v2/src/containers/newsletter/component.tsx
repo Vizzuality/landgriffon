@@ -25,7 +25,7 @@ const NewsLetter: React.FC = () => {
   return (
     <section className="bg-white">
       <Wrapper>
-        <div className="p-20 -mx-20 bg-orange-500">
+        <div className="relative z-10 p-20 -mx-20 -mt-10 bg-orange-500">
           <div>
             <h2 className="text-6xl font-black uppercase font-display">
               Be the first to hear about new releases and updates.

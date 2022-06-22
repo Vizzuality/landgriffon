@@ -21,9 +21,9 @@ Options:
     -h                Show help
     --h3-res=<res>    h3 resolution to use [default: 6].
 """
-import os
 import json
 import logging
+import os
 from io import StringIO
 from pathlib import Path
 from re import sub
@@ -95,8 +95,8 @@ def vector_file_to_h3dataframe(
     # but for now we just drop the duplicates if it is safe to do so (i.e. the dupes have the same value)
     if h3df.index.duplicated().any():
         logging.warning(f"Duplicated H3 indexes found in {filename}. Checking if it safe to drop...")
-        dupes = h3df.index.duplicated(keep="first")
-        dupe_idx = h3df.index[dupes]
+        dupes_mask = h3df.index.duplicated(keep="first")
+        dupe_idx = h3df.index[dupes_mask]
         # check that the duplicated values are the same and drop them if they are
         # if not, raise an error and stop ingestion to encourage manual data validation check
         for idx in dupe_idx:
@@ -107,7 +107,7 @@ def vector_file_to_h3dataframe(
                     " Data ingestion will stop. Please check the data."
                 )
                 raise ValueError(f"Duplicated H3 index {idx} found in {filename} with different values.")
-        h3df = h3df[~dupes]  # drop the duplicates
+        h3df = h3df[~dupes_mask]  # drop the duplicates
         logging.info(f"Dropped {len(dupe_idx)} duplicated H3 indexes")
 
     if not h3df.empty:
@@ -173,14 +173,22 @@ def insert_to_h3_data_and_contextual_layer_tables(
          VALUES ('{table}', '{column}', {h3_res}, {year});"""
     )
     cursor.execute(f"""SELECT id FROM "h3_data" WHERE "h3columnName" = '{column}';""")
-    h3_data = cursor.fetchall()
+    h3_data_id = cursor.fetchall()[0][0]
     # TODO: Fix description and metadata in script parameters
     logging.info("Inserting record into contextual_layer table...")
     cursor.execute(
         f"""INSERT INTO "contextual_layer"  ("h3DataId", "name", "metadata", "description", "category")
-         VALUES ('{h3_data[0][0]}', '{dataset}', '{json.dumps({"place":"holder"})}', '{"<placeholder>"}', '{category}');
+         VALUES ('{h3_data_id}', '{dataset}', '{json.dumps({"place":"holder"})}', '{"<placeholder>"}', '{category}');
         """
     )
+    # insert contextual_layer entry id into h3_table
+    cursor.execute(f"""SELECT id FROM "contextual_layer" WHERE "h3DataId" = '{h3_data_id}';""")
+    contextual_data_id = cursor.fetchall()[0][0]
+
+    cursor.execute(
+        f"""update "h3_data"  set "contextualLayerId" = '{contextual_data_id}' where  "h3tableName" = '{table}';"""
+    )
+
     connection.commit()
     cursor.close()
 

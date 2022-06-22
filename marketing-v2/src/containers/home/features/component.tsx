@@ -25,7 +25,7 @@ const Features: React.FC = () => {
                   <Icon icon={FLEXIBLE_SVG} className="w-14 h-14" />
                   <h3 className="text-3xl font-medium font-display">Flexible to your needs.</h3>
                 </div>
-                <p>
+                <p className="text-xl">
                   LandGriffon is designed to adapt to each company&apos;s unique context and
                   ambitions. Regardless of the amount or detail of your existing data, we can work
                   with you.
@@ -39,7 +39,7 @@ const Features: React.FC = () => {
                   <h3 className="text-3xl font-medium font-display">Community powered.</h3>
                 </div>
 
-                <p>
+                <p className="text-xl">
                   LandGriffon brings together the most trusted indicator data from across the
                   sustainability community. Learn more about the indicators we use.
                 </p>
@@ -52,7 +52,7 @@ const Features: React.FC = () => {
                   <h3 className="text-3xl font-medium font-display">An ethos of transparency.</h3>
                 </div>
 
-                <p>
+                <p className="text-xl">
                   We’re confident in our technology, and you should be too. Our methods and code are
                   open for all to see, use, and verify.
                 </p>

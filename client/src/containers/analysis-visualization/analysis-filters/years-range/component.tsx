@@ -27,7 +27,7 @@ const YearsFilter: React.FC = () => {
   });
 
   useEffect(() => {
-    setYears(data);
+    setYears(range(data[0], toNumber(data[data.length - 1] + 2) + 1));
   }, [data]);
 
   useEffect(() => {
@@ -36,14 +36,18 @@ const YearsFilter: React.FC = () => {
 
   const lastYearWithData = useMemo(() => data[data.length - 1], [data]);
 
-  const handleOnEndYearSearch = (searchedYear) => {
-    if (!isFinite(toNumber(searchedYear)) || toNumber(searchedYear) <= data[0]) {
+  const handleOnEndYearSearch: (searchedYear: string) => void = (searchedYear) => {
+    const year = toNumber(searchedYear);
+
+    if (!isFinite(year) || year <= data[0]) {
       return;
     }
 
     // TODO: set max number of years, otherwise an extra number la va a liar parda
-    if (!years.includes(toNumber(searchedYear))) {
-      setYears([...range(data[data.length - 1] + 1, toNumber(searchedYear) + 1), ...data]);
+    if (year === data[data.length - 1]) {
+      setYears(range(data[0], data[data.length - 1] + 2));
+    } else if (!years.includes(year)) {
+      setYears(range(data[0], year + 1));
     }
   };
 

@@ -49,13 +49,13 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
         `No Admin Region where Coordinates: LAT: ${searchParams.lat}, LONG: ${searchParams.lng} are could been found`,
       );
     }
-    if (country) {
-      await this.validateAdminRegion(
-        res[0].adminRegionId,
-        country,
-        searchParams,
-      );
-    }
+    // if (country) {
+    //   await this.validateAdminRegion(
+    //     res[0].adminRegionId,
+    //     country,
+    //     searchParams,
+    //   );
+    // }
 
     return res[0];
   }
@@ -108,13 +108,13 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
     const result: any = res.reduce(function (previous: any, current: any) {
       return previous.level > current.level ? previous : current;
     });
-    if (country) {
-      await this.validateAdminRegion(
-        result.adminRegionId,
-        country,
-        coordinates,
-      );
-    }
+    // if (country) {
+    //   await this.validateAdminRegion(
+    //     result.adminRegionId,
+    //     country,
+    //     coordinates,
+    //   );
+    // }
 
     return result;
   }

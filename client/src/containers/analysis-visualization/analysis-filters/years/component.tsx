@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters, setFilter, setFilters } from 'store/features/analysis/filters';
@@ -6,46 +6,83 @@ import { analysisFilters, setFilter, setFilters } from 'store/features/analysis/
 import { useYears } from 'hooks/years';
 
 import Select, { SelectProps } from 'components/select';
+import { toNumber, range } from 'lodash';
 
 const YearsFilter: React.FC = () => {
   const dispatch = useAppDispatch();
   const filters = useAppSelector(analysisFilters);
   const { layer, materials, indicator, startYear } = filters;
-  const { data: years, isLoading } = useYears(layer, materials, indicator);
+  const { data, isLoading } = useYears(layer, materials, indicator);
 
+  const [years, setYears] = useState(data);
+
+  const [selectedOption, setSelectedOption] = useState<SelectProps['current']>(null);
+
+  useEffect(() => {
+    setSelectedOption({
+      label: startYear?.toString(),
+      value: startYear,
+    });
+  }, [startYear]);
+
+  useEffect(() => {
+    setYears([...range(data[0], data[data.length - 1] + 3)]);
+  }, [data]);
+  const lastAvailableYear = data[data.length - 1];
   const yearOptions: SelectProps['options'] = useMemo(
-    () => years?.map((year) => ({ label: year.toString(), value: year })),
-    [years],
+    () =>
+      years?.map((year) => ({
+        label: year.toString(),
+        value: year,
+        extraInfo: year > lastAvailableYear ? 'projected data' : null,
+      })),
+    [lastAvailableYear, years],
   );
 
-  // Always set a value
-  const yearSelected: SelectProps['current'] = useMemo(
-    () => ({ label: startYear?.toString(), value: startYear }),
-    [startYear],
+  const handleSearch: SelectProps['onSearch'] = useCallback(
+    (searchedYear) => {
+      const year = toNumber(searchedYear);
+
+      if (!isFinite(year) || year <= data[0]) {
+        return;
+      }
+
+      // TODO: set max number of years, otherwise an extra number la va a liar parda
+      if (year === data[data.length - 1]) {
+        setYears(range(data[0], data[data.length - 1] + 2));
+      } else if (!years.includes(year)) {
+        setYears(range(data[0], year + 1));
+      }
+    },
+    [data, years],
   );
 
   const handleChange: SelectProps['onChange'] = useCallback(
-    ({ value }) => {
-      dispatch(setFilter({ id: 'startYear', value }));
+    (option) => {
+      setSelectedOption(option);
+      dispatch(setFilter({ id: 'startYear', value: option.value }));
     },
     [dispatch],
   );
 
   // Update filters when data changes
   useEffect(() => {
-    if (years?.length && !isLoading) {
-      dispatch(setFilters({ startYear: years[years.length - 1], endYear: null }));
+    if (data?.length && !isLoading) {
+      dispatch(setFilters({ startYear: data[data.length - 1], endYear: null }));
     }
-  }, [dispatch, isLoading, years]);
+  }, [dispatch, isLoading, data]);
 
   return (
-    <div className="w-32">
+    <div className="w-44">
       <Select
+        label="in"
+        hideValueWhenMenuOpen
         loading={isLoading}
-        current={yearSelected}
+        current={selectedOption}
         options={yearOptions}
-        placeholder="Year"
+        placeholder="Type any year"
         showSearch
+        onSearch={handleSearch}
         onChange={handleChange}
       />
     </div>

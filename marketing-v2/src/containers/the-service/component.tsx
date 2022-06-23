@@ -1,6 +1,7 @@
 import React from 'react';
 
 import Hero from 'containers/the-service/hero';
+import Separator from 'containers/the-service/separator';
 import Testimonials from 'containers/testimonials';
 import Newsletter from 'containers/newsletter';
 
@@ -21,10 +22,12 @@ const TheService: React.FC = () => {
         <Step01 />
         <Step02 />
       </Steps>
+      <Separator image="/images/service/images6_service.jpg" />
       <Steps theme="orange">
         <Step03 />
         <Step04 />
       </Steps>
+      <Separator image="/images/service/images7_service.jpg" />
       <Steps theme="blue">
         <Step05 />
         <Step06 />

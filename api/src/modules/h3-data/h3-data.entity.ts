@@ -79,9 +79,9 @@ export class H3Data extends BaseEntity {
   @OneToMany(() => IndicatorRecord, (ir: IndicatorRecord) => ir.materialH3Data)
   indicatorRecords: IndicatorRecord[];
 
-  @OneToMany(() => ContextualLayer, (cl: ContextualLayer) => cl.h3Data)
+  @ManyToOne(() => ContextualLayer, (cl: ContextualLayer) => cl.h3Data)
   @JoinColumn({ name: 'contextualLayerId' })
-  contextualLayers: ContextualLayer[];
+  contextualLayer: ContextualLayer;
 
   @Column({ nullable: true })
   contextualLayerId: string;

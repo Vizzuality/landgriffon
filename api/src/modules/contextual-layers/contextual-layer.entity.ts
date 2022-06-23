@@ -2,7 +2,7 @@ import {
   BaseEntity,
   Column,
   Entity,
-  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { BaseServiceResource } from 'types/resource.interface';
@@ -45,10 +45,6 @@ export class ContextualLayer extends BaseEntity {
   })
   metadata: JSON;
 
-  @Column({ nullable: true })
-  @ApiPropertyOptional()
-  description?: string;
-
   @Column({
     type: 'enum',
     enum: CONTEXTUAL_LAYER_CATEGORY,
@@ -57,6 +53,6 @@ export class ContextualLayer extends BaseEntity {
   })
   category: CONTEXTUAL_LAYER_CATEGORY;
 
-  @ManyToOne(() => H3Data, (h3Data: H3Data) => h3Data.contextualLayers)
-  h3Data: H3Data;
+  @OneToMany(() => H3Data, (h3Data: H3Data) => h3Data.contextualLayer)
+  h3Data: H3Data[];
 }

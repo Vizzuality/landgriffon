@@ -4,19 +4,22 @@ import Head from 'next/head';
 
 import ApplicationLayout from 'layouts/application';
 
-const TheService: FC = () => {
+import TheService from 'containers/the-service';
+
+const TheServicePage: FC = () => {
   return (
     <ApplicationLayout>
       <>
         <Head>
-          <title>The service - Landgriffon</title>
+          <title>The Service - Landgriffon</title>
           <link rel="icon" href="/favicon.ico" />
           <meta name="viewport" content="width=1024" />
         </Head>
-        TheService
+
+        <TheService />
       </>
     </ApplicationLayout>
   );
 };
 
-export default TheService;
+export default TheServicePage;

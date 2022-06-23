@@ -7,6 +7,8 @@ import Newsletter from 'containers/newsletter';
 import Steps from 'containers/the-service/steps';
 import Step01 from 'containers/the-service/steps/01/component';
 import Step02 from 'containers/the-service/steps/02/component';
+import Step03 from 'containers/the-service/steps/03/component';
+import Step04 from 'containers/the-service/steps/04/component';
 
 const TheService: React.FC = () => {
   return (
@@ -18,7 +20,8 @@ const TheService: React.FC = () => {
         <Step02 />
       </Steps>
       <Steps theme="orange">
-        <Step01 />
+        <Step03 />
+        <Step04 />
       </Steps>
       <Steps theme="blue">
         <Step01 />

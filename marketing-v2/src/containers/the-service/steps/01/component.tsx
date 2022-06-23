@@ -8,7 +8,7 @@ const Step01: React.FC = () => {
           true,
       })}
     >
-      <div className="w-full space-y-24">
+      <div className="w-full space-y-10">
         <header className="relative">
           <div className="relative z-10 space-y-12">
             <h2 className="text-xl font-black uppercase font-display">Benchmark</h2>
@@ -30,26 +30,28 @@ const Step01: React.FC = () => {
         </div>
       </div>
 
-      <div className="w-full space-y-10">
-        <h4 className="text-2xl border-b border-black pb-2.5">We are interested in your:</h4>
+      <div className="w-full space-y-20">
+        <div className="space-y-10">
+          <h4 className="text-2xl border-b border-black pb-2.5">We are interested in your:</h4>
 
-        <ul className="space-y-5 font-light">
-          <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
-            Targets, objectives, materiality and commitments
-          </li>
-          <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
-            Reporting and compliance requirements
-          </li>
-          <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
-            Existing usage of environmental datasets, certification
-          </li>
-          <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
-            Frameworks, reporting guidelines, etc
-          </li>
-          <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
-            Risk management
-          </li>
-        </ul>
+          <ul className="space-y-5 font-light">
+            <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
+              Targets, objectives, materiality and commitments
+            </li>
+            <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
+              Reporting and compliance requirements
+            </li>
+            <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
+              Existing usage of environmental datasets, certification
+            </li>
+            <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
+              Frameworks, reporting guidelines, etc
+            </li>
+            <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
+              Risk management
+            </li>
+          </ul>
+        </div>
       </div>
     </article>
   );

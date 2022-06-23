@@ -19,8 +19,19 @@ const Steps: React.FC<StepsProps> = ({ theme, children }: StepsProps) => {
         'bg-blue-500': theme === 'blue',
       })}
     >
+      {theme === 'orange' && (
+        <div
+          className="absolute z-0 w-full h-full pointer-events-none"
+          style={{
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: '100% auto',
+            backgroundPosition: '50% 100%',
+            backgroundImage: `url('/images/service/example/composition.png')`,
+          }}
+        />
+      )}
       <Wrapper>
-        <div className="space-y-64">
+        <div className="relative z-10 space-y-64">
           {Children.map(children, (c) => {
             return <FadeIn>{c}</FadeIn>;
           })}

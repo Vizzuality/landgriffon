@@ -63,6 +63,19 @@ postgres_thread_pool = ThreadedConnectionPool(
 )
 
 
+def get_contextual_layer_category_enum(connection_pool) -> set:
+    """Get the enum of contextual layer categories"""
+    conn = connection_pool.getconn()
+    with conn.cursor() as cursor:
+        cursor.execute("SELECT unnest(enum_range(NULL::contextual_layer_category));")
+        values = set(r[0] for r in cursor.fetchall())
+    connection_pool.putconn(conn)
+    return values
+
+
+CONTEXTUAL_LAYER_CATEGORIES = get_contextual_layer_category_enum(postgres_thread_pool)
+
+
 def slugify(s):
     s = sub(r"[_-]+", " ", s).title().replace(" ", "")
     return "".join([s[0].lower(), s[1:]])
@@ -124,7 +137,7 @@ def create_h3_grid_table(
 ):
     """Creates the h3 data table (like `h3_grid_nio_global`) with the correct data types"""
     dtypes = df.dtypes.to_dict()
-    schema = ", ".join([f'"{col}" {DTYPES_TO_PG[str(dtype)]}' for col, dtype in dtypes.items()])
+    schema = ", ".join([f'"{slugify(col)}" {DTYPES_TO_PG[str(dtype)]}' for col, dtype in dtypes.items()])
     cursor = connection.cursor()
     if drop_if_exists:
         cursor.execute(f"DROP TABLE IF EXISTS {table_name};")
@@ -203,14 +216,20 @@ def main(folder, table, column, dataset, category, year, h3_res):
         logging.error(f"No vectors with extension {vec_extensions} found in {folder}")
         return
 
+    if category not in CONTEXTUAL_LAYER_CATEGORIES:
+        logging.error(f"Category '{category}' not supported. Supported categories: {CONTEXTUAL_LAYER_CATEGORIES}")
+        return
+
     conn = postgres_thread_pool.getconn()
     if len(vectors) == 1:  # folder just contains one vector file
         df = vector_file_to_h3dataframe(vectors[0], column, h3_res)
         create_h3_grid_table(table, df, conn)
         insert_to_h3_grid_table(table, df, conn)  # apply multiprocessing here if needed
+        column = slugify(column)  # slugify the column name to follow the convention of db column naming
         insert_to_h3_data_and_contextual_layer_tables(table, column, h3_res, dataset, category, year, conn)
     else:
-        raise NotImplementedError("For now we only support folders with just one vector file")
+        raise NotImplementedError(f"Found more than one vector file in {folder}."
+                                  f" For now we only support folders with just one vector file.")
     postgres_thread_pool.putconn(conn, close=True)
 
 

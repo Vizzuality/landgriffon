@@ -186,13 +186,15 @@ const Select: React.FC<SelectProps> = ({
       return (
         <components.ValueContainer {...rest}>
           <div className="flex flex-row justify-start gap-x-0.5 align-middle">
-            {label && <span className="my-auto text-gray-600 h-min">{label}</span>}
+            {hideValueWhenMenuOpen && !isMenuOpen && label && (
+              <span className="my-auto text-gray-600 h-min">{label}</span>
+            )}
             {children}
           </div>
         </components.ValueContainer>
       );
     },
-    [label],
+    [hideValueWhenMenuOpen, isMenuOpen, label],
   );
 
   const Option: React.FC<OptionProps<SelectOption>> = useCallback(

@@ -29,10 +29,10 @@ export const Default = Template.bind({});
 Default.args = {
   options: [
     { value: 'ocean', label: 'Ocean' },
-    { value: 'blue', label: 'Blue', disabled: true },
     { value: 'purple', label: 'Purple' },
     { value: 'red', label: 'Red' },
     { value: 'orange', label: 'Orange' },
+    { value: 'blue', label: 'Disabled', disabled: true },
     { value: 'yellow', label: 'Yellow' },
     { value: 'green', label: 'Green' },
     { value: 'forest', label: 'Forest' },

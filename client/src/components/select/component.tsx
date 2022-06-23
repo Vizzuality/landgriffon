@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import ReactSelect, {
   Theme,
@@ -10,7 +10,6 @@ import ReactSelect, {
   OptionProps,
   InputProps,
   ValueContainerProps,
-  PlaceholderProps,
 } from 'react-select';
 import { ChevronDownIcon } from '@heroicons/react/outline';
 import tw from 'twin.macro';
@@ -19,7 +18,7 @@ import useFuse from 'hooks/fuse';
 
 import Loading from 'components/loading';
 
-import type { SelectProps } from './types';
+import type { SelectOption, SelectProps } from './types';
 import { flip, offset, shift, useFloating } from '@floating-ui/react-dom';
 
 /**
@@ -77,7 +76,7 @@ const customStyles: (theme: SelectProps['theme'], error?: boolean) => StylesConf
       ...tw`h-auto my-0 overflow-hidden border rounded-md shadow-md border-gray-50`,
     }),
     menuList: (provided) => ({ ...provided, ...tw`py-0` }),
-    input: (provided) => ({ ...tw`flex` }),
+    placeholder: (provided) => ({ ...provided, ...tw`my-auto` }),
   };
 };
 
@@ -196,7 +195,7 @@ const Select: React.FC<SelectProps> = ({
     [label],
   );
 
-  const Option: React.FC<OptionProps<{ extraInfo?: React.ReactNode; label: string }>> = useCallback(
+  const Option: React.FC<OptionProps<SelectOption>> = useCallback(
     ({ innerProps, innerRef, isSelected, isFocused, isDisabled, data: { label, extraInfo } }) => (
       <div {...innerProps} ref={innerRef}>
         <div

@@ -20,8 +20,7 @@ WORKDIR_AQUEDUCT=data/contextual/aqueduct
 
 all:
 	make clean
-	make -j 2 crop indicators contextual
-
+	make -j 2 crop indicators
 
 crop:
 	make -j 2 convert-mapspam-crop-production convert-earthstat-crop-production convert-earthstat-crop-harvest convert-mapspam-crop-harvest convert-glw3-livestock
@@ -35,7 +34,7 @@ indicators:
 		# There is probably a better way to do this, that future me will learn about - in the future.
 	make convert-deforestation
 
-contextual:
+contextual-layers:
 	make -j 2 convert-aqueduct-contextual
 
 ############################################

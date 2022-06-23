@@ -69,7 +69,7 @@ const What: React.FC = () => {
   }, [slide]);
 
   return (
-    <section className="relative pt-32 pb-64 bg-blue-500">
+    <section className="relative pt-32 pb-64 bg-blue-600">
       <div className="relative z-10">
         <Wrapper>
           <div className="flex justify-between">

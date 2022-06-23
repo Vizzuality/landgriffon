@@ -13,7 +13,7 @@ const Steps: React.FC<StepsProps> = ({ theme, children }: StepsProps) => {
   return (
     <section
       className={cx({
-        'relative py-32': true,
+        'relative pt-64 pb-32': true,
         'bg-green-500': theme === 'green',
         'bg-orange-500': theme === 'orange',
         'bg-blue-500': theme === 'blue',

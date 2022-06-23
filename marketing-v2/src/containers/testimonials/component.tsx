@@ -72,7 +72,7 @@ const Testimonials: React.FC = () => {
   const [slide, setSlide] = useState(0);
 
   return (
-    <section className="relative py-32 bg-blue-500">
+    <section className="relative py-32 bg-blue-600">
       <Wrapper>
         <div className="justify-between md:flex">
           <div className="space-y-5 md:w-5/12">

@@ -5,10 +5,12 @@ import Testimonials from 'containers/testimonials';
 import Newsletter from 'containers/newsletter';
 
 import Steps from 'containers/the-service/steps';
-import Step01 from 'containers/the-service/steps/01/component';
-import Step02 from 'containers/the-service/steps/02/component';
-import Step03 from 'containers/the-service/steps/03/component';
-import Step04 from 'containers/the-service/steps/04/component';
+import Step01 from 'containers/the-service/steps/01';
+import Step02 from 'containers/the-service/steps/02';
+import Step03 from 'containers/the-service/steps/03';
+import Step04 from 'containers/the-service/steps/04';
+import Step05 from 'containers/the-service/steps/05';
+import Step06 from 'containers/the-service/steps/06';
 
 const TheService: React.FC = () => {
   return (
@@ -24,7 +26,8 @@ const TheService: React.FC = () => {
         <Step04 />
       </Steps>
       <Steps theme="blue">
-        <Step01 />
+        <Step05 />
+        <Step06 />
       </Steps>
 
       <Testimonials />

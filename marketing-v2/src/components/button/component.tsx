@@ -5,9 +5,9 @@ import Loading from 'components/loading';
 const COMMON_CLASSNAMES =
   'inline-flex items-center overflow-hidden justify-center rounded-md cursor-pointer';
 const PRIMARY =
-  'border-transparent shadow-sm text-white bg-green-700 hover:bg-green-800 focus:outline-offset-2 focus:outline focus:outline-green-600';
+  'border-transparent shadow-sm text-white bg-green-500 hover:bg-green-800 focus:outline-offset-2 focus:outline focus:outline-green-600';
 const SECONDARY =
-  'border border-gray-300 focus:border-green-700 shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-green-700';
+  'border border-gray-300 focus:border-green-500 shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-green-500';
 
 export const THEME = {
   default: COMMON_CLASSNAMES,
@@ -57,8 +57,8 @@ function buildClassName({
 }: AnchorProps) {
   return cx(COMMON_CLASSNAMES, THEME[theme], SIZE[size], {
     [className]: !!className,
-    'opacity-50 pointer-events-none hover:bg-green-700': disabled,
-    'pointer-events-none hover:bg-green-700': loading,
+    'opacity-50 pointer-events-none hover:bg-green-500': disabled,
+    'pointer-events-none hover:bg-green-500': loading,
   });
 }
 

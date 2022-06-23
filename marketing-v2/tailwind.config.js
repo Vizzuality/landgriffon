@@ -17,10 +17,6 @@ module.exports = {
         '6xl': ['3.4375rem', '2.75rem'],
         '10xl': ['7.8125rem', '5.6875rem'],
       },
-      spacing: {
-        125: '30.875rem',
-        250: '48.75rem',
-      },
     },
     colors: {
       black: colors.black,
@@ -28,6 +24,11 @@ module.exports = {
       red: colors.red,
       yellow: colors.yellow,
       transparent: colors.transparent,
+      green: {
+        400: '#129B4A',
+        500: '#078A3C',
+      },
+
       blue: {
         500: '#0C1063',
       },
@@ -46,22 +47,7 @@ module.exports = {
         100: '#F3F4F6',
         50: '#F9FAFB',
       },
-      green: {
-        900: '#003D2D',
-        800: '#00543F',
-        700: '#078A3C', // primary
-        600: '#059669',
-        500: '#10B981',
-        400: '#34D399',
-        300: '#6EE7B7',
-        200: '#A7F3D0',
-        100: '#D1FAE5',
-        50: '#EBF6F1',
-      },
     },
-  },
-  variants: {
-    extend: {},
   },
   plugins: [forms, typography, lineClamp],
 };

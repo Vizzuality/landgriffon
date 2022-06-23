@@ -67,7 +67,7 @@ const How: React.FC = () => {
                         'flex items-center justify-center p-5 rounded-full w-52 h-52': true,
                         'transition-colors': true,
                         'bg-gray-100': STEP !== 2,
-                        'bg-green-700 text-white': STEP === 2,
+                        'bg-green-500 text-white': STEP === 2,
                       })}
                     >
                       <h3 className="text-xl font-black text-center uppercase font-display">

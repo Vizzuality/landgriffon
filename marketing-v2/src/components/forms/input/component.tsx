@@ -9,9 +9,9 @@ const THEMES = {
     unit: 'absolute right-3 text-sm text-gray-500',
   },
   'inline-primary': {
-    base: 'appearance-none w-full text-sm text-center text-green-700 font-bold border-0 border-b-2 border-green-700 px-0 py-0 focus:outline-none focus:border-green-700 focus:ring-0',
-    icon: 'absolute w-4 h-4 text-green-700 transform -translate-y-1/2 top-1/2 left-0',
-    unit: 'absolute right-0 text-sm font-bold text-green-700',
+    base: 'appearance-none w-full text-sm text-center text-green-500 font-bold border-0 border-b-2 border-green-500 px-0 py-0 focus:outline-none focus:border-green-500 focus:ring-0',
+    icon: 'absolute w-4 h-4 text-green-500 transform -translate-y-1/2 top-1/2 left-0',
+    unit: 'absolute right-0 text-sm font-bold text-green-500',
   },
 };
 
@@ -44,7 +44,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               'bg-gray-400 h-1 appearance-none': type === 'range',
               'pl-10': !!icon && theme !== 'inline-primary',
               'pl-3': !!icon && theme === 'inline-primary',
-              'border-gray-200 focus:ring-green-700 focus:border-green-700':
+              'border-gray-200 focus:ring-green-500 focus:border-green-500':
                 theme === 'default' && !error,
               'border-red-600 focus:ring-red-600 focus:border-red-600': !!error,
               'pr-8': type === 'search',

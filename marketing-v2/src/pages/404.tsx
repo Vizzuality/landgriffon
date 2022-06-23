@@ -21,7 +21,7 @@ const Page404: React.FC = () => {
           <button
             type="button"
             onClick={handleGoBack}
-            className="flex mt-10 text-green-700 cursor-pointer hover:underline"
+            className="flex mt-10 text-green-500 cursor-pointer hover:underline"
           >
             <ArrowLeftIcon className="w-4 h-4 mt-1 mr-1" />
             Go back

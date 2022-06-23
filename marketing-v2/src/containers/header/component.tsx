@@ -23,9 +23,9 @@ const Header: React.FC = () => {
             <Link href="/the-service">
               <a
                 className={cx({
-                  'relative block py-7 hover:text-green-700': true,
-                  'text-green-700': pathname === '/the-service',
-                  'after:content-[""] after:absolute after:top-0 after:left-0 after:h-1 after:w-full after:bg-green-700':
+                  'relative block py-7 hover:text-green-500': true,
+                  'text-green-500': pathname === '/the-service',
+                  'after:content-[""] after:absolute after:top-0 after:left-0 after:h-1 after:w-full after:bg-green-500':
                     pathname === '/the-service',
                 })}
               >
@@ -37,9 +37,9 @@ const Header: React.FC = () => {
             <Link href="/methodology">
               <a
                 className={cx({
-                  'relative block py-7 hover:text-green-700': true,
-                  'text-green-700': pathname === '/methodology',
-                  'after:content-[""] after:absolute after:top-0 after:left-0 after:h-1 after:w-full after:bg-green-700':
+                  'relative block py-7 hover:text-green-500': true,
+                  'text-green-500': pathname === '/methodology',
+                  'after:content-[""] after:absolute after:top-0 after:left-0 after:h-1 after:w-full after:bg-green-500':
                     pathname === '/methodology',
                 })}
               >
@@ -51,9 +51,9 @@ const Header: React.FC = () => {
             <Link href="/about">
               <a
                 className={cx({
-                  'relative block py-7 hover:text-green-700': true,
-                  'text-green-700': pathname === '/about',
-                  'after:content-[""] after:absolute after:top-0 after:left-0 after:h-1 after:w-full after:bg-green-700':
+                  'relative block py-7 hover:text-green-500': true,
+                  'text-green-500': pathname === '/about',
+                  'after:content-[""] after:absolute after:top-0 after:left-0 after:h-1 after:w-full after:bg-green-500':
                     pathname === '/about',
                 })}
               >
@@ -65,9 +65,9 @@ const Header: React.FC = () => {
             <Link href="/team">
               <a
                 className={cx({
-                  'relative block py-7 hover:text-green-700': true,
-                  'text-green-700': pathname === '/team',
-                  'after:content-[""] after:absolute after:top-0 after:left-0 after:h-1 after:w-full after:bg-green-700':
+                  'relative block py-7 hover:text-green-500': true,
+                  'text-green-500': pathname === '/team',
+                  'after:content-[""] after:absolute after:top-0 after:left-0 after:h-1 after:w-full after:bg-green-500':
                     pathname === '/team',
                 })}
               >
@@ -79,9 +79,9 @@ const Header: React.FC = () => {
             <Link href="/faq">
               <a
                 className={cx({
-                  'relative block py-7 hover:text-green-700': true,
-                  'text-green-700': pathname === '/faq',
-                  'after:content-[""] after:absolute after:top-0 after:left-0 after:h-1 after:w-full after:bg-green-700':
+                  'relative block py-7 hover:text-green-500': true,
+                  'text-green-500': pathname === '/faq',
+                  'after:content-[""] after:absolute after:top-0 after:left-0 after:h-1 after:w-full after:bg-green-500':
                     pathname === '/faq',
                 })}
               >
@@ -93,8 +93,8 @@ const Header: React.FC = () => {
             <Link href="/blog">
               <a
                 className={cx({
-                  'relative block py-7 hover:text-green-700': true,
-                  'text-green-700': pathname === '/blog',
+                  'relative block py-7 hover:text-green-500': true,
+                  'text-green-500': pathname === '/blog',
                 })}
               >
                 Blog
@@ -105,7 +105,7 @@ const Header: React.FC = () => {
       </nav>
 
       <div>
-        <button className="px-10 text-white bg-green-700 py-7">Contact</button>
+        <button className="px-10 text-white bg-green-500 py-7">Contact</button>
       </div>
     </header>
   );

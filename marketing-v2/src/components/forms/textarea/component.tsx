@@ -4,7 +4,7 @@ import classnames from 'classnames';
 
 const THEMES = {
   default:
-    'border w-full rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 px-3',
+    'border w-full rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 px-3',
 };
 
 type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {

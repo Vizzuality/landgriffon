@@ -1,0 +1,54 @@
+{
+    "$defs": {
+        "code": {
+            "type": "array",
+            "description": "The mapping between layer values and meaning of the value. Used to show in the legend of the layer",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "number",
+                        "description": "The actual data value"
+                    },
+                    "label": {
+                        "type": "string",
+                        "description": "The label of the code to show in the legend"
+                    }
+                }
+            }
+        }
+    },
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "The name of the layer"
+        },
+        "description": {
+            "type": "string",
+            "description": "The description of the layer"
+        },
+        "legend": {
+            "type": "object",
+            "description": "The legend of the layer",
+            "properties": {
+                "value_type": {
+                    "type": "string",
+                    "description": "The type of the value of the layer"
+                },
+                "code": {
+                    "$ref": "#/$defs/code"
+                }
+            }
+        },
+        "source": {
+            "type": "string",
+            "description": "The citation of the layer"
+        },
+        "licence": {
+            "type": "string",
+            "description": "The licence of the layer"
+        }
+    }
+}
+

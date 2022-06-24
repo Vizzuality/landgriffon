@@ -10,6 +10,7 @@ import {
 } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { AddressComponent } from '@googlemaps/google-maps-services-js';
 import { GeocodeResult } from '@googlemaps/google-maps-services-js/dist/common';
+import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 
 /**
  * @note: Landgriffon Geocoding strategy doc:
@@ -67,7 +68,7 @@ export abstract class BaseStrategy {
           },
         ),
       ];
-      warning = `${locationAddress},${locationCountry} is ambiguous, taking most accurate interpretation.`;
+      warning = `${locationAddress},${locationCountry} is ambiguous, using most accurate interpretation: ${geocodeResponseData.results[0].formatted_address}.`;
     }
 
     return { data: geocodeResponseData, warning };
@@ -101,7 +102,7 @@ export abstract class BaseStrategy {
         address.types.includes('country'),
       );
     if (country) return country.long_name;
-    throw new Error(`Could not get country`);
+    throw new GeoCodingError(`Could not get country from GeoCoding`);
   }
 
   /**
@@ -120,8 +121,8 @@ export abstract class BaseStrategy {
       countrySet.add(this.getCountryNameFromGeocodeResult(result));
     });
     if (countrySet.size > 1) {
-      throw new Error(
-        `Address outside provided country: ${address}, ${country}`,
+      throw new GeoCodingError(
+        `Address: ${address} is outside provided Country: ${country}`,
       );
     }
   }

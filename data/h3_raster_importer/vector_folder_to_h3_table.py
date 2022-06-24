@@ -30,10 +30,12 @@ from re import sub
 
 import fiona
 import geopandas as gpd
+import jsonschema
 import pandas as pd
 import psycopg2
 from docopt import docopt
 from h3ronpy import vector
+from jsonschema.exceptions import ValidationError
 from psycopg2.pool import ThreadedConnectionPool
 
 DTYPES_TO_PG = {
@@ -191,7 +193,7 @@ def insert_to_h3_data_and_contextual_layer_tables(
     logging.info("Inserting record into contextual_layer table...")
     cursor.execute(
         f"""INSERT INTO "contextual_layer"  ("h3DataId", "name", "metadata", "description", "category")
-         VALUES ('{h3_data_id}', '{dataset}', '{json.dumps({"place":"holder"})}', '{"<placeholder>"}', '{category}');
+         VALUES ('{h3_data_id}', '{dataset}', '{json.dumps(get_metadata(table))}', '{"<placeholder>"}', '{category}');
         """
     )
     # insert contextual_layer entry id into h3_table
@@ -204,6 +206,31 @@ def insert_to_h3_data_and_contextual_layer_tables(
 
     connection.commit()
     cursor.close()
+
+
+def get_metadata(table: str) -> dict:
+    """Returns the metadata for the given table"""
+    metadata_base_path = Path(__file__).parent / "contextual_layers_metadata"
+    # load the json schema
+    with open(metadata_base_path / "contextual_metadata_schema.json") as f:
+        schema = json.load(f)
+
+    metadata_path = metadata_base_path / f"{table}_metadata.json"
+
+    if not metadata_path.exists():
+        logging.error(f"No metadata found for {table}")
+        # todo: should we raise exception or return empty metadata and keep going?
+        raise FileNotFoundError(f"Metadata file for {table} not found")
+
+    with open(metadata_path, "r") as f:
+        metadata = json.load(f)
+        try:
+            jsonschema.validate(metadata, schema)
+        except ValidationError as e:
+            logging.error(f"Metadata for {table} is not valid: {e}")
+            # todo: should we raise exception or return empty metadata and keep going?
+            raise e
+        return metadata
 
 
 def main(folder, table, column, dataset, category, year, h3_res):
@@ -228,8 +255,10 @@ def main(folder, table, column, dataset, category, year, h3_res):
         column = slugify(column)  # slugify the column name to follow the convention of db column naming
         insert_to_h3_data_and_contextual_layer_tables(table, column, h3_res, dataset, category, year, conn)
     else:
-        raise NotImplementedError(f"Found more than one vector file in {folder}."
-                                  f" For now we only support folders with just one vector file.")
+        mssg = (f"Found more than one vector file in {folder}."
+                f" For now we only support folders with just one vector file.")
+        logging.error(mssg)
+        return
     postgres_thread_pool.putconn(conn, close=True)
 
 

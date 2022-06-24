@@ -4,7 +4,9 @@ import Head from 'next/head';
 
 import ApplicationLayout from 'layouts/application';
 
-const Methodology: FC = () => {
+import Methodology from 'containers/methodology';
+
+const MethodologyPage: FC = () => {
   return (
     <ApplicationLayout>
       <>
@@ -13,10 +15,11 @@ const Methodology: FC = () => {
           <link rel="icon" href="/favicon.ico" />
           <meta name="viewport" content="width=1024" />
         </Head>
-        Methodology
+
+        <Methodology />
       </>
     </ApplicationLayout>
   );
 };
 
-export default Methodology;
+export default MethodologyPage;

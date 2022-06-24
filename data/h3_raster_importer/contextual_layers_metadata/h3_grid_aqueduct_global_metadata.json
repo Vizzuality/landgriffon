@@ -1,0 +1,35 @@
+{
+    "$schema": "./contextual_metadata_schema.json",
+    "name": "h3_grid_aqueduct_global",
+    "description": "Baseline water stress measures the ratio of total water withdrawals to available renewable surface and groundwater supplies.",
+    "legend": {
+        "code": [
+            {
+                "value": -1,
+                "label": "Arid and Low Water Use"
+            },
+            {
+                "value": 0,
+                "label": "Low (<10%)"
+            },
+            {
+                "value": 1,
+                "label": "Low - medium (10-20%)"
+            },
+            {
+                "value": 2,
+                "label": "Medium - high (20-40%)"
+            },
+            {
+                "value": 3,
+                "label": "High (40-80%)"
+            },
+            {
+                "value": 4,
+                "label": "Extremely High (>80%)"
+            }
+        ]
+    },
+    "source": "Hofste, R., S. Kuzma, S. Walker, E.H. Sutanudjaja, et. al. 2019. “Aqueduct 3.0: Updated DecisionRelevant Global Water Risk Indicators.” Technical Note. Washington, DC: World Resources Institute. Available online at: https://www.wri.org/publication/aqueduct-30",
+    "licence": "Creative Commons"
+}

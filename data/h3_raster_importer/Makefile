@@ -23,7 +23,7 @@ all:
 
 
 crop:
-	make -j 2 convert-mapspam-crop-production convert-earthstat-crop-production convert-earthstat-crop-harvest convert-mapspam-crop-harvest convert-cropland convert-pasture convert-glw3-livestock
+	make -j 2 convert-mapspam-crop-production convert-earthstat-crop-production convert-earthstat-crop-harvest convert-mapspam-crop-harvest convert-glw3-livestock
 
 # NOTE: The ingestion below is commented in order to avoid ingesting data, we don't have indicator for in the database yet
 # once the new indicators have been defined and ingested we will need to update the indicator code in for each on the indicator commented below and allow the ingestion.

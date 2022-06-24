@@ -26,16 +26,12 @@
         },
         "description": {
             "type": "string",
-            "description": "The description of the layer"
+            "description": "The description of the layer. Typically, the description of the feature column used. Used as body of the layer information to give context to the user"
         },
         "legend": {
             "type": "object",
             "description": "The legend of the layer",
             "properties": {
-                "value_type": {
-                    "type": "string",
-                    "description": "The type of the value of the layer"
-                },
                 "code": {
                     "$ref": "#/$defs/code"
                 }

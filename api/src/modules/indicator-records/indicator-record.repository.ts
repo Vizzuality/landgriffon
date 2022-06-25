@@ -74,19 +74,21 @@ export class IndicatorRecordRepository extends AppBaseRepository<IndicatorRecord
                   and mth."type" = 'harvest'
               ) as slwithmaterialh3data
               on sr."sourcingLocationId" = slwithmaterialh3data.id`);
-      if (!response.length)
+      if (!response.length) {
         this.logger.warn(
-          `Could not retrieve Sourcing Records with weighted indicator values`,
+          `Could not retrieve any Sourcing Records with weighted indicator values`,
         );
+        throw new ServiceUnavailableException(
+          'Could not calculate Impact: Please contact Administrator',
+        );
+      }
 
       return response;
     } catch (err: any) {
       this.logger.error(
         `Error querying data from DB to calculate Indicator Records: ${err.message}`,
       );
-      throw new MissingH3DataError(
-        `Could net retrieve Indicator Raw data from Sourcing Locations: ${err}`,
-      );
+      throw err;
     }
   }
 

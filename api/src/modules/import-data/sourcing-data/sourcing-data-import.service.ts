@@ -25,7 +25,6 @@ import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
-import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 import { TasksService } from 'modules/tasks/tasks.service';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 
@@ -145,12 +144,8 @@ export class SourcingDataImportService {
         //       done by the AfterInser() event listener placed in indicator-record.entity.ts
         await IndicatorRecord.updateImpactView();
       } catch (err: any) {
-        if (err instanceof MissingH3DataError) {
-          throw new MissingH3DataError(
-            `Missing H3 Data to calculate Impact in Import`,
-          );
-          throw err;
-        }
+        this.logger.error(`Error thrown during import: ${err}`);
+        throw new ServiceUnavailableException(`${err.message}`);
       }
     } finally {
       await this.fileService.deleteDataFromFS(filePath);

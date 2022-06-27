@@ -73,7 +73,7 @@ const YearsFilter: React.FC = () => {
   }, [dispatch, isLoading, data]);
 
   return (
-    <div className="w-44">
+    <div className="">
       <Select
         numeric
         label="in"

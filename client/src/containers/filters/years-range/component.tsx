@@ -148,6 +148,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
               <div className="grid grid-cols-1 gap-2">
                 <div>From</div>
                 <Select
+                  numeric
                   hideValueWhenMenuOpen
                   loading={loading}
                   showSearch={showSearch ?? showStartYearSearch}
@@ -159,6 +160,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
                 />
                 <div>To</div>
                 <Select
+                  numeric
                   hideValueWhenMenuOpen
                   loading={loading}
                   showSearch={showSearch ?? showEndYearSearch}

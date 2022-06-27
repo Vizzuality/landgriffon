@@ -75,6 +75,7 @@ const YearsFilter: React.FC = () => {
   return (
     <div className="w-44">
       <Select
+        numeric
         label="in"
         hideValueWhenMenuOpen
         loading={isLoading}

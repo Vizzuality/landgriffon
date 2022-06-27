@@ -65,7 +65,10 @@ const customStyles: (theme: SelectProps['theme'], error?: boolean) => StylesConf
       ...tw`my-auto`,
       ...(theme === 'inline-primary' && tw`font-bold text-green-700`),
     }),
-    indicatorsContainer: (provided) => ({ ...provided, ...tw`ml-2 mr-1 w-min` }),
+    indicatorsContainer: (provided) => ({
+      ...provided,
+      ...(theme === 'inline-primary' ? tw`hidden` : tw`ml-2 mr-1 w-min`),
+    }),
     indicatorSeparator: () => tw`hidden`,
     menu: (provided) => ({
       ...provided,

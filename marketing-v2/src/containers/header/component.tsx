@@ -62,20 +62,6 @@ const Header: React.FC = () => {
             </Link>
           </li>
           <li>
-            <Link href="/team">
-              <a
-                className={cx({
-                  'relative block py-7 hover:text-green-500': true,
-                  'text-green-500': pathname === '/team',
-                  'after:content-[""] after:absolute after:top-0 after:left-0 after:h-1 after:w-full after:bg-green-500':
-                    pathname === '/team',
-                })}
-              >
-                Team
-              </a>
-            </Link>
-          </li>
-          <li>
             <Link href="/faq">
               <a
                 className={cx({

@@ -25,7 +25,9 @@ const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({ loading = false, childr
 
   useEffect(() => {
     if (asideRef && asideRef.current) {
-      setPosition(asideRef.current.getBoundingClientRect());
+      const properties = asideRef.current.getBoundingClientRect();
+      const { x } = properties;
+      if (x !== 0) setPosition(asideRef.current.getBoundingClientRect());
     }
   }, [asideRef]);
 

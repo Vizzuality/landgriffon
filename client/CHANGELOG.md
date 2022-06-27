@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Prevent collapse button to break his position [LANDGRIF-729](https://vizzuality.atlassian.net/browse/LANDGRIF-729)
+
+
 ## 2022.06.27
 
 ### Added
@@ -32,8 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Upgrade Tailwind to version 3.0.24
 - Upgrade to Yarn version 3.2.1
 - Upgrade to Node LTS 16.15.0
-- Tooltip redesigned in charts view, legend included inside chart card [LANDGRIF-702](https://vizzuality.atlassian.net/browse/LANDGRIF-702)
 - Increased allowed file size for upload from 1.5MB to 2.0MB
+- Tooltip redesigned in charts view, legend included inside chart card [LANDGRIF-702](https://vizzuality.atlassian.net/browse/LANDGRIF-702)
 - Interactivity added to chart legend to highlight areas in the graph [LANDGRIF-688](https://vizzuality.atlassian.net/browse/LANDGRIF-688)
 - Active pills showing selected filters on table and chart view [LANDGRIF-616](https://vizzuality.atlassian.net/browse/LANDGRIF-616)
 - Select and TreeSelect components redo according to design [LANDGRIF-686](https://vizzuality.atlassian.net/browse/LANDGRIF-686)
@@ -53,6 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Standarized values for group by in analysis section [LANDGRIF-710](https://vizzuality.atlassian.net/browse/LANDGRIF-710)
 - Tooltip not showing last date in chart [LANDGRIF-709](https://vizzuality.atlassian.net/browse/LANDGRIF-709)
 - Number of rows in analysis table view updated accordinly with cells expansion [LANDGRIF-693](https://vizzuality.atlassian.net/browse/LANDGRIF-693)
+
 
 ## 0.3.0 - 2021-09-01
 

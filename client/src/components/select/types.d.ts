@@ -25,4 +25,5 @@ export type SelectProps = {
   theme?: 'default' | 'default-bordernone' | 'inline-primary';
   error?: boolean;
   hideValueWhenMenuOpen?: boolean;
+  numeric?: boolean;
 };

@@ -86,17 +86,6 @@ const SEARCH_OPTIONS = {
   threshold: 0.4,
 };
 
-const Input: React.FC<InputProps> = ({ children, ...rest }) => {
-  return (
-    <components.Input
-      {...rest}
-      inputClassName="ring-0 focus:ring-0 outline-none focus:outline-none focus:outline-0 truncate"
-    >
-      {children}
-    </components.Input>
-  );
-};
-
 const Select: React.FC<SelectProps> = ({
   disabled = false,
   label,
@@ -111,6 +100,7 @@ const Select: React.FC<SelectProps> = ({
   error = false,
   showSearch = false,
   hideValueWhenMenuOpen = false,
+  numeric = false,
 }) => {
   const { result: optionsResult, search: setSearchTerm } = useFuse(options, SEARCH_OPTIONS);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -179,6 +169,26 @@ const Select: React.FC<SelectProps> = ({
       </div>
     ),
     [reference, theme],
+  );
+
+  const Input: React.FC<InputProps> = useCallback(
+    ({ children, onChange, ...rest }) => {
+      return (
+        <components.Input
+          {...rest}
+          onChange={(e) => {
+            if (numeric) {
+              e.currentTarget.value = e.currentTarget.value.replaceAll(/[^0-9]/g, '');
+            }
+            onChange?.(e);
+          }}
+          inputClassName="ring-0 focus:ring-0 outline-none focus:outline-none focus:outline-0 truncate"
+        >
+          {children}
+        </components.Input>
+      );
+    },
+    [numeric],
   );
 
   const ValueContainer: React.FC<ValueContainerProps> = useCallback(

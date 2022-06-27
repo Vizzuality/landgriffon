@@ -178,7 +178,9 @@ const Select: React.FC<SelectProps> = ({
           {...rest}
           onChange={(e) => {
             if (numeric) {
-              e.currentTarget.value = e.currentTarget.value.replaceAll(/[^0-9]/g, '');
+              if (!/^[0-9]*$/.test(e.currentTarget.value)) {
+                return;
+              }
             }
             onChange?.(e);
           }}

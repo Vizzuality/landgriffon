@@ -4,6 +4,8 @@ import {
   TASK_TYPE,
   Task,
   taskResource,
+  TASK_STEP,
+  stepToPercentage,
 } from 'modules/tasks/task.entity';
 import {
   AppBaseService,
@@ -43,6 +45,8 @@ export class TasksService extends AppBaseService<
         'errors',
         'logs',
         'userId',
+        'progress',
+        'currentStep',
       ],
       keyForAttribute: 'camelCase',
     };
@@ -76,6 +80,7 @@ export class TasksService extends AppBaseService<
     newData?: Record<string, any>;
     newErrors?: Error;
     newLogs?: string[];
+    currentStep?: TASK_STEP;
   }): Promise<Task> {
     /**
      * @debt
@@ -85,7 +90,8 @@ export class TasksService extends AppBaseService<
      * @todo: Make this work nicely in distributed systems.
      *
      */
-    const { taskId, newStatus, newData, newErrors, newLogs } = updateTask;
+    const { taskId, newStatus, newData, newErrors, newLogs, currentStep } =
+      updateTask;
     const task: Task | undefined = await this.taskRepository.findOne(taskId);
     if (!task) {
       throw new NotFoundException(`Could not found Task with ID: ${taskId}`);
@@ -106,6 +112,11 @@ export class TasksService extends AppBaseService<
           return { warning };
         }),
       );
+    }
+
+    if (currentStep) {
+      task.currentStep = currentStep;
+      task.progress = stepToPercentage[currentStep];
     }
 
     if (newStatus) task.status = newStatus;

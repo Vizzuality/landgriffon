@@ -6,7 +6,7 @@ import { getQueueToken } from '@nestjs/bull';
 import { importQueueName } from 'modules/import-data/workers/import-queue.name';
 import { ImportDataService } from 'modules/import-data/import-data.service';
 import { TasksRepository } from 'modules/tasks/tasks.repository';
-import { Task } from 'modules/tasks/task.entity';
+import { Task, TASK_STEP } from 'modules/tasks/task.entity';
 
 // TODO: Update tests below once auth is done
 describe('XLSX Upload Feature Job Producer Tests', () => {
@@ -50,6 +50,7 @@ describe('XLSX Upload Feature Job Producer Tests', () => {
     });
     expect(tasks[0].status).toEqual('processing');
     expect(tasks[0].userId).toEqual(userId);
+    expect(tasks[0].currentStep).toEqual(TASK_STEP.UNKNOWN);
   }, 100000);
   test('When loadXlsxFile is called with required file data and a userId, but the Job can not be added to the queue, and the related tasks should be removed', async () => {
     await bootstrapTestingApp(importQueueFail);

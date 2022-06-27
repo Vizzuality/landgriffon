@@ -20,6 +20,24 @@ export enum TASK_STATUS {
   FAILED = 'failed',
 }
 
+export enum TASK_STEP {
+  UNKNOWN = 'unknown',
+  SAVING_MSB = 'saving_msb', // Materials, Suppliers, Business-Units
+  GEOLOCATING = 'geolocating',
+  CALCULATING_IMPACT = 'calculating_impact',
+  SAVING_IMPACT = 'saving_impact',
+  DONE = 'done',
+}
+
+export const stepToPercentage: { [key in TASK_STEP]: number } = {
+  unknown: 0.0,
+  saving_msb: 0.0,
+  geolocating: 25.0,
+  calculating_impact: 50.0,
+  saving_impact: 75.0,
+  done: 100.0,
+};
+
 export enum TASK_TYPE {
   UNKNOWN = 'unknown',
   SOURCING_DATA_IMPORT = 'sourcing_data_import',
@@ -46,6 +64,14 @@ export class Task extends TimestampedBaseEntity {
   @ApiProperty()
   @Column({ type: 'enum', enum: TASK_STATUS, default: TASK_STATUS.PROCESSING })
   status!: TASK_STATUS;
+
+  @ApiProperty()
+  @Column({ type: 'enum', enum: TASK_STEP, default: TASK_STEP.UNKNOWN })
+  currentStep: TASK_STEP;
+
+  @ApiProperty()
+  @Column({ type: 'decimal', nullable: false, default: 0.0 })
+  progress: number;
 
   @ApiProperty()
   @Column({ type: 'json' })

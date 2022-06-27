@@ -25,6 +25,7 @@ import {
   createSourcingLocation,
   createSourcingRecord,
   createSupplier,
+  createTask,
 } from '../../../entity-mocks';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { UnknownLocationGeoCodingStrategy } from 'modules/geo-coding/strategies/unknown-location.geocoding.service';
@@ -51,6 +52,8 @@ import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-c
 import { Material } from 'modules/materials/material.entity';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
+import { Task, TASK_STEP } from 'modules/tasks/task.entity';
+import { TasksRepository } from 'modules/tasks/tasks.repository';
 let tablesToDrop: string[] = [];
 
 let missingDataFallbackPolicy: string = 'error';
@@ -133,6 +136,7 @@ describe('Sourcing Data import', () => {
   }
 
   let businessUnitRepository: BusinessUnitRepository;
+  let taskRepository: TasksRepository;
   let materialRepository: MaterialRepository;
   let materialToH3Service: MaterialsToH3sService;
   let supplierRepository: SupplierRepository;
@@ -163,6 +167,7 @@ describe('Sourcing Data import', () => {
     businessUnitRepository = moduleFixture.get<BusinessUnitRepository>(
       BusinessUnitRepository,
     );
+    taskRepository = moduleFixture.get<TasksRepository>(TasksRepository);
     materialRepository =
       moduleFixture.get<MaterialRepository>(MaterialRepository);
     materialToH3Service = moduleFixture.get<MaterialsToH3sService>(
@@ -198,6 +203,7 @@ describe('Sourcing Data import', () => {
 
   afterEach(async () => {
     await materialToH3Service.delete({});
+    await taskRepository.delete({});
     await materialRepository.delete({});
     await indicatorRepository.delete({});
     await businessUnitRepository.delete({});
@@ -223,10 +229,11 @@ describe('Sourcing Data import', () => {
 
   test('When a file is processed by the API and there are no materials in the database, an error should be displayed', async () => {
     expect.assertions(1);
+    const task: Task = await createTask();
     try {
       await sourcingDataImportService.importSourcingData(
         __dirname + '/base-dataset.xlsx',
-        '',
+        task.id,
       );
     } catch (err: any) {
       expect(err.message).toEqual(
@@ -239,6 +246,7 @@ describe('Sourcing Data import', () => {
     const geoRegion: GeoRegion = await createGeoRegion({
       isCreatedByUser: false,
     });
+    const task: Task = await createTask();
     await createAdminRegion({
       isoA2: 'ABC',
       geoRegion,
@@ -254,7 +262,7 @@ describe('Sourcing Data import', () => {
 
     await sourcingDataImportService.importSourcingData(
       __dirname + '/base-dataset.xlsx',
-      '',
+      task.id,
     );
   }, 100000);
 
@@ -262,6 +270,7 @@ describe('Sourcing Data import', () => {
     const geoRegion: GeoRegion = await createGeoRegion({
       isCreatedByUser: false,
     });
+    let task: Task = await createTask();
     await createAdminRegion({
       isoA2: 'ABC',
       geoRegion,
@@ -276,8 +285,12 @@ describe('Sourcing Data import', () => {
 
     await sourcingDataImportService.importSourcingData(
       __dirname + '/base-dataset.xlsx',
-      '',
+      task.id,
     );
+
+    task = await taskRepository.findOneOrFail({ id: task.id });
+    expect(task.progress).toEqual('100');
+    expect(task.currentStep).toEqual(TASK_STEP.DONE);
 
     const businessUnits: BusinessUnit[] = await businessUnitRepository.find();
     expect(businessUnits).toHaveLength(5);
@@ -310,6 +323,7 @@ describe('Sourcing Data import', () => {
     const geoRegion: GeoRegion = await createGeoRegion({
       isCreatedByUser: false,
     });
+    const task: Task = await createTask();
     await createAdminRegion({
       isoA2: 'ABC',
       geoRegion,
@@ -324,7 +338,7 @@ describe('Sourcing Data import', () => {
 
     await sourcingDataImportService.importSourcingData(
       __dirname + '/base-dataset.xlsx',
-      '',
+      task.id,
     );
 
     const sourcingRecords: SourcingRecord[] =
@@ -394,6 +408,8 @@ describe('Sourcing Data import', () => {
       missingDataFallbackPolicy = 'error';
 
       const geoRegion: GeoRegion = await createGeoRegion();
+      const task: Task = await createTask();
+
       await createAdminRegion({
         isoA2: 'ABC',
         geoRegion,
@@ -413,7 +429,7 @@ describe('Sourcing Data import', () => {
       try {
         await sourcingDataImportService.importSourcingData(
           __dirname + '/base-dataset-one-material.xlsx',
-          '',
+          task.id,
         );
       } catch (err: any) {
         expect(err.message).toEqual(
@@ -426,6 +442,8 @@ describe('Sourcing Data import', () => {
       missingDataFallbackPolicy = 'ignore';
 
       const geoRegion: GeoRegion = await createGeoRegion();
+      const task: Task = await createTask();
+
       await createAdminRegion({
         isoA2: 'ABC',
         geoRegion,
@@ -444,7 +462,7 @@ describe('Sourcing Data import', () => {
 
       await sourcingDataImportService.importSourcingData(
         __dirname + '/base-dataset.xlsx',
-        '',
+        task.id,
       );
 
       const businessUnits: BusinessUnit[] = await businessUnitRepository.find();
@@ -478,6 +496,7 @@ describe('Sourcing Data import', () => {
       missingDataFallbackPolicy = 'fallback';
 
       const geoRegion: GeoRegion = await createGeoRegion();
+      const task: Task = await createTask();
       await createAdminRegion({
         isoA2: 'ABC',
         geoRegion,
@@ -496,7 +515,7 @@ describe('Sourcing Data import', () => {
 
       await sourcingDataImportService.importSourcingData(
         __dirname + '/base-dataset.xlsx',
-        '',
+        task.id,
       );
 
       const businessUnits: BusinessUnit[] = await businessUnitRepository.find();

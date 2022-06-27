@@ -2,7 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
-import { Task, TASK_STATUS, TASK_TYPE } from 'modules/tasks/task.entity';
+import {
+  Task,
+  TASK_STATUS,
+  TASK_STEP,
+  TASK_TYPE,
+} from 'modules/tasks/task.entity';
 import { TasksModule } from 'modules/tasks/tasks.module';
 import { TasksRepository } from 'modules/tasks/tasks.repository';
 import { createTask } from '../../entity-mocks';
@@ -157,6 +162,11 @@ describe('Tasks Module (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(response.body.data[0].id).toEqual(task1.id);
+      expect(response.body.data[0].attributes.progress).toEqual('0');
+      expect(response.body.data[0].attributes.currentStep).toEqual(
+        TASK_STEP.UNKNOWN,
+      );
+
       expect(response.body.data[0].attributes.status).toEqual('processing');
       expect(response.body.data[1].id).toEqual(task2.id);
       expect(response.body.data[1].attributes.status).toEqual('failed');

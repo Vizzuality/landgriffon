@@ -145,7 +145,9 @@ export class IndicatorRecordsService extends AppBaseService<
    * @description Creates Indicator Records from all existing Sourcing Records in the DB
    */
   // TODO still not adapted to modular indicators, because the performance gets hit drastically on the source import. Pending to be worked on
-  async createIndicatorRecordsForAllSourcingRecords(): Promise<void> {
+  async createIndicatorRecordsForAllSourcingRecords(): Promise<
+    IndicatorRecord[]
+  > {
     const rawData: SourcingRecordsWithIndicatorRawDataDto[] =
       await this.indicatorRecordRepository.getIndicatorRawDataForAllSourcingRecords();
     const calculatedData: IndicatorRecordCalculatedValuesDto[] = rawData.map(
@@ -209,6 +211,15 @@ export class IndicatorRecordsService extends AppBaseService<
         );
       },
     );
+    return indicatorRecords;
+  }
+
+  /**
+   * @description Save Indicator Records
+   */
+  async saveIndicatorRecordsForAllSourcingRecords(
+    indicatorRecords: IndicatorRecord[],
+  ): Promise<void> {
     await this.indicatorRecordRepository.saveChunks(indicatorRecords);
   }
 

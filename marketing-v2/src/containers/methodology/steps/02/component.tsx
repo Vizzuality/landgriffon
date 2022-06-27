@@ -5,7 +5,7 @@ const Step02: React.FC = () => {
   return (
     <article
       className={cx({
-        'flex flex-col lg:flex-row-reverse justify-between space-y-10 lg:space-x-10 lg:space-x-reverse lg:space-y-0':
+        'flex flex-col lg:flex-row-reverse justify-between space-y-10 lg:space-x-20 lg:space-x-reverse lg:space-y-0':
           true,
       })}
     >

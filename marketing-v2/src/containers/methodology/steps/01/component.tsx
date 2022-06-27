@@ -5,7 +5,7 @@ const Step01: React.FC = () => {
   return (
     <article
       className={cx({
-        'flex flex-col lg:flex-row justify-between space-y-10 lg:space-x-10 lg:space-y-0': true,
+        'flex flex-col lg:flex-row justify-between space-y-10 lg:space-x-20 lg:space-y-0': true,
       })}
     >
       <div className="w-full space-y-10">

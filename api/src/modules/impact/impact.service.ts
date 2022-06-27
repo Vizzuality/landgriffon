@@ -250,33 +250,29 @@ export class ImpactService {
   private async getEntityTree(
     impactTableDto: GetImpactTableDto,
   ): Promise<ImpactTableEntityType[]> {
+    const treeOptions: GetMaterialTreeWithOptionsDto = {
+      ...(impactTableDto.materialIds && {
+        materialIds: impactTableDto.materialIds,
+      }),
+      ...(impactTableDto.originIds && {
+        originIds: impactTableDto.originIds,
+      }),
+      ...(impactTableDto.supplierIds && {
+        supplierIds: impactTableDto.supplierIds,
+      }),
+    };
     switch (impactTableDto.groupBy) {
       case GROUP_BY_VALUES.MATERIAL: {
-        const treeOptions: GetMaterialTreeWithOptionsDto =
-          impactTableDto.materialIds
-            ? { materialIds: impactTableDto.materialIds }
-            : {};
-
         return this.materialsService.getMaterialsTreeWithSourcingLocations(
           treeOptions,
         );
       }
       case GROUP_BY_VALUES.REGION: {
-        const treeOptions: GetAdminRegionTreeWithOptionsDto =
-          impactTableDto.originIds
-            ? { originIds: impactTableDto.originIds }
-            : {};
-
         return this.adminRegionsService.getAdminRegionTreeWithSourcingLocations(
           treeOptions,
         );
       }
       case GROUP_BY_VALUES.SUPPLIER: {
-        const treeOptions: GetSupplierTreeWithOptions =
-          impactTableDto.supplierIds
-            ? { supplierIds: impactTableDto.supplierIds }
-            : {};
-
         return this.suppliersService.getSuppliersWithSourcingLocations(
           treeOptions,
         );

@@ -4,7 +4,7 @@ import { sortBy } from 'lodash';
 import TreeSelect from 'components/tree-select';
 
 // hooks
-import { useLocationTypes } from 'hooks/interventions';
+import { useLocationTypes, LocationTypesParams } from 'hooks/location-types';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
 type LocationTypeFilterProps = {
@@ -14,6 +14,10 @@ type LocationTypeFilterProps = {
   optionsLocationTypes?: TreeSelectProps['current'];
   ellipsis?: TreeSelectProps['ellipsis'];
   fitContent?: TreeSelectProps['fitContent'];
+  materialIds?: LocationTypesParams['materialIds'];
+  supplierIds?: LocationTypesParams['supplierIds'];
+  businessUnitIds?: LocationTypesParams['businessUnitIds'];
+  originIds?: LocationTypesParams['originIds'];
 };
 
 const LocationTypesFilter: React.FC<LocationTypeFilterProps> = ({
@@ -22,8 +26,17 @@ const LocationTypesFilter: React.FC<LocationTypeFilterProps> = ({
   theme,
   ellipsis,
   fitContent,
+  materialIds,
+  supplierIds,
+  businessUnitIds,
+  originIds,
 }) => {
-  const data = useLocationTypes();
+  const { data } = useLocationTypes({
+    materialIds,
+    supplierIds,
+    businessUnitIds,
+    originIds,
+  });
 
   const options: TreeSelectProps['options'] = useMemo(
     () =>

@@ -10,7 +10,7 @@ import InfoTooltip from 'containers/info-tooltip';
 
 // hooks
 import { useSuppliersTypes } from 'hooks/suppliers';
-import { useLocationTypes } from 'hooks/interventions';
+import { useLocationTypes } from 'hooks/location-types';
 import { useAdminRegionsTrees } from 'hooks/admin-regions';
 import { useFormContext } from 'react-hook-form';
 import { useMetadataInterventionsInfo } from 'hooks/metadata-info';
@@ -51,7 +51,8 @@ const Supplier: FC = () => {
     [producers],
   );
 
-  const locationTypes = useLocationTypes();
+  const { data: locationTypes } = useLocationTypes({});
+
   const optionsLocationTypes: SelectOptions = useMemo(
     () =>
       locationTypes.map(({ label, value }) => ({

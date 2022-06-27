@@ -56,8 +56,17 @@ export const filtersForH3API = createSelector(
 export const filtersForTabularAPI = createSelector(
   [analysisFilters],
   (analysisFiltersState: AnalysisFiltersState): ImpactTabularAPIParams => {
-    const { layer, startYear, endYear, by, indicator, materials, suppliers, origins } =
-      analysisFiltersState;
+    const {
+      layer,
+      startYear,
+      endYear,
+      by,
+      indicator,
+      materials,
+      suppliers,
+      origins,
+      locationTypes,
+    } = analysisFiltersState;
 
     if (layer === 'impact') {
       const result: ImpactTabularAPIParams = {
@@ -68,6 +77,7 @@ export const filtersForTabularAPI = createSelector(
         materialIds: materials?.map(({ value }) => value),
         supplierIds: suppliers?.map(({ value }) => value),
         originIds: origins?.map(({ value }) => value),
+        locationTypes: locationTypes?.map(({ value }) => value),
       };
       return result;
     }

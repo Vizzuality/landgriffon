@@ -16,7 +16,7 @@ const Video: React.FC = () => {
   }, [inView]);
 
   return (
-    <section ref={ref} className="relative h-screen bg-white">
+    <section ref={ref} className="relative max-h-screen bg-white">
       <video ref={videoRef} src="/videos/truck.mp4" className="aspect-video" loop muted />
     </section>
   );

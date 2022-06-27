@@ -124,16 +124,26 @@ const AreaStacked: React.FC<AreaStackedProps> = ({
       const x0 = xScale.invert(x);
       const index = bisectDate(data, x0, 1);
       const d0 = data[index - 1 < 0 ? 0 : index - 1];
-      const d1 = data[index - 1];
-      const lastDate = data.reduce((a, b) => (a.date > b.date ? a : b)).date;
+      const d1 = data[index];
+      const dates = data.map((d) => d.date).sort();
+      const firstDate = dates[0];
+      const lastDate = dates[dates.length - 1];
       let d = d0;
 
       if (d1 && getDate(d1) && data[index + 1]?.date) {
         d = getDate(d0).valueOf() - x0.valueOf() > getDate(d1).valueOf() - x0.valueOf() ? d1 : d0;
       }
 
+      if (data[index - 2]?.date === firstDate) {
+        d = data[0];
+      }
+
+      if (data[index - 2]?.date !== firstDate && data[index - 1]?.id === '2') {
+        d = getDate(data[index]).valueOf() < x0.valueOf() ? data[index - 1] : data[index - 2];
+      }
+
       if (!data[index + 1]?.date && data[index]?.date === lastDate) {
-        d = getDate(data[index]).valueOf() < x0.valueOf() ? data[index] : d1;
+        d = getDate(data[index]).valueOf() < x0.valueOf() ? data[index] : data[index - 1];
       }
 
       const y = keys.reduce((acc, k) => {

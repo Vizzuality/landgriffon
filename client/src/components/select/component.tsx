@@ -177,11 +177,7 @@ const Select: React.FC<SelectProps> = ({
         <components.Input
           {...rest}
           onChange={(e) => {
-            if (numeric) {
-              if (!/^[0-9]*$/.test(e.currentTarget.value)) {
-                return;
-              }
-            }
+            if (numeric && !/^[0-9]*$/.test(e.currentTarget.value)) return;
             onChange?.(e);
           }}
           inputClassName="ring-0 focus:ring-0 outline-none focus:outline-none focus:outline-0 truncate"

@@ -58,7 +58,7 @@ const YearsFilter: React.FC = () => {
       endYear={endYear}
       years={years}
       yearsGap={yearsGap}
-      showEndYearSearch={true}
+      showSearch
       onChange={setYearsRange}
       onEndYearSearch={handleOnEndYearSearch}
       lastYearWithData={lastYearWithData}

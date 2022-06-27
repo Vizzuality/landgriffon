@@ -2491,7 +2491,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dnd-kit/core@npm:^5.0.3":
+"@dnd-kit/core@npm:5.0.3":
   version: 5.0.3
   resolution: "@dnd-kit/core@npm:5.0.3"
   dependencies:
@@ -2505,7 +2505,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dnd-kit/modifiers@npm:^5.0.0":
+"@dnd-kit/modifiers@npm:5.0.0":
   version: 5.0.0
   resolution: "@dnd-kit/modifiers@npm:5.0.0"
   dependencies:
@@ -2517,7 +2517,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dnd-kit/sortable@npm:^6.0.1":
+"@dnd-kit/sortable@npm:6.0.1":
   version: 6.0.1
   resolution: "@dnd-kit/sortable@npm:6.0.1"
   dependencies:
@@ -2820,7 +2820,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@floating-ui/react-dom-interactions@npm:^0.6.4":
+"@floating-ui/react-dom-interactions@npm:0.6.4":
   version: 0.6.4
   resolution: "@floating-ui/react-dom-interactions@npm:0.6.4"
   dependencies:
@@ -2834,7 +2834,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@floating-ui/react-dom@npm:^0.7.0":
+"@floating-ui/react-dom@npm:0.7.0":
   version: 0.7.0
   resolution: "@floating-ui/react-dom@npm:0.7.0"
   dependencies:
@@ -4447,7 +4447,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-actions@npm:6.4.22, @storybook/addon-actions@npm:^6.4.22":
+"@storybook/addon-actions@npm:6.4.22":
   version: 6.4.22
   resolution: "@storybook/addon-actions@npm:6.4.22"
   dependencies:
@@ -4636,7 +4636,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-essentials@npm:^6.4.22":
+"@storybook/addon-essentials@npm:6.4.22":
   version: 6.4.22
   resolution: "@storybook/addon-essentials@npm:6.4.22"
   dependencies:
@@ -4680,7 +4680,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-interactions@npm:^6.4.22":
+"@storybook/addon-interactions@npm:6.4.22":
   version: 6.4.22
   resolution: "@storybook/addon-interactions@npm:6.4.22"
   dependencies:
@@ -4708,7 +4708,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-links@npm:^6.4.22":
+"@storybook/addon-links@npm:6.4.22":
   version: 6.4.22
   resolution: "@storybook/addon-links@npm:6.4.22"
   dependencies:
@@ -4981,7 +4981,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/builder-webpack5@npm:^6.4.22":
+"@storybook/builder-webpack5@npm:6.4.22":
   version: 6.4.22
   resolution: "@storybook/builder-webpack5@npm:6.4.22"
   dependencies:
@@ -5452,7 +5452,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/manager-webpack5@npm:^6.4.22":
+"@storybook/manager-webpack5@npm:6.4.22":
   version: 6.4.22
   resolution: "@storybook/manager-webpack5@npm:6.4.22"
   dependencies:
@@ -5566,7 +5566,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/react@npm:^6.4.22":
+"@storybook/react@npm:6.4.22":
   version: 6.4.22
   resolution: "@storybook/react@npm:6.4.22"
   dependencies:
@@ -5692,7 +5692,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/testing-library@npm:^0.0.11":
+"@storybook/testing-library@npm:0.0.11":
   version: 0.0.11
   resolution: "@storybook/testing-library@npm:0.0.11"
   dependencies:
@@ -8225,22 +8225,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.21.1":
-  version: 0.21.4
-  resolution: "axios@npm:0.21.4"
-  dependencies:
-    follow-redirects: ^1.14.0
-  checksum: 44245f24ac971e7458f3120c92f9d66d1fc695e8b97019139de5b0cc65d9b8104647db01e5f46917728edfc0cfd88eb30fc4c55e6053eef4ace76768ce95ff3c
-  languageName: node
-  linkType: hard
-
-"axios@npm:^0.27.2":
+"axios@npm:0.27.2":
   version: 0.27.2
   resolution: "axios@npm:0.27.2"
   dependencies:
     follow-redirects: ^1.14.9
     form-data: ^4.0.0
   checksum: 38cb7540465fe8c4102850c4368053c21683af85c5fdf0ea619f9628abbcb59415d1e22ebc8a6390d2bbc9b58a9806c874f139767389c862ec9b772235f06854
+  languageName: node
+  linkType: hard
+
+"axios@npm:^0.21.1":
+  version: 0.21.4
+  resolution: "axios@npm:0.21.4"
+  dependencies:
+    follow-redirects: ^1.14.0
+  checksum: 44245f24ac971e7458f3120c92f9d66d1fc695e8b97019139de5b0cc65d9b8104647db01e5f46917728edfc0cfd88eb30fc4c55e6053eef4ace76768ce95ff3c
   languageName: node
   linkType: hard
 
@@ -8251,7 +8251,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-loader@npm:^8.0.0, babel-loader@npm:^8.2.5":
+"babel-loader@npm:8.2.5, babel-loader@npm:^8.0.0":
   version: 8.2.5
   resolution: "babel-loader@npm:8.2.5"
   dependencies:
@@ -8346,6 +8346,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"babel-plugin-macros@npm:3.1.0, babel-plugin-macros@npm:^3.0.1":
+  version: 3.1.0
+  resolution: "babel-plugin-macros@npm:3.1.0"
+  dependencies:
+    "@babel/runtime": ^7.12.5
+    cosmiconfig: ^7.0.0
+    resolve: ^1.19.0
+  checksum: 765de4abebd3e4688ebdfbff8571ddc8cd8061f839bb6c3e550b0344a4027b04c60491f843296ce3f3379fb356cc873d57a9ee6694262547eb822c14a25be9a6
+  languageName: node
+  linkType: hard
+
 "babel-plugin-macros@npm:^2.0.0, babel-plugin-macros@npm:^2.6.1, babel-plugin-macros@npm:^2.8.0":
   version: 2.8.0
   resolution: "babel-plugin-macros@npm:2.8.0"
@@ -8354,17 +8365,6 @@ __metadata:
     cosmiconfig: ^6.0.0
     resolve: ^1.12.0
   checksum: 59b09a21cf3ae1e14186c1b021917d004b49b953824b24953a54c6502da79e8051d4ac31cfd4a0ae7f6ea5ddf1f7edd93df4895dd3c3982a5b2431859c2889ac
-  languageName: node
-  linkType: hard
-
-"babel-plugin-macros@npm:^3.0.1, babel-plugin-macros@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "babel-plugin-macros@npm:3.1.0"
-  dependencies:
-    "@babel/runtime": ^7.12.5
-    cosmiconfig: ^7.0.0
-    resolve: ^1.19.0
-  checksum: 765de4abebd3e4688ebdfbff8571ddc8cd8061f839bb6c3e550b0344a4027b04c60491f843296ce3f3379fb356cc873d57a9ee6694262547eb822c14a25be9a6
   languageName: node
   linkType: hard
 
@@ -15305,11 +15305,11 @@ __metadata:
     "@deck.gl/layers": 8.5.8
     "@deck.gl/mesh-layers": 8.5.8
     "@deck.gl/react": 8.5.8
-    "@dnd-kit/core": ^5.0.3
-    "@dnd-kit/modifiers": ^5.0.0
-    "@dnd-kit/sortable": ^6.0.1
-    "@floating-ui/react-dom": ^0.7.0
-    "@floating-ui/react-dom-interactions": ^0.6.4
+    "@dnd-kit/core": 5.0.3
+    "@dnd-kit/modifiers": 5.0.0
+    "@dnd-kit/sortable": 6.0.1
+    "@floating-ui/react-dom": 0.7.0
+    "@floating-ui/react-dom-interactions": 0.6.4
     "@headlessui/react": 1.6.1
     "@heroicons/react": 1.0.6
     "@hookform/resolvers": 2.8.8
@@ -15327,16 +15327,16 @@ __metadata:
     "@react-aria/searchfield": 3.2.2
     "@react-hook/debounce": 4.0.0
     "@reduxjs/toolkit": 1.8.2
-    "@storybook/addon-actions": ^6.4.22
+    "@storybook/addon-actions": 6.4.22
     "@storybook/addon-docs": 6.4.22
-    "@storybook/addon-essentials": ^6.4.22
-    "@storybook/addon-interactions": ^6.4.22
-    "@storybook/addon-links": ^6.4.22
+    "@storybook/addon-essentials": 6.4.22
+    "@storybook/addon-interactions": 6.4.22
+    "@storybook/addon-links": 6.4.22
     "@storybook/addon-postcss": 2.0.0
-    "@storybook/builder-webpack5": ^6.4.22
-    "@storybook/manager-webpack5": ^6.4.22
-    "@storybook/react": ^6.4.22
-    "@storybook/testing-library": ^0.0.11
+    "@storybook/builder-webpack5": 6.4.22
+    "@storybook/manager-webpack5": 6.4.22
+    "@storybook/react": 6.4.22
+    "@storybook/testing-library": 0.0.11
     "@tailwindcss/forms": 0.4.0
     "@tailwindcss/typography": 0.5.0
     "@types/chroma-js": 2.1.3
@@ -15362,9 +15362,9 @@ __metadata:
     "@visx/tooltip": 2.1.0
     "@visx/xychart": 2.9.0
     autoprefixer: 10.2.5
-    axios: ^0.27.2
-    babel-loader: ^8.2.5
-    babel-plugin-macros: ^3.1.0
+    axios: 0.27.2
+    babel-loader: 8.2.5
+    babel-plugin-macros: 3.1.0
     chroma-js: 2.1.2
     classnames: 2.3.1
     cypress: 8.7.0
@@ -15388,7 +15388,7 @@ __metadata:
     lottie-react: 2.2.1
     next: 12.1.0
     next-auth: 4.2.1
-    nyc: ^15.1.0
+    nyc: 15.1.0
     nyc-report-lcov-absolute: 1.0.0
     postcss: 8.3.6
     prettier: 2.3.1
@@ -15399,12 +15399,12 @@ __metadata:
     react-dom: 17.0.2
     react-dropzone: 11.5.1
     react-hook-form: 7.27.1
-    react-hot-toast: ^2.2.0
+    react-hot-toast: 2.2.0
     react-map-gl: 6.1.15
     react-query: 3.34.16
-    react-range: ^1.8.12
+    react-range: 1.8.12
     react-redux: 7.2.4
-    react-select: ^5.3.2
+    react-select: 5.3.2
     react-spring: 9.4.2
     rooks: 5.10.0
     sharp: 0.29.3
@@ -17086,7 +17086,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nyc@npm:15.1.0, nyc@npm:^15.1.0":
+"nyc@npm:15.1.0":
   version: 15.1.0
   resolution: "nyc@npm:15.1.0"
   dependencies:
@@ -19053,7 +19053,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hot-toast@npm:^2.2.0":
+"react-hot-toast@npm:2.2.0":
   version: 2.2.0
   resolution: "react-hot-toast@npm:2.2.0"
   dependencies:
@@ -19156,7 +19156,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-range@npm:^1.8.12":
+"react-range@npm:1.8.12":
   version: 1.8.12
   resolution: "react-range@npm:1.8.12"
   peerDependencies:
@@ -19218,7 +19218,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-select@npm:^5.3.2":
+"react-select@npm:5.3.2":
   version: 5.3.2
   resolution: "react-select@npm:5.3.2"
   dependencies:

@@ -69,7 +69,6 @@ const customStyles: (theme: SelectProps['theme'], error?: boolean) => StylesConf
       ...tw`my-auto`,
       ...(theme === 'inline-primary' && tw`font-bold text-green-700`),
     }),
-    // placeholder: (provided) => ({ ...provided, ...tw`my-auto` }),
     indicatorSeparator: () => tw`hidden`,
     menu: (provided) => ({
       ...provided,
@@ -102,7 +101,11 @@ const Select: React.FC<SelectProps> = ({
   hideValueWhenMenuOpen = false,
   numeric = false,
 }) => {
-  const { result: optionsResult, search: setSearchTerm } = useFuse(options, SEARCH_OPTIONS);
+  const {
+    result: optionsResult,
+    search: setSearchTerm,
+    term: searchTerm,
+  } = useFuse(options, SEARCH_OPTIONS);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleSearch = useCallback(
@@ -172,10 +175,11 @@ const Select: React.FC<SelectProps> = ({
   );
 
   const Input: React.FC<InputProps> = useCallback(
-    ({ children, onChange, ...rest }) => {
+    ({ children, onChange, className, ...rest }) => {
       return (
         <components.Input
           {...rest}
+          className={classNames({ 'w-0': searchTerm.length === 0 }, className)}
           onChange={(e) => {
             if (numeric && !/^[0-9]*$/.test(e.currentTarget.value)) return;
             onChange?.(e);
@@ -186,7 +190,7 @@ const Select: React.FC<SelectProps> = ({
         </components.Input>
       );
     },
-    [numeric],
+    [numeric, searchTerm.length],
   );
 
   const ValueContainer: React.FC<ValueContainerProps> = useCallback(
@@ -197,7 +201,7 @@ const Select: React.FC<SelectProps> = ({
             {hideValueWhenMenuOpen && !isMenuOpen && label && (
               <span className="my-auto text-gray-600 h-min">{label}</span>
             )}
-            {children}
+            {React.Children.toArray(children).reverse()}
           </div>
         </components.ValueContainer>
       );

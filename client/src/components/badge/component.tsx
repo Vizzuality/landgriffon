@@ -29,17 +29,24 @@ const Badge: React.FC<BadgeProps> = ({
   return (
     <span
       className={classNames(
-        'inline-flex items-center py-0.5 font-medium  text-green-700 overflow-hidden',
+        'inline-flex items-center font-medium text-green-700 overflow-hidden shadow-sm px-2',
         THEMES[theme]?.wrapper,
+        removable ? 'pr-1' : 'py-0',
         className,
-        removable ? 'pl-2 pr-0.5' : 'px-2',
       )}
     >
-      <span className="truncate text-ellipsis text-green-900">{children}</span>
+      <span
+        className={classNames(
+          'truncate text-ellipsis text-green-700',
+          removable ? 'pr-0.5' : 'px-0.5',
+        )}
+      >
+        {children}
+      </span>
       {removable && (
         <button
           type="button"
-          className="flex-shrink-0 ml-0.5 h-4 w-4 rounded-full inline-flex items-center justify-center text-green-900 hover:bg-green-200 hover:text-green-500 focus:outline-none focus:bg-green-500 focus:text-white"
+          className="flex-shrink-0 ml-0.5 h-4 w-4 rounded-full inline-flex items-center justify-center text-gray-900 hover:bg-green-200 hover:text-green-500 focus:outline-none focus:bg-green-500 focus:text-white"
           onClick={handleClick}
         >
           <span className="sr-only">Remove</span>

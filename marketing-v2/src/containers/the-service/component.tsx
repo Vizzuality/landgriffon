@@ -1,7 +1,6 @@
 import React from 'react';
 
 import Hero from 'containers/the-service/hero';
-import Separator from 'containers/the-service/separator';
 // import Example from 'containers/the-service/example';
 
 import Steps from 'containers/the-service/steps';
@@ -12,6 +11,7 @@ import Step04 from 'containers/the-service/steps/04';
 import Step05 from 'containers/the-service/steps/05';
 import Step06 from 'containers/the-service/steps/06';
 
+import Separator from 'containers/separator';
 import Testimonials from 'containers/testimonials';
 import Newsletter from 'containers/newsletter';
 

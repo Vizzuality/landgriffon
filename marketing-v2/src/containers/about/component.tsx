@@ -4,9 +4,11 @@ import Hero from 'containers/about/hero';
 import How from 'containers/about/how';
 import Video from 'containers/about/video';
 import Values from 'containers/about/values';
+import Reason from 'containers/about/reason';
 
 import Testimonials from 'containers/testimonials';
 import Newsletter from 'containers/newsletter';
+import Separator from 'containers/separator';
 
 const About: React.FC = () => {
   return (
@@ -15,6 +17,8 @@ const About: React.FC = () => {
       <How />
       <Video />
       <Values />
+      <Reason />
+      <Separator image="/images/service/images6_service.jpg" />
 
       <Testimonials />
       <Newsletter />

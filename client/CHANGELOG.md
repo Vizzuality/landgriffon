@@ -11,8 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-### Fixed
+- Changed select styles to match the design, specifically for the years. They now have a different behaviour than the others to improve usability.
 
+### Fixed
 
 ## 2022.06.27
 

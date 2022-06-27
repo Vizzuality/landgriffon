@@ -58,24 +58,21 @@ const customStyles: (theme: SelectProps['theme'], error?: boolean) => StylesConf
       ...(theme === 'inline-primary' &&
         tw`border border-l-0 border-r-0 border-t-0 border-b-2 border-b-green-700 shadow-none rounded-none min-w-[30px] p-0 min-h-0`),
       ...(theme === 'default' && tw`w-full rounded-md`),
-    }),
-    valueContainer: (provided) => ({
-      ...provided,
-      ...tw`flex justify-start`,
-      ...(theme === 'inline-primary' && tw`p-0`),
+      ...tw`px-4 gap-x-0.5`,
     }),
     singleValue: (provided) => ({
       ...provided,
       ...tw`my-auto`,
       ...(theme === 'inline-primary' && tw`font-bold text-green-700`),
     }),
+    indicatorsContainer: (provided) => ({ ...provided, ...tw`ml-2 mr-1 w-min` }),
     indicatorSeparator: () => tw`hidden`,
     menu: (provided) => ({
       ...provided,
-      ...tw`h-auto my-0 overflow-hidden border rounded-md shadow-md border-gray-50`,
+      ...tw`h-auto my-0 overflow-hidden border rounded-md shadow-md border-gray-50 min-w-[11rem]`,
     }),
     menuList: (provided) => ({ ...provided, ...tw`py-0` }),
-    placeholder: (provided) => ({ ...provided, ...tw`my-auto` }),
+    valueContainer: (provided) => ({ ...provided, ...tw`px-0` }),
   };
 };
 
@@ -101,11 +98,7 @@ const Select: React.FC<SelectProps> = ({
   hideValueWhenMenuOpen = false,
   numeric = false,
 }) => {
-  const {
-    result: optionsResult,
-    search: setSearchTerm,
-    term: searchTerm,
-  } = useFuse(options, SEARCH_OPTIONS);
+  const { result: optionsResult, search: setSearchTerm } = useFuse(options, SEARCH_OPTIONS);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleSearch = useCallback(
@@ -150,7 +143,7 @@ const Select: React.FC<SelectProps> = ({
           position: strategy,
           top: y ?? '',
           left: x ?? '',
-          width:
+          minWidth:
             theme === 'inline-primary'
               ? '300px'
               : (referenceElement.current as HTMLElement)?.offsetWidth,
@@ -174,12 +167,25 @@ const Select: React.FC<SelectProps> = ({
     [reference, theme],
   );
 
+  const ValueContainer: React.FC<ValueContainerProps> = useCallback(
+    ({ children, ...rest }) => {
+      return (
+        <>
+          {hideValueWhenMenuOpen && !isMenuOpen && label && (
+            <div className="text-gray-600">{label}</div>
+          )}
+          <components.ValueContainer {...rest}>{children}</components.ValueContainer>
+        </>
+      );
+    },
+    [hideValueWhenMenuOpen, isMenuOpen, label],
+  );
+
   const Input: React.FC<InputProps> = useCallback(
-    ({ children, onChange, className, ...rest }) => {
+    ({ children, onChange, ...rest }) => {
       return (
         <components.Input
           {...rest}
-          className={classNames({ 'w-0': searchTerm.length === 0 }, className)}
           onChange={(e) => {
             if (numeric && !/^[0-9]*$/.test(e.currentTarget.value)) return;
             onChange?.(e);
@@ -190,23 +196,7 @@ const Select: React.FC<SelectProps> = ({
         </components.Input>
       );
     },
-    [numeric, searchTerm.length],
-  );
-
-  const ValueContainer: React.FC<ValueContainerProps> = useCallback(
-    ({ children, ...rest }) => {
-      return (
-        <components.ValueContainer {...rest}>
-          <div className="flex flex-row justify-start gap-x-0.5 align-middle">
-            {hideValueWhenMenuOpen && !isMenuOpen && label && (
-              <span className="my-auto text-gray-600 h-min">{label}</span>
-            )}
-            {React.Children.toArray(children).reverse()}
-          </div>
-        </components.ValueContainer>
-      );
-    },
-    [hideValueWhenMenuOpen, isMenuOpen, label],
+    [numeric],
   );
 
   const Option: React.FC<OptionProps<SelectOption>> = useCallback(
@@ -216,7 +206,7 @@ const Select: React.FC<SelectProps> = ({
           className={classNames(
             isFocused ? 'bg-green-50 text-green-700' : 'text-gray-900',
             isSelected && 'bg-green-50 text-green-700',
-            'cursor-pointer select-none relative py-2 pl-4 pr-4',
+            'cursor-pointer select-none relative py-2 px-4',
             isDisabled && 'text-opacity-50 cursor-default',
           )}
         >
@@ -272,7 +262,7 @@ const Select: React.FC<SelectProps> = ({
             theme === 'default'
               ? ({ selectProps: { menuIsOpen } }) => (
                   <ChevronDownIcon
-                    className={classNames('h-4 w-4 mx-4 text-gray-900', {
+                    className={classNames('h-4 w-4 text-gray-900', {
                       'rotate-180': menuIsOpen,
                     })}
                   />

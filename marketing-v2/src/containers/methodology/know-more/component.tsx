@@ -10,7 +10,7 @@ const KnowMore: React.FC = () => {
             <h2 className="font-black text-center text-black uppercase font-display text-7xl">
               Would you like to know more about landgriffon?
             </h2>
-            <h3 className="text-3xl font-black text-center text-black font-display">
+            <h3 className="text-3xl font-medium text-center text-black font-display">
               contact us and let&apos;s figure out how we can work together.
             </h3>
           </div>

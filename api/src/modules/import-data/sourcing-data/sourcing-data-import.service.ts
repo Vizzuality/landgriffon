@@ -27,6 +27,8 @@ import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 import { TasksService } from 'modules/tasks/tasks.service';
+import { TASK_STEP } from 'modules/tasks/task.entity';
+import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -77,6 +79,10 @@ export class SourcingDataImportService {
     this.logger.log(`Starting import process`);
     await this.fileService.isFilePresentInFs(filePath);
     try {
+      await this.tasksService.updateImportJobEvent({
+        taskId,
+        currentStep: TASK_STEP.SAVING_MSB,
+      });
       const parsedXLSXDataset: SourcingRecordsSheets =
         await this.fileService.transformToJson(filePath, SHEETS_MAP);
 
@@ -114,6 +120,11 @@ export class SourcingDataImportService {
           materials,
           dtoMatchedData.sourcingData,
         );
+
+      await this.tasksService.updateImportJobEvent({
+        taskId,
+        currentStep: TASK_STEP.GEOLOCATING,
+      });
       // TODO: TBD What to do when there is some location where we cannot determine its admin-region: i.e coordinates
       //       in the middle of the sea
       const geoCodedSourcingData: SourcingData[] =
@@ -138,7 +149,20 @@ export class SourcingDataImportService {
       //       Getting H3 data for calculations is done within DB so we need to improve the error handling
       //       TBD: What to do when there is no H3 for a Material
       try {
-        await this.indicatorRecordsService.createIndicatorRecordsForAllSourcingRecords();
+        await this.tasksService.updateImportJobEvent({
+          taskId,
+          currentStep: TASK_STEP.CALCULATING_IMPACT,
+        });
+        const indicatorRecords: IndicatorRecord[] =
+          await this.indicatorRecordsService.createIndicatorRecordsForAllSourcingRecords();
+
+        await this.tasksService.updateImportJobEvent({
+          taskId,
+          currentStep: TASK_STEP.SAVING_IMPACT,
+        });
+        await this.indicatorRecordsService.saveIndicatorRecordsForAllSourcingRecords(
+          indicatorRecords,
+        );
         this.logger.log('Indicator Records generated');
       } catch (err: any) {
         if (err instanceof MissingH3DataError) {
@@ -150,6 +174,10 @@ export class SourcingDataImportService {
       }
     } finally {
       await this.fileService.deleteDataFromFS(filePath);
+      await this.tasksService.updateImportJobEvent({
+        taskId,
+        currentStep: TASK_STEP.DONE,
+      });
     }
   }
 

@@ -2,9 +2,11 @@ import { FC } from 'react';
 
 import Head from 'next/head';
 
+import About from 'containers/about';
+
 import ApplicationLayout from 'layouts/application';
 
-const About: FC = () => {
+const AboutPage: FC = () => {
   return (
     <ApplicationLayout>
       <>
@@ -13,10 +15,11 @@ const About: FC = () => {
           <link rel="icon" href="/favicon.ico" />
           <meta name="viewport" content="width=1024" />
         </Head>
-        About
+
+        <About />
       </>
     </ApplicationLayout>
   );
 };
 
-export default About;
+export default AboutPage;

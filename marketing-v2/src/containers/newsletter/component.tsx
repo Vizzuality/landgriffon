@@ -23,9 +23,9 @@ const NewsLetter: React.FC = () => {
   }, []);
 
   return (
-    <section className="bg-white">
+    <section className="overflow-hidden bg-orange-500 xl:overflow-visible xl:bg-white">
       <Wrapper>
-        <div className="relative z-10 p-20 -mx-20 -mt-10 bg-orange-500">
+        <div className="relative z-10 py-20 bg-orange-500 xl:-mt-10 xl:px-20 xl:-mx-20">
           <div>
             <h2 className="text-6xl font-black uppercase font-display">
               Be the first to hear about new releases and updates.

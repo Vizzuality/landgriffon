@@ -62,7 +62,7 @@ const MoreFilters: React.FC = () => {
     [selectedFilters.suppliers],
   );
 
-  const locationTypesIds = useMemo(
+  const locationTypesValues = useMemo(
     () => selectedFilters.locationTypes.map(({ value }) => value),
     [selectedFilters.locationTypes],
   );
@@ -172,7 +172,7 @@ const MoreFilters: React.FC = () => {
                   withSourcingLocations
                   originIds={originIds}
                   supplierIds={supplierIds}
-                  locationTypes={locationTypesIds}
+                  locationTypes={locationTypesValues}
                   current={selectedFilters.materials}
                   fitContent
                   onChange={(values) => handleChangeFilter('materials', values)}
@@ -185,10 +185,21 @@ const MoreFilters: React.FC = () => {
                   withSourcingLocations
                   materialIds={materialIds}
                   supplierIds={supplierIds}
-                  locationTypes={locationTypesIds}
+                  locationTypes={locationTypesValues}
                   current={selectedFilters.origins}
                   fitContent
                   onChange={(values) => handleChangeFilter('origins', values)}
+                />
+              </div>
+              <div>
+                <div className="mb-1">Location type</div>
+                <LocationTypes
+                  current={selectedFilters.locationTypes}
+                  fitContent
+                  materialIds={materialIds}
+                  originIds={originIds}
+                  supplierIds={supplierIds}
+                  onChange={(values) => handleChangeFilter('locationTypes', values)}
                 />
               </div>
               <div>
@@ -198,7 +209,7 @@ const MoreFilters: React.FC = () => {
                   withSourcingLocations
                   materialIds={materialIds}
                   originIds={originIds}
-                  locationTypes={locationTypesIds}
+                  locationTypes={locationTypesValues}
                   current={selectedFilters.suppliers}
                   fitContent
                   onChange={(values) => handleChangeFilter('suppliers', values)}

@@ -55,6 +55,7 @@ export type ImpactTabularAPIParams = {
   materialIds?: string[];
   originIds?: string[];
   supplierIds?: string[];
+  locationTypes?: string[];
 };
 
 type Unit = {

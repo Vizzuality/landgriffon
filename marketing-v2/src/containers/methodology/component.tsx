@@ -5,6 +5,7 @@ import Hero from 'containers/methodology/hero';
 import Steps from 'containers/methodology/steps';
 import Step01 from 'containers/methodology/steps/01';
 import Step02 from 'containers/methodology/steps/02';
+import KnowMore from 'containers/methodology/know-more';
 
 import Testimonials from 'containers/testimonials';
 import Newsletter from 'containers/newsletter';
@@ -18,6 +19,8 @@ const Methodology: React.FC = () => {
         <Step01 />
         <Step02 />
       </Steps>
+
+      <KnowMore />
 
       <Testimonials />
       <Newsletter />

@@ -48,14 +48,13 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
   const indicatorsTemplate = <span className="font-bold">{unit?.symbol}</span>;
   const compareTemplate = <span className="font-bold whitespace-nowrap">{scenarioToCompare}</span>;
   const materialTemplate = !!materials.length && (
-    <ul className="inline-flex pl-1">
+    <ul className="inline-flex pl-1 text-xs">
       {materials.map((material) => (
-        <li key={material.value}>
+        <li key={material.value} className="pr-1">
           <Badge
             key={material.value}
             data={material}
             onClick={() => handleRemoveBadge('materials', materials, material)}
-            className="pl-0"
             removable
           >
             {material.label}
@@ -117,7 +116,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
   );
 
   return (
-    <div className={`flex items-start justify-start text-sm ${className}`}>
+    <div className={`flex items-start justify-start text-xs ${className}`}>
       <div className="items-start mr-1.5 mt-1">
         <InformationCircleIcon className="shrink-0 w-4 h-4 text-gray-900" />
       </div>

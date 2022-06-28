@@ -8,7 +8,7 @@ const FAQList: React.FC = () => {
     <section className="bg-white">
       <div className="relative z-10">
         <Wrapper>
-          <div className="divide-y divide-gray-100">
+          <div className="border-t border-gray-100 divide-y divide-gray-100">
             {FAQS.map((f) => {
               return <FAQItem key={f.id} {...f} />;
             })}

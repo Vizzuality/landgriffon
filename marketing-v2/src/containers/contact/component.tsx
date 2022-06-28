@@ -37,7 +37,7 @@ const Contact: React.FC = () => {
           <div className="relative z-10 py-20 md:py-32">
             <div className="flex flex-col justify-between space-y-10 md:flex-row md:space-x-20 md:space-y-0">
               <div className="space-y-10 md:w-8/12">
-                <h2 className="text-6xl font-black uppercase font-display">
+                <h2 className="font-black uppercase text-7xl font-display">
                   Thanks for your interest in landgriffon.
                 </h2>
                 <h3 className="text-3xl font-medium font-display">

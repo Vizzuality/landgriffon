@@ -18,7 +18,7 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer }: FAQItemProps) => 
   return (
     <article
       className={cx({
-        'p-12': true,
+        'p-5 md:p-12': true,
         'bg-white': !open,
         'bg-gray-100': open,
       })}

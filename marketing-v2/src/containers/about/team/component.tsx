@@ -57,7 +57,7 @@ const Team: React.FC = () => {
       </div>
 
       <div
-        className="absolute bottom-0 right-0 z-0 bg-cover w-[600px] h-[600px] rotate-[145deg] translate-x-1/2 translate-y-1/2"
+        className="absolute bottom-0 right-0 z-0 bg-cover w-[1000px] h-[1000px] rotate-[145deg] translate-x-1/2 translate-y-1/2"
         style={{ backgroundImage: `url('/images/about/team/bg_circles.svg')` }}
       />
     </section>

@@ -4,7 +4,9 @@ import Head from 'next/head';
 
 import ApplicationLayout from 'layouts/application';
 
-const Contact: FC = () => {
+import Contact from 'containers/contact';
+
+const ContactPage: FC = () => {
   return (
     <ApplicationLayout>
       <>
@@ -13,10 +15,11 @@ const Contact: FC = () => {
           <link rel="icon" href="/favicon.ico" />
           <meta name="viewport" content="width=1024" />
         </Head>
-        Contact
+
+        <Contact />
       </>
     </ApplicationLayout>
   );
 };
 
-export default Contact;
+export default ContactPage;

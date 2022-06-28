@@ -91,7 +91,9 @@ const Header: React.FC = () => {
       </nav>
 
       <div>
-        <button className="px-10 text-white bg-green-500 py-7">Contact</button>
+        <Link href="/contact">
+          <a className="block px-10 text-white bg-green-500 py-7">Contact</a>
+        </Link>
       </div>
     </header>
   );

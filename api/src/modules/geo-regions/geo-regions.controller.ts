@@ -12,6 +12,7 @@ import {
 import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -37,6 +38,7 @@ import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/geo-regions`)
 @ApiTags(geoRegionResource.className)
+@ApiBearerAuth()
 export class GeoRegionsController {
   constructor(public readonly geoRegionsService: GeoRegionsService) {}
 

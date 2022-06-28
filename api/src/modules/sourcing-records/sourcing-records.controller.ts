@@ -13,6 +13,7 @@ import {
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -39,6 +40,7 @@ import { SetUserInterceptor } from 'decorators/set-user.interceptor';
 
 @Controller(`/api/v1/sourcing-records`)
 @ApiTags(sourcingRecordResource.className)
+@ApiBearerAuth()
 export class SourcingRecordsController {
   constructor(public readonly sourcingRecordsService: SourcingRecordsService) {}
 

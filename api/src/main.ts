@@ -24,9 +24,7 @@ async function bootstrap(): Promise<void> {
       .setDescription('LandGriffon is a conservation planning platform.')
       .setVersion(process.env.npm_package_version || 'development')
       .addBearerAuth({
-        type: 'apiKey',
-        in: 'header',
-        name: 'Authorization',
+        type: 'http',
       })
       .build();
   const swaggerDocument: OpenAPIObject = SwaggerModule.createDocument(

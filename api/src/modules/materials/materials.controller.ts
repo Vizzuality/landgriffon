@@ -13,11 +13,11 @@ import {
 import { MaterialsService } from 'modules/materials/materials.service';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -39,6 +39,7 @@ import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-materia
 
 @Controller(`/api/v1/materials`)
 @ApiTags(materialResource.className)
+@ApiBearerAuth()
 export class MaterialsController {
   constructor(
     public readonly materialsService: MaterialsService,

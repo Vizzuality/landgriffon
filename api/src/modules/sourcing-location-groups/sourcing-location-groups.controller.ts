@@ -13,6 +13,7 @@ import {
 import { SourcingLocationGroupsService } from 'modules/sourcing-location-groups/sourcing-location-groups.service';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -39,6 +40,7 @@ import { SetUserInterceptor } from 'decorators/set-user.interceptor';
 
 @Controller(`/api/v1/sourcing-location-groups`)
 @ApiTags(sourcingLocationGroupResource.className)
+@ApiBearerAuth()
 export class SourcingLocationGroupsController {
   constructor(
     public readonly sourcingLocationsService: SourcingLocationGroupsService,

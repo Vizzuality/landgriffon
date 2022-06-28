@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { UnitConversionsService } from 'modules/unit-conversions/unit-conversions.service';
 import {
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -36,6 +37,7 @@ import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/unit-conversions`)
 @ApiTags(unitConversionResource.className)
+@ApiBearerAuth()
 export class UnitConversionsController {
   constructor(public readonly unitConversionsService: UnitConversionsService) {}
 

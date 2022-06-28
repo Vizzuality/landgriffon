@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -16,6 +17,7 @@ import { SerializedUrlResponseDto } from 'modules/url-params/dto/url-param.respo
 
 @Controller(`/api/v1/url-params`)
 @ApiTags(urlParamResource.className)
+@ApiBearerAuth()
 export class UrlParamsController {
   constructor(public readonly urlParamService: UrlParamsService) {}
 

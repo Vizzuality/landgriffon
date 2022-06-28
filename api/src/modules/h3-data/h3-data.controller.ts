@@ -5,6 +5,7 @@ import {
   ApiTags,
   ApiOkResponse,
   ApiBadRequestResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { H3DataService } from 'modules/h3-data/h3-data.service';
 import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
@@ -19,6 +20,7 @@ import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
 
 @Controller('/api/v1/h3')
 @ApiTags(H3Data.name)
+@ApiBearerAuth()
 export class H3DataController {
   constructor(protected readonly h3DataService: H3DataService) {}
 

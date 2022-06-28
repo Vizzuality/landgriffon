@@ -12,6 +12,7 @@ import {
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -37,6 +38,7 @@ import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/indicators`)
 @ApiTags(indicatorResource.className)
+@ApiBearerAuth()
 export class IndicatorsController {
   constructor(public readonly indicatorsService: IndicatorsService) {}
 

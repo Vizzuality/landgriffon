@@ -13,6 +13,7 @@ import {
 import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -39,6 +40,7 @@ import { SetUserInterceptor } from 'decorators/set-user.interceptor';
 
 @Controller(`/api/v1/scenario-interventions`)
 @ApiTags(scenarioResource.className)
+@ApiBearerAuth()
 export class ScenarioInterventionsController {
   constructor(
     public readonly scenarioInterventionsService: ScenarioInterventionsService,

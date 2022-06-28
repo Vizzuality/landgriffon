@@ -12,6 +12,7 @@ import {
 import { IndicatorCoefficientsService } from 'modules/indicator-coefficients/indicator-coefficients.service';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -37,6 +38,7 @@ import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/indicator-coefficients`)
 @ApiTags(indicatorCoefficientResource.className)
+@ApiBearerAuth()
 export class IndicatorCoefficientsController {
   constructor(
     public readonly indicatorCoefficientsService: IndicatorCoefficientsService,

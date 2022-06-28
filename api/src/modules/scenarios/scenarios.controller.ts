@@ -12,6 +12,7 @@ import {
 import { ScenariosService } from 'modules/scenarios/scenarios.service';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -36,6 +37,7 @@ import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-in
 
 @Controller(`/api/v1/scenarios`)
 @ApiTags(scenarioResource.className)
+@ApiBearerAuth()
 export class ScenariosController {
   constructor(public readonly scenariosService: ScenariosService) {}
 

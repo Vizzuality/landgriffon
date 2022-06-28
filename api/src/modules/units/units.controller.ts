@@ -12,6 +12,7 @@ import {
 import { UnitsService } from 'modules/units/units.service';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -34,6 +35,7 @@ import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/units`)
 @ApiTags(unitResource.className)
+@ApiBearerAuth()
 export class UnitsController {
   constructor(public readonly unitsService: UnitsService) {}
 

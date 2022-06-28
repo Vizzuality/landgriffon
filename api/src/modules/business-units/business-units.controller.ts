@@ -13,6 +13,7 @@ import {
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -40,6 +41,7 @@ import { GetBusinessUnitTreeWithOptionsDto } from 'modules/business-units/dto/ge
 
 @Controller(`/api/v1/business-units`)
 @ApiTags(businessUnitResource.className)
+@ApiBearerAuth()
 export class BusinessUnitsController {
   constructor(public readonly businessUnitsService: BusinessUnitsService) {}
 

@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -37,6 +38,7 @@ import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/indicator-records`)
 @ApiTags(indicatorRecordResource.className)
+@ApiBearerAuth()
 export class IndicatorRecordsController {
   constructor(
     public readonly indicatorRecordService: IndicatorRecordsService,

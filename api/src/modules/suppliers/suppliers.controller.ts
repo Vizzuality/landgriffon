@@ -13,6 +13,7 @@ import {
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -40,6 +41,7 @@ import { GetSupplierByType } from 'modules/suppliers/dto/get-supplier-by-type.dt
 
 @Controller(`/api/v1/suppliers`)
 @ApiTags(supplierResource.className)
+@ApiBearerAuth()
 export class SuppliersController {
   constructor(
     public readonly suppliersService: SuppliersService,

@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiForbiddenResponse,
@@ -32,6 +33,7 @@ import * as config from 'config';
 
 @Controller('/auth')
 @ApiTags('Authentication')
+@ApiBearerAuth()
 export class AuthenticationController {
   constructor(private readonly authenticationService: AuthenticationService) {}
 

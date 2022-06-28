@@ -14,6 +14,7 @@ import {
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -46,6 +47,7 @@ import { GetLocationTypesDto } from 'modules/sourcing-locations/dto/location-typ
 
 @Controller(`/api/v1/sourcing-locations`)
 @ApiTags(sourcingLocationResource.className)
+@ApiBearerAuth()
 export class SourcingLocationsController {
   constructor(
     public readonly sourcingLocationsService: SourcingLocationsService,

@@ -33,9 +33,9 @@ import { UpdateUserPasswordDTO } from 'modules/users/dto/update.user-password';
 import { PaginationMeta } from 'utils/app-base.service';
 import { CreateUserDTO } from 'modules/users/dto/create.user.dto';
 
-@ApiBearerAuth()
 @ApiTags(userResource.className)
 @Controller(`/api/v1/users`)
+@ApiBearerAuth()
 export class UsersController {
   constructor(public readonly service: UsersService) {}
 

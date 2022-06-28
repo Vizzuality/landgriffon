@@ -4,7 +4,12 @@ import {
   GetRankedImpactTableDto,
 } from 'modules/impact/dto/get-impact-table.dto';
 import { ImpactService } from 'modules/impact/impact.service';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import {
   ImpactTable,
   PaginatedImpactTable,
@@ -17,6 +22,7 @@ import { JSONAPIPaginationQueryParams } from 'decorators/json-api-parameters.dec
 
 @Controller('/api/v1/impact')
 @ApiTags('Impact')
+@ApiBearerAuth()
 export class ImpactController {
   constructor(private readonly impactService: ImpactService) {}
 

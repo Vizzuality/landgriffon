@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -32,6 +33,7 @@ import { SetUserInterceptor } from 'decorators/set-user.interceptor';
 
 @Controller('/api/v1/tasks')
 @ApiTags(taskResource.className)
+@ApiBearerAuth()
 export class TasksController {
   constructor(protected readonly taskService: TasksService) {}
 

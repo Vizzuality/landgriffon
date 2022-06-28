@@ -13,6 +13,7 @@ import {
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -40,6 +41,7 @@ import { GetAdminRegionTreeWithOptionsDto } from 'modules/admin-regions/dto/get-
 
 @Controller(`/api/v1/admin-regions`)
 @ApiTags(adminRegionResource.className)
+@ApiBearerAuth()
 export class AdminRegionsController {
   constructor(public readonly adminRegionsService: AdminRegionsService) {}
 

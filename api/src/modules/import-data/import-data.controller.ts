@@ -4,7 +4,7 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ApiConsumesXLSX } from 'decorators/xlsx-upload.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { fileUploadInterceptor } from 'modules/import-data/file-upload.interceptor';
@@ -16,6 +16,7 @@ import { User } from 'modules/users/user.entity';
 
 @ApiTags('Import Data')
 @Controller(`/api/v1/import`)
+@ApiBearerAuth()
 export class ImportDataController {
   constructor(public readonly importDataService: ImportDataService) {}
 

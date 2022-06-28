@@ -256,8 +256,9 @@ export type METADATA_INTERVENTIONS = {
  */
 export type Target = {
   id: string;
-  baselineYear: number;
-  targetYear: number;
-  value: number;
+  name: Indicator['name'];
   indicatorId: Indicator['id'];
+  baselineYear: number;
+  baselineValue: number;
+  years: { year: number; value: number }[];
 };

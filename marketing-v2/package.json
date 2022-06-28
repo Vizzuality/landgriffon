@@ -37,7 +37,6 @@
     "jsona": "1.9.2",
     "lodash": "4.17.21",
     "next": "12.1.0",
-    "next-auth": "4.2.1",
     "next-compose-plugins": "^2.2.1",
     "next-optimized-images": "^2.6.2",
     "postcss": "8.3.6",

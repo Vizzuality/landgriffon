@@ -47,13 +47,11 @@ export function useIndicator(id: Indicator['id']): RespondeIndicatorData {
       apiService
         .request({
           method: 'GET',
-          url: `/indicators/${id}`,
+          url: id === 'all' ? '/indicators' : `/indicators/${id}`,
           params: { include: 'unit' },
         })
         .then(({ data: responseData }) => responseData.data),
-    {
-      ...DEFAULT_QUERY_OPTIONS,
-    },
+    DEFAULT_QUERY_OPTIONS,
   );
 
   const { data, isError } = query;

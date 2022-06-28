@@ -31,11 +31,11 @@ const Contact: React.FC = () => {
   }, []);
 
   return (
-    <section className="bg-white ">
+    <section className="bg-white">
       <div className="relative z-10">
         <Wrapper>
-          <div className="relative z-10 py-32">
-            <div className="flex flex-col justify-between space-y-20 md:flex-row md:space-x-20 md:space-y-0">
+          <div className="relative z-10 py-20 md:py-32">
+            <div className="flex flex-col justify-between space-y-10 md:flex-row md:space-x-20 md:space-y-0">
               <div className="space-y-10 md:w-8/12">
                 <h2 className="text-6xl font-black uppercase font-display">
                   Thanks for your interest in landgriffon.
@@ -47,7 +47,7 @@ const Contact: React.FC = () => {
               </div>
 
               <div className="md:w-4/12">
-                <ul className="space-y-10">
+                <ul className="space-y-5 md:space-y-10">
                   <li className="flex space-x-5">
                     <Icon icon={EMAIL_SVG} className="w-8 h-8 shrink-0" />
 
@@ -88,7 +88,10 @@ const Contact: React.FC = () => {
           }}
         >
           <Wrapper>
-            <form onSubmit={handleSubmit(onSubmit)} className="p-20 space-y-10 bg-orange-500">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="p-10 space-y-10 bg-orange-500 md:p-20"
+            >
               <div className="flex flex-col items-end justify-between space-y-10 md:flex-row md:space-x-10 md:space-y-0">
                 <div className="w-full">
                   <label htmlFor="name" className="font-bold ">

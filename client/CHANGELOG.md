@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- An issue in the table component when the user navigates to the admin page
 - Prevent collapse button to break his position [LANDGRIF-729](https://vizzuality.atlassian.net/browse/LANDGRIF-729)
 
 

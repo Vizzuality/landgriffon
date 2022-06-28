@@ -8,7 +8,7 @@ import { getValueByColumn } from 'ka-table/Utils/DataUtils';
 
 import Cell from 'components/table/cell';
 
-import { DataRowProps } from './types';
+import type { DataRowProps } from './types';
 
 const DataRow: React.FC<DataRowProps> = ({
   childComponents,

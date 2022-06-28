@@ -7,7 +7,6 @@ import { DispatchFunc } from 'ka-table/types';
 
 import DataRow from 'components/table/data-row';
 import GroupRow from 'components/table/group-row';
-import HeadCellContent from 'components/table/head-cell-content';
 
 import { useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
@@ -15,8 +14,10 @@ import { analysisFilters } from 'store/features/analysis/filters';
 import Loading from 'components/loading';
 
 import { DEFAULT_CLASSNAMES, SHADOW_CLASSNAMES } from './constants';
-import { TableProps, ColumnProps, ApiSortingType } from './types';
 import { SortingMode, ApiSortingDirection } from './enums';
+
+import type { TableProps, ColumnProps, ApiSortingType } from './types';
+import type { ChildComponents } from 'ka-table/models';
 
 const defaultProps: TableProps = {
   columns: [],
@@ -33,12 +34,12 @@ const Table: React.FC<TableProps> = ({
   sortingMode,
   defaultSorting,
   onSortingChange,
-  handleIndicatorRows,
+  handleIndicatorRows = () => null,
   ...props
 }: TableProps) => {
   const firstColumnKey = props.columns[0]?.key;
   const stickyColumnKey = isFirstColumnSticky && firstColumnKey;
-  const [tableProps, setTableProps] = useState({ ...defaultProps, ...props });
+  const [tableProps, setTableProps] = useState<TableProps>({ ...defaultProps, ...props });
   const { indicator } = useAppSelector(analysisFilters);
 
   const [apiSorting, setApiSorting] = useState<ApiSortingType>({
@@ -47,7 +48,7 @@ const Table: React.FC<TableProps> = ({
   });
 
   const indicatorsExpanded = useMemo(
-    () => tableProps.data.filter(({ id }) => tableProps.treeGroupsExpanded.find((d) => d === id)),
+    () => tableProps.data.filter(({ id }) => tableProps.treeGroupsExpanded?.find((d) => d === id)),
     [tableProps.data, tableProps.treeGroupsExpanded],
   );
 
@@ -71,7 +72,7 @@ const Table: React.FC<TableProps> = ({
           return acc + i.indicatorChildrenRows.find((c) => c.name === i.name)?.childrenRows;
         }
       }, 0),
-    [indicatorRows, indicator.value],
+    [indicatorRows, indicator?.value],
   );
 
   const updateTableProps = useCallback(
@@ -154,7 +155,7 @@ const Table: React.FC<TableProps> = ({
     setTableProps((tableProps) => ({ ...tableProps, columns }));
   }, [props.columns, apiSorting, sortingMode, isLoading]);
 
-  const childComponents = {
+  const childComponents: ChildComponents = {
     tableWrapper: {
       elementAttributes: () => ({
         className: DEFAULT_CLASSNAMES.tableWrapper,
@@ -167,17 +168,10 @@ const Table: React.FC<TableProps> = ({
       }),
       ...props.childComponents?.tableHead,
     },
-    tableFoot: {
-      elementAttributes: () => ({
-        className: DEFAULT_CLASSNAMES.tableFoot,
-      }),
-      ...props.childComponents?.tableFoot,
-    },
     headCell: {
       elementAttributes: (props) => {
         const isFirstColumn = props.column.key === firstColumnKey;
         const isSticky = isFirstColumnSticky && props.column.key === stickyColumnKey;
-        const isSortable = props.column.isSortable !== false;
         const classNames = DEFAULT_CLASSNAMES.headCell;
 
         return {
@@ -185,28 +179,11 @@ const Table: React.FC<TableProps> = ({
             'text-center': !isFirstColumn,
             'sticky left-0 z-10 w-80': isSticky,
             'w-48': !isSticky,
-            'cursor-default': !isSortable,
-            'cursor-pointer': isSortable,
             [SHADOW_CLASSNAMES]: isSticky,
           }),
         };
       },
       ...props.childComponents?.headCell,
-    },
-    headCellContent: {
-      elementAttributes: (props) => {
-        const isSortable = props.column.isSortable !== false;
-        const classNames = DEFAULT_CLASSNAMES.headCellContent;
-
-        return {
-          className: cx(classNames, {
-            'cursor-text': !isSortable,
-            'cursor-pointer': isSortable,
-          }),
-        };
-      },
-      content: HeadCellContent,
-      ...props.childComponents?.headCellContent,
     },
     dataRow: {
       elementAttributes: (props) => ({
@@ -240,19 +217,34 @@ const Table: React.FC<TableProps> = ({
       content: (props) => <GroupRow {...props} sticky={isFirstColumnSticky} />,
       ...props.childComponents?.groupRow,
     },
-    summaryCell: {
+  };
+
+  if (props.childComponents?.tableFoot) {
+    childComponents.tableFoot = {
+      elementAttributes: () => ({
+        className: DEFAULT_CLASSNAMES.tableFoot,
+      }),
+      ...props.childComponents?.tableFoot,
+    };
+  }
+
+  if (props.childComponents?.summaryCell) {
+    childComponents.summaryCell = {
       elementAttributes: () => ({
         className: DEFAULT_CLASSNAMES.summaryCell,
       }),
       ...props.childComponents?.summaryCell,
-    },
-    summaryRow: {
+    };
+  }
+
+  if (props.childComponents?.summaryRow) {
+    childComponents.summaryRow = {
       elementAttributes: () => ({
         className: DEFAULT_CLASSNAMES.summaryRow,
       }),
       ...props.childComponents?.summaryRow,
-    },
-  };
+    };
+  }
 
   return (
     <div

@@ -725,7 +725,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
   });
 
   describe('Group By tests', () => {
-    test('When I query the API for a Impact table grouped by material Then I should get the correct data', async () => {
+    test('When I query the API for a Impact table grouped by material with filters Then I should get the correct data', async () => {
       const adminRegion: AdminRegion = await createAdminRegion({
         name: 'Fake AdminRegion',
       });
@@ -743,12 +743,25 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         name: 'Fake Material 2',
       });
 
+      const material3: Material = await createMaterial({
+        name: 'Fake Material 3',
+      });
+
+      const material4: Material = await createMaterial({
+        name: 'Fake Material 4',
+        parent: material3,
+      });
+
       const businessUnit: BusinessUnit = await createBusinessUnit({
         name: 'Fake Business Unit',
       });
 
       const supplier: Supplier = await createSupplier({
         name: 'Fake Supplier',
+      });
+
+      const supplier2: Supplier = await createSupplier({
+        name: 'Fake Supplier 2',
       });
 
       const sourcingLocation1: SourcingLocation = await createSourcingLocation({
@@ -762,6 +775,13 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         material: material2,
         businessUnit,
         t1Supplier: supplier,
+        adminRegion,
+      });
+
+      await createSourcingLocation({
+        material: material4,
+        businessUnit,
+        t1Supplier: supplier2,
         adminRegion,
       });
 
@@ -798,6 +818,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           'indicatorIds[]': [indicator.id],
+          'supplierIds[]': [supplier.id],
           endYear: 2013,
           startYear: 2010,
           groupBy: 'material',

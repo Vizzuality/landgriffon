@@ -10,7 +10,6 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import {
-  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
@@ -38,7 +37,6 @@ import { PaginationMeta } from 'utils/app-base.service';
 
 @Controller(`/api/v1/api-events`)
 @ApiTags('ApiEvents')
-@ApiBearerAuth()
 export class ApiEventsController {
   constructor(public service: ApiEventsService) {}
 

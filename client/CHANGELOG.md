@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 
 - Changed select styles to match the design, specifically for the years. They now have a different behaviour than the others to improve usability.
+- Applied new design for the targets section in the admin page
 
 ### Fixed
 

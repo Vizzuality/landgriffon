@@ -1,44 +1,43 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import Head from 'next/head';
 import { InformationCircleIcon } from '@heroicons/react/solid';
 
-import useModal from 'hooks/modals';
 import { useTargets } from 'hooks/targets';
+import { useIndicators } from 'hooks/indicators';
 
 import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import NoData from 'containers/admin/no-data';
-import UploadDataSourceModal from 'containers/admin/upload-data-source-modal';
 import TargetsList from 'containers/targets/list';
 import Button from 'components/button';
 import Loading from 'components/loading';
 
 import type { Target } from 'types';
-import useIndicators from 'hooks/indicators';
-
-const TableNoSSR = dynamic(() => import('components/table'), { ssr: false });
-const TARGETS_DATA: Target[] = [
-  {
-    id: 'target-1',
-    indicatorId: 'Carbon emissions fue to land use change (tCO2)',
-    baselineYear: 2015,
-    targetYear: 2045,
-    value: 2.3,
-  },
-];
+import Radio from 'components/forms/radio';
 
 const AdminTargetsPage: React.FC = () => {
-  const {
-    isOpen: isUploadDataSourceModalOpen,
-    open: openUploadDataSourceModal,
-    close: closeUploadDataSourceModal,
-  } = useModal();
-
   const { data: indicators } = useIndicators();
-  const { data: targets, isLoading } = useTargets();
+  const { isLoading } = useTargets();
   const hasData = indicators?.length > 0;
-  console.log('indicators: ', indicators);
 
   const handleCreateTarget = useCallback(() => console.log('create a new target'), []);
+  // TO-DO: temporal targets
+  const targets = useMemo<Target[]>(() => {
+    if (indicators) {
+      return indicators.map((indicator) => ({
+        id: indicator.id,
+        name: indicator.name,
+        indicatorId: indicator.id,
+        baselineYear: 2020,
+        baselineValue: 1,
+        years: [
+          { year: 2022, value: 0 },
+          { year: 2023, value: 0 },
+          { year: 2024, value: 0 },
+        ],
+      }));
+    }
+    return [];
+  }, [indicators]);
 
   return (
     <AdminLayout
@@ -65,37 +64,22 @@ const AdminTargetsPage: React.FC = () => {
 
       {hasData && (
         <>
-          <div className="flex items-center text-sm text-black py-2">
-            <InformationCircleIcon className="w-5 h-5 mr-3 text-black" aria-hidden="true" />
-            Target value for each indicator by year
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex items-center text-sm text-black py-2">
+              <InformationCircleIcon className="w-5 h-5 mr-3 text-black" aria-hidden="true" />
+              Target value for each indicator by year
+            </div>
+            <div className="flex justify-end text-sm space-x-4">
+              <Radio name="absolutePercentage" id="absolute">
+                Absolute value
+              </Radio>
+              <Radio name="absolutePercentage" id="percentage">
+                Percentage of reduction
+              </Radio>
+            </div>
           </div>
           <div className="mt-4 space-y-4">
-            {indicators.map(({ id, name }) => (
-              <div className="rounded-md bg-white" key={id}>
-                <div>{name}</div>
-                {/* <div>
-                  <div>
-                    <div>Baseline</div>
-                    <div>2.37Mt</div>
-                  </div>
-                  <div>
-                    <div>2035</div>
-                    <div>2.37Mt</div>
-                  </div>
-                  <div>
-                    <div>2040</div>
-                    <div>2.37Mt</div>
-                  </div>
-                  <div>
-                    <div>2050</div>
-                    <div>2.37Mt</div>
-                  </div>
-                </div> */}
-                <div>
-                  <button>Edit</button>
-                </div>
-              </div>
-            ))}
+            <TargetsList data={targets} />
           </div>
         </>
       )}

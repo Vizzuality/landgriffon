@@ -1,32 +1,42 @@
 {
     "$schema": "./contextual_metadata_schema.json",
-    "name": "h3_grid_aqueduct_global",
+    "name": "Baseline water stress",
     "description": "Baseline water stress measures the ratio of total water withdrawals to available renewable surface and groundwater supplies.",
     "legend": {
-        "code": [
+        "name": "Baseline water stress",
+        "id": "",
+        "unit": "",
+        "min": -1,
+        "items": [
             {
                 "value": -1,
-                "label": "Arid and Low Water Use"
+                "value_label": "Arid and Low Water Use",
+                "color": "#FEF0D9"
             },
             {
                 "value": 0,
-                "label": "Low (<10%)"
+                "value_label": "Low (<10%)",
+                "color": "#FDD49E"
             },
             {
                 "value": 1,
-                "label": "Low - medium (10-20%)"
+                "value_label": "Low - medium (10-20%)",
+                "color": "#FDBB84"
             },
             {
                 "value": 2,
-                "label": "Medium - high (20-40%)"
+                "value_label": "Medium - high (20-40%)",
+                "color": "#FC8D59"
             },
             {
                 "value": 3,
-                "label": "High (40-80%)"
+                "value_label": "High (40-80%)",
+                "color": "#E34A33"
             },
             {
                 "value": 4,
-                "label": "Extremely High (>80%)"
+                "value_label": "Extremely High (>80%)",
+                "color": "#B30000"
             }
         ]
     },

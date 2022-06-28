@@ -1,18 +1,47 @@
 {
     "$defs": {
-        "code": {
-            "type": "array",
-            "description": "The mapping between layer values and meaning of the value. Used to show in the legend of the layer",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "value": {
-                        "type": "number",
-                        "description": "The actual data value"
-                    },
-                    "label": {
-                        "type": "string",
-                        "description": "The label of the code to show in the legend"
+        "LegendItem": {
+            "type": "object",
+            "description": "Legend entry",
+            "properties": {
+                "value": {
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "color": {
+                    "type": "string"
+                },
+                "value_label": {
+                    "type": "string",
+                    "description": "Label of the value."
+                }
+            }
+        },
+        "Legend": {
+            "type": "object",
+            "description": "",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
+                },
+                "min": {
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/LegendItem"
                     }
                 }
             }
@@ -29,13 +58,7 @@
             "description": "The description of the layer. Typically, the description of the feature column used. Used as body of the layer information to give context to the user"
         },
         "legend": {
-            "type": "object",
-            "description": "The legend of the layer",
-            "properties": {
-                "code": {
-                    "$ref": "#/$defs/code"
-                }
-            }
+            "$ref": "#/$defs/Legend"
         },
         "source": {
             "type": "string",
@@ -47,4 +70,5 @@
         }
     }
 }
+
 

@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - An issue in the table component when the user navigates to the admin page
 - Prevent collapse button to break his position [LANDGRIF-729](https://vizzuality.atlassian.net/browse/LANDGRIF-729)
-
+- [LANDGRIF-716](https://vizzuality.atlassian.net/browse/LANDGRIF-716) fixed extra bad requests in analysis.
 
 ## 2022.06.27
 
@@ -58,7 +58,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Standarized values for group by in analysis section [LANDGRIF-710](https://vizzuality.atlassian.net/browse/LANDGRIF-710)
 - Tooltip not showing last date in chart [LANDGRIF-709](https://vizzuality.atlassian.net/browse/LANDGRIF-709)
 - Number of rows in analysis table view updated accordinly with cells expansion [LANDGRIF-693](https://vizzuality.atlassian.net/browse/LANDGRIF-693)
-
 
 ## 0.3.0 - 2021-09-01
 

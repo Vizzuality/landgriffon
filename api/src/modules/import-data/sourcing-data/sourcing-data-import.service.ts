@@ -27,7 +27,6 @@ import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 import { TasksService } from 'modules/tasks/tasks.service';
-import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -141,9 +140,6 @@ export class SourcingDataImportService {
       try {
         await this.indicatorRecordsService.createIndicatorRecordsForAllSourcingRecords();
         this.logger.log('Indicator Records generated');
-        // TODO: Hack to force m.view refresh once Indicator Records are persisted. This should be automagically
-        //       done by the AfterInser() event listener placed in indicator-record.entity.ts
-        await IndicatorRecord.updateImpactView();
       } catch (err: any) {
         if (err instanceof MissingH3DataError) {
           throw new MissingH3DataError(

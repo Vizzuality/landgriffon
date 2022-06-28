@@ -3,8 +3,9 @@ import { FC } from 'react';
 import Head from 'next/head';
 
 import ApplicationLayout from 'layouts/application';
+import Faqs from 'containers/faqs';
 
-const FAQ: FC = () => {
+const FAQPage: FC = () => {
   return (
     <ApplicationLayout>
       <>
@@ -13,10 +14,11 @@ const FAQ: FC = () => {
           <link rel="icon" href="/favicon.ico" />
           <meta name="viewport" content="width=1024" />
         </Head>
-        FAQ
+
+        <Faqs />
       </>
     </ApplicationLayout>
   );
 };
 
-export default FAQ;
+export default FAQPage;

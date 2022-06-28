@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 import Wrapper from 'containers/wrapper';
 import FadeIn from 'components/fade';
 

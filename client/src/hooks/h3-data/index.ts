@@ -133,12 +133,11 @@ export function useH3ImpactData(
 ): H3DataResponse {
   const filters = useAppSelector(analysisFilters);
   const { startYear, materials, indicator, suppliers, origins, locationTypes } = filters;
-  const isEnable = !!(indicator && startYear);
 
   const colors = useColors('impact');
   const urlParams: ImpactH3APIParams = {
     year: startYear,
-    indicatorId: indicator?.value && indicator?.value !== 'all' ? indicator?.value : null,
+    indicatorId: indicator?.value && indicator?.value === 'all' ? null : indicator?.value,
     ...(materials?.length ? { materialIds: materials?.map(({ value }) => value) } : {}),
     ...(suppliers?.length ? { supplierIds: suppliers?.map(({ value }) => value) } : {}),
     ...(origins?.length ? { originIds: origins?.map(({ value }) => value) } : {}),
@@ -146,6 +145,8 @@ export function useH3ImpactData(
     ...params,
     resolution: origins?.length ? 6 : 4,
   };
+
+  const isEnable = !!(urlParams.indicatorId && urlParams.year);
 
   const query = useQuery(
     ['h3-data-impact', filters],

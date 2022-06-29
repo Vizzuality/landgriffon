@@ -108,19 +108,23 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
     const result: any = res.reduce(function (previous: any, current: any) {
       return previous.level > current.level ? previous : current;
     });
-    // if (country) {
-    //   await this.validateAdminRegion(
-    //     result.adminRegionId,
-    //     country,
-    //     coordinates,
-    //   );
-    // }
+    if (country) {
+      await this.validateAdminRegion(
+        result.adminRegionId,
+        country,
+        coordinates,
+      );
+    }
 
     return result;
   }
 
   /**
-   ** @description Retrieves Admin Region and its ancestor and checks if it's inside provided country
+   ** @description Creates approx 1KM buffer given a point to Intersect with geometries
+   *               Due to GADM lack of accuracy in country boundaries, would be possible for
+   *               locations near said boundaries get intersected with a wrong country
+   *               We create said buffer to offset this lack, and this could return multiple intersecting geometries
+   *               If the provided country is among the result, we validate the input
    */
   async validateAdminRegion(
     adminRegionId: string,
@@ -130,10 +134,22 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
       lat: number;
     },
   ): Promise<void> {
-    const ancestor: AdminRegion = await this.findAncestorsTree({
-      id: adminRegionId,
-    } as AdminRegion);
-    if (ancestor.name !== country)
+    const countries: AdminRegion[] = await this
+      .query(`SELECT a.id AS "adminRegionId" , a."name", a."level" , g."name" , g.id AS "geoRegionId"
+        FROM admin_region a
+               RIGHT JOIN geo_region g on a."geoRegionId" = g.id
+        WHERE ST_Intersects(
+         ST_BUFFER(ST_SetSRID(ST_POINT(${coordinates.lng} ,${coordinates.lat} ),4326)::geometry, 0.01),
+          st_setsrid(g."theGeom"::geometry, 4326)
+          )
+        AND a.id IS NOT NULL
+        ORDER BY a.level asc
+        `);
+    if (
+      !countries.some(
+        (retrievedCountry: AdminRegion) => retrievedCountry.name === country,
+      )
+    )
       throw new BadRequestException(
         `coordinates ${coordinates.lng}, ${coordinates.lat} are not inside ${country}`,
       );

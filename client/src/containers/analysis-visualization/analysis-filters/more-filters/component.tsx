@@ -82,6 +82,11 @@ const MoreFilters: React.FC = () => {
     setIsOpen(false);
   }, [dispatch, selectedFilters]);
 
+  // Close filters window
+  const handleCancel = useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
   // Restoring state from initial state only internally,
   // the user have to apply the changes
   const handleClearFilters = useCallback(() => {
@@ -226,7 +231,7 @@ const MoreFilters: React.FC = () => {
             </div>
 
             <div className="flex gap-2 mt-6">
-              <Button theme="secondary" className="px-9">
+              <Button theme="secondary" className="px-9" onClick={handleCancel}>
                 Cancel
               </Button>
               <Button

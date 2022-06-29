@@ -36,6 +36,7 @@ export class ContextualLayer extends BaseEntity {
     type: 'varchar',
     length: 255,
     nullable: false,
+    unique: true,
   })
   name: string;
 
@@ -53,7 +54,9 @@ export class ContextualLayer extends BaseEntity {
   })
   category: CONTEXTUAL_LAYER_CATEGORY;
 
-  @OneToMany(() => H3Data, (h3Data: H3Data) => h3Data.contextualLayer)
+  @OneToMany(() => H3Data, (h3Data: H3Data) => h3Data.contextualLayer, {
+    cascade: true,
+  })
   h3Data: H3Data[];
 }
 

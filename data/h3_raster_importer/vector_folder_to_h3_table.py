@@ -177,7 +177,7 @@ def insert_to_h3_data_and_contextual_layer_tables(
         f"""DELETE FROM "contextual_layer" WHERE "name" = '{dataset}'"""
     )
     cursor.execute(f"""DELETE FROM "h3_data" WHERE "h3tableName" = '{table}';""")
-    connection.commit()
+    connection.commit()  # todo: check if commiting here the deletes before everything else is safe
 
     # insert new entries
     logging.info("Inserting record into h3_data table...")
@@ -186,8 +186,6 @@ def insert_to_h3_data_and_contextual_layer_tables(
         f"""INSERT INTO "h3_data" ("h3tableName", "h3columnName", "h3resolution", "year")
          VALUES ('{table}', '{column}', {h3_res}, {year});"""
     )
-    # cursor.execute(f"""SELECT id FROM "h3_data" WHERE "h3columnName" = '{column}';""")
-    # h3_data_id = cursor.fetchall()[0][0]
 
     logging.info("Inserting record into contextual_layer table...")
     cursor.execute(
@@ -196,9 +194,8 @@ def insert_to_h3_data_and_contextual_layer_tables(
          RETURNING id;
         """
     )
-    # insert contextual_layer entry id into h3_table
     contextual_data_id = cursor.fetchall()[0][0]
-
+    # insert contextual_layer entry id into h3_table
     cursor.execute(
         f"""update "h3_data"  set "contextualLayerId" = '{contextual_data_id}' where  "h3tableName" = '{table}';"""
     )

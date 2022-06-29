@@ -13,7 +13,10 @@ const Hero: React.FC = () => {
           transition={{ duration: 0.75, delay: 0.1 }}
         >
           <h1 className="font-black text-black uppercase font-display text-7xl">
-            We help you transform your supply chain for the better, using six key steps.
+            We help you transform your supply chain for the better, using{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-green-500 to-blue-600">
+              six key steps.
+            </span>
           </h1>
         </motion.div>
 

@@ -184,12 +184,26 @@ const AnalysisTable: React.FC = () => {
     return uniq(result);
   }, [impactTable]);
 
+  const projectedYears = useMemo<number[]>(
+    () =>
+      Object.values(impactTable)[0]
+        ?.rows[0].values.filter(({ isProjected }) => !!isProjected)
+        .map(({ year }) => year) as number[],
+    [impactTable],
+  );
+
+  const firstProjectedYear = useMemo(
+    () => projectedYears && Math.min(...projectedYears),
+    [projectedYears],
+  );
+
   // Totals for summary
   const yearsSum = useMemo(() => {
     const resultByYear = [];
 
     years.forEach((year) => {
-      const result = impactTable.map(({ yearSum }) => {
+      const result = impactTable.map((props) => {
+        const yearSum = props.yearSum;
         const yearValue = yearSum.find((sum) => sum.year === year);
         if (yearValue) return yearValue;
         return { year, value: null };
@@ -227,6 +241,8 @@ const AnalysisTable: React.FC = () => {
           key: year.toString(),
           title: year.toString(),
           dataType: DataType.Number,
+          isFirstYearProjected: firstProjectedYear === year,
+          isProjected: projectedYears.includes(year),
           width: 110,
         })),
       ],
@@ -243,12 +259,16 @@ const AnalysisTable: React.FC = () => {
       childComponents: {
         summaryRow: {
           content: (props) => (
-            <SummaryRow rowData={{ name: 'Total impact', ...yearsSum }} {...props} />
+            <SummaryRow
+              firstProjectedYear={firstProjectedYear}
+              rowData={{ name: 'Total impact', ...yearsSum }}
+              {...props}
+            />
           ),
         },
       },
     };
-  }, [tableData, years, yearsSum, totalIndicators]);
+  }, [tableData, years, yearsSum, projectedYears, totalIndicators, firstProjectedYear]);
 
   const handleIndicatorRows = useCallback((total) => {
     setTotalRows(total);

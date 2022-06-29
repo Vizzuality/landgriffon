@@ -61,12 +61,12 @@ const DataRow: React.FC<DataRowProps> = ({
         const editorValue = editableCell && editableCell.editorValue;
         const value = hasEditorValue ? editorValue : getValueByColumn(rowData, column);
         const cellDeep = treeDeep != null && index === 0 ? treeDeep : undefined;
-
         return (
           <Cell
             className={cx({
               'cursor-pointer': isTreeGroup,
               'font-semibold': isTreeExpanded && treeDeep === 0 && index === 0,
+              'border-l border-dashed border-gray-200': column.isFirstYearProjected,
             })}
             treeArrowElement={arrow?.pop()}
             childComponents={childComponents}

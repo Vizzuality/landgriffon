@@ -1,4 +1,5 @@
-import { ITableProps, ICellProps, ChildComponents } from 'ka-table';
+import { ITableProps, ICellProps } from 'ka-table';
+import { ChildComponents } from 'ka-table/models';
 
 import { SortingMode } from './enums';
 
@@ -8,6 +9,21 @@ export type ColumnProps = ICellProps & {
   /** Whether the column is sortable */
   isSortable: boolean;
 };
+
+import type { Column } from 'ka-table/models';
+import type { IHeadCellProps } from 'ka-table/props';
+
+interface CustomColumn extends Column {
+  isFirstYearProjected?: boolean;
+}
+
+export interface CustomHeadCell extends Omit<IHeadCellProps, 'column'> {
+  column: CustomColumn;
+}
+
+export interface CustomChildComponents extends ChildComponents {
+  headCell: ChildComponent<CustomHeadCell>;
+}
 
 export interface TableProps extends ITableProps {
   /** classNames to apply to the table */
@@ -20,7 +36,7 @@ export interface TableProps extends ITableProps {
   /** Whether to make the first column sticky. Defaults to `true` */
   stickyFirstColumn?: boolean;
   /** ka-table childComponents */
-  childComponents?: ChildComponents;
+  childComponents?: CustomChildComponents;
   /** ka-table sorting modes + a custom one: `Api` */
   sortingMode?: SortingMode;
   /** Default sorting time */

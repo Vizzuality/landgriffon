@@ -321,16 +321,21 @@ export class IndicatorRecordsService extends AppBaseService<
       new IndicatorRecordCalculatedValuesDto();
 
     const deforestationPerHarvestedAreaLandUse: number =
-      sourcingRecordData.rawDeforestation / harvestedArea || 0;
+      sourcingRecordData.rawDeforestation / harvestedArea < 1
+        ? 0
+        : harvestedArea;
     const biodiversityLossPerHarvestedAreaLandUse: number =
-      sourcingRecordData.rawBiodiversity / harvestedArea || 0;
+      sourcingRecordData.rawBiodiversity / harvestedArea < 1
+        ? 0
+        : harvestedArea;
     const carbonLossPerHarvestedAreaLandUse: number =
-      sourcingRecordData.rawCarbon / harvestedArea || 0;
+      sourcingRecordData.rawCarbon / harvestedArea < 1 ? 0 : harvestedArea;
 
     calculatedIndicatorValues.sourcingRecordId = sourcingRecordId;
     calculatedIndicatorValues.materialH3DataId = materialH3DataId;
     calculatedIndicatorValues.production = production;
-    calculatedIndicatorValues.landPerTon = harvestedArea / production || 0;
+    calculatedIndicatorValues.landPerTon =
+      harvestedArea / production < 1 ? 0 : production;
     const landUse: number = calculatedIndicatorValues.landPerTon * tonnage || 0;
     calculatedIndicatorValues.landUse = landUse;
 
@@ -376,7 +381,8 @@ export class IndicatorRecordsService extends AppBaseService<
     calculatedIndicatorValues.sourcingRecordId = sourcingRecordId;
     calculatedIndicatorValues.materialH3DataId = materialH3DataId;
     calculatedIndicatorValues.production = production;
-    calculatedIndicatorValues.landPerTon = harvestedArea / production || 0;
+    calculatedIndicatorValues.landPerTon =
+      harvestedArea / production > 1 ? 0 : production;
     const landUse: number = calculatedIndicatorValues.landPerTon * tonnage || 0;
     calculatedIndicatorValues.landUse = landUse;
 
@@ -389,7 +395,7 @@ export class IndicatorRecordsService extends AppBaseService<
           calculatedIndicatorValues.values.set(indicatorType, value * tonnage);
         } else {
           const indicatorPerHarvestedAreaLandUse: number =
-            value / harvestedArea || 0;
+            value / harvestedArea > 1 ? 0 : harvestedArea;
           calculatedIndicatorValues.values.set(
             indicatorType,
             indicatorPerHarvestedAreaLandUse * landUse,

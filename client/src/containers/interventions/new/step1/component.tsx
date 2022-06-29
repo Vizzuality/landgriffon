@@ -73,6 +73,7 @@ const Step1: FC = () => {
     handleSubmit,
     setValue,
     watch,
+    reset,
     getValues,
     resetField,
     clearErrors,
@@ -245,10 +246,11 @@ const Step1: FC = () => {
   );
 
   const handleCancel = useCallback(() => {
+    reset();
     dispatch(setSubContentCollapsed(true));
     dispatch(setNewInterventionStep(1));
     dispatch(resetInterventionData());
-  }, [dispatch]);
+  }, [dispatch, reset]);
 
   const handleReset = useCallback(() => {
     resetField('businessUnitIds');

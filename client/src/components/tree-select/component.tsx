@@ -37,15 +37,16 @@ const THEMES = {
     arrow: 'items-center text-gray-900',
     treeNodes:
       'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700 z-[100]',
+    badge: 'text-sm',
   },
   'inline-primary': {
     label: 'truncate text-ellipsis font-bold cursor-pointer px-0 py-0',
-    wrapper:
-      'min-h-[2rem] border-b-2 flex-col border-green-700 max-w-[190px] min-w-[30px] overflow-x-hidden truncate text-ellipsis',
+    wrapper: 'inline-flex border-b-2 border-green-700 max-w-none min-w-[30px] min-h-[26px]',
     arrow: 'mx-auto w-fit',
     treeNodes:
       'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
     treeContent: 'max-w-xl',
+    badge: '',
   },
 };
 
@@ -151,6 +152,11 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     [onChange],
   );
 
+  const handleReset = useCallback(() => {
+    setSelectedKeys([]);
+    setSelected(null);
+  }, []);
+
   // Selection for multiple
   const handleCheck = useCallback(
     (checkedKeys, info) => {
@@ -187,7 +193,6 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
       setSearchTerm(e.currentTarget.value);
       onSearch?.(e.currentTarget.value);
       setIsOpen(true);
-      e.currentTarget.focus();
     },
     [onSearch],
   );
@@ -264,29 +269,52 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     }
   }, [current]);
 
+  const SearchInput = useMemo(() => {
+    const Component = () => (
+      <div className="inline-flex flex-row flex-grow h-min gap-x-1">
+        <SearchIcon className="block w-4 h-4 my-auto text-gray-400" />
+        <input
+          autoFocus
+          type="search"
+          value={searchTerm}
+          placeholder={selected === null ? placeholder : null}
+          className={classNames('px-0 py-0 truncate border-none focus:ring-0', {
+            'text-sm min-w-fit': theme !== 'inline-primary',
+          })}
+          onChange={handleSearch}
+          autoComplete="off"
+          style={{
+            minWidth: searchTerm || currentOptions.length !== 0 ? '4ch' : `${placeholder.length}ch`,
+            maxWidth: '10ch',
+            width: `${searchTerm.length}ch`,
+          }}
+        />
+        {searchTerm && (
+          <button type="button" onClick={resetSearch} className="px-2 py-0">
+            <XIcon className="w-4 h-4 text-gray-400" />
+          </button>
+        )}
+      </div>
+    );
+    return Component;
+  }, [currentOptions.length, handleSearch, placeholder, resetSearch, searchTerm, selected, theme]);
+
   return (
     <div>
-      {/*
-        Button instead of div so the select doesn't toggle on space key press,
-        allowing spaces in the search
-      */}
-      <button
+      <div
         {...getReferenceProps({
           ref: reference,
         })}
-        className={classNames(
-          'relative w-full',
-          {
-            [THEMES[theme].wrapper]: theme === 'default',
-            'flex flex-row justify-between items-center gap-1': theme === 'default',
-            'border-2 border-red-600': theme === 'default' && error,
-            'w-fit': theme === 'inline-primary',
-          },
-          { 'w-fit': theme === 'inline-primary' },
-        )}
+        className={classNames('relative w-full', {
+          [THEMES[theme].wrapper]: theme === 'default',
+          'flex flex-row justify-between items-center gap-1': theme === 'default',
+          'border-2 border-red-600': theme === 'default' && error,
+          'w-fit': theme === 'inline-primary',
+        })}
       >
         <div
-          className={classNames('flex gap-1 h-min flex-wrap overflow-hidden', {
+          className={classNames('gap-1 h-min overflow-hidden', {
+            'flex flex-wrap': theme !== 'inline-primary',
             'ring-green-700 border-green-700': isOpen,
             'border-red-600': theme === 'inline-primary' && error,
             [THEMES[theme].wrapper]: theme === 'inline-primary',
@@ -296,24 +324,29 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           {multiple ? (
             <>
               {(!currentOptions || !currentOptions.length) && !showSearch && (
-                <span className="inline-block text-sm text-gray-500 truncate">{placeholder}</span>
+                <span className="inline-block text-gray-500 truncate">{placeholder}</span>
               )}
               {!!currentOptions?.length &&
-                currentOptions.slice(0, badgesToShow).map((option) => (
+                currentOptions.slice(0, badgesToShow).map((option, index) => (
                   <Badge
                     key={option.value}
-                    className={classNames('text-sm h-fit my-auto max-w-full', THEMES[theme].label)}
+                    className={classNames(
+                      'h-fit my-auto max-w-full',
+                      THEMES[theme].label,
+                      THEMES[theme].badge,
+                    )}
                     data={option}
                     onClick={handleRemoveBadge}
                     removable={theme !== 'inline-primary'}
                     theme={theme}
                   >
                     {option.label}
+                    {theme === 'inline-primary' && index < currentOptions.length - 1 && ','}
                   </Badge>
                 ))}
               {currentOptions?.length > badgesToShow && (
                 <Badge
-                  className={classNames('text-sm h-fit my-auto', THEMES[theme].label)}
+                  className={classNames('h-fit my-auto', THEMES[theme].label, THEMES[theme].badge)}
                   theme={theme}
                 >
                   {currentOptions.length - badgesToShow} more selected
@@ -321,43 +354,22 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
               )}
             </>
           ) : (
-            <span className="inline-block my-auto truncate">
+            <div className="inline-flex items-center my-auto truncate">
               {selected ? (
-                <span className="font-medium">{selected.label}</span>
+                <span className="font-bold">{selected.label}</span>
               ) : (
                 // the placeholder is in the search input already
                 showSearch || <span className="text-gray-500">{placeholder}</span>
               )}
-            </span>
-          )}
-          {showSearch && (
-            <div className="inline-flex flex-row flex-grow h-min gap-x-1">
-              <SearchIcon className="block w-4 h-4 my-auto text-gray-400" />
-              <input
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsOpen(true);
-                }}
-                type="search"
-                value={searchTerm}
-                placeholder={currentOptions.length === 0 && selected === null ? placeholder : null}
-                className="px-0 py-0 text-sm truncate border-none focus:ring-0"
-                onChange={handleSearch}
-                autoComplete="off"
-                style={{
-                  minWidth:
-                    searchTerm || currentOptions.length !== 0 ? '4ch' : `${placeholder.length}ch`,
-                  maxWidth: '10ch',
-                  width: `${searchTerm.length}ch`,
-                }}
-              />
-              {searchTerm && (
-                <button type="button" onClick={resetSearch} className="px-2 py-0">
+              {!selected && <SearchInput />}
+              {selected && (
+                <button type="button" onClick={handleReset} className="px-2 py-0">
                   <XIcon className="w-4 h-4 text-gray-400" />
                 </button>
               )}
             </div>
           )}
+          {multiple && showSearch && <SearchInput />}
         </div>
         <div
           className={classNames('flex pointer-events-none h-fit', THEMES[theme].arrow, {
@@ -378,7 +390,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
             />
           )}
         </div>
-      </button>
+      </div>
       <Transition
         show={isOpen}
         enter="transition ease-out duration-200"

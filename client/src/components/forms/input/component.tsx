@@ -9,7 +9,7 @@ const THEMES = {
     unit: 'absolute right-3 text-sm text-gray-500',
   },
   'inline-primary': {
-    base: 'appearance-none w-full text-sm text-center text-green-700 font-bold border-0 border-b-2 border-green-700 px-0 py-0 focus:outline-none focus:border-green-700 focus:ring-0',
+    base: 'appearance-none w-full text-center text-green-700 font-bold border-0 border-b-2 border-green-700 px-0 py-0 focus:outline-none focus:border-green-700 focus:ring-0',
     icon: 'absolute w-4 h-4 text-green-700 transform -translate-y-1/2 top-1/2 left-0',
     unit: 'absolute right-0 text-sm font-bold text-green-700',
   },

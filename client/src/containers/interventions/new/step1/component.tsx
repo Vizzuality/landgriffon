@@ -194,9 +194,9 @@ const Step1: FC = () => {
         interventionDescription: yup.string(),
         percentage: yup.number().min(0).max(100),
         materialIds: yup.array().min(1),
-        businessUnitIds: yup.array().min(1),
-        supplierIds: yup.array().min(1),
-        adminRegionIds: yup.array().min(1),
+        businessUnitIds: yup.array().nullable(),
+        supplierIds: yup.array().nullable(),
+        adminRegionIds: yup.array().nullable(),
         endYear: yup
           .number()
           .test(
@@ -223,7 +223,7 @@ const Step1: FC = () => {
     (id: string, values: SelectOption | SelectOption[]) => {
       const valuesIds = Array.isArray(values)
         ? values.map((option) => option?.value)
-        : values?.value;
+        : [values?.value];
 
       setValue(id, valuesIds);
       clearErrors(id);
@@ -285,7 +285,7 @@ const Step1: FC = () => {
             Clear all
           </button>
         </div>
-        <div className="flex items-center text-green-700 space-x-1">
+        <div className="flex flex-wrap items-center text-green-700 space-x-2">
           <Input
             {...register('percentage')}
             type="number"
@@ -298,67 +298,73 @@ const Step1: FC = () => {
             defaultValue={100}
             theme="inline-primary"
             unit="%"
-            className="whitespace-nowrap"
+            className="whitespace-nowrap min-w-fit mb-1"
             error={errors?.endYear?.message}
             showHint={false}
           />
 
           <span className="text-gray-700">of</span>
-          <div className="font-bold">
+          <div className="mt-1">
             <Materials
               {...register('materialIds')}
-              multiple
+              multiple={false}
               businessUnitIds={businessUnitIds}
               supplierIds={supplierIds}
               originIds={adminRegionIds}
               withSourcingLocations
               current={watch('materialIds') || newInterventionData.materialIds}
               onChange={(values) => handleDropdown('materialIds', values)}
-              ellipsis
+              ellipsis={false}
               theme="inline-primary"
               error={!!errors?.materialIds?.message}
             />
           </div>
           <span className="text-gray-700">for</span>
-          <BusinessUnits
-            {...register('businessUnitIds')}
-            multiple
-            materialIds={materialIds}
-            supplierIds={supplierIds}
-            originIds={adminRegionIds}
-            withSourcingLocations
-            current={watch('businessUnitIds') || newInterventionData.businessUnitIds}
-            onChange={(values) => handleDropdown('businessUnitIds', values)}
-            ellipsis
-            theme="inline-primary"
-            error={!!errors?.businessUnitIds?.message}
-          />
+          <div className="mt-1">
+            <BusinessUnits
+              {...register('businessUnitIds')}
+              multiple
+              materialIds={materialIds}
+              supplierIds={supplierIds}
+              originIds={adminRegionIds}
+              withSourcingLocations
+              current={watch('businessUnitIds') || newInterventionData.businessUnitIds}
+              onChange={(values) => handleDropdown('businessUnitIds', values)}
+              ellipsis
+              theme="inline-primary"
+              error={!!errors?.businessUnitIds?.message}
+            />
+          </div>
           <span className="text-gray-700 font-medium">from</span>
-          <Suppliers
-            {...register('supplierIds')}
-            multiple
-            materialIds={materialIds}
-            businessUnitIds={businessUnitIds}
-            originIds={adminRegionIds}
-            withSourcingLocations
-            current={watch('supplierIds') || newInterventionData.supplierIds}
-            onChange={(values) => handleDropdown('supplierIds', values)}
-            theme="inline-primary"
-            error={!!errors?.supplierIds?.message}
-          />
+          <div className="mt-1">
+            <Suppliers
+              {...register('supplierIds')}
+              multiple
+              materialIds={materialIds}
+              businessUnitIds={businessUnitIds}
+              originIds={adminRegionIds}
+              withSourcingLocations
+              current={watch('supplierIds') || newInterventionData.supplierIds}
+              onChange={(values) => handleDropdown('supplierIds', values)}
+              theme="inline-primary"
+              error={!!errors?.supplierIds?.message}
+            />
+          </div>
           <span className="text-gray-700 font-medium">in</span>
-          <OriginRegions
-            {...register('adminRegionIds')}
-            multiple
-            materialIds={materialIds}
-            supplierIds={supplierIds}
-            businessUnitIds={businessUnitIds}
-            withSourcingLocations
-            current={watch('adminRegionIds') || newInterventionData.adminRegionIds}
-            onChange={(values) => handleDropdown('adminRegionIds', values)}
-            theme="inline-primary"
-            error={!!errors?.adminRegionIds?.message}
-          />
+          <div className="mt-1">
+            <OriginRegions
+              {...register('adminRegionIds')}
+              multiple
+              materialIds={materialIds}
+              supplierIds={supplierIds}
+              businessUnitIds={businessUnitIds}
+              withSourcingLocations
+              current={watch('adminRegionIds') || newInterventionData.adminRegionIds}
+              onChange={(values) => handleDropdown('adminRegionIds', values)}
+              theme="inline-primary"
+              error={!!errors?.adminRegionIds?.message}
+            />
+          </div>
           <span className="text-gray-700 font-medium">.</span>
         </div>
       </fieldset>
@@ -371,6 +377,7 @@ const Step1: FC = () => {
           <div className="mt-1">
             <Input
               {...register('endYear')}
+              autoFocus={false}
               type="number"
               name="endYear"
               id="endYear"

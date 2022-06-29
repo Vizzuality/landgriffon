@@ -455,7 +455,7 @@ extract-aqueduct-contextual: download-aqueduct-contextual
 	mkdir -p $(WORKDIR_AQUEDUCT)/Y2019M07D12_Aqueduct30_V01
 	unzip -u $(WORKDIR_AQUEDUCT)/Y2019M07D12_Aqueduct30_V01.zip  -d $(WORKDIR_AQUEDUCT)/
 
-convert-aqueduct-contextual: # extract-aqueduct-contextual
+convert-aqueduct-contextual: extract-aqueduct-contextual
 	python vector_folder_to_h3_table.py $(WORKDIR_AQUEDUCT)/Y2019M07D12_Aqueduct30_V01/baseline/annual h3_grid_aqueduct_global bws_cat aqueduct "Environmental datasets" 2019 --h3-res=6
 
 

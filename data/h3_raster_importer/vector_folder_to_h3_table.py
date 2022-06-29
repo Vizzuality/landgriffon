@@ -174,8 +174,7 @@ def insert_to_h3_data_and_contextual_layer_tables(
     cursor = connection.cursor()
     # remove existing entries
     cursor.execute(
-        f"""DELETE FROM "contextual_layer" WHERE "h3DataId" IN
-         (SELECT id FROM "h3_data" WHERE "h3tableName" = '{table}');"""
+        f"""DELETE FROM "contextual_layer" WHERE "name" = '{dataset}'"""
     )
     cursor.execute(f"""DELETE FROM "h3_data" WHERE "h3tableName" = '{table}';""")
     connection.commit()
@@ -187,17 +186,17 @@ def insert_to_h3_data_and_contextual_layer_tables(
         f"""INSERT INTO "h3_data" ("h3tableName", "h3columnName", "h3resolution", "year")
          VALUES ('{table}', '{column}', {h3_res}, {year});"""
     )
-    cursor.execute(f"""SELECT id FROM "h3_data" WHERE "h3columnName" = '{column}';""")
-    h3_data_id = cursor.fetchall()[0][0]
-    # TODO: Fix description and metadata in script parameters
+    # cursor.execute(f"""SELECT id FROM "h3_data" WHERE "h3columnName" = '{column}';""")
+    # h3_data_id = cursor.fetchall()[0][0]
+
     logging.info("Inserting record into contextual_layer table...")
     cursor.execute(
-        f"""INSERT INTO "contextual_layer"  ("h3DataId", "name", "metadata", "description", "category")
-         VALUES ('{h3_data_id}', '{dataset}', '{json.dumps(get_metadata(table))}', '{"<placeholder>"}', '{category}');
+        f"""INSERT INTO "contextual_layer"  ("name", "metadata", "category")
+         VALUES ('{dataset}', '{json.dumps(get_metadata(table))}', '{category}')
+         RETURNING id;
         """
     )
     # insert contextual_layer entry id into h3_table
-    cursor.execute(f"""SELECT id FROM "contextual_layer" WHERE "h3DataId" = '{h3_data_id}';""")
     contextual_data_id = cursor.fetchall()[0][0]
 
     cursor.execute(

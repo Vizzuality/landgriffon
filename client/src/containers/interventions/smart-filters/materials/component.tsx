@@ -9,7 +9,7 @@ import type { TreeSelectProps } from 'components/tree-select/types';
 
 type MaterialsFilterProps = {
   /** Tree depth. Defaults to `1` */
-  current?: string[];
+  current?: string[] | string;
   depth?: MaterialsTreesParams['depth'];
   ellipsis?: TreeSelectProps['ellipsis'];
   error?: TreeSelectProps['error'];
@@ -69,15 +69,21 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
 
   const currentOptions = useMemo(() => {
     const checkedOptions = [];
-    current?.forEach((key) => {
-      const recursiveSearch = (arr) => {
-        arr.forEach((opt) => {
-          if (opt.value === key) checkedOptions.push(opt);
-          if (opt.children) recursiveSearch(opt.children);
-        });
-      };
-      recursiveSearch(treeOptions);
-    });
+    if (current && Array.isArray(current)) {
+      current?.forEach((key) => {
+        const recursiveSearch = (arr) => {
+          arr.forEach((opt) => {
+            if (opt.value === key) checkedOptions.push(opt);
+            if (opt.children) recursiveSearch(opt.children);
+          });
+        };
+        recursiveSearch(treeOptions);
+      });
+    } else {
+      treeOptions.forEach((opt) => {
+        if (opt.value === current) checkedOptions.push(opt);
+      });
+    }
     return checkedOptions;
   }, [current, treeOptions]);
 

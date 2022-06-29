@@ -17,7 +17,7 @@ import { DEFAULT_CLASSNAMES, SHADOW_CLASSNAMES } from './constants';
 import { SortingMode, ApiSortingDirection } from './enums';
 
 import type { TableProps, ColumnProps, ApiSortingType } from './types';
-import type { ChildComponents } from 'ka-table/models';
+import type { CustomChildComponents } from './types';
 
 const defaultProps: TableProps = {
   columns: [],
@@ -151,11 +151,10 @@ const Table: React.FC<TableProps> = ({
             }),
           }))
         : props.columns;
-
     setTableProps((tableProps) => ({ ...tableProps, columns }));
   }, [props.columns, apiSorting, sortingMode, isLoading]);
 
-  const childComponents: ChildComponents = {
+  const childComponents: CustomChildComponents = {
     tableWrapper: {
       elementAttributes: () => ({
         className: DEFAULT_CLASSNAMES.tableWrapper,
@@ -173,6 +172,7 @@ const Table: React.FC<TableProps> = ({
         const isFirstColumn = props.column.key === firstColumnKey;
         const isSticky = isFirstColumnSticky && props.column.key === stickyColumnKey;
         const classNames = DEFAULT_CLASSNAMES.headCell;
+        const isProjected = props.column.isFirstYearProjected;
 
         return {
           className: cx(classNames, {
@@ -180,6 +180,7 @@ const Table: React.FC<TableProps> = ({
             'sticky left-0 z-10 w-80': isSticky,
             'w-48': !isSticky,
             [SHADOW_CLASSNAMES]: isSticky,
+            'border-l border-dashed border-gray-200': isProjected,
           }),
         };
       },
@@ -233,7 +234,6 @@ const Table: React.FC<TableProps> = ({
       elementAttributes: () => ({
         className: DEFAULT_CLASSNAMES.summaryCell,
       }),
-      ...props.childComponents?.summaryCell,
     };
   }
 

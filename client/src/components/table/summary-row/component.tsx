@@ -11,10 +11,11 @@ const DEFAULT_CLASSNAMES =
 const SummaryRow: React.FC<SummaryRowProps> = ({
   rowData,
   isFirstColumnSticky = true,
+  firstProjectedYear,
   ...props
 }: SummaryRowProps) => {
   const firstColumnKey = props.columns[0].key;
-
+  console.log(firstProjectedYear, 'firstProjectedYear');
   return (
     <>
       {times(props.groupColumnsCount, (idx) => (
@@ -30,7 +31,6 @@ const SummaryRow: React.FC<SummaryRowProps> = ({
         if (!rowData[key]) {
           return <td key={key} className={classNames('ka-empty-cell', DEFAULT_CLASSNAMES)}></td>;
         }
-
         return (
           <td
             key={key}
@@ -41,6 +41,7 @@ const SummaryRow: React.FC<SummaryRowProps> = ({
                 uppercase: isFirstColumn,
                 'text-center': !isFirstColumn,
                 'sticky z-10 left-0': isFirstColumn && isFirstColumnSticky,
+                'border-l border-dashed color-gray-200': firstProjectedYear === Number(key),
                 'after:absolute after:opacity-100 after:-right-3 after:w-3 after:top-0 after:bottom-0 after:border-l after:border-gray-50 after:shadow-[12px_0_10px_-15px_inset_#c2c5c9]':
                   isFirstColumn && isFirstColumnSticky,
               },

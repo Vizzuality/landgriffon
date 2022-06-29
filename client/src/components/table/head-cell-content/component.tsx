@@ -4,7 +4,20 @@ import { SortDirection } from 'ka-table/enums';
 import { IHeadCellProps } from 'ka-table/props';
 import { isSortingEnabled } from 'ka-table/Utils/SortUtils';
 
-const HeadCellContent: React.FC<IHeadCellProps> = ({ column, sortingMode }: IHeadCellProps) => {
+import type { Column } from 'ka-table/models';
+
+interface CustomColumn extends Column {
+  isFirstYearProjected?: boolean;
+}
+
+interface CustomIHeadCellProps extends IHeadCellProps {
+  column: CustomColumn;
+}
+
+const HeadCellContent: React.FC<CustomIHeadCellProps> = ({
+  column,
+  sortingMode,
+}: CustomIHeadCellProps) => {
   const sortingEnabled = isSortingEnabled(sortingMode);
 
   return (

@@ -9,6 +9,8 @@ export type ITableData = ITableProps & {
 export type CustomColumn = ICellProps & {
   type: 'analysis-chart';
   width: number;
+  isProjected: boolean;
+  isFirstYearProjected?: number;
 };
 
 export type CustomChartCell = ICellProps & {
@@ -31,6 +33,6 @@ export type ColumnHeadings = Readonly<{
 }>;
 
 export type CustomChartCell = ICellProps & {
-  column: { chart: boolean; width: number };
+  column: { chart: boolean; width: number; isProjected: boolean; isFirstYearProjected: boolean };
   rowData: GroupRowData;
 };

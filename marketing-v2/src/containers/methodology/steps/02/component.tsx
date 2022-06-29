@@ -1,5 +1,8 @@
 import cx from 'classnames';
+import Icon from 'components/icon';
 import Image from 'next/image';
+
+import DOWNLOAD_SVG from 'svgs/ui/icn_download.svg?sprite';
 
 const Step02: React.FC = () => {
   return (
@@ -31,9 +34,11 @@ const Step02: React.FC = () => {
 
         <button
           type="button"
-          className="py-8 font-semibold text-white bg-black border border-black px-14 hover:bg-black/75"
+          className="flex items-center py-8 font-semibold text-white bg-black border border-black px-14 hover:bg-black/75 space-x-2.5"
         >
-          Download Methodology
+          <span>Download Methodology</span>
+
+          <Icon icon={DOWNLOAD_SVG} className="w-4 h-4 fill-white" />
         </button>
       </div>
 

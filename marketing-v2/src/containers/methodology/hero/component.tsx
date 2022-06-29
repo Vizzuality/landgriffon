@@ -34,7 +34,7 @@ const Hero: React.FC = () => {
     <section className="relative z-10 bg-white">
       <Wrapper>
         <motion.div
-          className="relative pt-64 pb-32"
+          className="relative py-32"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, delay: 0.1 }}
@@ -44,7 +44,12 @@ const Hero: React.FC = () => {
           </h1>
         </motion.div>
 
-        <div className="relative aspect-video">
+        <motion.div
+          className="relative aspect-video"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.75, delay: 0.1 }}
+        >
           <header className="absolute z-10 flex items-center space-x-5 text-white top-6 left-6">
             <button
               className="flex items-center justify-center w-20 h-20 bg-white cursor-pointer"
@@ -57,7 +62,7 @@ const Hero: React.FC = () => {
             <h4 className="text-sm font-black uppercase font-display">Whatch demo</h4>
           </header>
           <video ref={videoRef} src="/videos/truck.mp4" className="aspect-video" />
-        </div>
+        </motion.div>
 
         <div className="mt-20 space-y-10">
           <div className="space-y-5">

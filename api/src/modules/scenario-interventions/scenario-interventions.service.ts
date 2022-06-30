@@ -111,6 +111,7 @@ export class ScenarioInterventionsService extends AppBaseService<
     /**
      * Getting Sourcing Locations and Sourcing Records for start year of all Materials of the intervention with applied filters
      */
+
     const actualSourcingDataWithTonnage: SourcingLocation[] =
       await this.sourcingLocationsService.findFilteredSourcingLocationsForIntervention(
         dtoWithDescendants,

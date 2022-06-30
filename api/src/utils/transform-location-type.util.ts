@@ -10,3 +10,9 @@ export function transformLocationType(
     return el.replace(/-/g, ' ') as LOCATION_TYPES;
   });
 }
+
+export function transformSingleLocationType(
+  locationTypesParam: LOCATION_TYPES_PARAMS,
+): LOCATION_TYPES {
+  return locationTypesParam.replace(/-/g, ' ') as LOCATION_TYPES;
+}

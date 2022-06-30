@@ -76,7 +76,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
   const disabledScenarios = visualizationMode === 'map';
 
   return (
-    <li className="col-span-1">
+    <li className="col-span-1 last-of-type:mb-6">
       <div
         className={classNames(
           'rounded border',

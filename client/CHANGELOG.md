@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Make loader more visible when chart data is fetching [LANDGRIF-759](https://vizzuality.atlassian.net/browse/LANDGRIF-759)
 - Aggregated values in chart ('other/others' category) should always be '#E4E4E4' [LANDGRIF-771](https://vizzuality.atlassian.net/browse/LANDGRIF-771)
 - Show aggregated values in chart just if there are more than 5 elements in total [LANDGRIF-773](https://vizzuality.atlassian.net/browse/LANDGRIF-773)
+- Last scenario hidden by gradient [LANDGRIF-739](https://vizzuality.atlassian.net/browse/LANDGRIF-739)
 
 ## 2022.06.27
 

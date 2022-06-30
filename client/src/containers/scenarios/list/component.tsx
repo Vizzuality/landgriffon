@@ -5,6 +5,7 @@ import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { scenarios, setCurrentScenario } from 'store/features/analysis/scenarios';
 
 import ScenarioItem from 'containers/scenarios/item';
+
 import { ACTUAL_DATA } from '../constants';
 
 import type { Scenario, Scenarios } from '../types';
@@ -47,16 +48,14 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
           data={ACTUAL_DATA}
           isSelected={isScenarioSelected(ACTUAL_DATA.id, currentScenario)}
         />
-        {data.map((item) => {
-          return (
-            <ScenarioItem
-              key={item.id}
-              data={item}
-              isSelected={isScenarioSelected(item.id, currentScenario)}
-              onClick={setSelected}
-            />
-          );
-        })}
+        {data.map((item) => (
+          <ScenarioItem
+            key={item.id}
+            data={item}
+            isSelected={isScenarioSelected(item.id, currentScenario)}
+            onClick={setSelected}
+          />
+        ))}
       </ul>
     </RadioGroup>
   );

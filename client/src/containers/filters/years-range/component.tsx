@@ -41,13 +41,11 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
   useEffect(() => {
     if (!years.length) return;
     setStartYearOptions(
-      years
-        ?.map((year) => ({
-          label: year.toString(),
-          value: year,
-          disabled: endYear <= year + (yearsGap - 1),
-        }))
-        .filter((y) => y.value <= lastYearWithData),
+      years?.map((year) => ({
+        label: year.toString(),
+        value: year,
+        disabled: endYear <= year + (yearsGap - 1),
+      })),
     );
 
     setEndYearOptions(
@@ -59,7 +57,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
     );
 
     setIsLoaded(true);
-  }, [endYear, isLoaded, startYear, years, yearsGap, lastYearWithData]);
+  }, [endYear, isLoaded, startYear, years, yearsGap]);
 
   useEffect(() => {
     if (!startYearOptions || !endYearOptions) return;

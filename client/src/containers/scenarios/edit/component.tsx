@@ -117,7 +117,7 @@ const ScenariosNewContainer: React.FC = () => {
             rows={3}
             className="w-full"
             defaultValue={description}
-            onChange={handleChange}
+            onInput={handleChange}
           />
         </div>
       </form>

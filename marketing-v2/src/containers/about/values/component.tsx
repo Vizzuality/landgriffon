@@ -1,4 +1,5 @@
 import FadeIn from 'components/fade';
+import Scale from 'components/scale';
 import Wrapper from 'containers/wrapper';
 
 const Values: React.FC = () => {
@@ -46,7 +47,9 @@ const Values: React.FC = () => {
                     To ensure our methods and program are trusted by all key players in the field.
                   </p>
                 </div>
-                <div className="absolute top-0 right-0 z-0 w-32 h-32 translate-x-1/2 -translate-y-1/2 bg-green-500 rounded-full" />
+                <Scale className="absolute top-0 right-0 z-0 w-32 h-32">
+                  <div className="w-full h-full translate-x-1/2 -translate-y-1/2 bg-green-500 rounded-full" />
+                </Scale>
               </li>
               <li className="relative">
                 <div className="relative z-10 space-y-10">
@@ -58,7 +61,9 @@ const Values: React.FC = () => {
                     work; taking action.
                   </p>
                 </div>
-                <div className="absolute top-0 left-0 z-0 -translate-x-1/2 translate-y-5 bg-orange-500 rounded-full w-52 h-52" />
+                <Scale className="absolute top-0 left-0 z-0 w-52 h-52">
+                  <div className="w-full h-full -translate-x-1/2 translate-y-5 bg-orange-500 rounded-full" />
+                </Scale>
               </li>
               <li className="relative">
                 <div className="relative z-10 space-y-10">
@@ -69,7 +74,9 @@ const Values: React.FC = () => {
                     Designed to fit your business needs, now and as they evolve.
                   </p>
                 </div>
-                <div className="absolute top-0 right-0 z-0 w-40 h-40 -translate-x-5 translate-y-0 bg-blue-500 rounded-full" />
+                <Scale className="absolute top-0 right-0 z-0 w-40 h-40">
+                  <div className="w-full h-full -translate-x-5 translate-y-0 bg-blue-500 rounded-full" />
+                </Scale>
               </li>
             </ul>
           </div>

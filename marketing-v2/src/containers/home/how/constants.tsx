@@ -2,7 +2,7 @@ import MATERIALS_SVG from 'svgs/home/how/icn_materials.svg?sprite';
 import VOLUMES_SVG from 'svgs/home/how/icn_volumes.svg?sprite';
 import SOURCES_SVG from 'svgs/home/how/icn_sources.svg?sprite';
 
-import UNKNOWN_SVG from 'svgs/home/how/icn_unknown.svg?sprite';
+import UNKNOWN_SVG from 'svgs/home/how/icn_globe.svg?sprite';
 import COUNTRY_SVG from 'svgs/home/how/icn_country.svg?sprite';
 import REGION_SVG from 'svgs/home/how/icn_region.svg?sprite';
 import FACILITY_SVG from 'svgs/home/how/icn_supplier.svg?sprite';

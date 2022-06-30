@@ -162,12 +162,13 @@ download-pasture:
 	wget -q -O $(WORKDIR_GLW3)/pasture/harvestArea/CroplandPastureArea2000_Geotiff.zip https://s3.us-east-2.amazonaws.com/earthstatdata/CroplandPastureArea2000_Geotiff.zip
 
 #unzip
+#remove no data values
 extract-pasture: download-pasture
 	unzip -j -o -u $(WORKDIR_GLW3)/pasture/harvestArea/CroplandPastureArea2000_Geotiff.zip */Pasture2000_5m.tif -d $(WORKDIR_GLW3)/pasture/harvestArea
-	gdal_translate -a_nodata 0 -of GTiff $(WORKDIR_GLW3)/pasture/harvestArea/Pasture2000_5m.tif \
+	gdal_translate -a_nodata -3.402823e+38 -of GTiff $(WORKDIR_GLW3)/pasture/harvestArea/Pasture2000_5m.tif \
 	$(WORKDIR_GLW3)/pasture/harvestArea/es_pasture_global.tif
 	rm -f $(WORKDIR_GLW3)/pasture/harvestArea/Pasture2000_5m.tif
-	gdal_calc.py --calc "A*10000*(A>0)" --format GTiff --type Float32 -A $(WORKDIR_GLW3)/pasture/harvestArea/es_pasture_global.tif \
+	gdal_calc.py --calc "A*10*100" --format GTiff --type Float32 --NoDataValue -3.402823e+38 -A $(WORKDIR_GLW3)/pasture/harvestArea/es_pasture_global.tif \
 	 --A_band 1 --outfile $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif;
 	rm -f $(WORKDIR_GLW3)/pasture/harvestArea/es_pasture_global.tif
 
@@ -193,20 +194,20 @@ download-glw3-data: extract-pasture
 # rasterize livetock per aggricultural land from FAO to get harvest area
 # multiply glw3 cattle (number of animals per km2) by the raster area to get the total number of animals per pixel (LSU)
 rasterize-glw3-livestock: download-glw3-data
-	gdal_calc.py --calc "A*B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/cattle/6_Ct_2010_Aw.tif --A_band 1 -B $(WORKDIR_GLW3)/8_AreaKm.tif --outfile $(WORKDIR_GLW3)/cattle/production/GLW3_2010_cattle_LSU.tif
-	gdal_calc.py --calc "A*B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/chickens/6_Ch_2010_Aw.tif --A_band 1 -B $(WORKDIR_GLW3)/8_AreaKm.tif --outfile $(WORKDIR_GLW3)/chickens/production/GLW3_2010_chickens_LSU.tif
-	gdal_calc.py --calc "A*B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/horses/6_Ho_2010_Aw.tif --A_band 1 -B $(WORKDIR_GLW3)/8_AreaKm.tif --outfile $(WORKDIR_GLW3)/horses/production/GLW3_2010_horses_LSU.tif
-	gdal_calc.py --calc "A*B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/goats/6_Gt_2010_Aw.tif --A_band 1 -B $(WORKDIR_GLW3)/8_AreaKm.tif --outfile $(WORKDIR_GLW3)/goats/production/GLW3_2010_goats_LSU.tif
-	gdal_calc.py --calc "A*B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/sheep/6_Sh_2010_Aw.tif --A_band 1 -B $(WORKDIR_GLW3)/8_AreaKm.tif --outfile $(WORKDIR_GLW3)/sheep/production/GLW3_2010_sheep_LSU.tif
-	gdal_calc.py --calc "A*B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/pigs/6_Pg_2010_Aw.tif --A_band 1 -B $(WORKDIR_GLW3)/8_AreaKm.tif --outfile $(WORKDIR_GLW3)/pigs/production/GLW3_2010_pigs_LSU.tif
-	gdal_calc.py --calc "A*(B>0)" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif --A_band 1 -B $(WORKDIR_GLW3)/cattle/6_Ct_2010_Aw.tif --outfile $(WORKDIR_GLW3)/cattle/harvestArea/GLW3_2010_cattle_ha.tif
-	gdal_calc.py --calc "A*(B>0)" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif --A_band 1 -B $(WORKDIR_GLW3)/chickens/6_Ch_2010_Aw.tif --outfile $(WORKDIR_GLW3)/chickens/harvestArea/GLW3_2010_chickens_ha.tif
-	gdal_calc.py --calc "A*(B>0)" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif --A_band 1 -B $(WORKDIR_GLW3)/horses/6_Ho_2010_Aw.tif --outfile $(WORKDIR_GLW3)/horses/harvestArea/GLW3_2010_horses_ha.tif
-	gdal_calc.py --calc "A*(B>0)" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif --A_band 1 -B $(WORKDIR_GLW3)/goats/6_Gt_2010_Aw.tif --outfile $(WORKDIR_GLW3)/goats/harvestArea/GLW3_2010_goats_ha.tif
-	gdal_calc.py --calc "A*(B>0)" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif --A_band 1 -B $(WORKDIR_GLW3)/sheep/6_Sh_2010_Aw.tif --outfile $(WORKDIR_GLW3)/sheep/harvestArea/GLW3_2010_sheep_ha.tif
-	gdal_calc.py --calc "A*(B>0)" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif --A_band 1 -B $(WORKDIR_GLW3)/pigs/6_Pg_2010_Aw.tif --outfile $(WORKDIR_GLW3)/pigs/harvestArea/GLW3_2010_pigs_ha.tif
+	gdal_calc.py --calc "A*B" --format GTiff --type Float32 --NoDataValue 0 -A $(WORKDIR_GLW3)/cattle/6_Ct_2010_Aw.tif --A_band 1 -B $(WORKDIR_GLW3)/8_AreaKm.tif --outfile $(WORKDIR_GLW3)/cattle/production/GLW3_2010_cattle_LSU.tif
+	gdal_calc.py --calc "A*B" --format GTiff --type Float32 --NoDataValue 0 -A $(WORKDIR_GLW3)/chickens/6_Ch_2010_Aw.tif --A_band 1 -B $(WORKDIR_GLW3)/8_AreaKm.tif --outfile $(WORKDIR_GLW3)/chickens/production/GLW3_2010_chickens_LSU.tif
+	gdal_calc.py --calc "A*B" --format GTiff --type Float32 --NoDataValue 0 -A $(WORKDIR_GLW3)/horses/6_Ho_2010_Aw.tif --A_band 1 -B $(WORKDIR_GLW3)/8_AreaKm.tif --outfile $(WORKDIR_GLW3)/horses/production/GLW3_2010_horses_LSU.tif
+	gdal_calc.py --calc "A*B" --format GTiff --type Float32 --NoDataValue 0 -A $(WORKDIR_GLW3)/goats/6_Gt_2010_Aw.tif --A_band 1 -B $(WORKDIR_GLW3)/8_AreaKm.tif --outfile $(WORKDIR_GLW3)/goats/production/GLW3_2010_goats_LSU.tif
+	gdal_calc.py --calc "A*B" --format GTiff --type Float32 --NoDataValue 0 -A $(WORKDIR_GLW3)/sheep/6_Sh_2010_Aw.tif --A_band 1 -B $(WORKDIR_GLW3)/8_AreaKm.tif --outfile $(WORKDIR_GLW3)/sheep/production/GLW3_2010_sheep_LSU.tif
+	gdal_calc.py --calc "A*B" --format GTiff --type Float32 --NoDataValue 0 -A $(WORKDIR_GLW3)/pigs/6_Pg_2010_Aw.tif --A_band 1 -B $(WORKDIR_GLW3)/8_AreaKm.tif --outfile $(WORKDIR_GLW3)/pigs/production/GLW3_2010_pigs_LSU.tif
+	gdal_calc.py --calc "A*(B>0)" --format GTiff --type Float32 --NoDataValue 3.402823e+38 -A $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif --A_band 1 -B $(WORKDIR_GLW3)/cattle/6_Ct_2010_Aw.tif --outfile $(WORKDIR_GLW3)/cattle/harvestArea/GLW3_2010_cattle_ha.tif
+	gdal_calc.py --calc "A*(B>0)" --format GTiff --type Float32 --NoDataValue 3.402823e+38 -A $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif --A_band 1 -B $(WORKDIR_GLW3)/chickens/6_Ch_2010_Aw.tif --outfile $(WORKDIR_GLW3)/chickens/harvestArea/GLW3_2010_chickens_ha.tif
+	gdal_calc.py --calc "A*(B>0)" --format GTiff --type Float32 --NoDataValue 3.402823e+38 -A $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif --A_band 1 -B $(WORKDIR_GLW3)/horses/6_Ho_2010_Aw.tif --outfile $(WORKDIR_GLW3)/horses/harvestArea/GLW3_2010_horses_ha.tif
+	gdal_calc.py --calc "A*(B>0)" --format GTiff --type Float32 --NoDataValue 3.402823e+38 -A $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif --A_band 1 -B $(WORKDIR_GLW3)/goats/6_Gt_2010_Aw.tif --outfile $(WORKDIR_GLW3)/goats/harvestArea/GLW3_2010_goats_ha.tif
+	gdal_calc.py --calc "A*(B>0)" --format GTiff --type Float32 --NoDataValue 3.402823e+38 -A $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif --A_band 1 -B $(WORKDIR_GLW3)/sheep/6_Sh_2010_Aw.tif --outfile $(WORKDIR_GLW3)/sheep/harvestArea/GLW3_2010_sheep_ha.tif
+	gdal_calc.py --calc "A*(B>0)" --format GTiff --type Float32 --NoDataValue 3.402823e+38 -A $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif --A_band 1 -B $(WORKDIR_GLW3)/pigs/6_Pg_2010_Aw.tif --outfile $(WORKDIR_GLW3)/pigs/harvestArea/GLW3_2010_pigs_ha.tif
 	rm -f $(WORKDIR_GLW3)/cattle/6_Ct_2010_Aw.tif $(WORKDIR_GLW3)/chickens/6_Ch_2010_Aw.tif $(WORKDIR_GLW3)/horses/6_Ho_2010_Aw.tif $(WORKDIR_GLW3)/goats/6_Gt_2010_Aw.tif \
-	$(WORKDIR_GLW3)/sheep/6_Sh_2010_Aw.tif $(WORKDIR_GLW3)/8_AreaKm.tif
+	$(WORKDIR_GLW3)/sheep/6_Sh_2010_Aw.tif $(WORKDIR_GLW3)/8_AreaKm.tif;
 
 rasterize-glw3-livestock-pasture: rasterize-glw3-livestock
 	gdal_calc.py --calc "A+B+C+D+E+F" --format GTiff --type Float32 --NoDataValue 0.0 \

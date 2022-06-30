@@ -31,21 +31,22 @@ export class InterventionGeneratorService {
       dto.materialIds,
     );
 
-    dto.adminRegionIds =
-      await this.adminRegionService.getAdminRegionDescendants(
-        dto.adminRegionIds,
-      );
+    if (dto.adminRegionIds)
+      dto.adminRegionIds =
+        await this.adminRegionService.getAdminRegionDescendants(
+          dto.adminRegionIds,
+        );
 
-    dto.businessUnitIds =
-      await this.businessUnitService.getBusinessUnitsDescendants(
-        dto.businessUnitIds,
-      );
+    if (dto.businessUnitIds)
+      dto.businessUnitIds =
+        await this.businessUnitService.getBusinessUnitsDescendants(
+          dto.businessUnitIds,
+        );
 
-    if (dto.supplierIds) {
+    if (dto.supplierIds)
       dto.supplierIds = await this.suppliersService.getSuppliersDescendants(
         dto.supplierIds,
       );
-    }
 
     return dto;
   }

@@ -135,18 +135,22 @@ export class SourcingLocationsService extends AppBaseService<
         .where('sl."materialId" IN (:...materialIds)', {
           materialIds: createInterventionDto.materialIds,
         })
-        .andWhere('sl."businessUnitId" IN (:...businessUnits)', {
-          businessUnits: createInterventionDto.businessUnitIds,
-        })
         .andWhere('sr.year >= :startYear', {
           startYear: createInterventionDto.startYear,
         })
-        .andWhere('sl.adminRegionId IN (:...adminRegion)', {
-          adminRegion: createInterventionDto.adminRegionIds,
-        })
+
         .andWhere('sl.interventionType IS NULL');
 
-    // Filter by suppliers if are provided. A user might not know from which provider gets some material
+    // Optional filters:
+
+    if (createInterventionDto.businessUnitIds)
+      queryBuilder.andWhere('sl."businessUnitId" IN (:...businessUnits)', {
+        businessUnits: createInterventionDto.businessUnitIds,
+      });
+    if (createInterventionDto.adminRegionIds)
+      queryBuilder.andWhere('sl.adminRegionId IN (:...adminRegion)', {
+        adminRegion: createInterventionDto.adminRegionIds,
+      });
     if (createInterventionDto.supplierIds) {
       queryBuilder.andWhere(
         new Brackets((qb: WhereExpressionBuilder) => {

@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { createPortal } from 'react-dom';
 
 import { setCurrentScenario, setMode, scenarios } from 'store/features/analysis/scenarios';
+import { analysisUI } from 'store/features/analysis/ui';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 
 import ScenariosComparison from 'containers/scenarios/comparison';
@@ -31,6 +32,7 @@ const DROPDOWN_ITEM_CLASSNAME =
 const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) => {
   const dispatch = useAppDispatch();
   const { currentScenario } = useAppSelector(scenarios);
+  const { visualizationMode } = useAppSelector(analysisUI);
 
   const { x, y, reference, floating, strategy } = useFloating({
     placement: 'right',
@@ -69,6 +71,10 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
     if (!isSelected) setComparisonEnabled(false);
   }, [isSelected]);
 
+  // TO - DO remove this condition when scenarios analysis is available to show in the ma
+  // Option to select a different scenario for map view disabled temporarily
+  const disabledScenarios = visualizationMode === 'map';
+
   return (
     <li className="col-span-1">
       <div
@@ -79,6 +85,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
       >
         <div className="flex items-center">
           <RadioGroup.Option
+            disabled={disabledScenarios}
             key={data.id}
             value={data}
             className="flex justify-between flex-1 truncate items-top"
@@ -86,15 +93,18 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
             {({ checked }) => (
               <>
                 <div className="flex justify-center flex-shrink-0 w-10 py-4 items-top">
-                  <span
-                    className={classNames(
-                      checked ? 'bg-green-700 border-transparent' : 'bg-white border-gray-200',
-                      'h-4 w-4 mt-0.5 cursor-pointer rounded-full border flex items-center justify-center',
-                    )}
-                    aria-hidden="true"
-                  >
-                    <span className="rounded-full bg-white w-1.5 h-1.5" />
-                  </span>
+                  {/* TO DO - remove this condition when scenarios analysis is available to show in the map*/}
+                  {disabledScenarios && data.id === ACTUAL_DATA.id && (
+                    <span
+                      className={classNames(
+                        checked ? 'bg-green-700 border-transparent' : 'bg-white border-gray-200',
+                        'h-4 w-4 mt-0.5 cursor-pointer rounded-full border flex items-center justify-center',
+                      )}
+                      aria-hidden="true"
+                    >
+                      <span className="rounded-full bg-white w-1.5 h-1.5" />
+                    </span>
+                  )}
                 </div>
                 <div className="flex-1 py-4 pr-4 truncate">
                   <h2 className="text-sm font-medium text-gray-900 truncate">{data.title}</h2>

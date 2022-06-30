@@ -27,7 +27,7 @@ import { Material } from 'modules/materials/material.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import {
-  LOCATION_TYPES,
+  LOCATION_TYPES_PARAMS,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
@@ -335,7 +335,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitIds: [preconditions.businessUnit1.id],
           adminRegionIds: [preconditions.adminRegion1.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-          newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+          newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
           newLocationCountryInput: 'Spain',
           newIndicatorCoefficients: {
             GHG_LUC_T: 1,
@@ -455,7 +455,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitIds: [preconditions.businessUnit1.id],
           adminRegionIds: [preconditions.adminRegion1.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-          newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+          newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
           newLocationCountryInput: 'Spain',
           newIndicatorCoefficients: {
             GHG_LUC_T: 1,
@@ -588,7 +588,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             preconditions.adminRegion2.id,
           ],
           type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
-          newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+          newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
           newLocationCountryInput: 'Spain',
           newMaterialId: replacingMaterial.id,
           newIndicatorCoefficients: {
@@ -599,7 +599,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           },
         });
 
-      expect(HttpStatus.CREATED);
+      expect(response.status).toBe(HttpStatus.CREATED);
 
       const createdScenarioIntervention =
         await scenarioInterventionRepository.findOne(response.body.data.id);
@@ -668,8 +668,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     });
 
     test(
-      'When I create a new Intervention, But I dont supply any suppliers for filtering' +
-        'Then the API should filter all available suppliers matching the rest of the filters' +
+      'When I create a new Intervention, But I dont supply any suppliers, business units and admin regions for filtering' +
+        'Then the API should filter all available suppliers, business units and admin regions matching the material filter' +
         'And the Intervention should be created successfully',
       async () => {
         const preconditions: ScenarioInterventionPreconditions =
@@ -683,7 +683,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
         const replacingMaterial: Material = await createMaterial();
 
-        await request(app.getHttpServer())
+        const response = await request(app.getHttpServer())
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -691,20 +691,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             startYear: 2018,
             percentage: 50,
             scenarioId: preconditions.scenario.id,
-            materialIds: [
-              preconditions.material1.id,
-              preconditions.material2.id,
-            ],
-            businessUnitIds: [
-              preconditions.businessUnit1.id,
-              preconditions.businessUnit2.id,
-            ],
-            adminRegionIds: [
-              preconditions.adminRegion1.id,
-              preconditions.adminRegion2.id,
-            ],
+            materialIds: [preconditions.material1.id],
             type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
-            newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+            newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
             newLocationCountryInput: 'Spain',
             newMaterialId: replacingMaterial.id,
             newIndicatorCoefficients: {
@@ -715,7 +704,120 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             },
           });
 
-        expect(HttpStatus.CREATED);
+        expect(response.status).toBe(HttpStatus.CREATED);
+
+        const allSourcingLocations: [SourcingLocation[], number] =
+          await sourcingLocationRepository.findAndCount();
+        const allSourcingRecords: [SourcingRecord[], number] =
+          await sourcingRecordRepository.findAndCount();
+
+        expect(allSourcingLocations[1]).toEqual(4);
+        expect(allSourcingRecords[1]).toEqual(4);
+
+        const canceledSourcingLocations: SourcingLocation[] =
+          await sourcingLocationRepository.find({
+            where: {
+              interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+            },
+          });
+
+        expect(canceledSourcingLocations.length).toBe(1);
+
+        const newSourcingLocations: SourcingLocation[] =
+          await sourcingLocationRepository.find({
+            where: {
+              interventionType:
+                SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+            },
+          });
+
+        expect(newSourcingLocations.length).toBe(1);
+      },
+    );
+
+    test(
+      'When I create a new Intervention, But the replaced material has descendant materials ' +
+        'Then the API should add material descendants to filters ' +
+        'And the Intervention should be created successfully',
+      async () => {
+        const preconditions: ScenarioInterventionPreconditions =
+          await createInterventionPreconditions();
+
+        const geoRegion: GeoRegion = await createGeoRegion();
+        await createAdminRegion({
+          isoA2: 'ABC',
+          geoRegion,
+        });
+
+        const material1Descendant2 = await createMaterial({
+          name: 'Descendant Material',
+          parent: preconditions.material1,
+        });
+
+        const newDescendantLocation = await createSourcingLocation({
+          materialId: material1Descendant2.id,
+          t1SupplierId: preconditions.supplier1Descendant.id,
+          businessUnitId: preconditions.businessUnit1Descendant.id,
+          adminRegionId: preconditions.adminRegion1Descendant.id,
+        });
+
+        await createSourcingRecord({
+          sourcingLocationId: newDescendantLocation.id,
+          year: 2018,
+          tonnage: 600,
+        });
+
+        const replacingMaterial: Material = await createMaterial();
+
+        const response = await request(app.getHttpServer())
+          .post('/api/v1/scenario-interventions')
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send({
+            title: 'scenario intervention material',
+            startYear: 2018,
+            percentage: 50,
+            scenarioId: preconditions.scenario.id,
+            materialIds: [preconditions.material1.id],
+            type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+            newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
+            newLocationCountryInput: 'Spain',
+            newMaterialId: replacingMaterial.id,
+            newIndicatorCoefficients: {
+              GHG_LUC_T: 1,
+              DF_LUC_T: 10,
+              UWU_T: 5,
+              BL_LUC_T: 3,
+            },
+          });
+
+        expect(response.status).toBe(HttpStatus.CREATED);
+
+        const allSourcingLocations: [SourcingLocation[], number] =
+          await sourcingLocationRepository.findAndCount();
+        const allSourcingRecords: [SourcingRecord[], number] =
+          await sourcingRecordRepository.findAndCount();
+
+        expect(allSourcingLocations[1]).toEqual(6);
+        expect(allSourcingRecords[1]).toEqual(6);
+
+        const canceledSourcingLocations: SourcingLocation[] =
+          await sourcingLocationRepository.find({
+            where: {
+              interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+            },
+          });
+
+        expect(canceledSourcingLocations.length).toBe(2);
+
+        const newSourcingLocations: SourcingLocation[] =
+          await sourcingLocationRepository.find({
+            where: {
+              interventionType:
+                SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+            },
+          });
+
+        expect(newSourcingLocations.length).toBe(1);
       },
     );
   });
@@ -846,7 +948,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
         [
-          'Available columns for new location type: unknown, aggregation point, point of production, country of production',
+          'Available location types options: unknown,aggregation-point,point-of-production,country-of-production',
           'New location type input is required for the selected intervention type',
           'New Location Country input is required for the selected intervention and location type',
         ],
@@ -872,7 +974,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitIds: [businessUnit.id],
           adminRegionIds: [adminRegion.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-          newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+          newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
         });
 
       expect(HttpStatus.BAD_REQUEST);
@@ -897,7 +999,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitIds: [businessUnit.id],
           adminRegionIds: [adminRegion.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-          newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+          newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
         });
 
       expect(HttpStatus.BAD_REQUEST);
@@ -929,7 +1031,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           supplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-          newLocationType: LOCATION_TYPES.AGGREGATION_POINT,
+          newLocationType: LOCATION_TYPES_PARAMS.AGGREGATION_POINT,
         });
 
       expect(HttpStatus.BAD_REQUEST);
@@ -953,7 +1055,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           supplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-          newLocationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
+          newLocationType: LOCATION_TYPES_PARAMS.POINT_OF_PRODUCTION,
           newLocationCountryInput: 'TestCountry',
         });
 
@@ -995,7 +1097,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
         [
-          'Available columns for new location type: unknown, aggregation point, point of production, country of production',
+          'Available location types options: unknown,aggregation-point,point-of-production,country-of-production',
           'newMaterialId must be a UUID',
           'New Material is required for the selected intervention type',
           'New location type input is required for the selected intervention type',
@@ -1003,7 +1105,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       );
     });
 
-    test('When I Create new intervention for more than 1 material Then i should get a relevant error message', async () => {
+    test('When I Create new intervention for more than 1 material Then I should get a relevant error message', async () => {
       const scenario: Scenario = await createScenario();
       const material: Material = await createMaterial();
       const material2: Material = await createMaterial();
@@ -1450,7 +1552,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             businessUnitIds: [parentBusinessUnit.id],
             adminRegionIds: [parentAdminRegion.id],
             type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
-            newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+            newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
             newLocationCountryInput: 'Spain',
             newMaterialId: newMaterial.id,
           });

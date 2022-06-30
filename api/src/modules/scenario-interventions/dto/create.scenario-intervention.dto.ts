@@ -8,17 +8,19 @@ import {
   IsOptional,
   IsString,
   IsUUID,
-  maxLength,
   MaxLength,
   MinLength,
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { SCENARIO_INTERVENTION_TYPE } from 'modules/scenario-interventions/scenario-intervention.entity';
-import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
+import {
+  LOCATION_TYPES,
+  LOCATION_TYPES_PARAMS,
+} from 'modules/sourcing-locations/sourcing-location.entity';
 import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
-import { Type } from 'class-transformer';
-import { Optional } from '@nestjs/common';
+import { Transform, Type } from 'class-transformer';
+import { transformSingleLocationType } from 'utils/transform-location-type.util';
 
 export class CreateScenarioInterventionDto {
   @IsString()
@@ -167,16 +169,21 @@ export class CreateScenarioInterventionDto {
     message:
       'New location type input is required for the selected intervention type',
   })
-  @IsEnum(Object.values(LOCATION_TYPES), {
-    message: `Available columns for new location type: ${Object.values(
-      LOCATION_TYPES,
-    ).join(', ')}`,
-  })
   @ApiPropertyOptional({
     description: `Type of new Supplier Location, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL} and ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER}`,
     enum: Object.values(LOCATION_TYPES),
     example: LOCATION_TYPES.POINT_OF_PRODUCTION,
   })
+  @IsEnum(LOCATION_TYPES, {
+    each: true,
+    message:
+      'Available location types options: ' +
+      Object.values(LOCATION_TYPES_PARAMS).toString().toLowerCase(),
+  })
+  @Transform(({ value }: { value: LOCATION_TYPES_PARAMS }) =>
+    transformSingleLocationType(value),
+  )
+  @Type(() => String)
   newLocationType!: LOCATION_TYPES;
 
   @ValidateIf(

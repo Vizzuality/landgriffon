@@ -48,6 +48,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 theme === 'default' && !error,
               'border-red-600 focus:ring-red-600 focus:border-red-600': !!error,
               'pr-8': type === 'search',
+              'bg-gray-100': props.disabled,
             })}
             type={type}
             ref={ref}

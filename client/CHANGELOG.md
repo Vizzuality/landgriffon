@@ -19,9 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Location types params added to "/impact/table" endpoint [LANDGRIF-733](https://vizzuality.atlassian.net/browse/LANDGRIF-733)
 - An issue in the table component when the user navigates to the admin page
 - Prevent collapse button to break his position [LANDGRIF-729](https://vizzuality.atlassian.net/browse/LANDGRIF-729)
-- [LANDGRIF-716](https://vizzuality.atlassian.net/browse/LANDGRIF-716) fixed extra bad requests in analysis.
 - Scenario description not updating properly [LANDGRIF-740](https://vizzuality.atlassian.net/browse/LANDGRIF-740)
 - Limit options for start year in analysis to years with available data [LANDGRIF-737](https://vizzuality.atlassian.net/browse/LANDGRIF-737)
+- Extra bad requests in analysis [LANDGRIF-716](https://vizzuality.atlassian.net/browse/LANDGRIF-716)
+- UI fixes in the intervention creation form [LANDGRIF-742](https://vizzuality.atlassian.net/browse/LANDGRIF-742)
 
 ## 2022.06.27
 

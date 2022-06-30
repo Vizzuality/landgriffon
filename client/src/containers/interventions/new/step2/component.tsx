@@ -141,6 +141,8 @@ const Step2: FC = () => {
         }),
       };
 
+      console.log(parsedData);
+
       if (interventionMode === 'create') {
         createIntervention.mutate(parsedData, {
           onSuccess: () => {

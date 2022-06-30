@@ -13,20 +13,26 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-white ">
       <Wrapper>
-        <nav className="py-32">
+        <nav className="py-20 md:py-32">
           <ul className="flex flex-col">
             <li>
               <Link href="/about">
-                <a className="font-black uppercase font-display text-9xl">About us</a>
+                <a className="text-5xl font-black uppercase font-display md:text-7xl lg:text-9xl">
+                  About us
+                </a>
               </Link>
             </li>
             <li>
               <Link href="/contact">
-                <a className="font-black uppercase font-display text-9xl">Contact us</a>
+                <a className="text-5xl font-black uppercase font-display md:text-7xl lg:text-9xl">
+                  Contact us
+                </a>
               </Link>
             </li>
             <li>
-              <a className="font-black uppercase font-display text-9xl">Blog</a>
+              <a className="text-5xl font-black uppercase font-display md:text-7xl lg:text-9xl">
+                Blog
+              </a>
             </li>
           </ul>
         </nav>

@@ -7,7 +7,7 @@ const Hero: React.FC = () => {
     <section className="relative z-10 bg-white">
       <Wrapper>
         <motion.div
-          className="relative py-32"
+          className="relative pt-32 pb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, delay: 0.1 }}

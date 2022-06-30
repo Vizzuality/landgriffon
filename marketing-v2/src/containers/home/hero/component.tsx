@@ -5,8 +5,11 @@ import { motion } from 'framer-motion';
 const Hero: React.FC = () => {
   return (
     <section
-      className="relative flex flex-col items-center justify-center h-screen bg-blue-600 bg-right bg-no-repeat"
-      style={{ backgroundImage: `url('/images/home/hero/bg_circles.svg')` }}
+      className="relative flex flex-col items-center justify-center h-screen bg-blue-600 bg-no-repeat bg-cover"
+      style={{
+        backgroundImage: `url('/images/home/hero/bg_circles.svg')`,
+        backgroundPosition: '100% 50%',
+      }}
     >
       <Wrapper>
         <div className="space-y-5">

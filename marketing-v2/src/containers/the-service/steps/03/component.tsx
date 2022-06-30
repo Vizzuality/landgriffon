@@ -1,4 +1,5 @@
 import cx from 'classnames';
+import Link from 'next/link';
 
 const Step03: React.FC = () => {
   return (
@@ -28,12 +29,11 @@ const Step03: React.FC = () => {
             your procurement data, we build a picture of what environmental impacts are linked to
             your supply chain and where.
           </p>
-          <button
-            type="button"
-            className="py-8 font-semibold text-white bg-black border border-black px-14 hover:bg-black/75"
-          >
-            Learn more about the science behind
-          </button>
+          <Link href="/methodology">
+            <a className="inline-block py-8 font-semibold text-white bg-black border border-black px-14 hover:bg-black/75">
+              Learn more about the science behind
+            </a>
+          </Link>
         </div>
       </div>
 

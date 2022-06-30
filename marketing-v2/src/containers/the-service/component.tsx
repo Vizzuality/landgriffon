@@ -18,7 +18,7 @@ import Newsletter from 'containers/newsletter';
 
 const TheService: React.FC = () => {
   return (
-    <>
+    <div className="w-full overflow-hidden">
       <Hero />
 
       <Steps theme="green">
@@ -40,7 +40,7 @@ const TheService: React.FC = () => {
 
       <Testimonials />
       <Newsletter />
-    </>
+    </div>
   );
 };
 

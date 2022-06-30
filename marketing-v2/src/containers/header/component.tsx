@@ -9,7 +9,7 @@ const Header: React.FC = () => {
 
   return (
     <header className="flex items-center justify-between font-semibold">
-      <div className="px-12 shrink-0">
+      <div className="md:px-5 lg:px-12 shrink-0">
         <Link href="/">
           <a>
             <Image src="/images/logo.svg" alt="Landgriffon" width={180} height={14} priority />
@@ -17,7 +17,7 @@ const Header: React.FC = () => {
         </Link>
       </div>
 
-      <nav>
+      <nav className="hidden lg:block">
         <ul className="flex space-x-14">
           <li>
             <Link href="/the-service">

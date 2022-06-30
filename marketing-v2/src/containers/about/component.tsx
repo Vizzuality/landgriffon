@@ -18,7 +18,7 @@ const About: React.FC = () => {
       <Video />
       <Values />
       <Reason />
-      <Separator image="/images/service/images6_service.jpg" />
+      <Separator image="/images/about/images11_about.jpg" />
       <Team />
 
       <Newsletter />

@@ -10,6 +10,7 @@ import Step03 from 'containers/the-service/steps/03';
 import Step04 from 'containers/the-service/steps/04';
 import Step05 from 'containers/the-service/steps/05';
 import Step06 from 'containers/the-service/steps/06';
+import AppScreens from 'containers/the-service/app-screens';
 
 import Separator from 'containers/separator';
 import Testimonials from 'containers/testimonials';
@@ -28,8 +29,8 @@ const TheService: React.FC = () => {
       <Steps theme="orange">
         <Step03 />
         <Step04 />
-        <div className="h-[40vw]" />
       </Steps>
+      <AppScreens />
       {/* <Example /> */}
       <Separator image="/images/service/images7_service.jpg" />
       <Steps theme="blue">

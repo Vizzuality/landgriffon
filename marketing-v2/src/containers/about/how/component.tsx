@@ -9,7 +9,7 @@ import ARROW_TOP_RIGHT_SVG from 'svgs/ui/arrow-top-right.svg?sprite';
 
 const How: React.FC = () => {
   return (
-    <section className="relative py-32 bg-blue-600 bg-cover md:py-64">
+    <section className="relative z-10 py-32 bg-blue-600 bg-cover md:py-64 lg:-mt-20">
       <Wrapper>
         <div className="max-w-2xl mx-auto space-y-10 text-center text-white md:space-y-20">
           <FadeIn>

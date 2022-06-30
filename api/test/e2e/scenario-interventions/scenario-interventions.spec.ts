@@ -203,7 +203,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           },
         });
 
-      expect(HttpStatus.CREATED);
+      expect(response.status).toBe(HttpStatus.CREATED);
 
       const createdScenarioIntervention =
         await scenarioInterventionRepository.findOne(response.body.data.id);
@@ -345,7 +345,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           },
         });
 
-      expect(HttpStatus.CREATED);
+      expect(response.status).toBe(HttpStatus.CREATED);
 
       const createdScenarioIntervention =
         await scenarioInterventionRepository.findOne(response.body.data.id);
@@ -465,7 +465,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           },
         });
 
-      expect(HttpStatus.CREATED);
+      expect(response.status).toBe(HttpStatus.CREATED);
 
       const createdScenarioIntervention =
         await scenarioInterventionRepository.findOne(response.body.data.id);
@@ -849,7 +849,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           },
         });
 
-      expect(HttpStatus.BAD_REQUEST);
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       expect(response.body.errors[0].title).toEqual(
         'No actual data for requested filters',
       );
@@ -875,7 +875,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
         });
 
-      expect(HttpStatus.BAD_REQUEST);
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       expect(response.body.errors[0].title).toEqual(
         'No actual data for requested filters',
       );
@@ -977,7 +977,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
         });
 
-      expect(HttpStatus.BAD_REQUEST);
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       expect(response).toHaveErrorMessage(
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
@@ -1059,7 +1059,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           newLocationCountryInput: 'TestCountry',
         });
 
-      expect(HttpStatus.BAD_REQUEST);
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       expect(response2).toHaveErrorMessage(
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
@@ -1092,7 +1092,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           newLocationCountryInput: 'TestCountry',
         });
 
-      expect(HttpStatus.BAD_REQUEST);
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       expect(response).toHaveErrorMessage(
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
@@ -1130,7 +1130,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           newMaterialId: material.id,
         });
 
-      expect(HttpStatus.BAD_REQUEST);
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       expect(response).toHaveErrorMessage(
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',

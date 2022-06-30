@@ -80,7 +80,7 @@ const Supplier: FC = () => {
   const handleDropdown = useCallback(
     (id: string, value: SelectOption) => {
       clearErrors(id);
-      setValue(id, value.value);
+      setValue(id, value?.value);
     },
     [setValue, clearErrors],
   );
@@ -96,8 +96,8 @@ const Supplier: FC = () => {
   // for the rest of them is enough eith the country
   const isLocationInputEnabled = useMemo(
     () =>
-      selectedLocationTypeOption?.value === 'point of production' ||
-      selectedLocationTypeOption?.value === 'aggregation point',
+      selectedLocationTypeOption?.value === 'point-of-production' ||
+      selectedLocationTypeOption?.value === 'aggregation-point',
     [selectedLocationTypeOption],
   );
 

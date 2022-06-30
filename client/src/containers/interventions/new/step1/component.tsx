@@ -195,9 +195,9 @@ const Step1: FC = () => {
         interventionDescription: yup.string(),
         percentage: yup.number().min(0).max(100),
         materialIds: yup.array().min(1),
-        businessUnitIds: yup.array().nullable(),
+        businessUnitIds: yup.array().min(1),
         supplierIds: yup.array().nullable(),
-        adminRegionIds: yup.array().nullable(),
+        adminRegionIds: yup.array().min(1),
         endYear: yup
           .number()
           .test(

@@ -20,13 +20,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Location types params added to "/impact/table" endpoint [LANDGRIF-733](https://vizzuality.atlassian.net/browse/LANDGRIF-733)
 - An issue in the table component when the user navigates to the admin page
 - Prevent collapse button to break his position [LANDGRIF-729](https://vizzuality.atlassian.net/browse/LANDGRIF-729)
-- [LANDGRIF-716](https://vizzuality.atlassian.net/browse/LANDGRIF-716) fixed extra bad requests in analysis.
 - Scenario description not updating properly [LANDGRIF-740](https://vizzuality.atlassian.net/browse/LANDGRIF-740)
 - Limit options for start year in analysis to years with available data [LANDGRIF-737](https://vizzuality.atlassian.net/browse/LANDGRIF-737)
 - Make loader more visible when chart data is fetching [LANDGRIF-759](https://vizzuality.atlassian.net/browse/LANDGRIF-759)
 - Aggregated values in chart ('other/others' category) should always be '#E4E4E4' [LANDGRIF-771](https://vizzuality.atlassian.net/browse/LANDGRIF-771)
 - Show aggregated values in chart just if there are more than 5 elements in total [LANDGRIF-773](https://vizzuality.atlassian.net/browse/LANDGRIF-773)
 - Last scenario hidden by gradient [LANDGRIF-739](https://vizzuality.atlassian.net/browse/LANDGRIF-739)
+- Extra bad requests in analysis [LANDGRIF-716](https://vizzuality.atlassian.net/browse/LANDGRIF-716)
+- UI fixes in the intervention creation form [LANDGRIF-742](https://vizzuality.atlassian.net/browse/LANDGRIF-742)
 
 ## 2022.06.27
 

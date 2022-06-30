@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 
 - Changed select styles to match the design, specifically for the years. They now have a different behaviour than the others to improve usability.
-- Applied new design for the targets section in the admin page
+- Applied new design for the targets section in the admin page.
+- Scenarios selection disabled temporarily in map visualization mode [LANDGRIF-744](https://vizzuality.atlassian.net/browse/LANDGRIF-744)
 
 ### Fixed
 - Location types params added to "/impact/table" endpoint [LANDGRIF-733](https://vizzuality.atlassian.net/browse/LANDGRIF-733)

@@ -138,7 +138,6 @@ const Table: React.FC<TableProps> = ({
   useEffect(() => {
     // Data is loading; let's retain the existing columns for now.
     if (isLoading) return;
-
     const columns =
       sortingMode === SortingMode.Api
         ? props.columns.map((column) => ({

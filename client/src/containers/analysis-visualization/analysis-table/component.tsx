@@ -94,7 +94,6 @@ const AnalysisTable: React.FC = () => {
   const tableData = useMemo(() => {
     const result = [];
     const isMultipleIndicator = impactTable.length > 1;
-
     // TO-DO: make it recursive to more levels, right now the max deep is 4
     impactTable.forEach((indicator) => {
       const rowParentId = isMultipleIndicator ? indicator.indicatorId : null;

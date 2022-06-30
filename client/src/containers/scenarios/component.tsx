@@ -94,7 +94,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
           </div>
         </div>
       )}
-      <div className="bg-white z-20 sticky bottom-0 left-0 w-full pb-6 before:bg-gradient-to-t before:from-white before:w-full before:h-24 before:content before:-top-24 before:left-0 before:absolute">
+      <div className="bg-white z-20 sticky bottom-0 left-0 w-full pb-6 before:bg-gradient-to-t before:from-white before:w-full before:h-16 before:content before:-top-16 before:left-0 before:absolute">
         <Button size="xl" className="block w-full" onClick={handleClick}>
           <PlusIcon className="-ml-5 mr-3 h-5 w-5" aria-hidden="true" />
           Create a new scenario

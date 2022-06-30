@@ -577,8 +577,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           startYear: 2018,
           percentage: 50,
           scenarioId: preconditions.scenario.id,
-          materialIds: [preconditions.material1.id, preconditions.material2.id],
-          supplierIds: [preconditions.supplier1.id, preconditions.supplier2.id],
+          materialIds: [preconditions.material1.id],
+          supplierIds: [preconditions.supplier1.id],
           businessUnitIds: [
             preconditions.businessUnit1.id,
             preconditions.businessUnit2.id,
@@ -627,8 +627,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const allSourcingRecords: [SourcingRecord[], number] =
         await sourcingRecordRepository.findAndCount();
 
-      expect(allSourcingLocations[1]).toEqual(5);
-      expect(allSourcingRecords[1]).toEqual(5);
+      expect(allSourcingLocations[1]).toEqual(4);
+      expect(allSourcingRecords[1]).toEqual(4);
 
       const canceledSourcingLocations: SourcingLocation[] =
         await sourcingLocationRepository.find({
@@ -637,7 +637,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           },
         });
 
-      expect(canceledSourcingLocations.length).toBe(2);
+      expect(canceledSourcingLocations.length).toBe(1);
 
       const newSourcingLocations: SourcingLocation[] =
         await sourcingLocationRepository.find({
@@ -664,7 +664,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
       expect(newSourcingRecords.length).toBe(1);
-      expect(newSourcingRecords[0].tonnage).toEqual('550');
+      expect(newSourcingRecords[0].tonnage).toEqual('250');
     });
 
     test(
@@ -793,26 +793,23 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
         [
-          'title must be shorter than or equal to 40 characters',
-          'title must be longer than or equal to 2 characters',
-          'title should not be empty',
+          'Intervention must cover 1 existing material',
+          'New Location Country input is required for the selected intervention and location type',
+          'each value in materialIds must be a UUID',
+          'materialIds should not be empty',
+          'percentage must be a number conforming to the specified constraints',
+          'percentage should not be empty',
+          'scenarioId must be a UUID',
+          'scenarioId should not be empty',
+          'startYear must be a number conforming to the specified constraints',
+          'startYear should not be empty',
           'title must be a string',
+          'title must be longer than or equal to 2 characters',
+          'title must be shorter than or equal to 40 characters',
+          'title should not be empty',
+          'type must be a string',
           'type must be a valid enum value',
           'type should not be empty',
-          'type must be a string',
-          'startYear should not be empty',
-          'startYear must be a number conforming to the specified constraints',
-          'percentage should not be empty',
-          'percentage must be a number conforming to the specified constraints',
-          'scenarioId should not be empty',
-          'scenarioId must be a UUID',
-          'materialIds should not be empty',
-          'each value in materialIds must be a UUID',
-          'businessUnitIds should not be empty',
-          'each value in businessUnitIds must be a UUID',
-          'adminRegionIds should not be empty',
-          'each value in adminRegionIds must be a UUID',
-          'New Location Country input is required for the selected intervention and location type',
         ],
       );
     });
@@ -971,7 +968,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       );
     });
 
-    test('Create new intervention with replacing material without new location data fields and new material should fail with a 400 error', async () => {
+    test('When I Create new intervention with replacing material without new location data fields and new material Then I should get a 400 error', async () => {
       const scenario: Scenario = await createScenario();
       const material: Material = await createMaterial();
       const supplier: Supplier = await createSupplier();
@@ -1003,6 +1000,39 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           'New Material is required for the selected intervention type',
           'New location type input is required for the selected intervention type',
         ],
+      );
+    });
+
+    test('When I Create new intervention for more than 1 material Then i should get a relevant error message', async () => {
+      const scenario: Scenario = await createScenario();
+      const material: Material = await createMaterial();
+      const material2: Material = await createMaterial();
+      const supplier: Supplier = await createSupplier();
+      const businessUnit: BusinessUnit = await createBusinessUnit();
+      const adminRegion: AdminRegion = await createAdminRegion();
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'test scenario intervention',
+          startYear: 2025,
+          percentage: 50,
+          scenarioId: scenario.id,
+          materialIds: [material.id, material2.id],
+          supplierIds: [supplier.id],
+          businessUnitIds: [businessUnit.id],
+          adminRegionIds: [adminRegion.id],
+          type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+          newLocationCountryInput: 'TestCountry',
+          newLocationType: 'unknown',
+          newMaterialId: material.id,
+        });
+
+      expect(HttpStatus.BAD_REQUEST);
+      expect(response).toHaveErrorMessage(
+        HttpStatus.BAD_REQUEST,
+        'Bad Request Exception',
+        ['Intervention must cover 1 existing material'],
       );
     });
   });

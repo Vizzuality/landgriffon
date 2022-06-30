@@ -1,11 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  ArrayMaxSize,
+  ArrayNotEmpty,
   IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
   IsUUID,
+  maxLength,
   MaxLength,
   MinLength,
   ValidateIf,
@@ -15,6 +18,7 @@ import { SCENARIO_INTERVENTION_TYPE } from 'modules/scenario-interventions/scena
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
 import { Type } from 'class-transformer';
+import { Optional } from '@nestjs/common';
 
 export class CreateScenarioInterventionDto {
   @IsString()
@@ -85,7 +89,10 @@ export class CreateScenarioInterventionDto {
   scenarioId!: string;
 
   @IsUUID(4, { each: true })
-  @IsNotEmpty()
+  @ArrayNotEmpty()
+  @ArrayMaxSize(1, {
+    message: 'Intervention must cover 1 existing material',
+  })
   @ApiProperty({
     description: 'Ids of Materials that will be affected by intervention',
     type: [String],
@@ -94,13 +101,13 @@ export class CreateScenarioInterventionDto {
   materialIds!: string[];
 
   @IsUUID(4, { each: true })
-  @IsNotEmpty()
+  @IsOptional()
   @ApiPropertyOptional({
     description: 'Ids of Business Units that will be affected by intervention',
     type: [String],
     example: 'bc5e4933-cd9a-4afc-bd53-56941b812345',
   })
-  businessUnitIds!: string[];
+  businessUnitIds?: string[];
 
   @IsUUID(4, { each: true })
   @IsOptional()
@@ -110,16 +117,16 @@ export class CreateScenarioInterventionDto {
     type: [String],
     example: 'bc5e4933-cd9a-4afc-bd53-56941b865432',
   })
-  supplierIds!: string[];
+  supplierIds?: string[];
 
   @IsUUID(4, { each: true })
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: 'Ids of Admin Regions that will be affected by intervention',
     type: [String],
     example: 'bc5e4933-cd9a-4afc-bd53-56941b8adca3',
   })
-  adminRegionIds!: string[];
+  adminRegionIds?: string[];
 
   @IsOptional()
   @ApiPropertyOptional({

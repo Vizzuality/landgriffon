@@ -48,3 +48,11 @@ other smart filter endpoints.
 
 Fixed 
 Impact table - fix filters when retrieving 'group by' entities for table skeleton
+
+## 2022-06-30
+
+### Fixed
+
+Fixed
+Creating Scenario Intervention can cover only 1 material, business units and admin regions filters are not obligatory
+

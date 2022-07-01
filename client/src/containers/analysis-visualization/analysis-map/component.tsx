@@ -3,36 +3,30 @@ import DeckGL from '@deck.gl/react';
 import { StaticMap } from 'react-map-gl';
 import { XCircleIcon } from '@heroicons/react/solid';
 
-import { useAppSelector } from 'store/hooks';
+import { useAppSelector, useAppDispatch } from 'store/hooks';
+import { analysisMap } from 'store/features/analysis';
+import { setViewState } from 'store/features/analysis/map';
 
 import { useImpactLayer } from 'hooks/layers/impact';
 import { useMaterialLayer } from 'hooks/layers/material';
 import { useRiskLayer } from 'hooks/layers/risk';
 
-import PopUp from 'components/map/popup';
+import Legend from 'containers/analysis-visualization/analysis-legend';
 import PageLoading from 'containers/page-loading';
-import Legend from '../analysis-legend';
+import ZoomControl from 'components/map/controls/zoom';
+import PopUp from 'components/map/popup';
+import BasemapControl from 'components/map/controls/basemap';
 
 import { NUMBER_FORMAT } from 'utils/number-format';
-import ZoomControl from 'components/map/controls/zoom';
-import { analysisMap } from 'store/features/analysis';
-
-import type { PopUpProps } from 'components/map/popup/types';
-import BasemapControl from 'components/map/controls/basemap';
 
 import DefaultMapStyle from './styles/map-style.json';
 import SatelliteMapStyle from './styles/map-style-satellite.json';
-import { BasemapValue } from 'components/map/controls/basemap/types';
+
+import type { BasemapValue } from 'components/map/controls/basemap/types';
+import type { PopUpProps } from 'components/map/popup/types';
+import type { ViewState } from 'react-map-gl/src/mapbox/mapbox';
 
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
-const INITIAL_VIEW_STATE = {
-  longitude: 0,
-  latitude: 0,
-  zoom: 2,
-  pitch: 0,
-  bearing: 0,
-  minZoom: 2,
-};
 
 const MAP_SYTLES = {
   terrain: DefaultMapStyle,
@@ -40,11 +34,15 @@ const MAP_SYTLES = {
 };
 
 const AnalysisMap: React.FC = () => {
-  const { tooltipData, tooltipPosition, layers: layerProps } = useAppSelector(analysisMap);
-  const [isRendering, setIsRendering] = useState(false);
-
-  const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
-
+  const dispatch = useAppDispatch();
+  const {
+    viewState,
+    tooltipData,
+    tooltipPosition,
+    layers: layerProps,
+  } = useAppSelector(analysisMap);
+  const [isRendering, setIsRendering] = useState<boolean>(false);
+  const [localViewState, setLocalViewState] = useState<ViewState>(viewState);
   const [mapStyle, setMapStyle] = useState<BasemapValue>('terrain');
 
   // Loading layers
@@ -65,9 +63,28 @@ const AnalysisMap: React.FC = () => {
 
   const onZoomChange = useCallback(
     (zoom) => {
-      setViewState((state) => ({ ...state, zoom, transitionDuration: 250 }));
+      setLocalViewState((state) => ({ ...state, zoom, transitionDuration: 250 }));
+      dispatch(setViewState({ zoom }));
     },
-    [setViewState],
+    [dispatch],
+  );
+
+  const handleViewStateChange = useCallback(
+    ({ viewState }) => {
+      setLocalViewState(viewState);
+      dispatch(
+        // viewState have more attributes we want to save in the store
+        setViewState({
+          longitude: viewState.longitude,
+          latitude: viewState.latitude,
+          zoom: viewState.zoom,
+          altitude: viewState.altitude,
+          pitch: viewState.pitch,
+          bearing: viewState.bearing,
+        }),
+      );
+    },
+    [dispatch],
   );
 
   const handleMapStyleChange = useCallback((newStyle: BasemapValue) => {
@@ -79,15 +96,13 @@ const AnalysisMap: React.FC = () => {
       {(isFetching || isRendering) && <PageLoading />}
       <DeckGL
         initialViewState={viewState}
-        onViewStateChange={({ viewState }) => {
-          setViewState(viewState);
-        }}
+        onViewStateChange={handleViewStateChange}
         controller
         layers={layers}
         onAfterRender={handleAfterRender}
       >
         <StaticMap
-          viewState={viewState}
+          viewState={localViewState}
           mapStyle={MAP_SYTLES[mapStyle]}
           mapboxApiAccessToken={MAPBOX_API_TOKEN}
           className="-z-10"

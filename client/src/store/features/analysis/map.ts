@@ -1,7 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+import type { ViewState } from 'react-map-gl/src/mapbox/mapbox';
 import type { RootState } from 'store';
 import type { Layer, Material } from 'types';
+
+const INITIAL_VIEW_STATE = {
+  longitude: 0,
+  latitude: 0,
+  zoom: 2,
+  pitch: 0,
+  bearing: 0,
+  minZoom: 2,
+};
 
 const DEFAULT_LAYER_ATTRIBUTES = {
   order: 0,
@@ -41,6 +51,7 @@ type TooltipData = {
 };
 
 export type AnalysisMapState = {
+  viewState: ViewState;
   // User layers; not used, but it's prepared for the future
   userLayers: Layer[];
   // Custom LG layers
@@ -65,6 +76,7 @@ type FeatureState = RootState & { 'analysis/map': AnalysisMapState };
 
 // Define the initial state using that type
 export const initialState: AnalysisMapState = {
+  viewState: INITIAL_VIEW_STATE,
   userLayers: [],
   layers: {
     material: { id: 'h3-layer-material', ...DEFAULT_LAYER_ATTRIBUTES, order: 3 },
@@ -87,6 +99,13 @@ export const analysisMapSlice = createSlice({
   name: 'analysisMap',
   initialState,
   reducers: {
+    setViewState: (state, action: PayloadAction<Partial<AnalysisMapState['viewState']>>) => ({
+      ...state,
+      viewState: {
+        ...state.viewState,
+        ...action.payload,
+      },
+    }),
     setLayer: (
       state,
       action: PayloadAction<{
@@ -168,6 +187,7 @@ export const analysisMapSlice = createSlice({
 });
 
 export const {
+  setViewState,
   setLayer,
   setUserLayer,
   setUserLayers,

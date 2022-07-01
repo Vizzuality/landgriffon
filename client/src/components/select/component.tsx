@@ -59,6 +59,7 @@ const customStyles: (theme: SelectProps['theme'], error?: boolean) => StylesConf
         tw`border border-l-0 border-r-0 border-t-0 border-b-2 border-b-green-700 shadow-none rounded-none min-w-[30px] p-0 min-h-0`),
       ...(theme === 'default' && tw`w-full rounded-md`),
       ...tw`px-4 gap-x-0.5`,
+      ...(theme === 'default-bordernone' && tw`border-0 px-1`),
     }),
     singleValue: (provided) => ({
       ...provided,
@@ -221,7 +222,7 @@ const Select: React.FC<SelectProps> = ({
             </div>
             {extraInfo && (
               <div>
-                <i className="text-xs text-gray-600">{extraInfo}</i>
+                <span className="text-xs text-gray-600 italic">{extraInfo}</span>
               </div>
             )}
           </div>
@@ -262,7 +263,7 @@ const Select: React.FC<SelectProps> = ({
           IndicatorSeparator: null,
           LoadingIndicator: () => <Loading className="text-green-700" />,
           DropdownIndicator:
-            theme === 'default'
+            theme === 'default' || theme === 'default-bordernone'
               ? ({ selectProps: { menuIsOpen } }) => (
                   <ChevronDownIcon
                     className={classNames('h-4 w-4 text-gray-900', {

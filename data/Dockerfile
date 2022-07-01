@@ -18,7 +18,7 @@ RUN mkdir -p data/
 
 COPY ./base_data_importer/ /base_data_importer
 COPY ./data_download/ /data_download
-COPY ./h3_raster_importer /h3_raster_importer
+COPY h3_data_importer /h3_data_importer
 COPY ./Makefile ./Makefile
 
 ENTRYPOINT ["/usr/bin/make"]

@@ -25,8 +25,8 @@ seed-gadm:
 
 seed-h3-tables:
 	@echo "Starting seeding h3 tables... "
-	cd ./h3_raster_importer && make
+	cd ./h3_data_importer && make
 
 seed-contextual-layers:
 	@echo "Starting seeding contextual layers... "
-	cd ./h3_raster_importer && make contextual-layers
+	cd ./h3_data_importer && make contextual-layers

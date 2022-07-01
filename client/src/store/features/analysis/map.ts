@@ -8,9 +8,6 @@ const INITIAL_VIEW_STATE = {
   longitude: 0,
   latitude: 0,
   zoom: 2,
-  pitch: 0,
-  bearing: 0,
-  minZoom: 2,
 };
 
 const DEFAULT_LAYER_ATTRIBUTES = {
@@ -51,7 +48,7 @@ type TooltipData = {
 };
 
 export type AnalysisMapState = {
-  viewState: ViewState;
+  viewState: Partial<ViewState>;
   // User layers; not used, but it's prepared for the future
   userLayers: Layer[];
   // Custom LG layers

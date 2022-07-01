@@ -6,6 +6,7 @@ import { XCircleIcon } from '@heroicons/react/solid';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap } from 'store/features/analysis';
 import { setViewState } from 'store/features/analysis/map';
+import { useDebounce } from 'rooks';
 
 import { useImpactLayer } from 'hooks/layers/impact';
 import { useMaterialLayer } from 'hooks/layers/material';
@@ -33,6 +34,15 @@ const MAP_SYTLES = {
   satellite: SatelliteMapStyle,
 };
 
+const INITIAL_VIEW_STATE = {
+  longitude: 0,
+  latitude: 0,
+  zoom: 2,
+  pitch: 0,
+  bearing: 0,
+  minZoom: 2,
+};
+
 const AnalysisMap: React.FC = () => {
   const dispatch = useAppDispatch();
   const {
@@ -42,8 +52,26 @@ const AnalysisMap: React.FC = () => {
     layers: layerProps,
   } = useAppSelector(analysisMap);
   const [isRendering, setIsRendering] = useState<boolean>(false);
-  const [localViewState, setLocalViewState] = useState<ViewState>(viewState);
+  const [localViewState, setLocalViewState] = useState<ViewState>({
+    ...INITIAL_VIEW_STATE,
+    ...viewState, // store has priority over local state
+  });
   const [mapStyle, setMapStyle] = useState<BasemapValue>('terrain');
+
+  // Debounced view state update to avoid too many updates in the store
+  const updateViewState = useCallback(
+    (viewState) =>
+      dispatch(
+        // viewState have more attributes we want to save in the store
+        setViewState({
+          longitude: viewState.longitude,
+          latitude: viewState.latitude,
+          zoom: viewState.zoom,
+        }),
+      ),
+    [dispatch],
+  );
+  const setDebouncedViewState = useDebounce(updateViewState, 300);
 
   // Loading layers
   const impactLayer = useImpactLayer();
@@ -69,24 +97,6 @@ const AnalysisMap: React.FC = () => {
     [dispatch],
   );
 
-  const handleViewStateChange = useCallback(
-    ({ viewState }) => {
-      setLocalViewState(viewState);
-      dispatch(
-        // viewState have more attributes we want to save in the store
-        setViewState({
-          longitude: viewState.longitude,
-          latitude: viewState.latitude,
-          zoom: viewState.zoom,
-          altitude: viewState.altitude,
-          pitch: viewState.pitch,
-          bearing: viewState.bearing,
-        }),
-      );
-    },
-    [dispatch],
-  );
-
   const handleMapStyleChange = useCallback((newStyle: BasemapValue) => {
     setMapStyle(newStyle);
   }, []);
@@ -95,8 +105,16 @@ const AnalysisMap: React.FC = () => {
     <>
       {(isFetching || isRendering) && <PageLoading />}
       <DeckGL
-        initialViewState={viewState}
-        onViewStateChange={handleViewStateChange}
+        initialViewState={localViewState}
+        // do not add useCallback here, it will cause performance issues on the map
+        onViewStateChange={({ viewState }) => {
+          setViewState(viewState);
+          setDebouncedViewState({
+            longitude: viewState.longitude,
+            latitude: viewState.latitude,
+            zoom: viewState.zoom,
+          });
+        }}
         controller
         layers={layers}
         onAfterRender={handleAfterRender}

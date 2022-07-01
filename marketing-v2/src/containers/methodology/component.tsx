@@ -10,10 +10,12 @@ import KnowMore from 'containers/methodology/know-more';
 
 import Testimonials from 'containers/testimonials';
 import Newsletter from 'containers/newsletter';
+import ScrollDown from 'containers/scroll-down';
 
 const Methodology: React.FC = () => {
   return (
     <>
+      <ScrollDown theme="light" />
       <Hero />
 
       <Steps>

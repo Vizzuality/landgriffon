@@ -130,7 +130,7 @@ const Rason: React.FC = () => {
                 <li>
                   <Image
                     layout="intrinsic"
-                    src="/images/logos/NASA_logo.png"
+                    src="/images/logos/nasa_logo.png"
                     alt="NASA"
                     width={180}
                     height={180}

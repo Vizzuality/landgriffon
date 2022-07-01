@@ -9,10 +9,12 @@ import Team from 'containers/about/team';
 
 import Newsletter from 'containers/newsletter';
 import Separator from 'containers/separator';
+import ScrollDown from 'containers/scroll-down';
 
 const About: React.FC = () => {
   return (
     <>
+      <ScrollDown theme="light" />
       <Hero />
       <How />
       <Video />

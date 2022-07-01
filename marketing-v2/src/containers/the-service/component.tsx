@@ -15,10 +15,12 @@ import AppScreens from 'containers/the-service/app-screens';
 import Separator from 'containers/separator';
 import Testimonials from 'containers/testimonials';
 import Newsletter from 'containers/newsletter';
+import ScrollDown from 'containers/scroll-down';
 
 const TheService: React.FC = () => {
   return (
     <div className="w-full overflow-hidden">
+      <ScrollDown theme="light" />
       <Hero />
 
       <Steps theme="green">

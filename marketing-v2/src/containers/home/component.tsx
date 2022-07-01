@@ -7,10 +7,12 @@ import How from 'containers/home/how';
 import Developed from 'containers/home/developed';
 import Testimonials from 'containers/testimonials';
 import Newsletter from 'containers/newsletter';
+import ScrollDown from 'containers/scroll-down';
 
 const Home: React.FC = () => {
   return (
     <>
+      <ScrollDown theme="dark" />
       <Hero />
       <What />
       <Features />

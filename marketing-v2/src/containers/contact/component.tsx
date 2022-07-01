@@ -5,11 +5,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 import Wrapper from 'containers/wrapper';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 import EMAIL_SVG from 'svgs/contact/icn_email.svg?sprite';
 import LOCATION_SVG from 'svgs/contact/icn_location.svg?sprite';
 import Icon from 'components/icon';
+import { useSaveContact } from 'hooks/contact';
+import Loading from 'components/loading';
 
 const schema = yup.object().shape({
   name: yup.string().required(),
@@ -21,14 +23,34 @@ const schema = yup.object().shape({
 });
 
 const Contact: React.FC = () => {
-  const { register, handleSubmit, formState } = useForm({
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const { register, handleSubmit, formState, reset } = useForm({
     resolver: yupResolver(schema),
   });
   const { errors } = formState;
 
-  const onSubmit = useCallback((data) => {
-    console.log(data);
-  }, []);
+  const saveContactMutation = useSaveContact({});
+
+  const onSubmit = useCallback(
+    (data) => {
+      setSubmitting(true);
+      saveContactMutation.mutate(
+        { data },
+        {
+          onSuccess: () => {
+            setSubmitting(false);
+            setSuccess(true);
+          },
+          onError: () => {
+            setSubmitting(false);
+          },
+        },
+      );
+    },
+    [saveContactMutation],
+  );
 
   return (
     <section className="bg-white">
@@ -90,8 +112,33 @@ const Contact: React.FC = () => {
           <Wrapper>
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className="p-10 space-y-10 bg-orange-500 md:p-20"
+              className="relative p-10 space-y-10 bg-orange-500 md:p-20"
             >
+              {submitting && (
+                <div className="absolute top-0 left-0 z-20 flex items-center justify-center w-full h-full bg-orange-500/50">
+                  <Loading />
+                </div>
+              )}
+
+              {success && (
+                <div className="absolute top-0 left-0 z-20 flex flex-col items-center justify-center w-full h-full py-20 space-y-5 bg-orange-500 xl:px-20">
+                  <h2 className="text-6xl font-black uppercase font-display">Thank you</h2>
+                  <p className="text-xl font-light">We will be in touch soon.</p>
+
+                  <div>
+                    <button
+                      type="button"
+                      className="py-8 mt-5 font-semibold text-black bg-transparent border border-black px-14 hover:bg-black/10"
+                      onClick={() => {
+                        reset();
+                        setSuccess(false);
+                      }}
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              )}
               <div className="flex flex-col items-end justify-between space-y-10 md:flex-row md:space-x-10 md:space-y-0">
                 <div className="w-full">
                   <label htmlFor="name" className="font-bold ">

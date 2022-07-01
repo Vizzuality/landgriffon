@@ -40,7 +40,6 @@ const NewsLetter: React.FC = () => {
           },
         },
       );
-      console.log(data);
     },
     [saveNewsLetterMutation],
   );

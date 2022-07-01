@@ -20,7 +20,7 @@ WORKDIR_AQUEDUCT=data/contextual/aqueduct
 
 all:
 	make clean
-	make -j 2 crop indicators
+	make -j 2 indicators
 
 crop:
 	make -j 2 convert-mapspam-crop-production convert-earthstat-crop-production convert-earthstat-crop-harvest convert-mapspam-crop-harvest convert-glw3-livestock

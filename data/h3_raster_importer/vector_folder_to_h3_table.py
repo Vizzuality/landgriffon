@@ -54,6 +54,7 @@ DTYPES_TO_PG = {
 }
 
 logging.basicConfig(level=logging.INFO)
+log = logging.getLogger("vector_folder_to_h3_table")
 
 postgres_thread_pool = ThreadedConnectionPool(
     1,
@@ -102,14 +103,14 @@ def vector_file_to_h3dataframe(
     h3_res: int = 6,
 ) -> gpd.GeoDataFrame:
     """Converts a vector file to a GeoDataFrame"""
-    logging.info(f"Reading {str(filename)} and converting geometry to H3...")
+    log.info(f"Reading {str(filename)} and converting geometry to H3...")
     gdf = gpd.GeoDataFrame.from_features(records(filename, [column])).set_crs("EPSG:4326")
     h3df = vector.geodataframe_to_h3(gdf, h3_res).set_index("h3index")
     # check for duplicated h3 indices since the aqueduct data set generates duplicated h3 indices
     # we currently don't know why this happens and further investigation is needed
     # but for now we just drop the duplicates if it is safe to do so (i.e. the dupes have the same value)
     if h3df.index.duplicated().any():
-        logging.warning(f"Duplicated H3 indexes found in {filename}. Checking if it safe to drop...")
+        log.warning(f"Duplicated H3 indexes found in {filename}. Checking if it safe to drop...")
         dupes_mask = h3df.index.duplicated(keep="first")
         dupe_idx = h3df.index[dupes_mask]
         # check that the duplicated values are the same and drop them if they are
@@ -117,13 +118,13 @@ def vector_file_to_h3dataframe(
         for idx in dupe_idx:
             values = h3df.loc[idx]
             if any(values[col].is_unique for col in values.columns):
-                logging.error(
+                log.error(
                     f"Duplicated H3 index {idx} found in {filename} with different values."
                     " Data ingestion will stop. Please check the data."
                 )
                 raise ValueError(f"Duplicated H3 index {idx} found in {filename} with different values.")
         h3df = h3df[~dupes_mask]  # drop the duplicates
-        logging.info(f"Dropped {len(dupe_idx)} duplicated H3 indexes")
+        log.info(f"Dropped {len(dupe_idx)} duplicated H3 indexes")
 
     if not h3df.empty:
         # we want h3index as hex, do we?
@@ -143,9 +144,9 @@ def create_h3_grid_table(
     cursor = connection.cursor()
     if drop_if_exists:
         cursor.execute(f"DROP TABLE IF EXISTS {table_name};")
-        logging.info(f"Dropped table {table_name}")
+        log.info(f"Dropped table {table_name}")
     cursor.execute(f"CREATE TABLE {table_name} (h3index h3index PRIMARY KEY, {schema});")
-    logging.info(f"Created table {table_name} with columns {', '.join(dtypes.keys())}")
+    log.info(f"Created table {table_name} with columns {', '.join(dtypes.keys())}")
     connection.commit()
     cursor.close()
 
@@ -156,7 +157,7 @@ def insert_to_h3_grid_table(
     connection: psycopg2.extensions.connection,
 ):
     cursor = connection.cursor()
-    logging.info(f"Preparing {len(df)} rows buffer...")
+    log.info(f"Preparing {len(df)} rows buffer...")
 
     with StringIO() as buffer:  # why are we using this?
         df.to_csv(buffer, na_rep="NULL", header=False, sep="\t")  # use tabs because fields with commas
@@ -165,7 +166,7 @@ def insert_to_h3_grid_table(
 
     connection.commit()
     cursor.close()
-    logging.info(f"{len(df)} values written to database.")
+    log.info(f"{len(df)} values written to database.")
 
 
 def insert_to_h3_data_and_contextual_layer_tables(
@@ -180,14 +181,14 @@ def insert_to_h3_data_and_contextual_layer_tables(
     connection.commit()  # todo: check if commiting here the deletes before everything else is safe
 
     # insert new entries
-    logging.info("Inserting record into h3_data table...")
+    log.info("Inserting record into h3_data table...")
 
     cursor.execute(
         f"""INSERT INTO "h3_data" ("h3tableName", "h3columnName", "h3resolution", "year")
          VALUES ('{table}', '{column}', {h3_res}, {year});"""
     )
 
-    logging.info("Inserting record into contextual_layer table...")
+    log.info("Inserting record into contextual_layer table...")
     cursor.execute(
         f"""INSERT INTO "contextual_layer"  ("name", "metadata", "category")
          VALUES ('{dataset}', '{json.dumps(get_metadata(table))}', '{category}')
@@ -214,7 +215,7 @@ def get_metadata(table: str) -> dict:
     metadata_path = metadata_base_path / f"{table}_metadata.json"
 
     if not metadata_path.exists():
-        logging.error(f"No metadata found for {table}")
+        log.error(f"No metadata found for {table}")
         # todo: should we raise exception or return empty metadata and keep going?
         raise FileNotFoundError(f"Metadata file for {table} not found")
 
@@ -223,7 +224,7 @@ def get_metadata(table: str) -> dict:
         try:
             jsonschema.validate(metadata, schema)
         except ValidationError as e:
-            logging.error(f"Metadata for {table} is not valid: {e}")
+            log.error(f"Metadata for {table} is not valid: {e}")
             # todo: should we raise exception or return empty metadata and keep going?
             raise e
         return metadata
@@ -236,11 +237,11 @@ def main(folder, table, column, dataset, category, year, h3_res):
     for ext in vec_extensions:
         vectors.extend(path.glob(f"*.{ext}"))
     if not vectors:
-        logging.error(f"No vectors with extension {vec_extensions} found in {folder}")
+        log.error(f"No vectors with extension {vec_extensions} found in {folder}")
         return
 
     if category not in CONTEXTUAL_LAYER_CATEGORIES:
-        logging.error(f"Category '{category}' not supported. Supported categories: {CONTEXTUAL_LAYER_CATEGORIES}")
+        log.error(f"Category '{category}' not supported. Supported categories: {CONTEXTUAL_LAYER_CATEGORIES}")
         return
 
     conn = postgres_thread_pool.getconn()
@@ -253,7 +254,7 @@ def main(folder, table, column, dataset, category, year, h3_res):
     else:
         mssg = (f"Found more than one vector file in {folder}."
                 f" For now we only support folders with just one vector file.")
-        logging.error(mssg)
+        log.error(mssg)
         return
     postgres_thread_pool.putconn(conn, close=True)
 

@@ -53,6 +53,7 @@ DTYPES_TO_PG = {
 BLOCK_SIZE = 512
 
 logging.basicConfig(level=logging.INFO)
+log = logging.getLogger("tif_folder_to_h3_table")
 
 postgres_thread_pool = ThreadedConnectionPool(1, 50,
                                               host=os.getenv('API_POSTGRES_HOST'),
@@ -88,7 +89,7 @@ def gen_raster_h3_for_row_and_column(row, column, names, readers, h3_res):
                                                  compacted=False, geo=False)
         dfs.append(_df.set_index('h3index')['value'])
     df = pd.concat(dfs, axis=1)
-    logging.debug(f'Reading block {row}, {column}: h3index count {len(df)}')
+    log.debug(f'Reading block {row}, {column}: h3index count {len(df)}')
     if len(df):
         df.columns = names
         df.index = pd.Series(df.index).apply(lambda x: hex(x)[2:])
@@ -102,15 +103,15 @@ def gen_raster_h3_for_row(raster_list, h3_res, table_name, row):
     base = rio.open(raster_list[0])
     results = []
 
-    logging.debug(f'Starting iterating over row {row}')
+    log.debug(f'Starting iterating over row {row}')
 
     column_range = range(ceil(base.width / BLOCK_SIZE))
     progress_bar = tqdm(column_range)
     for column in progress_bar:
         results.append(gen_raster_h3_for_row_and_column(row, column, names, readers, h3_res))
-        progress_bar.set_description("Processing column %s for row %s " % (column, row))
+        progress_bar.set_description(f"Processing column {column} for row {row}")
 
-    logging.debug(f'Done iterating over row {row}')
+    log.debug(f'Done iterating over row {row}')
 
     write_data_to_database_table(table_name, results, row)
 
@@ -144,16 +145,16 @@ def gen_raster_h3(raster_list, h3_res, table_name, thread_count):
     height = ceil(base.height / BLOCK_SIZE)
     width = ceil(base.width / BLOCK_SIZE)
 
-    logging.info(f"Generating h3 data from raster with {height} x {width}")
+    log.info(f"Generating h3 data from raster with {height} x {width} for table {table_name}")
 
     partial_gen_raster_h3_for_row = partial(gen_raster_h3_for_row, raster_list, h3_res, table_name)
     row_progress_bar = tqdm(pool.imap_unordered(func=partial_gen_raster_h3_for_row, iterable=range(height)),
                             total=height)
     result_list_tqdm = []
-    row_progress_bar.set_description("Processed %s rows of %s " % (len(result_list_tqdm), height))
+    row_progress_bar.set_description(f"Processed {len(result_list_tqdm)} rows of {height} for table {table_name}")
     for row in row_progress_bar:
         result_list_tqdm.append(row)
-        row_progress_bar.set_description("Processed %s rows of %s " % (len(result_list_tqdm), height))
+        row_progress_bar.set_description(f"Processed {len(result_list_tqdm)} rows of {height} for table {table_name}")
 
     base.close()
 
@@ -164,7 +165,7 @@ def create_table(h3_res, raster_list, table):
 
     base = rio.open(raster_list[0])
 
-    logging.debug(f"Loading first rows to build table {table}")
+    log.debug(f"Loading first rows to build table {table}")
     names = [slugify(os.path.splitext(os.path.basename(r))[0]) for r in raster_list]
     readers = [rio.open(r) for r in raster_list]
 
@@ -181,7 +182,7 @@ def create_table(h3_res, raster_list, table):
     cols = zip(column_data.columns, column_data.dtypes)
     schema = ', '.join([f"\"{col}\" {DTYPES_TO_PG[str(dtype)]}" for col, dtype in cols])
     cursor.execute(f"CREATE TABLE {table} (h3index h3index PRIMARY KEY, {schema});")
-    logging.debug(f"Created table {table} with columns {', '.join(column_data.columns)}")
+    log.info(f"Created table {table} with columns {', '.join(column_data.columns)}")
     conn.commit()
     postgres_thread_pool.putconn(conn, close=True)
     return column_data
@@ -193,7 +194,7 @@ def write_data_to_database_table(table, results, row):
     cursor = conn.cursor()
     counter = 0
 
-    logging.info(f"Preparing row {row} buffer...")
+    log.info(f"Preparing row {row} buffer...")
 
     for data in results:
         if data is not None:
@@ -204,7 +205,7 @@ def write_data_to_database_table(table, results, row):
                 cursor.copy_from(buffer, table, sep=',', null="NULL")
 
     conn.commit()
-    logging.info(f"{counter} values for row {row} written to database, ending row iteration")
+    log.info(f"{counter} values for row {row} written to database table {table}, ending row iteration")
     postgres_thread_pool.putconn(conn, close=True)
 
 
@@ -212,7 +213,7 @@ def load_raster_list_to_h3_table(raster_list, table, data_type, dataset, year, h
     conn = postgres_thread_pool.getconn()
 
     cursor = conn.cursor()
-    logging.info(f"Dropping table {table}...")
+    log.info(f"Dropping table {table}...")
     cursor.execute(f"DROP TABLE IF EXISTS {table};")
     cursor.execute(
         f"""DELETE FROM "material_to_h3" WHERE "h3DataId" IN (SELECT id FROM "h3_data" WHERE "h3tableName" = '{table}');""")
@@ -233,12 +234,14 @@ def load_raster_list_to_h3_table(raster_list, table, data_type, dataset, year, h
             INSERT INTO "h3_data" ("h3tableName", "h3columnName", "h3resolution", "year")
             VALUES ('{table}', '{column}', {h3_res}, {year});
         """)
+        log.info(f"Inserted('{table}', '{column}', {h3_res}, {year}) into h3_data table.")
         # inter id in material entity
         if data_type == 'indicator':
             cursor.execute(f"""select id from "indicator" where "nameCode" = '{dataset}'""")
             indicator_data = cursor.fetchall()
             cursor.execute(
                 f"""update "h3_data"  set "indicatorId" = '{indicator_data[0][0]}' where  "h3columnName" = '{column}'""")
+            log.info(f"Updated indicatorId '{indicator_data[0][0]}' in h3_data for {column}")
         else:
             cursor.execute(f"""select id from "h3_data" where "h3columnName" = '{column}'""")
             h3_data = cursor.fetchall()
@@ -256,6 +259,7 @@ def load_raster_list_to_h3_table(raster_list, table, data_type, dataset, year, h
                         f"""DELETE FROM "material_to_h3" WHERE "materialId" = '{material_id[0]}' AND "type" = 'harvest'""")
                     cursor.execute(
                         f"""INSERT INTO "material_to_h3" ("materialId", "h3DataId", "type") VALUES ('{material_id[0]}', '{h3_data[0][0]}', 'harvest')""")
+                log.info(f"Updated materialId '{material_id[0]}' in material_to_h3 for {column}")
 
     conn.commit()
     cursor.close()
@@ -267,10 +271,10 @@ def main(folder, table, data_type, dataset, year, h3_res, thread_count):
         for f in os.listdir(folder)
         if os.path.splitext(f)[1] == '.tif'
     ]
-    logging.info(f'Starting h3 import with {thread_count} threads')
-    logging.info(f'Found {len(tiffs)} tiffs')
+    log.info(f'Starting h3 import with {thread_count} threads for table {table}')
+    log.info(f'Found {len(tiffs)} tiffs')
     load_raster_list_to_h3_table(tiffs, table, data_type, dataset, year, h3_res, thread_count)
-    logging.info('Done')
+    log.info(f'Done with table {table}')
 
 
 if __name__ == "__main__":

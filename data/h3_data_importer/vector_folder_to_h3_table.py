@@ -26,7 +26,6 @@ import logging
 import os
 from io import StringIO
 from pathlib import Path
-from re import sub
 
 import fiona
 import geopandas as gpd
@@ -37,6 +36,8 @@ from docopt import docopt
 from h3ronpy import vector
 from jsonschema.exceptions import ValidationError
 from psycopg2.pool import ThreadedConnectionPool
+
+from utils import slugify
 
 DTYPES_TO_PG = {
     "object": "text",
@@ -77,15 +78,6 @@ def get_contextual_layer_category_enum(connection_pool) -> set:
 
 
 CONTEXTUAL_LAYER_CATEGORIES = get_contextual_layer_category_enum(postgres_thread_pool)
-
-
-def slugify(s):
-    s = sub(r"[_-]+", " ", s).title().replace(" ", "")
-    return "".join([s[0].lower(), s[1:]])
-
-
-def snakify(s):
-    return sub(r"(?<!^)(?=[A-Z])", "_", s).lower()
 
 
 def records(filename, usecols, **kwargs):

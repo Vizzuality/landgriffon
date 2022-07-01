@@ -8,6 +8,7 @@ import pandas as pd
 import requests
 from psycopg2.pool import ThreadedConnectionPool
 
+from utils import slugify
 from vector_folder_to_h3_table import insert_to_h3_data_and_contextual_layer_tables
 
 CSV_URL = "https://hdr.undp.org/sites/default/files/data/2020/IHDI_HDR2020_040722.csv"
@@ -25,28 +26,9 @@ postgres_thread_pool = ThreadedConnectionPool(
 )
 
 
-def first_h3_grid_table_query(table_name: str, country_iso3_code: str, hdi_value: float) -> str:
-    """Makes a sql query to create a table.
-
-    The table contains the h3 indexes of country code and a hdi column with the given value
-    """
-
+def insert_h3_grid_table_query(table_name: str, column: str, country_iso3_code: str, hdi_value: float) -> str:
     query = f"""
-        create table {table_name} (h3index, hdi)
-        as
-        select
-            h3_uncompact(gr."h3Compact"::h3index[], 6) as h3index,
-            {hdi_value} as hdi
-        from geo_region gr
-        join admin_region ar on gr.id = ar."geoRegionId"
-        where ar."isoA3"  = '{country_iso3_code}';
-        """
-    return query
-
-
-def rest_of_h3_grid_table_query(table_name: str, country_iso3_code: str, hdi_value: float) -> str:
-    query = f"""
-        insert into {table_name} (h3index, hdi)
+        insert into {table_name} (h3index, "{column}")
         select
             h3_uncompact(gr."h3Compact"::h3index[], 6) as h3index,
             {hdi_value} as hdi
@@ -67,7 +49,7 @@ def download_data(url: str) -> pd.DataFrame:
     return pd.DataFrame(csv_rows[1:], columns=csv_rows[0])
 
 
-def insert_h3_grid_data(df: pd.DataFrame, table: str, column: str):
+def insert_h3_grid_data(df: pd.DataFrame, table: str, column: str, conn):
     """
     Parameters
     ----------
@@ -86,22 +68,20 @@ def insert_h3_grid_data(df: pd.DataFrame, table: str, column: str):
     log.warning(f"Found countries with NA entries and will not be inserted: {', '.join(countries_w_na.tolist())}")
     df = df.dropna(subset=column)
 
-    conn = postgres_thread_pool.getconn()
     with conn.cursor() as cursor:
         log.info(f"Dropping table {table}...")
         cursor.execute(f"drop table if exists {table};")
-    for i, row in enumerate(df.itertuples()):
-        country_code = getattr(row, "iso3")
-        value = getattr(row, column)
-        if i == 0:
-            query = first_h3_grid_table_query(table, country_code, value)
-        else:
-            query = rest_of_h3_grid_table_query(table, country_code, value)
+        log.info(f"Creating table {table}...")
+
+        cursor.execute(f'create table {table} (h3index h3index PRIMARY KEY, "{column}" real);')
+
+    for row in df.itertuples():
+        country_code, value = getattr(row, "iso3"), getattr(row, column)
+        query = insert_h3_grid_table_query(table, column, country_code, value)
         log.info(f"Inserting HDI data for country {country_code} with value {value}...")
         with conn.cursor() as cursor:
             cursor.execute(query)
     conn.commit()
-    postgres_thread_pool.putconn(conn, close=True)
 
 
 if __name__ == "__main__":
@@ -111,9 +91,15 @@ if __name__ == "__main__":
     parser.add_argument("table", help="name of the table to be created")
     parser.add_argument("column", help="label of the column to use")
     parser.add_argument("year", help="label of the column to use")
-
     args = parser.parse_args()
+
     data = download_data(CSV_URL)
-    insert_h3_grid_data(data, args.table, args.column)
+    data = data.rename(columns={args.column: slugify(args.column)})
+    column = slugify(args.column)
+
     conn = postgres_thread_pool.getconn()
-    insert_to_h3_data_and_contextual_layer_tables(args.table, args.column, 6, "HDI", "Social", args.year, conn)
+
+    insert_h3_grid_data(data, args.table, column, conn)
+    insert_to_h3_data_and_contextual_layer_tables(args.table, column, 6, "HDI", "Social", args.year, conn)
+
+    postgres_thread_pool.putconn(conn, close=True)

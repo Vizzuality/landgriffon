@@ -8,7 +8,7 @@ const Header: React.FC = () => {
   const { pathname } = useRouter();
 
   return (
-    <header className="flex items-center justify-between font-semibold">
+    <header className="flex items-center justify-between font-semibold bg-white">
       <div className="md:px-5 lg:px-12 shrink-0">
         <Link href="/">
           <a>
@@ -87,14 +87,13 @@ const Header: React.FC = () => {
               </a>
             </Link>
           </li>
+          <li>
+            <Link href="/contact">
+              <a className="block px-10 text-white bg-green-500 py-7">Contact</a>
+            </Link>
+          </li>
         </ul>
       </nav>
-
-      <div>
-        <Link href="/contact">
-          <a className="block px-10 text-white bg-green-500 py-7">Contact</a>
-        </Link>
-      </div>
     </header>
   );
 };

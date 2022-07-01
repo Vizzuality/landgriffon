@@ -30,13 +30,13 @@ const How: React.FC = () => {
   }, [percentage]);
 
   return (
-    <section className="relative bg-white">
+    <section className="relative hidden bg-white md:block">
       <Wrapper>
         <div ref={ref} className="h-[400vh] relative">
           <div className="sticky top-0 flex items-center py-32 border-t border-black/10">
             <div className="space-y-20">
               <FadeIn>
-                <h2 className="w-5/12 text-6xl font-black uppercase font-display">
+                <h2 className="w-5/12 text-4xl md:text-6xl font-black uppercase font-display">
                   How does it work?
                 </h2>
               </FadeIn>

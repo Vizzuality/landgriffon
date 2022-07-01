@@ -69,20 +69,20 @@ const What: React.FC = () => {
   }, [slide]);
 
   return (
-    <section className="relative pt-32 pb-64 bg-blue-600">
+    <section className="relative pt-12 pb-24 bg-blue-600 md:pt-32 md:pb-64">
       <div className="relative z-10">
         <Wrapper>
-          <div className="flex justify-between">
-            <div className="w-5/12">
+          <div className="flex flex-col space-y-5 md:flex-row md:space-y-0 md:justify-between">
+            <div className="md:w-5/12">
               <FadeIn>
                 <div>
-                  <h2 className="text-6xl font-black text-white uppercase font-display">
+                  <h2 className="text-4xl font-black text-white uppercase md:text-6xl font-display">
                     What can Landgriffon do for you?
                   </h2>
                 </div>
               </FadeIn>
             </div>
-            <div className="w-5/12">
+            <div className="md:w-5/12">
               <FadeIn>
                 <div className="space-y-5">
                   <div className="flex items-center space-x-2">
@@ -93,7 +93,7 @@ const What: React.FC = () => {
                   <div className="max-w-[275px]">{DESCRIPTION}</div>
                 </div>
 
-                <div className="flex mt-10 space-x-1">
+                <div className="hidden mt-10 space-x-1 md:flex">
                   <button
                     type="button"
                     onClick={() => {
@@ -123,7 +123,7 @@ const What: React.FC = () => {
       </div>
 
       {/* CARAOUSEL */}
-      <div className="relative z-10 mt-20">
+      <div className="relative z-10 mt-5 md:mt-20">
         <Wrapper>
           <FadeIn>
             <div className="flex flex-row items-center justify-center py-5 space-x-1">
@@ -160,7 +160,7 @@ const What: React.FC = () => {
         </Wrapper>
       </div>
       <div
-        className="absolute bottom-0 left-0 z-0 w-full bg-cover h-1/2"
+        className="absolute bottom-0 left-0 z-0 w-full bg-cover h-1/4 md:h-1/2"
         style={{ backgroundImage: `url('/images/home/what/image1_landing.jpg')` }}
       />
     </section>

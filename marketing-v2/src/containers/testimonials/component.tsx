@@ -72,20 +72,20 @@ const Testimonials: React.FC = () => {
   const [slide, setSlide] = useState(0);
 
   return (
-    <section className="relative py-32 bg-blue-600">
+    <section className="relative py-12 bg-blue-600 md:py-32">
       <Wrapper>
-        <div className="justify-between md:flex">
-          <div className="space-y-5 md:w-5/12">
+        <div className="flex-col space-y-10 md:flex-row md:justify-between md:flex md:space-y-0">
+          <div className="md:w-5/12">
             <FadeIn>
-              <div className="space-y-20">
-                <Icon icon={TESTIMONIALS_SVG} className="w-24 h-24" />
+              <div className="space-y-5 md:space-y-20">
+                <Icon icon={TESTIMONIALS_SVG} className="w-14 h-14 md:w-24 md:h-24" />
 
-                <h2 className="text-6xl font-black text-white uppercase font-display">
+                <h2 className="text-4xl font-black text-white uppercase md:text-6xl font-display">
                   WHAT OUR CLIENTS THINK OF US
                 </h2>
               </div>
 
-              <div className="mt-40">
+              <div className="mt-5 md:mt-40">
                 <Link href="/about">
                   <a className="font-semibold text-orange-500 flex space-x-2.5 items-center">
                     <span>Know more about us</span>

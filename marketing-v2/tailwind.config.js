@@ -14,6 +14,8 @@ module.exports = {
         display: ['Geomanist', 'sans-serif'],
       },
       fontSize: {
+        '4xl': ['2.1875rem', '2.125rem'],
+        '5xl': ['2.8125rem', '2.125rem'],
         '6xl': ['3.4375rem', '2.75rem'],
         '10xl': ['7.8125rem', '5.6875rem'],
       },

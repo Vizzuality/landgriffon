@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 const Hero: React.FC = () => {
   return (
     <section
-      className="relative flex flex-col items-center justify-center h-screen bg-blue-600 bg-no-repeat bg-cover"
+      className="relative flex flex-col items-center justify-center py-12 bg-blue-600 bg-no-repeat bg-cover md:h-screen"
       style={{
         backgroundImage: `url('/images/home/hero/bg_circles.svg')`,
         backgroundPosition: '100% 50%',
@@ -19,11 +19,11 @@ const Hero: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, delay: 0.1 }}
           >
-            <h1 className="font-black text-white uppercase font-display text-10xl">
+            <h1 className="text-5xl font-black text-white uppercase font-display md:text-10xl">
               Unlock the sustainability of your supply chain
             </h1>
 
-            <div className="absolute bottom-0 right-0 w-7/12">
+            <div className="bottom-0 right-0 mt-5 xl:absolute xl:w-7/12 xl:mt-0">
               <h2 className="max-w-md font-light text-white">
                 LandGriffon empowers companies measure, manage, and transform agricultural supply
                 chain impacts.

@@ -30,7 +30,7 @@ const Developed: React.FC = () => {
           </FadeIn>
 
           <FadeIn>
-            <div className="flex items-end justify-between">
+            <div className="flex flex-col justify-between space-y-5 md:items-end md:flex-row md:space-y-0">
               <div>
                 <h4 className="text-xs font-light text-white uppercase">Developed by</h4>
 

@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-white ">
       <Wrapper>
-        <nav className="py-20 md:py-32">
+        <nav className="py-12 md:py-32">
           <ul className="flex flex-col">
             <li>
               <Link href="/about">
@@ -39,7 +39,7 @@ const Footer: React.FC = () => {
       </Wrapper>
 
       <Wrapper>
-        <div className="flex justify-between pb-32">
+        <div className="pb-6 space-y-5 md:flex md:justify-between md:pb-32 md:space-y-0">
           <ul className="flex items-center justify-start space-x-10">
             <li>
               <a>

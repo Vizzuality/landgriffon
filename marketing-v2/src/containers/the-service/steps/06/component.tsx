@@ -11,7 +11,7 @@ const Step06: React.FC = () => {
         <header className="relative">
           <div className="relative z-10 space-y-12">
             <h2 className="text-xl font-black uppercase font-display">IMPROVE</h2>
-            <h3 className="text-6xl font-black uppercase font-display">
+            <h3 className="text-4xl md:text-6xl font-black uppercase font-display">
               Your plans, processes and outcomes.
             </h3>
           </div>

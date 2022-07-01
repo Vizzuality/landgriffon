@@ -122,7 +122,9 @@ const Contact: React.FC = () => {
 
               {success && (
                 <div className="absolute top-0 left-0 z-20 flex flex-col items-center justify-center w-full h-full py-20 space-y-5 bg-orange-500 xl:px-20">
-                  <h2 className="text-6xl font-black uppercase font-display">Thank you</h2>
+                  <h2 className="text-4xl md:text-6xl font-black uppercase font-display">
+                    Thank you
+                  </h2>
                   <p className="text-xl font-light">We will be in touch soon.</p>
 
                   <div>

@@ -47,7 +47,7 @@ const NewsLetter: React.FC = () => {
   return (
     <section className="overflow-hidden bg-orange-500 xl:overflow-visible xl:bg-white">
       <Wrapper>
-        <div className="relative z-10 py-20 bg-orange-500 xl:-mt-10 xl:px-20 xl:-mx-20">
+        <div className="relative z-10 py-12 bg-orange-500 md:py-20 xl:-mt-10 xl:px-20 xl:-mx-20">
           {submitting && (
             <div className="absolute top-0 left-0 z-20 flex items-center justify-center w-full h-full bg-orange-500/50">
               <Loading />
@@ -56,7 +56,7 @@ const NewsLetter: React.FC = () => {
 
           {success && (
             <div className="absolute top-0 left-0 z-20 flex flex-col items-center justify-center w-full h-full py-20 space-y-5 bg-orange-500 xl:px-20">
-              <h2 className="text-6xl font-black uppercase font-display">Thank you</h2>
+              <h2 className="text-4xl font-black uppercase md:text-6xl font-display">Thank you</h2>
               <p className="text-xl font-light">We will be in touch soon.</p>
 
               <div>
@@ -72,12 +72,12 @@ const NewsLetter: React.FC = () => {
           )}
 
           <div>
-            <h2 className="text-6xl font-black uppercase font-display">
+            <h2 className="text-4xl font-black uppercase md:text-6xl font-display">
               Be the first to hear about new releases and updates.
             </h2>
 
             <form onSubmit={handleSubmit(onSubmit)} className="mt-20">
-              <div className="flex items-end justify-between space-x-10">
+              <div className="flex flex-col space-y-5 md:flex-row md:items-end md:justify-between md:space-y-0 md:space-x-10">
                 <div className="w-full">
                   <label htmlFor="email" className="font-bold ">
                     Email adress

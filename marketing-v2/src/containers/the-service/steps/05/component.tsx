@@ -11,7 +11,7 @@ const Step05: React.FC = () => {
         <header className="relative">
           <div className="relative z-10 space-y-12">
             <h2 className="text-xl font-black uppercase font-display">Strategize</h2>
-            <h3 className="text-6xl font-black uppercase font-display">
+            <h3 className="text-4xl md:text-6xl font-black uppercase font-display">
               FIND THE BEST PATH FORWARD.
             </h3>
           </div>

@@ -8,8 +8,7 @@ import pandas as pd
 import requests
 from psycopg2.pool import ThreadedConnectionPool
 
-from utils import slugify
-from vector_folder_to_h3_table import insert_to_h3_data_and_contextual_layer_tables
+from utils import slugify, insert_to_h3_data_and_contextual_layer_tables
 
 CSV_URL = "https://hdr.undp.org/sites/default/files/data/2020/IHDI_HDR2020_040722.csv"
 

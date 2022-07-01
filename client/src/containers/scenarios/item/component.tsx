@@ -95,10 +95,6 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                   >
                     <span className="rounded-full bg-white w-1.5 h-1.5" />
                   </span>
-<<<<<<< HEAD
-                  )
-=======
->>>>>>> 97b27526 (limit start year options in analysis)
                 </div>
                 <div className="flex-1 py-4 pr-4 truncate">
                   <h2 className="text-sm font-medium text-gray-900 truncate">{data.title}</h2>

@@ -5,7 +5,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 import Wrapper from 'containers/wrapper';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
+import { useSaveNewsletter } from 'hooks/newsletter';
+import Loading from 'components/loading';
 
 const schema = yup.object().shape({
   email: yup.string().email().required(),
@@ -13,19 +15,63 @@ const schema = yup.object().shape({
 });
 
 const NewsLetter: React.FC = () => {
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+
   const { register, handleSubmit, formState } = useForm({
     resolver: yupResolver(schema),
   });
   const { errors } = formState;
 
-  const onSubmit = useCallback((data) => {
-    console.log(data);
-  }, []);
+  const saveNewsLetterMutation = useSaveNewsletter({});
+
+  const onSubmit = useCallback(
+    (data) => {
+      setSubmitting(true);
+      saveNewsLetterMutation.mutate(
+        { data },
+        {
+          onSuccess: () => {
+            setSubmitting(false);
+            setSuccess(true);
+          },
+          onError: () => {
+            setSubmitting(false);
+          },
+        },
+      );
+      console.log(data);
+    },
+    [saveNewsLetterMutation],
+  );
 
   return (
     <section className="overflow-hidden bg-orange-500 xl:overflow-visible xl:bg-white">
       <Wrapper>
         <div className="relative z-10 py-20 bg-orange-500 xl:-mt-10 xl:px-20 xl:-mx-20">
+          {submitting && (
+            <div className="absolute top-0 left-0 z-20 flex items-center justify-center w-full h-full bg-orange-500/50">
+              <Loading />
+            </div>
+          )}
+
+          {success && (
+            <div className="absolute top-0 left-0 z-20 flex flex-col items-center justify-center w-full h-full py-20 space-y-5 bg-orange-500 xl:px-20">
+              <h2 className="text-6xl font-black uppercase font-display">Thank you</h2>
+              <p className="text-xl font-light">We will be in touch soon.</p>
+
+              <div>
+                <button
+                  type="button"
+                  className="py-8 mt-5 font-semibold text-black bg-transparent border border-black px-14 hover:bg-black/10"
+                  onClick={() => setSuccess(false)}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
+
           <div>
             <h2 className="text-6xl font-black uppercase font-display">
               Be the first to hear about new releases and updates.

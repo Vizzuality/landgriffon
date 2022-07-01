@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Scenario description not updating properly [LANDGRIF-740](https://vizzuality.atlassian.net/browse/LANDGRIF-740)
 - Limit options for start year in analysis to years with available data [LANDGRIF-737](https://vizzuality.atlassian.net/browse/LANDGRIF-737)
 - Make loader more visible when chart data is fetching [LANDGRIF-759](https://vizzuality.atlassian.net/browse/LANDGRIF-759)
+- Aggregated values in chart ('other/others' category) should always be '#E4E4E4' [LANDGRIF-771](https://vizzuality.atlassian.net/browse/LANDGRIF-771)
 
 ## 2022.06.27
 

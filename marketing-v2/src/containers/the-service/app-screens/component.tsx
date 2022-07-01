@@ -37,6 +37,7 @@ const AppScreens: React.FC = () => {
           >
             <div className="w-[calc(33.33%_-_40px)]">
               <Image
+                priority
                 alt="Screen 01"
                 src="/images/service/example/01.png"
                 width={1005}
@@ -72,6 +73,7 @@ const AppScreens: React.FC = () => {
               }}
             >
               <Image
+                priority
                 alt="Screen 02"
                 src="/images/service/example/02.png"
                 width={1005}
@@ -81,6 +83,7 @@ const AppScreens: React.FC = () => {
             </motion.div>
             <div className="w-[calc(33.33%_-_40px)] opacity-30">
               <Image
+                priority
                 alt="Screen 03"
                 src="/images/service/example/03.png"
                 width={1005}
@@ -90,6 +93,7 @@ const AppScreens: React.FC = () => {
             </div>
             <div className="w-[calc(33.33%_-_40px)] opacity-20">
               <Image
+                priority
                 alt="Screen 04"
                 src="/images/service/example/04.png"
                 width={1005}
@@ -99,6 +103,7 @@ const AppScreens: React.FC = () => {
             </div>
             <div className="w-[calc(33.33%_-_40px)] opacity-20">
               <Image
+                priority
                 alt="Screen 05"
                 src="/images/service/example/05.png"
                 width={1005}

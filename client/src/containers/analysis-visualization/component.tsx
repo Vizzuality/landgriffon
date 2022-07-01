@@ -37,7 +37,7 @@ const AnalysisVisualization: React.FC = () => {
       )}
 
       {visualizationMode === 'chart' && (
-        <div className="flex flex-col pr-6 pl-12">
+        <div className="flex flex-col pr-6 pl-12 h-full">
           <AnalysisDynamicMetadata className="my-4" />
           <AnalysisChart />
         </div>

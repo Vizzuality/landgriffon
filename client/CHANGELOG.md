@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - [LANDGRIF-716](https://vizzuality.atlassian.net/browse/LANDGRIF-716) fixed extra bad requests in analysis.
 - Scenario description not updating properly [LANDGRIF-740](https://vizzuality.atlassian.net/browse/LANDGRIF-740)
 - Limit options for start year in analysis to years with available data [LANDGRIF-737](https://vizzuality.atlassian.net/browse/LANDGRIF-737)
+- Make loader more visible when chart data is fetching [LANDGRIF-759](https://vizzuality.atlassian.net/browse/LANDGRIF-759)
 
 ## 2022.06.27
 

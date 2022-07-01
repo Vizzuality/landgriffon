@@ -15,7 +15,7 @@ const SummaryRow: React.FC<SummaryRowProps> = ({
   ...props
 }: SummaryRowProps) => {
   const firstColumnKey = props.columns[0].key;
-  console.log(firstProjectedYear, 'firstProjectedYear');
+
   return (
     <>
       {times(props.groupColumnsCount, (idx) => (

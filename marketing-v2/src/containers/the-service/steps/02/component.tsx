@@ -10,9 +10,11 @@ const Step02: React.FC = () => {
     >
       <div className="w-full space-y-10">
         <header className="relative">
-          <div className="relative z-10 space-y-12">
+          <div className="relative z-10 space-y-5 md:space-y-12">
             <h2 className="text-xl font-black uppercase font-display">Map</h2>
-            <h3 className="text-4xl md:text-6xl font-black uppercase font-display">Your supply chain.</h3>
+            <h3 className="text-4xl font-black uppercase md:text-6xl font-display">
+              Your supply chain.
+            </h3>
           </div>
           <div className="absolute z-0 top-0 right-0 font-display text-[220px] leading-[160px] text-green-400">
             02

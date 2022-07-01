@@ -12,7 +12,7 @@ const Step01: React.FC = () => {
         <header className="relative">
           <div className="relative z-10 space-y-5">
             <h2 className="text-xl font-black uppercase font-display">WHAT WE MEASURE?</h2>
-            <h3 className="font-black leading-[100px] uppercase text-9xl font-display">
+            <h3 className="font-black md:leading-[100px] uppercase text-7xl md:text-9xl font-display">
               FARM LEVEL
             </h3>
           </div>

@@ -8,11 +8,18 @@ const Header: React.FC = () => {
   const { pathname } = useRouter();
 
   return (
-    <header className="flex items-center justify-between font-semibold bg-white">
-      <div className="md:px-5 lg:px-12 shrink-0">
+    <header className="flex items-center justify-between font-semibold bg-white h-14 lg:h-20">
+      <div className="px-4 lg:px-12 shrink-0">
         <Link href="/">
-          <a>
-            <Image src="/images/logo.svg" alt="Landgriffon" width={180} height={14} priority />
+          <a className="block">
+            <Image
+              src="/images/logo.svg"
+              alt="Landgriffon"
+              width={180}
+              height={14}
+              priority
+              layout="fixed"
+            />
           </a>
         </Link>
       </div>

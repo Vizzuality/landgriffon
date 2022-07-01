@@ -12,11 +12,11 @@ const Steps: React.FC<StepsProps> = ({ children }: StepsProps) => {
   return (
     <section
       className={cx({
-        'relative pt-64 pb-32 bg-white': true,
+        'relative pt-24 pb-12 md:pt-64 md:pb-32 bg-white': true,
       })}
     >
       <Wrapper>
-        <div className="relative z-10 space-y-64">
+        <div className="relative z-10 space-y-32 lg:space-y-64">
           {Children.map(children, (c) => {
             return <FadeIn>{c}</FadeIn>;
           })}

@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 const Hero: React.FC = () => {
   return (
     <section
-      className="relative flex flex-col items-center justify-center py-12 bg-blue-600 bg-no-repeat bg-cover md:h-screen"
+      className="relative flex flex-col items-center justify-center w-full py-12 overflow-hidden bg-blue-600 bg-no-repeat bg-cover md:h-screen"
       style={{
         backgroundImage: `url('/images/home/hero/bg_circles.svg')`,
         backgroundPosition: '100% 50%',
@@ -14,12 +14,12 @@ const Hero: React.FC = () => {
       <Wrapper>
         <div className="space-y-5">
           <motion.div
-            className="relative"
+            className="relative overflow-hidden"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, delay: 0.1 }}
           >
-            <h1 className="text-5xl font-black text-white uppercase font-display md:text-10xl">
+            <h1 className="text-5xl font-black tracking-tight text-white uppercase font-display md:text-10xl">
               Unlock the sustainability of your supply chain
             </h1>
 

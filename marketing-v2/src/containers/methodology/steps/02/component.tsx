@@ -15,7 +15,9 @@ const Step02: React.FC = () => {
       <div className="w-full space-y-10">
         <header className="relative">
           <div className="relative z-10 space-y-5">
-            <h3 className="font-black leading-[100px] uppercase text-9xl font-display">Land use</h3>
+            <h3 className="font-black md:leading-[100px] uppercase text-7xl md:text-9xl font-display">
+              Land use
+            </h3>
           </div>
         </header>
 

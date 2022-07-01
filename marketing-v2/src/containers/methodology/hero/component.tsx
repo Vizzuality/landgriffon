@@ -34,12 +34,12 @@ const Hero: React.FC = () => {
     <section className="relative z-10 bg-white">
       <Wrapper>
         <motion.div
-          className="relative py-32"
+          className="relative py-12 md:py-32"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, delay: 0.1 }}
         >
-          <h1 className="font-black text-black uppercase font-display text-7xl">
+          <h1 className="text-5xl font-black text-black uppercase font-display md:text-7xl">
             We use world-renowned datasets to analyze impacts.
           </h1>
         </motion.div>
@@ -64,7 +64,7 @@ const Hero: React.FC = () => {
           <video ref={videoRef} src="/videos/truck.mp4" className="aspect-video" />
         </motion.div>
 
-        <div className="mt-20 space-y-10">
+        <div className="mt-10 space-y-10 md:mt-20">
           <div className="space-y-5">
             <h3 className="text-xl font-black text-black uppercase font-display">
               BUILT ON TRUSTED SCIENTIFIC DATA:

@@ -12,7 +12,7 @@ const Rason: React.FC = () => {
       <Wrapper>
         <div className="space-y-10 text-white md:space-y-20">
           <FadeIn>
-            <h2 className="font-black text-white uppercase font-display text-7xl">
+            <h2 className="font-black text-white uppercase font-display text-5xl md:text-7xl">
               Sustainability is <span className="text-orange-500">more than a buzzword. </span>
             </h2>
           </FadeIn>
@@ -62,7 +62,7 @@ const Rason: React.FC = () => {
       <Wrapper>
         <div className="space-y-10 text-white md:space-y-20">
           <FadeIn>
-            <h2 className="font-black text-white uppercase font-display text-7xl">
+            <h2 className="font-black text-white uppercase font-display text-5xl md:text-7xl">
               The LandGriffon ecosystem;
               <span className="text-blue-500"> a consortium of experts. </span>
             </h2>

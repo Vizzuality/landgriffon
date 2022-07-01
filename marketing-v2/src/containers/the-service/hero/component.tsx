@@ -7,12 +7,12 @@ const Hero: React.FC = () => {
     <section className="relative z-10 bg-white">
       <Wrapper>
         <motion.div
-          className="relative pt-32 pb-16"
+          className="relative pt-12 md:pt-32 md:pb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, delay: 0.1 }}
         >
-          <h1 className="font-black text-black uppercase font-display text-7xl">
+          <h1 className="text-5xl font-black text-black uppercase font-display md:text-7xl">
             We help you transform your supply chain for the better, using{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-green-500 to-blue-600">
               six key steps.
@@ -20,9 +20,9 @@ const Hero: React.FC = () => {
           </h1>
         </motion.div>
 
-        <div className="flex space-x-6 translate-y-16">
+        <div className="flex space-x-2 translate-y-16 md:space-x-6">
           <motion.div
-            className="relative w-5/12 h-[460px] bg-cover"
+            className="relative w-5/12 h-32 md:h-[460px] bg-cover"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, delay: 0.1 }}
@@ -32,7 +32,7 @@ const Hero: React.FC = () => {
             }}
           />
           <motion.div
-            className="relative w-4/12 h-[460px] bg-cover mt-8"
+            className="relative w-4/12 h-32 md:h-[460px] bg-cover mt-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, delay: 0.1 }}
@@ -42,7 +42,7 @@ const Hero: React.FC = () => {
             }}
           />
           <motion.div
-            className="relative w-4/12 h-[460px] bg-cover"
+            className="relative w-4/12 h-32 md:h-[460px] bg-cover"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, delay: 0.1 }}

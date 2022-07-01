@@ -7,7 +7,7 @@ const KnowMore: React.FC = () => {
       <Wrapper>
         <FadeIn className="relative flex flex-col items-center justify-center py-32 space-y-20">
           <div className="space-y-10">
-            <h2 className="font-black text-center text-black uppercase font-display text-7xl">
+            <h2 className="font-black text-center text-black uppercase font-display text-5xl md:text-7xl">
               Would you like to know more about landgriffon?
             </h2>
             <h3 className="text-3xl font-medium text-center text-black font-display">

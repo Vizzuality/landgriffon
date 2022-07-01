@@ -8,7 +8,7 @@ const Values: React.FC = () => {
       <Wrapper>
         <FadeIn className="relative flex flex-col items-center justify-center py-32 space-y-20">
           <div className="space-y-10">
-            <h2 className="font-black text-black uppercase lg:w-8/12 font-display text-7xl">
+            <h2 className="font-black text-black uppercase lg:w-8/12 font-display text-5xl md:text-7xl">
               Sustainability is <span className="text-green-500">an ecosystem. </span>
             </h2>
             <h3 className="text-3xl font-medium text-black font-display">

@@ -8,14 +8,14 @@ const Hero: React.FC = () => {
     <section className="relative overflow-hidden bg-white">
       <Wrapper>
         <motion.div
-          className="relative pt-32"
+          className="relative pt-12 md:pt-32"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, delay: 0.1 }}
         >
           <div className="flex flex-col space-y-20 lg:flex-row lg:justify-between lg:space-x-20 lg:space-y-0">
-            <div className="space-y-20 lg:w-7/12">
-              <h1 className="font-black text-black uppercase font-display text-7xl">
+            <div className="space-y-10 md:space-y-20 lg:w-7/12">
+              <h1 className="text-5xl font-black text-black uppercase font-display md:text-7xl">
                 We are on a mission to make supply chains more sustainable.
               </h1>
 

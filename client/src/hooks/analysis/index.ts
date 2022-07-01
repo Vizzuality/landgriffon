@@ -14,15 +14,15 @@ import type { AnalysisChart } from './types';
 import type { Intervention } from './types';
 
 const COLOR_SCALE = chroma.scale([
-  '#E1E1E1',
-  '#AAD463',
-  '#FDB462',
-  '#9CBB97',
-  '#80B1D3',
-  '#FB968A',
-  '#BEBADA',
-  '#FFFFB3',
   '#8DD3C7',
+  '#FFFFB3',
+  '#BEBADA',
+  '#FB968A',
+  '#80B1D3',
+  '#9CBB97',
+  '#FDB462',
+  '#AAD463',
+  '#E1E1E1',
 ]);
 
 export function useColors(): RGBColor[] {
@@ -129,7 +129,7 @@ export function useAnalysisChart(params): AnalysisChart {
         {
           id: k,
           name: k,
-          color: colorScale[i],
+          color: k === 'Other' || k === 'Others' ? '#E4E4E4' : colorScale[i],
         },
       ],
       [],
@@ -138,7 +138,7 @@ export function useAnalysisChart(params): AnalysisChart {
     const colors = allKeys.reduce(
       (acc, k, i) => ({
         ...acc,
-        [k]: colorScale[i],
+        [k]: k === 'Other' || k === 'Others' ? '#E4E4E4' : colorScale[i],
       }),
       {},
     );

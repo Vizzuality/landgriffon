@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  ServiceUnavailableException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
@@ -53,11 +48,27 @@ export class H3DataService {
   /**
    * Find one H3 full data by its name
    */
-  async findH3ByName(
+  getH3ByName(
     h3TableName: string,
     h3ColumnName: string,
   ): Promise<H3IndexValueData[]> {
-    return await this.h3DataRepository.findH3ByName(h3TableName, h3ColumnName);
+    return this.h3DataRepository.getH3ByName(h3TableName, h3ColumnName);
+  }
+
+  /**
+   * Find one H3 full data by its name, for the given optional resolution
+   * if no resolution is provided, the  data will have the same resolution as it stored in the DB
+   */
+  getSumH3ByNameAndResolution(
+    h3TableName: string,
+    h3ColumnName: string,
+    resolution?: number,
+  ): Promise<H3IndexValueData[]> {
+    return this.h3DataRepository.getSumH3ByNameAndResolution(
+      h3TableName,
+      h3ColumnName,
+      resolution,
+    );
   }
 
   async getById(id: string): Promise<H3Data | undefined> {
@@ -66,6 +77,22 @@ export class H3DataService {
 
   async findH3ByIndicatorId(indicatorId: string): Promise<H3Data | undefined> {
     return await this.h3DataRepository.findOne({ indicatorId });
+  }
+
+  findH3ByContextualLayerId(
+    contextualLayerId: string,
+  ): Promise<H3Data | undefined> {
+    return this.h3DataRepository.findOne({ contextualLayerId });
+  }
+
+  getContextualLayerH3DataByClosestYear(
+    contextualLayerId: string,
+    year?: number,
+  ): Promise<H3Data | undefined> {
+    return this.h3DataRepository.getContextualLayerH3DataByClosestYear(
+      contextualLayerId,
+      year,
+    );
   }
 
   async getMaterialMapByResolution(

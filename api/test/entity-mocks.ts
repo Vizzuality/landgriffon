@@ -67,7 +67,6 @@ async function createContextualLayer(
     new ContextualLayer(),
     {
       name: 'A fake Contextual Layer',
-      description: 'Description of the fake Contextual Layer',
       category: CONTEXTUAL_LAYER_CATEGORY.ENVIRONMENTAL_DATASETS,
     },
     additionalData,

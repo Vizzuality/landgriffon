@@ -8,6 +8,7 @@ export const h3DataMock = async (h3DataMockParams: {
   additionalH3Data?: Record<string, any> | null;
   indicatorId?: string | null;
   year: number;
+  contextualLayerId?: string | null;
 }): Promise<H3Data> => {
   const formattedTableName: string = snakeCase(h3DataMockParams.h3TableName);
   const formattedColumnName: string = camelCase(h3DataMockParams.h3ColumnName);
@@ -36,7 +37,9 @@ export const h3DataMock = async (h3DataMockParams: {
   if (h3DataMockParams.indicatorId) {
     h3data.indicatorId = h3DataMockParams.indicatorId;
   }
-
+  if (h3DataMockParams.contextualLayerId) {
+    h3data.contextualLayerId = h3DataMockParams.contextualLayerId;
+  }
   return h3data.save();
 };
 

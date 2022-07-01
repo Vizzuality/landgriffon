@@ -28,7 +28,7 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { ImpactMaterializedView } from 'modules/impact/views/impact.materialized-view.entity';
-import { IndicatorRiskMapSQLStrategies } from './strategies/risk-map.strategies';
+import { IndicatorRiskMapSQLStrategies } from 'modules/h3-data/strategies/risk-map.strategies';
 
 /**
  * @note: Column aliases are marked as 'h' and 'v' so that DB returns data in the format the consumer needs to be
@@ -50,7 +50,7 @@ export class H3DataRepository extends Repository<H3Data> {
    * @param h3TableName: Name of the dynamically generated table
    *
    */
-  async findH3ByName(
+  async getH3ByName(
     h3TableName: string,
     h3ColumnName: string,
   ): Promise<H3IndexValueData[]> {
@@ -61,6 +61,44 @@ export class H3DataRepository extends Repository<H3Data> {
         .addSelect(`${h3ColumnName}`, 'v')
         .from(`${h3TableName}`, 'h3')
         .getRawOne();
+
+      if (result === undefined) {
+        throw new Error();
+      }
+      return result;
+    } catch (err) {
+      throw new NotFoundException(
+        `H3 ${h3ColumnName} data in ${h3TableName} could not been found`,
+      );
+    }
+  }
+
+  /** Retrieves data from dynamically generated H3 data summing by H3 index for the given resolution
+   * if no resolution is given, the h3 index of the max resolution available is served as found
+   *
+   * @param h3ColumnName: Name of the column inside the dynamically generated table
+   * @param h3TableName: Name of the dynamically generated table
+   * @param resolution: resolution of the h3 data
+   *
+   */
+  async getSumH3ByNameAndResolution(
+    h3TableName: string,
+    h3ColumnName: string,
+    resolution?: number,
+  ): Promise<H3IndexValueData[]> {
+    try {
+      let selectStatement: string = 'h3index';
+      if (resolution) {
+        selectStatement = `h3_to_parent(h3index, ${resolution})`;
+      }
+      const query: SelectQueryBuilder<unknown> = getManager()
+        .createQueryBuilder()
+        .select(selectStatement, 'h')
+        .addSelect(`sum("${h3ColumnName}")`, 'v')
+        .from(`${h3TableName}`, 'h3')
+        .groupBy('h');
+
+      const result: H3IndexValueData[] | undefined = await query.getRawMany();
 
       if (result === undefined) {
         throw new Error();
@@ -393,6 +431,29 @@ export class H3DataRepository extends Repository<H3Data> {
       .leftJoin('indicator', 'indicator', 'h3data.indicatorId = indicator.id')
       .where('indicator.nameCode = :type', { type })
       .orderBy(`ABS(h3data.year - ${year})`, 'ASC')
+      .limit(1);
+    return queryBuilder.getRawOne();
+  }
+
+  /**
+   * Gets the closest ContextualLayer H3 by absolute year, p.e. having and h3 for 2005 and 2010, the closest to 2006 will be 2005,
+   * and the closest to 2008 will be 2010
+   * @param contextualLayerId
+   * @param year
+   */
+  async getContextualLayerH3DataByClosestYear(
+    contextualLayerId: string,
+    year?: number,
+  ): Promise<H3Data | undefined> {
+    //TODO for the sake of simplicity in regards to the incoming Demo on July, this function
+    // for now, just returns the first most recent result that it finds, since there won't be multiple year data yet
+
+    const queryBuilder: SelectQueryBuilder<H3Data> = getManager()
+      .createQueryBuilder()
+      .select(' h3data.*')
+      .from(H3Data, 'h3data')
+      .where(`h3data."contextualLayerId" = '${contextualLayerId}'`)
+      .orderBy(`h3data.year`, 'DESC')
       .limit(1);
     return queryBuilder.getRawOne();
   }

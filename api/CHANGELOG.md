@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ##  2022-06-12
 ### Added
+Added [LANDGRIF-722](https://vizzuality.atlassian.net/browse/LANDGRIF-722)
+Added support for Contextual Layer data with 2 endpoints to serve contextual layers and their H3 Data
+
+##  2022-06-12
+### Added
 Added [LANDGRIF-697](https://vizzuality.atlassian.net/browse/LANDGRIF-697)
 Added class with custom chunk save method for large inserts to avoid blocking
 event loop

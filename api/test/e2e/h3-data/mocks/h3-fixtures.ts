@@ -182,3 +182,14 @@ export const h3DeforestationExampleDataFixture = {
   '868c36d97ffffff': 0,
   '868c36d9fffffff': null,
 };
+
+export const h3ContextualLayerExampleDataFixture = {
+  // parent resolution 1 - 8110bffffffffff
+
+  // parent resolution 3 - 821087fffffffff
+  '861080007ffffff': 0.2,
+  '86108002fffffff': 0.04,
+  // parent resolution 3 - 8210b7fffffffff
+  '8610b6d97ffffff': 0.1,
+  '8610b6db7ffffff': null,
+};

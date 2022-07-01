@@ -35,7 +35,7 @@ const AnalysisChart: FC = () => {
 
   return (
     <>
-      {isFetching && <Loading className="text-white -ml-1 mr-3" />}
+      {isFetching && <Loading className="text-green-700 w-12 h-12 m-auto" />}
 
       {!isFetching && chartData && (
         <AnimatePresence>

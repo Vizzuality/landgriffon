@@ -197,17 +197,6 @@ const MoreFilters: React.FC = () => {
                 />
               </div>
               <div>
-                <div className="mb-1">Location type</div>
-                <LocationTypes
-                  current={selectedFilters.locationTypes}
-                  fitContent
-                  materialIds={materialIds}
-                  originIds={originIds}
-                  supplierIds={supplierIds}
-                  onChange={(values) => handleChangeFilter('locationTypes', values)}
-                />
-              </div>
-              <div>
                 <div className="mb-1">Suppliers</div>
                 <Suppliers
                   multiple
@@ -225,6 +214,9 @@ const MoreFilters: React.FC = () => {
                 <LocationTypes
                   current={selectedFilters.locationTypes}
                   fitContent
+                  materialIds={materialIds}
+                  originIds={originIds}
+                  supplierIds={supplierIds}
                   onChange={(values) => handleChangeFilter('locationTypes', values)}
                 />
               </div>

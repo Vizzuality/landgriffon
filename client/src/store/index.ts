@@ -1,5 +1,8 @@
 import { configureStore, combineReducers, Middleware } from '@reduxjs/toolkit';
 import type { ReducersMapObject } from '@reduxjs/toolkit';
+import router from 'next/router';
+import { isObject } from 'lodash';
+
 import ui from 'store/features/ui';
 import analysisUI, {
   setVisualizationMode,
@@ -7,9 +10,11 @@ import analysisUI, {
   initialState as analysisUIInitialState,
 } from 'store/features/analysis/ui';
 import analysisFilters from 'store/features/analysis/filters';
-import analysisMap from 'store/features/analysis/map';
+import analysisMap, {
+  setViewState,
+  initialState as analysisMapInitialState,
+} from 'store/features/analysis/map';
 import analysisScenarios from 'store/features/analysis/scenarios';
-import router from 'next/router';
 
 const staticReducers = {
   ui,
@@ -54,12 +59,28 @@ const QUERY_PARAMS_MAP: QueryParams = {
     action: setVisualizationMode,
     defaultValue: analysisUIInitialState.visualizationMode,
   },
+  map: {
+    stateName: 'viewState',
+    rootState: 'analysis/map',
+    action: setViewState,
+    defaultValue: analysisMapInitialState.viewState,
+  },
 };
 
 const formatParam = (param: string): string | boolean | number => {
   if (param === 'true' || param === 'false') return Boolean(param === 'true');
   if (!Number.isNaN(Number(param))) return Number(param);
+  if (checkValidJSON(param)) return JSON.parse(param);
   return param;
+};
+
+const checkValidJSON = (json: string) => {
+  try {
+    isObject(JSON.parse(json));
+    return true;
+  } catch (e) {
+    return false;
+  }
 };
 
 const getPreloadedState = (query = {}) => {
@@ -67,6 +88,7 @@ const getPreloadedState = (query = {}) => {
   // because it doesn't merge with the original initial state
   const preloadedState = {
     'analysis/ui': { ...analysisUIInitialState },
+    'analysis/map': { ...analysisMapInitialState },
   };
 
   Object.keys(QUERY_PARAMS_MAP).forEach((param) => {
@@ -93,7 +115,18 @@ const querySyncMiddleware: Middleware = () => (next) => (action) => {
 
       // Only update when URL the param value is different
       if (currentQueryValue !== currentStateValue) {
-        router.push({ query: { ...query, [param]: currentStateValue } }, null, { shallow: true });
+        router.push(
+          {
+            query: {
+              ...query,
+              [param]: checkValidJSON(JSON.stringify(currentStateValue))
+                ? JSON.stringify(currentStateValue)
+                : currentStateValue,
+            },
+          },
+          null,
+          { shallow: true },
+        );
       }
     }
   });

@@ -27,28 +27,28 @@ export class InterventionGeneratorService {
   async addDescendantsEntitiesForFiltering(
     dto: CreateScenarioInterventionDto,
   ): Promise<CreateScenarioInterventionDto> {
-    dto.materialIds = await this.materialService.getMaterialsDescendants(
-      dto.materialIds,
-    );
+    let dtoWithDescendants: CreateScenarioInterventionDto = { ...dto };
+
+    dtoWithDescendants.materialIds =
+      await this.materialService.getMaterialsDescendants(dto.materialIds);
 
     if (dto.adminRegionIds)
-      dto.adminRegionIds =
+      dtoWithDescendants.adminRegionIds =
         await this.adminRegionService.getAdminRegionDescendants(
           dto.adminRegionIds,
         );
 
     if (dto.businessUnitIds)
-      dto.businessUnitIds =
+      dtoWithDescendants.businessUnitIds =
         await this.businessUnitService.getBusinessUnitsDescendants(
           dto.businessUnitIds,
         );
 
     if (dto.supplierIds)
-      dto.supplierIds = await this.suppliersService.getSuppliersDescendants(
-        dto.supplierIds,
-      );
+      dtoWithDescendants.supplierIds =
+        await this.suppliersService.getSuppliersDescendants(dto.supplierIds);
 
-    return dto;
+    return dtoWithDescendants;
   }
 
   async addReplacedElementsToIntervention(

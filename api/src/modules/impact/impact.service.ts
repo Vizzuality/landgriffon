@@ -56,7 +56,7 @@ export class ImpactService {
     this.logger.log('Retrieving data from DB to build Impact Table...');
 
     //Getting Descendants Ids for the filters, in case Parent Ids were received
-    // await this.loadDescendantEntityIds(impactTableDto);
+    await this.loadDescendantEntityIds(impactTableDto);
 
     // Get full entity tree in cate ids are not passed, otherwise get trees based on
     // given ids and add children and parent ids to them to get full data for aggregations

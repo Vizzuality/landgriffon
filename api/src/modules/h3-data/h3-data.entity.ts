@@ -81,7 +81,6 @@ export class H3Data extends BaseEntity {
 
   @ManyToOne(() => ContextualLayer, (cl: ContextualLayer) => cl.h3Data, {
     onDelete: 'CASCADE',
-    cascade: true,
   })
   @JoinColumn({ name: 'contextualLayerId' })
   contextualLayer: ContextualLayer;

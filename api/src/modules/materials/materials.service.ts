@@ -171,24 +171,24 @@ export class MaterialsService extends AppBaseService<
   async getMaterialsTreeWithSourcingLocations(
     materialTreeOptions: GetMaterialTreeWithOptionsDto,
   ): Promise<Material[]> {
-    if (materialTreeOptions.originIds) {
-      materialTreeOptions.originIds =
-        await this.adminRegionService.getAdminRegionDescendants(
-          materialTreeOptions.originIds,
-        );
-    }
-    if (materialTreeOptions.businessUnitIds) {
-      materialTreeOptions.businessUnitIds =
-        await this.businessUnitsService.getBusinessUnitsDescendants(
-          materialTreeOptions.businessUnitIds,
-        );
-    }
-    if (materialTreeOptions.supplierIds) {
-      materialTreeOptions.supplierIds =
-        await this.suppliersService.getSuppliersDescendants(
-          materialTreeOptions.supplierIds,
-        );
-    }
+    // if (materialTreeOptions.originIds) {
+    //   materialTreeOptions.originIds =
+    //     await this.adminRegionService.getAdminRegionDescendants(
+    //       materialTreeOptions.originIds,
+    //     );
+    // }
+    // if (materialTreeOptions.businessUnitIds) {
+    //   materialTreeOptions.businessUnitIds =
+    //     await this.businessUnitsService.getBusinessUnitsDescendants(
+    //       materialTreeOptions.businessUnitIds,
+    //     );
+    // }
+    // if (materialTreeOptions.supplierIds) {
+    //   materialTreeOptions.supplierIds =
+    //     await this.suppliersService.getSuppliersDescendants(
+    //       materialTreeOptions.supplierIds,
+    //     );
+    // }
     const materialLineage: Material[] =
       await this.materialRepository.getSourcingDataMaterialsWithAncestry(
         materialTreeOptions,

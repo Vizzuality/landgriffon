@@ -161,24 +161,24 @@ export class AdminRegionsService extends AppBaseService<
   async getAdminRegionTreeWithSourcingLocations(
     adminRegionTreeOptions: GetAdminRegionTreeWithOptionsDto,
   ): Promise<AdminRegion[]> {
-    if (adminRegionTreeOptions.businessUnitIds) {
-      adminRegionTreeOptions.businessUnitIds =
-        await this.businessUnitService.getBusinessUnitsDescendants(
-          adminRegionTreeOptions.businessUnitIds,
-        );
-    }
-    if (adminRegionTreeOptions.supplierIds) {
-      adminRegionTreeOptions.supplierIds =
-        await this.supplierService.getSuppliersDescendants(
-          adminRegionTreeOptions.supplierIds,
-        );
-    }
-    if (adminRegionTreeOptions.materialIds) {
-      adminRegionTreeOptions.materialIds =
-        await this.materialService.getMaterialsDescendants(
-          adminRegionTreeOptions.materialIds,
-        );
-    }
+    // if (adminRegionTreeOptions.businessUnitIds) {
+    //   adminRegionTreeOptions.businessUnitIds =
+    //     await this.businessUnitService.getBusinessUnitsDescendants(
+    //       adminRegionTreeOptions.businessUnitIds,
+    //     );
+    // }
+    // if (adminRegionTreeOptions.supplierIds) {
+    //   adminRegionTreeOptions.supplierIds =
+    //     await this.supplierService.getSuppliersDescendants(
+    //       adminRegionTreeOptions.supplierIds,
+    //     );
+    // }
+    // if (adminRegionTreeOptions.materialIds) {
+    //   adminRegionTreeOptions.materialIds =
+    //     await this.materialService.getMaterialsDescendants(
+    //       adminRegionTreeOptions.materialIds,
+    //     );
+    // }
     const adminRegionLineage: AdminRegion[] =
       await this.adminRegionRepository.getSourcingDataAdminRegionsWithAncestry(
         adminRegionTreeOptions,

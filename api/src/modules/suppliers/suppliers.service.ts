@@ -144,24 +144,24 @@ export class SuppliersService extends AppBaseService<
   async getSuppliersWithSourcingLocations(
     supplierTreeOptions: GetSupplierTreeWithOptions,
   ): Promise<any> {
-    if (supplierTreeOptions.originIds) {
-      supplierTreeOptions.originIds =
-        await this.adminRegionService.getAdminRegionDescendants(
-          supplierTreeOptions.originIds,
-        );
-    }
-    if (supplierTreeOptions.businessUnitIds) {
-      supplierTreeOptions.businessUnitIds =
-        await this.businessUnitsService.getBusinessUnitsDescendants(
-          supplierTreeOptions.businessUnitIds,
-        );
-    }
-    if (supplierTreeOptions.materialIds) {
-      supplierTreeOptions.materialIds =
-        await this.materialsService.getMaterialsDescendants(
-          supplierTreeOptions.materialIds,
-        );
-    }
+    // if (supplierTreeOptions.originIds) {
+    //   supplierTreeOptions.originIds =
+    //     await this.adminRegionService.getAdminRegionDescendants(
+    //       supplierTreeOptions.originIds,
+    //     );
+    // }
+    // if (supplierTreeOptions.businessUnitIds) {
+    //   supplierTreeOptions.businessUnitIds =
+    //     await this.businessUnitsService.getBusinessUnitsDescendants(
+    //       supplierTreeOptions.businessUnitIds,
+    //     );
+    // }
+    // if (supplierTreeOptions.materialIds) {
+    //   supplierTreeOptions.materialIds =
+    //     await this.materialsService.getMaterialsDescendants(
+    //       supplierTreeOptions.materialIds,
+    //     );
+    // }
     const supplierLineage: Supplier[] =
       await this.supplierRepository.getSourcingDataSuppliersWithAncestry(
         supplierTreeOptions,

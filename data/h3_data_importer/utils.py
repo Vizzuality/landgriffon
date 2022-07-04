@@ -6,6 +6,8 @@ from re import sub
 import jsonschema
 from jsonschema import ValidationError
 
+log = logging.getLogger(__name__)  # here we can use __name__ because it is an imported module
+
 
 def slugify(s):
     s = sub(r"[_-]+", " ", s).title().replace(" ", "")
@@ -30,7 +32,7 @@ def insert_to_h3_data_and_contextual_layer_tables(
 ):
     categories_enum = get_contextual_layer_category_enum(connection)
     if category not in categories_enum:
-        logging.error(f"Category '{category}' not supported. Supported categories: {categories_enum}")
+        log.error(f"Category '{category}' not supported. Supported categories: {categories_enum}")
         return
 
     with connection:
@@ -42,14 +44,14 @@ def insert_to_h3_data_and_contextual_layer_tables(
             )
 
             # insert new entries
-            logging.info("Inserting record into h3_data table...")
+            log.info("Inserting record into h3_data table...")
 
             cursor.execute(
                 f"""INSERT INTO "h3_data" ("h3tableName", "h3columnName", "h3resolution", "year")
                  VALUES ('{table}', '{column}', {h3_res}, {year});"""
             )
 
-            logging.info("Inserting record into contextual_layer table...")
+            log.info("Inserting record into contextual_layer table...")
             cursor.execute(
                 f"""INSERT INTO "contextual_layer"  ("name", "metadata", "category")
                  VALUES ('{dataset}', '{json.dumps(get_metadata(table))}', '{category}')
@@ -73,7 +75,7 @@ def get_metadata(table: str) -> dict:
     metadata_path = metadata_base_path / f"{table}_metadata.json"
 
     if not metadata_path.exists():
-        logging.error(f"No metadata found for {table}")
+        log.error(f"No metadata found for {table}")
         # todo: should we raise exception or return empty metadata and keep going?
         raise FileNotFoundError(f"Metadata file for {table} not found")
 
@@ -82,7 +84,7 @@ def get_metadata(table: str) -> dict:
         try:
             jsonschema.validate(metadata, schema)
         except ValidationError as e:
-            logging.error(f"Metadata for {table} is not valid: {e}")
+            log.error(f"Metadata for {table} is not valid: {e}")
             # todo: should we raise exception or return empty metadata and keep going?
             raise e
         return metadata

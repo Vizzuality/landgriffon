@@ -13,7 +13,7 @@
                 "color": {
                     "type": "string"
                 },
-                "value_label": {
+                "label": {
                     "type": "string",
                     "description": "Label of the value."
                 }
@@ -37,6 +37,11 @@
                         "string",
                         "number"
                     ]
+                },
+                "type": {
+                    "type": "string",
+                    "enum": ["category", "range"],
+                    "description": "Type of the legend. if 'category', each value of the LegendItem represents a category. if 'range', the value represents the upper bound of the bin, being the Legend.min the start of the first bin."
                 },
                 "items": {
                     "type": "array",

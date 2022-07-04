@@ -13470,6 +13470,7 @@ __metadata:
     react-dom: 17.0.2
     react-hook-form: 7.27.1
     react-intersection-observer: ^9.2.2
+    react-lock-scroll: ^0.1.8
     react-query: 3.34.16
     react-redux: 7.2.4
     react-scroll-percentage: 4.2.0
@@ -16765,6 +16766,13 @@ __metadata:
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: f7a19ac3496de32ca9ae12aa030f00f14a3d45374f1ceca0af707c831b2a6098ef0d6bdae51bd437b0a306d7f01d4677fcc8de7c0d331eb47ad0f46130e53c5f
+  languageName: node
+  linkType: hard
+
+"react-lock-scroll@npm:^0.1.8":
+  version: 0.1.8
+  resolution: "react-lock-scroll@npm:0.1.8"
+  checksum: 7759bc9b92411fc5706cada85f6bb794b5af492260788471a753bb188063b930f3c68752516269cdca1f8d1c13bdba35d12260737706cb9c7a753b3a7924d109
   languageName: node
   linkType: hard
 

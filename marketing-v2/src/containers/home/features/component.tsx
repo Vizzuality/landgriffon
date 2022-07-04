@@ -6,6 +6,7 @@ import FadeIn from 'components/fade';
 import FLEXIBLE_SVG from 'svgs/home/features/icn_flexible.svg?sprite';
 import COMMUNITY_SVG from 'svgs/home/features/icn_comm.svg?sprite';
 import ETHOS_SVG from 'svgs/home/features/icn_search.svg?sprite';
+import Link from 'next/link';
 
 const Features: React.FC = () => {
   return (
@@ -53,21 +54,23 @@ const Features: React.FC = () => {
                 </div>
 
                 <p className="text-xl">
-                  We’re confident in our technology, and you should be too. Our methods and code are
-                  open for all to see, use, and verify.
+                  We&apos;re confident in our technology, and you should be too. Our methods and
+                  code are open for all to see, use, and verify.
                 </p>
               </FadeIn>
             </li>
             <li>
               <FadeIn className="space-y-5 md:pr-10 md:space-y-10">
                 <div className="relative w-full pb-[100%]">
-                  <div className="absolute top-0 left-0 flex flex-col items-center justify-center w-full h-full p-5 space-y-10 bg-orange-500 rounded-full">
-                    <h3 className="text-3xl font-medium text-center font-display">
-                      Want to <br /> know more?
-                    </h3>
+                  <Link href="/contact?topic=contact">
+                    <a className="absolute top-0 left-0 flex flex-col items-center justify-center w-full h-full p-5 space-y-10 bg-orange-500 rounded-full">
+                      <h3 className="text-3xl font-medium text-center font-display">
+                        Want to <br /> know more?
+                      </h3>
 
-                    <a className="underline cursor-pointer">Get in touch</a>
-                  </div>
+                      <div className="underline cursor-pointer">Get in touch</div>
+                    </a>
+                  </Link>
                 </div>
               </FadeIn>
             </li>

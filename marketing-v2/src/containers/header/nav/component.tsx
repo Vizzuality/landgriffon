@@ -29,6 +29,9 @@ const HeaderNav: React.FC<NavProps> = ({ open }: NavProps) => {
           animate={{
             opacity: 1,
             y: 0,
+            transition: {
+              duration: isLg ? 0 : 0.25,
+            },
           }}
           exit={{
             opacity: 0,

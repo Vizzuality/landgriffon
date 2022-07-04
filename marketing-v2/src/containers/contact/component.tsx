@@ -6,12 +6,14 @@ import * as yup from 'yup';
 
 import Wrapper from 'containers/wrapper';
 import { useCallback, useState } from 'react';
+import { useSaveContact } from 'hooks/contact';
+
+import Icon from 'components/icon';
+import Loading from 'components/loading';
 
 import EMAIL_SVG from 'svgs/contact/icn_email.svg?sprite';
 import LOCATION_SVG from 'svgs/contact/icn_location.svg?sprite';
-import Icon from 'components/icon';
-import { useSaveContact } from 'hooks/contact';
-import Loading from 'components/loading';
+import { useRouter } from 'next/router';
 
 const schema = yup.object().shape({
   name: yup.string().required(),
@@ -26,7 +28,18 @@ const Contact: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  const { query } = useRouter();
+  const { topic } = query;
+
   const { register, handleSubmit, formState, reset } = useForm({
+    defaultValues: {
+      name: '',
+      email: '',
+      company: '',
+      topic: topic || '',
+      message: '',
+      terms: false,
+    },
     resolver: yupResolver(schema),
   });
   const { errors } = formState;
@@ -102,7 +115,7 @@ const Contact: React.FC = () => {
         </Wrapper>
 
         <div
-          className="bg-white bg-no-repeat  md:pb-32"
+          className="bg-white bg-no-repeat md:pb-32"
           style={{
             backgroundImage: `url('/images/contact/image11_contact.jpg')`,
             backgroundSize: '100% auto',
@@ -206,9 +219,9 @@ const Contact: React.FC = () => {
                     {...register('topic')}
                   >
                     <option value="">Select a topic</option>
-                    <option value="1">LandGriffon 1</option>
-                    <option value="2">LandGriffon 2</option>
-                    <option value="3">LandGriffon 3</option>
+                    <option value="demo">Request a demo</option>
+                    <option value="contact">Contact</option>
+                    <option value="support">Support</option>
                   </select>
                 </div>
               </div>

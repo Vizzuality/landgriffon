@@ -1,6 +1,7 @@
 import Wrapper from 'containers/wrapper';
 
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 const Hero: React.FC = () => {
   return (
@@ -33,14 +34,16 @@ const Hero: React.FC = () => {
             </div>
           </motion.div>
 
-          <motion.button
-            className="py-5 font-semibold text-white border-2 border-white px-9"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.75, delay: 0.1 }}
-          >
-            Set up a free call now
-          </motion.button>
+          <Link passHref href="/contact?topic=demo">
+            <motion.a
+              className="inline-block py-5 font-semibold text-white border-2 border-white px-9"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.75, delay: 0.1 }}
+            >
+              Set up a free call now
+            </motion.a>
+          </Link>
         </div>
       </Wrapper>
     </section>

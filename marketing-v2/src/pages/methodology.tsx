@@ -14,7 +14,6 @@ const MethodologyPage: FC = () => {
           <title>Methodology - Landgriffon</title>
           <link rel="icon" href="/favicon.ico" />
           <meta name="viewport" content="width=device-width" />
-
           <meta
             name="description"
             content="LandGriffon uses a unique methodology and world-renowned datasets to analyze supply chain impacts."

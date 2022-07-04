@@ -2,6 +2,7 @@ import Wrapper from 'containers/wrapper';
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const Hero: React.FC = () => {
   return (
@@ -19,9 +20,11 @@ const Hero: React.FC = () => {
                 We are on a mission to make supply chains more sustainable.
               </h1>
 
-              <button className="py-5 font-semibold text-black border-2 border-black px-9">
-                Set up a free call now
-              </button>
+              <Link href="/contact?topic=demo">
+                <a className="inline-block py-5 font-semibold text-black border-2 border-black px-9">
+                  Set up a free call now
+                </a>
+              </Link>
             </div>
 
             <div className="relative z-20 lg:w-5/12">

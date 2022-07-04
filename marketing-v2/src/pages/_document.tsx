@@ -11,10 +11,6 @@ class MyDocument extends Document {
     return (
       <Html className="bg-gray-100">
         <Head>
-          <meta
-            name="description"
-            content="Manage food and agriculture supply chain deforestation, climate, water risk and sustainability"
-          />
           {/* Fonts */}
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />

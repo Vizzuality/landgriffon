@@ -1,17 +1,24 @@
 import { Controller, Get, Param, Query, ValidationPipe } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { ContextualLayerByCategory } from 'modules/contextual-layers/contextual-layer.entity';
+import {
+  ContextualLayer,
+  ContextualLayerByCategory,
+} from 'modules/contextual-layers/contextual-layer.entity';
 import { ContextualLayersService } from 'modules/contextual-layers/contextual-layers.service';
 import { H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 import { GetContextualLayerH3Dto } from 'modules/contextual-layers//dto/get-contextual-layer-h3.dto';
 import { GetContextualLayerH3ResponseDto } from 'modules/contextual-layers//dto/get-contextual-layer-h3-response.dto';
 
 @Controller('api/v1/contextual-layers')
+@ApiTags(ContextualLayer.name)
+@ApiBearerAuth()
 export class ContextualLayersController {
   constructor(
     private readonly contextualLayerService: ContextualLayersService,

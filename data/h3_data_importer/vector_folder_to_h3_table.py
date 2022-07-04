@@ -21,22 +21,19 @@ Options:
     -h                Show help
     --h3-res=<res>    h3 resolution to use [default: 6].
 """
-import json
 import logging
 import os
 from io import StringIO
 from pathlib import Path
-from re import sub
 
 import fiona
 import geopandas as gpd
-import jsonschema
 import pandas as pd
 import psycopg2
 from docopt import docopt
 from h3ronpy import vector
-from jsonschema.exceptions import ValidationError
 from psycopg2.pool import ThreadedConnectionPool
+from utils import insert_to_h3_data_and_contextual_layer_tables, slugify
 
 DTYPES_TO_PG = {
     "object": "text",
@@ -59,33 +56,11 @@ log = logging.getLogger("vector_folder_to_h3_table")
 postgres_thread_pool = ThreadedConnectionPool(
     1,
     50,
-    host=os.getenv('API_POSTGRES_HOST'),
-    port=os.getenv('API_POSTGRES_PORT'),
-    user=os.getenv('API_POSTGRES_USERNAME'),
-    password=os.getenv('API_POSTGRES_PASSWORD')
+    host=os.getenv("API_POSTGRES_HOST"),
+    port=os.getenv("API_POSTGRES_PORT"),
+    user=os.getenv("API_POSTGRES_USERNAME"),
+    password=os.getenv("API_POSTGRES_PASSWORD"),
 )
-
-
-def get_contextual_layer_category_enum(connection_pool) -> set:
-    """Get the enum of contextual layer categories"""
-    conn = connection_pool.getconn()
-    with conn.cursor() as cursor:
-        cursor.execute("SELECT unnest(enum_range(NULL::contextual_layer_category));")
-        values = set(r[0] for r in cursor.fetchall())
-    connection_pool.putconn(conn)
-    return values
-
-
-CONTEXTUAL_LAYER_CATEGORIES = get_contextual_layer_category_enum(postgres_thread_pool)
-
-
-def slugify(s):
-    s = sub(r"[_-]+", " ", s).title().replace(" ", "")
-    return "".join([s[0].lower(), s[1:]])
-
-
-def snakify(s):
-    return sub(r"(?<!^)(?=[A-Z])", "_", s).lower()
 
 
 def records(filename, usecols, **kwargs):
@@ -169,67 +144,6 @@ def insert_to_h3_grid_table(
     log.info(f"{len(df)} values written to database.")
 
 
-def insert_to_h3_data_and_contextual_layer_tables(
-    table: str, column: str, h3_res: int, dataset: str, category: str, year: int, connection
-):
-    cursor = connection.cursor()
-    # remove existing entries
-    cursor.execute(
-        f"""DELETE FROM "contextual_layer" WHERE "name" = '{dataset}'"""
-    )
-    cursor.execute(f"""DELETE FROM "h3_data" WHERE "h3tableName" = '{table}';""")
-    connection.commit()  # todo: check if commiting here the deletes before everything else is safe
-
-    # insert new entries
-    log.info("Inserting record into h3_data table...")
-
-    cursor.execute(
-        f"""INSERT INTO "h3_data" ("h3tableName", "h3columnName", "h3resolution", "year")
-         VALUES ('{table}', '{column}', {h3_res}, {year});"""
-    )
-
-    log.info("Inserting record into contextual_layer table...")
-    cursor.execute(
-        f"""INSERT INTO "contextual_layer"  ("name", "metadata", "category")
-         VALUES ('{dataset}', '{json.dumps(get_metadata(table))}', '{category}')
-         RETURNING id;
-        """
-    )
-    contextual_data_id = cursor.fetchall()[0][0]
-    # insert contextual_layer entry id into h3_table
-    cursor.execute(
-        f"""update "h3_data"  set "contextualLayerId" = '{contextual_data_id}' where  "h3tableName" = '{table}';"""
-    )
-
-    connection.commit()
-    cursor.close()
-
-
-def get_metadata(table: str) -> dict:
-    """Returns the metadata for the given table"""
-    metadata_base_path = Path(__file__).parent / "contextual_layers_metadata"
-    # load the json schema
-    with open(metadata_base_path / "contextual_metadata_schema.json") as f:
-        schema = json.load(f)
-
-    metadata_path = metadata_base_path / f"{table}_metadata.json"
-
-    if not metadata_path.exists():
-        log.error(f"No metadata found for {table}")
-        # todo: should we raise exception or return empty metadata and keep going?
-        raise FileNotFoundError(f"Metadata file for {table} not found")
-
-    with open(metadata_path, "r") as f:
-        metadata = json.load(f)
-        try:
-            jsonschema.validate(metadata, schema)
-        except ValidationError as e:
-            log.error(f"Metadata for {table} is not valid: {e}")
-            # todo: should we raise exception or return empty metadata and keep going?
-            raise e
-        return metadata
-
-
 def main(folder, table, column, dataset, category, year, h3_res):
     vec_extensions = "gpkg shp json geojson".split()
     path = Path(folder)
@@ -240,10 +154,6 @@ def main(folder, table, column, dataset, category, year, h3_res):
         log.error(f"No vectors with extension {vec_extensions} found in {folder}")
         return
 
-    if category not in CONTEXTUAL_LAYER_CATEGORIES:
-        log.error(f"Category '{category}' not supported. Supported categories: {CONTEXTUAL_LAYER_CATEGORIES}")
-        return
-
     conn = postgres_thread_pool.getconn()
     if len(vectors) == 1:  # folder just contains one vector file
         df = vector_file_to_h3dataframe(vectors[0], column, h3_res)
@@ -252,9 +162,11 @@ def main(folder, table, column, dataset, category, year, h3_res):
         column = slugify(column)  # slugify the column name to follow the convention of db column naming
         insert_to_h3_data_and_contextual_layer_tables(table, column, h3_res, dataset, category, year, conn)
     else:
-        mssg = (f"Found more than one vector file in {folder}."
-                f" For now we only support folders with just one vector file.")
-        log.error(mssg)
+        mssg = (
+            f"Found more than one vector file in {folder}."
+            f" For now we only support folders with just one vector file."
+        )
+        logging.error(mssg)
         return
     postgres_thread_pool.putconn(conn, close=True)
 

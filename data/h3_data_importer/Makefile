@@ -17,6 +17,7 @@ WORKDIR_SPECIESRICHNESS=data/satelligence/species_richness
 WORKDIR_ABOVEGROUNDBIOMASS=data/satelligence/above_ground_biomass
 WORKDIR_SATDEFORESTATION=data/satelligence/deforestation
 WORKDIR_AQUEDUCT=data/contextual/aqueduct
+WORKDIR_HDI=data/contextual/hdi
 
 all:
 	make clean
@@ -35,7 +36,7 @@ indicators:
 	make convert-deforestation
 
 contextual-layers:
-	make -j 2 convert-aqueduct-contextual
+	make convert-aqueduct-contextual convert-hdi-contextual
 
 ############################################
 # MapSPAM crop production and harvest area #
@@ -459,6 +460,13 @@ extract-aqueduct-contextual: download-aqueduct-contextual
 convert-aqueduct-contextual: extract-aqueduct-contextual
 	python vector_folder_to_h3_table.py $(WORKDIR_AQUEDUCT)/Y2019M07D12_Aqueduct30_V01/baseline/annual h3_grid_aqueduct_global bws_cat aqueduct "Environmental datasets" 2019 --h3-res=6
 
+
+download-hdi-contextual:
+	mkdir -p $(WORKDIR_HDI)
+	wget --show-progress -q -O $(WORKDIR_HDI)/IHDI_HDR2020_040722.csv https://hdr.undp.org/sites/default/files/data/2020/IHDI_HDR2020_040722.csv
+
+convert-hdi-contextual: download-hdi-contextual
+	python csv_to_h3_table.py $(WORKDIR_HDI)/IHDI_HDR2020_040722.csv h3_grid_hdi_global hdi_2019 2019 iso3
 
 clean:
 	rm -rf data/*

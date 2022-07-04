@@ -13,6 +13,7 @@ export enum CONTEXTUAL_LAYER_CATEGORY {
   ENVIRONMENTAL_DATASETS = 'Environmental datasets',
   BUSINESS_DATASETS = 'Business datasets',
   FOOD_AND_AGRICULTURE = 'Food and agriculture',
+  SOCIAL = 'Social',
   DEFAULT = 'Default',
 }
 

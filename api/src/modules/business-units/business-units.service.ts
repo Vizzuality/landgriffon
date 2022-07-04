@@ -101,24 +101,24 @@ export class BusinessUnitsService extends AppBaseService<
   async getBusinessUnitTreeWithSourcingLocations(
     businessUnitTreeOptions: GetBusinessUnitTreeWithOptionsDto,
   ): Promise<BusinessUnit[]> {
-    // if (businessUnitTreeOptions.materialIds) {
-    //   businessUnitTreeOptions.materialIds =
-    //     await this.materialsService.getMaterialsDescendants(
-    //       businessUnitTreeOptions.materialIds,
-    //     );
-    // }
-    // if (businessUnitTreeOptions.supplierIds) {
-    //   businessUnitTreeOptions.supplierIds =
-    //     await this.suppliersService.getSuppliersDescendants(
-    //       businessUnitTreeOptions.supplierIds,
-    //     );
-    // }
-    // if (businessUnitTreeOptions.originIds) {
-    //   businessUnitTreeOptions.originIds =
-    //     await this.adminRegionService.getAdminRegionDescendants(
-    //       businessUnitTreeOptions.originIds,
-    //     );
-    // }
+    if (businessUnitTreeOptions.materialIds) {
+      businessUnitTreeOptions.materialIds =
+        await this.materialsService.getMaterialsDescendants(
+          businessUnitTreeOptions.materialIds,
+        );
+    }
+    if (businessUnitTreeOptions.supplierIds) {
+      businessUnitTreeOptions.supplierIds =
+        await this.suppliersService.getSuppliersDescendants(
+          businessUnitTreeOptions.supplierIds,
+        );
+    }
+    if (businessUnitTreeOptions.originIds) {
+      businessUnitTreeOptions.originIds =
+        await this.adminRegionService.getAdminRegionDescendants(
+          businessUnitTreeOptions.originIds,
+        );
+    }
     const businessUnitsLineage: BusinessUnit[] =
       await this.businessUnitRepository.getSourcingDataBusinessUnitssWithAncestry(
         businessUnitTreeOptions,

@@ -22,7 +22,6 @@ const COLOR_SCALE = chroma.scale([
   '#9CBB97',
   '#FDB462',
   '#AAD463',
-  '#E1E1E1',
 ]);
 
 export function useColors(): RGBColor[] {
@@ -51,27 +50,30 @@ export function useAnalysisChart(params): AnalysisChart {
     ) as number[];
 
     const projection = !!projectedYears.length && Math.min(...projectedYears);
+
     return {
       id: data.indicatorId,
       indicator: data.indicatorShortName,
       unit: data.metadata.unit,
       values: data.yearSum,
       projection,
-      children: flatten([
-        data.rows.map((row) => ({
-          id: row.name,
-          name: row.name,
-          values: row.values,
-        })),
-        {
-          id: data.others.numberOfAggregatedEntities === 1 ? 'Other' : 'Others',
-          name: data.others.numberOfAggregatedEntities === 1 ? 'Other' : 'Others',
-          values: data.others.aggregatedValues.map((aggregated) => ({
-            ...aggregated,
-            isProjected: projectedYears.includes(aggregated.year),
+      children: flatten(
+        [
+          data.rows.map((row) => ({
+            id: row.name,
+            name: row.name,
+            values: row.values,
           })),
-        },
-      ]),
+          data.others.numberOfAggregatedEntities > 0 && {
+            id: data.others.numberOfAggregatedEntities === 1 ? 'Other' : 'Others',
+            name: data.others.numberOfAggregatedEntities === 1 ? 'Other' : 'Others',
+            values: data.others.aggregatedValues.map((aggregated) => ({
+              ...aggregated,
+              isProjected: projectedYears.includes(aggregated.year),
+            })),
+          },
+        ].filter(Boolean),
+      ),
     };
   });
   return useMemo(() => {

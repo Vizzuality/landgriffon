@@ -24,7 +24,9 @@ const Legend: FC<LegendChartTypes> = ({ activeArea, onClick, indicatorData }: Le
             <span
               title={key}
               className={cx('text-xs', {
-                'truncate text-ellipsis text-gray-500 max-w-[74px]': activeArea !== `${key}-${id}`,
+                'truncate text-ellipsis max-w-[74px]':
+                  keys.length > 4 && activeArea !== `${key}-${id}`,
+                'text-gray-500': activeArea !== `${key}-${id}`,
                 'opacity-70 text-gray-900': activeArea && activeArea !== `${key}-${id}`,
               })}
             >

@@ -81,7 +81,7 @@ const Testimonials: React.FC = () => {
                 <Icon icon={TESTIMONIALS_SVG} className="w-14 h-14 md:w-24 md:h-24" />
 
                 <h2 className="text-4xl font-black text-white uppercase md:text-6xl font-display">
-                  WHAT OUR CLIENTS THINK OF US
+                  What is being said about LandGriffon
                 </h2>
               </div>
 

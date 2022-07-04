@@ -1,7 +1,6 @@
-"""Downloads the Human Development Index data in csv and imports it to a PostgreSQL database.
-
-The script converts the hdi country data to H3 grid cells using the already populated geo_region and admin_region tables
-to get the h3 hexes for each country. This way it only uses a sql join and avoid doing geo-spatial operations and
+"""
+The script converts the csv with country data to H3 grid cells using the already populated geo_region and admin_region
+tables to get the h3 hexes for each country. This way it only uses a sql join and avoid doing geo-spatial operations and
 querys.
 
 Postgres connection params read from environment:
@@ -11,13 +10,14 @@ Postgres connection params read from environment:
  - API_POSTGRES_DATABASE
 
 Usage:
-    insert_hdi_dataset.py <table> <column> <year>
+    csv_to_h3_table.py <table> <column> <year>
 
 Arguments:
     <file>            Path to the csv file with the hdi data.
     <table>           Postgresql table to create or overwrite.
     <column>          Column to insert HDI data into.
     <year>            Year of the data used.
+    <iso3_column>     Column with the country iso3 code.
 """
 
 import argparse
@@ -27,16 +27,15 @@ import os
 from pathlib import Path
 
 import pandas as pd
-import requests
 from psycopg2 import extensions
 from psycopg2.pool import ThreadedConnectionPool
-
-from utils import slugify, insert_to_h3_data_and_contextual_layer_tables
+from tqdm import tqdm
+from utils import insert_to_h3_data_and_contextual_layer_tables, slugify
 
 CSV_URL = "https://hdr.undp.org/sites/default/files/data/2020/IHDI_HDR2020_040722.csv"
 
 logging.basicConfig(level=logging.INFO)
-log = logging.getLogger(__name__)
+log = logging.getLogger("csv_to_h3_table")
 
 postgres_thread_pool = ThreadedConnectionPool(
     1,
@@ -61,21 +60,13 @@ def insert_h3_grid_table_query(table_name: str, column: str, country_iso3_code: 
     return query
 
 
-def download_data(url: str) -> pd.DataFrame:
-    with requests.Session() as s:
-        download = s.get(url)
-        log.info(f"Downloading HDI data from {url}")
-        decoded_content = download.content.decode("utf-8")
-    # using csv reader because pandas was raising some weird decoding errors for the hdi csv
-    csv_rows = list(csv.reader(decoded_content.splitlines(), delimiter=","))
-    return pd.DataFrame(csv_rows[1:], columns=csv_rows[0])
-
-
 def load_data(filename: Path) -> pd.DataFrame:
     return pd.read_csv(filename)
 
 
-def insert_h3_grid_data(df: pd.DataFrame, table: str, column: str, iso3_column: str, connection: extensions.connection) -> None:
+def insert_h3_grid_data(
+    df: pd.DataFrame, table: str, value_column: str, iso3_column: str, connection: extensions.connection
+) -> None:
     """
     Parameters
     ----------
@@ -83,31 +74,36 @@ def insert_h3_grid_data(df: pd.DataFrame, table: str, column: str, iso3_column: 
         data to insert
     table : str
         name of the h3 grid table to populate
-    column : str
+    value_column : str
         column of the dataset to insert into h3 grid table
-    connection : ThreadedConnectionPool
-        postgres connection pool
-   """
-    df: pd.DataFrame
-    df = df.loc[:, ["iso3", column]]
-    df[column] = pd.to_numeric(df[column])
-    # todo: check no data strategy
-    countries_w_na = df[df[column].isna()][iso3_column]
-    log.warning(f"Found {len(countries_w_na)} countries with NA entries and"
-                f" will not be inserted: {', '.join(countries_w_na.tolist())}")
-    df = df.dropna(subset=column)
+    connection : psycopg2.extensions.connection
+        postgres connection
+    """
+    df = df.loc[:, [iso3_column, value_column]]
+    df[value_column] = pd.to_numeric(df[value_column])
+    # drop rows with missing iso3. Could mean that the row is an aggregate like the hdi dataset, it has
+    # some rows with continental aggregates like "World" or "Europe and Central Asia" which don't have iso3
+    df = df.dropna(subset=[iso3_column])
+    countries_w_na = df[df[value_column].isna()][iso3_column]
+    log.warning(
+        f"Found {len(countries_w_na)} countries with NA entries and"
+        f" will not be inserted: {', '.join(countries_w_na.tolist())}"
+    )
+    df = df.dropna(subset=[value_column])
 
     with connection:
         with connection.cursor() as cursor:
             log.info(f"Dropping table {table}...")
             cursor.execute(f"drop table if exists {table};")
             log.info(f"Creating table {table}...")
-            cursor.execute(f'create table {table} (h3index h3index PRIMARY KEY, "{column}" real);')
+            cursor.execute(f'create table {table} (h3index h3index PRIMARY KEY, "{value_column}" real);')
 
-        for row in df.itertuples():
-            country_code, value = getattr(row, iso3_column), getattr(row, column)
-            query = insert_h3_grid_table_query(table, column, country_code, value)
-            log.info(f"Inserting data for country {country_code} with value {value}...")
+        pbar = tqdm(df.itertuples(), total=len(df))
+        for row in pbar:
+            country_code, value = getattr(row, iso3_column), getattr(row, value_column)
+            pbar.set_description(f"Inserting {country_code} into {table}")
+            query = insert_h3_grid_table_query(table, value_column, country_code, value)
+
             with connection.cursor() as cursor:
                 cursor.execute(query)
 

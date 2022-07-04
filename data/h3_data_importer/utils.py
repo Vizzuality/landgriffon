@@ -16,40 +16,51 @@ def snakify(s):
     return sub(r"(?<!^)(?=[A-Z])", "_", s).lower()
 
 
+def get_contextual_layer_category_enum(conn) -> set:
+    """Get the enum of contextual layer categories"""
+    with conn:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT unnest(enum_range(NULL::contextual_layer_category));")
+            values = set(r[0] for r in cursor.fetchall())
+    return values
+
+
 def insert_to_h3_data_and_contextual_layer_tables(
     table: str, column: str, h3_res: int, dataset: str, category: str, year: int, connection
 ):
-    cursor = connection.cursor()
-    # remove existing entries
-    cursor.execute(
-        f"""DELETE FROM "contextual_layer" WHERE "name" = '{dataset}'"""
-    )
-    cursor.execute(f"""DELETE FROM "h3_data" WHERE "h3tableName" = '{table}';""")
-    connection.commit()  # todo: check if commiting here the deletes before everything else is safe
+    categories_enum = get_contextual_layer_category_enum(connection)
+    if category not in categories_enum:
+        logging.error(f"Category '{category}' not supported. Supported categories: {categories_enum}")
+        return
 
-    # insert new entries
-    logging.info("Inserting record into h3_data table...")
+    with connection:
+        with connection.cursor() as cursor:
+            # remove existing entries
+            cursor.execute(f"""DELETE FROM "h3_data" WHERE "h3tableName" = '{table}';""")
+            cursor.execute(
+                f"""DELETE FROM "contextual_layer" WHERE "name" = '{dataset}'"""
+            )
 
-    cursor.execute(
-        f"""INSERT INTO "h3_data" ("h3tableName", "h3columnName", "h3resolution", "year")
-         VALUES ('{table}', '{column}', {h3_res}, {year});"""
-    )
+            # insert new entries
+            logging.info("Inserting record into h3_data table...")
 
-    logging.info("Inserting record into contextual_layer table...")
-    cursor.execute(
-        f"""INSERT INTO "contextual_layer"  ("name", "metadata", "category")
-         VALUES ('{dataset}', '{json.dumps(get_metadata(table))}', '{category}')
-         RETURNING id;
-        """
-    )
-    contextual_data_id = cursor.fetchall()[0][0]
-    # insert contextual_layer entry id into h3_table
-    cursor.execute(
-        f"""update "h3_data"  set "contextualLayerId" = '{contextual_data_id}' where  "h3tableName" = '{table}';"""
-    )
+            cursor.execute(
+                f"""INSERT INTO "h3_data" ("h3tableName", "h3columnName", "h3resolution", "year")
+                 VALUES ('{table}', '{column}', {h3_res}, {year});"""
+            )
 
-    connection.commit()
-    cursor.close()
+            logging.info("Inserting record into contextual_layer table...")
+            cursor.execute(
+                f"""INSERT INTO "contextual_layer"  ("name", "metadata", "category")
+                 VALUES ('{dataset}', '{json.dumps(get_metadata(table))}', '{category}')
+                 RETURNING id;
+                """
+            )
+            contextual_data_id = cursor.fetchall()[0][0]
+            # insert contextual_layer entry id into h3_table
+            cursor.execute(
+                f"""update "h3_data"  set "contextualLayerId" = '{contextual_data_id}' where  "h3tableName" = '{table}';"""
+            )
 
 
 def get_metadata(table: str) -> dict:

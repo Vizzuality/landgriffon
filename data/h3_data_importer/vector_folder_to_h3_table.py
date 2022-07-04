@@ -36,9 +36,7 @@ from docopt import docopt
 from h3ronpy import vector
 from jsonschema.exceptions import ValidationError
 from psycopg2.pool import ThreadedConnectionPool
-
-from data.h3_data_importer.utils import insert_to_h3_data_and_contextual_layer_tables
-from utils import slugify
+from utils import insert_to_h3_data_and_contextual_layer_tables, slugify
 
 DTYPES_TO_PG = {
     "object": "text",
@@ -61,24 +59,11 @@ log = logging.getLogger("vector_folder_to_h3_table")
 postgres_thread_pool = ThreadedConnectionPool(
     1,
     50,
-    host=os.getenv('API_POSTGRES_HOST'),
-    port=os.getenv('API_POSTGRES_PORT'),
-    user=os.getenv('API_POSTGRES_USERNAME'),
-    password=os.getenv('API_POSTGRES_PASSWORD')
+    host=os.getenv("API_POSTGRES_HOST"),
+    port=os.getenv("API_POSTGRES_PORT"),
+    user=os.getenv("API_POSTGRES_USERNAME"),
+    password=os.getenv("API_POSTGRES_PASSWORD"),
 )
-
-
-def get_contextual_layer_category_enum(connection_pool) -> set:
-    """Get the enum of contextual layer categories"""
-    conn = connection_pool.getconn()
-    with conn.cursor() as cursor:
-        cursor.execute("SELECT unnest(enum_range(NULL::contextual_layer_category));")
-        values = set(r[0] for r in cursor.fetchall())
-    connection_pool.putconn(conn)
-    return values
-
-
-CONTEXTUAL_LAYER_CATEGORIES = get_contextual_layer_category_enum(postgres_thread_pool)
 
 
 def records(filename, usecols, **kwargs):
@@ -172,10 +157,6 @@ def main(folder, table, column, dataset, category, year, h3_res):
         log.error(f"No vectors with extension {vec_extensions} found in {folder}")
         return
 
-    if category not in CONTEXTUAL_LAYER_CATEGORIES:
-        log.error(f"Category '{category}' not supported. Supported categories: {CONTEXTUAL_LAYER_CATEGORIES}")
-        return
-
     conn = postgres_thread_pool.getconn()
     if len(vectors) == 1:  # folder just contains one vector file
         df = vector_file_to_h3dataframe(vectors[0], column, h3_res)
@@ -184,9 +165,11 @@ def main(folder, table, column, dataset, category, year, h3_res):
         column = slugify(column)  # slugify the column name to follow the convention of db column naming
         insert_to_h3_data_and_contextual_layer_tables(table, column, h3_res, dataset, category, year, conn)
     else:
-        mssg = (f"Found more than one vector file in {folder}."
-                f" For now we only support folders with just one vector file.")
-        log.error(mssg)
+        mssg = (
+            f"Found more than one vector file in {folder}."
+            f" For now we only support folders with just one vector file."
+        )
+        logging.error(mssg)
         return
     postgres_thread_pool.putconn(conn, close=True)
 

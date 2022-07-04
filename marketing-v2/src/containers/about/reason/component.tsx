@@ -110,49 +110,59 @@ const Rason: React.FC = () => {
               </p>
               <ul className="grid grid-cols-2 gap-10 xs:grid-cols-3 md:grid-cols-5">
                 <li>
-                  <Image
-                    layout="intrinsic"
-                    src="/images/logos/sei_logo.png"
-                    alt="SEI"
-                    width={338}
-                    height={338}
-                  />
+                  <a href="https://www.sei.org/" target="_blank" rel="noreferrer noopener">
+                    <Image
+                      layout="intrinsic"
+                      src="/images/logos/sei-logo.png"
+                      alt="SEI"
+                      width={338}
+                      height={338}
+                    />
+                  </a>
                 </li>
                 <li>
-                  <Image
-                    layout="intrinsic"
-                    src="/images/logos/UN_logo.png"
-                    alt="UN"
-                    width={338}
-                    height={338}
-                  />
+                  <a href="https://www.un.org/" target="_blank" rel="noreferrer noopener">
+                    <Image
+                      layout="intrinsic"
+                      src="/images/logos/UN_logo.png"
+                      alt="UN"
+                      width={338}
+                      height={338}
+                    />
+                  </a>
                 </li>
                 <li>
-                  <Image
-                    layout="intrinsic"
-                    src="/images/logos/nasa_logo.png"
-                    alt="NASA"
-                    width={338}
-                    height={338}
-                  />
+                  <a href="https://www.nasa.gov/" target="_blank" rel="noreferrer noopener">
+                    <Image
+                      layout="intrinsic"
+                      src="/images/logos/nasa_logo.png"
+                      alt="NASA"
+                      width={338}
+                      height={338}
+                    />
+                  </a>
                 </li>
                 <li>
-                  <Image
-                    layout="intrinsic"
-                    src="/images/logos/Google_logo.png"
-                    alt="Google"
-                    width={338}
-                    height={338}
-                  />
+                  <a href="https://www.google.com/" target="_blank" rel="noreferrer noopener">
+                    <Image
+                      layout="intrinsic"
+                      src="/images/logos/Google_logo.png"
+                      alt="Google"
+                      width={338}
+                      height={338}
+                    />
+                  </a>
                 </li>
                 <li>
-                  <Image
-                    layout="intrinsic"
-                    src="/images/logos/WRI_logo.png"
-                    alt="WRI"
-                    width={338}
-                    height={338}
-                  />
+                  <a href="https://www.wri.org/" target="_blank" rel="noreferrer noopener">
+                    <Image
+                      layout="intrinsic"
+                      src="/images/logos/WRI_logo.png"
+                      alt="WRI"
+                      width={338}
+                      height={338}
+                    />
+                  </a>
                 </li>
               </ul>
             </div>
@@ -184,49 +194,63 @@ const Rason: React.FC = () => {
 
               <ul className="grid grid-cols-2 gap-10 xs:grid-cols-3 md:grid-cols-5">
                 <li>
-                  <Image
-                    layout="intrinsic"
-                    src="/images/logos/OLAM_logo.png"
-                    alt="OLAM"
-                    width={338}
-                    height={338}
-                  />
+                  <a href="https://www.olamgroup.com/" target="_blank" rel="noreferrer noopener">
+                    <Image
+                      layout="intrinsic"
+                      src="/images/logos/OLAM_logo.png"
+                      alt="OLAM"
+                      width={338}
+                      height={338}
+                    />
+                  </a>
                 </li>
                 <li>
-                  <Image
-                    layout="intrinsic"
-                    src="/images/logos/Mondelez_logo.png"
-                    alt="Mondelez"
-                    width={338}
-                    height={338}
-                  />
+                  <a
+                    href="https://www.mondelezinternational.com/"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    <Image
+                      layout="intrinsic"
+                      src="/images/logos/Mondelez_logo.png"
+                      alt="Mondelez"
+                      width={338}
+                      height={338}
+                    />
+                  </a>
                 </li>
                 <li>
-                  <Image
-                    layout="intrinsic"
-                    src="/images/logos/BMW_logo.png"
-                    alt="BMW"
-                    width={338}
-                    height={338}
-                  />
+                  <a href="https://www.bmw.com/" target="_blank" rel="noreferrer noopener">
+                    <Image
+                      layout="intrinsic"
+                      src="/images/logos/BMW_logo.png"
+                      alt="BMW"
+                      width={338}
+                      height={338}
+                    />
+                  </a>
                 </li>
                 <li>
-                  <Image
-                    layout="intrinsic"
-                    src="/images/logos/Tony_s_logo.png"
-                    alt="Tony's"
-                    width={338}
-                    height={338}
-                  />
+                  <a href="https://tonyschocolonely.com/" target="_blank" rel="noreferrer noopener">
+                    <Image
+                      layout="intrinsic"
+                      src="/images/logos/Tony_s_logo.png"
+                      alt="Tony's"
+                      width={338}
+                      height={338}
+                    />
+                  </a>
                 </li>
                 <li>
-                  <Image
-                    layout="intrinsic"
-                    src="/images/logos/Bunge_logo.png"
-                    alt="Bunge"
-                    width={338}
-                    height={338}
-                  />
+                  <a href="https://www.bunge.com/" target="_blank" rel="noreferrer noopener">
+                    <Image
+                      layout="intrinsic"
+                      src="/images/logos/Bunge_logo.png"
+                      alt="Bunge"
+                      width={338}
+                      height={338}
+                    />
+                  </a>
                 </li>
               </ul>
             </div>

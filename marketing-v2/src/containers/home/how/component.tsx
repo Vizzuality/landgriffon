@@ -36,7 +36,7 @@ const How: React.FC = () => {
           <div className="sticky top-0 flex items-center py-32 border-t border-black/10">
             <div className="space-y-20">
               <FadeIn>
-                <h2 className="w-5/12 text-4xl md:text-6xl font-black uppercase font-display">
+                <h2 className="w-5/12 text-4xl font-black uppercase md:text-6xl font-display">
                   How does it work?
                 </h2>
               </FadeIn>
@@ -49,7 +49,7 @@ const How: React.FC = () => {
                         'flex items-center justify-center p-5 rounded-full w-52 h-52': true,
                         'transition-colors': true,
                         'bg-gray-100': STEP !== 0,
-                        'bg-orange-500 shadow-orange-500 shadow-md': STEP === 0,
+                        'bg-orange-500 ': STEP === 0,
                       })}
                     >
                       <h3 className="text-xl font-black text-center uppercase font-display">
@@ -78,7 +78,7 @@ const How: React.FC = () => {
                         'flex items-center justify-center p-5 rounded-full w-52 h-52': true,
                         'transition-colors': true,
                         'bg-gray-100': STEP !== 1,
-                        'bg-green-500 text-white shadow-green-500 shadow-md': STEP === 1,
+                        'bg-green-500 text-white': STEP === 1,
                       })}
                     >
                       <h3 className="text-xl font-black text-center uppercase font-display">
@@ -107,7 +107,7 @@ const How: React.FC = () => {
                         'flex items-center justify-center p-5 rounded-full w-52 h-52': true,
                         'transition-colors': true,
                         'bg-gray-100': STEP !== 2,
-                        'bg-green-500 text-white shadow-green-500 shadow-md': STEP === 2,
+                        'bg-green-500 text-white': STEP === 2,
                       })}
                     >
                       <h3 className="text-xl font-black text-center uppercase font-display">
@@ -136,7 +136,7 @@ const How: React.FC = () => {
                         'flex items-center justify-center p-5 rounded-full w-52 h-52': true,
                         'transition-colors': true,
                         'bg-gray-100': STEP !== 3,
-                        'bg-blue-500 shadow-blue-500 shadow-md text-white': STEP === 3,
+                        'bg-blue-500 text-white': STEP === 3,
                       })}
                     >
                       <h3 className="text-xl font-black text-center uppercase font-display">

@@ -4,22 +4,24 @@ import { motion } from 'framer-motion';
 
 const Hero: React.FC = () => {
   return (
-    <section
-      className="relative flex flex-col items-center justify-center w-full py-12 overflow-hidden bg-blue-600 bg-no-repeat bg-cover md:h-screen"
-      style={{
-        backgroundImage: `url('/images/home/hero/bg_circles.svg')`,
-        backgroundPosition: '100% 50%',
-      }}
-    >
+    <section className="relative flex flex-col items-center justify-center w-full py-12 overflow-hidden bg-blue-600 md:h-screen">
+      <div
+        className="absolute bottom-0 right-0 hidden w-full h-full bg-right-bottom bg-no-repeat pointer-events-none md:block"
+        style={{
+          backgroundImage: `url('/images/home/hero/bg_circles.svg')`,
+          backgroundSize: 'auto 125%',
+          backgroundPosition: '100% bottom',
+        }}
+      ></div>
       <Wrapper>
         <div className="space-y-5">
           <motion.div
-            className="relative overflow-hidden"
+            className="relative"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, delay: 0.1 }}
           >
-            <h1 className="text-5xl font-black tracking-tight text-white uppercase font-display md:text-10xl">
+            <h1 className="text-5xl font-black tracking-tight text-white uppercase font-display md:text-8xl lg:text-10xl">
               Unlock the sustainability of your supply chain
             </h1>
 

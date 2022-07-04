@@ -11,7 +11,7 @@ import LINKEDIN_SVG from 'svgs/social/linkedin.svg?sprite';
 const Team: React.FC = () => {
   return (
     <section className="relative overflow-hidden bg-blue-600">
-      <div className="relative z-10 py-32 space-y-64 md:py-64">
+      <div className="relative z-10 py-12 md:space-y-64 md:py-64">
         <Wrapper>
           <div className="space-y-10 text-white md:space-y-20">
             <FadeIn>

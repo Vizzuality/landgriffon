@@ -8,11 +8,11 @@ import Image from 'next/image';
 
 const Rason: React.FC = () => {
   return (
-    <section className="relative py-32 space-y-64 bg-blue-600 bg-cover md:py-64">
+    <section className="relative py-12 space-y-12 bg-blue-600 bg-cover md:space-y-64 md:py-64">
       <Wrapper>
         <div className="space-y-10 text-white md:space-y-20">
           <FadeIn>
-            <h2 className="font-black text-white uppercase font-display text-5xl md:text-7xl">
+            <h2 className="text-5xl font-black text-white uppercase font-display md:text-7xl">
               Sustainability is <span className="text-orange-500">more than a buzzword. </span>
             </h2>
           </FadeIn>
@@ -62,7 +62,7 @@ const Rason: React.FC = () => {
       <Wrapper>
         <div className="space-y-10 text-white md:space-y-20">
           <FadeIn>
-            <h2 className="font-black text-white uppercase font-display text-5xl md:text-7xl">
+            <h2 className="text-5xl font-black text-white uppercase font-display md:text-7xl">
               The LandGriffon ecosystem;
               <span className="text-blue-500"> a consortium of experts. </span>
             </h2>
@@ -83,7 +83,7 @@ const Rason: React.FC = () => {
       </Wrapper>
 
       <Wrapper>
-        <div className="space-y-32 text-white md:space-y-32">
+        <div className="space-y-20 text-white md:space-y-32">
           <FadeIn>
             <div className="space-y-10">
               <h3 className="text-2xl font-bold text-white">Vizzuality</h3>
@@ -108,14 +108,14 @@ const Rason: React.FC = () => {
                   <Icon icon={ARROW_TOP_RIGHT_SVG} className="w-3 h-3" />
                 </a>
               </p>
-              <ul className="flex justify-between space-x-10">
+              <ul className="grid grid-cols-2 gap-10 xs:grid-cols-3 md:grid-cols-5">
                 <li>
                   <Image
                     layout="intrinsic"
-                    src="/images/logos/SEI_logo.png"
+                    src="/images/logos/sei_logo.png"
                     alt="SEI"
-                    width={180}
-                    height={180}
+                    width={338}
+                    height={338}
                   />
                 </li>
                 <li>
@@ -123,8 +123,8 @@ const Rason: React.FC = () => {
                     layout="intrinsic"
                     src="/images/logos/UN_logo.png"
                     alt="UN"
-                    width={180}
-                    height={180}
+                    width={338}
+                    height={338}
                   />
                 </li>
                 <li>
@@ -132,8 +132,8 @@ const Rason: React.FC = () => {
                     layout="intrinsic"
                     src="/images/logos/nasa_logo.png"
                     alt="NASA"
-                    width={180}
-                    height={180}
+                    width={338}
+                    height={338}
                   />
                 </li>
                 <li>
@@ -141,8 +141,8 @@ const Rason: React.FC = () => {
                     layout="intrinsic"
                     src="/images/logos/Google_logo.png"
                     alt="Google"
-                    width={180}
-                    height={180}
+                    width={338}
+                    height={338}
                   />
                 </li>
                 <li>
@@ -150,8 +150,8 @@ const Rason: React.FC = () => {
                     layout="intrinsic"
                     src="/images/logos/WRI_logo.png"
                     alt="WRI"
-                    width={180}
-                    height={180}
+                    width={338}
+                    height={338}
                   />
                 </li>
               </ul>
@@ -181,13 +181,61 @@ const Rason: React.FC = () => {
                   <Icon icon={ARROW_TOP_RIGHT_SVG} className="w-3 h-3" />
                 </a>
               </p>
+
+              <ul className="grid grid-cols-2 gap-10 xs:grid-cols-3 md:grid-cols-5">
+                <li>
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/OLAM_logo.png"
+                    alt="OLAM"
+                    width={338}
+                    height={338}
+                  />
+                </li>
+                <li>
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/Mondelez_logo.png"
+                    alt="Mondelez"
+                    width={338}
+                    height={338}
+                  />
+                </li>
+                <li>
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/BMW_logo.png"
+                    alt="BMW"
+                    width={338}
+                    height={338}
+                  />
+                </li>
+                <li>
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/Tony_s_logo.png"
+                    alt="Tony's"
+                    width={338}
+                    height={338}
+                  />
+                </li>
+                <li>
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/Bunge_logo.png"
+                    alt="Bunge"
+                    width={338}
+                    height={338}
+                  />
+                </li>
+              </ul>
             </div>
           </FadeIn>
         </div>
       </Wrapper>
 
       <div>
-        <div className="pt-32 -mt-32 border-t border-white/10">
+        <div className="pt-12 border-t md:pt-32 md:-mt-32 border-white/10">
           <Wrapper>
             <div className="space-y-32 text-white md:space-y-32">
               <FadeIn>

@@ -56,10 +56,10 @@ const Contact: React.FC = () => {
     <section className="bg-white">
       <div className="relative z-10">
         <Wrapper>
-          <div className="relative z-10 py-20 md:py-32">
+          <div className="relative z-10 py-12 md:py-32">
             <div className="flex flex-col justify-between space-y-10 md:flex-row md:space-x-20 md:space-y-0">
               <div className="space-y-10 md:w-8/12">
-                <h2 className="font-black uppercase text-5xl md:text-7xl font-display">
+                <h2 className="text-5xl font-black uppercase md:text-7xl font-display">
                   Thanks for your interest in landgriffon.
                 </h2>
                 <h3 className="text-3xl font-medium font-display">
@@ -102,7 +102,7 @@ const Contact: React.FC = () => {
         </Wrapper>
 
         <div
-          className="pb-32 bg-white bg-no-repeat"
+          className="bg-white bg-no-repeat  md:pb-32"
           style={{
             backgroundImage: `url('/images/contact/image11_contact.jpg')`,
             backgroundSize: '100% auto',
@@ -122,7 +122,7 @@ const Contact: React.FC = () => {
 
               {success && (
                 <div className="absolute top-0 left-0 z-20 flex flex-col items-center justify-center w-full h-full py-20 space-y-5 bg-orange-500 xl:px-20">
-                  <h2 className="text-4xl md:text-6xl font-black uppercase font-display">
+                  <h2 className="text-4xl font-black uppercase md:text-6xl font-display">
                     Thank you
                   </h2>
                   <p className="text-xl font-light">We will be in touch soon.</p>

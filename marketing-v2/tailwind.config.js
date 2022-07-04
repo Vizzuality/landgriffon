@@ -3,11 +3,16 @@ const forms = require('@tailwindcss/forms');
 const typography = require('@tailwindcss/typography');
 const colors = require('tailwindcss/colors');
 const lineClamp = require('@tailwindcss/line-clamp');
+const defaultTheme = require('tailwindcss/defaultTheme');
 
 module.exports = {
   content: ['./**/*.ts', './**/*.tsx'],
   darkMode: 'media', // 'media' or 'class'
   theme: {
+    screens: {
+      xs: '475px',
+      ...defaultTheme.screens,
+    },
     extend: {
       fontFamily: {
         sans: ['Public Sans', 'sans-serif'],

@@ -14,6 +14,20 @@ const AboutPage: FC = () => {
           <title>About - Landgriffon</title>
           <link rel="icon" href="/favicon.ico" />
           <meta name="viewport" content="width=device-width" />
+          <meta
+            name="description"
+            content="We urgently need to move towards a zero-carbon and nature positive future. We help companies evolve at the speed and scale needed for this, through technology, data, and advice on how to manage supply chain impacts."
+          />
+
+          <meta
+            name="og:title"
+            content="Sustainable Supply Chain Solutions: More Than A Buzzword."
+          />
+
+          <meta
+            name="og:description"
+            content="We urgently need to move towards a zero-carbon and nature positive future. We help companies evolve at the speed and scale needed for this, through technology, data, and advice on how to manage supply chain impacts."
+          />
         </Head>
 
         <About />

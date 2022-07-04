@@ -11,9 +11,21 @@ const ContactPage: FC = () => {
     <ApplicationLayout>
       <>
         <Head>
-          <title>Contact - Landgriffon</title>
+          <title>Contact us - Landgriffon</title>
           <link rel="icon" href="/favicon.ico" />
           <meta name="viewport" content="width=device-width" />
+
+          <meta
+            name="description"
+            content="Interested in how LandGriffon services could support your company along its sustainability journey? We would love to hear from you."
+          />
+
+          <meta name="og:title" content="Sustainable Supply Chain Solutions: Contact Us!" />
+
+          <meta
+            name="og:description"
+            content="Interested in how LandGriffon services could support your company along its sustainability journey? We would love to hear from you."
+          />
         </Head>
 
         <Contact />

@@ -21,7 +21,6 @@ Options:
     -h                Show help
     --h3-res=<res>    h3 resolution to use [default: 6].
 """
-import json
 import logging
 import os
 from io import StringIO
@@ -29,12 +28,10 @@ from pathlib import Path
 
 import fiona
 import geopandas as gpd
-import jsonschema
 import pandas as pd
 import psycopg2
 from docopt import docopt
 from h3ronpy import vector
-from jsonschema.exceptions import ValidationError
 from psycopg2.pool import ThreadedConnectionPool
 from utils import insert_to_h3_data_and_contextual_layer_tables, slugify
 

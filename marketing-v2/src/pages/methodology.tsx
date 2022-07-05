@@ -25,6 +25,9 @@ const MethodologyPage: FC = () => {
             name="og:description"
             content="LandGriffon uses a unique methodology and world-renowned datasets to analyze supply chain impacts."
           />
+          <meta name="og:type" content="website" />
+          <meta name="og:url" content="https://landgriffon.com/methodology" />
+          <meta name="og:image" content="https://landgriffon.com/images/og/OG-Methodology.png" />
         </Head>
 
         <Methodology />

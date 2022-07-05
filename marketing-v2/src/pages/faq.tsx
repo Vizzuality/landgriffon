@@ -25,6 +25,9 @@ const FAQPage: FC = () => {
             name="og:description"
             content="Here are the frequently asked questions we receive at LandGriffon, from who we are to what we do and how we do it."
           />
+          <meta name="og:type" content="website" />
+          <meta name="og:url" content="https://landgriffon.com/faq" />
+          <meta name="og:image" content="https://landgriffon.com/images/og/OG-FAQs.png" />
         </Head>
 
         <Faqs />

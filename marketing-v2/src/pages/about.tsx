@@ -28,6 +28,9 @@ const AboutPage: FC = () => {
             name="og:description"
             content="We urgently need to move towards a zero-carbon and nature positive future. We help companies evolve at the speed and scale needed for this, through technology, data, and advice on how to manage supply chain impacts."
           />
+          <meta name="og:type" content="website" />
+          <meta name="og:url" content="https://landgriffon.com/about" />
+          <meta name="og:image" content="https://landgriffon.com/images/og/OG-About.png" />
         </Head>
 
         <About />

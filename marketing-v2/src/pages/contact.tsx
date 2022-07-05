@@ -26,6 +26,9 @@ const ContactPage: FC = () => {
             name="og:description"
             content="Interested in how LandGriffon services could support your company along its sustainability journey? We would love to hear from you."
           />
+          <meta name="og:type" content="website" />
+          <meta name="og:url" content="https://landgriffon.com/contact" />
+          <meta name="og:image" content="https://landgriffon.com/images/og/OG-Contact.png" />
         </Head>
 
         <Contact />

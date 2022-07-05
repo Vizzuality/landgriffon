@@ -24,6 +24,9 @@ const HomePage: FC = () => {
             name="og:description"
             content="LandGriffon empowers companies to measure, manage, and transform agricultural supply chain impacts."
           />
+          <meta name="og:type" content="website" />
+          <meta name="og:url" content="https://landgriffon.com" />
+          <meta name="og:image" content="https://landgriffon.com/images/og/OG-Home.png" />
         </Head>
 
         <Home />

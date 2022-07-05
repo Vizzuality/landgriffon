@@ -1,4 +1,7 @@
 import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  ArrayNotEmpty,
   IsEnum,
   IsIn,
   IsNotEmpty,
@@ -91,18 +94,17 @@ export class GetImpactTableDto {
   @IsOptional()
   @IsUUID(4)
   scenarioId?: string;
-}
 
-export class GetTwoScenariosImpactTableDto extends GetImpactTableDto {
-  @ApiPropertyOptional()
+  @ApiProperty({
+    name: 'scenarioIds[]',
+    description: 'Array containg 2 Scenario Ids to compare',
+  })
   @IsOptional()
-  @IsUUID(4)
-  scenarioOneId: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsUUID(4)
-  scenarioTwoId: string;
+  @ArrayMinSize(2)
+  @ArrayMaxSize(2)
+  @IsUUID(4, { each: true })
+  @Type(() => String)
+  scenarioIds?: string[];
 }
 
 export class GetRankedImpactTableDto extends GetImpactTableDto {

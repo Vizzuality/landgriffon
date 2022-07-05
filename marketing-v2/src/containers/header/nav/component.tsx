@@ -118,17 +118,17 @@ const HeaderNav: React.FC<NavProps> = ({ open }: NavProps) => {
               </Link>
             </li>
             <li>
-              <Link href="/blog">
-                <a
-                  className={cx({
-                    'relative block font-light text-2xl lg:text-base py-1 lg:py-7 mx-5 lg:mx-0 px-5 lg:px-0 hover:text-green-500':
-                      true,
-                    'text-green-500': pathname === '/blog',
-                  })}
-                >
-                  Blog
-                </a>
-              </Link>
+              <a
+                href="https://medium.com/vizzuality-blog/tagged/sustainable-supply-chain"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cx({
+                  'relative block font-light text-2xl lg:text-base py-1 lg:py-7 mx-5 lg:mx-0 px-5 lg:px-0 hover:text-green-500':
+                    true,
+                })}
+              >
+                Blog
+              </a>
             </li>
           </ul>
           <div>

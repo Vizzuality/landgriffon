@@ -30,7 +30,12 @@ const Footer: React.FC = () => {
               </Link>
             </li>
             <li>
-              <a className="text-5xl font-black uppercase font-display md:text-7xl lg:text-9xl">
+              <a
+                href="https://medium.com/vizzuality-blog/tagged/sustainable-supply-chain"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-5xl font-black uppercase font-display md:text-7xl lg:text-9xl"
+              >
                 Blog
               </a>
             </li>

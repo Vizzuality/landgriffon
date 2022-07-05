@@ -81,86 +81,112 @@ const Hero: React.FC = () => {
 
             <ul className="grid grid-cols-2 gap-20 md:grid-cols-4 lg:grid-cols-5">
               <li className="flex items-center justify-center">
-                <Image
-                  layout="intrinsic"
-                  src="/images/logos/gfw.png"
-                  alt="GFW"
-                  width={62}
-                  height={62}
-                />
+                <a
+                  href="https://www.globalforestwatch.org/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/gfw.png"
+                    alt="GFW"
+                    width={62}
+                    height={62}
+                  />
+                </a>
               </li>
               <li className="flex items-center justify-center">
-                <Image
-                  layout="intrinsic"
-                  src="/images/logos/WWF.png"
-                  alt="WWF"
-                  width={43}
-                  height={62}
-                />
+                <a
+                  href="https://www.worldwildlife.org/pages/conservation-science-data-and-tools"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/WWF.png"
+                    alt="WWF"
+                    width={43}
+                    height={62}
+                  />
+                </a>
               </li>
               <li className="flex items-center justify-center">
-                <Image
-                  layout="intrinsic"
-                  src="/images/logos/satelligence.png"
-                  alt="satelligence"
-                  width={198}
-                  height={29}
-                />
+                <a href="https://satelligence.com/" target="_blank" rel="noopener noreferrer">
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/satelligence.png"
+                    alt="satelligence"
+                    width={198}
+                    height={29}
+                  />
+                </a>
               </li>
               <li className="flex items-center justify-center">
-                <Image
-                  layout="intrinsic"
-                  src="/images/logos/WRI.png"
-                  alt="WRI"
-                  width={120}
-                  height={72}
-                />
+                <a href="https://www.wri.org/" target="_blank" rel="noopener noreferrer">
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/WRI.png"
+                    alt="WRI"
+                    width={120}
+                    height={72}
+                  />
+                </a>
               </li>
               <li className="flex items-center justify-center">
-                <Image
-                  layout="intrinsic"
-                  src="/images/logos/water-footprint-network.png"
-                  alt="water-footprint-network"
-                  width={111}
-                  height={50}
-                />
+                <a href="https://waterfootprint.org/en/" target="_blank" rel="noopener noreferrer">
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/water-footprint-network.png"
+                    alt="water-footprint-network"
+                    width={111}
+                    height={50}
+                  />
+                </a>
               </li>
 
               <li className="flex items-center justify-center">
-                <Image
-                  layout="intrinsic"
-                  src="/images/logos/mapspam.png"
-                  alt="mapspam"
-                  width={113}
-                  height={50}
-                />
+                <a href="https://www.mapspam.info/" target="_blank" rel="noopener noreferrer">
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/mapspam.png"
+                    alt="mapspam"
+                    width={113}
+                    height={31}
+                  />
+                </a>
               </li>
               <li className="flex items-center justify-center">
-                <Image
-                  layout="intrinsic"
-                  src="/images/logos/FAO.png"
-                  alt="FAO"
-                  width={62}
-                  height={63}
-                />
+                <a href="https://www.fao.org/faostat/en/" target="_blank" rel="noopener noreferrer">
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/FAO.png"
+                    alt="FAO"
+                    width={62}
+                    height={63}
+                  />
+                </a>
               </li>
               <li className="flex items-center justify-center">
-                <Image
-                  layout="intrinsic"
-                  src="/images/logos/aqueduct.png"
-                  alt="aqueduct"
-                  width={166}
-                  height={34}
-                />
+                <a href="https://www.wri.org/aqueduct" target="_blank" rel="noopener noreferrer">
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/aqueduct.png"
+                    alt="aqueduct"
+                    width={166}
+                    height={34}
+                  />
+                </a>
               </li>
               <li className="flex items-center justify-center">
-                <Image
-                  layout="intrinsic"
-                  src="/images/logos/earthstat.png"
-                  alt="earthstat"
-                  width={149}
-                  height={37}
-                />
+                <a href="http://www.earthstat.org/" target="_blank" rel="noopener noreferrer">
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/earthstat.png"
+                    alt="earthstat"
+                    width={149}
+                    height={37}
+                  />
+                </a>
               </li>
             </ul>
           </div>

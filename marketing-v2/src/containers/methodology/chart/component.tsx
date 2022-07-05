@@ -103,9 +103,8 @@ const Chart: React.FC = () => {
             </h2>
           </FadeIn>
           <FadeIn>
-            <div className="relative z-10 space-y-1 text-center translate-y-10">
+            <div className="relative z-10 space-y-1 text-center translate-y-5">
               <h4 className="text-xl font-black uppercase font-display">Custom features</h4>
-              <p className="italic font-light ">“Developed Ad-hoc...”</p>
             </div>
             <div className="relative z-0 w-full pb-[100%]">
               <div
@@ -138,9 +137,6 @@ const Chart: React.FC = () => {
                             <h4 className="text-xl font-black text-white uppercase font-display">
                               Core methodology
                             </h4>
-                            <p className="italic font-light text-white">
-                              Prone to evolve from new requirements
-                            </p>
                           </div>
 
                           <div className="w-[55%] mx-auto">
@@ -150,9 +146,6 @@ const Chart: React.FC = () => {
                                   <h4 className="text-xl font-black text-white uppercase font-display">
                                     Base Platform
                                   </h4>
-                                  <p className="italic font-light text-white">
-                                    Prone to evolve from usage
-                                  </p>
                                 </div>
                               </div>
                             </div>

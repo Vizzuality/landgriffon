@@ -39,8 +39,7 @@ const Team: React.FC = () => {
                 <Icon icon={TEAM_SVG} className="w-16 h-16" />
               </div>
               <h3 className="text-3xl font-medium text-white font-display">
-                Our team bring together diverse expertize to ensure a service that helps make this
-                happen.
+                Our team brings diverse expertize to ensure the best service for your business.
               </h3>
             </FadeIn>
 
@@ -78,7 +77,7 @@ const Team: React.FC = () => {
 
             <FadeIn>
               <h3 className="mb-5 text-4xl font-medium text-white uppercase font-display">
-                Support Team
+                Supporting Roles
               </h3>
               <ul className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
                 {SUPPORT_TEAM.map((t) => {

@@ -36,7 +36,7 @@ const Step02: React.FC = () => {
 
         <button
           type="button"
-          className="flex items-center py-8 font-semibold text-white bg-black border border-black px-14 hover:bg-black/75 space-x-2.5"
+          className="hidden items-center py-8 font-semibold text-white bg-black border border-black px-14 hover:bg-black/75 space-x-2.5"
         >
           <span>Download Methodology</span>
 

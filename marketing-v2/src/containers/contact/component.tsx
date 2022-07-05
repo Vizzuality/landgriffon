@@ -90,11 +90,11 @@ const Contact: React.FC = () => {
                       <h4 className="font-bold">Email us</h4>
                       <p className="font-light">
                         <a
-                          href="mailto:hello@vizzuality.com"
+                          href="mailto:hello@landgriffon.com"
                           target="_blank"
                           rel="noreferrer noopener"
                         >
-                          hello@vizzuality.com
+                          hello@landgriffon.com
                         </a>
                       </p>
                     </div>

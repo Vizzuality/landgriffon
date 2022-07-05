@@ -3,7 +3,7 @@ import FadeIn from 'components/fade';
 
 import Icon from 'components/icon';
 
-import TEAM from './team';
+import { TEAM, ROLE_ORDER } from './team';
 
 import TEAM_SVG from 'svgs/about/icn_team.svg?sprite';
 import LINKEDIN_SVG from 'svgs/social/linkedin.svg?sprite';
@@ -11,16 +11,27 @@ import { useMemo } from 'react';
 
 const Team: React.FC = () => {
   const CORE_TEAM = useMemo(() => {
-    return TEAM.filter(({ group }) => group === 'core');
+    return TEAM.filter(({ group }) => group === 'core').sort((a, b) => {
+      // if (ROLE_ORDER.indexOf(a.role) === ROLE_ORDER.indexOf(b.role)) {
+      //   return a.name.localeCompare(b.name);
+      // }
+      return ROLE_ORDER.indexOf(a.role) - ROLE_ORDER.indexOf(b.role);
+    });
   }, []);
 
   const SUPPORT_TEAM = useMemo(() => {
-    return TEAM.filter(({ group }) => group === 'support');
+    return TEAM.filter(({ group }) => group === 'support').sort((a, b) => {
+      // if (ROLE_ORDER.indexOf(a.role) === ROLE_ORDER.indexOf(b.role)) {
+      //   return a.name.localeCompare(b.name);
+      // }
+
+      return ROLE_ORDER.indexOf(a.role) - ROLE_ORDER.indexOf(b.role);
+    });
   }, []);
 
   return (
     <section className="relative overflow-hidden bg-blue-600">
-      <div className="relative z-10 py-12 md:space-y-64 md:py-64">
+      <div className="relative z-10 py-12 space-y-12 lg:space-y-64 lg:py-64">
         <Wrapper>
           <div className="space-y-10 text-white md:space-y-20">
             <FadeIn>
@@ -101,7 +112,7 @@ const Team: React.FC = () => {
       </div>
 
       <div
-        className="absolute bottom-0 right-0 z-0 bg-cover bg-fixed w-[1200px] h-[1200px] rotate-[145deg] translate-x-1/2 translate-y-1/2 pointer-events-none"
+        className="hidden md:block absolute bottom-0 right-0 z-0 bg-cover bg-fixed w-[1200px] h-[1200px] rotate-[145deg] translate-x-1/2 translate-y-1/2 pointer-events-none"
         style={{ backgroundImage: `url('/images/about/team/bg_circles.svg')` }}
       />
     </section>

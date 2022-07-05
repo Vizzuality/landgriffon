@@ -1,4 +1,4 @@
-const TEAM = [
+export const TEAM = [
   {
     name: 'Toby Gardner',
     company: 'SEI - Trase',
@@ -263,4 +263,13 @@ const TEAM = [
   },
 ];
 
-export default TEAM;
+export const ROLE_ORDER = [
+  'Advisor',
+  'Science',
+  'Engineering',
+  'Design',
+  'Business',
+  'Communications',
+  'Project Management',
+  'Marketing Consultant',
+];

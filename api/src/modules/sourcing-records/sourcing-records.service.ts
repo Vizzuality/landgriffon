@@ -18,6 +18,11 @@ import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sou
 import { GetImpactTableDto } from 'modules/impact/dto/get-impact-table.dto';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { GetAvailableYeatsDto } from 'modules/sourcing-records/dto/get-available-yeats.dto';
+import { MaterialsService } from 'modules/materials/materials.service';
+import { SuppliersService } from 'modules/suppliers/suppliers.service';
+import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
+import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 
 export interface SourcingRecordDataForImpact {
   id: string;
@@ -37,6 +42,10 @@ export class SourcingRecordsService extends AppBaseService<
   constructor(
     @InjectRepository(SourcingRecordRepository)
     protected readonly sourcingRecordRepository: SourcingRecordRepository,
+    protected readonly materialService: MaterialsService,
+    protected readonly supplierService: SuppliersService,
+    protected readonly adminRegionService: AdminRegionsService,
+    protected readonly businessUnitService: BusinessUnitsService,
   ) {
     super(
       sourcingRecordRepository,
@@ -80,8 +89,10 @@ export class SourcingRecordsService extends AppBaseService<
   async save(entityArray: any[]): Promise<void> {
     await this.sourcingRecordRepository.save(entityArray);
   }
-  async getYears(materialIds?: string[]): Promise<number[]> {
-    return this.sourcingRecordRepository.getYears(materialIds);
+  async getYears(
+    getAvailableYearsDto?: GetAvailableYeatsDto,
+  ): Promise<number[]> {
+    return this.sourcingRecordRepository.getYears(getAvailableYearsDto);
   }
 
   /**

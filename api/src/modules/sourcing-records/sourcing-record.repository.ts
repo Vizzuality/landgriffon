@@ -21,6 +21,7 @@ import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { GetAvailableYeatsDto } from 'modules/sourcing-records/dto/get-available-yeats.dto';
 
 export class ImpactTableData {
   year: number;
@@ -40,21 +41,21 @@ export class ImpactTableData {
 export class SourcingRecordRepository extends Repository<SourcingRecord> {
   logger: Logger = new Logger(SourcingRecordRepository.name);
 
-  async getYears(materialIds?: string[]): Promise<number[]> {
+  async getYears(dto?: GetAvailableYeatsDto): Promise<number[]> {
     const queryBuilder: SelectQueryBuilder<SourcingRecord> =
       this.createQueryBuilder('sr')
         .select('year')
         .distinct(true)
         .orderBy('year', 'ASC');
 
-    if (materialIds) {
+    if (dto?.materialIds) {
       queryBuilder.leftJoin(
         SourcingLocation,
         'sl',
         'sl.id = sr."sourcingLocationId"',
       );
       queryBuilder.andWhere('"sl"."materialId" IN (:...materialIds)', {
-        materialIds,
+        materialIds: dto.materialIds,
       });
     }
     const sourcingRecordsYears: SourcingRecord[] =

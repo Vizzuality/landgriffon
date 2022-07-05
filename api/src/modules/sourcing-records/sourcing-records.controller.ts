@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
@@ -37,6 +38,7 @@ import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sou
 import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sourcing-record.dto';
 import { PaginationMeta } from 'utils/app-base.service';
 import { SetUserInterceptor } from 'decorators/set-user.interceptor';
+import { GetAvailableYeatsDto } from 'modules/sourcing-records/dto/get-available-yeats.dto';
 
 @Controller(`/api/v1/sourcing-records`)
 @ApiTags(sourcingRecordResource.className)
@@ -95,8 +97,13 @@ export class SourcingRecordsController {
     },
   })
   @Get('/years')
-  async getYears(): Promise<{ data: number[] }> {
-    const years: number[] = await this.sourcingRecordsService.getYears();
+  async getYears(
+    @Query(ValidationPipe)
+    getAvailableYears: GetAvailableYeatsDto,
+  ): Promise<{ data: number[] }> {
+    const years: number[] = await this.sourcingRecordsService.getYears(
+      getAvailableYears,
+    );
     return { data: years };
   }
 

@@ -60,7 +60,7 @@ export class ImpactController {
   async getTwoScenariosImpactTable(
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
     @Query(ValidationPipe)
-    twoScenariosImpactTableDto: GetTwoScenariosImpactTableDto,
+    twoScenariosImpactTableDto: GetImpactTableDto,
   ): Promise<PaginatedImpactTable> {
     return await this.impactService.getImpactTable(
       twoScenariosImpactTableDto,

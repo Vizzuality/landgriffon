@@ -15,7 +15,7 @@ export const TEAM = [
   },
   {
     name: 'Emma Gollub',
-    company: 'SEI - Trase',
+    company: 'Global Canopy & Trase',
     role: 'Advisor',
     group: 'support',
     linkedin: 'https://www.linkedin.com/in/emma-gollub-85469017',
@@ -60,6 +60,7 @@ export const TEAM = [
     company: 'Vizzuality',
     role: 'Science',
     group: 'core',
+    linkedin: 'https://www.linkedin.com/in/biel-stela/',
   },
   {
     name: 'Alicia Arenzana',
@@ -126,7 +127,7 @@ export const TEAM = [
     name: 'Miguel Mendoza',
     company: 'Vizzuality',
     role: 'Engineering',
-    group: 'support',
+    group: 'core',
   },
   {
     name: 'Irene Eleta',
@@ -180,7 +181,7 @@ export const TEAM = [
   {
     name: 'Sergio Estella',
     company: 'Vizzuality',
-    role: 'Business',
+    role: 'Business & Design',
     group: 'core',
     linkedin: 'https://www.linkedin.com/in/sergio-estella/',
   },
@@ -241,6 +242,13 @@ export const TEAM = [
     linkedin: 'https://www.linkedin.com/in/arjenvrielink/',
   },
   {
+    name: 'Rens Masselink',
+    company: 'Satelligence',
+    role: 'Science',
+    group: 'core',
+    linkedin: 'https://www.linkedin.com/in/rensmasselink/',
+  },
+  {
     name: 'Luca Foresta',
     company: 'Satelligence',
     role: 'Science',
@@ -269,6 +277,7 @@ export const ROLE_ORDER = [
   'Engineering',
   'Design',
   'Business',
+  'Business & Design',
   'Communications',
   'Project Management',
   'Marketing Consultant',

@@ -94,81 +94,88 @@ const Chart: React.FC = () => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <section className="relative z-10 hidden bg-white lg:block">
+    <section className="relative z-10 hidden py-16 bg-white lg:block">
       <Wrapper>
-        <FadeIn>
-          <div className="relative z-10 space-y-1 text-center translate-y-10">
-            <h4 className="text-xl font-black uppercase font-display">Custom features</h4>
-            <p className="italic font-light ">“Developed Ad-hoc...”</p>
-          </div>
-          <div className="relative z-0 w-full pb-[100%]">
-            <div
-              ref={chartRef}
-              className="absolute flex items-center justify-center w-full h-full bg-gray-100 rounded-full"
-            >
-              {/* FEATURES */}
-              {FEATURES.map((f) => {
-                return (
-                  <div
-                    key={f.id}
-                    className="absolute top-0 left-0 flex items-center justify-center"
-                    style={{
-                      transform: `translate(${f.options.x}px, ${f.options.y}px)`,
-                    }}
-                  >
-                    <div className="-translate-x-1/2 -translate-y-1/2 max-w-[120px]">
-                      <div className="font-bold text-center text-black">{f.title}</div>
+        <div className="space-y-10">
+          <FadeIn>
+            <h2 className="text-4xl font-black uppercase md:text-6xl font-display">
+              The LandGriffon methodology is open to evolution and customization
+            </h2>
+          </FadeIn>
+          <FadeIn>
+            <div className="relative z-10 space-y-1 text-center translate-y-10">
+              <h4 className="text-xl font-black uppercase font-display">Custom features</h4>
+              <p className="italic font-light ">“Developed Ad-hoc...”</p>
+            </div>
+            <div className="relative z-0 w-full pb-[100%]">
+              <div
+                ref={chartRef}
+                className="absolute flex items-center justify-center w-full h-full bg-gray-100 rounded-full"
+              >
+                {/* FEATURES */}
+                {FEATURES.map((f) => {
+                  return (
+                    <div
+                      key={f.id}
+                      className="absolute top-0 left-0 flex items-center justify-center"
+                      style={{
+                        transform: `translate(${f.options.x}px, ${f.options.y}px)`,
+                      }}
+                    >
+                      <div className="-translate-x-1/2 -translate-y-1/2 max-w-[120px]">
+                        <div className="font-bold text-center text-black">{f.title}</div>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-              {/* INNER CIRCLE */}
-              <div className="w-[65%] h-[65%] border border-gray-300 border-dashed rounded-full p-5">
-                <div className="space-y-10">
-                  <div className="w-[72.5%] mx-auto">
-                    <div className="w-full pb-[100%] relative">
-                      <div className="absolute flex flex-col items-center justify-center w-full h-full space-y-5 bg-green-500 rounded-full">
-                        <div className="space-y-1 text-center px-28">
-                          <h4 className="text-xl font-black text-white uppercase font-display">
-                            Core methodology
-                          </h4>
-                          <p className="italic font-light text-white">
-                            Prone to evolve from new requirements
-                          </p>
-                        </div>
+                  );
+                })}
+                {/* INNER CIRCLE */}
+                <div className="w-[65%] h-[65%] border border-gray-300 border-dashed rounded-full p-5">
+                  <div className="space-y-10">
+                    <div className="w-[72.5%] mx-auto">
+                      <div className="w-full pb-[100%] relative">
+                        <div className="absolute flex flex-col items-center justify-center w-full h-full space-y-5 bg-green-500 rounded-full">
+                          <div className="space-y-1 text-center px-28">
+                            <h4 className="text-xl font-black text-white uppercase font-display">
+                              Core methodology
+                            </h4>
+                            <p className="italic font-light text-white">
+                              Prone to evolve from new requirements
+                            </p>
+                          </div>
 
-                        <div className="w-[55%] mx-auto">
-                          <div className="w-full pb-[100%] relative">
-                            <div className="absolute flex flex-col items-center justify-center w-full h-full border border-white border-dashed rounded-full">
-                              <div className="px-10 space-y-1 text-center">
-                                <h4 className="text-xl font-black text-white uppercase font-display">
-                                  Base Platform
-                                </h4>
-                                <p className="italic font-light text-white">
-                                  Prone to evolve from usage
-                                </p>
+                          <div className="w-[55%] mx-auto">
+                            <div className="w-full pb-[100%] relative">
+                              <div className="absolute flex flex-col items-center justify-center w-full h-full border border-white border-dashed rounded-full">
+                                <div className="px-10 space-y-1 text-center">
+                                  <h4 className="text-xl font-black text-white uppercase font-display">
+                                    Base Platform
+                                  </h4>
+                                  <p className="italic font-light text-white">
+                                    Prone to evolve from usage
+                                  </p>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="space-y-1 text-center">
-                    <h4 className="text-xl font-black uppercase font-display">
-                      Analysis and Impact calculation
-                    </h4>
-                    <p className="italic font-light px-28">
-                      Part of Landgriffon platform, customizable to fit new sustainability project
-                      needs.
-                    </p>
+                    <div className="space-y-1 text-center">
+                      <h4 className="text-xl font-black uppercase font-display">
+                        Analysis and Impact calculation
+                      </h4>
+                      <p className="italic font-light px-28">
+                        Part of Landgriffon platform, customizable to fit new sustainability project
+                        needs.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </FadeIn>
+          </FadeIn>
+        </div>
       </Wrapper>
     </section>
   );

@@ -13,8 +13,8 @@ import { Supplier, SUPPLIER_STATUS } from 'modules/suppliers/supplier.entity';
 export class CreateSupplierDto {
   @IsString()
   @IsNotEmpty()
-  @MinLength(2)
-  @MaxLength(300)
+  @MinLength(1)
+  @MaxLength(1000)
   @ApiProperty()
   name!: string;
 

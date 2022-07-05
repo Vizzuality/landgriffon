@@ -13,7 +13,7 @@ do-nothing:
 	@echo "Doing nothing... "
 
 # ## Make Dataset
-seed-data: seed-source-data seed-gadm seed-h3-tables
+seed-data: seed-source-data seed-gadm seed-h3-tables seed-contextual-layers
 
 seed-source-data:
 	@echo "Importing source data... "

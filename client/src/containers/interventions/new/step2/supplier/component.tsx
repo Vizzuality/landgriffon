@@ -179,7 +179,10 @@ const Supplier: FC = () => {
                 )}
                 options={optionsCountries}
                 placeholder="All Countries"
-                onChange={(value) => handleDropdown('newLocationCountryInput', value)}
+                onChange={(value) => {
+                  clearErrors('newLocationCountryInput');
+                  setValue('newLocationCountryInput', value?.label);
+                }}
                 error={!!errors?.newLocationCountryInput}
                 allowEmpty
               />

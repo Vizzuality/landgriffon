@@ -68,7 +68,7 @@ const HeaderNav: React.FC<NavProps> = ({ open }: NavProps) => {
                       pathname === '/the-service',
                   })}
                 >
-                  The service
+                  The Service
                 </a>
               </Link>
             </li>

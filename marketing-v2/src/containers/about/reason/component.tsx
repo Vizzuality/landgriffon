@@ -76,7 +76,9 @@ const Rason: React.FC = () => {
               user-centric scientific applications, and artificial intelligence-based satellite
               monitoring to help companies secure this future. We help companies access, understand,
               and efficiently use the data and recommendations of the sustainability community.
-              Together we can transform sustainable ambitions into action.
+              <strong className="font-bold">
+                Together we can transform sustainable ambitions into action.
+              </strong>
             </p>
           </FadeIn>
         </div>

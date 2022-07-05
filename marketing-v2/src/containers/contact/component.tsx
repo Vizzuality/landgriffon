@@ -220,8 +220,8 @@ const Contact: React.FC = () => {
                   >
                     <option value="">Select a topic</option>
                     <option value="demo">Request a demo</option>
-                    <option value="contact">Contact</option>
-                    <option value="support">Support</option>
+                    <option value="support">Technical support</option>
+                    <option value="contact">General contact</option>
                   </select>
                 </div>
               </div>

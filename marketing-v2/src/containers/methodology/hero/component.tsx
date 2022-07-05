@@ -40,7 +40,7 @@ const Hero: React.FC = () => {
           transition={{ duration: 0.75, delay: 0.1 }}
         >
           <h1 className="text-5xl font-black text-black uppercase font-display md:text-7xl">
-            We use world-renowned datasets to analyze impacts.
+            A unique methodology using world-renowned datasets to analyze impacts.
           </h1>
         </motion.div>
 

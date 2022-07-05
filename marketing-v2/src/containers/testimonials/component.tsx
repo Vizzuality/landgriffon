@@ -1,4 +1,3 @@
-import { ArrowRightIcon } from '@heroicons/react/solid';
 import cx from 'classnames';
 
 import Carousel from 'components/carousel';
@@ -10,6 +9,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 import TESTIMONIALS_SVG from 'svgs/testimonials/icn_testimonials.svg?sprite';
+import ARROW_RIGHT_SVG from 'svgs/ui/arrow-right.svg?sprite';
 
 const SLIDES = [
   {
@@ -102,9 +102,9 @@ const Testimonials: React.FC = () => {
 
               <div className="mt-5 md:mt-40">
                 <Link href="/about">
-                  <a className="font-semibold text-orange-500 flex space-x-2.5 items-center">
+                  <a className="flex items-center space-x-5 font-semibold text-orange-500">
                     <span>Know more about us</span>
-                    <ArrowRightIcon className="w-10 h-10" />
+                    <Icon icon={ARROW_RIGHT_SVG} className="w-12 h-12 fill-orange-500" />
                   </a>
                 </Link>
               </div>

@@ -1,12 +1,14 @@
+import Link from 'next/link';
+
 import Icon from 'components/icon';
 
 import Wrapper from 'containers/wrapper';
 import FadeIn from 'components/fade';
 
+import ARROW_RIGHT_SVG from 'svgs/ui/arrow-right.svg?sprite';
 import FLEXIBLE_SVG from 'svgs/home/features/icn_flexible.svg?sprite';
 import COMMUNITY_SVG from 'svgs/home/features/icn_comm.svg?sprite';
 import ETHOS_SVG from 'svgs/home/features/icn_search.svg?sprite';
-import Link from 'next/link';
 
 const Features: React.FC = () => {
   return (
@@ -57,6 +59,15 @@ const Features: React.FC = () => {
                   We&apos;re confident in our technology, and you should be too. Our methods and
                   code are open for all to see, use, and verify.
                 </p>
+
+                <Link href="/methodology">
+                  <a className="flex items-center justify-between space-x-5">
+                    <span className="font-semibold underline">
+                      Learn more about the data and science behind LandGriffon.
+                    </span>
+                    <Icon icon={ARROW_RIGHT_SVG} className="w-12 h-12" />
+                  </a>
+                </Link>
               </FadeIn>
             </li>
             <li>

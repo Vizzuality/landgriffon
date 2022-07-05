@@ -7,8 +7,17 @@ import TEAM from './team';
 
 import TEAM_SVG from 'svgs/about/icn_team.svg?sprite';
 import LINKEDIN_SVG from 'svgs/social/linkedin.svg?sprite';
+import { useMemo } from 'react';
 
 const Team: React.FC = () => {
+  const CORE_TEAM = useMemo(() => {
+    return TEAM.filter(({ group }) => group === 'core');
+  }, []);
+
+  const SUPPORT_TEAM = useMemo(() => {
+    return TEAM.filter(({ group }) => group === 'support');
+  }, []);
+
   return (
     <section className="relative overflow-hidden bg-blue-600">
       <div className="relative z-10 py-12 md:space-y-64 md:py-64">
@@ -25,8 +34,43 @@ const Team: React.FC = () => {
             </FadeIn>
 
             <FadeIn>
+              <h3 className="mb-5 text-4xl font-medium text-white uppercase font-display">
+                Core Team
+              </h3>
               <ul className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
-                {TEAM.map((t) => {
+                {CORE_TEAM.map((t) => {
+                  return (
+                    <li key={t.name} className="relative py-5 border-t border-blue-500/30">
+                      <header className="flex justify-between">
+                        <div>
+                          <h4 className="text-xl text-blue-500 mb-2.5">{t.name}</h4>
+                          <h5 className="mb-5 font-bold">{t.company}</h5>
+                        </div>
+                        {t.linkedin && (
+                          <a
+                            href={t.linkedin}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-1"
+                          >
+                            <Icon icon={LINKEDIN_SVG} className="w-4 h-4 fill-white" />
+                          </a>
+                        )}
+                      </header>
+
+                      <p className="font-light">{t.role}</p>
+                    </li>
+                  );
+                })}
+              </ul>
+            </FadeIn>
+
+            <FadeIn>
+              <h3 className="mb-5 text-4xl font-medium text-white uppercase font-display">
+                Support Team
+              </h3>
+              <ul className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
+                {SUPPORT_TEAM.map((t) => {
                   return (
                     <li key={t.name} className="relative py-5 border-t border-blue-500/30">
                       <header className="flex justify-between">
@@ -57,7 +101,7 @@ const Team: React.FC = () => {
       </div>
 
       <div
-        className="absolute bottom-0 right-0 z-0 bg-cover w-[1000px] h-[1000px] rotate-[145deg] translate-x-1/2 translate-y-1/2"
+        className="absolute bottom-0 right-0 z-0 bg-cover bg-fixed w-[1200px] h-[1200px] rotate-[145deg] translate-x-1/2 translate-y-1/2 pointer-events-none"
         style={{ backgroundImage: `url('/images/about/team/bg_circles.svg')` }}
       />
     </section>

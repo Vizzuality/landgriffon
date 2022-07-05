@@ -18,13 +18,14 @@ const SLIDES = [
       <div className="w-full">
         <div className="space-y-10">
           <p className="text-2xl text-white">
-            The impacts from agriculture are embedded in a complex web of producers, suppliers, and
-            distributors. How do we bring the right solutions to those who can bring change?
+            With an estimated 80 - 90% of fashion&apos;s carbon emissions stemming from scope 3
+            sources, the first step for brands is the ability to locate impacts. Transparency and
+            visibility are more than buzzwords, they’re a necessity.
           </p>
 
           <p className="text-2xl text-white">
-            Share #LandGriffon. Help us connect with those who have the power to make major
-            differences #FoodCorporations
+            We explore this need with LandGriffon, which allows companies to analyze these impacts
+            and compare pathways towards sustainability.
           </p>
         </div>
       </div>
@@ -36,13 +37,14 @@ const SLIDES = [
       <div className="w-full">
         <div className="space-y-10">
           <p className="text-2xl text-white">
-            The impacts from agriculture are embedded in a complex web of producers, suppliers, and
-            distributors. How do we bring the right solutions to those who can bring change?
+            We&apos;re not only interested in better data, but the importance of pairing that with
+            enhanced visualization software, to oversee environmental impacts in a granular, but
+            manageable way. Analyzing this data paves the way to creating effective, data and
+            science-backed strategies for improvement.
           </p>
 
           <p className="text-2xl text-white">
-            Share #LandGriffon. Help us connect with those who have the power to make major
-            differences #FoodCorporations
+            That&apos;s why we believe so strongly in LandGriffon.
           </p>
         </div>
       </div>
@@ -54,13 +56,26 @@ const SLIDES = [
       <div className="w-full">
         <div className="space-y-10">
           <p className="text-2xl text-white">
-            The impacts from agriculture are embedded in a complex web of producers, suppliers, and
-            distributors. How do we bring the right solutions to those who can bring change?
+            Data is only as effective as the platform&apos;s usability. For systems as complex as
+            supply chains, the sweet spot is software that presents the important information when
+            it&apos;s needed and in a way that can be used for action, not overwhelm.
           </p>
 
           <p className="text-2xl text-white">
-            Share #LandGriffon. Help us connect with those who have the power to make major
-            differences #FoodCorporations
+            This is what we&apos;re striving for with LandGriffon.
+          </p>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: '4',
+    content: (
+      <div className="w-full">
+        <div className="space-y-10">
+          <p className="text-2xl text-white">
+            Let the platform do the work, so the people can focus on the essentials; decision
+            making.
           </p>
         </div>
       </div>
@@ -104,7 +119,7 @@ const Testimonials: React.FC = () => {
                 onChange={(i) => {
                   setSlide(i);
                 }}
-                autoplay
+                autoplay={10000}
                 options={{
                   duration: 0,
                   circular: true,

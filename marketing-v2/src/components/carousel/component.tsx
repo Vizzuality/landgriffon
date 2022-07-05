@@ -8,7 +8,7 @@ export interface CarouselProps {
     id: string | number;
     content?: ReactElement;
   }[];
-  autoplay?: boolean;
+  autoplay?: boolean | number;
   options?: Record<string, any>;
   onChange?: (slide: number) => void;
 }
@@ -31,6 +31,7 @@ export const Carousel: React.FC<CarouselProps> = ({
     if (timer.current) clearInterval(timer.current);
 
     if (autoplay) {
+      const autoplayTime = typeof autoplay === 'number' ? autoplay : 3000;
       timer.current = setInterval(() => {
         if (!pause && slider) {
           slider.current.next().catch((err) => {
@@ -45,7 +46,7 @@ export const Carousel: React.FC<CarouselProps> = ({
             }
           });
         }
-      }, 3000);
+      }, autoplayTime);
     }
 
     return () => {

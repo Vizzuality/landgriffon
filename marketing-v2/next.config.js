@@ -1,4 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+const withPlugins = require('next-compose-plugins');
+const withOptimizedImages = require('next-optimized-images');
+
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
@@ -8,4 +11,11 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = withPlugins(
+  [
+    withOptimizedImages({
+      optimizeImages: false,
+    }),
+  ],
+  nextConfig,
+);

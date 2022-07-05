@@ -4,7 +4,7 @@ import classnames from 'classnames';
 
 const THEMES = {
   default:
-    'border rounded-full text-sm text-green-700 focus:outline-none focus:ring-2 focus:ring-green-700/50 focus:border-green-700 px-0',
+    'border rounded-full text-sm text-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 px-0',
 };
 
 type RadioProps = React.InputHTMLAttributes<HTMLInputElement> & {

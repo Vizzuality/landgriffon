@@ -3,23 +3,28 @@ const forms = require('@tailwindcss/forms');
 const typography = require('@tailwindcss/typography');
 const colors = require('tailwindcss/colors');
 const lineClamp = require('@tailwindcss/line-clamp');
+const defaultTheme = require('tailwindcss/defaultTheme');
 
 module.exports = {
   content: ['./**/*.ts', './**/*.tsx'],
   darkMode: 'media', // 'media' or 'class'
   theme: {
+    screens: {
+      xs: '475px',
+      ...defaultTheme.screens,
+    },
     extend: {
       fontFamily: {
         sans: ['Public Sans', 'sans-serif'],
         display: ['Geomanist', 'sans-serif'],
       },
       fontSize: {
-        xs: '12px',
-        '2xs': '0.625rem',
-      },
-      spacing: {
-        125: '30.875rem',
-        250: '48.75rem',
+        '4xl': ['2.1875rem', '2.125rem'],
+        '5xl': ['2.8125rem', '2.125rem'],
+        '6xl': ['3.4375rem', '2.75rem'],
+        '7xl': ['4.375rem', '3.8125rem'],
+        '8xl': ['5.3125rem', '4.125rem'],
+        '10xl': ['7.8125rem', '5.6875rem'],
       },
     },
     colors: {
@@ -28,6 +33,19 @@ module.exports = {
       red: colors.red,
       yellow: colors.yellow,
       transparent: colors.transparent,
+      green: {
+        400: '#129B4A',
+        500: '#078A3C',
+      },
+      blue: {
+        400: '#6CCBFF',
+        500: '#4AB7F3',
+        600: '#0C1063',
+      },
+      orange: {
+        400: '#FFB73F',
+        500: '#FFA000',
+      },
       gray: {
         900: '#15181F',
         800: '#2D2F32',
@@ -40,22 +58,7 @@ module.exports = {
         100: '#F3F4F6',
         50: '#F9FAFB',
       },
-      green: {
-        900: '#003D2D',
-        800: '#00543F',
-        700: '#078A3C', // primary
-        600: '#059669',
-        500: '#10B981',
-        400: '#34D399',
-        300: '#6EE7B7',
-        200: '#A7F3D0',
-        100: '#D1FAE5',
-        50: '#EBF6F1',
-      },
     },
-  },
-  variants: {
-    extend: {},
   },
   plugins: [forms, typography, lineClamp],
 };

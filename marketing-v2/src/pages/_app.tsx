@@ -4,11 +4,11 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { OverlayProvider } from '@react-aria/overlays';
 import { SSRProvider } from '@react-aria/ssr';
 import { Hydrate } from 'react-query/hydration';
-import { SessionProvider } from 'next-auth/react';
 import store from 'store';
 
 import 'styles/globals.css';
 import 'styles/fonts.css';
+import 'styles/flicking.css';
 
 const queryClient = new QueryClient();
 
@@ -16,13 +16,11 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => (
   <ReduxProvider store={store}>
     <QueryClientProvider client={queryClient}>
       <Hydrate state={pageProps.dehydratedState}>
-        <SessionProvider session={pageProps.session}>
-          <OverlayProvider>
-            <SSRProvider>
-              <Component {...pageProps} />
-            </SSRProvider>
-          </OverlayProvider>
-        </SessionProvider>
+        <OverlayProvider>
+          <SSRProvider>
+            <Component {...pageProps} />
+          </SSRProvider>
+        </OverlayProvider>
       </Hydrate>
     </QueryClientProvider>
   </ReduxProvider>

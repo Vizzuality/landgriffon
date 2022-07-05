@@ -45,7 +45,8 @@ const schemaValidation = yup.object({
   newLocationInput: yup
     .string()
     .matches(
-      cityRegExp || addressRegExp || coordinatesRegExp,
+      // coordinatesRegExp || cityRegExp || addressRegExp,
+      coordinatesRegExp,
       'Please enter a valid addres, city or coordinates (lat, lon)',
     )
     .when('newLocationType', {
@@ -140,8 +141,6 @@ const Step2: FC = () => {
           },
         }),
       };
-
-      console.log(parsedData);
 
       if (interventionMode === 'create') {
         createIntervention.mutate(parsedData, {

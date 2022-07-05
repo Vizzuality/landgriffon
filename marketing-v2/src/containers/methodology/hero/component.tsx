@@ -45,7 +45,7 @@ const Hero: React.FC = () => {
         </motion.div>
 
         <motion.div
-          className="relative aspect-video"
+          className="relative hidden aspect-video"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, delay: 0.1 }}
@@ -64,7 +64,8 @@ const Hero: React.FC = () => {
           <video ref={videoRef} src="/videos/truck.mp4" className="aspect-video" />
         </motion.div>
 
-        <div className="mt-10 space-y-10 md:mt-20">
+        {/* <div className="mt-10 space-y-10 md:mt-20"> */}
+        <div className="">
           <div className="space-y-5">
             <h3 className="text-xl font-black text-black uppercase font-display">
               BUILT ON TRUSTED SCIENTIFIC DATA:

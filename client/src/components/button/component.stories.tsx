@@ -1,4 +1,4 @@
-import { Button } from '../components/button';
+import { Button } from '.';
 import { ButtonProps, AnchorProps } from 'components/button/component';
 import { PlusIcon } from '@heroicons/react/solid';
 import { MailIcon } from '@heroicons/react/outline';

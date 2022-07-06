@@ -40,6 +40,10 @@ export type RiskH3APIParams = MaterialH3APIParams & {
   indicatorId: string;
 };
 
+export type WaterH3APIParams = MaterialH3APIParams & {
+  indicatorId: string;
+};
+
 export type ImpactH3APIParams = CommonH3APIParams & {
   indicatorId: string;
   materialIds?: string[];
@@ -113,7 +117,7 @@ export type OriginRegion = {
   children: OriginRegion[];
 };
 
-type BusinessUnitsAtributes = Readonly<{
+type BusinessUnitsAttributes = Readonly<{
   name: string;
   description: string;
   status: 'inactive' | 'active';
@@ -126,7 +130,7 @@ export type BusinessUnits = {
   children: OriginRegion[];
   type: 'businessUnits';
   id: string;
-  attributes: BusinessUnitsAtributes;
+  attributes: BusinessUnitsAttributes;
 };
 
 type Metadata = {

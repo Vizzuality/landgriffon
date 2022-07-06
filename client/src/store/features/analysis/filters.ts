@@ -9,7 +9,7 @@ type Option = {
 };
 
 export type AnalysisFiltersState = {
-  layer: 'impact' | 'risk' | 'material';
+  layer: 'impact' | 'risk' | 'material' | 'water';
   indicator: Option;
   indicators: Indicator[];
   by: string;

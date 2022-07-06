@@ -78,12 +78,12 @@ describe('Suppliers - Create', () => {
     expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
   });
 
-  test('Create a supplier with name bigger than 300 characters should return bad request error', async () => {
+  test('Create a supplier with name bigger than 1000 characters should return bad request error', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/suppliers')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
-        name: 'i'.repeat(301),
+        name: 'i'.repeat(1001),
       })
       .expect(HttpStatus.BAD_REQUEST);
 

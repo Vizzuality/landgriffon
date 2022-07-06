@@ -5,6 +5,8 @@ import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
 import { Logger, NotFoundException } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-tree-with-options.dto';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { Scenario } from 'modules/scenarios/scenario.entity';
 
 @EntityRepository(Supplier)
 export class SupplierRepository extends ExtendedTreeRepository<
@@ -57,6 +59,25 @@ export class SupplierRepository extends ExtendedTreeRepository<
       queryBuilder.andWhere('sl.locationType IN (:...locationTypes)', {
         locationTypes: supplierTreeOptions.locationTypes,
       });
+    }
+
+    if (supplierTreeOptions.scenarioId) {
+      queryBuilder
+        .innerJoin(
+          ScenarioIntervention,
+          'scenarioIntervention',
+          'sl.scenarioInterventionId = scenarioIntervention.id',
+        )
+        .innerJoin(
+          Scenario,
+          'scenario',
+          'scenarioIntervention.scenarioId = scenario.id',
+        )
+        .andWhere('scenario.id = :scenarioId', {
+          scenarioId: supplierTreeOptions.scenarioId,
+        });
+    } else {
+      queryBuilder.andWhere('sl.scenarioInterventionId is null');
     }
 
     const [subQuery, subQueryParams]: [string, any[]] =

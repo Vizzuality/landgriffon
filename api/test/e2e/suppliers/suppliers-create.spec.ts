@@ -90,7 +90,7 @@ describe('Suppliers - Create', () => {
     expect(response).toHaveErrorMessage(
       HttpStatus.BAD_REQUEST,
       'Bad Request Exception',
-      ['name must be shorter than or equal to 300 characters'],
+      ['name must be shorter than or equal to 1000 characters'],
     );
   });
 
@@ -106,7 +106,7 @@ describe('Suppliers - Create', () => {
       'Bad Request Exception',
       [
         'name should not be empty',
-        'name must be shorter than or equal to 300 characters',
+        'name must be shorter than or equal to 1000 characters',
         'name must be longer than or equal to 2 characters',
         'name must be a string',
       ],

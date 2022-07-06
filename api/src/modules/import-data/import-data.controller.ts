@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  UnauthorizedException,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -37,6 +38,9 @@ export class ImportDataController {
     @UploadedFile() xlsxFile: Express.Multer.File,
     @GetUser() user: User,
   ): Promise<Partial<Task>> {
+    if (!user) {
+      throw new UnauthorizedException();
+    }
     const userId: string = user.id;
     const task: Task = await this.importDataService.validateAndLoadXlsxFile(
       userId,

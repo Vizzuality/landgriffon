@@ -102,6 +102,7 @@ describe('ContextualLayersModule (e2e)', () => {
     test(`When I query for H3 Data without resolution and year, I get proper h3 index data from the maximum resolution and most recent year available in the DB `, async () => {
       const contextualLayer: ContextualLayer = await createContextualLayer({
         category: CONTEXTUAL_LAYER_CATEGORY.BUSINESS_DATASETS,
+        metadata: { test: 'metadata' } as unknown as JSON,
       });
 
       const h3Data: H3Data = await h3DataMock({
@@ -127,6 +128,7 @@ describe('ContextualLayersModule (e2e)', () => {
           { h: '8610b6db7ffffff', v: null },
         ]),
       );
+      expect(response.body.metadata).toEqual({ test: 'metadata' });
     });
 
     test(`When I query for H3 Data with a given resolution, I get proper H3 index data, grouped by H3 index for the requested resolution`, async () => {

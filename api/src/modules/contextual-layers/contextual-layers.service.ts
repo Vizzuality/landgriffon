@@ -34,7 +34,10 @@ export class ContextualLayersService {
     contextualLayerId: string,
     resolution?: number,
     year?: number,
-  ): Promise<H3IndexValueData[]> {
+  ): Promise<{
+    data: H3IndexValueData[];
+    metadata: any;
+  }> {
     const h3Data: H3Data | undefined =
       await this.h3dataService.getContextualLayerH3DataByClosestYear(
         contextualLayerId,
@@ -47,10 +50,24 @@ export class ContextualLayersService {
       );
     }
 
-    return this.h3dataService.getSumH3ByNameAndResolution(
-      h3Data.h3tableName,
-      h3Data.h3columnName,
-      resolution,
-    );
+    const contextualLayerMap: H3IndexValueData[] =
+      await this.h3dataService.getSumH3ByNameAndResolution(
+        h3Data.h3tableName,
+        h3Data.h3columnName,
+        resolution,
+      );
+
+    const contextualLayer: ContextualLayer | undefined =
+      await this.contextualLayerRepository.findOne(contextualLayerId);
+    if (!contextualLayer) {
+      throw new NotFoundException(
+        `No Contextual Layer info found with Contextual layer Id: ${contextualLayerId}`,
+      );
+    }
+
+    return {
+      data: contextualLayerMap,
+      metadata: contextualLayer.metadata,
+    };
   }
 }

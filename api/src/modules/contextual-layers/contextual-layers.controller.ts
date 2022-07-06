@@ -55,14 +55,11 @@ export class ContextualLayersController {
   async getContextualLayerH3(
     @Param('id') contextualLayerId: string,
     @Query(ValidationPipe) queryParams: GetContextualLayerH3Dto,
-  ): Promise<{ data: H3IndexValueData[] }> {
-    const h3Data: H3IndexValueData[] =
-      await this.contextualLayerService.getContextualLayerH3(
-        contextualLayerId,
-        queryParams.resolution,
-        queryParams.year,
-      );
-
-    return { data: h3Data };
+  ): Promise<{ data: H3IndexValueData[]; metadata: any }> {
+    return this.contextualLayerService.getContextualLayerH3(
+      contextualLayerId,
+      queryParams.resolution,
+      queryParams.year,
+    );
   }
 }

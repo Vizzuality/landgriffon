@@ -107,7 +107,7 @@ describe('Suppliers - Create', () => {
       [
         'name should not be empty',
         'name must be shorter than or equal to 1000 characters',
-        'name must be longer than or equal to 2 characters',
+        'name must be longer than or equal to 1 characters',
         'name must be a string',
       ],
     );

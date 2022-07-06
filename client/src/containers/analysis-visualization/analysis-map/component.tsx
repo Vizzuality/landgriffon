@@ -11,6 +11,7 @@ import { useDebounce } from 'rooks';
 import { useImpactLayer } from 'hooks/layers/impact';
 import { useMaterialLayer } from 'hooks/layers/material';
 import { useRiskLayer } from 'hooks/layers/risk';
+import { useWaterLayer } from 'hooks/layers/water';
 
 import Legend from 'containers/analysis-visualization/analysis-legend';
 import PageLoading from 'containers/page-loading';
@@ -29,7 +30,7 @@ import type { ViewState } from 'react-map-gl/src/mapbox/mapbox';
 
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
 
-const MAP_SYTLES = {
+const MAP_STYLES = {
   terrain: DefaultMapStyle,
   satellite: SatelliteMapStyle,
 };
@@ -77,12 +78,13 @@ const AnalysisMap: React.FC = () => {
   const impactLayer = useImpactLayer();
   const materialLayer = useMaterialLayer();
   const riskLayer = useRiskLayer();
+  const waterLayer = useWaterLayer();
 
   const layers = useMemo(() => {
-    return [impactLayer, materialLayer, riskLayer]
+    return [impactLayer, materialLayer, riskLayer, waterLayer]
       .sort((a, b) => layerProps[b.layer.id].order - layerProps[a.layer.id].order)
       .map((layer) => layer.layer);
-  }, [impactLayer, layerProps, materialLayer, riskLayer]);
+  }, [impactLayer, layerProps, materialLayer, riskLayer, waterLayer]);
 
   const isError = materialLayer.isError || impactLayer.isError || riskLayer.isError;
   const isFetching = materialLayer.isFetching || impactLayer.isFetching || riskLayer.isFetching;
@@ -121,7 +123,7 @@ const AnalysisMap: React.FC = () => {
       >
         <StaticMap
           viewState={localViewState}
-          mapStyle={MAP_SYTLES[mapStyle]}
+          mapStyle={MAP_STYLES[mapStyle]}
           mapboxApiAccessToken={MAPBOX_API_TOKEN}
           className="-z-10"
         />

@@ -37,22 +37,19 @@ export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
 
       <ul className="flex w-full m-0">
         {min && (
-          <li className="text-xs flex justify-start w-0">
-            <span className="transform -translate-x-1/2">{min}</span>
+          <li className="text-xs flex justify-start w-0 relative">
+            <span className="absolute left w-4 truncate">{min}</span>
           </li>
         )}
         {items.map(({ value }) => (
           <li
             key={`${value}`}
-            className="flex justify-end text-xs"
+            className="flex justify-end text-xs text-center"
             style={{
               width: `${100 / items.length}%`,
             }}
           >
-            <span
-              title={`${value}`}
-              className="transform translate-x-1/2 truncate w-full text-center"
-            >
+            <span title={`${value}`} className="transform translate-x-1/2 truncate w-full">
               {value}
             </span>
           </li>

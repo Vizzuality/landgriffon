@@ -17,6 +17,7 @@ import type {
   H3Item,
   MaterialH3APIParams,
   RiskH3APIParams,
+  WaterH3APIParams,
   ImpactH3APIParams,
 } from 'types';
 
@@ -115,6 +116,60 @@ export function useH3RiskData(
     },
   );
 
+  const { data, isError } = query;
+
+  return useMemo<H3DataResponse>(
+    () =>
+      ({
+        ...query,
+        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as H3APIResponse,
+      } as H3DataResponse),
+    [query, isError, data],
+  );
+}
+
+export function useH3WaterData(
+  params: Partial<WaterH3APIParams> = {},
+  options: Partial<UseQueryOptions> = {},
+): H3DataResponse {
+  const colors = useColors('water');
+  const { data: categories } = useQuery(
+    ['contextual-layers-categories', params],
+    async () =>
+      apiRawService
+        .get('/contextual-layers/categories', {
+          params: {
+            ...params,
+            resolution: 4,
+          },
+        })
+        // Adding color to the response
+        .then((response) => response.data?.data),
+    {
+      placeholderData: {
+        data: [],
+      },
+    },
+  );
+  const query = useQuery(
+    ['h3-data-water', params],
+    async () =>
+      apiRawService
+        .get('/contextual-layers/6af25288-5718-46e1-b6af-424b6e3933b7/h3data', {
+          params: {
+            ...params,
+            resolution: 4,
+          },
+        })
+        // Adding color to the response
+        .then((response) => responseParser(response, colors)),
+    {
+      ...DEFAULT_QUERY_OPTIONS,
+      ...options,
+    },
+  );
+
+  console.log('query data', query);
   const { data, isError } = query;
 
   return useMemo<H3DataResponse>(

@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 - Dashed line added to analysis table to difference between real and projected data [LANDGRIF-736](https://vizzuality.atlassian.net/browse/LANDGRIF-736)
 - Map UI state in the URL params (center, zoom) [LANDGRIF-728](https://vizzuality.atlassian.net/browse/LANDGRIF-728)
-
+- Baseline water stress contextual layer [LANDGRIF-743](https://vizzuality.atlassian.net/browse/LANDGRIF-743)
 ### Changed
 - Changed select styles to match the design, specifically for the years. They now have a different behavior than the others to improve usability.
 - Applied new design for the targets section in the admin page.

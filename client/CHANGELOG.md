@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Extra bad requests in analysis [LANDGRIF-716](https://vizzuality.atlassian.net/browse/LANDGRIF-716)
 - UI fixes in the intervention creation form [LANDGRIF-742](https://vizzuality.atlassian.net/browse/LANDGRIF-742)
 - Styles for the sort dropdown in the scenarios list [LANDGRIF-738](https://vizzuality.atlassian.net/browse/LANDGRIF-738)
+- Sort country list alphabetically and added search functionality to the input in the intervention form [LANDGRIF-776](https://vizzuality.atlassian.net/browse/LANDGRIF-776)
 
 ## 2022.06.27
 

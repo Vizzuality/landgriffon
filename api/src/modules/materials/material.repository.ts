@@ -10,6 +10,8 @@ import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { Logger, NotFoundException } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { Scenario } from 'modules/scenarios/scenario.entity';
 
 @EntityRepository(Material)
 export class MaterialRepository extends ExtendedTreeRepository<
@@ -64,6 +66,24 @@ export class MaterialRepository extends ExtendedTreeRepository<
       queryBuilder.andWhere('sl.locationType IN (:...locationTypes)', {
         locationTypes: materialTreeOptions.locationTypes,
       });
+    }
+    if (materialTreeOptions.scenarioId) {
+      queryBuilder
+        .innerJoin(
+          ScenarioIntervention,
+          'scenarioIntervention',
+          'sl.scenarioInterventionId = scenarioIntervention.id',
+        )
+        .innerJoin(
+          Scenario,
+          'scenario',
+          'scenarioIntervention.scenarioId = scenario.id',
+        )
+        .andWhere('scenario.id = :scenarioId', {
+          scenarioId: materialTreeOptions.scenarioId,
+        });
+    } else {
+      queryBuilder.andWhere('sl.scenarioInterventionId is null');
     }
 
     const [subQuery, subQueryParams]: [string, any[]] =

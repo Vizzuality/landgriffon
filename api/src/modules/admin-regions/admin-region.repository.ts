@@ -10,6 +10,8 @@ import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-reg
 import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetAdminRegionTreeWithOptionsDto } from 'modules/admin-regions/dto/get-admin-region-tree-with-options.dto';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { Scenario } from 'modules/scenarios/scenario.entity';
 
 @EntityRepository(AdminRegion)
 export class AdminRegionRepository extends ExtendedTreeRepository<
@@ -183,6 +185,25 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
       queryBuilder.andWhere('sl.locationType IN (:...locationTypes)', {
         locationTypes: adminRegionTreeOptions.locationTypes,
       });
+    }
+
+    if (adminRegionTreeOptions.scenarioId) {
+      queryBuilder
+        .innerJoin(
+          ScenarioIntervention,
+          'scenarioIntervention',
+          'sl.scenarioInterventionId = scenarioIntervention.id',
+        )
+        .innerJoin(
+          Scenario,
+          'scenario',
+          'scenarioIntervention.scenarioId = scenario.id',
+        )
+        .andWhere('scenario.id = :scenarioId', {
+          scenarioId: adminRegionTreeOptions.scenarioId,
+        });
+    } else {
+      queryBuilder.andWhere('sl.scenarioInterventionId is null');
     }
 
     const [subQuery, subQueryParams]: [string, any[]] =

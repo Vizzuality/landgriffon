@@ -17,7 +17,7 @@ export class CreateBusinessUnitDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(2)
-  @MaxLength(40)
+  @MaxLength(400)
   @ApiProperty()
   name!: string;
 

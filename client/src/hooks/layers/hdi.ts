@@ -16,24 +16,24 @@ import { NUMBER_FORMAT } from 'utils/number-format';
 import type { LegendItem as LegendItemProp } from 'types';
 
 // const HEXAGON_HIGHLIGHT_COLOR = [0, 0, 0];
-const layerID = 'water';
+const layerID = 'hdi';
 
 // layerID should match with redux
-export const useWaterLayer: () => ReturnType<typeof useH3ContextualData> & {
+export const useHDILayer: () => ReturnType<typeof useH3ContextualData> & {
   layer: H3HexagonLayer;
 } = () => {
   const dispatch = useAppDispatch();
   const {
-    layers: { water: waterLayer },
+    layers: { hdi: hdiLayer },
   } = useAppSelector(analysisMap);
   const params = {
-    materialId: waterLayer.material && waterLayer.material.value,
+    materialId: hdiLayer.material && hdiLayer.material.value,
   };
   const options = {
-    enabled: !!(waterLayer.active && waterLayer.material),
+    enabled: !!(hdiLayer.active && hdiLayer.material),
   };
-  const query = useH3ContextualData('70494f5f-cb8f-4c83-bd4e-3c1851f89727', params, options);
-  const { data, isFetched, isFetching } = query;
+  const query = useH3ContextualData('a9a02da6-a110-4404-88b0-d35653da079c', params, options);
+  const { data, isFetching, isFetched } = query;
   const handleHover = useCallback(
     ({ object, x, y, viewport }) => {
       dispatch(
@@ -46,13 +46,13 @@ export const useWaterLayer: () => ReturnType<typeof useH3ContextualData> & {
       dispatch(
         setTooltipData({
           id: layerID,
-          name: 'Water',
+          name: 'Human Development Index',
           value: object?.v,
           unit: data.metadata?.legend.unit,
         }),
       );
     },
-    [data.metadata, dispatch],
+    [data.metadata?.legend.unit, dispatch],
   );
 
   const layer = new H3HexagonLayer({
@@ -66,8 +66,8 @@ export const useWaterLayer: () => ReturnType<typeof useH3ContextualData> & {
     pickable: true,
     coverage: 0.9,
     lineWidthMinPixels: 2,
-    opacity: waterLayer.opacity,
-    visible: waterLayer.active,
+    opacity: hdiLayer.opacity,
+    visible: hdiLayer.active,
     getHexagon: (d) => d.h,
     getFillColor: (d) => d.c,
     getLineColor: (d) => d.c,
@@ -102,7 +102,7 @@ export const useWaterLayer: () => ReturnType<typeof useH3ContextualData> & {
         }),
       );
     }
-  }, [data, isFetched, isFetching, dispatch]);
+  }, [data, isFetched, dispatch, isFetching]);
 
   return {
     ...query,

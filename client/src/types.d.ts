@@ -214,9 +214,19 @@ export type ErrorResponse = AxiosError<{
 /**
  * Layer
  */
+export type Layer = {
+  id: string;
+  order?: number;
+  active?: boolean;
+  opacity?: number;
+  legend?: Legend;
+  loading?: boolean;
+};
+
 export type LegendItem = {
   value: string | number;
   color: string;
+  label?: string;
 };
 
 export type Legend = {
@@ -227,13 +237,20 @@ export type Legend = {
   items: LegendItem[];
 };
 
-export type Layer = {
-  id?: string;
-  order?: number;
-  active?: boolean;
-  opacity?: number;
-  legend?: Legend;
-  loading?: boolean;
+export type LayerMetadata = {
+  $schema: string;
+  name: string;
+  description: string;
+  license: string;
+  source: string;
+  legend: {
+    id: string;
+    min?: number;
+    items: LegendItem[];
+    name: string;
+    type: string;
+    unit: string;
+  };
 };
 
 // Metadata info

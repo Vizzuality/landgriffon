@@ -14,7 +14,9 @@ import type { AxiosResponse } from 'axios';
 import type {
   RGBColor,
   H3APIResponse,
+  H3Data,
   H3Item,
+  LayerMetadata,
   MaterialH3APIParams,
   RiskH3APIParams,
   WaterH3APIParams,
@@ -22,6 +24,7 @@ import type {
 } from 'types';
 
 type H3DataResponse = UseQueryResult<H3APIResponse, unknown>;
+type H3ContextualResponse = UseQueryResult<{ data: H3Data; metadata: LayerMetadata }, unknown>;
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   placeholderData: {
@@ -40,6 +43,23 @@ const responseParser = (response: AxiosResponse, colors: RGBColor[]): H3APIRespo
   const { data, metadata } = response.data;
   const { quantiles } = metadata;
   const threshold = quantiles.slice(1, -1);
+  const scale = scaleThreshold<H3Item['v'], RGBColor>().domain(threshold).range(colors);
+  const h3DataWithColor = data.map(
+    (d: H3Item): H3Item => ({
+      ...d,
+      c: scale(d.v as H3Item['v']),
+    }),
+  );
+  return { data: h3DataWithColor, metadata };
+};
+
+const responseContextualParser = (response: AxiosResponse): H3APIResponse => {
+  const { data, metadata } = response.data;
+  const {
+    legend: { items },
+  } = metadata;
+  const threshold = items.map((item) => item.value);
+  const colors = items.map((item) => chroma(item.color).rgb());
   const scale = scaleThreshold<H3Item['v'], RGBColor>().domain(threshold).range(colors);
   const h3DataWithColor = data.map(
     (d: H3Item): H3Item => ({
@@ -128,56 +148,47 @@ export function useH3RiskData(
   );
 }
 
-export function useH3WaterData(
+export function useH3ContextualData(
+  id: string,
   params: Partial<WaterH3APIParams> = {},
   options: Partial<UseQueryOptions> = {},
-): H3DataResponse {
-  const colors = useColors('water');
-  const { data: categories } = useQuery(
-    ['contextual-layers-categories', params],
-    async () =>
-      apiRawService
-        .get('/contextual-layers/categories', {
-          params: {
-            ...params,
-            resolution: 4,
-          },
-        })
-        // Adding color to the response
-        .then((response) => response.data?.data),
-    {
-      placeholderData: {
-        data: [],
-      },
-    },
-  );
+): H3ContextualResponse {
   const query = useQuery(
-    ['h3-data-water', params],
+    ['h3-data-contextual', id, JSON.stringify(params)],
     async () =>
       apiRawService
-        .get('/contextual-layers/6af25288-5718-46e1-b6af-424b6e3933b7/h3data', {
+        .get(`/contextual-layers/${id}/h3data`, {
           params: {
             ...params,
             resolution: 4,
           },
         })
         // Adding color to the response
-        .then((response) => responseParser(response, colors)),
+        .then((response) => responseContextualParser(response)),
     {
       ...DEFAULT_QUERY_OPTIONS,
+      placeholderData: {
+        data: [],
+        metadata: {
+          name: null,
+          legend: {
+            unit: null,
+            items: [],
+          },
+        },
+      },
       ...options,
     },
   );
 
-  console.log('query data', query);
   const { data, isError } = query;
 
-  return useMemo<H3DataResponse>(
+  return useMemo<H3ContextualResponse>(
     () =>
       ({
         ...query,
-        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as H3APIResponse,
-      } as H3DataResponse),
+        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as H3ContextualResponse,
+      } as H3ContextualResponse),
     [query, isError, data],
   );
 }

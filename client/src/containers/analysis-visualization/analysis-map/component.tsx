@@ -12,6 +12,7 @@ import { useImpactLayer } from 'hooks/layers/impact';
 import { useMaterialLayer } from 'hooks/layers/material';
 import { useRiskLayer } from 'hooks/layers/risk';
 import { useWaterLayer } from 'hooks/layers/water';
+import { useHDILayer } from 'hooks/layers/hdi';
 
 import Legend from 'containers/analysis-visualization/analysis-legend';
 import PageLoading from 'containers/page-loading';
@@ -79,12 +80,13 @@ const AnalysisMap: React.FC = () => {
   const materialLayer = useMaterialLayer();
   const riskLayer = useRiskLayer();
   const waterLayer = useWaterLayer();
+  const hdiLayer = useHDILayer();
 
   const layers = useMemo(() => {
-    return [impactLayer, materialLayer, riskLayer, waterLayer]
+    return [impactLayer, materialLayer, riskLayer, waterLayer, hdiLayer]
       .sort((a, b) => layerProps[b.layer.id].order - layerProps[a.layer.id].order)
       .map((layer) => layer.layer);
-  }, [impactLayer, layerProps, materialLayer, riskLayer, waterLayer]);
+  }, [impactLayer, layerProps, materialLayer, riskLayer, waterLayer, hdiLayer]);
 
   const isError = materialLayer.isError || impactLayer.isError || riskLayer.isError;
   const isFetching = materialLayer.isFetching || impactLayer.isFetching || riskLayer.isFetching;

@@ -40,7 +40,7 @@ type RiskLayer = Layer & {
   year?: number;
 };
 
-type WaterLayer = Layer & {
+type ContextualLayer = Layer & {
   material?: {
     label: string;
     value: Material['id'];
@@ -63,7 +63,8 @@ export type AnalysisMapState = {
   layers: {
     material: MaterialLayer;
     risk: RiskLayer;
-    water: WaterLayer;
+    water: ContextualLayer;
+    hdi: ContextualLayer;
     impact: Layer;
   };
   // Tooltip state
@@ -88,6 +89,7 @@ export const initialState: AnalysisMapState = {
     material: { id: 'h3-layer-material', ...DEFAULT_LAYER_ATTRIBUTES, order: 3 },
     risk: { id: 'h3-layer-risk', ...DEFAULT_LAYER_ATTRIBUTES },
     water: { id: 'h3-layer-water', ...DEFAULT_LAYER_ATTRIBUTES },
+    hdi: { id: 'h3-layer-hdi', ...DEFAULT_LAYER_ATTRIBUTES },
     impact: {
       id: 'h3-layer-impact',
       ...DEFAULT_LAYER_ATTRIBUTES,
@@ -116,8 +118,8 @@ export const analysisMapSlice = createSlice({
     setLayer: (
       state,
       action: PayloadAction<{
-        id: 'material' | 'risk' | 'impact' | 'water';
-        layer: MaterialLayer | RiskLayer | WaterLayer | Layer;
+        id: 'material' | 'risk' | 'impact' | 'water' | 'hdi';
+        layer: Partial<MaterialLayer | RiskLayer | ContextualLayer | Layer>;
       }>,
     ) => ({
       ...state,

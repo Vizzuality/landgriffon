@@ -26,13 +26,10 @@ export const useHDILayer: () => ReturnType<typeof useH3ContextualData> & {
   const {
     layers: { hdi: hdiLayer },
   } = useAppSelector(analysisMap);
-  const params = {
-    materialId: hdiLayer.material && hdiLayer.material.value,
-  };
   const options = {
-    enabled: !!(hdiLayer.active && hdiLayer.material),
+    enabled: !!hdiLayer.active,
   };
-  const query = useH3ContextualData('a9a02da6-a110-4404-88b0-d35653da079c', params, options);
+  const query = useH3ContextualData('a9a02da6-a110-4404-88b0-d35653da079c', {}, options);
   const { data, isFetching, isFetched } = query;
   const handleHover = useCallback(
     ({ object, x, y, viewport }) => {
@@ -80,6 +77,16 @@ export const useHDILayer: () => ReturnType<typeof useH3ContextualData> & {
 
   // Populating legend
   useEffect(() => {
+    if (data && isFetching) {
+      dispatch(
+        setLayer({
+          id: layerID,
+          layer: {
+            loading: isFetching,
+          },
+        }),
+      );
+    }
     if (data && isFetched) {
       dispatch(
         setLayer({
@@ -89,6 +96,7 @@ export const useHDILayer: () => ReturnType<typeof useH3ContextualData> & {
             legend: {
               id: `legend-${layerID}`,
               name: data.metadata.name,
+              description: data.metadata.description,
               unit: data.metadata.legend.unit,
               min: !!data.metadata.legend.min && NUMBER_FORMAT(data.metadata.legend?.min),
               items: data.metadata.legend.items.map(

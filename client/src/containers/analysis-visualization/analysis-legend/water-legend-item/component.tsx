@@ -3,9 +3,8 @@ import { useCallback } from 'react';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap, setLayer } from 'store/features/analysis/map';
 
-import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
 import LegendItem from 'components/legend/item';
-import LegendTypeChoropleth from 'components/legend/types/choropleth';
+import LegendTypeCategorical from 'components/legend/types/categorical';
 
 const LAYER_ID = 'water';
 
@@ -29,30 +28,13 @@ const WaterLegendItem = () => {
     [dispatch],
   );
 
-  const handleMaterialChange = useCallback(
-    (material) => {
-      dispatch(setLayer({ id: LAYER_ID, layer: { ...water, material } }));
-    },
-    [dispatch, water],
-  );
+  console.log(water);
 
   return (
     <LegendItem
-      name={
-        water.active ? (
-          <div className="space-y-2 mr-2">
-            <div>Baseline water stress</div>
-            <Materials
-              current={water.material ? [water.material] : null}
-              onChange={handleMaterialChange}
-              multiple={false}
-            />
-          </div>
-        ) : (
-          'Baseline water stress'
-        )
-      }
+      name="Baseline water stress"
       unit={water.legend.unit}
+      info={water.legend.description}
       id={water.legend.id}
       opacity={water.opacity}
       active={water.active}
@@ -60,11 +42,7 @@ const WaterLegendItem = () => {
       onActiveChange={handleActive}
       isLoading={water.loading}
     >
-      <LegendTypeChoropleth
-        className="text-sm text-gray-500 flex-1"
-        min={water.legend.min}
-        items={water.legend.items}
-      />
+      <LegendTypeCategorical className="text-sm text-gray-500 flex-1" items={water.legend.items} />
     </LegendItem>
   );
 };

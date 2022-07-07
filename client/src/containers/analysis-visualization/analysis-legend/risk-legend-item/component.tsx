@@ -52,6 +52,7 @@ const RiskLegendItem = () => {
           'Risk'
         )
       }
+      info="The risk layer displayed on the map reflects the environmental impact associated with the provision of a product or service."
       unit={risk.legend.unit}
       id={risk.legend.id}
       opacity={risk.opacity}

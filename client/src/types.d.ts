@@ -231,6 +231,7 @@ export type LegendItem = {
 
 export type Legend = {
   name: string;
+  description?: string;
   id: string;
   unit: string;
   min: LegendItem['value'];

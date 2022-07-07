@@ -26,13 +26,10 @@ export const useWaterLayer: () => ReturnType<typeof useH3ContextualData> & {
   const {
     layers: { water: waterLayer },
   } = useAppSelector(analysisMap);
-  const params = {
-    materialId: waterLayer.material && waterLayer.material.value,
-  };
   const options = {
-    enabled: !!(waterLayer.active && waterLayer.material),
+    enabled: !!waterLayer.active,
   };
-  const query = useH3ContextualData('70494f5f-cb8f-4c83-bd4e-3c1851f89727', params, options);
+  const query = useH3ContextualData('70494f5f-cb8f-4c83-bd4e-3c1851f89727', {}, options);
   const { data, isFetched, isFetching } = query;
   const handleHover = useCallback(
     ({ object, x, y, viewport }) => {
@@ -80,6 +77,16 @@ export const useWaterLayer: () => ReturnType<typeof useH3ContextualData> & {
 
   // Populating legend
   useEffect(() => {
+    if (data && isFetching) {
+      dispatch(
+        setLayer({
+          id: layerID,
+          layer: {
+            loading: isFetching,
+          },
+        }),
+      );
+    }
     if (data && isFetched) {
       dispatch(
         setLayer({
@@ -88,6 +95,7 @@ export const useWaterLayer: () => ReturnType<typeof useH3ContextualData> & {
             loading: isFetching,
             legend: {
               id: `legend-${layerID}`,
+              description: data.metadata.description,
               name: data.metadata.name,
               unit: data.metadata.legend.unit,
               min: !!data.metadata.legend.min && NUMBER_FORMAT(data.metadata.legend?.min),

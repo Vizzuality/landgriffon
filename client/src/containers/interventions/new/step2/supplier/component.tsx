@@ -1,4 +1,5 @@
 import { useMemo, useCallback, FC } from 'react';
+import { sortBy } from 'lodash';
 
 // components
 import Input from 'components/forms/input';
@@ -70,10 +71,13 @@ const Supplier: FC = () => {
   const { data: countries, isLoading: isLoadingCountries } = useAdminRegionsTrees({ depth: 0 });
   const optionsCountries: SelectOptions = useMemo(
     () =>
-      countries.map(({ name, id }) => ({
-        label: name,
-        value: id,
-      })),
+      sortBy(
+        countries.map(({ name, id }) => ({
+          label: name,
+          value: id,
+        })),
+        'label',
+      ),
     [countries],
   );
 
@@ -173,6 +177,7 @@ const Supplier: FC = () => {
             <div className="mt-1">
               <Select
                 {...register('newLocationCountryInput')}
+                showSearch
                 loading={isLoadingCountries}
                 current={optionsCountries.find(
                   (option) => option.value === watch('newLocationCountryInput'),

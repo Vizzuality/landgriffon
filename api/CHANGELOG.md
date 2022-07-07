@@ -64,3 +64,11 @@ Fixed
 Impact years endpoint - returns years for which sourcing record volumes are not 0
 
 
+## 2022-07-11
+
+### Fixed
+
+Fixed
+Update entity methods that build trees - add option to not searh for filters descendants if the treeOptions properties already have them
+
+

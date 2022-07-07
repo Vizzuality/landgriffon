@@ -27,7 +27,6 @@ import Loading from 'components/loading';
 import { CHECKED_STRATEGIES } from './utils';
 
 import type { TreeSelectProps, TreeSelectOption } from './types';
-import { Transition } from '@headlessui/react';
 
 const THEMES = {
   default: {
@@ -391,66 +390,70 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           )}
         </div>
       </div>
-      <Transition
-        show={isOpen}
-        enter="transition ease-out duration-200"
-        enterFrom="opacity-0 translate-y-1"
-        enterTo="opacity-100 translate-y-0"
-        leave="transition ease-in duration-150"
-        leaveFrom="opacity-100 translate-y-0"
-        leaveTo="opacity-0 translate-y-1"
-        {...getFloatingProps({
-          style: {
-            position: strategy,
-            top: y ?? '',
-            left: x ?? '',
-            minWidth: multiple ? 150 : 100,
-            width:
-              fitContent && reference
-                ? (referenceElement.current as HTMLElement)?.offsetWidth
-                : 'inherit',
-          },
-          className:
-            'relative z-20 rounded-md overflow-hidden shadow-lg ring-1 ring-black ring-opacity-5',
-          ref: floating,
-        })}
-      >
+      {isOpen && (
         <div
-          className={classNames(
-            'bg-white max-h-80 overflow-y-auto',
-            fitContent ? 'max-w-full w-full' : 'max-w-xs',
-          )}
+          // show={isOpen}
+          // enter="transition ease-out duration-200"
+          // enterFrom="opacity-0 translate-y-1"
+          // enterTo="opacity-100 translate-y-0"
+          // leave="transition ease-in duration-150"
+          // leaveFrom="opacity-100 translate-y-0"
+          // leaveTo="opacity-0 translate-y-1"
+          {...getFloatingProps({
+            style: {
+              position: strategy,
+              top: y ?? '',
+              left: x ?? '',
+              minWidth: multiple ? 150 : 100,
+              width:
+                fitContent && reference
+                  ? (referenceElement.current as HTMLElement)?.offsetWidth
+                  : 'inherit',
+            },
+            className:
+              'relative z-20 rounded-md overflow-hidden shadow-lg ring-1 ring-black ring-opacity-5',
+            ref: floating,
+          })}
         >
-          {loading && (
-            <div className="p-4">
-              <Loading className="mr-3 -ml-1 text-green-700" />
-            </div>
-          )}
-          {!loading && (
-            <>
-              <Tree
-                autoExpandParent
-                checkStrictly={false}
-                checkable={multiple}
-                selectable={!multiple}
-                multiple={multiple}
-                selectedKeys={selectedKeys}
-                expandedKeys={expandedKeys}
-                checkedKeys={checkedKeys}
-                switcherIcon={customSwitcherIcon}
-                onExpand={handleExpand}
-                onSelect={handleSelect}
-                onCheck={handleCheck}
-              >
-                {renderTreeNodes(options)}
-              </Tree>
-              {(options.length === 0 || (searchTerm && filteredKeys.length === 0)) && (
-                <div className="p-2 mx-auto text-sm text-gray-700 opacity-60 w-fit">No results</div>
-              )}
-            </>
-          )}
+          <div
+            className={classNames(
+              'bg-white max-h-80 overflow-y-auto',
+              fitContent ? 'max-w-full w-full' : 'max-w-xs',
+            )}
+          >
+            {loading && (
+              <div className="p-4">
+                <Loading className="mr-3 -ml-1 text-green-700" />
+              </div>
+            )}
+            {!loading && (
+              <>
+                <Tree
+                  autoExpandParent
+                  checkStrictly={false}
+                  checkable={multiple}
+                  selectable={!multiple}
+                  multiple={multiple}
+                  selectedKeys={selectedKeys}
+                  expandedKeys={expandedKeys}
+                  checkedKeys={checkedKeys}
+                  switcherIcon={customSwitcherIcon}
+                  onExpand={handleExpand}
+                  onSelect={handleSelect}
+                  onCheck={handleCheck}
+                >
+                  {renderTreeNodes(options)}
+                </Tree>
+                {(options.length === 0 || (searchTerm && filteredKeys.length === 0)) && (
+                  <div className="p-2 mx-auto text-sm text-gray-700 opacity-60 w-fit">
+                    No results
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </div>
-      </Transition>
+      )}
     </div>
   );
 };

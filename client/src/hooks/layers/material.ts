@@ -80,7 +80,7 @@ export const useMaterialLayer: () => ReturnType<typeof useH3MaterialData> & {
     visible: materialLayer.active,
     getHexagon: (d) => d.h,
     getFillColor: (d) => d.c,
-    getElevation: (d) => d.v,
+    // getElevation: (d) => d.v,
     getLineColor: (d) => d.c,
     // getLineColor: (d) => (d.h === hoveredHexagon ? HEXAGON_HIGHLIGHT_COLOR : d.c),
     onHover: handleHover,

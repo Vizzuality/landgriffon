@@ -7,19 +7,19 @@ import Materials from 'containers/analysis-visualization/analysis-filters/materi
 import LegendItem from 'components/legend/item';
 import LegendTypeChoropleth from 'components/legend/types/choropleth';
 
-const LAYER_ID = 'water';
+const LAYER_ID = 'hdi';
 
-const WaterLegendItem = () => {
+const HdiLegendItem = () => {
   const dispatch = useAppDispatch();
   const {
-    layers: { water },
+    layers: { hdi },
   } = useAppSelector(analysisMap);
 
   const handleActive = useCallback(
     (active) => {
-      dispatch(setLayer({ id: LAYER_ID, layer: { ...water, active } }));
+      dispatch(setLayer({ id: LAYER_ID, layer: { ...hdi, active } }));
     },
-    [dispatch, water],
+    [dispatch, hdi],
   );
 
   const handleOpacity = useCallback(
@@ -31,42 +31,42 @@ const WaterLegendItem = () => {
 
   const handleMaterialChange = useCallback(
     (material) => {
-      dispatch(setLayer({ id: LAYER_ID, layer: { ...water, material } }));
+      dispatch(setLayer({ id: LAYER_ID, layer: { ...hdi, material } }));
     },
-    [dispatch, water],
+    [dispatch, hdi],
   );
 
   return (
     <LegendItem
       name={
-        water.active ? (
+        hdi.active ? (
           <div className="space-y-2 mr-2">
-            <div>Baseline water stress</div>
+            <div>Human development index</div>
             <Materials
-              current={water.material ? [water.material] : null}
+              current={hdi.material ? [hdi.material] : null}
               onChange={handleMaterialChange}
               multiple={false}
             />
           </div>
         ) : (
-          'Baseline water stress'
+          'Human development index'
         )
       }
-      unit={water.legend.unit}
-      id={water.legend.id}
-      opacity={water.opacity}
-      active={water.active}
+      unit={hdi.legend.unit}
+      id={hdi.legend.id}
+      opacity={hdi.opacity}
+      active={hdi.active}
       onChangeOpacity={handleOpacity}
       onActiveChange={handleActive}
-      isLoading={water.loading}
+      isLoading={hdi.loading}
     >
       <LegendTypeChoropleth
         className="text-sm text-gray-500 flex-1"
-        min={water.legend.min}
-        items={water.legend.items}
+        min={hdi.legend.min}
+        items={hdi.legend.items}
       />
     </LegendItem>
   );
 };
 
-export default WaterLegendItem;
+export default HdiLegendItem;

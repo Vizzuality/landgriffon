@@ -53,6 +53,7 @@ const MaterialLegendItem = () => {
   return (
     <LegendItem
       name={material.active ? Selector : 'Material Production'}
+      info="The material layer displayed on the map reflects the environmental impact associated with the provision of a product or service."
       unit={material.legend.unit}
       id={material.legend.id}
       opacity={material.opacity}

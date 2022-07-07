@@ -3,9 +3,8 @@ import { useCallback } from 'react';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap, setLayer } from 'store/features/analysis/map';
 
-import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
 import LegendItem from 'components/legend/item';
-import LegendTypeChoropleth from 'components/legend/types/choropleth';
+import LegendTypeCategorical from 'components/legend/types/categorical';
 
 const LAYER_ID = 'hdi';
 
@@ -29,30 +28,11 @@ const HdiLegendItem = () => {
     [dispatch],
   );
 
-  const handleMaterialChange = useCallback(
-    (material) => {
-      dispatch(setLayer({ id: LAYER_ID, layer: { ...hdi, material } }));
-    },
-    [dispatch, hdi],
-  );
-
   return (
     <LegendItem
-      name={
-        hdi.active ? (
-          <div className="space-y-2 mr-2">
-            <div>Human development index</div>
-            <Materials
-              current={hdi.material ? [hdi.material] : null}
-              onChange={handleMaterialChange}
-              multiple={false}
-            />
-          </div>
-        ) : (
-          'Human development index'
-        )
-      }
+      name="Human development index"
       unit={hdi.legend.unit}
+      info={hdi.legend.description}
       id={hdi.legend.id}
       opacity={hdi.opacity}
       active={hdi.active}
@@ -60,11 +40,7 @@ const HdiLegendItem = () => {
       onActiveChange={handleActive}
       isLoading={hdi.loading}
     >
-      <LegendTypeChoropleth
-        className="text-sm text-gray-500 flex-1"
-        min={hdi.legend.min}
-        items={hdi.legend.items}
-      />
+      <LegendTypeCategorical className="text-sm text-gray-500 flex-1" items={hdi.legend.items} />
     </LegendItem>
   );
 };

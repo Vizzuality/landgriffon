@@ -122,6 +122,7 @@ const Supplier: FC = () => {
             </Label>
             <Select
               {...register('newT1SupplierId')}
+              showSearch
               loading={isLoadingSuppliers}
               current={optionsSuppliers.find((option) => option.value === watch('newT1SupplierId'))}
               options={optionsSuppliers}
@@ -138,8 +139,9 @@ const Supplier: FC = () => {
             </Label>
             <Select
               {...register('newProducerId')}
+              showSearch
               loading={isLoadingProducers}
-              current={watch('newProducerId')}
+              current={optionsProducers.find((option) => option.value === watch('newProducerId'))}
               options={optionsProducers}
               placeholder="Select"
               onChange={(value) => handleDropdown('newProducerId', value)}
@@ -180,7 +182,7 @@ const Supplier: FC = () => {
                 showSearch
                 loading={isLoadingCountries}
                 current={optionsCountries.find(
-                  (option) => option.value === watch('newLocationCountryInput'),
+                  (option) => option.label === watch('newLocationCountryInput'),
                 )}
                 options={optionsCountries}
                 placeholder="All Countries"

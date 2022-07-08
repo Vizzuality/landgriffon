@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  PG_H3_VERSION: 3.7.1
+  PG_H3_VERSION: 3.7.2
 
 jobs:
   testing-api:

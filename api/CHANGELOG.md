@@ -56,3 +56,11 @@ Impact table - fix filters when retrieving 'group by' entities for table skeleto
 Updated
 Creating Scenario Intervention can cover only 1 material, business units and admin regions filters are not obligatory
 
+## 2022-07-08
+
+### Fixed
+
+Fixed
+Impact years endpoint - returns years for which sourcing record volumes are not 0
+
+

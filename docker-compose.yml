@@ -68,7 +68,7 @@ services:
     build:
       context: database
       args:
-        - PG_H3_VERSION=3.7.1
+        - PG_H3_VERSION=3.7.2
     container_name: landgriffon-postgresql
     env_file: ${ENVFILE}
     ports:

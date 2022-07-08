@@ -25,10 +25,16 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
   const dispatch = useAppDispatch();
   const { currentScenario, scenarioToCompare } = useAppSelector(scenarios);
   const { data: scenario } = useScenario(currentScenario);
+  const { data: scenarioB } = useScenario(scenarioToCompare);
 
   const scenario1 = useMemo(
     () => (currentScenario !== 'actual-data' ? scenario?.title : 'Actual data'),
     [currentScenario, scenario?.title],
+  );
+
+  const scenario2 = useMemo(
+    () => (scenarioToCompare !== 'actual-data' ? scenarioB?.title : 'Actual data'),
+    [scenarioToCompare, scenarioB?.title],
   );
 
   const { materials, origins, suppliers, locationTypes, indicator } =
@@ -46,7 +52,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
     data: { unit },
   } = useIndicator(indicator?.value);
   const indicatorsTemplate = <span className="font-bold">{unit?.symbol}</span>;
-  const compareTemplate = <span className="font-bold whitespace-nowrap">{scenarioToCompare}</span>;
+  const compareTemplate = <span className="font-bold whitespace-nowrap">{scenario2}</span>;
   const materialTemplate = !!materials.length && (
     <ul className="inline-flex pl-1 text-xs">
       {materials.map((material) => (
@@ -125,7 +131,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
           Viewing {values} Impact values for
           <span className="font-bold whitespace-nowrap">{scenario1}</span>
           <span className="font-bold whitespace-nowrap">
-            {!!compareTemplate && 'compared to'} {compareTemplate}
+            {!!compareTemplate && ' compared to'} {compareTemplate}
           </span>
         </p>
       )}

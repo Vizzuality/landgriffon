@@ -8,14 +8,12 @@ import {
   UseInfiniteQueryResult,
 } from 'react-query';
 
+import { apiService } from 'services/api';
 import { useAppSelector } from 'store/hooks';
-
 import { scenarios } from 'store/features/analysis/scenarios';
 
-import { apiService } from 'services/api';
-import { AxiosResponse } from 'axios';
-
 // types
+import type { AxiosResponse } from 'axios';
 import type { Scenario } from 'containers/scenarios/types';
 import type { Intervention } from 'containers/scenarios/types';
 

@@ -406,13 +406,24 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
       name: 'grandChildMaterial',
       parent: childMaterial1,
     });
+
+    // Creating 3 Sourcing Records with 0 toonage, years of those should not be included in response
     const sourcingRecord3: SourcingRecord = await createSourcingRecord({
       year: 2022,
     });
 
+    const sourcingRecord4: SourcingRecord = await createSourcingRecord({
+      year: 2019,
+      tonnage: 0,
+    });
+
+    const sourcingRecord5: SourcingRecord = await createSourcingRecord({
+      year: 2018,
+      tonnage: 0,
+    });
     await createSourcingLocation({
       material: grandChildMaterial,
-      sourcingRecords: [sourcingRecord3],
+      sourcingRecords: [sourcingRecord3, sourcingRecord4, sourcingRecord5],
     });
 
     const response4 = await request(app.getHttpServer())

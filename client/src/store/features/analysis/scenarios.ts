@@ -4,6 +4,7 @@ import type { Scenario, Intervention, InterventionTypes } from 'containers/scena
 
 export type ScenariosState = {
   mode: 'list' | 'edit';
+  isComparisonEnabled: boolean;
   comparisonMode: 'percentage' | 'absolute' | 'both';
   // Scenario ID for selected, edition and creation
   currentScenario: Scenario['id'];
@@ -53,6 +54,7 @@ type FeatureState = RootState & { analysis: ScenariosState };
 // Define the initial state using that type
 export const initialState: ScenariosState = {
   mode: 'list',
+  isComparisonEnabled: false,
   comparisonMode: null,
   currentScenario: null,
   scenarioToCompare: null,
@@ -103,6 +105,13 @@ export const analysisScenariosSlice = createSlice({
     setCurrentScenario: (state, action: PayloadAction<ScenariosState['currentScenario']>) => ({
       ...state,
       currentScenario: action.payload,
+    }),
+    setComparisonEnabled: (
+      state,
+      action: PayloadAction<ScenariosState['isComparisonEnabled']>,
+    ) => ({
+      ...state,
+      isComparisonEnabled: action.payload,
     }),
     setScenarioToCompare: (state, action: PayloadAction<ScenariosState['scenarioToCompare']>) => ({
       ...state,
@@ -169,6 +178,7 @@ export const analysisScenariosSlice = createSlice({
 
 export const {
   setCurrentScenario,
+  setComparisonEnabled,
   setScenarioToCompare,
   setMode,
   setComparisonMode,

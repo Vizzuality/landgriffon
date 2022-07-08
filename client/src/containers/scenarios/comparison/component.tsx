@@ -1,42 +1,53 @@
-import { FC } from 'react';
+import { FC, useCallback, useMemo, useEffect } from 'react';
+
+import { useScenarios } from 'hooks/scenarios';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { scenarios, setScenarioToCompare } from 'store/features/analysis/scenarios';
+
 import Select from 'components/select';
 
-type ScenariosComparison = Readonly<{
-  disabled: boolean;
-}>;
+import type { SelectOption } from 'components/select/types';
 
-const COMPARISON_MODES = [
-  {
-    label: 'Difference (percentage)',
-    value: 'percentage',
-  },
-  {
-    label: 'Difference (absolute)',
-    value: 'absolute',
-  },
-  {
-    label: 'Values (both values)',
-    value: 'both',
-  },
-];
+const ScenariosComparison: FC = () => {
+  const dispatch = useAppDispatch();
+  const { currentScenario, scenarioToCompare, isComparisonEnabled } = useAppSelector(scenarios);
 
-const TARGETS = [
-  {
-    label: 'Targets 2025',
-    value: 'targets-2025',
-  },
-];
+  const { data } = useScenarios({ disablePagination: true });
+  const options: SelectOption[] = useMemo(() => {
+    if (currentScenario === 'actual-data') {
+      return data.map(({ id, title }) => ({ label: title, value: id }));
+    }
+    return [{ label: 'Actual Data', value: 'actual-data' }];
+  }, [currentScenario, data]);
+  const selected = useMemo(
+    () => options.find(({ value }) => value === scenarioToCompare),
+    [scenarioToCompare, options],
+  );
 
-const ScenariosComparison: FC<ScenariosComparison> = ({ disabled }: ScenariosComparison) => (
-  <div className="mt-2 space-y-1">
-    <Select
-      label="Show"
-      current={COMPARISON_MODES[0]}
-      options={COMPARISON_MODES}
-      disabled={disabled}
-    />
-    <Select label="Relative to" current={TARGETS[0]} options={TARGETS} disabled={disabled} />
-  </div>
-);
+  const handleOnChange = useCallback(
+    (current) => {
+      dispatch(setScenarioToCompare(current.value));
+    },
+    [dispatch],
+  );
+
+  // Reset comparison when options changes
+  useEffect(() => {
+    dispatch(setScenarioToCompare(null));
+  }, [dispatch, options]);
+
+  return (
+    <div className="mt-2 space-y-1">
+      <Select
+        showSearch
+        current={selected}
+        options={options}
+        placeholder="Select scenario to compare"
+        disabled={!isComparisonEnabled}
+        onChange={handleOnChange}
+      />
+    </div>
+  );
+};
 
 export default ScenariosComparison;

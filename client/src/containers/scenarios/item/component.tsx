@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useState } from 'react';
+import { Fragment, useCallback, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Popover, RadioGroup, Switch, Transition } from '@headlessui/react';
 import { DotsVerticalIcon } from '@heroicons/react/solid';
@@ -6,7 +6,12 @@ import classNames from 'classnames';
 import toast from 'react-hot-toast';
 import { createPortal } from 'react-dom';
 
-import { setCurrentScenario, setMode, scenarios } from 'store/features/analysis/scenarios';
+import {
+  setCurrentScenario,
+  setMode,
+  scenarios,
+  setComparisonEnabled,
+} from 'store/features/analysis/scenarios';
 import { analysisUI } from 'store/features/analysis/ui';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 
@@ -31,7 +36,7 @@ const DROPDOWN_ITEM_CLASSNAME =
 
 const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) => {
   const dispatch = useAppDispatch();
-  const { currentScenario } = useAppSelector(scenarios);
+  const { currentScenario, isComparisonEnabled } = useAppSelector(scenarios);
   const { visualizationMode } = useAppSelector(analysisUI);
 
   const { x, y, reference, floating, strategy } = useFloating({
@@ -40,7 +45,6 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
   });
 
   const { data, isSelected, isComparisonAvailable } = props;
-  const [isComparisonEnabled, setComparisonEnabled] = useState<boolean>(false);
 
   const handleEdit = useCallback(() => {
     dispatch(setCurrentScenario(data.id));
@@ -53,7 +57,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
     deleteScenario.mutate(data.id, {
       onSuccess: () => {
         if (currentScenario === data.id) dispatch(setCurrentScenario(ACTUAL_DATA.id));
-        toast.success('Scenario succesfully deleted.');
+        toast.success('Scenario successfully deleted.');
       },
       onError: (error: ErrorResponse) => {
         const { errors } = error.response?.data;
@@ -68,8 +72,8 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
 
   useEffect(() => {
     // Disabling comparison when is not selected
-    if (!isSelected) setComparisonEnabled(false);
-  }, [isSelected]);
+    if (!isSelected) dispatch(setComparisonEnabled(false));
+  }, [dispatch, isSelected]);
 
   // TO - DO remove this condition when scenarios analysis is available to show in the ma
   // Option to select a different scenario for map view disabled temporarily
@@ -199,7 +203,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
               <label className="block text-sm">Compare this scenario</label>
               <Switch
                 checked={isComparisonEnabled}
-                onChange={setComparisonEnabled}
+                onChange={(isEnabled) => dispatch(setComparisonEnabled(isEnabled))}
                 className="relative inline-flex items-center justify-center flex-shrink-0 w-8 h-4 rounded-full cursor-pointer group focus:outline-none"
               >
                 <label className="sr-only">Comparison scenario setting</label>
@@ -223,7 +227,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                 />
               </Switch>
             </div>
-            {<ScenariosComparison disabled={!isComparisonEnabled} />}
+            {<ScenariosComparison />}
           </div>
         )}
       </div>

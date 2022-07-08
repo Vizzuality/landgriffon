@@ -55,15 +55,22 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
   const { data: indicators } = useIndicators();
   const { layer } = useAppSelector(analysisFilters);
   const filters = filtersForTabularAPI(store.getState());
+  const { indicatorId, ...restFilters } = filters;
 
   const isEnable =
-    !!filters?.indicatorId &&
+    !!indicatorId &&
     !!indicators?.length &&
     !!filters.startYear &&
     !!filters.endYear &&
     filters.endYear !== filters.startYear;
 
-  const indicatorIds = indicators.map(({ id }) => id);
+  const indicatorIds = useMemo(() => {
+    if (indicatorId === 'all') {
+      return indicators.map((indicator) => indicator.id);
+    }
+    if (indicatorId) return [indicatorId];
+    return [];
+  }, [indicators, indicatorId]);
 
   const query = useQuery(
     ['impact-data', layer, indicatorIds, filters, pagination],
@@ -71,12 +78,12 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
       apiRawService
         .get('/impact/table', {
           params: {
-            indicatorIds: filters.indicatorId === 'all' ? indicatorIds : [filters.indicatorId],
+            indicatorIds,
             startYear: filters.startYear,
             endYear: filters.endYear,
             groupBy: filters.groupBy,
+            ...restFilters,
             ...pagination,
-            ...filters,
           },
         })
         .then((response) => response.data),

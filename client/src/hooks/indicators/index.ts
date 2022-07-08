@@ -11,7 +11,7 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
 };
 
 type ResponseData = UseQueryResult<Indicator[]>;
-type RespondeIndicatorData = UseQueryResult<Indicator>;
+type ResponseIndicatorData = UseQueryResult<Indicator>;
 
 export function useIndicators(): ResponseData {
   const query = useQuery(
@@ -40,7 +40,7 @@ export function useIndicators(): ResponseData {
   );
 }
 
-export function useIndicator(id: Indicator['id']): RespondeIndicatorData {
+export function useIndicator(id: Indicator['id']): ResponseIndicatorData {
   const query = useQuery(
     ['indicators', id],
     async () =>
@@ -51,17 +51,20 @@ export function useIndicator(id: Indicator['id']): RespondeIndicatorData {
           params: { include: 'unit' },
         })
         .then(({ data: responseData }) => responseData.data),
-    DEFAULT_QUERY_OPTIONS,
+    {
+      ...DEFAULT_QUERY_OPTIONS,
+      enabled: !!id,
+    },
   );
 
   const { data, isError } = query;
 
-  return useMemo<RespondeIndicatorData>(
+  return useMemo<ResponseIndicatorData>(
     () =>
       ({
         ...query,
-        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as RespondeIndicatorData,
-      } as RespondeIndicatorData),
+        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as ResponseIndicatorData,
+      } as ResponseIndicatorData),
     [query, isError, data],
   );
 }

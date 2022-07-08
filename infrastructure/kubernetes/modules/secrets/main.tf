@@ -2,12 +2,6 @@ data "aws_eks_cluster_auth" "cluster" {
   name = var.cluster_name
 }
 
-provider "kubernetes" {
-  host                   = var.cluster_endpoint
-  cluster_ca_certificate = base64decode(var.cluster_ca)
-  token                  = data.aws_eks_cluster_auth.cluster.token
-}
-
 locals {
   postgres_secret_json = {
     username = "landgriffon-${var.namespace}"
@@ -25,6 +19,20 @@ locals {
 resource "random_password" "jwt_secret_generator" {
   length  = 64
   special = true
+#  lifecycle {
+#    ignore_changes = [
+#      length,
+#      lower,
+#      min_lower,
+#      min_numeric,
+#      min_special,
+#      min_upper,
+#      number,
+#      special,
+#      upper,
+#
+#    ]
+#  }
 }
 
 resource "aws_secretsmanager_secret" "api_secret" {
@@ -54,6 +62,20 @@ resource "kubernetes_secret" "api_secret" {
 resource "random_password" "postgresql_user_generator" {
   length  = 24
   special = true
+  lifecycle {
+    ignore_changes = [
+      length,
+      lower,
+      min_lower,
+      min_numeric,
+      min_special,
+      min_upper,
+      number,
+      special,
+      upper,
+
+    ]
+  }
 }
 
 resource "aws_secretsmanager_secret" "postgres_user_secret" {
@@ -74,12 +96,12 @@ resource "kubernetes_secret" "db_secret" {
   }
 
   data = {
-    DB_HOST        = "postgres-postgresql.default.svc.cluster.local"
-    DB_USERNAME    = sensitive(local.postgres_secret_json.username)
-    DB_PASSWORD    = sensitive(local.postgres_secret_json.password)
-    DB_DATABASE    = sensitive(local.postgres_secret_json.database)
-    DB_SYNCHRONIZE = "true"
-    REDIS_HOST     = "redis-master.default.svc.cluster.local"
+    DB_HOST                 = "postgres-postgresql.${var.namespace}.svc.cluster.local"
+    DB_USERNAME             = sensitive(local.postgres_secret_json.username)
+    DB_PASSWORD             = sensitive(local.postgres_secret_json.password)
+    DB_DATABASE             = sensitive(local.postgres_secret_json.database)
+    DB_SYNCHRONIZE          = "true"
+    REDIS_HOST              = "redis-master.default.svc.cluster.local"
     REDIS_IMPORT_QUEUE_NAME = "excel-import-${var.namespace}"
   }
 }

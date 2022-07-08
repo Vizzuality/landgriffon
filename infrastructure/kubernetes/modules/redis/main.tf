@@ -11,7 +11,7 @@ resource "random_password" "redis_admin_generator" {
 }
 
 resource "aws_secretsmanager_secret" "redis_admin_secret" {
-  name        = "redis-admin-credentials"
+  name        = "redis-admin-credentials-${var.namespace}"
   description = "Credentials for the admin user of the K8S Redis Server"
 }
 
@@ -24,7 +24,8 @@ resource "helm_release" "redis" {
   name       = "redis"
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "redis"
-  version    = "15.6.0"
+  version    = "16.13.2"
+  namespace  = var.namespace
 
   values = [
     file("${path.module}/values.yaml")
@@ -44,9 +45,10 @@ resource "helm_release" "redis" {
 resource "kubernetes_secret" "redis-secret" {
   metadata {
     name = "redis-secret"
+    namespace  = var.namespace
   }
 
   data = {
-    redis-password          = sensitive(local.redis_secret_json.password)
+    redis-password = sensitive(local.redis_secret_json.password)
   }
 }

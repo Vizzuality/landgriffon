@@ -84,7 +84,7 @@ variable "default_node_group_min_size" {
 
 variable "default_node_group_max_size" {
   type    = number
-  default = 2
+  default = 3
 }
 
 variable "default_node_group_desired_size" {
@@ -104,7 +104,7 @@ variable "data_node_group_min_size" {
 
 variable "data_node_group_max_size" {
   type    = number
-  default = 1
+  default = 3
 }
 
 variable "data_node_group_desired_size" {

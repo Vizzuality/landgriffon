@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "eks_oidc_assume_role" {
     condition {
       test     = "StringEquals"
       variable = "${replace(data.aws_eks_cluster.selected.identity[0].oidc[0].issuer, "https://", "")}:sub"
-      values = [
+      values   = [
         "system:serviceaccount:${var.k8s_namespace}:aws-load-balancer-controller"
       ]
     }
@@ -56,7 +56,10 @@ resource "aws_iam_role" "lb-controller-iam-role" {
 }
 
 data "aws_iam_policy_document" "lb-controller-iam-policy-document" {
-  source_json = file("${path.module}/iam_policy.json")
+  #  source_json = file("${path.module}/iam_policy.json")
+  source_policy_documents = [
+    file("${path.module}/iam_policy.json")
+  ]
 }
 
 resource "aws_iam_policy" "lb-controller-iam-policy" {
@@ -74,8 +77,8 @@ resource "aws_iam_role_policy_attachment" "lb-controller-iam-role-policy-attachm
 resource "kubernetes_service_account" "this" {
   automount_service_account_token = true
   metadata {
-    name      = "aws-load-balancer-controller"
-    namespace = var.k8s_namespace
+    name        = "aws-load-balancer-controller"
+    namespace   = var.k8s_namespace
     annotations = {
       # This annotation is only used when running on EKS which can
       # use IAM roles for service accounts.

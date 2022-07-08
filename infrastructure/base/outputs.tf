@@ -36,6 +36,16 @@ output "eks_cluster" {
   description = "EKS cluster object"
 }
 
+output "eks_cluster_host" {
+  value       = module.eks.cluster.endpoint
+  description = "EKS cluster endpoint"
+}
+
+output "eks_cluster_name" {
+  value       = module.eks.cluster.name
+  description = "EKS cluster name"
+}
+
 locals {
   kube_configmap = <<KUBECONFIGMAP
 apiVersion: v1

@@ -1,7 +1,7 @@
 locals {
   postgres_secret_json = {
-    username = "postgres"
-    password = random_password.postgresql_admin_generator.result
+    username       = "postgres"
+    admin_password = random_password.postgresql_admin_generator.result
   }
 }
 
@@ -11,7 +11,7 @@ resource "random_password" "postgresql_admin_generator" {
 }
 
 resource "aws_secretsmanager_secret" "postgresql_admin_secret" {
-  name        = "postgresql-admin-credentials"
+  name        = "postgresql-admin-credentials-${var.namespace}"
   description = "Credentials for the admin user of the K8S PostgreSQL Server"
 }
 
@@ -24,36 +24,71 @@ resource "helm_release" "postgres" {
   name       = "postgres"
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "postgresql"
-  version    = "9.4.1"
+  version    = "11.6.15"
+  namespace  = var.namespace
 
   values = [
-    file("${path.module}/values.yaml")
+    file("${path.module}/values-11.6.15.yaml")
   ]
 
   set {
-    name  = "postgresqlUsername"
-    value = sensitive(local.postgres_secret_json.username)
+    name  = "auth.username"
+    value = sensitive(var.username)
   }
 
   set {
-    name  = "postgresqlPostgresPassword"
-    value = sensitive(local.postgres_secret_json.password)
+    name  = "auth.password"
+    value = sensitive(var.password)
   }
 
   set {
-    name  = "existingSecret"
-    value = "postgres-secret"
-  }
-}
-
-resource "kubernetes_secret" "postgres-secret" {
-  metadata {
-    name = "postgres-secret"
+    name  = "auth.database"
+    value = sensitive(var.database)
   }
 
-  data = {
-    postgresql-password          = sensitive(local.postgres_secret_json.password)
-    postgresql-postgres-password = sensitive(local.postgres_secret_json.password)
+  set {
+    name  = "auth.postgresPassword"
+    value = sensitive(local.postgres_secret_json.admin_password)
+  }
+
+  set {
+    name  = "image.repository"
+    value = "vizzuality/landgriffon-database"
+  }
+
+  set {
+    name  = "image.tag"
+    value = "latest"
+  }
+
+  set {
+    name  = "primary.persistence.size"
+    value = "60Gi"
+  }
+
+  set {
+    name  = "postgresql.podSecurityContext.enabled"
+    value = false
+  }
+
+  set {
+    name  = "primary.affinity"
+    type  = "auto"
+    value = yamlencode({
+      nodeAffinity = {
+        requiredDuringSchedulingIgnoredDuringExecution = {
+          nodeSelectorTerms = [
+            {
+              matchExpressions = [{
+                key      = "type",
+                operator = "In",
+                values   = ["data"]
+              }]
+            }
+          ]
+        }
+      }
+    })
   }
 }
 

@@ -2,13 +2,6 @@ data "aws_eks_cluster_auth" "cluster" {
   name = var.cluster_name
 }
 
-provider "kubectl" {
-  host                   = var.cluster_endpoint
-  cluster_ca_certificate = base64decode(var.cluster_ca)
-  token                  = data.aws_eks_cluster_auth.cluster.token
-  load_config_file       = false
-}
-
 // https://docs.aws.amazon.com/eks/latest/userguide/cluster-autoscaler.html
 // AWS Cluster autoscaler
 // File has changes - see link above for details

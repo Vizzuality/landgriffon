@@ -4,6 +4,6 @@ variable "cluster_name" {
 }
 
 variable "namespace" {
+  description = "Namespace name"
   type        = string
-  description = "The k8s namespace to use"
 }

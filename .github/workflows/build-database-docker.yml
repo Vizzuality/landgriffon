@@ -29,4 +29,4 @@ jobs:
         with:
           context: database
           push: true
-          tags: vizzuality/landgriffon-database:latest
+          tags: vizzuality/landgriffon-database:${{ github.ref != 'refs/heads/main' && 'staging' || 'production' }}

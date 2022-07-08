@@ -90,23 +90,6 @@ module "data-node-group" {
   }
 }
 
-#module "data-import-group" {
-#  source          = "./modules/node_group"
-#  cluster         = module.eks.cluster
-#  cluster_name    = module.eks.cluster_name
-#  node_group_name = "data-import-node-group"
-#  instance_types  = "r5a.4xlarge"
-#  instance_disk_size = 750
-#  min_size        = 1
-#  max_size        = 2
-#  desired_size    = 1
-#  node_role_arn   = module.eks.node_role_arn
-#  subnet_ids      = [module.vpc.private_subnets[0].id]
-#  labels = {
-#    type : "data-import"
-#  }
-#}
-
 module "s3_bucket" {
   source = "./modules/s3_bucket"
   bucket = "landgriffon-raw-data"

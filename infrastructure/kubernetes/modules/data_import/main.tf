@@ -2,12 +2,6 @@ data "aws_eks_cluster_auth" "cluster" {
   name = var.cluster_name
 }
 
-provider "kubernetes" {
-  host                   = var.cluster_endpoint
-  cluster_ca_certificate = base64decode(var.cluster_ca)
-  token                  = data.aws_eks_cluster_auth.cluster.token
-}
-
 resource "kubernetes_job" "data_import" {
   count = var.load_data ? 1 : 0
 

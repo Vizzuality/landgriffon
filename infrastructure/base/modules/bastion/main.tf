@@ -14,7 +14,6 @@ resource "aws_security_group" "bastion_security_group" {
   )
 }
 
-
 resource "aws_security_group_rule" "ssh_ingress" {
   type              = "ingress"
   from_port         = 22

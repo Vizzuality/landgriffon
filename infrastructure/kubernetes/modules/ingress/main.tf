@@ -3,14 +3,8 @@ data "aws_eks_cluster_auth" "cluster" {
 }
 
 locals {
-  api_domain    = "api.${var.domain_prefix != null ? ("${var.domain_prefix}.") : ""}landgriffon.com"
-  client_domain = "client.${var.domain_prefix != null ? ("${var.domain_prefix}.") : ""}landgriffon.com"
-}
-
-provider "kubernetes" {
-  host                   = var.cluster_endpoint
-  cluster_ca_certificate = base64decode(var.cluster_ca)
-  token                  = data.aws_eks_cluster_auth.cluster.token
+  api_domain    = "api.${var.namespace != "production" ? ("${var.namespace}.") : ""}landgriffon.com"
+  client_domain = "client.${var.namespace != "production" ? ("${var.namespace}.") : ""}landgriffon.com"
 }
 
 data "aws_route53_zone" "landgriffon-com" {

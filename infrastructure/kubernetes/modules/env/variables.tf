@@ -9,15 +9,25 @@ variable "environment" {
   description = "An environment namespace for the infrastructure."
 }
 
-variable "domain" {
-  type        = string
-  description = "The base domain name"
-}
-
 variable "aws_region" {
   default     = "eu-west-3"
   type        = string
   description = "A valid AWS region to configure the underlying AWS SDK."
+}
+
+variable "cluster_name" {
+  type        = string
+  description = "The k8s cluster name"
+}
+
+variable "private_subnet_ids" {
+  type = list(string)
+  description = "IDs of the subnets used in the EKS cluster"
+}
+
+variable "image_tag" {
+  type        = string
+  description = "The tag to use when pulling docker images"
 }
 
 variable "tf_state_bucket" {
@@ -36,30 +46,14 @@ variable "gmaps_api_key" {
   description = "The Google Maps API key used for access to the geocoding API"
 }
 
-variable "environments" {
-  description = "A list of environments"
-}
-
-variable "load_fresh_data_staging" {
+variable "load_fresh_data" {
   type        = bool
   default     = false
-  description = "If a new data import should be triggered for the staging app. Clears the current database."
+  description = "If a new data import should be triggered. Clears the current database."
 }
 
-variable "load_fresh_data_prod" {
-  type        = bool
-  default     = false
-  description = "If a new data import should be triggered for the production app. Clears the current database."
-}
-
-variable "data_import_arguments_prod" {
+variable "data_import_arguments" {
   type        = list(string)
   default     = ["seed-h3-tables"]
-  description = "Arguments to pass to the initial data import process for the production cluster"
-}
-
-variable "data_import_arguments_staging" {
-  type        = list(string)
-  default     = ["seed-h3-tables"]
-  description = "Arguments to pass to the initial data import process for the staging cluster"
+  description = "Arguments to pass to the initial data import process"
 }

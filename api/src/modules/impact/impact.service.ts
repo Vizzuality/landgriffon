@@ -280,7 +280,8 @@ export class ImpactService {
       }
       case GROUP_BY_VALUES.BUSINESS_UNIT:
         return this.businessUnitsService.getBusinessUnitTreeWithSourcingLocations(
-          {},
+          treeOptions,
+          true,
         );
 
       case GROUP_BY_VALUES.LOCATION_TYPE:

@@ -85,8 +85,6 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
     ...pagination,
   };
 
-  if (!isComparisonEnabled) delete params.scenarioId;
-
   const query = useQuery(
     ['impact-data', layer, params],
     async () => apiRawService.get('/impact/table', { params }).then((response) => response.data),

@@ -33,8 +33,10 @@ const ScenariosComparison: FC = () => {
 
   // Reset comparison when options changes
   useEffect(() => {
-    dispatch(setScenarioToCompare(null));
-  }, [dispatch, options]);
+    if (selected?.value && scenarioToCompare !== selected?.value) {
+      dispatch(setScenarioToCompare(null));
+    }
+  }, [selected, dispatch, options, scenarioToCompare]);
 
   return (
     <div className="mt-2 space-y-1">

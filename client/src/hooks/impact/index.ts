@@ -6,6 +6,7 @@ import chroma from 'chroma-js';
 import { useAppSelector } from 'store/hooks';
 import { filtersForTabularAPI } from 'store/features/analysis/selector';
 import { analysisFilters } from 'store/features/analysis/filters';
+import { scenarios } from 'store/features/analysis/scenarios';
 
 import { apiRawService } from 'services/api';
 import { useIndicators } from 'hooks/indicators';
@@ -54,6 +55,7 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
   const store = useStore();
   const { data: indicators } = useIndicators();
   const { layer } = useAppSelector(analysisFilters);
+  const { isComparisonEnabled, scenarioToCompare } = useAppSelector(scenarios);
   const filters = filtersForTabularAPI(store.getState());
   const { indicatorId, ...restFilters } = filters;
 
@@ -72,21 +74,21 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
     return [];
   }, [indicators, indicatorId]);
 
+  const params = {
+    indicatorIds,
+    startYear: filters.startYear,
+    endYear: filters.endYear,
+    groupBy: filters.groupBy,
+    scenarioId: scenarioToCompare,
+    ...restFilters,
+    ...pagination,
+  };
+
+  if (!isComparisonEnabled) delete params.scenarioId;
+
   const query = useQuery(
-    ['impact-data', layer, indicatorIds, filters, pagination],
-    async () =>
-      apiRawService
-        .get('/impact/table', {
-          params: {
-            indicatorIds,
-            startYear: filters.startYear,
-            endYear: filters.endYear,
-            groupBy: filters.groupBy,
-            ...restFilters,
-            ...pagination,
-          },
-        })
-        .then((response) => response.data),
+    ['impact-data', layer, isComparisonEnabled, filters, pagination],
+    async () => apiRawService.get('/impact/table', { params }).then((response) => response.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
       enabled: layer === 'impact' && isEnable,

@@ -44,6 +44,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
     const queryBuilder: SelectQueryBuilder<SourcingRecord> =
       this.createQueryBuilder('sr')
         .select('year')
+        .where('sr.tonnage > 0')
         .distinct(true)
         .orderBy('year', 'ASC');
 

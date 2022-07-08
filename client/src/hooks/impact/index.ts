@@ -79,15 +79,13 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
     startYear: filters.startYear,
     endYear: filters.endYear,
     groupBy: filters.groupBy,
-    scenarioId: scenarioToCompare,
+    ...(isComparisonEnabled ? { scenarioId: scenarioToCompare } : {}),
     ...restFilters,
     ...pagination,
   };
 
-  if (!isComparisonEnabled) delete params.scenarioId;
-
   const query = useQuery(
-    ['impact-data', layer, isComparisonEnabled, filters, pagination],
+    ['impact-data', layer, params],
     async () => apiRawService.get('/impact/table', { params }).then((response) => response.data),
     {
       ...DEFAULT_QUERY_OPTIONS,

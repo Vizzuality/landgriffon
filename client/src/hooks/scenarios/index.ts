@@ -47,17 +47,11 @@ const DEFAULT_INFINITE_QUERY_OPTIONS = {
   refetchOnWindowFocus: false,
 };
 
-export function useScenarios(): ResponseData {
+export function useScenarios(params = {}, options = {}): ResponseData {
   const { sort, filter, searchTerm } = useAppSelector(scenarios);
 
   //this should come from API
   const userId = '94757458-343444';
-  const params = {
-    ...(!!sort && { sort }),
-    ...(filter === 'private' && { 'filter[userId]': userId }),
-    ...(filter === 'public' && { 'filter[status]': filter }),
-    ...(!!searchTerm && { 'filter[title]': searchTerm }),
-  };
 
   const response: ResponseData = useQuery<Scenario[]>(
     ['scenariosList', sort, filter, searchTerm],
@@ -66,12 +60,19 @@ export function useScenarios(): ResponseData {
         .request({
           method: 'GET',
           url: '/scenarios',
-          params,
+          params: {
+            ...(!!sort && { sort }),
+            ...(filter === 'private' && { 'filter[userId]': userId }),
+            ...(filter === 'public' && { 'filter[status]': filter }),
+            ...(!!searchTerm && { 'filter[title]': searchTerm }),
+            ...params,
+          },
         })
         .then(({ data: responseData }) => responseData.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
       placeholderData: [],
+      ...options,
     },
   );
   return useMemo((): ResponseData => response, [response]);

@@ -9,6 +9,10 @@ ENV USER $NAME
 ENV APP_HOME /opt/$NAME
 ENV NODE_PATH src
 
+RUN apk update \
+  && apk add --virtual build-dependencies build-base \
+  && apk add --no-cache python3 py3-pip \
+
 RUN addgroup -g $GID $USER &&  adduser -u $UID -D -G $USER $USER
 
 WORKDIR $APP_HOME

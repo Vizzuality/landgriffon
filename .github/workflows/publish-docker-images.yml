@@ -5,6 +5,7 @@ on:
     branches:
       - 'main'
       - 'staging'
+      - 'test'
     paths:
       - 'api/**'
       - 'client/**'
@@ -39,12 +40,19 @@ jobs:
           checkName: Client Tests
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
+      - name: Extract branch name
+        shell: bash
+        run: |
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+        id: extract_branch
+
       - name: Push to Docker Hub
         uses: docker/build-push-action@v2
         with:
           context: api
           push: true
-          tags: vizzuality/landgriffon-api:${{ github.ref != 'refs/heads/main' && 'staging' || 'production' }}
+          tags: vizzuality/landgriffon-api:${{ steps.extract_branch.outputs.branch }}
 
   push_client_to_registry:
     name: Push Client Docker image to Docker Hub
@@ -72,18 +80,22 @@ jobs:
           checkName: Client Tests
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
+      - name: Extract branch name
+        shell: bash
+        run: |
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+        id: extract_branch
+
       - name: Push to Docker Hub
         uses: docker/build-push-action@v2
         with:
           context: client
           push: true
-          tags: vizzuality/landgriffon-client:${{ github.ref != 'refs/heads/main' && 'staging' || 'production' }}
+          tags: vizzuality/landgriffon-client:${{ steps.extract_branch.outputs.branch }}
           build-args: |
-            "NEXT_PUBLIC_MAPBOX_API_TOKEN=${{ secrets.NEXT_PUBLIC_MAPBOX_API_TOKEN }}"
-            "NEXT_PUBLIC_API_URL=${{ github.ref != 'refs/heads/main' && secrets.NEXT_PUBLIC_API_URL_STAGING || secrets.NEXT_PUBLIC_API_URL_PRODUCTION }}"
-            "NEXTAUTH_URL=${{ github.ref != 'refs/heads/main' && secrets.NEXTAUTH_URL_STAGING || secrets.NEXTAUTH_URL_PRODUCTION }}"
-            "NEXTAUTH_SECRET=${{ github.ref != 'refs/heads/main' && secrets.NEXTAUTH_SECRET_STAGING || secrets.NEXTAUTH_SECRET_PRODUCTION }}"
-
+            "NEXTAUTH_URL=${{ secrets[format('NEXTAUTH_URL_{0}', steps.extract_branch.outputs.branch-upper )] }}"
+            "NEXTAUTH_SECRET=${{ secrets[format('NEXTAUTH_SECRET_{0}', steps.extract_branch.outputs.branch-upper )] }}"
 
   push_data_import_to_registry:
     name: Push Data Import Docker image to Docker Hub
@@ -111,9 +123,16 @@ jobs:
           checkName: Client Tests
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
+      - name: Extract branch name
+        shell: bash
+        run: |
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+        id: extract_branch
+
       - name: Push to Docker Hub
         uses: docker/build-push-action@v2
         with:
           context: data
           push: true
-          tags: vizzuality/landgriffon-data-import:${{ github.ref != 'refs/heads/main' && 'staging' || 'production' }}
+          tags: vizzuality/landgriffon-data-import:${{ steps.extract_branch.outputs.branch }}

@@ -5,6 +5,7 @@ on:
     branches:
       - 'main'
       - 'staging'
+      - 'test'
     paths:
       - 'api/**'
       - 'client/**'
@@ -87,3 +88,9 @@ jobs:
         run: |
           kubectl rollout restart deployment api -n staging
           kubectl rollout restart deployment client -n staging
+
+      - name: Redeploy test pods
+        if: ${{ github.ref == 'refs/heads/test' }}
+        run: |
+          kubectl rollout restart deployment api -n test
+          kubectl rollout restart deployment client -n test

@@ -1,14 +1,17 @@
-data "aws_eks_cluster" "cluster" {
-  name = var.cluster_name
+data "aws_eks_node_groups" "node_groups" {
+  cluster_name = var.cluster_name
+}
+
+data "aws_eks_node_group" "node_group" {
+  cluster_name = var.cluster_name
+
+  node_group_name = tolist(data.aws_eks_node_groups.node_groups.names)[0]
 }
 
 resource "random_id" "eks-node-group" {
   keepers = {
-    # Generate a new id each time we make changes to the instance type
-    # In case TF gets stuck during apply, we can taint this resource to force TF
-    # to create a new random ID
-    # `terraform taint module.core-node-group.random_id.eks_node_group`
     instance_types = var.instance_types
+    namespace      = var.namespace
   }
   byte_length = 8
 }
@@ -16,7 +19,7 @@ resource "random_id" "eks-node-group" {
 resource "aws_eks_node_group" "eks-node-group" {
   cluster_name    = var.cluster_name
   node_group_name = "${var.node_group_name}-${random_id.eks-node-group.hex}"
-  node_role_arn   = data.aws_eks_cluster.cluster.role_arn
+  node_role_arn   = data.aws_eks_node_group.node_group.node_role_arn
   subnet_ids      = var.subnet_ids
 
   scaling_config {

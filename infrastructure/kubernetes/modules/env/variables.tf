@@ -54,6 +54,6 @@ variable "load_fresh_data" {
 
 variable "data_import_arguments" {
   type        = list(string)
-  default     = ["seed-h3-tables"]
+  default     = ["seed-data"]
   description = "Arguments to pass to the initial data import process"
 }

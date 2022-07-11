@@ -96,6 +96,8 @@ jobs:
           build-args: |
             "NEXTAUTH_URL=${{ secrets[format('NEXTAUTH_URL_{0}', steps.extract_branch.outputs.branch-upper )] }}"
             "NEXTAUTH_SECRET=${{ secrets[format('NEXTAUTH_SECRET_{0}', steps.extract_branch.outputs.branch-upper )] }}"
+            "NEXT_PUBLIC_MAPBOX_API_TOKEN=${{ secrets.NEXT_PUBLIC_MAPBOX_API_TOKEN }}"
+            "NEXT_PUBLIC_API_URL=${{ secrets[format('NEXT_PUBLIC_API_URL_{0}', steps.extract_branch.outputs.branch-upper )] }}"
 
   push_data_import_to_registry:
     name: Push Data Import Docker image to Docker Hub

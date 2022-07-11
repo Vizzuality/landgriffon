@@ -69,6 +69,6 @@ Impact years endpoint - returns years for which sourcing record volumes are not 
 ### Fixed
 
 Fixed
-Update entity methods that build trees - add option to not searh for filters descendants if the treeOptions properties already have them
+Update entity methods that build trees - filters descendants search moved to calling functions
 
 

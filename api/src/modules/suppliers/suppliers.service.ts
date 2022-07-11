@@ -110,8 +110,28 @@ export class SuppliersService extends AppBaseService<
   async getTrees(
     supplierTreeOptions: GetSupplierTreeWithOptions,
   ): Promise<Supplier[]> {
-    if (supplierTreeOptions.withSourcingLocations)
+    if (supplierTreeOptions.withSourcingLocations) {
+      if (supplierTreeOptions.originIds) {
+        supplierTreeOptions.originIds =
+          await this.adminRegionService.getAdminRegionDescendants(
+            supplierTreeOptions.originIds,
+          );
+      }
+      if (supplierTreeOptions.businessUnitIds) {
+        supplierTreeOptions.businessUnitIds =
+          await this.businessUnitsService.getBusinessUnitsDescendants(
+            supplierTreeOptions.businessUnitIds,
+          );
+      }
+      if (supplierTreeOptions.materialIds) {
+        supplierTreeOptions.materialIds =
+          await this.materialsService.getMaterialsDescendants(
+            supplierTreeOptions.materialIds,
+          );
+      }
       return this.getSuppliersWithSourcingLocations(supplierTreeOptions);
+    }
+
     return this.findTreesWithOptions(supplierTreeOptions.depth);
   }
 
@@ -143,29 +163,7 @@ export class SuppliersService extends AppBaseService<
 
   async getSuppliersWithSourcingLocations(
     supplierTreeOptions: GetSupplierTreeWithOptions,
-    descendantsFound?: boolean,
   ): Promise<any> {
-    if (!descendantsFound) {
-      if (supplierTreeOptions.originIds) {
-        supplierTreeOptions.originIds =
-          await this.adminRegionService.getAdminRegionDescendants(
-            supplierTreeOptions.originIds,
-          );
-      }
-      if (supplierTreeOptions.businessUnitIds) {
-        supplierTreeOptions.businessUnitIds =
-          await this.businessUnitsService.getBusinessUnitsDescendants(
-            supplierTreeOptions.businessUnitIds,
-          );
-      }
-      if (supplierTreeOptions.materialIds) {
-        supplierTreeOptions.materialIds =
-          await this.materialsService.getMaterialsDescendants(
-            supplierTreeOptions.materialIds,
-          );
-      }
-    }
-
     const supplierLineage: Supplier[] =
       await this.supplierRepository.getSourcingDataSuppliersWithAncestry(
         supplierTreeOptions,

@@ -263,25 +263,21 @@ export class ImpactService {
       case GROUP_BY_VALUES.MATERIAL: {
         return this.materialsService.getMaterialsTreeWithSourcingLocations(
           treeOptions,
-          true,
         );
       }
       case GROUP_BY_VALUES.REGION: {
         return this.adminRegionsService.getAdminRegionTreeWithSourcingLocations(
           treeOptions,
-          true,
         );
       }
       case GROUP_BY_VALUES.SUPPLIER: {
         return this.suppliersService.getSuppliersWithSourcingLocations(
           treeOptions,
-          true,
         );
       }
       case GROUP_BY_VALUES.BUSINESS_UNIT:
         return this.businessUnitsService.getBusinessUnitTreeWithSourcingLocations(
           treeOptions,
-          true,
         );
 
       case GROUP_BY_VALUES.LOCATION_TYPE:

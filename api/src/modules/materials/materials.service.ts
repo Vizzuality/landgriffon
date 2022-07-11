@@ -170,9 +170,18 @@ export class MaterialsService extends AppBaseService<
 
   async getMaterialsTreeWithSourcingLocations(
     materialTreeOptions: GetMaterialTreeWithOptionsDto,
-    descendantsFound?: boolean,
   ): Promise<Material[]> {
-    if (!descendantsFound) {
+    const materialLineage: Material[] =
+      await this.materialRepository.getSourcingDataMaterialsWithAncestry(
+        materialTreeOptions,
+      );
+    return this.buildTree<Material>(materialLineage, null);
+  }
+
+  async getTrees(
+    materialTreeOptions: GetMaterialTreeWithOptionsDto,
+  ): Promise<Material[]> {
+    if (materialTreeOptions.withSourcingLocations) {
       if (materialTreeOptions.originIds) {
         materialTreeOptions.originIds =
           await this.adminRegionService.getAdminRegionDescendants(
@@ -191,20 +200,9 @@ export class MaterialsService extends AppBaseService<
             materialTreeOptions.supplierIds,
           );
       }
+      return this.getMaterialsTreeWithSourcingLocations(materialTreeOptions);
     }
 
-    const materialLineage: Material[] =
-      await this.materialRepository.getSourcingDataMaterialsWithAncestry(
-        materialTreeOptions,
-      );
-    return this.buildTree<Material>(materialLineage, null);
-  }
-
-  async getTrees(
-    materialTreeOptions: GetMaterialTreeWithOptionsDto,
-  ): Promise<Material[]> {
-    if (materialTreeOptions.withSourcingLocations)
-      return this.getMaterialsTreeWithSourcingLocations(materialTreeOptions);
     return this.findTreesWithOptions({ depth: materialTreeOptions.depth });
   }
 

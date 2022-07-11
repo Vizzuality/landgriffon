@@ -160,9 +160,18 @@ export class AdminRegionsService extends AppBaseService<
 
   async getAdminRegionTreeWithSourcingLocations(
     adminRegionTreeOptions: GetAdminRegionTreeWithOptionsDto,
-    descendantsFound?: boolean,
   ): Promise<AdminRegion[]> {
-    if (!descendantsFound) {
+    const adminRegionLineage: AdminRegion[] =
+      await this.adminRegionRepository.getSourcingDataAdminRegionsWithAncestry(
+        adminRegionTreeOptions,
+      );
+    return this.buildTree<AdminRegion>(adminRegionLineage, null);
+  }
+
+  async getTrees(
+    adminRegionTreeOptions: GetAdminRegionTreeWithOptionsDto,
+  ): Promise<AdminRegion[]> {
+    if (adminRegionTreeOptions.withSourcingLocations) {
       if (adminRegionTreeOptions.businessUnitIds) {
         adminRegionTreeOptions.businessUnitIds =
           await this.businessUnitService.getBusinessUnitsDescendants(
@@ -181,22 +190,11 @@ export class AdminRegionsService extends AppBaseService<
             adminRegionTreeOptions.materialIds,
           );
       }
-    }
-
-    const adminRegionLineage: AdminRegion[] =
-      await this.adminRegionRepository.getSourcingDataAdminRegionsWithAncestry(
-        adminRegionTreeOptions,
-      );
-    return this.buildTree<AdminRegion>(adminRegionLineage, null);
-  }
-
-  async getTrees(
-    adminRegionTreeOptions: GetAdminRegionTreeWithOptionsDto,
-  ): Promise<AdminRegion[]> {
-    if (adminRegionTreeOptions.withSourcingLocations)
       return this.getAdminRegionTreeWithSourcingLocations(
         adminRegionTreeOptions,
       );
+    }
+
     return this.findTreesWithOptions({ depth: adminRegionTreeOptions.depth });
   }
 

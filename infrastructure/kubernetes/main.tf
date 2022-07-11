@@ -34,7 +34,7 @@ module "environment" {
     production = {
       load_fresh_data       = var.load_fresh_data_prod
       data_import_arguments = var.data_import_arguments_prod
-      image_tag             = "production"
+      image_tag             = "main"
     }
   })
   source = "./modules/env"
@@ -48,6 +48,6 @@ module "environment" {
   gmaps_api_key         = var.gmaps_api_key
   load_fresh_data       = lookup(each.value, "load_fresh_data", false)
   data_import_arguments = lookup(each.value, "data_import_arguments", ["seed-data"])
-  image_tag             = lookup(each.value, "image_tag", "production")
+  image_tag             = lookup(each.value, "image_tag", "main")
   private_subnet_ids       = data.terraform_remote_state.core.outputs.private_subnet_ids
 }

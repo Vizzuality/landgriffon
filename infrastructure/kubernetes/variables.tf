@@ -54,12 +54,12 @@ variable "load_fresh_data_prod" {
 
 variable "data_import_arguments_prod" {
   type        = list(string)
-  default     = ["seed-h3-tables"]
+  default     = ["seed-data"]
   description = "Arguments to pass to the initial data import process for the production cluster"
 }
 
 variable "data_import_arguments_staging" {
   type        = list(string)
-  default     = ["seed-h3-tables"]
+  default     = ["seed-data"]
   description = "Arguments to pass to the initial data import process for the staging cluster"
 }

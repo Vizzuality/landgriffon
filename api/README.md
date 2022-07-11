@@ -15,7 +15,6 @@
 API documentation is done using [OpenAPI](https://swagger.io/docs/specification/about/) (formerly known as Swagger) and
 is available through the `/swagger` endpoint.
 
-
 ## Installation
 
 ### Database setup

@@ -65,7 +65,8 @@ module "k8s_data_import" {
 
   depends_on = [
     module.k8s_namespace,
-    module.k8s_database
+    module.k8s_database,
+    module.data-import-group
   ]
 }
 
@@ -105,9 +106,10 @@ module "data-import-group" {
   min_size           = 1
   max_size           = 2
   desired_size       = 1
+  namespace          = var.environment
   subnet_ids         = [var.private_subnet_ids[0]]
   labels             = {
-    type : "data-import"
+    type : "data-import-${var.environment}"
   }
 }
 

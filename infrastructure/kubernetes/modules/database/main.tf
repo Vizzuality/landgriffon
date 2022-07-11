@@ -28,7 +28,7 @@ resource "helm_release" "postgres" {
   namespace  = var.namespace
 
   values = [
-    file("${path.module}/values-11.6.15.yaml")
+    file("${path.module}/values.yaml")
   ]
 
   set {
@@ -95,5 +95,6 @@ resource "helm_release" "postgres" {
 data "kubernetes_service" "postgresql" {
   metadata {
     name = "postgres-postgresql"
+    namespace = var.namespace
   }
 }

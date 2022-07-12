@@ -5,5 +5,5 @@ by Landgriffon client application.
 
 * `NEXT_PUBLIC_MAPBOX_API_TOKEN`:
 * `NEXT_PUBLIC_API_URL`: URL including protocol of the client application.
-* `NEXTAUTH_URL`:
+* `NEXTAUTH_URL`: URL including protocol of the api application.
 * `NEXTAUTH_SECRET`:

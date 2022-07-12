@@ -11,7 +11,7 @@ type CustomCredentials = Credential & {
 
 const logger = pino();
 logger.info(`NEXTAUTH_SECRET: ${process.env.NEXTAUTH_SECRET}`);
-logger.info(`NEXTAUTH_URL ${process.env.NEXTAUTH_URL}`);
+logger.info(`NEXTAUTH_URL: ${process.env.NEXTAUTH_URL}`);
 
 const options: NextAuthOptions = {
   /**
@@ -94,7 +94,7 @@ const options: NextAuthOptions = {
 
   events: {
     signOut(message) {
-      logger.info('sign out message: ', message);
+      logger.info(`Signing out: ${message}`);
       // After sign-out expire token in the API
       // if (session) {
       //   await AUTHENTICATION.request({

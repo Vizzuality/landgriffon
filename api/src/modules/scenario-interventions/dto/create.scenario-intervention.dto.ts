@@ -10,6 +10,7 @@ import {
   IsUUID,
   MaxLength,
   MinLength,
+  Validate,
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
@@ -21,6 +22,9 @@ import {
 import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
 import { Transform, Type } from 'class-transformer';
 import { transformSingleLocationType } from 'utils/transform-location-type.util';
+import { InterventionLocationAddressInputValidator } from 'modules/scenario-interventions/dto/custom-validators/address-input.custom.validator';
+import { InterventionLocationLatitudeInputValidator } from 'modules/scenario-interventions/dto/custom-validators/latitude-input.custom.validator';
+import { InterventionLocationLongitudeInputValidator } from 'modules/scenario-interventions/dto/custom-validators/longitude-input.custom.validator';
 
 export class CreateScenarioInterventionDto {
   @IsString()
@@ -204,19 +208,26 @@ export class CreateScenarioInterventionDto {
   @ApiPropertyOptional({
     description: `
     New Supplier Location address, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER}
-    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT}.
+    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT} in case no coordintaes were provided.
+    Address OR coordinates must be provided.
 
     Must be NULL for New Supplier Locations of types: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}
     or if coordinates are provided for the relevant location types`,
     type: String,
     example: 'Main Street, 1',
   })
+  @ValidateIf(
+    (dto: CreateScenarioInterventionDto) =>
+      dto.type !== SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+  )
+  @Validate(InterventionLocationAddressInputValidator)
   newLocationAddressInput?: string;
 
   @ApiPropertyOptional({
     description: `
     New Supplier Location latitude, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER}
-    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT}.
+    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT} in case no address was provided.
+    Address OR coordinates must be provided.
 
     Must be NULL for New Supplier Locations of types: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}
     or if address is provided for the relevant location types.`,
@@ -225,12 +236,18 @@ export class CreateScenarioInterventionDto {
     maximum: 90,
     example: 30.123,
   })
+  @ValidateIf(
+    (dto: CreateScenarioInterventionDto) =>
+      dto.type !== SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+  )
+  @Validate(InterventionLocationLatitudeInputValidator)
   newLocationLatitude?: number;
 
   @ApiPropertyOptional({
     description: `
     New Supplier Location longitude, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER}
-    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT}.
+    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT} in case no address was provided.
+    Address OR coordinates must be provided.
 
     Must be NULL for New Supplier Locations of type: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}
     or if address is provided for the relevant location types.`,
@@ -239,6 +256,11 @@ export class CreateScenarioInterventionDto {
     maximum: 180,
     example: 100.123,
   })
+  @ValidateIf(
+    (dto: CreateScenarioInterventionDto) =>
+      dto.type !== SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+  )
+  @Validate(InterventionLocationLongitudeInputValidator)
   newLocationLongitude?: number;
 
   @ValidateIf(

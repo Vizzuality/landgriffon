@@ -1,15 +1,13 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { authService } from 'services/authentication';
+import logger from 'utils/logger';
 import type { NextAuthOptions } from 'next-auth';
-import pino from 'pino';
 
 type CustomCredentials = Credential & {
   password: string;
   username: string;
 };
-
-const logger = pino();
 
 const options: NextAuthOptions = {
   /**
@@ -92,7 +90,7 @@ const options: NextAuthOptions = {
 
   events: {
     signOut(message) {
-      logger.info(`Signing out: ${message}`);
+      logger.info(`Signing out: ${JSON.stringify(message)}`);
       // After sign-out expire token in the API
       // if (session) {
       //   await AUTHENTICATION.request({

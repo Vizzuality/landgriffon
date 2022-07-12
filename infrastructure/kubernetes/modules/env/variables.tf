@@ -15,9 +15,19 @@ variable "aws_region" {
   description = "A valid AWS region to configure the underlying AWS SDK."
 }
 
+variable "repo_name" {
+  type        = string
+  description = "Name of the github repo where the project is hosted"
+}
+
 variable "cluster_name" {
   type        = string
   description = "The k8s cluster name"
+}
+
+variable "domain" {
+  type        = string
+  description = "Domain where the app is publicly available"
 }
 
 variable "private_subnet_ids" {

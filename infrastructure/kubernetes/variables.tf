@@ -36,6 +36,16 @@ variable "gmaps_api_key" {
   description = "The Google Maps API key used for access to the geocoding API"
 }
 
+variable "repo_name" {
+  type        = string
+  description = "Name of the github repo where the project is hosted"
+}
+
+variable "mapbox_api_token" {
+  type        = string
+  description = "Token to access the Mapbox API"
+}
+
 variable "environments" {
   description = "A list of environments"
 }

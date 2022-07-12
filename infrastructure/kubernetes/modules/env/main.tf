@@ -90,6 +90,7 @@ module "k8s_ingress" {
   allowed_account_id = var.allowed_account_id
   aws_region         = var.aws_region
   namespace          = var.environment
+  domain             = var.domain
 
   depends_on = [
     module.k8s_namespace
@@ -111,6 +112,13 @@ module "data-import-group" {
   labels             = {
     type : "data-import-${var.environment}"
   }
+}
+
+module "github_actions_frontend_secrets" {
+  source    = "../github_secrets"
+  repo_name = var.repo_name
+  branch    = var.image_tag
+  domain    = var.domain
 }
 
 #module "data_import" {

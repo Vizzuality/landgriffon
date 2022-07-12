@@ -17,3 +17,8 @@ variable "aws_region" {
   type        = string
   description = "A valid AWS region to configure the underlying AWS SDK."
 }
+
+variable "domain" {
+  type        = string
+  description = "Domain where the app is publicly available"
+}

@@ -3,8 +3,8 @@ data "aws_eks_cluster_auth" "cluster" {
 }
 
 locals {
-  api_domain    = "api.${var.namespace != "production" ? ("${var.namespace}.") : ""}landgriffon.com"
-  client_domain = "client.${var.namespace != "production" ? ("${var.namespace}.") : ""}landgriffon.com"
+  api_domain    = "api.${var.namespace != "production" ? ("${var.namespace}.") : ""}${var.domain}"
+  client_domain = "client.${var.namespace != "production" ? ("${var.namespace}.") : ""}${var.domain}"
 }
 
 data "aws_route53_zone" "landgriffon-com" {

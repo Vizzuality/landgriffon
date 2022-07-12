@@ -6,10 +6,10 @@ load_fresh_data_staging       = false
 load_fresh_data_prod          = false
 data_import_arguments_prod    = ["seed-data"]
 data_import_arguments_staging = ["seed-data"]
-
-environments = {
+repo_name                     = "landgriffion"
+environments                  = {
   test : {
-    image_tag             = "staging"
-    load_fresh_data       = false
+    image_tag       = "staging"
+    load_fresh_data = false
   },
 }

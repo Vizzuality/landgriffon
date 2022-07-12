@@ -24,6 +24,12 @@ module "k8s_infrastructure" {
   deploy_metrics_server = false
 }
 
+resource "github_actions_secret" "mapbox_api_token_secret" {
+  repository       = var.repo_name
+  secret_name      = "NEXT_PUBLIC_MAPBOX_API_TOKEN"
+  plaintext_value  = var.mapbox_api_token
+}
+
 module "environment" {
   for_each = merge(var.environments, {
     staging = {
@@ -49,5 +55,7 @@ module "environment" {
   load_fresh_data       = lookup(each.value, "load_fresh_data", false)
   data_import_arguments = lookup(each.value, "data_import_arguments", ["seed-data"])
   image_tag             = lookup(each.value, "image_tag", "main")
-  private_subnet_ids       = data.terraform_remote_state.core.outputs.private_subnet_ids
+  private_subnet_ids    = data.terraform_remote_state.core.outputs.private_subnet_ids
+  repo_name             = var.repo_name
+  domain                = var.domain
 }

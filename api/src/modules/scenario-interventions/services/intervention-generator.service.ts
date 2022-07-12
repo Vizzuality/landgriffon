@@ -27,7 +27,7 @@ export class InterventionGeneratorService {
   async addDescendantsEntitiesForFiltering(
     dto: CreateScenarioInterventionDto,
   ): Promise<CreateScenarioInterventionDto> {
-    let dtoWithDescendants: CreateScenarioInterventionDto = { ...dto };
+    const dtoWithDescendants: CreateScenarioInterventionDto = { ...dto };
 
     dtoWithDescendants.materialIds =
       await this.materialService.getMaterialsDescendants(dto.materialIds);

@@ -55,7 +55,7 @@ const AppScreens: React.FC = () => {
                 initial: {
                   opacity: 0.8,
                   y: 0,
-                  boxShadow: '0 0 0px 0px rgba(0, 0, 0, 0.5)',
+                  boxShadow: '0 0 0px 0px rgba(0, 0, 0, 0.2)',
                   transition: {
                     duration: 0.5,
                     delay: 0.1,
@@ -64,7 +64,7 @@ const AppScreens: React.FC = () => {
                 animate: {
                   opacity: 1,
                   y: -20,
-                  boxShadow: '0 0 100px 0px rgba(0, 0, 0, 0.5)',
+                  boxShadow: '0 0 80px 0px rgba(0, 0, 0, 0.2)',
                   transition: {
                     duration: 0.5,
                     delay: 0.1,

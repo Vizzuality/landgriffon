@@ -5,6 +5,7 @@ import { OverlayProvider } from '@react-aria/overlays';
 import { SSRProvider } from '@react-aria/ssr';
 import { Hydrate } from 'react-query/hydration';
 import store from 'store';
+import { MediaContextProvider } from 'components/media-query';
 
 import 'styles/globals.css';
 import 'styles/fonts.css';
@@ -17,9 +18,11 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => (
     <QueryClientProvider client={queryClient}>
       <Hydrate state={pageProps.dehydratedState}>
         <OverlayProvider>
-          <SSRProvider>
-            <Component {...pageProps} />
-          </SSRProvider>
+          <MediaContextProvider>
+            <SSRProvider>
+              <Component {...pageProps} />
+            </SSRProvider>
+          </MediaContextProvider>
         </OverlayProvider>
       </Hydrate>
     </QueryClientProvider>

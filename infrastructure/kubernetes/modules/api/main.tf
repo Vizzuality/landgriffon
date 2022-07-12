@@ -197,9 +197,9 @@ resource "kubernetes_deployment" "api_deployment" {
             }
 
             success_threshold     = 1
-            timeout_seconds       = 5
+            timeout_seconds       = 25
             initial_delay_seconds = 15
-            period_seconds        = 15
+            period_seconds        = 25
           }
 
           readiness_probe {
@@ -210,9 +210,9 @@ resource "kubernetes_deployment" "api_deployment" {
             }
 
             success_threshold     = 1
-            timeout_seconds       = 5
+            timeout_seconds       = 25
             initial_delay_seconds = 30
-            period_seconds        = 15
+            period_seconds        = 25
           }
         }
       }

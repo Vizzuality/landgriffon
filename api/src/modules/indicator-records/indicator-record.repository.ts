@@ -12,10 +12,13 @@ import {
 } from '@nestjs/common';
 import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
-import { H3Data } from '../h3-data/h3-data.entity';
-import { Indicator, INDICATOR_TYPES } from '../indicators/indicator.entity';
-import { MATERIAL_TO_H3_TYPE } from '../materials/material-to-h3.entity';
-import { IndicatorRecordValueSQLStrategies } from './strategies/indicator-record-value.strategies';
+import { H3Data } from 'modules/h3-data/h3-data.entity';
+import {
+  Indicator,
+  INDICATOR_TYPES,
+} from 'modules/indicators/indicator.entity';
+import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
+import { IndicatorRecordValueSQLStrategies } from 'modules/indicator-records/strategies/indicator-record-value.strategies';
 import { AppBaseRepository } from 'utils/app-base.repository';
 
 @EntityRepository(IndicatorRecord)

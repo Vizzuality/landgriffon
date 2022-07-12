@@ -371,26 +371,15 @@ export class ScenarioInterventionsService extends AppBaseService<
         );
 
       if (identicalSourcingLocationDataIndex >= 0) {
-        const joinedRecords: any = newSourcingLocationData[
-          identicalSourcingLocationDataIndex
-        ].sourcingRecords.concat(location.sourcingRecords);
-
-        const mergedRecords = joinedRecords.reduce(
-          (acc: any, sourcingRecords: { year: number; tonnage: number }) => {
-            acc[sourcingRecords.year] = {
-              year: sourcingRecords.year,
-              tonnage:
-                (acc[sourcingRecords.year]
-                  ? Number(acc[sourcingRecords.year].tonnage)
-                  : 0) + Number(sourcingRecords.tonnage),
-            };
-            return acc;
-          },
-          {},
-        );
+        const updatedSourcingRecords: SourcingRecord[] =
+          this.updateNewSupplierLocationTonnage(
+            newSourcingLocationData,
+            identicalSourcingLocationDataIndex,
+            location.sourcingRecords,
+          );
         newSourcingLocationData[
           identicalSourcingLocationDataIndex
-        ].sourcingRecords = Object.values(mergedRecords);
+        ].sourcingRecords = updatedSourcingRecords;
       } else {
         const newInterventionLocation: SourcingData = {
           materialId: location.materialId,
@@ -541,5 +530,33 @@ export class ScenarioInterventionsService extends AppBaseService<
     newScenarioIntervention.updatedById = dto.updatedById;
     await this.repository.save(newScenarioIntervention);
     return newScenarioIntervention;
+  }
+
+  updateNewSupplierLocationTonnage(
+    existingSourcingLocations: SourcingData[],
+    index: number,
+    newSourcingRecords: SourcingRecord[],
+  ): SourcingRecord[] {
+    const joinedRecords: { year: number; tonnage: number }[] =
+      existingSourcingLocations[index].sourcingRecords.concat(
+        newSourcingRecords,
+      );
+
+    const mergedRecords: { year: number; tonnage: number }[] =
+      joinedRecords.reduce(
+        (acc: any, sourcingRecords: { year: number; tonnage: number }) => {
+          acc[sourcingRecords.year] = {
+            year: sourcingRecords.year,
+            tonnage:
+              (acc[sourcingRecords.year]
+                ? Number(acc[sourcingRecords.year].tonnage)
+                : 0) + Number(sourcingRecords.tonnage),
+          };
+          return acc;
+        },
+        {},
+      );
+
+    return Object.values(mergedRecords);
   }
 }

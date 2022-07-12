@@ -43,6 +43,7 @@ import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import {
   createInterventionPreconditions,
+  createInterventionPreconditionsForSupplierChange,
   createInterventionPreconditionsWithMultipleYearRecords,
   ScenarioInterventionPreconditions,
 } from '../../utils/scenario-interventions-preconditions';
@@ -54,6 +55,7 @@ import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
 import { ScenariosModule } from 'modules/scenarios/scenarios.module';
+import { In } from 'typeorm';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -434,7 +436,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
     test('Create a scenario intervention of type Change of supplier location with start year for which there are multiple years, should be successful', async () => {
       const preconditions: ScenarioInterventionPreconditions =
-        await createInterventionPreconditionsWithMultipleYearRecords();
+        await createInterventionPreconditionsForSupplierChange();
 
       const geoRegion: GeoRegion = await createGeoRegion();
       await createAdminRegion({
@@ -451,7 +453,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           percentage: 50,
           scenarioId: preconditions.scenario.id,
           materialIds: [preconditions.material1.id],
-          supplierIds: [preconditions.supplier1.id],
           businessUnitIds: [preconditions.businessUnit1.id],
           adminRegionIds: [preconditions.adminRegion1.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
@@ -491,8 +492,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const allSourcingRecords: [SourcingRecord[], number] =
         await sourcingRecordRepository.findAndCount();
 
-      expect(allSourcingLocations[1]).toEqual(4);
-      expect(allSourcingRecords[1]).toEqual(8);
+      expect(allSourcingLocations[1]).toEqual(6);
+      expect(allSourcingRecords[1]).toEqual(12);
 
       const canceledSourcingLocations: SourcingLocation[] =
         await sourcingLocationRepository.find({
@@ -501,7 +502,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           },
         });
 
-      expect(canceledSourcingLocations.length).toBe(1);
+      expect(canceledSourcingLocations.length).toBe(2);
       expect(canceledSourcingLocations[0].scenarioInterventionId).toEqual(
         response.body.data.id,
       );
@@ -515,13 +516,14 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const canceledSourcingRecords: SourcingRecord[] =
         await sourcingRecordRepository.find({
           where: {
-            sourcingLocationId: canceledSourcingLocations[0].id,
+            sourcingLocationId: In([
+              canceledSourcingLocations[0].id,
+              canceledSourcingLocations[1].id,
+            ]),
           },
         });
 
-      expect(canceledSourcingRecords.length).toBe(2);
-      expect(canceledSourcingRecords[0].tonnage).toEqual('500');
-      expect(canceledSourcingRecords[1].tonnage).toEqual('550');
+      expect(canceledSourcingRecords.length).toBe(4);
 
       const newSourcingLocations: SourcingLocation[] =
         await sourcingLocationRepository.find({

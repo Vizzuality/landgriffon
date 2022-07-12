@@ -1,12 +1,4 @@
-import {
-  Fragment,
-  useCallback,
-  useState,
-  useMemo,
-  useEffect,
-  useLayoutEffect,
-  ChangeEventHandler,
-} from 'react';
+import { Fragment, useCallback, useState, useMemo, useEffect, ChangeEventHandler } from 'react';
 import classNames from 'classnames';
 import {
   flip,
@@ -17,6 +9,7 @@ import {
   useFloating,
   useInteractions,
   useRole,
+  autoUpdate,
 } from '@floating-ui/react-dom-interactions';
 import { ChevronDownIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
 import Tree, { TreeNode, TreeProps } from 'rc-tree';
@@ -83,12 +76,12 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
     reference,
     floating,
     strategy,
-    update,
     refs: { reference: referenceElement },
     context,
   } = useFloating({
     open: isOpen,
     onOpenChange: setIsOpen,
+    whileElementsMounted: autoUpdate,
     placement: 'bottom-start',
     strategy: 'fixed',
     middleware: [offset({ mainAxis: 4 }), shift({ padding: 4 }), flip()],
@@ -106,11 +99,6 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   const [expandedKeys, setExpandedKeys] = useState<TreeProps['expandedKeys']>([]);
   const [checkedKeys, setCheckedKeys] = useState<TreeProps['checkedKeys']>([]);
   const [filteredKeys, setFilteredKeys] = useState([]);
-
-  useLayoutEffect(() => {
-    // Update tooltip position when selection changes
-    update();
-  }, [checkedKeys, update, multiple, fitContent, filteredKeys]);
 
   const renderTreeNodes = useCallback(
     (data, counter = 0) =>

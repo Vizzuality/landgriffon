@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import ReactSelect, {
   Theme,
@@ -19,7 +19,7 @@ import useFuse from 'hooks/fuse';
 import Loading from 'components/loading';
 
 import type { SelectOption, SelectProps } from './types';
-import { flip, offset, shift, useFloating } from '@floating-ui/react-dom';
+import { flip, offset, shift, useFloating, autoUpdate } from '@floating-ui/react-dom';
 
 /**
  * Overriding default React Select theme
@@ -59,7 +59,7 @@ const customStyles: (theme: SelectProps['theme'], error?: boolean) => StylesConf
         tw`border border-l-0 border-r-0 border-t-0 border-b-2 border-b-green-700 shadow-none rounded-none min-w-[30px] p-0 min-h-0`),
       ...(theme === 'default' && tw`w-full rounded-md`),
       ...tw`px-4 gap-x-0.5`,
-      ...(theme === 'default-bordernone' && tw`border-0 px-1`),
+      ...(theme === 'default-bordernone' && tw`px-1 border-0`),
     }),
     singleValue: (provided) => ({
       ...provided,
@@ -127,16 +127,12 @@ const Select: React.FC<SelectProps> = ({
     y,
     strategy,
     refs: { reference: referenceElement },
-    update,
   } = useFloating({
+    whileElementsMounted: autoUpdate,
     placement: 'bottom-start',
     strategy: 'fixed',
     middleware: [offset({ mainAxis: 4 }), flip(), shift()],
   });
-
-  useLayoutEffect(() => {
-    update();
-  }, [theme, update]);
 
   const Menu: React.FC<MenuProps> = useCallback(
     ({ children, ...rest }) => (
@@ -222,7 +218,7 @@ const Select: React.FC<SelectProps> = ({
             </div>
             {extraInfo && (
               <div>
-                <span className="text-xs text-gray-600 italic">{extraInfo}</span>
+                <span className="text-xs italic text-gray-600">{extraInfo}</span>
               </div>
             )}
           </div>

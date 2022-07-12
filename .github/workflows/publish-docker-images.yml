@@ -20,11 +20,22 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build API Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: "{{defaultContext}}:api"
+          load: true
+          tags: vizzuality/landgriffon-api:${{ steps.extract_branch.outputs.branch }}
 
       - name: Wait for API tests to run
         uses: fountainhead/action-wait-for-check@v1.0.0
@@ -50,7 +61,7 @@ jobs:
       - name: Push to Docker Hub
         uses: docker/build-push-action@v2
         with:
-          context: api
+          context: "{{defaultContext}}:api"
           push: true
           tags: vizzuality/landgriffon-api:${{ steps.extract_branch.outputs.branch }}
 
@@ -60,11 +71,27 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Client Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: "{{defaultContext}}:client"
+          load: true
+          tags: vizzuality/landgriffon-client:${{ steps.extract_branch.outputs.branch }}
+          build-args: |
+            "NEXTAUTH_URL=${{ secrets[format('NEXTAUTH_URL_{0}', steps.extract_branch.outputs.branch-upper )] }}"
+            "NEXTAUTH_SECRET=${{ secrets[format('NEXTAUTH_SECRET_{0}', steps.extract_branch.outputs.branch-upper )] }}"
+            "NEXT_PUBLIC_MAPBOX_API_TOKEN=${{ secrets.NEXT_PUBLIC_MAPBOX_API_TOKEN }}"
+            "NEXT_PUBLIC_API_URL=${{ secrets[format('NEXT_PUBLIC_API_URL_{0}', steps.extract_branch.outputs.branch-upper )] }}"
 
       - name: Wait for API tests to run
         uses: fountainhead/action-wait-for-check@v1.0.0
@@ -90,7 +117,7 @@ jobs:
       - name: Push to Docker Hub
         uses: docker/build-push-action@v2
         with:
-          context: client
+          context: "{{defaultContext}}:client"
           push: true
           tags: vizzuality/landgriffon-client:${{ steps.extract_branch.outputs.branch }}
           build-args: |
@@ -105,11 +132,22 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Data Import Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: "{{defaultContext}}:data"
+          load: true
+          tags: vizzuality/landgriffon-data-import:${{ steps.extract_branch.outputs.branch }}
 
       - name: Wait for API tests to run
         uses: fountainhead/action-wait-for-check@v1.0.0
@@ -133,8 +171,8 @@ jobs:
         id: extract_branch
 
       - name: Push to Docker Hub
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
-          context: data
+          context: "{{defaultContext}}:data"
           push: true
           tags: vizzuality/landgriffon-data-import:${{ steps.extract_branch.outputs.branch }}

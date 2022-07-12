@@ -94,6 +94,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
   return (
     <div>
       <button
+        type="button"
         {...getReferenceProps({
           ref: reference,
         })}

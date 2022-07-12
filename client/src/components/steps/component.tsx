@@ -58,6 +58,7 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
         <li key={step.name} className="md:flex-1">
           {step.status === 'complete' && (
             <button
+              type="button"
               className={cx(
                 'w-full group pl-4 py-2 flex flex-col border-l-4md:pl-0 md:pt-4 md:pb-0 md:border-l-0 md:border-t-4',
                 {
@@ -68,12 +69,12 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
               )}
               onClick={() => handleTab(step.id)}
             >
-              <span className="text-indigo-600 font-semibold tracking-wide uppercase group-hover:text-indigo-800 leading-4 text-xs">
+              <span className="text-xs font-semibold leading-4 tracking-wide text-indigo-600 uppercase group-hover:text-indigo-800">
                 {step.title}
               </span>
-              <span className="font-medium text-left leading-5 text-sm">{step.name}</span>
+              <span className="text-sm font-medium leading-5 text-left">{step.name}</span>
               {!!step.description && step.id === current && (
-                <p className="text-left text-xs text-gray-500 leading-5 -tracking-tight">
+                <p className="text-xs leading-5 text-left text-gray-500 -tracking-tight">
                   {step.description}
                 </p>
               )}
@@ -81,6 +82,7 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
           )}
           {step.status === 'current' && (
             <button
+              type="button"
               className={cx(
                 'w-full pl-4 py-2 flex flex-col border-l-4 md:pl-0 md:pt-4 md:pb-0 md:border-l-0 md:border-t-4',
                 {
@@ -91,12 +93,12 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
               aria-current="step"
               onClick={() => handleTab(step.id)}
             >
-              <span className="text-indigo-600 font-semibold tracking-wide uppercase leading-4 text-xs">
+              <span className="text-xs font-semibold leading-4 tracking-wide text-indigo-600 uppercase">
                 {step.title}
               </span>
-              <span className="font-medium text-left leading-5 text-sm">{step.name}</span>
+              <span className="text-sm font-medium leading-5 text-left">{step.name}</span>
               {!!step.description && step.id === current && (
-                <p className="text-left text-xs text-gray-500 leading-5 -tracking-tight">
+                <p className="text-xs leading-5 text-left text-gray-500 -tracking-tight">
                   {step.description}
                 </p>
               )}
@@ -104,6 +106,7 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
           )}
           {step.status === 'upcoming' && (
             <button
+              type="button"
               className={cx(
                 'w-full group pl-4 py-2 flex flex-col border-l-4 md:pl-0 md:pt-4 md:pb-0 md:border-l-0 md:border-t-4',
                 {
@@ -115,12 +118,12 @@ const Steps: React.FC<StepsProps> = ({ steps, current }: StepsProps) => {
               disabled={hasErrors}
               onClick={() => handleTab(step.id)}
             >
-              <span className="text-gray-500 font-semibold tracking-wide uppercase group-hover:text-gray-700 leading-4 text-xs">
+              <span className="text-xs font-semibold leading-4 tracking-wide text-gray-500 uppercase group-hover:text-gray-700">
                 {step.title}
               </span>
-              <span className="font-medium text-left leading-5 text-sm">{step.name}</span>
+              <span className="text-sm font-medium leading-5 text-left">{step.name}</span>
               {!!step.description && step.id === current && (
-                <p className="text-left text-xs text-gray-500 leading-5 -tracking-tight">
+                <p className="text-xs leading-5 text-left text-gray-500 -tracking-tight">
                   {step.description}
                 </p>
               )}

@@ -45,9 +45,9 @@ const AdminUsersPage: React.FC = () => {
       <Head>
         <title>Admin users | Landgriffon</title>
       </Head>
-      <div className="flex flex-col-reverse md:flex-row justify-between items-center">
-        <div className="flex w-full md:w-auto gap-2">
-          <Search placeholder="Search table" onChange={setSearchText} />
+      <div className="flex flex-col-reverse items-center justify-between md:flex-row">
+        <div className="flex w-full gap-2 md:w-auto">
+          <Search placeholder="Search table" value={searchText} onChange={setSearchText} />
         </div>
         <div className="flex items-center">
           <Button theme="primary" onClick={() => console.info('Add user: click')}>

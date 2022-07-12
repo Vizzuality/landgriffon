@@ -1014,9 +1014,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       );
     });
 
-    // TODO: Add custom validation to check if either newLocationAddressInput or LAT LONG properties are provided for intervention types needing geocoding.
-    //       This can't be done by class-validator
-    test.skip('Create new intervention with replacing supplier with new location type point of Production or Aggregation point and no address/coordinates data should fail with a 400 error', async () => {
+    test('Create new intervention with replacing supplier with new location type point of Production or Aggregation point and no address/coordinates data should fail with a 400 error', async () => {
       const scenario: Scenario = await createScenario();
       const material: Material = await createMaterial();
       const supplier: Supplier = await createSupplier();
@@ -1042,6 +1040,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'Bad Request Exception',
         [
           'New Location Country input is required for the selected intervention and location type',
+          'Address input or coordinates are required for locations of type aggregation point.',
+          'Address input or coordinates are required for locations of type aggregation point. Latitude values must be min: -90, max: 90',
+          'Address input or coordinates are required for locations of type aggregation point. Longitude values must be min: -180, max: 180',
         ],
       );
 
@@ -1061,13 +1062,44 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           newLocationCountryInput: 'TestCountry',
         });
 
-      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      expect(response2.status).toBe(HttpStatus.BAD_REQUEST);
       expect(response2).toHaveErrorMessage(
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
         [
-          'New address or coordinates input is required for the selected intervention and location type',
-          'New Location Country input is required for the selected intervention and location type',
+          'Address input or coordinates are required for locations of type point of production.',
+          'Address input or coordinates are required for locations of type point of production. Latitude values must be min: -90, max: 90',
+          'Address input or coordinates are required for locations of type point of production. Longitude values must be min: -180, max: 180',
+        ],
+      );
+
+      const response3 = await request(app.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'test scenario intervention',
+          startYear: 2025,
+          percentage: 50,
+          scenarioId: scenario.id,
+          materialIds: [material.id],
+          supplierIds: [supplier.id],
+          businessUnitIds: [businessUnit.id],
+          type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          newLocationType: LOCATION_TYPES_PARAMS.AGGREGATION_POINT,
+          newLocationCountryInput: 'TestCountry',
+          newLocationLatitude: -4,
+          newLocationLongitude: -60,
+          newLocationAddressInput: 'address',
+        });
+
+      expect(response3.status).toBe(HttpStatus.BAD_REQUEST);
+      expect(response3).toHaveErrorMessage(
+        HttpStatus.BAD_REQUEST,
+        'Bad Request Exception',
+        [
+          'Address input OR coordinates are required for locations of type aggregation point. Address must be empty if coordinates are provided',
+          'Address input OR coordinates must be provided for locations of type aggregation point. Latitude must be empty if address is provided',
+          'Address input OR coordinates must be provided for locations of type aggregation point. Latitude must be empty if address is provided',
         ],
       );
     });

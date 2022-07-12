@@ -15,7 +15,6 @@ import { NUMBER_FORMAT } from 'utils/number-format';
 
 import type { LegendItem as LegendItemProp } from 'types';
 
-// const HEXAGON_HIGHLIGHT_COLOR = [0, 0, 0];
 const layerID = 'water';
 
 // layerID should match with redux
@@ -68,11 +67,7 @@ export const useWaterLayer: () => ReturnType<typeof useH3ContextualData> & {
     getHexagon: (d) => d.h,
     getFillColor: (d) => d.c,
     getLineColor: (d) => d.c,
-    // getLineColor: (d) => (d.h === hoveredHexagon ? HEXAGON_HIGHLIGHT_COLOR : d.c),
     onHover: handleHover,
-    // updateTriggers: {
-    //   getLineColor: hoveredHexagon,
-    // },
   });
 
   // Populating legend

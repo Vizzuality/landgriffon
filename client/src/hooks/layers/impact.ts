@@ -18,7 +18,6 @@ import { COLOR_RAMPS } from 'utils/colors';
 import type { LegendItem as LegendItemProp } from 'types';
 
 const LAYER_ID = 'impact'; // should match with redux
-// const HEXAGON_HIGHLIGHT_COLOR = [0, 0, 0];
 
 export const useImpactLayer: () => ReturnType<typeof useH3ImpactData> & { layer: H3HexagonLayer } =
   () => {
@@ -67,11 +66,7 @@ export const useImpactLayer: () => ReturnType<typeof useH3ImpactData> & { layer:
       getHexagon: (d) => d.h,
       getFillColor: (d) => d.c,
       getLineColor: (d) => d.c,
-      // getLineColor: (d) => (d.h === hoveredHexagon ? HEXAGON_HIGHLIGHT_COLOR : d.c),
       onHover: handleHover,
-      // updateTriggers: {
-      //   getLineColor: hoveredHexagon,
-      // },
     });
 
     // Populating legend

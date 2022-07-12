@@ -28,8 +28,6 @@ const WaterLegendItem = () => {
     [dispatch],
   );
 
-  console.log(water);
-
   return (
     <LegendItem
       name="Baseline water stress"
@@ -42,7 +40,7 @@ const WaterLegendItem = () => {
       onActiveChange={handleActive}
       isLoading={water.loading}
     >
-      <LegendTypeCategorical className="text-sm text-gray-500 flex-1" items={water.legend.items} />
+      <LegendTypeCategorical className="flex-1 text-sm text-gray-500" items={water.legend.items} />
     </LegendItem>
   );
 };

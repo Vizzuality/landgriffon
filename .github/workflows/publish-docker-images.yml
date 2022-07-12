@@ -30,6 +30,13 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Extract branch name
+        shell: bash
+        run: |
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+        id: extract_branch
+
       - name: Build API Docker image
         uses: docker/build-push-action@v2
         with:
@@ -50,13 +57,6 @@ jobs:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: Client Tests
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-
-      - name: Extract branch name
-        shell: bash
-        run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
-        id: extract_branch
 
       - name: Push to Docker Hub
         uses: docker/build-push-action@v2
@@ -80,6 +80,13 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract branch name
+        shell: bash
+        run: |
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+        id: extract_branch
 
       - name: Build Client Docker image
         uses: docker/build-push-action@v2
@@ -106,13 +113,6 @@ jobs:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: Client Tests
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-
-      - name: Extract branch name
-        shell: bash
-        run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
-        id: extract_branch
 
       - name: Push to Docker Hub
         uses: docker/build-push-action@v2
@@ -142,6 +142,13 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Extract branch name
+        shell: bash
+        run: |
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+        id: extract_branch
+
       - name: Build Data Import Docker image
         uses: docker/build-push-action@v3
         with:
@@ -162,13 +169,6 @@ jobs:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: Client Tests
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-
-      - name: Extract branch name
-        shell: bash
-        run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
-        id: extract_branch
 
       - name: Push to Docker Hub
         uses: docker/build-push-action@v3

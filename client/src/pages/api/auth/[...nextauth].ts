@@ -2,16 +2,21 @@ import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { authService } from 'services/authentication';
 import type { NextAuthOptions } from 'next-auth';
+import pino from 'pino';
 
 type CustomCredentials = Credential & {
   password: string;
   username: string;
 };
 
+const logger = pino();
+logger.info(`NEXTAUTH_SECRET: ${process.env.NEXTAUTH_SECRET}`);
+logger.info(`NEXTAUTH_URL ${process.env.NEXTAUTH_URL}`);
+
 const options: NextAuthOptions = {
   /**
    * Defining custom pages
-   * By default Next-Auth provides /api/auth/signin
+   * By default Next-Auth provides /api/auth/signing
    */
   pages: {
     signIn: '/auth/sign-in',
@@ -89,7 +94,7 @@ const options: NextAuthOptions = {
 
   events: {
     signOut(message) {
-      console.log('sign out message: ', message);
+      logger.info('sign out message: ', message);
       // After sign-out expire token in the API
       // if (session) {
       //   await AUTHENTICATION.request({

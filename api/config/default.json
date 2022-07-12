@@ -48,7 +48,7 @@
     "batchChunkSize": 50
   },
   "fileUploads": {
-    "sizeLimit": 5e6,
+    "sizeLimit": 8388608,
     "storagePath": "/tmp/csv-uploads"
   },
   "geolocation": {

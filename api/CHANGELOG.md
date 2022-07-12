@@ -71,4 +71,11 @@ Impact years endpoint - returns years for which sourcing record volumes are not 
 Fixed
 Update entity methods that build trees - filters descendants search moved to calling functions
 
+## 2022-07-12
+
+### Fixed
+
+Fixed
+Scenario Interventions - when creating new intervention of type new supplier location, replacing SLs with identical entities relations 
+are grouped into one with tonnage accumulated
 

@@ -280,6 +280,10 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           className={classNames('px-0 py-0 truncate border-none focus:ring-0', {
             'text-sm min-w-fit': theme !== 'inline-primary',
           })}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen(true);
+          }}
           onChange={handleSearch}
           autoComplete="off"
           style={{

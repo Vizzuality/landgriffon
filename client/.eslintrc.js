@@ -13,5 +13,6 @@ module.exports = {
         usePrettierrc: true,
       },
     ],
+    'react/button-has-type': ['warn'],
   },
 };

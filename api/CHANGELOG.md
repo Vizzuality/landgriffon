@@ -79,3 +79,11 @@ Fixed
 Scenario Interventions - when creating new intervention of type new supplier location, replacing SLs with identical entities relations 
 are grouped into one with tonnage accumulated
 
+## 2022-07-12
+
+### Fixed
+
+Fixed
+Scenario Interventions - fix conditional validations of inputs
+
+

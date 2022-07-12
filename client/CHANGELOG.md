@@ -12,10 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Map UI state in the URL params (center, zoom) [LANDGRIF-728](https://vizzuality.atlassian.net/browse/LANDGRIF-728)
 
 ### Changed
-
-- Changed select styles to match the design, specifically for the years. They now have a different behaviour than the others to improve usability.
+- Changed select styles to match the design, specifically for the years. They now have a different behavior than the others to improve usability.
 - Applied new design for the targets section in the admin page.
 - Scenarios selection disabled temporarily in map visualization mode [LANDGRIF-744](https://vizzuality.atlassian.net/browse/LANDGRIF-744)
+- Replaced excel file to download in the Data page.
 
 ### Fixed
 - Location types params added to "/impact/table" endpoint [LANDGRIF-733](https://vizzuality.atlassian.net/browse/LANDGRIF-733)

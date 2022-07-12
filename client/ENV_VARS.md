@@ -7,3 +7,4 @@ by Landgriffon client application.
 * `NEXT_PUBLIC_API_URL`: URL including protocol of the api application.
 * `NEXTAUTH_URL`: URL including protocol of the client application.
 * `NEXTAUTH_SECRET`: Secret used for cryptographic operations in the client application. Generate using `openssl rand -base64 32`
+

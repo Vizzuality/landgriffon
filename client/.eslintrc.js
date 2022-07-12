@@ -14,5 +14,6 @@ module.exports = {
       },
     ],
     'react/button-has-type': ['warn'],
+    'no-console': ['warn'],
   },
 };

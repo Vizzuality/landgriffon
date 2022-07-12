@@ -19,11 +19,11 @@ resource "aws_acm_certificate" "landgriffon_cert" {
 
 resource "aws_route53_record" "landgriffon-com-record" {
   for_each = {
-    for dvo in aws_acm_certificate.landgriffon_cert.domain_validation_options : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      record = dvo.resource_record_value
-      type   = dvo.resource_record_type
-    }
+  for dvo in aws_acm_certificate.landgriffon_cert.domain_validation_options : dvo.domain_name => {
+    name   = dvo.resource_record_name
+    record = dvo.resource_record_value
+    type   = dvo.resource_record_type
+  }
   }
 
   allow_overwrite = true
@@ -59,14 +59,15 @@ resource "kubernetes_ingress_v1" "landgriffon" {
   wait_for_load_balancer = true
 
   metadata {
-    name      = "landgriffon"
-    namespace = var.namespace
+    name        = "landgriffon"
+    namespace   = var.namespace
     annotations = {
-      "kubernetes.io/ingress.class"                = "alb"
-      "alb.ingress.kubernetes.io/scheme"           = "internet-facing"
-      "alb.ingress.kubernetes.io/healthcheck-path" = "/health"
-      "alb.ingress.kubernetes.io/certificate-arn"  = aws_acm_certificate_validation.aws_env_resourcewatch_org_domain_cert_validation.certificate_arn
-      "alb.ingress.kubernetes.io/listen-ports"     = "[{\"HTTP\": 80}, {\"HTTPS\": 443}]"
+      "kubernetes.io/ingress.class"                    = "alb"
+      "alb.ingress.kubernetes.io/scheme"               = "internet-facing"
+      "alb.ingress.kubernetes.io/healthcheck-path"     = "/health"
+      "alb.ingress.kubernetes.io/certificate-arn"      = aws_acm_certificate_validation.aws_env_resourcewatch_org_domain_cert_validation.certificate_arn
+      "alb.ingress.kubernetes.io/listen-ports"         = "[{\"HTTP\": 80}, {\"HTTPS\": 443}]"
+      "alb.ingress.kubernetes.io/actions.ssl-redirect" = "{\"Type\": \"redirect\", \"RedirectConfig\": { \"Protocol\": \"HTTPS\", \"Port\": \"443\", \"StatusCode\": \"HTTP_301\"}}"
     }
   }
 
@@ -86,8 +87,21 @@ resource "kubernetes_ingress_v1" "landgriffon" {
           number = 3000
         }
       }
+    }
 
-
+    rule {
+      http {
+        path {
+          backend {
+            service {
+              name = "ssl-redirect"
+              port {
+                name = "use-annotation"
+              }
+            }
+          }
+        }
+      }
     }
 
     rule {

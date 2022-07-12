@@ -44,11 +44,18 @@ jobs:
           load: true
           tags: vizzuality/landgriffon-api:${{ steps.extract_branch.outputs.branch }}
 
-      - name: Wait for API tests to run
+      - name: Wait for API E2E tests to run
         uses: fountainhead/action-wait-for-check@v1.0.0
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          checkName: API Tests
+          checkName: E2E Tests
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Wait for API Integration tests to run
+        uses: fountainhead/action-wait-for-check@v1.0.0
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          checkName: Integration Tests
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Wait for Client tests to run
@@ -100,11 +107,18 @@ jobs:
             "NEXT_PUBLIC_MAPBOX_API_TOKEN=${{ secrets.NEXT_PUBLIC_MAPBOX_API_TOKEN }}"
             "NEXT_PUBLIC_API_URL=${{ secrets[format('NEXT_PUBLIC_API_URL_{0}', steps.extract_branch.outputs.branch-upper )] }}"
 
-      - name: Wait for API tests to run
+      - name: Wait for API E2E tests to run
         uses: fountainhead/action-wait-for-check@v1.0.0
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          checkName: API Tests
+          checkName: E2E Tests
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Wait for API Integration tests to run
+        uses: fountainhead/action-wait-for-check@v1.0.0
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          checkName: Integration Tests
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Wait for Client tests to run
@@ -156,11 +170,18 @@ jobs:
           load: true
           tags: vizzuality/landgriffon-data-import:${{ steps.extract_branch.outputs.branch }}
 
-      - name: Wait for API tests to run
+      - name: Wait for API E2E tests to run
         uses: fountainhead/action-wait-for-check@v1.0.0
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          checkName: API Tests
+          checkName: E2E Tests
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Wait for API Integration tests to run
+        uses: fountainhead/action-wait-for-check@v1.0.0
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          checkName: Integration Tests
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Wait for Client tests to run

@@ -110,7 +110,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
   useLayoutEffect(() => {
     // Update tooltip position when selection changes
     update();
-  }, [checkedKeys, update, multiple, fitContent]);
+  }, [checkedKeys, update, multiple, fitContent, filteredKeys]);
 
   const renderTreeNodes = useCallback(
     (data, counter = 0) =>

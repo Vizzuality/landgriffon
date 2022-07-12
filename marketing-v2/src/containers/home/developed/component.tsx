@@ -6,7 +6,7 @@ const Developed: React.FC = () => {
   return (
     <section
       className="relative py-32 bg-white bg-cover"
-      style={{ backgroundImage: `url('/images/home/developed/image2_landing.png')` }}
+      style={{ backgroundImage: `url('/images/home/developed/image2_landing.jpg')` }}
     >
       <Wrapper>
         <div className="space-y-10 md:space-y-20">

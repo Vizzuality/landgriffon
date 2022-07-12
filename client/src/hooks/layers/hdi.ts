@@ -29,8 +29,9 @@ export const useHDILayer: () => ReturnType<typeof useH3ContextualData> & {
   const options = {
     enabled: !!hdiLayer.active,
   };
-  const query = useH3ContextualData('a9a02da6-a110-4404-88b0-d35653da079c', {}, options);
+  const query = useH3ContextualData('6f9bc2a8-e4e5-4c18-a615-ee8acf275c35', {}, options);
   const { data, isFetching, isFetched } = query;
+
   const handleHover = useCallback(
     ({ object, x, y, viewport }) => {
       dispatch(

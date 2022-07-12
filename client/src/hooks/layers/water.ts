@@ -29,7 +29,7 @@ export const useWaterLayer: () => ReturnType<typeof useH3ContextualData> & {
   const options = {
     enabled: !!waterLayer.active,
   };
-  const query = useH3ContextualData('70494f5f-cb8f-4c83-bd4e-3c1851f89727', {}, options);
+  const query = useH3ContextualData('0ea3f1af-e993-48cd-9a8f-f7522249d8e9', {}, options);
   const { data, isFetched, isFetching } = query;
   const handleHover = useCallback(
     ({ object, x, y, viewport }) => {

@@ -180,8 +180,8 @@ resource "kubernetes_deployment" "api_deployment" {
 
           resources {
             limits = {
-              cpu    = "1"
-              memory = "4Gi"
+              cpu    = "2"
+              memory = "8Gi"
             }
             requests = {
               cpu    = "1"

@@ -542,20 +542,19 @@ export class ScenarioInterventionsService extends AppBaseService<
         newSourcingRecords,
       );
 
-    const mergedRecords: { year: number; tonnage: number }[] =
-      joinedRecords.reduce(
-        (acc: any, sourcingRecords: { year: number; tonnage: number }) => {
-          acc[sourcingRecords.year] = {
-            year: sourcingRecords.year,
-            tonnage:
-              (acc[sourcingRecords.year]
-                ? Number(acc[sourcingRecords.year].tonnage)
-                : 0) + Number(sourcingRecords.tonnage),
-          };
-          return acc;
-        },
-        {},
-      );
+    const mergedRecords: { year: SourcingRecord } = joinedRecords.reduce(
+      (acc: any, sourcingRecords: { year: number; tonnage: number }) => {
+        acc[sourcingRecords.year] = {
+          year: sourcingRecords.year,
+          tonnage:
+            (acc[sourcingRecords.year]
+              ? Number(acc[sourcingRecords.year].tonnage)
+              : 0) + Number(sourcingRecords.tonnage),
+        };
+        return acc;
+      },
+      {},
+    );
 
     return Object.values(mergedRecords);
   }

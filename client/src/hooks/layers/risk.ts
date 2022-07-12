@@ -19,7 +19,6 @@ import { COLOR_RAMPS } from 'utils/colors';
 import type { LegendItem as LegendItemProp } from 'types';
 
 const LAYER_ID = 'risk'; // should match with redux
-// const HEXAGON_HIGHLIGHT_COLOR = [0, 0, 0];
 
 export const useRiskLayer: () => ReturnType<typeof useH3RiskData> & { layer: H3HexagonLayer } =
   () => {
@@ -75,13 +74,8 @@ export const useRiskLayer: () => ReturnType<typeof useH3RiskData> & { layer: H3H
       visible: riskLayer.active,
       getHexagon: (d) => d.h,
       getFillColor: (d) => d.c,
-      getElevation: (d) => d.v,
       getLineColor: (d) => d.c,
-      // getLineColor: (d) => (d.h === hoveredHexagon ? HEXAGON_HIGHLIGHT_COLOR : d.c),
       onHover: handleHover,
-      // updateTriggers: {
-      //   getLineColor: hoveredHexagon,
-      // },
     });
 
     // Populating legend

@@ -1,19 +1,17 @@
 import cx from 'classnames';
 
-export type LegendTypeChoroplethProps = {
+export type LegendTypeCategoricalProps = {
   className?: string;
-  min: number | string;
   items: Array<{
     value: number | string;
     color: string;
   }>;
 };
 
-export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
+export const LegendTypeCategorical: React.FC<LegendTypeCategoricalProps> = ({
   className = '',
-  min = 0,
   items = [],
-}: LegendTypeChoroplethProps) => {
+}: LegendTypeCategoricalProps) => {
   if (items.length === 0) return null;
 
   return (
@@ -35,23 +33,16 @@ export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
         ))}
       </ul>
 
-      <ul className="flex w-full m-0">
-        {min && (
-          <li className="text-xs flex justify-start w-0 relative">
-            <span className="absolute left w-4 truncate">{min}</span>
-          </li>
-        )}
+      <ul className="flex w-full mx-0 mb-0 mt-1">
         {items.map(({ value }) => (
           <li
             key={`${value}`}
-            className="flex justify-end text-xs text-center"
+            className="flex flex-wrap justify-center leading-4 text-center text-xs"
             style={{
               width: `${100 / items.length}%`,
             }}
           >
-            <span title={`${value}`} className="transform translate-x-1/2 truncate w-full">
-              {value}
-            </span>
+            {value}
           </li>
         ))}
       </ul>
@@ -59,4 +50,4 @@ export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
   );
 };
 
-export default LegendTypeChoropleth;
+export default LegendTypeCategorical;

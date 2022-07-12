@@ -141,6 +141,23 @@ export class ScenarioInterventionsService extends AppBaseService<
         newCancelledByInterventionLocationsData,
       );
 
+    // Saving Indicator records for newly created Sourcing Locations of type canceled:
+
+    for (const sourcingLocation of cancelledInterventionSourcingLocations) {
+      for await (const sourcingRecord of sourcingLocation.sourcingRecords) {
+        await this.indicatorRecordsService.createIndicatorRecordsBySourcingRecords(
+          {
+            sourcingRecordId: sourcingRecord.id,
+            tonnage: sourcingRecord.tonnage,
+            geoRegionId: sourcingLocation.geoRegionId,
+            materialId: sourcingLocation.materialId,
+            year: sourcingRecord.year,
+          },
+          dto.newIndicatorCoefficients,
+        );
+      }
+    }
+
     /**
      *  Creating New Intervention to be saved in scenario_interventions table
      */
@@ -346,27 +363,47 @@ export class ScenarioInterventionsService extends AppBaseService<
 
     const newSourcingLocationData: SourcingData[] = [];
     for (const location of sourcingData) {
-      const newInterventionLocation: SourcingData = {
-        materialId: location.materialId,
-        locationType: dto.newLocationType,
-        locationAddressInput: dto.newLocationAddressInput,
-        locationCountryInput: dto.newLocationCountryInput,
-        locationLatitude: dto.newLocationLatitude,
-        locationLongitude: dto.newLocationLongitude,
-        t1SupplierId: dto.newT1SupplierId,
-        producerId: dto.newProducerId,
-        businessUnitId: location.businessUnitId,
-        geoRegionId: geoCodedLocationSample[0].geoRegionId,
-        adminRegionId: geoCodedLocationSample[0].adminRegionId,
-        locationWarning: geoCodedLocationSample[0].locationWarning,
-        sourcingRecords: location.sourcingRecords.map((elem: any) => {
-          return { year: elem.year, tonnage: elem.tonnage };
-        }),
-        interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
-      };
+      const identicalSourcingLocationDataIndex: number | undefined =
+        newSourcingLocationData.findIndex(
+          (el: SourcingData) =>
+            location.materialId === el.materialId &&
+            location.businessUnitId === el.businessUnitId,
+        );
 
-      newSourcingLocationData.push(newInterventionLocation);
+      if (identicalSourcingLocationDataIndex >= 0) {
+        const updatedSourcingRecords: SourcingRecord[] =
+          this.updateNewSupplierLocationTonnage(
+            newSourcingLocationData,
+            identicalSourcingLocationDataIndex,
+            location.sourcingRecords,
+          );
+        newSourcingLocationData[
+          identicalSourcingLocationDataIndex
+        ].sourcingRecords = updatedSourcingRecords;
+      } else {
+        const newInterventionLocation: SourcingData = {
+          materialId: location.materialId,
+          locationType: dto.newLocationType,
+          locationAddressInput: dto.newLocationAddressInput,
+          locationCountryInput: dto.newLocationCountryInput,
+          locationLatitude: dto.newLocationLatitude,
+          locationLongitude: dto.newLocationLongitude,
+          t1SupplierId: dto.newT1SupplierId,
+          producerId: dto.newProducerId,
+          businessUnitId: location.businessUnitId,
+          geoRegionId: geoCodedLocationSample[0].geoRegionId,
+          adminRegionId: geoCodedLocationSample[0].adminRegionId,
+          locationWarning: geoCodedLocationSample[0].locationWarning,
+          sourcingRecords: location.sourcingRecords.map((elem: any) => {
+            return { year: elem.year, tonnage: elem.tonnage };
+          }),
+          interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+        };
+
+        newSourcingLocationData.push(newInterventionLocation);
+      }
     }
+
     return newSourcingLocationData;
   }
 
@@ -493,5 +530,32 @@ export class ScenarioInterventionsService extends AppBaseService<
     newScenarioIntervention.updatedById = dto.updatedById;
     await this.repository.save(newScenarioIntervention);
     return newScenarioIntervention;
+  }
+
+  updateNewSupplierLocationTonnage(
+    existingSourcingLocations: SourcingData[],
+    index: number,
+    newSourcingRecords: SourcingRecord[],
+  ): SourcingRecord[] {
+    const joinedRecords: { year: number; tonnage: number }[] =
+      existingSourcingLocations[index].sourcingRecords.concat(
+        newSourcingRecords,
+      );
+
+    const mergedRecords: { year: SourcingRecord } = joinedRecords.reduce(
+      (acc: any, sourcingRecords: { year: number; tonnage: number }) => {
+        acc[sourcingRecords.year] = {
+          year: sourcingRecords.year,
+          tonnage:
+            (acc[sourcingRecords.year]
+              ? Number(acc[sourcingRecords.year].tonnage)
+              : 0) + Number(sourcingRecords.tonnage),
+        };
+        return acc;
+      },
+      {},
+    );
+
+    return Object.values(mergedRecords);
   }
 }

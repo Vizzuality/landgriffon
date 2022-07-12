@@ -14,6 +14,7 @@
     "test": "start-server-and-test 'yarn build && yarn start' http://localhost:3000/auth/sign-in 'nyc --reporter nyc-report-lcov-absolute yarn cypress:run'"
   },
   "dependencies": {
+    "@artsy/fresnel": "^3.5.0",
     "@egjs/react-flicking": "^4.9.0",
     "@floating-ui/react-dom": "^0.7.0",
     "@heroicons/react": "1.0.6",

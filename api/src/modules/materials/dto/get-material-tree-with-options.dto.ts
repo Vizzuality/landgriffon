@@ -70,4 +70,9 @@ export class GetMaterialTreeWithOptionsDto {
   )
   @Type(() => String)
   locationTypes?: LOCATION_TYPES_PARAMS[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID(4)
+  scenarioId?: string;
 }

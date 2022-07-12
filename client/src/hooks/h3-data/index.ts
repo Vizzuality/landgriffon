@@ -14,13 +14,17 @@ import type { AxiosResponse } from 'axios';
 import type {
   RGBColor,
   H3APIResponse,
+  H3Data,
   H3Item,
+  LayerMetadata,
   MaterialH3APIParams,
   RiskH3APIParams,
+  WaterH3APIParams,
   ImpactH3APIParams,
 } from 'types';
 
 type H3DataResponse = UseQueryResult<H3APIResponse, unknown>;
+type H3ContextualResponse = UseQueryResult<{ data: H3Data; metadata: LayerMetadata }, unknown>;
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   placeholderData: {
@@ -39,6 +43,23 @@ const responseParser = (response: AxiosResponse, colors: RGBColor[]): H3APIRespo
   const { data, metadata } = response.data;
   const { quantiles } = metadata;
   const threshold = quantiles.slice(1, -1);
+  const scale = scaleThreshold<H3Item['v'], RGBColor>().domain(threshold).range(colors);
+  const h3DataWithColor = data.map(
+    (d: H3Item): H3Item => ({
+      ...d,
+      c: scale(d.v as H3Item['v']),
+    }),
+  );
+  return { data: h3DataWithColor, metadata };
+};
+
+const responseContextualParser = (response: AxiosResponse): H3APIResponse => {
+  const { data, metadata } = response.data;
+  const {
+    legend: { items },
+  } = metadata;
+  const threshold = items.map((item) => item.value);
+  const colors = items.map((item) => chroma(item.color).rgb());
   const scale = scaleThreshold<H3Item['v'], RGBColor>().domain(threshold).range(colors);
   const h3DataWithColor = data.map(
     (d: H3Item): H3Item => ({
@@ -123,6 +144,51 @@ export function useH3RiskData(
         ...query,
         data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as H3APIResponse,
       } as H3DataResponse),
+    [query, isError, data],
+  );
+}
+
+export function useH3ContextualData(
+  id: string,
+  params: Partial<WaterH3APIParams> = {},
+  options: Partial<UseQueryOptions> = {},
+): H3ContextualResponse {
+  const query = useQuery(
+    ['h3-data-contextual', id, JSON.stringify(params)],
+    async () =>
+      apiRawService
+        .get(`/contextual-layers/${id}/h3data`, {
+          params: {
+            ...params,
+            resolution: 4,
+          },
+        })
+        // Adding color to the response
+        .then((response) => responseContextualParser(response)),
+    {
+      ...DEFAULT_QUERY_OPTIONS,
+      placeholderData: {
+        data: [],
+        metadata: {
+          name: null,
+          legend: {
+            unit: null,
+            items: [],
+          },
+        },
+      },
+      ...options,
+    },
+  );
+
+  const { data, isError } = query;
+
+  return useMemo<H3ContextualResponse>(
+    () =>
+      ({
+        ...query,
+        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as H3ContextualResponse,
+      } as H3ContextualResponse),
     [query, isError, data],
   );
 }

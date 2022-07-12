@@ -1,6 +1,9 @@
-import { Indicator, INDICATOR_TYPES } from '../../indicators/indicator.entity';
-import { H3Data } from '../../h3-data/h3-data.entity';
-import { MATERIAL_TO_H3_TYPE } from '../../materials/material-to-h3.entity';
+import {
+  Indicator,
+  INDICATOR_TYPES,
+} from 'modules/indicators/indicator.entity';
+import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { getManager, SelectQueryBuilder } from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
 

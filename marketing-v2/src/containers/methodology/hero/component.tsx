@@ -79,7 +79,7 @@ const Hero: React.FC = () => {
           <div className="space-y-5">
             <h4 className="text-xs uppercase">Data providers:</h4>
 
-            <ul className="grid grid-cols-2 gap-20 md:grid-cols-4 lg:grid-cols-5">
+            <ul className="grid grid-cols-2 gap-10 md:grid-cols-4 md:gap-20 lg:grid-cols-5 lg:gap-20">
               <li className="flex items-center justify-center">
                 <a
                   href="https://www.globalforestwatch.org/"

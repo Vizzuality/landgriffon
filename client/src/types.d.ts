@@ -40,6 +40,10 @@ export type RiskH3APIParams = MaterialH3APIParams & {
   indicatorId: string;
 };
 
+export type WaterH3APIParams = MaterialH3APIParams & {
+  indicatorId: string;
+};
+
 export type ImpactH3APIParams = CommonH3APIParams & {
   indicatorId: string;
   materialIds?: string[];
@@ -113,7 +117,7 @@ export type OriginRegion = {
   children: OriginRegion[];
 };
 
-type BusinessUnitsAtributes = Readonly<{
+type BusinessUnitsAttributes = Readonly<{
   name: string;
   description: string;
   status: 'inactive' | 'active';
@@ -126,7 +130,7 @@ export type BusinessUnits = {
   children: OriginRegion[];
   type: 'businessUnits';
   id: string;
-  attributes: BusinessUnitsAtributes;
+  attributes: BusinessUnitsAttributes;
 };
 
 type Metadata = {
@@ -210,26 +214,44 @@ export type ErrorResponse = AxiosError<{
 /**
  * Layer
  */
+export type Layer = {
+  id: string;
+  order?: number;
+  active?: boolean;
+  opacity?: number;
+  legend?: Legend;
+  loading?: boolean;
+};
+
 export type LegendItem = {
   value: string | number;
   color: string;
+  label?: string;
 };
 
 export type Legend = {
   name: string;
+  description?: string;
   id: string;
   unit: string;
   min: LegendItem['value'];
   items: LegendItem[];
 };
 
-export type Layer = {
-  id?: string;
-  order?: number;
-  active?: boolean;
-  opacity?: number;
-  legend?: Legend;
-  loading?: boolean;
+export type LayerMetadata = {
+  $schema: string;
+  name: string;
+  description: string;
+  license: string;
+  source: string;
+  legend: {
+    id: string;
+    min?: number;
+    items: LegendItem[];
+    name: string;
+    type: string;
+    unit: string;
+  };
 };
 
 // Metadata info

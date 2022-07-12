@@ -14,6 +14,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@artsy/fresnel@npm:^3.5.0":
+  version: 3.5.0
+  resolution: "@artsy/fresnel@npm:3.5.0"
+  peerDependencies:
+    react: ">=16.3.0 <18.0.0"
+  checksum: 31d70914669928e36c62729a43241aa366fd1f1bb599bda3816769760ef4dfc8274d0d0db72c8369d449c7031845964c60e791bcecabea6c52a666dfba87297a
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:7.12.11":
   version: 7.12.11
   resolution: "@babel/code-frame@npm:7.12.11"
@@ -13406,6 +13415,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "landgriffon-marketing-v2@workspace:."
   dependencies:
+    "@artsy/fresnel": ^3.5.0
     "@babel/core": 7.0.1
     "@cypress/code-coverage": 3.9.6
     "@egjs/react-flicking": ^4.9.0

@@ -19,7 +19,6 @@ import { COLOR_RAMPS } from 'utils/colors';
 import type { LegendItem as LegendItemProp } from 'types';
 
 const LAYER_ID = 'material'; // should match with redux
-// const HEXAGON_HIGHLIGHT_COLOR = [0, 0, 0];
 
 export const useMaterialLayer: () => ReturnType<typeof useH3MaterialData> & {
   layer: H3HexagonLayer;
@@ -80,13 +79,8 @@ export const useMaterialLayer: () => ReturnType<typeof useH3MaterialData> & {
     visible: materialLayer.active,
     getHexagon: (d) => d.h,
     getFillColor: (d) => d.c,
-    getElevation: (d) => d.v,
     getLineColor: (d) => d.c,
-    // getLineColor: (d) => (d.h === hoveredHexagon ? HEXAGON_HIGHLIGHT_COLOR : d.c),
     onHover: handleHover,
-    // updateTriggers: {
-    //   getLineColor: hoveredHexagon,
-    // },
   });
 
   // Populating legend

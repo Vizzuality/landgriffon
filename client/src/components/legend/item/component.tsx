@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { useMetadataLayerInfo } from 'hooks/metadata-info';
-
 import Toggle from 'components/toggle';
 import Loading from 'components/loading';
 import OpacityControl from './opacityControl';
@@ -11,6 +9,7 @@ import classNames from 'classnames';
 
 export type LegendItemProps = {
   name: string | JSX.Element;
+  info: string;
   unit: string;
   id: string;
   description?: string;
@@ -26,8 +25,8 @@ export type LegendItemProps = {
 
 export const LegendItem: React.FC<LegendItemProps> = ({
   name,
+  info,
   unit,
-  id,
   active = false,
   isLoading = false,
   showToolbar = true,
@@ -50,11 +49,13 @@ export const LegendItem: React.FC<LegendItemProps> = ({
     setActive(active);
   }, [active]);
 
-  const info = useMetadataLayerInfo();
-
   return (
     <div className={classNames('pr-4 py-4 space-y-4 group', { 'bg-gray-50': !main })}>
-      {isLoading && <Loading />}
+      {isLoading && (
+        <div className="w-full flex align-center justify-center">
+          <Loading />
+        </div>
+      )}
       {name && (
         <div className={classNames('w-full flex', { hidden: isLoading })}>
           <div className="grow flex items-start justify-between">
@@ -68,7 +69,7 @@ export const LegendItem: React.FC<LegendItemProps> = ({
               <div className="flex items-center">
                 <div className="flex items-center space-x-1 mt-0.5">
                   <OpacityControl opacity={opacity} onChange={onChangeOpacity} />
-                  <InfoToolTip icon="outline" info={info[id]} />
+                  <InfoToolTip icon="outline" info={info} />
                 </div>
               </div>
             )}

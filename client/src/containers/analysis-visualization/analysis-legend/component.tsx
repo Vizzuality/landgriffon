@@ -3,6 +3,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import ImpactLegendItem from './impact-legend-item';
 import MaterialLegendItem from './material-legend-item';
 import RiskLegendItem from './risk-legend-item';
+import WaterLegendItem from './water-legend-item';
+import HdiLegendItem from './hdi-legend-item';
 import Sortable from 'containers/sortable';
 import { SortableItem } from 'containers/sortable/component';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
@@ -33,6 +35,8 @@ export const Legend: React.FC = () => {
     () => ({
       'h3-layer-material': <MaterialLegendItem />,
       'h3-layer-risk': <RiskLegendItem />,
+      'h3-layer-water': <WaterLegendItem />,
+      'h3-layer-hdi': <HdiLegendItem />,
       'h3-layer-impact': <ImpactLegendItem />,
     }),
     [],

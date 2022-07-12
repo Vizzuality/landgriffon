@@ -18,7 +18,6 @@ import { COLOR_RAMPS } from 'utils/colors';
 import type { LegendItem as LegendItemProp } from 'types';
 
 const LAYER_ID = 'impact'; // should match with redux
-// const HEXAGON_HIGHLIGHT_COLOR = [0, 0, 0];
 
 export const useImpactLayer: () => ReturnType<typeof useH3ImpactData> & { layer: H3HexagonLayer } =
   () => {
@@ -28,7 +27,7 @@ export const useImpactLayer: () => ReturnType<typeof useH3ImpactData> & { layer:
       layers: { impact: impactLayer },
     } = useAppSelector(analysisMap);
     const query = useH3ImpactData();
-    const { data } = query;
+    const { data, isSuccess } = query;
 
     const handleHover = useCallback(
       ({ object, x, y, viewport }) => {
@@ -66,18 +65,13 @@ export const useImpactLayer: () => ReturnType<typeof useH3ImpactData> & { layer:
       visible: impactLayer.active,
       getHexagon: (d) => d.h,
       getFillColor: (d) => d.c,
-      getElevation: (d) => d.v,
       getLineColor: (d) => d.c,
-      // getLineColor: (d) => (d.h === hoveredHexagon ? HEXAGON_HIGHLIGHT_COLOR : d.c),
       onHover: handleHover,
-      // updateTriggers: {
-      //   getLineColor: hoveredHexagon,
-      // },
     });
 
     // Populating legend
     useEffect(() => {
-      if (data && indicator) {
+      if (data && isSuccess && indicator) {
         dispatch(
           setLayer({
             id: LAYER_ID,
@@ -99,7 +93,7 @@ export const useImpactLayer: () => ReturnType<typeof useH3ImpactData> & { layer:
           }),
         );
       }
-    }, [data, dispatch, indicator, query.isFetching, startYear]);
+    }, [data, isSuccess, dispatch, indicator, query.isFetching, startYear]);
 
     return {
       ...query,

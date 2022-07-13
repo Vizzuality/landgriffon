@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import cx from 'classnames';
 import { Table as KaTable, kaReducer } from 'ka-table';
-import { updateData, updatePagesCount, updatePageSize } from 'ka-table/actionCreators';
+import { updateData, updatePagesCount } from 'ka-table/actionCreators';
 import { ActionType, SortingMode as kaSortingMode, SortDirection } from 'ka-table/enums';
 import { DispatchFunc } from 'ka-table/types';
 
@@ -92,8 +92,6 @@ const Table: React.FC<TableProps> = ({
     [isLoading, totalRows, props.total, handleIndicatorRows],
   );
 
-  console.log({ tableProps });
-
   const handleApiSorting = useCallback(
     (action) => {
       const column = props.columns.find((column) => column.key === action.columnKey) as ColumnProps;
@@ -122,8 +120,6 @@ const Table: React.FC<TableProps> = ({
 
   const dispatch: DispatchFunc = useCallback(
     (action) => {
-      console.log({ action });
-
       switch (action.type) {
         case ActionType.UpdateSortDirection:
           if (sortingMode === SortingMode.Api) {
@@ -132,12 +128,6 @@ const Table: React.FC<TableProps> = ({
             updateTableProps(action);
           }
           break;
-        // case ActionType.UpdatePageIndex:
-        //   dispatch(loadData());
-        // case ActionType.LoadData:
-        //   // TODO: call callbacks on page/page size
-        //   // dispatch(updateData())
-        //   console.log('load data', action);
         default:
           updateTableProps(action);
       }
@@ -148,7 +138,6 @@ const Table: React.FC<TableProps> = ({
   useEffect(() => {
     // Data is loading; let's retain the existing data for now.
     if (isLoading) return;
-    console.log('Update data');
 
     dispatch(updateData(props.data));
   }, [props.data, dispatch, isLoading]);
@@ -239,18 +228,9 @@ const Table: React.FC<TableProps> = ({
       elementAttributes: () => ({
         className: DEFAULT_CLASSNAMES.paging,
       }),
-      content: (pagingProps) => {
-        console.log({ pagingProps });
-
-        return (
-          <Paging
-            {...pagingProps}
-            onPageSizeChange={(size) => dispatch(updatePageSize(size))}
-            isLoading={isLoading}
-            totalRows={paging.totalItems}
-          />
-        );
-      },
+      content: (pagingProps) => (
+        <Paging {...pagingProps} isLoading={isLoading} totalRows={paging.totalItems} />
+      ),
       ...props.childComponents?.paging,
     },
   };
@@ -282,10 +262,10 @@ const Table: React.FC<TableProps> = ({
   }
 
   useEffect(() => {
+    if (paging.pageSize === tableProps.paging?.pageSize) return;
     if (!tableProps.paging?.pageSize) return;
-    // dispatch(updatePageSize(paging.pageSize));
     onPageSizeChange(tableProps.paging.pageSize);
-  }, [onPageSizeChange, tableProps.paging?.pageSize]);
+  }, [onPageSizeChange, paging.pageSize, tableProps.paging?.pageSize]);
 
   useEffect(() => {
     dispatch(updatePagesCount(tableProps.paging?.pagesCount));

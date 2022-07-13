@@ -52,9 +52,6 @@ const dataToCsv: (tableData: ITableData) => string = (tableData) => {
 const AnalysisTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  console.log({ pageSize });
-
-  console.log({ currentPage, pageSize });
 
   const {
     data: {

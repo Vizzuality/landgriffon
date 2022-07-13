@@ -50,7 +50,14 @@ const dataToCsv: (tableData: ITableData) => string = (tableData) => {
 };
 
 const AnalysisTable: React.FC = () => {
-  const { data: impactData, isLoading, isFetching } = useImpactData();
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+
+  const {
+    data: impactData,
+    isLoading,
+    isFetching,
+  } = useImpactData({ 'page[number]': currentPage, 'page[size]': pageSize });
   const {
     data: { impactTable },
   } = impactData;
@@ -94,7 +101,7 @@ const AnalysisTable: React.FC = () => {
   const tableData = useMemo(() => {
     const result = [];
     const isMultipleIndicator = impactTable.length > 1;
-    // TO-DO: make it recursive to more levels, right now the max deep is 4
+    // TO-DO: make it recursive to more levels, right now the max depth is 4
     impactTable.forEach((indicator) => {
       const rowParentId = isMultipleIndicator ? indicator.indicatorId : null;
       if (isMultipleIndicator) {
@@ -267,7 +274,7 @@ const AnalysisTable: React.FC = () => {
         },
       },
     };
-  }, [tableData, years, yearsSum, projectedYears, totalIndicators, firstProjectedYear]);
+  }, [years, totalIndicators, tableData, firstProjectedYear, projectedYears, yearsSum]);
 
   const handleIndicatorRows = useCallback((total) => {
     setTotalRows(total);
@@ -300,7 +307,15 @@ const AnalysisTable: React.FC = () => {
       <div className="relative">
         {isLoading && <Loading className="mr-3 -ml-1 text-green-700" />}
 
-        <Table isLoading={isFetching} {...tableProps} handleIndicatorRows={handleIndicatorRows} />
+        <Table
+          pageNumber={currentPage}
+          pageSize={pageSize}
+          onPageChange={(page) => setCurrentPage(page)}
+          onPageSizeChange={(size) => setPageSize(size)}
+          isLoading={isFetching}
+          {...tableProps}
+          handleIndicatorRows={handleIndicatorRows}
+        />
       </div>
     </>
   );

@@ -47,6 +47,10 @@ export interface TableProps extends ITableProps {
   handleIndicatorRows?: func;
   /** Number of total indicators shown in the table. */
   total?: number;
+  pageNumber?: number;
+  onPageChange?: (page: number) => void;
+  pageSize?: number;
+  onPageSizeChange?: (size: number) => void;
 }
 
 export type ApiSortingType = {

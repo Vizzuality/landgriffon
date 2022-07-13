@@ -11,6 +11,11 @@ export type APIMetadataPagination = {
   totalPages: number;
 };
 
+export type APIpaginationRequest = {
+  'page[size]': number;
+  'page[number]': number;
+};
+
 export type H3Item = {
   c: RGBColor;
   h: string;

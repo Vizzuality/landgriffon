@@ -10,7 +10,13 @@ import { analysisFilters } from 'store/features/analysis/filters';
 import { apiRawService } from 'services/api';
 import { useIndicators } from 'hooks/indicators';
 
-import type { RGBColor, ImpactData, ImpactRanking } from 'types';
+import type {
+  RGBColor,
+  ImpactData,
+  ImpactRanking,
+  APIMetadataPagination,
+  APIpaginationRequest,
+} from 'types';
 import { useStore } from 'react-redux';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
@@ -48,7 +54,9 @@ export function useColors(): RGBColor[] {
 type ImpactDataResponse = UseQueryResult<ImpactData, unknown>;
 type ImpactRankingResponse = UseQueryResult<ImpactRanking, unknown>;
 
-export function useImpactData(): ImpactDataResponse {
+export const useImpactData: (pagination: APIpaginationRequest) => ImpactDataResponse = (
+  pagination,
+) => {
   const store = useStore();
   const { data: indicators } = useIndicators();
   const { layer } = useAppSelector(analysisFilters);
@@ -73,6 +81,7 @@ export function useImpactData(): ImpactDataResponse {
             startYear: filters.startYear,
             endYear: filters.endYear,
             groupBy: filters.groupBy,
+            ...pagination,
             ...filters,
           },
         })
@@ -93,7 +102,7 @@ export function useImpactData(): ImpactDataResponse {
       } as ImpactDataResponse),
     [query, isError, data],
   );
-}
+};
 
 export function useImpactRanking(
   params = { maxRankingEntities: 5, sort: 'ASC' },

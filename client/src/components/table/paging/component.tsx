@@ -30,6 +30,7 @@ const Paging: React.FC<PagingProps> = ({
     (size: number) => {
       if (size <= 0) return;
       dispatch(updatePageSize(size));
+      onPageSizeChange?.(size);
     },
     [dispatch],
   );

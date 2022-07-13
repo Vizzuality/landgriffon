@@ -21,7 +21,7 @@ const Table: React.FC<PaginationProps> = ({
   onPageClick = () => {
     // noOp
   },
-}: PaginationProps) => {
+}) => {
   const [pagination, setPagination] = useState({
     numItems: undefined,
     currentPage: undefined,
@@ -83,7 +83,7 @@ const Table: React.FC<PaginationProps> = ({
         'flex flex-col md:flex-row gap-2 md:gap-0 justify-between items-center',
       )}
     >
-      <div className="text-xs text-gray-500 font-bold">
+      <div className="text-xs font-bold text-gray-500">
         {numItems} of {totalItems} entries
       </div>
 
@@ -96,6 +96,7 @@ const Table: React.FC<PaginationProps> = ({
         </Button>
         {rangeButtons.map((buttonNumber) => (
           <Button
+            className="select-none"
             key={buttonNumber}
             active={buttonNumber === pagination.currentPage}
             onClick={() => {

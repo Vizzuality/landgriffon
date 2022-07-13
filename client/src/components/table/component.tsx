@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import cx from 'classnames';
 import { Table as KaTable, kaReducer } from 'ka-table';
-import { updateData, updatePageSize } from 'ka-table/actionCreators';
+import { updateData } from 'ka-table/actionCreators';
 import {
   ActionType,
   SortingMode as kaSortingMode,
@@ -23,7 +23,6 @@ import { SortingMode, ApiSortingDirection } from './enums';
 
 import type { TableProps, ColumnProps, ApiSortingType } from './types';
 import type { CustomChildComponents } from './types';
-import Select from 'components/select';
 import Paging from './paging';
 
 const defaultProps: TableProps = {
@@ -49,6 +48,8 @@ const Table: React.FC<TableProps> = ({
   defaultSorting,
   onSortingChange,
   handleIndicatorRows = () => null,
+  onPageChange,
+  onPageSizeChange,
   ...props
 }) => {
   const firstColumnKey = props.columns[0]?.key;
@@ -97,7 +98,7 @@ const Table: React.FC<TableProps> = ({
       const total = totalRows + props.total;
       handleIndicatorRows(total);
     },
-    [isLoading, handleIndicatorRows, props.total, totalRows],
+    [isLoading, totalRows, props.total, handleIndicatorRows],
   );
 
   const handleApiSorting = useCallback(
@@ -135,7 +136,7 @@ const Table: React.FC<TableProps> = ({
           } else {
             updateTableProps(action);
           }
-          return;
+          break;
         default:
           updateTableProps(action);
       }
@@ -235,27 +236,10 @@ const Table: React.FC<TableProps> = ({
       elementAttributes: () => ({
         className: DEFAULT_CLASSNAMES.paging,
       }),
-      content: (pagingProps) => <Paging {...pagingProps} totalRows={props.data?.length || 0} />,
-      ...props.childComponents?.paging,
-    },
-    pagingPages: {
-      content: ({}) => <div>custom!</div>,
-      ...props.childComponents?.pagingPages,
-    },
-    pagingSizes: {
-      content: ({ dispatch, pageSize, pageSizes }) => (
-        <div className="flex flex-row gap-2">
-          <div className="my-auto text-gray-700">Rows per page</div>
-          <div>
-            <Select
-              onChange={({ value }) => dispatch(updatePageSize(value as number))}
-              current={{ label: `${pageSize}`, value: pageSize }}
-              options={pageSizes.map((size) => ({ label: `${size}`, value: size }))}
-            />
-          </div>
-        </div>
+      content: (pagingProps) => (
+        <Paging {...pagingProps} isLoading={isLoading} totalRows={props.data?.length || 0} />
       ),
-      ...props.childComponents?.pagingSize,
+      ...props.childComponents?.paging,
     },
   };
 

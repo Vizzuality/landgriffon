@@ -6,6 +6,9 @@ on:
       - 'main'
       - 'staging'
       - 'test'
+      - 'vcf'
+      - 'tetrapack'
+      - 'diageo'
     paths:
       - 'api/**'
       - 'client/**'

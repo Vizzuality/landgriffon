@@ -5,6 +5,7 @@ import { getManager, SelectQueryBuilder } from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
 
 /**
+ * @todo update queries for computing risk map for deforestation, biodiversity, carbon and water indicators.
  * This File contains a group of helper strategy functions that generate the SQL to calculate the risk maps values for
  * each type of Indicator.
  * This is so because the formula and indicator (and potentially material) H3 Data required for calculation can be
@@ -87,7 +88,8 @@ function prepareRiskMapBiodiversitySQL(
           ` * (${calculusFactor}/0.0001) ` +
           ` * ( ("${INDICATOR_TYPES.DEFORESTATION}"."${deforestationIndicatorH3Column}" ` +
           ` * "${MATERIAL_TO_H3_TYPE.HARVEST}"."${materialH3HarvestColumn}") ` +
-          ` ) "${baseRiskMapSQLColumn}"`,
+          ` / (sum("${MATERIAL_TO_H3_TYPE.PRODUCER}"."${materialH3ProducerColumn}") ` +
+          ` over())) "${baseRiskMapSQLColumn}"`,
       )
   );
 }
@@ -132,6 +134,7 @@ function prepareRiskMapCarbonEmissionSQL(
         `"${INDICATOR_TYPES.CARBON_EMISSIONS}"."${carbonEmissionIndicatorH3Column}" ` +
           ` * ( ("${INDICATOR_TYPES.DEFORESTATION}"."${deforestationIndicatorH3Column}" ` +
           ` * "${MATERIAL_TO_H3_TYPE.HARVEST}"."${materialH3HarvestColumn}") ` +
+          ` / (sum("${MATERIAL_TO_H3_TYPE.PRODUCER}"."${materialH3ProducerColumn}") over())` +
           ` ) "${baseRiskMapSQLColumn}"`,
       )
   );
@@ -172,7 +175,8 @@ function prepareRiskMapDeforestationSQL(
       .addSelect(
         `("${INDICATOR_TYPES.DEFORESTATION}"."${deforestationIndicatorH3Column}"` +
           ` * "${MATERIAL_TO_H3_TYPE.HARVEST}"."${materialH3HarvestColumn}")` +
-          ` "${baseRiskMapSQLColumn}"`,
+          ` / sum("${MATERIAL_TO_H3_TYPE.PRODUCER}"."${materialH3ProducerColumn}")` +
+          ` over() "${baseRiskMapSQLColumn}"`,
       )
   );
 }
@@ -211,7 +215,8 @@ function prepareRiskMapWaterSQL(
       .addSelect(
         `"${INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE}"."${waterIndicatorH3Column}" ` +
           ` * ${calculusFactor} ` +
-          ` "${baseRiskMapSQLColumn}"`,
+          ` / sum("${MATERIAL_TO_H3_TYPE.PRODUCER}"."${materialH3ProducerColumn}") ` +
+          ` over() "${baseRiskMapSQLColumn}"`,
       )
   );
 }

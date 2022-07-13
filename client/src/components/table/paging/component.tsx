@@ -30,7 +30,6 @@ const Paging: React.FC<PagingProps> = ({
     (size: number) => {
       if (size <= 0) return;
       dispatch(updatePageSize(size));
-      onPageSizeChange?.(size);
     },
     [dispatch],
   );
@@ -57,7 +56,7 @@ const Paging: React.FC<PagingProps> = ({
       </div>
       <div>
         <Pagination
-          numNumberButtons={0}
+          // numNumberButtons={0}
           isLoading={isLoading}
           totalPages={pagesCount}
           onPageClick={(page) => handlePageChange(page)}

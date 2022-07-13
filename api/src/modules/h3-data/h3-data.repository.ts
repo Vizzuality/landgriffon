@@ -128,7 +128,7 @@ export class H3DataRepository extends Repository<H3Data> {
       const query: string = getManager()
         .createQueryBuilder()
         .select(`h3_to_parent(h3index, ${resolution})`, 'h')
-        .addSelect(`sum("${materialH3Data.h3columnName}")`, 'v')
+        .addSelect(`round(sum("${materialH3Data.h3columnName}"))`, 'v')
         .from(materialH3Data.h3tableName, 'h3table')
         .where(`"h3table"."${materialH3Data.h3columnName}" is not null`)
         .andWhere(`"${materialH3Data.h3columnName}" <> 0`)
@@ -140,7 +140,8 @@ export class H3DataRepository extends Repository<H3Data> {
       );
       const materialMap: any = await getManager().query(
         `SELECT *
-         FROM "${tmpTableName}";`,
+         FROM "${tmpTableName}"
+         WHERE "${tmpTableName}".v > 0;`,
       );
       const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
 
@@ -230,7 +231,7 @@ export class H3DataRepository extends Repository<H3Data> {
     const withDynamicResolution: SelectQueryBuilder<any> = getManager()
       .createQueryBuilder()
       .addSelect(`h3_to_parent(q.h3index, ${resolution})`, `h`)
-      .addSelect(`sum(sum)`, `v`)
+      .addSelect(`round(sum(sum))`, `v`)
       .from(`( ${selectQueryBuilder.getSql()} )`, `q`)
       .groupBy('h');
 
@@ -242,7 +243,8 @@ export class H3DataRepository extends Repository<H3Data> {
       params,
     );
     const impactMap: any = await getManager().query(
-      `SELECT * FROM "${tmpTableName}"`,
+      `SELECT * FROM "${tmpTableName}"
+      WHERE "${tmpTableName}".v > 0;`,
     );
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
     await getManager().query(`DROP TABLE "${tmpTableName}";`);
@@ -257,7 +259,7 @@ export class H3DataRepository extends Repository<H3Data> {
   async calculateQuantiles(tmpTableName: string): Promise<number[]> {
     try {
       const resultArray: number[] = await getManager().query(
-        `select min(v)                                      as min,
+        `select 0                                    as min,
                 percentile_cont(0.1667) within group (order by v) as per16,
                 percentile_cont(0.3337) within group (order by v) as per33,
                 percentile_cont(0.50) within group (order by v)   as per50,
@@ -265,7 +267,8 @@ export class H3DataRepository extends Repository<H3Data> {
                 percentile_cont(0.8337) within group (order by v) as per83,
                 percentile_cont(1) within group (order by v)      as max
          from "${tmpTableName}"
-         where v > 0`,
+         where v>0
+         `,
       );
       return Object.values(resultArray[0]);
     } catch (err) {
@@ -364,7 +367,7 @@ export class H3DataRepository extends Repository<H3Data> {
         `h3_to_parent(${baseRiskMapSQLTable}.h3index, ${resolution})`,
         'h',
       )
-      .addSelect(`sum(${baseRiskMapSQLTable}.${baseRiskMapSQLColumn})`, 'v')
+      .addSelect(`round(sum(${baseRiskMapSQLTable}.${baseRiskMapSQLColumn}))`, 'v')
       .from(`(${indicatorRiskSQL.getQuery()})`, baseRiskMapSQLTable)
       .groupBy('h')
       .getSql();
@@ -376,7 +379,8 @@ export class H3DataRepository extends Repository<H3Data> {
     );
     const riskMap: any = await getManager().query(
       `SELECT *
-       FROM "${tmpTableName}";`,
+       FROM "${tmpTableName}"
+       WHERE "${tmpTableName}".v > 0;`,
     );
     const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
     await getManager().query(`DROP TABLE "${tmpTableName}"`);

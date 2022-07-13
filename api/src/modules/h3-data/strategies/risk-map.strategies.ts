@@ -87,8 +87,7 @@ function prepareRiskMapBiodiversitySQL(
           ` * (${calculusFactor}/0.0001) ` +
           ` * ( ("${INDICATOR_TYPES.DEFORESTATION}"."${deforestationIndicatorH3Column}" ` +
           ` * "${MATERIAL_TO_H3_TYPE.HARVEST}"."${materialH3HarvestColumn}") ` +
-          ` / (sum("${MATERIAL_TO_H3_TYPE.PRODUCER}"."${materialH3ProducerColumn}") ` +
-          ` over())) "${baseRiskMapSQLColumn}"`,
+          ` ) "${baseRiskMapSQLColumn}"`,
       )
   );
 }
@@ -133,7 +132,6 @@ function prepareRiskMapCarbonEmissionSQL(
         `"${INDICATOR_TYPES.CARBON_EMISSIONS}"."${carbonEmissionIndicatorH3Column}" ` +
           ` * ( ("${INDICATOR_TYPES.DEFORESTATION}"."${deforestationIndicatorH3Column}" ` +
           ` * "${MATERIAL_TO_H3_TYPE.HARVEST}"."${materialH3HarvestColumn}") ` +
-          ` / (sum("${MATERIAL_TO_H3_TYPE.PRODUCER}"."${materialH3ProducerColumn}") over())` +
           ` ) "${baseRiskMapSQLColumn}"`,
       )
   );
@@ -174,8 +172,7 @@ function prepareRiskMapDeforestationSQL(
       .addSelect(
         `("${INDICATOR_TYPES.DEFORESTATION}"."${deforestationIndicatorH3Column}"` +
           ` * "${MATERIAL_TO_H3_TYPE.HARVEST}"."${materialH3HarvestColumn}")` +
-          ` / sum("${MATERIAL_TO_H3_TYPE.PRODUCER}"."${materialH3ProducerColumn}")` +
-          ` over() "${baseRiskMapSQLColumn}"`,
+          ` "${baseRiskMapSQLColumn}"`,
       )
   );
 }
@@ -214,8 +211,7 @@ function prepareRiskMapWaterSQL(
       .addSelect(
         `"${INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE}"."${waterIndicatorH3Column}" ` +
           ` * ${calculusFactor} ` +
-          ` / sum("${MATERIAL_TO_H3_TYPE.PRODUCER}"."${materialH3ProducerColumn}") ` +
-          ` over() "${baseRiskMapSQLColumn}"`,
+          ` "${baseRiskMapSQLColumn}"`,
       )
   );
 }

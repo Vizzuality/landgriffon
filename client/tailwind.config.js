@@ -30,6 +30,7 @@ module.exports = {
       red: colors.red,
       yellow: colors.yellow,
       transparent: colors.transparent,
+      primary: '#078A3C',
       gray: {
         900: '#15181F',
         800: '#2D2F32',

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import classNames from 'classnames';
 import {
   ChevronDoubleLeftIcon,
@@ -10,7 +10,7 @@ import {
 import Button from './button';
 import { PaginationProps } from './types';
 
-const Table: React.FC<PaginationProps> = ({
+const Pagination: React.FC<PaginationProps> = ({
   className,
   isLoading = false,
   numItems,
@@ -18,63 +18,49 @@ const Table: React.FC<PaginationProps> = ({
   totalPages,
   totalItems,
   numNumberButtons = 8,
-  onPageClick = () => {
-    // noOp
-  },
+  onPageClick,
 }) => {
-  const [pagination, setPagination] = useState({
-    numItems: undefined,
-    currentPage: undefined,
-    totalPages: undefined,
-    totalItems: undefined,
-  });
-
-  useEffect(() => {
-    // Do not update pagination if data is loading.
-    if (isLoading) return;
-    setPagination({ numItems, currentPage, totalPages, totalItems });
-  }, [currentPage, isLoading, numItems, totalItems, totalPages]);
-
   const calcPagingRange = useCallback(() => {
     // https://codereview.stackexchange.com/a/183472
     const min = 1;
     let length = numNumberButtons;
 
-    if (length > pagination.totalPages) length = pagination.totalPages;
+    if (length > totalPages) length = totalPages;
 
-    let start = pagination.currentPage - Math.floor(length / 2);
+    let start = currentPage - Math.floor(length / 2);
     start = Math.max(start, min);
-    start = Math.min(start, min + pagination.totalPages - length);
+    start = Math.min(start, min + totalPages - length);
 
     return Array.from({ length: length }, (el, i) => start + i);
-  }, [numNumberButtons, pagination]);
+  }, [currentPage, numNumberButtons, totalPages]);
 
   const rangeButtons = calcPagingRange();
 
   const handleFirstClick = () => {
-    onPageClick(1);
+    onPageClick?.(1);
   };
 
   const handlePreviousClick = () => {
-    if (pagination.currentPage <= 1) return;
-    onPageClick(pagination.currentPage - 1);
+    if (currentPage <= 1) return;
+    onPageClick?.(currentPage - 1);
   };
 
   const handleRangeButtonClick = (pageNumber) => {
-    onPageClick(pageNumber);
+    onPageClick?.(pageNumber);
   };
 
   const handleNextClick = () => {
-    if (pagination.currentPage >= pagination.totalPages) return;
-    onPageClick(currentPage + 1);
+    if (currentPage >= totalPages) return;
+    onPageClick?.(currentPage + 1);
   };
 
   const handleLastClick = () => {
-    onPageClick(pagination.totalPages);
+    onPageClick?.(totalPages);
   };
+  if (isLoading) return null;
 
   // We don't have enough values to display the pagination; show nothing.
-  if (Object.values(pagination).some((val) => val === undefined)) return null;
+  if ([numItems, currentPage, totalPages, totalItems].some((val) => val === undefined)) return null;
 
   return (
     <div
@@ -88,17 +74,17 @@ const Table: React.FC<PaginationProps> = ({
       </div>
 
       <div className="flex items-center">
-        <Button disabled={pagination.currentPage <= 1} onClick={handleFirstClick}>
+        <Button disabled={currentPage <= 1} onClick={handleFirstClick}>
           <ChevronDoubleLeftIcon className="w-4 h-4" />
         </Button>
-        <Button disabled={pagination.currentPage <= 1} onClick={handlePreviousClick}>
+        <Button disabled={currentPage <= 1} onClick={handlePreviousClick}>
           <ChevronLeftIcon className="w-5 h-5" />
         </Button>
         {rangeButtons.map((buttonNumber) => (
           <Button
             className="select-none"
             key={buttonNumber}
-            active={buttonNumber === pagination.currentPage}
+            active={buttonNumber === currentPage}
             onClick={() => {
               handleRangeButtonClick(buttonNumber);
             }}
@@ -106,16 +92,10 @@ const Table: React.FC<PaginationProps> = ({
             {buttonNumber}
           </Button>
         ))}
-        <Button
-          disabled={pagination.currentPage >= pagination.totalPages}
-          onClick={handleNextClick}
-        >
+        <Button disabled={currentPage >= totalPages} onClick={handleNextClick}>
           <ChevronRightIcon className="w-5 h-5" />
         </Button>
-        <Button
-          disabled={pagination.currentPage >= pagination.totalPages}
-          onClick={handleLastClick}
-        >
+        <Button disabled={currentPage >= totalPages} onClick={handleLastClick}>
           <ChevronDoubleRightIcon className="w-4 h-4" />
         </Button>
       </div>
@@ -123,4 +103,4 @@ const Table: React.FC<PaginationProps> = ({
   );
 };
 
-export default Table;
+export default Pagination;

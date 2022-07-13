@@ -171,16 +171,18 @@ export type PurchasedTonnesData = {
   isProjected: boolean;
 };
 
+export type PaginationMetadata = {
+  page?: number;
+  size?: number;
+  totalItems?: number;
+  totalPages?: number;
+};
+
 export type ImpactData = {
   data: {
     impactTable: ImpactTableData[];
   };
-  metadata: {
-    page?: number;
-    size?: number;
-    totalItems?: number;
-    totalPages?: number;
-  };
+  metadata: PaginationMetadata;
 };
 
 export type ImpactRanking = {

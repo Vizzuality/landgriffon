@@ -10,13 +10,7 @@ import { analysisFilters } from 'store/features/analysis/filters';
 import { apiRawService } from 'services/api';
 import { useIndicators } from 'hooks/indicators';
 
-import type {
-  RGBColor,
-  ImpactData,
-  ImpactRanking,
-  APIMetadataPagination,
-  APIpaginationRequest,
-} from 'types';
+import type { RGBColor, ImpactData, ImpactRanking, APIpaginationRequest } from 'types';
 import { useStore } from 'react-redux';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
@@ -54,7 +48,7 @@ export function useColors(): RGBColor[] {
 type ImpactDataResponse = UseQueryResult<ImpactData, unknown>;
 type ImpactRankingResponse = UseQueryResult<ImpactRanking, unknown>;
 
-export const useImpactData: (pagination: APIpaginationRequest) => ImpactDataResponse = (
+export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataResponse = (
   pagination,
 ) => {
   const store = useStore();
@@ -72,9 +66,11 @@ export const useImpactData: (pagination: APIpaginationRequest) => ImpactDataResp
   const indicatorIds = indicators.map(({ id }) => id);
 
   const query = useQuery(
-    ['impact-data', layer, indicatorIds, filters],
-    async () =>
-      apiRawService
+    ['impact-data', layer, indicatorIds, filters, pagination],
+    async () => {
+      console.log('fetch');
+
+      return apiRawService
         .get('/impact/table', {
           params: {
             indicatorIds: filters.indicatorId === 'all' ? indicatorIds : [filters.indicatorId],
@@ -85,7 +81,8 @@ export const useImpactData: (pagination: APIpaginationRequest) => ImpactDataResp
             ...filters,
           },
         })
-        .then((response) => response.data),
+        .then((response) => response.data);
+    },
     {
       ...DEFAULT_QUERY_OPTIONS,
       enabled: layer === 'impact' && isEnable,

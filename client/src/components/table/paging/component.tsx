@@ -1,5 +1,3 @@
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid';
-import ChevronLast from 'components/icons/chevronLast';
 import Pagination from 'components/pagination';
 import Select from 'components/select';
 import { updatePageIndex, updatePageSize } from 'ka-table/actionCreators';
@@ -27,8 +25,9 @@ const Paging: React.FC<PagingProps> = ({
   const handlePageChange = useCallback(
     (page: number) => {
       if (page < 0 || page > pagesCount) return;
+
       onPageChange?.(page);
-      dispatch(updatePageIndex(page));
+      dispatch(updatePageIndex(page - 1));
     },
     [dispatch, onPageChange, pagesCount],
   );
@@ -36,8 +35,8 @@ const Paging: React.FC<PagingProps> = ({
   const handlePageSizeChange = useCallback(
     (size: number) => {
       if (size <= 0) return;
-      onPageSizeChange?.(size);
       dispatch(updatePageSize(size));
+      onPageSizeChange?.(size);
     },
     [dispatch, onPageSizeChange],
   );
@@ -62,12 +61,12 @@ const Paging: React.FC<PagingProps> = ({
       </div>
       <div>
         <Pagination
+          numNumberButtons={0}
           isLoading={isLoading}
           totalPages={pagesCount}
-          // TODO: assumming pages starts at 0, check how the API handles it
-          onPageClick={(page) => handlePageChange(page - 1)}
+          onPageClick={(page) => handlePageChange(page)}
           currentPage={pageIndex + 1}
-          numItems={pageSize}
+          numItems={totalRows % pageSize}
           totalItems={totalRows}
         />
       </div>

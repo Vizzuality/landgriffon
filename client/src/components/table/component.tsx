@@ -1,13 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import cx from 'classnames';
 import { Table as KaTable, kaReducer } from 'ka-table';
-import { updateData } from 'ka-table/actionCreators';
-import {
-  ActionType,
-  SortingMode as kaSortingMode,
-  SortDirection,
-  PagingPosition,
-} from 'ka-table/enums';
+import { updateData, updatePagesCount, updatePageSize } from 'ka-table/actionCreators';
+import { ActionType, SortingMode as kaSortingMode, SortDirection } from 'ka-table/enums';
 import { DispatchFunc } from 'ka-table/types';
 
 import DataRow from 'components/table/data-row';
@@ -31,13 +26,7 @@ const defaultProps: TableProps = {
   total: null,
   rowKeyField: 'id',
   sortingMode: SortingMode.None,
-  paging: {
-    enabled: true,
-    pageIndex: 0,
-    pageSize: 10,
-    pageSizes: [10, 20, 30, 40],
-    position: PagingPosition.Bottom,
-  },
+  // singleAction: loadData(),
 };
 
 const Table: React.FC<TableProps> = ({
@@ -48,6 +37,7 @@ const Table: React.FC<TableProps> = ({
   defaultSorting,
   onSortingChange,
   handleIndicatorRows = () => null,
+  paging,
   onPageChange,
   onPageSizeChange,
   ...props
@@ -94,12 +84,15 @@ const Table: React.FC<TableProps> = ({
     (action) => {
       // Data is loading; let's retain the existing props for now.
       if (isLoading) return;
+
       setTableProps((prevState) => kaReducer(prevState, action));
       const total = totalRows + props.total;
       handleIndicatorRows(total);
     },
     [isLoading, totalRows, props.total, handleIndicatorRows],
   );
+
+  console.log({ tableProps });
 
   const handleApiSorting = useCallback(
     (action) => {
@@ -129,6 +122,8 @@ const Table: React.FC<TableProps> = ({
 
   const dispatch: DispatchFunc = useCallback(
     (action) => {
+      console.log({ action });
+
       switch (action.type) {
         case ActionType.UpdateSortDirection:
           if (sortingMode === SortingMode.Api) {
@@ -137,6 +132,12 @@ const Table: React.FC<TableProps> = ({
             updateTableProps(action);
           }
           break;
+        // case ActionType.UpdatePageIndex:
+        //   dispatch(loadData());
+        // case ActionType.LoadData:
+        //   // TODO: call callbacks on page/page size
+        //   // dispatch(updateData())
+        //   console.log('load data', action);
         default:
           updateTableProps(action);
       }
@@ -147,6 +148,8 @@ const Table: React.FC<TableProps> = ({
   useEffect(() => {
     // Data is loading; let's retain the existing data for now.
     if (isLoading) return;
+    console.log('Update data');
+
     dispatch(updateData(props.data));
   }, [props.data, dispatch, isLoading]);
 
@@ -236,9 +239,18 @@ const Table: React.FC<TableProps> = ({
       elementAttributes: () => ({
         className: DEFAULT_CLASSNAMES.paging,
       }),
-      content: (pagingProps) => (
-        <Paging {...pagingProps} isLoading={isLoading} totalRows={props.data?.length || 0} />
-      ),
+      content: (pagingProps) => {
+        console.log({ pagingProps });
+
+        return (
+          <Paging
+            {...pagingProps}
+            onPageSizeChange={(size) => dispatch(updatePageSize(size))}
+            isLoading={isLoading}
+            totalRows={paging.totalItems}
+          />
+        );
+      },
       ...props.childComponents?.paging,
     },
   };
@@ -269,6 +281,21 @@ const Table: React.FC<TableProps> = ({
     };
   }
 
+  useEffect(() => {
+    if (!tableProps.paging?.pageSize) return;
+    // dispatch(updatePageSize(paging.pageSize));
+    onPageSizeChange(tableProps.paging.pageSize);
+  }, [onPageSizeChange, tableProps.paging?.pageSize]);
+
+  useEffect(() => {
+    dispatch(updatePagesCount(tableProps.paging?.pagesCount));
+  }, [dispatch, tableProps.paging?.pagesCount]);
+
+  useEffect(() => {
+    if (!tableProps.paging?.pageIndex) return;
+    onPageChange?.(tableProps.paging?.pageIndex);
+  }, [onPageChange, tableProps.paging?.pageIndex]);
+
   return (
     <div
       className={cx('relative', className, {
@@ -283,6 +310,7 @@ const Table: React.FC<TableProps> = ({
       )}
       <KaTable
         {...tableProps}
+        paging={paging}
         sortingMode={sortingMode as kaSortingMode}
         childComponents={childComponents}
         dispatch={dispatch}

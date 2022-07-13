@@ -69,6 +69,3 @@ export class InterventionLocationAddressInputValidator
       : false;
   }
 }
-
-('Address input or coordinates are required for locations of type aggregation point. Latitude values must be min: -90, max: 90,Address input or coordinates are required for locations of type aggregation point. Longitude values must be min: -180, max: 180,New Location Country input is required for the selected intervention and location type');
-('Address input or coordinates are required for locations of type aggregation point.,Address input or coordinates are required for locations of type aggregation point. Latitude values must be min: -90, max: 90,Address input or coordinates are required for locations of type aggregation point. Longitude values must be min: -180, max: 180,New Location Country input is required for the selected intervention and location type');

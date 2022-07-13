@@ -108,7 +108,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
         {...getReferenceProps({
           ref: reference,
         })}
-        className="relative w-full py-2 pl-3 pr-10 text-left bg-white border-0.5 min-h-[2.5rem] border-gray-300 rounded-md shadow-sm cursor-pointer focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 sm:text-sm"
+        className="relative w-full py-2 pl-3 pr-10 text-left bg-white border min-h-[2.5rem] border-gray-300 rounded-md shadow-sm cursor-pointer focus:outline-none focus:ring-1 focus:ring-green-700 focus:border-green-700 sm:text-sm"
       >
         <span className="block h-5 truncate">
           <span className="mr-1 text-gray-600">from</span>

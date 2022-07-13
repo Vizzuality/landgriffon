@@ -44,7 +44,7 @@ const customStyles: (theme: SelectProps['theme'], error?: boolean) => StylesConf
   error = false,
 ) => {
   return {
-    container: (provided) => ({ ...provided, ...tw`text-sm` }),
+    container: (provided) => ({ ...provided, ...tw`text-sm shadow-sm` }),
     option: (provided, { isDisabled, isSelected }) => ({
       ...provided,
       ...tw`text-gray-900 truncate cursor-pointer hover:bg-green-50`,

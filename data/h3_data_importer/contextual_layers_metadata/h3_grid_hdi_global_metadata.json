@@ -2,6 +2,7 @@
     "$schema": "./contextual_metadata_schema.json",
     "name": "Human Development Index",
     "description": "The HDI is a measure of human development.",
+    "aggType": "mode",
     "legend": {
         "name": "Human Development Index (HDI)",
         "id": "",
@@ -32,5 +33,5 @@
         ]
     },
     "source": "https://hdr.undp.org/data-center/documentation-and-downloads",
-    "licence": ""
+    "license": ""
 }

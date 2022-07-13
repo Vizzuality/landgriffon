@@ -13,7 +13,7 @@ const SummaryRow: React.FC<SummaryRowProps> = ({
   isFirstColumnSticky = true,
   firstProjectedYear,
   ...props
-}: SummaryRowProps) => {
+}) => {
   const firstColumnKey = props.columns[0].key;
 
   return (

@@ -67,10 +67,8 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
 
   const query = useQuery(
     ['impact-data', layer, indicatorIds, filters, pagination],
-    async () => {
-      console.log('fetch');
-
-      return apiRawService
+    async () =>
+      apiRawService
         .get('/impact/table', {
           params: {
             indicatorIds: filters.indicatorId === 'all' ? indicatorIds : [filters.indicatorId],
@@ -81,8 +79,7 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
             ...filters,
           },
         })
-        .then((response) => response.data);
-    },
+        .then((response) => response.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
       enabled: layer === 'impact' && isEnable,

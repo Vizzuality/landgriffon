@@ -7,8 +7,6 @@ import { useCallback } from 'react';
 interface PagingProps extends IPagingProps {
   totalRows: number;
   isLoading?: boolean;
-  onPageChange?: (page: number) => void;
-  onPageSizeChange?: (size: number) => void;
 }
 
 const Paging: React.FC<PagingProps> = ({
@@ -18,27 +16,22 @@ const Paging: React.FC<PagingProps> = ({
   pageSizes,
   pagesCount,
   totalRows,
-  onPageChange,
-  onPageSizeChange,
   isLoading = false,
 }) => {
   const handlePageChange = useCallback(
     (page: number) => {
       if (page < 0 || page > pagesCount) return;
-
-      onPageChange?.(page);
-      dispatch(updatePageIndex(page - 1));
+      dispatch(updatePageIndex(page));
     },
-    [dispatch, onPageChange, pagesCount],
+    [dispatch, pagesCount],
   );
 
   const handlePageSizeChange = useCallback(
     (size: number) => {
       if (size <= 0) return;
       dispatch(updatePageSize(size));
-      onPageSizeChange?.(size);
     },
-    [dispatch, onPageSizeChange],
+    [dispatch],
   );
 
   const rowStartRange = pageIndex * pageSize + 1;
@@ -61,7 +54,7 @@ const Paging: React.FC<PagingProps> = ({
       </div>
       <div>
         <Pagination
-          numNumberButtons={0}
+          // numNumberButtons={0}
           isLoading={isLoading}
           totalPages={pagesCount}
           onPageClick={(page) => handlePageChange(page)}

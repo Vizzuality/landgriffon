@@ -58,7 +58,7 @@ const Sidebar: React.FC = () => {
             leaveFrom="translate-x-0"
             leaveTo="-translate-x-full"
           >
-            <div className="relative flex flex-col flex-1 w-full max-w-xs pt-5 pb-4 bg-green-700">
+            <div className="relative flex flex-col flex-1 w-full max-w-xs pt-5 pb-4 bg-primary">
               <Transition.Child
                 as={Fragment}
                 enter="ease-in-out duration-300"
@@ -104,7 +104,7 @@ const Sidebar: React.FC = () => {
       {/* Static sidebar for desktop */}
       <div className="flex lg:flex-shrink-0">
         <div className="flex flex-col w-28">
-          <div className="flex-1 flex flex-col min-h-0 overflow-y-auto bg-green-700">
+          <div className="flex-1 flex flex-col min-h-0 overflow-y-auto bg-primary">
             <div className="flex-1">
               {/* TODO: Logo should be here */}
               <DesktopNavigation items={navigationItems} />

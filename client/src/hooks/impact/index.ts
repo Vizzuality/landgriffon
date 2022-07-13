@@ -79,6 +79,7 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
     startYear: filters.startYear,
     endYear: filters.endYear,
     groupBy: filters.groupBy,
+    ...pagination,
     ...(isComparisonEnabled ? { scenarioId: scenarioToCompare } : {}),
     ...restFilters,
     ...pagination,

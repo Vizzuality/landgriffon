@@ -1,8 +1,13 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import cx from 'classnames';
 import { Table as KaTable, kaReducer } from 'ka-table';
-import { updateData } from 'ka-table/actionCreators';
-import { ActionType, SortingMode as kaSortingMode, SortDirection } from 'ka-table/enums';
+import { updateData, updatePageSize } from 'ka-table/actionCreators';
+import {
+  ActionType,
+  SortingMode as kaSortingMode,
+  SortDirection,
+  PagingPosition,
+} from 'ka-table/enums';
 import { DispatchFunc } from 'ka-table/types';
 
 import DataRow from 'components/table/data-row';
@@ -18,6 +23,8 @@ import { SortingMode, ApiSortingDirection } from './enums';
 
 import type { TableProps, ColumnProps, ApiSortingType } from './types';
 import type { CustomChildComponents } from './types';
+import Select from 'components/select';
+import Paging from './paging';
 
 const defaultProps: TableProps = {
   columns: [],
@@ -25,6 +32,13 @@ const defaultProps: TableProps = {
   total: null,
   rowKeyField: 'id',
   sortingMode: SortingMode.None,
+  paging: {
+    enabled: true,
+    pageIndex: 0,
+    pageSize: 10,
+    pageSizes: [10, 20, 30, 40],
+    position: PagingPosition.Bottom,
+  },
 };
 
 const Table: React.FC<TableProps> = ({
@@ -36,7 +50,7 @@ const Table: React.FC<TableProps> = ({
   onSortingChange,
   handleIndicatorRows = () => null,
   ...props
-}: TableProps) => {
+}) => {
   const firstColumnKey = props.columns[0]?.key;
   const stickyColumnKey = isFirstColumnSticky && firstColumnKey;
   const [tableProps, setTableProps] = useState<TableProps>({ ...defaultProps, ...props });
@@ -217,6 +231,32 @@ const Table: React.FC<TableProps> = ({
       content: (props) => <GroupRow {...props} sticky={isFirstColumnSticky} />,
       ...props.childComponents?.groupRow,
     },
+    paging: {
+      elementAttributes: () => ({
+        className: DEFAULT_CLASSNAMES.paging,
+      }),
+      content: (pagingProps) => <Paging {...pagingProps} totalRows={props.data?.length || 0} />,
+      ...props.childComponents?.paging,
+    },
+    pagingPages: {
+      content: ({}) => <div>custom!</div>,
+      ...props.childComponents?.pagingPages,
+    },
+    pagingSizes: {
+      content: ({ dispatch, pageSize, pageSizes }) => (
+        <div className="flex flex-row gap-2">
+          <div className="my-auto text-gray-700">Rows per page</div>
+          <div>
+            <Select
+              onChange={({ value }) => dispatch(updatePageSize(value as number))}
+              current={{ label: `${pageSize}`, value: pageSize }}
+              options={pageSizes.map((size) => ({ label: `${size}`, value: size }))}
+            />
+          </div>
+        </div>
+      ),
+      ...props.childComponents?.pagingSize,
+    },
   };
 
   if (props.childComponents?.tableFoot) {
@@ -248,11 +288,11 @@ const Table: React.FC<TableProps> = ({
   return (
     <div
       className={cx('relative', className, {
-        'my-4 shadow-sm': !className,
+        'my-4': !className,
       })}
     >
       {isLoading && (
-        <div className="absolute top-0 right-0 bottom-0 left-0 z-30 bg-white bg-opacity-60 backdrop-blur-xs flex flex-col items-center justify-center">
+        <div className="absolute top-0 bottom-0 left-0 right-0 z-30 flex flex-col items-center justify-center bg-white bg-opacity-60 backdrop-blur-xs">
           <Loading className="w-12 h-12" />
           <span className="mt-4 text-gray-600">Loading...</span>
         </div>

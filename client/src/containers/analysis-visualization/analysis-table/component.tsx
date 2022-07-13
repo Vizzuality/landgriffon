@@ -277,7 +277,7 @@ const AnalysisTable: React.FC = () => {
   return (
     <>
       <div className="flex justify-between">
-        <div className="w-full flex items-end justify-between">
+        <div className="flex items-end justify-between w-full">
           <AnalysisDynamicMetadata />
           <div>
             <LinkButton
@@ -298,7 +298,7 @@ const AnalysisTable: React.FC = () => {
         </div>
       </div>
       <div className="relative">
-        {isLoading && <Loading className="text-green-700 -ml-1 mr-3" />}
+        {isLoading && <Loading className="mr-3 -ml-1 text-green-700" />}
 
         <Table isLoading={isFetching} {...tableProps} handleIndicatorRows={handleIndicatorRows} />
       </div>

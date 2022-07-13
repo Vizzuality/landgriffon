@@ -25,9 +25,12 @@ export interface CustomChildComponents extends ChildComponents {
   headCell: ChildComponent<CustomHeadCell>;
 }
 
-export interface TableProps extends ITableProps {
+export interface TableProps extends Omit<ITableProps, 'paging'> {
   /** classNames to apply to the table */
   className?: string;
+  paging?: PagingOptions & {
+    totalItems?: number;
+  };
   /**
    * Whether data is currently being loaded. Will cause pagination to freeze its current state.
    * Defaults to `false`.

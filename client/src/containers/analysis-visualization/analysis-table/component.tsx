@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { uniq } from 'lodash';
-import { DataType, SortingMode } from 'ka-table/enums';
+import { DataType, PagingPosition, SortingMode } from 'ka-table/enums';
 import { DownloadIcon } from '@heroicons/react/outline';
 
 import { useImpactData } from 'hooks/impact';
@@ -50,17 +50,20 @@ const dataToCsv: (tableData: ITableData) => string = (tableData) => {
 };
 
 const AnalysisTable: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  console.log({ pageSize });
+
+  console.log({ currentPage, pageSize });
 
   const {
-    data: impactData,
+    data: {
+      data: { impactTable },
+      metadata,
+    },
     isLoading,
     isFetching,
   } = useImpactData({ 'page[number]': currentPage, 'page[size]': pageSize });
-  const {
-    data: { impactTable },
-  } = impactData;
 
   const totalIndicators = useMemo(() => {
     return !isLoading && impactTable.length === 1 ? impactTable[0].rows.length : impactTable.length;
@@ -308,8 +311,15 @@ const AnalysisTable: React.FC = () => {
         {isLoading && <Loading className="mr-3 -ml-1 text-green-700" />}
 
         <Table
-          pageNumber={currentPage}
-          pageSize={pageSize}
+          paging={{
+            enabled: true,
+            pageIndex: metadata.page - 1,
+            pagesCount: metadata.totalPages,
+            pageSize: metadata.size,
+            totalItems: metadata.totalPages,
+            pageSizes: [10, 20, 30, 40],
+            position: PagingPosition.Bottom,
+          }}
           onPageChange={(page) => setCurrentPage(page)}
           onPageSizeChange={(size) => setPageSize(size)}
           isLoading={isFetching}

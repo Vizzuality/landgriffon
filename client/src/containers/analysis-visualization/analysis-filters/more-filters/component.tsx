@@ -128,7 +128,7 @@ const MoreFilters: React.FC = () => {
         className={classNames(
           THEME.default,
           THEME.secondary,
-          'flex gap-x-1 justify-end rounded-md min-h-[2.5rem] border border-gray-300 px-2 select-none',
+          'flex gap-x-1 justify-end rounded-md min-h-[2.5rem] border border-gray-300 shadow-sm px-2 select-none',
         )}
         {...getReferenceProps({
           ref: reference,

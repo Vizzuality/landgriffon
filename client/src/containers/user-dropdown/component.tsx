@@ -37,7 +37,7 @@ const UserDropdown: React.FC = () => {
     <Popover as="div" className="flex justify-center w-full mb-5">
       <div>
         {(!session || status === 'loading') && <Loading className="text-white" />}
-        <Popover.Button ref={reference}>{renderAvatar()}</Popover.Button>
+        <Popover.Button ref={reference}>{renderAvatar('bg-black/20')}</Popover.Button>
       </div>
       {session &&
         createPortal(

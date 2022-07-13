@@ -73,14 +73,17 @@ const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({ loading = false, childr
       </section>
 
       {/* Secondary column (hidden on smaller screens) */}
-      <aside className="relative hidden lg:block lg:flex-shrink-0 lg:order-first" ref={asideRef}>
+      <aside
+        className="relative hidden lg:block lg:flex-shrink-0 lg:order-first bg-primary"
+        ref={asideRef}
+      >
         <Transition
           as="aside"
           show={!isSidebarCollapsed}
           enter="transition-opacity duration-75"
           enterFrom="opacity-0"
           enterTo="opacity-100"
-          leave="transition-opacity duration-150"
+          leave="transition-opacity duration-75"
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
           afterEnter={() => setPosition(asideRef?.current?.getBoundingClientRect())}
@@ -88,7 +91,7 @@ const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({ loading = false, childr
         >
           <div
             ref={scrollRef}
-            className="h-full lg:h-screen relative flex flex-col border-r border-gray-200 bg-white overflow-y-auto w-96 px-6"
+            className="h-full lg:h-screen relative flex flex-col bg-white overflow-y-auto w-96 px-12 rounded-tl-3xl"
           >
             {clonedChildren}
           </div>
@@ -101,7 +104,7 @@ const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({ loading = false, childr
         createPortal(
           <div
             className={classNames(
-              'absolute hidden lg:block top-5 transform -translate-x-1/2 z-20 ease-in-out duration-75',
+              'absolute hidden lg:block top-6 transform -translate-x-1/2 z-20 ease-in-out duration-75',
               {
                 'lg:hidden': !isSubContentCollapsed,
               },

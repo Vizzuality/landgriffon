@@ -4,7 +4,7 @@ export type CollapseButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> 
   active: boolean;
 };
 
-const ICON_CLASSNAMES = 'h-4 w-4 text-green-700';
+const ICON_CLASSNAMES = 'h-4 w-4 text-gray-900';
 
 const CollapseButton: React.FC<CollapseButtonProps> = ({
   active,
@@ -12,7 +12,7 @@ const CollapseButton: React.FC<CollapseButtonProps> = ({
 }: CollapseButtonProps) => (
   <button
     type="button"
-    className="rounded-full border-2 border-gray-100 w-11 h-11 flex justify-center items-center bg-white cursor-pointer hover:bg-green-50 hover:border-green-700 focus:outline-none"
+    className="rounded-full border border-gray-300 w-10 h-10 flex justify-center items-center bg-white cursor-pointer hover:bg-green-50 hover:border-green-700 focus:outline-none"
     onClick={onClick}
   >
     {active ? (

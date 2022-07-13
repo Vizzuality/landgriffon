@@ -2,6 +2,7 @@
     "$schema": "./contextual_metadata_schema.json",
     "name": "Baseline water stress",
     "description": "Baseline water stress measures the ratio of total water withdrawals to available renewable surface and groundwater supplies.",
+    "aggType": "mode",
     "legend": {
         "name": "Baseline water stress",
         "id": "",
@@ -42,5 +43,5 @@
         ]
     },
     "source": "Hofste, R., S. Kuzma, S. Walker, E.H. Sutanudjaja, et. al. 2019. “Aqueduct 3.0: Updated DecisionRelevant Global Water Risk Indicators.” Technical Note. Washington, DC: World Resources Institute. Available online at: https://www.wri.org/publication/aqueduct-30",
-    "licence": "Creative Commons"
+    "license": "Creative Commons"
 }

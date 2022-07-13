@@ -40,7 +40,10 @@
                 },
                 "type": {
                     "type": "string",
-                    "enum": ["category", "range"],
+                    "enum": [
+                        "category",
+                        "range"
+                    ],
                     "description": "Type of the legend. if 'category', each value of the LegendItem represents a category. if 'range', the value represents the upper bound of the bin, being the Legend.min the start of the first bin."
                 },
                 "items": {
@@ -49,7 +52,14 @@
                         "$ref": "#/$defs/LegendItem"
                     }
                 }
-            }
+            },
+            "required": [
+                "name",
+                "unit",
+                "min",
+                "type",
+                "items"
+            ]
         }
     },
     "type": "object",
@@ -65,15 +75,33 @@
         "legend": {
             "$ref": "#/$defs/Legend"
         },
+        "aggType": {
+            "type": "string",
+            "enum": [
+                "sum",
+                "mean",
+                "median",
+                "min",
+                "max",
+                "mode"
+            ],
+            "description": "The aggregation type that should be used to resample the layer."
+        },
         "source": {
             "type": "string",
             "description": "The citation of the layer"
         },
-        "licence": {
+        "license": {
             "type": "string",
-            "description": "The licence of the layer"
+            "description": "The license of the layer"
         }
-    }
+    },
+    "required": [
+        "name",
+        "description",
+        "legend",
+        "aggType",
+        "source",
+        "license"
+    ]
 }
-
-

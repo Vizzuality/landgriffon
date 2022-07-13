@@ -92,8 +92,6 @@ const Table: React.FC<TableProps> = ({
     [isLoading, totalRows, props.total, handleIndicatorRows],
   );
 
-  console.log({ tableProps });
-
   const handleApiSorting = useCallback(
     (action) => {
       const column = props.columns.find((column) => column.key === action.columnKey) as ColumnProps;
@@ -122,8 +120,6 @@ const Table: React.FC<TableProps> = ({
 
   const dispatch: DispatchFunc = useCallback(
     (action) => {
-      console.log({ action });
-
       switch (action.type) {
         case ActionType.UpdateSortDirection:
           if (sortingMode === SortingMode.Api) {
@@ -132,12 +128,6 @@ const Table: React.FC<TableProps> = ({
             updateTableProps(action);
           }
           break;
-        // case ActionType.UpdatePageIndex:
-        //   dispatch(loadData());
-        // case ActionType.LoadData:
-        //   // TODO: call callbacks on page/page size
-        //   // dispatch(updateData())
-        //   console.log('load data', action);
         default:
           updateTableProps(action);
       }
@@ -148,7 +138,6 @@ const Table: React.FC<TableProps> = ({
   useEffect(() => {
     // Data is loading; let's retain the existing data for now.
     if (isLoading) return;
-    console.log('Update data');
 
     dispatch(updateData(props.data));
   }, [props.data, dispatch, isLoading]);

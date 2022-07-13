@@ -14,22 +14,26 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
   <ApplicationLayout>
     <section
       aria-labelledby="primary-heading"
-      className="min-w-0 flex-1 h-screen flex flex-col overflow-y-auto p-6 pb-16 lg:pb-0"
+      className="min-w-0 flex-1 h-screen flex flex-col overflow-y-auto bg-gray-100"
     >
       {loading && <PageLoading />}
 
-      <header className="sticky top-0 bg-gray-100 z-10 pt-6">
-        <h1 className="text-center md:text-left">Admin</h1>
+      <header className="sticky top-0 bg-primary z-10">
+        <div className="flex items-center justify-between px-12 py-8 rounded-tl-3xl bg-white border-b border-gray-200">
+          <h1 className="text-left">Admin</h1>
 
-        <div className="flex flex-col md:flex-row justify-between items-center border-b border-gray-200">
-          <Tabs bottomBorder={false} activeTab={currentTab} tabs={ADMIN_TABS} />
-          {headerButtons && (
-            <div className="flex gap-3 mt-4 mb-4 md:-mt-2 md:mb-2">{headerButtons}</div>
-          )}
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <Tabs bottomBorder={false} activeTab={currentTab} tabs={ADMIN_TABS} />
+          </div>
         </div>
+        {headerButtons && (
+          <div className="bg-white">
+            <div className="flex justify-end gap-3 px-12 py-6">{headerButtons}</div>
+          </div>
+        )}
       </header>
 
-      <section className="pt-4 mt-4 pb-6 md:py-1">{children}</section>
+      <section className="px-12 py-6">{children}</section>
     </section>
   </ApplicationLayout>
 );

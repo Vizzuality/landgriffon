@@ -31,6 +31,6 @@ export function useTargets(queryParams: QueryParams = null): ResponseData {
         .then(({ data: responseData }) => responseData.data),
     DEFAULT_QUERY_OPTIONS,
   );
-  console.log('targets from api: ', response);
+
   return useMemo<ResponseData>((): ResponseData => response, [response]);
 }

@@ -1099,7 +1099,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         [
           'Address input OR coordinates are required for locations of type aggregation point. Address must be empty if coordinates are provided',
           'Address input OR coordinates must be provided for locations of type aggregation point. Latitude must be empty if address is provided',
-          'Address input OR coordinates must be provided for locations of type aggregation point. Latitude must be empty if address is provided',
+          'Address input OR coordinates must be provided for locations of type aggregation point. Longitude must be empty if address is provided',
         ],
       );
     });

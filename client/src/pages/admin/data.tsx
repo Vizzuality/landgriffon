@@ -52,9 +52,12 @@ const AdminDataPage: React.FC = () => {
   } = useModal();
 
   /** Processing data for use in the table props */
-
-  const allYears = uniq(
-    flatten(sourcingData.map(({ purchases }) => purchases.map(({ year }) => year))).sort(),
+  const allYears = useMemo(
+    () =>
+      Array.from(
+        new Set(sourcingData.flatMap(({ purchases }) => purchases.map((p) => p.year))),
+      ).sort(),
+    [sourcingData],
   );
 
   const { startYear, endYear, yearsInRange, setYearsRange } = useYearsRange({ years: allYears });

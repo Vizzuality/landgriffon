@@ -1,15 +1,13 @@
 import cx from 'classnames';
 import { forwardRef, SVGProps } from 'react';
 import Loading from 'components/loading';
-import { PlusIcon } from '@heroicons/react/solid';
-import { MailIcon } from '@heroicons/react/outline';
 
 const COMMON_CLASSNAMES =
   'inline-flex items-center overflow-hidden justify-center rounded-md cursor-pointer';
 const PRIMARY =
-  'border-transparent shadow-sm text-white bg-green-700 hover:bg-green-800 focus:outline-offset-2 focus:outline focus:outline-green-600';
+  'border-transparent shadow-sm text-white bg-primary hover:bg-green-800 focus:outline-offset-2 focus:outline focus:outline-green-600';
 const SECONDARY =
-  'border border-gray-300 focus:border-green-700 shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-green-700';
+  'border border-gray-300 focus:border-primary shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-green-700';
 
 export const THEME = {
   default: COMMON_CLASSNAMES,

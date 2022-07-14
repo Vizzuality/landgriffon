@@ -93,7 +93,7 @@ const SignIn: React.FC = () => {
                 </Checkbox>
 
                 <div className="text-sm">
-                  <a href="#" className="font-medium text-green-800 hover:text-green-700">
+                  <a href="#" className="font-medium text-primary hover:text-green-700">
                     Forgot your password?
                   </a>
                 </div>

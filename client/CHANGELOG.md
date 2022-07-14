@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Pagination functionality to the impact table [LANDGRIF-777](https://vizzuality.atlassian.net/browse/LANDGRIF-777)
 - Added new theme and layout for Landgriffon [LANDGRIF-782](https://vizzuality.atlassian.net/browse/LANDGRIF-782)
 - Show scenario comparison data in table view [LANDGRIF-745](https://vizzuality.atlassian.net/browse/LANDGRIF-745)
+- Redesign of new intervention creation [LANDGRIF-783](https://vizzuality.atlassian.net/browse/LANDGRIF-783)
 
 ### Changed
 

@@ -1,13 +1,13 @@
 import { TabsType } from 'components/tabs';
 
 export const ADMIN_TABS: TabsType = {
+  DATA: {
+    name: 'Actual data',
+    href: '/admin/data',
+  },
   SCENARIOS: {
     name: 'Scenarios',
     href: '/admin/scenarios',
-  },
-  DATA: {
-    name: 'Data',
-    href: '/admin/data',
   },
   TARGETS: {
     name: 'Targets',
@@ -16,9 +16,5 @@ export const ADMIN_TABS: TabsType = {
   USERS: {
     name: 'Users',
     href: '/admin/users',
-  },
-  SETTINGS: {
-    name: 'Settings',
-    href: '/admin/settings',
   },
 };

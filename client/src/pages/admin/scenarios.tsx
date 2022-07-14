@@ -6,7 +6,7 @@ const AdminSettingsPage: React.FC = () => {
   const data = [0, 1, 2, 3, 4, 5, 6];
 
   return (
-    <AdminLayout currentTab={ADMIN_TABS.SCENARIOS}>
+    <AdminLayout currentTab={ADMIN_TABS.SCENARIOS} title="Manage scenarios data">
       <Head>
         <title>Admin scenarios | Landgriffon</title>
       </Head>

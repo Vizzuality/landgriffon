@@ -261,9 +261,9 @@ const Table: React.FC<TableProps> = ({
   }
 
   useEffect(() => {
-    if (paging.pageSize === tableProps.paging?.pageSize || !tableProps.paging?.pageSize) return;
+    if (paging?.pageSize === tableProps.paging?.pageSize || !tableProps.paging?.pageSize) return;
     onPageSizeChange(tableProps.paging.pageSize);
-  }, [onPageSizeChange, paging.pageSize, tableProps.paging?.pageSize]);
+  }, [onPageSizeChange, paging?.pageSize, tableProps.paging?.pageSize]);
 
   useEffect(() => {
     dispatch(updatePagesCount(tableProps.paging?.pagesCount));

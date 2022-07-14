@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from 'react';
+import React, { useEffect, useState, Fragment, useMemo } from 'react';
 import { Transition } from '@headlessui/react';
 import { ChevronUpIcon } from '@heroicons/react/solid';
 import cx from 'classnames';
@@ -31,12 +31,13 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
   onEndYearSearch = () => null,
   lastYearWithData,
 }) => {
+  const startYearOption = useMemo(() => ({ label: `${startYear}`, value: startYear }), [startYear]);
+  const endYearOption = useMemo(() => ({ label: `${endYear}`, value: endYear }), [endYear]);
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [startYearOptions, setStartYearOptions] = useState<SelectOption[]>();
-  const [startYearOption, setStartYearOption] = useState<SelectOption>();
   const [endYearOptions, setEndYearOptions] = useState<SelectOption[]>();
-  const [endYearOption, setEndYearOption] = useState<SelectOption>();
 
   useEffect(() => {
     if (!years.length) return;
@@ -61,29 +62,17 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
   }, [endYear, isLoaded, startYear, years, yearsGap, lastYearWithData]);
 
   useEffect(() => {
-    if (!startYearOptions || !endYearOptions) return;
-
-    const startYearForRange =
-      startYear === endYear
-        ? startYearOptions[0]
-        : startYearOptions.find((option) => option.value === startYear);
-
-    setStartYearOption(startYearForRange);
-    setEndYearOption(endYearOptions.find((option) => option.value === endYear));
-  }, [startYearOptions, endYearOptions, startYear, endYear]);
-
-  useEffect(() => {
     if (!startYearOption || !endYearOption) return;
     if (startYear === startYearOption.value && endYear === endYearOption.value) return;
     onChange?.({ startYear: Number(startYearOption.value), endYear: Number(endYearOption.value) });
   }, [
     startYear,
     endYear,
-    startYearOption,
     startYearOptions,
     endYearOption,
     endYearOptions,
     onChange,
+    startYearOption,
   ]);
 
   const { reference, floating, x, y, context, strategy } = useFloating({
@@ -155,7 +144,9 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
                   showSearch={showSearch ?? showStartYearSearch}
                   options={startYearOptions}
                   current={startYearOption}
-                  onChange={setStartYearOption}
+                  onChange={({ value }) => {
+                    onChange?.({ startYear: Number(value), endYear });
+                  }}
                   onSearch={onStartYearSearch}
                   placeholder="Type any year"
                 />
@@ -173,7 +164,9 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
                         : undefined,
                   }))}
                   current={endYearOption}
-                  onChange={setEndYearOption}
+                  onChange={({ value }) => {
+                    onChange?.({ startYear, endYear: Number(value) });
+                  }}
                   onSearch={onEndYearSearch}
                   placeholder="Type any year"
                 />

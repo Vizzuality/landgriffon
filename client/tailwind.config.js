@@ -30,7 +30,6 @@ module.exports = {
       red: colors.red,
       yellow: colors.yellow,
       transparent: colors.transparent,
-      primary: '#078A3C',
       gray: {
         900: '#15181F',
         800: '#2D2F32',
@@ -55,6 +54,10 @@ module.exports = {
         100: '#D1FAE5',
         50: '#EBF6F1',
       },
+      // theme
+      primary: '#078A3C',
+      blue: '#A9E0F5',
+      yellow: '#F9DFB1',
     },
   },
   variants: {

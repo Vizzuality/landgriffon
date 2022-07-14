@@ -1,9 +1,12 @@
 import ApplicationLayout from 'layouts/application';
-import Tabs from 'components/tabs';
+import Link from 'next/link';
+import classNames from 'classnames';
+
 import PageLoading from 'containers/page-loading';
 
-import { AdminLayoutProps } from './types';
 import { ADMIN_TABS } from './constants';
+
+import type { AdminLayoutProps } from './types';
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({
   loading = false,
@@ -18,12 +21,23 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
     >
       {loading && <PageLoading />}
 
-      <header className="sticky top-0 bg-primary z-10">
-        <div className="flex items-center justify-between px-12 py-8 rounded-tl-3xl bg-white border-b border-gray-200">
-          <h1 className="text-left">{title}</h1>
+      <header className="sticky top-0 bg-primary z-20">
+        <div className="flex items-stretch justify-between px-12 rounded-tl-3xl bg-white border-b border-gray-200">
+          <h1 className="text-left my-8">{title}</h1>
 
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <Tabs bottomBorder={false} activeTab={currentTab} tabs={ADMIN_TABS} />
+          <div className="flex text-sm">
+            {Object.values(ADMIN_TABS).map((tab, index) => (
+              <Link key={tab.name} href={tab.href}>
+                <a
+                  className={classNames('flex items-center -mb-2px', {
+                    'ml-10': index !== 0,
+                    'text-primary border-b-2 border-primary': currentTab && tab === currentTab,
+                  })}
+                >
+                  {tab.name}
+                </a>
+              </Link>
+            ))}
           </div>
         </div>
       </header>

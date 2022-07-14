@@ -34,13 +34,15 @@ const Paging: React.FC<PagingProps> = ({
     [dispatch],
   );
 
+  const itemsInThisPage = pageIndex + 1 === pagesCount ? totalRows % pageSize : pageSize;
+
   const rowStartRange = pageIndex * pageSize + 1;
-  const rowEndRange = rowStartRange + pageSize - 1;
+  const rowEndRange = rowStartRange + itemsInThisPage - 1;
 
   return (
     <>
       <div className="flex flex-row gap-2">
-        <div className="my-auto text-gray-700">Rows per page</div>
+        <div className="my-auto text-sm text-gray-500">Rows per page</div>
         <div>
           <Select
             onChange={({ value }) => handlePageSizeChange(value as number)}
@@ -49,17 +51,17 @@ const Paging: React.FC<PagingProps> = ({
           />
         </div>
       </div>
-      <div className="my-auto">
+      <div className="my-auto text-sm text-gray-500">
         {rowStartRange}-{Math.min(totalRows, rowEndRange)} of {totalRows}
       </div>
       <div>
         <Pagination
-          // numNumberButtons={0}
+          numNumberButtons={0}
           isLoading={isLoading}
           totalPages={pagesCount}
           onPageClick={(page) => handlePageChange(page)}
           currentPage={pageIndex + 1}
-          numItems={totalRows % pageSize}
+          numItems={itemsInThisPage}
           totalItems={totalRows}
           showSummary={false}
         />

@@ -44,7 +44,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               'bg-gray-400 h-1 appearance-none': type === 'range',
               'pl-10': !!icon && theme !== 'inline-primary',
               'pl-3': !!icon && theme === 'inline-primary',
-              'border-gray-300 focus:ring-green-700 focus:border-green-700':
+              'border-gray-300 focus:ring-primary focus:border-primary':
                 theme === 'default' && !error,
               'border-red-600 focus:ring-red-600 focus:border-red-600': !!error,
               'pr-8': type === 'search',

@@ -61,6 +61,7 @@ const Paging: React.FC<PagingProps> = ({
           currentPage={pageIndex + 1}
           numItems={totalRows % pageSize}
           totalItems={totalRows}
+          showSummary={false}
         />
       </div>
     </>

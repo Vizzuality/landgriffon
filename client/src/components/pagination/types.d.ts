@@ -18,4 +18,6 @@ export type PaginationProps = {
   numNumberButtons?: number;
   /** Callback for when the user chooses a page */
   onPageClick?: (page: number) => void;
+  /** Whether to show the 'X out of Y entries' text */
+  showSummary?: boolean;
 };

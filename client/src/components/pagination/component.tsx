@@ -17,8 +17,9 @@ const Pagination: React.FC<PaginationProps> = ({
   currentPage,
   totalPages,
   totalItems,
-  numNumberButtons = 8,
   onPageClick,
+  showSummary = true,
+  numNumberButtons = 8,
 }) => {
   const calcPagingRange = useCallback(() => {
     // https://codereview.stackexchange.com/a/183472
@@ -69,10 +70,11 @@ const Pagination: React.FC<PaginationProps> = ({
         'flex flex-col md:flex-row gap-2 md:gap-0 justify-between items-center',
       )}
     >
-      <div className="text-xs font-bold text-gray-500">
-        {numItems} of {totalItems} entries
-      </div>
-
+      {showSummary && (
+        <div className="text-xs font-bold text-gray-500">
+          {numItems} of {totalItems} entries
+        </div>
+      )}
       <div className="flex items-center">
         <Button disabled={currentPage <= 1} onClick={handleFirstClick}>
           <ChevronDoubleLeftIcon className="w-4 h-4" />

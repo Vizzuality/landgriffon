@@ -313,7 +313,7 @@ const AnalysisTable: React.FC = () => {
             pageIndex: metadata.page - 1,
             pagesCount: metadata.totalPages,
             pageSize: metadata.size,
-            totalItems: metadata.totalPages,
+            totalItems: metadata.totalItems,
             pageSizes: [10, 20, 30, 40],
             position: PagingPosition.Bottom,
           }}

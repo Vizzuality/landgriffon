@@ -40,19 +40,16 @@ const AdminTargetsPage: React.FC = () => {
   }, [indicators]);
 
   return (
-    <AdminLayout
-      currentTab={ADMIN_TABS.TARGETS}
-      headerButtons={
-        <>
-          <Button theme="primary" onClick={handleCreateTarget}>
-            Create a new target
-          </Button>
-        </>
-      }
-    >
+    <AdminLayout currentTab={ADMIN_TABS.TARGETS}>
       <Head>
         <title>Admin targets | Landgriffon</title>
       </Head>
+
+      <div className="flex justify-end gap-3">
+        <Button theme="primary" onClick={handleCreateTarget}>
+          Create a new target
+        </Button>
+      </div>
 
       {!isLoading && !hasData && <NoData />}
 

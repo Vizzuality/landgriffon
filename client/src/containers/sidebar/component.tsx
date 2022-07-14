@@ -1,12 +1,6 @@
 import { Fragment, useCallback } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import {
-  CollectionIcon,
-  CogIcon,
-  ChartSquareBarIcon,
-  XIcon,
-  QuestionMarkCircleIcon,
-} from '@heroicons/react/outline';
+import { CollectionIcon, CogIcon, XIcon, QuestionMarkCircleIcon } from '@heroicons/react/outline';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { ui, setMenuMobileOpen } from 'store/features/ui';
 import MobileNavigation from 'containers/navigation/mobile';
@@ -15,7 +9,6 @@ import UserDropdown from 'containers/user-dropdown';
 import type { NavigationList } from 'containers/navigation/types';
 
 const navigationItems: NavigationList = [
-  { name: 'Overview', href: '/', icon: ChartSquareBarIcon },
   { name: 'Analysis', href: '/analysis', icon: CollectionIcon },
   { name: 'Admin', href: '/admin', icon: CogIcon },
   { name: 'Help', href: '#', icon: QuestionMarkCircleIcon },

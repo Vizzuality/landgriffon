@@ -7,9 +7,10 @@ load_fresh_data_prod          = false
 data_import_arguments_prod    = ["seed-data"]
 data_import_arguments_staging = ["seed-data"]
 repo_name                     = "landgriffion"
-environments                  = {
-  test : {
-    image_tag       = "staging"
-    load_fresh_data = false
-  },
+
+environments = {
+  test : {},
+  vcf : {},
+  tetrapack : {},
+  diageo : {},
 }

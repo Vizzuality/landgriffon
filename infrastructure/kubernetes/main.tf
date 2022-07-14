@@ -54,7 +54,7 @@ module "environment" {
   gmaps_api_key         = var.gmaps_api_key
   load_fresh_data       = lookup(each.value, "load_fresh_data", false)
   data_import_arguments = lookup(each.value, "data_import_arguments", ["seed-data"])
-  image_tag             = lookup(each.value, "image_tag", "main")
+  image_tag             = lookup(each.value, "image_tag", each.key)
   private_subnet_ids    = data.terraform_remote_state.core.outputs.private_subnet_ids
   repo_name             = var.repo_name
   domain                = var.domain

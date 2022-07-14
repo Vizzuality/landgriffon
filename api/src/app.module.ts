@@ -34,6 +34,7 @@ import { TargetsModule } from 'modules/targets/targets.module';
 import { CommandModule } from 'nestjs-command';
 import { UrlParamsModule } from 'modules/url-params/url-params.module';
 import { ContextualLayersModule } from 'modules/contextual-layers/contextual-layers.module';
+import { CachedDataModule } from 'modules/cached-data/cached-data.module';
 import * as config from 'config';
 
 const redisConfig: any = config.get('redis');
@@ -77,6 +78,7 @@ const redisConfig: any = config.get('redis');
     CommandModule,
     UrlParamsModule,
     ContextualLayersModule,
+    CachedDataModule,
   ],
   providers: [
     {

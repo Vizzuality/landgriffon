@@ -1,7 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from 'app.module';
 import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
-import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
+import {
+  CachedRawValue,
+  IndicatorRecordsService,
+} from 'modules/indicator-records/indicator-records.service';
 import {
   createAdminRegion,
   createBusinessUnit,
@@ -15,24 +18,17 @@ import {
 } from '../../entity-mocks';
 import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
 import { INDICATOR_RECORD_STATUS } from 'modules/indicator-records/indicator-record.entity';
-import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
-import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { Material } from 'modules/materials/material.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
-import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
-import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
-import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
-import { MaterialRepository } from 'modules/materials/material.repository';
 import { createWorldToCalculateIndicatorRecords } from '../../utils/indicator-records-preconditions';
 import { v4 as UUIDv4 } from 'uuid';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
@@ -47,6 +43,19 @@ import {
   h3DataMock,
 } from '../../e2e/h3-data/mocks/h3-data.mock';
 import { NotFoundException } from '@nestjs/common';
+import { CachedDataService } from '../../../src/modules/cached-data/cached-data.service';
+import {
+  CACHED_DATA_TYPE,
+  CachedData,
+} from '../../../src/modules/cached-data/cached.data.entity';
+import { IndicatorRepository } from '../../../src/modules/indicators/indicator.repository';
+import { SourcingRecordRepository } from '../../../src/modules/sourcing-records/sourcing-record.repository';
+import { AdminRegionRepository } from '../../../src/modules/admin-regions/admin-region.repository';
+import { BusinessUnitRepository } from '../../../src/modules/business-units/business-unit.repository';
+import { SupplierRepository } from '../../../src/modules/suppliers/supplier.repository';
+import { GeoRegionRepository } from '../../../src/modules/geo-regions/geo-region.repository';
+import { MaterialRepository } from '../../../src/modules/materials/material.repository';
+import { CachedDataRepository } from '../../../src/modules/cached-data/cached-data.repository';
 
 describe('Indicator Records Service', () => {
   let indicatorRecordRepository: IndicatorRecordRepository;
@@ -58,9 +67,11 @@ describe('Indicator Records Service', () => {
   let supplierRepository: SupplierRepository;
   let geoRegionRepository: GeoRegionRepository;
   let materialRepository: MaterialRepository;
+  let cachedDataRepository: CachedDataRepository;
 
   let indicatorRecordService: IndicatorRecordsService;
   let materialsToH3sService: MaterialsToH3sService;
+  let cachedDataService: CachedDataService;
 
   beforeAll(async () => {
     const testingModule: TestingModule = await Test.createTestingModule({
@@ -88,6 +99,8 @@ describe('Indicator Records Service', () => {
       testingModule.get<GeoRegionRepository>(GeoRegionRepository);
     materialRepository =
       testingModule.get<MaterialRepository>(MaterialRepository);
+    cachedDataRepository =
+      testingModule.get<CachedDataRepository>(CachedDataRepository);
 
     indicatorRecordService = testingModule.get<IndicatorRecordsService>(
       IndicatorRecordsService,
@@ -95,6 +108,7 @@ describe('Indicator Records Service', () => {
     materialsToH3sService = testingModule.get<MaterialsToH3sService>(
       MaterialsToH3sService,
     );
+    cachedDataService = testingModule.get<CachedDataService>(CachedDataService);
   });
 
   afterEach(async () => {
@@ -109,10 +123,15 @@ describe('Indicator Records Service', () => {
     await h3DataRepository.delete({});
     await geoRegionRepository.delete({});
     await materialRepository.delete({});
+    await cachedDataRepository.delete({});
 
     await dropH3GridTables();
 
-    await dropH3DataMock(['fake_material_table2002']);
+    await dropH3DataMock([
+      'fake_material_table2002',
+      'fake_material_table_harvest2002',
+      'fake_material_table_producer2002',
+    ]);
   });
 
   describe('createIndicatorRecordsBySourcingRecords', () => {
@@ -408,6 +427,259 @@ describe('Indicator Records Service', () => {
         1610,
       );
     });
+
+    test("When creating indicators without provided coefficients and the material has H3 data, the raw values for the calculations should be read from the cache if they're already present on the CachedData", async () => {
+      //ARRANGE
+      const indicatorPreconditions = await createPreconditions();
+
+      const sourcingData = {
+        sourcingRecordId: indicatorPreconditions.sourcingRecord2.id,
+        tonnage: indicatorPreconditions.sourcingRecord2.tonnage,
+        geoRegionId: indicatorPreconditions.sourcingLocation2.geoRegionId,
+        materialId: indicatorPreconditions.sourcingLocation2.materialId,
+        year: indicatorPreconditions.sourcingRecord2.year,
+      };
+
+      const h3MaterialProducer = await h3DataMock({
+        h3TableName: 'fakeMaterialTableProducer2002',
+        h3ColumnName: 'fakeMaterialColumn2002',
+        additionalH3Data: h3MaterialExampleDataFixture,
+        year: 2002,
+      });
+      const h3MaterialHarvest = await h3DataMock({
+        h3TableName: 'fakeMaterialTableHarvest2002',
+        h3ColumnName: 'fakeMaterialColumn2002',
+        additionalH3Data: h3MaterialExampleDataFixture,
+        year: 2002,
+      });
+      const materialH3DataProducer = await createMaterialToH3(
+        indicatorPreconditions.material2.id,
+        h3MaterialProducer.id,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
+      const materialH3DataHarvest = await createMaterialToH3(
+        indicatorPreconditions.material2.id,
+        h3MaterialHarvest.id,
+        MATERIAL_TO_H3_TYPE.HARVEST,
+      );
+
+      //Small "hack" to access the method to simplify part of the cache key
+      const indicatorRecordServiceAny: any = indicatorRecordService;
+      const generateIndicatorCacheKey: any =
+        indicatorRecordServiceAny.generateIndicatorCalculationCacheKey;
+      const generateMaterialCacheKey: any =
+        indicatorRecordServiceAny.generateMaterialCalculationCacheKey;
+
+      //Prepare Cache Data
+      const bioMap: Map<INDICATOR_TYPES, H3Data> = new Map();
+      bioMap.set(
+        INDICATOR_TYPES.BIODIVERSITY_LOSS,
+        indicatorPreconditions.biodiversityLoss,
+      );
+      bioMap.set(
+        INDICATOR_TYPES.DEFORESTATION,
+        indicatorPreconditions.deforestation,
+      );
+      const materialsMap: Map<MATERIAL_TO_H3_TYPE, H3Data> = new Map();
+      materialsMap.set(MATERIAL_TO_H3_TYPE.HARVEST, h3MaterialHarvest);
+      materialsMap.set(MATERIAL_TO_H3_TYPE.PRODUCER, h3MaterialProducer);
+
+      const bioCacheKey: any = generateIndicatorCacheKey(
+        indicatorPreconditions.sourcingLocation2.geoRegionId,
+        INDICATOR_TYPES.BIODIVERSITY_LOSS,
+        bioMap,
+        materialsMap,
+      );
+      const materialHarvestKey: any = generateMaterialCacheKey(
+        indicatorPreconditions.sourcingLocation2.geoRegionId,
+        h3MaterialHarvest,
+      );
+      const materialProducerKey: any = generateMaterialCacheKey(
+        indicatorPreconditions.sourcingLocation2.geoRegionId,
+        h3MaterialProducer,
+      );
+      const bioCache: CachedData = await cachedDataService.createCachedData(
+        bioCacheKey,
+        { rawValue: 450 } as CachedRawValue,
+        CACHED_DATA_TYPE.RAW_INDICATOR_VALUE_GEOREGION,
+      );
+      const harvestCache: CachedData = await cachedDataService.createCachedData(
+        materialHarvestKey,
+        { rawValue: 75 } as CachedRawValue,
+        CACHED_DATA_TYPE.RAW_MATERIAL_VALUE_GEOREGION,
+      );
+      const prodCache: CachedData = await cachedDataService.createCachedData(
+        materialProducerKey,
+        { rawValue: 200 } as CachedRawValue,
+        CACHED_DATA_TYPE.RAW_MATERIAL_VALUE_GEOREGION,
+      );
+
+      //ACT
+      await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
+        sourcingData,
+      );
+
+      //ASSERT
+      const allIndicators = await indicatorRecordRepository.find();
+      expect(allIndicators.length).toEqual(4);
+
+      await checkCreatedIndicatorRecord(
+        INDICATOR_TYPES.BIODIVERSITY_LOSS,
+        indicatorPreconditions.biodiversityLoss,
+        materialH3DataHarvest,
+        sourcingData,
+        1125,
+        200,
+      );
+    });
+
+    test('When creating indicators without provided coefficients and the raws values are not cached, the raw values for the calculations should be cached after the execution', async () => {
+      //ARRANGE
+      const indicatorPreconditions = await createPreconditions();
+
+      const sourcingData = {
+        sourcingRecordId: indicatorPreconditions.sourcingRecord2.id,
+        tonnage: indicatorPreconditions.sourcingRecord2.tonnage,
+        geoRegionId: indicatorPreconditions.sourcingLocation2.geoRegionId,
+        materialId: indicatorPreconditions.sourcingLocation2.materialId,
+        year: indicatorPreconditions.sourcingRecord2.year,
+      };
+
+      const h3MaterialHarvest = await h3DataMock({
+        h3TableName: 'fakeMaterialTableHarvest2002',
+        h3ColumnName: 'fakeMaterialColumn2002',
+        additionalH3Data: h3MaterialExampleDataFixture,
+        year: 2002,
+      });
+      const h3MaterialProducer = await h3DataMock({
+        h3TableName: 'fakeMaterialTableProducer2002',
+        h3ColumnName: 'fakeMaterialColumn2002',
+        additionalH3Data: h3MaterialExampleDataFixture,
+        year: 2002,
+      });
+      const materialH3DataProducer = await createMaterialToH3(
+        indicatorPreconditions.material2.id,
+        h3MaterialProducer.id,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
+      const materialH3DataHarvest = await createMaterialToH3(
+        indicatorPreconditions.material2.id,
+        h3MaterialHarvest.id,
+        MATERIAL_TO_H3_TYPE.HARVEST,
+      );
+
+      // Prepare cached data
+      const bioMap: Map<INDICATOR_TYPES, H3Data> = new Map();
+      bioMap.set(
+        INDICATOR_TYPES.BIODIVERSITY_LOSS,
+        indicatorPreconditions.biodiversityLoss,
+      );
+      bioMap.set(
+        INDICATOR_TYPES.DEFORESTATION,
+        indicatorPreconditions.deforestation,
+      );
+      const defMap: Map<INDICATOR_TYPES, H3Data> = new Map();
+      defMap.set(
+        INDICATOR_TYPES.DEFORESTATION,
+        indicatorPreconditions.deforestation,
+      );
+      const carbonMap: Map<INDICATOR_TYPES, H3Data> = new Map();
+      carbonMap.set(
+        INDICATOR_TYPES.CARBON_EMISSIONS,
+        indicatorPreconditions.carbonEmissions,
+      );
+      carbonMap.set(
+        INDICATOR_TYPES.DEFORESTATION,
+        indicatorPreconditions.deforestation,
+      );
+      const waterMap: Map<INDICATOR_TYPES, H3Data> = new Map();
+      waterMap.set(
+        INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+        indicatorPreconditions.waterRisk,
+      );
+
+      const materialsMap: Map<MATERIAL_TO_H3_TYPE, H3Data> = new Map();
+      materialsMap.set(MATERIAL_TO_H3_TYPE.HARVEST, h3MaterialHarvest);
+      materialsMap.set(MATERIAL_TO_H3_TYPE.PRODUCER, h3MaterialProducer);
+
+      //Small "hack" to access the method to simplify part of the cache key
+      const indicatorRecordServiceAny: any = indicatorRecordService;
+      const generateIndicatorCacheKey: any =
+        indicatorRecordServiceAny.generateIndicatorCalculationCacheKey;
+      const generateMaterialCacheKey: any =
+        indicatorRecordServiceAny.generateMaterialCalculationCacheKey;
+
+      const bioCacheKey: any = generateIndicatorCacheKey(
+        indicatorPreconditions.sourcingLocation2.geoRegionId,
+        INDICATOR_TYPES.BIODIVERSITY_LOSS,
+        bioMap,
+        materialsMap,
+      );
+      const carbonCacheKey: any = generateIndicatorCacheKey(
+        indicatorPreconditions.sourcingLocation2.geoRegionId,
+        INDICATOR_TYPES.CARBON_EMISSIONS,
+        carbonMap,
+        materialsMap,
+      );
+      const defCacheKey: any = generateIndicatorCacheKey(
+        indicatorPreconditions.sourcingLocation2.geoRegionId,
+        INDICATOR_TYPES.DEFORESTATION,
+        defMap,
+        materialsMap,
+      );
+      const waterCacheKey: any = generateIndicatorCacheKey(
+        indicatorPreconditions.sourcingLocation2.geoRegionId,
+        INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+        waterMap,
+        materialsMap,
+      );
+      const materialHarvestKey: any = generateMaterialCacheKey(
+        indicatorPreconditions.sourcingLocation2.geoRegionId,
+        h3MaterialHarvest,
+      );
+      const materialProdKey: any = generateMaterialCacheKey(
+        indicatorPreconditions.sourcingLocation2.geoRegionId,
+        h3MaterialProducer,
+      );
+
+      //ACT
+      await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
+        sourcingData,
+      );
+
+      //ASSERT
+
+      await checkCachedData(
+        bioCacheKey,
+        479600.00187158585,
+        CACHED_DATA_TYPE.RAW_INDICATOR_VALUE_GEOREGION,
+      );
+      await checkCachedData(
+        carbonCacheKey,
+        47.96,
+        CACHED_DATA_TYPE.RAW_INDICATOR_VALUE_GEOREGION,
+      );
+      await checkCachedData(
+        defCacheKey,
+        260,
+        CACHED_DATA_TYPE.RAW_INDICATOR_VALUE_GEOREGION,
+      );
+      await checkCachedData(
+        waterCacheKey,
+        0.00015400000363588332,
+        CACHED_DATA_TYPE.RAW_INDICATOR_VALUE_GEOREGION,
+      );
+      await checkCachedData(
+        materialProdKey,
+        1610,
+        CACHED_DATA_TYPE.RAW_MATERIAL_VALUE_GEOREGION,
+      );
+      await checkCachedData(
+        materialHarvestKey,
+        1610,
+        CACHED_DATA_TYPE.RAW_MATERIAL_VALUE_GEOREGION,
+      );
+    });
   });
 
   /**
@@ -441,6 +713,27 @@ describe('Indicator Records Service', () => {
       materialH3Data.h3DataId,
     );
     //Inidicator Coefficients are not checked because it's not used
+  }
+
+  /**
+   * Does expect checks on CachedDatas related to indicator and material calculations.
+   * Intended for CachedDatas of
+   * @param cacheKey
+   * @param value
+   * @param type
+   */
+  async function checkCachedData(
+    cacheKey: any,
+    value: number,
+    type: CACHED_DATA_TYPE,
+  ): Promise<void> {
+    const cachedData: CachedData | undefined =
+      await cachedDataService.getCachedDataByKey(cacheKey, type);
+
+    expect(cachedData).toBeDefined();
+    expect(cachedData?.data).toBeDefined();
+    expect(cachedData?.type).toEqual(type);
+    expect((cachedData?.data as CachedRawValue).rawValue).toEqual(value);
   }
 
   async function createPreconditions(): Promise<any> {

@@ -138,7 +138,6 @@ const Table: React.FC<TableProps> = ({
   useEffect(() => {
     // Data is loading; let's retain the existing data for now.
     if (isLoading) return;
-
     dispatch(updateData(props.data));
   }, [props.data, dispatch, isLoading]);
 
@@ -262,8 +261,7 @@ const Table: React.FC<TableProps> = ({
   }
 
   useEffect(() => {
-    if (paging.pageSize === tableProps.paging?.pageSize) return;
-    if (!tableProps.paging?.pageSize) return;
+    if (paging.pageSize === tableProps.paging?.pageSize || !tableProps.paging?.pageSize) return;
     onPageSizeChange(tableProps.paging.pageSize);
   }, [onPageSizeChange, paging.pageSize, tableProps.paging?.pageSize]);
 

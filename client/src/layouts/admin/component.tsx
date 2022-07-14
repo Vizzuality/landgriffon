@@ -26,11 +26,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
           <h1 className="text-left my-8">{title}</h1>
 
           <div className="flex text-sm">
-            {Object.values(ADMIN_TABS).map((tab, index) => (
+            {Object.values(ADMIN_TABS).map((tab) => (
               <Link key={tab.name} href={tab.href}>
                 <a
-                  className={classNames('flex items-center -mb-2px', {
-                    'ml-10': index !== 0,
+                  className={classNames('flex items-center -mb-2px first:ml-10', {
                     'text-primary border-b-2 border-primary': currentTab && tab === currentTab,
                   })}
                 >

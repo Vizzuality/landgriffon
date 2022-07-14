@@ -30,7 +30,7 @@ const DEFAULT_THEME: Theme = {
   borderRadius: 6,
   colors: {
     ...defaultTheme.colors,
-    primary: '#00634A',
+    primary: '#078A3C',
     primary25: '#EBF6F1',
   },
   spacing: {
@@ -52,23 +52,24 @@ const customStyles: (theme: SelectProps['theme'], error?: boolean) => StylesConf
     option: (provided, { isDisabled, isSelected }) => ({
       ...provided,
       ...tw`text-gray-900 truncate cursor-pointer hover:bg-green-50`,
-      ...(isDisabled && tw`bg-green-700`),
-      ...(isSelected && tw`text-white hover:bg-green-700`),
+      ...(isDisabled && tw`bg-primary`),
+      ...(isSelected && tw`text-white hover:bg-primary`),
     }),
-    control: (provided) => ({
+    control: (provided, { isFocused }) => ({
       ...provided,
       boxShadow: 'none',
       ...(error && tw`border-2 border-red-600`),
       ...(theme === 'inline-primary' &&
-        tw`border border-l-0 border-r-0 border-t-0 border-b-2 border-b-green-700 shadow-none rounded-none min-w-[30px] p-0 min-h-0`),
-      ...(theme === 'default' && tw`w-full rounded-md`),
+        tw`border border-l-0 border-r-0 border-t-0 border-b-2 border-b-primary shadow-none rounded-none min-w-[30px] p-0 min-h-0`),
+      ...(theme === 'default' && tw`w-full rounded-md border`),
       ...tw`px-4 gap-x-0.5`,
       ...(theme === 'default-bordernone' && tw`px-1 border-0`),
+      ...(isFocused && tw`ring-1 ring-primary`),
     }),
     singleValue: (provided) => ({
       ...provided,
       ...tw`my-auto`,
-      ...(theme === 'inline-primary' && tw`font-bold text-green-700`),
+      ...(theme === 'inline-primary' && tw`font-bold text-primary`),
     }),
     indicatorsContainer: (provided) => ({
       ...provided,
@@ -164,7 +165,7 @@ const Select: React.FC<SelectProps> = ({
       <div ref={reference}>
         <components.Control {...rest}>{children}</components.Control>
         {theme === 'inline-primary' && (
-          <div className="mt-0.5 border-t-green-700 border-t-4 border-x-4 border-x-transparent mx-auto w-0 h-0" />
+          <div className="mt-0.5 border-t-primary border-t-4 border-x-4 border-x-transparent mx-auto w-0 h-0" />
         )}
       </div>
     ),
@@ -194,7 +195,7 @@ const Select: React.FC<SelectProps> = ({
             if (numeric && !/^[0-9]*$/.test(e.currentTarget.value)) return;
             onChange?.(e);
           }}
-          inputClassName="ring-0 focus:ring-0 outline-none focus:outline-none focus:outline-0 truncate"
+          inputClassName="ring-0 focus:ring-0 outline-none focus:outline-none truncate"
         >
           {children}
         </components.Input>
@@ -208,8 +209,8 @@ const Select: React.FC<SelectProps> = ({
       <div {...innerProps} ref={innerRef}>
         <div
           className={classNames(
-            isFocused ? 'bg-green-50 text-green-700' : 'text-gray-900',
-            isSelected && 'bg-green-50 text-green-700',
+            isFocused ? ' bg-green-50 text-primary' : 'text-gray-900',
+            isSelected && 'bg-green-50 text-primary',
             'cursor-pointer select-none relative py-2 px-4',
             isDisabled && 'text-opacity-50 cursor-default',
           )}
@@ -261,7 +262,7 @@ const Select: React.FC<SelectProps> = ({
         components={{
           Option,
           IndicatorSeparator: null,
-          LoadingIndicator: () => <Loading className="text-green-700" />,
+          LoadingIndicator: () => <Loading className="text-primary" />,
           DropdownIndicator:
             theme === 'default' || theme === 'default-bordernone'
               ? ({ selectProps: { menuIsOpen } }) => (

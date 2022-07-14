@@ -28,15 +28,15 @@ const THEMES = {
       'flex-row max-w-full bg-white relative border border-gray-300 rounded-md shadow-sm px-3 cursor-pointer min-h-[2.5rem] h-min py-1 text-sm',
     arrow: 'items-center text-gray-900',
     treeNodes:
-      'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700 z-[100]',
+      'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-primary z-[100]',
     badge: 'text-sm',
   },
   'inline-primary': {
     label: 'truncate text-ellipsis font-bold cursor-pointer px-0 py-0',
-    wrapper: 'inline-flex border-b-2 border-green-700 max-w-none min-w-[30px] min-h-[26px]',
+    wrapper: 'inline-flex border-b-2 border-primary max-w-none min-w-[30px] min-h-[26px]',
     arrow: 'mx-auto w-fit',
     treeNodes:
-      'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-green-700',
+      'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-primary',
     treeContent: 'max-w-xl',
     badge: '',
   },
@@ -109,7 +109,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           className={classNames(THEMES[theme].treeNodes, {
             'w-full': fitContent,
             hidden: searchTerm !== '' && !filteredKeys.includes(item.value),
-            'bg-green-50 text-green-700 font-semibold': selectedKeys.includes(item.value),
+            'bg-green-50 text-primary font-semibold': selectedKeys.includes(item.value),
           })}
           style={{ paddingLeft: 16 * counter }}
         >
@@ -306,7 +306,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
         <div
           className={classNames('gap-1 h-min overflow-hidden', {
             'flex flex-wrap': theme !== 'inline-primary',
-            'ring-green-700 border-green-700': isOpen,
+            'ring-primary border-primary': isOpen,
             'border-red-600': theme === 'inline-primary' && error,
             [THEMES[theme].wrapper]: theme === 'inline-primary',
           })}
@@ -370,7 +370,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           {theme === 'inline-primary' ? (
             <div
               className={classNames(
-                'mt-0.5 border-t-green-700 border-t-4 border-x-4 border-x-transparent mx-auto w-0 h-0',
+                'mt-0.5 border-t-primary border-t-4 border-x-4 border-x-transparent mx-auto w-0 h-0',
                 { 'border-t-red-600': error },
               )}
             />
@@ -408,7 +408,7 @@ const TreeSelect: React.FC<TreeSelectProps> = ({
           >
             {loading && (
               <div className="p-4">
-                <Loading className="mr-3 -ml-1 text-green-700" />
+                <Loading className="mr-3 -ml-1 text-primary" />
               </div>
             )}
             {!loading && (

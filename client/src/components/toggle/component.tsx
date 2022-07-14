@@ -35,7 +35,7 @@ const Toggle: React.FC<ToggleProps> = ({ defaultActive = false, onChange }) => {
       <span
         aria-hidden="true"
         className={classNames(
-          enabled ? 'bg-green-600' : 'bg-gray-200',
+          enabled ? 'bg-primary' : 'bg-gray-200',
           'pointer-events-none absolute h-3.5 w-7 mx-auto rounded-full transition-colors ease-in-out duration-200',
         )}
       />

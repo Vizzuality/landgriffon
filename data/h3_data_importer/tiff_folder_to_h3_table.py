@@ -9,7 +9,7 @@ Postgres connection params read from environment:
  - API_POSTGRES_DATABASE
 
 Usage:
-    tiff_folder_to_h3_table.py <folder> <table> <dataType> <dataset> <year> [--h3-res=6] [--thread-count=4]
+    tiff_folder_to_h3_table.py <folder> <table> <dataType> <dataset> <year> [--contextual] [--h3-res=6] [--thread-count=4]
 
 Arguments:
     <folder>          Folder containing GeoTiffs.
@@ -19,9 +19,11 @@ Arguments:
     <year>            Year of the imported dataset
 Options:
     -h                Show help
+    --contextual      If the data has to be referenced in contextual_layers table.
     --h3-res=<res>    h3 resolution to use [default: 6].
+    --thread-count=<thread_count>    Number of threads to use [default: 4].
 """
-
+import json
 import os
 from io import StringIO
 from re import sub
@@ -36,6 +38,8 @@ from docopt import docopt
 from multiprocessing.pool import ThreadPool
 from functools import partial
 from tqdm import tqdm
+
+from utils import get_metadata
 
 DTYPES_TO_PG = {
     'boolean': 'bool',
@@ -209,7 +213,7 @@ def write_data_to_database_table(table, results, row):
     postgres_thread_pool.putconn(conn, close=True)
 
 
-def load_raster_list_to_h3_table(raster_list, table, data_type, dataset, year, h3_res, thread_count):
+def load_raster_list_to_h3_table(raster_list, table, data_type, dataset, year, h3_res, thread_count, is_contextual):
     conn = postgres_thread_pool.getconn()
 
     cursor = conn.cursor()
@@ -235,6 +239,8 @@ def load_raster_list_to_h3_table(raster_list, table, data_type, dataset, year, h
             VALUES ('{table}', '{column}', {h3_res}, {year});
         """)
         log.info(f"Inserted('{table}', '{column}', {h3_res}, {year}) into h3_data table.")
+        if is_contextual:
+            insert_in_contextual_layer(table, dataset, cursor)
         # inter id in material entity
         if data_type == 'indicator':
             cursor.execute(f"""select id from "indicator" where "nameCode" = '{dataset}'""")
@@ -265,7 +271,27 @@ def load_raster_list_to_h3_table(raster_list, table, data_type, dataset, year, h
     cursor.close()
 
 
-def main(folder, table, data_type, dataset, year, h3_res, thread_count):
+def insert_in_contextual_layer(table, dataset, cursor):
+    """Inserts table into contextual layer and updates h3_table with contextual layer id"""
+    cursor.execute(
+        f"""DELETE FROM "contextual_layer" WHERE "name" = '{dataset}'"""
+    )
+    log.info(f"Inserting '{dataset}' into contextual_layer table...")
+    cursor.execute(
+        f"""INSERT INTO "contextual_layer"  ("name", "metadata", "category")
+         VALUES ('{dataset}', '{json.dumps(get_metadata(table))}', 'Environmental datasets')
+         RETURNING id;
+        """
+    )
+    contextual_data_id = cursor.fetchall()[0][0]
+    # insert contextual_layer id into h3_table
+    cursor.execute(
+        f"""update "h3_data"  set "contextualLayerId" = '{contextual_data_id}' where  "h3tableName" = '{table}';"""
+    )
+    log.info(f"Updated contextualLayerId '{contextual_data_id}' in h3_data for {table}")
+
+
+def main(folder, table, data_type, dataset, year, h3_res, thread_count, is_contextual):
     tiffs = [
         os.path.join(folder, f)
         for f in os.listdir(folder)
@@ -273,7 +299,7 @@ def main(folder, table, data_type, dataset, year, h3_res, thread_count):
     ]
     log.info(f'Starting h3 import with {thread_count} threads for table {table}')
     log.info(f'Found {len(tiffs)} tiffs')
-    load_raster_list_to_h3_table(tiffs, table, data_type, dataset, year, h3_res, thread_count)
+    load_raster_list_to_h3_table(tiffs, table, data_type, dataset, year, h3_res, thread_count, is_contextual)
     log.info(f'Done with table {table}')
 
 
@@ -286,5 +312,6 @@ if __name__ == "__main__":
         args['<dataset>'],
         args['<year>'],
         int(args['--h3-res']),
-        int(args['--thread-count'] if args['--thread-count'] else "4")
+        int(args['--thread-count'] if args['--thread-count'] else "4"),
+        args['--contextual'],
     )

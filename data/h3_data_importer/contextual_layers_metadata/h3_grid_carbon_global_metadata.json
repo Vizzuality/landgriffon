@@ -1,0 +1,64 @@
+{
+    "$schema": "./contextual_metadata_schema.json",
+    "name": "Carbon emissions due to land use change",
+    "description": "Carbon emissions due to land use change (tCO2e) measures the release of biomass carbon associated with the forest that were lost near to a corpland area for a specific agricultural commodity.",
+    "aggType": "mode",
+    "legend": {
+        "name": "Human Development Index (HDI)",
+        "id": "",
+        "unit": "",
+        "min": 0.394,
+        "type": "range",
+        "items": [
+            {
+                "value": 0.546,
+                "label": "Low",
+                "color": "#B30000"
+            },
+            {
+                "value": 0.697,
+                "label": "Medium",
+                "color": "#E34A33"
+            },
+            {
+                "value": 0.796,
+                "label": "High",
+                "color": "#FC8D59"
+            },
+            {
+                "value": 0.957,
+                "label": "Very High",
+                "color": "#FDBB84"
+            }
+        ]
+    },
+    "source": "Global Forest Watch",
+    "license":  "CC BY 4.0",
+
+    "extra": {
+        "goal": [
+            "Goal 13: Take urgent action to combat climate change and its impacts*."
+        ],
+        "name": "Carbon emissions due to land use change",
+        "source": "Global Forest Watch",
+        "target": [
+            "Target 13. 2. Integrate climate change measures into national policies, strategies and planning."
+        ],
+        "license": "CC BY 4.0",
+        "cautions": "Data are the product of modeling and thus have an inherent degree of error and uncertainty. Users are strongly encouraged to read and fully comprehend the metadata and other available documentation prior to data use. Net flux reflects the total over the model period of 2001-2021, not an annual time series from which a trend can be derived. Thus, values must be divided by 20 to calculate average annual net flux. Uncertainty is higher in gross removals than emissions, driven largely by uncertainty in removal factors for established temperate forests outside the US and Europe. Values are applicable to forest areas (canopy cover >30 percent and >5 m height). See Harris et al. (2021) for further information on the forest definition used in the analysis. Emissions are from stand-replacing disturbances and do not include emissions from forest degradation. Activity data used as the basis of the estimates contain temporal inconsistencies: o Tree cover gain represents a cumulative total from 2000-2012, rather than annual gains. o Tree cover loss from 2001-2010 and 2011-2021 were produced from different algorithms, with later years of loss likely to be more sensitive to smaller-scale forest disturbances.",
+        "citation": "Harris et al. (2021). Global maps of 21st century forest carbon fluxes. Accessed on 28/04/2022 from Global Forest Watch.",
+        "datasets": [
+            "GFW Forest greenhouse gas net flux"
+        ],
+        "overview": "Net forest carbon flux represents the net exchange of carbon between forests and the atmosphere between 2001 and 2021, calculated as the balance between carbon emitted by forests and removed by (or sequestered by) forests during the model period (megagrams CO2e ha-1). Net carbon flux is calculated by subtracting average annual gross removals from average annual gross emissions in each modeled pixel; negative values are where forests were net sinks of carbon and positive values are where forests were net sources of carbon between 2001 and 2021. Net fluxes are calculated following IPCC Guidelines for national greenhouse gas inventories in each pixel where forests existed in 2000 or were established between 2000 and 2012 according to the Global Forest Change tree cover change data of Hansen et al. (2013). This layer reflects the cumulative net flux during the model period (2001-2020) and must be divided by 19 to obtain average annual net flux; net flux values cannot be assigned to individual years of the model. This net flux layer is part of the forest carbon flux model described in Harris et al. (2021). This paper introduces a geospatial monitoring framework for estimating global forest carbon fluxes which can assist governments and non-government actors with tracking greenhouse gas fluxes from forests and decreasing emissions or increasing removals by forests. All input layers were resampled to a common resolution of 0.00025 x 0.00025 degrees each to match Hansen et al. (2013). Net flux is available for download in two different area units over the model duration: 1) megagrams of CO2e ha-1, and 2) megagrams of CO2e pixel-1. The first is appropriate for visualizing (mapping) net flux because it represent the density of carbon fluxes per hectare. The second is appropriate for calculating the net flux in an area of interest (AOI) because the values of the pixels in the AOI can be summed to obtain the total carbon flux for that area. The values in the latter were calculated by adjusting the net flux per hectare by the size of each pixel, which varies by latitude. When estimating net flux occurring over a defined number of years between 2001 and 2021, divide the provided values by the model duration and then multiply by the number of years in the period of interest.",
+        "indicator": [
+            "Indicator 13.2.1. Number of countries that have communicated the establishment or operationalization of an integrated policy/strategy/plan which increases their ability to adapt to the adverse impacts of climate change, and foster climate resilience and low greenhouse gas emissions development in a manner that does not threaten food production (including a national adaptation plan, nationally determined contribution, national communication, biennial update report or other)."
+        ],
+        "resolution": "30m x 30m",
+        "date of content": "2001-2021",
+        "geographic coverage": "Global coverage",
+        "frequency of updates": "Annual"
+    }
+}
+
+

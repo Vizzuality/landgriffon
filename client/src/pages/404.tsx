@@ -11,11 +11,9 @@ import {
   CogIcon,
   QuestionMarkCircleIcon,
   ArrowLeftIcon,
-  HomeIcon,
 } from '@heroicons/react/outline';
 
 const navigationItems: NavigationList = [
-  { name: 'Overview', href: '/', icon: HomeIcon },
   { name: 'Analysis', href: '/analysis', icon: CollectionIcon },
   { name: 'Admin', href: '#', icon: CogIcon },
   { name: 'Help', href: '#', icon: QuestionMarkCircleIcon },

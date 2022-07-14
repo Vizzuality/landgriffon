@@ -41,6 +41,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Sort country list alphabetically and added search functionality to the input in the intervention form [LANDGRIF-776](https://vizzuality.atlassian.net/browse/LANDGRIF-776)
 - User was not able to choice an option in the selectors for intervention creation [LANDGRIF-785](https://vizzuality.atlassian.net/browse/LANDGRIF-785)
 
+### Removed
+- Overview link in the sidebar menu.
+
 ## 2022.06.27
 
 ### Added

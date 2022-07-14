@@ -8,7 +8,7 @@ import { ADMIN_TABS } from './constants';
 const AdminLayout: React.FC<AdminLayoutProps> = ({
   loading = false,
   currentTab,
-  headerButtons,
+  title = 'Admin',
   children,
 }: AdminLayoutProps) => (
   <ApplicationLayout>
@@ -20,17 +20,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
 
       <header className="sticky top-0 bg-primary z-10">
         <div className="flex items-center justify-between px-12 py-8 rounded-tl-3xl bg-white border-b border-gray-200">
-          <h1 className="text-left">Admin</h1>
+          <h1 className="text-left">{title}</h1>
 
           <div className="flex flex-col md:flex-row justify-between items-center">
             <Tabs bottomBorder={false} activeTab={currentTab} tabs={ADMIN_TABS} />
           </div>
         </div>
-        {headerButtons && (
-          <div className="bg-white">
-            <div className="flex justify-end gap-3 px-12 py-6">{headerButtons}</div>
-          </div>
-        )}
       </header>
 
       <section className="px-12 py-6">{children}</section>

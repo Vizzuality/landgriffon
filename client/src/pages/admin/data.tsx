@@ -123,23 +123,19 @@ const AdminDataPage: React.FC = () => {
   const isSearching = !!searchText;
 
   return (
-    <AdminLayout
-      currentTab={ADMIN_TABS.DATA}
-      headerButtons={
-        <>
-          <DownloadMaterialsDataButton
-            onDownloading={() => setDataDownloadError(null)}
-            onError={setDataDownloadError}
-          />
-          <Button theme="primary" onClick={openUploadDataSourceModal}>
-            Upload data source
-          </Button>
-        </>
-      }
-    >
+    <AdminLayout currentTab={ADMIN_TABS.DATA} title="Actual data">
       <Head>
         <title>Admin data | Landgriffon</title>
       </Head>
+      <div className="flex justify-end gap-3">
+        <DownloadMaterialsDataButton
+          onDownloading={() => setDataDownloadError(null)}
+          onError={setDataDownloadError}
+        />
+        <Button theme="primary" onClick={openUploadDataSourceModal}>
+          Upload data source
+        </Button>
+      </div>
 
       <UploadDataSourceModal
         open={isUploadDataSourceModalOpen}

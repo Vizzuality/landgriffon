@@ -2,7 +2,7 @@ import { Toaster } from 'react-hot-toast';
 import LandgriffonLogo from 'containers/logo/component';
 
 const AuthenticationLayout: React.FC = ({ children }) => (
-  <div className="min-h-screen bg-green-700 flex flex-col py-12 sm:px-6 lg:px-8">
+  <div className="min-h-screen bg-primary flex flex-col py-12 sm:px-6 lg:px-8">
     <div className="text-center lg:text-left">
       <LandgriffonLogo />
     </div>

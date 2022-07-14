@@ -1,4 +1,6 @@
-// react types
-import { AriaSearchFieldProps as SearchProps } from '@react-types/searchfield';
+import { InputHTMLAttributes } from 'react';
 
-export type { SearchProps };
+// react types
+export type SearchProps = InputHTMLAttributes & {
+  icon?: (props: React.ComponentProps<'svg'>) => JSX.Element;
+};

@@ -4062,6 +4062,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-aria/ssr@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "@react-aria/ssr@npm:3.2.0"
+  dependencies:
+    "@babel/runtime": ^7.6.2
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 30468b436f9d56636eb3fb89cbbbf861c55ad841e255e529d225a0efd9c23628badaee72c42ab3870b5f17a9d5b5163564a64e9b928565230a090cb4f7de23bf
+  languageName: node
+  linkType: hard
+
 "@react-aria/textfield@npm:^3.5.0":
   version: 3.5.2
   resolution: "@react-aria/textfield@npm:3.5.2"
@@ -15384,6 +15395,7 @@ __metadata:
     "@react-aria/dialog": 3.1.4
     "@react-aria/overlays": 3.6.3
     "@react-aria/searchfield": 3.2.2
+    "@react-aria/ssr": ^3.2.0
     "@react-hook/debounce": 4.0.0
     "@reduxjs/toolkit": 1.8.2
     "@storybook/addon-actions": 6.4.22

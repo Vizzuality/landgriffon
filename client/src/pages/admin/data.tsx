@@ -182,7 +182,7 @@ const AdminDataPage: React.FC = () => {
 
       {(hasData || isFetchingData) && (
         <>
-          <Table {...tableProps} />
+          {/* <Table {...tableProps} /> */}
           <Pagination className="my-4 ml-4 mr-2" {...paginationProps} />
         </>
       )}

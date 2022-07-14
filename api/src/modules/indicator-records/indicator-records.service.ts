@@ -31,6 +31,15 @@ import { IndicatorRecordCalculatedValuesDto } from 'modules/indicator-records/dt
 import { IndicatorNameCodeWithRelatedH3 } from 'modules/indicators/dto/indicator-namecode-with-related-h3.dto';
 import { IndicatorComputedRawDataDto } from 'modules/indicators/dto/indicator-computed-raw-data.dto';
 import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
+import { CachedDataService } from 'modules/cached-data/cached-data.service';
+import {
+  CACHED_DATA_TYPE,
+  CachedData,
+} from 'modules/cached-data/cached.data.entity';
+
+export interface CachedRawValue {
+  rawValue: number;
+}
 
 @Injectable()
 export class IndicatorRecordsService extends AppBaseService<
@@ -46,6 +55,7 @@ export class IndicatorRecordsService extends AppBaseService<
     private readonly h3DataService: H3DataService,
     private readonly materialsToH3sService: MaterialsToH3sService,
     private readonly h3DataYearsService: H3DataYearsService,
+    private readonly cachedDataService: CachedDataService,
   ) {
     super(
       indicatorRecordRepository,
@@ -476,7 +486,8 @@ export class IndicatorRecordsService extends AppBaseService<
       }
 
       const value: number =
-        await this.indicatorRecordRepository.getH3SumOverGeoRegionSQL(
+        //await this.indicatorRecordRepository.getH3SumOverGeoRegionSQL(
+        await this.calculateRawMaterialValueOverGeoRegion(
           geoRegionId,
           materialH3,
         );
@@ -499,7 +510,8 @@ export class IndicatorRecordsService extends AppBaseService<
         );
 
       const impactRawValue: number =
-        await this.indicatorRecordRepository.getIndicatorRecordRawValue(
+        //await this.indicatorRecordRepository.getIndicatorRecordRawValue(
+        await this.calculateRawIndicatorValueOverGeoRegion(
           geoRegionId,
           indicator.nameCode as INDICATOR_TYPES,
           indicatorH3s,
@@ -516,6 +528,144 @@ export class IndicatorRecordsService extends AppBaseService<
       production: materialValues.get(MATERIAL_TO_H3_TYPE.PRODUCER)!,
       harvestedArea: materialValues.get(MATERIAL_TO_H3_TYPE.HARVEST)!,
       indicatorValues: indicatorValues,
+    };
+  }
+
+  /**
+   * This functions calculates (or gets from the Cached Data if present) the material raw value
+   * for the given material and geoRegion, and puts the result on the cache if needed.
+   * @param geoRegionId
+   * @param materialH3
+   */
+  async calculateRawMaterialValueOverGeoRegion(
+    geoRegionId: string,
+    materialH3: H3Data,
+  ): Promise<number> {
+    const cacheKey: any = this.generateMaterialCalculationCacheKey(
+      geoRegionId,
+      materialH3,
+    );
+
+    const cachedData: CachedData | undefined =
+      await this.cachedDataService.getCachedDataByKey(
+        cacheKey,
+        CACHED_DATA_TYPE.RAW_MATERIAL_VALUE_GEOREGION,
+      );
+
+    if (cachedData) {
+      return (cachedData.data as CachedRawValue).rawValue;
+    }
+
+    const cachedRawValue: CachedRawValue = {
+      rawValue: await this.indicatorRecordRepository.getH3SumOverGeoRegionSQL(
+        geoRegionId,
+        materialH3,
+      ),
+    };
+
+    await this.cachedDataService.createCachedData(
+      cacheKey,
+      cachedRawValue,
+      CACHED_DATA_TYPE.RAW_MATERIAL_VALUE_GEOREGION,
+    );
+
+    return cachedRawValue.rawValue;
+  }
+
+  /**
+   * his functions calculates (or gets from the Cached Data if present) the indicator raw value
+   * for the given indicators, material and geoRegion, and puts the result on the cache if needed.
+   * @param geoRegionId
+   * @param indicatorType
+   * @param indicatorH3s
+   * @param materialH3s
+   */
+  async calculateRawIndicatorValueOverGeoRegion(
+    geoRegionId: string,
+    indicatorType: INDICATOR_TYPES,
+    indicatorH3s: Map<INDICATOR_TYPES, H3Data>,
+    materialH3s: Map<MATERIAL_TO_H3_TYPE, H3Data>,
+  ): Promise<number> {
+    const cacheKey: any = this.generateIndicatorCalculationCacheKey(
+      geoRegionId,
+      indicatorType,
+      indicatorH3s,
+      materialH3s,
+    );
+
+    const cachedData: CachedData | undefined =
+      await this.cachedDataService.getCachedDataByKey(
+        cacheKey,
+        CACHED_DATA_TYPE.RAW_INDICATOR_VALUE_GEOREGION,
+      );
+
+    if (cachedData) {
+      return (cachedData.data as CachedRawValue).rawValue;
+    }
+
+    const cachedRawValue: CachedRawValue = {
+      rawValue: await this.indicatorRecordRepository.getIndicatorRecordRawValue(
+        geoRegionId,
+        indicatorType,
+        indicatorH3s,
+        materialH3s,
+      ),
+    };
+
+    await this.cachedDataService.createCachedData(
+      cacheKey,
+      cachedRawValue,
+      CACHED_DATA_TYPE.RAW_INDICATOR_VALUE_GEOREGION,
+    );
+
+    return cachedRawValue.rawValue;
+  }
+
+  /// Calculation Cache related helpers
+  /**
+   * Creates a Material calculation cache key object, that will be used as the hashed for the cache
+   * @param geoRegionId
+   * @param materialH3
+   * @private
+   */
+  private generateMaterialCalculationCacheKey(
+    geoRegionId: string,
+    materialH3: H3Data,
+  ): any {
+    return { geoRegionId, materialH3Id: materialH3.id };
+  }
+
+  /**
+   * Creates a Indicator calculation cache key object, that will be used as the hashed for the cache
+   * The object is simplified in order to avoid issues when hashing the key object
+   * @param geoRegionId
+   * @param indicatorType
+   * @param indicatorH3s
+   * @param materialH3s
+   * @private
+   */
+  private generateIndicatorCalculationCacheKey(
+    geoRegionId: string,
+    indicatorType: INDICATOR_TYPES,
+    indicatorH3s: Map<INDICATOR_TYPES, H3Data>,
+    materialH3s: Map<MATERIAL_TO_H3_TYPE, H3Data>,
+  ): any {
+    // Convert the maps to {type, id} objects
+    const maoToMinifiedEntryArray = (
+      map: Map<INDICATOR_TYPES | MATERIAL_TO_H3_TYPE, H3Data>,
+    ): any => {
+      return Array.from(map).map(
+        (value: [INDICATOR_TYPES | MATERIAL_TO_H3_TYPE, H3Data]) => {
+          return { type: value[0].toString(), id: value[1].id };
+        },
+      );
+    };
+
+    return {
+      geoRegionId,
+      indicatorType,
+      indicatorH3Ids: maoToMinifiedEntryArray(indicatorH3s),
+      materialH3Ids: maoToMinifiedEntryArray(materialH3s),
     };
   }
 }

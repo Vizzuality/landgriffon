@@ -7,6 +7,7 @@ import { H3DataModule } from 'modules/h3-data/h3-data.module';
 import { IndicatorsModule } from 'modules/indicators/indicators.module';
 import { MaterialsModule } from 'modules/materials/materials.module';
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
+import { CachedDataModule } from 'modules/cached-data/cached-data.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records
     H3DataModule,
     MaterialsModule,
     SourcingRecordsModule,
+    CachedDataModule,
   ],
   controllers: [IndicatorRecordsController],
   providers: [IndicatorRecordsService],

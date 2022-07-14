@@ -1,4 +1,5 @@
-import { Button } from 'components/button';
+import { AnchorLink, Button } from 'components/button';
+import Link from 'next/link';
 
 const ScenarioCard: React.FC = () => (
   <div className="rounded-md bg-white p-6 space-y-6">
@@ -22,9 +23,14 @@ const ScenarioCard: React.FC = () => (
     </div>
     <div className="flex space-between">
       <Button theme="secondary">Delete</Button>
-      <div className="flex gap-2">
-        <div className="text-xs text-right">Modified: 2022/07/12</div>
-        <Button theme="secondary">Edit</Button>
+      <div className="flex flex-1 justify-end gap-2">
+        <div className="text-xs text-right">
+          Modified:
+          <br /> 2022/07/12
+        </div>
+        <Link href={`/admin/scenarios/1/edit`} passHref>
+          <AnchorLink theme="secondary">Edit</AnchorLink>
+        </Link>
         <Button theme="primary">Analyze</Button>
       </div>
     </div>

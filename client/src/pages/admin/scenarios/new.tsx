@@ -48,7 +48,7 @@ const CreateScenarioPage: React.FC = () => {
       <div className="grid grid-cols-12 gap-6">
         <div className="col-start-3 col-span-8">
           <h1>New scenario</h1>
-          <ScenarioForm onSubmit={handleCreateScenario} />
+          <ScenarioForm isSubmitting={createScenario.isLoading} onSubmit={handleCreateScenario} />
         </div>
       </div>
     </CleanLayout>

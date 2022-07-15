@@ -1,14 +1,18 @@
 import { AnchorLink, Button } from 'components/button';
 import Link from 'next/link';
+import { format } from 'date-fns';
 
-const ScenarioCard: React.FC = () => (
+import type { Scenario } from '../types';
+
+type ScenarioCardProps = {
+  data: Scenario;
+};
+
+const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => (
   <div className="rounded-md bg-white p-6 space-y-6 shadow-sm">
-    <h2>Scenario name</h2>
-    <p className="text-gray-500 text-xs leading-5">
-      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Possimus ut odit rerum quaerat
-      minima repellendus veritatis voluptatibus vero inventore error corrupti natus, vel sunt
-      perspiciatis nam voluptatum nulla. Corporis, debitis.
-    </p>
+    <h2>{data.title}</h2>
+    {data.description && <p className="text-gray-500 text-xs leading-5">{data.description}</p>}
+    {/* TO-DO: Fix growth rate of 1.5% meanwhile is implemented in the API */}
     <div>
       <h3>Growth rates</h3>
       <div className="flex space-x-4 mt-2">
@@ -23,12 +27,12 @@ const ScenarioCard: React.FC = () => (
     </div>
     <div className="flex space-between">
       <Button theme="secondary">Delete</Button>
-      <div className="flex flex-1 justify-end gap-2">
-        <div className="text-xs text-right">
+      <div className="flex flex-1 justify-end items-center gap-4">
+        <div className="text-xs text-right leading-4">
           Modified:
-          <br /> 2022/07/12
+          <br /> {format(new Date(data.updatedAt), 'yyyy/MM/dd')}
         </div>
-        <Link href={`/admin/scenarios/1/edit`} passHref>
+        <Link href={`/admin/scenarios/${data.id}/edit`} passHref>
           <AnchorLink theme="secondary">Edit</AnchorLink>
         </Link>
         <Button theme="primary">Analyze</Button>

@@ -11,6 +11,7 @@ import type { Scenario } from '../types';
 
 type ScenarioFormProps = {
   scenario?: Scenario;
+  isSubmitting?: boolean;
   onSubmit?: (scenario: Scenario) => void;
 };
 
@@ -19,7 +20,7 @@ const schemaValidation = yup.object({
   description: yup.string(),
 });
 
-const ScenarioForm: React.FC<ScenarioFormProps> = ({ scenario, onSubmit }) => {
+const ScenarioForm: React.FC<ScenarioFormProps> = ({ scenario, isSubmitting, onSubmit }) => {
   const {
     register,
     handleSubmit,
@@ -38,7 +39,7 @@ const ScenarioForm: React.FC<ScenarioFormProps> = ({ scenario, onSubmit }) => {
           type="text"
           name="title"
           id="title"
-          // defaultValue={title}
+          defaultValue={scenario?.title}
           placeholder="Type a scenario name"
           aria-label="Name"
           autoFocus
@@ -56,14 +57,16 @@ const ScenarioForm: React.FC<ScenarioFormProps> = ({ scenario, onSubmit }) => {
           rows={3}
           className="w-full"
           error={errors?.description?.message}
-          // defaultValue={description}
+          defaultValue={scenario?.description}
         />
       </div>
       <div className="flex justify-end col-span-2 space-x-6">
         <Link href="/admin/scenarios" passHref>
           <AnchorLink theme="secondary">Cancel</AnchorLink>
         </Link>
-        <Button type="submit">Save scenario</Button>
+        <Button loading={isSubmitting} type="submit">
+          Save scenario
+        </Button>
       </div>
     </form>
   );

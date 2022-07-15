@@ -3,41 +3,40 @@ import toast from 'react-hot-toast';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useQueryClient } from 'react-query';
 
 import { useScenario, useUpdateScenario } from 'hooks/scenarios';
 
 import CleanLayout from 'layouts/clean';
-import BackLink from 'components/back-link';
 import ScenarioForm from 'containers/scenarios/form';
+import BackLink from 'components/back-link';
+import Loading from 'components/loading';
 
 import type { ErrorResponse } from 'types';
 
 const UpdateScenarioPage: React.FC = () => {
   const { query } = useRouter();
-  console.log(query.scenarioId);
-  const { data } = useScenario(query?.scenarioId as string);
-  console.log(data);
+  const queryClient = useQueryClient();
+  const { data, isLoading } = useScenario(query?.scenarioId as string);
   const updateScenario = useUpdateScenario();
+
   const handleCreateScenario = useCallback(
     (scenarioFormData) => {
-      console.log(scenarioFormData);
-      // createScenario.mutate(scenarioFormData, {
-      //   onSuccess: ({ data }) => {
-      //     const { data: scenario } = data;
-      //     const { id, title } = scenario;
-      //     toast.success(`The scenario ${title} has been created`);
-      //     // adding some delay to make sure the user reads the success message
-      //     setTimeout(() => {
-      //       router.replace(`/admin/scenarios/${id}/edit`);
-      //     }, 1000);
-      //   },
-      //   onError: (error: ErrorResponse) => {
-      //     const { errors } = error.response?.data;
-      //     errors.forEach(({ title }) => toast.error(title));
-      //   },
-      // });
+      updateScenario.mutate(
+        { id: data.id, data: scenarioFormData },
+        {
+          onSuccess: () => {
+            toast.success('Your changes were successfully saved.');
+            queryClient.invalidateQueries('scenariosList');
+          },
+          onError: (error: ErrorResponse) => {
+            const { errors } = error.response?.data;
+            errors.forEach(({ meta }) => toast.error(meta.rawError.response.message));
+          },
+        },
+      );
     },
-    [updateScenario],
+    [data?.id, queryClient, updateScenario],
   );
 
   return (
@@ -53,7 +52,14 @@ const UpdateScenarioPage: React.FC = () => {
       <div className="grid grid-cols-12 gap-6">
         <div className="col-start-3 col-span-8">
           <h1>Edit scenario</h1>
-          <ScenarioForm onSubmit={handleCreateScenario} />
+          {isLoading && <Loading />}
+          {!isLoading && data && (
+            <ScenarioForm
+              isSubmitting={updateScenario.isLoading}
+              scenario={data}
+              onSubmit={handleCreateScenario}
+            />
+          )}
         </div>
       </div>
     </CleanLayout>

@@ -45,11 +45,18 @@ const DEFAULT_INFINITE_QUERY_OPTIONS = {
   refetchOnWindowFocus: false,
 };
 
-export function useScenarios(params = {}, options = {}): ResponseData {
+export function useScenarios({ params = {}, options = {} }): ResponseData {
   const { sort, filter, searchTerm } = useAppSelector(scenarios);
 
   //this should come from API
   const userId = '94757458-343444';
+  const paramsResult = {
+    ...(!!sort && { sort }),
+    ...(filter === 'private' && { 'filter[userId]': userId }),
+    ...(filter === 'public' && { 'filter[status]': filter }),
+    ...(!!searchTerm && { 'filter[title]': searchTerm }),
+    ...params,
+  };
 
   const response: ResponseData = useQuery<Scenario[]>(
     ['scenariosList', sort, filter, searchTerm],
@@ -58,13 +65,7 @@ export function useScenarios(params = {}, options = {}): ResponseData {
         .request({
           method: 'GET',
           url: '/scenarios',
-          params: {
-            ...(!!sort && { sort }),
-            ...(filter === 'private' && { 'filter[userId]': userId }),
-            ...(filter === 'public' && { 'filter[status]': filter }),
-            ...(!!searchTerm && { 'filter[title]': searchTerm }),
-            ...params,
-          },
+          params: paramsResult,
         })
         .then(({ data: responseData }) => responseData.data),
     {
@@ -177,11 +178,5 @@ export function useCreateScenario() {
 
   return useMutation(createScenario, {
     mutationKey: 'createScenario',
-    onSuccess: () => {
-      console.info('Success creating a new scenario');
-    },
-    onError: () => {
-      console.info('Error');
-    },
   });
 }

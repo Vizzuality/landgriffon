@@ -273,20 +273,24 @@ def load_raster_list_to_h3_table(raster_list, table, data_type, dataset, year, h
 
 def insert_in_contextual_layer(table, dataset, cursor):
     """Inserts table into contextual layer and updates h3_table with contextual layer id"""
-    cursor.execute(
-        f"""DELETE FROM "contextual_layer" WHERE "name" = '{dataset}'"""
+    cursor.execute("""
+        DELETE FROM "contextual_layer" WHERE "name" = %s;
+        """,
+        (dataset,)
     )
     log.info(f"Inserting '{dataset}' into contextual_layer table...")
     cursor.execute(
-        f"""INSERT INTO "contextual_layer"  ("name", "metadata", "category")
-         VALUES ('{dataset}', '{json.dumps(get_metadata(table))}', 'Environmental datasets')
+        """INSERT INTO "contextual_layer"  ("name", "metadata", "category")
+         VALUES (%s, %s, 'Environmental datasets')
          RETURNING id;
-        """
+        """,
+        (dataset, json.dumps(get_metadata(table)))
     )
     contextual_data_id = cursor.fetchall()[0][0]
     # insert contextual_layer id into h3_table
     cursor.execute(
-        f"""update "h3_data"  set "contextualLayerId" = '{contextual_data_id}' where  "h3tableName" = '{table}';"""
+        f"""update "h3_data"  set "contextualLayerId" = %s where  "h3tableName" = %s;""",
+        (contextual_data_id, table)
     )
     log.info(f"Updated contextualLayerId '{contextual_data_id}' in h3_data for {table}")
 

@@ -285,7 +285,7 @@ get-bwf_irrigated_prod: extract-water-footprint
 
 # Convert the wf tiffs in the folder to h3indexes at resolution 6
 convert-water-footprint: get-bwf_irrigated_prod
-	python tiff_folder_to_h3_table.py $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint h3_grid_wf_global indicator UWU_T 2005 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python tiff_folder_to_h3_table.py $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint h3_grid_wf_global indicator UWU_T 2005 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --contextual
 
 # BIODIVERSITY
 #Download biodiversity datasets
@@ -318,7 +318,7 @@ rasterize-biodiversity-file:
 
 # convert the biodiversity rasters to h3 tables
 convert-biodiversity: rasterize-biodiversity
-	python tiff_folder_to_h3_table.py $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow/lcia_psl_regional h3_grid_bio_global indicator BL_LUC_T 2015 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python tiff_folder_to_h3_table.py $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow/lcia_psl_regional h3_grid_bio_global indicator BL_LUC_T 2015 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --contextual
 
 
 # DEFORESTATION
@@ -356,7 +356,7 @@ preprocess-deforestation: download-deforestation
 convert-deforestation: preprocess-deforestation
 	@echo "Converting deforestation data... "
 	python tiff_folder_to_h3_table.py data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles h3_grid_deforestation_global \
-	indicator DF_LUC_T 2019 --h3-res=6 --thread-count=$$(( $(PARALLELIZATION_FACTOR) ))
+	indicator DF_LUC_T 2019 --h3-res=6 --thread-count=$$(( $(PARALLELIZATION_FACTOR) )) --contextual
 
 # CARBON EMISSIONS
 # Download net carbon flux:
@@ -381,7 +381,7 @@ preprocess-carbon: download-carbon
 
 # translate to h3 and import
 convert-carbon: preprocess-carbon
-	python tiff_folder_to_h3_table.py $(WORKDIR_CARBON)/GHGEmissions h3_grid_carbon_global indicator GHG_LUC_T 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python tiff_folder_to_h3_table.py $(WORKDIR_CARBON)/GHGEmissions h3_grid_carbon_global indicator GHG_LUC_T 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --contextual
 
 ##################################
 #        Satelligence data       #

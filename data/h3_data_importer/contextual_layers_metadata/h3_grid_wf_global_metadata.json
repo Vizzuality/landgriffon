@@ -1,10 +1,10 @@
 {
     "$schema": "./contextual_metadata_schema.json",
-    "name": "Carbon emissions due to land use change",
-    "description": "Carbon emissions due to land use change (tCO2e) measures the release of biomass carbon associated with the forest that were lost near to a corpland area for a specific agricultural commodity.",
+    "name": "Unsustainable water use",
+    "description": "Blue water footprint or water consumption indicator (m3) measures directly and indirectly the appropriation of freshwater resources. The Blue Water Footprint includes the water that has been sourced from surface or groundwater resources and is either evaporated, incorporated into a product or taken from one body of water and returned to another, or returned at a different time.",
     "aggType": "sum",
     "legend": {
-        "name": "Carbon emissions due to land use change",
+        "name": "Unsustainable water use",
         "id": "",
         "unit": "",
         "min": 0.394,
@@ -32,8 +32,6 @@
             }
         ]
     },
-    "source": "Global Forest Watch",
-    "license":  "CC BY 4.0"
+    "source": "Water Footprint Network",
+    "license": "CC BY 4.0"
 }
-
-

@@ -7,28 +7,38 @@
         "name": "Unsustainable water use",
         "id": "",
         "unit": "",
-        "min": 0.394,
+        "min": 1.37,
         "type": "range",
         "items": [
             {
-                "value": 0.546,
-                "label": "Low",
-                "color": "#B30000"
+                "value": 17492922000.00,
+                "label": "",
+                "color": "#808080"
             },
             {
-                "value": 0.697,
-                "label": "Medium",
-                "color": "#E34A33"
+                "value": 78225230000.00,
+                "label": "",
+                "color": "#FDD49E"
             },
             {
-                "value": 0.796,
-                "label": "High",
+                "value":  196827190000.00,
+                "label": "",
+                "color": "#FDBB84"
+            },
+            {
+                "value": 430112240000.00,
+                "label": "",
                 "color": "#FC8D59"
             },
             {
-                "value": 0.957,
-                "label": "Very High",
-                "color": "#FDBB84"
+                "value": 719765300000.00,
+                "label": "",
+                "color": "#E34A33"
+            },
+            {
+                "value": 1034112600000.00,
+                "label": "",
+                "color": "#B30000"
             }
         ]
     },

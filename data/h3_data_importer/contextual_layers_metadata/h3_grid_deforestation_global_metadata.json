@@ -8,27 +8,17 @@
         "id": "",
         "unit": "",
         "min": 0.394,
-        "type": "range",
+        "type": "category",
         "items": [
             {
-                "value": 0.546,
-                "label": "Low",
+                "value": 0,
+                "label": "No deforestation",
                 "color": "#B30000"
             },
             {
-                "value": 0.697,
-                "label": "Medium",
+                "value": 1,
+                "label": "Deforestation"
                 "color": "#E34A33"
-            },
-            {
-                "value": 0.796,
-                "label": "High",
-                "color": "#FC8D59"
-            },
-            {
-                "value": 0.957,
-                "label": "Very High",
-                "color": "#FDBB84"
             }
         ]
     },

@@ -28,9 +28,15 @@ const TargetItem: React.FC<Target> = ({ id, name, years }) => {
             <div className={TARGET_PILL_VALUE_CLASSNAMES}>{value}</div>
           </div>
         ))}
-        <Button theme="secondary" onClick={openEditTargetModal}>Edit</Button>
+        <Button theme="secondary" onClick={openEditTargetModal}>
+          Edit
+        </Button>
       </div>
-      <AdminEditTargetModal open={isUploadEditTargetModalOpen} onDismiss={closeEditTargetModal} />
+      <AdminEditTargetModal
+        title={name}
+        open={isUploadEditTargetModalOpen}
+        onDismiss={closeEditTargetModal}
+      />
     </div>
   );
 };

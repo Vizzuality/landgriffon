@@ -1,13 +1,16 @@
 import Head from 'next/head';
 import Link from 'next/link';
+import { PlusIcon } from '@heroicons/react/solid';
+
+import { useScenarios } from 'hooks/scenarios';
 
 import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import ScenarioCard from 'containers/scenarios/card';
 import { AnchorLink } from 'components/button';
-import { PlusIcon } from '@heroicons/react/solid';
+import Loading from 'components/loading';
 
 const ScenariosAdminPage: React.FC = () => {
-  const data = [0, 1, 2, 3, 4, 5, 6];
+  const { data, isLoading } = useScenarios({ params: { disablePagination: true } });
 
   return (
     <AdminLayout currentTab={ADMIN_TABS.SCENARIOS} title="Manage scenarios data">
@@ -22,10 +25,13 @@ const ScenariosAdminPage: React.FC = () => {
           </AnchorLink>
         </Link>
       </div>
-      <div className="grid grid-cols-3 gap-6">
-        {data.map((i) => (
-          <ScenarioCard key={`scenario-card-${i}`} />
-        ))}
+      <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6">
+        {isLoading && <Loading />}
+        {!isLoading &&
+          data &&
+          data.map((scenarioData) => (
+            <ScenarioCard key={`scenario-card-${scenarioData.id}`} data={scenarioData} />
+          ))}
       </div>
     </AdminLayout>
   );

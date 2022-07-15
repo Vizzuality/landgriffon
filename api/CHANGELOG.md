@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+##  2022-07-15
+### Added
+Added [LANDGRIF-778](https://vizzuality.atlassian.net/browse/LANDGRIF-7782)
+Adds a CachedData Entity for use on Indicator Record calculations to improve performance.
+
 ##  2022-06-12
 ### Added
 Added [LANDGRIF-722](https://vizzuality.atlassian.net/browse/LANDGRIF-722)

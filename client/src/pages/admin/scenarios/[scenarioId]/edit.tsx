@@ -31,8 +31,6 @@ const UpdateScenarioPage: React.FC = () => {
     scenarioId: data?.id,
   });
 
-  console.log(interventions);
-
   const handleUpdateScenario = useCallback(
     (scenarioFormData) => {
       updateScenario.mutate(

@@ -7,7 +7,7 @@ import type { SearchProps } from './types';
 
 export const Search: FC<SearchProps> = (props: SearchProps) => {
   const { onChange } = props;
-  const [value, setValue] = useState<SearchProps['value']>(null);
+  const [value, setValue] = useState<SearchProps['value']>('');
 
   const handleChange = useCallback(
     (e) => {

@@ -10,7 +10,9 @@ import { AnchorLink } from 'components/button';
 import Loading from 'components/loading';
 
 const ScenariosAdminPage: React.FC = () => {
-  const { data, isLoading } = useScenarios({ params: { disablePagination: true } });
+  const { data, isLoading } = useScenarios({
+    params: { disablePagination: true },
+  });
 
   return (
     <AdminLayout currentTab={ADMIN_TABS.SCENARIOS} title="Manage scenarios data">

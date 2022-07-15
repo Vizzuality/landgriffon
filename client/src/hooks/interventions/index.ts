@@ -77,6 +77,30 @@ interface Indicator {
 type ResponseInterventionsData = UseQueryResult<Intervention[]>;
 type ResponseInterventionsIndicators = UseQueryResult<Indicator[]>;
 
+export function useScenarioIntervention({
+  scenarioId,
+  params = {},
+  options = {},
+}: {
+  scenarioId: string;
+  params?: Record<string, unknown>;
+  options?: Partial<UseQueryOptions>;
+}) {
+  const query = useQuery(
+    ['scenarioInterventions', scenarioId, params],
+    async () =>
+      apiService
+        .request({
+          method: 'GET',
+          url: `/scenarios/${scenarioId}/interventions`,
+          params,
+        })
+        .then(({ data: responseData }) => responseData.data),
+    { ...DEFAULT_QUERY_OPTIONS, ...options },
+  );
+  return query as ResponseInterventionsData;
+}
+
 export function useInterventions(queryParams = {}): ResponseInterventionsData {
   const response = useQuery(
     ['interventionsList', queryParams],

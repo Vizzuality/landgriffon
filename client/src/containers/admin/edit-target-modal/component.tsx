@@ -1,19 +1,19 @@
-import { useMemo, useCallback, FC } from 'react';
-import { PlusCircleIcon, XCircleIcon } from '@heroicons/react/solid';
+import { useMemo, useState, FC, useEffect } from 'react';
+import { range } from 'lodash';
 
 // components
 import Modal from 'components/modal';
-import Select from 'components/select';
+import Select, { SelectProps } from 'components/select';
 import Button from 'components/button';
-import { Input } from 'components/forms';
 
 // containers
 import InfoTooltip from 'containers/info-tooltip';
+import TargetInputList from 'containers/targets/input-list';
 
 // hooks
-import { useFormContext } from 'react-hook-form';
+import { useSourcingRecordsYears } from 'hooks/sourcing-records';
 
-const AdminEditTargetModal: FC = ({ open, onDismiss }) => {
+const AdminEditTargetModal: FC = ({ title, open, onDismiss }) => {
   // const {
   //   // register,
   //   setValue,
@@ -21,6 +21,11 @@ const AdminEditTargetModal: FC = ({ open, onDismiss }) => {
   //   clearErrors,
   //   formState: { errors },
   // } = useFormContext();
+
+  const { data } = useSourcingRecordsYears();
+
+  const [selectedOption, setSelectedOption] = useState<SelectProps['current']>(null);
+
 
   // const handleDropdown = useCallback(
   //   (id: string, value: SelectOption) => {
@@ -30,31 +35,17 @@ const AdminEditTargetModal: FC = ({ open, onDismiss }) => {
   //   [setValue, clearErrors],
   // );
 
-  const optionsYears = [
-    {
-      label: '2018',
-      value: '2018',
-    },
-    {
-      label: '2019',
-      value: '2019',
-    },
-    {
-      label: '2020',
-      value: '2020',
-    },
-    {
-      label: '2021',
-      value: '2021',
-    },
-  ];
+  const yearOptions: SelectProps['options'] = useMemo(
+    () =>
+      data?.map((year) => ({
+        label: year.toString(),
+        value: year,
+      })),
+    [data],
+  );
+
   return (
-    <Modal
-      title="Deforestation loss due to land use change"
-      open={open}
-      onDismiss={onDismiss}
-      dismissable
-    >
+    <Modal title={title} open={open} onDismiss={onDismiss} dismissable>
       <p className="text-md text-gray-500 mb-8">
         Set up the baseline year and the targets for this indicator.
       </p>
@@ -67,7 +58,7 @@ const AdminEditTargetModal: FC = ({ open, onDismiss }) => {
           <Select
             // {...register('newYearID')}
             // current={optionsYears.find((option) => option.value === watch('newYearID'))}
-            options={optionsYears}
+            options={yearOptions}
             placeholder="Select"
             // onChange={(value) => handleDropdown('newProducerId', value)}
           />
@@ -78,48 +69,11 @@ const AdminEditTargetModal: FC = ({ open, onDismiss }) => {
           </div>
         </div>
       </div>
-      <legend className="flex font-medium leading-5">
+      <legend className="flex pb-2 font-medium leading-5">
         <span className="mr-2.5">Targets</span>
         <InfoTooltip info />
       </legend>
-      {/* This should go in a separate component, but not sure where to put it yet, so that is the reason for it to be here */}
-      <div className="items-center justify-between rounded-md bg-gray-50 shadow-sm p-4">
-        <div className="flex flex-row pb-2 font-semibold text-sm text-gray-500 uppercase">
-          <span className="basis-1/6 mr-2.5">Year</span>
-          <span className="basis-1/4 mr-2.5">Percentage</span>
-          <span className="basis-1/2 mr-2.5">Value</span>
-        </div>
-        <div className="flex flex-row items-center space-x-4 text-gray-900">
-          <Input
-            type="text"
-            id="year"
-            name="year"
-            placeholder="2018"
-            className="w-full basis-1/6"
-            defaultValue=""
-            // onInput={handleChange}
-          />
-          <Input
-            type="text"
-            id="percentage"
-            name="percentage"
-            placeholder="0"
-            className="w-full basis-1/4"
-            defaultValue=""
-            // onInput={handleChange}
-          />
-          <Input
-            type="text"
-            id="value"
-            name="value"
-            placeholder="0"
-            className="w-full basis-1/2"
-            defaultValue=""
-            // onInput={handleChange}
-          />
-          <XCircleIcon className="w-5 h-5 mr-3 fill-gray-400" />
-        </div>
-      </div>
+      <TargetInputList />
       {/* <Button theme="primary" icon={PlusCircleIcon} onClick={onDismiss}>
           Add a target
       </Button> */}

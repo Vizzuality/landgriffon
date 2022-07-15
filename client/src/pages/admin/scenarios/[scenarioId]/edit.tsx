@@ -4,15 +4,21 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useQueryClient } from 'react-query';
+import { XIcon, PlusIcon, DotsVerticalIcon } from '@heroicons/react/solid';
 
 import { useScenario, useUpdateScenario } from 'hooks/scenarios';
+import { useScenarioIntervention } from 'hooks/interventions';
 
 import CleanLayout from 'layouts/clean';
 import ScenarioForm from 'containers/scenarios/form';
 import BackLink from 'components/back-link';
 import Loading from 'components/loading';
+import Select from 'components/select';
+import { AnchorLink, Button } from 'components/button';
+import Input from 'components/forms/input';
 
 import type { ErrorResponse } from 'types';
+import Toggle from 'components/toggle';
 
 const UpdateScenarioPage: React.FC = () => {
   const { query } = useRouter();
@@ -20,7 +26,14 @@ const UpdateScenarioPage: React.FC = () => {
   const { data, isLoading } = useScenario(query?.scenarioId as string);
   const updateScenario = useUpdateScenario();
 
-  const handleCreateScenario = useCallback(
+  // Interventions
+  const { data: interventions, isLoading: isInterventionsLoading } = useScenarioIntervention({
+    scenarioId: data?.id,
+  });
+
+  console.log(interventions);
+
+  const handleUpdateScenario = useCallback(
     (scenarioFormData) => {
       updateScenario.mutate(
         { id: data.id, data: scenarioFormData },
@@ -57,8 +70,86 @@ const UpdateScenarioPage: React.FC = () => {
             <ScenarioForm
               isSubmitting={updateScenario.isLoading}
               scenario={data}
-              onSubmit={handleCreateScenario}
-            />
+              onSubmit={handleUpdateScenario}
+            >
+              {/* TO-DO: Promote to a specific component */}
+              <div>
+                <h2 className="mb-4">Growth rates</h2>
+                <div className="grid grid-cols-8 gap-4">
+                  <div className="col-span-4">
+                    <label className="block text-sm mb-2">Business unit</label>
+                    <Select current={null} disabled options={[]} />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-sm mb-2">Growth rate (linear)</label>
+                    <Input name="growth-rate" placeholder="0 % per year" disabled />
+                  </div>
+                  <div className="flex col-span-2 items-end">
+                    <Button disabled theme="secondary" className="w-full h-[40px]">
+                      Add growth rate
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2 p-2 border rounded-md border-gray-300 mt-4 mb-2">
+                  <div className="flex items-center rounded-full bg-blue py-0.5 px-3 text-sm">
+                    Entire company +1.5%/y
+                    <button disabled>
+                      <XIcon className="w-3 h-3 ml-2" />
+                    </button>
+                  </div>
+                </div>
+                <p className="text-xs mx-2">
+                  Add as many you want, more specific growth rates override less specific ones.
+                </p>
+              </div>
+
+              <div>
+                <div className="flex mb-4">
+                  <h2 className="flex-1 mb-4">Interventions</h2>
+                  {!isInterventionsLoading && interventions.length > 0 && (
+                    <Link href={`/admin/scenarios/${data.id}/interventions/new`} passHref>
+                      <AnchorLink theme="secondary" className="text-gray-900">
+                        <PlusIcon className="h-5 w-5 mr-2 text-gray-900" aria-hidden="true" />
+                        Add intervention
+                      </AnchorLink>
+                    </Link>
+                  )}
+                </div>
+                {isInterventionsLoading && <Loading />}
+                {!isInterventionsLoading && interventions.length > 0 && (
+                  <div className="space-y-2">
+                    {interventions.map((intervention) => (
+                      <div
+                        key={intervention.id}
+                        className="flex items-center p-4 bg-yellow rounded-md space-x-4"
+                      >
+                        <div className="flex flex-1 space-x-2">
+                          <Toggle defaultActive={intervention.status === 'active'} />
+                          <div>{intervention.title}</div>
+                        </div>
+                        <button>
+                          <DotsVerticalIcon className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {!isInterventionsLoading && interventions.length === 0 && (
+                  <div className="bg-gray-100 rounded-md px-10 py-16 space-y-6 text-center">
+                    <p className="text-sm">
+                      Each scenario should be formed by at least one intervention in your supply
+                      chain.
+                    </p>
+                    <Link href={`/admin/scenarios/${data.id}/interventions/new`} passHref>
+                      <AnchorLink theme="secondary" className="text-gray-900">
+                        <PlusIcon className="h-5 w-5 mr-2 text-gray-900" aria-hidden="true" />
+                        Add intervention
+                      </AnchorLink>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </ScenarioForm>
           )}
         </div>
       </div>

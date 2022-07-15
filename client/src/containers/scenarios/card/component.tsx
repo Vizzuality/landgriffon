@@ -14,7 +14,7 @@ type ScenarioCardProps = {
 
 const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
   const { data: interventions, isLoading: isInterventionsLoading } = useScenarioIntervention({
-    scenarioId: data.id,
+    scenarioId: data?.id,
   });
 
   return (
@@ -45,7 +45,7 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
       <div className="flex space-between">
         <Button theme="secondary">Delete</Button>
         <div className="flex flex-1 justify-end items-center gap-4">
-          <div className="text-xs text-right leading-4">
+          <div className="text-xs text-right text-gray-400 leading-4">
             Modified:
             <br /> {format(new Date(data.updatedAt), 'yyyy/MM/dd')}
           </div>

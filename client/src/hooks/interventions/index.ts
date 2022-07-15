@@ -96,7 +96,7 @@ export function useScenarioIntervention({
           params,
         })
         .then(({ data: responseData }) => responseData.data),
-    { ...DEFAULT_QUERY_OPTIONS, ...options },
+    { ...DEFAULT_QUERY_OPTIONS, ...options, enabled: !!scenarioId },
   );
   return query as ResponseInterventionsData;
 }

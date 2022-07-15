@@ -20,7 +20,12 @@ const schemaValidation = yup.object({
   description: yup.string(),
 });
 
-const ScenarioForm: React.FC<ScenarioFormProps> = ({ scenario, isSubmitting, onSubmit }) => {
+const ScenarioForm: React.FC<ScenarioFormProps> = ({
+  children,
+  scenario,
+  isSubmitting,
+  onSubmit,
+}) => {
   const {
     register,
     handleSubmit,
@@ -31,8 +36,8 @@ const ScenarioForm: React.FC<ScenarioFormProps> = ({ scenario, isSubmitting, onS
   });
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-6 mt-6 w-full">
-      <div className="col-span-2">
+    <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-6 mt-6 w-full">
+      <div>
         <label>Name</label>
         <Input
           {...register('title')}
@@ -46,7 +51,7 @@ const ScenarioForm: React.FC<ScenarioFormProps> = ({ scenario, isSubmitting, onS
           error={errors?.title?.message}
         />
       </div>
-      <div className="col-span-2">
+      <div>
         <label>
           Description <span className="text-gray-500">(optional)</span>
         </label>
@@ -60,7 +65,8 @@ const ScenarioForm: React.FC<ScenarioFormProps> = ({ scenario, isSubmitting, onS
           defaultValue={scenario?.description}
         />
       </div>
-      <div className="flex justify-end col-span-2 space-x-6">
+      {children}
+      <div className="flex justify-end space-x-6">
         <Link href="/admin/scenarios" passHref>
           <AnchorLink theme="secondary">Cancel</AnchorLink>
         </Link>

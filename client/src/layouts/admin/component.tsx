@@ -22,7 +22,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
       {loading && <PageLoading />}
 
       <header className="sticky top-0 bg-primary z-20">
-        <div className="flex items-stretch justify-between px-12 rounded-tl-3xl bg-white border-b border-gray-200">
+        <div className="flex items-stretch justify-between px-12 rounded-tl-3xl bg-white border-b border-gray-100">
           <h1 className="text-left my-8">{title}</h1>
 
           <div className="flex text-sm space-x-10">

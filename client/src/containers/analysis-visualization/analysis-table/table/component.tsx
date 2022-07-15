@@ -12,13 +12,13 @@ import { useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
 
 import Loading from 'components/loading';
+import Paging from 'components/table/paging';
 
-import { DEFAULT_CLASSNAMES, SHADOW_CLASSNAMES } from './constants';
-import { SortingMode, ApiSortingDirection } from './enums';
+import { DEFAULT_CLASSNAMES, SHADOW_CLASSNAMES } from 'components/table/constants';
+import { SortingMode, ApiSortingDirection } from 'components/table/enums';
 
-import type { TableProps, ColumnProps, ApiSortingType } from './types';
-import type { CustomChildComponents } from './types';
-import Paging from './paging';
+import type { TableProps, ColumnProps, ApiSortingType } from 'components/table/types';
+import type { CustomChildComponents } from 'components/table/types';
 
 const defaultProps: TableProps = {
   columns: [],
@@ -139,7 +139,6 @@ const Table: React.FC<TableProps> = ({
   useEffect(() => {
     // Data is loading; let's retain the existing data for now.
     if (isLoading) return;
-
     dispatch(updateData(props.data));
   }, [props.data, dispatch, isLoading]);
 
@@ -234,7 +233,6 @@ const Table: React.FC<TableProps> = ({
       ),
       ...props.childComponents?.paging,
     },
-    ...props.childComponents,
   };
 
   if (props.childComponents?.tableFoot) {

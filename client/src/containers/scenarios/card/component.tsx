@@ -2,7 +2,7 @@ import { AnchorLink, Button } from 'components/button';
 import Link from 'next/link';
 
 const ScenarioCard: React.FC = () => (
-  <div className="rounded-md bg-white p-6 space-y-6">
+  <div className="rounded-md bg-white p-6 space-y-6 shadow-sm">
     <h2>Scenario name</h2>
     <p className="text-gray-500 text-xs leading-5">
       Lorem ipsum, dolor sit amet consectetur adipisicing elit. Possimus ut odit rerum quaerat

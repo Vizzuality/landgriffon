@@ -1,9 +1,11 @@
 import { ISummaryCellProps, ICellProps } from 'ka-table/props';
 import { ITableProps } from 'ka-table';
 import { GroupRowData } from 'ka-table/models';
+import { CellProps } from 'components/table/cell';
 
-export type ITableData = ITableProps & {
+export type ITableData = Omit<ITableProps, 'columns'> & {
   key?: string;
+  columns: CellProps['column'][];
 };
 
 export type CustomColumn = ICellProps & {

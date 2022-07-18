@@ -29,31 +29,23 @@ const DataRow: React.FC<DataRowProps> = ({
   validation,
   firstColumnKey,
   isFirstColumnSticky,
-}: DataRowProps) => {
+}) => {
   const [isRowHovered, setIsRowHovered] = useState<boolean>(false);
 
-  const arrow = isTreeGroup
-    ? [
-        isTreeExpanded ? (
-          <ChevronDownIcon
-            key={rowKeyValue}
-            className="shrink-0 mt-0.5 mr-2 w-4 h-4 text-gray-900"
-          />
-        ) : (
-          <ChevronRightIcon
-            key={rowKeyValue}
-            className="shrink-0 mt-0.5 mr-2 w-4 h-4 text-gray-900"
-          />
-        ),
-      ]
-    : undefined;
+  const arrow = isTreeGroup ? (
+    isTreeExpanded ? (
+      <ChevronDownIcon key={rowKeyValue} className="shrink-0 mt-0.5 mr-2 w-4 h-4 text-gray-900" />
+    ) : (
+      <ChevronRightIcon key={rowKeyValue} className="shrink-0 mt-0.5 mr-2 w-4 h-4 text-gray-900" />
+    )
+  ) : undefined;
 
   const handleClick = useCallback(() => {
     if (!isTreeGroup) return;
     dispatch(updateTreeGroupsExpanded(rowKeyValue));
   }, [dispatch, isTreeGroup, rowKeyValue]);
 
-  console.log('row data: ', rowData);
+  // console.log('row data: ', rowData);
 
   return (
     <>
@@ -62,6 +54,7 @@ const DataRow: React.FC<DataRowProps> = ({
         const hasEditorValue = editableCell && editableCell.hasOwnProperty('editorValue');
         const editorValue = editableCell && editableCell.editorValue;
         const value = hasEditorValue ? editorValue : getValueByColumn(rowData, column);
+
         const cellDeep = treeDeep != null && index === 0 ? treeDeep : undefined;
         return (
           <Cell
@@ -70,7 +63,7 @@ const DataRow: React.FC<DataRowProps> = ({
               'font-semibold': isTreeExpanded && treeDeep === 0 && index === 0,
               'border-l border-dashed border-gray-200': column.isFirstYearProjected,
             })}
-            treeArrowElement={arrow?.pop()}
+            treeArrowElement={index === 0 && arrow}
             childComponents={childComponents}
             treeDeep={cellDeep}
             column={column}

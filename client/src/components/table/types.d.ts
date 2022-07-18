@@ -1,7 +1,7 @@
 import { ITableProps, ICellProps } from 'ka-table';
-import { ChildComponents } from 'ka-table/models';
+import { ChildComponents, Column as KaColumn } from 'ka-table/models';
 
-import { SortingMode } from './enums';
+import { DataType, SortingMode } from './enums';
 
 export type ColumnProps = ICellProps & {
   /** Custom cell types */
@@ -25,12 +25,17 @@ export interface CustomChildComponents extends ChildComponents {
   headCell: ChildComponent<CustomHeadCell>;
 }
 
-export interface TableProps extends Omit<ITableProps, 'paging'> {
+export type Column = Omit<KaColumn, 'dataType'> & {
+  dataType?: DataType;
+};
+export interface TableProps extends Omit<ITableProps, 'paging' | 'columns'> {
   /** classNames to apply to the table */
   className?: string;
   paging?: PagingOptions & {
     totalItems?: number;
   };
+
+  columns: Column[];
   /**
    * Whether data is currently being loaded. Will cause pagination to freeze its current state.
    * Defaults to `false`.

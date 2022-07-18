@@ -1,12 +1,12 @@
 import { useCallback, useMemo, useState } from 'react';
 import { uniq } from 'lodash';
-import { DataType, PagingPosition, SortingMode } from 'ka-table/enums';
+import { PagingPosition, SortingMode } from 'ka-table/enums';
 import { DownloadIcon } from '@heroicons/react/outline';
 
 import { useImpactData } from 'hooks/impact';
 
 import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
-import Table from 'components/table';
+import Table, { DataType } from 'components/table';
 import SummaryRow from 'components/table/summary-row';
 import Loading from 'components/loading';
 import LinkButton from 'components/button';
@@ -14,6 +14,11 @@ import LinkButton from 'components/button';
 import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 
 import type { ITableData } from './types';
+import { ITableProps } from 'ka-table';
+import { CellProps } from 'components/table/cell';
+import { ChildComponents } from 'ka-table/models';
+import { useAppSelector } from 'store/hooks';
+import { scenarios } from 'store/features/analysis/scenarios';
 
 const dataToCsv: (tableData: ITableData) => string = (tableData) => {
   const LINE_SEPARATOR = '\r\n';
@@ -52,7 +57,7 @@ const dataToCsv: (tableData: ITableData) => string = (tableData) => {
 const AnalysisTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-
+  const { isComparisonEnabled } = useAppSelector(scenarios);
   const {
     data: {
       data: { impactTable },
@@ -118,7 +123,9 @@ const AnalysisTable: React.FC = () => {
           })),
           datesRangeChart: datesRangeChartConfig(indicator.yearSum),
           ...indicator.yearSum
-            .map(({ year, value }) => ({ [year]: value }))
+            .map(({ year, value }) => ({
+              [year]: isComparisonEnabled ? { value, diff: 'TODO' } : value,
+            }))
             .reduce((a, b) => ({ ...a, ...b })),
         });
       }
@@ -178,7 +185,7 @@ const AnalysisTable: React.FC = () => {
     });
 
     return result;
-  }, [impactTable]);
+  }, [impactTable, isComparisonEnabled]);
 
   // Years from impact table
   const years = useMemo(() => {
@@ -240,13 +247,13 @@ const AnalysisTable: React.FC = () => {
         {
           key: 'datesRangeChart',
           title: `${minYear} - ${maxYear}`,
-          type: 'line-chart',
+          dataType: DataType.LineChart,
           width: 140,
         },
         ...years.map((year) => ({
           key: year.toString(),
           title: year.toString(),
-          dataType: DataType.Number,
+          dataType: isComparisonEnabled ? DataType.Object : DataType.Number,
           isFirstYearProjected: firstProjectedYear === year,
           isProjected: projectedYears.includes(year),
           width: 110,
@@ -254,8 +261,8 @@ const AnalysisTable: React.FC = () => {
       ],
       data: tableData,
       format: ({ value, column }) => {
-        if (column.key !== 'datesRangeChart' && column.key !== 'name' && value) {
-          return BIG_NUMBER_FORMAT(value);
+        if (column.key !== 'datesRangeChart' && column.key !== 'name' && value.value) {
+          return BIG_NUMBER_FORMAT(value.value);
         }
         if (column.key !== 'datesRangeChart' && column.key !== 'name' && Number.isNaN(+value)) {
           return '-';
@@ -272,9 +279,36 @@ const AnalysisTable: React.FC = () => {
             />
           ),
         },
+        cell: {
+          content: (props: CellProps) => {
+            const { column, value } = props;
+            switch (column.dataType) {
+              case DataType.LineChart:
+                return null;
+              case DataType.Number:
+                return BIG_NUMBER_FORMAT(value);
+              case DataType.Object:
+                // TODO: add comparison data here
+                return <div>the object</div>;
+              default:
+                return value;
+            }
+          },
+          elementAttributes: () => ({
+            className: 'p-0',
+          }),
+        } as ChildComponents['cell'],
       },
     };
-  }, [years, totalIndicators, tableData, firstProjectedYear, projectedYears, yearsSum]);
+  }, [
+    years,
+    totalIndicators,
+    tableData,
+    isComparisonEnabled,
+    firstProjectedYear,
+    projectedYears,
+    yearsSum,
+  ]);
 
   const handleIndicatorRows = useCallback((total) => {
     setTotalRows(total);
@@ -320,7 +354,7 @@ const AnalysisTable: React.FC = () => {
           onPageChange={(page) => setCurrentPage(page)}
           onPageSizeChange={(size) => setPageSize(size)}
           isLoading={isFetching}
-          {...tableProps}
+          {...(tableProps as ITableProps)}
           handleIndicatorRows={handleIndicatorRows}
         />
       </div>

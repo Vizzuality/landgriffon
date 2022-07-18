@@ -28,12 +28,23 @@ export class ImpactTableData {
   indicatorShortName: string;
   name: string;
   tonnes: string;
-  impact: number;
+  impact?: number;
   interventionImpact?: number;
   absoluteDifference?: number;
   percentageDifference?: number;
   scenarioInterventionId: string | null;
+  scenarioId: string | null;
   typeByIntervention: SOURCING_LOCATION_TYPE_BY_INTERVENTION | null;
+}
+
+export class ImpactTableForScenarioComparisson extends ImpactTableData {
+  scenarioOne?: ScenarioComparissonImpact;
+  scenarioTwo?: ScenarioComparissonImpact;
+}
+
+class ScenarioComparissonImpact {
+  scenarioId: string;
+  impact: number;
 }
 
 @EntityRepository(SourcingRecord)

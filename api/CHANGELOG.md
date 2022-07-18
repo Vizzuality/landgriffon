@@ -86,4 +86,13 @@ are grouped into one with tonnage accumulated
 Fixed
 Scenario Interventions - fix conditional validations of inputs
 
+## 2022-07-18
+
+### Temporary fix
+
+Fixed
+Indicator record calculations - if production and harvest area values are less than 1,
+related impact values are set to 0
+
+
 

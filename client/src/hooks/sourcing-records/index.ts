@@ -1,32 +1,38 @@
-import { responseSymbol } from 'next/dist/server/web/spec-compliant/fetch-event';
-import { useQuery, UseQueryOptions, UseQueryResult } from 'react-query';
+import { useQuery, UseQueryOptions } from 'react-query';
 
 import { apiRawService } from 'services/api';
 
-const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
+type SourcingRecordsYearsData = number[];
+
+const DEFAULT_QUERY_OPTIONS: UseQueryOptions<SourcingRecordsYearsData> = {
   placeholderData: [],
   retry: false,
   keepPreviousData: false,
   refetchOnWindowFocus: false,
 };
 
-type SourcingRecordsYearsData = number[];
-type SourcingRecordsYearsResponse = UseQueryResult<SourcingRecordsYearsData>;
-
-export function useSourcingRecordsYears(): SourcingRecordsYearsResponse {
+export function useSourcingRecordsYears({
+  params = {},
+  options = {},
+}: {
+  params: Record<string, unknown>;
+  options: UseQueryOptions<SourcingRecordsYearsData>;
+}) {
   const result = useQuery<SourcingRecordsYearsData>(
     ['SourcingRecordYears'],
     async () =>
       apiRawService
-        .request<SourcingRecordsYearsData>({
+        .request<{ data: SourcingRecordsYearsData }>({
           method: 'GET',
+          params,
           url: '/sourcing-records/years',
         })
-        .then((response) => response.data),
+        .then((response) => response.data?.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
-      select: (responseData) => responseData.data,
+      ...options,
     },
   );
-  return result as SourcingRecordsYearsResponse;
+
+  return result;
 }

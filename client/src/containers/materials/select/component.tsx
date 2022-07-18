@@ -33,7 +33,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
   businessUnitIds,
   originIds,
   locationTypes,
-  withSourcingLocations, // Do not a default; backend will override depth if this is set at all
+  withSourcingLocations = false, // Do not a default; backend will override depth if this is set at all
   onChange = () => null,
   theme,
   ellipsis,

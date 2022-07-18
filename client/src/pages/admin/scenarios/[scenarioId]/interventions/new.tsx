@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 import CleanLayout from 'layouts/clean';
+import InterventionForm from 'containers/interventions/form';
 import BackLink from 'components/back-link';
 
 const CreateInterventionPage: React.FC = () => {
@@ -21,6 +22,7 @@ const CreateInterventionPage: React.FC = () => {
       <div className="grid grid-cols-12 gap-6">
         <div className="col-start-3 col-span-8">
           <h1>New intervention</h1>
+          <InterventionForm />
         </div>
       </div>
     </CleanLayout>

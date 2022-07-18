@@ -320,6 +320,11 @@ export class IndicatorRecordsService extends AppBaseService<
     const calculatedIndicatorValues: IndicatorRecordCalculatedValuesDto =
       new IndicatorRecordCalculatedValuesDto();
 
+    // TODO Alternative strategy for calculations when production and harvest area values are very small
+
+    /** Temporary solution - checking if production and harvest area values are less than 1
+     *  the raw impact values and land use values will be set to 0
+     */
     const deforestationPerHarvestedAreaLandUse: number =
       harvestedArea < 1
         ? 0
@@ -334,6 +339,7 @@ export class IndicatorRecordsService extends AppBaseService<
     calculatedIndicatorValues.sourcingRecordId = sourcingRecordId;
     calculatedIndicatorValues.materialH3DataId = materialH3DataId;
     calculatedIndicatorValues.production = production;
+    // Land per tonn is set to 0 if production or harvest area are less than 1
     calculatedIndicatorValues.landPerTon =
       harvestedArea < 1 || production < 1 ? 0 : harvestedArea / production || 0;
     const landUse: number = calculatedIndicatorValues.landPerTon * tonnage || 0;
@@ -378,10 +384,18 @@ export class IndicatorRecordsService extends AppBaseService<
     const calculatedIndicatorValues: IndicatorRecordCalculatedValuesDto =
       new IndicatorRecordCalculatedValuesDto();
 
+    // TODO Alternative strategy for calculations when production and harvest area values are very small
+
+    /** Temporary solution - checking if production and harvest area values are less than 1
+     *  the raw impact values and land use values will be set to 0
+     */
+
     calculatedIndicatorValues.sourcingRecordId = sourcingRecordId;
     calculatedIndicatorValues.materialH3DataId = materialH3DataId;
     calculatedIndicatorValues.production = production;
-    calculatedIndicatorValues.landPerTon = harvestedArea / production || 0;
+    // Land per tonn is set to 0 if production or harvest area are less than 1
+    calculatedIndicatorValues.landPerTon =
+      harvestedArea < 1 || production < 1 ? 0 : harvestedArea / production || 0;
     const landUse: number = calculatedIndicatorValues.landPerTon * tonnage || 0;
     calculatedIndicatorValues.landUse = landUse;
 
@@ -393,8 +407,9 @@ export class IndicatorRecordsService extends AppBaseService<
         if (indicatorType === INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE) {
           calculatedIndicatorValues.values.set(indicatorType, value * tonnage);
         } else {
+          // Impact value is set to 0 if harvest area are less than 1
           const indicatorPerHarvestedAreaLandUse: number =
-            value / harvestedArea || 0;
+            harvestedArea < 1 ? 0 : value / harvestedArea || 0;
           calculatedIndicatorValues.values.set(
             indicatorType,
             indicatorPerHarvestedAreaLandUse * landUse,

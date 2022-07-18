@@ -321,16 +321,21 @@ export class IndicatorRecordsService extends AppBaseService<
       new IndicatorRecordCalculatedValuesDto();
 
     const deforestationPerHarvestedAreaLandUse: number =
-      sourcingRecordData.rawDeforestation / harvestedArea || 0;
+      harvestedArea < 1
+        ? 0
+        : sourcingRecordData.rawDeforestation / harvestedArea || 0;
     const biodiversityLossPerHarvestedAreaLandUse: number =
-      sourcingRecordData.rawBiodiversity / harvestedArea || 0;
+      harvestedArea < 1
+        ? 0
+        : sourcingRecordData.rawBiodiversity / harvestedArea || 0;
     const carbonLossPerHarvestedAreaLandUse: number =
-      sourcingRecordData.rawCarbon / harvestedArea || 0;
+      harvestedArea < 1 ? 0 : sourcingRecordData.rawCarbon / harvestedArea || 0;
 
     calculatedIndicatorValues.sourcingRecordId = sourcingRecordId;
     calculatedIndicatorValues.materialH3DataId = materialH3DataId;
     calculatedIndicatorValues.production = production;
-    calculatedIndicatorValues.landPerTon = harvestedArea / production || 0;
+    calculatedIndicatorValues.landPerTon =
+      harvestedArea < 1 || production < 1 ? 0 : harvestedArea / production || 0;
     const landUse: number = calculatedIndicatorValues.landPerTon * tonnage || 0;
     calculatedIndicatorValues.landUse = landUse;
 

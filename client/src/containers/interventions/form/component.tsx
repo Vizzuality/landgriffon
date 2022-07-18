@@ -110,7 +110,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
             // businessUnitIds={businessUnitIds}
             // supplierIds={supplierIds}
             // originIds={adminRegionIds}
-            onChange={materialIdsRegister.onChange}
+            onChange={(values) => materialIdsRegister.onChange(values)}
             // error={!!errors?.businessUnitIds?.message}
           />
         </div>

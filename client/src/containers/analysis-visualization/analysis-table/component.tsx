@@ -150,7 +150,9 @@ const AnalysisTable: React.FC = () => {
           })),
           datesRangeChart: datesRangeChartConfig(row.values),
           ...row.values
-            .map(({ year, value }) => ({ [year as string]: value }))
+            .map(({ year, value, ...rest }) => ({
+              [year as number]: showComparison ? { value, ...rest } : value,
+            }))
             .reduce((a, b) => ({ ...a, ...b })),
         });
 
@@ -166,7 +168,9 @@ const AnalysisTable: React.FC = () => {
               name: childRow.name,
               datesRangeChart: datesRangeChartConfig(childRow.values),
               ...childRow.values
-                .map(({ year, value }) => ({ [year as string]: value }))
+                .map(({ year, value, ...rest }) => ({
+                  [year as number]: showComparison ? { value, ...rest } : value,
+                }))
                 .reduce((a, b) => ({ ...a, ...b })),
             });
 
@@ -180,7 +184,9 @@ const AnalysisTable: React.FC = () => {
                   name: grandChildRow.name,
                   datesRangeChart: datesRangeChartConfig(grandChildRow.values),
                   ...grandChildRow.values
-                    .map(({ year, value }) => ({ [year as string]: value }))
+                    .map(({ year, value, ...rest }) => ({
+                      [year as number]: showComparison ? { value, ...rest } : value,
+                    }))
                     .reduce((a, b) => ({ ...a, ...b })),
                 });
               });

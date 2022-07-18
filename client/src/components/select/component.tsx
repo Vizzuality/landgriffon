@@ -61,7 +61,7 @@ const customStyles: (theme: SelectProps['theme'], error?: boolean) => StylesConf
       ...(error && tw`border-2 border-red-600`),
       ...(theme === 'inline-primary' &&
         tw`border border-l-0 border-r-0 border-t-0 border-b-2 border-b-primary shadow-none rounded-none min-w-[30px] p-0 min-h-0`),
-      ...(theme === 'default' && tw`w-full rounded-md border`),
+      ...(theme === 'default' && tw`w-full border rounded-md`),
       ...tw`px-4 gap-x-0.5`,
       ...(theme === 'default-bordernone' && tw`px-1 border-0`),
       ...(isFocused && tw`ring-1 ring-primary`),
@@ -78,7 +78,7 @@ const customStyles: (theme: SelectProps['theme'], error?: boolean) => StylesConf
     indicatorSeparator: () => tw`hidden`,
     menu: (provided) => ({
       ...provided,
-      ...tw`h-auto my-0 overflow-hidden border rounded-md shadow-md border-gray-50 min-w-[11rem]`,
+      ...tw`static h-auto my-0 overflow-hidden border rounded-md shadow-md border-gray-50 min-w-[11rem]`,
     }),
     menuList: (provided) => ({ ...provided, ...tw`py-0` }),
     valueContainer: (provided) => ({ ...provided, ...tw`px-0` }),

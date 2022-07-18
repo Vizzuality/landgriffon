@@ -94,7 +94,7 @@ const AdminDataPage: React.FC = () => {
         { key: 'locationType', title: 'Location Type', dataType: DataType.String },
         { key: 'country', title: 'Country', dataType: DataType.String },
         ...yearsData.columns.map((column) => ({ ...column, isSortable: false })),
-      ],
+      ] as TableProps['columns'],
       data: merge(sourcingData, yearsData.data),
       sortingMode: SortingMode.Api,
       defaultSorting: sorting,

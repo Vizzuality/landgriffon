@@ -341,11 +341,11 @@ transform-deforestation-file:
 	table_name=`basename -s .tif $(FILE) | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
 	wget -q -O "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" $(FILE) ; \
 	rm -f "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
-	gdal_calc.py --calc "(A>19)" --format GTiff --type Byte --NoDataValue 0.0 -A "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" --A_band 1 --outfile "$(WORKDIR_DEFORESTATION)/$${table_name}_2020.tif";
-	rm -f "$(WORKDIR_DEFORESTATION)/$${table_name}.tif";
-	gdalwarp -s_srs EPSG:4326 -t_srs EPSG:4326 -r sum -tr 0.0833333333333286 0.0833333333333286 -multi -of GTiff -wo NUM_THREADS=ALL_CPUS "$(WORKDIR_DEFORESTATION)/$${table_name}_2020.tif" "$(WORKDIR_DEFORESTATION)/$${table_name}_2020_10km.tif";
-	rm -f "$(WORKDIR_DEFORESTATION)/$${table_name}_2020.tif";
-	gdal_calc.py --calc "(A/2833882.6666666665)*85016480" --format GTiff --type Float32 -A "$(WORKDIR_DEFORESTATION)/$${table_name}_2020_10km.tif" --A_band 1 --outfile "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/$${table_name}_2020_density.tif";
+	gdal_calc.py --quiet --calc "(A>19)" --format GTiff --type Byte --co="BIGTIFF=IF_SAFER" --co="COMPRESS=DEFLATE" --co="PREDICTOR=2" --NoDataValue 0.0 -A "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" --A_band 1 --outfile "$(WORKDIR_DEFORESTATION)/$${table_name}_2020.tif"; \
+	rm -f "$(WORKDIR_DEFORESTATION)/$${table_name}.tif"; \
+	gdalwarp -s_srs EPSG:4326 -t_srs EPSG:4326 -r sum -tr 0.0833333333333286 0.0833333333333286 -multi -of GTiff -wo NUM_THREADS=ALL_CPUS "$(WORKDIR_DEFORESTATION)/$${table_name}_2020.tif" "$(WORKDIR_DEFORESTATION)/$${table_name}_2020_10km.tif"; \
+	rm -f "$(WORKDIR_DEFORESTATION)/$${table_name}_2020.tif"; \
+	gdal_calc.py --calc "(A/2833882.6666666665)*85016480" --format GTiff --type Float32 -A "$(WORKDIR_DEFORESTATION)/$${table_name}_2020_10km.tif" --A_band 1 --outfile "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/$${table_name}_2020_density.tif"; \
 	rm -f "$(WORKDIR_DEFORESTATION)/$${table_name}_2020_10km.tif";
 
 preprocess-deforestation: download-deforestation

@@ -1,14 +1,16 @@
 import cx from 'classnames';
 
 import CellEditor from 'ka-table/Components/CellEditor/CellEditor';
-import CellText from 'ka-table/Components/CellText/CellText';
+import CellElement from 'ka-table/Components/CellComponent/CellComponent';
 
 import LineChartCell from 'components/table/cell/line-chart-cell';
 import { DEFAULT_CLASSNAMES, SHADOW_CLASSNAMES } from 'components/table/constants';
 
 import { CellProps } from './types';
+import { DataType } from '../enums';
+import { ICellEditorProps, ICellProps } from 'ka-table/props';
 
-const Cell: React.FC<CellProps> = (props: CellProps) => {
+const Cell: React.FC<CellProps> = (props) => {
   const {
     className,
     column,
@@ -35,13 +37,15 @@ const Cell: React.FC<CellProps> = (props: CellProps) => {
   };
 
   const cellElement = () => {
-    if (isEditableCell) return <CellEditor {...props} />;
+    if (isEditableCell) return <CellEditor {...(props as ICellEditorProps)} />;
 
-    switch (column.type) {
-      case 'line-chart':
+    switch (column.dataType) {
+      case DataType.LineChart:
         return <LineChartCell {...props} />;
+      case DataType.Object:
+        return <CellElement {...(props as ICellProps)} />;
       default:
-        return <CellText {...props} />;
+        return <CellElement {...(props as ICellProps)} />;
     }
   };
 

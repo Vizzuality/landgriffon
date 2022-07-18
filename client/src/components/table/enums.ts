@@ -1,7 +1,11 @@
-import { DataType as kaDataType } from 'ka-table/enums';
-
-export { kaDataType as DataType };
-
+export enum DataType {
+  Boolean = 'boolean',
+  Date = 'date',
+  Number = 'number',
+  Object = 'object',
+  String = 'string',
+  LineChart = 'line-chart',
+}
 /**
  * We can't extend enums, so we're re-declaring `ka-table`'s one,
  * with our extra items. It's unlikely they'll change it anyways, maybe just to

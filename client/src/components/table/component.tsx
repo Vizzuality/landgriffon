@@ -233,6 +233,7 @@ const Table: React.FC<TableProps> = ({
       ),
       ...props.childComponents?.paging,
     },
+    ...props.childComponents,
   };
 
   if (props.childComponents?.tableFoot) {

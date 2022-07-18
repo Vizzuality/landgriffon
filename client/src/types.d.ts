@@ -292,3 +292,6 @@ export type Target = {
   baselineValue: number;
   years: { year: number; value: number }[];
 };
+
+export type ArrayElement<ArrayType extends readonly unknown[]> =
+  ArrayType extends readonly (infer ElementType)[] ? ElementType : never;

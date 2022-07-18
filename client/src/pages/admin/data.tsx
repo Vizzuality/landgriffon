@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import Head from 'next/head';
-import { flatten, merge, uniq } from 'lodash';
+import { merge } from 'lodash';
 import { useDebounce } from '@react-hook/debounce';
 import { ExclamationIcon /*, FilterIcon*/ } from '@heroicons/react/solid';
 

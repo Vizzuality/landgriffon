@@ -1,4 +1,7 @@
-export type CellProps = ICellProps & {
+import { ICellProps } from 'ka-table/props';
+import { Column } from '../types';
+
+export type CellProps = Omit<ICellProps, 'column'> & {
   /** Classnames to apply to the container */
   className?: string;
   /** Key of the first column in the table */
@@ -13,4 +16,5 @@ export type CellProps = ICellProps & {
   onMouseEnter?: () => void;
   /** onmouseleave callback */
   onMouseLeave?: () => void;
+  column: Column;
 };

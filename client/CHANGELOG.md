@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Baseline water stress contextual layer [LANDGRIF-743](https://vizzuality.atlassian.net/browse/LANDGRIF-743)
 - Pagination functionality to the impact table [LANDGRIF-777](https://vizzuality.atlassian.net/browse/LANDGRIF-777)
 - Added new theme and layout for Landgriffon [LANDGRIF-782](https://vizzuality.atlassian.net/browse/LANDGRIF-782)
+- Show scenario comparison data in table view [LANDGRIF-745](https://vizzuality.atlassian.net/browse/LANDGRIF-745)
 
 ### Changed
 

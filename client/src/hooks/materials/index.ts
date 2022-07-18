@@ -50,7 +50,7 @@ export function useMaterials(): ResponseData {
 }
 
 export function useMaterialsTrees(
-  params: MaterialsTreesParams,
+  params: MaterialsTreesParams = {},
   options: UseQueryOptions = {},
 ): ResponseData {
   const query = useQuery(

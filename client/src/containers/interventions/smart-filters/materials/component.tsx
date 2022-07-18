@@ -32,7 +32,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
   error,
   fitContent,
   multiple,
-  theme = 'inline-primary',
+  theme = 'default',
   withSourcingLocations, // Do not a default; backend will override depth if this is set at all
   businessUnitIds,
   supplierIds,

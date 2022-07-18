@@ -29,7 +29,6 @@ const ScenarioForm: React.FC<ScenarioFormProps> = ({
   const {
     register,
     handleSubmit,
-    // watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),

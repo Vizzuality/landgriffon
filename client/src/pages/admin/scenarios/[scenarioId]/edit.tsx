@@ -16,9 +16,10 @@ import Loading from 'components/loading';
 import Select from 'components/select';
 import { AnchorLink, Button } from 'components/button';
 import Input from 'components/forms/input';
+import Toggle from 'components/toggle';
+import Tooltip from 'components/tooltip';
 
 import type { ErrorResponse } from 'types';
-import Toggle from 'components/toggle';
 
 const UpdateScenarioPage: React.FC = () => {
   const { query } = useRouter();
@@ -125,9 +126,24 @@ const UpdateScenarioPage: React.FC = () => {
                           <Toggle defaultActive={intervention.status === 'active'} />
                           <div>{intervention.title}</div>
                         </div>
-                        <button>
+                        <Tooltip
+                          arrow
+                          content={
+                            <div>
+                              <Link
+                                href={`/admin/scenarios/${data.id}/interventions/${intervention.id}/edit`}
+                              >
+                                <a className="block p-2">Edit</a>
+                              </Link>
+                              <button type="button" className="block p-2">
+                                Delete
+                              </button>
+                            </div>
+                          }
+                          className="w-54 bg-white rounded-md"
+                        >
                           <DotsVerticalIcon className="w-4 h-4" />
-                        </button>
+                        </Tooltip>
                       </div>
                     ))}
                   </div>

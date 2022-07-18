@@ -41,6 +41,16 @@ export class ActualVsScenarioImpactTableData extends ImpactTableData {
   percentageDifference?: number;
 }
 
+export class ImpactTableForScenarioComparisson extends ImpactTableData {
+  scenarioOne?: ScenarioComparissonImpact;
+  scenarioTwo?: ScenarioComparissonImpact;
+}
+
+class ScenarioComparissonImpact {
+  scenarioId: string;
+  impact: number;
+}
+
 @EntityRepository(SourcingRecord)
 export class SourcingRecordRepository extends Repository<SourcingRecord> {
   logger: Logger = new Logger(SourcingRecordRepository.name);

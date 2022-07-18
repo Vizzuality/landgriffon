@@ -19,6 +19,7 @@ import { CellProps } from 'components/table/cell';
 import { ChildComponents } from 'ka-table/models';
 import { useAppSelector } from 'store/hooks';
 import { scenarios } from 'store/features/analysis/scenarios';
+import ComparisonCell from './comparison-cell';
 
 const dataToCsv: (tableData: ITableData) => string = (tableData) => {
   const LINE_SEPARATOR = '\r\n';
@@ -57,7 +58,12 @@ const dataToCsv: (tableData: ITableData) => string = (tableData) => {
 const AnalysisTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const { isComparisonEnabled } = useAppSelector(scenarios);
+  const { scenarioToCompare, isComparisonEnabled } = useAppSelector(scenarios);
+  const showComparison = useMemo(
+    () => isComparisonEnabled && !!scenarioToCompare,
+    [isComparisonEnabled, scenarioToCompare],
+  );
+
   const {
     data: {
       data: { impactTable },
@@ -123,8 +129,8 @@ const AnalysisTable: React.FC = () => {
           })),
           datesRangeChart: datesRangeChartConfig(indicator.yearSum),
           ...indicator.yearSum
-            .map(({ year, value }) => ({
-              [year]: isComparisonEnabled ? { value, diff: 'TODO' } : value,
+            .map(({ year, value, ...rest }) => ({
+              [year]: showComparison ? { value, ...rest } : value,
             }))
             .reduce((a, b) => ({ ...a, ...b })),
         });
@@ -185,7 +191,7 @@ const AnalysisTable: React.FC = () => {
     });
 
     return result;
-  }, [impactTable, isComparisonEnabled]);
+  }, [impactTable, showComparison]);
 
   // Years from impact table
   const years = useMemo(() => {
@@ -253,7 +259,7 @@ const AnalysisTable: React.FC = () => {
         ...years.map((year) => ({
           key: year.toString(),
           title: year.toString(),
-          dataType: isComparisonEnabled ? DataType.Object : DataType.Number,
+          dataType: showComparison ? DataType.Object : DataType.Number,
           isFirstYearProjected: firstProjectedYear === year,
           isProjected: projectedYears.includes(year),
           width: 110,
@@ -288,8 +294,7 @@ const AnalysisTable: React.FC = () => {
               case DataType.Number:
                 return BIG_NUMBER_FORMAT(value);
               case DataType.Object:
-                // TODO: add comparison data here
-                return <div>the object</div>;
+                return <ComparisonCell {...value} />;
               default:
                 return value;
             }
@@ -304,7 +309,7 @@ const AnalysisTable: React.FC = () => {
     years,
     totalIndicators,
     tableData,
-    isComparisonEnabled,
+    showComparison,
     firstProjectedYear,
     projectedYears,
     yearsSum,

@@ -6,7 +6,7 @@
     "legend": {
         "name": "Carbon emissions due to land use change",
         "id": "",
-        "unit": "",
+        "unit": "tonnes",
         "min": 0,
         "type": "range",
         "items": [

@@ -150,7 +150,7 @@ const UpdateScenarioPage: React.FC = () => {
                             }
                           />
                           <div>
-                            <InterventionPhrase {...intervention} />
+                            <InterventionPhrase intervention={intervention} />
                           </div>
                         </div>
                         <Dropdown>

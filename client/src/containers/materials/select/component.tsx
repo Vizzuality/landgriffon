@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { FC, forwardRef, useMemo } from 'react';
 import { sortBy } from 'lodash';
 
 import { useMaterialsTrees, MaterialsTreesParams } from 'hooks/materials';
@@ -18,6 +18,7 @@ type MaterialsFilterProps = {
   theme?: 'default' | 'inline-primary';
   currentOptions?: TreeSelectProps['current'];
   ellipsis?: TreeSelectProps['ellipsis'];
+  error?: TreeSelectProps['error'];
   fitContent?: TreeSelectProps['fitContent'];
   businessUnitIds?: MaterialsTreesParams['businessUnitIds'];
   supplierIds?: MaterialsTreesParams['supplierIds'];
@@ -25,62 +26,75 @@ type MaterialsFilterProps = {
   locationTypes?: MaterialsTreesParams['locationTypes'];
 };
 
-const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
-  multiple,
-  current,
-  depth = 1,
-  supplierIds,
-  businessUnitIds,
-  originIds,
-  locationTypes,
-  withSourcingLocations = false, // Do not a default; backend will override depth if this is set at all
-  onChange = () => null,
-  theme,
-  ellipsis,
-  fitContent,
-}) => {
-  const { data, isFetching } = useMaterialsTrees(
+const MaterialsFilter: FC<MaterialsFilterProps> = forwardRef<
+  HTMLInputElement,
+  MaterialsFilterProps
+>(
+  (
     {
-      depth,
+      multiple,
+      current,
+      depth = 1,
       supplierIds,
       businessUnitIds,
       originIds,
       locationTypes,
-      withSourcingLocations,
+      withSourcingLocations = false, // Do not a default; backend will override depth if this is set at all
+      onChange = () => null,
+      theme,
+      error,
+      ellipsis,
+      fitContent,
     },
-    {
-      // 2 minutes stale time
-      staleTime: 2 * 60 * 1000,
-    },
-  );
+    ref,
+  ) => {
+    const { data, isFetching } = useMaterialsTrees(
+      {
+        depth,
+        supplierIds,
+        businessUnitIds,
+        originIds,
+        locationTypes,
+        withSourcingLocations,
+      },
+      {
+        // 2 minutes stale time
+        staleTime: 2 * 60 * 1000,
+      },
+    );
 
-  const treeOptions: TreeSelectProps['options'] = useMemo(
-    () =>
-      sortBy(
-        data?.map(({ name, id, children }) => ({
-          label: name,
-          value: id,
-          children: children?.map(({ name, id }) => ({ label: name, value: id })),
-        })),
-        'label',
-      ),
-    [data],
-  );
+    const treeOptions: TreeSelectProps['options'] = useMemo(
+      () =>
+        sortBy(
+          data?.map(({ name, id, children }) => ({
+            label: name,
+            value: id,
+            children: children?.map(({ name, id }) => ({ label: name, value: id })),
+          })),
+          'label',
+        ),
+      [data],
+    );
 
-  return (
-    <TreeSelect
-      multiple={multiple}
-      showSearch
-      loading={isFetching}
-      options={treeOptions}
-      placeholder="Materials"
-      onChange={onChange}
-      current={current}
-      theme={theme}
-      fitContent={fitContent}
-      ellipsis={ellipsis}
-    />
-  );
-};
+    return (
+      <TreeSelect
+        multiple={multiple}
+        showSearch
+        loading={isFetching}
+        options={treeOptions}
+        placeholder="Materials"
+        onChange={onChange}
+        current={current}
+        theme={theme}
+        fitContent={fitContent}
+        ellipsis={ellipsis}
+        error={error}
+        ref={ref}
+      />
+    );
+  },
+);
+
+MaterialsFilter.displayName = 'MaterialsFilter';
 
 export default MaterialsFilter;

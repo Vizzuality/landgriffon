@@ -335,6 +335,7 @@ describe('ScenariosModule (e2e)', () => {
           newMaterial,
           newBusinessUnit,
           newAdminRegion,
+          startYear: 2020,
         });
 
         const scenario = await createScenario({
@@ -364,6 +365,7 @@ describe('ScenariosModule (e2e)', () => {
         expect(response.body.data[0].attributes.newAdminRegion.id).toEqual(
           newAdminRegion.id,
         );
+        expect(response.body.data[0].attributes.startYear).toEqual(2020);
       },
     );
   });

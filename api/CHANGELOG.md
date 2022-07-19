@@ -104,5 +104,9 @@ Fixed
 Scenario Interventions - comparison vs actual data, if year earlier than intervention start year is selected,
 returninh 0 values for that year instead of error
 
+Fixed
+Scenario Interventions - status of intervetion can be updated, startYear is returned as part of get response
+
+
 
 

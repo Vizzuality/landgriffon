@@ -13,12 +13,12 @@
             {
                 "value": 0,
                 "label": "No deforestation",
-                "color": "#B30000"
+                "color": "#FFFFFF"
             },
             {
                 "value": 1,
                 "label": "Deforestation",
-                "color": "#E34A33"
+                "color": "#D4428E"
             }
         ]
     },

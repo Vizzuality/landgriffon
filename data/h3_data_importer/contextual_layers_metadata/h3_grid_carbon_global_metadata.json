@@ -6,39 +6,39 @@
     "legend": {
         "name": "Carbon emissions due to land use change",
         "id": "",
-        "unit": "tonnes",
+        "unit": "tCO2e",
         "min": 0,
         "type": "range",
         "items": [
               {
                 "value": 159.20,
                 "label": "",
-                "color": "#FEF0D9"
+                "color": "#ffc800"
             },
             {
                 "value": 823.71,
                 "label": "",
-                "color": "#FDD49E"
+                "color": "#efa100"
             },
             {
                 "value": 2454.54,
                 "label": "",
-                "color": "#FDBB84"
+                "color": "#d97b00"
             },
             {
                 "value": 6013.14,
                 "label": "",
-                "color": "#FC8D59"
+                "color": "#ba5500"
             },
             {
                 "value": 12167.56,
                 "label": "",
-                "color": "#E34A33"
+                "color": "#932f00"
             },
             {
                 "value": 25058.65,
                 "label": "",
-                "color": "#B30000"
+                "color": "#610000"
             }
         ]
     },

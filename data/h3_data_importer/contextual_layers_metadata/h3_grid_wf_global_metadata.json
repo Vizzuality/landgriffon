@@ -6,39 +6,39 @@
     "legend": {
         "name": "Unsustainable water use",
         "id": "",
-        "unit": "m3",
+        "unit": "m3/yr",
         "min": 1.37,
         "type": "range",
         "items": [
             {
                 "value": 17492922000.00,
                 "label": "",
-                "color": "#FEF0D9"
+                "color": "#0ffffb"
             },
             {
                 "value": 78225230000.00,
                 "label": "",
-                "color": "#FDD49E"
+                "color": "#00d8ec"
             },
             {
                 "value":  196827190000.00,
                 "label": "",
-                "color": "#FDBB84"
+                "color": "#00afd8"
             },
             {
                 "value": 430112240000.00,
                 "label": "",
-                "color": "#FC8D59"
+                "color": "#0084be"
             },
             {
                 "value": 719765300000.00,
                 "label": "",
-                "color": "#E34A33"
+                "color": "#00559e"
             },
             {
                 "value": 1034112600000.00,
                 "label": "",
-                "color": "#B30000"
+                "color": "#00187a"
             }
         ]
     },

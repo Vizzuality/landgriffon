@@ -4,20 +4,22 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useQueryClient } from 'react-query';
+import { Menu } from '@headlessui/react';
 import { XIcon, PlusIcon, DotsVerticalIcon } from '@heroicons/react/solid';
 
 import { useScenario, useUpdateScenario } from 'hooks/scenarios';
-import { useScenarioIntervention } from 'hooks/interventions';
+import { useScenarioIntervention, useUpdateIntervention } from 'hooks/interventions';
 
 import CleanLayout from 'layouts/clean';
 import ScenarioForm from 'containers/scenarios/form';
+import InterventionPhrase from 'containers/interventions/phrase';
 import BackLink from 'components/back-link';
 import Loading from 'components/loading';
 import Select from 'components/select';
 import { AnchorLink, Button } from 'components/button';
 import Input from 'components/forms/input';
 import Toggle from 'components/toggle';
-import Tooltip from 'components/tooltip';
+import Dropdown from 'components/dropdown';
 
 import type { ErrorResponse } from 'types';
 
@@ -26,6 +28,7 @@ const UpdateScenarioPage: React.FC = () => {
   const queryClient = useQueryClient();
   const { data, isLoading } = useScenario(query?.scenarioId as string);
   const updateScenario = useUpdateScenario();
+  const updateIntervention = useUpdateIntervention();
 
   // Interventions
   const { data: interventions, isLoading: isInterventionsLoading } = useScenarioIntervention({
@@ -49,6 +52,24 @@ const UpdateScenarioPage: React.FC = () => {
       );
     },
     [data?.id, queryClient, updateScenario],
+  );
+
+  const handleInterventionToggle = useCallback(
+    (interventionId, isActive) =>
+      updateIntervention.mutate(
+        { id: interventionId, data: { status: isActive ? 'active' : 'inactive' } },
+        {
+          onSuccess: () => {
+            toast.success('Intervention has been successfully updated.');
+            queryClient.invalidateQueries('scenario');
+          },
+          onError: (error: ErrorResponse) => {
+            const { errors } = error.response?.data;
+            errors.forEach(({ meta }) => toast.error(meta.rawError.response.message));
+          },
+        },
+      ),
+    [queryClient, updateIntervention],
   );
 
   return (
@@ -90,7 +111,7 @@ const UpdateScenarioPage: React.FC = () => {
                 <div className="flex flex-wrap gap-2 p-2 border rounded-md border-gray-300 mt-4 mb-2">
                   <div className="flex items-center rounded-full bg-blue py-0.5 px-3 text-sm">
                     Entire company +1.5%/y
-                    <button disabled>
+                    <button type="button" disabled>
                       <XIcon className="w-3 h-3 ml-2" />
                     </button>
                   </div>
@@ -121,27 +142,36 @@ const UpdateScenarioPage: React.FC = () => {
                         className="flex items-center p-4 bg-yellow rounded-md space-x-4"
                       >
                         <div className="flex flex-1 space-x-2">
-                          <Toggle defaultActive={intervention.status === 'active'} />
-                          <div>{intervention.title}</div>
+                          <Toggle
+                            data-interventionId={intervention.id}
+                            defaultActive={intervention.status === 'active'}
+                            onChange={(isActive) =>
+                              handleInterventionToggle(intervention.id, isActive)
+                            }
+                          />
+                          <div>
+                            <InterventionPhrase {...intervention} />
+                          </div>
                         </div>
-                        <Tooltip
-                          arrow
-                          content={
-                            <div>
+                        <Dropdown>
+                          <Dropdown.Button>
+                            <DotsVerticalIcon className="w-4 h-4" />
+                          </Dropdown.Button>
+                          <Dropdown.Items>
+                            <Dropdown.Item>
                               <Link
                                 href={`/admin/scenarios/${data.id}/interventions/${intervention.id}/edit`}
                               >
-                                <a className="block p-2">Edit</a>
+                                <a className="block p-2 text-sm">Edit</a>
                               </Link>
-                              <button type="button" className="block p-2">
+                            </Dropdown.Item>
+                            <Menu.Item>
+                              <button type="button" className="block p-2 text-sm">
                                 Delete
                               </button>
-                            </div>
-                          }
-                          className="w-54 bg-white rounded-md"
-                        >
-                          <DotsVerticalIcon className="w-4 h-4" />
-                        </Tooltip>
+                            </Menu.Item>
+                          </Dropdown.Items>
+                        </Dropdown>
                       </div>
                     ))}
                   </div>

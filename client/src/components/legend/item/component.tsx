@@ -40,7 +40,7 @@ export const LegendItem: React.FC<LegendItemProps> = ({
   const handleChange = useCallback(
     (active) => {
       setActive(active);
-      if (onActiveChange) onActiveChange(active);
+      onActiveChange?.(active);
     },
     [onActiveChange],
   );
@@ -52,13 +52,13 @@ export const LegendItem: React.FC<LegendItemProps> = ({
   return (
     <div className={classNames('pr-4 py-4 space-y-4 group', { 'bg-gray-50': !main })}>
       {isLoading && (
-        <div className="w-full flex align-center justify-center">
+        <div className="flex justify-center w-full align-center">
           <Loading />
         </div>
       )}
       {name && (
         <div className={classNames('w-full flex', { hidden: isLoading })}>
-          <div className="grow flex items-start justify-between">
+          <div className="flex items-start justify-between grow">
             <div className="max-w-[210px] text-sm text-gray-500 flex flex-row justify-start gap-x-1">
               <div className="invisible group-hover:visible pl-1 pr-0.5">
                 <DragHandle />
@@ -74,15 +74,15 @@ export const LegendItem: React.FC<LegendItemProps> = ({
               </div>
             )}
           </div>
-          <div className="ml-1 w-8">
-            <Toggle defaultActive={isActive} onChange={handleChange} />
+          <div className="w-8 ml-1">
+            <Toggle active={isActive} onChange={handleChange} />
           </div>
         </div>
       )}
       {!isLoading && isActive && children && (
         <div className="flex ml-2">
           <div className="flex-1 w-[90%]">{children}</div>
-          {unit && <div className="w-8 text-xs text-gray-500 -m-1">{unit}</div>}
+          {unit && <div className="w-8 -m-1 text-xs text-gray-500">{unit}</div>}
         </div>
       )}
     </div>

@@ -3,11 +3,13 @@ import { InterventionTypes } from '../enums';
 
 import type { Intervention } from '../types';
 
-const InterventionPhrase: React.FC<Intervention> = (intervention) => {
-  const year = useMemo(
-    () => <strong>{intervention.startYear} 2020</strong>,
-    [intervention.startYear],
-  );
+type InterventionPhraseProps = {
+  intervention: Intervention;
+  short?: boolean;
+};
+
+const InterventionPhrase: React.FC<InterventionPhraseProps> = ({ intervention, short = false }) => {
+  const year = useMemo(() => <strong>{intervention.startYear}</strong>, [intervention.startYear]);
 
   const materials = useMemo(
     () => <strong>{intervention.replacedMaterials[0].name}</strong>,
@@ -33,27 +35,38 @@ const InterventionPhrase: React.FC<Intervention> = (intervention) => {
     if (intervention.type === InterventionTypes.Material) {
       return (
         <>
-          Switch {materials} to <strong>New material</strong>
-          in {year} for {business} and {suppliers} in {regions}
+          Switch {materials} to <strong>New material</strong> in {year}
+          {!short && (
+            <>
+              for {business} and {suppliers} in {regions}
+            </>
+          )}
         </>
       );
     }
     if (intervention.type === InterventionTypes.SupplierLocation) {
       return (
         <>
-          Switch {materials} from <strong>New region</strong> in {year} {business}
+          Switch {materials} from <strong>New region</strong> in {year}
+          {!short && <>for {business}</>}
         </>
       );
     }
     if (intervention.type === InterventionTypes.Efficiency) {
       return (
         <>
-          Change efficiency for {materials} in {year} for {business} and {suppliers} in {regions}
+          Change efficiency for {materials} in {year}
+          {!short && (
+            <>
+              for {business} and {suppliers}
+            </>
+          )}
+          in {regions}
         </>
       );
     }
     return null;
-  }, [business, intervention.type, materials, regions, suppliers, year]);
+  }, [business, intervention.type, materials, regions, short, suppliers, year]);
 
   return <span>{result}</span>;
 };

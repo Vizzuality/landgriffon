@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 
 import { useScenarioIntervention } from 'hooks/interventions';
 
+import InterventionPhrase from 'containers/interventions/phrase';
 import Loading from 'components/loading';
 
 import type { Scenario } from '../types';
@@ -35,7 +36,9 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
           interventions &&
           interventions.map((intervention) => (
             <div className="flex space-x-4 mt-2" key={intervention.id}>
-              <div className="rounded-full bg-yellow py-0.5 px-3 text-xs">{intervention.title}</div>
+              <div className="rounded-full bg-yellow py-0.5 px-3 text-xs">
+                <InterventionPhrase intervention={intervention} short />
+              </div>
             </div>
           ))}
         {!isInterventionsLoading && interventions.length === 0 && (

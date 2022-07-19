@@ -28,7 +28,7 @@ import { InterventionLocationLongitudeInputValidator } from 'modules/scenario-in
 
 export class CreateScenarioInterventionDto {
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @MinLength(2)
   @MaxLength(40)
   @ApiProperty({
@@ -36,7 +36,7 @@ export class CreateScenarioInterventionDto {
     type: String,
     example: 'Replace cotton',
   })
-  title!: string;
+  title?: string;
 
   @IsString()
   @IsOptional()

@@ -56,7 +56,7 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
    * Data fields
    */
   @ApiProperty()
-  @Column({ nullable: false })
+  @Column({ nullable: false, default: 'Untitled' })
   title!: string;
 
   @ApiPropertyOptional()

@@ -6,8 +6,8 @@
     "legend": {
         "name": "Forest loss",
         "id": "",
-        "unit": "",
-        "min": 0.394,
+        "unit": null,
+        "min": 0,
         "type": "category",
         "items": [
             {

@@ -58,9 +58,9 @@ export class H3DataRepository extends Repository<H3Data> {
       const result: H3IndexValueData[] | undefined = await getManager()
         .createQueryBuilder()
         .select('h3index', 'h')
-        .addSelect(`${h3ColumnName}`, 'v')
+        .addSelect(`"${h3ColumnName}"`, 'v')
         .from(`${h3TableName}`, 'h3')
-        .getRawOne();
+        .getRawMany();
 
       if (result === undefined) {
         throw new Error();
@@ -164,7 +164,7 @@ export class H3DataRepository extends Repository<H3Data> {
    * @param materialIds
    * @param originIds
    * @param supplierIds
-   * @param locationType
+   * @param locationTypes
    */
   async getImpactMap(
     indicator: Indicator,
@@ -367,7 +367,10 @@ export class H3DataRepository extends Repository<H3Data> {
         `h3_to_parent(${baseRiskMapSQLTable}.h3index, ${resolution})`,
         'h',
       )
-      .addSelect(`round(sum(${baseRiskMapSQLTable}.${baseRiskMapSQLColumn}))`, 'v')
+      .addSelect(
+        `round(sum(${baseRiskMapSQLTable}.${baseRiskMapSQLColumn}))`,
+        'v',
+      )
       .from(`(${indicatorRiskSQL.getQuery()})`, baseRiskMapSQLTable)
       .groupBy('h')
       .getSql();

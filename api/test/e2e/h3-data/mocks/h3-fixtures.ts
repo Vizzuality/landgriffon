@@ -189,7 +189,13 @@ export const h3ContextualLayerExampleDataFixture = {
   // parent resolution 3 - 821087fffffffff
   '861080007ffffff': 0.2,
   '86108002fffffff': 0.04,
+  '86108001fffffff': 0.2,
+  '861080027ffffff': 1,
+  '861080017ffffff': 0.5,
   // parent resolution 3 - 8210b7fffffffff
-  '8610b6d97ffffff': 0.1,
+  '8610b6d97ffffff': 0.5,
   '8610b6db7ffffff': null,
+  '8610b6d9fffffff': 5,
+  '8610b6da7ffffff': 0.5,
+  '8610b6dafffffff': 0,
 };

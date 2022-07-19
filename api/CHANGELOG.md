@@ -94,6 +94,13 @@ Fixed
 Indicator record calculations - if production and harvest area values are less than 1,
 related impact values are set to 0
 
+## 2022-07-19
+
+### Added
+
+Added
+Contextual Layers - Added different types of aggregation for Contextual Layers' H3 info depending on metadata
+
 
 
 ## 2022-07-19

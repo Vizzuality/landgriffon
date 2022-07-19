@@ -87,3 +87,13 @@ Fixed
 Scenario Interventions - fix conditional validations of inputs
 
 
+## 2022-07-19
+
+### Fixed
+
+Fixed
+Scenario Interventions - comparison vs actual data, if year earlier than intervention start year is selected,
+returninh 0 values for that year instead of error
+
+
+

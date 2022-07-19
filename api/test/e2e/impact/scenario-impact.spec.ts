@@ -15,7 +15,10 @@ import { createNewSupplierInterventionPreconditions } from './scenario-impact-pr
 import { newSupplierScenarioInterventionTable } from './scenario-impact-responses/new-supplier-intervention.response';
 import { createMultipleInterventionsPreconditions } from './scenario-impact-preconditions/mixed-interventions-scenario.preconditions';
 import { Scenario } from 'modules/scenarios/scenario.entity';
-import { mixedInterventionsScenarioTable } from './scenario-impact-responses/mixed-interventions-scenario.response';
+import {
+  mixedInterventionsScenarioTable,
+  mixedInterventionsScenarioTable2019,
+} from './scenario-impact-responses/mixed-interventions-scenario.response';
 import { clearEntityTables } from '../../utils/database-test-helper';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
@@ -141,7 +144,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       newScenario: Scenario;
     } = await createMultipleInterventionsPreconditions();
 
-    const response = await request(app.getHttpServer())
+    const response1 = await request(app.getHttpServer())
       .get('/api/v1/impact/table')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -153,8 +156,24 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       })
       .expect(HttpStatus.OK);
 
-    expect(response.body.data.impactTable[0].rows).toEqual(
+    expect(response1.body.data.impactTable[0].rows).toEqual(
       mixedInterventionsScenarioTable.impactTable[0].rows,
+    );
+
+    const response2 = await request(app.getHttpServer())
+      .get('/api/v1/impact/table')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .query({
+        'indicatorIds[]': [preconditions.indicator.id],
+        endYear: 2023,
+        startYear: 2019,
+        groupBy: 'material',
+        scenarioId: preconditions.newScenario.id,
+      })
+      .expect(HttpStatus.OK);
+
+    expect(response2.body.data.impactTable[0].rows).toEqual(
+      mixedInterventionsScenarioTable2019.impactTable[0].rows,
     );
   });
 });

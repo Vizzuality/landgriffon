@@ -1,44 +1,44 @@
 {
     "$schema": "./contextual_metadata_schema.json",
     "name": "Biodiversity loss due to land use change",
-    "description": "Biodiversity loss due to land use change (PDF) measures the regional species loss, displacement or reduction of species that would otherwise exist in the land if it wouldn't be used for production of certain commodities.",
+    "description": "Biodiversity loss due to land use change, measured in potentially disappeared fraction of species per year (PDF/yr), measures the regional species loss, displacement or reduction of species that would otherwise exist in the land if it wouldn't be used for production of certain commodities.",
     "aggType": "mean",
     "legend": {
         "name": "Biodiversity loss due to land use change",
         "id": "",
-        "unit": "",
+        "unit": "PDF/yr",
         "min": 0.02,
         "type": "range",
         "items": [
            {
                 "value": 3.98,
                 "label": "",
-                "color": "#FEF0D9"
+                "color": "#ffff00"
             },
             {
                 "value": 12.80,
                 "label": "",
-                "color": "#FDD49E"
+                "color": "#81f15e"
             },
             {
                 "value": 31.66,
                 "label": "",
-                "color": "#FDBB84"
+                "color": "#00cd8e"
             },
             {
                 "value": 73.36,
                 "label": "",
-                "color": "#FC8D59"
+                "color": "#009c9b"
             },
             {
                 "value": 141.71,
                 "label": "",
-                "color": "#E34A33"
+                "color": "#00688b"
             },
             {
                 "value": 310.35,
                 "label": "",
-                "color": "#B30000"
+                "color": "#002f61"
             }
         ]
     },

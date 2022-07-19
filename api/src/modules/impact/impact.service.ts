@@ -391,11 +391,17 @@ export class ImpactService {
             // If the year requested does no exist in the raw data, project its value getting the latest value (previous year which comes in ascendant order)
           } else {
             const lastYearsValue: number =
-              calculatedData[namesByIndicatorIndex].values[rowValuesIndex - 1]
-                .value;
+              rowValuesIndex > 0
+                ? calculatedData[namesByIndicatorIndex].values[
+                    rowValuesIndex - 1
+                  ].value
+                : 0;
             const lastYearsInterventionValue: number =
-              calculatedData[namesByIndicatorIndex].values[rowValuesIndex - 1]
-                .interventionValue || 0;
+              rowValuesIndex > 0
+                ? calculatedData[namesByIndicatorIndex].values[
+                    rowValuesIndex - 1
+                  ].interventionValue || 0
+                : 0;
             calculatedData[namesByIndicatorIndex].values.push({
               year: year,
               value: lastYearsValue + (lastYearsValue * this.growthRate) / 100,
@@ -509,10 +515,13 @@ export class ImpactService {
         });
         // If it does not exist, get the previous value and project it
       } else {
-        const tonnesToProject: number =
-          dataForImpactTable.length > 0
+        // TODO: this is hotfix for situations where we receive a start year for which we don't have data
+        const previousYearTonnage: number =
+          purchasedTonnes.length > 0
             ? purchasedTonnes[purchasedTonnes.length - 1].value
             : 0;
+        const tonnesToProject: number =
+          dataForImpactTable.length > 0 ? previousYearTonnage : 0;
         purchasedTonnes.push({
           year,
           value: tonnesToProject + (tonnesToProject * this.growthRate) / 100,

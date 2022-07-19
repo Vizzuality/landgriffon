@@ -26,7 +26,7 @@ const ImpactLayer = () => {
   const dispatch = useAppDispatch();
   const { indicator } = useAppSelector(analysisFilters);
   const {
-    layers: { impact },
+    layers: { [LAYER_ID]: impactLayer },
   } = useAppSelector(analysisMap);
   const handleOpacity = useCallback(
     (opacity: number) => {
@@ -37,29 +37,28 @@ const ImpactLayer = () => {
 
   const handleActive = useCallback(
     (active) => {
-      dispatch(setLayer({ id: LAYER_ID, layer: { ...impact, active } }));
+      dispatch(setLayer({ id: LAYER_ID, layer: { active } }));
     },
-    [dispatch, impact],
+    [dispatch],
   );
-
+  if (!impactLayer.metadata) return null;
   // TO-DO: add Loading component
   return (
     <LegendItem
-      name={impact.legend.name}
+      name={impactLayer.metadata.legend.name}
       info={INFO_METADATA[`impact-${indicator?.value}`]}
-      id={impact.legend.id}
-      unit={impact.legend.unit}
-      opacity={impact.opacity}
-      active={impact.active}
+      {...impactLayer.metadata.legend}
+      opacity={impactLayer.opacity}
+      active={impactLayer.active}
       onChangeOpacity={handleOpacity}
       onActiveChange={handleActive}
-      isLoading={impact.loading}
+      isLoading={impactLayer.loading}
       main
     >
       <LegendTypeChoropleth
-        className="text-sm text-gray-500 flex-1"
-        min={impact.legend.min}
-        items={impact.legend.items}
+        className="flex-1 text-sm text-gray-500"
+        min={impactLayer.metadata.legend.min}
+        items={impactLayer.metadata.legend.items}
       />
     </LegendItem>
   );

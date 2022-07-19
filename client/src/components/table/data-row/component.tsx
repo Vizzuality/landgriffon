@@ -45,8 +45,6 @@ const DataRow: React.FC<DataRowProps> = ({
     dispatch(updateTreeGroupsExpanded(rowKeyValue));
   }, [dispatch, isTreeGroup, rowKeyValue]);
 
-  // console.log('row data: ', rowData);
-
   return (
     <>
       {columns.map((column, index) => {

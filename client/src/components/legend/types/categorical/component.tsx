@@ -1,11 +1,9 @@
 import cx from 'classnames';
+import type { Legend } from 'types';
 
 export type LegendTypeCategoricalProps = {
   className?: string;
-  items: Array<{
-    value: number | string;
-    color: string;
-  }>;
+  items: Legend['items'];
 };
 
 export const LegendTypeCategorical: React.FC<LegendTypeCategoricalProps> = ({
@@ -33,11 +31,11 @@ export const LegendTypeCategorical: React.FC<LegendTypeCategoricalProps> = ({
         ))}
       </ul>
 
-      <ul className="flex w-full mx-0 mb-0 mt-1">
+      <ul className="flex w-full mx-0 mt-1 mb-0">
         {items.map(({ value }) => (
           <li
             key={`${value}`}
-            className="flex flex-wrap justify-center leading-4 text-center text-xs"
+            className="flex flex-wrap justify-center text-xs leading-4 text-center"
             style={{
               width: `${100 / items.length}%`,
             }}

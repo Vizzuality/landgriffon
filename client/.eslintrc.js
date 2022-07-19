@@ -15,5 +15,6 @@ module.exports = {
     ],
     'react/button-has-type': ['warn'],
     'no-console': ['warn'],
+    '@typescript-eslint/consistent-type-imports': ['warn'],
   },
 };

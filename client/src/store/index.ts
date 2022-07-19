@@ -1,5 +1,5 @@
-import { configureStore, combineReducers, Middleware } from '@reduxjs/toolkit';
-import type { ReducersMapObject } from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import type { ReducersMapObject, Middleware } from '@reduxjs/toolkit';
 import router from 'next/router';
 import { isObject } from 'lodash';
 
@@ -104,11 +104,10 @@ const getPreloadedState = (query = {}) => {
 
 // Custom middleware to sync URL params and the store
 const querySyncMiddleware: Middleware = () => (next) => (action) => {
-  const { query } = router;
+  const { query, isReady } = router;
+  if (!isReady) return next(action);
 
-  Object.keys(QUERY_PARAMS_MAP).forEach((param) => {
-    const queryState = QUERY_PARAMS_MAP[param];
-
+  Object.entries(QUERY_PARAMS_MAP).forEach(([param, queryState]) => {
     if (action.type === queryState.action.type) {
       const currentStateValue = action.payload;
       const currentQueryValue = query[param];

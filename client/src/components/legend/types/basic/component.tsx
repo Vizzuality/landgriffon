@@ -1,11 +1,9 @@
 import cx from 'classnames';
+import type { Legend } from 'types';
 
 export interface LegendTypeBasicProps {
   className?: string;
-  items: Array<{
-    value: string;
-    color: string;
-  }>;
+  items: Legend['items'];
 }
 
 export const LegendTypeBasic: React.FC<LegendTypeBasicProps> = ({

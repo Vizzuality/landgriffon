@@ -24,8 +24,9 @@ export const useImpactLayer: () => ReturnType<typeof useH3ImpactData> & { layer:
     const dispatch = useAppDispatch();
     const { indicator, startYear } = useAppSelector(analysisFilters);
     const {
-      layers: { impact: impactLayer },
+      layers: { [LAYER_ID]: impactLayer },
     } = useAppSelector(analysisMap);
+
     const query = useH3ImpactData();
     const { data, isSuccess } = query;
 
@@ -77,17 +78,21 @@ export const useImpactLayer: () => ReturnType<typeof useH3ImpactData> & { layer:
             id: LAYER_ID,
             layer: {
               loading: query.isFetching,
-              legend: {
-                id: `${LAYER_ID}-${indicator.value}`,
-                name: `${indicator.label} in ${startYear}`,
-                unit: data.metadata.unit,
-                min: !!data.metadata.quantiles.length && NUMBER_FORMAT(data.metadata.quantiles[0]),
-                items: data.metadata.quantiles.slice(1).map(
-                  (v, index): LegendItemProp => ({
-                    value: NUMBER_FORMAT(v),
-                    color: COLOR_RAMPS[LAYER_ID][index],
-                  }),
-                ),
+              metadata: {
+                legend: {
+                  id: `${LAYER_ID}-${indicator.value}`,
+                  type: 'basic',
+                  name: `${indicator.label} in ${startYear}`,
+                  unit: data.metadata.unit,
+                  min:
+                    !!data.metadata.quantiles.length && NUMBER_FORMAT(data.metadata.quantiles[0]),
+                  items: data.metadata.quantiles.slice(1).map(
+                    (v, index): LegendItemProp => ({
+                      value: NUMBER_FORMAT(v),
+                      color: COLOR_RAMPS[LAYER_ID][index],
+                    }),
+                  ),
+                },
               },
             },
           }),

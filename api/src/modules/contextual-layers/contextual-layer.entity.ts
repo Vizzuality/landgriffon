@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { BaseServiceResource } from 'types/resource.interface';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 
 export enum CONTEXTUAL_LAYER_CATEGORY {
@@ -15,6 +15,14 @@ export enum CONTEXTUAL_LAYER_CATEGORY {
   FOOD_AND_AGRICULTURE = 'Food and agriculture',
   SOCIAL = 'Social',
   DEFAULT = 'Default',
+}
+export enum CONTEXTUAL_LAYER_AGG_TYPE {
+  SUM = 'sum',
+  MEAN = 'mean',
+  MEDIAN = 'median',
+  MIN = 'min',
+  MAX = 'max',
+  MODE = 'mode',
 }
 
 export const businessUnitResource: BaseServiceResource = {
@@ -44,7 +52,7 @@ export class ContextualLayer extends BaseEntity {
     type: 'jsonb',
     nullable: true,
   })
-  metadata?: JSON;
+  metadata?: any;
 
   @Column({
     type: 'enum',

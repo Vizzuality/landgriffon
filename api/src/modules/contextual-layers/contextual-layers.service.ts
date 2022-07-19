@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { ContextualLayerRepository } from 'modules/contextual-layers/contextual-layer.repository';
 import { ContextualLayer } from 'modules/contextual-layers/contextual-layer.entity';
 import { groupBy } from 'lodash';
@@ -30,6 +35,12 @@ export class ContextualLayersService {
     }));
   }
 
+  /**
+   *
+   * @param contextualLayerId
+   * @param resolution
+   * @param year
+   */
   async getContextualLayerH3(
     contextualLayerId: string,
     resolution?: number,
@@ -50,19 +61,33 @@ export class ContextualLayersService {
       );
     }
 
-    const contextualLayerMap: H3IndexValueData[] =
-      await this.h3dataService.getSumH3ByNameAndResolution(
-        h3Data.h3tableName,
-        h3Data.h3columnName,
-        resolution,
-      );
-
     const contextualLayer: ContextualLayer | undefined =
       await this.contextualLayerRepository.findOne(contextualLayerId);
     if (!contextualLayer) {
       throw new NotFoundException(
         `No Contextual Layer info found with Contextual layer Id: ${contextualLayerId}`,
       );
+    }
+
+    let contextualLayerMap: H3IndexValueData[];
+    if (!resolution) {
+      contextualLayerMap = await this.h3dataService.getH3ByName(
+        h3Data.h3tableName,
+        h3Data.h3columnName,
+      );
+    } else {
+      if (!contextualLayer.metadata?.aggType) {
+        throw new BadRequestException(
+          `No aggregation type on metadata of Contextual layer Id: ${contextualLayerId}`,
+        );
+      }
+      contextualLayerMap =
+        await this.contextualLayerRepository.getAggregatedH3ByNameAndResolution(
+          h3Data.h3tableName,
+          h3Data.h3columnName,
+          resolution,
+          contextualLayer.metadata.aggType,
+        );
     }
 
     return {

@@ -41,6 +41,7 @@ export class ScenarioInterventionsService extends AppBaseService<
     'title',
     'description',
     'updatedById',
+    'status',
   ];
 
   constructor(
@@ -64,6 +65,7 @@ export class ScenarioInterventionsService extends AppBaseService<
         'title',
         'description',
         'status',
+        'startYear',
         'type',
         'createdAt',
         'updatedAt',

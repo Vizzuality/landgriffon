@@ -1183,9 +1183,10 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           title: 'updated test scenario intervention',
-        })
-        .expect(HttpStatus.OK);
+          status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+        });
 
+      expect(response.status).toBe(HttpStatus.OK);
       const updatedScenarioIntervention =
         await scenarioInterventionRepository.findOneOrFail(
           scenarioIntervention.id,
@@ -1194,6 +1195,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(response.body.data.attributes.title).toEqual(
         'updated test scenario intervention',
+      );
+      expect(response.body.data.attributes.status).toEqual(
+        SCENARIO_INTERVENTION_STATUS.INACTIVE,
       );
 
       // Note: Update response does not retrieve the related resources

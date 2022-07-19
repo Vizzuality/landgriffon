@@ -121,13 +121,21 @@ export const analysisMapSlice = createSlice({
         id: 'material' | 'risk' | 'impact' | 'water' | 'hdi';
         layer: Partial<MaterialLayer | RiskLayer | ContextualLayer | Layer>;
       }>,
-    ) => ({
-      ...state,
-      layers: {
-        ...state.layers,
-        [action.payload.id]: { ...state.layers[action.payload.id], ...action.payload.layer },
-      },
-    }),
+    ) => {
+      // only one contextual layer active at the same time, set the rest as disabled
+      if (action.payload.id !== 'impact' && action.payload.layer.active) {
+        Object.keys(state.layers).forEach((layerId) => {
+          if (layerId !== 'impact' && layerId !== action.payload.id) {
+            state.layers[layerId].active = false;
+          }
+        });
+      }
+
+      state.layers[action.payload.id] = {
+        ...state.layers[action.payload.id],
+        ...action.payload.layer,
+      };
+    },
     setLayerOrder: (state, action: PayloadAction<Layer['id'][]>) => {
       Object.values(state.layers).forEach((layer) => {
         layer.order = action.payload.indexOf(layer.id);

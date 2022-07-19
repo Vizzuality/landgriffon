@@ -481,7 +481,7 @@ export class ScenarioInterventionsService extends AppBaseService<
   ): ScenarioIntervention {
     const scenarioIntervention: ScenarioIntervention =
       new ScenarioIntervention();
-    scenarioIntervention.title = dto.title;
+    scenarioIntervention.title = dto.title || 'Untitled';
     scenarioIntervention.description = dto.description;
     scenarioIntervention.scenarioId = dto.scenarioId;
     scenarioIntervention.startYear = dto.startYear;

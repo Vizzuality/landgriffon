@@ -6,7 +6,7 @@
     "legend": {
         "name": "Unsustainable water use",
         "id": "",
-        "unit": "",
+        "unit": "m3",
         "min": 1.37,
         "type": "range",
         "items": [

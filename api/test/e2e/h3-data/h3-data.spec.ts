@@ -20,10 +20,7 @@ import {
   createSourcingRecord,
 } from '../../entity-mocks';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
-import {
-  Indicator,
-  INDICATOR_TYPES,
-} from 'modules/indicators/indicator.entity';
+import { Indicator } from 'modules/indicators/indicator.entity';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { h3BasicFixture } from './mocks/h3-fixtures';
@@ -97,7 +94,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect(HttpStatus.OK);
 
-    expect(response.body.data).toEqual({ h: '861203a4fffffff', v: 1000 });
+    expect(response.body.data).toEqual([{ h: '861203a4fffffff', v: 1000 }]);
   });
 
   test('Given sourcing records exist in DB, When I query available years for a Impact layer, then I should get said data in a array of numbers', async () => {

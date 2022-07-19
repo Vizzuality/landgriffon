@@ -1,9 +1,6 @@
 import { useCallback } from 'react';
 import { Switch } from '@headlessui/react';
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ');
-}
+import classNames from 'classnames';
 
 type ToggleProps = {
   active: boolean;

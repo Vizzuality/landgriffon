@@ -60,6 +60,7 @@ import { In } from 'typeorm';
 const expectedJSONAPIAttributes: string[] = [
   'title',
   'description',
+  'startYear',
   'status',
   'type',
   'createdAt',

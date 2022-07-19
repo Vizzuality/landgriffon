@@ -1,8 +1,9 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 import type { ViewState } from 'react-map-gl/src/mapbox/mapbox';
 import type { RootState } from 'store';
-import type { Layer, Material } from 'types';
+import type { Layer } from 'types';
 
 const INITIAL_VIEW_STATE = {
   longitude: 0,
@@ -10,42 +11,12 @@ const INITIAL_VIEW_STATE = {
   zoom: 2,
 };
 
-const DEFAULT_LAYER_ATTRIBUTES = {
+const DEFAULT_LAYER_ATTRIBUTES: Partial<Layer> = {
   order: 0,
   active: false,
   opacity: 0.7,
   loading: false,
-  legend: {
-    name: null,
-    id: null,
-    unit: null,
-    min: null,
-    items: [],
-  },
-};
-
-type MaterialLayer = Layer & {
-  material?: {
-    label: string;
-    value: Material['id'];
-  };
-  year?: number;
-};
-
-type RiskLayer = Layer & {
-  material?: {
-    label: string;
-    value: Material['id'];
-  };
-  year?: number;
-};
-
-type ContextualLayer = Layer & {
-  material?: {
-    label: string;
-    value: Material['id'];
-  };
-  year?: number;
+  isContextual: false,
 };
 
 type TooltipData = {
@@ -60,13 +31,7 @@ export type AnalysisMapState = {
   // User layers; not used, but it's prepared for the future
   userLayers: Layer[];
   // Custom LG layers
-  layers: {
-    material: MaterialLayer;
-    risk: RiskLayer;
-    water: ContextualLayer;
-    hdi: ContextualLayer;
-    impact: Layer;
-  };
+  layers: Record<Layer['id'], Layer>;
   // Tooltip state
   tooltipData: TooltipData[];
   tooltipPosition: {
@@ -86,14 +51,11 @@ export const initialState: AnalysisMapState = {
   viewState: INITIAL_VIEW_STATE,
   userLayers: [],
   layers: {
-    material: { id: 'h3-layer-material', ...DEFAULT_LAYER_ATTRIBUTES, order: 3 },
-    risk: { id: 'h3-layer-risk', ...DEFAULT_LAYER_ATTRIBUTES },
-    water: { id: 'h3-layer-water', ...DEFAULT_LAYER_ATTRIBUTES },
-    hdi: { id: 'h3-layer-hdi', ...DEFAULT_LAYER_ATTRIBUTES },
     impact: {
-      id: 'h3-layer-impact',
+      id: 'impact',
       ...DEFAULT_LAYER_ATTRIBUTES,
-      active: true, // this layers should be always active
+      active: true,
+      isContextual: false,
     },
   },
   tooltipData: [],
@@ -118,20 +80,27 @@ export const analysisMapSlice = createSlice({
     setLayer: (
       state,
       action: PayloadAction<{
-        id: 'material' | 'risk' | 'impact' | 'water' | 'hdi';
-        layer: Partial<MaterialLayer | RiskLayer | ContextualLayer | Layer>;
+        id: 'material' | string;
+        layer: Partial<Layer>;
       }>,
     ) => {
       // only one contextual layer active at the same time, set the rest as disabled
-      if (action.payload.id !== 'impact' && action.payload.layer.active) {
+      if (
+        'active' in action.payload.layer &&
+        action.payload.layer.active &&
+        (('isContextual' in action.payload.layer && action.payload.layer.isContextual) ||
+          state.layers[action.payload.id]?.isContextual)
+      ) {
         Object.keys(state.layers).forEach((layerId) => {
-          if (layerId !== 'impact' && layerId !== action.payload.id) {
-            state.layers[layerId].active = false;
+          const layer = state.layers[layerId];
+          if (layerId !== action.payload.id && layer.isContextual) {
+            layer.active = false;
           }
         });
       }
 
       state.layers[action.payload.id] = {
+        ...DEFAULT_LAYER_ATTRIBUTES,
         ...state.layers[action.payload.id],
         ...action.payload.layer,
       };

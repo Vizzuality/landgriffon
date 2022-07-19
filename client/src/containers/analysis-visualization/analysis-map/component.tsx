@@ -9,10 +9,6 @@ import { setViewState } from 'store/features/analysis/map';
 import { useDebounce } from 'rooks';
 
 import { useImpactLayer } from 'hooks/layers/impact';
-import { useMaterialLayer } from 'hooks/layers/material';
-import { useRiskLayer } from 'hooks/layers/risk';
-import { useWaterLayer } from 'hooks/layers/water';
-import { useHDILayer } from 'hooks/layers/hdi';
 
 import Legend from 'containers/analysis-visualization/analysis-legend';
 import PageLoading from 'containers/page-loading';
@@ -47,12 +43,7 @@ const INITIAL_VIEW_STATE = {
 
 const AnalysisMap: React.FC = () => {
   const dispatch = useAppDispatch();
-  const {
-    viewState,
-    tooltipData,
-    tooltipPosition,
-    layers: layerProps,
-  } = useAppSelector(analysisMap);
+  const { viewState, tooltipData, tooltipPosition } = useAppSelector(analysisMap);
   const [isRendering, setIsRendering] = useState<boolean>(false);
   const [localViewState, setLocalViewState] = useState<ViewState>({
     ...INITIAL_VIEW_STATE,
@@ -77,19 +68,10 @@ const AnalysisMap: React.FC = () => {
 
   // Loading layers
   const impactLayer = useImpactLayer();
-  const materialLayer = useMaterialLayer();
-  const riskLayer = useRiskLayer();
-  const waterLayer = useWaterLayer();
-  const hdiLayer = useHDILayer();
+  // TODO: Add other layers here. They can't be stored in the store, but we can store the props and recreate them each time
 
-  const layers = useMemo(() => {
-    return [impactLayer, materialLayer, riskLayer, waterLayer, hdiLayer]
-      .sort((a, b) => layerProps[b.layer.id].order - layerProps[a.layer.id].order)
-      .map((layer) => layer.layer);
-  }, [impactLayer, layerProps, materialLayer, riskLayer, waterLayer, hdiLayer]);
-
-  const isError = materialLayer.isError || impactLayer.isError || riskLayer.isError;
-  const isFetching = materialLayer.isFetching || impactLayer.isFetching || riskLayer.isFetching;
+  const isError = impactLayer.isError;
+  const isFetching = impactLayer.isFetching;
 
   const handleAfterRender = useCallback(() => setIsRendering(false), []);
 
@@ -120,7 +102,7 @@ const AnalysisMap: React.FC = () => {
           });
         }}
         controller
-        layers={layers}
+        layers={[impactLayer.layer]}
         onAfterRender={handleAfterRender}
       >
         <StaticMap
@@ -139,7 +121,7 @@ const AnalysisMap: React.FC = () => {
               } as PopUpProps['position']
             }
           >
-            <div className="py-2 px-4 space-y-2 bg-white shadow-sm rounded-md">
+            <div className="px-4 py-2 space-y-2 bg-white rounded-md shadow-sm">
               {tooltipData.map((data) => (
                 <div key={`tooltip-item-${data.id}`} className="whitespace-nowrap">
                   <strong className="text-xs font-semibold">{data.name}</strong>:{' '}
@@ -153,16 +135,16 @@ const AnalysisMap: React.FC = () => {
         )}
       </DeckGL>
       {isError && (
-        <div className="absolute z-10 top-20 left-12 rounded-md bg-red-50 p-4">
+        <div className="absolute z-10 p-4 rounded-md top-20 left-12 bg-red-50">
           <div className="flex">
-            <XCircleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />
-            <p className="text-red-600 text-sm ml-3 mb-0">
+            <XCircleIcon className="w-5 h-5 text-red-400" aria-hidden="true" />
+            <p className="mb-0 ml-3 text-sm text-red-600">
               No available data for the current filter selection. Please try another one.
             </p>
           </div>
         </div>
       )}
-      <div className="absolute z-10 bottom-10 right-6 space-y-2 w-10">
+      <div className="absolute z-10 w-10 space-y-2 bottom-10 right-6">
         <BasemapControl value={mapStyle} onChange={handleMapStyleChange} />
         <ZoomControl viewport={viewState} onZoomChange={onZoomChange} />
         <Legend />

@@ -1,25 +1,23 @@
 import cx from 'classnames';
+import type { Legend } from 'types';
 
 export type LegendTypeChoroplethProps = {
   className?: string;
   min: number | string;
-  items: Array<{
-    value: number | string;
-    color: string;
-  }>;
+  items: Legend['items'];
 };
 
 export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
   className = '',
   min = 0,
   items = [],
-}: LegendTypeChoroplethProps) => {
+}) => {
   if (items.length === 0) return null;
 
   return (
     <div
       className={cx('px-4 w-full max-w-full', {
-        [className]: !!className,
+        className,
       })}
     >
       <ul className="flex w-full">
@@ -37,19 +35,19 @@ export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
 
       <ul className="flex w-full m-0">
         {min && (
-          <li className="text-xs flex justify-start w-0 relative">
-            <span className="absolute left w-4 truncate">{min}</span>
+          <li className="relative flex justify-start w-0 text-xs">
+            <span className="absolute w-4 truncate left">{min}</span>
           </li>
         )}
-        {items.map(({ value }) => (
+        {items.map(({ value }, i) => (
           <li
-            key={`${value}`}
+            key={`${value}-${i}`}
             className="flex justify-end text-xs text-center"
             style={{
               width: `${100 / items.length}%`,
             }}
           >
-            <span title={`${value}`} className="transform translate-x-1/2 truncate w-full">
+            <span title={`${value}`} className="w-full truncate transform translate-x-1/2">
               {value}
             </span>
           </li>

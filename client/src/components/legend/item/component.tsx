@@ -1,5 +1,3 @@
-import { useCallback, useEffect, useState } from 'react';
-
 import Toggle from 'components/toggle';
 import Loading from 'components/loading';
 import OpacityControl from './opacityControl';
@@ -36,19 +34,6 @@ export const LegendItem: React.FC<LegendItemProps> = ({
   onChangeOpacity,
   main = false,
 }) => {
-  const [isActive, setActive] = useState<boolean>(active);
-  const handleChange = useCallback(
-    (active) => {
-      setActive(active);
-      onActiveChange?.(active);
-    },
-    [onActiveChange],
-  );
-
-  useEffect(() => {
-    setActive(active);
-  }, [active]);
-
   return (
     <div className={classNames('pr-4 py-4 space-y-4 group', { 'bg-gray-50': !main })}>
       {isLoading && (
@@ -75,11 +60,11 @@ export const LegendItem: React.FC<LegendItemProps> = ({
             )}
           </div>
           <div className="w-8 ml-1">
-            <Toggle active={isActive} onChange={handleChange} />
+            <Toggle active={active} onChange={onActiveChange} />
           </div>
         </div>
       )}
-      {!isLoading && isActive && children && (
+      {!isLoading && active && children && (
         <div className="flex ml-2">
           <div className="flex-1 w-[90%]">{children}</div>
           {unit && <div className="w-8 -m-1 text-xs text-gray-500">{unit}</div>}

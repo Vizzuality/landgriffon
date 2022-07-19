@@ -223,10 +223,11 @@ export type ErrorResponse = AxiosError<{
  */
 export type Layer = {
   id: string;
+  isContextual: boolean;
   order?: number;
   active?: boolean;
   opacity?: number;
-  legend?: Legend;
+  metadata?: WithRequiredProperty<Partial<LayerMetadata>, 'legend'>;
   loading?: boolean;
 };
 
@@ -235,6 +236,7 @@ export type LegendItem = {
   color: string;
   label?: string;
 };
+export type LegendType = 'basic' | 'category' | 'choropleth' | 'gradient' | 'range';
 
 export type Legend = {
   name: string;
@@ -243,6 +245,7 @@ export type Legend = {
   unit: string;
   min: LegendItem['value'];
   items: LegendItem[];
+  type: LegendType;
 };
 
 export type LayerMetadata = {
@@ -251,14 +254,7 @@ export type LayerMetadata = {
   description: string;
   license: string;
   source: string;
-  legend: {
-    id: string;
-    min?: number;
-    items: LegendItem[];
-    name: string;
-    type: string;
-    unit: string;
-  };
+  legend: Legend;
 };
 
 // Metadata info
@@ -293,5 +289,12 @@ export type Target = {
   years: { year: number; value: number }[];
 };
 
+// Helper types
+
 export type ArrayElement<ArrayType extends readonly unknown[]> =
   ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
+
+export type WithRequiredProperty<Type, Key extends keyof Type> = Type &
+  {
+    [Property in Key]-?: Type[Property];
+  };

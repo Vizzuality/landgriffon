@@ -10,26 +10,19 @@ import {
 } from 'store/features/analysis/map';
 
 import { useH3ContextualData } from 'hooks/h3-data';
+import type { Layer } from 'types';
 
-import { NUMBER_FORMAT } from 'utils/number-format';
-
-import type { LegendItem as LegendItemProp } from 'types';
-
-const layerID = 'water';
-
-// layerID should match with redux
-export const useWaterLayer: () => ReturnType<typeof useH3ContextualData> & {
+export const useContextualLayer: (id: Layer['id']) => ReturnType<typeof useH3ContextualData> & {
   layer: H3HexagonLayer;
-} = () => {
+} = (id) => {
   const dispatch = useAppDispatch();
   const {
-    layers: { water: waterLayer },
+    layers: { [id]: layerInfo },
   } = useAppSelector(analysisMap);
-  const options = {
-    enabled: !!waterLayer.active,
-  };
-  const query = useH3ContextualData('0ea3f1af-e993-48cd-9a8f-f7522249d8e9', {}, options);
-  const { data, isFetched, isFetching } = query;
+
+  const query = useH3ContextualData(id, {}, { enabled: layerInfo.active });
+  const { data, isFetching, isFetched } = query;
+
   const handleHover = useCallback(
     ({ object, x, y, viewport }) => {
       dispatch(
@@ -41,18 +34,18 @@ export const useWaterLayer: () => ReturnType<typeof useH3ContextualData> & {
       );
       dispatch(
         setTooltipData({
-          id: layerID,
-          name: 'Water',
+          id,
+          name: layerInfo.metadata.name,
           value: object?.v,
-          unit: data.metadata?.legend.unit,
+          unit: layerInfo.metadata.legend.unit,
         }),
       );
     },
-    [data.metadata, dispatch],
+    [dispatch, id, layerInfo.metadata.legend.unit, layerInfo.metadata.name],
   );
 
   const layer = new H3HexagonLayer({
-    id: layerID,
+    id,
     data: data.data,
     wireframe: false,
     filled: true,
@@ -62,8 +55,8 @@ export const useWaterLayer: () => ReturnType<typeof useH3ContextualData> & {
     pickable: true,
     coverage: 0.9,
     lineWidthMinPixels: 2,
-    opacity: waterLayer.opacity,
-    visible: waterLayer.active,
+    opacity: layerInfo.opacity,
+    visible: layerInfo.active,
     getHexagon: (d) => d.h,
     getFillColor: (d) => d.c,
     getLineColor: (d) => d.c,
@@ -75,7 +68,7 @@ export const useWaterLayer: () => ReturnType<typeof useH3ContextualData> & {
     if (data && isFetching) {
       dispatch(
         setLayer({
-          id: layerID,
+          id,
           layer: {
             loading: isFetching,
           },
@@ -85,27 +78,14 @@ export const useWaterLayer: () => ReturnType<typeof useH3ContextualData> & {
     if (data && isFetched) {
       dispatch(
         setLayer({
-          id: layerID,
+          id,
           layer: {
             loading: isFetching,
-            legend: {
-              id: `legend-${layerID}`,
-              description: data.metadata.description,
-              name: data.metadata.name,
-              unit: data.metadata.legend.unit,
-              min: !!data.metadata.legend.min && NUMBER_FORMAT(data.metadata.legend?.min),
-              items: data.metadata.legend.items.map(
-                ({ color, label }): LegendItemProp => ({
-                  value: label,
-                  color,
-                }),
-              ),
-            },
           },
         }),
       );
     }
-  }, [data, isFetched, isFetching, dispatch]);
+  }, [data, isFetched, dispatch, isFetching, id]);
 
   return {
     ...query,

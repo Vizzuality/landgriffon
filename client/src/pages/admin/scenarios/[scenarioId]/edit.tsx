@@ -57,9 +57,7 @@ const UpdateScenarioPage: React.FC = () => {
         <title>Edit scenario | Landgriffon</title>
       </Head>
       <Link href="/admin/scenarios" passHref>
-        <BackLink className="mb-6 flex xl:absolute xl:top-[60px] xl:mb-0">
-          Back to scenarios
-        </BackLink>
+        <BackLink className="mb-6 flex xl:sticky xl:top-0">Back to scenarios</BackLink>
       </Link>
       <div className="grid grid-cols-12 gap-6">
         <div className="col-start-3 col-span-8">

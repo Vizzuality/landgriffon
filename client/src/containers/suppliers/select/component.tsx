@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { forwardRef, useMemo } from 'react';
 import TreeSelect from 'components/tree-select';
 import { sortBy } from 'lodash';
 
@@ -24,76 +24,84 @@ type SuppliersFilterProps = {
   fitContent?: TreeSelectProps['fitContent'];
 };
 
-const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
-  multiple,
-  current,
-  depth = 1,
-  withSourcingLocations, // Do not a default; backend will override depth if this is set at all
-  materialIds,
-  businessUnitIds,
-  originIds,
-  onChange,
-  theme = 'default',
-  ellipsis,
-  fitContent,
-  error,
-  ...props
-}) => {
-  const { data, isFetching } = useSuppliersTrees({
-    depth,
-    withSourcingLocations,
-    materialIds,
-    businessUnitIds,
-    originIds,
-  });
+const SuppliersFilter = forwardRef<HTMLInputElement, SuppliersFilterProps>(
+  (
+    {
+      multiple,
+      current,
+      depth = 1,
+      withSourcingLocations, // Do not a default; backend will override depth if this is set at all
+      materialIds,
+      businessUnitIds,
+      originIds,
+      onChange,
+      theme = 'default',
+      ellipsis,
+      fitContent,
+      error,
+      ...props
+    },
+    ref,
+  ) => {
+    const { data, isFetching } = useSuppliersTrees({
+      depth,
+      withSourcingLocations,
+      materialIds,
+      businessUnitIds,
+      originIds,
+    });
 
-  const treeOptions: TreeSelectProps['options'] = useMemo(
-    () =>
-      sortBy(
-        data?.map(({ name, id, children }) => ({
-          label: name,
-          value: id,
-          children: children?.map(({ name, id, children }) => ({
+    const treeOptions: TreeSelectProps['options'] = useMemo(
+      () =>
+        sortBy(
+          data?.map(({ name, id, children }) => ({
             label: name,
             value: id,
-            children: children?.map(({ name, id }) => ({ label: name, value: id })),
+            children: children?.map(({ name, id, children }) => ({
+              label: name,
+              value: id,
+              children: children?.map(({ name, id }) => ({ label: name, value: id })),
+            })),
           })),
-        })),
-        'label',
-      ),
-    [data],
-  );
+          'label',
+        ),
+      [data],
+    );
 
-  const currentOptions = useMemo(() => {
-    const checkedOptions = [];
-    current?.forEach((key) => {
-      const recursiveSearch = (arr) => {
-        arr.forEach((opt) => {
-          if (opt.value === key) checkedOptions.push(opt);
-          if (opt.children) recursiveSearch(opt.children);
-        });
-      };
-      recursiveSearch(treeOptions);
-    });
-    return checkedOptions;
-  }, [current, treeOptions]);
+    const currentOptions = useMemo(() => {
+      const checkedOptions = [];
+      current?.forEach((key) => {
+        const recursiveSearch = (arr) => {
+          arr.forEach((opt) => {
+            if (opt.value === key) checkedOptions.push(opt);
+            if (opt.children) recursiveSearch(opt.children);
+          });
+        };
+        recursiveSearch(treeOptions);
+      });
+      return checkedOptions;
+    }, [current, treeOptions]);
 
-  return (
-    <TreeSelect
-      {...props}
-      multiple={multiple}
-      showSearch
-      loading={isFetching}
-      options={treeOptions}
-      placeholder="all suppliers"
-      onChange={onChange}
-      current={currentOptions}
-      theme={theme}
-      ellipsis={ellipsis}
-      error={error}
-      fitContent={fitContent}
-    />
-  );
-};
+    return (
+      <TreeSelect
+        {...props}
+        multiple={multiple}
+        showSearch
+        loading={isFetching}
+        options={treeOptions}
+        placeholder="all suppliers"
+        onChange={onChange}
+        current={currentOptions}
+        theme={theme}
+        ellipsis={ellipsis}
+        error={error}
+        fitContent={fitContent}
+        ref={ref}
+      />
+    );
+  },
+);
+
+SuppliersFilter.displayName = 'SuppliersFilter';
 
 export default SuppliersFilter;

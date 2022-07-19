@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { forwardRef, useMemo } from 'react';
 import TreeSelect from 'components/tree-select';
 import { sortBy } from 'lodash';
 
@@ -22,76 +22,84 @@ type OriginRegionsFilterProps = {
   fitContent?: TreeSelectProps['fitContent'];
 };
 
-const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
-  multiple,
-  current,
-  depth = 1,
-  withSourcingLocations, // Do not a default; backend will override depth if this is set at all
-  materialIds,
-  supplierIds,
-  businessUnitIds,
-  onChange,
-  theme = 'default',
-  ellipsis,
-  error,
-  fitContent,
-  ...props
-}) => {
-  const { data, isFetching } = useAdminRegionsTrees({
-    depth,
-    withSourcingLocations,
-    materialIds,
-    supplierIds,
-    businessUnitIds,
-  });
+const OriginRegionsFilter = forwardRef<HTMLInputElement, OriginRegionsFilterProps>(
+  (
+    {
+      multiple,
+      current,
+      depth = 1,
+      withSourcingLocations, // Do not a default; backend will override depth if this is set at all
+      materialIds,
+      supplierIds,
+      businessUnitIds,
+      onChange,
+      theme = 'default',
+      ellipsis,
+      error,
+      fitContent,
+      ...props
+    },
+    ref,
+  ) => {
+    const { data, isFetching } = useAdminRegionsTrees({
+      depth,
+      withSourcingLocations,
+      materialIds,
+      supplierIds,
+      businessUnitIds,
+    });
 
-  const treeOptions: TreeSelectProps['options'] = useMemo(
-    () =>
-      sortBy(
-        data?.map(({ name, id, children }) => ({
-          label: name,
-          value: id,
-          children: children?.map(({ name, id, children }) => ({
+    const treeOptions: TreeSelectProps['options'] = useMemo(
+      () =>
+        sortBy(
+          data?.map(({ name, id, children }) => ({
             label: name,
             value: id,
-            children: children?.map(({ name, id }) => ({ label: name, value: id })),
+            children: children?.map(({ name, id, children }) => ({
+              label: name,
+              value: id,
+              children: children?.map(({ name, id }) => ({ label: name, value: id })),
+            })),
           })),
-        })),
-        'label',
-      ),
-    [data],
-  );
+          'label',
+        ),
+      [data],
+    );
 
-  const currentOptions = useMemo(() => {
-    const checkedOptions = [];
-    current?.forEach((key) => {
-      const recursiveSearch = (arr) => {
-        arr.forEach((opt) => {
-          if (opt.value === key) checkedOptions.push(opt);
-          if (opt.children) recursiveSearch(opt.children);
-        });
-      };
-      recursiveSearch(treeOptions);
-    });
-    return checkedOptions;
-  }, [current, treeOptions]);
+    const currentOptions = useMemo(() => {
+      const checkedOptions = [];
+      current?.forEach((key) => {
+        const recursiveSearch = (arr) => {
+          arr.forEach((opt) => {
+            if (opt.value === key) checkedOptions.push(opt);
+            if (opt.children) recursiveSearch(opt.children);
+          });
+        };
+        recursiveSearch(treeOptions);
+      });
+      return checkedOptions;
+    }, [current, treeOptions]);
 
-  return (
-    <TreeSelect
-      {...props}
-      multiple={multiple}
-      showSearch
-      current={currentOptions}
-      loading={isFetching}
-      options={treeOptions}
-      placeholder="all sourcing regions"
-      onChange={onChange}
-      theme={theme}
-      ellipsis={ellipsis}
-      error={error}
-      fitContent={fitContent}
-    />
-  );
-};
+    return (
+      <TreeSelect
+        {...props}
+        multiple={multiple}
+        showSearch
+        current={currentOptions}
+        loading={isFetching}
+        options={treeOptions}
+        placeholder="all sourcing regions"
+        onChange={onChange}
+        theme={theme}
+        ellipsis={ellipsis}
+        error={error}
+        fitContent={fitContent}
+        ref={ref}
+      />
+    );
+  },
+);
+
+OriginRegionsFilter.displayName = 'OriginRegionsFilter';
 
 export default OriginRegionsFilter;

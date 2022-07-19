@@ -6,7 +6,7 @@
     "legend": {
         "name": "Baseline water stress",
         "id": "",
-        "unit": "",
+        "unit": null,
         "min": -1,
         "type": "category",
         "items": [

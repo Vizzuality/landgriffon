@@ -13,32 +13,32 @@
             {
                 "value": -1,
                 "label": "Arid and Low Water Use",
-                "color": "#808080"
+                "color": "#e0e0e0"
             },
             {
                 "value": 0,
                 "label": "Low (<10%)",
-                "color": "#FDD49E"
+                "color": "#ffff99"
             },
             {
                 "value": 1,
                 "label": "Low - medium (10-20%)",
-                "color": "#FDBB84"
+                "color": "#ffe600"
             },
             {
                 "value": 2,
                 "label": "Medium - high (20-40%)",
-                "color": "#FC8D59"
+                "color": "#ff9900"
             },
             {
                 "value": 3,
                 "label": "High (40-80%)",
-                "color": "#E34A33"
+                "color": "#ff1900"
             },
             {
                 "value": 4,
                 "label": "Extremely High (>80%)",
-                "color": "#B30000"
+                "color": "#cc0014"
             }
         ]
     },

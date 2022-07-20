@@ -1,12 +1,7 @@
-import { AxiosPromise } from 'axios';
+import type { AxiosPromise } from 'axios';
 import { useMemo } from 'react';
-import {
-  useQuery,
-  useQueryClient,
-  UseQueryResult,
-  UseQueryOptions,
-  useMutation,
-} from 'react-query';
+import type { UseQueryResult, UseQueryOptions } from 'react-query';
+import { useQuery, useQueryClient, useMutation } from 'react-query';
 
 import { apiService } from 'services/api';
 

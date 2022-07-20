@@ -25,8 +25,7 @@ import SatelliteMapStyle from './styles/map-style-satellite.json';
 import type { BasemapValue } from 'components/map/controls/basemap/types';
 import type { PopUpProps } from 'components/map/popup/types';
 import type { ViewState } from 'react-map-gl/src/mapbox/mapbox';
-import { useQueryClient } from 'react-query';
-import type { H3APIResponse } from 'types';
+import { useAllContextual } from 'hooks/h3-data';
 
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
 
@@ -74,7 +73,6 @@ const AnalysisMap: React.FC = () => {
     [dispatch],
   );
   const setDebouncedViewState = useDebounce(updateViewState, 300);
-  const queryClient = useQueryClient();
 
   // Loading layers
   const {
@@ -83,19 +81,14 @@ const AnalysisMap: React.FC = () => {
     data: { data: impactData },
   } = useImpactLayer();
 
-  const allContextualData = queryClient.getQueriesData<H3APIResponse>(['h3-data-contextual']);
-
-  const contextualData = useMemo(() => {
-    const allData = allContextualData;
-    return new Map(allData.map(([key, value]) => [key[1], value?.data]));
-  }, [allContextualData]);
+  const contextualData = useAllContextual();
 
   const layers = useMemo(
     () =>
       Object.values(layerDeckGLProps).map((props) => {
         const layerInfo = layersMetadata[props.id];
 
-        const data = layerInfo.isContextual ? contextualData.get(props.id) : impactData;
+        const data = layerInfo.isContextual ? contextualData.get(props.id)?.data : impactData;
 
         return new H3HexagonLayer({
           ...props,

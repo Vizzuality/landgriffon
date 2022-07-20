@@ -1,4 +1,3 @@
-import cx from 'classnames';
 import type { Legend } from 'types';
 
 export interface LegendTypeBasicProps {
@@ -6,25 +5,18 @@ export interface LegendTypeBasicProps {
   items: Legend['items'];
 }
 
-export const LegendTypeBasic: React.FC<LegendTypeBasicProps> = ({
-  className = '',
-  items,
-}: LegendTypeBasicProps) => (
-  <div
-    className={cx({
-      [className]: !!className,
-    })}
-  >
+export const LegendTypeBasic: React.FC<LegendTypeBasicProps> = ({ className, items }) => (
+  <div className={className}>
     <ul className="flex flex-col w-full space-y-1">
-      {items.map(({ value, color }) => (
-        <li key={`${value}`} className="flex space-x-2 text-xs">
+      {items.map(({ label, color }) => (
+        <li key={label} className="flex space-x-2 text-xs">
           <div
             className="flex-shrink-0 w-3 h-3 mt-0.5 rounded"
             style={{
               backgroundColor: color,
             }}
           />
-          <div>{value}</div>
+          <div>{label}</div>
         </li>
       ))}
     </ul>

@@ -38,10 +38,14 @@
   }
 
   h2 {
-    @apply text-lg text-gray-900 font-semibold;
+    @apply text-2xl text-gray-900 font-semibold;
   }
 
   h3 {
+    @apply text-lg font-semibold;
+  }
+
+  h4 {
     @apply text-xs font-normal;
   }
 }

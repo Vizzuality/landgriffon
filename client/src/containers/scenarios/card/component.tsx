@@ -20,17 +20,17 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
 
   return (
     <div className="rounded-md bg-white p-6 space-y-6 shadow-sm">
-      <h2>{data.title}</h2>
+      <h2 className="text-lg">{data.title}</h2>
       {data.description && <p className="text-gray-500 text-xs leading-5">{data.description}</p>}
       {/* TO-DO: Fix growth rate of 1.5% meanwhile is implemented in the API */}
       <div>
-        <h3>Growth rates</h3>
+        <h3 className="text-xs">Growth rates</h3>
         <div className="flex space-x-4 mt-2">
           <div className="rounded-full bg-blue py-0.5 px-3 text-xs">Entire company +1.5%/yr</div>
         </div>
       </div>
       <div>
-        <h3>Interventions</h3>
+        <h3 className="text-xs">Interventions</h3>
         {isInterventionsLoading && <Loading />}
         {!isInterventionsLoading &&
           interventions &&

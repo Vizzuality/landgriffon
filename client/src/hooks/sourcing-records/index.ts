@@ -10,14 +10,13 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions<SourcingRecordsYearsData> = {
   keepPreviousData: false,
   refetchOnWindowFocus: false,
 };
-
-export function useSourcingRecordsYears({
-  params = {},
-  options = {},
-}: {
-  params: Record<string, unknown>;
-  options: UseQueryOptions<SourcingRecordsYearsData>;
-}) {
+export function useSourcingRecordsYears(
+  props: {
+    params?: Record<string, unknown>;
+    options?: UseQueryOptions<SourcingRecordsYearsData>;
+  } = {},
+) {
+  const { params = {}, options = {} } = props;
   const result = useQuery<SourcingRecordsYearsData>(
     ['SourcingRecordYears'],
     async () =>

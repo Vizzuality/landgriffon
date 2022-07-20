@@ -77,11 +77,12 @@ const TYPES_OF_INTERVENTIONS = Object.values(InterventionTypes).map((interventio
 
 const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSubmit }) => {
   const {
-    handleSubmit,
+    register,
+    control,
     watch,
     getValues,
     setValue,
-    control,
+    handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
@@ -96,15 +97,15 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
   console.log('values: ', getValues());
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-6">
-      <div className="flex flex-col justify-center">
+    <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-6 space-y-10">
+      <div className="flex flex-col justify-center pr-10">
         <h2>1. Apply intervention to...</h2>
-        <p className="text-sm">
+        <p className="text-sm text-gray-500">
           Choose to which data of your supply chain you want to apply the intervention in order to
           analyze changes.
         </p>
       </div>
-      <div className="space-y-4">
+      <div className="space-y-4 border-gray-100 border-l-2 pl-10">
         <div>
           <label className={LABEL_CLASSNAMES}>
             Raw material <sup>*</sup>
@@ -195,17 +196,17 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
         </div>
       </div>
 
-      <div className="flex flex-col justify-center">
+      <div className="flex flex-col justify-center pr-10">
         <h2>2. Type of intervention</h2>
       </div>
-      <div>
+      <div className="border-gray-100 border-l-2 pl-10">
         <Controller
           name="interventionType"
           control={control}
           render={({ field }) => (
             <RadioGroup {...field} onChange={(value) => setValue('interventionType', value)}>
               <RadioGroup.Label className="sr-only">Type of intervention</RadioGroup.Label>
-              <div className="space-y-4 my-8">
+              <div className="space-y-4">
                 {TYPES_OF_INTERVENTIONS.map(({ label, value }) => (
                   <RadioGroup.Option
                     value={value}
@@ -238,21 +239,43 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
 
       {currentInterventionType && (
         <>
-          <div className="flex flex-col justify-center">
+          <div className="flex flex-col justify-center pr-10">
             <h2>3. Set up intervention</h2>
+            <p className="text-sm text-gray-500">
+              Select the new material you want to switch to and also the supplier, location or
+              impact if you want.
+            </p>
           </div>
           {/* Those options depending on intervention type selected by the user */}
 
-          <div className="space-y-4">
+          <div className="space-y-4 border-gray-100 border-l-2 pl-10">
             {currentInterventionType === InterventionTypes.Material && (
               <>
                 <div>
                   <label className={LABEL_CLASSNAMES}>
                     New material <sup>*</sup>
                   </label>
+                  <Controller
+                    name="newMaterialId"
+                    control={control}
+                    render={({ field }) => (
+                      <MaterialsSelect
+                        {...field}
+                        multiple={false}
+                        withSourcingLocations
+                        current={field.value}
+                        businessUnitIds={currentBusinessUnitIds?.map(({ value }) => value)}
+                        supplierIds={currentSupplierIds?.map(({ value }) => value)}
+                        originIds={currentLocationIds?.map(({ value }) => value)}
+                        onChange={(selected) => setValue('newMaterialId', selected && [selected])}
+                        error={!!errors?.newMaterialId?.message}
+                      />
+                    )}
+                  />
                 </div>
                 <div>
-                  <label className={LABEL_CLASSNAMES}>Tons of material per ton</label>
+                  <label className={LABEL_CLASSNAMES}>Tons of new material</label>
+                  <Input type="number" placeholder="0" {...register('newMaterialTonnageRatio')} />
                 </div>
               </>
             )}

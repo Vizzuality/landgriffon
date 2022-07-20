@@ -25,7 +25,7 @@ import SatelliteMapStyle from './styles/map-style-satellite.json';
 import type { BasemapValue } from 'components/map/controls/basemap/types';
 import type { PopUpProps } from 'components/map/popup/types';
 import type { ViewState } from 'react-map-gl/src/mapbox/mapbox';
-import { useAllContextual } from 'hooks/h3-data';
+import { useAllContextualLayersData } from 'hooks/h3-data';
 import { sortBy } from 'lodash';
 
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
@@ -82,7 +82,7 @@ const AnalysisMap: React.FC = () => {
     data: { data: impactData },
   } = useImpactLayer();
 
-  const contextualData = useAllContextual();
+  const contextualData = useAllContextualLayersData();
 
   const layers = useMemo(() => {
     const legends = Object.values(layerDeckGLProps).map((props) => {

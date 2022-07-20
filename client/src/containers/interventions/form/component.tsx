@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useForm, Controller } from 'react-hook-form';
 import { RadioGroup, Disclosure } from '@headlessui/react';
@@ -86,8 +86,8 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
     register,
     control,
     watch,
-    getValues,
     setValue,
+    resetField,
     handleSubmit,
     formState: { errors },
   } = useForm({
@@ -151,6 +151,24 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
       ),
     [countries],
   );
+
+  useEffect(() => {
+    if (currentInterventionType === InterventionTypes.SupplierLocation) {
+      ['newMaterialId', 'newMaterialTonnageRatio'].forEach((field) => resetField(field));
+    } else if (currentInterventionType === InterventionTypes.Efficiency) {
+      [
+        'newMaterialId',
+        'newMaterialTonnageRatio',
+        'newSupplierId',
+        'newProducerId',
+        'newLocationType',
+        'newLocationCountryInput',
+        'newLocationAddressInput',
+        'newLocationLatitude',
+        'newLocationLongitude',
+      ].forEach((field) => resetField(field));
+    }
+  }, [currentInterventionType, resetField]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-6 space-y-10">
@@ -488,7 +506,13 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                         </div>
                         {locationType.value === LocationTypes.aggregationPoint && (
                           <div>
-                            <label className={LABEL_CLASSNAMES}>City / Address</label>
+                            <label className={LABEL_CLASSNAMES}>City</label>
+                            <Input type="text" {...register('mewLocationCountryInput')} />
+                          </div>
+                        )}
+                        {locationType.value === LocationTypes.aggregationPoint && (
+                          <div>
+                            <label className={LABEL_CLASSNAMES}>Address</label>
                             <Input type="text" {...register('newLocationAddressInput')} />
                           </div>
                         )}

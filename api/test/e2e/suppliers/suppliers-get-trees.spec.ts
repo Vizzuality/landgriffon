@@ -37,6 +37,16 @@ describe('Suppliers - Get trees', () => {
     await app.close();
   });
 
+  test('When I request suppliers trees, and the DB is empty, then I should get empty array', async () => {
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/suppliers/trees`)
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send()
+      .expect(HttpStatus.OK);
+
+    expect(response.body.data).toStrictEqual([]);
+  });
+
   test('Get trees of suppliers should be successful (happy case)', async () => {
     const rootSupplier: Supplier = await createSupplier();
     const childOneSupplier: Supplier = await createSupplier({

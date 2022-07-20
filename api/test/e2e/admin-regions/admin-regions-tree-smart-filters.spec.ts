@@ -43,6 +43,19 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
     await app.close();
   });
 
+  test('When I request admin region trees, and the DB is empty, then I should get empty array', async () => {
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/admin-regions/trees`)
+      .query({
+        withSourcingLocations: true,
+      })
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send()
+      .expect(HttpStatus.OK);
+
+    expect(response.body.data).toStrictEqual([]);
+  });
+
   test(
     'When I query a Admin Region Tree endpoint ' +
       'And I query the ones with sourcing locations' +

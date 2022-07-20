@@ -87,11 +87,6 @@ export class BusinessUnitRepository extends ExtendedTreeRepository<
       ),
     );
 
-    if (!result || !result.length)
-      throw new NotFoundException(
-        'No Business-Units with sourcing locations found. Please check if sourcing-data has been provided to the platform',
-      );
-
     return result;
   }
 }

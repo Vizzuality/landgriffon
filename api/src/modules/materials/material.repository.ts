@@ -113,11 +113,6 @@ export class MaterialRepository extends ExtendedTreeRepository<
       ),
     );
 
-    if (!result || !result.length)
-      throw new NotFoundException(
-        'No Materials with sourcing locations found. Please check if sourcing-data has been provided to the platform',
-      );
-
     return result;
   }
 }

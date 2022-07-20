@@ -42,6 +42,19 @@ describe('Business Units - Get trees - Smart Filters', () => {
     await app.close();
   });
 
+  test('When I request business units trees, and the DB is empty, then I should get empty array', async () => {
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/business-units/trees`)
+      .query({
+        withSourcingLocations: true,
+      })
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send()
+      .expect(HttpStatus.OK);
+
+    expect(response.body.data).toStrictEqual([]);
+  });
+
   test(
     'When I query a Business Unit Tree endpoint ' +
       'And I query the ones with sourcing locations' +

@@ -1,4 +1,5 @@
-import { MutableRefObject, useMemo, useCallback } from 'react';
+import type { MutableRefObject } from 'react';
+import { useMemo, useCallback } from 'react';
 import Lottie from 'lottie-react';
 import { PlusIcon, XCircleIcon } from '@heroicons/react/solid';
 import toast from 'react-hot-toast';
@@ -60,8 +61,8 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
   }, [createScenario, dispatch]);
 
   return (
-    <div className="bg-white overscroll-contain text-gray-900">
-      <div className="sticky top-0 z-20 bg-white pb-4 pt-10 text-sm after:bg-gradient-to-b after:from-white after:w-full after:h-3 after:content after:-bottom-3 after:left-0 after:absolute">
+    <div className="text-gray-900 bg-white overscroll-contain">
+      <div className="sticky top-0 z-20 pt-10 pb-4 text-sm bg-white after:bg-gradient-to-b after:from-white after:w-full after:h-3 after:content after:-bottom-3 after:left-0 after:absolute">
         <h1>Scenarios</h1>
         <p className="my-2">Select the scenario you want to analyse</p>
         {!isLoading && data && (
@@ -71,20 +72,20 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
         )}
       </div>
       {isLoading && (
-        <div className=" p-6 flex justify-center">
+        <div className="flex justify-center p-6 ">
           <Loading className="text-green-700" />
         </div>
       )}
       {!isLoading && data && (
-        <div className="flex-1 relative z-10 overflow-hidden">
+        <div className="relative z-10 flex-1 overflow-hidden">
           <ScenariosList data={scenariosList} />
         </div>
       )}
       {!isLoading && error && (
-        <div className="rounded-md bg-red-50 p-4 my-4">
+        <div className="p-4 my-4 rounded-md bg-red-50">
           <div className="flex">
             <div className="flex-shrink-0">
-              <XCircleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />
+              <XCircleIcon className="w-5 h-5 text-red-400" aria-hidden="true" />
             </div>
             <div className="ml-3">
               <h3 className="text-sm font-medium text-red-800">
@@ -94,14 +95,14 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
           </div>
         </div>
       )}
-      <div className="bg-white z-20 sticky bottom-0 left-0 w-full pb-6 before:bg-gradient-to-t before:from-white before:w-full before:h-16 before:content before:-top-16 before:left-0 before:absolute">
+      <div className="sticky bottom-0 left-0 z-20 w-full pb-6 bg-white before:bg-gradient-to-t before:from-white before:w-full before:h-16 before:content before:-top-16 before:left-0 before:absolute">
         <Button size="xl" className="block w-full" onClick={handleClick}>
-          <PlusIcon className="-ml-5 mr-3 h-5 w-5" aria-hidden="true" />
+          <PlusIcon className="w-5 h-5 mr-3 -ml-5" aria-hidden="true" />
           Create a new scenario
         </Button>
         {!scenariosList ||
           (scenariosList.length === 0 && (
-            <div className="p-7 space-y-8 text-center absolute z-20 bg-white">
+            <div className="absolute z-20 space-y-8 text-center bg-white p-7">
               <p className="text-sm">
                 Scenarios let you simulate changes in sourcing to evaluate how they would affect
                 impacts and risks. Create a scenario to get started.

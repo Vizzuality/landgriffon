@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap, setLayer } from 'store/features/analysis/map';
@@ -41,6 +41,16 @@ const ImpactLayer = () => {
     },
     [dispatch],
   );
+
+  const legendItems = useMemo(
+    () =>
+      impactLayer.metadata?.legend.items.map((item) => ({
+        ...item,
+        label: item.label || `${item.value}`,
+      })),
+    [impactLayer.metadata?.legend.items],
+  );
+
   if (!impactLayer.metadata) return null;
   // TO-DO: add Loading component
   return (
@@ -58,7 +68,7 @@ const ImpactLayer = () => {
       <LegendTypeChoropleth
         className="flex-1 text-sm text-gray-500"
         min={impactLayer.metadata.legend.min}
-        items={impactLayer.metadata.legend.items}
+        items={legendItems}
       />
     </LegendItem>
   );

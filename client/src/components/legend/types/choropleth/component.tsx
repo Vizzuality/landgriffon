@@ -8,18 +8,14 @@ export type LegendTypeChoroplethProps = {
 };
 
 export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
-  className = '',
+  className,
   min = 0,
   items = [],
 }) => {
   if (items.length === 0) return null;
 
   return (
-    <div
-      className={cx('px-4 w-full max-w-full', {
-        className,
-      })}
-    >
+    <div className={cx('px-4 w-full max-w-full', className)}>
       <ul className="flex w-full">
         {items.map(({ color }) => (
           <li
@@ -39,7 +35,7 @@ export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
             <span className="absolute w-4 truncate left">{min}</span>
           </li>
         )}
-        {items.map(({ value }, i) => (
+        {items.map(({ label, value }, i) => (
           <li
             key={`${value}-${i}`}
             className="flex justify-end text-xs text-center"
@@ -47,8 +43,8 @@ export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
               width: `${100 / items.length}%`,
             }}
           >
-            <span title={`${value}`} className="w-full truncate transform translate-x-1/2">
-              {value}
+            <span title={label} className="w-full truncate transform translate-x-1/2">
+              {label}
             </span>
           </li>
         ))}

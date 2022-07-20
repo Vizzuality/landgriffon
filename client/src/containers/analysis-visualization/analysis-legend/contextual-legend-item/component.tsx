@@ -40,7 +40,7 @@ const ContextualLegendItem: React.FC<ContextualLegendItemProps> = ({ layer }) =>
     const props = {
       items: layer.metadata.legend.items.map((item) => ({
         ...item,
-        label: item.label ?? `${item.value}`,
+        label: item.label || `${item.value}`,
       })),
     };
     switch (layer.metadata.legend.type) {

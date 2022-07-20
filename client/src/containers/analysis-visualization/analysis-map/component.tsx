@@ -96,9 +96,7 @@ const AnalysisMap: React.FC = () => {
         getHexagon: (d) => d.h,
         getFillColor: (d) => d.c,
         getLineColor: (d) => d.c,
-        handleHover: ({ object, x, y, viewport }) => {
-          console.log({ object });
-
+        onHover: ({ object, x, y, viewport }) => {
           dispatch(
             setTooltipPosition({
               x,
@@ -109,7 +107,7 @@ const AnalysisMap: React.FC = () => {
           dispatch(
             setTooltipData({
               id: props.id,
-              name: layerInfo.metadata?.name,
+              name: layerInfo.metadata?.name || layerInfo.metadata?.legend.name,
               value: object?.v,
               unit: layerInfo.metadata?.legend.unit,
             }),

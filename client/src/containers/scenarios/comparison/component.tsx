@@ -12,7 +12,7 @@ const ScenariosComparison: FC = () => {
   const dispatch = useAppDispatch();
   const { currentScenario, scenarioToCompare, isComparisonEnabled } = useAppSelector(scenarios);
 
-  const { data } = useScenarios({ disablePagination: true });
+  const { data } = useScenarios({ params: { disablePagination: true } });
   const options: SelectOption[] = useMemo(() => {
     if (currentScenario === 'actual-data') {
       return data.map(({ id, title }) => ({ label: title, value: id }));

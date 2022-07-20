@@ -104,7 +104,7 @@ const AdminDataPage: React.FC = () => {
         { key: 'locationType', title: 'Location Type', dataType: DataType.String },
         { key: 'country', title: 'Country', dataType: DataType.String },
         ...yearsData.columns.map((column) => ({ ...column, isSortable: false })),
-      ] as TableProps['columns'],
+      ] as ITableProps['columns'],
       data: merge(sourcingData, yearsData.data),
       defaultSorting: sorting,
       onSortingChange: (params: ApiSortingType) => {
@@ -114,7 +114,6 @@ const AdminDataPage: React.FC = () => {
     }),
     [isFetchingSourcingData, sorting, sourcingData, yearsData.columns, yearsData.data],
   );
-  console.log('table props: ', tableProps);
 
   /** Pagination Props */
   const paginationProps: PaginationProps = useMemo(

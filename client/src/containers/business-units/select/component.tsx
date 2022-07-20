@@ -8,7 +8,7 @@ import TreeSelect from 'components/tree-select';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
 type BusinessUnitsFilterProps = {
-  current: string[];
+  current: TreeSelectProps['current'];
   /** Tree depth. Defaults to `1` */
   currentOptions?: TreeSelectProps['current'];
   depth?: BusinessUnitsTreesParams['depth'];
@@ -77,7 +77,7 @@ const BusinessUnitsFilter = forwardRef<HTMLInputElement, BusinessUnitsFilterProp
       current?.forEach((key) => {
         const recursiveSearch = (arr) => {
           arr.forEach((opt) => {
-            if (opt.value === key) checkedOptions.push(opt);
+            if (opt.value === key.value) checkedOptions.push(opt);
             if (opt.children) recursiveSearch(opt.children);
           });
         };

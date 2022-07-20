@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import Link from 'next/link';
 import { useForm, Controller } from 'react-hook-form';
 import { RadioGroup } from '@headlessui/react';
@@ -13,7 +14,9 @@ import Input from 'components/forms/input';
 import Textarea from 'components/forms/textarea';
 import { AnchorLink, Button } from 'components/button';
 
+import InterventionTypeIcon from './intervention-type-icon';
 import Years from './years';
+import { InterventionTypes } from '../enums';
 
 import type { Intervention } from 'containers/scenarios/types';
 
@@ -67,15 +70,13 @@ const schemaValidation = yup.object({
 
 const LABEL_CLASSNAMES = 'text-sm';
 
-const TYPES_OF_INTERVENTIONS = [
-  { label: 'Switch to a new raw material', value: 'material' },
-  { label: 'Source from a new supplier or location', value: 'supplier-location' },
-  { label: 'Change efficiency in data collection', value: 'efficiency' },
-];
+const TYPES_OF_INTERVENTIONS = Object.values(InterventionTypes).map((interventionType) => ({
+  value: interventionType,
+  label: interventionType,
+}));
 
 const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSubmit }) => {
   const {
-    register,
     handleSubmit,
     watch,
     getValues,
@@ -86,8 +87,13 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
     resolver: yupResolver(schemaValidation),
   });
 
-  console.log('values: ', watch('materialIds'));
-  console.log('errors: ', errors);
+  const currentMaterialIds = watch('materialIds');
+  const currentBusinessUnitIds = watch('businessUnitIds');
+  const currentLocationIds = watch('adminRegionIds');
+  const currentSupplierIds = watch('supplierIds');
+  const currentInterventionType = watch('interventionType');
+
+  console.log('values: ', getValues());
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-6">
@@ -111,11 +117,10 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                 {...field}
                 multiple={false}
                 withSourcingLocations
-                current={watch('materialIds')}
-                // businessUnitIds={businessUnitIds}
-                // supplierIds={supplierIds}
-                // originIds={adminRegionIds}
-                ellipsis={false}
+                current={field.value}
+                businessUnitIds={currentBusinessUnitIds?.map(({ value }) => value)}
+                supplierIds={currentSupplierIds?.map(({ value }) => value)}
+                originIds={currentLocationIds?.map(({ value }) => value)}
                 onChange={(selected) => setValue('materialIds', selected && [selected])}
                 error={!!errors?.materialIds?.message}
               />
@@ -131,14 +136,13 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
               <BusinessUnitsSelect
                 {...field}
                 multiple
-                // materialIds={materialIds}
-                // supplierIds={supplierIds}
-                // originIds={adminRegionIds}
+                materialIds={currentMaterialIds?.map(({ value }) => value)}
+                supplierIds={currentSupplierIds?.map(({ value }) => value)}
+                originIds={currentLocationIds?.map(({ value }) => value)}
                 withSourcingLocations
-                current={watch('businessUnitIds')}
-                // current={watch('businessUnitIds') || newInterventionData.businessUnitIds}
-                ellipsis
-                // error={!!errors?.businessUnitIds?.message}
+                current={field.value}
+                onChange={(selected) => setValue('businessUnitIds', selected ?? [])}
+                error={!!errors?.businessUnitIds?.message}
               />
             )}
           />
@@ -152,14 +156,13 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
               <LocationsSelect
                 {...field}
                 multiple
-                // materialIds={materialIds}
-                // supplierIds={supplierIds}
-                // businessUnitIds={businessUnitIds}
+                materialIds={currentMaterialIds?.map(({ value }) => value)}
+                supplierIds={currentSupplierIds?.map(({ value }) => value)}
+                businessUnitIds={currentBusinessUnitIds?.map(({ value }) => value)}
                 withSourcingLocations
-                current={watch('adminRegionIds')}
-                // current={watch('adminRegionIds') || newInterventionData.adminRegionIds}
-                // onChange={(values) => handleDropdown('adminRegionIds', values)}
-                // error={!!errors?.adminRegionIds?.message}
+                current={field.value}
+                onChange={(selected) => setValue('adminRegionIds', selected ?? [])}
+                error={!!errors?.adminRegionIds?.message}
               />
             )}
           />
@@ -173,14 +176,13 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
               <SuppliersSelect
                 {...field}
                 multiple
-                // materialIds={materialIds}
-                // businessUnitIds={businessUnitIds}
-                // originIds={adminRegionIds}
+                materialIds={currentMaterialIds?.map(({ value }) => value)}
+                businessUnitIds={currentBusinessUnitIds?.map(({ value }) => value)}
+                originIds={currentLocationIds?.map(({ value }) => value)}
                 withSourcingLocations
-                current={watch('supplierIds')}
-                // current={watch('supplierIds') || newInterventionData.supplierIds}
-                // onChange={(values) => handleDropdown('supplierIds', values)}
-                // error={!!errors?.supplierIds?.message}
+                current={field.value}
+                onChange={(selected) => setValue('supplierIds', selected ?? [])}
+                error={!!errors?.supplierIds?.message}
               />
             )}
           />
@@ -197,48 +199,66 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
         <h2>2. Type of intervention</h2>
       </div>
       <div>
-        <RadioGroup value={TYPES_OF_INTERVENTIONS[0]} onChange={(value) => console.log(value)}>
-          <RadioGroup.Label className="sr-only">Type of intervention</RadioGroup.Label>
-          <div className="space-y-4 my-8">
-            {TYPES_OF_INTERVENTIONS.map(({ label, value }) => (
-              <RadioGroup.Option
-                value={value}
-                key={value}
-                className={({ active, checked }) =>
-                  classNames(
-                    'border p-4 rounded-md',
-                    active
-                      ? 'border-yellow bg-yellow text-gray-900'
-                      : 'border-gray-300 text-gray-500',
-                  )
-                }
-              >
-                {({ active, checked }) => (
-                  <div className="flex space-x-4">
-                    <div>Icon</div>
-                    <RadioGroup.Label>{label}</RadioGroup.Label>
-                  </div>
-                )}
-              </RadioGroup.Option>
-            ))}
-          </div>
-        </RadioGroup>
+        <Controller
+          name="interventionType"
+          control={control}
+          render={({ field }) => (
+            <RadioGroup {...field} onChange={(value) => setValue('interventionType', value)}>
+              <RadioGroup.Label className="sr-only">Type of intervention</RadioGroup.Label>
+              <div className="space-y-4 my-8">
+                {TYPES_OF_INTERVENTIONS.map(({ label, value }) => (
+                  <RadioGroup.Option
+                    value={value}
+                    key={value}
+                    className={({ active, checked }) =>
+                      classNames(
+                        'border p-4 rounded-md',
+                        active || checked
+                          ? 'border-yellow bg-yellow text-gray-900'
+                          : 'border-gray-300 text-gray-500',
+                      )
+                    }
+                  >
+                    {({ active, checked }) => (
+                      <div className="flex space-x-4 items-center">
+                        <InterventionTypeIcon
+                          interventionType={value}
+                          variant={active || checked ? 'light' : 'default'}
+                        />
+                        <RadioGroup.Label>{label}</RadioGroup.Label>
+                      </div>
+                    )}
+                  </RadioGroup.Option>
+                ))}
+              </div>
+            </RadioGroup>
+          )}
+        />
       </div>
 
-      <div className="flex flex-col justify-center">
-        <h2>3. Set up intervention</h2>
-      </div>
-      {/* Those options depending on intervention type selected by the user */}
-      <div className="space-y-4">
-        <div>
-          <label className={LABEL_CLASSNAMES}>
-            New material <sup>*</sup>
-          </label>
-        </div>
-        <div>
-          <label className={LABEL_CLASSNAMES}>Tons of material per ton</label>
-        </div>
-      </div>
+      {currentInterventionType && (
+        <>
+          <div className="flex flex-col justify-center">
+            <h2>3. Set up intervention</h2>
+          </div>
+          {/* Those options depending on intervention type selected by the user */}
+
+          <div className="space-y-4">
+            {currentInterventionType === InterventionTypes.Material && (
+              <>
+                <div>
+                  <label className={LABEL_CLASSNAMES}>
+                    New material <sup>*</sup>
+                  </label>
+                </div>
+                <div>
+                  <label className={LABEL_CLASSNAMES}>Tons of material per ton</label>
+                </div>
+              </>
+            )}
+          </div>
+        </>
+      )}
 
       <div className="col-span-2">
         <div className="text-sm text-gray-500 text-right mb-6">

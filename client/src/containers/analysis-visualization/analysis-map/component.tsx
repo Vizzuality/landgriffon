@@ -26,6 +26,7 @@ import type { BasemapValue } from 'components/map/controls/basemap/types';
 import type { PopUpProps } from 'components/map/popup/types';
 import type { ViewState } from 'react-map-gl/src/mapbox/mapbox';
 import { useAllContextual } from 'hooks/h3-data';
+import { sortBy } from 'lodash';
 
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
 
@@ -83,40 +84,41 @@ const AnalysisMap: React.FC = () => {
 
   const contextualData = useAllContextual();
 
-  const layers = useMemo(
-    () =>
-      Object.values(layerDeckGLProps).map((props) => {
-        const layerInfo = layersMetadata[props.id];
+  const layers = useMemo(() => {
+    const legends = Object.values(layerDeckGLProps).map((props) => {
+      const layerInfo = layersMetadata[props.id];
 
-        const data = layerInfo.isContextual ? contextualData.get(props.id)?.data : impactData;
+      const data = layerInfo.isContextual ? contextualData.get(props.id)?.data : impactData;
 
-        return new H3HexagonLayer({
-          ...props,
-          data,
-          getHexagon: (d) => d.h,
-          getFillColor: (d) => d.c,
-          getLineColor: (d) => d.c,
-          handleHover: ({ object, x, y, viewport }) => {
-            dispatch(
-              setTooltipPosition({
-                x,
-                y,
-                viewport: viewport ? { width: viewport.width, height: viewport.height } : null,
-              }),
-            );
-            dispatch(
-              setTooltipData({
-                id: props.id,
-                name: 'Impact',
-                value: object?.v,
-                unit: layerInfo.metadata?.legend.unit,
-              }),
-            );
-          },
-        });
-      }),
-    [contextualData, dispatch, impactData, layerDeckGLProps, layersMetadata],
-  );
+      return new H3HexagonLayer({
+        ...props,
+        data,
+        getHexagon: (d) => d.h,
+        getFillColor: (d) => d.c,
+        getLineColor: (d) => d.c,
+        handleHover: ({ object, x, y, viewport }) => {
+          console.log({ object });
+
+          dispatch(
+            setTooltipPosition({
+              x,
+              y,
+              viewport: viewport ? { width: viewport.width, height: viewport.height } : null,
+            }),
+          );
+          dispatch(
+            setTooltipData({
+              id: props.id,
+              name: layerInfo.metadata?.name,
+              value: object?.v,
+              unit: layerInfo.metadata?.legend.unit,
+            }),
+          );
+        },
+      });
+    });
+    return sortBy(legends, (l) => layersMetadata[l.id].order).reverse();
+  }, [contextualData, dispatch, impactData, layerDeckGLProps, layersMetadata]);
 
   const handleAfterRender = useCallback(() => setIsRendering(false), []);
 

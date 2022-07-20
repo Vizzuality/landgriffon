@@ -231,7 +231,7 @@ export class H3DataRepository extends Repository<H3Data> {
     const withDynamicResolution: SelectQueryBuilder<any> = getManager()
       .createQueryBuilder()
       .addSelect(`h3_to_parent(q.h3index, ${resolution})`, `h`)
-      .addSelect(`round(sum(sum))`, `v`)
+      .addSelect(`round(sum(sum)::numeric, 2)`, `v`)
       .from(`( ${selectQueryBuilder.getSql()} )`, `q`)
       .groupBy('h');
 

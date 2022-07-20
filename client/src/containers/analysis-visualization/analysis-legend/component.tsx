@@ -57,7 +57,7 @@ export const Legend: React.FC = () => {
   return (
     <div className="relative">
       {showLegend && (
-        <div className="absolute bottom-0 z-10 flex flex-col flex-grow max-w-xs overflow-hidden bg-white border border-gray-200 rounded-lg shadow-sm right-12 w-80">
+        <div className="absolute bottom-0 z-10 flex flex-col flex-grow max-w-xs overflow-hidden overflow-y-scroll bg-white border border-gray-200 rounded-lg shadow-sm right-12 w-80 md:max-h-[75vh]">
           <div className="flex items-center justify-between px-4 py-2">
             <div className="text-sm font-semibold text-gray-900">Legend</div>
             <button

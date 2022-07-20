@@ -33,6 +33,12 @@ const DEFAULT_DECKGL_PROPS = {
   visible: DEFAULT_LAYER_ATTRIBUTES.active,
 };
 
+interface DeckGLConstructorProps {
+  id: Layer['id'];
+  visible: boolean;
+  opacity: number;
+}
+
 type TooltipData = {
   id: string;
   name: string;
@@ -57,7 +63,7 @@ export type AnalysisMapState = {
     };
   };
   // Deck.gl layer props by layer id
-  layerDeckGLProps: Record<Layer['id'], any>;
+  layerDeckGLProps: Record<Layer['id'], Partial<DeckGLConstructorProps>>;
 };
 
 type FeatureState = RootState & { 'analysis/map': AnalysisMapState };
@@ -81,9 +87,7 @@ export const initialState: AnalysisMapState = {
     x: 0,
     y: 0,
   },
-  layerDeckGLProps: {
-    impact: DEFAULT_DECKGL_PROPS,
-  },
+  layerDeckGLProps: {},
 };
 
 export const analysisMapSlice = createSlice({
@@ -129,7 +133,7 @@ export const analysisMapSlice = createSlice({
       state,
       action: PayloadAction<{
         id: Layer['id'];
-        props: any;
+        props: DeckGLConstructorProps;
       }>,
     ) => {
       state.layerDeckGLProps[action.payload.id] = {

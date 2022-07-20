@@ -15,12 +15,9 @@ import type { AxiosResponse } from 'axios';
 import type {
   RGBColor,
   H3APIResponse,
-  H3Data,
   H3Item,
-  LayerMetadata,
   MaterialH3APIParams,
   RiskH3APIParams,
-  WaterH3APIParams,
   ImpactH3APIParams,
 } from 'types';
 
@@ -149,61 +146,59 @@ export function useH3RiskData(
   );
 }
 
-export function useH3ContextualData(
+export const useH3ContextualData = (
   id: string,
-  params: Partial<WaterH3APIParams>,
+  // params: Partial<WaterH3APIParams>,
   options: Partial<UseQueryOptions>,
-): H3ContextualResponse {
-  // TODO: the API throws an error with the commented code
-  return useH3ImpactData();
-  // const filters = useAppSelector(analysisFilters);
-  // const { startYear, materials, indicator, suppliers, origins, locationTypes } = filters;
-  // const urlParams = {
-  //   year: startYear,
-  //   indicatorId: indicator?.value && indicator?.value === 'all' ? null : indicator?.value,
-  //   ...(materials?.length ? { materialIds: materials?.map(({ value }) => value) } : {}),
-  //   ...(suppliers?.length ? { supplierIds: suppliers?.map(({ value }) => value) } : {}),
-  //   ...(origins?.length ? { originIds: origins?.map(({ value }) => value) } : {}),
-  //   ...(locationTypes?.length ? { locationTypes: locationTypes?.map(({ value }) => value) } : {}),
-  //   ...params,
-  //   resolution: origins?.length ? 6 : 4,
-  // };
-  // const query = useQuery(
-  //   ['h3-data-contextual', id, params],
-  //   async () =>
-  //     apiRawService
-  //       .get(`/contextual-layers/${id}/h3data`, {
-  //         params: urlParams,
-  //       })
-  //       // Adding color to the response
-  //       .then((response) => responseContextualParser(response)),
-  //   {
-  //     ...DEFAULT_QUERY_OPTIONS,
-  //     placeholderData: {
-  //       data: [],
-  //       metadata: {
-  //         name: null,
-  //         legend: {
-  //           unit: null,
-  //           items: [],
-  //         },
-  //       },
-  //     },
-  //     ...options,
-  //   },
-  // );
+): H3ContextualResponse => {
+  const filters = useAppSelector(analysisFilters);
+  const { startYear, materials, indicator, suppliers, origins, locationTypes } = filters;
+  const urlParams = {
+    year: startYear,
+    indicatorId: indicator?.value && indicator?.value === 'all' ? null : indicator?.value,
+    ...(materials?.length ? { materialIds: materials?.map(({ value }) => value) } : {}),
+    ...(suppliers?.length ? { supplierIds: suppliers?.map(({ value }) => value) } : {}),
+    ...(origins?.length ? { originIds: origins?.map(({ value }) => value) } : {}),
+    ...(locationTypes?.length ? { locationTypes: locationTypes?.map(({ value }) => value) } : {}),
+    resolution: origins?.length ? 6 : 4,
+  };
+  const query = useQuery(
+    ['h3-data-contextual', id, urlParams],
+    async () =>
+      apiRawService
+        .get(`/contextual-layers/${id}/h3data`, {
+          params: urlParams,
+        })
+        // Adding color to the response
+        .then((response) => responseContextualParser(response)),
+    {
+      ...DEFAULT_QUERY_OPTIONS,
+      placeholderData: {
+        data: [],
+        metadata: {
+          name: null,
+          legend: {
+            unit: null,
+            items: [],
+          },
+        },
+      },
+      ...options,
+      enabled: options.enabled && !!id && !!urlParams.year,
+    },
+  );
 
-  // const { data, isError } = query;
+  const { data, isError } = query;
 
-  // return useMemo<H3ContextualResponse>(
-  //   () =>
-  //     ({
-  //       ...query,
-  //       data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as H3ContextualResponse,
-  //     } as H3ContextualResponse),
-  //   [query, isError, data],
-  // );
-}
+  return useMemo<H3ContextualResponse>(
+    () =>
+      ({
+        ...query,
+        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as H3ContextualResponse,
+      } as H3ContextualResponse),
+    [query, isError, data],
+  );
+};
 
 export function useH3ImpactData(
   params: Partial<ImpactH3APIParams> = {},

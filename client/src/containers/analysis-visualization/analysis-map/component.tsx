@@ -6,7 +6,7 @@ import { H3HexagonLayer } from '@deck.gl/geo-layers';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap } from 'store/features/analysis';
-import { setViewState } from 'store/features/analysis/map';
+import { setTooltipData, setTooltipPosition, setViewState } from 'store/features/analysis/map';
 import { useDebounce } from 'rooks';
 
 import { useImpactLayer } from 'hooks/layers/impact';
@@ -25,6 +25,8 @@ import SatelliteMapStyle from './styles/map-style-satellite.json';
 import type { BasemapValue } from 'components/map/controls/basemap/types';
 import type { PopUpProps } from 'components/map/popup/types';
 import type { ViewState } from 'react-map-gl/src/mapbox/mapbox';
+import { useQueryClient } from 'react-query';
+import type { H3APIResponse } from 'types';
 
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
 
@@ -44,7 +46,13 @@ const INITIAL_VIEW_STATE = {
 
 const AnalysisMap: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { viewState, tooltipData, tooltipPosition, layerDeckGLProps } = useAppSelector(analysisMap);
+  const {
+    viewState,
+    tooltipData,
+    tooltipPosition,
+    layerDeckGLProps,
+    layers: layersMetadata,
+  } = useAppSelector(analysisMap);
   const [isRendering, setIsRendering] = useState<boolean>(false);
   const [localViewState, setLocalViewState] = useState<ViewState>({
     ...INITIAL_VIEW_STATE,
@@ -66,27 +74,56 @@ const AnalysisMap: React.FC = () => {
     [dispatch],
   );
   const setDebouncedViewState = useDebounce(updateViewState, 300);
+  const queryClient = useQueryClient();
+
+  // Loading layers
+  const {
+    isError,
+    isFetching,
+    data: { data: impactData },
+  } = useImpactLayer();
+
+  const allContextualData = queryClient.getQueriesData<H3APIResponse>(['h3-data-contextual']);
+
+  const contextualData = useMemo(() => {
+    const allData = allContextualData;
+    return new Map(allData.map(([key, value]) => [key[1], value?.data]));
+  }, [allContextualData]);
 
   const layers = useMemo(
     () =>
-      Object.values(layerDeckGLProps).map(
-        (props) =>
-          new H3HexagonLayer({
-            ...props,
-            getHexagon: (d) => d.h,
-            getFillColor: (d) => d.c,
-            getLineColor: (d) => d.c,
-          }),
-      ),
-    [layerDeckGLProps],
+      Object.values(layerDeckGLProps).map((props) => {
+        const layerInfo = layersMetadata[props.id];
+
+        const data = layerInfo.isContextual ? contextualData.get(props.id) : impactData;
+
+        return new H3HexagonLayer({
+          ...props,
+          data,
+          getHexagon: (d) => d.h,
+          getFillColor: (d) => d.c,
+          getLineColor: (d) => d.c,
+          handleHover: ({ object, x, y, viewport }) => {
+            dispatch(
+              setTooltipPosition({
+                x,
+                y,
+                viewport: viewport ? { width: viewport.width, height: viewport.height } : null,
+              }),
+            );
+            dispatch(
+              setTooltipData({
+                id: props.id,
+                name: 'Impact',
+                value: object?.v,
+                unit: layerInfo.metadata?.legend.unit,
+              }),
+            );
+          },
+        });
+      }),
+    [contextualData, dispatch, impactData, layerDeckGLProps, layersMetadata],
   );
-
-  // Loading layers
-  const impactLayer = useImpactLayer();
-  // TODO: Add other layers here. They can't be stored in the store, but we can store the props and recreate them each time
-
-  const isError = impactLayer.isError;
-  const isFetching = impactLayer.isFetching;
 
   const handleAfterRender = useCallback(() => setIsRendering(false), []);
 

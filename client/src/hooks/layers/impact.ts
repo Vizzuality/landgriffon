@@ -1,15 +1,8 @@
-import { useCallback, useEffect } from 'react';
-import type { H3HexagonLayer } from '@deck.gl/geo-layers';
+import { useEffect } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
-import {
-  analysisMap,
-  setLayer,
-  setLayerDeckGLProps,
-  setTooltipData,
-  setTooltipPosition,
-} from 'store/features/analysis/map';
+import { analysisMap, setLayer, setLayerDeckGLProps } from 'store/features/analysis/map';
 
 import { useH3ImpactData } from 'hooks/h3-data';
 
@@ -29,27 +22,6 @@ export const useImpactLayer: () => ReturnType<typeof useH3ImpactData> = () => {
 
   const query = useH3ImpactData();
   const { data, isSuccess, isFetched } = query;
-
-  const handleHover = useCallback(
-    ({ object, x, y, viewport }) => {
-      dispatch(
-        setTooltipPosition({
-          x,
-          y,
-          viewport: viewport ? { width: viewport.width, height: viewport.height } : null,
-        }),
-      );
-      dispatch(
-        setTooltipData({
-          id: LAYER_ID,
-          name: 'Impact',
-          value: object?.v,
-          unit: data.metadata?.unit,
-        }),
-      );
-    },
-    [data.metadata?.unit, dispatch],
-  );
 
   // Populating legend
   useEffect(() => {
@@ -82,6 +54,7 @@ export const useImpactLayer: () => ReturnType<typeof useH3ImpactData> = () => {
 
   useEffect(() => {
     if (!isFetched) return;
+
     dispatch(
       setLayerDeckGLProps({
         id: LAYER_ID,
@@ -89,11 +62,10 @@ export const useImpactLayer: () => ReturnType<typeof useH3ImpactData> = () => {
           id: LAYER_ID,
           opacity: impactLayer.opacity,
           visible: impactLayer.active,
-          data: data.data,
         },
       }),
     );
-  }, [data.data, dispatch, impactLayer.active, impactLayer.opacity, isFetched]);
+  }, [dispatch, impactLayer.active, impactLayer.opacity, isFetched]);
 
   return query;
 };

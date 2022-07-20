@@ -1,22 +1,29 @@
+import { useMemo } from 'react';
 import Link from 'next/link';
 import { useForm, Controller } from 'react-hook-form';
-import { RadioGroup, Disclosure, Transition } from '@headlessui/react';
+import { RadioGroup, Disclosure } from '@headlessui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { PlusIcon, MinusIcon } from '@heroicons/react/solid';
 import * as yup from 'yup';
 import classNames from 'classnames';
+import { sortBy } from 'lodash';
 
+import { useSuppliersTypes } from 'hooks/suppliers';
+import { useLocationTypes } from 'hooks/location-types';
+import { useAdminRegionsTrees } from 'hooks/admin-regions';
 import MaterialsSelect from 'containers/materials/select';
 import BusinessUnitsSelect from 'containers/business-units/select';
 import LocationsSelect from 'containers/locations/select';
 import SuppliersSelect from 'containers/suppliers/select';
 import Input from 'components/forms/input';
 import { AnchorLink, Button } from 'components/button';
+import Select from 'components/select';
 
 import InterventionTypeIcon from './intervention-type-icon';
 // import Years from './years';
-import { InterventionTypes } from '../enums';
+import { InterventionTypes, LocationTypes } from '../enums';
 
+import type { SelectOptions } from 'components/select/types';
 import type { Intervention } from '../types';
 
 type InterventionFormProps = {
@@ -92,8 +99,58 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
   const currentLocationIds = watch('adminRegionIds');
   const currentSupplierIds = watch('supplierIds');
   const currentInterventionType = watch('interventionType');
+  const locationType = watch('newLocationType');
 
-  console.log('values: ', getValues());
+  // Suppliers
+  const { data: suppliers, isLoading: isLoadingSuppliers } = useSuppliersTypes({
+    type: 't1supplier',
+  });
+  const optionsSuppliers = useMemo<SelectOptions>(
+    () =>
+      suppliers.map((supplier) => ({
+        label: supplier.name,
+        value: supplier.id,
+      })),
+    [suppliers],
+  );
+
+  // Producers
+  const { data: producers, isLoading: isLoadingProducers } = useSuppliersTypes({
+    type: 'producer',
+  });
+  const optionsProducers = useMemo<SelectOptions>(
+    () =>
+      producers.map((producer) => ({
+        label: producer.name,
+        value: producer.id,
+      })),
+    [producers],
+  );
+
+  // Location types
+  const { data: locationTypes } = useLocationTypes({});
+  const optionsLocationTypes: SelectOptions = useMemo(
+    () =>
+      locationTypes.map(({ label, value }) => ({
+        label,
+        value,
+      })),
+    [locationTypes],
+  );
+
+  // Countries
+  const { data: countries, isLoading: isLoadingCountries } = useAdminRegionsTrees({ depth: 0 });
+  const optionsCountries: SelectOptions = useMemo(
+    () =>
+      sortBy(
+        countries.map(({ name, id }) => ({
+          label: name,
+          value: id,
+        })),
+        'label',
+      ),
+    [countries],
+  );
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-6 space-y-10">
@@ -262,11 +319,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                       <MaterialsSelect
                         {...field}
                         multiple={false}
-                        withSourcingLocations
                         current={field.value}
-                        businessUnitIds={currentBusinessUnitIds?.map(({ value }) => value)}
-                        supplierIds={currentSupplierIds?.map(({ value }) => value)}
-                        originIds={currentLocationIds?.map(({ value }) => value)}
                         onChange={(selected) => setValue('newMaterialId', selected && [selected])}
                         error={!!errors?.newMaterialId?.message}
                       />
@@ -314,35 +367,43 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                     >
                       <div className="space-y-4">
                         <div>
-                          <label className={LABEL_CLASSNAMES}>Carbon emission</label>
-                          <Input
-                            type="number"
-                            placeholder="0"
-                            {...register('newMaterialTonnageRatio')}
+                          <label className={LABEL_CLASSNAMES}>Tier 1 supplier</label>
+                          <Controller
+                            name="newSupplierId"
+                            control={control}
+                            render={({ field }) => (
+                              <Select
+                                {...field}
+                                showSearch
+                                loading={isLoadingSuppliers}
+                                current={field.value}
+                                options={optionsSuppliers}
+                                placeholder="Select"
+                                onChange={(value) => setValue('newSupplierId', value)}
+                                error={!!errors?.newSupplierId?.message}
+                                allowEmpty
+                              />
+                            )}
                           />
                         </div>
                         <div>
-                          <label className={LABEL_CLASSNAMES}>Deforestation risk</label>
-                          <Input
-                            type="number"
-                            placeholder="0"
-                            {...register('newMaterialTonnageRatio')}
-                          />
-                        </div>
-                        <div>
-                          <label className={LABEL_CLASSNAMES}>Water withdrawal</label>
-                          <Input
-                            type="number"
-                            placeholder="0"
-                            {...register('newMaterialTonnageRatio')}
-                          />
-                        </div>
-                        <div>
-                          <label className={LABEL_CLASSNAMES}>Biodiversity impact</label>
-                          <Input
-                            type="number"
-                            placeholder="0"
-                            {...register('newMaterialTonnageRatio')}
+                          <label className={LABEL_CLASSNAMES}>Producer</label>
+                          <Controller
+                            name="newProducerId"
+                            control={control}
+                            render={({ field }) => (
+                              <Select
+                                {...field}
+                                showSearch
+                                loading={isLoadingProducers}
+                                current={field.value}
+                                options={optionsProducers}
+                                placeholder="Select"
+                                onChange={(value) => setValue('newProducerId', value)}
+                                error={!!errors?.newProducerId?.message}
+                                allowEmpty
+                              />
+                            )}
                           />
                         </div>
                       </div>
@@ -386,37 +447,67 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                     >
                       <div className="space-y-4">
                         <div>
-                          <label className={LABEL_CLASSNAMES}>Carbon emission</label>
-                          <Input
-                            type="number"
-                            placeholder="0"
-                            {...register('newMaterialTonnageRatio')}
+                          <label className={LABEL_CLASSNAMES}>Location type</label>
+                          <Controller
+                            name="newLocationType"
+                            control={control}
+                            render={({ field }) => (
+                              <Select
+                                {...field}
+                                showSearch
+                                loading={isLoadingProducers}
+                                current={field.value}
+                                options={optionsLocationTypes}
+                                placeholder="Select"
+                                onChange={(value) => setValue('newLocationType', value)}
+                                error={!!errors?.newLocationType?.message}
+                                allowEmpty
+                              />
+                            )}
                           />
                         </div>
                         <div>
-                          <label className={LABEL_CLASSNAMES}>Deforestation risk</label>
-                          <Input
-                            type="number"
-                            placeholder="0"
-                            {...register('newMaterialTonnageRatio')}
+                          <label className={LABEL_CLASSNAMES}>Country</label>
+                          <Controller
+                            name="newCountryId"
+                            control={control}
+                            render={({ field }) => (
+                              <Select
+                                {...field}
+                                showSearch
+                                loading={isLoadingCountries}
+                                current={field.value}
+                                options={optionsCountries}
+                                placeholder="Select"
+                                onChange={(value) => setValue('newCountryId', value)}
+                                error={!!errors?.newCountryId?.message}
+                                allowEmpty
+                              />
+                            )}
                           />
                         </div>
-                        <div>
-                          <label className={LABEL_CLASSNAMES}>Water withdrawal</label>
-                          <Input
-                            type="number"
-                            placeholder="0"
-                            {...register('newMaterialTonnageRatio')}
-                          />
-                        </div>
-                        <div>
-                          <label className={LABEL_CLASSNAMES}>Biodiversity impact</label>
-                          <Input
-                            type="number"
-                            placeholder="0"
-                            {...register('newMaterialTonnageRatio')}
-                          />
-                        </div>
+                        {locationType.value === LocationTypes.aggregationPoint && (
+                          <div>
+                            <label className={LABEL_CLASSNAMES}>City / Address</label>
+                            <Input type="text" {...register('newLocationAddressInput')} />
+                          </div>
+                        )}
+                        {locationType.value === LocationTypes.aggregationPoint && (
+                          <div>
+                            <label className={LABEL_CLASSNAMES}>Coordinates</label>
+                            <Input
+                              {...register('newLocationLatitude')}
+                              type="number"
+                              placeholder="Latitude"
+                              className="mb-2"
+                            />
+                            <Input
+                              {...register('newLocationLongitude')}
+                              type="number"
+                              placeholder="Longitude"
+                            />
+                          </div>
+                        )}
                       </div>
                     </Disclosure.Panel>
                   </>

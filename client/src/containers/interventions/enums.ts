@@ -5,6 +5,7 @@ export enum InterventionTypes {
 }
 
 export enum LocationTypes {
+  unknown = 'unknown',
   aggregationPoint = 'aggregation-point',
   pointOfProduction = 'point-of-production',
   countryOfProduction = 'country-of-production',

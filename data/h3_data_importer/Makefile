@@ -356,7 +356,7 @@ preprocess-deforestation: download-deforestation
 convert-deforestation: preprocess-deforestation
 	@echo "Converting deforestation data... "
 	python tiff_folder_to_h3_table.py data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles h3_grid_deforestation_global \
-	indicator DF_LUC_T 2019 --h3-res=6 --thread-count=$$(( $(PARALLELIZATION_FACTOR) )) --contextual
+	indicator DF_LUC_T 2019 --h3-res=6 --thread-count=$$(( $(PARALLELIZATION_FACTOR) ))
 
 # CARBON EMISSIONS
 # Download net carbon flux:

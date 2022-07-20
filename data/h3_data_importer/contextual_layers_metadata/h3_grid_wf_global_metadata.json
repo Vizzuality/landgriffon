@@ -11,32 +11,32 @@
         "type": "range",
         "items": [
             {
-                "value": 17492922000.00,
+                "value": 1000,
                 "label": "",
                 "color": "#0ffffb"
             },
             {
-                "value": 78225230000.00,
+                "value": 10000,
                 "label": "",
                 "color": "#00d8ec"
             },
             {
-                "value":  196827190000.00,
+                "value":  1000000,
                 "label": "",
                 "color": "#00afd8"
             },
             {
-                "value": 430112240000.00,
+                "value": 100000000,
                 "label": "",
                 "color": "#0084be"
             },
             {
-                "value": 719765300000.00,
+                "value": 10000000000,
                 "label": "",
                 "color": "#00559e"
             },
             {
-                "value": 1034112600000.00,
+                "value": 2000000000000,
                 "label": "",
                 "color": "#00187a"
             }

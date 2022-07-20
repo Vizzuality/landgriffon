@@ -10,35 +10,30 @@
         "min": 0.02,
         "type": "range",
         "items": [
-           {
-                "value": 3.98,
-                "label": "",
-                "color": "#ffff00"
-            },
             {
-                "value": 12.80,
-                "label": "",
-                "color": "#81f15e"
-            },
-            {
-                "value": 31.66,
-                "label": "",
-                "color": "#00cd8e"
-            },
-            {
-                "value": 73.36,
-                "label": "",
-                "color": "#009c9b"
-            },
-            {
-                "value": 141.71,
+                "value": 0.1,
                 "label": "",
                 "color": "#00688b"
             },
             {
-                "value": 310.35,
+                "value": 1,
                 "label": "",
-                "color": "#002f61"
+                "color": "#009c9b"
+            },
+            {
+                "value": 10,
+                "label": "",
+                "color": "#00cd8e"
+            },
+            {
+                "value": 100,
+                "label": "",
+                "color": "#81f15e"
+            },
+            {
+                "value": 1000,
+                "label": "",
+                "color": "#ffff00"
             }
         ]
     },

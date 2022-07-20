@@ -11,32 +11,32 @@
         "type": "range",
         "items": [
               {
-                "value": 159.20,
+                "value": 1,
                 "label": "",
                 "color": "#ffc800"
             },
             {
-                "value": 823.71,
+                "value": 10,
                 "label": "",
                 "color": "#efa100"
             },
             {
-                "value": 2454.54,
+                "value": 100,
                 "label": "",
                 "color": "#d97b00"
             },
             {
-                "value": 6013.14,
+                "value": 1000,
                 "label": "",
                 "color": "#ba5500"
             },
             {
-                "value": 12167.56,
+                "value": 10000,
                 "label": "",
                 "color": "#932f00"
             },
             {
-                "value": 25058.65,
+                "value": 100000,
                 "label": "",
                 "color": "#610000"
             }

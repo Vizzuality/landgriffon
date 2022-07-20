@@ -1,8 +1,8 @@
-import { useMemo } from 'react';
 import Link from 'next/link';
 import { useForm, Controller } from 'react-hook-form';
-import { RadioGroup } from '@headlessui/react';
+import { RadioGroup, Disclosure, Transition } from '@headlessui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { PlusIcon, MinusIcon } from '@heroicons/react/solid';
 import * as yup from 'yup';
 import classNames from 'classnames';
 
@@ -11,23 +11,22 @@ import BusinessUnitsSelect from 'containers/business-units/select';
 import LocationsSelect from 'containers/locations/select';
 import SuppliersSelect from 'containers/suppliers/select';
 import Input from 'components/forms/input';
-import Textarea from 'components/forms/textarea';
 import { AnchorLink, Button } from 'components/button';
 
 import InterventionTypeIcon from './intervention-type-icon';
-import Years from './years';
+// import Years from './years';
 import { InterventionTypes } from '../enums';
 
-import type { Intervention } from 'containers/scenarios/types';
+import type { Intervention } from '../types';
 
 type InterventionFormProps = {
   isSubmitting?: boolean;
   onSubmit?: (scenario: Intervention) => void;
 };
 
-const addressRegExp = /(\d{1,}) [a-zA-Z0-9\s]+(\.)? [a-zA-Z]+(\,)? [A-Z]{2} [0-9]{5,6}/;
-const coordinatesRegExp = /^[-]?\d+[\.]?\d*, [-]?\d+[\.]?\d*$/;
-const cityRegExp = /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/;
+// const addressRegExp = /(\d{1,}) [a-zA-Z0-9\s]+(\.)? [a-zA-Z]+(\,)? [A-Z]{2} [0-9]{5,6}/;
+// const coordinatesRegExp = /^[-]?\d+[\.]?\d*, [-]?\d+[\.]?\d*$/;
+// const cityRegExp = /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/;
 
 const schemaValidation = yup.object({
   title: yup.string().min(2),
@@ -248,9 +247,10 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
           </div>
           {/* Those options depending on intervention type selected by the user */}
 
-          <div className="space-y-4 border-gray-100 border-l-2 pl-10">
+          <div className="space-y-10 border-gray-100 border-l-2 pl-10">
             {currentInterventionType === InterventionTypes.Material && (
-              <>
+              <div className="space-y-4">
+                <h3>New material</h3>
                 <div>
                   <label className={LABEL_CLASSNAMES}>
                     New material <sup>*</sup>
@@ -277,8 +277,220 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                   <label className={LABEL_CLASSNAMES}>Tons of new material</label>
                   <Input type="number" placeholder="0" {...register('newMaterialTonnageRatio')} />
                 </div>
-              </>
+              </div>
             )}
+
+            {(currentInterventionType === InterventionTypes.Material ||
+              currentInterventionType === InterventionTypes.SupplierLocation) && (
+              <Disclosure as="div" className="space-y-4">
+                {({ open }) => (
+                  <>
+                    <div className="flex justify-between items-center w-full">
+                      {currentInterventionType === InterventionTypes.Material ? (
+                        <div>
+                          <h3 className="inline-block">Supplier</h3>{' '}
+                          <span className="text-regular text-gray-500">(optional)</span>
+                        </div>
+                      ) : (
+                        <h3>New supplier</h3>
+                      )}
+                      <Disclosure.Button
+                        className={classNames(
+                          'border-primary border w-6 h-6 rounded flex items-center justify-center',
+                          open ? 'bg-primary' : 'bg-transparent',
+                          currentInterventionType === InterventionTypes.SupplierLocation &&
+                            'hidden',
+                        )}
+                      >
+                        {open ? (
+                          <MinusIcon className="w-5 h-5 text-white" />
+                        ) : (
+                          <PlusIcon className="w-5 h-5 text-primary" />
+                        )}
+                      </Disclosure.Button>
+                    </div>
+                    <Disclosure.Panel
+                      static={currentInterventionType === InterventionTypes.SupplierLocation}
+                    >
+                      <div className="space-y-4">
+                        <div>
+                          <label className={LABEL_CLASSNAMES}>Carbon emission</label>
+                          <Input
+                            type="number"
+                            placeholder="0"
+                            {...register('newMaterialTonnageRatio')}
+                          />
+                        </div>
+                        <div>
+                          <label className={LABEL_CLASSNAMES}>Deforestation risk</label>
+                          <Input
+                            type="number"
+                            placeholder="0"
+                            {...register('newMaterialTonnageRatio')}
+                          />
+                        </div>
+                        <div>
+                          <label className={LABEL_CLASSNAMES}>Water withdrawal</label>
+                          <Input
+                            type="number"
+                            placeholder="0"
+                            {...register('newMaterialTonnageRatio')}
+                          />
+                        </div>
+                        <div>
+                          <label className={LABEL_CLASSNAMES}>Biodiversity impact</label>
+                          <Input
+                            type="number"
+                            placeholder="0"
+                            {...register('newMaterialTonnageRatio')}
+                          />
+                        </div>
+                      </div>
+                    </Disclosure.Panel>
+                  </>
+                )}
+              </Disclosure>
+            )}
+
+            {(currentInterventionType === InterventionTypes.Material ||
+              currentInterventionType === InterventionTypes.SupplierLocation) && (
+              <Disclosure as="div" className="space-y-4">
+                {({ open }) => (
+                  <>
+                    <div className="flex justify-between items-center w-full">
+                      {currentInterventionType === InterventionTypes.Material ? (
+                        <div>
+                          <h3 className="inline-block">Location</h3>{' '}
+                          <span className="text-regular text-gray-500">(optional)</span>
+                        </div>
+                      ) : (
+                        <h3>New location</h3>
+                      )}
+                      <Disclosure.Button
+                        className={classNames(
+                          'border-primary border w-6 h-6 rounded flex items-center justify-center',
+                          open ? 'bg-primary' : 'bg-transparent',
+                          currentInterventionType === InterventionTypes.SupplierLocation &&
+                            'hidden',
+                        )}
+                      >
+                        {open ? (
+                          <MinusIcon className="w-5 h-5 text-white" />
+                        ) : (
+                          <PlusIcon className="w-5 h-5 text-primary" />
+                        )}
+                      </Disclosure.Button>
+                    </div>
+                    <Disclosure.Panel
+                      static={currentInterventionType === InterventionTypes.SupplierLocation}
+                    >
+                      <div className="space-y-4">
+                        <div>
+                          <label className={LABEL_CLASSNAMES}>Carbon emission</label>
+                          <Input
+                            type="number"
+                            placeholder="0"
+                            {...register('newMaterialTonnageRatio')}
+                          />
+                        </div>
+                        <div>
+                          <label className={LABEL_CLASSNAMES}>Deforestation risk</label>
+                          <Input
+                            type="number"
+                            placeholder="0"
+                            {...register('newMaterialTonnageRatio')}
+                          />
+                        </div>
+                        <div>
+                          <label className={LABEL_CLASSNAMES}>Water withdrawal</label>
+                          <Input
+                            type="number"
+                            placeholder="0"
+                            {...register('newMaterialTonnageRatio')}
+                          />
+                        </div>
+                        <div>
+                          <label className={LABEL_CLASSNAMES}>Biodiversity impact</label>
+                          <Input
+                            type="number"
+                            placeholder="0"
+                            {...register('newMaterialTonnageRatio')}
+                          />
+                        </div>
+                      </div>
+                    </Disclosure.Panel>
+                  </>
+                )}
+              </Disclosure>
+            )}
+
+            <Disclosure as="div" className="space-y-4">
+              {({ open }) => (
+                <>
+                  <div className="flex justify-between items-center w-full">
+                    {currentInterventionType !== InterventionTypes.Efficiency ? (
+                      <div>
+                        <h3 className="inline-block">Impacts per ton</h3>{' '}
+                        <span className="text-regular text-gray-500">(optional)</span>
+                      </div>
+                    ) : (
+                      <h3>Impacts per ton</h3>
+                    )}
+                    <Disclosure.Button
+                      className={classNames(
+                        'border-primary border w-6 h-6 rounded flex items-center justify-center',
+                        open ? 'bg-primary' : 'bg-transparent',
+                        currentInterventionType === InterventionTypes.Efficiency && 'hidden',
+                      )}
+                    >
+                      {open ? (
+                        <MinusIcon className="w-5 h-5 text-white" />
+                      ) : (
+                        <PlusIcon className="w-5 h-5 text-primary" />
+                      )}
+                    </Disclosure.Button>
+                  </div>
+                  <Disclosure.Panel
+                    static={currentInterventionType === InterventionTypes.Efficiency}
+                  >
+                    <div className="space-y-4">
+                      <div>
+                        <label className={LABEL_CLASSNAMES}>Carbon emission</label>
+                        <Input
+                          type="number"
+                          placeholder="0"
+                          {...register('newMaterialTonnageRatio')}
+                        />
+                      </div>
+                      <div>
+                        <label className={LABEL_CLASSNAMES}>Deforestation risk</label>
+                        <Input
+                          type="number"
+                          placeholder="0"
+                          {...register('newMaterialTonnageRatio')}
+                        />
+                      </div>
+                      <div>
+                        <label className={LABEL_CLASSNAMES}>Water withdrawal</label>
+                        <Input
+                          type="number"
+                          placeholder="0"
+                          {...register('newMaterialTonnageRatio')}
+                        />
+                      </div>
+                      <div>
+                        <label className={LABEL_CLASSNAMES}>Biodiversity impact</label>
+                        <Input
+                          type="number"
+                          placeholder="0"
+                          {...register('newMaterialTonnageRatio')}
+                        />
+                      </div>
+                    </div>
+                  </Disclosure.Panel>
+                </>
+              )}
+            </Disclosure>
           </div>
         </>
       )}

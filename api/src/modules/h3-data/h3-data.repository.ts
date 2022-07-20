@@ -184,7 +184,7 @@ export class H3DataRepository extends Repository<H3Data> {
       .leftJoin(SourcingRecord, 'sr', 'sl.id = sr.sourcingLocationId')
       .leftJoin(IndicatorRecord, 'ir', 'sr.id = ir.sourcingRecordId')
       .where('ir.value > 0')
-      .andWhere('ir.scaler > 0')
+      .andWhere('ir.scaler >= 1')
       .andWhere('sl.scenarioInterventionId IS NULL')
       .andWhere('ir.indicatorId = :indicatorId', { indicatorId: indicator.id })
       .andWhere('sr.year = :year', { year })

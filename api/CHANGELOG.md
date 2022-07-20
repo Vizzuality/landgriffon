@@ -115,5 +115,12 @@ Fixed
 Scenario Interventions - status of intervetion can be updated, startYear is returned as part of get response
 
 
+## 2022-07-19
+
+### Fixed
+Fixed
+Entity trees - when there is no data in the Database, entity entity tree endpoint will return empty array
+instead of 404 error
+
 
 

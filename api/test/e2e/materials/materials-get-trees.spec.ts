@@ -58,6 +58,16 @@ describe('Materials - Get trees', () => {
     await app.close();
   });
 
+  test('When I request material trees, and the DB is empty, then I should get empty array', async () => {
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/materials/trees`)
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send()
+      .expect(HttpStatus.OK);
+
+    expect(response.body.data).toStrictEqual([]);
+  });
+
   test('Get trees of materials should be successful (happy case)', async () => {
     const h3Data: H3Data = await createH3Data();
 

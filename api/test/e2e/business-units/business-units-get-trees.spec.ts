@@ -41,6 +41,16 @@ describe('BusinessUnits - Get Trees', () => {
   });
 
   describe('Business units - Get Trees', () => {
+    test('When I request business units trees, and the DB is empty, then I should get empty array', async () => {
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/business-units/trees`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send()
+        .expect(HttpStatus.OK);
+
+      expect(response.body.data).toStrictEqual([]);
+    });
+
     test(
       'When I query a Supplier Tree endpoint ' +
         'And I query the ones with sourcing locations' +

@@ -55,6 +55,19 @@ describe('Suppliers - Get trees - Smart Filters', () => {
     await app.close();
   });
 
+  test('When I request suppliers trees, and the DB is empty, then I should get empty array', async () => {
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/suppliers/trees`)
+      .query({
+        withSourcingLocations: true,
+      })
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send()
+      .expect(HttpStatus.OK);
+
+    expect(response.body.data).toStrictEqual([]);
+  });
+
   test(
     'When I query a Supplier Tree endpoint ' +
       'And I query the ones with sourcing locations' +

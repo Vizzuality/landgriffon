@@ -50,6 +50,16 @@ describe('AdminRegions - Get trees', () => {
     await app.close();
   });
 
+  test('When I request admin regions trees, and the DB is empty, then I should get empty array', async () => {
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/admin-regions/trees`)
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .send()
+      .expect(HttpStatus.OK);
+
+    expect(response.body.data).toStrictEqual([]);
+  });
+
   test('Get trees of admin regions should be successful (happy case)', async () => {
     await createH3Data();
 

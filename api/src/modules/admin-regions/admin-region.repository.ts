@@ -234,11 +234,6 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
       ),
     );
 
-    if (!result || !result.length)
-      throw new NotFoundException(
-        'No Admin Regions with associated Sourcing Locations found. Please check if sourcing data has been provided to the platform',
-      );
-
     return result;
   }
 }

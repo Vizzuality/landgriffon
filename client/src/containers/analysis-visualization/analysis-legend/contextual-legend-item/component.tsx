@@ -11,13 +11,6 @@ import LegendTypeChoropleth from 'components/legend/types/choropleth';
 import LegendTypeGradient from 'components/legend/types/gradient';
 import { useContextualLayer } from 'hooks/layers/contextual';
 
-// const LEGEND_TYPES: Record<LegendType, React.FC<Pick<LayerMetadata['legend'], 'items'>>> = {
-//   basic: LegendTypeBasic,
-//   categorical: LegendTypeCategorical,
-//   choropleth: LegendTypeChoropleth,
-//   gradient: LegendTypeGradient,
-// };
-
 interface ContextualLegendItemProps {
   layer: Layer;
 }
@@ -25,7 +18,7 @@ interface ContextualLegendItemProps {
 const ContextualLegendItem: React.FC<ContextualLegendItemProps> = ({ layer }) => {
   const dispatch = useAppDispatch();
 
-  const { data, isLoading } = useContextualLayer(layer.id);
+  const { isLoading } = useContextualLayer(layer.id);
 
   const handleActive = useCallback(
     (active) => {
@@ -45,14 +38,17 @@ const ContextualLegendItem: React.FC<ContextualLegendItemProps> = ({ layer }) =>
   const Legend = useMemo(() => {
     if (!layer.metadata) return null;
     const props = {
-      items: layer.metadata.legend.items,
+      items: layer.metadata.legend.items.map((item) => ({
+        ...item,
+        label: item.label ?? `${item.value}`,
+      })),
     };
     switch (layer.metadata.legend.type) {
       case 'basic':
-      case 'range': // TODO: What legend is each type? What types do we have?
         return <LegendTypeBasic {...props} />;
       case 'category':
         return <LegendTypeCategorical {...props} />;
+      case 'range':
       case 'choropleth':
         return <LegendTypeChoropleth min={layer.metadata.legend.min} {...props} />;
       case 'gradient':

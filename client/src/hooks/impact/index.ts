@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { useQuery, UseQueryOptions, UseQueryResult } from 'react-query';
+import type { UseQueryOptions, UseQueryResult } from 'react-query';
+import { useQuery } from 'react-query';
 
 import chroma from 'chroma-js';
 

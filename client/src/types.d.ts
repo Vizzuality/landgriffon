@@ -22,7 +22,7 @@ export type H3Item = {
   v: number;
 };
 
-export type H3Data = H3Item[] | [];
+export type H3Data = H3Item[];
 
 export type H3APIResponse = {
   data: H3Data;

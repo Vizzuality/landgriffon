@@ -1,6 +1,6 @@
 export enum InterventionTypes {
-  SupplierLocation = 'Source from new supplier or location',
   Material = 'Switch to a new material',
+  SupplierLocation = 'Source from new supplier or location',
   Efficiency = 'Change production efficiency',
 }
 

@@ -7,7 +7,7 @@ import { useSuppliersTrees, SuppliersTreesParams } from 'hooks/suppliers';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
 type SuppliersFilterProps = {
-  current: string[];
+  current: TreeSelectProps['current'];
   multiple?: TreeSelectProps['multiple'];
   /** Tree depth. Defaults to `1` */
   depth?: SuppliersTreesParams['depth'];
@@ -73,7 +73,7 @@ const SuppliersFilter = forwardRef<HTMLInputElement, SuppliersFilterProps>(
       current?.forEach((key) => {
         const recursiveSearch = (arr) => {
           arr.forEach((opt) => {
-            if (opt.value === key) checkedOptions.push(opt);
+            if (opt.value === key.value) checkedOptions.push(opt);
             if (opt.children) recursiveSearch(opt.children);
           });
         };

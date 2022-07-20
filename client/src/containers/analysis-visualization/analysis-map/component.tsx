@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import DeckGL from '@deck.gl/react';
 import { StaticMap } from 'react-map-gl';
 import { XCircleIcon } from '@heroicons/react/solid';
+import { H3HexagonLayer } from '@deck.gl/geo-layers';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap } from 'store/features/analysis';
@@ -43,7 +44,7 @@ const INITIAL_VIEW_STATE = {
 
 const AnalysisMap: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { viewState, tooltipData, tooltipPosition } = useAppSelector(analysisMap);
+  const { viewState, tooltipData, tooltipPosition, layerDeckGLProps } = useAppSelector(analysisMap);
   const [isRendering, setIsRendering] = useState<boolean>(false);
   const [localViewState, setLocalViewState] = useState<ViewState>({
     ...INITIAL_VIEW_STATE,
@@ -65,6 +66,20 @@ const AnalysisMap: React.FC = () => {
     [dispatch],
   );
   const setDebouncedViewState = useDebounce(updateViewState, 300);
+
+  const layers = useMemo(
+    () =>
+      Object.values(layerDeckGLProps).map(
+        (props) =>
+          new H3HexagonLayer({
+            ...props,
+            getHexagon: (d) => d.h,
+            getFillColor: (d) => d.c,
+            getLineColor: (d) => d.c,
+          }),
+      ),
+    [layerDeckGLProps],
+  );
 
   // Loading layers
   const impactLayer = useImpactLayer();
@@ -102,7 +117,7 @@ const AnalysisMap: React.FC = () => {
           });
         }}
         controller
-        layers={[impactLayer.layer]}
+        layers={layers}
         onAfterRender={handleAfterRender}
       >
         <StaticMap

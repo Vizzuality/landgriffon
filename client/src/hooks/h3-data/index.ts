@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { UseQueryOptions, UseQueryResult } from 'react-query';
+import type { QueryFunction, UseQueryOptions, UseQueryResult } from 'react-query';
 import { useQueries } from 'react-query';
 import { useQuery } from 'react-query';
 import chroma from 'chroma-js';
@@ -21,6 +21,7 @@ import type {
   RiskH3APIParams,
   ImpactH3APIParams,
   H3Data,
+  Layer,
 } from 'types';
 import { analysisMap } from 'store/features/analysis';
 
@@ -149,6 +150,18 @@ export function useH3RiskData(
   );
 }
 
+// The fetch function is the same when fetching one or more layers
+const fetchContextualLayerData: QueryFunction<
+  H3APIResponse,
+  ['h3-data-contextual', Layer['id'], Record<string, string>]
+> = async ({ queryKey: [, id, urlParams] }) =>
+  apiRawService
+    .get(`/contextual-layers/${id}/h3data`, {
+      params: urlParams,
+    })
+    // Adding color to the response
+    .then((response) => responseContextualParser(response));
+
 export const useH3ContextualData = (
   id: string,
   // params: Partial<WaterH3APIParams>,
@@ -165,31 +178,21 @@ export const useH3ContextualData = (
     ...(locationTypes?.length ? { locationTypes: locationTypes?.map(({ value }) => value) } : {}),
     resolution: origins?.length ? 6 : 4,
   };
-  const query = useQuery(
-    ['h3-data-contextual', id, urlParams],
-    async () =>
-      apiRawService
-        .get(`/contextual-layers/${id}/h3data`, {
-          params: urlParams,
-        })
-        // Adding color to the response
-        .then((response) => responseContextualParser(response)),
-    {
-      ...DEFAULT_QUERY_OPTIONS,
-      placeholderData: {
-        data: [],
-        metadata: {
-          name: null,
-          legend: {
-            unit: null,
-            items: [],
-          },
+  const query = useQuery(['h3-data-contextual', id, urlParams], fetchContextualLayerData, {
+    ...DEFAULT_QUERY_OPTIONS,
+    placeholderData: {
+      data: [],
+      metadata: {
+        name: null,
+        legend: {
+          unit: null,
+          items: [],
         },
       },
-      ...options,
-      enabled: options.enabled && !!id && !!urlParams.year,
     },
-  );
+    ...options,
+    enabled: options.enabled && !!id && !!urlParams.year,
+  });
 
   const { data, isError } = query;
 
@@ -203,7 +206,7 @@ export const useH3ContextualData = (
   );
 };
 
-export const useAllContextual = (options?: Partial<UseQueryOptions>) => {
+export const useAllContextualLayersData = (options?: Partial<UseQueryOptions>) => {
   const { layers } = useAppSelector(analysisMap);
   const filters = useAppSelector(analysisFilters);
   const { startYear, materials, indicator, suppliers, origins, locationTypes } = filters;
@@ -222,13 +225,7 @@ export const useAllContextual = (options?: Partial<UseQueryOptions>) => {
       .filter((layer) => layer.isContextual)
       .map((layer) => ({
         queryKey: ['h3-data-contextual', layer.id, urlParams],
-        queryFn: async () =>
-          apiRawService
-            .get(`/contextual-layers/${layer.id}/h3data`, {
-              params: urlParams,
-            })
-            // Adding color to the response
-            .then((response) => responseContextualParser(response)),
+        queryFn: async () => fetchContextualLayerData,
         ...DEFAULT_QUERY_OPTIONS,
         ...options,
         enabled:

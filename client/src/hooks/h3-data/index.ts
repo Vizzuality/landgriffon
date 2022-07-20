@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import type { UseQueryOptions, UseQueryResult } from 'react-query';
+import { useQueries } from 'react-query';
 import { useQuery } from 'react-query';
 import chroma from 'chroma-js';
 import { scaleThreshold } from 'd3-scale';
@@ -19,7 +20,9 @@ import type {
   MaterialH3APIParams,
   RiskH3APIParams,
   ImpactH3APIParams,
+  H3Data,
 } from 'types';
+import { analysisMap } from 'store/features/analysis';
 
 type H3DataResponse = UseQueryResult<H3APIResponse, unknown>;
 type H3ContextualResponse = H3DataResponse; // UseQueryResult<{ data: H3Data; metadata: LayerMetadata }, unknown>;
@@ -198,6 +201,56 @@ export const useH3ContextualData = (
       } as H3ContextualResponse),
     [query, isError, data],
   );
+};
+
+export const useAllContextual = (options?: Partial<UseQueryOptions>) => {
+  const { layers } = useAppSelector(analysisMap);
+  const filters = useAppSelector(analysisFilters);
+  const { startYear, materials, indicator, suppliers, origins, locationTypes } = filters;
+  const urlParams = {
+    year: startYear,
+    indicatorId: indicator?.value && indicator?.value === 'all' ? null : indicator?.value,
+    ...(materials?.length ? { materialIds: materials?.map(({ value }) => value) } : {}),
+    ...(suppliers?.length ? { supplierIds: suppliers?.map(({ value }) => value) } : {}),
+    ...(origins?.length ? { originIds: origins?.map(({ value }) => value) } : {}),
+    ...(locationTypes?.length ? { locationTypes: locationTypes?.map(({ value }) => value) } : {}),
+    resolution: origins?.length ? 6 : 4,
+  };
+
+  const queries = useQueries(
+    Object.values(layers)
+      .filter((layer) => layer.isContextual)
+      .map((layer) => ({
+        queryKey: ['h3-data-contextual', layer.id, urlParams],
+        queryFn: async () =>
+          apiRawService
+            .get(`/contextual-layers/${layer.id}/h3data`, {
+              params: urlParams,
+            })
+            // Adding color to the response
+            .then((response) => responseContextualParser(response)),
+        ...DEFAULT_QUERY_OPTIONS,
+        ...options,
+        enabled:
+          ('enabled' in (options || {}) ? options.enabled : true) &&
+          layer.active &&
+          !!layer.id &&
+          !!urlParams.year,
+        select: (data: H3APIResponse) => ({ ...data, layerId: layer.id }),
+      })),
+  );
+
+  const map = useMemo(
+    () =>
+      new Map(
+        queries.map(({ data: { layerId, ...data }, ...rest }) => [
+          layerId,
+          { ...data, ...rest } as UseQueryResult<H3Data>,
+        ]),
+      ),
+    [queries],
+  );
+  return map;
 };
 
 export function useH3ImpactData(

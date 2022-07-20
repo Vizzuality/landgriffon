@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
-import { useQuery, UseQueryResult, UseQueryOptions, useMutation } from 'react-query';
+import { useQuery, useMutation } from 'react-query';
 import { apiService } from 'services/api';
 
+import type { UseQueryResult, UseQueryOptions } from 'react-query';
 import type { Intervention } from 'containers/interventions/types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {

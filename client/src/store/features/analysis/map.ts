@@ -19,6 +19,20 @@ const DEFAULT_LAYER_ATTRIBUTES: Partial<Layer> = {
   isContextual: false,
 };
 
+const DEFAULT_DECKGL_PROPS = {
+  data: [],
+  wireframe: false,
+  filled: true,
+  stroked: true,
+  extruded: false,
+  highPrecision: 'auto',
+  pickable: true,
+  coverage: 0.9,
+  lineWidthMinPixels: 2,
+  opacity: DEFAULT_LAYER_ATTRIBUTES.opacity,
+  visible: DEFAULT_LAYER_ATTRIBUTES.active,
+};
+
 type TooltipData = {
   id: string;
   name: string;
@@ -42,6 +56,8 @@ export type AnalysisMapState = {
       height: number;
     };
   };
+  // Deck.gl layer props by layer id
+  layerDeckGLProps: Record<Layer['id'], any>;
 };
 
 type FeatureState = RootState & { 'analysis/map': AnalysisMapState };
@@ -54,6 +70,7 @@ export const initialState: AnalysisMapState = {
     impact: {
       id: 'impact',
       ...DEFAULT_LAYER_ATTRIBUTES,
+      order: 0,
       active: true,
       isContextual: false,
     },
@@ -63,6 +80,9 @@ export const initialState: AnalysisMapState = {
     viewport: null,
     x: 0,
     y: 0,
+  },
+  layerDeckGLProps: {
+    impact: DEFAULT_DECKGL_PROPS,
   },
 };
 
@@ -80,7 +100,7 @@ export const analysisMapSlice = createSlice({
     setLayer: (
       state,
       action: PayloadAction<{
-        id: 'material' | string;
+        id: Layer['id'];
         layer: Partial<Layer>;
       }>,
     ) => {
@@ -104,6 +124,20 @@ export const analysisMapSlice = createSlice({
         ...state.layers[action.payload.id],
         ...action.payload.layer,
       };
+    },
+    setLayerDeckGLProps: (
+      state,
+      action: PayloadAction<{
+        id: Layer['id'];
+        props: any;
+      }>,
+    ) => {
+      state.layerDeckGLProps[action.payload.id] = {
+        ...DEFAULT_DECKGL_PROPS,
+        ...state.layerDeckGLProps[action.payload.id],
+        ...action.payload.props,
+      };
+      return state;
     },
     setLayerOrder: (state, action: PayloadAction<Layer['id'][]>) => {
       Object.values(state.layers).forEach((layer) => {
@@ -175,6 +209,7 @@ export const analysisMapSlice = createSlice({
 export const {
   setViewState,
   setLayer,
+  setLayerDeckGLProps,
   setUserLayer,
   setUserLayers,
   setTooltipData,

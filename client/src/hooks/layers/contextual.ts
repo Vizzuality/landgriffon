@@ -1,5 +1,4 @@
 import { useEffect, useCallback } from 'react';
-import { H3HexagonLayer } from '@deck.gl/geo-layers';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import {
@@ -7,14 +6,15 @@ import {
   setLayer,
   setTooltipPosition,
   setTooltipData,
+  setLayerDeckGLProps,
 } from 'store/features/analysis/map';
 
 import { useH3ContextualData } from 'hooks/h3-data';
 import type { Layer } from 'types';
 
-export const useContextualLayer: (id: Layer['id']) => ReturnType<typeof useH3ContextualData> & {
-  layer: H3HexagonLayer;
-} = (id) => {
+export const useContextualLayer: (id: Layer['id']) => ReturnType<typeof useH3ContextualData> = (
+  id,
+) => {
   const dispatch = useAppDispatch();
   const {
     layers: { [id]: layerInfo },
@@ -23,6 +23,7 @@ export const useContextualLayer: (id: Layer['id']) => ReturnType<typeof useH3Con
   const query = useH3ContextualData(id, {}, { enabled: layerInfo.active });
   const { data, isFetching, isFetched } = query;
 
+  // TODO: move tthis to where the new H3Hexagon... is
   const handleHover = useCallback(
     ({ object, x, y, viewport }) => {
       dispatch(
@@ -43,25 +44,6 @@ export const useContextualLayer: (id: Layer['id']) => ReturnType<typeof useH3Con
     },
     [dispatch, id, layerInfo.metadata.legend.unit, layerInfo.metadata.name],
   );
-
-  const layer = new H3HexagonLayer({
-    id,
-    data: data.data,
-    wireframe: false,
-    filled: true,
-    stroked: true,
-    extruded: false,
-    highPrecision: 'auto',
-    pickable: true,
-    coverage: 0.9,
-    lineWidthMinPixels: 2,
-    opacity: layerInfo.opacity,
-    visible: layerInfo.active,
-    getHexagon: (d) => d.h,
-    getFillColor: (d) => d.c,
-    getLineColor: (d) => d.c,
-    onHover: handleHover,
-  });
 
   // Populating legend
   useEffect(() => {
@@ -87,8 +69,27 @@ export const useContextualLayer: (id: Layer['id']) => ReturnType<typeof useH3Con
     }
   }, [data, isFetched, dispatch, isFetching, id]);
 
-  return {
-    ...query,
-    layer,
-  };
+  useEffect(() => {
+    if (!layerInfo.id) return;
+    dispatch(
+      setLayerDeckGLProps({
+        id: layerInfo.id,
+        props: {
+          id: `h3-${layerInfo.metadata.name}`,
+          opacity: layerInfo.opacity,
+          visible: layerInfo.active,
+          data: data.data,
+        },
+      }),
+    );
+  }, [
+    data.data,
+    dispatch,
+    layerInfo.active,
+    layerInfo.id,
+    layerInfo.metadata.name,
+    layerInfo.opacity,
+  ]);
+
+  return query;
 };

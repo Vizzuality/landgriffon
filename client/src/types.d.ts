@@ -284,7 +284,7 @@ export type Target = {
   indicatorId: Indicator['id'];
   baselineYear: number;
   baselineValue: number;
-  years: { year: number; value: number }[];
+  years: { year: number; value: number; percentage: number }[];
 };
 
 // Helper types

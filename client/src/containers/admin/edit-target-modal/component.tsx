@@ -1,39 +1,25 @@
-import { useMemo, useState, FC, useEffect } from 'react';
-import { range } from 'lodash';
+import { useMemo, useState, FC, useCallback } from 'react';
 
-// components
+import { useSourcingRecordsYears } from 'hooks/sourcing-records';
+import { useTargets } from 'hooks/targets';
+
+import InfoTooltip from 'containers/info-tooltip';
+import TargetInputList from 'containers/targets/input-list';
+
 import Modal from 'components/modal';
 import Select, { SelectProps } from 'components/select';
 import Button from 'components/button';
 
-// containers
-import InfoTooltip from 'containers/info-tooltip';
-import TargetInputList from 'containers/targets/input-list';
+import type { ModalProps } from 'components/modal';
 
-// hooks
-import { useSourcingRecordsYears } from 'hooks/sourcing-records';
+type EditTargetModalProps = ModalProps;
 
-const AdminEditTargetModal: FC = ({ title, open, onDismiss }) => {
-  // const {
-  //   // register,
-  //   setValue,
-  //   watch,
-  //   clearErrors,
-  //   formState: { errors },
-  // } = useFormContext();
-
-  const { data } = useSourcingRecordsYears();
+const AdminEditTargetModal: FC<EditTargetModalProps> = ({ title, open, onDismiss }) => {
+  const { data, isLoading } = useSourcingRecordsYears();
+  const { data: targets } = useTargets();
 
   const [selectedOption, setSelectedOption] = useState<SelectProps['current']>(null);
-
-
-  // const handleDropdown = useCallback(
-  //   (id: string, value: SelectOption) => {
-  //     clearErrors(id);
-  //     setValue(id, value?.value);
-  //   },
-  //   [setValue, clearErrors],
-  // );
+  const [targetYears, setTargetYearsValues] = useState(targets.years);
 
   const yearOptions: SelectProps['options'] = useMemo(
     () =>
@@ -42,6 +28,33 @@ const AdminEditTargetModal: FC = ({ title, open, onDismiss }) => {
         value: year,
       })),
     [data],
+  );
+
+  const handleDropdown = useCallback((option) => {
+    setSelectedOption(option);
+  }, []);
+
+  const handleOnChangeTarget = useCallback(
+    (year, target) => {
+      const baseline = 2370000;
+      const isPercentage = target.id === 'percentage';
+      console.log('isPercentage', isPercentage)
+      const isValue = target.id === 'value';
+      const updatedTargets = targetYears.map((target) => {
+        if (year === target.year && isPercentage) {
+          const targetCalculation = (target.value * baseline) / 100;
+          console.log('multiply', target.value * baseline)
+          console.log('targetCalculation', targetCalculation)
+          return { ...target, value: targetCalculation };
+        } else if (year == target.year && isValue) {
+          const percentageCalculation = (target.value * 100) / baseline;
+          return { ...target, percentage: percentageCalculation };
+        }
+        return target;
+      });
+      return setTargetYearsValues(updatedTargets);
+    },
+    [targetYears],
   );
 
   return (
@@ -56,11 +69,14 @@ const AdminEditTargetModal: FC = ({ title, open, onDismiss }) => {
       <div className="mt-5 pb-4 grid grid-cols-2 gap-y-4 gap-x-6 sm:grid-cols-2">
         <div className="block font-medium text-gray-900">
           <Select
-            // {...register('newYearID')}
-            // current={optionsYears.find((option) => option.value === watch('newYearID'))}
+            numeric
+            hideValueWhenMenuOpen
+            loading={isLoading}
+            current={selectedOption}
             options={yearOptions}
-            placeholder="Select"
-            // onChange={(value) => handleDropdown('newProducerId', value)}
+            placeholder="Select a year"
+            onChange={handleDropdown}
+            // error={!!errors?.newYearID}
           />
         </div>
         <div className="block font-medium text-gray-700">
@@ -73,7 +89,11 @@ const AdminEditTargetModal: FC = ({ title, open, onDismiss }) => {
         <span className="mr-2.5">Targets</span>
         <InfoTooltip info />
       </legend>
-      <TargetInputList />
+      <TargetInputList
+        data={targetYears}
+        // percentageValue={}
+        onChange={handleOnChangeTarget}
+      />
       {/* <Button theme="primary" icon={PlusCircleIcon} onClick={onDismiss}>
           Add a target
       </Button> */}

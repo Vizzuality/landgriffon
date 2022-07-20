@@ -13,10 +13,15 @@ const THEMES = {
     icon: 'absolute w-4 h-4 text-green-700 transform -translate-y-1/2 top-1/2 left-0',
     unit: 'absolute right-0 text-sm font-bold text-green-700',
   },
+  'inside-unit': {
+    base: 'appearance-none block w-full border rounded-md shadow-sm text-gray-900 placeholder-gray-500 focus:outline-none text-sm min-h-[2.5rem]',
+    icon: 'absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 top-1/2 left-3',
+    unit: 'absolute right-3 text-sm text-gray-500',
+  },
 };
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  theme?: 'default' | 'inline-primary';
+  theme?: 'default' | 'inline-primary' | 'inside-unit';
   className?: string;
   type?: string;
   // https://github.com/tailwindlabs/heroicons/issues/64#issuecomment-859168741
@@ -32,7 +37,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     ref,
   ) => {
     const Icon = icon;
-
     return (
       <div className={classnames('relative', className)}>
         <div className="flex items-center">
@@ -42,8 +46,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               // The Checkbox component should be used instead, but just in case.
               'px-0': type === 'checkbox',
               'bg-gray-400 h-1 appearance-none': type === 'range',
-              'pl-10': !!icon && theme !== 'inline-primary',
-              'pl-3': !!icon && theme === 'inline-primary',
+              'pl-10': !!icon && theme === 'default',
+              'pl-3': !!icon && theme !== 'default',
               'border-gray-300 focus:ring-primary focus:border-primary':
                 theme === 'default' && !error,
               'border-red-600 focus:ring-red-600 focus:border-red-600': !!error,
@@ -60,6 +64,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             style={{
               marginRight:
                 type !== 'search' &&
+                theme !== 'inside-unit' &&
                 unit &&
                 unit?.length * 10 + (theme === 'inline-primary' ? 2 : 14),
             }}

@@ -26,10 +26,7 @@ export type H3Data = H3Item[];
 
 export type H3APIResponse = {
   data: H3Data;
-  metadata: {
-    quantiles: number[];
-    unit: string;
-  };
+  metadata: LayerMetadata;
 };
 
 export type CommonH3APIParams = {

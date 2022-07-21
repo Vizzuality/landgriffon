@@ -252,6 +252,7 @@ export type LayerMetadata = {
   license: string;
   source: string;
   legend: Legend;
+  unit: string;
 };
 
 // Metadata info

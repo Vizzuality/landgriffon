@@ -27,6 +27,13 @@ import type {
 } from 'types';
 import { analysisMap } from 'store/features/analysis';
 
+type H3ImpactResponse = H3APIResponse & {
+  metadata: {
+    quantiles: number[];
+    unit: string;
+  };
+};
+type H3ImpactDataResponse = UseQueryResult<H3ImpactResponse, unknown>;
 type H3DataResponse = UseQueryResult<H3APIResponse, unknown>;
 type H3ContextualResponse = H3DataResponse; // UseQueryResult<{ data: H3Data; metadata: LayerMetadata }, unknown>;
 
@@ -276,7 +283,7 @@ export const useAllContextualLayersData = (options?: Partial<UseQueryOptions>) =
 export function useH3ImpactData(
   params: Partial<ImpactH3APIParams> = {},
   options: Partial<UseQueryOptions> = {},
-): H3DataResponse {
+): H3ImpactDataResponse {
   const filters = useAppSelector(analysisFilters);
   const { startYear, materials, indicator, suppliers, origins, locationTypes } = filters;
 
@@ -312,12 +319,12 @@ export function useH3ImpactData(
 
   const { data, isError } = query;
 
-  return useMemo<H3DataResponse>(
+  return useMemo(
     () =>
       ({
         ...query,
         data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as H3APIResponse,
-      } as H3DataResponse),
+      } as H3ImpactDataResponse),
     [query, isError, data],
   );
 }

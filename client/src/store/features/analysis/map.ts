@@ -117,7 +117,7 @@ export const analysisMapSlice = createSlice({
       ) {
         Object.keys(state.layers).forEach((layerId) => {
           const layer = state.layers[layerId];
-          if (layerId !== action.payload.id && layer.isContextual) {
+          if (layer.active && layerId !== action.payload.id && layer.isContextual) {
             layer.active = false;
           }
         });

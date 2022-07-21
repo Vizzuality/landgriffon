@@ -70,7 +70,7 @@ const Hero: React.FC = () => {
             <h3 className="text-xl font-black text-black uppercase font-display">
               BUILT ON TRUSTED SCIENTIFIC DATA:
             </h3>
-            <p className="text-2xl">
+            <p className="text-2xl pb-3">
               Landgriffon is built on open access data produced by leading researchers, NGOs, and
               government programs such as Copernicus, making it easier for you to take advantage of
               this scientific knowledge.
@@ -91,8 +91,8 @@ const Hero: React.FC = () => {
                     layout="intrinsic"
                     src="/images/logos/copernicus_logo.png"
                     alt="GFW"
-                    width={62}
-                    height={62}
+                    width={133}
+                    height={32}
                   />
                 </a>
               </li>

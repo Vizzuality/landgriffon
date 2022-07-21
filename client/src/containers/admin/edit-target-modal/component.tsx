@@ -10,6 +10,7 @@ import Modal from 'components/modal';
 import Select, { SelectProps } from 'components/select';
 import Button from 'components/button';
 
+import type { TargetYear } from 'types';
 import type { ModalProps } from 'components/modal';
 
 type EditTargetModalProps = ModalProps;
@@ -19,7 +20,17 @@ const AdminEditTargetModal: FC<EditTargetModalProps> = ({ title, open, onDismiss
   const { data: targets } = useTargets();
 
   const [selectedOption, setSelectedOption] = useState<SelectProps['current']>(null);
-  const [targetYears, setTargetYearsValues] = useState(targets.years);
+
+  const targetYearsArray: TargetYear[] = useMemo(
+    // TO-DO: use indicatorID to filter the target years needed in each case
+    () => {
+      const findTarget = targets?.find((target) => target.indicatorId === '234').years;
+      return findTarget;
+    },
+    [targets],
+  );
+
+  const [targetYears, setTargetYearsValues] = useState<TargetYear[]>(targetYearsArray);
 
   const yearOptions: SelectProps['options'] = useMemo(
     () =>
@@ -38,13 +49,10 @@ const AdminEditTargetModal: FC<EditTargetModalProps> = ({ title, open, onDismiss
     (year, target) => {
       const baseline = 2370000;
       const isPercentage = target.id === 'percentage';
-      console.log('isPercentage', isPercentage)
       const isValue = target.id === 'value';
       const updatedTargets = targetYears.map((target) => {
         if (year === target.year && isPercentage) {
           const targetCalculation = (target.value * baseline) / 100;
-          console.log('multiply', target.value * baseline)
-          console.log('targetCalculation', targetCalculation)
           return { ...target, value: targetCalculation };
         } else if (year == target.year && isValue) {
           const percentageCalculation = (target.value * 100) / baseline;

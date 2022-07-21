@@ -6,35 +6,37 @@ import { apiService } from 'services/api';
 
 import type { Target } from 'types';
 
-const TARGETS_DATA: Target = {
-  id: '1',
-  name: 'Test indicator',
-  indicatorId: '1',
-  baselineYear: 0,
-  baselineValue: 1,
-  years: [
-    {
-      year: 2020,
-      percentage: 30,
-      value: null,
-    },
-    {
-      year: 2030,
-      percentage: 45,
-      value: null,
-    },
-    {
-      year: 2040,
-      percentage: 53,
-      value: null,
-    },
-    {
-      year: 2050,
-      percentage: 60,
-      value: null,
-    },
-  ],
-};
+const TARGETS_DATA: Target[] = [
+  {
+    id: '1',
+    name: 'Test indicator',
+    indicatorId: '234',
+    baselineYear: 0,
+    baselineValue: 1,
+    years: [
+      {
+        year: 2020,
+        percentage: 30,
+        value: null,
+      },
+      {
+        year: 2030,
+        percentage: 45,
+        value: null,
+      },
+      {
+        year: 2040,
+        percentage: 53,
+        value: null,
+      },
+      {
+        year: 2050,
+        percentage: 60,
+        value: null,
+      },
+    ],
+  },
+];
 
 type ResponseData = UseQueryResult<Target[]>;
 type QueryParams = {

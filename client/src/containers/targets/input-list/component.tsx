@@ -17,7 +17,7 @@ const TargetInputList: React.FC<TargetListProps> = ({ data, onChange }) => (
     </div>
     {data.map((target) => (
       <div
-        key={`${target.id}-${target.year}`}
+        key={target.year}
         className="flex flex-row items-center space-x-4 pb-3 text-gray-900"
       >
         <Input
@@ -40,7 +40,7 @@ const TargetInputList: React.FC<TargetListProps> = ({ data, onChange }) => (
           className="w-full basis-1/4"
           defaultValue={target.percentage}
           theme="inside-unit"
-          onInput={(ev) => onChange(target.year, ev.target)}
+          // onInput={(ev) => onChange(target.year, ev.target)}
         />
         <Input
           type="number"

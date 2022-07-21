@@ -24,14 +24,14 @@ const AdminTargetsPage: React.FC = () => {
     if (indicators) {
       return indicators.map((indicator) => ({
         id: indicator.id,
-        name: indicator.name,
+        name: indicator.name.toString(),
         indicatorId: indicator.id,
         baselineYear: 2020,
         baselineValue: 1,
         years: [
-          { year: 2022, value: 0 },
-          { year: 2023, value: 0 },
-          { year: 2024, value: 0 },
+          { year: 2022, percentage: 0, value: 0 },
+          { year: 2023, percentage: 0, value: 0 },
+          { year: 2024, percentage: 0, value: 0 },
         ],
       }));
     }

@@ -23,6 +23,7 @@ const YearsFilter: React.FC = () => {
     // Map mode only makes use of the endYear and will display the Select,
     // not the YearsRangeFilter.
     validateRange: visualizationMode !== 'map',
+    yearsGap: 5,
     ...filters,
   });
 

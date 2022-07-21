@@ -20,7 +20,6 @@ import { AnchorLink, Button } from 'components/button';
 import Select from 'components/select';
 
 import InterventionTypeIcon from './intervention-type-icon';
-// import Years from './years';
 import { InterventionTypes, LocationTypes } from '../enums';
 
 import type { SelectOptions } from 'components/select/types';
@@ -34,6 +33,11 @@ type InterventionFormProps = {
 // const addressRegExp = /(\d{1,}) [a-zA-Z0-9\s]+(\.)? [a-zA-Z]+(\,)? [A-Z]{2} [0-9]{5,6}/;
 // const coordinatesRegExp = /^[-]?\d+[\.]?\d*, [-]?\d+[\.]?\d*$/;
 // const cityRegExp = /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/;
+
+const optionSchema = yup.object({
+  value: yup.string(),
+  label: yup.string(),
+});
 
 const schemaValidation = yup.object({
   title: yup.string().min(2),
@@ -64,7 +68,7 @@ const schemaValidation = yup.object({
   newLocationLongitude: yup.number(),
 
   // Material
-  newMaterialId: yup.string(),
+  newMaterialId: yup.array().of(optionSchema),
   newMaterialTonnageRatio: yup.number(),
 
   // Coefficients
@@ -87,6 +91,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
     control,
     watch,
     setValue,
+    getValues,
     resetField,
     handleSubmit,
     formState: { errors },
@@ -170,6 +175,8 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
     }
   }, [currentInterventionType, resetField]);
 
+  console.log('form values: ', getValues());
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-6 space-y-10">
       <div className="flex flex-col justify-center pr-10">
@@ -180,6 +187,19 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
         </p>
       </div>
       <div className="space-y-4 border-gray-100 border-l-2 pl-10">
+        <div>
+          <label className={LABEL_CLASSNAMES}>
+            Percentage <sup>*</sup>
+          </label>
+          <Input
+            {...register('percentage')}
+            type="number"
+            min="0"
+            max="100"
+            placeholder="100"
+            defaultValue={100}
+          />
+        </div>
         <div>
           <label className={LABEL_CLASSNAMES}>
             Raw material <sup>*</sup>
@@ -266,7 +286,24 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
           <label className={LABEL_CLASSNAMES}>
             Year of implementation <sup>*</sup>
           </label>
-          {/* <Years /> */}
+          <Controller
+            name="startYear"
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                showSearch
+                current={field.value}
+                options={[
+                  { label: '2019', value: 2019 },
+                  { label: '2020', value: 2020 },
+                ]}
+                placeholder="Select a year"
+                onChange={(value) => setValue('startYear', value)}
+                error={!!errors?.startYear?.message}
+              />
+            )}
+          />
         </div>
       </div>
 
@@ -343,10 +380,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                       />
                     )}
                   />
-                </div>
-                <div>
-                  <label className={LABEL_CLASSNAMES}>Tons of new material</label>
-                  <Input type="number" placeholder="0" {...register('newMaterialTonnageRatio')} />
                 </div>
               </div>
             )}
@@ -479,7 +512,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                                 placeholder="Select"
                                 onChange={(value) => setValue('newLocationType', value)}
                                 error={!!errors?.newLocationType?.message}
-                                allowEmpty
                               />
                             )}
                           />
@@ -487,7 +519,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                         <div>
                           <label className={LABEL_CLASSNAMES}>Country</label>
                           <Controller
-                            name="newCountryId"
+                            name="mewLocationCountryInput"
                             control={control}
                             render={({ field }) => (
                               <Select
@@ -499,7 +531,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                                 placeholder="Select"
                                 onChange={(value) => setValue('newCountryId', value)}
                                 error={!!errors?.newCountryId?.message}
-                                allowEmpty
                               />
                             )}
                           />
@@ -523,12 +554,16 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                               {...register('newLocationLatitude')}
                               type="number"
                               placeholder="Latitude"
+                              min={-90}
+                              max={90}
                               className="mb-2"
                             />
                             <Input
                               {...register('newLocationLongitude')}
                               type="number"
                               placeholder="Longitude"
+                              min={-180}
+                              max={180}
                             />
                           </div>
                         )}
@@ -571,35 +606,19 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                     <div className="space-y-4">
                       <div>
                         <label className={LABEL_CLASSNAMES}>Carbon emission</label>
-                        <Input
-                          type="number"
-                          placeholder="0"
-                          {...register('newMaterialTonnageRatio')}
-                        />
+                        <Input type="number" placeholder="0" {...register('GHG_LUC_T')} />
                       </div>
                       <div>
                         <label className={LABEL_CLASSNAMES}>Deforestation risk</label>
-                        <Input
-                          type="number"
-                          placeholder="0"
-                          {...register('newMaterialTonnageRatio')}
-                        />
+                        <Input type="number" placeholder="0" {...register('DF_LUC_T')} />
                       </div>
                       <div>
                         <label className={LABEL_CLASSNAMES}>Water withdrawal</label>
-                        <Input
-                          type="number"
-                          placeholder="0"
-                          {...register('newMaterialTonnageRatio')}
-                        />
+                        <Input type="number" placeholder="0" {...register('UWU_T')} />
                       </div>
                       <div>
                         <label className={LABEL_CLASSNAMES}>Biodiversity impact</label>
-                        <Input
-                          type="number"
-                          placeholder="0"
-                          {...register('newMaterialTonnageRatio')}
-                        />
+                        <Input type="number" placeholder="0" {...register('BL_LUC_T')} />
                       </div>
                     </div>
                   </Disclosure.Panel>

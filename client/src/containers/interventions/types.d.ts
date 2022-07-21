@@ -1,4 +1,4 @@
-import { InterventionTypes, LocationTypes, LocationStatus } from './enums';
+import type { InterventionTypes, LocationTypes, LocationStatus } from './enums';
 
 export type IndicatorCoefficients = {
   DF_LUC_T: number;
@@ -29,8 +29,8 @@ export type InterventionDto = Readonly<{
   description?: string;
   status: LocationStatus;
   type: InterventionTypes;
-  startYear: number;
-  endYear?: number;
+  startYear?: number;
+  endYear: number;
   percentage: number;
   scenarioId: string;
   materialIds: string[];

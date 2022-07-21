@@ -9,7 +9,10 @@ import { useCallback } from 'react';
 
 const CreateInterventionPage: React.FC = () => {
   const { query } = useRouter();
-  const handleSubmit = useCallback((interventionFormData) => console.log(interventionFormData), []);
+  const handleSubmit = useCallback(
+    (interventionFormData) => console.log('intervention data: ', interventionFormData),
+    [],
+  );
 
   return (
     <CleanLayout>
@@ -20,7 +23,7 @@ const CreateInterventionPage: React.FC = () => {
         <BackLink className="mb-6 flex xl:sticky xl:top-0">Back to scenario</BackLink>
       </Link>
       <div className="grid grid-cols-12 gap-6">
-        <div className="col-start-3 col-span-8">
+        <div className="col-start-2 col-span-10 xl:col-start-3 xl:col-span-8">
           <h1>New intervention</h1>
           <InterventionForm onSubmit={handleSubmit} />
         </div>

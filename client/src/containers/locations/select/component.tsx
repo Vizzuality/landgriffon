@@ -2,7 +2,8 @@ import { forwardRef, useMemo } from 'react';
 import TreeSelect from 'components/tree-select';
 import { sortBy } from 'lodash';
 
-import { useAdminRegionsTrees, AdminRegionsTreesParams } from 'hooks/admin-regions';
+import type { AdminRegionsTreesParams } from 'hooks/admin-regions';
+import { useAdminRegionsTrees } from 'hooks/admin-regions';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
 type OriginRegionsFilterProps = {
@@ -22,7 +23,10 @@ type OriginRegionsFilterProps = {
   fitContent?: TreeSelectProps['fitContent'];
 };
 
-const OriginRegionsFilter = forwardRef<HTMLInputElement, OriginRegionsFilterProps>(
+const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = forwardRef<
+  HTMLInputElement,
+  OriginRegionsFilterProps
+>(
   (
     {
       multiple,

@@ -504,19 +504,19 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                             )}
                           />
                         </div>
-                        {locationType.value === LocationTypes.aggregationPoint && (
+                        {locationType?.value === LocationTypes.aggregationPoint && (
                           <div>
                             <label className={LABEL_CLASSNAMES}>City</label>
                             <Input type="text" {...register('mewLocationCountryInput')} />
                           </div>
                         )}
-                        {locationType.value === LocationTypes.aggregationPoint && (
+                        {locationType?.value === LocationTypes.aggregationPoint && (
                           <div>
                             <label className={LABEL_CLASSNAMES}>Address</label>
                             <Input type="text" {...register('newLocationAddressInput')} />
                           </div>
                         )}
-                        {locationType.value === LocationTypes.aggregationPoint && (
+                        {locationType?.value === LocationTypes.aggregationPoint && (
                           <div>
                             <label className={LABEL_CLASSNAMES}>Coordinates</label>
                             <Input

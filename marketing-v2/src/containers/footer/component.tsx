@@ -47,17 +47,25 @@ const Footer: React.FC = () => {
         <div className="pb-6 space-y-5 md:flex md:justify-between md:pb-32 md:space-y-0">
           <ul className="flex items-center justify-start space-x-10">
             <li>
-              <a>
+              <a href="https://twitter.com/LandGriffon_" target="_blank" rel="noreferrer noopener">
                 <Icon icon={TWITTER_SVG} className="w-5 h-5" />
               </a>
             </li>
             <li>
-              <a>
+              <a
+                href="https://www.linkedin.com/company/landgriffon/ "
+                target="_blank"
+                rel="noreferrer noopener"
+              >
                 <Icon icon={LINKEDIN_SVG} className="w-5 h-5" />
               </a>
             </li>
             <li>
-              <a>
+              <a
+                href="https://medium.com/vizzuality-blog/tagged/sustainable-supply-chain"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
                 <Icon icon={MEDIUM_SVG} className="w-5 h-5" />
               </a>
             </li>

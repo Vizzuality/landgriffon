@@ -68,7 +68,7 @@ const Developed: React.FC = () => {
                       alt="SEI"
                     />
                   </div>
-                  <div>
+                  {/* <div>
                     <Image
                       className="inline-block"
                       width={180}
@@ -76,7 +76,7 @@ const Developed: React.FC = () => {
                       src="/images/home/developed/trase.png"
                       alt="Trase"
                     />
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>

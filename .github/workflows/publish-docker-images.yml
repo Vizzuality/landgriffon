@@ -110,7 +110,13 @@ jobs:
           ECR_REPOSITORY: client
           IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG client
+          docker build \
+          --build-arg NEXTAUTH_URL=${{ secrets[format('NEXTAUTH_URL_{0}', steps.extract_branch.outputs.branch-upper )] }} \
+          --build-arg NEXTAUTH_SECRET=${{ secrets[format('NEXTAUTH_SECRET_{0}', steps.extract_branch.outputs.branch-upper )] }} \
+          --build-arg NEXT_PUBLIC_MAPBOX_API_TOKEN=${{ secrets.NEXT_PUBLIC_MAPBOX_API_TOKEN }} \
+          --build-arg NEXT_PUBLIC_API_URL=${{ secrets[format('NEXT_PUBLIC_API_URL_{0}', steps.extract_branch.outputs.branch-upper )] }} \
+          -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+          client
 
       - name: Wait for API E2E tests to run
         uses: fountainhead/action-wait-for-check@v1.0.0

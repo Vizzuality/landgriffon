@@ -3,7 +3,8 @@ import type { QueryFunction, UseQueryOptions, UseQueryResult } from 'react-query
 import { useQueries } from 'react-query';
 import { useQuery } from 'react-query';
 import chroma from 'chroma-js';
-import { scaleThreshold } from 'd3-scale';
+import type { ScaleOrdinal, ScaleThreshold } from 'd3-scale';
+import { scaleThreshold, scaleOrdinal } from 'd3-scale';
 
 import { useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
@@ -22,6 +23,7 @@ import type {
   ImpactH3APIParams,
   H3Data,
   Layer,
+  Legend,
 } from 'types';
 import { analysisMap } from 'store/features/analysis';
 
@@ -55,15 +57,36 @@ const responseParser = (response: AxiosResponse, colors: RGBColor[]): H3APIRespo
   return { data: h3DataWithColor, metadata };
 };
 
-const responseContextualParser = (response: AxiosResponse): H3APIResponse => {
+type ScalesType = ScaleOrdinal<H3Item['v'], H3Item['c']> | ScaleThreshold<H3Item['v'], H3Item['c']>;
+
+const scaleByLegendType = (
+  type: Legend['type'],
+  threshold: Legend['items'][0]['value'][],
+  colors: H3Item['c'][],
+): ScalesType => {
+  switch (type) {
+    case 'category':
+      return scaleOrdinal<H3Item['v'], H3Item['c']>()
+        .domain(threshold as H3Item['v'][])
+        .range(colors);
+    default:
+      return scaleThreshold<H3Item['v'], H3Item['c']>()
+        .domain(threshold as number[])
+        .range(colors);
+  }
+};
+
+const responseContextualParser = (response: AxiosResponse<H3APIResponse>): H3APIResponse => {
   const { data, metadata } = response.data;
   const {
-    legend: { items },
+    legend: { items, type },
   } = metadata;
   const threshold = items.map((item) => item.value);
   const colors = items.map((item) => chroma(item.color).rgb());
-  const scale = scaleThreshold<H3Item['v'], RGBColor>().domain(threshold).range(colors);
-  const h3DataWithColor = data.map(
+
+  const scale = scaleByLegendType(type, threshold, colors);
+
+  const h3DataWithColor: H3Item[] = data.map(
     (d: H3Item): H3Item => ({
       ...d,
       c: scale(d.v as H3Item['v']),

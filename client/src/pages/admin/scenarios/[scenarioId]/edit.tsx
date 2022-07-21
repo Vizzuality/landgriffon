@@ -13,6 +13,7 @@ import { useScenarioIntervention, useUpdateIntervention } from 'hooks/interventi
 import CleanLayout from 'layouts/clean';
 import ScenarioForm from 'containers/scenarios/form';
 import InterventionPhrase from 'containers/interventions/phrase';
+import { LocationStatus } from 'containers/interventions/enums';
 import BackLink from 'components/back-link';
 import Loading from 'components/loading';
 import Select from 'components/select';
@@ -144,7 +145,7 @@ const UpdateScenarioPage: React.FC = () => {
                         <div className="flex flex-1 space-x-2">
                           <Toggle
                             data-interventionId={intervention.id}
-                            defaultActive={intervention.status === 'active'}
+                            active={intervention.status === LocationStatus.active}
                             onChange={(isActive) =>
                               handleInterventionToggle(intervention.id, isActive)
                             }

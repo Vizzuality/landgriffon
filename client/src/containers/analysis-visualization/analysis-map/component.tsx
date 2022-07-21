@@ -23,7 +23,6 @@ import DefaultMapStyle from './styles/map-style.json';
 import SatelliteMapStyle from './styles/map-style-satellite.json';
 
 import type { BasemapValue } from 'components/map/controls/basemap/types';
-import type { PopUpProps } from 'components/map/popup/types';
 import type { ViewState } from 'react-map-gl/src/mapbox/mapbox';
 import { useAllContextualLayersData } from 'hooks/h3-data';
 import { sortBy } from 'lodash';
@@ -158,20 +157,19 @@ const AnalysisMap: React.FC = () => {
         />
         {!!tooltipData.length && (
           <PopUp
-            position={
-              {
-                ...tooltipPosition.viewport,
-                x: tooltipPosition.x,
-                y: tooltipPosition.y,
-              } as PopUpProps['position']
-            }
+            position={{
+              ...tooltipPosition.viewport,
+              x: tooltipPosition.x,
+              y: tooltipPosition.y,
+            }}
           >
             <div className="px-4 py-2 space-y-2 bg-white rounded-md shadow-sm">
               {tooltipData.map((data) => (
                 <div key={`tooltip-item-${data.id}`} className="whitespace-nowrap">
                   <strong className="text-xs font-semibold">{data.name}</strong>:{' '}
                   <span className="text-xs">
-                    {data.value ? NUMBER_FORMAT(data.value) : '-'} ({data.unit})
+                    {data.value ? NUMBER_FORMAT(data.value) : '-'}
+                    {data.unit && ` ${data.unit}`}
                   </span>
                 </div>
               ))}

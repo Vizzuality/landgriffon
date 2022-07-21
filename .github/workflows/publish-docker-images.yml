@@ -60,7 +60,7 @@ jobs:
 
       - name: Build API Docker image
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: api
           IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
         run: |
@@ -89,7 +89,7 @@ jobs:
 
       - name: Push API Docker image to AWS ECR
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: api
           IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
         run: |

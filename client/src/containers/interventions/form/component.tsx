@@ -42,40 +42,39 @@ const optionSchema = yup.object({
 const schemaValidation = yup.object({
   title: yup.string().min(2),
   description: yup.string(),
-  type: yup.string().required(),
-  scenarioId: yup.string().required(),
-  startYear: yup.number().required(),
-  endYear: yup.number().required(),
+  type: yup.array().of(optionSchema).required(),
+  startYear: optionSchema.required(),
+  endYear: optionSchema,
   percentage: yup.number().required(),
 
   // Filters
-  materialIds: yup.array().required(),
-  businessUnitIds: yup.array(),
-  supplierIds: yup.array(),
-  adminRegionIds: yup.array().required(),
+  materialIds: yup.array().of(optionSchema).required(),
+  businessUnitIds: yup.array().of(optionSchema),
+  supplierIds: yup.array().of(optionSchema),
+  adminRegionIds: yup.array().of(optionSchema),
 
   // Supplier
-  newT1Supplier: yup.string(),
-  newProducerId: yup.string(),
+  newT1Supplier: yup.array().of(optionSchema),
+  newProducerId: yup.array().of(optionSchema),
 
   // Location
   newLocationType: yup
     .string()
-    .matches(/(aggregation point|point of production|country of production)/),
+    .matches(/(aggregation point|point of production|country of production)/)
+    .required(),
   newLocationCountryInput: yup.string().required(),
   newLocationAddressInput: yup.string(),
-  newLocationLatitude: yup.number(),
-  newLocationLongitude: yup.number(),
+  newLocationLatitude: yup.number().min(-90).max(90),
+  newLocationLongitude: yup.number().min(180).max(-180),
 
   // Material
   newMaterialId: yup.array().of(optionSchema),
-  newMaterialTonnageRatio: yup.number(),
 
   // Coefficients
-  DF_LUC_T: yup.number().required(),
-  UWU_T: yup.number().required(),
-  BL_LUC_T: yup.number().required(),
-  GHG_LUC_T: yup.number().required(),
+  DF_LUC_T: yup.number(),
+  UWU_T: yup.number(),
+  BL_LUC_T: yup.number(),
+  GHG_LUC_T: yup.number(),
 });
 
 const LABEL_CLASSNAMES = 'text-sm';
@@ -91,7 +90,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
     control,
     watch,
     setValue,
-    getValues,
     resetField,
     handleSubmit,
     formState: { errors },
@@ -157,6 +155,12 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
     [countries],
   );
 
+  // Years
+  const optionsYears = [
+    { label: '2019', value: 2019 },
+    { label: '2020', value: 2020 },
+  ];
+
   useEffect(() => {
     if (currentInterventionType === InterventionTypes.SupplierLocation) {
       ['newMaterialId', 'newMaterialTonnageRatio'].forEach((field) => resetField(field));
@@ -174,8 +178,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
       ].forEach((field) => resetField(field));
     }
   }, [currentInterventionType, resetField]);
-
-  console.log('form values: ', getValues());
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-6 space-y-10">
@@ -289,15 +291,13 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
           <Controller
             name="startYear"
             control={control}
+            defaultValue={optionsYears[0]}
             render={({ field }) => (
               <Select
                 {...field}
                 showSearch
                 current={field.value}
-                options={[
-                  { label: '2019', value: 2019 },
-                  { label: '2020', value: 2020 },
-                ]}
+                options={optionsYears}
                 placeholder="Select a year"
                 onChange={(value) => setValue('startYear', value)}
                 error={!!errors?.startYear?.message}
@@ -390,6 +390,116 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                 {({ open }) => (
                   <>
                     <div className="flex justify-between items-center w-full">
+                      <h3>New location</h3>
+                      <Disclosure.Button
+                        className={classNames(
+                          'border-primary border w-6 h-6 rounded flex items-center justify-center',
+                          open ? 'bg-primary' : 'bg-transparent',
+                          {
+                            hidden:
+                              currentInterventionType === InterventionTypes.Material ||
+                              currentInterventionType === InterventionTypes.SupplierLocation,
+                          },
+                        )}
+                      >
+                        {open ? (
+                          <MinusIcon className="w-5 h-5 text-white" />
+                        ) : (
+                          <PlusIcon className="w-5 h-5 text-primary" />
+                        )}
+                      </Disclosure.Button>
+                    </div>
+                    <Disclosure.Panel
+                      static={
+                        currentInterventionType === InterventionTypes.SupplierLocation ||
+                        currentInterventionType === InterventionTypes.Material
+                      }
+                    >
+                      <div className="space-y-4">
+                        <div>
+                          <label className={LABEL_CLASSNAMES}>
+                            Location type <sup>*</sup>
+                          </label>
+                          <Controller
+                            name="newLocationType"
+                            control={control}
+                            render={({ field }) => (
+                              <Select
+                                {...field}
+                                showSearch
+                                loading={isLoadingProducers}
+                                current={field.value}
+                                options={optionsLocationTypes}
+                                placeholder="Select"
+                                onChange={(value) => setValue('newLocationType', value)}
+                                error={!!errors?.newLocationType?.message}
+                              />
+                            )}
+                          />
+                        </div>
+                        <div>
+                          <label className={LABEL_CLASSNAMES}>
+                            Country <sup>*</sup>
+                          </label>
+                          <Controller
+                            name="newLocationCountryInput"
+                            control={control}
+                            render={({ field }) => (
+                              <Select
+                                {...field}
+                                showSearch
+                                loading={isLoadingCountries}
+                                current={field.value}
+                                options={optionsCountries}
+                                placeholder="Select"
+                                onChange={(value) => setValue('newLocationCountryInput', value)}
+                                error={!!errors?.newLocationCountryInput?.message}
+                              />
+                            )}
+                          />
+                        </div>
+                        {locationType?.value === LocationTypes.aggregationPoint && (
+                          <div>
+                            <label className={LABEL_CLASSNAMES}>City / address</label>
+                            <Input type="text" {...register('newLocationAddressInput')} />
+                          </div>
+                        )}
+                        {locationType?.value === LocationTypes.aggregationPoint && (
+                          <div>
+                            <label className={LABEL_CLASSNAMES}>Coordinates</label>
+                            <div className="flex space-x-2 w-full">
+                              <Input
+                                {...register('newLocationLatitude')}
+                                type="number"
+                                placeholder="Latitude"
+                                min={-90}
+                                max={90}
+                                className="w-full"
+                              />
+                              <Input
+                                {...register('newLocationLongitude')}
+                                type="number"
+                                placeholder="Longitude"
+                                min={-180}
+                                max={180}
+                                className="w-full"
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </Disclosure.Panel>
+                  </>
+                )}
+              </Disclosure>
+            )}
+
+            {(currentInterventionType === InterventionTypes.Material ||
+              currentInterventionType === InterventionTypes.SupplierLocation) && (
+              <Disclosure as="div" className="space-y-4">
+                {({ open }) => (
+                  <>
+                    <div className="flex justify-between items-center w-full">
                       {currentInterventionType === InterventionTypes.Material ? (
                         <div>
                           <h3 className="inline-block">Supplier</h3>{' '}
@@ -402,8 +512,9 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                         className={classNames(
                           'border-primary border w-6 h-6 rounded flex items-center justify-center',
                           open ? 'bg-primary' : 'bg-transparent',
-                          currentInterventionType === InterventionTypes.SupplierLocation &&
-                            'hidden',
+                          {
+                            hidden: currentInterventionType === InterventionTypes.SupplierLocation,
+                          },
                         )}
                       >
                         {open ? (
@@ -464,116 +575,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
               </Disclosure>
             )}
 
-            {(currentInterventionType === InterventionTypes.Material ||
-              currentInterventionType === InterventionTypes.SupplierLocation) && (
-              <Disclosure as="div" className="space-y-4">
-                {({ open }) => (
-                  <>
-                    <div className="flex justify-between items-center w-full">
-                      {currentInterventionType === InterventionTypes.Material ? (
-                        <div>
-                          <h3 className="inline-block">Location</h3>{' '}
-                          <span className="text-regular text-gray-500">(optional)</span>
-                        </div>
-                      ) : (
-                        <h3>New location</h3>
-                      )}
-                      <Disclosure.Button
-                        className={classNames(
-                          'border-primary border w-6 h-6 rounded flex items-center justify-center',
-                          open ? 'bg-primary' : 'bg-transparent',
-                          currentInterventionType === InterventionTypes.SupplierLocation &&
-                            'hidden',
-                        )}
-                      >
-                        {open ? (
-                          <MinusIcon className="w-5 h-5 text-white" />
-                        ) : (
-                          <PlusIcon className="w-5 h-5 text-primary" />
-                        )}
-                      </Disclosure.Button>
-                    </div>
-                    <Disclosure.Panel
-                      static={currentInterventionType === InterventionTypes.SupplierLocation}
-                    >
-                      <div className="space-y-4">
-                        <div>
-                          <label className={LABEL_CLASSNAMES}>Location type</label>
-                          <Controller
-                            name="newLocationType"
-                            control={control}
-                            render={({ field }) => (
-                              <Select
-                                {...field}
-                                showSearch
-                                loading={isLoadingProducers}
-                                current={field.value}
-                                options={optionsLocationTypes}
-                                placeholder="Select"
-                                onChange={(value) => setValue('newLocationType', value)}
-                                error={!!errors?.newLocationType?.message}
-                              />
-                            )}
-                          />
-                        </div>
-                        <div>
-                          <label className={LABEL_CLASSNAMES}>Country</label>
-                          <Controller
-                            name="mewLocationCountryInput"
-                            control={control}
-                            render={({ field }) => (
-                              <Select
-                                {...field}
-                                showSearch
-                                loading={isLoadingCountries}
-                                current={field.value}
-                                options={optionsCountries}
-                                placeholder="Select"
-                                onChange={(value) => setValue('newCountryId', value)}
-                                error={!!errors?.newCountryId?.message}
-                              />
-                            )}
-                          />
-                        </div>
-                        {locationType?.value === LocationTypes.aggregationPoint && (
-                          <div>
-                            <label className={LABEL_CLASSNAMES}>City</label>
-                            <Input type="text" {...register('mewLocationCountryInput')} />
-                          </div>
-                        )}
-                        {locationType?.value === LocationTypes.aggregationPoint && (
-                          <div>
-                            <label className={LABEL_CLASSNAMES}>Address</label>
-                            <Input type="text" {...register('newLocationAddressInput')} />
-                          </div>
-                        )}
-                        {locationType?.value === LocationTypes.aggregationPoint && (
-                          <div>
-                            <label className={LABEL_CLASSNAMES}>Coordinates</label>
-                            <Input
-                              {...register('newLocationLatitude')}
-                              type="number"
-                              placeholder="Latitude"
-                              min={-90}
-                              max={90}
-                              className="mb-2"
-                            />
-                            <Input
-                              {...register('newLocationLongitude')}
-                              type="number"
-                              placeholder="Longitude"
-                              min={-180}
-                              max={180}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    </Disclosure.Panel>
-                  </>
-                )}
-              </Disclosure>
-            )}
-
             <Disclosure as="div" className="space-y-4">
               {({ open }) => (
                 <>
@@ -606,19 +607,39 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                     <div className="space-y-4">
                       <div>
                         <label className={LABEL_CLASSNAMES}>Carbon emission</label>
-                        <Input type="number" placeholder="0" {...register('GHG_LUC_T')} />
+                        <Input
+                          {...register('GHG_LUC_T')}
+                          defaultValue={null}
+                          type="number"
+                          placeholder="0"
+                        />
                       </div>
                       <div>
                         <label className={LABEL_CLASSNAMES}>Deforestation risk</label>
-                        <Input type="number" placeholder="0" {...register('DF_LUC_T')} />
+                        <Input
+                          {...register('DF_LUC_T')}
+                          defaultValue={null}
+                          type="number"
+                          placeholder="0"
+                        />
                       </div>
                       <div>
                         <label className={LABEL_CLASSNAMES}>Water withdrawal</label>
-                        <Input type="number" placeholder="0" {...register('UWU_T')} />
+                        <Input
+                          {...register('UWU_T')}
+                          defaultValue={null}
+                          type="number"
+                          placeholder="0"
+                        />
                       </div>
                       <div>
                         <label className={LABEL_CLASSNAMES}>Biodiversity impact</label>
-                        <Input type="number" placeholder="0" {...register('BL_LUC_T')} />
+                        <Input
+                          {...register('BL_LUC_T')}
+                          defaultValue={null}
+                          type="number"
+                          placeholder="0"
+                        />
                       </div>
                     </div>
                   </Disclosure.Panel>

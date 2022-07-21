@@ -1,4 +1,4 @@
-import { useCallback, useMemo, FC } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 
 // form validation
@@ -73,7 +73,7 @@ const schemaValidation = yup.object({
 
 const errorMessage = 'Please complete all the missing fields';
 
-const Step2: FC = () => {
+const Step2: React.FC = () => {
   const dispatch = useAppDispatch();
   const { currentScenario, interventionMode, currentIntervention } = useAppSelector(scenarios);
 
@@ -199,7 +199,7 @@ const Step2: FC = () => {
         {(type === 'Source from new supplier or location' ||
           type === 'Switch to a new material') && <Supplier />}
         <SupplierImpact />
-        <div className="pt-10 flex justify-between items-center">
+        <div className="flex items-center justify-between pt-10">
           {hasErrors && (
             <div className="mt-2 text-sm text-red-600">
               <p className="first-letter:uppercase">{errorMessage}</p>
@@ -210,7 +210,7 @@ const Step2: FC = () => {
               Cancel
             </Button>
             <Button
-              className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="inline-flex justify-center px-4 py-2 ml-3 text-sm font-medium text-white bg-green-700 border border-transparent rounded-md shadow-sm hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               // disabled={!isValid}
               type="submit"
             >

@@ -64,7 +64,7 @@ jobs:
           ECR_REPOSITORY: api
           IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
         run: |
-          docker build -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
 
 #      - name: Wait for API E2E tests to run
 #        uses: fountainhead/action-wait-for-check@v1.0.0

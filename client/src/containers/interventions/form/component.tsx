@@ -40,35 +40,30 @@ const optionSchema = yup.object({
 });
 
 const schemaValidation = yup.object({
-  title: yup.string().min(2),
-  description: yup.string(),
-  type: yup.array().of(optionSchema).required(),
+  interventionType: yup.string().required(),
   startYear: optionSchema.required(),
-  endYear: optionSchema,
   percentage: yup.number().required(),
+  scenarioId: yup.string().required(),
 
   // Filters
   materialIds: yup.array().of(optionSchema).required(),
   businessUnitIds: yup.array().of(optionSchema),
   supplierIds: yup.array().of(optionSchema),
-  adminRegionIds: yup.array().of(optionSchema),
+  adminRegionIds: yup.array().of(optionSchema).required(),
 
   // Supplier
-  newT1Supplier: yup.array().of(optionSchema),
-  newProducerId: yup.array().of(optionSchema),
+  newT1Supplier: optionSchema,
+  newProducerId: optionSchema,
 
   // Location
-  newLocationType: yup
-    .string()
-    .matches(/(aggregation point|point of production|country of production)/)
-    .required(),
-  newLocationCountryInput: yup.string().required(),
+  newLocationType: optionSchema,
+  newLocationCountryInput: optionSchema,
   newLocationAddressInput: yup.string(),
   newLocationLatitude: yup.number().min(-90).max(90),
   newLocationLongitude: yup.number().min(180).max(-180),
 
   // Material
-  newMaterialId: yup.array().of(optionSchema),
+  newMaterialId: optionSchema,
 
   // Coefficients
   DF_LUC_T: yup.number(),
@@ -90,6 +85,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
     control,
     watch,
     setValue,
+    getValues,
     resetField,
     handleSubmit,
     formState: { errors },
@@ -178,6 +174,9 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
       ].forEach((field) => resetField(field));
     }
   }, [currentInterventionType, resetField]);
+
+  console.log('errors: ', errors);
+  console.log('values: ', getValues());
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-6 space-y-10">

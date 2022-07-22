@@ -86,10 +86,14 @@ export const Legend: React.FC = () => {
       )}
       <button
         type="button"
-        className="relative flex items-center justify-center w-full h-10 bg-white border border-gray-100 rounded-lg"
+        className="relative flex items-center justify-center w-full h-10 bg-white border border-gray-100 rounded-lg p-1.5"
         onClick={handleShowLegend}
       >
-        <ChevronDoubleRightIcon />
+        <ChevronDoubleRightIcon
+          className={classNames('transition-transform', {
+            'rotate-180': showLegend,
+          })}
+        />
       </button>
     </div>
   );

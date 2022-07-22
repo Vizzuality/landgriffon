@@ -209,7 +209,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
             </div>
           )}
         </div>
-        {isSelected && isComparisonAvailable && (
+        {data.id === ACTUAL_DATA.id && isComparisonAvailable && (
           <div className="p-4 border-t border-primary">
             <div className="flex justify-between">
               <label className="block text-sm">Compare with</label>
@@ -239,7 +239,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                 />
               </Switch>
             </div>
-            {<ScenariosComparison />}
+            <ScenariosComparison />
           </div>
         )}
       </div>

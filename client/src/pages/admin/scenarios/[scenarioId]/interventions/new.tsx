@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import router, { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 
 import { useCreateNewIntervention } from 'hooks/interventions';
@@ -24,9 +24,11 @@ const CreateInterventionPage: React.FC = () => {
       console.log('intervention dto: ', interventionDto);
       createIntervention.mutate(interventionDto, {
         onSuccess: () => {
-          // const { data: scenario } = data;
-          // const { id, title } = scenario;
           toast.success(`Intervention was created successfully`);
+          // adding some delay to make sure the user reads the success message
+          setTimeout(() => {
+            router.replace(`/admin/scenarios/${interventionDto.scenarioId}/edit`);
+          }, 1000);
         },
         onError: (error: ErrorResponse) => {
           const { errors } = error.response?.data;

@@ -1,11 +1,15 @@
 import type { InterventionDto, InterventionFormData } from './types';
 import type { SelectOption } from 'components/select/types';
 
+function emptyStringIsNull(value: string): string | null {
+  return value === '' ? null : value;
+}
+
 function getValue(option: SelectOption): SelectOption['value'] {
   if (option?.value) {
     const valueToNumber = Number(option.value);
     if (!Number.isNaN(valueToNumber)) return valueToNumber;
-    return option.value;
+    return emptyStringIsNull(option.value as string);
   }
   return null;
 }

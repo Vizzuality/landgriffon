@@ -1,12 +1,6 @@
 import { useMemo } from 'react';
-import {
-  useQuery,
-  useQueryClient,
-  useInfiniteQuery,
-  UseQueryResult,
-  useMutation,
-  UseInfiniteQueryResult,
-} from 'react-query';
+import type { UseQueryResult, UseInfiniteQueryResult } from 'react-query';
+import { useQuery, useQueryClient, useInfiniteQuery, useMutation } from 'react-query';
 
 import { apiService } from 'services/api';
 import { useAppSelector } from 'store/hooks';
@@ -31,6 +25,7 @@ type QueryParams = {
   sort?: string;
   pageParam?: number;
   searchTerm?: string;
+  include?: string;
 };
 
 const DEFAULT_QUERY_OPTIONS = {
@@ -147,9 +142,6 @@ export function useDeleteScenario() {
       mutationKey: 'deleteScenario',
       onSuccess: () => {
         queryClient.invalidateQueries('scenariosList');
-      },
-      onError: () => {
-        console.info('Error');
       },
     },
   );

@@ -213,7 +213,7 @@ const AnalysisTable: React.FC = () => {
   const projectedYears = useMemo<number[]>(
     () =>
       Object.values(impactTable)[0]
-        ?.rows[0].values.filter(({ isProjected }) => !!isProjected)
+        ?.rows[0]?.values.filter(({ isProjected }) => !!isProjected)
         .map(({ year }) => year) as number[],
     [impactTable],
   );

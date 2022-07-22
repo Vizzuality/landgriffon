@@ -23,6 +23,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
   const { fetchNextPage, hasNextPage, data, isLoading, error } = useInfiniteScenarios({
     sort: sort as string,
     searchTerm,
+    include: 'scenarioInterventions',
   });
 
   const scenariosList: Scenario[] = useMemo(() => {
@@ -37,8 +38,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
   return (
     <div className="text-gray-900 bg-white overscroll-contain">
       <div className="sticky top-0 z-20 pt-10 pb-4 text-sm bg-white after:bg-gradient-to-b after:from-white after:w-full after:h-3 after:content after:-bottom-3 after:left-0 after:absolute">
-        <h1>Scenarios</h1>
-        <p className="my-2">Select the scenario you want to analyse</p>
+        <h1>Analyze data</h1>
         {!isLoading && data && (
           <div className="pt-6">
             <ScenariosFilters />
@@ -47,7 +47,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
       </div>
       {isLoading && (
         <div className="flex justify-center p-6 ">
-          <Loading className="text-green-700" />
+          <Loading className="text-primary" />
         </div>
       )}
       {!isLoading && data && (

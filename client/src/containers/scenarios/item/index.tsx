@@ -9,7 +9,7 @@ const ScenarioItemContainer = (props) => {
     isSelected: false,
     isComparisonEnabled: false,
     ...props,
-    isComparisonAvailable: visualizationMode !== 'map',
+    isComparisonAvailable: visualizationMode === 'table',
   };
 
   return <Component {...componentProps} />;

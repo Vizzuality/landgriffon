@@ -3,6 +3,7 @@ export type Scenario = {
   title: string;
   description?: string;
   updatedAt?: date;
+  scenarioInterventions?: Intervention[];
 };
 
 export type Scenarios = Scenario[];

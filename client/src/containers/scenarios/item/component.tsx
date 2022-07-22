@@ -5,10 +5,10 @@ import { DotsVerticalIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
 import toast from 'react-hot-toast';
 import { createPortal } from 'react-dom';
+import Link from 'next/link';
 
 import {
   setCurrentScenario,
-  setMode,
   scenarios,
   setComparisonEnabled,
 } from 'store/features/analysis/scenarios';
@@ -46,11 +46,6 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
 
   const { data, isSelected, isComparisonAvailable } = props;
 
-  const handleEdit = useCallback(() => {
-    dispatch(setCurrentScenario(data.id));
-    dispatch(setMode('edit'));
-  }, [dispatch, data.id]);
-
   const deleteScenario = useDeleteScenario();
 
   const handleDelete = useCallback(() => {
@@ -83,8 +78,8 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
     <li className="col-span-1 last-of-type:mb-6">
       <div
         className={classNames(
-          'rounded border',
-          isSelected ? 'border-green-700 bg-green-50' : 'border-gray-200',
+          'rounded-md border',
+          isSelected ? 'border-primary' : 'border-gray-300',
         )}
       >
         <div className="flex items-center">
@@ -101,7 +96,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                   {((disabledScenarios && data.id === ACTUAL_DATA.id) || !disabledScenarios) && (
                     <span
                       className={classNames(
-                        checked ? 'bg-green-700 border-transparent' : 'bg-white border-gray-200',
+                        checked ? 'bg-primary border-transparent' : 'bg-white border-gray-200',
                         'h-4 w-4 mt-0.5 cursor-pointer rounded-full border flex items-center justify-center',
                       )}
                       aria-hidden="true"
@@ -110,12 +105,24 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                     </span>
                   )}
                 </div>
-                <div className="flex-1 py-4 pr-4 truncate">
-                  <h2 className="text-sm font-medium text-gray-900 truncate">{data.title}</h2>
-                  <div className="text-sm text-gray-600">
-                    {data.id === ACTUAL_DATA.id && (
-                      <span className="text-green-700">Based on your uploaded data</span>
+                <div className="flex-1 py-4 pr-4 truncate space-y-2">
+                  <h2
+                    className={classNames(
+                      'text-sm font-medium truncate',
+                      isSelected ? 'text-primary' : 'text-gray-900',
                     )}
+                  >
+                    {data.title}
+                  </h2>
+                  {data.id !== ACTUAL_DATA.id && (
+                    <div className="flex">
+                      <div className="bg-yellow text-xs px-2 rounded-full">
+                        {data.scenarioInterventions.length} interventions
+                      </div>
+                    </div>
+                  )}
+                  <div className="text-xs text-gray-500">
+                    {data.id === ACTUAL_DATA.id && <span>Based on your uploaded data</span>}
                     {data.id !== ACTUAL_DATA.id &&
                       data.updatedAt &&
                       `Last edited ${format(new Date(data.updatedAt), 'yyyy/MM/dd')}`}
@@ -160,13 +167,13 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                           >
                             <div className="py-1">
                               <div>
-                                <button
-                                  type="button"
-                                  className={classNames('text-gray-700', DROPDOWN_ITEM_CLASSNAME)}
-                                  onClick={handleEdit}
-                                >
-                                  Edit
-                                </button>
+                                <Link href={`/admin/scenarios/${data.id}/edit`}>
+                                  <a
+                                    className={classNames('text-gray-700', DROPDOWN_ITEM_CLASSNAME)}
+                                  >
+                                    Edit
+                                  </a>
+                                </Link>
                               </div>
                               <div>
                                 <button
@@ -198,9 +205,9 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
           )}
         </div>
         {isSelected && isComparisonAvailable && (
-          <div className="p-4 border-t border-green-700">
+          <div className="p-4 border-t border-primary">
             <div className="flex justify-between">
-              <label className="block text-sm">Compare this scenario</label>
+              <label className="block text-sm">Compare with</label>
               <Switch
                 checked={isComparisonEnabled}
                 onChange={(isEnabled) => dispatch(setComparisonEnabled(isEnabled))}
@@ -214,7 +221,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                 <span
                   aria-hidden="true"
                   className={classNames(
-                    isComparisonEnabled ? 'bg-green-700' : 'bg-gray-200',
+                    isComparisonEnabled ? 'bg-primary' : 'bg-gray-200',
                     'pointer-events-none absolute h-3 w-7 mx-auto rounded-full transition-colors ease-in-out duration-100',
                   )}
                 />

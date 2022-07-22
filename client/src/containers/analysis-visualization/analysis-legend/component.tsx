@@ -75,7 +75,9 @@ export const Legend: React.FC = () => {
                 <SortableItem
                   key={layer.id}
                   id={layer.id}
-                  className={classNames({ hidden: !showContextualLayers && layer.isContextual })}
+                  className={classNames({
+                    hidden: !showContextualLayers && layer.isContextual && !layer.active,
+                  })}
                 >
                   {LegendToShow(layer)}
                 </SortableItem>

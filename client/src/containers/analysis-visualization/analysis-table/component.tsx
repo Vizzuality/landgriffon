@@ -1,20 +1,18 @@
-import { useCallback, useMemo, useState } from 'react';
-import { uniq } from 'lodash';
-import { PagingPosition, SortingMode } from 'ka-table/enums';
-import { DownloadIcon } from '@heroicons/react/outline';
-
-import { useImpactData } from 'hooks/impact';
-
-import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
+import LinkButton from 'components/button';
+import Loading from 'components/loading';
 import Table, { DataType } from 'components/table';
 import SummaryRow from 'components/table/summary-row';
-import Loading from 'components/loading';
-import LinkButton from 'components/button';
-
+import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
+import { useImpactData } from 'hooks/impact';
+import { PagingPosition, SortingMode } from 'ka-table/enums';
+import { uniq } from 'lodash';
+import { useCallback, useMemo, useState } from 'react';
+import { scenarios } from 'store/features/analysis/scenarios';
+import { useAppSelector } from 'store/hooks';
 import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 
-import { useAppSelector } from 'store/hooks';
-import { scenarios } from 'store/features/analysis/scenarios';
+import { DownloadIcon } from '@heroicons/react/outline';
+
 import ComparisonCell from './comparison-cell';
 
 import type { ITableData } from './types';
@@ -356,15 +354,15 @@ const AnalysisTable: React.FC = () => {
         <Table
           paging={{
             enabled: true,
-            pageIndex: metadata.page - 1,
+            pageIndex: metadata.page,
             pagesCount: metadata.totalPages,
             pageSize: metadata.size,
             totalItems: metadata.totalItems,
             pageSizes: [10, 20, 30, 40],
             position: PagingPosition.Bottom,
           }}
-          onPageChange={(page) => setCurrentPage(page)}
-          onPageSizeChange={(size) => setPageSize(size)}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={setPageSize}
           isLoading={isFetching}
           {...(tableProps as ITableProps)}
           handleIndicatorRows={handleIndicatorRows}

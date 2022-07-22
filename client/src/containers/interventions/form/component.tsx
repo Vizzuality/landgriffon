@@ -23,11 +23,12 @@ import InterventionTypeIcon from './intervention-type-icon';
 import { InterventionTypes, LocationTypes } from '../enums';
 
 import type { SelectOptions } from 'components/select/types';
-import type { Intervention } from '../types';
+import type { InterventionFormData } from '../types';
+import { useRouter } from 'next/router';
 
 type InterventionFormProps = {
   isSubmitting?: boolean;
-  onSubmit?: (scenario: Intervention) => void;
+  onSubmit?: (interventionFormData: InterventionFormData) => void;
 };
 
 // const addressRegExp = /(\d{1,}) [a-zA-Z0-9\s]+(\.)? [a-zA-Z]+(\,)? [A-Z]{2} [0-9]{5,6}/;
@@ -52,12 +53,12 @@ const schemaValidation = yup.object({
   adminRegionIds: yup.array().of(optionSchema).required(),
 
   // Supplier
-  newT1Supplier: optionSchema,
-  newProducerId: optionSchema,
+  newT1SupplierId: optionSchema.nullable(),
+  newProducerId: optionSchema.nullable(),
 
   // Location
-  newLocationType: optionSchema,
-  newLocationCountryInput: optionSchema,
+  newLocationType: optionSchema.nullable(),
+  newLocationCountryInput: optionSchema.nullable(),
   newLocationAddressInput: yup.string(),
   newLocationLatitude: yup.number().min(-90).max(90),
   newLocationLongitude: yup.number().min(180).max(-180),
@@ -80,12 +81,13 @@ const TYPES_OF_INTERVENTIONS = Object.values(InterventionTypes).map((interventio
 }));
 
 const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSubmit }) => {
+  const { query } = useRouter();
+
   const {
     register,
     control,
     watch,
     setValue,
-    getValues,
     resetField,
     handleSubmit,
     formState: { errors },
@@ -164,7 +166,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
       [
         'newMaterialId',
         'newMaterialTonnageRatio',
-        'newSupplierId',
+        'newT1SupplierId',
         'newProducerId',
         'newLocationType',
         'newLocationCountryInput',
@@ -175,11 +177,9 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
     }
   }, [currentInterventionType, resetField]);
 
-  console.log('errors: ', errors);
-  console.log('values: ', getValues());
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-6 space-y-10">
+      <input {...register('scenarioId')} type="hidden" defaultValue={query.scenarioId} />
       <div className="flex flex-col justify-center pr-10">
         <h2>1. Apply intervention to...</h2>
         <p className="text-sm text-gray-500">
@@ -374,7 +374,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                         {...field}
                         multiple={false}
                         current={field.value}
-                        onChange={(selected) => setValue('newMaterialId', selected && [selected])}
+                        onChange={(selected) => setValue('newMaterialId', selected)}
                         error={!!errors?.newMaterialId?.message}
                       />
                     )}
@@ -530,8 +530,9 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                         <div>
                           <label className={LABEL_CLASSNAMES}>Tier 1 supplier</label>
                           <Controller
-                            name="newSupplierId"
+                            name="newT1SupplierId"
                             control={control}
+                            defaultValue={null}
                             render={({ field }) => (
                               <Select
                                 {...field}
@@ -540,7 +541,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                                 current={field.value}
                                 options={optionsSuppliers}
                                 placeholder="Select"
-                                onChange={(value) => setValue('newSupplierId', value)}
+                                onChange={(value) => setValue('newT1SupplierId', value)}
                                 error={!!errors?.newSupplierId?.message}
                                 allowEmpty
                               />
@@ -552,6 +553,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                           <Controller
                             name="newProducerId"
                             control={control}
+                            defaultValue={null}
                             render={({ field }) => (
                               <Select
                                 {...field}

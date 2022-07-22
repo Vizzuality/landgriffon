@@ -2,7 +2,12 @@ import type { InterventionDto, InterventionFormData } from './types';
 import type { SelectOption } from 'components/select/types';
 
 function getValue(option: SelectOption): SelectOption['value'] {
-  return option.value;
+  if (option?.value) {
+    const valueToNumber = Number(option.value);
+    if (!Number.isNaN(valueToNumber)) return valueToNumber;
+    return option.value;
+  }
+  return null;
 }
 
 export function parseInterventionFormDataToDto(
@@ -19,13 +24,14 @@ export function parseInterventionFormDataToDto(
     newT1SupplierId,
     newProducerId,
     newLocationType,
-    mewLocationCountryInput,
+    newLocationCountryInput,
     DF_LUC_T,
     UWU_T,
     BL_LUC_T,
     GHG_LUC_T,
     ...rest
   } = interventionFormData;
+  const thereIsCoefficients = !!(DF_LUC_T || UWU_T || BL_LUC_T || GHG_LUC_T);
 
   const result: InterventionDto = {
     ...rest,
@@ -40,17 +46,21 @@ export function parseInterventionFormDataToDto(
     newMaterialId: getValue(newMaterialId) as string,
 
     newLocationType: getValue(newLocationType) as string,
-    mewLocationCountryInput: getValue(mewLocationCountryInput) as string,
+    newLocationCountryInput: newLocationCountryInput?.label,
 
     newT1SupplierId: getValue(newT1SupplierId) as string,
     newProducerId: getValue(newProducerId) as string,
 
-    newIndicatorCoefficients: {
-      DF_LUC_T,
-      UWU_T,
-      BL_LUC_T,
-      GHG_LUC_T,
-    },
+    ...(thereIsCoefficients
+      ? {
+          newIndicatorCoefficients: {
+            DF_LUC_T,
+            UWU_T,
+            BL_LUC_T,
+            GHG_LUC_T,
+          },
+        }
+      : {}),
   };
 
   return result;

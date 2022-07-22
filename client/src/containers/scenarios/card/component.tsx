@@ -1,11 +1,14 @@
-import { AnchorLink, Button } from 'components/button';
+import { useCallback } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
+import toast from 'react-hot-toast';
 
-import { useScenarioIntervention } from 'hooks/interventions';
+import { useDeleteScenario } from 'hooks/scenarios';
+import { useScenarioInterventions } from 'hooks/interventions';
 
 import InterventionPhrase from 'containers/interventions/phrase';
 import Loading from 'components/loading';
+import { AnchorLink, Button } from 'components/button';
 
 import type { Scenario } from '../types';
 
@@ -14,9 +17,18 @@ type ScenarioCardProps = {
 };
 
 const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
-  const { data: interventions, isLoading: isInterventionsLoading } = useScenarioIntervention({
+  const deleteScenario = useDeleteScenario();
+  const { data: interventions, isLoading: isInterventionsLoading } = useScenarioInterventions({
     scenarioId: data?.id,
   });
+
+  const handleDeleteScenario = useCallback(() => {
+    deleteScenario.mutate(data.id, {
+      onSuccess: () => {
+        toast.success(`Scenario deleted successfully`);
+      },
+    });
+  }, [data?.id, deleteScenario]);
 
   return (
     <div className="rounded-md bg-white p-6 space-y-6 shadow-sm">
@@ -46,7 +58,9 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
         )}
       </div>
       <div className="flex space-between">
-        <Button theme="secondary">Delete</Button>
+        <Button theme="secondary" onClick={handleDeleteScenario}>
+          Delete
+        </Button>
         <div className="flex flex-1 justify-end items-center gap-4">
           <div className="text-xs text-right text-gray-400 leading-4">
             Modified:
@@ -55,7 +69,9 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
           <Link href={`/admin/scenarios/${data.id}/edit`} passHref>
             <AnchorLink theme="secondary">Edit</AnchorLink>
           </Link>
-          <Button theme="primary">Analyze</Button>
+          <Link href={`/analysis?mode=table&scenarioId=${data.id}`} passHref>
+            <AnchorLink theme="primary">Analyze</AnchorLink>
+          </Link>
         </div>
       </div>
     </div>

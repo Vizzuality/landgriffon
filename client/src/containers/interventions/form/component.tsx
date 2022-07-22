@@ -39,7 +39,7 @@ const optionSchema = yup.object({
 const schemaValidation = yup.object({
   interventionType: yup.string().required(),
   startYear: optionSchema.required(),
-  percentage: yup.number().required(),
+  percentage: yup.number().moreThan(0).max(100).required(),
   scenarioId: yup.string().required(),
 
   // Filters
@@ -163,7 +163,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
         'newMaterialId',
         'newT1SupplierId',
         'newProducerId',
-        'newLocationType',
         'newLocationCountryInput',
         'newLocationAddressInput',
         'newLocationLatitude',
@@ -172,9 +171,17 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
     }
   }, [currentInterventionType, resetField]);
 
+  useEffect(() => setValue('scenarioId', query?.scenarioId), [query?.scenarioId, setValue]);
+
+  useEffect(() => {
+    if (currentInterventionType === InterventionTypes.Efficiency) {
+      setValue('newLocationType', { label: 'Unknown', value: LocationTypes.unknown });
+    }
+  }, [currentInterventionType, setValue]);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-6 space-y-10">
-      <input {...register('scenarioId')} type="hidden" defaultValue={query.scenarioId} />
+      <input {...register('scenarioId')} type="hidden" value={watch('scenarioId')} />
       <div className="flex flex-col justify-center pr-10">
         <h2>1. Apply intervention to...</h2>
         <p className="text-sm text-gray-500">
@@ -194,6 +201,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
             max="100"
             placeholder="100"
             defaultValue={100}
+            error={errors?.percentage?.message}
           />
         </div>
         <div>
@@ -607,36 +615,40 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                         <label className={LABEL_CLASSNAMES}>Carbon emission</label>
                         <Input
                           {...register('GHG_LUC_T')}
-                          defaultValue={null}
                           type="number"
                           placeholder="0"
+                          // defaultValue={0}
+                          error={errors?.GHG_LUC_T?.message}
                         />
                       </div>
                       <div>
                         <label className={LABEL_CLASSNAMES}>Deforestation risk</label>
                         <Input
                           {...register('DF_LUC_T')}
-                          defaultValue={null}
                           type="number"
                           placeholder="0"
+                          // defaultValue={0}
+                          error={errors?.DF_LUC_T?.message}
                         />
                       </div>
                       <div>
                         <label className={LABEL_CLASSNAMES}>Water withdrawal</label>
                         <Input
                           {...register('UWU_T')}
-                          defaultValue={null}
                           type="number"
                           placeholder="0"
+                          // defaultValue={0}
+                          error={errors?.UWU_T?.message}
                         />
                       </div>
                       <div>
                         <label className={LABEL_CLASSNAMES}>Biodiversity impact</label>
                         <Input
                           {...register('BL_LUC_T')}
-                          defaultValue={null}
                           type="number"
                           placeholder="0"
+                          // defaultValue={0}
+                          error={errors?.BL_LUC_T?.message}
                         />
                       </div>
                     </div>

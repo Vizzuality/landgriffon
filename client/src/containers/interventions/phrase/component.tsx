@@ -31,13 +31,17 @@ const InterventionPhrase: React.FC<InterventionPhraseProps> = ({ intervention, s
     [intervention.replacedAdminRegions],
   );
 
+  const newMaterial = intervention.newMaterial?.name || 'New material';
+  const newRegion = intervention.newAdminRegion?.name || 'New region';
+
   const result = useMemo(() => {
     if (intervention.type === InterventionTypes.Material) {
       return (
         <>
-          Switch {materials} to <strong>New material</strong> in {year}
+          Switch {materials} to <strong>{newMaterial}</strong> in {year}
           {!short && (
             <>
+              {' '}
               for {business} and {suppliers} in {regions}
             </>
           )}
@@ -47,7 +51,7 @@ const InterventionPhrase: React.FC<InterventionPhraseProps> = ({ intervention, s
     if (intervention.type === InterventionTypes.SupplierLocation) {
       return (
         <>
-          Switch {materials} from <strong>New region</strong> in {year}
+          Switch {materials} from <strong>{newRegion}</strong> in {year}
           {!short && <>for {business}</>}
         </>
       );
@@ -58,6 +62,7 @@ const InterventionPhrase: React.FC<InterventionPhraseProps> = ({ intervention, s
           Change efficiency for {materials} in {year}
           {!short && (
             <>
+              {' '}
               for {business} and {suppliers}
             </>
           )}
@@ -66,7 +71,17 @@ const InterventionPhrase: React.FC<InterventionPhraseProps> = ({ intervention, s
       );
     }
     return null;
-  }, [business, intervention.type, materials, regions, short, suppliers, year]);
+  }, [
+    business,
+    intervention.type,
+    materials,
+    newMaterial,
+    newRegion,
+    regions,
+    short,
+    suppliers,
+    year,
+  ]);
 
   return <span>{result}</span>;
 };

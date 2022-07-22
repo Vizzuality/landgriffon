@@ -17,9 +17,9 @@ export type Intervention = Readonly<{
   replacedBusinessUnits: { id: string; name: string }[];
   replacedSuppliers: { id: string; name: string }[];
   replacedAdminRegions: { id: string; name: string }[];
-  newMaterial: unknown;
-  newBusinessUnit: unknown;
-  newAdminRegion: unknown;
+  newMaterial: { name: string };
+  newBusinessUnit: { name: string };
+  newAdminRegion: { name: string };
 }>;
 
 export type InterventionFormData = Readonly<{

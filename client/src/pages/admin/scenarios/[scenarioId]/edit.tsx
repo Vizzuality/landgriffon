@@ -176,13 +176,13 @@ const UpdateScenarioPage: React.FC = () => {
                             <DotsVerticalIcon className="w-4 h-4" />
                           </Dropdown.Button>
                           <Dropdown.Items>
-                            <Dropdown.Item>
+                            {/* <Dropdown.Item>
                               <Link
                                 href={`/admin/scenarios/${data.id}/interventions/${intervention.id}/edit`}
                               >
                                 <a className="block p-2 text-sm">Edit</a>
                               </Link>
-                            </Dropdown.Item>
+                            </Dropdown.Item> */}
                             <Menu.Item>
                               <button
                                 type="button"

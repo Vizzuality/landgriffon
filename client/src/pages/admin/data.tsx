@@ -1,24 +1,22 @@
-import { useState, useMemo } from 'react';
-import Head from 'next/head';
-import { merge } from 'lodash';
-import { useDebounce } from '@react-hook/debounce';
-import { ExclamationIcon /*, FilterIcon*/ } from '@heroicons/react/solid';
-import type { ITableProps } from 'ka-table';
-
+import Button from 'components/button';
+import Search from 'components/search';
+import { DataType, SortingMode, TableNoSSR as Table } from 'components/table';
+import DownloadMaterialsDataButton from 'containers/admin/download-materials-data-button';
+import NoDataUpload from 'containers/admin/no-data-upload';
+import NoResults from 'containers/admin/no-results';
+import UploadDataSourceModal from 'containers/admin/upload-data-source-modal';
+import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range';
 import useModal from 'hooks/modals';
 import { useSourcingLocationsMaterials } from 'hooks/sourcing-locations';
 import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
-import NoDataUpload from 'containers/admin/no-data-upload';
-import NoResults from 'containers/admin/no-results';
-import DownloadMaterialsDataButton from 'containers/admin/download-materials-data-button';
-import UploadDataSourceModal from 'containers/admin/upload-data-source-modal';
-import Button from 'components/button';
-import type { PaginationProps } from 'components/pagination';
-import Pagination from 'components/pagination';
-import Search from 'components/search';
-import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range';
-import type { TableProps, ApiSortingType } from 'components/table';
-import { TableNoSSR as Table, DataType, SortingMode } from 'components/table';
+import { merge } from 'lodash';
+import Head from 'next/head';
+import { useMemo, useState } from 'react';
+
+import { ExclamationIcon } from '@heroicons/react/solid';
+import { useDebounce } from '@react-hook/debounce';
+
+import type { ApiSortingType, TableProps } from 'components/table';
 
 const AdminDataPage: React.FC = () => {
   const [searchText, setSearchText] = useDebounce('', 250);
@@ -78,8 +76,7 @@ const AdminDataPage: React.FC = () => {
   }, [allYears, sourcingData, yearsInRange]);
 
   /** Table Props */
-
-  const tableProps: TableProps = useMemo(() => {
+  const tableProps = useMemo<TableProps>(() => {
     return {
       isLoading: isFetchingSourcingData,
       rowKeyField: 'id',
@@ -91,7 +88,7 @@ const AdminDataPage: React.FC = () => {
         { key: 'locationType', title: 'Location Type', dataType: DataType.String },
         { key: 'country', title: 'Country', dataType: DataType.String },
         ...yearsData.columns.map((column) => ({ ...column, isSortable: false })),
-      ] as ITableProps['columns'],
+      ],
       data: merge(sourcingData, yearsData.data),
       sortingMode: SortingMode.Api,
       defaultSorting: sorting,
@@ -99,22 +96,27 @@ const AdminDataPage: React.FC = () => {
         setCurrentPage(1);
         setSorting(params);
       },
-    };
-  }, [isFetchingSourcingData, sorting, sourcingData, yearsData.columns, yearsData.data]);
-
-  /** Pagination Props */
-
-  const paginationProps: PaginationProps = useMemo(
-    () => ({
-      isLoading: isFetchingSourcingData,
-      numItems: sourcingData.length,
-      currentPage: currentPage,
-      totalPages: sourcingMetadata.totalPages,
-      totalItems: sourcingMetadata.totalItems,
-      onPageClick: setCurrentPage,
-    }),
-    [currentPage, isFetchingSourcingData, sourcingData, sourcingMetadata],
-  );
+      onPageChange: setCurrentPage,
+      paging: {
+        enabled: true,
+        totalItems: sourcingMetadata.totalItems,
+        pageSize: sourcingMetadata.size,
+        pageIndex: sourcingMetadata.page,
+        pagesCount: sourcingMetadata.totalPages,
+        showSummary: true,
+      },
+    } as TableProps;
+  }, [
+    isFetchingSourcingData,
+    sorting,
+    sourcingData,
+    sourcingMetadata.page,
+    sourcingMetadata.size,
+    sourcingMetadata.totalItems,
+    sourcingMetadata.totalPages,
+    yearsData.columns,
+    yearsData.data,
+  ]);
 
   /** Helpers for use in the JSX */
 
@@ -176,12 +178,7 @@ const AdminDataPage: React.FC = () => {
 
       {!hasData && isSearching && <NoResults />}
 
-      {(hasData || isFetchingData) && (
-        <>
-          <Table {...tableProps} />
-          <Pagination className="my-4 ml-4 mr-2" {...paginationProps} />
-        </>
-      )}
+      {(hasData || isFetchingData) && <Table {...tableProps} />}
     </AdminLayout>
   );
 };

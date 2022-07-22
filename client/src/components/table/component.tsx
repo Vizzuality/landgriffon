@@ -1,33 +1,29 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import cx from 'classnames';
-import { Table as KaTable, kaReducer } from 'ka-table';
-import { updateData, updatePagesCount } from 'ka-table/actionCreators';
-import type { SortingMode as kaSortingMode } from 'ka-table/enums';
-import { ActionType, SortDirection } from 'ka-table/enums';
-import type { DispatchFunc } from 'ka-table/types';
-
+import Loading from 'components/loading';
 import DataRow from 'components/table/data-row';
 import GroupRow from 'components/table/group-row';
-
-import { useAppSelector } from 'store/hooks';
+import { kaReducer, Table as KaTable } from 'ka-table';
+import { updateData, updatePagesCount } from 'ka-table/actionCreators';
+import { ActionType, SortDirection } from 'ka-table/enums';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { analysisFilters } from 'store/features/analysis/filters';
-
-import Loading from 'components/loading';
+import { useAppSelector } from 'store/hooks';
 
 import { DEFAULT_CLASSNAMES, SHADOW_CLASSNAMES } from './constants';
-import { SortingMode, ApiSortingDirection } from './enums';
+import { ApiSortingDirection, SortingMode } from './enums';
+import Paging from './paging';
+
+import type { SortingMode as kaSortingMode } from 'ka-table/enums';
+import type { DispatchFunc } from 'ka-table/types';
 
 import type { TableProps, ColumnProps, ApiSortingType } from './types';
 import type { CustomChildComponents } from './types';
-import Paging from './paging';
-
 const defaultProps: TableProps = {
   columns: [],
   data: [],
   total: null,
   rowKeyField: 'id',
   sortingMode: SortingMode.None,
-  // singleAction: loadData(),
 };
 
 const Table: React.FC<TableProps> = ({

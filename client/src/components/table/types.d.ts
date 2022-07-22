@@ -1,5 +1,5 @@
 import type { ITableProps, ICellProps } from 'ka-table';
-import type { ChildComponents, Column as KaColumn } from 'ka-table/models';
+import type { ChildComponents, Column as KaColumn, PagingOptions } from 'ka-table/models';
 
 import type { DataType, SortingMode } from './enums';
 

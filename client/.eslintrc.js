@@ -6,13 +6,7 @@ module.exports = {
     'plugin:prettier/recommended',
   ],
   rules: {
-    'prettier/prettier': [
-      'error',
-      {},
-      {
-        usePrettierrc: true,
-      },
-    ],
+    'prettier/prettier': ['error'],
     'react/button-has-type': ['warn'],
     'no-console': ['warn'],
     '@typescript-eslint/consistent-type-imports': ['warn'],

@@ -1,4 +1,5 @@
-import { FC, useCallback, useState } from 'react';
+import type { FC } from 'react';
+import { useCallback, useState } from 'react';
 import classNames from 'classnames';
 
 import Button from 'components/button';

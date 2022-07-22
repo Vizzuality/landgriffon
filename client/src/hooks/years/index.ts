@@ -1,7 +1,8 @@
-import { useQuery, UseQueryResult, UseQueryOptions } from 'react-query';
+import type { UseQueryResult, UseQueryOptions } from 'react-query';
+import { useQuery } from 'react-query';
 
 import { apiRawService } from 'services/api';
-import { AnalysisState } from 'store/features/analysis';
+import type { AnalysisState } from 'store/features/analysis';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   placeholderData: [],

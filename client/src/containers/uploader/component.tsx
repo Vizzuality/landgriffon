@@ -8,9 +8,10 @@ import { FILE_UPLOADER_MAX_SIZE } from 'constants/file-uploader-size-limits';
 import { apiService } from 'services/api';
 import { bytesToMegabytes } from 'utils/units';
 
-import Alerts, { AlertsItemProps } from 'components/alerts';
+import type { AlertsItemProps } from 'components/alerts';
+import Alerts from 'components/alerts';
 
-import { UploaderProps } from './types';
+import type { UploaderProps } from './types';
 
 const Uploader: React.FC<UploaderProps> = ({
   header,

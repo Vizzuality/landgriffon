@@ -1,4 +1,5 @@
-import { useCallback, FC } from 'react';
+import type { FC } from 'react';
+import { useCallback } from 'react';
 import { useAppDispatch } from 'store/hooks';
 import { setSubContentCollapsed } from 'store/features/analysis/ui';
 

@@ -1,4 +1,5 @@
-import { AnchorHTMLAttributes, FC, forwardRef } from 'react';
+import type { AnchorHTMLAttributes, FC } from 'react';
+import { forwardRef } from 'react';
 import classNames from 'classnames';
 import { ArrowLeftIcon } from '@heroicons/react/solid';
 

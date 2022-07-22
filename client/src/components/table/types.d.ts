@@ -1,7 +1,7 @@
-import { ITableProps, ICellProps } from 'ka-table';
-import { ChildComponents, Column as KaColumn } from 'ka-table/models';
+import type { ITableProps, ICellProps } from 'ka-table';
+import type { ChildComponents, Column as KaColumn } from 'ka-table/models';
 
-import { DataType, SortingMode } from './enums';
+import type { DataType, SortingMode } from './enums';
 
 export type ColumnProps = ICellProps & {
   /** Custom cell types */

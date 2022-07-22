@@ -11,7 +11,8 @@ import {
   useDismiss,
 } from '@floating-ui/react-dom-interactions';
 
-import { Placement, shift } from '@floating-ui/core';
+import type { Placement } from '@floating-ui/core';
+import { shift } from '@floating-ui/core';
 import classNames from 'classnames';
 
 interface TooltipProps {

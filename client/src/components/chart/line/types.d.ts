@@ -1,4 +1,4 @@
-import { Orientation } from '@visx/axis';
+import type { Orientation } from '@visx/axis';
 
 type ChartData = Readonly<{
   x: string | number;

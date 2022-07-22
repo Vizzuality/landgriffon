@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 
-import { UseYearsRangeProps, YearsRangeParams } from './types';
+import type { UseYearsRangeProps, YearsRangeParams } from './types';
 
 export function useYearsRange({
   years: yearsProp = [],

@@ -1,6 +1,6 @@
-import { FC } from 'react';
+import type { FC } from 'react';
 
-import { ScenarioInterventionsGrowthItems } from 'containers/scenarios/types';
+import type { ScenarioInterventionsGrowthItems } from 'containers/scenarios/types';
 
 const GrowthList: FC<ScenarioInterventionsGrowthItems> = ({
   items,

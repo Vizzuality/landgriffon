@@ -1,6 +1,6 @@
 import LineChart from 'components/chart/line/component';
 
-import { LineChartCellProps } from './types';
+import type { LineChartCellProps } from './types';
 
 const LineChartCell: React.FC<LineChartCellProps> = ({ ...props }: LineChartCellProps) => (
   <div

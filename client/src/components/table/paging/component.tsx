@@ -1,7 +1,7 @@
 import Pagination from 'components/pagination';
 import Select from 'components/select';
 import { updatePageIndex, updatePageSize } from 'ka-table/actionCreators';
-import { IPagingProps } from 'ka-table/props';
+import type { IPagingProps } from 'ka-table/props';
 import { useCallback } from 'react';
 
 interface PagingProps extends IPagingProps {

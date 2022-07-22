@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { updateGroupsExpanded } from 'ka-table/actionCreators';
 
-import { GroupRowProps } from './types';
+import type { GroupRowProps } from './types';
 
 const GroupRow: React.FC<GroupRowProps> = ({
   dispatch,

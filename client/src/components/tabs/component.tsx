@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import Link from 'next/link';
 
-import { TabsProps } from './types';
+import type { TabsProps } from './types';
 
 const Tabs: React.FC<TabsProps> = ({ activeTab, tabs, bottomBorder = true }: TabsProps) => (
   <div className={classNames('flex text-sm', { 'border-b border-gray-200': !!bottomBorder })}>

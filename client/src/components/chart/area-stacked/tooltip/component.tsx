@@ -1,5 +1,5 @@
 import { TooltipWithBounds } from '@visx/tooltip';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 

@@ -14,7 +14,7 @@ import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import type { HTMLAttributes } from 'react';
 import React from 'react';
 import { CSS } from '@dnd-kit/utilities';
-import { SortableListenersContextProps, SortableProps } from './types';
+import type { SortableListenersContextProps, SortableProps } from './types';
 import classNames from 'classnames';
 
 export const SortableListenersContext = React.createContext<SortableListenersContextProps | null>(

@@ -7,9 +7,9 @@ import CellElement from 'ka-table/Components/CellComponent/CellComponent';
 import LineChartCell from 'components/table/cell/line-chart-cell';
 import { DEFAULT_CLASSNAMES, SHADOW_CLASSNAMES } from 'components/table/constants';
 
-import { CellProps } from './types';
+import type { CellProps } from './types';
 import { DataType } from '../enums';
-import { ICellEditorProps, ICellProps } from 'ka-table/props';
+import type { ICellEditorProps, ICellProps } from 'ka-table/props';
 
 const Cell: React.FC<CellProps> = (props) => {
   const {

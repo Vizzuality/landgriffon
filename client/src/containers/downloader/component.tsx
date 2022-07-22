@@ -4,7 +4,7 @@ import { noop } from 'lodash';
 
 import { apiService } from 'services/api';
 
-import { DownloaderProps } from './types';
+import type { DownloaderProps } from './types';
 
 const DEFAULT_PARAMS = {
   disablePagination: true,

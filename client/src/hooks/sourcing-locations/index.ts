@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
-import { useQuery, UseQueryOptions, UseQueryResult } from 'react-query';
+import type { UseQueryOptions, UseQueryResult } from 'react-query';
+import { useQuery } from 'react-query';
 import { v4 as uuidv4 } from 'uuid';
 
 import apiService from 'services/api';
-import { SourcingLocation, APIMetadataPagination } from 'types';
+import type { SourcingLocation, APIMetadataPagination } from 'types';
 
 type SourcingLocationsMaterialsAPIResponse = {
   data: SourcingLocation[];

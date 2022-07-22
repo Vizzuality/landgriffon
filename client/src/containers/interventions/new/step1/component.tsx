@@ -1,5 +1,7 @@
-import { useCallback, useMemo, FC, useEffect, useState } from 'react';
-import { FieldValues, useForm } from 'react-hook-form';
+import type { FC } from 'react';
+import { useCallback, useMemo, useEffect, useState } from 'react';
+import type { FieldValues } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
@@ -7,12 +9,12 @@ import * as yup from 'yup';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { useInterventionTypes } from 'hooks/analysis';
 import { setSubContentCollapsed } from 'store/features/analysis/ui';
+import type { ScenariosState } from 'store/features/analysis/scenarios';
 import {
   scenarios,
   setNewInterventionStep,
   setNewInterventionData,
   resetInterventionData,
-  ScenariosState,
 } from 'store/features/analysis/scenarios';
 import { useCreateNewIntervention, useUpdateIntervention } from 'hooks/interventions';
 

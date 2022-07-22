@@ -3,7 +3,7 @@ import { times } from 'lodash';
 
 import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 
-import { SummaryRowProps } from './types';
+import type { SummaryRowProps } from './types';
 
 const DEFAULT_CLASSNAMES =
   'text-gray-600 border-t border-gray-300 bg-gray-50 py-3 text-xs break-words font-bold';

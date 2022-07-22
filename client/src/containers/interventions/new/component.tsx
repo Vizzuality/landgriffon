@@ -1,4 +1,5 @@
-import { useMemo, FC } from 'react';
+import type { FC } from 'react';
+import { useMemo } from 'react';
 import { useAppSelector } from 'store/hooks';
 import { scenarios } from 'store/features/analysis/scenarios';
 

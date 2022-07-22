@@ -2,7 +2,8 @@ import { forwardRef, useMemo } from 'react';
 import TreeSelect from 'components/tree-select';
 import { sortBy } from 'lodash';
 
-import { useSuppliersTrees, SuppliersTreesParams } from 'hooks/suppliers';
+import type { SuppliersTreesParams } from 'hooks/suppliers';
+import { useSuppliersTrees } from 'hooks/suppliers';
 
 import type { TreeSelectProps } from 'components/tree-select/types';
 

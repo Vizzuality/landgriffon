@@ -268,7 +268,7 @@ const AnalysisTable: React.FC = () => {
           title: year.toString(),
           dataType: showComparison ? DataType.Object : DataType.Number,
           isFirstYearProjected: firstProjectedYear === year,
-          isProjected: projectedYears.includes(year),
+          isProjected: projectedYears?.includes(year),
           width: 110,
         })),
       ],

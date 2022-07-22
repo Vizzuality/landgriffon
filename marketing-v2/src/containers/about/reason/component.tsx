@@ -268,7 +268,7 @@ const Rason: React.FC = () => {
                 <div className="flex flex-col space-y-10 lg:flex-row lg:justify-between lg:space-x-20 lg:space-y-0">
                   <div className="w-full space-y-5">
                     <h4 className="relative font-bold pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-white">
-                      Stockholm Environment Institute (SEI) & Trase
+                      Stockholm Environment Institute (SEI)
                     </h4>
                     <p className="pl-5">
                       SEI are an international non-profit research and policy organization that
@@ -277,12 +277,9 @@ const Rason: React.FC = () => {
                     </p>
                     <p className="pl-5">
                       Our work spans climate, water, air and land-use issues, governance, the
-                      economy, gender and health. We have created the data-driven transparency
-                      initiative, Trase, that is revolutionizing our understanding of the trade and
-                      financing of commodities driving deforestation worldwide. Trase is a unique
-                      supply chain mapping approach that brings together disparate, publicly
-                      available data to connect consumer markets to deforestation and other impacts
-                      on the ground.
+                      economy, gender and health. Stakeholder involvement is at the heart of our
+                      efforts to build capacity, strengthen institutions and equip partners for
+                      long-term change.
                     </p>
 
                     <div className="pl-5">
@@ -293,18 +290,6 @@ const Rason: React.FC = () => {
                         className="inline-flex text-xl justify-center items-center space-x-2.5 text-orange-500"
                       >
                         <span>Discover SEI</span>
-                        <Icon icon={ARROW_TOP_RIGHT_SVG} className="w-3 h-3" />
-                      </a>
-                    </div>
-
-                    <div className="pl-5">
-                      <a
-                        href="https://www.trase.earth/"
-                        target="_blank"
-                        rel="noreferrer noopener"
-                        className="inline-flex text-xl justify-center items-center space-x-2.5 text-orange-500"
-                      >
-                        <span>Discover Trase</span>
                         <Icon icon={ARROW_TOP_RIGHT_SVG} className="w-3 h-3" />
                       </a>
                     </div>

@@ -269,6 +269,20 @@ export const TEAM = [
     group: 'support',
     linkedin: 'https://www.linkedin.com/in/indiafloramazzei/',
   },
+  {
+    name: 'Tina el Chaer',
+    company: 'Satelligence',
+    role: 'Design',
+    group: 'support',
+    linkedin: 'https://www.linkedin.com/in/tina-chaer-0005/',
+  },
+  {
+    name: 'Lidia Arranz',
+    company: 'Vizzuality',
+    role: 'Design',
+    group: 'core',
+    linkedin: 'https://www.linkedin.com/in/lidia-arranz-a4693797',
+  },
 ];
 
 export const ROLE_ORDER = [

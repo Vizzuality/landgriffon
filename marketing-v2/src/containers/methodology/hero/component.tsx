@@ -70,9 +70,10 @@ const Hero: React.FC = () => {
             <h3 className="text-xl font-black text-black uppercase font-display">
               BUILT ON TRUSTED SCIENTIFIC DATA:
             </h3>
-            <p className="text-2xl">
-              We have embedded the work of pioneering NGOs and their open access data into our
-              platform, making it easier for you to use and implement this scientific knowledge.
+            <p className="text-2xl pb-3">
+              Landgriffon is built on open access data produced by leading researchers, NGOs, and
+              government programs such as Copernicus, making it easier for you to take advantage of
+              this scientific knowledge.
             </p>
           </div>
 
@@ -80,6 +81,21 @@ const Hero: React.FC = () => {
             <h4 className="text-xs uppercase">Data providers:</h4>
 
             <ul className="grid grid-cols-2 gap-10 md:grid-cols-4 md:gap-20 lg:grid-cols-5 lg:gap-20">
+              <li className="flex items-center justify-center">
+                <a
+                  href="https://land.copernicus.eu/global/index.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/copernicus_logo.png"
+                    alt="GFW"
+                    width={133}
+                    height={32}
+                  />
+                </a>
+              </li>
               <li className="flex items-center justify-center">
                 <a
                   href="https://www.globalforestwatch.org/"

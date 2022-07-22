@@ -42,7 +42,7 @@ const Hero: React.FC = () => {
                 <div>
                   <Image
                     priority
-                    src="/images/about/hero/02.jpg"
+                    src="/images/about/hero/03.jpg"
                     width={972 / 2}
                     height={666 / 2}
                     alt="About 02"
@@ -52,7 +52,7 @@ const Hero: React.FC = () => {
                 <div className="absolute hidden m-0 -translate-x-5 bottom-28 lg:block right-full">
                   <Image
                     priority
-                    src="/images/about/hero/03.jpg"
+                    src="/images/about/hero/02.jpg"
                     width={360 / 2}
                     height={498 / 2}
                     alt="About 03"

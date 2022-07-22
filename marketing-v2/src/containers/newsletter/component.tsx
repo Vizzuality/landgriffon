@@ -80,7 +80,7 @@ const NewsLetter: React.FC = () => {
               <div className="flex flex-col space-y-5 md:flex-row md:items-end md:justify-between md:space-y-0 md:space-x-10">
                 <div className="w-full">
                   <label htmlFor="email" className="font-bold ">
-                    Email adress
+                    Sign up to our newsletter now.
                   </label>
                   <input
                     id="email"
@@ -89,7 +89,7 @@ const NewsLetter: React.FC = () => {
                         true,
                       'border-red-500': errors.email,
                     })}
-                    placeholder="Introduce your email address"
+                    placeholder="Enter your email address here"
                     {...register('email')}
                   />
                 </div>

@@ -36,7 +36,7 @@ export const Legend: React.FC = () => {
     setShowContextualLayers((show) => !show);
   }, []);
 
-  const allOrderedLayers = useMemo(() => {
+  const orderedLayers = useMemo(() => {
     return sortByOrder(layers);
   }, [layers]);
 
@@ -46,18 +46,12 @@ export const Legend: React.FC = () => {
     [],
   );
 
-  const orderedLayers = useMemo(() => {
-    if (showContextualLayers) return allOrderedLayers;
-
-    return allOrderedLayers.filter((layer) => !layer.isContextual);
-  }, [allOrderedLayers, showContextualLayers]);
-
   const activeLayerCount = Object.values(layers).filter((layer) => layer.active).length;
 
   return (
     <div className="relative">
       {showLegend && (
-        <div className="absolute bottom-0 z-10 flex flex-col flex-grow max-w-xs overflow-hidden overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-sm right-12 w-80 md:max-h-[75vh]">
+        <div className="absolute bottom-0 z-10 flex flex-col flex-grow max-w-xs overflow-hidden bg-white border border-gray-200 rounded-lg shadow-sm right-12 w-80 md:max-h-[75vh]">
           <div className="flex items-center justify-between px-4 py-2">
             <div className="text-sm font-semibold text-gray-900">Legend</div>
             <button
@@ -78,7 +72,11 @@ export const Legend: React.FC = () => {
             }}
           >
             {orderedLayers.map((layer) => (
-              <SortableItem key={layer.id} id={layer.id}>
+              <SortableItem
+                key={layer.id}
+                id={layer.id}
+                className={classNames({ hidden: !showContextualLayers && layer.isContextual })}
+              >
                 {LegendToShow(layer)}
               </SortableItem>
             ))}
@@ -96,7 +94,7 @@ export const Legend: React.FC = () => {
           </div>
         )}
         <div className="mt-2">
-          {allOrderedLayers.map((layer) => (
+          {orderedLayers.map((layer) => (
             <div
               key={layer.id}
               className={classNames(
@@ -106,7 +104,7 @@ export const Legend: React.FC = () => {
                   'bg-gray-500': !layer.active,
                 },
               )}
-              style={{ zIndex: allOrderedLayers.length - layer.order }}
+              style={{ zIndex: orderedLayers.length - layer.order }}
             />
           ))}
         </div>

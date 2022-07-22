@@ -37,7 +37,7 @@ export type InterventionFormData = Readonly<{
   newProducerId?: SelectOption;
 
   newLocationType?: SelectOption;
-  mewLocationCountryInput?: SelectOption;
+  newLocationCountryInput?: SelectOption;
   newLocationAddressInput?: string;
   newLocationLatitude?: number;
   newLocationLongitude?: number;
@@ -70,7 +70,7 @@ export type InterventionDto = Readonly<{
   newProducerId?: string;
 
   newLocationType: string;
-  mewLocationCountryInput?: string;
+  newLocationCountryInput?: string;
   newIndicatorCoefficients?: IndicatorCoefficients;
   newLocationAddressInput?: string;
   newLocationLatitude?: number;

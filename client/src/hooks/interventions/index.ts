@@ -79,7 +79,7 @@ interface Indicator {
 type ResponseInterventionsData = UseQueryResult<Intervention[]>;
 type ResponseInterventionsIndicators = UseQueryResult<Indicator[]>;
 
-export function useScenarioIntervention({
+export function useScenarioInterventions({
   scenarioId,
   params = {},
   options = {},
@@ -137,12 +137,6 @@ export function useCreateNewIntervention() {
 
   return useMutation(createIntervention, {
     mutationKey: 'addIntervention',
-    onSuccess: () => {
-      console.info('Success creating intervention');
-    },
-    onError: () => {
-      console.info('Error');
-    },
   });
 }
 
@@ -155,12 +149,6 @@ export function useDeleteIntervention() {
 
   return useMutation(deleteIntervention, {
     mutationKey: 'deleteIntervention',
-    onSuccess: () => {
-      console.info('The intervention has been deleted ');
-    },
-    onError: () => {
-      console.info('Error');
-    },
   });
 }
 

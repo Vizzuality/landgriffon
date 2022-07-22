@@ -8,7 +8,11 @@ import { Menu } from '@headlessui/react';
 import { XIcon, PlusIcon, DotsVerticalIcon } from '@heroicons/react/solid';
 
 import { useScenario, useUpdateScenario } from 'hooks/scenarios';
-import { useScenarioIntervention, useUpdateIntervention } from 'hooks/interventions';
+import {
+  useScenarioInterventions,
+  useUpdateIntervention,
+  useDeleteIntervention,
+} from 'hooks/interventions';
 
 import CleanLayout from 'layouts/clean';
 import ScenarioForm from 'containers/scenarios/form';
@@ -30,9 +34,10 @@ const UpdateScenarioPage: React.FC = () => {
   const { data, isLoading } = useScenario(query?.scenarioId as string);
   const updateScenario = useUpdateScenario();
   const updateIntervention = useUpdateIntervention();
+  const deleteIntervention = useDeleteIntervention();
 
   // Interventions
-  const { data: interventions, isLoading: isInterventionsLoading } = useScenarioIntervention({
+  const { data: interventions, isLoading: isInterventionsLoading } = useScenarioInterventions({
     scenarioId: data?.id,
   });
 
@@ -62,7 +67,7 @@ const UpdateScenarioPage: React.FC = () => {
         {
           onSuccess: () => {
             toast.success('Intervention has been successfully updated.');
-            queryClient.invalidateQueries('scenario');
+            queryClient.invalidateQueries('scenarioInterventions');
           },
           onError: (error: ErrorResponse) => {
             const { errors } = error.response?.data;
@@ -71,6 +76,18 @@ const UpdateScenarioPage: React.FC = () => {
         },
       ),
     [queryClient, updateIntervention],
+  );
+
+  const handleDeleteIntervention = useCallback(
+    (interventionId) => {
+      deleteIntervention.mutate(interventionId, {
+        onSuccess: () => {
+          toast.success('Intervention has been successfully deleted.');
+          queryClient.invalidateQueries('scenarioInterventions');
+        },
+      });
+    },
+    [queryClient, deleteIntervention],
   );
 
   return (
@@ -167,7 +184,11 @@ const UpdateScenarioPage: React.FC = () => {
                               </Link>
                             </Dropdown.Item>
                             <Menu.Item>
-                              <button type="button" className="block p-2 text-sm">
+                              <button
+                                type="button"
+                                className="block p-2 text-sm"
+                                onClick={() => handleDeleteIntervention(intervention.id)}
+                              >
                                 Delete
                               </button>
                             </Menu.Item>

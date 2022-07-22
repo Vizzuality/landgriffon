@@ -1,17 +1,40 @@
+import { useCallback } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import toast from 'react-hot-toast';
+
+import { useCreateNewIntervention } from 'hooks/interventions';
 
 import CleanLayout from 'layouts/clean';
 import InterventionForm from 'containers/interventions/form';
+import { parseInterventionFormDataToDto } from 'containers/interventions/utils';
 import BackLink from 'components/back-link';
-import { useCallback } from 'react';
+
+import type { ErrorResponse } from 'types';
 
 const CreateInterventionPage: React.FC = () => {
   const { query } = useRouter();
+  const createIntervention = useCreateNewIntervention();
+
   const handleSubmit = useCallback(
-    (interventionFormData) => console.log('intervention data: ', interventionFormData),
-    [],
+    (interventionFormData) => {
+      console.log('intervention form data: ', interventionFormData);
+      const interventionDto = parseInterventionFormDataToDto(interventionFormData);
+      console.log('intervention dto: ', interventionDto);
+      createIntervention.mutate(interventionDto, {
+        onSuccess: () => {
+          // const { data: scenario } = data;
+          // const { id, title } = scenario;
+          toast.success(`Intervention was created successfully`);
+        },
+        onError: (error: ErrorResponse) => {
+          const { errors } = error.response?.data;
+          errors.forEach(({ title }) => toast.error(title));
+        },
+      });
+    },
+    [createIntervention],
   );
 
   return (

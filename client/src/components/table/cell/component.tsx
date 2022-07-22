@@ -1,4 +1,3 @@
-import { useCallback, useMemo } from 'react';
 import cx from 'classnames';
 
 import CellEditor from 'ka-table/Components/CellEditor/CellEditor';
@@ -30,17 +29,14 @@ const Cell: React.FC<CellProps> = (props) => {
   const isSticky = isFirstColumnSticky && props.column.key === firstColumnKey;
   const isFirstColumn = props.column.key === firstColumnKey;
 
-  const cellSpacingElements = useMemo(
-    () => () => {
-      const numSpaces = treeDeep ? treeDeep - (treeArrowElement ? 0 : 1) : 0;
-      return [...Array(numSpaces)].map((value, index) => (
-        <div key={`${rowKeyValue}-${props.column.key}-cell-spacing-${index}`} className="w-5" />
-      ));
-    },
-    [props.column.key, rowKeyValue, treeArrowElement, treeDeep],
-  );
+  const cellSpacingElements = () => {
+    const numSpaces = treeDeep ? treeDeep - (treeArrowElement ? 0 : 1) : 0;
+    return [...Array(numSpaces)].map((value, index) => (
+      <div key={`${rowKeyValue}-${props.column.key}-cell-spacing-${index}`} className="w-5" />
+    ));
+  };
 
-  const cellElement = useMemo(() => {
+  const cellElement = () => {
     if (isEditableCell) return <CellEditor {...(props as ICellEditorProps)} />;
 
     switch (column.dataType) {
@@ -51,11 +47,11 @@ const Cell: React.FC<CellProps> = (props) => {
       default:
         return <CellElement {...(props as ICellProps)} />;
     }
-  }, [column.dataType, isEditableCell, props]);
+  };
 
-  const handleClick = useCallback(() => {
+  const handleClick = () => {
     onClick && onClick();
-  }, [onClick]);
+  };
 
   return (
     <td
@@ -80,7 +76,7 @@ const Cell: React.FC<CellProps> = (props) => {
         <div className="flex items-start">
           {cellSpacingElements()}
           {treeArrowElement}
-          {cellElement}
+          {cellElement()}
         </div>
       </div>
     </td>

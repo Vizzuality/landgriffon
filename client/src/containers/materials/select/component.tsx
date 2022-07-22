@@ -39,7 +39,7 @@ const MaterialsFilter: FC<MaterialsFilterProps> = forwardRef<
       businessUnitIds,
       originIds,
       locationTypes,
-      withSourcingLocations = false, // Do not a default; backend will override depth if this is set at all
+      withSourcingLocations, // Do not a default; backend will override depth if this is set at all
       onChange = () => null,
       theme,
       error,

@@ -79,6 +79,13 @@ const AdminDataPage: React.FC = () => {
   const tableProps = useMemo<TableProps>(() => {
     return {
       isLoading: isFetchingSourcingData,
+      childComponents: {
+        cell: {
+          elementAttributes: () => ({
+            className: 'p-0',
+          }),
+        },
+      },
       rowKeyField: 'id',
       columns: [
         { key: 'material', title: 'Material', dataType: DataType.String, width: 240 },

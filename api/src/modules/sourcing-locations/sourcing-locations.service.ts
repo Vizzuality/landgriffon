@@ -143,15 +143,24 @@ export class SourcingLocationsService extends AppBaseService<
 
     // Optional filters:
 
-    if (createInterventionDto.businessUnitIds)
+    if (
+      createInterventionDto.businessUnitIds &&
+      createInterventionDto.businessUnitIds.length > 0
+    )
       queryBuilder.andWhere('sl."businessUnitId" IN (:...businessUnits)', {
         businessUnits: createInterventionDto.businessUnitIds,
       });
-    if (createInterventionDto.adminRegionIds)
+    if (
+      createInterventionDto.adminRegionIds &&
+      createInterventionDto.adminRegionIds.length > 0
+    )
       queryBuilder.andWhere('sl.adminRegionId IN (:...adminRegion)', {
         adminRegion: createInterventionDto.adminRegionIds,
       });
-    if (createInterventionDto.supplierIds) {
+    if (
+      createInterventionDto.supplierIds &&
+      createInterventionDto.supplierIds.length > 0
+    ) {
       queryBuilder.andWhere(
         new Brackets((qb: WhereExpressionBuilder) => {
           qb.where('sl."t1SupplierId" IN (:...suppliers)', {

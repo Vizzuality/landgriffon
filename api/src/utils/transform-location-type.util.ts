@@ -12,7 +12,9 @@ export function transformLocationType(
 }
 
 export function transformSingleLocationType(
-  locationTypesParam: LOCATION_TYPES_PARAMS,
+  locationTypesParam: LOCATION_TYPES_PARAMS | undefined,
 ): LOCATION_TYPES {
-  return locationTypesParam.replace(/-/g, ' ') as LOCATION_TYPES;
+  if (locationTypesParam)
+    return locationTypesParam.replace(/-/g, ' ') as LOCATION_TYPES;
+  else return LOCATION_TYPES.UNKNOWN;
 }

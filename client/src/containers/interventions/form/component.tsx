@@ -31,10 +31,6 @@ type InterventionFormProps = {
   onSubmit?: (interventionFormData: InterventionFormData) => void;
 };
 
-// const addressRegExp = /(\d{1,}) [a-zA-Z0-9\s]+(\.)? [a-zA-Z]+(\,)? [A-Z]{2} [0-9]{5,6}/;
-// const coordinatesRegExp = /^[-]?\d+[\.]?\d*, [-]?\d+[\.]?\d*$/;
-// const cityRegExp = /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/;
-
 const optionSchema = yup.object({
   value: yup.string(),
   label: yup.string(),
@@ -161,11 +157,10 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
 
   useEffect(() => {
     if (currentInterventionType === InterventionTypes.SupplierLocation) {
-      ['newMaterialId', 'newMaterialTonnageRatio'].forEach((field) => resetField(field));
+      ['newMaterialId'].forEach((field) => resetField(field));
     } else if (currentInterventionType === InterventionTypes.Efficiency) {
       [
         'newMaterialId',
-        'newMaterialTonnageRatio',
         'newT1SupplierId',
         'newProducerId',
         'newLocationType',
@@ -244,7 +239,9 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
           />
         </div>
         <div>
-          <label className={LABEL_CLASSNAMES}>Region</label>
+          <label className={LABEL_CLASSNAMES}>
+            Region <sup>*</sup>
+          </label>
           <Controller
             name="adminRegionIds"
             control={control}

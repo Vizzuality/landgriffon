@@ -293,18 +293,6 @@ const Rason: React.FC = () => {
                         <Icon icon={ARROW_TOP_RIGHT_SVG} className="w-3 h-3" />
                       </a>
                     </div>
-
-                    <div className="pl-5">
-                      <a
-                        href="https://www.trase.earth/"
-                        target="_blank"
-                        rel="noreferrer noopener"
-                        className="inline-flex text-xl justify-center items-center space-x-2.5 text-orange-500"
-                      >
-                        <span>Discover Trase</span>
-                        <Icon icon={ARROW_TOP_RIGHT_SVG} className="w-3 h-3" />
-                      </a>
-                    </div>
                   </div>
                   <div className="w-full space-y-5">
                     <h4 className="relative font-bold pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-white">

@@ -19,9 +19,7 @@ const CreateInterventionPage: React.FC = () => {
 
   const handleSubmit = useCallback(
     (interventionFormData) => {
-      console.log('intervention form data: ', interventionFormData);
       const interventionDto = parseInterventionFormDataToDto(interventionFormData);
-      console.log('intervention dto: ', interventionDto);
       createIntervention.mutate(interventionDto, {
         onSuccess: () => {
           toast.success(`Intervention was created successfully`);

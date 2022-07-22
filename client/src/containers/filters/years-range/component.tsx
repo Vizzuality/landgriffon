@@ -1,12 +1,7 @@
-import React, { useEffect, useState, Fragment, useMemo } from 'react';
-import { Transition } from '@headlessui/react';
-import { ChevronUpIcon } from '@heroicons/react/solid';
 import cx from 'classnames';
-
 import Select from 'components/select';
-import type { SelectOption } from 'components/select/types';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
 
-import type { YearsRangeFilterProps } from './types';
 import {
   flip,
   offset,
@@ -16,6 +11,11 @@ import {
   useFloating,
   useInteractions,
 } from '@floating-ui/react-dom-interactions';
+import { Transition } from '@headlessui/react';
+import { ChevronUpIcon } from '@heroicons/react/solid';
+
+import type { SelectOption } from 'components/select/types';
+import type { YearsRangeFilterProps } from './types';
 
 export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
   startYear,

@@ -22,7 +22,7 @@ export interface CustomHeadCell extends Omit<IHeadCellProps, 'column'> {
 }
 
 export interface CustomChildComponents extends ChildComponents {
-  headCell: ChildComponent<CustomHeadCell>;
+  headCell?: ChildComponent<CustomHeadCell>;
 }
 
 export type Column = Omit<KaColumn, 'dataType'> & {

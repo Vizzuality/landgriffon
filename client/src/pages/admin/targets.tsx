@@ -1,18 +1,17 @@
-import { useCallback, useMemo } from 'react';
-import Head from 'next/head';
-import { InformationCircleIcon } from '@heroicons/react/solid';
-
-import { useTargets } from 'hooks/targets';
-import { useIndicators } from 'hooks/indicators';
-
-import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
+import Button from 'components/button';
+import Radio from 'components/forms/radio';
+import Loading from 'components/loading';
 import NoData from 'containers/admin/no-data';
 import TargetsList from 'containers/targets/list';
-import Button from 'components/button';
-import Loading from 'components/loading';
+import { useIndicators } from 'hooks/indicators';
+import { useTargets } from 'hooks/targets';
+import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
+import Head from 'next/head';
+import { useCallback, useMemo } from 'react';
+
+import { InformationCircleIcon } from '@heroicons/react/solid';
 
 import type { Target } from 'types';
-import Radio from 'components/forms/radio';
 
 const AdminTargetsPage: React.FC = () => {
   const { data: indicators } = useIndicators();
@@ -54,7 +53,7 @@ const AdminTargetsPage: React.FC = () => {
       {!isLoading && !hasData && <NoData />}
 
       {isLoading && (
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div className="absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2">
           <Loading />
         </div>
       )}
@@ -62,11 +61,11 @@ const AdminTargetsPage: React.FC = () => {
       {hasData && (
         <>
           <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center text-sm text-black py-2">
+            <div className="flex items-center py-2 text-sm text-black">
               <InformationCircleIcon className="w-5 h-5 mr-3 text-black" aria-hidden="true" />
               Target value for each indicator by year
             </div>
-            <div className="flex justify-end text-sm space-x-4">
+            <div className="flex justify-end space-x-4 text-sm">
               <Radio name="absolutePercentage" id="absolute">
                 Absolute value
               </Radio>

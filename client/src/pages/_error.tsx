@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import { NavigationList } from 'containers/navigation/types';
+import type { NavigationList } from 'containers/navigation/types';
 import NavigationError from 'containers/navigation/error';
 import Logo from 'containers/logo';
 import Image from 'next/image';

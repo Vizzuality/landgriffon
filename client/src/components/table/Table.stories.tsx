@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import type { ComponentStory, ComponentMeta } from '@storybook/react';
 import initStore from 'store';
 
 import Table from './component';
-import { TableProps } from '.';
+import type { TableProps } from '.';
 import { Provider } from 'react-redux';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export

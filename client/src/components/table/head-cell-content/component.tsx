@@ -1,7 +1,7 @@
 import { SortAscendingIcon, SortDescendingIcon } from '@heroicons/react/solid';
 
 import { SortDirection } from 'ka-table/enums';
-import { IHeadCellProps } from 'ka-table/props';
+import type { IHeadCellProps } from 'ka-table/props';
 import { isSortingEnabled } from 'ka-table/Utils/SortUtils';
 
 import type { Column } from 'ka-table/models';

@@ -1,5 +1,6 @@
 import cx from 'classnames';
-import { forwardRef, SVGProps } from 'react';
+import type { SVGProps } from 'react';
+import { forwardRef } from 'react';
 import Loading from 'components/loading';
 
 const COMMON_CLASSNAMES =

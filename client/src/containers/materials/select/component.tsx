@@ -1,7 +1,9 @@
-import React, { FC, forwardRef, useMemo } from 'react';
+import type { FC } from 'react';
+import React, { forwardRef, useMemo } from 'react';
 import { sortBy } from 'lodash';
 
-import { useMaterialsTrees, MaterialsTreesParams } from 'hooks/materials';
+import type { MaterialsTreesParams } from 'hooks/materials';
+import { useMaterialsTrees } from 'hooks/materials';
 
 import TreeSelect from 'components/tree-select';
 

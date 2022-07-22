@@ -1,5 +1,5 @@
-import { ICellProps } from 'ka-table/props';
-import { Column } from '../types';
+import type { ICellProps } from 'ka-table/props';
+import type { Column } from '../types';
 
 export type CellProps = Omit<ICellProps, 'column'> & {
   /** Classnames to apply to the container */

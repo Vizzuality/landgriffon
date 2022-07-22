@@ -1,4 +1,5 @@
-import { FC, useMemo, useCallback } from 'react';
+import type { FC } from 'react';
+import { useMemo, useCallback } from 'react';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { useScenario } from 'hooks/scenarios';
 import { useIndicator } from 'hooks/indicators';

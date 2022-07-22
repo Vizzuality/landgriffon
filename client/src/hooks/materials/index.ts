@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { useQuery, UseQueryResult, UseQueryOptions } from 'react-query';
+import type { UseQueryResult, UseQueryOptions } from 'react-query';
+import { useQuery } from 'react-query';
 import { apiService } from 'services/api';
 import type { Material } from 'types';
 

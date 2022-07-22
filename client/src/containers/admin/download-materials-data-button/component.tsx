@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { flatten, noop, pick, uniq } from 'lodash';
 
-import Downloader, { DownloaderHeadersType, DownloaderTransformProps } from 'containers/downloader';
+import type { DownloaderHeadersType, DownloaderTransformProps } from 'containers/downloader';
+import Downloader from 'containers/downloader';
 
 import Button from 'components/button';
 import Loading from 'components/loading';
 
-import { DownloadMaterialsDataButtonProps } from './types';
+import type { DownloadMaterialsDataButtonProps } from './types';
 
 const DEFAULT_HEADERS: DownloaderHeadersType[] = [
   { key: 'materialName', label: 'Material' },

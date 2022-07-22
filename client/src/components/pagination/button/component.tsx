@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 
-import { ButtonProps } from './types';
+import type { ButtonProps } from './types';
 
 const Table: React.FC<ButtonProps> = ({
   className,

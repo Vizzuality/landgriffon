@@ -1,12 +1,5 @@
-import {
-  Fragment,
-  useCallback,
-  useState,
-  useMemo,
-  useEffect,
-  ChangeEventHandler,
-  forwardRef,
-} from 'react';
+import type { ChangeEventHandler } from 'react';
+import { Fragment, useCallback, useState, useMemo, useEffect, forwardRef } from 'react';
 import classNames from 'classnames';
 import {
   flip,
@@ -20,7 +13,8 @@ import {
   autoUpdate,
 } from '@floating-ui/react-dom-interactions';
 import { ChevronDownIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
-import Tree, { TreeNode, TreeProps } from 'rc-tree';
+import type { TreeProps } from 'rc-tree';
+import Tree, { TreeNode } from 'rc-tree';
 import Fuse from 'fuse.js';
 
 import Badge from 'components/badge';

@@ -1,6 +1,6 @@
-import { IRowProps } from 'ka-table/props';
+import type { IRowProps } from 'ka-table/props';
 
-import { Column } from 'ka-table/models';
+import type { Column } from 'ka-table/models';
 
 interface CustomColumn extends Column {
   isFirstYearProjected?: boolean;

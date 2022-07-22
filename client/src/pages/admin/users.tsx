@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import Head from 'next/head';
 import { useDebounce } from '@react-hook/debounce';
-import { ITableProps } from 'ka-table';
+import type { ITableProps } from 'ka-table';
 import { DataType } from 'ka-table/enums';
 import dynamic from 'next/dynamic';
 import { PlusIcon } from '@heroicons/react/solid';

@@ -1,5 +1,6 @@
 import { ParentSize } from '@visx/responsive';
-import { Children, cloneElement, isValidElement, ReactChild } from 'react';
+import type { ReactChild } from 'react';
+import { Children, cloneElement, isValidElement } from 'react';
 
 export type ChartProps = {
   children: ReactChild | ReactChild[];

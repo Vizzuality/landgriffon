@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import cx from 'classnames';
 import { Table as KaTable, kaReducer } from 'ka-table';
 import { updateData, updatePagesCount } from 'ka-table/actionCreators';
-import { ActionType, SortingMode as kaSortingMode, SortDirection } from 'ka-table/enums';
-import { DispatchFunc } from 'ka-table/types';
+import type { SortingMode as kaSortingMode } from 'ka-table/enums';
+import { ActionType, SortDirection } from 'ka-table/enums';
+import type { DispatchFunc } from 'ka-table/types';
 
 import DataRow from 'components/table/data-row';
 import GroupRow from 'components/table/group-row';

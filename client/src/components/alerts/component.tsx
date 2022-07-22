@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { CheckCircleIcon, XCircleIcon, ExclamationIcon } from '@heroicons/react/solid';
 
 import { ALERT_CLASSES } from './constants';
-import { AlertsProps } from './types';
+import type { AlertsProps } from './types';
 
 const Alerts: React.FC<AlertsProps> = ({ className, items }: AlertsProps) => {
   if (!items) return null;

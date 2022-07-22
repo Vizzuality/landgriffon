@@ -2,7 +2,7 @@ import classNames from 'classnames';
 
 import Loading from 'components/loading';
 
-import { PageLoadingProps } from './types';
+import type { PageLoadingProps } from './types';
 
 const PageLoading: React.FC<PageLoadingProps> = ({
   className,

@@ -5,7 +5,8 @@ import { analysisFilters, setFilter, setFilters } from 'store/features/analysis/
 
 import { useYears } from 'hooks/years';
 
-import Select, { SelectProps } from 'components/select';
+import type { SelectProps } from 'components/select';
+import Select from 'components/select';
 import { toNumber, range } from 'lodash';
 
 const YearsFilter: React.FC = () => {

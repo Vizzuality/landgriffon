@@ -4,7 +4,7 @@ import { useCallback, useMemo } from 'react';
 
 import SatelliteImage from './images/satellite1.png';
 import DefaultImage from './images/default1.png';
-import { BasemapValue } from './types';
+import type { BasemapValue } from './types';
 interface BasemapControlProps {
   value: BasemapValue;
   onChange: (value: BasemapValue) => void;

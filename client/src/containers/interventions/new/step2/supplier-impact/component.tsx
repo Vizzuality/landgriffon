@@ -1,4 +1,5 @@
-import { useState, FC, useCallback } from 'react';
+import type { FC } from 'react';
+import { useState, useCallback } from 'react';
 
 // components
 import Checkbox from 'components/forms/checkbox';

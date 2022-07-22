@@ -1,4 +1,5 @@
-import { FC, useCallback, useState } from 'react';
+import type { FC } from 'react';
+import { useCallback, useState } from 'react';
 import { SearchIcon, XIcon } from '@heroicons/react/solid';
 
 import Input from 'components/forms/input';

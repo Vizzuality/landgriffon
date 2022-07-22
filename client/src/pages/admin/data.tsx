@@ -4,7 +4,7 @@ import { merge } from 'lodash';
 import { useDebounce } from '@react-hook/debounce';
 import { ExclamationIcon /*, FilterIcon*/ } from '@heroicons/react/solid';
 import { DataType } from 'ka-table/enums';
-import { ITableProps } from 'ka-table';
+import type { ITableProps } from 'ka-table';
 import { v4 as uuidv4 } from 'uuid';
 
 import useModal from 'hooks/modals';
@@ -17,7 +17,8 @@ import DownloadMaterialsDataButton from 'containers/admin/download-materials-dat
 import UploadDataSourceModal from 'containers/admin/upload-data-source-modal';
 import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range';
 import Button from 'components/button';
-import Pagination, { PaginationProps } from 'components/pagination';
+import type { PaginationProps } from 'components/pagination';
+import Pagination from 'components/pagination';
 import Search from 'components/search';
 import { TableNoSSR as SimpleTable } from 'components/simple-table';
 

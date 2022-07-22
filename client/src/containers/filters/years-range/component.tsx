@@ -6,7 +6,7 @@ import cx from 'classnames';
 import Select from 'components/select';
 import type { SelectOption } from 'components/select/types';
 
-import { YearsRangeFilterProps } from './types';
+import type { YearsRangeFilterProps } from './types';
 import {
   flip,
   offset,

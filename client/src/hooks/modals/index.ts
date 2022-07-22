@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { UseModalProps } from './types';
+import type { UseModalProps } from './types';
 
 export function useModal(): UseModalProps {
   const [isOpen, setIsOpen] = useState(false);

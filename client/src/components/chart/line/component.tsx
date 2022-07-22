@@ -1,9 +1,9 @@
-import { FC } from 'react';
+import type { FC } from 'react';
 import { AnimatedLineSeries, XYChart, AnimatedAxis, AnimatedGrid } from '@visx/xychart';
 import { ParentSize } from '@visx/responsive';
 
 // types
-import { LineChartProps } from './types';
+import type { LineChartProps } from './types';
 
 const LineChart: FC<LineChartProps> = ({
   width = 200,

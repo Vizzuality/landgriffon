@@ -255,7 +255,7 @@ export const useAllContextualLayersData = (options?: Partial<UseQueryOptions>) =
       .filter((layer) => layer.isContextual)
       .map((layer) => ({
         queryKey: ['h3-data-contextual', layer.id, urlParams],
-        queryFn: async () => fetchContextualLayerData,
+        queryFn: fetchContextualLayerData,
         ...DEFAULT_QUERY_OPTIONS,
         ...options,
         enabled:

@@ -1,4 +1,5 @@
-import { useCallback, useMemo, FC } from 'react';
+import type { FC } from 'react';
+import { useCallback, useMemo } from 'react';
 
 // hooks
 // import { useAppDispatch, useAppSelector } from 'store/hooks';
@@ -11,7 +12,7 @@ import Label from 'components/forms/label';
 import Textarea from 'components/forms/textarea';
 
 // types
-import { SelectOptions, SelectOption } from 'components/select/types';
+import type { SelectOptions, SelectOption } from 'components/select/types';
 import { useBusinessUnits } from 'hooks/business-units';
 
 const growthRates = ['growth1', 'growth2', 'growth3'];

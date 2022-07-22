@@ -1,7 +1,7 @@
-import { ISummaryCellProps, ICellProps } from 'ka-table/props';
-import { ITableProps } from 'ka-table';
-import { GroupRowData } from 'ka-table/models';
-import { CellProps } from 'components/table/cell';
+import type { ISummaryCellProps, ICellProps } from 'ka-table/props';
+import type { ITableProps } from 'ka-table';
+import type { GroupRowData } from 'ka-table/models';
+import type { CellProps } from 'components/table/cell';
 
 export type ITableData = Omit<ITableProps, 'columns'> & {
   key?: string;

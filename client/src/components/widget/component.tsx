@@ -1,5 +1,5 @@
 import cx from 'classnames';
-import { ReactChild } from 'react';
+import type { ReactChild } from 'react';
 
 export type WidgetProps = {
   title: string;

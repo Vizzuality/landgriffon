@@ -4,7 +4,8 @@ import { sortBy } from 'lodash';
 import TreeSelect from 'components/tree-select';
 
 // hooks
-import { useLocationTypes, LocationTypesParams } from 'hooks/location-types';
+import type { LocationTypesParams } from 'hooks/location-types';
+import { useLocationTypes } from 'hooks/location-types';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
 type LocationTypeFilterProps = {

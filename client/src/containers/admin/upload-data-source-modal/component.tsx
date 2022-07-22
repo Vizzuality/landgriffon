@@ -7,7 +7,7 @@ import Loading from 'components/loading';
 import Modal from 'components/modal';
 import Uploader from 'containers/uploader';
 
-import { UploadDataSourceModalProps } from './types';
+import type { UploadDataSourceModalProps } from './types';
 
 const UploadDataSourceModal: React.FC<UploadDataSourceModalProps> = ({
   open,

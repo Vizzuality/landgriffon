@@ -13,13 +13,14 @@ import LinkButton from 'components/button';
 
 import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 
-import type { ITableData } from './types';
-import { ITableProps } from 'ka-table';
-import { CellProps } from 'components/table/cell';
-import { ChildComponents } from 'ka-table/models';
 import { useAppSelector } from 'store/hooks';
 import { scenarios } from 'store/features/analysis/scenarios';
 import ComparisonCell from './comparison-cell';
+
+import type { ITableData } from './types';
+import type { ITableProps } from 'ka-table';
+import type { CellProps } from 'components/table/cell';
+import type { ChildComponents } from 'ka-table/models';
 
 const dataToCsv: (tableData: ITableData) => string = (tableData) => {
   const LINE_SEPARATOR = '\r\n';

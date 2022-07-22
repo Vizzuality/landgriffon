@@ -14,7 +14,10 @@ import analysisMap, {
   setViewState,
   initialState as analysisMapInitialState,
 } from 'store/features/analysis/map';
-import analysisScenarios from 'store/features/analysis/scenarios';
+import analysisScenarios, {
+  setCurrentScenario,
+  initialState as analysisScenariosInitialState,
+} from 'store/features/analysis/scenarios';
 
 const staticReducers = {
   ui,
@@ -64,6 +67,12 @@ const QUERY_PARAMS_MAP: QueryParams = {
     rootState: 'analysis/map',
     action: setViewState,
     defaultValue: analysisMapInitialState.viewState,
+  },
+  scenarioId: {
+    stateName: 'currentScenario',
+    rootState: 'analysis/scenarios',
+    action: setCurrentScenario,
+    defaultValue: analysisScenariosInitialState.currentScenario,
   },
 };
 

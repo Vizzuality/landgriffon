@@ -56,7 +56,7 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
   const store = useStore();
   const { data: indicators } = useIndicators();
   const { layer } = useAppSelector(analysisFilters);
-  const { isComparisonEnabled, scenarioToCompare } = useAppSelector(scenarios);
+  const { isComparisonEnabled, scenarioToCompare, currentScenario } = useAppSelector(scenarios);
   const filters = filtersForTabularAPI(store.getState());
   const { indicatorId, ...restFilters } = filters;
 
@@ -81,9 +81,12 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
     endYear: filters.endYear,
     groupBy: filters.groupBy,
     ...pagination,
-    ...(isComparisonEnabled ? { scenarioId: scenarioToCompare } : {}),
     ...restFilters,
     ...pagination,
+    ...(currentScenario && currentScenario !== 'actual-data'
+      ? { scenarioId: currentScenario }
+      : {}),
+    ...(isComparisonEnabled ? { scenarioId: scenarioToCompare } : {}),
   };
 
   const query = useQuery(

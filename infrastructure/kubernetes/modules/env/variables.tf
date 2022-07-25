@@ -67,3 +67,18 @@ variable "data_import_arguments" {
   default     = ["seed-data"]
   description = "Arguments to pass to the initial data import process"
 }
+
+variable "api_container_registry_url" {
+  type        = string
+  description = "URL for the API container registry"
+}
+
+variable "client_container_registry_url" {
+  type        = string
+  description = "URL for the client container registry"
+}
+
+variable "data_import_container_registry_url" {
+  type        = string
+  description = "URL for the data import container registry"
+}

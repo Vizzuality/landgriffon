@@ -26,16 +26,6 @@ output "private_subnet_ids" {
   value = module.vpc.private_subnet_ids
 }
 
-output "kubectl_config" {
-  value       = module.eks.kubeconfig
-  description = "Configuration snippet for the kubectl CLI tool that allows access to this EKS cluster"
-}
-
-output "eks_cluster" {
-  value       = module.eks.cluster
-  description = "EKS cluster object"
-}
-
 output "eks_cluster_host" {
   value       = module.eks.cluster.endpoint
   description = "EKS cluster endpoint"
@@ -46,28 +36,14 @@ output "eks_cluster_name" {
   description = "EKS cluster name"
 }
 
-locals {
-  kube_configmap = <<KUBECONFIGMAP
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: aws-auth
-  namespace: kube-system
-data:
-  mapRoles: |
-    - rolearn: ${module.bastion.eks_manager_role.arn}
-      username: system:node:{{EC2PrivateDNSName}}
-      groups:
-        - system:masters
-    - rolearn: ${module.eks.node_role_arn}
-      username: system:node:{{EC2PrivateDNSName}}
-      groups:
-        - system:bootstrappers
-        - system:nodes
-
-KUBECONFIGMAP
+output "api_container_registry_url" {
+  value = module.api_container_registry.container_registry_url
 }
 
-output "kube_configmap" {
-  value = local.kube_configmap
+output "client_container_registry_url" {
+  value = module.client_container_registry.container_registry_url
+}
+
+output "data_import_container_registry_url" {
+  value = module.data_import_container_registry.container_registry_url
 }

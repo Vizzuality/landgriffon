@@ -31,7 +31,7 @@ module "k8s_api" {
   source          = "../api"
   cluster_name    = var.cluster_name
   deployment_name = "api"
-  image           = "vizzuality/landgriffon-api:${var.image_tag}"
+  image           = "${var.api_container_registry_url}:${var.image_tag}"
   namespace       = var.environment
 
   depends_on = [
@@ -44,7 +44,7 @@ module "k8s_client" {
   source          = "../client"
   cluster_name    = var.cluster_name
   deployment_name = "client"
-  image           = "vizzuality/landgriffon-client:${var.image_tag}"
+  image           = "${var.client_container_registry_url}:${var.image_tag}"
   namespace       = var.environment
   site_url        = module.k8s_ingress.client_url
   api_url         = module.k8s_ingress.api_url
@@ -58,7 +58,7 @@ module "k8s_data_import" {
   source       = "../data_import"
   cluster_name = var.cluster_name
   job_name     = "data-import"
-  image        = "vizzuality/landgriffon-data-import:${var.image_tag}"
+  image        = "${var.data_import_container_registry_url}:${var.image_tag}"
   namespace    = var.environment
   load_data    = var.load_fresh_data
   arguments    = var.data_import_arguments

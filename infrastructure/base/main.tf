@@ -17,10 +17,10 @@ module "bootstrap" {
 
 # Internal module which defines the VPC
 module "vpc" {
-  source  = "./modules/vpc"
-  region  = var.aws_region
-  project = var.project_name
-  tags    = local.tags
+  source              = "./modules/vpc"
+  region              = var.aws_region
+  project             = var.project_name
+  tags                = local.tags
   private_subnet_tags = {
     "kubernetes.io/role/internal-elb" : 1
 
@@ -42,8 +42,8 @@ module "bastion" {
 }
 
 module "dns" {
-  source = "./modules/dns"
-  domain = var.domain
+  source              = "./modules/dns"
+  domain              = var.domain
   site_server_ip_list = [
     "76.76.21.21"
   ]
@@ -69,7 +69,7 @@ module "default-node-group" {
   desired_size    = var.default_node_group_desired_size
   node_role_arn   = module.eks.node_role_arn
   subnet_ids      = module.vpc.private_subnets.*.id
-  labels = {
+  labels          = {
     type : "default"
   }
 }
@@ -85,7 +85,7 @@ module "data-node-group" {
   desired_size    = var.data_node_group_desired_size
   node_role_arn   = module.eks.node_role_arn
   subnet_ids      = [module.vpc.private_subnets[0].id]
-  labels = {
+  labels          = {
     type : "data"
   }
 }
@@ -93,4 +93,19 @@ module "data-node-group" {
 module "s3_bucket" {
   source = "./modules/s3_bucket"
   bucket = "landgriffon-raw-data"
+}
+
+module "api_container_registry" {
+  source = "./modules/container_registry"
+  name   = "api"
+}
+
+module "client_container_registry" {
+  source = "./modules/container_registry"
+  name   = "client"
+}
+
+module "data_import_container_registry" {
+  source = "./modules/container_registry"
+  name   = "data_import"
 }

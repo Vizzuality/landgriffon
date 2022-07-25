@@ -106,7 +106,7 @@ resource "aws_iam_role" "eks-node-group-iam-role" {
 }
 
 data "aws_iam_policy_document" "eks-admin-ClusterAutoscaleAccessPolicy-document" {
-  source_json = file("${path.module}/cluster-autoscale-access-policy.json")
+  source_policy_documents = [file("${path.module}/cluster-autoscale-access-policy.json")]
 }
 
 resource "aws_iam_policy" "eks-admin-ClusterAutoscaleAccessPolicy" {

@@ -80,20 +80,21 @@ jobs:
         run: |
           ssh -i ~/.ssh/bastion.key -o StrictHostKeyChecking=no -N -L 4433:${{ secrets.EKS_HOST }}:443 ${{ secrets.BASTION_USER }}@${{ secrets.BASTION_HOST }} -T &
 
+      - name: Extract branch name
+        shell: bash
+        run: |
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+        id: extract_branch
+
       - name: Redeploy production pods
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ steps.extract_branch.outputs.branch == 'main' }}
         run: |
           kubectl rollout restart deployment api -n production
           kubectl rollout restart deployment client -n production
 
-      - name: Redeploy staging pods
-        if: ${{ github.ref == 'refs/heads/staging' }}
+      - name: Redeploy pods for other branches
+        if: ${{ steps.extract_branch.outputs.branch != 'main' }}
         run: |
-          kubectl rollout restart deployment api -n staging
-          kubectl rollout restart deployment client -n staging
-
-      - name: Redeploy test pods
-        if: ${{ github.ref == 'refs/heads/test' }}
-        run: |
-          kubectl rollout restart deployment api -n test
-          kubectl rollout restart deployment client -n test
+          kubectl rollout restart deployment api -n ${{ steps.extract_branch.outputs.branch }}
+          kubectl rollout restart deployment client -n ${{ steps.extract_branch.outputs.branch }}

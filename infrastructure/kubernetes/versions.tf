@@ -48,8 +48,8 @@ provider "kubernetes" {
 
 provider "helm" {
   kubernetes {
-    host                   = "${data.terraform_remote_state.core.outputs.eks_cluster.endpoint}:4433"
-    cluster_ca_certificate = base64decode(data.terraform_remote_state.core.outputs.eks_cluster.certificate_authority.0.data)
+    host                   = "${data.aws_eks_cluster.cluster.endpoint}:4433"
+    cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
     exec {
       api_version = "client.authentication.k8s.io/v1alpha1"
       args = [

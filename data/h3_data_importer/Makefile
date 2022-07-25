@@ -62,14 +62,14 @@ extract-mapspam-crop-production: download-mapspam-crop-production
 	mkdir -p $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod
 	unzip -u $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod.geotiff.zip *_A.tif -d $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod
 	for file in $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/*_A.tif; do\
-		gdal_calc.py --quiet --calc="round(A, 4)" -A "$$file" --outfile="$$file";\
+		gdal_calc.py --quiet --calc="numpy.round(A, 4)" -A "$$file" --outfile="$$file";\
 	done
 
 extract-mapspam-crop-harvest: download-mapspam-crop-harvest
 	mkdir -p $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha
 	unzip -u $(WORKDIR_MAPSPAM)/spam2010v2r0_global_harv_area.geotiff.zip *_A.tif -d $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha
 	for file in $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/*_A.tif; do\
-		gdal_calc.py --quiet --calc="round(A, 4)" -A "$$file" --outfile="$$file";\
+		gdal_calc.py --quiet --calc="numpy.round(A, 4)" -A "$$file" --outfile="$$file";\
 	done
 #CONVERT DATASETS:
 # <table>: <tiff_folder>
@@ -118,7 +118,7 @@ extract-earthstat-crop-production: download-earthstat-crop-production
 		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
 		output_file="$(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/earthstat2000_global_$${table_name}.tif";\
 		gdal_translate -a_nodata 0 -of GTiff "$${tiffile}" "$${output_file}";\
-		gdal_calc.py --quiet --calc="round(A, 4)" -A "$${output_file}" --outfile "$${output_file}";\
+		gdal_calc.py --quiet --calc="numpy.round(A, 4)" -A "$${output_file}" --outfile "$${output_file}";\
 		rm -f "$${tiffile}";\
 	done
 
@@ -149,7 +149,7 @@ extract-earthstat-crop-harvest: download-earthstat-crop-production
 		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
 		output_file="$(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/earthstat2000_global_$${table_name}.tif";\
 		gdal_translate -a_nodata 0 -of GTiff "$${tiffile}" "$${output_file}";\
-		gdal_calc.py --quiet --calc="round(A, 4)" -A "$${output_file}" --outfile "$${output_file}";\
+		gdal_calc.py --quiet --calc="numpy.round(A, 4)" -A "$${output_file}" --outfile "$${output_file}";\
 		rm -f "$${tiffile}";\
 	done
 

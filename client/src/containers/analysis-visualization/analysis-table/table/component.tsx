@@ -27,7 +27,9 @@ const defaultProps: TableProps = {
   total: null,
   rowKeyField: 'id',
   sortingMode: SortingMode.None,
-  paging: false,
+  paging: {
+    enabled: false,
+  },
   // singleAction: loadData(),
 };
 

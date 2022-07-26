@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
+import toast from 'react-hot-toast';
 
 import type { UseYearsRangeProps, YearsRangeParams } from './types';
 
@@ -66,7 +67,7 @@ export function useYearsRange({
         return;
       } else {
         // We have a years gap set, but not enough data to respect it.
-        console.error('Years gap cannot be respected; not enough years data');
+        toast.error('Years gap cannot be respected; not enough years data');
       }
     }
   }, [

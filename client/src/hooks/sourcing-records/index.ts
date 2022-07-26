@@ -1,6 +1,7 @@
-import { useQuery, UseQueryOptions } from 'react-query';
-
 import { apiRawService } from 'services/api';
+import { useQuery } from 'react-query';
+
+import type { UseQueryOptions } from 'react-query';
 
 type SourcingRecordsYearsData = number[];
 

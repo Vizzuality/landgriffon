@@ -1,4 +1,4 @@
-import { useMemo, useState, FC, useCallback } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 
 import { useSourcingRecordsYears } from 'hooks/sourcing-records';
 import { useTargets } from 'hooks/targets';
@@ -7,15 +7,16 @@ import InfoTooltip from 'containers/info-tooltip';
 import TargetInputList from 'containers/targets/input-list';
 
 import Modal from 'components/modal';
-import Select, { SelectProps } from 'components/select';
+import Select from 'components/select';
 import Button from 'components/button';
 
 import type { TargetYear } from 'types';
 import type { ModalProps } from 'components/modal';
+import type { SelectProps } from 'components/select';
 
 type EditTargetModalProps = ModalProps;
 
-const AdminEditTargetModal: FC<EditTargetModalProps> = ({ title, open, onDismiss }) => {
+const AdminEditTargetModal: React.FC<EditTargetModalProps> = ({ title, open, onDismiss }) => {
   const { data, isLoading } = useSourcingRecordsYears();
   const { data: targets } = useTargets();
 

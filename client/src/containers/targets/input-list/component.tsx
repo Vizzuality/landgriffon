@@ -2,7 +2,7 @@ import { XCircleIcon } from '@heroicons/react/solid';
 
 import { Input } from 'components/forms';
 
-import { TargetYear } from 'types';
+import type { TargetYear } from 'types';
 interface TargetListProps {
   data: TargetYear[];
   onChange: (year: number, target: Record<string, unknown>) => void;
@@ -16,10 +16,7 @@ const TargetInputList: React.FC<TargetListProps> = ({ data, onChange }) => (
       <span className="basis-1/2 mr-2.5">Value</span>
     </div>
     {data.map((target) => (
-      <div
-        key={target.year}
-        className="flex flex-row items-center space-x-4 pb-3 text-gray-900"
-      >
+      <div key={target.year} className="flex flex-row items-center space-x-4 pb-3 text-gray-900">
         <Input
           type="number"
           id="year"

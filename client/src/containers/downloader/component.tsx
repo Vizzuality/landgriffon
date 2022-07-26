@@ -57,7 +57,6 @@ const Downloader: React.FC<DownloaderProps> = ({
       // TODO: Other export formats
       default:
         const errorMessage = `Export format ${type} not yet supported`;
-        console.error(errorMessage);
         onError(errorMessage);
         return;
     }

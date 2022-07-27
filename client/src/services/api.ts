@@ -15,8 +15,9 @@ const defaultConfig = {
 };
 
 const authorizedRequest = async (config) => {
-  const { accessToken } = await getSession();
-  config.headers['Authorization'] = `Bearer ${accessToken}`;
+  const session = await getSession();
+
+  config.headers['Authorization'] = `Bearer ${session?.accessToken}`;
   return config;
 };
 

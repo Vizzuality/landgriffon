@@ -15,6 +15,11 @@ on:
       - 'data/**'
       - '.github/**'
   workflow_dispatch:
+    inputs:
+      skipWaitForTest:
+        description: 'If the image deployment should wait for the tests execution to be successful'
+        required: true
+        default: false
 
 jobs:
   push_api_to_registry:
@@ -51,6 +56,7 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG api
 
       - name: Wait for API E2E tests to run
+        if: ${{ github.event.inputs.skipWaitForTest == 'true' }}
         uses: fountainhead/action-wait-for-check@v1.0.0
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
@@ -58,6 +64,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Wait for API Integration tests to run
+        if: ${{ github.event.inputs.skipWaitForTest == 'true' }}
         uses: fountainhead/action-wait-for-check@v1.0.0
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
@@ -65,6 +72,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Wait for Client tests to run
+        if: ${{ github.event.inputs.skipWaitForTest == 'true' }}
         uses: fountainhead/action-wait-for-check@v1.0.0
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}

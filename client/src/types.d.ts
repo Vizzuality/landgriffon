@@ -92,7 +92,7 @@ export type Material = {
 
 export type SourcingLocation = {
   materialId: string;
-  materialName: string;
+  material: string;
   t1Supplier: string;
   producer: string;
   businessUnit: string;

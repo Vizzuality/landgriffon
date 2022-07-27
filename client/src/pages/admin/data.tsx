@@ -12,15 +12,21 @@ import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import { merge } from 'lodash';
 import Head from 'next/head';
 import { useMemo, useState } from 'react';
+import NewTable from 'components/newTable';
 
 import { ExclamationIcon } from '@heroicons/react/solid';
 import { useDebounce } from '@react-hook/debounce';
 
 import type { ApiSortingType, TableProps } from 'components/table';
+import type { PaginationState } from '@tanstack/react-table';
+import { ColumnType } from 'components/newTable/column';
 
 const AdminDataPage: React.FC = () => {
   const [searchText, setSearchText] = useDebounce('', 250);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageSize: 10,
+    pageIndex: 1,
+  });
   const [sorting, setSorting] = useState<ApiSortingType>();
   const [dataDownloadError, setDataDownloadError] = useState<string>();
 
@@ -36,8 +42,8 @@ const AdminDataPage: React.FC = () => {
       order: sorting.order,
     }),
     search: searchText,
-    'page[size]': 10,
-    'page[number]': currentPage,
+    'page[size]': pagination.pageSize,
+    'page[number]': pagination.pageIndex,
   });
 
   const {
@@ -60,9 +66,9 @@ const AdminDataPage: React.FC = () => {
   const yearsData = useMemo(() => {
     return {
       columns: allYears.map((year) => ({
-        key: year.toString(),
+        id: year.toString(),
         title: year.toString(),
-        DataType: DataType.Number,
+        type: ColumnType.RawValue,
         width: 80,
         visible: yearsInRange.includes(year),
       })),
@@ -100,10 +106,10 @@ const AdminDataPage: React.FC = () => {
       sortingMode: SortingMode.Api,
       defaultSorting: sorting,
       onSortingChange: (params: ApiSortingType) => {
-        setCurrentPage(1);
+        setPagination((pag) => ({ ...pag, pageIndex: 1 }));
         setSorting(params);
       },
-      onPageChange: setCurrentPage,
+      // onPageChange: ,
       paging: {
         enabled: true,
         totalItems: sourcingMetadata.totalItems,
@@ -145,14 +151,11 @@ const AdminDataPage: React.FC = () => {
           Upload data source
         </Button>
       </div>
-
       <UploadDataSourceModal
         open={isUploadDataSourceModalOpen}
         onDismiss={closeUploadDataSourceModal}
       />
-
       {!hasData && !isFetchingData && !isSearching && <NoDataUpload />}
-
       {!(!hasData && !isFetchingData && !isSearching) && (
         <div className="flex flex-col-reverse items-center justify-between md:flex-row">
           <div className="flex w-full gap-2 md:w-auto">
@@ -163,16 +166,6 @@ const AdminDataPage: React.FC = () => {
               years={allYears}
               onChange={setYearsRange}
             />
-            {/*
-            <Button theme="secondary" onClick={() => console.info('Filters: click')}>
-              <span className="block h-5 truncate">
-                <FilterIcon className="w-5 h-5 text-gray-900" aria-hidden="true" />
-              </span>
-              <span className="flex items-center justify-center w-5 h-5 ml-1 text-xs font-semibold text-white bg-green-700 rounded-full">
-                2
-              </span>
-            </Button>
-            */}
           </div>
           {dataDownloadError && (
             <div className="flex items-center text-sm text-yellow-800">
@@ -182,10 +175,33 @@ const AdminDataPage: React.FC = () => {
           )}
         </div>
       )}
-
       {!hasData && isSearching && <NoResults />}
-
-      {(hasData || isFetchingData) && <Table {...tableProps} />}
+      <NewTable
+        data={merge(sourcingData, yearsData.data)}
+        columns={[
+          { id: 'material', title: 'Material', type: ColumnType.RawValue, width: 240 },
+          { id: 'businessUnit', title: 'Business Unit', type: ColumnType.RawValue },
+          { id: 't1Supplier', title: 'T1 Supplier', type: ColumnType.RawValue },
+          { id: 'producer', title: 'Producer', type: ColumnType.RawValue },
+          { id: 'locationType', title: 'Location Type', type: ColumnType.RawValue },
+          { id: 'country', title: 'Country', type: ColumnType.RawValue },
+          ...(yearsData.columns.map((column) => ({
+            id: column.id,
+            title: column.title,
+            type: ColumnType.RawValue,
+          })) as any),
+        ]}
+        manualPagination
+        state={{
+          pagination: {
+            pageIndex: sourcingMetadata.page,
+            pageSize: sourcingMetadata.size,
+          },
+        }}
+        totalItems={sourcingMetadata.totalItems}
+        pageCount={sourcingMetadata.totalPages}
+        onPaginationChange={setPagination}
+      />
     </AdminLayout>
   );
 };

@@ -128,6 +128,7 @@ jobs:
 
       - name: Wait for API E2E tests to run
         uses: fountainhead/action-wait-for-check@v1.0.0
+        if: ${{ github.event.inputs.skipWaitForTest == 'true' }}
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: E2E Tests
@@ -135,6 +136,7 @@ jobs:
 
       - name: Wait for API Integration tests to run
         uses: fountainhead/action-wait-for-check@v1.0.0
+        if: ${{ github.event.inputs.skipWaitForTest == 'true' }}
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: Integration Tests
@@ -142,6 +144,7 @@ jobs:
 
       - name: Wait for Client tests to run
         uses: fountainhead/action-wait-for-check@v1.0.0
+        if: ${{ github.event.inputs.skipWaitForTest == 'true' }}
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: Client Tests
@@ -191,6 +194,7 @@ jobs:
 
       - name: Wait for API E2E tests to run
         uses: fountainhead/action-wait-for-check@v1.0.0
+        if: ${{ github.event.inputs.skipWaitForTest == 'true' }}
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: E2E Tests
@@ -198,6 +202,7 @@ jobs:
 
       - name: Wait for API Integration tests to run
         uses: fountainhead/action-wait-for-check@v1.0.0
+        if: ${{ github.event.inputs.skipWaitForTest == 'true' }}
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: Integration Tests
@@ -205,6 +210,7 @@ jobs:
 
       - name: Wait for Client tests to run
         uses: fountainhead/action-wait-for-check@v1.0.0
+        if: ${{ github.event.inputs.skipWaitForTest == 'true' }}
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: Client Tests

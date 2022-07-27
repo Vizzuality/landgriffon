@@ -1,6 +1,7 @@
 import axios from 'axios';
 import Jsona from 'jsona';
 import { getSession, signOut } from 'next-auth/react';
+import type { AxiosRequestConfig } from 'axios';
 
 /**
  * API service require to be authenticated.
@@ -9,7 +10,7 @@ import { getSession, signOut } from 'next-auth/react';
 
 const dataFormatter = new Jsona();
 
-const defaultConfig = {
+const defaultConfig: AxiosRequestConfig = {
   baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api/v1`,
   headers: { 'Content-Type': 'application/json' },
 };

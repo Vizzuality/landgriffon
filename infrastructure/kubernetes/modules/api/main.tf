@@ -174,6 +174,11 @@ resource "kubernetes_deployment" "api_deployment" {
           }
 
           env {
+            name = "REQUIRE_USER_ACCOUNT_ACTIVATION"
+            value = "true"
+          }
+
+          env {
             name = "DB_MIGRATIONS_RUN"
             value = "true"
           }

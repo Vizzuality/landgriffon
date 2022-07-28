@@ -65,6 +65,5 @@ provider "helm" {
 
 # https://github.com/integrations/terraform-provider-github/issues/667#issuecomment-1182340862
 provider "github" {
-#  token = var.github_token
 #  owner = "vizzuality"
 }

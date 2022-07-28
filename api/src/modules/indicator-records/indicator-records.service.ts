@@ -101,7 +101,6 @@ export class IndicatorRecordsService extends AppBaseService<
           `Cannot calculate impact for sourcing record - missing ${type} h3 data for material with ID "${sourcingRecord.materialId}" and year "${sourcingRecord.year}". Ignoring souring record`,
         );
         return null;
-        break;
       case 'fallback':
         this.logger.debug(
           `Missing ${type} h3 data for material with ID "${sourcingRecord.materialId}" and year "${sourcingRecord.year}". Falling back to different year`,
@@ -123,7 +122,6 @@ export class IndicatorRecordsService extends AppBaseService<
           );
         }
         return h3Table;
-        break;
       case 'error':
         throw new MissingH3DataError(
           `Cannot calculate impact for sourcing record - missing ${type} h3 data for material with ID "${sourcingRecord.materialId}" and year "${sourcingRecord.year}"`,
@@ -156,69 +154,70 @@ export class IndicatorRecordsService extends AppBaseService<
    */
   // TODO still not adapted to modular indicators, because the performance gets hit drastically on the source import. Pending to be worked on
   async createIndicatorRecordsForAllSourcingRecords(): Promise<void> {
+    const indicatorMap: Record<string, any> = await this.getIndicatorMap();
+    // Using a hardcoded list of indicator types because this function is still based on
+    // a calculation query with hardcoded indicators,
+    const indicators: INDICATOR_TYPES[] = [
+      INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+      INDICATOR_TYPES.CARBON_EMISSIONS,
+      INDICATOR_TYPES.DEFORESTATION,
+      INDICATOR_TYPES.BIODIVERSITY_LOSS,
+    ];
+
     const rawData: SourcingRecordsWithIndicatorRawDataDto[] =
       await this.indicatorRecordRepository.getIndicatorRawDataForAllSourcingRecords();
-    const calculatedData: IndicatorRecordCalculatedValuesDto[] = rawData.map(
-      (sourcingRecordData: SourcingRecordsWithIndicatorRawDataDto) =>
-        this.calculateIndicatorValues(sourcingRecordData),
-    );
-    const indicatorMap: Record<string, any> = await this.getIndicatorMap();
-    const indicatorRecords: IndicatorRecord[] = [];
-    calculatedData.forEach(
-      (calculatedIndicatorRecords: IndicatorRecordCalculatedValuesDto) => {
-        const indicatorRecordDeforestation: IndicatorRecord =
-          IndicatorRecord.merge(new IndicatorRecord(), {
-            value: calculatedIndicatorRecords.values.get(
-              INDICATOR_TYPES.DEFORESTATION,
-            ),
-            indicatorId: indicatorMap[INDICATOR_TYPES.DEFORESTATION].id,
-            status: INDICATOR_RECORD_STATUS.SUCCESS,
-            sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
-            scaler: calculatedIndicatorRecords.production,
-            materialH3DataId: calculatedIndicatorRecords.materialH3DataId,
-          });
-        const indicatorRecordBiodiversity: IndicatorRecord =
-          IndicatorRecord.merge(new IndicatorRecord(), {
-            value: calculatedIndicatorRecords.values.get(
-              INDICATOR_TYPES.BIODIVERSITY_LOSS,
-            ),
-            indicatorId: indicatorMap[INDICATOR_TYPES.BIODIVERSITY_LOSS].id,
-            status: INDICATOR_RECORD_STATUS.SUCCESS,
-            sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
-            scaler: calculatedIndicatorRecords.production,
-            materialH3DataId: calculatedIndicatorRecords.materialH3DataId,
-          });
-        const indicatorRecordCarbonEmissions: IndicatorRecord =
-          IndicatorRecord.merge(new IndicatorRecord(), {
-            value: calculatedIndicatorRecords.values.get(
-              INDICATOR_TYPES.CARBON_EMISSIONS,
-            ),
-            indicatorId: indicatorMap[INDICATOR_TYPES.CARBON_EMISSIONS].id,
-            status: INDICATOR_RECORD_STATUS.SUCCESS,
-            sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
-            scaler: calculatedIndicatorRecords.production,
-            materialH3DataId: calculatedIndicatorRecords.materialH3DataId,
-          });
-        const indicatorRecordUnsustainableWater: IndicatorRecord =
-          IndicatorRecord.merge(new IndicatorRecord(), {
-            value: calculatedIndicatorRecords.values.get(
-              INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
-            ),
-            indicatorId:
-              indicatorMap[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE].id,
-            status: INDICATOR_RECORD_STATUS.SUCCESS,
-            sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
-            scaler: calculatedIndicatorRecords.production,
-            materialH3DataId: calculatedIndicatorRecords.materialH3DataId,
-          });
-        indicatorRecords.push(
-          indicatorRecordDeforestation,
-          indicatorRecordBiodiversity,
-          indicatorRecordCarbonEmissions,
-          indicatorRecordUnsustainableWater,
+
+    const calculatedData2: IndicatorRecordCalculatedValuesDto[] = rawData.map(
+      (sourcingRecordData: SourcingRecordsWithIndicatorRawDataDto) => {
+        // Small DTO transformations to adapt the result of the stored procedures query
+        const indicatorValues: Map<INDICATOR_TYPES, number> = new Map();
+        indicatorValues.set(
+          INDICATOR_TYPES.DEFORESTATION,
+          sourcingRecordData.rawDeforestation,
+        );
+        indicatorValues.set(
+          INDICATOR_TYPES.CARBON_EMISSIONS,
+          sourcingRecordData.rawCarbon,
+        );
+        indicatorValues.set(
+          INDICATOR_TYPES.BIODIVERSITY_LOSS,
+          sourcingRecordData.rawBiodiversity,
+        );
+        indicatorValues.set(
+          INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+          sourcingRecordData.rawWater,
+        );
+
+        const indicatorComputedRawDataDto: IndicatorComputedRawDataDto = {
+          harvestedArea: sourcingRecordData.harvestedArea,
+          production: sourcingRecordData.production,
+          indicatorValues,
+        };
+
+        return this.calculateIndicatorValuesV2(
+          sourcingRecordData.sourcingRecordId,
+          sourcingRecordData.tonnage,
+          sourcingRecordData.materialH3DataId,
+          indicatorComputedRawDataDto,
         );
       },
     );
+
+    const indicatorRecords: IndicatorRecord[] = [];
+    for (const calculatedIndicatorRecords of calculatedData2) {
+      for (const indicator of indicators) {
+        indicatorRecords.push(
+          IndicatorRecord.merge(new IndicatorRecord(), {
+            value: calculatedIndicatorRecords.values.get(indicator),
+            indicatorId: indicatorMap[indicator].id,
+            status: INDICATOR_RECORD_STATUS.SUCCESS,
+            sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
+            scaler: calculatedIndicatorRecords.production,
+            materialH3DataId: calculatedIndicatorRecords.materialH3DataId,
+          }),
+        );
+      }
+    }
     await this.indicatorRecordRepository.saveChunks(indicatorRecords);
   }
 

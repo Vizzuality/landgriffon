@@ -129,6 +129,8 @@ describe('Indicator Records Service', () => {
 
     await dropH3DataMock([
       'fake_material_table2002',
+      'fake_material1_table2002',
+      'fake_material2_table2002',
       'fake_material_table_harvest2002',
       'fake_material_table_producer2002',
     ]);
@@ -139,7 +141,7 @@ describe('Indicator Records Service', () => {
       // ARRANGE
       const indicatorPreconditions = await createPreconditions();
       const fakeH3Data = await createH3Data();
-      const materialH3Data = await createMaterialToH3(
+      await createMaterialToH3(
         indicatorPreconditions.material1.id,
         fakeH3Data.id,
         MATERIAL_TO_H3_TYPE.HARVEST,
@@ -215,7 +217,7 @@ describe('Indicator Records Service', () => {
         INDICATOR_TYPES.DEFORESTATION,
         indicatorPreconditions.deforestation,
         materialH3Data,
-        sourcingData,
+        sourcingData.sourcingRecordId,
         350,
         null,
       );
@@ -223,7 +225,7 @@ describe('Indicator Records Service', () => {
         INDICATOR_TYPES.BIODIVERSITY_LOSS,
         indicatorPreconditions.biodiversityLoss,
         materialH3Data,
-        sourcingData,
+        sourcingData.sourcingRecordId,
         100,
         null,
       );
@@ -231,7 +233,7 @@ describe('Indicator Records Service', () => {
         INDICATOR_TYPES.CARBON_EMISSIONS,
         indicatorPreconditions.carbonEmissions,
         materialH3Data,
-        sourcingData,
+        sourcingData.sourcingRecordId,
         400,
         null,
       );
@@ -239,7 +241,7 @@ describe('Indicator Records Service', () => {
         INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
         indicatorPreconditions.waterRisk,
         materialH3Data,
-        sourcingData,
+        sourcingData.sourcingRecordId,
         200,
         null,
       );
@@ -290,7 +292,7 @@ describe('Indicator Records Service', () => {
         additionalH3Data: h3MaterialExampleDataFixture,
         year: 2002,
       });
-      const materialH3DataHarvest = await createMaterialToH3(
+      await createMaterialToH3(
         indicatorPreconditions.material2.id,
         h3Material.id,
         MATERIAL_TO_H3_TYPE.HARVEST,
@@ -379,7 +381,7 @@ describe('Indicator Records Service', () => {
         h3Material.id,
         MATERIAL_TO_H3_TYPE.PRODUCER,
       );
-      const materialH3DataHarvest = await createMaterialToH3(
+      await createMaterialToH3(
         indicatorPreconditions.material2.id,
         h3Material.id,
         MATERIAL_TO_H3_TYPE.HARVEST,
@@ -398,7 +400,7 @@ describe('Indicator Records Service', () => {
         INDICATOR_TYPES.DEFORESTATION,
         indicatorPreconditions.deforestation,
         materialH3DataProducer,
-        sourcingData,
+        sourcingData.sourcingRecordId,
         80.74534161490683,
         1610,
       );
@@ -406,7 +408,7 @@ describe('Indicator Records Service', () => {
         INDICATOR_TYPES.BIODIVERSITY_LOSS,
         indicatorPreconditions.biodiversityLoss,
         materialH3DataProducer,
-        sourcingData,
+        sourcingData.sourcingRecordId,
         148944.0999601198,
         1610,
       );
@@ -414,7 +416,7 @@ describe('Indicator Records Service', () => {
         INDICATOR_TYPES.CARBON_EMISSIONS,
         indicatorPreconditions.carbonEmissions,
         materialH3DataProducer,
-        sourcingData,
+        sourcingData.sourcingRecordId,
         14.894409937888199,
         1610,
       );
@@ -422,8 +424,118 @@ describe('Indicator Records Service', () => {
         INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
         indicatorPreconditions.waterRisk,
         materialH3DataProducer,
-        sourcingData,
+        sourcingData.sourcingRecordId,
         0.07700000181794166,
+        1610,
+      );
+    });
+
+    test('When creating all indicators records, it should create the indicator records properly', async () => {
+      //ARRANGE
+      const indicatorPreconditions = await createPreconditions();
+
+      const h3Material1 = await h3DataMock({
+        h3TableName: 'fakeMaterial1Table2002',
+        h3ColumnName: 'fakeMaterialColumn2002',
+        additionalH3Data: h3MaterialExampleDataFixture,
+        year: 2002,
+      });
+      const h3Material2 = await h3DataMock({
+        h3TableName: 'fakeMaterial2Table2002',
+        h3ColumnName: 'fakeMaterialColumn2002',
+        additionalH3Data: h3MaterialExampleDataFixture,
+        year: 2002,
+      });
+      const materialH3DataProducer1 = await createMaterialToH3(
+        indicatorPreconditions.material1.id,
+        h3Material1.id,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
+      await createMaterialToH3(
+        indicatorPreconditions.material1.id,
+        h3Material1.id,
+        MATERIAL_TO_H3_TYPE.HARVEST,
+      );
+      const materialH3DataProducer2 = await createMaterialToH3(
+        indicatorPreconditions.material2.id,
+        h3Material2.id,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
+      await createMaterialToH3(
+        indicatorPreconditions.material2.id,
+        h3Material2.id,
+        MATERIAL_TO_H3_TYPE.HARVEST,
+      );
+
+      //ACT
+      await indicatorRecordService.createIndicatorRecordsForAllSourcingRecords();
+
+      //ASSERT
+      const allIndicators = await indicatorRecordRepository.find();
+      expect(allIndicators.length).toEqual(8);
+
+      await checkCreatedIndicatorRecord(
+        INDICATOR_TYPES.DEFORESTATION,
+        indicatorPreconditions.deforestation,
+        materialH3DataProducer1,
+        indicatorPreconditions.sourcingRecord1.id,
+        161.49068322981367,
+        1610,
+      );
+      await checkCreatedIndicatorRecord(
+        INDICATOR_TYPES.BIODIVERSITY_LOSS,
+        indicatorPreconditions.biodiversityLoss,
+        materialH3DataProducer1,
+        indicatorPreconditions.sourcingRecord1.id,
+        297888.1999202396,
+        1610,
+      );
+      await checkCreatedIndicatorRecord(
+        INDICATOR_TYPES.CARBON_EMISSIONS,
+        indicatorPreconditions.carbonEmissions,
+        materialH3DataProducer1,
+        indicatorPreconditions.sourcingRecord1.id,
+        29.788819307125873,
+        1610,
+      );
+      await checkCreatedIndicatorRecord(
+        INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+        indicatorPreconditions.waterRisk,
+        materialH3DataProducer1,
+        indicatorPreconditions.sourcingRecord1.id,
+        1.5400000363588333,
+        1610,
+      );
+      await checkCreatedIndicatorRecord(
+        INDICATOR_TYPES.DEFORESTATION,
+        indicatorPreconditions.deforestation,
+        materialH3DataProducer2,
+        indicatorPreconditions.sourcingRecord2.id,
+        80.74534161490683,
+        1610,
+      );
+      await checkCreatedIndicatorRecord(
+        INDICATOR_TYPES.BIODIVERSITY_LOSS,
+        indicatorPreconditions.biodiversityLoss,
+        materialH3DataProducer2,
+        indicatorPreconditions.sourcingRecord2.id,
+        148944.0999601198,
+        1610,
+      );
+      await checkCreatedIndicatorRecord(
+        INDICATOR_TYPES.CARBON_EMISSIONS,
+        indicatorPreconditions.carbonEmissions,
+        materialH3DataProducer2,
+        indicatorPreconditions.sourcingRecord2.id,
+        14.894409653562937,
+        1610,
+      );
+      await checkCreatedIndicatorRecord(
+        INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+        indicatorPreconditions.waterRisk,
+        materialH3DataProducer2,
+        indicatorPreconditions.sourcingRecord2.id,
+        0.7700000181794167,
         1610,
       );
     });
@@ -452,7 +564,7 @@ describe('Indicator Records Service', () => {
         additionalH3Data: h3MaterialExampleDataFixture,
         year: 2002,
       });
-      const materialH3DataProducer = await createMaterialToH3(
+      await createMaterialToH3(
         indicatorPreconditions.material2.id,
         h3MaterialProducer.id,
         MATERIAL_TO_H3_TYPE.PRODUCER,
@@ -498,17 +610,17 @@ describe('Indicator Records Service', () => {
         indicatorPreconditions.sourcingLocation2.geoRegionId,
         h3MaterialProducer,
       );
-      const bioCache: CachedData = await cachedDataService.createCachedData(
+      await cachedDataService.createCachedData(
         bioCacheKey,
         { rawValue: 450 } as CachedRawValue,
         CACHED_DATA_TYPE.RAW_INDICATOR_VALUE_GEOREGION,
       );
-      const harvestCache: CachedData = await cachedDataService.createCachedData(
+      await cachedDataService.createCachedData(
         materialHarvestKey,
         { rawValue: 75 } as CachedRawValue,
         CACHED_DATA_TYPE.RAW_MATERIAL_VALUE_GEOREGION,
       );
-      const prodCache: CachedData = await cachedDataService.createCachedData(
+      await cachedDataService.createCachedData(
         materialProducerKey,
         { rawValue: 200 } as CachedRawValue,
         CACHED_DATA_TYPE.RAW_MATERIAL_VALUE_GEOREGION,
@@ -527,7 +639,7 @@ describe('Indicator Records Service', () => {
         INDICATOR_TYPES.BIODIVERSITY_LOSS,
         indicatorPreconditions.biodiversityLoss,
         materialH3DataHarvest,
-        sourcingData,
+        sourcingData.sourcingRecordId,
         1125,
         200,
       );
@@ -557,12 +669,12 @@ describe('Indicator Records Service', () => {
         additionalH3Data: h3MaterialExampleDataFixture,
         year: 2002,
       });
-      const materialH3DataProducer = await createMaterialToH3(
+      await createMaterialToH3(
         indicatorPreconditions.material2.id,
         h3MaterialProducer.id,
         MATERIAL_TO_H3_TYPE.PRODUCER,
       );
-      const materialH3DataHarvest = await createMaterialToH3(
+      await createMaterialToH3(
         indicatorPreconditions.material2.id,
         h3MaterialHarvest.id,
         MATERIAL_TO_H3_TYPE.HARVEST,
@@ -687,7 +799,7 @@ describe('Indicator Records Service', () => {
    * @param indicatorType
    * @param h3Data
    * @param materialH3Data
-   * @param sourcingData
+   * @param sourcingRecordId
    * @param recordValue
    * @param scalerValue
    */
@@ -695,17 +807,15 @@ describe('Indicator Records Service', () => {
     indicatorType: INDICATOR_TYPES,
     h3Data: H3Data,
     materialH3Data: MaterialToH3,
-    sourcingData: any,
+    sourcingRecordId: string,
     recordValue: number,
     scalerValue: number | null,
   ): Promise<void> {
     const indicatorRecords = await indicatorRecordRepository.find({
-      where: { indicatorId: h3Data.indicatorId },
+      where: { indicatorId: h3Data.indicatorId, sourcingRecordId },
     });
     expect(indicatorRecords.length).toEqual(1);
-    expect(indicatorRecords[0].sourcingRecordId).toEqual(
-      sourcingData.sourcingRecordId,
-    );
+    expect(indicatorRecords[0].sourcingRecordId).toEqual(sourcingRecordId);
     expect(indicatorRecords[0].status).toEqual(INDICATOR_RECORD_STATUS.SUCCESS);
     expect(indicatorRecords[0].value).toEqual(recordValue);
     expect(indicatorRecords[0].scaler).toEqual(scalerValue);
@@ -741,7 +851,36 @@ describe('Indicator Records Service', () => {
     const supplier1: Supplier = await createSupplier({
       name: 'Stark Industries',
     });
-    const geoRegion1: GeoRegion = await createGeoRegion({ name: 'geoRegion1' });
+    const geoRegion1: GeoRegion = await createGeoRegion({
+      name: 'geoRegion1',
+      h3Compact: [
+        '861080007ffffff',
+        '861080017ffffff',
+        '86108001fffffff',
+        '861080027ffffff',
+        '86108002fffffff',
+
+        '8610b6d97ffffff',
+        '8610b6d9fffffff',
+        '8610b6da7ffffff',
+        '8610b6dafffffff',
+        '8610b6db7ffffff',
+      ],
+      h3Flat: [
+        '861080007ffffff',
+        '861080017ffffff',
+        '86108001fffffff',
+        '861080027ffffff',
+        '86108002fffffff',
+
+        '8610b6d97ffffff',
+        '8610b6d9fffffff',
+        '8610b6da7ffffff',
+        '8610b6dafffffff',
+        '8610b6db7ffffff',
+      ],
+      h3FlatLength: 10,
+    });
     const adminRegion1: AdminRegion = await createAdminRegion({
       name: 'USA',
       geoRegionId: geoRegion1.id,

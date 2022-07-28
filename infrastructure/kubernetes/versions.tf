@@ -67,6 +67,3 @@ provider "helm" {
 provider "github" {
 #  owner = "vizzuality"
 }
-
-
-GITHUB_OWNER=vizzuality GITHUB_TOKEN=ghp_FM4in0RCSWtTYvn terragrunt apply -var-file=vars/local.tfvars

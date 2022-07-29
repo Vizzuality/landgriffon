@@ -15,7 +15,6 @@ class MyDocument extends Document {
             name="description"
             content="Manage food and agriculture supply chain deforestation, climate, water risk and sustainability"
           />
-          <meta name="viewport" content="width=1024" />
           <link rel="shortcut icon" href="/favicon.ico" />
           <link href="https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.css" rel="stylesheet" />
           {/* Fonts */}

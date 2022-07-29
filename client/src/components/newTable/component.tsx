@@ -4,7 +4,9 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { getCoreRowModel } from '@tanstack/react-table';
 import { useReactTable } from '@tanstack/react-table';
 import Pagination from 'components/pagination';
-import React, { useMemo } from 'react';
+import PageSizeSelector from 'components/pagination/pageSizeSelector';
+import React, { useCallback, useMemo } from 'react';
+import Cell, { HeaderCell } from './cell';
 import type { ColumnDefinition } from './column';
 import { hasAccessorFn, isFieldNameSet, isRawColumn } from './column';
 
@@ -34,11 +36,16 @@ const Table = <T,>({ totalItems, data, columns, ...options }: TableProps<T>) => 
           cell: (cell) => {
             if (isRawColumn(column)) {
               const value = cell.getValue();
-              return column.format ? column.format(value) : `${value}`;
+              return <Cell>{column.format ? column.format(value) : value}</Cell>;
             }
-            return column.render(cell);
+            return (
+              <Cell maxWidth={column.maxWidth} width={column.width}>
+                {column.render(cell)}
+              </Cell>
+            );
           },
-          header: () => <span className="capitalize">{column.title}</span>,
+          header: () => <HeaderCell>{column.title}</HeaderCell>,
+          ...column,
         },
       );
     }),
@@ -46,56 +53,83 @@ const Table = <T,>({ totalItems, data, columns, ...options }: TableProps<T>) => 
   });
 
   const { pagination } = table.getState();
+  const onChangePageSize = useCallback(
+    (newSize: number) => {
+      table.setPageSize(newSize);
+    },
+    [table],
+  );
 
   return (
-    <div>
-      <table>
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(header.column.columnDef.header, header.getContext())}
-                </th>
+    <div className="space-y-5">
+      <div className="overflow-hidden shadow-xl rounded-2xl">
+        <div
+          className=" max-h-[50vh] overflow-auto"
+          // className=" max-h-[50vh]  hover:overflow-auto "
+        >
+          <table
+            className="table-fixed"
+            // style={{
+            //   width: table.getCenterTotalSize(),
+            // }}
+          >
+            <thead className="border-b border-b-gray-300 bg-gray-50">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <th key={header.id} style={{ width: header.column.getSize() + 10 }}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </th>
+                  ))}
+                </tr>
               ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+            </thead>
+            <tbody>
+              {table.getRowModel().rows.map((row) => (
+                <tr className="odd:bg-white even:bg-gray-50 hover:bg-gray-100" key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      className="w-full pr-5"
+                      key={cell.id}
+                      style={{ columnWidth: cell.column.getSize() + 20 }}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  ))}
+                </tr>
               ))}
-            </tr>
-          ))}
-        </tbody>
-        <tfoot>
-          {table.getFooterGroups().map((footerGroup) => (
-            <tr key={footerGroup.id}>
-              {footerGroup.headers.map((header) => (
-                <th key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(header.column.columnDef.footer, header.getContext())}
-                </th>
+            </tbody>
+            <tfoot>
+              {table.getFooterGroups().map((footerGroup) => (
+                <tr key={footerGroup.id}>
+                  {footerGroup.headers.map((header) => (
+                    <th key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.footer, header.getContext())}
+                    </th>
+                  ))}
+                </tr>
               ))}
-            </tr>
-          ))}
-        </tfoot>
-      </table>
-      <Pagination
-        totalPages={table.getPageCount()}
-        totalItems={totalItems}
-        numItems={pagination.pageSize}
-        currentPage={pagination.pageIndex}
-        onPageClick={(newPage) => {
-          // I don't totally understand this?
-          table.setPageIndex(newPage);
-        }}
-      />
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <div className="flex flex-row justify-between">
+        <PageSizeSelector onChange={onChangePageSize} pageSize={pagination.pageSize} />
+        <Pagination
+          totalPages={table.getPageCount()}
+          totalItems={totalItems}
+          numItems={pagination.pageSize}
+          currentPage={pagination.pageIndex}
+          onPageClick={(newPage) => {
+            table.setPageIndex(newPage);
+          }}
+        />
+      </div>
     </div>
   );
 };

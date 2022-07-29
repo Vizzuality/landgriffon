@@ -1,4 +1,4 @@
-import type { AccessorFn, CellContext, DeepKeys } from '@tanstack/react-table';
+import type { AccessorFn, CellContext, ColumnDef, DeepKeys } from '@tanstack/react-table';
 
 export enum ColumnType {
   RawValue,
@@ -8,6 +8,8 @@ export enum ColumnType {
 type CommonColumnInfo = {
   id: string;
   title?: string;
+  width?: number;
+  maxWidth?: number;
 };
 
 type IdFieldNameColumn<T> = {
@@ -38,7 +40,9 @@ type RenderColumn<T, C> = BaseColumn<T, C> & {
   render: (info: CellContext<T, C>) => React.ReactNode;
 };
 
-export type ColumnDefinition<T, C> = RawColumn<T, C> | RenderColumn<T, C>;
+export type ColumnDefinition<T, C> =
+  | RawColumn<T, C>
+  | (RenderColumn<T, C> & Partial<ColumnDef<T, C>>);
 
 export const isRawColumn = <T, C>(column: ColumnDefinition<T, C>): column is RawColumn<T, C> => {
   return column.type === ColumnType.RawValue;

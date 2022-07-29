@@ -1,6 +1,5 @@
 import Button from 'components/button';
 import Search from 'components/search';
-import { DataType, SortingMode, TableNoSSR as Table } from 'components/table';
 import DownloadMaterialsDataButton from 'containers/admin/download-materials-data-button';
 import NoDataUpload from 'containers/admin/no-data-upload';
 import NoResults from 'containers/admin/no-results';
@@ -17,7 +16,7 @@ import NewTable from 'components/newTable';
 import { ExclamationIcon } from '@heroicons/react/solid';
 import { useDebounce } from '@react-hook/debounce';
 
-import type { ApiSortingType, TableProps } from 'components/table';
+import type { ApiSortingType } from 'components/table';
 import type { PaginationState } from '@tanstack/react-table';
 import { ColumnType } from 'components/newTable/column';
 
@@ -82,54 +81,54 @@ const AdminDataPage: React.FC = () => {
   }, [allYears, sourcingData, yearsInRange]);
 
   /** Table Props */
-  const tableProps = useMemo<TableProps>(() => {
-    return {
-      isLoading: isFetchingSourcingData,
-      childComponents: {
-        cell: {
-          elementAttributes: () => ({
-            className: 'p-0',
-          }),
-        },
-      },
-      rowKeyField: 'id',
-      columns: [
-        { key: 'material', title: 'Material', dataType: DataType.String, width: 240 },
-        { key: 'businessUnit', title: 'Business Unit', dataType: DataType.String },
-        { key: 't1Supplier', title: 'T1 Supplier', dataType: DataType.String },
-        { key: 'producer', title: 'Producer', dataType: DataType.String },
-        { key: 'locationType', title: 'Location Type', dataType: DataType.String },
-        { key: 'country', title: 'Country', dataType: DataType.String },
-        ...yearsData.columns.map((column) => ({ ...column, isSortable: false })),
-      ],
-      data: merge(sourcingData, yearsData.data),
-      sortingMode: SortingMode.Api,
-      defaultSorting: sorting,
-      onSortingChange: (params: ApiSortingType) => {
-        setPagination((pag) => ({ ...pag, pageIndex: 1 }));
-        setSorting(params);
-      },
-      // onPageChange: ,
-      paging: {
-        enabled: true,
-        totalItems: sourcingMetadata.totalItems,
-        pageSize: sourcingMetadata.size,
-        pageIndex: sourcingMetadata.page,
-        pagesCount: sourcingMetadata.totalPages,
-        showSummary: true,
-      },
-    } as TableProps;
-  }, [
-    isFetchingSourcingData,
-    sorting,
-    sourcingData,
-    sourcingMetadata.page,
-    sourcingMetadata.size,
-    sourcingMetadata.totalItems,
-    sourcingMetadata.totalPages,
-    yearsData.columns,
-    yearsData.data,
-  ]);
+  // const tableProps = useMemo<TableProps>(() => {
+  //   return {
+  //     isLoading: isFetchingSourcingData,
+  //     childComponents: {
+  //       cell: {
+  //         elementAttributes: () => ({
+  //           className: 'p-0',
+  //         }),
+  //       },
+  //     },
+  //     rowKeyField: 'id',
+  //     columns: [
+  //       { key: 'material', title: 'Material', dataType: DataType.String, width: 240 },
+  //       { key: 'businessUnit', title: 'Business Unit', dataType: DataType.String },
+  //       { key: 't1Supplier', title: 'T1 Supplier', dataType: DataType.String },
+  //       { key: 'producer', title: 'Producer', dataType: DataType.String },
+  //       { key: 'locationType', title: 'Location Type', dataType: DataType.String },
+  //       { key: 'country', title: 'Country', dataType: DataType.String },
+  //       ...yearsData.columns.map((column) => ({ ...column, isSortable: false })),
+  //     ],
+  //     data: merge(sourcingData, yearsData.data),
+  //     sortingMode: SortingMode.Api,
+  //     defaultSorting: sorting,
+  //     onSortingChange: (params: ApiSortingType) => {
+  //       setPagination((pag) => ({ ...pag, pageIndex: 1 }));
+  //       setSorting(params);
+  //     },
+  //     // onPageChange: ,
+  //     paging: {
+  //       enabled: true,
+  //       totalItems: sourcingMetadata.totalItems,
+  //       pageSize: sourcingMetadata.size,
+  //       pageIndex: sourcingMetadata.page,
+  //       pagesCount: sourcingMetadata.totalPages,
+  //       showSummary: true,
+  //     },
+  //   } as TableProps;
+  // }, [
+  //   isFetchingSourcingData,
+  //   sorting,
+  //   sourcingData,
+  //   sourcingMetadata.page,
+  //   sourcingMetadata.size,
+  //   sourcingMetadata.totalItems,
+  //   sourcingMetadata.totalPages,
+  //   yearsData.columns,
+  //   yearsData.data,
+  // ]);
 
   /** Helpers for use in the JSX */
 
@@ -179,7 +178,7 @@ const AdminDataPage: React.FC = () => {
       <NewTable
         data={merge(sourcingData, yearsData.data)}
         columns={[
-          { id: 'material', title: 'Material', type: ColumnType.RawValue, width: 240 },
+          { id: 'material', title: 'Material', type: ColumnType.RawValue, size: 240 },
           { id: 'businessUnit', title: 'Business Unit', type: ColumnType.RawValue },
           { id: 't1Supplier', title: 'T1 Supplier', type: ColumnType.RawValue },
           { id: 'producer', title: 'Producer', type: ColumnType.RawValue },
@@ -189,6 +188,7 @@ const AdminDataPage: React.FC = () => {
             id: column.id,
             title: column.title,
             type: ColumnType.RawValue,
+            size: 70,
           })) as any),
         ]}
         manualPagination

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+##  2022-08-01
+### Added
+Added [LANDGRIF-813](https://vizzuality.atlassian.net/browse/LANDGRIF-813)
+Adds endpoint to retrieve location types supported by the platform
+
+
 ##  2022-07-15
 ### Added
 Added [LANDGRIF-778](https://vizzuality.atlassian.net/browse/LANDGRIF-7782)

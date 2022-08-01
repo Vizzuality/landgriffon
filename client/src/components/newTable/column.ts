@@ -10,6 +10,7 @@ type CommonColumnInfo = {
   title?: string;
   width?: number;
   maxWidth?: number;
+  align?: 'left' | 'center' | 'right';
 };
 
 type IdFieldNameColumn<T> = {

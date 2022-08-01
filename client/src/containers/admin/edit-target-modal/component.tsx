@@ -3,9 +3,9 @@ import { useMemo, useState, useCallback } from 'react';
 import { useSourcingRecordsYears } from 'hooks/sourcing-records';
 import { useTargets } from 'hooks/targets';
 
-import InfoTooltip from 'containers/info-tooltip';
 import TargetInputList from 'containers/targets/input-list';
 
+import InfoTooltip from 'components/info-tooltip';
 import Modal from 'components/modal';
 import Select from 'components/select';
 import Button from 'components/button';

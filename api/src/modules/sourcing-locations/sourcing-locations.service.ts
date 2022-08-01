@@ -10,7 +10,7 @@ import {
   JSONAPISerializerConfig,
 } from 'utils/app-base.service';
 import {
-  LOCATION_TYPES_PARAMS,
+  LOCATION_TYPES,
   SourcingLocation,
   sourcingLocationResource,
 } from 'modules/sourcing-locations/sourcing-location.entity';
@@ -30,6 +30,7 @@ import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { MaterialsService } from 'modules/materials/materials.service';
+import { locationTypeParser } from 'modules/sourcing-locations/helpers/location-type.parser';
 
 @Injectable()
 export class SourcingLocationsService extends AppBaseService<
@@ -209,22 +210,8 @@ export class SourcingLocationsService extends AppBaseService<
         locationTypesOptions,
       );
 
-    const parsedLocationTypes: LocationTypeWithLabel[] = locationTypes.map(
-      (locationType: { locationType: string }) => {
-        return {
-          label:
-            locationType.locationType
-              .replace(/-/g, ' ')
-              .charAt(0)
-              .toUpperCase() +
-            locationType.locationType.replace(/-/g, ' ').slice(1),
-          value: locationType.locationType.replace(
-            / /g,
-            '-',
-          ) as LOCATION_TYPES_PARAMS,
-        };
-      },
-    );
+    const parsedLocationTypes: LocationTypeWithLabel[] =
+      locationTypeParser(locationTypes);
 
     return { data: parsedLocationTypes };
   }
@@ -238,5 +225,16 @@ export class SourcingLocationsService extends AppBaseService<
       .andWhere(`${this.alias}.interventionType IS NULL`);
 
     return query;
+  }
+
+  /**
+   * @description Returns a hardcoded list of all location types supported by the platform
+   */
+  getAllSupportedLocationTypes(): any {
+    const locationTypes: { locationType: string }[] = Object.values(
+      LOCATION_TYPES,
+    ).map((locationType: string) => ({ locationType }));
+
+    return { data: locationTypeParser(locationTypes) };
   }
 }

@@ -98,7 +98,7 @@ export class IndicatorRecordsService extends AppBaseService<
     switch (config.get('import.missingDataFallbackStrategy')) {
       case 'ignore':
         this.logger.log(
-          `Cannot calculate impact for sourcing record - missing ${type} h3 data for material with ID "${sourcingRecord.materialId}" and year "${sourcingRecord.year}". Ignoring souring record`,
+          `Cannot calculate impact for sourcing record - missing ${type} h3 data for material with ID "${sourcingRecord.materialId}" and year "${sourcingRecord.year}". Ignoring sourcing record`,
         );
         return null;
       case 'fallback':

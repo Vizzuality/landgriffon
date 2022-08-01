@@ -1,4 +1,4 @@
-import { SortableListenersContext } from 'containers/sortable/component';
+import { SortableListenersContext } from 'components/sortable/component';
 import { useContext } from 'react';
 import cx from 'classnames';
 

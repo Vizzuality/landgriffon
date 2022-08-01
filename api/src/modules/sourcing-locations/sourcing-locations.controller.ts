@@ -127,6 +127,13 @@ export class SourcingLocationsController {
     return this.sourcingLocationsService.getLocationTypes(locationTypesOptions);
   }
 
+  @ApiOperation({ description: 'Get location types supported by the platform' })
+  @ApiOkResponse({ type: LocationTypesDto })
+  @Get('/location-types/supported')
+  async getAllSupportedLocationTypes(): Promise<LocationTypesDto> {
+    return this.sourcingLocationsService.getAllSupportedLocationTypes();
+  }
+
   @ApiOperation({ description: 'Find sourcing location by id' })
   @ApiOkResponse({ type: SourcingLocation })
   @ApiNotFoundResponse({ description: 'Sourcing location not found' })

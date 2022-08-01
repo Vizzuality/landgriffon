@@ -10,7 +10,6 @@ import { analysisUI } from 'store/features/analysis/ui';
 import ApplicationLayout from 'layouts/application';
 import PageLoading from 'containers/page-loading';
 import CollapseButton from 'containers/collapse-button';
-import ScenariosForm from 'containers/scenarios/edit/form';
 import type { AnalysisLayoutProps } from './types';
 
 const AnalysisVisualizationNoSSR = dynamic(() => import('containers/analysis-visualization'), {
@@ -52,11 +51,11 @@ const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({ loading = false, childr
           Analysis
         </h1>
 
-        {/* Interventions and growth forms */}
+        {/* TO-DO: scenario edition */}
         {!isSubContentCollapsed && !isSidebarCollapsed && (
           <div className="absolute top-0 left-0 h-full w-full min-w-min xl:w-250 lg:flex-shrink-0 bg-white z-10">
             <div className="h-full flex flex-col border-r border-gray-200 p-6 overflow-auto w-full">
-              <ScenariosForm />
+              Scenario edition
             </div>
           </div>
         )}

@@ -2,7 +2,6 @@
 const forms = require('@tailwindcss/forms');
 const typography = require('@tailwindcss/typography');
 const colors = require('tailwindcss/colors');
-const lineClamp = require('./src/lib/tailwind/line-clamp');
 
 module.exports = {
   content: ['./**/*.ts', './**/*.tsx'],
@@ -64,5 +63,5 @@ module.exports = {
   variants: {
     extend: {},
   },
-  plugins: [forms, typography, lineClamp],
+  plugins: [forms, typography],
 };

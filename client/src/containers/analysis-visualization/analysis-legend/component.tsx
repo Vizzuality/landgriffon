@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import Sortable from 'containers/sortable';
-import { SortableItem } from 'containers/sortable/component';
+import Sortable from 'components/sortable';
+import { SortableItem } from 'components/sortable/component';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisMap, setLayer } from 'store/features/analysis/map';
 import type { Layer } from 'types';

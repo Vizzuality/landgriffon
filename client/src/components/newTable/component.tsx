@@ -1,9 +1,9 @@
 import type { TableOptions } from '@tanstack/react-table';
+import { getExpandedRowModel } from '@tanstack/react-table';
 import { flexRender } from '@tanstack/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { getCoreRowModel } from '@tanstack/react-table';
 import { useReactTable } from '@tanstack/react-table';
-import classNames from 'classnames';
 import Pagination from 'components/pagination';
 import PageSizeSelector from 'components/pagination/pageSizeSelector';
 import React, { useCallback, useMemo } from 'react';
@@ -11,16 +11,34 @@ import Cell, { HeaderCell } from './cell';
 import type { ColumnDefinition } from './column';
 import { hasAccessorFn, isFieldNameSet, isRawColumn } from './column';
 
+const getAlignmentClasses = (align: 'left' | 'center' | 'right') => {
+  switch (align) {
+    case 'left':
+      return 'text-left';
+    case 'right':
+      return 'text-right';
+    case 'center':
+    default:
+      return 'text-center';
+  }
+};
 export interface TableProps<T> extends Omit<TableOptions<T>, 'columns' | 'getCoreRowModel'> {
   columns: ColumnDefinition<T, unknown>[];
   totalItems?: number;
 }
 
-const Table = <T,>({ totalItems, data, columns, ...options }: TableProps<T>) => {
+const Table = <T extends { children?: T[] }>({
+  totalItems,
+  data,
+  columns,
+  ...options
+}: TableProps<T>) => {
   const columnHelper = useMemo(() => createColumnHelper<T>(), []);
   const table = useReactTable({
     data,
+    getSubRows: (row) => row.children,
     getCoreRowModel: getCoreRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
     defaultColumn: {
       cell: (info) => info.getValue(),
       header: (info) => <span className="capitalize">{info.header.column.id}</span>,
@@ -36,34 +54,22 @@ const Table = <T,>({ totalItems, data, columns, ...options }: TableProps<T>) => 
         {
           id: column.id,
           cell: (cell) => {
+            let children: string | React.ReactNode;
             if (isRawColumn(column)) {
               const value = cell.getValue();
-              return (
-                <Cell
-                  className={classNames({
-                    'text-left': column.align === 'left',
-                    'text-center': !column.align || column.align === 'center',
-                    'text-right': column.align === 'right',
-                  })}
-                >
-                  {column.format ? column.format(value) : value}
-                </Cell>
-              );
+              children = column.format ? column.format(value) : value;
+            } else {
+              children = column.render(cell);
             }
+
             return (
-              <Cell maxWidth={column.maxWidth} width={column.width}>
-                {column.render(cell)}
+              <Cell context={cell} className={getAlignmentClasses(column.align)}>
+                {children}
               </Cell>
             );
           },
-          header: () => (
-            <HeaderCell
-              className={classNames({
-                'text-left': column.align === 'left',
-                'text-center': !column.align || column.align === 'center',
-                'text-right': column.align === 'right',
-              })}
-            >
+          header: (context) => (
+            <HeaderCell context={context} className={getAlignmentClasses(column.align)}>
               {column.title}
             </HeaderCell>
           ),
@@ -97,7 +103,7 @@ const Table = <T,>({ totalItems, data, columns, ...options }: TableProps<T>) => 
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
                     <th
-                      className="sticky top-0 pl-5 border-b border-b-gray-300 bg-gray-50"
+                      className="sticky top-0 border-b border-b-gray-300 bg-gray-50"
                       key={header.id}
                       style={{ width: header.column.getSize() }}
                     >
@@ -114,10 +120,8 @@ const Table = <T,>({ totalItems, data, columns, ...options }: TableProps<T>) => 
                 <tr className="odd:bg-white even:bg-gray-50 hover:bg-gray-100" key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <td
-                      className="pl-5"
                       key={cell.id}
                       style={{
-                        // columnWidth: cell.column.getSize(),
                         width: cell.column.getSize(),
                       }}
                     >

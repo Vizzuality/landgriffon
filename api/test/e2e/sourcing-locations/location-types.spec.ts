@@ -221,4 +221,22 @@ describe('SourcingLocationsModule (e2e)', () => {
       );
     });
   });
+
+  describe('Supported Location Types', () => {
+    test('When I query the API for all location types, Then I should get a list of all location types supported by the platform', async () => {
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/sourcing-locations/location-types/supported`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .expect(HttpStatus.OK);
+
+      expect(response.body.data).toEqual(
+        expect.arrayContaining([
+          { label: 'Country of production', value: 'country-of-production' },
+          { label: 'Aggregation point', value: 'aggregation-point' },
+          { label: 'Point of production', value: 'point-of-production' },
+          { label: 'Unknown', value: 'unknown' },
+        ]),
+      );
+    });
+  });
 });

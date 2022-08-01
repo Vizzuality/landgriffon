@@ -57,7 +57,7 @@ const schemaValidation = yup.object({
   newLocationCountryInput: optionSchema.nullable(),
   newLocationAddressInput: yup.string(),
   newLocationLatitude: yup.number().min(-90).max(90),
-  newLocationLongitude: yup.number().min(180).max(-180),
+  newLocationLongitude: yup.number().min(-180).max(180),
 
   // Material
   newMaterialId: optionSchema,
@@ -465,7 +465,11 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                         {locationType?.value === LocationTypes.aggregationPoint && (
                           <div>
                             <label className={LABEL_CLASSNAMES}>City / address</label>
-                            <Input type="text" {...register('newLocationAddressInput')} />
+                            <Input
+                              type="text"
+                              {...register('newLocationAddressInput')}
+                              error={errors?.newLocationAddressInput?.message}
+                            />
                           </div>
                         )}
                         {locationType?.value === LocationTypes.aggregationPoint && (
@@ -479,6 +483,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                                 min={-90}
                                 max={90}
                                 className="w-full"
+                                error={errors?.newLocationLatitude?.message}
                               />
                               <Input
                                 {...register('newLocationLongitude')}
@@ -487,6 +492,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                                 min={-180}
                                 max={180}
                                 className="w-full"
+                                error={errors?.newLocationLongitude?.message}
                               />
                             </div>
                           </div>

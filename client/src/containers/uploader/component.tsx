@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import Image from 'next/image';
 import { useDropzone } from 'react-dropzone';
 
-import { FILE_UPLOADER_MAX_SIZE } from 'constants/file-uploader-size-limits';
 import { apiService } from 'services/api';
 import { bytesToMegabytes } from 'utils/units';
 
@@ -20,7 +19,7 @@ const Uploader: React.FC<UploaderProps> = ({
   url,
   fileTypes,
   maxFiles = 1,
-  maxSize = FILE_UPLOADER_MAX_SIZE,
+  maxSize = Number(process.env.NEXT_PUBLIC_FILE_UPLOADER_MAX_SIZE || 10000000),
   autoUpload = false,
   showAlerts = true,
   disabled = false,

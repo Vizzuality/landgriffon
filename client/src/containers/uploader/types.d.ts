@@ -28,8 +28,7 @@ export type UploaderProps = {
   maxFiles?: number;
   /**
    * Maximum size of the uploaded files, in bytes.
-   * Defaults to the value set in the constant `FILE_UPLOADER_MAX_SIZE`, defined in
-   * `src/constants/file-uploader-size-limits.ts`
+   * Defaults to the value set in the env variable `NEXT_PUBLIC_FILE_UPLOADER_MAX_SIZE`
    */
   maxSize?: number;
   /**

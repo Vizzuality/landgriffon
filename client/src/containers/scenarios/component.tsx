@@ -74,9 +74,10 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
           (scenariosList.length === 0 && (
             <div className="absolute z-20 space-y-8 text-center bg-white p-7">
               <p className="text-sm">
-                Scenarios let you simulate changes in sourcing to evaluate how they would affect
-                impacts and risks. Create a scenario to get started.
+                Scenarios let you <strong>simulate changes</strong> in sourcing to evaluate how they
+                would affect impacts and risks.
               </p>
+              <p>Create a scenario to get started.</p>
               <div className="w-full">
                 <Lottie
                   animationData={noScenariosAnimationData}

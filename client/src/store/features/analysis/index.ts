@@ -30,14 +30,7 @@ export const { setFilter, setFilters, resetFiltersAndOverride } = analysisFilter
 
 export const { setLayer, setUserLayer, setUserLayers } = analysisMapSlice.actions;
 
-export const {
-  setCurrentScenario,
-  setScenarioToCompare,
-  setComparisonMode,
-  setScenarioTab,
-  setNewInterventionStep,
-  setCurrentIntervention,
-  setInterventionMode,
-} = analysisScenariosSlice.actions;
+export const { setCurrentScenario, setScenarioToCompare, setComparisonMode } =
+  analysisScenariosSlice.actions;
 
 export const analysis = (state: FeatureState) => state.analysis;

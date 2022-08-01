@@ -41,8 +41,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Styles for the sort dropdown in the scenarios list [LANDGRIF-738](https://vizzuality.atlassian.net/browse/LANDGRIF-738)
 - Sort country list alphabetically and added search functionality to the input in the intervention form [LANDGRIF-776](https://vizzuality.atlassian.net/browse/LANDGRIF-776)
 - User was not able to choice an option in the selectors for intervention creation [LANDGRIF-785](https://vizzuality.atlassian.net/browse/LANDGRIF-785)
-
 - Crash when the session expired [LANDGRIF-786](https://vizzuality.atlassian.net/browse/LANDGRIF-786)
+- Latitude validation in the intervention form
+- Coefficients were not to be null in the intervention form
 
 ### Removed
 - Overview link in the sidebar menu.

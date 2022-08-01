@@ -11,6 +11,8 @@ import { sortBy } from 'lodash';
 import { useSuppliersTypes } from 'hooks/suppliers';
 import { useLocationTypes } from 'hooks/location-types';
 import { useAdminRegionsTrees } from 'hooks/admin-regions';
+import { useSourcingRecordsYears } from 'hooks/sourcing-records';
+
 import MaterialsSelect from 'containers/materials/select';
 import BusinessUnitsSelect from 'containers/business-units/select';
 import LocationsSelect from 'containers/locations/select';
@@ -63,10 +65,22 @@ const schemaValidation = yup.object({
   newMaterialId: optionSchema,
 
   // Coefficients
-  DF_LUC_T: yup.number(),
-  UWU_T: yup.number(),
-  BL_LUC_T: yup.number(),
-  GHG_LUC_T: yup.number(),
+  DF_LUC_T: yup
+    .number()
+    .nullable()
+    .transform((_, val) => (val === Number(val) ? val : null)),
+  UWU_T: yup
+    .number()
+    .nullable()
+    .transform((_, val) => (val === Number(val) ? val : null)),
+  BL_LUC_T: yup
+    .number()
+    .nullable()
+    .transform((_, val) => (val === Number(val) ? val : null)),
+  GHG_LUC_T: yup
+    .number()
+    .nullable()
+    .transform((_, val) => (val === Number(val) ? val : null)),
 });
 
 const LABEL_CLASSNAMES = 'text-sm';
@@ -150,10 +164,15 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
   );
 
   // Years
-  const optionsYears = [
-    { label: '2019', value: 2019 },
-    { label: '2020', value: 2020 },
-  ];
+  const { data: years, isLoading: isLoadingYears } = useSourcingRecordsYears();
+  const optionsYears: SelectOptions = useMemo(
+    () =>
+      years.map((year) => ({
+        label: year.toString(),
+        value: year,
+      })),
+    [years],
+  );
 
   useEffect(() => {
     if (currentInterventionType === InterventionTypes.SupplierLocation) {
@@ -304,6 +323,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                 options={optionsYears}
                 placeholder="Select a year"
                 onChange={(value) => setValue('startYear', value)}
+                loading={isLoadingYears}
                 error={!!errors?.startYear?.message}
               />
             )}

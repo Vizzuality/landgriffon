@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { createPortal } from 'react-dom';
 import { signOut, useSession } from 'next-auth/react';
 import { Popover } from '@headlessui/react';
-import StringAvatar from 'containers/string-avatar';
+import StringAvatar from 'components/string-avatar';
 import Avatar from 'components/avatar';
 import Loading from 'components/loading';
 import { offset, useFloating } from '@floating-ui/react-dom';

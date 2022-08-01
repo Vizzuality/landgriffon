@@ -40,6 +40,7 @@ yarn-error.log*
 # Test with Cypress
 /cypress/screenshots
 /cypress/videos
+cypress.*.json
 
 # Storybook
 public/styles/*.storybook.css

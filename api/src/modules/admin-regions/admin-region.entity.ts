@@ -57,9 +57,9 @@ export class AdminRegion extends BaseEntity {
   @Column({ type: 'int', nullable: true })
   level: number;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   @ApiPropertyOptional()
-  name?: string;
+  name!: string;
 
   @Column({ nullable: true })
   @ApiPropertyOptional()

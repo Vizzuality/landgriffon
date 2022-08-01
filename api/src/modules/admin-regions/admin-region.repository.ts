@@ -7,11 +7,12 @@ import {
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-region.dto';
-import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
+import { Logger, NotFoundException } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetAdminRegionTreeWithOptionsDto } from 'modules/admin-regions/dto/get-admin-region-tree-with-options.dto';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
+import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 
 @EntityRepository(AdminRegion)
 export class AdminRegionRepository extends ExtendedTreeRepository<
@@ -51,13 +52,13 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
         `No Admin Region where Coordinates: LAT: ${searchParams.lat}, LONG: ${searchParams.lng} are could been found`,
       );
     }
-    // if (country) {
-    //   await this.validateAdminRegion(
-    //     res[0].adminRegionId,
-    //     country,
-    //     searchParams,
-    //   );
-    // }
+    if (country) {
+      await this.validateAdminRegion(
+        res[0].adminRegionId,
+        country,
+        searchParams,
+      );
+    }
 
     return res[0];
   }
@@ -110,13 +111,13 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
     const result: any = res.reduce(function (previous: any, current: any) {
       return previous.level > current.level ? previous : current;
     });
-    // if (country) {
-    //   await this.validateAdminRegion(
-    //     result.adminRegionId,
-    //     country,
-    //     coordinates,
-    //   );
-    // }
+    if (country) {
+      await this.validateAdminRegion(
+        result.adminRegionId,
+        country,
+        coordinates,
+      );
+    }
 
     return result;
   }
@@ -132,11 +133,27 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
       lat: number;
     },
   ): Promise<void> {
-    const ancestor: AdminRegion = await this.findAncestorsTree({
-      id: adminRegionId,
-    } as AdminRegion);
-    if (ancestor.name !== country)
-      throw new BadRequestException(
+    const intersectingCountries: AdminRegion[] = await this.query(
+      `
+     SELECT a.id AS "adminRegionId" , a."name", a."level" , g."name" , g.id AS "geoRegionId"
+        FROM admin_region a
+               RIGHT JOIN geo_region g on a."geoRegionId" = g.id
+        WHERE ST_Intersects(
+         ST_BUFFER(ST_SetSRID(ST_POINT($1 ,$2),4326)::geometry, 0.01),
+          st_setsrid(g."theGeom"::geometry, 4326)
+          )
+        AND a.id IS NOT null
+        and a."level" = 0
+    `,
+      [coordinates.lng, coordinates.lat],
+    );
+    if (
+      !intersectingCountries.some(
+        (intersectingCountry: AdminRegion) =>
+          intersectingCountry.name === country,
+      )
+    )
+      throw new GeoCodingError(
         `coordinates ${coordinates.lng}, ${coordinates.lat} are not inside ${country}`,
       );
   }

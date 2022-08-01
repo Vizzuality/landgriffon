@@ -136,6 +136,8 @@ const AdminDataPage: React.FC = () => {
   const isFetchingData = isFetchingSourcingData;
   const isSearching = !!searchText;
 
+  const data = useMemo(() => merge(sourcingData, yearsData.data), [sourcingData, yearsData.data]);
+
   return (
     <AdminLayout currentTab={ADMIN_TABS.DATA} title="Actual data">
       <Head>
@@ -176,7 +178,7 @@ const AdminDataPage: React.FC = () => {
       )}
       {!hasData && isSearching && <NoResults />}
       <NewTable
-        data={merge(sourcingData, yearsData.data)}
+        data={data}
         columns={[
           {
             id: 'material',

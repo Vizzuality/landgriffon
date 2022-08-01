@@ -3,6 +3,7 @@ import { flexRender } from '@tanstack/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { getCoreRowModel } from '@tanstack/react-table';
 import { useReactTable } from '@tanstack/react-table';
+import classNames from 'classnames';
 import Pagination from 'components/pagination';
 import PageSizeSelector from 'components/pagination/pageSizeSelector';
 import React, { useCallback, useMemo } from 'react';
@@ -23,6 +24,7 @@ const Table = <T,>({ totalItems, data, columns, ...options }: TableProps<T>) => 
     defaultColumn: {
       cell: (info) => info.getValue(),
       header: (info) => <span className="capitalize">{info.header.column.id}</span>,
+      footer: null,
     },
     columns: columns.map((column) => {
       return columnHelper.accessor(
@@ -36,7 +38,17 @@ const Table = <T,>({ totalItems, data, columns, ...options }: TableProps<T>) => 
           cell: (cell) => {
             if (isRawColumn(column)) {
               const value = cell.getValue();
-              return <Cell>{column.format ? column.format(value) : value}</Cell>;
+              return (
+                <Cell
+                  className={classNames({
+                    'text-left': column.align === 'left',
+                    'text-center': !column.align || column.align === 'center',
+                    'text-right': column.align === 'right',
+                  })}
+                >
+                  {column.format ? column.format(value) : value}
+                </Cell>
+              );
             }
             return (
               <Cell maxWidth={column.maxWidth} width={column.width}>
@@ -44,7 +56,17 @@ const Table = <T,>({ totalItems, data, columns, ...options }: TableProps<T>) => 
               </Cell>
             );
           },
-          header: () => <HeaderCell>{column.title}</HeaderCell>,
+          header: () => (
+            <HeaderCell
+              className={classNames({
+                'text-left': column.align === 'left',
+                'text-center': !column.align || column.align === 'center',
+                'text-right': column.align === 'right',
+              })}
+            >
+              {column.title}
+            </HeaderCell>
+          ),
           ...column,
         },
       );
@@ -61,23 +83,24 @@ const Table = <T,>({ totalItems, data, columns, ...options }: TableProps<T>) => 
   );
 
   return (
-    <div className="space-y-5">
+    <div className="mt-5 space-y-5">
       <div className="overflow-hidden shadow-xl rounded-2xl">
-        <div
-          className=" max-h-[50vh] overflow-auto"
-          // className=" max-h-[50vh]  hover:overflow-auto "
-        >
+        <div className=" max-h-[50vh] overflow-auto">
           <table
-            className="table-fixed"
-            // style={{
-            //   width: table.getCenterTotalSize(),
-            // }}
+            className="border-separate table-fixed border-spacing-0"
+            style={{
+              width: table.getTotalSize(),
+            }}
           >
             <thead className="border-b border-b-gray-300 bg-gray-50">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
-                    <th key={header.id} style={{ width: header.column.getSize() + 10 }}>
+                    <th
+                      className="sticky top-0 pl-5 border-b border-b-gray-300 bg-gray-50"
+                      key={header.id}
+                      style={{ width: header.column.getSize() }}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(header.column.columnDef.header, header.getContext())}
@@ -91,9 +114,12 @@ const Table = <T,>({ totalItems, data, columns, ...options }: TableProps<T>) => 
                 <tr className="odd:bg-white even:bg-gray-50 hover:bg-gray-100" key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <td
-                      className="w-full pr-5"
+                      className="pl-5"
                       key={cell.id}
-                      style={{ columnWidth: cell.column.getSize() + 20 }}
+                      style={{
+                        // columnWidth: cell.column.getSize(),
+                        width: cell.column.getSize(),
+                      }}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
@@ -105,7 +131,14 @@ const Table = <T,>({ totalItems, data, columns, ...options }: TableProps<T>) => 
               {table.getFooterGroups().map((footerGroup) => (
                 <tr key={footerGroup.id}>
                   {footerGroup.headers.map((header) => (
-                    <th key={header.id}>
+                    <th
+                      className="sticky bottom-0 pl-5"
+                      key={header.id}
+                      style={{
+                        columnWidth: header.column.getSize(),
+                        width: header.column.getSize(),
+                      }}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(header.column.columnDef.footer, header.getContext())}

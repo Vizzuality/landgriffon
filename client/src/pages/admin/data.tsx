@@ -178,7 +178,13 @@ const AdminDataPage: React.FC = () => {
       <NewTable
         data={merge(sourcingData, yearsData.data)}
         columns={[
-          { id: 'material', title: 'Material', type: ColumnType.RawValue, size: 240 },
+          {
+            id: 'material',
+            title: 'Material',
+            type: ColumnType.RawValue,
+            size: 280,
+            align: 'left',
+          },
           { id: 'businessUnit', title: 'Business Unit', type: ColumnType.RawValue },
           { id: 't1Supplier', title: 'T1 Supplier', type: ColumnType.RawValue },
           { id: 'producer', title: 'Producer', type: ColumnType.RawValue },

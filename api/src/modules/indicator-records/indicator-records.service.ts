@@ -194,7 +194,7 @@ export class IndicatorRecordsService extends AppBaseService<
           indicatorValues,
         };
 
-        return this.calculateIndicatorValuesV2(
+        return this.calculateIndicatorValues(
           sourcingRecordData.sourcingRecordId,
           sourcingRecordData.tonnage,
           sourcingRecordData.materialH3DataId,
@@ -269,7 +269,7 @@ export class IndicatorRecordsService extends AppBaseService<
           sourcingData.materialId,
           sourcingData.year,
         );
-      calculatedIndicatorRecordValues = this.calculateIndicatorValuesV2(
+      calculatedIndicatorRecordValues = this.calculateIndicatorValues(
         sourcingData.sourcingRecordId,
         sourcingData.tonnage,
         materialH3Data.id,
@@ -311,71 +311,6 @@ export class IndicatorRecordsService extends AppBaseService<
   }
 
   /**
-   * @description Consumes Indicator Raw Data from the DB to calculate final values for Indicator Records
-   */
-  // TODO: Extract the logic of equaling to 0 all falsy values to some other place
-  // TODO: Although refactored, this is kept for compatibility with the calculation of all sourcing records on sourcing import
-  private calculateIndicatorValues(
-    sourcingRecordData: SourcingRecordsWithIndicatorRawDataDto,
-  ): IndicatorRecordCalculatedValuesDto {
-    const {
-      sourcingRecordId,
-      tonnage,
-      production,
-      harvestedArea,
-      materialH3DataId,
-    } = sourcingRecordData;
-
-    const calculatedIndicatorValues: IndicatorRecordCalculatedValuesDto =
-      new IndicatorRecordCalculatedValuesDto();
-
-    // TODO Alternative strategy for calculations when production and harvest area values are very small
-
-    /** Temporary solution - checking if production and harvest area values are less than 1
-     *  the raw impact values and land use values will be set to 0
-     */
-    const deforestationPerHarvestedAreaLandUse: number =
-      harvestedArea < 1
-        ? 0
-        : sourcingRecordData.rawDeforestation / harvestedArea || 0;
-    const biodiversityLossPerHarvestedAreaLandUse: number =
-      harvestedArea < 1
-        ? 0
-        : sourcingRecordData.rawBiodiversity / harvestedArea || 0;
-    const carbonLossPerHarvestedAreaLandUse: number =
-      harvestedArea < 1 ? 0 : sourcingRecordData.rawCarbon / harvestedArea || 0;
-
-    calculatedIndicatorValues.sourcingRecordId = sourcingRecordId;
-    calculatedIndicatorValues.materialH3DataId = materialH3DataId;
-    calculatedIndicatorValues.production = production;
-    // Land per tonn is set to 0 if production or harvest area are less than 1
-    calculatedIndicatorValues.landPerTon =
-      harvestedArea < 1 || production < 1 ? 0 : harvestedArea / production || 0;
-    const landUse: number = calculatedIndicatorValues.landPerTon * tonnage || 0;
-    calculatedIndicatorValues.landUse = landUse;
-
-    calculatedIndicatorValues.values = new Map();
-    calculatedIndicatorValues.values.set(
-      INDICATOR_TYPES.DEFORESTATION,
-      deforestationPerHarvestedAreaLandUse * landUse,
-    );
-    calculatedIndicatorValues.values.set(
-      INDICATOR_TYPES.BIODIVERSITY_LOSS,
-      biodiversityLossPerHarvestedAreaLandUse * landUse,
-    );
-    calculatedIndicatorValues.values.set(
-      INDICATOR_TYPES.CARBON_EMISSIONS,
-      carbonLossPerHarvestedAreaLandUse * landUse,
-    );
-    calculatedIndicatorValues.values.set(
-      INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
-      sourcingRecordData.rawWater * tonnage,
-    );
-
-    return calculatedIndicatorValues;
-  }
-
-  /**
    * Consumes Indicator Raw Data from the DB to calculate final values for Indicator Records
    * @param sourcingRecordId
    * @param tonnage
@@ -383,7 +318,7 @@ export class IndicatorRecordsService extends AppBaseService<
    * @param indicatorComputedRawData
    * @private
    */
-  private calculateIndicatorValuesV2(
+  private calculateIndicatorValues(
     sourcingRecordId: string,
     tonnage: number,
     materialH3DataId: string,

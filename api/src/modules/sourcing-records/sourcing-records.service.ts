@@ -18,6 +18,7 @@ import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sou
 import { GetImpactTableDto } from 'modules/impact/dto/get-impact-table.dto';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { GetScenarioComparisonDto } from 'modules/impact/dto/get-scenario-comparison.dto';
 
 export interface SourcingRecordDataForImpact {
   id: string;
@@ -93,6 +94,14 @@ export class SourcingRecordsService extends AppBaseService<
   ): Promise<ImpactTableData[]> {
     return this.sourcingRecordRepository.getDataForImpactTable(
       getImpactTableDto,
+    );
+  }
+
+  async getDataForScenarioComparison(
+    getScenarioComparisonDto: GetScenarioComparisonDto,
+  ): Promise<ImpactTableData[]> {
+    return this.sourcingRecordRepository.getDataForScenarioComaprison(
+      getScenarioComparisonDto,
     );
   }
 

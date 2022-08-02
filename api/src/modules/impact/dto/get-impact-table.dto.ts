@@ -1,4 +1,7 @@
 import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  ArrayNotEmpty,
   IsEnum,
   IsIn,
   IsNotEmpty,

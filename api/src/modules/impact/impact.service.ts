@@ -382,7 +382,7 @@ export class ImpactService {
           if (dataForYear) {
             calculatedData[namesByIndicatorIndex].values.push({
               year: dataForYear.year,
-              value: dataForYear.impact,
+              value: dataForYear.impact || 0,
               isProjected: false,
               ...(queryDto.scenarioId && {
                 interventionValue: dataForYear.interventionImpact,

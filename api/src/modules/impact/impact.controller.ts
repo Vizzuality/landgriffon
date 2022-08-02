@@ -45,6 +45,25 @@ export class ImpactController {
   }
 
   @ApiOperation({
+    description: 'Get data for comparing Impacts of 2 Scenarios',
+  })
+  @ApiOkResponse({
+    type: PaginatedImpactTable,
+  })
+  @JSONAPIPaginationQueryParams()
+  @Get('scenarios-table')
+  async getTwoScenariosImpactTable(
+    @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
+    @Query(ValidationPipe)
+    twoScenariosImpactTableDto: GetImpactTableDto,
+  ): Promise<PaginatedImpactTable> {
+    return await this.impactService.getImpactTable(
+      twoScenariosImpactTableDto,
+      fetchSpecification,
+    );
+  }
+
+  @ApiOperation({
     description:
       'Get Ranked Impact Table, up to maxRankingEntities, aggregating the rest of entities, for each indicator ',
   })

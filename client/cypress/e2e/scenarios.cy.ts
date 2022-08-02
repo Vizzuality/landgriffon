@@ -19,7 +19,7 @@ describe('Scenarios', () => {
     cy.visit('/admin/scenarios');
     cy.wrap(getSession()).then((session: Session) => {
       cy.request({
-        url: `${Cypress.env('apiUrl')}/api/v1/scenarios`,
+        url: `${Cypress.env('API_URL')}/api/v1/scenarios`,
         headers: {
           Authorization: `Bearer ${session.accessToken}`,
         },

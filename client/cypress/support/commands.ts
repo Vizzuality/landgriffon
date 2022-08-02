@@ -15,8 +15,8 @@ Cypress.Commands.add('login', (): Cypress.Chainable => {
   return cy.wrap(
     signIn('credentials', {
       redirect: false,
-      username: Cypress.env('username'),
-      password: Cypress.env('password'),
+      username: Cypress.env('USERNAME'),
+      password: Cypress.env('PASSWORD'),
     }),
   );
 });

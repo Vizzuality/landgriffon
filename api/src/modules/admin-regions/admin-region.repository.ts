@@ -154,7 +154,7 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
       )
     )
       throw new GeoCodingError(
-        `coordinates ${coordinates.lng}, ${coordinates.lat} are not inside ${country}`,
+        `coordinates ${coordinates.lat}, ${coordinates.lng} are not inside ${country}`,
       );
   }
 

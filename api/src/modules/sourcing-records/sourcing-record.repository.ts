@@ -21,6 +21,7 @@ import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { GetScenarioComparisonDto } from 'modules/impact/dto/get-scenario-comparison.dto';
 
 export class ImpactTableData {
   year: number;
@@ -28,7 +29,7 @@ export class ImpactTableData {
   indicatorShortName: string;
   name: string;
   tonnes: string;
-  impact?: number;
+  impact: number;
   interventionImpact?: number;
   absoluteDifference?: number;
   percentageDifference?: number;
@@ -37,12 +38,11 @@ export class ImpactTableData {
   typeByIntervention: SOURCING_LOCATION_TYPE_BY_INTERVENTION | null;
 }
 
-export class ImpactTableForScenarioComparisson extends ImpactTableData {
-  scenarioOne?: ScenarioComparissonImpact;
-  scenarioTwo?: ScenarioComparissonImpact;
+export class ScenariosImpactTableData extends ImpactTableData {
+  scenarioComparison: ScenarioComparissonImpact[];
 }
 
-class ScenarioComparissonImpact {
+export class ScenarioComparissonImpact {
   scenarioId: string;
   impact: number;
 }
@@ -78,19 +78,103 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
   async getDataForImpactTable(
     getImpactTaleDto: GetImpactTableDto,
   ): Promise<ImpactTableData[]> {
-    const {
-      startYear,
-      endYear,
-      indicatorIds,
-      materialIds,
-      originIds,
-      groupBy,
-      supplierIds,
-      locationTypes,
-      scenarioId,
-    } = getImpactTaleDto;
-
+    // Creating basic select query
     const impactDataQueryBuilder: SelectQueryBuilder<SourcingRecord> =
+      this.createBasicSelectQuery(getImpactTaleDto);
+
+    if (getImpactTaleDto.scenarioId) {
+      impactDataQueryBuilder
+        .innerJoin(
+          ScenarioIntervention,
+          'scenarioIntervention',
+          'sourcingLocation.scenarioInterventionId = scenarioIntervention.id',
+        )
+        .innerJoin(
+          Scenario,
+          'scenario',
+          'scenarioIntervention.scenarioId = scenario.id',
+        )
+        .andWhere('scenario.id = :scenarioId', {
+          scenarioid: getImpactTaleDto.scenarioId,
+        });
+    } else {
+      impactDataQueryBuilder.andWhere(
+        'sourcingLocation.scenarioInterventionId is null',
+      );
+    }
+
+    // Adding received entity filters to query
+    this.addEntityFiltersToQuery(impactDataQueryBuilder, getImpactTaleDto);
+
+    // Adding received group by option to query
+
+    this.addGroupAndOrderByToQuery(impactDataQueryBuilder, getImpactTaleDto);
+
+    const dataForImpactTable: ImpactTableData[] =
+      await impactDataQueryBuilder.getRawMany();
+
+    if (!dataForImpactTable.length) {
+      throw new NotFoundException(
+        'Data required for building Impact Table could not been retrieved from DB',
+      );
+    }
+    return dataForImpactTable;
+  }
+
+  async getDataForScenarioComaprison(
+    getScenarioComparisonDto: GetScenarioComparisonDto,
+  ): Promise<ImpactTableData[]> {
+    // Creating basic select query
+    const impactDataQueryBuilder: SelectQueryBuilder<SourcingRecord> =
+      this.createBasicSelectQuery(getScenarioComparisonDto);
+
+    // Adding filters to get only new impacts of the scenarios chosen for comparison
+    impactDataQueryBuilder
+      .innerJoin(
+        ScenarioIntervention,
+        'scenarioIntervention',
+        'sourcingLocation.scenarioInterventionId = scenarioIntervention.id',
+      )
+      .innerJoin(
+        Scenario,
+        'scenario',
+        'scenarioIntervention.scenarioId = scenario.id',
+      )
+      .andWhere('scenario.id = IN (:...scenarioIds)', {
+        scenarioids: getScenarioComparisonDto.scenarioIds,
+      })
+      .andWhere(
+        `sourcingLocation.interventionType = ${SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING}`,
+      );
+
+    // Adding received entity filters to query
+    this.addEntityFiltersToQuery(
+      impactDataQueryBuilder,
+      getScenarioComparisonDto,
+    );
+
+    // Adding received group by option to query
+
+    this.addGroupAndOrderByToQuery(
+      impactDataQueryBuilder,
+      getScenarioComparisonDto,
+    );
+
+    const dataForImpactTable: ImpactTableData[] =
+      await impactDataQueryBuilder.getRawMany();
+
+    if (!dataForImpactTable.length) {
+      throw new NotFoundException(
+        'Data required for building Scenario Comparison Table could not been retrieved from DB',
+      );
+    }
+    return dataForImpactTable;
+  }
+
+  private createBasicSelectQuery(
+    impactDataDto: GetScenarioComparisonDto | GetImpactTableDto,
+  ): SelectQueryBuilder<SourcingRecord> {
+    const basicSelectQuery: SelectQueryBuilder<SourcingRecord> =
       this.createQueryBuilder('sourcingRecords')
         .select('sourcingRecords.year', 'year')
         .addSelect('sum(sourcingRecords.tonnage)', 'tonnes')
@@ -133,117 +217,101 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
           'sourcingLocation.businessUnitId = businessUnit.id',
         )
         .where('sourcingRecords.year BETWEEN :startYear and :endYear', {
-          startYear,
-          endYear,
+          startYear: impactDataDto.startYear,
+          endYear: impactDataDto.endYear,
         })
-        .andWhere('indicator.id IN (:...indicatorIds)', { indicatorIds });
+        .andWhere('indicator.id IN (:...indicatorIds)', {
+          indicatorIds: impactDataDto.indicatorIds,
+        });
 
-    // FILTERS
+    return basicSelectQuery;
+  }
 
-    // If Impact table is for scenario - scenarioId filter shall be added, else only SLs not belonging to interventions shall be chosen
-
-    if (scenarioId) {
-      impactDataQueryBuilder
-        .innerJoin(
-          ScenarioIntervention,
-          'scenarioIntervention',
-          'sourcingLocation.scenarioInterventionId = scenarioIntervention.id',
-        )
-        .innerJoin(
-          Scenario,
-          'scenario',
-          'scenarioIntervention.scenarioId = scenario.id',
-        )
-        .andWhere('scenario.id = :scenarioId', { scenarioId });
-    } else {
-      impactDataQueryBuilder.andWhere(
-        'sourcingLocation.scenarioInterventionId is null',
-      );
-    }
-
-    // User chosen Filters
-
-    if (materialIds) {
-      impactDataQueryBuilder.andWhere(
+  private addEntityFiltersToQuery(
+    selectQueryBuilder: SelectQueryBuilder<SourcingRecord>,
+    impactDataDto: GetScenarioComparisonDto | GetImpactTableDto,
+  ): SelectQueryBuilder<SourcingRecord> {
+    if (impactDataDto.materialIds) {
+      selectQueryBuilder.andWhere(
         'sourcingLocation.materialId IN (:...materialIds)',
         {
-          materialIds,
+          materialIds: impactDataDto.materialIds,
         },
       );
     }
-    if (originIds) {
-      impactDataQueryBuilder.andWhere(
+    if (impactDataDto.originIds) {
+      selectQueryBuilder.andWhere(
         'sourcingLocation.adminRegionId IN (:...originIds)',
         {
-          originIds,
+          originIds: impactDataDto.originIds,
         },
       );
     }
-    if (supplierIds) {
-      impactDataQueryBuilder.andWhere(
+    if (impactDataDto.supplierIds) {
+      selectQueryBuilder.andWhere(
         new Brackets((qb: WhereExpressionBuilder) => {
           qb.where('sourcingLocation.t1SupplierId IN (:...supplierIds)', {
-            supplierIds,
+            supplierIds: impactDataDto.supplierIds,
           }).orWhere('sourcingLocation.producerId IN (:...supplierIds)', {
-            supplierIds,
+            supplierIds: impactDataDto.supplierIds,
           });
         }),
       );
     }
 
-    if (locationTypes) {
-      impactDataQueryBuilder.andWhere(
+    if (impactDataDto.locationTypes) {
+      selectQueryBuilder.andWhere(
         'sourcingLocation.locationType IN (:...locationTypes)',
         {
-          locationTypes,
+          locationTypes: impactDataDto.locationTypes,
         },
       );
     }
-    //GROUPING BY
-    switch (groupBy) {
+
+    return selectQueryBuilder;
+  }
+
+  private addGroupAndOrderByToQuery(
+    selectQueryBuilder: SelectQueryBuilder<SourcingRecord>,
+    impactDataDto: GetScenarioComparisonDto | GetImpactTableDto,
+  ): SelectQueryBuilder<SourcingRecord> {
+    switch (impactDataDto.groupBy) {
       case GROUP_BY_VALUES.MATERIAL:
-        impactDataQueryBuilder
+        selectQueryBuilder
           .addSelect('material.name', 'name')
           .groupBy('material.name');
         break;
       case GROUP_BY_VALUES.REGION:
-        impactDataQueryBuilder
+        selectQueryBuilder
           .addSelect('adminRegion.name', 'name')
           .groupBy('adminRegion.name');
         break;
       case GROUP_BY_VALUES.SUPPLIER:
-        impactDataQueryBuilder
+        selectQueryBuilder
           .addSelect('supplier.name', 'name')
           .andWhere('supplier.name IS NOT NULL')
           .groupBy('supplier.name');
         break;
       case GROUP_BY_VALUES.BUSINESS_UNIT:
-        impactDataQueryBuilder
+        selectQueryBuilder
           .addSelect('businessUnit.name', 'name')
           .groupBy('businessUnit.name');
         break;
       case GROUP_BY_VALUES.LOCATION_TYPE:
-        impactDataQueryBuilder
+        selectQueryBuilder
           .addSelect('sourcingLocation.locationType', 'name')
           .groupBy('sourcingLocation.locationType');
         break;
       default:
     }
-    impactDataQueryBuilder
+
+    selectQueryBuilder
       .addGroupBy(
         `sourcingRecords.year, indicator.id, sourcingLocation.interventionType`,
       )
       .orderBy('year', 'ASC')
       .addOrderBy('name');
 
-    const dataForImpactTable: ImpactTableData[] =
-      await impactDataQueryBuilder.getRawMany();
-
-    if (!dataForImpactTable.length) {
-      throw new NotFoundException(
-        'Data required for building Impact Table could not been retrieved from DB',
-      );
-    }
-    return dataForImpactTable;
+    return selectQueryBuilder;
   }
 }

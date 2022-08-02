@@ -22,6 +22,7 @@ import {
 } from 'modules/impact/dto/impact-table.dto';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { GetScenarioComparisonDto } from 'modules/impact/dto/get-scenario-comparison.dto';
 
 export interface SourcingRecordDataForImpact {
   id: string;

@@ -1,11 +1,8 @@
 import Image from 'next/image';
+import type { HTMLAttributes } from 'react';
 
-type LandgriffonLogoProps = {
-  className?: string;
-};
-
-const LandgriffonLogo: React.FC<LandgriffonLogoProps> = ({ className }) => (
-  <div className={className}>
+const LandgriffonLogo: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => (
+  <div {...props}>
     <Image src="/landgriffon-logo-white.svg" width="196" height="16" alt="Landgriffon logo" />
   </div>
 );

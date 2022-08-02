@@ -1,7 +1,13 @@
-import { ChevronRightIcon } from '@heroicons/react/solid';
-import type { CellContext, HeaderContext } from '@tanstack/react-table';
+import {
+  ChevronRightIcon,
+  SelectorIcon,
+  SortAscendingIcon,
+  SortDescendingIcon,
+} from '@heroicons/react/solid';
+import type { CellContext, ColumnMeta, HeaderContext } from '@tanstack/react-table';
 import classNames from 'classnames';
 import type { CSSProperties } from 'react';
+import { useMemo } from 'react';
 
 interface CellProps<T, C> {
   context: CellContext<T, C>;
@@ -9,8 +15,19 @@ interface CellProps<T, C> {
   style?: CSSProperties;
 }
 
+const renderChildren = <T, C>(format: ColumnMeta<T, C>['format'], children: C) => {
+  if (!children) return '-';
+
+  return format ? format(children) : children;
+};
+
 const Cell = <T, C>({ children, className, context }: React.PropsWithChildren<CellProps<T, C>>) => {
   const isFirstColumn = context.table.getAllColumns()[0].id === context.column.id;
+
+  const renderedChildren = useMemo(
+    () => renderChildren(context.column.columnDef.meta.format, children),
+    [context.column.columnDef.meta.format, children],
+  );
 
   return (
     <div
@@ -35,7 +52,7 @@ const Cell = <T, C>({ children, className, context }: React.PropsWithChildren<Ce
             />
           </div>
         )}
-        {children || '-'}
+        {renderedChildren}
       </div>
     </div>
   );
@@ -49,9 +66,10 @@ interface HeaderCellProps<T, C> {
 export const HeaderCell = <T, C>({
   children,
   className,
-  context,
+  context: { column, table },
 }: React.PropsWithChildren<HeaderCellProps<T, C>>) => {
-  const isFirstColumn = context.table.getAllColumns()[0].id === context.column.id;
+  const isFirstColumn = table.getAllColumns()[0].id === column.id;
+  const isSorted = column.getIsSorted();
   return (
     <div
       className={classNames(
@@ -62,7 +80,16 @@ export const HeaderCell = <T, C>({
         className,
       )}
     >
-      {children}
+      <div className="flex flex-row justify-start gap-2">
+        {children}
+        {column.getCanSort() && (
+          <div className="w-5 h-5 cursor-pointer" onClick={column.getToggleSortingHandler()}>
+            {isSorted === 'asc' && <SortAscendingIcon />}
+            {isSorted === 'desc' && <SortDescendingIcon />}
+            {!isSorted && <SelectorIcon />}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

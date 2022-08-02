@@ -6,6 +6,8 @@ import { v4 as uuidv4 } from 'uuid';
 import apiService from 'services/api';
 import type { SourcingLocation, APIMetadataPagination } from 'types';
 
+import type { ApiSortParams } from 'components/newTable/types';
+
 type SourcingLocationsMaterialsAPIResponse = {
   data: SourcingLocation[];
   meta: APIMetadataPagination;
@@ -18,7 +20,7 @@ export type SourcingLocationsParams = {
   search?: string;
   'page[number]'?: number;
   'page[size]'?: number;
-};
+} & Partial<ApiSortParams>;
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   placeholderData: [],

@@ -11,10 +11,12 @@ const SLIDES = [
   {
     id: '1',
     content: (
-      <div
-        className="w-full border-4 border-white pb-[45%] bg-cover"
-        style={{ backgroundImage: `url('/images/home/what/screen_1.jpg')` }}
-      />
+      <div className="w-full">
+        <div
+          className="w-full border-4 border-white pb-[45%] bg-cover"
+          style={{ backgroundImage: `url('/images/home/what/screen_1.jpg')` }}
+        />
+      </div>
     ),
     description: (
       <div className="text-xl text-white">
@@ -28,10 +30,12 @@ const SLIDES = [
   {
     id: '2',
     content: (
-      <div
-        className="w-full border-4 border-white pb-[45%] bg-cover"
-        style={{ backgroundImage: `url('/images/home/what/screen_2.jpg')` }}
-      />
+      <div className="w-full">
+        <div
+          className="w-full border-4 border-white pb-[45%] bg-cover"
+          style={{ backgroundImage: `url('/images/home/what/screen_2.jpg')` }}
+        />
+      </div>
     ),
     description: (
       <div className="text-xl text-white">
@@ -45,10 +49,12 @@ const SLIDES = [
   {
     id: '3',
     content: (
-      <div
-        className="w-full border-4 border-white pb-[45%] bg-cover"
-        style={{ backgroundImage: `url('/images/home/what/screen_3.jpg')` }}
-      />
+      <div className="w-full">
+        <div
+          className="w-full border-4 border-white pb-[45%] bg-cover"
+          style={{ backgroundImage: `url('/images/home/what/screen_3.jpg')` }}
+        />
+      </div>
     ),
     description: (
       <div className="text-xl text-white">

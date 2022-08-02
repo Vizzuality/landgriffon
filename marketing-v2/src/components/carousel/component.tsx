@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useRef, useState } from 'react';
+import React, { ReactElement, useEffect, useRef, useState, cloneElement } from 'react';
 
 import Flicking, { ERROR_CODE, FlickingError } from '@egjs/react-flicking';
 
@@ -20,6 +20,7 @@ export const Carousel: React.FC<CarouselProps> = ({
   options = {
     duration: 500,
     circular: true,
+    bound: false,
   },
   onChange,
 }: CarouselProps) => {
@@ -71,7 +72,7 @@ export const Carousel: React.FC<CarouselProps> = ({
   }, [slide]);
 
   return (
-    <div className="relative w-full">
+    <div className="w-full">
       <div
         role="presentation"
         className="overflow-hidden"
@@ -100,11 +101,9 @@ export const Carousel: React.FC<CarouselProps> = ({
           {...options}
         >
           {slides.map((sl) => {
-            return (
-              <div key={sl.id} className="w-full">
-                {sl.content}
-              </div>
-            );
+            return cloneElement(sl.content, {
+              key: sl.id,
+            });
           })}
         </Flicking>
       </div>

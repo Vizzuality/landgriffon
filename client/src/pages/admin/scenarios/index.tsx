@@ -21,7 +21,7 @@ const ScenariosAdminPage: React.FC = () => {
       </Head>
       <div className="flex justify-end mb-6">
         <Link href="/admin/scenarios/new" passHref>
-          <AnchorLink theme="primary">
+          <AnchorLink theme="primary" data-testid="scenario-add-button">
             <PlusIcon className="h-5 w-5" aria-hidden="true" />
             Add scenario
           </AnchorLink>

@@ -31,7 +31,7 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
   }, [data?.id, deleteScenario]);
 
   return (
-    <div className="rounded-md bg-white p-6 space-y-6 shadow-sm">
+    <div className="rounded-md bg-white p-6 space-y-6 shadow-sm" data-testid="scenario-card">
       <h2 className="text-lg">{data.title}</h2>
       {data.description && <p className="text-gray-500 text-xs leading-5">{data.description}</p>}
       {/* TO-DO: Fix growth rate of 1.5% meanwhile is implemented in the API */}

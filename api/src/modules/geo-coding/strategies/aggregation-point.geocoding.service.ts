@@ -4,6 +4,7 @@ import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.se
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { GeocodeResponse } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 
 @Injectable()
 export class AggregationPointGeocodingStrategy extends BaseStrategy {
@@ -43,7 +44,7 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
               lng: sourcingData.locationLongitude,
               lat: sourcingData.locationLatitude,
             },
-            sourcingData.locationCountryInput,
+            sourcingData as SourcingLocation,
           )
         ).adminRegionId;
       } catch (e) {
@@ -90,7 +91,7 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
               lat: geocodedResponseData?.data.results[0]?.geometry.location.lat,
               level: 1,
             },
-            sourcingData.locationCountryInput,
+            sourcingData as SourcingLocation,
           );
         return {
           ...sourcingData,
@@ -110,7 +111,7 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
                 .lat,
               level: 2,
             },
-            sourcingData.locationCountryInput,
+            sourcingData as SourcingLocation,
           );
         return {
           ...sourcingData,
@@ -143,7 +144,7 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
               lat: geocodedResponseData?.data?.results[0]?.geometry.location
                 .lat,
             },
-            sourcingData.locationCountryInput,
+            sourcingData as SourcingLocation,
           );
 
         return {

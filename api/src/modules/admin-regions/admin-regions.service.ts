@@ -23,6 +23,7 @@ import { GetAdminRegionTreeWithOptionsDto } from 'modules/admin-regions/dto/get-
 import { MaterialsService } from 'modules/materials/materials.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 
 @Injectable()
 export class AdminRegionsService extends AppBaseService<
@@ -132,11 +133,11 @@ export class AdminRegionsService extends AppBaseService<
       lat: number;
       level: number;
     },
-    country?: string,
+    sourcingLocation: SourcingLocation,
   ): Promise<{ adminRegionId: string; geoRegionId: string }> {
     return this.adminRegionRepository.getAdminRegionAndGeoRegionIdByCoordinatesAndLevel(
       searchParams,
-      country,
+      sourcingLocation,
     );
   }
 
@@ -145,11 +146,11 @@ export class AdminRegionsService extends AppBaseService<
       lng: number;
       lat: number;
     },
-    country?: string,
+    sourcingLocation: SourcingLocation,
   ): Promise<any> {
     return this.adminRegionRepository.getClosestAdminRegionByCoordinates(
       coordinates,
-      country,
+      sourcingLocation,
     );
   }
 

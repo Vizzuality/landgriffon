@@ -14956,15 +14956,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ka-table@npm:7.3.0":
-  version: 7.3.0
-  resolution: "ka-table@npm:7.3.0"
-  peerDependencies:
-    react: ^16.8.3 || ^17.0.0-0
-  checksum: 43fb16f0b0012def256ecd926c340248af3671829b0638994b6ed983207581773eb829f817a9b5294b4dca0741ca97ce5adbb23a42c4a690fe46ff879514fc28
-  languageName: node
-  linkType: hard
-
 "kdbush@npm:^3.0.0":
   version: 3.0.0
   resolution: "kdbush@npm:3.0.0"
@@ -15115,7 +15106,6 @@ __metadata:
     fuse.js: 6.4.6
     istanbul-reports: 3.0.0
     jsona: 1.9.2
-    ka-table: 7.3.0
     lodash: 4.17.21
     lottie-react: 2.2.1
     next: 12.1.0

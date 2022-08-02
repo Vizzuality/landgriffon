@@ -10,12 +10,12 @@ import initStore from 'store';
 
 import type { AppProps } from 'next/app';
 
-import 'ka-table/style.css';
 import 'styles/globals.css';
+import type { NextPage } from 'next';
 
 const queryClient = new QueryClient();
 
-const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
+const MyApp: NextPage<AppProps> = ({ Component, pageProps }) => {
   const store = useMemo(() => initStore(pageProps.query), [pageProps.query]);
   return (
     <>

@@ -16,9 +16,9 @@ import NewTable from 'components/newTable';
 import { ExclamationIcon } from '@heroicons/react/solid';
 import { useDebounce } from '@react-hook/debounce';
 
-import type { ApiSortingType } from 'components/table';
-import type { PaginationState } from '@tanstack/react-table';
-import { ColumnType } from 'components/newTable/column';
+import type { PaginationState, SortingState } from '@tanstack/react-table';
+import type { ColumnDefinition } from 'components/newTable/column';
+import type { SourcingLocation } from 'types';
 
 const AdminDataPage: React.FC = () => {
   const [searchText, setSearchText] = useDebounce('', 250);
@@ -26,7 +26,7 @@ const AdminDataPage: React.FC = () => {
     pageSize: 10,
     pageIndex: 1,
   });
-  const [sorting, setSorting] = useState<ApiSortingType>();
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [dataDownloadError, setDataDownloadError] = useState<string>();
 
   const {
@@ -34,11 +34,11 @@ const AdminDataPage: React.FC = () => {
     meta: sourcingMetadata,
     isFetching: isFetchingSourcingData,
   } = useSourcingLocationsMaterials({
-    ...(sorting && {
+    ...(sorting[0] && {
       // Even though in the data the key is `materialName`, the endpoint
       // expects it to be `material` when using filters.
-      orderBy: sorting.orderBy === 'materialName' ? 'material' : sorting.orderBy,
-      order: sorting.order,
+      orderBy: sorting[0].id === 'materialName' ? 'material' : sorting[0].id,
+      order: sorting[0].desc ? 'desc' : 'asc',
     }),
     search: searchText,
     'page[size]': pagination.pageSize,
@@ -65,9 +65,8 @@ const AdminDataPage: React.FC = () => {
   const yearsData = useMemo(() => {
     return {
       columns: allYears.map((year) => ({
-        id: year.toString(),
-        title: year.toString(),
-        type: ColumnType.RawValue,
+        id: `${year}`,
+        title: `${year}`,
         width: 80,
         visible: yearsInRange.includes(year),
       })),
@@ -79,56 +78,6 @@ const AdminDataPage: React.FC = () => {
       })),
     };
   }, [allYears, sourcingData, yearsInRange]);
-
-  /** Table Props */
-  // const tableProps = useMemo<TableProps>(() => {
-  //   return {
-  //     isLoading: isFetchingSourcingData,
-  //     childComponents: {
-  //       cell: {
-  //         elementAttributes: () => ({
-  //           className: 'p-0',
-  //         }),
-  //       },
-  //     },
-  //     rowKeyField: 'id',
-  //     columns: [
-  //       { key: 'material', title: 'Material', dataType: DataType.String, width: 240 },
-  //       { key: 'businessUnit', title: 'Business Unit', dataType: DataType.String },
-  //       { key: 't1Supplier', title: 'T1 Supplier', dataType: DataType.String },
-  //       { key: 'producer', title: 'Producer', dataType: DataType.String },
-  //       { key: 'locationType', title: 'Location Type', dataType: DataType.String },
-  //       { key: 'country', title: 'Country', dataType: DataType.String },
-  //       ...yearsData.columns.map((column) => ({ ...column, isSortable: false })),
-  //     ],
-  //     data: merge(sourcingData, yearsData.data),
-  //     sortingMode: SortingMode.Api,
-  //     defaultSorting: sorting,
-  //     onSortingChange: (params: ApiSortingType) => {
-  //       setPagination((pag) => ({ ...pag, pageIndex: 1 }));
-  //       setSorting(params);
-  //     },
-  //     // onPageChange: ,
-  //     paging: {
-  //       enabled: true,
-  //       totalItems: sourcingMetadata.totalItems,
-  //       pageSize: sourcingMetadata.size,
-  //       pageIndex: sourcingMetadata.page,
-  //       pagesCount: sourcingMetadata.totalPages,
-  //       showSummary: true,
-  //     },
-  //   } as TableProps;
-  // }, [
-  //   isFetchingSourcingData,
-  //   sorting,
-  //   sourcingData,
-  //   sourcingMetadata.page,
-  //   sourcingMetadata.size,
-  //   sourcingMetadata.totalItems,
-  //   sourcingMetadata.totalPages,
-  //   yearsData.columns,
-  //   yearsData.data,
-  // ]);
 
   /** Helpers for use in the JSX */
 
@@ -147,6 +96,17 @@ const AdminDataPage: React.FC = () => {
       },
     ];
   }
+
+  const yearsColumns = useMemo<ColumnDefinition<SourcingLocation[], string>[]>(
+    () =>
+      yearsData.columns.map((column) => ({
+        id: column.id,
+        title: column.title,
+        enableHiding: !column.visible,
+        size: 70,
+      })),
+    [yearsData.columns],
+  );
 
   return (
     <AdminLayout currentTab={ADMIN_TABS.DATA} title="Actual data">
@@ -189,33 +149,29 @@ const AdminDataPage: React.FC = () => {
       {!hasData && isSearching && <NoResults />}
       <NewTable
         data={data}
+        onSortingChange={setSorting}
         columns={[
           {
             id: 'material',
             title: 'Material',
-            type: ColumnType.RawValue,
             size: 280,
             align: 'left',
             isSticky: true,
+            enableSorting: true,
           },
-          { id: 'businessUnit', title: 'Business Unit', type: ColumnType.RawValue },
-          { id: 't1Supplier', title: 'T1 Supplier', type: ColumnType.RawValue },
-          { id: 'producer', title: 'Producer', type: ColumnType.RawValue },
-          { id: 'locationType', title: 'Location Type', type: ColumnType.RawValue },
-          { id: 'country', title: 'Country', type: ColumnType.RawValue },
-          ...(yearsData.columns.map((column) => ({
-            id: column.id,
-            title: column.title,
-            type: ColumnType.RawValue,
-            size: 70,
-          })) as any),
+          { id: 'businessUnit', title: 'Business Unit' },
+          { id: 't1Supplier', title: 'T1 Supplier' },
+          { id: 'producer', title: 'Producer' },
+          { id: 'locationType', title: 'Location Type' },
+          { id: 'country', title: 'Country' },
+          ...yearsColumns,
         ]}
-        manualPagination
         state={{
           pagination: {
             pageIndex: sourcingMetadata.page,
             pageSize: sourcingMetadata.size,
           },
+          sorting,
         }}
         totalItems={sourcingMetadata.totalItems}
         pageCount={sourcingMetadata.totalPages}

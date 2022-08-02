@@ -16,9 +16,9 @@ const TableRow = <T,>({ row }: TableRowProps<T>) => {
             width: cell.column.getSize(),
           }}
           className={classNames(
-            'group-odd:bg-white group-even:bg-gray-50 group-hover:bg-gray-100',
+            'group-odd:bg-white group-even:bg-gray-50 group-hover:bg-gray-100 h-full',
             {
-              'sticky left-0 z-10 border-r': cell.column.columnDef.meta.isSticky,
+              'sticky left-0 z-10 shadow-lg': cell.column.columnDef.meta.isSticky,
             },
           )}
         >
@@ -39,7 +39,7 @@ export const TableHeaderRow = <T,>({ headerGroup }: TableHeaderRowProps<T>) => {
       {headerGroup.headers.map((header) => (
         <th
           className={classNames('sticky z-20 top-0 border-b border-b-gray-300 bg-gray-50', {
-            'left-0 z-30 border-r': header.column.columnDef.meta.isSticky,
+            'left-0 z-30': header.column.columnDef.meta.isSticky,
           })}
           key={header.id}
           style={{ width: header.column.getSize() }}

@@ -7,6 +7,8 @@ ARG NEXTAUTH_URL
 ARG NEXTAUTH_SECRET
 ARG NEXT_PUBLIC_MAPBOX_API_TOKEN
 ARG NEXT_PUBLIC_API_URL
+ARG CYPRESS_USERNAME
+ARG CYPRESS_PASSWORD
 
 ENV NAME landgriffon-client
 ENV USER $NAME
@@ -16,6 +18,9 @@ ENV NEXTAUTH_SECRET $NEXTAUTH_SECRET
 ENV NEXT_PUBLIC_MAPBOX_API_TOKEN $NEXT_PUBLIC_MAPBOX_API_TOKEN
 ENV NEXT_PUBLIC_API_URL $NEXT_PUBLIC_API_URL
 ENV NEXT_TELEMETRY_DISABLED 1
+ENV CYPRESS_USERNAME $CYPRESS_USERNAME
+ENV CYPRESS_PASSWORD $CYPRESS_PASSWORD
+ENV CYPRESS_API_URL $NEXT_PUBLIC_API_URL
 
 RUN apk add --no-cache libc6-compat git
 RUN addgroup -g $GID $USER && adduser -u $UID -D -G $USER $USER
@@ -36,7 +41,7 @@ COPY --chown=$USER:$USER cypress ./cypress
 
 # NextJS config files
 COPY --chown=$USER:$USER next.config.js next-env.d.ts local.d.ts \
-	postcss.config.js tailwind.config.js cypress.json entrypoint.sh \
+	postcss.config.js tailwind.config.js cypress.config.ts entrypoint.sh \
 	tsconfig.json .browserlistrc .babelrc .eslintrc.js .prettierrc.json ./
 
 RUN yarn build

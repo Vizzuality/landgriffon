@@ -10,6 +10,7 @@ declare global {
        * @example cy.login()
        */
       login(): Chainable<Element>;
+      logout(): Chainable<Element>;
     }
   }
 }

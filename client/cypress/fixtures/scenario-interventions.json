@@ -1,0 +1,993 @@
+{
+  "data": [
+    {
+      "type": "scenarioInterventions",
+      "id": "454d1f14-1d24-47bd-a012-755a391f3a9b",
+      "attributes": {
+        "title": "Untitled",
+        "description": null,
+        "status": "inactive",
+        "startYear": 2020,
+        "type": "Switch to a new material",
+        "createdAt": "2022-07-22T15:31:26.607Z",
+        "updatedAt": "2022-07-22T15:58:50.741Z",
+        "replacedMaterials": [
+          {
+            "createdAt": "2022-07-20T10:02:04.932Z",
+            "updatedAt": "2022-07-20T10:02:04.932Z",
+            "id": "2f453e5f-c684-4939-a02e-31b2a6f3914c",
+            "parentId": "0d7b1be5-dc86-47b8-ba3a-25190a275011",
+            "name": "Natural rubber, balata, gutta-percha, guayule, chicle and similar gums",
+            "description": "Natural rubber, balata, gutta-percha, guayule, chicle and similar gums; in primary forms or in plates, sheets or strip",
+            "hsCodeId": "4001",
+            "earthstatId": null,
+            "mapspamId": null,
+            "status": "active",
+            "metadata": {
+              "name": "Global rubber distribution in 2000",
+              "source": "Monfreda, C., N. Ramankutty, and J. A. Foley (2008), Farming the planet: 2. Geographic distribution of crop areas, yields, physiological types, and net primary production in the year 2000, Global Biogeochem. Cycles, 22, GB1022, doi: 10.1029/2007GB002947.",
+              "license": "CC BY 4.0",
+              "cautions": "Global distributions of rubber in 2000 expressed in tonnes (T).",
+              "citation": "Monfreda, C., N. Ramankutty, and J. A. Foley (2008), Farming the planet: 2. Geographic distribution of crop areas, yields, physiological types, and net primary production in the year 2000, Global Biogeochem. Cycles, 22, GB1022, doi: 10.1029/2007GB002947.",
+              "datasets": [
+                "Earthstat Harvested Area and Yield for 175 Crops"
+              ],
+              "overview": "'All crops' represent all of the crops that are included in the tool as displayed in the menu. Pixel colors are shaded by level of production. The crop layers displayed on the map reflect 2000 data regardless of the timeframe selected.",
+              "resolution": "10km x 10km",
+              "date of content": "2000",
+              "geographic coverage": "Global coverage",
+              "frequency of updates": ""
+            },
+            "datasetId": "es_rubber"
+          }
+        ],
+        "replacedBusinessUnits": [
+          {
+            "id": "fc54c70b-1dcf-45f1-bdc5-53d6a28d8285",
+            "name": "Footwear (Tier-5. Rubber Plantation)",
+            "description": "An estate in a tropical country where rubber trees are grown on a large scale.",
+            "status": "inactive",
+            "metadata": null
+          },
+          {
+            "id": "a428cb81-aa88-452d-bcac-23a54932246b",
+            "name": "Footwear (Tier-4. Rubber Processor & Rubber Plantation)",
+            "description": "Raw material conversion facility where latex coagulates naturally in a collecting cup, and is then granulated by a rotary knife into small pieces + an estate in a tropical country where rubber trees are grown on a large scale.",
+            "status": "inactive",
+            "metadata": null
+          },
+          {
+            "id": "7fbddaf5-7442-475f-8244-09bd43007db7",
+            "name": "Footwear (Tier-2. Outsole Producer )",
+            "description": null,
+            "status": "inactive",
+            "metadata": null
+          },
+          {
+            "id": "ebff3e4e-6924-46bd-b7dd-08a2822a121d",
+            "name": "Footwear (Tier-4. Agent/Trader)",
+            "description": null,
+            "status": "inactive",
+            "metadata": null
+          }
+        ],
+        "replacedAdminRegions": [
+          {
+            "id": "8eba220d-21c1-4e72-8c87-d5ea87dba654",
+            "parentId": null,
+            "gadmId": "GTM",
+            "level": 0,
+            "name": "Guatemala",
+            "description": null,
+            "status": "inactive",
+            "isoA2": "GT",
+            "isoA3": "GTM",
+            "geoRegionId": "9f3f2c3a-ee43-4562-85e1-c94126238b22"
+          },
+          {
+            "id": "4703037f-5c43-4b5c-8b68-cab208eb39c1",
+            "parentId": "b1c332bb-2f7b-4ad0-8487-17af4dbb09b9",
+            "gadmId": "GTM.6.1_1",
+            "level": 2,
+            "name": "Escuintla",
+            "description": null,
+            "status": "inactive",
+            "isoA2": null,
+            "isoA3": null,
+            "geoRegionId": "dde79b04-fc2d-4304-98ba-49a8c30163f0"
+          },
+          {
+            "id": "af107a14-7cb9-4a72-ba9c-f4083e52d19d",
+            "parentId": "07ac4118-9b08-4084-9972-82dd83f4b33d",
+            "gadmId": "GTM.7.17_1",
+            "level": 2,
+            "name": "ZONA 1",
+            "description": null,
+            "status": "inactive",
+            "isoA2": null,
+            "isoA3": null,
+            "geoRegionId": "fa18398b-1bd7-47fd-b380-039378f1376e"
+          },
+          {
+            "id": "3bd3956f-bd8e-48c8-8294-cec898309d19",
+            "parentId": "07ac4118-9b08-4084-9972-82dd83f4b33d",
+            "gadmId": "GTM.7.18_1",
+            "level": 2,
+            "name": "ZONA 10",
+            "description": null,
+            "status": "inactive",
+            "isoA2": null,
+            "isoA3": null,
+            "geoRegionId": "9d5048ac-99f2-4001-8bdf-c3591a5b74c6"
+          },
+          {
+            "id": "327dbbb7-ac7f-491a-bf3e-58e31c0cac9a",
+            "parentId": "07ac4118-9b08-4084-9972-82dd83f4b33d",
+            "gadmId": "GTM.7.22_1",
+            "level": 2,
+            "name": "ZONA 14",
+            "description": null,
+            "status": "inactive",
+            "isoA2": null,
+            "isoA3": null,
+            "geoRegionId": "f04fae96-0976-463c-9ac1-50ab4020b0d0"
+          },
+          {
+            "id": "81a5af09-e5c5-4cfb-b665-6240a141c739",
+            "parentId": "07ac4118-9b08-4084-9972-82dd83f4b33d",
+            "gadmId": "GTM.7.23_1",
+            "level": 2,
+            "name": "ZONA 15",
+            "description": null,
+            "status": "inactive",
+            "isoA2": null,
+            "isoA3": null,
+            "geoRegionId": "a13b416a-7a96-444c-a7b6-79b0a15b77bd"
+          }
+        ],
+        "replacedSuppliers": [
+          {
+            "createdAt": "2022-07-20T13:10:49.808Z",
+            "updatedAt": "2022-07-20T13:10:49.808Z",
+            "id": "36a83d27-8539-4cf8-91af-234923b759e7",
+            "parentId": null,
+            "name": "Agropecuaria Atitlán, S.A.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:50.022Z",
+            "updatedAt": "2022-07-20T13:10:50.022Z",
+            "id": "864a5bc9-98ce-493a-bf1a-02205a6682be",
+            "parentId": null,
+            "name": "Polímeros Naturales, S.A.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.808Z",
+            "updatedAt": "2022-07-20T13:10:49.808Z",
+            "id": "00a577c8-de0a-4108-a3db-53cd65ff2e77",
+            "parentId": null,
+            "name": "Agropecuaria Ixtacapa, S.A.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:50.022Z",
+            "updatedAt": "2022-07-20T13:10:50.022Z",
+            "id": "a3357c93-77cf-41ec-bcfc-33148e137b04",
+            "parentId": null,
+            "name": "Polyfrutos",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.808Z",
+            "updatedAt": "2022-07-20T13:10:49.808Z",
+            "id": "832197d3-48b0-46f2-8321-cc77c86d3ee5",
+            "parentId": null,
+            "name": "Agropecuaria Potrerillos, S.A.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.950Z",
+            "updatedAt": "2022-07-20T13:10:49.950Z",
+            "id": "5edee68b-2480-41bb-aa1c-ee6eea9b1623",
+            "parentId": null,
+            "name": "Guatelinda, S.A.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.808Z",
+            "updatedAt": "2022-07-20T13:10:49.808Z",
+            "id": "799a44a8-9d83-4219-9399-45dd5e052ded",
+            "parentId": null,
+            "name": "Aligerados Padda S.A. de C.V.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.987Z",
+            "updatedAt": "2022-07-20T13:10:49.987Z",
+            "id": "37248ae7-9c92-498a-95ef-9c19748e729c",
+            "parentId": null,
+            "name": "Los Diamantes, S.A.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.890Z",
+            "updatedAt": "2022-07-20T13:10:49.890Z",
+            "id": "cb593783-eef8-46d7-98a0-d172f3fc6a77",
+            "parentId": null,
+            "name": "Entre Ríos, S.A.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          }
+        ],
+        "newMaterial": {
+          "createdAt": "2022-07-20T10:02:04.932Z",
+          "updatedAt": "2022-07-20T10:02:04.932Z",
+          "id": "41822942-3957-4526-9dc5-a80d94419a1e",
+          "parentId": null,
+          "name": "Raw hides, skins and leather",
+          "description": "Raw hides and skins (other than furskins) and leather",
+          "hsCodeId": "41",
+          "earthstatId": null,
+          "mapspamId": null,
+          "status": "active",
+          "metadata": {
+            "name": "Global cattle distribution in 2010",
+            "source": "Gilbert M, G Nicolas, G Cinardi, S Vanwambeke, TP Van Boeckel, GRW Wint, TP Robinson (2018) Global Distribution Data for Cattle, Buffaloes, Horses, Sheep, Goats, Pigs, Chickens and Ducks in 2010. Nature Scientific data, 5:180227. doi: 10.1038/sdata.2018.227",
+            "license": "CC0 1.0",
+            "cautions": "Global distributions of cattle in 2010 expressed in total livestock units (LSU).",
+            "citation": "Gilbert M, G Nicolas, G Cinardi, S Vanwambeke, TP Van Boeckel, GRW Wint, TP Robinson (2018) Global Distribution Data for Cattle, Buffaloes, Horses, Sheep, Goats, Pigs, Chickens and Ducks in 2010. Nature Scientific data, 5:180227. doi: 10.1038/sdata.2018.227 https://doi.org/10.1038/sdata.2018.227",
+            "datasets": [
+              "Global cattle distribution in 2010"
+            ],
+            "overview": "This dataset contains the global distribution of cattle in 2010 expressed in total number of cattle per pixel (5 min of arc) according to the Gridded Livestock of the World database (GLW 3). Please go through the 1_Ct_2010_Metadata.html file for more information about this dataset and the set of included files.",
+            "resolution": "10km x 10km",
+            "date of content": "2010",
+            "geographic coverage": "Global coverage",
+            "frequency of updates": ""
+          },
+          "datasetId": "glw3_cattle"
+        },
+        "newBusinessUnit": null,
+        "newAdminRegion": {
+          "id": "8eba220d-21c1-4e72-8c87-d5ea87dba654",
+          "parentId": null,
+          "gadmId": "GTM",
+          "level": 0,
+          "name": "Guatemala",
+          "description": null,
+          "status": "inactive",
+          "isoA2": "GT",
+          "isoA3": "GTM",
+          "geoRegionId": "9f3f2c3a-ee43-4562-85e1-c94126238b22"
+        }
+      }
+    },
+    {
+      "type": "scenarioInterventions",
+      "id": "3c738ffb-5dda-44eb-ac94-eaebb8a4ea05",
+      "attributes": {
+        "title": "Untitled",
+        "description": null,
+        "status": "active",
+        "startYear": 2020,
+        "type": "Switch to a new material",
+        "createdAt": "2022-07-22T15:40:46.064Z",
+        "updatedAt": "2022-07-22T15:40:46.064Z",
+        "replacedMaterials": [
+          {
+            "createdAt": "2022-07-20T10:02:04.932Z",
+            "updatedAt": "2022-07-20T10:02:04.932Z",
+            "id": "2f453e5f-c684-4939-a02e-31b2a6f3914c",
+            "parentId": "0d7b1be5-dc86-47b8-ba3a-25190a275011",
+            "name": "Natural rubber, balata, gutta-percha, guayule, chicle and similar gums",
+            "description": "Natural rubber, balata, gutta-percha, guayule, chicle and similar gums; in primary forms or in plates, sheets or strip",
+            "hsCodeId": "4001",
+            "earthstatId": null,
+            "mapspamId": null,
+            "status": "active",
+            "metadata": {
+              "name": "Global rubber distribution in 2000",
+              "source": "Monfreda, C., N. Ramankutty, and J. A. Foley (2008), Farming the planet: 2. Geographic distribution of crop areas, yields, physiological types, and net primary production in the year 2000, Global Biogeochem. Cycles, 22, GB1022, doi: 10.1029/2007GB002947.",
+              "license": "CC BY 4.0",
+              "cautions": "Global distributions of rubber in 2000 expressed in tonnes (T).",
+              "citation": "Monfreda, C., N. Ramankutty, and J. A. Foley (2008), Farming the planet: 2. Geographic distribution of crop areas, yields, physiological types, and net primary production in the year 2000, Global Biogeochem. Cycles, 22, GB1022, doi: 10.1029/2007GB002947.",
+              "datasets": [
+                "Earthstat Harvested Area and Yield for 175 Crops"
+              ],
+              "overview": "'All crops' represent all of the crops that are included in the tool as displayed in the menu. Pixel colors are shaded by level of production. The crop layers displayed on the map reflect 2000 data regardless of the timeframe selected.",
+              "resolution": "10km x 10km",
+              "date of content": "2000",
+              "geographic coverage": "Global coverage",
+              "frequency of updates": ""
+            },
+            "datasetId": "es_rubber"
+          }
+        ],
+        "replacedBusinessUnits": [
+          {
+            "id": "fc54c70b-1dcf-45f1-bdc5-53d6a28d8285",
+            "name": "Footwear (Tier-5. Rubber Plantation)",
+            "description": "An estate in a tropical country where rubber trees are grown on a large scale.",
+            "status": "inactive",
+            "metadata": null
+          },
+          {
+            "id": "a428cb81-aa88-452d-bcac-23a54932246b",
+            "name": "Footwear (Tier-4. Rubber Processor & Rubber Plantation)",
+            "description": "Raw material conversion facility where latex coagulates naturally in a collecting cup, and is then granulated by a rotary knife into small pieces + an estate in a tropical country where rubber trees are grown on a large scale.",
+            "status": "inactive",
+            "metadata": null
+          },
+          {
+            "id": "f3923e68-6eb5-410e-b6d5-7129b482e432",
+            "name": "Footwear (Tier-1. Footwear Manufacturer)",
+            "description": null,
+            "status": "inactive",
+            "metadata": null
+          },
+          {
+            "id": "7fbddaf5-7442-475f-8244-09bd43007db7",
+            "name": "Footwear (Tier-2. Outsole Producer )",
+            "description": null,
+            "status": "inactive",
+            "metadata": null
+          },
+          {
+            "id": "ebff3e4e-6924-46bd-b7dd-08a2822a121d",
+            "name": "Footwear (Tier-4. Agent/Trader)",
+            "description": null,
+            "status": "inactive",
+            "metadata": null
+          },
+          {
+            "id": "4779c26e-f5e7-49fa-8336-eb5ef40fa0f5",
+            "name": "Footwear (Tier-3. Agent/Trader)",
+            "description": null,
+            "status": "inactive",
+            "metadata": null
+          },
+          {
+            "id": "3b7f62cc-a598-40b9-b0be-3dbd9d5a2b1e",
+            "name": "Footwear (Tier-1.Footwear Manufacturer & Outsole Producer",
+            "description": null,
+            "status": "inactive",
+            "metadata": null
+          }
+        ],
+        "replacedAdminRegions": [
+          {
+            "id": "cc72c8a8-f8b1-42b1-8c92-88f24659feb8",
+            "parentId": null,
+            "gadmId": "VNM",
+            "level": 0,
+            "name": "Vietnam",
+            "description": null,
+            "status": "inactive",
+            "isoA2": "VN",
+            "isoA3": "VNM",
+            "geoRegionId": "df5d0321-e1f6-429d-a5a7-6232a5af32be"
+          },
+          {
+            "id": "2419d435-9145-4a09-827e-8b7780c10afe",
+            "parentId": "4a1af6f3-1315-464b-9830-8a3a6e9bfd9a",
+            "gadmId": "VNM.25.22_1",
+            "level": 2,
+            "name": "Tân Bình",
+            "description": null,
+            "status": "inactive",
+            "isoA2": null,
+            "isoA3": null,
+            "geoRegionId": "101992e6-405e-467b-a6eb-a76bab636906"
+          },
+          {
+            "id": "66e1e5e2-8456-413b-9b47-b4d2fc592604",
+            "parentId": "9df4266f-60fb-43b6-b093-c56480e53c58",
+            "gadmId": "VNM.17.4_1",
+            "level": 2,
+            "name": "Long Khánh",
+            "description": null,
+            "status": "inactive",
+            "isoA2": null,
+            "isoA3": null,
+            "geoRegionId": "82a870f4-e82d-4f1a-913f-b6b4c0fc15c2"
+          },
+          {
+            "id": "83755015-469a-4b4f-88de-7ae6d42a1f21",
+            "parentId": "142608bf-c8f4-48b4-a4ce-20db5d5a4329",
+            "gadmId": "VNM.10.6_1",
+            "level": 2,
+            "name": "Đồng Phú",
+            "description": null,
+            "status": "inactive",
+            "isoA2": null,
+            "isoA3": null,
+            "geoRegionId": "cdc3d6a5-a77b-4a49-8fab-5490925efe9f"
+          },
+          {
+            "id": "03770618-5e56-4ab9-ad31-e436342c0a93",
+            "parentId": "c337a84a-a3c2-40c5-b2b6-f281de4d41d7",
+            "gadmId": "VNM.9.3_1",
+            "level": 2,
+            "name": "Bàu Bàng",
+            "description": null,
+            "status": "inactive",
+            "isoA2": null,
+            "isoA3": null,
+            "geoRegionId": "48c72a77-5ae3-4520-b5e1-5db8e47a4c10"
+          }
+        ],
+        "replacedSuppliers": [
+          {
+            "createdAt": "2022-07-20T13:10:49.887Z",
+            "updatedAt": "2022-07-20T13:10:49.887Z",
+            "id": "2c7eb5a4-5887-4668-91ee-50a4232d36a4",
+            "parentId": null,
+            "name": "Dong Nai Rubber Corporation",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.916Z",
+            "updatedAt": "2022-07-20T13:10:49.916Z",
+            "id": "5835f768-bf51-46a1-80fa-a0ae7591d337",
+            "parentId": null,
+            "name": "Fortune Art Industry Co,. Ltd (Try On (SVN))",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.985Z",
+            "updatedAt": "2022-07-20T13:10:49.985Z",
+            "id": "e2a4e050-3f29-42f4-a975-8c42de936e94",
+            "parentId": null,
+            "name": "Hubei Sunsmile Footwear Co., Ltd.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:50.066Z",
+            "updatedAt": "2022-07-20T13:10:50.066Z",
+            "id": "492a9122-613a-44cc-abce-b3d62998f910",
+            "parentId": null,
+            "name": "Sao Do Company Limited (Senying Co.,Ltd)",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.856Z",
+            "updatedAt": "2022-07-20T13:10:49.856Z",
+            "id": "1945b946-ce38-4861-87f8-86c66980d78a",
+            "parentId": null,
+            "name": "Carlington (Cambodia) Co., Ltd.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.888Z",
+            "updatedAt": "2022-07-20T13:10:49.888Z",
+            "id": "ef9a49a6-9e70-48b7-b1be-0c90fcabd9c2",
+            "parentId": null,
+            "name": "DongGuan ChangAn XinJia Shoes Material Co Ltd",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.916Z",
+            "updatedAt": "2022-07-20T13:10:49.916Z",
+            "id": "35f823ca-6a61-487a-9548-1ecd7d4663c9",
+            "parentId": null,
+            "name": "Foshan City Rending Shoe Materials Co.,Ltd",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.949Z",
+            "updatedAt": "2022-07-20T13:10:49.949Z",
+            "id": "7bb909f7-fc65-4440-887f-34088a444fdc",
+            "parentId": null,
+            "name": "Guangzhou Zhenxin Rubber & Plastic Co Ltd",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.985Z",
+            "updatedAt": "2022-07-20T13:10:49.985Z",
+            "id": "605318b5-9807-4e06-be64-c21416c43b41",
+            "parentId": null,
+            "name": "Hui Zhou Ji Tai Shoe-Material Co., Ltd.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:50.066Z",
+            "updatedAt": "2022-07-20T13:10:50.066Z",
+            "id": "53dda0d5-f135-4c52-8769-7af1c632db18",
+            "parentId": null,
+            "name": "Sun Jade Vietnam Footwear Ltd. (United Well Trading Limited)",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:50.103Z",
+            "updatedAt": "2022-07-20T13:10:50.103Z",
+            "id": "b4382e35-931a-48d2-a49b-f3528e60002b",
+            "parentId": null,
+            "name": "Vietnam",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.856Z",
+            "updatedAt": "2022-07-20T13:10:49.856Z",
+            "id": "acd60a03-55d9-4ce2-a27a-ebecd1c5ed09",
+            "parentId": null,
+            "name": "Cauchos Arnedo Maroc S.A.R.L.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.888Z",
+            "updatedAt": "2022-07-20T13:10:49.888Z",
+            "id": "d1c1598c-de4f-42c0-a87c-f47a56d2794a",
+            "parentId": null,
+            "name": "Dongguan Chunxiang Rubber & Plastic Products Co., Ltd.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.916Z",
+            "updatedAt": "2022-07-20T13:10:49.916Z",
+            "id": "f561efde-31e4-4c5d-a58e-9c2af415bce9",
+            "parentId": null,
+            "name": "Foshan Tang Dynasty XinXin Rubber & Plastic Limited.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.986Z",
+            "updatedAt": "2022-07-20T13:10:49.986Z",
+            "id": "6a574e51-fc32-40a0-a8a0-c9f629385e42",
+            "parentId": null,
+            "name": "Huizhou Yixin Sports Equipment Co., Ltd.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:50.026Z",
+            "updatedAt": "2022-07-20T13:10:50.026Z",
+            "id": "57d3500a-34e1-4e60-bddf-d58576982b18",
+            "parentId": null,
+            "name": "Pouyuen Vietnam Co., Ltd. (The Look (Macao Commercial Offshore) Company Limited) (Footwear D3/ Outsole B5,J1,M2)",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:50.103Z",
+            "updatedAt": "2022-07-20T13:10:50.103Z",
+            "id": "5ebab6dd-5a22-4f18-994a-3b0cac9a1164",
+            "parentId": null,
+            "name": "Xinwei (Vietnan)Company Limited",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.808Z",
+            "updatedAt": "2022-07-20T13:10:49.808Z",
+            "id": "101089a4-d895-405c-9267-a38d2078f78c",
+            "parentId": null,
+            "name": "Alena Vietnam Footwear Ltd. (United Well Trading Limited)",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.856Z",
+            "updatedAt": "2022-07-20T13:10:49.856Z",
+            "id": "59ea29c7-bf57-4d81-8903-b60f3e29943d",
+            "parentId": null,
+            "name": "Chunxiang Rubber Plastic Product Co., Ltd (Vietnam)",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.950Z",
+            "updatedAt": "2022-07-20T13:10:49.950Z",
+            "id": "6ef828ae-9d93-48c0-9bc4-017d24d3307f",
+            "parentId": null,
+            "name": "Hiep Thanh Rubber Industries Corporation",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:50.027Z",
+            "updatedAt": "2022-07-20T13:10:50.027Z",
+            "id": "5d983483-b22f-4891-8721-8d6454e0ef7d",
+            "parentId": null,
+            "name": "Procesadora Industrial Fortaleza",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:50.067Z",
+            "updatedAt": "2022-07-20T13:10:50.067Z",
+            "id": "f1f8d70d-35d2-4b86-8642-49cfec715255",
+            "parentId": null,
+            "name": "Tan Cuong Trading And Manufacturing Co., Ltd",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.808Z",
+            "updatedAt": "2022-07-20T13:10:49.808Z",
+            "id": "799a44a8-9d83-4219-9399-45dd5e052ded",
+            "parentId": null,
+            "name": "Aligerados Padda S.A. de C.V.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.889Z",
+            "updatedAt": "2022-07-20T13:10:49.889Z",
+            "id": "391e9865-1468-47fc-8a7b-87c035c56793",
+            "parentId": null,
+            "name": "Dongguan Ruiqian Shoes Material Co., Ltd",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.917Z",
+            "updatedAt": "2022-07-20T13:10:49.917Z",
+            "id": "a4fc0c82-9d1c-4ff3-9bd9-087c6ca5bbb9",
+            "parentId": null,
+            "name": "Fujian Sunshine Footwear Co., Ltd.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.987Z",
+            "updatedAt": "2022-07-20T13:10:49.987Z",
+            "id": "5c612f57-c0a4-4cd9-9460-147bb5da9ba0",
+            "parentId": null,
+            "name": "Lin Wen Chih Sunbow Enterprises Co., Ltd.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:50.068Z",
+            "updatedAt": "2022-07-20T13:10:50.068Z",
+            "id": "873d1afc-61dc-4d63-97eb-b1dd81d731a9",
+            "parentId": null,
+            "name": "Tanthanhhoa Longan Trading And Manufacturing Co., Ltd. (Eternal Prowess Vietnam Co., Ltd. (EPLA))",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:50.104Z",
+            "updatedAt": "2022-07-20T13:10:50.104Z",
+            "id": "7a384ba9-e0be-44b1-b98c-52f24be50afe",
+            "parentId": null,
+            "name": "Yudu Da Tian Shoes Co., Ltd. (Exhibition Limited)",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.809Z",
+            "updatedAt": "2022-07-20T13:10:49.809Z",
+            "id": "faed5a08-1e6c-4579-a34a-f9f8255ee24c",
+            "parentId": null,
+            "name": "An Thai Rubber Technology Co., Ltd.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.857Z",
+            "updatedAt": "2022-07-20T13:10:49.857Z",
+            "id": "35816605-9aa1-4d77-b4a8-b4d094700f80",
+            "parentId": null,
+            "name": "Dai Hung Cuong Rubber One Member Co., Ltd.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.890Z",
+            "updatedAt": "2022-07-20T13:10:49.890Z",
+            "id": "a1a0d132-10d5-4aef-bcec-b424a794e9ac",
+            "parentId": null,
+            "name": "Duy Thang Co., Ltd",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.917Z",
+            "updatedAt": "2022-07-20T13:10:49.917Z",
+            "id": "2e1f6eaf-7b9b-4c2a-83ef-32b226e200b1",
+            "parentId": null,
+            "name": "Fulgent Sun Footwear Co., Ltd.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.951Z",
+            "updatedAt": "2022-07-20T13:10:49.951Z",
+            "id": "f8d9743a-8ea4-45da-8c04-8144d16e31c5",
+            "parentId": null,
+            "name": "Ho Chi Minh, Vietnam",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.857Z",
+            "updatedAt": "2022-07-20T13:10:49.857Z",
+            "id": "128c073b-5777-4e09-810f-1e3a91e3c5f8",
+            "parentId": null,
+            "name": "Daklak Rubber Investment Joint Stock Company (DRI) Daklak Rubber Limited Company (DAKLAORUCO)",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.918Z",
+            "updatedAt": "2022-07-20T13:10:49.918Z",
+            "id": "df70691a-9004-4866-bacb-f449eb1415a8",
+            "parentId": null,
+            "name": "Fullxin (Ho Chi Minh)",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.951Z",
+            "updatedAt": "2022-07-20T13:10:49.951Z",
+            "id": "35f8c5f5-65c1-4dff-be1b-05e8f346cb17",
+            "parentId": null,
+            "name": "Hong Jianfeng",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.988Z",
+            "updatedAt": "2022-07-20T13:10:49.988Z",
+            "id": "d3b6fb2a-adbc-4f60-9eb1-ef6087f90a88",
+            "parentId": null,
+            "name": "Mai Vinh Rubber Trading Services Production Co., Ltd",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:50.105Z",
+            "updatedAt": "2022-07-20T13:10:50.105Z",
+            "id": "ceaf4d0b-90b5-433d-9762-66c308180b5b",
+            "parentId": null,
+            "name": "ZhongShan LiYuan Footwear Factory (PY1-C1)",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.809Z",
+            "updatedAt": "2022-07-20T13:10:49.809Z",
+            "id": "57a553e7-e12c-4f28-bd39-e47e8bd51b7c",
+            "parentId": null,
+            "name": "Bao Zun Vietnam Co., Ltd",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.964Z",
+            "updatedAt": "2022-07-20T13:10:49.964Z",
+            "id": "b8829b03-546f-477e-be9c-1d7b1a7d283a",
+            "parentId": null,
+            "name": "Hongcheng Shoes Materials, Co. Ltd (Ming Cheng Company / Dongguan HongCheng High Polymer Material Technology Co. Ltd)",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:50.019Z",
+            "updatedAt": "2022-07-20T13:10:50.019Z",
+            "id": "15ca2e1a-3b6d-42c2-ae82-705751bdafe7",
+            "parentId": null,
+            "name": "Phu Rieng Rubber Company",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:50.070Z",
+            "updatedAt": "2022-07-20T13:10:50.070Z",
+            "id": "113112b9-2b37-4e8b-b3d4-795995826771",
+            "parentId": null,
+            "name": "Try On Rubber (Viet Nam) Co., Ltd (Thuan Ich Joint Stock Company)",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.809Z",
+            "updatedAt": "2022-07-20T13:10:49.809Z",
+            "id": "09414aa4-df4e-472c-b144-5d2dbfef9dbf",
+            "parentId": null,
+            "name": "Binh Long Rubber Company",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.887Z",
+            "updatedAt": "2022-07-20T13:10:49.887Z",
+            "id": "6df15e7d-ab99-4c4b-b6b9-4c4434e37eaf",
+            "parentId": null,
+            "name": "Dau Tieng Rubber Corporation",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.918Z",
+            "updatedAt": "2022-07-20T13:10:49.918Z",
+            "id": "5c2a8950-95c3-4612-872b-afef956e1331",
+            "parentId": null,
+            "name": "Gang Wei Vietnam Co.,Ltd",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.963Z",
+            "updatedAt": "2022-07-20T13:10:49.963Z",
+            "id": "9b78e03d-1405-43bc-b6af-c03e3e514c68",
+            "parentId": null,
+            "name": "Hong Tuong Co.,Ltd",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:50.014Z",
+            "updatedAt": "2022-07-20T13:10:50.014Z",
+            "id": "9d245d49-1326-4ac5-a6f6-199483fd5d55",
+            "parentId": null,
+            "name": "Nghia Xin Co., Ltd",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:50.082Z",
+            "updatedAt": "2022-07-20T13:10:50.082Z",
+            "id": "bace81e8-7289-473c-a5b6-901d57a56f94",
+            "parentId": null,
+            "name": "Try On Shoe Material (BD) Ltd.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:49.810Z",
+            "updatedAt": "2022-07-20T13:10:49.810Z",
+            "id": "9343d32c-f293-4473-a671-2b3f1cc2fa76",
+            "parentId": null,
+            "name": "Binh Phuoc General Import Export Joint Stock Company",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:50.015Z",
+            "updatedAt": "2022-07-20T13:10:50.015Z",
+            "id": "ab25a710-84e1-4b4c-a8f1-180228cf67b1",
+            "parentId": null,
+            "name": "Ngoc Hung Footwear Co.,Ltd",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          },
+          {
+            "createdAt": "2022-07-20T13:10:50.092Z",
+            "updatedAt": "2022-07-20T13:10:50.092Z",
+            "id": "81ac6a12-b239-4d73-a338-65c94a29c042",
+            "parentId": null,
+            "name": "TY Bach Co., Ltd.",
+            "description": null,
+            "status": "active",
+            "metadata": null
+          }
+        ],
+        "newMaterial": {
+          "createdAt": "2022-07-20T10:02:04.932Z",
+          "updatedAt": "2022-07-20T10:02:04.932Z",
+          "id": "41822942-3957-4526-9dc5-a80d94419a1e",
+          "parentId": null,
+          "name": "Raw hides, skins and leather",
+          "description": "Raw hides and skins (other than furskins) and leather",
+          "hsCodeId": "41",
+          "earthstatId": null,
+          "mapspamId": null,
+          "status": "active",
+          "metadata": {
+            "name": "Global cattle distribution in 2010",
+            "source": "Gilbert M, G Nicolas, G Cinardi, S Vanwambeke, TP Van Boeckel, GRW Wint, TP Robinson (2018) Global Distribution Data for Cattle, Buffaloes, Horses, Sheep, Goats, Pigs, Chickens and Ducks in 2010. Nature Scientific data, 5:180227. doi: 10.1038/sdata.2018.227",
+            "license": "CC0 1.0",
+            "cautions": "Global distributions of cattle in 2010 expressed in total livestock units (LSU).",
+            "citation": "Gilbert M, G Nicolas, G Cinardi, S Vanwambeke, TP Van Boeckel, GRW Wint, TP Robinson (2018) Global Distribution Data for Cattle, Buffaloes, Horses, Sheep, Goats, Pigs, Chickens and Ducks in 2010. Nature Scientific data, 5:180227. doi: 10.1038/sdata.2018.227 https://doi.org/10.1038/sdata.2018.227",
+            "datasets": [
+              "Global cattle distribution in 2010"
+            ],
+            "overview": "This dataset contains the global distribution of cattle in 2010 expressed in total number of cattle per pixel (5 min of arc) according to the Gridded Livestock of the World database (GLW 3). Please go through the 1_Ct_2010_Metadata.html file for more information about this dataset and the set of included files.",
+            "resolution": "10km x 10km",
+            "date of content": "2010",
+            "geographic coverage": "Global coverage",
+            "frequency of updates": ""
+          },
+          "datasetId": "glw3_cattle"
+        },
+        "newBusinessUnit": null,
+        "newAdminRegion": {
+          "id": "95115576-5c68-448d-8f26-eaf0f55b68f2",
+          "parentId": null,
+          "gadmId": "MAR",
+          "level": 0,
+          "name": "Morocco",
+          "description": null,
+          "status": "inactive",
+          "isoA2": "MA",
+          "isoA3": "MAR",
+          "geoRegionId": "5023f70c-db38-4c5e-a4f1-f0bec6bd465f"
+        }
+      }
+    }
+  ]
+}

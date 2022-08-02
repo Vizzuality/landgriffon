@@ -27,7 +27,7 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
       lat: number;
       level: number;
     },
-    country?: string,
+    sourcingLocation: SourcingLocation,
   ): Promise<{ adminRegionId: string; geoRegionId: string }> {
     const res: any = await this.query(
       `
@@ -52,13 +52,12 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
         `No Admin Region where Coordinates: LAT: ${searchParams.lat}, LONG: ${searchParams.lng} are could been found`,
       );
     }
-    if (country) {
-      await this.validateAdminRegion(
-        res[0].adminRegionId,
-        country,
-        searchParams,
-      );
-    }
+
+    await this.validateAdminRegion(
+      res[0].adminRegionId,
+      sourcingLocation,
+      searchParams,
+    );
 
     return res[0];
   }
@@ -79,7 +78,7 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
       lng: number;
       lat: number;
     },
-    country?: string,
+    sourcingLocation: SourcingLocation,
   ): Promise<any> {
     const res: any = await this.query(
       `SELECT a.id AS "adminRegionId" , a."name", a."level" , g."name" , g.id AS "geoRegionId"
@@ -111,13 +110,12 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
     const result: any = res.reduce(function (previous: any, current: any) {
       return previous.level > current.level ? previous : current;
     });
-    if (country) {
-      await this.validateAdminRegion(
-        result.adminRegionId,
-        country,
-        coordinates,
-      );
-    }
+
+    await this.validateAdminRegion(
+      result.adminRegionId,
+      sourcingLocation,
+      coordinates,
+    );
 
     return result;
   }
@@ -127,7 +125,7 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
    */
   async validateAdminRegion(
     adminRegionId: string,
-    country: string,
+    sourcingLocation: SourcingLocation,
     coordinates: {
       lng: number;
       lat: number;
@@ -135,7 +133,7 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
   ): Promise<void> {
     const intersectingCountries: AdminRegion[] = await this.query(
       `
-     SELECT a.id AS "adminRegionId" , a."name", a."level" , g."name" , g.id AS "geoRegionId"
+     SELECT a.id AS "adminRegionId" , a."name", a."level" , g.id AS "geoRegionId"
         FROM admin_region a
                RIGHT JOIN geo_region g on a."geoRegionId" = g.id
         WHERE ST_Intersects(
@@ -150,11 +148,14 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
     if (
       !intersectingCountries.some(
         (intersectingCountry: AdminRegion) =>
-          intersectingCountry.name === country,
+          intersectingCountry.name === sourcingLocation.locationCountryInput,
       )
     )
       throw new GeoCodingError(
-        `coordinates ${coordinates.lat}, ${coordinates.lng} are not inside ${country}`,
+        sourcingLocation.locationAddressInput
+          ? `Address ${sourcingLocation.locationAddressInput} is `
+          : `Coordinates ${coordinates.lat}, ${coordinates.lng} are ` +
+            `not inside ${sourcingLocation.locationCountryInput}`,
       );
   }
 

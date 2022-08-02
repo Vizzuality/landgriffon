@@ -3,6 +3,7 @@ import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.se
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { BaseStrategy } from 'modules/geo-coding/strategies/base-strategy';
 import { GeocodeResponse } from 'modules/geo-coding/geocoders/geocoder.interface';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 
 @Injectable()
 export class PointOfProductionGeocodingStrategy extends BaseStrategy {
@@ -34,7 +35,7 @@ export class PointOfProductionGeocodingStrategy extends BaseStrategy {
               lng: sourcingData.locationLongitude,
               lat: sourcingData.locationLatitude,
             },
-            sourcingData.locationCountryInput,
+            sourcingData as SourcingLocation,
           )
         ).adminRegionId;
       } catch (e) {
@@ -75,7 +76,7 @@ export class PointOfProductionGeocodingStrategy extends BaseStrategy {
               lng: geoCodeResponseData?.data?.results[0]?.geometry.location.lng,
               lat: geoCodeResponseData?.data?.results[0]?.geometry.location.lat,
             },
-            sourcingData.locationCountryInput,
+            sourcingData as SourcingLocation,
           );
       } catch (e) {
         await this.geoRegionService.remove(geoRegionId as unknown as string);

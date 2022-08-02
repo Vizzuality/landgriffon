@@ -143,26 +143,6 @@ const Table = <T extends { children?: T[] }>({
                 </tr>
               ))}
             </tbody>
-            <tfoot>
-              {table.getFooterGroups().map((footerGroup) => (
-                <tr key={footerGroup.id}>
-                  {footerGroup.headers.map((header) => (
-                    <th
-                      className="sticky bottom-0 pl-5"
-                      key={header.id}
-                      style={{
-                        columnWidth: header.column.getSize(),
-                        width: header.column.getSize(),
-                      }}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.footer, header.getContext())}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </tfoot>
           </table>
         </div>
       </div>

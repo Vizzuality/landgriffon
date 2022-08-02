@@ -32,6 +32,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
                   className={classNames('flex items-center -mb-2px', {
                     'text-primary border-b-2 border-primary': currentTab && tab === currentTab,
                   })}
+                  data-testid="admin-menu-item"
+                  data-testisactive={currentTab && tab === currentTab}
                 >
                   {tab.name}
                 </a>

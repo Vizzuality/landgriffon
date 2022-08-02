@@ -36,6 +36,7 @@ import { PaginationMeta } from 'utils/app-base.service';
 import { ImpactService } from './impact.service';
 import { GetScenarioComparisonDto } from './dto/get-scenario-comparison.dto';
 import {
+  PaginatedScenariosImpactTable,
   ScenariosImpactTable,
   ScenariosImpactTableDataByIndicator,
   ScenariosImpactTableRows,
@@ -59,7 +60,7 @@ export class ScenarioComparisonService {
   async getScenarioComparisonTable(
     scenarioComparisonDto: GetScenarioComparisonDto,
     fetchSpecification: FetchSpecification,
-  ): Promise<PaginatedImpactTable> {
+  ): Promise<PaginatedScenariosImpactTable> {
     const indicators: Indicator[] =
       await this.indicatorService.getIndicatorsById(
         scenarioComparisonDto.indicatorIds,
@@ -92,12 +93,13 @@ export class ScenarioComparisonService {
         paginatedEntities.entities,
       );
 
-    const comparisonTable: ImpactTable = this.buildScenarioComparisonTable(
-      scenarioComparisonDto,
-      indicators,
-      scenarioComparisonImpactData,
-      this.buildImpactTableRowsSkeleton(paginatedEntities.entities),
-    );
+    const comparisonTable: ScenariosImpactTable =
+      this.buildScenarioComparisonTable(
+        scenarioComparisonDto,
+        indicators,
+        scenarioComparisonImpactData,
+        this.buildImpactTableRowsSkeleton(paginatedEntities.entities),
+      );
 
     return { data: comparisonTable, metadata: paginatedEntities.metadata };
   }
@@ -353,22 +355,14 @@ export class ScenarioComparisonService {
       }
 
       // copy and populate tree skeleton for each indicator
-      const skeleton: ImpactTableRows[] = JSON.parse(JSON.stringify(entities));
+      const skeleton: ScenariosImpactTableRows[] = JSON.parse(
+        JSON.stringify(entities),
+      );
       skeleton.forEach((entity: any) => {
-        this.populateValuesRecursively(
-          entity,
-          calculatedData,
-          rangeOfYears,
-          queryDto.scenarioId,
-        );
+        this.populateValuesRecursively(entity, calculatedData, rangeOfYears);
       });
 
-      scenariosImpactTable[indicatorValuesIndex].rows = queryDto.scenarioId
-        ? skeleton
-        : skeleton.filter(
-            (item: ImpactTableRows) =>
-              item.children.length > 0 || item.values[0].value > 0,
-          );
+      scenariosImpactTable[indicatorValuesIndex].rows = skeleton;
     });
 
     return { scenariosImpactTable };
@@ -434,7 +428,7 @@ export class ScenarioComparisonService {
 
   private buildImpactTableRowsSkeleton(
     entities: ImpactTableEntityType[],
-  ): ImpactTableRows[] {
+  ): ScenariosImpactTableRows[] {
     return entities.map((item: ImpactTableEntityType) => {
       return {
         name: item.name || '',

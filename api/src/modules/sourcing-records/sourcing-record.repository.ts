@@ -24,6 +24,7 @@ import { Logger, NotFoundException } from '@nestjs/common';
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { GetScenarioComparisonDto } from 'modules/impact/dto/get-scenario-comparison.dto';
 
 export class ImpactTableData {
   year: number;
@@ -41,12 +42,11 @@ export class ActualVsScenarioImpactTableData extends ImpactTableData {
   percentageDifference?: number;
 }
 
-export class ImpactTableForScenarioComparisson extends ImpactTableData {
-  scenarioOne?: ScenarioComparissonImpact;
-  scenarioTwo?: ScenarioComparissonImpact;
+export class ScenariosImpactTableData extends ImpactTableData {
+  scenarioComparison: ScenarioComparissonImpact[];
 }
 
-class ScenarioComparissonImpact {
+export class ScenarioComparissonImpact {
   scenarioId: string;
   impact: number;
 }
@@ -217,7 +217,6 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
         },
       );
     }
-
     if (impactDataDto.originIds) {
       selectQueryBuilder.andWhere(
         'sourcingLocation.adminRegionId IN (:...originIds)',

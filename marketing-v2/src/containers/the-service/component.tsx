@@ -16,6 +16,7 @@ import Separator from 'containers/separator';
 import Testimonials from 'containers/testimonials';
 import Newsletter from 'containers/newsletter';
 import ScrollDown from 'containers/scroll-down';
+import BlogPosts from 'containers/blog-posts';
 
 const TheService: React.FC = () => {
   return (
@@ -41,6 +42,7 @@ const TheService: React.FC = () => {
       </Steps>
 
       <Testimonials />
+      <BlogPosts />
       <Newsletter />
     </div>
   );

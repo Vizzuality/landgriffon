@@ -1,8 +1,14 @@
-import type { AccessorFn, CellContext, ColumnDef, DeepKeys } from '@tanstack/react-table';
+import type { AccessorFn, CellContext, ColumnDef, DeepKeys, RowData } from '@tanstack/react-table';
 
 export enum ColumnType {
   RawValue,
   Render,
+}
+
+declare module '@tanstack/table-core' {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    isSticky: boolean;
+  }
 }
 
 type CommonColumnInfo = {
@@ -11,6 +17,7 @@ type CommonColumnInfo = {
   width?: number;
   maxWidth?: number;
   align?: 'left' | 'center' | 'right';
+  isSticky?: boolean;
 };
 
 type IdFieldNameColumn<T> = {

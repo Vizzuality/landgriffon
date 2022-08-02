@@ -138,6 +138,16 @@ const AdminDataPage: React.FC = () => {
 
   const data = useMemo(() => merge(sourcingData, yearsData.data), [sourcingData, yearsData.data]);
 
+  if (data?.[0]) {
+    data[0].children = [
+      {
+        ...data[0],
+        material: 'CHILD',
+        children: [{ ...data[0], material: 'GRANDCHILD' }],
+      },
+    ];
+  }
+
   return (
     <AdminLayout currentTab={ADMIN_TABS.DATA} title="Actual data">
       <Head>
@@ -186,6 +196,7 @@ const AdminDataPage: React.FC = () => {
             type: ColumnType.RawValue,
             size: 280,
             align: 'left',
+            isSticky: true,
           },
           { id: 'businessUnit', title: 'Business Unit', type: ColumnType.RawValue },
           { id: 't1Supplier', title: 'T1 Supplier', type: ColumnType.RawValue },

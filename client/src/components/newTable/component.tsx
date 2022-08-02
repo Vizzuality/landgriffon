@@ -4,6 +4,7 @@ import { flexRender } from '@tanstack/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { getCoreRowModel } from '@tanstack/react-table';
 import { useReactTable } from '@tanstack/react-table';
+import classNames from 'classnames';
 import Pagination from 'components/pagination';
 import PageSizeSelector from 'components/pagination/pageSizeSelector';
 import React, { useCallback, useMemo } from 'react';
@@ -53,6 +54,9 @@ const Table = <T extends { children?: T[] }>({
           : column.id,
         {
           id: column.id,
+          meta: {
+            isSticky: column.isSticky || false,
+          },
           cell: (cell) => {
             let children: string | React.ReactNode;
             if (isRawColumn(column)) {
@@ -103,7 +107,9 @@ const Table = <T extends { children?: T[] }>({
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
                     <th
-                      className="sticky top-0 border-b border-b-gray-300 bg-gray-50"
+                      className={classNames('sticky top-0 border-b border-b-gray-300 bg-gray-50', {
+                        'left-0 z-10': header.column.columnDef.meta.isSticky,
+                      })}
                       key={header.id}
                       style={{ width: header.column.getSize() }}
                     >
@@ -117,13 +123,19 @@ const Table = <T extends { children?: T[] }>({
             </thead>
             <tbody>
               {table.getRowModel().rows.map((row) => (
-                <tr className="odd:bg-white even:bg-gray-50 hover:bg-gray-100" key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
+                <tr className="group" key={row.id}>
+                  {row.getVisibleCells().map((cell, i) => (
                     <td
                       key={cell.id}
                       style={{
                         width: cell.column.getSize(),
                       }}
+                      className={classNames(
+                        'group-odd:bg-white group-even:bg-gray-50 group-hover:bg-gray-100',
+                        {
+                          'sticky left-0 z-10 border-r': cell.column.columnDef.meta.isSticky,
+                        },
+                      )}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>

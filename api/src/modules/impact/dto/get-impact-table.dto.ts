@@ -94,17 +94,6 @@ export class GetImpactTableDto {
   @IsOptional()
   @IsUUID(4)
   scenarioId?: string;
-
-  @ApiProperty({
-    name: 'scenarioIds[]',
-    description: 'Array containg 2 Scenario Ids to compare',
-  })
-  @IsOptional()
-  @ArrayMinSize(2)
-  @ArrayMaxSize(2)
-  @IsUUID(4, { each: true })
-  @Type(() => String)
-  scenarioIds?: string[];
 }
 
 export class GetRankedImpactTableDto extends GetImpactTableDto {

@@ -1,4 +1,4 @@
-import { signIn } from 'next-auth/react';
+import { signIn, signOut } from 'next-auth/react';
 
 // ***********************************************
 // This example commands.js shows you how to
@@ -19,4 +19,9 @@ Cypress.Commands.add('login', (): Cypress.Chainable => {
       password: Cypress.env('PASSWORD'),
     }),
   );
+});
+
+Cypress.Commands.add('logout', (): Cypress.Chainable => {
+  cy.log('logout');
+  return cy.wrap(signOut({ redirect: false }));
 });

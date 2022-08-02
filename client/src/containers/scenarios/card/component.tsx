@@ -47,7 +47,11 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
         {!isInterventionsLoading &&
           interventions &&
           interventions.map((intervention) => (
-            <div className="flex space-x-4 mt-2" key={intervention.id}>
+            <div
+              className="flex space-x-4 mt-2"
+              key={intervention.id}
+              data-testid="scenario-interventions-item"
+            >
               <div className="rounded-full bg-yellow py-0.5 px-3 text-xs">
                 <InterventionPhrase intervention={intervention} short />
               </div>

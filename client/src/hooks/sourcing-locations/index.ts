@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import apiService from 'services/api';
 import type { SourcingLocation, APIMetadataPagination } from 'types';
 
-import type { ApiSortParams } from 'components/newTable/types';
+import type { ApiSortParams } from 'components/table/types';
 
 type SourcingLocationsMaterialsAPIResponse = {
   data: SourcingLocation[];

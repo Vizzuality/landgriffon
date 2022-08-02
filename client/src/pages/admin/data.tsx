@@ -11,13 +11,13 @@ import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import { merge } from 'lodash';
 import Head from 'next/head';
 import { useMemo, useState } from 'react';
-import NewTable from 'components/newTable';
+import Table from 'components/table';
 
 import { ExclamationIcon } from '@heroicons/react/solid';
 import { useDebounce } from '@react-hook/debounce';
 
 import type { PaginationState, SortingState } from '@tanstack/react-table';
-import type { ColumnDefinition } from 'components/newTable/column';
+import type { ColumnDefinition } from 'components/table/column';
 import type { SourcingLocation } from 'types';
 
 const AdminDataPage: React.FC = () => {
@@ -147,7 +147,9 @@ const AdminDataPage: React.FC = () => {
         </div>
       )}
       {!hasData && isSearching && <NoResults />}
-      <NewTable
+      <Table
+        getSubRows={(row) => row.children}
+        isLoading={isFetchingData}
         data={data}
         onSortingChange={setSorting}
         columns={[

@@ -12,15 +12,6 @@ import {
 } from 'modules/sourcing-records/sourcing-record.repository';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { range } from 'lodash';
-import {
-  ImpactTable,
-  ImpactTableDataAggregatedValue,
-  ImpactTableDataByIndicator,
-  ImpactTablePurchasedTonnes,
-  ImpactTableRows,
-  ImpactTableRowsValues,
-  PaginatedImpactTable,
-} from 'modules/impact/dto/response-impact-table.dto';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
@@ -33,7 +24,6 @@ import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-materia
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SOURCING_LOCATION_TYPE_BY_INTERVENTION } from 'modules/sourcing-locations/sourcing-location.entity';
 import { PaginationMeta } from 'utils/app-base.service';
-import { ImpactService } from './impact.service';
 import { GetScenarioComparisonDto } from './dto/get-scenario-comparison.dto';
 import {
   PaginatedScenariosImpactTable,

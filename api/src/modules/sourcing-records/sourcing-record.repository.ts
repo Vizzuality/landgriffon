@@ -95,7 +95,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
           'scenarioIntervention.scenarioId = scenario.id',
         )
         .andWhere('scenario.id = :scenarioId', {
-          scenarioid: getImpactTaleDto.scenarioId,
+          scenarioId: getImpactTaleDto.scenarioId,
         });
     } else {
       impactDataQueryBuilder.andWhere(

@@ -89,41 +89,6 @@ export class ImpactService {
   }
 
   /**
-   *
-   * @param scenariosImpactTableDto
-   * Returns a table comapring 2 Scenarios Impacts
-   */
-  // async getRTwoScenariosImpactTable(
-  //   scenariosImpactTableDto: GetTwoScenariosImpactTableDto,
-  //   fetchSpecification: FetchSpecification,
-  // ): Promise<PaginatedImpactTable> {
-  //   // Getting entities - same as in getImapcttable method
-  //   const indicators: Indicator[] =
-  //     await this.indicatorService.getIndicatorsById(
-  //       scenariosImpactTableDto.indicatorIds,
-  //     );
-  //   this.logger.log(
-  //     'Retrieving data from DB to compare Impact Data of 2 Scenarios...',
-  //   );
-
-  //   await this.loadDescendantEntityIds(scenariosImpactTableDto);
-
-  //   const entities: ImpactTableEntityType[] = await this.getEntityTree(
-  //     scenariosImpactTableDto,
-  //   );
-
-  //   const paginatedEntities: PaginatedEntitiesDto =
-  //     ImpactService.paginateRootEntities(entities, fetchSpecification);
-
-  //   this.updateGroupByCriteriaFromEntityTree(
-  //     scenariosImpactTableDto,
-  //     paginatedEntities.entities,
-  //   );
-
-  //   // Retrieving and processing Impact Data of Scenarios
-  // }
-
-  /**
    * Returns an ImpactTable with results ranked according to the dto's sort property
    * and showing a max of maxRankingEntities, with the rest aggregated into an "others" property
    * for each indicator
@@ -409,7 +374,7 @@ export class ImpactService {
           if (dataForYear) {
             calculatedData[namesByIndicatorIndex].values.push({
               year: dataForYear.year,
-              value: dataForYear.impact,
+              value: dataForYear.impact || 0,
               isProjected: false,
             });
             // If the year requested does no exist in the raw data, project its value getting the latest value (previous year which comes in ascendant order)

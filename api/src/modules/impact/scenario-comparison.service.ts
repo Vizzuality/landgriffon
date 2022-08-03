@@ -315,7 +315,7 @@ export class ScenarioComparisonService {
           if (dataForYear) {
             calculatedData[namesByIndicatorIndex].values.push({
               year: dataForYear.year,
-              values: dataForYear.scenarioComparison,
+              scenariosImpacts: dataForYear.scenarioComparison,
               isProjected: false,
             });
             // If the year requested does no exist in the raw data, project its value getting the latest value (previous year which comes in ascendant order)
@@ -324,7 +324,7 @@ export class ScenarioComparisonService {
               rowValuesIndex > 0
                 ? calculatedData[namesByIndicatorIndex].values[
                     rowValuesIndex - 1
-                  ].values
+                  ].scenariosImpacts
                 : [{ scenarioId: 'none', impact: 0 }];
 
             const projectedScenariosImpacts: ScenarioComparissonImpact[] =
@@ -336,7 +336,7 @@ export class ScenarioComparisonService {
               });
             calculatedData[namesByIndicatorIndex].values.push({
               year: year,
-              values: projectedScenariosImpacts,
+              scenariosImpacts: projectedScenariosImpacts,
               isProjected: true,
             });
           }
@@ -371,7 +371,7 @@ export class ScenarioComparisonService {
     for (const year of rangeOfYears) {
       entity.values.push({
         year: year,
-        values: [],
+        scenariosImpacts: [],
         isProjected: false,
       });
     }
@@ -399,9 +399,9 @@ export class ScenarioComparisonService {
       SceanriosImpactTableRowsValues,
     ] of entity.values.entries()) {
       valuesToAggregate.forEach((item: ScenariosImpactTableRowsValues[]) => {
-        entity.values[valueIndex].values =
-          SceanriosImpactTableRowsValues.values.map((impactRow) => {
-            const sameScenarioImpact = item[valueIndex].values.find(
+        entity.values[valueIndex].scenariosImpacts =
+          SceanriosImpactTableRowsValues.scenariosImpacts.map((impactRow) => {
+            const sameScenarioImpact = item[valueIndex].scenariosImpacts.find(
               (impact) => impact.scenarioId === impactRow.scenarioId,
             );
             impactRow.impact =

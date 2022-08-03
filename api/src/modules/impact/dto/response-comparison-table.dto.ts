@@ -67,7 +67,7 @@ export class ScenariosImpactTableRowsValues {
   @ApiProperty()
   year: number;
   @ApiProperty({ type: () => ScenarioImpact, isArray: true })
-  values: ScenarioImpact[];
+  scenariosImpacts: ScenarioImpact[];
   @ApiPropertyOptional()
   absoluteDifference?: number;
   @ApiPropertyOptional()

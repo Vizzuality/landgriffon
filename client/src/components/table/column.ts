@@ -10,11 +10,14 @@ declare module '@tanstack/table-core' {
   }
 }
 
-export type ColumnDefinition<T, C> = Omit<ColumnDef<T, C>, 'accesorKey'> & {
+export type ColumnDefinition<T, C = T, F = React.ReactNode> = Omit<
+  ColumnDef<T, C>,
+  'accesorKey'
+> & {
   id: string;
-  fieldAccessor?: AccessorFn<T>;
+  fieldAccessor?: AccessorFn<T, C>;
   isSticky?: boolean;
   align?: 'left' | 'right' | 'center';
   title?: string;
-  format?: (value: C) => React.ReactNode;
+  format?: (value: C) => F;
 } & Pick<HTMLAttributes<HTMLDivElement>, 'className'>;

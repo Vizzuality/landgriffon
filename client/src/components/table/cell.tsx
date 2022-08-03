@@ -6,7 +6,7 @@ import {
 } from '@heroicons/react/solid';
 import type { CellContext, ColumnMeta, HeaderContext } from '@tanstack/react-table';
 import classNames from 'classnames';
-import type { CSSProperties, HTMLAttributes } from 'react';
+import type { HTMLAttributes } from 'react';
 import { useMemo } from 'react';
 
 type CellProps<T, C> = {

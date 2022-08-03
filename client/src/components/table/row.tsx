@@ -18,7 +18,7 @@ const TableRow = <T,>({ row }: TableRowProps<T>) => {
           className={classNames(
             'group-odd:bg-white group-even:bg-gray-50 group-hover:bg-gray-100 h-full',
             {
-              'sticky left-0 z-10 shadow-lg': cell.column.columnDef.meta.isSticky,
+              'sticky left-0 z-[1] shadow-lg': cell.column.columnDef.meta.isSticky,
             },
           )}
         >
@@ -38,8 +38,8 @@ export const TableHeaderRow = <T,>({ headerGroup }: TableHeaderRowProps<T>) => {
     <tr key={headerGroup.id}>
       {headerGroup.headers.map((header) => (
         <th
-          className={classNames('sticky z-20 top-0 border-b border-b-gray-300 bg-gray-50', {
-            'left-0 z-30': header.column.columnDef.meta.isSticky,
+          className={classNames('sticky z-[2] top-0 border-b border-b-gray-300 bg-gray-50', {
+            'left-0 z-[3]': header.column.columnDef.meta.isSticky,
           })}
           key={header.id}
           style={{ width: header.column.getSize() }}

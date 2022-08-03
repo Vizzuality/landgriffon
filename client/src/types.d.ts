@@ -153,7 +153,7 @@ export type ImpactTableData = {
   others: AggregatedValues;
   rows: {
     name: string;
-    values: Record<string, number | string | boolean>[];
+    values: { year: number; value: number; isProjected: boolean }[];
     children?: ImpactTableData['rows'];
   }[];
   yearSum: {

@@ -80,14 +80,14 @@ const Table = <T,>({ totalItems, data, columns, ...options }: TableProps<T>) => 
   );
 
   return (
-    <div className="mt-5 space-y-5">
-      <div className="overflow-hidden shadow-xl rounded-2xl">
+    <div className="w-full mt-5 space-y-5">
+      <div className="w-full overflow-hidden shadow-xl rounded-2xl">
         <div className=" max-h-[50vh] overflow-auto">
           <table
-            className="border-separate table-fixed border-spacing-0"
-            style={{
-              width: table.getTotalSize(),
-            }}
+            className="w-full border-separate table-fixed border-spacing-0"
+            // style={{
+            //   width: table.getTotalSize(),
+            // }}
           >
             <thead className="border-b border-b-gray-300 bg-gray-50">
               {table.getHeaderGroups().map((headerGroup) => (

@@ -1,18 +1,13 @@
 import { useMemo } from 'react';
 import Head from 'next/head';
 import { useDebounce } from '@react-hook/debounce';
-import type { ITableProps } from 'ka-table';
-import { DataType } from 'ka-table/enums';
-import dynamic from 'next/dynamic';
 import { PlusIcon } from '@heroicons/react/solid';
 
 import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import Button from 'components/button';
 import Search from 'components/search';
-
-type ITableData = ITableProps;
-
-const TableNoSSR = dynamic(() => import('components/table'), { ssr: false });
+import type { TableProps } from 'components/table/component';
+import Table from 'components/table';
 
 const AdminUsersPage: React.FC = () => {
   const [searchText, setSearchText] = useDebounce('', 250);
@@ -26,15 +21,14 @@ const AdminUsersPage: React.FC = () => {
       role: `Role: ${index}`,
     }));
 
-  const tableProps: ITableData = useMemo(
+  const tableProps = useMemo<TableProps<typeof tableData[0]>>(
     () => ({
-      rowKeyField: 'id',
       columns: [
-        { key: 'name', title: 'Name', dataType: DataType.String, width: 110 },
-        { key: 'email', title: 'Email', dataType: DataType.String },
-        { key: 'title', title: 'Title', dataType: DataType.String },
-        { key: 'role', title: 'Role', dataType: DataType.String },
-      ],
+        { id: 'name', title: 'Name', size: 110 },
+        { id: 'email', title: 'Email' },
+        { id: 'title', title: 'Title' },
+        { id: 'role', title: 'Role' },
+      ].map((column) => ({ align: 'left', ...column })),
       data: tableData,
     }),
     [tableData],
@@ -56,7 +50,7 @@ const AdminUsersPage: React.FC = () => {
           </Button>
         </div>
       </div>
-      <TableNoSSR {...tableProps} />
+      <Table {...tableProps} />
     </AdminLayout>
   );
 };

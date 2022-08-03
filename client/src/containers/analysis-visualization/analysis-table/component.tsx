@@ -32,10 +32,10 @@ const dataToCsv: (tableData: AnalysisTableProps) => string = (tableData) => {
       .map((column) => column.title || column.id)
       .join(';') + LINE_SEPARATOR;
 
-  tableData.data.forEach(({ name, ...yearValues }) => {
+  tableData.data.forEach(({ name, values }) => {
     const rowData: (string | number)[] = [name];
-    Object.values(yearValues).forEach((value) => {
-      rowData.push(value as number);
+    values.forEach(({ value }) => {
+      rowData.push(value);
     });
 
     str += rowData.join(';') + LINE_SEPARATOR;

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- Same input for city, address and coordinates for intervention form [LANDGRIF-821](https://vizzuality.atlassian.net/browse/LANDGRIF-821)
+
+## [2022.08.03]
+
 ### Added
 
 - Dashed line added to analysis table to difference between real and projected data [LANDGRIF-736](https://vizzuality.atlassian.net/browse/LANDGRIF-736)

@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useForm, Controller } from 'react-hook-form';
 import { RadioGroup, Disclosure } from '@headlessui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -23,10 +24,10 @@ import Select from 'components/select';
 
 import InterventionTypeIcon from './intervention-type-icon';
 import { InterventionTypes, LocationTypes } from '../enums';
+import { isCoordinates } from 'utils/coordinates';
 
 import type { SelectOptions } from 'components/select/types';
 import type { InterventionFormData } from '../types';
-import { useRouter } from 'next/router';
 
 type InterventionFormProps = {
   isSubmitting?: boolean;
@@ -57,9 +58,15 @@ const schemaValidation = yup.object({
   // Location
   newLocationType: optionSchema.nullable(),
   newLocationCountryInput: optionSchema.nullable(),
-  newLocationAddressInput: yup.string(),
-  newLocationLatitude: yup.number().min(-90).max(90),
-  newLocationLongitude: yup.number().min(-180).max(180),
+  newLocationAddressInput: yup.lazy((value) => {
+    if (isCoordinates(value)) {
+      return yup.string().test('is-coordinates', 'Coordinates should be valid', (value) => {
+        const [lat, lng] = value.split(',').map((coordinate) => parseFloat(coordinate));
+        return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+      });
+    }
+    return yup.string().required('City, address or coordinates field is required');
+  }),
 
   // Material
   newMaterialId: optionSchema,
@@ -98,6 +105,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
     control,
     watch,
     setValue,
+    getValues,
     resetField,
     handleSubmit,
     formState: { errors },
@@ -198,8 +206,31 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
     }
   }, [currentInterventionType, setValue]);
 
+  // When city, address or coordinates input are valid coordinates, set the location coordinates inputs
+  useEffect(() => {
+    const subscription = watch(({ newLocationAddressInput }, { name, type }) => {
+      if (name === 'newLocationAddressInput' && type === 'change') {
+        if (isCoordinates(newLocationAddressInput)) {
+          const [lat, lng]: [number, number] = newLocationAddressInput
+            .split(',')
+            .map((coordinate: string) => Number.parseFloat(coordinate));
+          setValue('newLocationLatitude', lat);
+          setValue('newLocationLongitude', lng);
+        } else {
+          resetField('newLocationLatitude');
+          resetField('newLocationLongitude');
+        }
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [resetField, setValue, watch]);
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-6 space-y-10">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="grid grid-cols-2 gap-6 space-y-10"
+      data-testid="intervention-form"
+    >
       <input {...register('scenarioId')} type="hidden" value={watch('scenarioId')} />
       <div className="flex flex-col justify-center pr-10">
         <h2>1. Apply intervention to...</h2>
@@ -354,6 +385,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                           : 'border-gray-300 text-gray-500',
                       )
                     }
+                    data-testid="intervention-type-option"
                   >
                     {({ active, checked }) => (
                       <div className="flex space-x-4 items-center">
@@ -483,18 +515,20 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                           />
                         </div>
                         {locationType?.value === LocationTypes.aggregationPoint && (
-                          <div>
-                            <label className={LABEL_CLASSNAMES}>City / address</label>
+                          <div data-testid="city-address-coordinates-field">
+                            <label className={LABEL_CLASSNAMES}>City, address or coordinates</label>
                             <Input
                               type="text"
                               {...register('newLocationAddressInput')}
                               error={errors?.newLocationAddressInput?.message}
                             />
+                            <div className="text-xs text-gray-500 mt-1">
+                              Add lat and long coordinates separated by comma, e.g. 40, -3
+                            </div>
                           </div>
                         )}
                         {locationType?.value === LocationTypes.aggregationPoint && (
-                          <div>
-                            <label className={LABEL_CLASSNAMES}>Coordinates</label>
+                          <div className="hidden">
                             <div className="flex space-x-2 w-full">
                               <Input
                                 {...register('newLocationLatitude')}
@@ -503,7 +537,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                                 min={-90}
                                 max={90}
                                 className="w-full"
-                                error={errors?.newLocationLatitude?.message}
                               />
                               <Input
                                 {...register('newLocationLongitude')}
@@ -512,7 +545,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                                 min={-180}
                                 max={180}
                                 className="w-full"
-                                error={errors?.newLocationLongitude?.message}
                               />
                             </div>
                           </div>

@@ -6,6 +6,7 @@ import { SSRProvider } from '@react-aria/ssr';
 import { Hydrate } from 'react-query/hydration';
 import store from 'store';
 import { MediaContextProvider } from 'components/media-query';
+import ThirdParty from 'containers/third-party-cookies';
 
 import 'styles/globals.css';
 import 'styles/fonts.css';
@@ -21,6 +22,7 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => (
           <MediaContextProvider>
             <SSRProvider>
               <Component {...pageProps} />
+              <ThirdParty />
             </SSRProvider>
           </MediaContextProvider>
         </OverlayProvider>

@@ -1,8 +1,5 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import {
-  GetImpactTableDto,
-  GetRankedImpactTableDto,
-} from 'modules/impact/dto/get-impact-table.dto';
+import { Logger } from '@nestjs/common';
+import { GetImpactTableDto } from 'modules/impact/dto/get-impact-table.dto';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import {
@@ -22,7 +19,6 @@ import { DEFAULT_PAGINATION, FetchSpecification } from 'nestjs-base-service';
 import { PaginatedEntitiesDto } from 'modules/impact/dto/paginated-entities.dto';
 import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
-import { SOURCING_LOCATION_TYPE_BY_INTERVENTION } from 'modules/sourcing-locations/sourcing-location.entity';
 import { PaginationMeta } from 'utils/app-base.service';
 import { GetScenarioComparisonDto } from './dto/get-scenario-comparison.dto';
 import {
@@ -482,42 +478,4 @@ export class ScenarioComparisonService {
    * intervention type (replacing or canceled) and reduces it to 1 object with impact value 'before Intervention',
    * impact value of the Intervention and absolute / percentage differences between them
    */
-
-  private static processDataForScenarioImpactTable(
-    dataForImpactTable: ImpactTableData[],
-  ): ImpactTableData[] {
-    const dataForScenarioImpactTable: { [index: string]: ImpactTableData } =
-      dataForImpactTable.reduce(
-        (
-          result: { [index: string]: ImpactTableData },
-          item: ImpactTableData,
-        ) => {
-          const { impact, typeByIntervention, ...commonProperties } = item;
-          const key: string = Object.values(commonProperties).join('-');
-          const prevItem: ImpactTableData = result[key] || {};
-          const {
-            impact: prevImpact = 0,
-            interventionImpact: prevInterventionImpact = 0,
-          } = prevItem;
-
-          result[key] = {
-            ...item,
-            impact:
-              typeByIntervention ===
-              SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED
-                ? impact
-                : prevImpact,
-            interventionImpact:
-              typeByIntervention ===
-              SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING
-                ? impact
-                : prevInterventionImpact,
-          };
-          return result;
-        },
-        {},
-      );
-
-    return Object.values(dataForScenarioImpactTable);
-  }
 }

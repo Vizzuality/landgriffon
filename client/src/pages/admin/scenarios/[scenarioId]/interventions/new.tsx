@@ -47,7 +47,7 @@ const CreateInterventionPage: React.FC = () => {
       </Link>
       <div className="grid grid-cols-12 gap-6">
         <div className="col-start-2 col-span-10 xl:col-start-3 xl:col-span-8">
-          <h1>New intervention</h1>
+          <h1 data-testid="page-title">New intervention</h1>
           <InterventionForm onSubmit={handleSubmit} />
         </div>
       </div>

@@ -1,6 +1,5 @@
 import Button from 'components/button';
 import Search from 'components/search';
-import { DataType, SortingMode, TableNoSSR as Table } from 'components/table';
 import DownloadMaterialsDataButton from 'containers/admin/download-materials-data-button';
 import NoDataUpload from 'containers/admin/no-data-upload';
 import NoResults from 'containers/admin/no-results';
@@ -12,16 +11,22 @@ import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import { merge } from 'lodash';
 import Head from 'next/head';
 import { useMemo, useState } from 'react';
+import Table from 'components/table';
 
 import { ExclamationIcon } from '@heroicons/react/solid';
 import { useDebounce } from '@react-hook/debounce';
 
-import type { ApiSortingType, TableProps } from 'components/table';
+import type { PaginationState, SortingState } from '@tanstack/react-table';
+import type { ColumnDefinition } from 'components/table/column';
+import type { SourcingLocation } from 'types';
 
 const AdminDataPage: React.FC = () => {
   const [searchText, setSearchText] = useDebounce('', 250);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [sorting, setSorting] = useState<ApiSortingType>();
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageSize: 10,
+    pageIndex: 1,
+  });
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [dataDownloadError, setDataDownloadError] = useState<string>();
 
   const {
@@ -29,15 +34,15 @@ const AdminDataPage: React.FC = () => {
     meta: sourcingMetadata,
     isFetching: isFetchingSourcingData,
   } = useSourcingLocationsMaterials({
-    ...(sorting && {
+    ...(sorting[0] && {
       // Even though in the data the key is `materialName`, the endpoint
       // expects it to be `material` when using filters.
-      orderBy: sorting.orderBy === 'materialName' ? 'material' : sorting.orderBy,
-      order: sorting.order,
+      orderBy: sorting[0].id === 'materialName' ? 'material' : sorting[0].id,
+      order: sorting[0].desc ? 'desc' : 'asc',
     }),
     search: searchText,
-    'page[size]': 10,
-    'page[number]': currentPage,
+    'page[size]': pagination.pageSize,
+    'page[number]': pagination.pageIndex,
   });
 
   const {
@@ -60,9 +65,8 @@ const AdminDataPage: React.FC = () => {
   const yearsData = useMemo(() => {
     return {
       columns: allYears.map((year) => ({
-        key: year.toString(),
-        title: year.toString(),
-        DataType: DataType.Number,
+        id: `${year}`,
+        title: `${year}`,
         width: 80,
         visible: yearsInRange.includes(year),
       })),
@@ -75,61 +79,34 @@ const AdminDataPage: React.FC = () => {
     };
   }, [allYears, sourcingData, yearsInRange]);
 
-  /** Table Props */
-  const tableProps = useMemo<TableProps>(() => {
-    return {
-      isLoading: isFetchingSourcingData,
-      childComponents: {
-        cell: {
-          elementAttributes: () => ({
-            className: 'p-0',
-          }),
-        },
-      },
-      rowKeyField: 'id',
-      columns: [
-        { key: 'material', title: 'Material', dataType: DataType.String, width: 240 },
-        { key: 'businessUnit', title: 'Business Unit', dataType: DataType.String },
-        { key: 't1Supplier', title: 'T1 Supplier', dataType: DataType.String },
-        { key: 'producer', title: 'Producer', dataType: DataType.String },
-        { key: 'locationType', title: 'Location Type', dataType: DataType.String },
-        { key: 'country', title: 'Country', dataType: DataType.String },
-        ...yearsData.columns.map((column) => ({ ...column, isSortable: false })),
-      ],
-      data: merge(sourcingData, yearsData.data),
-      sortingMode: SortingMode.Api,
-      defaultSorting: sorting,
-      onSortingChange: (params: ApiSortingType) => {
-        setCurrentPage(1);
-        setSorting(params);
-      },
-      onPageChange: setCurrentPage,
-      paging: {
-        enabled: true,
-        totalItems: sourcingMetadata.totalItems,
-        pageSize: sourcingMetadata.size,
-        pageIndex: sourcingMetadata.page,
-        pagesCount: sourcingMetadata.totalPages,
-        showSummary: true,
-      },
-    } as TableProps;
-  }, [
-    isFetchingSourcingData,
-    sorting,
-    sourcingData,
-    sourcingMetadata.page,
-    sourcingMetadata.size,
-    sourcingMetadata.totalItems,
-    sourcingMetadata.totalPages,
-    yearsData.columns,
-    yearsData.data,
-  ]);
-
   /** Helpers for use in the JSX */
 
   const hasData = sourcingData?.length > 0;
   const isFetchingData = isFetchingSourcingData;
   const isSearching = !!searchText;
+
+  const data = useMemo(() => merge(sourcingData, yearsData.data), [sourcingData, yearsData.data]);
+
+  if (data?.[0]) {
+    data[0].children = [
+      {
+        ...data[0],
+        material: 'CHILD',
+        children: [{ ...data[0], material: 'GRANDCHILD' }],
+      },
+    ];
+  }
+
+  const yearsColumns = useMemo<ColumnDefinition<SourcingLocation[], string>[]>(
+    () =>
+      yearsData.columns.map((column) => ({
+        id: column.id,
+        title: column.title,
+        enableHiding: !column.visible,
+        size: 70,
+      })),
+    [yearsData.columns],
+  );
 
   return (
     <AdminLayout currentTab={ADMIN_TABS.DATA} title="Actual data">
@@ -145,14 +122,11 @@ const AdminDataPage: React.FC = () => {
           Upload data source
         </Button>
       </div>
-
       <UploadDataSourceModal
         open={isUploadDataSourceModalOpen}
         onDismiss={closeUploadDataSourceModal}
       />
-
       {!hasData && !isFetchingData && !isSearching && <NoDataUpload />}
-
       {!(!hasData && !isFetchingData && !isSearching) && (
         <div className="flex flex-col-reverse items-center justify-between md:flex-row">
           <div className="flex w-full gap-2 md:w-auto">
@@ -163,16 +137,6 @@ const AdminDataPage: React.FC = () => {
               years={allYears}
               onChange={setYearsRange}
             />
-            {/*
-            <Button theme="secondary" onClick={() => console.info('Filters: click')}>
-              <span className="block h-5 truncate">
-                <FilterIcon className="w-5 h-5 text-gray-900" aria-hidden="true" />
-              </span>
-              <span className="flex items-center justify-center w-5 h-5 ml-1 text-xs font-semibold text-white bg-green-700 rounded-full">
-                2
-              </span>
-            </Button>
-            */}
           </div>
           {dataDownloadError && (
             <div className="flex items-center text-sm text-yellow-800">
@@ -182,10 +146,39 @@ const AdminDataPage: React.FC = () => {
           )}
         </div>
       )}
-
       {!hasData && isSearching && <NoResults />}
-
-      {(hasData || isFetchingData) && <Table {...tableProps} />}
+      <Table
+        getSubRows={(row) => row.children}
+        isLoading={isFetchingData}
+        data={data}
+        onSortingChange={setSorting}
+        columns={[
+          {
+            id: 'material',
+            title: 'Material',
+            size: 280,
+            align: 'left',
+            isSticky: true,
+            enableSorting: true,
+          },
+          { id: 'businessUnit', title: 'Business Unit' },
+          { id: 't1Supplier', title: 'T1 Supplier' },
+          { id: 'producer', title: 'Producer' },
+          { id: 'locationType', title: 'Location Type' },
+          { id: 'country', title: 'Country' },
+          ...yearsColumns,
+        ]}
+        state={{
+          pagination: {
+            pageIndex: sourcingMetadata.page,
+            pageSize: sourcingMetadata.size,
+          },
+          sorting,
+        }}
+        totalItems={sourcingMetadata.totalItems}
+        pageCount={sourcingMetadata.totalPages}
+        onPaginationChange={setPagination}
+      />
     </AdminLayout>
   );
 };

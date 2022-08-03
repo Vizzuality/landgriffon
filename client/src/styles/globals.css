@@ -30,7 +30,7 @@
   }
 
   body {
-    @apply text-gray-900 antialiased;
+    @apply antialiased text-gray-900;
   }
 
   h1 {
@@ -38,7 +38,7 @@
   }
 
   h2 {
-    @apply text-2xl text-gray-900 font-semibold;
+    @apply text-2xl font-semibold text-gray-900;
   }
 
   h3 {
@@ -68,7 +68,7 @@
 
 /* RC Tree checkbox override */
 .rc-tree-checkbox {
-  @apply h-4 w-4 border border-gray-200 flex-shrink-0 rounded;
+  @apply flex-shrink-0 w-4 h-4 border border-gray-200 rounded;
 }
 
 .rc-tree-checkbox.rc-tree-checkbox-checked {
@@ -80,51 +80,9 @@
 }
 
 .rc-tree-node-content-wrapper {
-  @apply text-ellipsis truncate overflow-hidden w-full;
+  @apply w-full overflow-hidden truncate text-ellipsis;
 }
 
 .rc-tree-title {
-  @apply text-gray-900 w-full;
-}
-
-/* ka-table overrides */
-.ka {
-  /* @apply bg-transparent; */
-  background-color: transparent;
-}
-
-.ka-table .ka-thead-background {
-  @apply bg-gray-50;
-}
-
-.ka-table .ka-empty-cell {
-  width: 0;
-  min-width: 0;
-}
-
-.ka-table .ka-cell {
-  line-height: normal;
-}
-.ka-table tr:first-child th:first-child {
-  border-top-left-radius: 0.5rem; /* rounded-lg */
-}
-
-.ka-table tr:first-child th:last-child {
-  border-top-right-radius: 0.5rem; /* rounded-lg */
-}
-
-.ka-table tr:last-child td:first-child {
-  border-bottom-left-radius: 0.5rem; /* rounded-lg */
-}
-
-.ka-table tr:last-child td:last-child {
-  border-bottom-right-radius: 0.5rem; /* rounded-lg */
-}
-
-.ka-table .ka-icon-sort {
-  display: none;
-}
-
-.ka-cell-text::first-letter {
-  text-transform: uppercase;
+  @apply w-full text-gray-900;
 }

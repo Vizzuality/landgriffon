@@ -1,63 +1,62 @@
 import LinkButton from 'components/button';
 import Loading from 'components/loading';
-import Table, { DataType } from 'components/table';
-import SummaryRow from 'components/table/summary-row';
 import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
 import { useImpactData } from 'hooks/impact';
-import { PagingPosition, SortingMode } from 'ka-table/enums';
 import { uniq } from 'lodash';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { scenarios } from 'store/features/analysis/scenarios';
 import { useAppSelector } from 'store/hooks';
-import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 
 import { DownloadIcon } from '@heroicons/react/outline';
+import type { TableProps } from 'components/table/component';
+import Table from 'components/table/component';
+import type { PaginationState, SortingState } from '@tanstack/react-table';
+import type { ColumnDefinition } from 'components/table/column';
+import LineChart from 'components/chart/line';
+import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 
-import ComparisonCell from './comparison-cell';
+import type { ImpactTableData } from 'types';
 
-import type { ITableData } from './types';
-import type { ITableProps } from 'ka-table';
-import type { CellProps } from 'components/table/cell';
-import type { ChildComponents } from 'ka-table/models';
+type TableDataType = ImpactTableData['rows'][0];
 
-const dataToCsv: (tableData: ITableData) => string = (tableData) => {
+type AnalysisTableProps = TableProps<TableDataType>;
+
+const dataToCsv: (tableData: AnalysisTableProps) => string = (tableData) => {
   const LINE_SEPARATOR = '\r\n';
 
   if (!tableData) return null;
   let str = 'data:text/csv;charset=utf-8,';
   str +=
     tableData.columns
-      .filter(({ dataType }) => ['number', 'string'].includes(dataType))
-      .map((column) => column.title)
+      // .filter(({ dataType }) => ['number', 'string'].includes(dataType))
+      .map((column) => column.title || column.id)
       .join(';') + LINE_SEPARATOR;
 
-  tableData.data.forEach(
-    ({
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      id,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      parentId,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      datesRangeChart,
-      name,
-      ...yearValues
-    }) => {
-      const rowData: (string | number)[] = [name];
-      Object.values(yearValues).forEach((value) => {
-        rowData.push(value as number);
-      });
+  tableData.data.forEach(({ name, values }) => {
+    const rowData: (string | number)[] = [name];
+    values.forEach(({ value }) => {
+      rowData.push(value);
+    });
 
-      str += rowData.join(';') + LINE_SEPARATOR;
-    },
-  );
+    str += rowData.join(';') + LINE_SEPARATOR;
+  });
 
   return str;
 };
 
 const AnalysisTable: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [paginationState, setPaginationState] = useState<PaginationState>({
+    pageIndex: 1,
+    pageSize: 10,
+  });
+  const [sortingState, setSortingState] = useState<SortingState>([]);
+  const tableState = useMemo(
+    () => ({ pagination: paginationState, sorting: sortingState }),
+    [paginationState, sortingState],
+  );
   const { scenarioToCompare, isComparisonEnabled } = useAppSelector(scenarios);
+
+  // TODO: redo this
   const showComparison = useMemo(
     () => isComparisonEnabled && !!scenarioToCompare,
     [isComparisonEnabled, scenarioToCompare],
@@ -70,12 +69,14 @@ const AnalysisTable: React.FC = () => {
     },
     isLoading,
     isFetching,
-  } = useImpactData({ 'page[number]': currentPage, 'page[size]': pageSize });
+  } = useImpactData({
+    'page[number]': paginationState.pageIndex,
+    'page[size]': paginationState.pageSize,
+  });
 
-  const totalIndicators = useMemo(() => {
+  const totalRows = useMemo(() => {
     return !isLoading && impactTable.length === 1 ? impactTable[0].rows.length : impactTable.length;
   }, [isLoading, impactTable]);
-  const [totalRows, setTotalRows] = useState(totalIndicators);
 
   const datesRangeChartConfig = (data) => {
     const chartData = data.map(({ year, value }) => ({
@@ -107,100 +108,9 @@ const AnalysisTable: React.FC = () => {
     };
   };
 
-  // Data to pass to the table
-  const tableData = useMemo(() => {
-    const result = [];
-    const isMultipleIndicator = impactTable.length > 1;
-    // TO-DO: make it recursive to more levels, right now the max depth is 4
-    impactTable.forEach((indicator) => {
-      const rowParentId = isMultipleIndicator ? indicator.indicatorId : null;
-      if (isMultipleIndicator) {
-        // Indicators (top tree level)
-        result.push({
-          id: indicator.indicatorId,
-          parentId: null,
-          name: indicator.indicatorShortName,
-          indicatorRows: indicator.rows.length,
-          indicatorChildrenRows: indicator.rows.map((r) => ({
-            id: `${rowParentId}`,
-            name: r.name,
-            childrenRows: r.children.length,
-          })),
-          datesRangeChart: datesRangeChartConfig(indicator.yearSum),
-          ...indicator.yearSum
-            .map(({ year, value, ...rest }) => ({
-              [year]: showComparison ? { value, ...rest } : value,
-            }))
-            .reduce((a, b) => ({ ...a, ...b })),
-        });
-      }
-      // Indicator rows
-      indicator.rows.forEach((row, parentIndex) => {
-        const secondParentId = `${rowParentId}-${parentIndex}`;
-        result.push({
-          id: secondParentId,
-          parentId: rowParentId,
-          name: row.name,
-          indicatorRows: indicator.rows.length,
-          indicatorChildrenRows: indicator.rows.map((r) => ({
-            id: `${rowParentId}-${parentIndex}`,
-            name: r.name,
-            childrenRows: r.children.length,
-          })),
-          datesRangeChart: datesRangeChartConfig(row.values),
-          ...row.values
-            .map(({ year, value, ...rest }) => ({
-              [year as number]: showComparison ? { value, ...rest } : value,
-            }))
-            .reduce((a, b) => ({ ...a, ...b })),
-        });
-
-        const child = row.children;
-
-        if (child?.length > 0) {
-          child.forEach((childRow, childIndex) => {
-            const thirdParentId = `${secondParentId}-${childIndex}`;
-
-            result.push({
-              id: thirdParentId,
-              parentId: secondParentId,
-              name: childRow.name,
-              datesRangeChart: datesRangeChartConfig(childRow.values),
-              ...childRow.values
-                .map(({ year, value, ...rest }) => ({
-                  [year as number]: showComparison ? { value, ...rest } : value,
-                }))
-                .reduce((a, b) => ({ ...a, ...b })),
-            });
-
-            const grandChild = childRow.children;
-
-            if (grandChild?.length > 0) {
-              grandChild.forEach((grandChildRow, childIndex) => {
-                result.push({
-                  id: `${thirdParentId}-${childIndex}`,
-                  parentId: thirdParentId,
-                  name: grandChildRow.name,
-                  datesRangeChart: datesRangeChartConfig(grandChildRow.values),
-                  ...grandChildRow.values
-                    .map(({ year, value, ...rest }) => ({
-                      [year as number]: showComparison ? { value, ...rest } : value,
-                    }))
-                    .reduce((a, b) => ({ ...a, ...b })),
-                });
-              });
-            }
-          });
-        }
-      });
-    });
-
-    return result;
-  }, [impactTable, showComparison]);
-
   // Years from impact table
   const years = useMemo(() => {
-    const result = [];
+    const result: number[] = [];
     impactTable.forEach(({ yearSum }) => {
       const years = (yearSum || []).map(({ year }) => year);
       years.forEach((year) => result.push(year));
@@ -208,121 +118,70 @@ const AnalysisTable: React.FC = () => {
     return uniq(result);
   }, [impactTable]);
 
-  const projectedYears = useMemo<number[]>(
+  const tableData = useMemo(
     () =>
-      Object.values(impactTable)[0]
-        ?.rows[0]?.values.filter(({ isProjected }) => !!isProjected)
-        .map(({ year }) => year) as number[],
+      impactTable.map(({ indicatorShortName, yearSum, rows, ...impact }) => ({
+        ...impact,
+        children: rows,
+        name: indicatorShortName,
+        ...(yearSum && {
+          values: yearSum.map((sum) => ({ ...sum, isProjected: false })),
+        }),
+      })),
     [impactTable],
   );
 
-  const firstProjectedYear = useMemo(
-    () => projectedYears && Math.min(...projectedYears),
-    [projectedYears],
+  const baseColumns = useMemo<ColumnDefinition<TableDataType, unknown>[]>(
+    () => [
+      {
+        id: 'indicatorId',
+        title: 'Name',
+        fieldAccessor: (data) => data.name,
+        align: 'left',
+        isSticky: true,
+        size: 260,
+      },
+      {
+        id: 'datesRangeChart',
+        fieldAccessor: (row) => row.values,
+        title: 'Range',
+        className: 'px-2 mx-auto',
+        // style: { paddingLeft: 'inherit' },
+        format: (value) => {
+          const chartConfig = datesRangeChartConfig(value);
+          return (
+            <div className="h-20 overflow-hidden translate-y-1/3">
+              <LineChart chartConfig={chartConfig} />
+            </div>
+          );
+        },
+      },
+      ...years.map<ColumnDefinition<TableDataType, number>>((year) => ({
+        id: `${year}`,
+        title: `${year}`,
+        fieldAccessor: (data) => {
+          return data.values.find((value) => value.year === year).value;
+        },
+        format: BIG_NUMBER_FORMAT,
+      })),
+    ],
+    [years],
   );
 
-  // Totals for summary
-  const yearsSum = useMemo(() => {
-    const resultByYear = [];
-
-    years.forEach((year) => {
-      const result = impactTable.map((props) => {
-        const yearSum = props.yearSum;
-        const yearValue = yearSum.find((sum) => sum.year === year);
-        if (yearValue) return yearValue;
-        return { year, value: null };
-      });
-
-      resultByYear.push(result.reduce((a, b) => ({ year, value: a.value + b.value })));
-    });
-
-    if (!resultByYear.length) return [];
-    return resultByYear
-      .map(({ year, value }) => ({ [year as string]: value }))
-      .reduce((a, b) => ({ ...a, ...b }));
-  }, [impactTable, years]);
-
-  // Table configuration
-  const tableProps: ITableData = useMemo(() => {
-    const minYear = Math.min(...years);
-    const maxYear = Math.max(...years);
-
-    return {
-      rowKeyField: 'id',
-      treeGroupKeyField: 'parentId',
-      treeGroupsExpanded: [],
-      sortingMode: SortingMode.Single,
-      total: totalIndicators,
-      columns: [
-        { key: 'name', title: 'Name', dataType: DataType.String },
-        {
-          key: 'datesRangeChart',
-          title: `${minYear} - ${maxYear}`,
-          dataType: DataType.LineChart,
-          width: 140,
-        },
-        ...years.map((year) => ({
-          key: year.toString(),
-          title: year.toString(),
-          dataType: showComparison ? DataType.Object : DataType.Number,
-          isFirstYearProjected: firstProjectedYear === year,
-          isProjected: projectedYears?.includes(year),
-          width: 110,
-        })),
-      ],
+  const tableProps = useMemo<TableProps<TableDataType>>(
+    () => ({
+      getSubRows: (row) => row.children,
+      state: tableState,
+      onSortingChange: setSortingState,
+      onPaginationChange: setPaginationState,
+      totalItems: metadata.totalItems,
+      pageCount: metadata.totalPages,
+      isLoading: isFetching,
       data: tableData,
-      format: ({ value, column }) => {
-        if (column.key !== 'datesRangeChart' && column.key !== 'name' && value.value) {
-          return BIG_NUMBER_FORMAT(value.value);
-        }
-        if (column.key !== 'datesRangeChart' && column.key !== 'name' && Number.isNaN(+value)) {
-          return '-';
-        }
-        return value;
-      },
-      childComponents: {
-        summaryRow: {
-          content: (props) => (
-            <SummaryRow
-              firstProjectedYear={firstProjectedYear}
-              rowData={{ name: 'Total impact', ...yearsSum }}
-              {...props}
-            />
-          ),
-        },
-        cell: {
-          content: (props: CellProps) => {
-            const { column, value } = props;
-            switch (column.dataType) {
-              case DataType.LineChart:
-                return null;
-              case DataType.Number:
-                return BIG_NUMBER_FORMAT(value);
-              case DataType.Object:
-                return <ComparisonCell {...value} />;
-              default:
-                return value;
-            }
-          },
-          elementAttributes: () => ({
-            className: 'p-0',
-          }),
-        } as ChildComponents['cell'],
-      },
-    };
-  }, [
-    years,
-    totalIndicators,
-    tableData,
-    showComparison,
-    firstProjectedYear,
-    projectedYears,
-    yearsSum,
-  ]);
-
-  const handleIndicatorRows = useCallback((total) => {
-    setTotalRows(total);
-  }, []);
+      columns: baseColumns,
+    }),
+    [baseColumns, isFetching, metadata.totalItems, metadata.totalPages, tableData, tableState],
+  );
   const csv = useMemo<string | null>(() => encodeURI(dataToCsv(tableProps)), [tableProps]);
 
   return (
@@ -351,22 +210,7 @@ const AnalysisTable: React.FC = () => {
       <div className="relative">
         {isLoading && <Loading className="mr-3 -ml-1 text-green-700" />}
 
-        <Table
-          paging={{
-            enabled: true,
-            pageIndex: metadata.page,
-            pagesCount: metadata.totalPages,
-            pageSize: metadata.size,
-            totalItems: metadata.totalItems,
-            pageSizes: [10, 20, 30, 40],
-            position: PagingPosition.Bottom,
-          }}
-          onPageChange={setCurrentPage}
-          onPageSizeChange={setPageSize}
-          isLoading={isFetching}
-          {...(tableProps as ITableProps)}
-          handleIndicatorRows={handleIndicatorRows}
-        />
+        <Table {...tableProps} />
       </div>
     </>
   );

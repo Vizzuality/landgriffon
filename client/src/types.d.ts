@@ -92,7 +92,7 @@ export type Material = {
 
 export type SourcingLocation = {
   materialId: string;
-  materialName: string;
+  material: string;
   t1Supplier: string;
   producer: string;
   businessUnit: string;
@@ -153,7 +153,7 @@ export type ImpactTableData = {
   others: AggregatedValues;
   rows: {
     name: string;
-    values: Record<string, number | string | boolean>[];
+    values: { year: number; value: number; isProjected: boolean }[];
     children?: ImpactTableData['rows'];
   }[];
   yearSum: {

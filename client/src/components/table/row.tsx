@@ -2,6 +2,7 @@ import type { HeaderGroup, Row, TableMeta } from '@tanstack/react-table';
 import { flexRender } from '@tanstack/react-table';
 import classNames from 'classnames';
 import type { HTMLAttributes } from 'react';
+import { useMemo } from 'react';
 
 interface TableRowProps<T> extends HTMLAttributes<HTMLTableRowElement> {
   row: Row<T>;
@@ -10,10 +11,11 @@ interface TableRowProps<T> extends HTMLAttributes<HTMLTableRowElement> {
 }
 
 const TableRow = <T,>({ row, theme, isLast, ...props }: TableRowProps<T>) => {
+  const cells = useMemo(() => row.getVisibleCells(), [row]);
   return (
     <>
-      <tr className={classNames('group', {})} key={row.id} {...props}>
-        {row.getVisibleCells().map((cell, i) => (
+      <tr className="group" key={row.id} {...props}>
+        {cells.map((cell, i) => (
           <td
             key={cell.id}
             style={{

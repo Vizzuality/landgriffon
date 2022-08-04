@@ -135,7 +135,7 @@ const AnalysisTable: React.FC = () => {
     () => [
       {
         id: 'indicatorId',
-        title: 'Name',
+        title: '',
         fieldAccessor: (data) => data.name,
         align: 'left',
         isSticky: true,
@@ -170,7 +170,6 @@ const AnalysisTable: React.FC = () => {
 
   const tableProps = useMemo<TableProps<TableDataType>>(
     () => ({
-      theme: 'fancy',
       paginationProps: {
         totalItems: totalRows,
         itemNumber: tableData.length,

@@ -11,14 +11,15 @@ import type { ColumnDefinition } from './column';
 import TableRow, { TableHeaderRow } from './row';
 
 export interface TableProps<T = unknown>
-  extends Omit<TableOptions<T>, 'columns' | 'getCoreRowModel'> {
+  extends Omit<TableOptions<T>, 'columns' | 'getCoreRowModel' | 'pageCount'> {
   columns: ColumnDefinition<T, unknown>[];
   isLoading?: boolean;
-  theme?: 'default' | 'fancy';
+  theme?: 'default' | 'striped';
   paginationProps?: {
     totalItems: number;
     itemNumber: number;
     showSummary?: boolean;
+    pageCount?: number;
   };
 }
 
@@ -31,7 +32,6 @@ const columnToColumnDef = <T,>(
     meta: {
       isSticky: column.isSticky || false,
       align: column.align || 'center',
-      title: column.title || column.id,
       format: column.format,
     },
     cell: (context) => {
@@ -44,7 +44,7 @@ const columnToColumnDef = <T,>(
     },
     header: (context) => (
       <HeaderCell align={column.align} {...column} context={context}>
-        {column.title || column.id}
+        {column.title ?? column.id}
       </HeaderCell>
     ),
     enableSorting: !!column.enableSorting,
@@ -85,6 +85,7 @@ const Table = <T,>({
       footer: null,
     },
     columns: columnDefs,
+    pageCount: paginationProps.pageCount,
     ...options,
   });
 
@@ -115,31 +116,19 @@ const Table = <T,>({
     },
     [allExpandGroupRows, table],
   );
-
-  // for (let i = 0; i < expandModel.rows.length; ++i) {
-  //   const lastRowOfGroup = expandModel.rows
-  //     .reverse()
-  //     .find((row) => row.id.split('.')[0] === `${i}`);
-  //   console.log({ lastRowOfGroup });
-  // }
-
+  const bodyRows = table.getExpandedRowModel().rows;
   return (
-    <div className="w-full mt-5 space-y-5">
+    <div className="w-full space-y-5">
       <div className="w-full overflow-hidden shadow-xl rounded-2xl">
-        <div className=" max-h-[50vh] overflow-auto">
-          <table
-            className="w-full border-collapse table-fixed border-spacing-0"
-            // style={{
-            //   width: table.getTotalSize(),
-            // }}
-          >
+        <div className=" max-h-[65vh] overflow-auto">
+          <table className="w-full border-separate table-fixed border-spacing-0">
             <thead className="border-b border-b-gray-300 bg-gray-50">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableHeaderRow key={headerGroup.id} headerGroup={headerGroup} />
               ))}
             </thead>
             <tbody>
-              {table.getExpandedRowModel().rows.map((row) => {
+              {bodyRows.map((row) => {
                 const groupRows = expandModel.rows.filter(
                   (other) => row.id.split('.')[0] === other.id.split('.')[0],
                 );

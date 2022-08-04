@@ -148,6 +148,7 @@ const AdminDataPage: React.FC = () => {
       )}
       {!hasData && isSearching && <NoResults />}
       <Table
+        theme="striped"
         getSubRows={(row) => row.children}
         isLoading={isFetchingData}
         data={data}
@@ -175,8 +176,11 @@ const AdminDataPage: React.FC = () => {
           },
           sorting,
         }}
-        totalItems={sourcingMetadata.totalItems}
-        pageCount={sourcingMetadata.totalPages}
+        paginationProps={{
+          itemNumber: data.length,
+          totalItems: sourcingMetadata.totalItems,
+          pageCount: sourcingMetadata.totalPages,
+        }}
         onPaginationChange={setPagination}
       />
     </AdminLayout>

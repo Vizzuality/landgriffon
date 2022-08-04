@@ -58,7 +58,8 @@ const schemaValidation = yup.object({
   // Location
   newLocationType: optionSchema.nullable(),
   newLocationCountryInput: optionSchema.nullable(),
-  newLocationAddressInput: yup.lazy((value) => {
+
+  cityAddressCoordinates: yup.lazy((value) => {
     if (isCoordinates(value)) {
       return yup.string().test('is-coordinates', 'Coordinates should be valid', (value) => {
         const [lat, lng] = value.split(',').map((coordinate) => parseFloat(coordinate));
@@ -105,7 +106,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
     control,
     watch,
     setValue,
-    getValues,
     resetField,
     handleSubmit,
     formState: { errors },
@@ -190,6 +190,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
         'newMaterialId',
         'newT1SupplierId',
         'newProducerId',
+        'cityAddressCoordinates',
         'newLocationCountryInput',
         'newLocationAddressInput',
         'newLocationLatitude',
@@ -208,15 +209,17 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
 
   // When city, address or coordinates input are valid coordinates, set the location coordinates inputs
   useEffect(() => {
-    const subscription = watch(({ newLocationAddressInput }, { name, type }) => {
-      if (name === 'newLocationAddressInput' && type === 'change') {
-        if (isCoordinates(newLocationAddressInput)) {
-          const [lat, lng]: [number, number] = newLocationAddressInput
+    const subscription = watch(({ cityAddressCoordinates }, { name, type }) => {
+      if (name === 'cityAddressCoordinates' && type === 'change') {
+        if (isCoordinates(cityAddressCoordinates)) {
+          const [lat, lng]: [number, number] = cityAddressCoordinates
             .split(',')
             .map((coordinate: string) => Number.parseFloat(coordinate));
           setValue('newLocationLatitude', lat);
           setValue('newLocationLongitude', lng);
+          resetField('newLocationAddressInput');
         } else {
+          setValue('newLocationAddressInput', cityAddressCoordinates);
           resetField('newLocationLatitude');
           resetField('newLocationLongitude');
         }
@@ -515,17 +518,28 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                           />
                         </div>
                         {locationType?.value === LocationTypes.aggregationPoint && (
-                          <div data-testid="city-address-coordinates-field">
-                            <label className={LABEL_CLASSNAMES}>City, address or coordinates</label>
-                            <Input
-                              type="text"
-                              {...register('newLocationAddressInput')}
-                              error={errors?.newLocationAddressInput?.message}
-                            />
-                            <div className="text-xs text-gray-500 mt-1">
-                              Add lat and long coordinates separated by comma, e.g. 40, -3
+                          <>
+                            <div data-testid="city-address-coordinates-field">
+                              <label className={LABEL_CLASSNAMES}>
+                                City, address or coordinates
+                              </label>
+                              <Input
+                                type="text"
+                                {...register('cityAddressCoordinates')}
+                                error={errors?.newLocationAddressInput?.message}
+                              />
+                              <div className="text-xs text-gray-500 mt-1">
+                                Add lat and long coordinates separated by comma, e.g. 40, -3
+                              </div>
                             </div>
-                          </div>
+                            <div className="hidden">
+                              <Input
+                                type="text"
+                                {...register('newLocationAddressInput')}
+                                error={errors?.newLocationAddressInput?.message}
+                              />
+                            </div>
+                          </>
                         )}
                         {locationType?.value === LocationTypes.aggregationPoint && (
                           <div className="hidden">

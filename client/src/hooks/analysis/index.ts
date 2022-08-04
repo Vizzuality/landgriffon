@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import flatten from 'lodash/flatten';
 import uniq from 'lodash/uniq';
 import compact from 'lodash/compact';
+import chroma from 'chroma-js';
 
 import { useAppSelector } from 'store/hooks';
 import { useImpactRanking } from 'hooks/impact';
@@ -10,6 +11,17 @@ import { analysisFilters } from 'store/features/analysis/filters';
 
 import type { AnalysisChart } from './types';
 import type { Intervention } from './types';
+
+const COLOR_SCALE = chroma.scale([
+  '#8DD3C7',
+  '#FFFFB3',
+  '#BEBADA',
+  '#FB968A',
+  '#80B1D3',
+  '#9CBB97',
+  '#FDB462',
+  '#AAD463',
+]);
 
 export function useAnalysisChart(params): AnalysisChart {
   const filters = useAppSelector(analysisFilters);

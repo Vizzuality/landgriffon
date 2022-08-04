@@ -170,17 +170,21 @@ const AnalysisTable: React.FC = () => {
 
   const tableProps = useMemo<TableProps<TableDataType>>(
     () => ({
+      theme: 'fancy',
+      paginationProps: {
+        totalItems: totalRows,
+        itemNumber: tableData.length,
+        pageCount: metadata.totalPages,
+      },
       getSubRows: (row) => row.children,
       state: tableState,
       onSortingChange: setSortingState,
       onPaginationChange: setPaginationState,
-      totalItems: metadata.totalItems,
-      pageCount: metadata.totalPages,
       isLoading: isFetching,
       data: tableData,
       columns: baseColumns,
     }),
-    [baseColumns, isFetching, metadata.totalItems, metadata.totalPages, tableData, tableState],
+    [baseColumns, isFetching, metadata.totalPages, tableData, tableState, totalRows],
   );
   const csv = useMemo<string | null>(() => encodeURI(dataToCsv(tableProps)), [tableProps]);
 

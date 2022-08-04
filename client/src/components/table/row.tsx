@@ -1,32 +1,37 @@
-import type { HeaderGroup, Row } from '@tanstack/react-table';
+import type { HeaderGroup, Row, TableMeta } from '@tanstack/react-table';
 import { flexRender } from '@tanstack/react-table';
 import classNames from 'classnames';
+import type { HTMLAttributes } from 'react';
 
-interface TableRowProps<T> {
+interface TableRowProps<T> extends HTMLAttributes<HTMLTableRowElement> {
   row: Row<T>;
+  theme: TableMeta<T>['theme'];
+  isLast: boolean;
 }
 
-const TableRow = <T,>({ row }: TableRowProps<T>) => {
+const TableRow = <T,>({ row, theme, isLast, ...props }: TableRowProps<T>) => {
   return (
-    <tr className="group" key={row.id}>
-      {row.getVisibleCells().map((cell) => (
+    <tr className={classNames('group', {})} key={row.id} {...props}>
+      {row.getVisibleCells().map((cell, i) => (
         <td
           key={cell.id}
           style={{
             width: cell.column.getSize(),
           }}
-          className={classNames(
-            'group-odd:bg-white group-even:bg-gray-50 group-hover:bg-gray-100 h-full',
-            {
-              'sticky z-[1] shadow-lg': !!cell.column.columnDef.meta.isSticky,
-              'left-0 z-[1]':
-                cell.column.columnDef.meta.isSticky ||
-                cell.column.columnDef.meta.isSticky === 'left',
-              'right-0 z-[1]':
-                cell.column.columnDef.meta.isSticky ||
-                cell.column.columnDef.meta.isSticky === 'right',
-            },
-          )}
+          className={classNames('h-full border-l-4 border-transparent', {
+            'bg-white': theme === 'fancy',
+            'border-b-4': theme === 'fancy' && isLast,
+            'border-l-4 border-l-green-700 box-content':
+              theme === 'fancy' && row.getIsSelected() && i === 0,
+
+            'group-odd:bg-white group-even:bg-gray-50 group-hover:bg-gray-100': theme === 'default',
+            'sticky z-[1] shadow-lg': !!cell.column.columnDef.meta.isSticky,
+            'left-0 z-[1]':
+              cell.column.columnDef.meta.isSticky || cell.column.columnDef.meta.isSticky === 'left',
+            'right-0 z-[1]':
+              cell.column.columnDef.meta.isSticky ||
+              cell.column.columnDef.meta.isSticky === 'right',
+          })}
         >
           {flexRender(cell.column.columnDef.cell, cell.getContext())}
         </td>

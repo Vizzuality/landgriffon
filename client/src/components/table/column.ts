@@ -3,6 +3,10 @@ import type { HTMLAttributes } from 'react';
 import type React from 'react';
 declare module '@tanstack/table-core' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface TableMeta<TData extends RowData> {
+    theme: 'default' | 'fancy';
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     isSticky?: boolean | 'left' | 'right';
     align?: 'left' | 'right' | 'center';

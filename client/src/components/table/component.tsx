@@ -1,4 +1,4 @@
-import type { ColumnHelper, DeepKeys, TableOptions } from '@tanstack/react-table';
+import type { ColumnHelper, DeepKeys, Row, TableOptions } from '@tanstack/react-table';
 import { getExpandedRowModel } from '@tanstack/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { getCoreRowModel } from '@tanstack/react-table';
@@ -13,8 +13,13 @@ import TableRow, { TableHeaderRow } from './row';
 export interface TableProps<T = unknown>
   extends Omit<TableOptions<T>, 'columns' | 'getCoreRowModel'> {
   columns: ColumnDefinition<T, unknown>[];
-  totalItems?: number;
   isLoading?: boolean;
+  theme?: 'default' | 'fancy';
+  paginationProps?: {
+    totalItems: number;
+    itemNumber: number;
+    showSummary?: boolean;
+  };
 }
 
 const columnToColumnDef = <T,>(
@@ -29,10 +34,10 @@ const columnToColumnDef = <T,>(
       title: column.title || column.id,
       format: column.format,
     },
-    cell: (cell) => {
-      const value = cell.getValue();
+    cell: (context) => {
+      const value = context.getValue();
       return (
-        <Cell {...column} align={column.align} context={cell}>
+        <Cell {...column} align={column.align} context={context}>
           {value}
         </Cell>
       );
@@ -46,7 +51,13 @@ const columnToColumnDef = <T,>(
   });
 };
 
-const Table = <T,>({ totalItems, data, columns, ...options }: TableProps<T>) => {
+const Table = <T,>({
+  paginationProps,
+  data,
+  columns,
+  theme = 'default',
+  ...options
+}: TableProps<T>) => {
   const columnHelper = useMemo(() => createColumnHelper<T>(), []);
 
   const columnDefs = useMemo(
@@ -60,6 +71,12 @@ const Table = <T,>({ totalItems, data, columns, ...options }: TableProps<T>) => 
     manualPagination: true,
     manualSorting: true,
     enableMultiSort: false,
+    enableRowSelection: true,
+    enableSubRowSelection: true,
+    enableMultiRowSelection: true,
+    meta: {
+      theme,
+    },
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     defaultColumn: {
@@ -71,7 +88,9 @@ const Table = <T,>({ totalItems, data, columns, ...options }: TableProps<T>) => 
     ...options,
   });
 
-  const { pagination } = table.getState();
+  const { pagination: paginationData } = table.getState();
+  const pagination = { ...paginationData, ...paginationProps };
+
   const onChangePageSize = useCallback(
     (newSize: number) => {
       table.setPageSize(newSize);
@@ -79,12 +98,37 @@ const Table = <T,>({ totalItems, data, columns, ...options }: TableProps<T>) => 
     [table],
   );
 
+  const expandModel = table.getExpandedRowModel();
+
+  const allExpandGroupRows = useCallback(
+    (rowId: string) => {
+      const topLevel = rowId.split('.')[0];
+      return expandModel.flatRows.filter((subRow) => subRow.id.split('.')[0] === topLevel);
+    },
+    [expandModel.flatRows],
+  );
+
+  const handleRowSelection = useCallback(
+    (row: Row<T>) => {
+      const groupRows = allExpandGroupRows(row.id);
+      table.setRowSelection(Object.fromEntries(groupRows.map((row) => [row.id, true])));
+    },
+    [allExpandGroupRows, table],
+  );
+
+  // for (let i = 0; i < expandModel.rows.length; ++i) {
+  //   const lastRowOfGroup = expandModel.rows
+  //     .reverse()
+  //     .find((row) => row.id.split('.')[0] === `${i}`);
+  //   console.log({ lastRowOfGroup });
+  // }
+
   return (
     <div className="w-full mt-5 space-y-5">
       <div className="w-full overflow-hidden shadow-xl rounded-2xl">
         <div className=" max-h-[50vh] overflow-auto">
           <table
-            className="w-full border-separate table-fixed border-spacing-0"
+            className="w-full border-collapse table-fixed border-spacing-0"
             // style={{
             //   width: table.getTotalSize(),
             // }}
@@ -95,9 +139,25 @@ const Table = <T,>({ totalItems, data, columns, ...options }: TableProps<T>) => 
               ))}
             </thead>
             <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} row={row} />
-              ))}
+              {table.getExpandedRowModel().rows.map((row) => {
+                const groupRows = expandModel.rows.filter(
+                  (other) => row.id.split('.')[0] === other.id.split('.')[0],
+                );
+
+                const isLastRow = groupRows[groupRows.length - 1].id === row.id;
+
+                return (
+                  <TableRow
+                    isLast={isLastRow}
+                    onClick={() => {
+                      handleRowSelection(row);
+                    }}
+                    theme={table.options.meta.theme}
+                    key={row.id}
+                    row={row}
+                  />
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -106,9 +166,10 @@ const Table = <T,>({ totalItems, data, columns, ...options }: TableProps<T>) => 
       <div className="flex flex-row justify-between">
         <PageSizeSelector onChange={onChangePageSize} pageSize={pagination.pageSize} />
         <Pagination
+          showSummary={pagination.showSummary ?? true}
           totalPages={table.getPageCount()}
-          totalItems={totalItems}
-          numItems={pagination.pageSize}
+          totalItems={pagination.totalItems}
+          numItems={pagination.itemNumber ?? pagination.pageSize}
           currentPage={pagination.pageIndex}
           onPageClick={(newPage) => {
             table.setPageIndex(newPage);

@@ -11,7 +11,7 @@ import { analysisFilters } from 'store/features/analysis/filters';
 
 import { apiRawService } from 'services/api';
 
-import { COLOR_RAMPS } from 'utils/colors';
+import { COLOR_RAMPS, useColors } from 'utils/colors';
 
 import type { AxiosResponse } from 'axios';
 import type {
@@ -102,19 +102,11 @@ const responseContextualParser = (response: AxiosResponse<H3APIResponse>): H3API
   return { data: h3DataWithColor, metadata };
 };
 
-export function useColors(layerName: string): RGBColor[] {
-  const colors = useMemo(
-    () => COLOR_RAMPS[layerName].map((color) => chroma(color).rgb()),
-    [layerName],
-  );
-  return colors;
-}
-
 export function useH3MaterialData(
   params: Partial<MaterialH3APIParams> = {},
   options: Partial<UseQueryOptions> = {},
 ): H3DataResponse {
-  const colors = useColors('material');
+  const colors = useColors('material', COLOR_RAMPS);
   const query = useQuery(
     ['h3-data-material', params],
     async () =>
@@ -149,7 +141,7 @@ export function useH3RiskData(
   params: Partial<RiskH3APIParams> = {},
   options: Partial<UseQueryOptions> = {},
 ): H3DataResponse {
-  const colors = useColors('risk');
+  const colors = useColors('risk', COLOR_RAMPS);
   const query = useQuery(
     ['h3-data-risk', params],
     async () =>
@@ -287,7 +279,7 @@ export function useH3ImpactData(
   const filters = useAppSelector(analysisFilters);
   const { startYear, materials, indicator, suppliers, origins, locationTypes } = filters;
 
-  const colors = useColors('impact');
+  const colors = useColors('impact', COLOR_RAMPS);
   const urlParams: ImpactH3APIParams = {
     year: startYear,
     indicatorId: indicator?.value && indicator?.value === 'all' ? null : indicator?.value,

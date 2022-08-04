@@ -51,7 +51,7 @@ export type InterventionFormData = {
   GHG_LUC_T?: number;
 };
 
-export type InterventionDto = Readonly<{
+export type InterventionDto = {
   id?: number;
   title?: string;
   description?: string;
@@ -79,4 +79,4 @@ export type InterventionDto = Readonly<{
 
   newMaterialId?: string;
   newMaterialTonnageRatio?: number;
-}>;
+};

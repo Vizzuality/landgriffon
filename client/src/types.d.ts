@@ -1,3 +1,5 @@
+import type { ComparisonCellProps } from 'containers/analysis-visualization/analysis-table/comparison-cell/component';
+
 export type RGBColor = [number, number, number];
 
 export type HEXColor = string;
@@ -153,7 +155,11 @@ export type ImpactTableData = {
   others: AggregatedValues;
   rows: {
     name: string;
-    values: { year: number; value: number; isProjected: boolean }[];
+    values: ({
+      year: number;
+      value: number;
+      isProjected: boolean;
+    } & Partial<ComparisonCellProps>)[];
     children?: ImpactTableData['rows'];
   }[];
   yearSum: {

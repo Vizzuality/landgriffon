@@ -36,6 +36,7 @@ import {
   CACHED_DATA_TYPE,
   CachedData,
 } from 'modules/cached-data/cached.data.entity';
+import { ImpactCalculatorService } from 'modules/indicator-records/services/impact-calculator.service';
 
 export interface CachedRawValue {
   rawValue: number;
@@ -51,6 +52,7 @@ export class IndicatorRecordsService extends AppBaseService<
   constructor(
     @InjectRepository(IndicatorRecordRepository)
     private readonly indicatorRecordRepository: IndicatorRecordRepository,
+    private readonly impactCalculatorService: ImpactCalculatorService,
     private readonly indicatorService: IndicatorsService,
     private readonly h3DataService: H3DataService,
     private readonly materialsToH3sService: MaterialsToH3sService,

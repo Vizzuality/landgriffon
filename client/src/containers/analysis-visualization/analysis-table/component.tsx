@@ -3,7 +3,7 @@ import Loading from 'components/loading';
 import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
 import { useImpactData } from 'hooks/impact';
 import { uniq } from 'lodash';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { scenarios } from 'store/features/analysis/scenarios';
 import { useAppSelector } from 'store/hooks';
 
@@ -16,6 +16,8 @@ import LineChart from 'components/chart/line';
 import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 
 import type { ImpactTableData } from 'types';
+import type { ComparisonCellProps } from './comparison-cell/component';
+import ComparisonCell from './comparison-cell/component';
 
 type TableDataType = ImpactTableData['rows'][0];
 
@@ -131,6 +133,37 @@ const AnalysisTable: React.FC = () => {
     [impactTable],
   );
 
+  const comparisonColumn = useCallback<
+    (year: number) => ColumnDefinition<TableDataType, number | ComparisonCellProps>
+  >(
+    (year) => {
+      if (showComparison) {
+        return {
+          id: `${year}`,
+          title: `${year}`,
+          fieldAccessor: (data) => {
+            return data.values.find((value) => value.year === year) as Required<
+              TableDataType['values'][0]
+            >;
+          },
+          format: (data) => {
+            return <ComparisonCell {...data} />;
+          },
+        } as ColumnDefinition<TableDataType, ComparisonCellProps>;
+      }
+
+      return {
+        id: `${year}`,
+        title: `${year}`,
+        fieldAccessor: (data) => {
+          return data.values.find((value) => value.year === year).value;
+        },
+        format: BIG_NUMBER_FORMAT,
+      } as ColumnDefinition<TableDataType, number>;
+    },
+    [showComparison],
+  );
+
   const baseColumns = useMemo<ColumnDefinition<TableDataType, unknown>[]>(
     () => [
       {
@@ -156,16 +189,9 @@ const AnalysisTable: React.FC = () => {
           );
         },
       },
-      ...years.map<ColumnDefinition<TableDataType, number>>((year) => ({
-        id: `${year}`,
-        title: `${year}`,
-        fieldAccessor: (data) => {
-          return data.values.find((value) => value.year === year).value;
-        },
-        format: BIG_NUMBER_FORMAT,
-      })),
+      ...years.map((year) => comparisonColumn(year)),
     ],
-    [years],
+    [comparisonColumn, years],
   );
 
   const tableProps = useMemo<TableProps<TableDataType>>(

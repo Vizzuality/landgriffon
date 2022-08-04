@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import Head from 'next/head';
 import { useDebounce } from '@react-hook/debounce';
 import { PlusIcon } from '@heroicons/react/solid';
@@ -8,11 +8,19 @@ import Button from 'components/button';
 import Search from 'components/search';
 import type { TableProps } from 'components/table/component';
 import Table from 'components/table';
+import type { PaginationState } from '@tanstack/react-table';
+
+interface UserData {
+  name: string;
+  email: string;
+  title: string;
+  role: string;
+}
 
 const AdminUsersPage: React.FC = () => {
   const [searchText, setSearchText] = useDebounce('', 250);
 
-  const tableData = Array(100)
+  const tableData: UserData[] = Array(100)
     .fill(undefined)
     .map((_, index) => ({
       name: `Name: ${index}`,
@@ -21,8 +29,15 @@ const AdminUsersPage: React.FC = () => {
       role: `Role: ${index}`,
     }));
 
-  const tableProps = useMemo<TableProps<typeof tableData[0]>>(
+  const [paginationState, setPaginationState] = useState<PaginationState>({
+    pageIndex: 1,
+    pageSize: 10,
+  });
+
+  const tableProps = useMemo<TableProps<UserData>>(
     () => ({
+      onPaginationChange: setPaginationState,
+      state: { pagination: paginationState },
       columns: [
         { id: 'name', title: 'Name', size: 110 },
         { id: 'email', title: 'Email' },
@@ -32,7 +47,7 @@ const AdminUsersPage: React.FC = () => {
       data: tableData,
       theme: 'striped',
     }),
-    [tableData],
+    [paginationState, tableData],
   );
 
   return (

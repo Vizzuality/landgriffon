@@ -85,7 +85,7 @@ const Table = <T,>({
       footer: null,
     },
     columns: columnDefs,
-    pageCount: paginationProps.pageCount,
+    pageCount: paginationProps?.pageCount,
     ...options,
   });
 

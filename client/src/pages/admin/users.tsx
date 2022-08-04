@@ -30,6 +30,7 @@ const AdminUsersPage: React.FC = () => {
         { id: 'role', title: 'Role' },
       ].map((column) => ({ align: 'left', ...column })),
       data: tableData,
+      theme: 'striped',
     }),
     [tableData],
   );

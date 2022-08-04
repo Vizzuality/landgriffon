@@ -31,13 +31,13 @@ const AnalysisVisualization: React.FC = () => {
       {visualizationMode === 'map' && <AnalysisMap />}
 
       {visualizationMode === 'table' && (
-        <div className="flex flex-col pr-6 pl-6 xl:pl-12">
+        <div className="flex flex-col pl-6 pr-6 xl:pl-12">
           <AnalysisTable />
         </div>
       )}
 
       {visualizationMode === 'chart' && (
-        <div className="flex flex-col pr-6 pl-12 h-full">
+        <div className="flex flex-col h-full pl-12 pr-6">
           <AnalysisDynamicMetadata className="my-4" />
           <AnalysisChart />
         </div>

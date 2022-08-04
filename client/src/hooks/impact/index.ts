@@ -2,8 +2,6 @@ import { useMemo } from 'react';
 import type { UseQueryOptions, UseQueryResult } from 'react-query';
 import { useQuery } from 'react-query';
 
-import chroma from 'chroma-js';
-
 import { useAppSelector } from 'store/hooks';
 import { filtersForTabularAPI } from 'store/features/analysis/selector';
 import { analysisFilters } from 'store/features/analysis/filters';
@@ -12,7 +10,7 @@ import { scenarios } from 'store/features/analysis/scenarios';
 import { apiRawService } from 'services/api';
 import { useIndicators } from 'hooks/indicators';
 
-import type { RGBColor, ImpactData, ImpactRanking, APIpaginationRequest } from 'types';
+import type { ImpactData, ImpactRanking, APIpaginationRequest } from 'types';
 import { useStore } from 'react-redux';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
@@ -39,13 +37,6 @@ const DEFAULT_QUERY_RANKING_OPTIONS: UseQueryOptions = {
   keepPreviousData: true,
   refetchOnWindowFocus: false,
 };
-const COLOR_SCALE = chroma.scale(['#8DD3C7', '#BEBADA', '#FDB462']);
-
-export function useColors(): RGBColor[] {
-  const { layer } = useAppSelector(analysisFilters);
-  const colors = useMemo(() => COLOR_SCALE[layer].map((color) => chroma(color).rgb()), [layer]);
-  return colors;
-}
 
 type ImpactDataResponse = UseQueryResult<ImpactData, unknown>;
 type ImpactRankingResponse = UseQueryResult<ImpactRanking, unknown>;

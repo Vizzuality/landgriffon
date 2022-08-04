@@ -24,26 +24,26 @@ export interface TableProps<T = unknown>
 }
 
 const columnToColumnDef = <T,>(
-  column: ColumnDefinition<T, unknown>,
+  { format, align, isSticky, fieldAccessor, ...column }: ColumnDefinition<T, unknown>,
   columnHelper: ColumnHelper<T>,
 ) => {
-  return columnHelper.accessor(column.fieldAccessor || (column.id as DeepKeys<T>), {
+  return columnHelper.accessor(fieldAccessor || (column.id as DeepKeys<T>), {
     ...column,
     meta: {
-      isSticky: column.isSticky || false,
-      align: column.align || 'center',
-      format: column.format,
+      isSticky: isSticky || false,
+      align: align || 'center',
+      format,
     },
     cell: (context) => {
       const value = context.getValue();
       return (
-        <Cell {...column} align={column.align} context={context}>
+        <Cell {...column} align={align} context={context}>
           {value}
         </Cell>
       );
     },
     header: (context) => (
-      <HeaderCell align={column.align} {...column} context={context}>
+      <HeaderCell align={align} {...column} context={context}>
         {column.title ?? column.id}
       </HeaderCell>
     ),

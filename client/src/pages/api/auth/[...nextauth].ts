@@ -23,9 +23,6 @@ const options: NextAuthOptions = {
     strategy: 'jwt',
     maxAge: 2 * 60 * 60, // 2 hours
   },
-
-  secret: process.env.NEXTAUTH_SECRET,
-
   // Configure one or more authentication providers
   providers: [
     CredentialsProvider({

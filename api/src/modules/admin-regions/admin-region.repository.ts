@@ -153,9 +153,8 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
     )
       throw new GeoCodingError(
         sourcingLocation.locationAddressInput
-          ? `Address ${sourcingLocation.locationAddressInput} is `
-          : `Coordinates ${coordinates.lat}, ${coordinates.lng} are ` +
-            `not inside ${sourcingLocation.locationCountryInput}`,
+          ? `Address ${sourcingLocation.locationAddressInput} is not inside ${sourcingLocation.locationCountryInput}`
+          : `Coordinates ${coordinates.lat}, ${coordinates.lng} are not inside ${sourcingLocation.locationCountryInput}`,
       );
   }
 

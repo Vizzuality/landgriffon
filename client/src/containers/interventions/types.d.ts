@@ -22,7 +22,7 @@ export type Intervention = Readonly<{
   newAdminRegion: { name: string };
 }>;
 
-export type InterventionFormData = Readonly<{
+export type InterventionFormData = {
   interventionType: string;
   startYear: SelectOption;
   percentage: number;
@@ -38,6 +38,7 @@ export type InterventionFormData = Readonly<{
 
   newLocationType?: SelectOption;
   newLocationCountryInput?: SelectOption;
+  cityAddressCoordinates: string;
   newLocationAddressInput?: string;
   newLocationLatitude?: number;
   newLocationLongitude?: number;
@@ -48,7 +49,7 @@ export type InterventionFormData = Readonly<{
   UWU_T?: number;
   BL_LUC_T?: number;
   GHG_LUC_T?: number;
-}>;
+};
 
 export type InterventionDto = Readonly<{
   id?: number;

@@ -35,6 +35,10 @@ export function parseInterventionFormDataToDto(
     GHG_LUC_T,
     ...rest
   } = interventionFormData;
+
+  // removing some fields which API doesn't support
+  delete interventionFormData.cityAddressCoordinates;
+
   const thereIsCoefficients = !!(DF_LUC_T || UWU_T || BL_LUC_T || GHG_LUC_T);
 
   const result: InterventionDto = {

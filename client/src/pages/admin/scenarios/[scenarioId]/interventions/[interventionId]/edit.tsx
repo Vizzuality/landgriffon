@@ -26,10 +26,9 @@ const EditInterventionPage: React.FC = () => {
       ].join(','),
     },
   });
-  console.log(data);
   const editIntervention = useUpdateIntervention();
 
-  const handleSubmit = useCallback(() => {}, []);
+  const handleSubmit = useCallback(() => null, []);
 
   return (
     <CleanLayout>

@@ -11,9 +11,9 @@
     "prettier": "prettier --config .prettierrc.json --check --write \"./src/**/*.{tsx,jsx,ts,js}\"",
     "cypress": "cypress open",
     "cypress:headless": "cypress run",
-    "e2e": "start-server-and-test dev http://localhost:3000/auth/sign-in cypress:open",
-    "e2e:headless": "start-server-and-test dev http://localhost:3000/auth/sign-in cypress:headless",
-    "test": "start-server-and-test 'yarn build && yarn start' http://localhost:3000/auth/sign-in 'nyc --reporter nyc-report-lcov-absolute yarn cypress:headless'",
+    "e2e": "start-server-and-test dev http://localhost:3000/auth/signin cypress:open",
+    "e2e:headless": "start-server-and-test dev http://localhost:3000/auth/signin cypress:headless",
+    "test": "start-server-and-test 'yarn build && yarn start' http://localhost:3000/auth/signin 'nyc --reporter nyc-report-lcov-absolute yarn cypress:headless'",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },

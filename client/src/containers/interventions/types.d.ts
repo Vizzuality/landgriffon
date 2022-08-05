@@ -8,7 +8,7 @@ export type IndicatorCoefficients = {
   GHG_LUC_T: number;
 };
 
-export type Intervention = Readonly<{
+export type Intervention = {
   id: string;
   title: string;
   type: InterventionTypes;
@@ -21,7 +21,7 @@ export type Intervention = Readonly<{
   newMaterial: { name: string };
   newBusinessUnit: { name: string };
   newAdminRegion: { name: string };
-}>;
+};
 
 export type InterventionFormData = {
   interventionType: string;

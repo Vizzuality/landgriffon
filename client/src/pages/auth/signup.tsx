@@ -41,7 +41,7 @@ const SignUp: React.FC = () => {
   const signUp = useMutation(signUpService, {
     onSuccess: () => {
       // Redirect to sign-in when user is created successfully
-      router.push('/auth/sign-in');
+      router.push('/auth/signin');
     },
   });
 
@@ -59,9 +59,9 @@ const SignUp: React.FC = () => {
       </Head>
       <AuthenticationLayout>
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold my-4">Sign up</h2>
+          <div className="px-4 py-8 bg-white shadow sm:rounded-lg sm:px-10">
+            <div className="mb-10 text-center">
+              <h2 className="my-4 text-3xl font-bold">Sign up</h2>
               <p className="text-sm font-medium text-gray-500">
                 To create an account please enter your details below.
               </p>
@@ -102,9 +102,9 @@ const SignUp: React.FC = () => {
             </form>
           </div>
           <div className="my-4">
-            <p className="text-center text-sm">
+            <p className="text-sm text-center">
               Do you already have an account?{' '}
-              <Link href="/auth/sign-in">
+              <Link href="/auth/signin">
                 <a className="text-white">Sign-in</a>
               </Link>
             </p>

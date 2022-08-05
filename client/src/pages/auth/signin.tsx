@@ -31,19 +31,20 @@ const SignIn: React.FC = () => {
   });
 
   const handleSignIn = useCallback(
-    (data) => {
+    async (data) => {
       setIsLoading(true);
-      signIn('credentials', {
+      const { ok } = await signIn('credentials', {
         ...data,
         redirect: false,
-      }).then(({ error }) => {
-        if (error) {
-          setIsLoading(false);
-          toast.error('Login failed. Your emails or password is incorrect.');
-        } else {
-          router.push('/analysis');
-        }
       });
+
+      setIsLoading(false);
+
+      if (ok) {
+        router.push('/analysis');
+      } else {
+        toast.error('Login failed. Your emails or password is incorrect.');
+      }
     },
     [router],
   );
@@ -55,9 +56,9 @@ const SignIn: React.FC = () => {
       </Head>
       <AuthenticationLayout>
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold my-4">Sign in to your account</h2>
+          <div className="px-4 py-8 bg-white shadow sm:rounded-lg sm:px-10">
+            <div className="mb-10 text-center">
+              <h2 className="my-4 text-3xl font-bold">Sign in to your account</h2>
               <p className="text-sm font-medium text-gray-500">
                 To continue please enter your details below.
               </p>
@@ -107,9 +108,9 @@ const SignIn: React.FC = () => {
             </form>
           </div>
           <div className="my-4">
-            <p className="text-center text-sm">
+            <p className="text-sm text-center">
               Don&apos;t have an account?{' '}
-              <Link href="/auth/sign-up">
+              <Link href="/auth/signup">
                 <a className="text-white">Sign-up</a>
               </Link>
             </p>

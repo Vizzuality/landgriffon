@@ -12,11 +12,11 @@ type CustomCredentials = Credential & {
 const options: NextAuthOptions = {
   /**
    * Defining custom pages
-   * By default Next-Auth provides /api/auth/signing
+   * By default Next-Auth provides /api/auth/signin
    */
   pages: {
-    signIn: '/auth/sign-in',
-    error: '/auth/sign-in',
+    error: '/auth/signin',
+    signIn: '/auth/signin',
   },
 
   session: {

@@ -3,6 +3,8 @@ import { getExpandedRowModel } from '@tanstack/react-table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { getCoreRowModel } from '@tanstack/react-table';
 import { useReactTable } from '@tanstack/react-table';
+import classNames from 'classnames';
+import Loading from 'components/loading';
 import Pagination from 'components/pagination';
 import PageSizeSelector from 'components/pagination/pageSizeSelector';
 import React, { useCallback, useMemo } from 'react';
@@ -56,6 +58,7 @@ const Table = <T,>({
   data,
   columns,
   theme = 'default',
+  isLoading,
   ...options
 }: TableProps<T>) => {
   const columnHelper = useMemo(() => createColumnHelper<T>(), []);
@@ -67,7 +70,6 @@ const Table = <T,>({
 
   const table = useReactTable({
     data,
-    // TODO: maybe don't set this defaults? Looks like we're going to use the API everywhere for this
     manualPagination: true,
     manualSorting: true,
     enableMultiSort: false,
@@ -119,8 +121,17 @@ const Table = <T,>({
   const bodyRows = table.getExpandedRowModel().rows;
   return (
     <div className="w-full space-y-5">
-      <div className="w-full overflow-hidden shadow-xl rounded-2xl">
-        <div className=" max-h-[65vh] overflow-auto">
+      <div className="relative w-full overflow-hidden shadow-xl rounded-2xl">
+        {isLoading && (
+          <div className="absolute z-40 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+            <Loading className="w-12 h-12" />
+          </div>
+        )}
+        <div
+          className={classNames('max-h-[65vh] overflow-auto', {
+            'blur-sm pointer-events-none': isLoading,
+          })}
+        >
           <table className="w-full border-separate table-fixed border-spacing-0">
             <thead className="border-b border-b-gray-300 bg-gray-50">
               {table.getHeaderGroups().map((headerGroup) => (
@@ -128,6 +139,10 @@ const Table = <T,>({
               ))}
             </thead>
             <tbody>
+              {bodyRows.length === 0 && (
+                // TODO: no data message?
+                <tr className="h-20" />
+              )}
               {bodyRows.map((row) => {
                 const groupRows = expandModel.rows.filter(
                   (other) => row.id.split('.')[0] === other.id.split('.')[0],

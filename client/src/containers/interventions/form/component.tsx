@@ -28,9 +28,10 @@ import { InterventionTypes, LocationTypes, InfoTooltip } from '../enums';
 import { isCoordinates } from 'utils/coordinates';
 
 import type { SelectOptions } from 'components/select/types';
-import type { InterventionFormData } from '../types';
+import type { Intervention, InterventionFormData } from '../types';
 
 type InterventionFormProps = {
+  intervention?: Intervention;
   isSubmitting?: boolean;
   onSubmit?: (interventionFormData: InterventionFormData) => void;
 };
@@ -124,7 +125,11 @@ const TYPES_OF_INTERVENTIONS = Object.values(InterventionTypes).map((interventio
   label: interventionType,
 }));
 
-const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSubmit }) => {
+const InterventionForm: React.FC<InterventionFormProps> = ({
+  intervention,
+  isSubmitting,
+  onSubmit,
+}) => {
   const { query } = useRouter();
 
   const {

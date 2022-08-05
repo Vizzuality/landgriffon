@@ -98,7 +98,7 @@ const AdminDataPage: React.FC = () => {
         id: column.id,
         title: column.title,
         enableHiding: !column.visible,
-        size: 70,
+        // size: 70,
       })),
     [yearsData.columns],
   );

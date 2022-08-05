@@ -33,17 +33,22 @@ const AdminDataPage: React.FC = () => {
     data: sourcingData,
     meta: sourcingMetadata,
     isFetching: isFetchingSourcingData,
-  } = useSourcingLocationsMaterials({
-    ...(sorting[0] && {
-      // Even though in the data the key is `materialName`, the endpoint
-      // expects it to be `material` when using filters.
-      orderBy: sorting[0].id === 'materialName' ? 'material' : sorting[0].id,
-      order: sorting[0].desc ? 'desc' : 'asc',
-    }),
-    search: searchText,
-    'page[size]': pagination.pageSize,
-    'page[number]': pagination.pageIndex,
-  });
+  } = useSourcingLocationsMaterials(
+    {
+      ...(sorting[0] && {
+        // Even though in the data the key is `materialName`, the endpoint
+        // expects it to be `material` when using filters.
+        orderBy: sorting[0].id === 'materialName' ? 'material' : sorting[0].id,
+        order: sorting[0].desc ? 'desc' : 'asc',
+      }),
+      search: searchText,
+      'page[size]': pagination.pageSize,
+      'page[number]': pagination.pageIndex,
+    },
+    {
+      keepPreviousData: true,
+    },
+  );
 
   const {
     isOpen: isUploadDataSourceModalOpen,

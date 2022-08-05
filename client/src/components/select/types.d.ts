@@ -18,7 +18,8 @@ export type SelectProps = {
   loading?: boolean;
   label?: string;
   options: SelectOption[];
-  current: SelectOption | null;
+  defaultValue?: SelectOption;
+  current?: SelectOption | null;
   placeholder?: string;
   allowEmpty?: boolean;
   onChange?: (selected: SelectOption) => unknown;

@@ -103,6 +103,30 @@ export function useScenarioInterventions({
   return query as ResponseInterventionsData;
 }
 
+export function useIntervention({
+  interventionId,
+  params = {},
+  options = {},
+}: {
+  interventionId: string;
+  params?: Record<string, unknown>;
+  options?: Partial<UseQueryOptions>;
+}) {
+  const query = useQuery(
+    ['fetchIntervention', interventionId, params],
+    async () =>
+      apiService
+        .request({
+          method: 'GET',
+          url: `/scenario-interventions/${interventionId}`,
+          params,
+        })
+        .then(({ data: responseData }) => responseData.data),
+    { ...DEFAULT_QUERY_OPTIONS, ...options, enabled: !!interventionId },
+  );
+  return query as UseQueryResult<Intervention>;
+}
+
 export function useInterventions(queryParams = {}): ResponseInterventionsData {
   const response = useQuery(
     ['interventionsList', queryParams],

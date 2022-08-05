@@ -97,6 +97,7 @@ const Select: React.FC<SelectProps> = React.forwardRef<HTMLInputElement, SelectP
       disabled = false,
       label,
       options = [],
+      defaultValue = null,
       current = null,
       allowEmpty = false,
       loading = false,
@@ -238,6 +239,7 @@ const Select: React.FC<SelectProps> = React.forwardRef<HTMLInputElement, SelectP
         <input ref={ref} className="hidden" />
         <ReactSelect
           instanceId={instanceId}
+          defaultValue={defaultValue}
           onMenuOpen={() => setIsMenuOpen(true)}
           onMenuClose={() => setIsMenuOpen(false)}
           styles={styles}

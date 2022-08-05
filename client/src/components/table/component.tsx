@@ -87,7 +87,6 @@ const Table = <T,>({
       footer: null,
     },
     columns: columnDefs,
-    pageCount: paginationProps?.pageCount,
     ...options,
   });
 
@@ -171,7 +170,7 @@ const Table = <T,>({
         <PageSizeSelector onChange={onChangePageSize} pageSize={pagination.pageSize} />
         <Pagination
           showSummary={pagination.showSummary ?? true}
-          totalPages={table.getPageCount()}
+          totalPages={pagination.pageCount}
           totalItems={pagination.totalItems}
           numItems={pagination.itemNumber ?? pagination.pageSize}
           currentPage={pagination.pageIndex}

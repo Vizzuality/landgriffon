@@ -1,5 +1,4 @@
 import LinkButton from 'components/button';
-import Loading from 'components/loading';
 import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
 import { useImpactData } from 'hooks/impact';
 import { uniq } from 'lodash';
@@ -58,7 +57,6 @@ const AnalysisTable: React.FC = () => {
   );
   const { scenarioToCompare, isComparisonEnabled } = useAppSelector(scenarios);
 
-  // TODO: redo this
   const showComparison = useMemo(
     () => isComparisonEnabled && !!scenarioToCompare,
     [isComparisonEnabled, scenarioToCompare],
@@ -236,9 +234,7 @@ const AnalysisTable: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="relative">
-        {isLoading && <Loading className="mr-3 -ml-1 text-green-700" />}
-
+      <div className="relative mt-5">
         <Table {...tableProps} />
       </div>
     </>

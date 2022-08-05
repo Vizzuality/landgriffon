@@ -30,6 +30,7 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
 };
 export function useSourcingLocationsMaterials(
   params: SourcingLocationsParams,
+  queryOptions?: Partial<UseQueryOptions>,
 ): SourcingLocationsMaterialsDataResponse {
   const query = useQuery(
     ['sourcingLocationsMaterials', params],
@@ -43,6 +44,7 @@ export function useSourcingLocationsMaterials(
         .then((response) => response.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
+      ...queryOptions,
     },
   );
 

@@ -68,7 +68,7 @@
     "jsona": "1.9.2",
     "lodash": "4.17.21",
     "lottie-react": "2.2.1",
-    "next": "^12.2.3",
+    "next": "12.2.2",
     "next-auth": "^4.10.3",
     "pino": "8.1.0",
     "postcss": "8.3.6",

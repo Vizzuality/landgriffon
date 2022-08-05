@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Changed
+
 - Same input for city, address and coordinates for intervention form [LANDGRIF-821](https://vizzuality.atlassian.net/browse/LANDGRIF-821)
 
 ## [2022.08.03]
@@ -51,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Coefficients were not to be null in the intervention form
 
 ### Removed
+
 - Overview link in the sidebar menu.
 
 ## 2022.06.27
@@ -77,6 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Select and TreeSelect components redo according to design [LANDGRIF-686](https://vizzuality.atlassian.net/browse/LANDGRIF-686)
 - Removed multiply blend mode from the map
 - Added basemap selector, allowing to toggle between satellite and terrain [LANDGRIF-662](https://vizzuality.atlassian.net/browse/LANDGRIF-662)
+- Upgrade to Next.js 12 [LANDGRIF-815](https://vizzuality.atlassian.net/browse/LANDGRIF-815)
 
 ### Fixed
 

@@ -92,16 +92,6 @@ const AdminDataPage: React.FC = () => {
 
   const data = useMemo(() => merge(sourcingData, yearsData.data), [sourcingData, yearsData.data]);
 
-  if (data?.[0]) {
-    data[0].children = [
-      {
-        ...data[0],
-        material: 'CHILD',
-        children: [{ ...data[0], material: 'GRANDCHILD' }],
-      },
-    ];
-  }
-
   const yearsColumns = useMemo<ColumnDefinition<SourcingLocation[], string>[]>(
     () =>
       yearsData.columns.map((column) => ({
@@ -152,42 +142,44 @@ const AdminDataPage: React.FC = () => {
         </div>
       )}
       {!hasData && isSearching && <NoResults />}
-      <Table
-        theme="striped"
-        getSubRows={(row) => row.children}
-        isLoading={isFetchingData}
-        data={data}
-        onSortingChange={setSorting}
-        columns={[
-          {
-            id: 'material',
-            title: 'Material',
-            size: 280,
-            align: 'left',
-            isSticky: true,
-            enableSorting: true,
-          },
-          { id: 'businessUnit', title: 'Business Unit' },
-          { id: 't1Supplier', title: 'T1 Supplier' },
-          { id: 'producer', title: 'Producer' },
-          { id: 'locationType', title: 'Location Type' },
-          { id: 'country', title: 'Country' },
-          ...yearsColumns,
-        ]}
-        state={{
-          pagination: {
-            pageIndex: sourcingMetadata.page,
-            pageSize: sourcingMetadata.size,
-          },
-          sorting,
-        }}
-        paginationProps={{
-          itemNumber: data.length,
-          totalItems: sourcingMetadata.totalItems,
-          pageCount: sourcingMetadata.totalPages,
-        }}
-        onPaginationChange={setPagination}
-      />
+      <div className="mt-5">
+        <Table
+          theme="striped"
+          getSubRows={(row) => row.children}
+          isLoading={isFetchingData}
+          data={data}
+          onSortingChange={setSorting}
+          columns={[
+            {
+              id: 'material',
+              title: 'Material',
+              size: 280,
+              align: 'left',
+              isSticky: true,
+              enableSorting: true,
+            },
+            { id: 'businessUnit', title: 'Business Unit' },
+            { id: 't1Supplier', title: 'T1 Supplier' },
+            { id: 'producer', title: 'Producer' },
+            { id: 'locationType', title: 'Location Type' },
+            { id: 'country', title: 'Country' },
+            ...yearsColumns,
+          ]}
+          state={{
+            pagination: {
+              pageIndex: sourcingMetadata.page,
+              pageSize: sourcingMetadata.size,
+            },
+            sorting,
+          }}
+          paginationProps={{
+            itemNumber: data.length,
+            totalItems: sourcingMetadata.totalItems,
+            pageCount: sourcingMetadata.totalPages,
+          }}
+          onPaginationChange={setPagination}
+        />
+      </div>
     </AdminLayout>
   );
 };

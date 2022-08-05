@@ -1,24 +1,18 @@
 import {
   Connection,
-  EntityRepository,
   getConnection,
   QueryRunner,
-  Repository,
   SelectQueryBuilder,
 } from 'typeorm';
 import { Injectable, Logger } from '@nestjs/common';
-import { SaveOptions } from 'typeorm/repository/SaveOptions';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
-import { H3DataService } from 'modules/h3-data/h3-data.service';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
-import { SourcingRecordsWithIndicatorRawDataDto } from '../../sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
+import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 
 @Injectable()
 export class ImpactCalculatorService {
   logger: Logger = new Logger(this.constructor.name);
-
-  constructor(private readonly h3DataService: H3DataService) {}
 
   async calculateImpact(
     connection: Connection,
@@ -26,7 +20,6 @@ export class ImpactCalculatorService {
     georegionId: string,
     materialId: string,
     year: number,
-    options?: SaveOptions,
   ): Promise<any[]> {
     // MAIN LOGIC
 
@@ -70,9 +63,16 @@ export class ImpactCalculatorService {
      */
 
     const materialH3s: Map<MATERIAL_TO_H3_TYPE, H3Data> =
-      await this.h3DataService.getAllMaterialH3sByClosestYear(materialId, year);
+      await this.getAllMaterialH3sByClosestYear(
+        connection,
+        queryRunner,
+        materialId,
+        year,
+      );
     const indicatorH3s: Map<INDICATOR_TYPES, H3Data> =
-      await this.h3DataService.getIndicatorH3sByTypeAndClosestYear(
+      await this.getIndicatorH3sByTypeAndClosestYear(
+        connection,
+        queryRunner,
         Object.values(INDICATOR_TYPES),
         year,
       );
@@ -240,5 +240,89 @@ export class ImpactCalculatorService {
     }
 
     return result;
+  }
+
+  getIndicatorH3sByTypeAndClosestYear(
+    connecttion: Connection,
+    queryRunner: QueryRunner,
+    indicatorTypes: INDICATOR_TYPES[],
+    year: number,
+  ): Promise<Map<INDICATOR_TYPES, H3Data>> {
+    return indicatorTypes.reduce(
+      async (
+        previousValue: Promise<Map<INDICATOR_TYPES, H3Data>>,
+        currentIndicatorType: INDICATOR_TYPES,
+      ) => {
+        const queryBuilder: SelectQueryBuilder<H3Data> = connecttion
+          .createQueryBuilder()
+          .select(' h3data.*')
+          .from(H3Data, 'h3data')
+          .leftJoin(
+            'indicator',
+            'indicator',
+            'h3data.indicatorId = indicator.id',
+          )
+          .where(`indicator.nameCode = '${currentIndicatorType}'`)
+          .orderBy(`ABS(h3data.year - ${year})`, 'ASC')
+          .limit(1);
+
+        const map: Map<INDICATOR_TYPES, H3Data> = await previousValue;
+
+        try {
+          const result: any = await queryRunner.query(queryBuilder.getQuery());
+
+          if (result.length) {
+            map.set(currentIndicatorType, result[0]);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+
+        return map;
+      },
+      Promise.resolve(new Map()),
+    );
+  }
+
+  getAllMaterialH3sByClosestYear(
+    connecttion: Connection,
+    queryRunner: QueryRunner,
+    materialId: string,
+    year: number,
+  ): Promise<Map<MATERIAL_TO_H3_TYPE, H3Data>> {
+    return Object.values(MATERIAL_TO_H3_TYPE).reduce(
+      async (
+        previousValue: Promise<Map<MATERIAL_TO_H3_TYPE, H3Data>>,
+        currentMaterialToH3Type: MATERIAL_TO_H3_TYPE,
+      ) => {
+        const queryBuilder: SelectQueryBuilder<H3Data> = connecttion
+          .createQueryBuilder()
+          .select('h3data.*')
+          .from(H3Data, 'h3data')
+          .leftJoin(
+            'material_to_h3',
+            'materialsToH3s',
+            'materialsToH3s.h3DataId = h3data.id',
+          )
+          .where(`materialsToH3s.materialId = '${materialId}'`)
+          .andWhere(`materialsToH3s.type = '${currentMaterialToH3Type}'`)
+          .orderBy(`ABS(h3data.year - ${year})`, 'ASC')
+          .limit(1);
+
+        const map: Map<MATERIAL_TO_H3_TYPE, H3Data> = await previousValue;
+        try {
+          const result: any = await queryRunner.query(queryBuilder.getQuery());
+
+          if (result.length) {
+            map.set(currentMaterialToH3Type, result[0]);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+
+        return map;
+      },
+      Promise.resolve(new Map()),
+    );
   }
 }

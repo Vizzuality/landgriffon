@@ -508,7 +508,7 @@ describe('Indicator Records Service', () => {
         indicatorPreconditions.carbonEmissions,
         materialH3DataProducer1,
         indicatorPreconditions.sourcingRecord1.id,
-        29.788819307125873,
+        29.788819875776397,
         1610,
       );
       await checkCreatedIndicatorRecord(
@@ -540,7 +540,7 @@ describe('Indicator Records Service', () => {
         indicatorPreconditions.carbonEmissions,
         materialH3DataProducer2,
         indicatorPreconditions.sourcingRecord2.id,
-        14.894409653562937,
+        14.894409937888199,
         1610,
       );
       await checkCreatedIndicatorRecord(
@@ -551,7 +551,7 @@ describe('Indicator Records Service', () => {
         0.7700000181794167,
         1610,
       );
-    });
+    }, 100000000);
 
     test("When creating indicators without provided coefficients and the material has H3 data, the raw values for the calculations should be read from the cache if they're already present on the CachedData", async () => {
       //ARRANGE

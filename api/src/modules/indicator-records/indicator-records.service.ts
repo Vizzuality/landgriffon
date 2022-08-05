@@ -167,7 +167,8 @@ export class IndicatorRecordsService extends AppBaseService<
     ];
 
     const rawData: SourcingRecordsWithIndicatorRawDataDto[] =
-      await this.indicatorRecordRepository.getIndicatorRawDataForAllSourcingRecords();
+      //await this.indicatorRecordRepository.getIndicatorRawDataForAllSourcingRecords();
+      await this.impactCalculatorService.calculateAllSourcingRecords();
 
     const calculatedData2: IndicatorRecordCalculatedValuesDto[] = rawData.map(
       (sourcingRecordData: SourcingRecordsWithIndicatorRawDataDto) => {

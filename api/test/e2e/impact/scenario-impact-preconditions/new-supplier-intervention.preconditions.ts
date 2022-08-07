@@ -23,20 +23,29 @@ import {
   createUnit,
 } from '../../../entity-mocks';
 import { INDICATOR_TYPES } from '../../../../src/modules/indicators/indicator.entity';
+import { Scenario } from 'modules/scenarios/scenario.entity';
 
-export async function createNewSupplierInterventionPreconditions(): Promise<{
+export async function createNewSupplierInterventionPreconditions(
+  customScenario?: Scenario,
+  customIndicator?: Indicator,
+): Promise<{
   indicator: Indicator;
   scenarioIntervention: ScenarioIntervention;
 }> {
   const adminRegion: AdminRegion = await createAdminRegion({
     name: 'India',
   });
-  const unit: Unit = await createUnit({ shortName: 'fakeUnit' });
-  const indicator: Indicator = await createIndicator({
-    name: 'Deforestation',
-    unit,
-    nameCode: INDICATOR_TYPES.DEFORESTATION,
+  const unit: Unit = await createUnit({
+    name: 'defFakeUnit',
+    shortName: 'fakeUnitDef',
   });
+  const indicator: Indicator = customIndicator
+    ? customIndicator
+    : await createIndicator({
+        name: 'Deforestation',
+        unit,
+        nameCode: INDICATOR_TYPES.DEFORESTATION,
+      });
 
   const textile: Material = await createMaterial({ name: 'Textile' });
 
@@ -60,10 +69,13 @@ export async function createNewSupplierInterventionPreconditions(): Promise<{
   const supplierB: Supplier = await createSupplier({
     name: 'Supplier B',
   });
+
   // Scenario pre-conditions
 
-  const scenarioIntervention: ScenarioIntervention =
-    await createScenarioIntervention();
+  const scenarioIntervention: ScenarioIntervention = customScenario
+    ? await createScenarioIntervention({ scenario: customScenario })
+    : await createScenarioIntervention();
+
   // Sourcing Locations - real ones
 
   const cottonSourcingLocation: SourcingLocation = await createSourcingLocation(

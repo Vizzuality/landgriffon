@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { GetImpactTableDto } from 'modules/impact/dto/get-impact-table.dto';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
@@ -29,8 +29,8 @@ import {
   ScenariosImpactTableRowsValues,
 } from './dto/response-comparison-table.dto';
 
+@Injectable()
 export class ScenarioComparisonService {
-  //TODO: Hack to set a expected growing rate. This needs to be stored in the DB in the future
   growthRate: number = 1.5;
   logger: Logger = new Logger(ScenarioComparisonService.name);
 
@@ -290,7 +290,9 @@ export class ScenarioComparisonService {
       // Get unique entity names for aggregations from raw data
       const namesByIndicator: string[] = [
         ...new Set(
-          scenariosdDataByIndicator.map((el: ImpactTableData) => el.name),
+          scenariosdDataByIndicator.map(
+            (el: ScenariosImpactTableData) => el.name,
+          ),
         ),
       ];
       // For each unique name, append values by year

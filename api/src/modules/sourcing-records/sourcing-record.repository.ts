@@ -136,6 +136,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       impactDataQueryBuilder,
       getActualVsScenarioImpactTable,
     );
+    impactDataQueryBuilder.addGroupBy('scenario.id');
 
     const dataForActualVsScenarioImpactTable: ActualVsScenarioImpactTableData[] =
       await impactDataQueryBuilder.getRawMany();

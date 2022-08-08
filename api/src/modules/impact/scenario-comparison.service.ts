@@ -164,27 +164,27 @@ export class ScenarioComparisonService {
   /**
    * Returns an array of ImpactTable Entities, determined by the grouBy field and properties
    * of the GetImpactTableDto
-   * @param impactTableDto
+   * @param scenarioComparisonTableDto
    * @private
    */
   private async getEntityTree(
-    impactTableDto: GetImpactTableDto,
+    scenarioComparisonTableDto: GetScenarioComparisonDto,
   ): Promise<ImpactTableEntityType[]> {
     const treeOptions: GetMaterialTreeWithOptionsDto = {
-      ...(impactTableDto.materialIds && {
-        materialIds: impactTableDto.materialIds,
+      ...(scenarioComparisonTableDto.materialIds && {
+        materialIds: scenarioComparisonTableDto.materialIds,
       }),
-      ...(impactTableDto.originIds && {
-        originIds: impactTableDto.originIds,
+      ...(scenarioComparisonTableDto.originIds && {
+        originIds: scenarioComparisonTableDto.originIds,
       }),
-      ...(impactTableDto.supplierIds && {
-        supplierIds: impactTableDto.supplierIds,
+      ...(scenarioComparisonTableDto.supplierIds && {
+        supplierIds: scenarioComparisonTableDto.supplierIds,
       }),
-      ...(impactTableDto.scenarioId && {
-        scenarioId: impactTableDto.scenarioId,
+      ...(scenarioComparisonTableDto.scenarioIds && {
+        scenarioIds: scenarioComparisonTableDto.scenarioIds,
       }),
     };
-    switch (impactTableDto.groupBy) {
+    switch (scenarioComparisonTableDto.groupBy) {
       case GROUP_BY_VALUES.MATERIAL: {
         return this.materialsService.getMaterialsTreeWithSourcingLocations(
           treeOptions,
@@ -327,10 +327,13 @@ export class ScenarioComparisonService {
 
             const projectedScenariosImpacts: ScenarioComparissonImpact[] =
               lastYearsValue.map((scenarioImpact) => {
-                scenarioImpact.impact =
-                  scenarioImpact.impact +
-                  (scenarioImpact.impact * this.growthRate) / 100;
-                return scenarioImpact;
+                const newScenarioImpact = JSON.parse(
+                  JSON.stringify(scenarioImpact),
+                );
+                newScenarioImpact.impact =
+                  newScenarioImpact.impact +
+                  (newScenarioImpact.impact * this.growthRate) / 100;
+                return newScenarioImpact;
               });
             calculatedData[namesByIndicatorIndex].values.push({
               year: year,

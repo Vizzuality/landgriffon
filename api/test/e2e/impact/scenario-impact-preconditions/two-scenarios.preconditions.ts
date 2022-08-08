@@ -1,6 +1,7 @@
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import {
   createIndicator,
+  createMaterial,
   createScenario,
   createUnit,
 } from '../../../entity-mocks';
@@ -11,6 +12,7 @@ import {
   INDICATOR_TYPES,
 } from 'modules/indicators/indicator.entity';
 import { Unit } from 'modules/units/unit.entity';
+import { Material } from 'modules/materials/material.entity';
 
 export async function createTwoScenariosPreconditions(): Promise<{
   newScenario1: Scenario;
@@ -30,8 +32,29 @@ export async function createTwoScenariosPreconditions(): Promise<{
     nameCode: INDICATOR_TYPES.DEFORESTATION,
   });
 
-  await createNewSupplierInterventionPreconditions(newScenario1, indicator);
-  await createNewMaterialInterventionPreconditions(newScenario2, indicator);
+  const textile: Material = await createMaterial({ name: 'Textile' });
+
+  const wool: Material = await createMaterial({
+    name: 'Wool',
+    parent: textile,
+  });
+  const cotton: Material = await createMaterial({
+    name: 'Cotton',
+    parent: textile,
+  });
+
+  const preconditionsMaterials: Record<string, any> = { textile, cotton, wool };
+
+  await createNewSupplierInterventionPreconditions(
+    newScenario1,
+    indicator,
+    preconditionsMaterials,
+  );
+  await createNewMaterialInterventionPreconditions(
+    newScenario2,
+    indicator,
+    preconditionsMaterials,
+  );
 
   return { newScenario1, newScenario2, indicator };
 }

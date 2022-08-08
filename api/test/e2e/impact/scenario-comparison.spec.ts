@@ -82,7 +82,7 @@ describe('Scenario comparison test suite (e2e)', () => {
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         'indicatorIds[]': [preconditions.indicator.id],
-        endYear: 2022,
+        endYear: 2021,
         startYear: 2020,
         groupBy: 'material',
         scenarioIds: [

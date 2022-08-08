@@ -28,6 +28,7 @@ import { Scenario } from 'modules/scenarios/scenario.entity';
 export async function createNewSupplierInterventionPreconditions(
   customScenario?: Scenario,
   customIndicator?: Indicator,
+  customMaterials?: Record<string, Material>,
 ): Promise<{
   indicator: Indicator;
   scenarioIntervention: ScenarioIntervention;
@@ -47,16 +48,22 @@ export async function createNewSupplierInterventionPreconditions(
         nameCode: INDICATOR_TYPES.DEFORESTATION,
       });
 
-  const textile: Material = await createMaterial({ name: 'Textile' });
+  const textile: Material = customMaterials
+    ? customMaterials.textile
+    : await createMaterial({ name: 'Textile' });
 
-  const wool: Material = await createMaterial({
-    name: 'Wool',
-    parent: textile,
-  });
-  const cotton: Material = await createMaterial({
-    name: 'Cotton',
-    parent: textile,
-  });
+  const wool: Material = customMaterials
+    ? customMaterials.wool
+    : await createMaterial({
+        name: 'Wool',
+        parent: textile,
+      });
+  const cotton: Material = customMaterials
+    ? customMaterials.cotton
+    : await createMaterial({
+        name: 'Cotton',
+        parent: textile,
+      });
 
   const businessUnit: BusinessUnit = await createBusinessUnit({
     name: 'Fake Business Unit',

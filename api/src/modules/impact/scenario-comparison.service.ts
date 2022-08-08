@@ -23,6 +23,7 @@ import { PaginationMeta } from 'utils/app-base.service';
 import { GetScenarioComparisonDto } from './dto/get-scenario-comparison.dto';
 import {
   PaginatedScenariosImpactTable,
+  ScenarioImpact,
   ScenariosImpactTable,
   ScenariosImpactTableDataByIndicator,
   ScenariosImpactTableRows,
@@ -400,15 +401,27 @@ export class ScenarioComparisonService {
       SceanriosImpactTableRowsValues,
     ] of entity.values.entries()) {
       valuesToAggregate.forEach((item: ScenariosImpactTableRowsValues[]) => {
-        entity.values[valueIndex].scenariosImpacts =
-          SceanriosImpactTableRowsValues.scenariosImpacts.map((impactRow) => {
-            const sameScenarioImpact = item[valueIndex].scenariosImpacts.find(
-              (impact) => impact.scenarioId === impactRow.scenarioId,
-            );
-            impactRow.impact =
-              impactRow.impact + (sameScenarioImpact?.impact ?? 0);
-            return impactRow;
-          });
+        const totalScenarioImpacts = item[valueIndex].scenariosImpacts.concat(
+          SceanriosImpactTableRowsValues.scenariosImpacts,
+        );
+
+        entity.values[valueIndex].scenariosImpacts = Object.values(
+          totalScenarioImpacts.reduce(
+            (
+              acc: { [index: string]: ScenarioImpact },
+              scenarioImpact: ScenarioImpact,
+            ) => {
+              const { scenarioId, impact } = scenarioImpact;
+              acc[scenarioId] = {
+                scenarioId,
+                impact: (acc[scenarioId] ? acc[scenarioId].impact : 0) + impact,
+              };
+
+              return acc;
+            },
+            {},
+          ),
+        );
 
         entity.values[valueIndex].isProjected =
           item[valueIndex].isProjected || entity.values[valueIndex].isProjected;

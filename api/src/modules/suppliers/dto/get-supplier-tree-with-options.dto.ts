@@ -71,8 +71,8 @@ export class GetSupplierTreeWithOptions {
   @Type(() => String)
   locationTypes?: LOCATION_TYPES_PARAMS[];
 
-  @IsUUID('4', { each: true })
+  @IsUUID('4')
   @ApiPropertyOptional()
   @IsOptional()
-  scenarioIds?: string[];
+  scenarioId?: string;
 }

@@ -2,8 +2,7 @@ import cx from 'classnames';
 import { forwardRef, SVGProps } from 'react';
 import Loading from 'components/loading';
 
-const COMMON_CLASSNAMES =
-  'inline-flex items-center overflow-hidden justify-center rounded-md cursor-pointer';
+const COMMON_CLASSNAMES = 'inline-flex items-center overflow-hidden justify-center cursor-pointer';
 const PRIMARY =
   'border-transparent shadow-sm text-white bg-green-500 hover:bg-green-800 focus:outline-offset-2 focus:outline focus:outline-green-600';
 const SECONDARY =

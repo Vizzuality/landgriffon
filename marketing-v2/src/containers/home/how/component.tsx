@@ -30,7 +30,7 @@ const How: React.FC = () => {
   }, [percentage]);
 
   return (
-    <section className="relative hidden bg-white md:block">
+    <section className="relative hidden bg-white lg:block">
       <Wrapper>
         <div ref={ref} className="h-[400vh] relative py-12 border-t border-black/10">
           <div className="sticky top-0 flex items-center py-12 ">

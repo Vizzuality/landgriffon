@@ -6,19 +6,7 @@ import { ImpactModule } from 'modules/impact/impact.module';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
-import { createNewMaterialInterventionPreconditions } from './scenario-impact-preconditions/new-material-intervention.preconditions';
-import { createNewCoefficientsInterventionPreconditions } from './scenario-impact-preconditions/new-coefficients-intervention.preconditions';
-import { newCoefficientsScenarioInterventionTable } from './scenario-impact-responses/new-coefficients-intervention.response';
-import { newMaterialScenarioInterventionTable } from './scenario-impact-responses/new-materials-intervention.response';
-import { createNewSupplierInterventionPreconditions } from './scenario-impact-preconditions/new-supplier-intervention.preconditions';
-import { newSupplierScenarioInterventionTable } from './scenario-impact-responses/new-supplier-intervention.response';
-import { createMultipleInterventionsPreconditions } from './scenario-impact-preconditions/mixed-interventions-scenario.preconditions';
 import { Scenario } from 'modules/scenarios/scenario.entity';
-import {
-  mixedInterventionsScenarioTable,
-  mixedInterventionsScenarioTable2019,
-} from './scenario-impact-responses/mixed-interventions-scenario.response';
 import { clearEntityTables } from '../../utils/database-test-helper';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
@@ -33,6 +21,7 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { createTwoScenariosPreconditions } from './scenario-impact-preconditions/two-scenarios.preconditions';
+import { getDiffMaterialsScenariosComparison } from './scenario-comparison-responses/diff-materials-comparison.reponse';
 
 describe('Scenario comparison test suite (e2e)', () => {
   let app: INestApplication;
@@ -92,5 +81,15 @@ describe('Scenario comparison test suite (e2e)', () => {
       });
 
     expect(response.status).toBe(HttpStatus.OK);
+
+    const expectedScenariosTable = getDiffMaterialsScenariosComparison(
+      preconditions.newScenario1.id,
+      preconditions.newScenario2.id,
+      preconditions.indicator.id,
+    );
+
+    expect(response.body.data.scenariosImpactTable).toEqual(
+      expectedScenariosTable.scenariosImpactTable,
+    );
   });
 });

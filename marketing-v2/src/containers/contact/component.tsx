@@ -3,6 +3,7 @@ import cx from 'classnames';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import Link from 'next/link';
 
 import Wrapper from 'containers/wrapper';
 import { useCallback, useState } from 'react';
@@ -258,7 +259,9 @@ const Contact: React.FC = () => {
 
                   <label className="font-light" htmlFor="terms">
                     I agree with the LandGriffon&apos;s{' '}
-                    <a className="underline">Privacy statement</a>
+                    <Link href="/privacy-policy">
+                      <a className="font-semibold text-black underline">Privacy Policy</a>
+                    </Link>{' '}
                   </label>
                 </div>
 

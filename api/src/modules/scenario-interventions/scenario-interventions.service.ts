@@ -77,6 +77,7 @@ export class ScenarioInterventionsService extends AppBaseService<
         'newMaterial',
         'newBusinessUnit',
         'newAdminRegion',
+        'percentage',
       ],
       keyForAttribute: 'camelCase',
     };

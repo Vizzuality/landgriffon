@@ -65,6 +65,7 @@ const expectedJSONAPIAttributes: string[] = [
   'type',
   'createdAt',
   'updatedAt',
+  'percentage',
 ];
 
 describe('ScenarioInterventionsModule (e2e)', () => {

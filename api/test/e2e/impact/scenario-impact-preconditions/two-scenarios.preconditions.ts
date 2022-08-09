@@ -28,6 +28,7 @@ export async function createTwoScenariosPreconditions(): Promise<{
   });
   const indicator: Indicator = await createIndicator({
     name: 'Deforestation',
+    shortName: 'Deforestation',
     unit,
     nameCode: INDICATOR_TYPES.DEFORESTATION,
   });

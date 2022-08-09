@@ -1,7 +1,7 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
-import { TimestampedBaseEntity } from '../../baseEntities/timestamped-base-entity';
+import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseServiceResource } from '../../types/resource.interface';
+import { BaseServiceResource } from 'types/resource.interface';
 
 export enum CACHED_DATA_TYPE {
   RAW_INDICATOR_VALUE_GEOREGION = 'rawImpactedValueGeoRegion',

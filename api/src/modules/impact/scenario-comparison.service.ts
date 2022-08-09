@@ -20,7 +20,7 @@ import { PaginatedEntitiesDto } from 'modules/impact/dto/paginated-entities.dto'
 import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import { PaginationMeta } from 'utils/app-base.service';
-import { GetScenarioComparisonDto } from './dto/get-scenario-comparison.dto';
+import { GetScenarioComparisonDto } from 'modules/impact/dto/get-scenario-comparison.dto';
 import {
   PaginatedScenariosImpactTable,
   ScenarioImpact,
@@ -28,7 +28,7 @@ import {
   ScenariosImpactTableDataByIndicator,
   ScenariosImpactTableRows,
   ScenariosImpactTableRowsValues,
-} from './dto/response-comparison-table.dto';
+} from 'modules/impact/dto/response-comparison-table.dto';
 
 @Injectable()
 export class ScenarioComparisonService {
@@ -108,7 +108,7 @@ export class ScenarioComparisonService {
   private groupScenarioComparisonData(
     impactData: ImpactTableData[],
   ): ScenariosImpactTableData[] {
-    let dataForScenarioImpactTable: ScenariosImpactTableData[] = [];
+    const dataForScenarioImpactTable: ScenariosImpactTableData[] = [];
 
     impactData.forEach((impactData: ImpactTableData) => {
       const existingScenarioDataIndex: number =
@@ -327,8 +327,8 @@ export class ScenarioComparisonService {
                 : [{ scenarioId: 'none', impact: 0 }];
 
             const projectedScenariosImpacts: ScenarioComparissonImpact[] =
-              lastYearsValue.map((scenarioImpact) => {
-                const newScenarioImpact = JSON.parse(
+              lastYearsValue.map((scenarioImpact: ScenarioImpact) => {
+                const newScenarioImpact: ScenarioImpact = JSON.parse(
                   JSON.stringify(scenarioImpact),
                 );
                 newScenarioImpact.impact =
@@ -401,7 +401,9 @@ export class ScenarioComparisonService {
       SceanriosImpactTableRowsValues,
     ] of entity.values.entries()) {
       valuesToAggregate.forEach((item: ScenariosImpactTableRowsValues[]) => {
-        const totalScenarioImpacts = item[valueIndex].scenariosImpacts.concat(
+        const totalScenarioImpacts: ScenarioImpact[] = item[
+          valueIndex
+        ].scenariosImpacts.concat(
           SceanriosImpactTableRowsValues.scenariosImpacts,
         );
 

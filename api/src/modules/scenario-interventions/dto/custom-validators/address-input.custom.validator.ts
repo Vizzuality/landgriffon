@@ -5,7 +5,7 @@ import {
 } from 'class-validator';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 
-import { CreateScenarioInterventionDto } from '../create.scenario-intervention.dto';
+import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
 
 @ValidatorConstraint({ name: 'newLocationAddressInput', async: false })
 export class InterventionLocationAddressInputValidator

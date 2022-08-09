@@ -1,2 +1,2 @@
 export { default } from './component';
-export type { ModalProps } from './types';
+export type { CookiesProps } from './types';

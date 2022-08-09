@@ -3,6 +3,7 @@ import cx from 'classnames';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import Link from 'next/link';
 
 import Wrapper from 'containers/wrapper';
 import { useCallback, useState } from 'react';
@@ -110,8 +111,11 @@ const NewsLetter: React.FC = () => {
                   })}
                 />
                 <label className="font-light" htmlFor="terms">
-                  By signing up here I agree to receive LandGriffon email newsletter.{' '}
-                  <a className="underline">Privacy statement</a>
+                  I agree with LandGriffon’s{' '}
+                  <Link href="/privacy-policy">
+                    <a className="underline font-semibold text-black">Privacy Policy</a>
+                  </Link>{' '}
+                  and to receive the LandGriffon email newsletter.
                 </label>
               </div>
             </form>

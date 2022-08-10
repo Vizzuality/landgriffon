@@ -26,6 +26,7 @@ import {
   ScenarioImpact,
   ScenariosImpactTable,
   ScenariosImpactTableDataByIndicator,
+  ScenariosImpactTablePurchasedTonnes,
   ScenariosImpactTableRows,
   ScenariosImpactTableRowsValues,
 } from 'modules/impact/dto/response-comparison-table.dto';
@@ -361,6 +362,22 @@ export class ScenarioComparisonService {
   }
 
   /**
+   * @description Recursive function calculates total purchased tonnes per year per scenario
+   */
+
+  private getTotalPurchasedVolumeByYear(
+    rangeOfYears: number[],
+    scenarioComparisonImpactData: ScenariosImpactTableData[],
+  ): ScenariosImpactTablePurchasedTonnes[] {
+    const purchasedTonnes: ScenariosImpactTablePurchasedTonnes[] = [];
+    rangeOfYears.forEach((year: number) => {
+      let valueOfPurchasedTonnesByYear: ScenariosImpactTablePurchasedTonnes;
+    });
+
+    return purchasedTonnes;
+  }
+
+  /**
    * @description Recursive function that populates and returns
    * aggregated data of parent entity and all its children
    */
@@ -491,11 +508,4 @@ export class ScenarioComparisonService {
       }),
     };
   }
-
-  /**
-   * @description Function that processes impact data for a Scenario, retrieved from DB,
-   * finds 2 objects with same groupBy name (material, supplier, etc) and year, sbut with different
-   * intervention type (replacing or canceled) and reduces it to 1 object with impact value 'before Intervention',
-   * impact value of the Intervention and absolute / percentage differences between them
-   */
 }

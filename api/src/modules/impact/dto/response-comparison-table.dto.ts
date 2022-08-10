@@ -11,7 +11,7 @@ export class ScenariosImpactTable {
     type: () => ScenariosImpactTableDataByIndicator,
     isArray: true,
   })
-  purchasedTonnes?: ImpactTablePurchasedTonnes[];
+  purchasedTonnes?: ScenariosImpactTablePurchasedTonnes[];
 }
 
 export class PaginatedScenariosImpactTable {
@@ -19,16 +19,6 @@ export class PaginatedScenariosImpactTable {
   data: ScenariosImpactTable;
   @ApiProperty({ type: () => PaginationMeta })
   metadata?: PaginationMeta;
-}
-
-export class ImpactTableDataAggregationInfo {
-  aggregatedValues: ImpactTableDataAggregatedValue[];
-  numberOfAggregatedEntities: number;
-  sort: string;
-}
-export class ImpactTableDataAggregatedValue {
-  year: number;
-  value: number;
 }
 
 export class ScenariosImpactTableDataByIndicator {
@@ -94,11 +84,16 @@ export class YearSumData {
   percentageDifference?: number;
 }
 
-export class ImpactTablePurchasedTonnes {
+export class ScenariosImpactTablePurchasedTonnes {
   @ApiProperty()
   year: number;
   @ApiProperty()
-  value: number;
+  values: ScenarioTonnage[];
   @ApiProperty()
   isProjected: boolean;
+}
+
+export class ScenarioTonnage {
+  scenarioId: string;
+  tonnage: number;
 }

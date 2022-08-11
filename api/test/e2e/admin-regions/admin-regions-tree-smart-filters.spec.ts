@@ -136,7 +136,7 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
     },
   );
 
-  test.skip(
+  test(
     'When I query a Admin Region Tree endpoint ' +
       'And I query the ones with sourcing locations' +
       'And I filter them by a related Location Types' +

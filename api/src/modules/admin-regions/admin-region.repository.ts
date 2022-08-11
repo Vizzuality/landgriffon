@@ -162,13 +162,13 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
    ** @description Retrieves Admin Regions and their ancestors (in a plain format) when there are associated Sourcing Locations
    */
 
-  async getSourcingDataAdminRegionsWithAncestry(
+  async getSourcingDataAdminRegions(
     adminRegionTreeOptions: GetAdminRegionTreeWithOptionsDto,
+    withAncestry: boolean = true,
   ): Promise<AdminRegion[]> {
     // Join and filters over materials present in sourcing-locations. Resultant query returns IDs of elements meeting the filters
     const queryBuilder: SelectQueryBuilder<AdminRegion> =
       this.createQueryBuilder('ar')
-        .select('ar.id')
         .innerJoin(SourcingLocation, 'sl', 'sl.adminRegionId = ar.id')
         .distinct(true);
     if (adminRegionTreeOptions.originIds) {
@@ -222,6 +222,10 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
     } else {
       queryBuilder.andWhere('sl.scenarioInterventionId is null');
     }
+    if (!withAncestry) {
+      return queryBuilder.select().getMany();
+    }
+    queryBuilder.select('ar.id');
 
     const [subQuery, subQueryParams]: [string, any[]] =
       queryBuilder.getQueryAndParameters();

@@ -269,7 +269,7 @@ export class ImpactService {
         );
       }
       case GROUP_BY_VALUES.REGION: {
-        return this.adminRegionsService.getAdminRegionTreeWithSourcingLocations(
+        return this.adminRegionsService.getAdminRegionWithSourcingLocations(
           treeOptions,
         );
       }

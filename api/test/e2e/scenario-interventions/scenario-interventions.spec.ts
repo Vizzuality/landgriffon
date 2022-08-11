@@ -56,6 +56,7 @@ import { MaterialRepository } from 'modules/materials/material.repository';
 import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
 import { ScenariosModule } from 'modules/scenarios/scenarios.module';
 import { In } from 'typeorm';
+import { range } from 'lodash';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -1483,6 +1484,96 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           childBusinessUnit.id,
         );
         expect(intervention?.replacedSuppliers[0].id).toEqual(childSupplier.id);
+      },
+    );
+
+    test(
+      'When I create a new Intervention' +
+        'And I dont select any Admin Region' +
+        'Then I should see all Admin Regions present in Sourcing Locations as replaced Admin Regions',
+      async () => {
+        for (const num of range(1, 20)) {
+          const adminRegion: AdminRegion = await createAdminRegion({
+            name: `admin region:${num}`,
+          });
+          if (num % 2 === 0) {
+            await createSourcingLocation({ adminRegion });
+          }
+        }
+        const parentMaterial: Material = await createMaterial({
+          name: 'parent material',
+        });
+        // Included in Sourcing Locations
+        const childMaterial: Material = await createMaterial({
+          name: 'child material',
+          parent: parentMaterial,
+        });
+        // Included in Sourcing Locations
+        const grandChildMaterial: Material = await createMaterial({
+          name: 'grand child material',
+          parent: childMaterial,
+        });
+        // Not included in Sourcing Locations
+        const parentBusinessUnit: BusinessUnit = await createBusinessUnit({
+          name: 'parent business unit',
+        });
+        // Included in Sourcing Locations
+        const childBusinessUnit: BusinessUnit = await createBusinessUnit({
+          name: 'child business unit',
+          parent: parentBusinessUnit,
+        });
+        // Not included in Sourcing Locations
+        const parentSupplier: Supplier = await createSupplier({
+          name: 'parent supplier',
+        });
+
+        const childSupplier: Supplier = await createSupplier({
+          name: 'child supplier',
+          parent: parentSupplier,
+        });
+
+        const sourcingRecord1: SourcingRecord = await createSourcingRecord({
+          year: 2020,
+        });
+        const sourcingRecord2: SourcingRecord = await createSourcingRecord({
+          year: 2020,
+        });
+
+        await createSourcingLocation({
+          material: grandChildMaterial,
+          businessUnit: childBusinessUnit,
+          t1Supplier: childSupplier,
+          sourcingRecords: [sourcingRecord1],
+        });
+
+        await createSourcingLocation({
+          material: childMaterial,
+          businessUnit: childBusinessUnit,
+          t1Supplier: childSupplier,
+          sourcingRecords: [sourcingRecord2],
+        });
+        const scenario: Scenario = await createScenario();
+
+        const response = await request(app.getHttpServer())
+          .post('/api/v1/scenario-interventions')
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send({
+            title: 'test scenario intervention',
+            startYear: 2020,
+            percentage: 50,
+            scenarioId: scenario.id,
+            materialIds: [parentMaterial.id],
+            supplierIds: [parentSupplier.id],
+            businessUnitIds: [parentBusinessUnit.id],
+            type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          });
+
+        response.body.data.attributes.replacedAdminRegions.every(
+          (adminRegion: any) =>
+            expect(parseInt(adminRegion.name.split(':')[1]) % 2 === 0).toBe(
+              true,
+            ),
+        );
       },
     );
 

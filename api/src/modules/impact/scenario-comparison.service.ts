@@ -4,7 +4,7 @@ import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import {
   ImpactTableData,
-  ScenarioComparissonImpact,
+  ScenarioComparisonImpact,
   ScenariosImpactTableData,
 } from 'modules/sourcing-records/sourcing-record.repository';
 import { Indicator } from 'modules/indicators/indicator.entity';
@@ -29,6 +29,7 @@ import {
   ScenariosImpactTablePurchasedTonnes,
   ScenariosImpactTableRows,
   ScenariosImpactTableRowsValues,
+  ScenarioTonnage,
 } from 'modules/impact/dto/response-comparison-table.dto';
 
 @Injectable()
@@ -120,17 +121,30 @@ export class ScenarioComparisonService {
       if (existingScenarioDataIndex > -1) {
         dataForScenarioImpactTable[
           existingScenarioDataIndex
-        ].scenarioComparison.push({
+        ].scenariosImpacts.push({
           scenarioId: impactData.scenarioId as string,
           impact: impactData.impact,
+        });
+
+        dataForScenarioImpactTable[
+          existingScenarioDataIndex
+        ].scenariosTonnes.push({
+          scenarioId: impactData.scenarioId as string,
+          tonnage: Number(impactData.tonnes),
         });
       } else {
         const newComparisonData: ScenariosImpactTableData = {
           ...impactData,
-          scenarioComparison: [
+          scenariosImpacts: [
             {
               scenarioId: impactData.scenarioId as string,
               impact: impactData.impact,
+            },
+          ],
+          scenariosTonnes: [
+            {
+              scenarioId: impactData.scenarioId as string,
+              tonnage: Number(impactData.tonnes),
             },
           ],
         };
@@ -315,19 +329,19 @@ export class ScenarioComparisonService {
           if (dataForYear) {
             calculatedData[namesByIndicatorIndex].values.push({
               year: dataForYear.year,
-              scenariosImpacts: dataForYear.scenarioComparison,
+              scenariosImpacts: dataForYear.scenariosImpacts,
               isProjected: false,
             });
             // If the year requested does no exist in the raw data, project its value getting the latest value (previous year which comes in ascendant order)
           } else {
-            const lastYearsValue: ScenarioComparissonImpact[] =
+            const lastYearsValue: ScenarioComparisonImpact[] =
               rowValuesIndex > 0
                 ? calculatedData[namesByIndicatorIndex].values[
                     rowValuesIndex - 1
                   ].scenariosImpacts
                 : [{ scenarioId: 'none', impact: 0 }];
 
-            const projectedScenariosImpacts: ScenarioComparissonImpact[] =
+            const projectedScenariosImpacts: ScenarioComparisonImpact[] =
               lastYearsValue.map((scenarioImpact: ScenarioImpact) => {
                 const newScenarioImpact: ScenarioImpact = JSON.parse(
                   JSON.stringify(scenarioImpact),
@@ -358,7 +372,10 @@ export class ScenarioComparisonService {
       scenariosImpactTable[indicatorValuesIndex].rows = skeleton;
     });
 
-    return { scenariosImpactTable };
+    const purchasedTonnes: ScenariosImpactTablePurchasedTonnes[] =
+      this.getTotalPurchasedVolumeByYear(rangeOfYears, dataForComparisonTable);
+
+    return { scenariosImpactTable, purchasedTonnes };
   }
 
   /**
@@ -370,8 +387,69 @@ export class ScenarioComparisonService {
     scenarioComparisonImpactData: ScenariosImpactTableData[],
   ): ScenariosImpactTablePurchasedTonnes[] {
     const purchasedTonnes: ScenariosImpactTablePurchasedTonnes[] = [];
-    rangeOfYears.forEach((year: number) => {
-      let valueOfPurchasedTonnesByYear: ScenariosImpactTablePurchasedTonnes;
+    rangeOfYears.forEach((year: number, yearIndex: number) => {
+      const dataAvailableForTheYear: ScenariosImpactTableData[] =
+        scenarioComparisonImpactData.filter(
+          (el: ScenariosImpactTableData) => el.year === year,
+        );
+
+      if (dataAvailableForTheYear.length > 0) {
+        const impactDataWithCombinedTonnes: ScenariosImpactTableData =
+          dataAvailableForTheYear.reduce(
+            (
+              acc: ScenariosImpactTableData,
+              currentValue: ScenariosImpactTableData,
+            ) => {
+              acc.scenariosTonnes = acc.scenariosTonnes.concat(
+                currentValue.scenariosTonnes,
+              );
+              return acc;
+            },
+          );
+
+        const scenariosTonnages: ScenarioTonnage[] = Object.values(
+          impactDataWithCombinedTonnes.scenariosTonnes.reduce(
+            (
+              acc: { [index: string]: ScenarioTonnage },
+              scenarioTonnage: ScenarioTonnage,
+            ) => {
+              const { scenarioId, tonnage } = scenarioTonnage;
+              acc[scenarioId] = {
+                scenarioId,
+                tonnage:
+                  (acc[scenarioId] ? acc[scenarioId].tonnage : 0) + tonnage,
+              };
+
+              return acc;
+            },
+            {},
+          ),
+        );
+        purchasedTonnes.push({
+          year,
+          values: scenariosTonnages,
+          isProjected: false,
+        });
+      } else {
+        const lastYearsTonnages: ScenarioTonnage[] =
+          purchasedTonnes[yearIndex - 1].values;
+
+        const projectedScenariosTonnages: ScenarioTonnage[] =
+          lastYearsTonnages.map((scenarioTonnage: ScenarioTonnage) => {
+            const newScenarioTonnage: ScenarioTonnage = JSON.parse(
+              JSON.stringify(scenarioTonnage),
+            );
+            newScenarioTonnage.tonnage =
+              newScenarioTonnage.tonnage +
+              (newScenarioTonnage.tonnage * this.growthRate) / 100;
+            return newScenarioTonnage;
+          });
+        purchasedTonnes.push({
+          year,
+          values: projectedScenariosTonnages,
+          isProjected: true,
+        });
+      }
     });
 
     return purchasedTonnes;

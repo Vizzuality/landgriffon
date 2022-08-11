@@ -1,11 +1,8 @@
-import {
-  ScenariosImpactTable,
-  ScenariosImpactTableRows,
-} from 'modules/impact/dto/response-comparison-table.dto';
+import { ScenariosImpactTable } from 'modules/impact/dto/response-comparison-table.dto';
 
 export function getDiffMaterialsScenariosComparison(
   scenarioIdOne: string,
-  scebnarioIdTwo: string,
+  scenarioIdTwo: string,
   indicatorId: string,
 ): ScenariosImpactTable {
   return {
@@ -52,7 +49,7 @@ export function getDiffMaterialsScenariosComparison(
                     year: 2020,
                     scenariosImpacts: [
                       {
-                        scenarioId: scebnarioIdTwo,
+                        scenarioId: scenarioIdTwo,
                         impact: 1800,
                       },
                     ],
@@ -62,7 +59,7 @@ export function getDiffMaterialsScenariosComparison(
                     year: 2021,
                     scenariosImpacts: [
                       {
-                        scenarioId: scebnarioIdTwo,
+                        scenarioId: scenarioIdTwo,
                         impact: 1827,
                       },
                     ],
@@ -106,7 +103,7 @@ export function getDiffMaterialsScenariosComparison(
                     impact: 1900,
                   },
                   {
-                    scenarioId: scebnarioIdTwo,
+                    scenarioId: scenarioIdTwo,
                     impact: 1800,
                   },
                 ],
@@ -120,7 +117,7 @@ export function getDiffMaterialsScenariosComparison(
                     impact: 1928.5,
                   },
                   {
-                    scenarioId: scebnarioIdTwo,
+                    scenarioId: scenarioIdTwo,
                     impact: 1827,
                   },
                 ],
@@ -133,6 +130,37 @@ export function getDiffMaterialsScenariosComparison(
         metadata: {
           unit: 'm3/year',
         },
+      },
+    ],
+
+    purchasedTonnes: [
+      {
+        year: 2020,
+        values: [
+          {
+            scenarioId: scenarioIdOne,
+            tonnage: 2005.12,
+          },
+          {
+            scenarioId: scenarioIdTwo,
+            tonnage: 1002.56,
+          },
+        ],
+        isProjected: false,
+      },
+      {
+        year: 2021,
+        values: [
+          {
+            scenarioId: scenarioIdOne,
+            tonnage: 2035.1968,
+          },
+          {
+            scenarioId: scenarioIdTwo,
+            tonnage: 1017.5984,
+          },
+        ],
+        isProjected: true,
       },
     ],
   };

@@ -90,13 +90,26 @@ export class InterventionGeneratorService {
           false,
         );
     }
-
-    newIntervention.replacedBusinessUnits =
-      await this.businessUnitService.getBusinessUnitsById(businessUnitIds);
+    if (businessUnitIds) {
+      newIntervention.replacedBusinessUnits =
+        await this.businessUnitService.getBusinessUnitsById(businessUnitIds);
+    } else {
+      newIntervention.replacedBusinessUnits =
+        await this.businessUnitService.getBusinessUnitWithSourcingLocations(
+          {},
+          false,
+        );
+    }
 
     if (supplierIds.length) {
       newIntervention.replacedSuppliers =
         await this.suppliersService.getSuppliersById(supplierIds);
+    } else {
+      newIntervention.replacedSuppliers =
+        await this.suppliersService.getSuppliersWithSourcingLocations(
+          {},
+          false,
+        );
     }
 
     newIntervention.replacedSourcingLocations = cancelledSourcingLocations;

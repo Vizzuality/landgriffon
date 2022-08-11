@@ -1531,7 +1531,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         const parentSupplier: Supplier = await createSupplier({
           name: 'parent supplier',
         });
-
+        //Included in Sourcing Locations
         const childSupplier: Supplier = await createSupplier({
           name: 'child supplier',
           parent: parentSupplier,
@@ -1559,7 +1559,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
         const scenario: Scenario = await createScenario();
 
-        const response = await request(app.getHttpServer())
+        const responseAdminRegions = await request(app.getHttpServer())
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -1573,14 +1573,14 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           });
 
-        response.body.data.attributes.replacedAdminRegions.every(
+        responseAdminRegions.body.data.attributes.replacedAdminRegions.every(
           (adminRegion: any) =>
             expect(parseInt(adminRegion.name.split(':')[1]) % 2 === 0).toBe(
               true,
             ),
         );
 
-        const response2 = await request(app.getHttpServer())
+        const responseBusinessUnits = await request(app.getHttpServer())
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -1593,10 +1593,26 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           });
 
-        response2.body.data.attributes.replacedBusinessUnits.forEach(
+        responseBusinessUnits.body.data.attributes.replacedBusinessUnits.forEach(
           (bu: any) =>
             expect(bu.name.includes('child business unit')).toBe(true),
         );
+
+        const responseSuppliers = await request(app.getHttpServer())
+          .post('/api/v1/scenario-interventions')
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send({
+            title: 'test scenario intervention',
+            startYear: 2020,
+            percentage: 50,
+            scenarioId: scenario.id,
+            materialIds: [parentMaterial.id],
+            type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          });
+
+        expect(
+          responseSuppliers.body.data.attributes.replacedSuppliers[0].name,
+        ).toEqual(childSupplier.name);
       },
     );
 

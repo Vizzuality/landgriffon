@@ -7,7 +7,7 @@ import {
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
-import { Logger, NotFoundException } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetBusinessUnitTreeWithOptionsDto } from 'modules/business-units/dto/get-business-unit-tree-with-options.dto';
 
@@ -22,13 +22,13 @@ export class BusinessUnitRepository extends ExtendedTreeRepository<
    * @description Retrieves business-units and it's ancestors (in a plain format) there are registered sourcingLocations for
    */
 
-  async getSourcingDataBusinessUnitssWithAncestry(
+  async getSourcingDataBusinessUnits(
     businessUnitTreeOptions: GetBusinessUnitTreeWithOptionsDto,
+    withAncestry: boolean = true,
   ): Promise<BusinessUnit[]> {
     // Join and filters over business-units present in sourcing-locations. Resultant query returns IDs of elements meeting the filters
     const queryBuilder: SelectQueryBuilder<BusinessUnit> =
       this.createQueryBuilder('bu')
-        .select('bu.id')
         .innerJoin(SourcingLocation, 'sl', 'sl.businessUnitId = bu.id')
         .distinct(true);
 
@@ -59,6 +59,11 @@ export class BusinessUnitRepository extends ExtendedTreeRepository<
         locationTypes: businessUnitTreeOptions.locationTypes,
       });
     }
+
+    if (!withAncestry) {
+      return queryBuilder.getMany();
+    }
+    queryBuilder.select('bu.id');
 
     const [subQuery, subQueryParams]: [string, any[]] =
       queryBuilder.getQueryAndParameters();

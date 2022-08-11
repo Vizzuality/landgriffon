@@ -1519,7 +1519,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
         // Included in Sourcing Locations
         const childBusinessUnit: BusinessUnit = await createBusinessUnit({
-          name: 'child business unit',
+          name: 'child business unit 1',
+          parent: parentBusinessUnit,
+        });
+        // Included in Sourcing Locations
+        const childBusinessUnit2: BusinessUnit = await createBusinessUnit({
+          name: 'child business unit 2',
           parent: parentBusinessUnit,
         });
         // Not included in Sourcing Locations
@@ -1548,7 +1553,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
         await createSourcingLocation({
           material: childMaterial,
-          businessUnit: childBusinessUnit,
+          businessUnit: childBusinessUnit2,
           t1Supplier: childSupplier,
           sourcingRecords: [sourcingRecord2],
         });
@@ -1573,6 +1578,24 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             expect(parseInt(adminRegion.name.split(':')[1]) % 2 === 0).toBe(
               true,
             ),
+        );
+
+        const response2 = await request(app.getHttpServer())
+          .post('/api/v1/scenario-interventions')
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send({
+            title: 'test scenario intervention',
+            startYear: 2020,
+            percentage: 50,
+            scenarioId: scenario.id,
+            materialIds: [parentMaterial.id],
+            supplierIds: [parentSupplier.id],
+            type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          });
+
+        response2.body.data.attributes.replacedBusinessUnits.forEach(
+          (bu: any) =>
+            expect(bu.name.includes('child business unit')).toBe(true),
         );
       },
     );

@@ -111,18 +111,21 @@ export class BusinessUnitsService extends AppBaseService<
           businessUnitTreeOptions.originIds,
         );
     }
-    return this.getBusinessUnitTreeWithSourcingLocations(
-      businessUnitTreeOptions,
-    );
+    return this.getBusinessUnitWithSourcingLocations(businessUnitTreeOptions);
   }
 
-  async getBusinessUnitTreeWithSourcingLocations(
+  async getBusinessUnitWithSourcingLocations(
     businessUnitTreeOptions: GetBusinessUnitTreeWithOptionsDto,
+    withAncestry: boolean = true,
   ): Promise<BusinessUnit[]> {
     const businessUnitsLineage: BusinessUnit[] =
-      await this.businessUnitRepository.getSourcingDataBusinessUnitssWithAncestry(
+      await this.businessUnitRepository.getSourcingDataBusinessUnits(
         businessUnitTreeOptions,
+        withAncestry,
       );
+    if (!withAncestry) {
+      return businessUnitsLineage;
+    }
     return this.buildTree<BusinessUnit>(businessUnitsLineage, null);
   }
 

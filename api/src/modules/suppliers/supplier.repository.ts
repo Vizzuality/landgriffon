@@ -2,7 +2,7 @@ import { EntityRepository, SelectQueryBuilder } from 'typeorm';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
-import { Logger, NotFoundException } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-tree-with-options.dto';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
@@ -19,14 +19,14 @@ export class SupplierRepository extends ExtendedTreeRepository<
    * @description Retrieves suppliers and it's ancestors (in a plain format) there are registered sourcingLocations for
    */
 
-  async getSourcingDataSuppliersWithAncestry(
+  async getSourcingDataSuppliers(
     supplierTreeOptions: GetSupplierTreeWithOptions,
+    withAncestry: boolean = true,
   ): Promise<Supplier[]> {
     // Join and filters over materials present in sourcing-locations. Resultant query returns IDs of elements meeting the filters
     const queryBuilder: SelectQueryBuilder<Supplier> = this.createQueryBuilder(
       's',
     )
-      .select('s.id')
       .innerJoin(
         SourcingLocation,
         'sl',
@@ -79,6 +79,11 @@ export class SupplierRepository extends ExtendedTreeRepository<
     } else {
       queryBuilder.andWhere('sl.scenarioInterventionId is null');
     }
+
+    if (!withAncestry) {
+      return queryBuilder.getMany();
+    }
+    queryBuilder.select('s.id');
 
     const [subQuery, subQueryParams]: [string, any[]] =
       queryBuilder.getQueryAndParameters();

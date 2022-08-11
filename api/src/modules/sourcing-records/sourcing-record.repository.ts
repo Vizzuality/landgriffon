@@ -43,12 +43,18 @@ export class ActualVsScenarioImpactTableData extends ImpactTableData {
 }
 
 export class ScenariosImpactTableData extends ImpactTableData {
-  scenarioComparison: ScenarioComparissonImpact[];
+  scenariosImpacts: ScenarioComparisonImpact[];
+  scenariosTonnes: ScenarioComparisonTonnes[];
 }
 
-export class ScenarioComparissonImpact {
+export class ScenarioComparisonImpact {
   scenarioId: string;
   impact: number;
+}
+
+export class ScenarioComparisonTonnes {
+  scenarioId: string;
+  tonnage: number;
 }
 
 @EntityRepository(SourcingRecord)

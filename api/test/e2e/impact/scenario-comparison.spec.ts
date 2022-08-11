@@ -91,5 +91,9 @@ describe('Scenario comparison test suite (e2e)', () => {
     expect(response.body.data.scenariosImpactTable).toEqual(
       expectedScenariosTable.scenariosImpactTable,
     );
+
+    expect(response.body.data.purchasedTonnes).toEqual(
+      expectedScenariosTable.purchasedTonnes,
+    );
   });
 });

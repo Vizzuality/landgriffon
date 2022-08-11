@@ -279,7 +279,7 @@ export class ImpactService {
         );
       }
       case GROUP_BY_VALUES.BUSINESS_UNIT:
-        return this.businessUnitsService.getBusinessUnitTreeWithSourcingLocations(
+        return this.businessUnitsService.getBusinessUnitWithSourcingLocations(
           treeOptions,
         );
 

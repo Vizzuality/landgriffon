@@ -159,13 +159,18 @@ export class AdminRegionsService extends AppBaseService<
    * @description Get a tree of AdminRegions where there are sourcing-locations registered within
    */
 
-  async getAdminRegionTreeWithSourcingLocations(
+  async getAdminRegionWithSourcingLocations(
     adminRegionTreeOptions: GetAdminRegionTreeWithOptionsDto,
+    withAncestry: boolean = true,
   ): Promise<AdminRegion[]> {
     const adminRegionLineage: AdminRegion[] =
-      await this.adminRegionRepository.getSourcingDataAdminRegionsWithAncestry(
+      await this.adminRegionRepository.getSourcingDataAdminRegions(
         adminRegionTreeOptions,
+        withAncestry,
       );
+    if (!withAncestry) {
+      return adminRegionLineage;
+    }
     return this.buildTree<AdminRegion>(adminRegionLineage, null);
   }
 
@@ -191,9 +196,7 @@ export class AdminRegionsService extends AppBaseService<
             adminRegionTreeOptions.materialIds,
           );
       }
-      return this.getAdminRegionTreeWithSourcingLocations(
-        adminRegionTreeOptions,
-      );
+      return this.getAdminRegionWithSourcingLocations(adminRegionTreeOptions);
     }
 
     return this.findTreesWithOptions({ depth: adminRegionTreeOptions.depth });

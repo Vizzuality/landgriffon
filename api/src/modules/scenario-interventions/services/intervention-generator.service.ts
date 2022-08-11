@@ -80,9 +80,16 @@ export class InterventionGeneratorService {
 
     newIntervention.replacedMaterials =
       await this.materialService.getMaterialsById(materialIds);
-
-    newIntervention.replacedAdminRegions =
-      await this.adminRegionService.getAdminRegionsById(adminRegionsIds);
+    if (adminRegionsIds.length) {
+      newIntervention.replacedAdminRegions =
+        await this.adminRegionService.getAdminRegionsById(adminRegionsIds);
+    } else {
+      newIntervention.replacedAdminRegions =
+        await this.adminRegionService.getAdminRegionWithSourcingLocations(
+          {},
+          false,
+        );
+    }
 
     newIntervention.replacedBusinessUnits =
       await this.businessUnitService.getBusinessUnitsById(businessUnitIds);

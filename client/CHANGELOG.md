@@ -22,7 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Show scenario comparison data in table view [LANDGRIF-745](https://vizzuality.atlassian.net/browse/LANDGRIF-745)
 - Redesign of new intervention creation [LANDGRIF-783](https://vizzuality.atlassian.net/browse/LANDGRIF-783)
 - Read contextual layers and their data from the API[LANDGRIF-792](https://vizzuality.atlassian.net/browse/LANDGRIF-792)
-
+- Added a button in Analysis to add new scenarios [LANDGRIF-805]
+(https://vizzuality.atlassian.net/browse/LANDGRIF-805)
 ### Changed
 
 - Changed select styles to match the design, specifically for the years. They now have a different behavior than the others to improve usability.

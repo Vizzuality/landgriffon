@@ -105,7 +105,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                     </span>
                   )}
                 </div>
-                <div className="flex-1 py-4 pr-4 truncate space-y-2">
+                <div className="flex-1 py-4 pr-4 space-y-2 truncate">
                   <h2
                     className={classNames(
                       'text-sm font-medium truncate',
@@ -116,7 +116,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                   </h2>
                   {data.id !== ACTUAL_DATA.id && (
                     <div className="flex">
-                      <div className="bg-yellow text-xs px-2 rounded-full">
+                      <div className="px-2 text-xs rounded-full bg-yellow">
                         {data.scenarioInterventions.length} interventions
                       </div>
                     </div>
@@ -126,7 +126,7 @@ const ScenariosList: React.FC<ScenariosItemProps> = (props: ScenariosItemProps) 
                       <span className="text-sm text-gray-500">Based on your uploaded data</span>
                     )}
                     {data.id !== ACTUAL_DATA.id && data.updatedAt && (
-                      <span className="text-gray-400 text-xs">{`Last edited ${format(
+                      <span className="text-xs text-gray-400">{`Last edited ${format(
                         new Date(data.updatedAt),
                         'yyyy/MM/dd',
                       )}`}</span>

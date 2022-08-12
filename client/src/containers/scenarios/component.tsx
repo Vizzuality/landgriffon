@@ -1,7 +1,8 @@
 import type { MutableRefObject } from 'react';
 import { useMemo } from 'react';
 import Lottie from 'lottie-react';
-import { XCircleIcon } from '@heroicons/react/solid';
+import { PlusCircleIcon, XCircleIcon } from '@heroicons/react/solid';
+import Link from 'next/link';
 
 import { useAppSelector } from 'store/hooks';
 import { scenarios } from 'store/features/analysis/scenarios';
@@ -13,6 +14,7 @@ import ScenariosFilters from 'containers/scenarios/filters';
 import ScenariosList from 'containers/scenarios/list';
 
 import Loading from 'components/loading';
+import Button from 'components/button';
 
 import type { Scenario } from './types';
 
@@ -70,6 +72,12 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
         </div>
       )}
       <div className="sticky bottom-0 left-0 z-20 w-full pb-6 bg-white before:bg-gradient-to-t before:from-white before:w-full before:h-16 before:content before:-top-16 before:left-0 before:absolute">
+        <Link href="/admin/scenarios/new" passHref>
+          <Button size="xl" theme="tertiary" className="block w-full">
+            <PlusCircleIcon className="w-6 h-6 mr-3 -ml-5" aria-hidden="true" />
+            Add new scenario
+          </Button>
+        </Link>
         {!scenariosList ||
           (scenariosList.length === 0 && (
             <div className="absolute z-20 space-y-8 text-center bg-white p-7">

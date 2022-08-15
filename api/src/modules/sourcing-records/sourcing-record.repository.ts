@@ -49,12 +49,16 @@ export class ScenariosImpactTableData extends ImpactTableData {
 
 export class ScenarioComparisonImpact {
   scenarioId: string;
-  impact: number;
+  newImpact?: number;
+  canceledImpact?: number;
+  impactResult?: number;
 }
 
 export class ScenarioComparisonTonnes {
   scenarioId: string;
-  tonnage: number;
+  newTonnage?: number;
+  canceledTonnage?: number;
+  tonnageDifference?: number;
 }
 
 @EntityRepository(SourcingRecord)

@@ -36,12 +36,6 @@ export class ScenariosImpactTableDataByIndicator {
   metadata: { unit: string };
   @ApiProperty({ type: () => ScenariosImpactTableRowsValues, isArray: true })
   values?: ScenariosImpactTableRowsValues[];
-
-  @ApiPropertyOptional({
-    description:
-      'Extra information used for Ranked ImpactTable requests. Missing on normal ImpactTable requests',
-  })
-  others?: ImpactTableDataAggregationInfo;
 }
 
 export class ScenariosImpactTableRows {
@@ -68,7 +62,9 @@ export class ScenariosImpactTableRowsValues {
 
 export class ScenarioImpact {
   scenarioId: string;
-  impact: number;
+  newImpact?: number;
+  canceledImpact?: number;
+  impactResult?: number;
 }
 
 export class YearSumData {
@@ -95,5 +91,7 @@ export class ScenariosImpactTablePurchasedTonnes {
 
 export class ScenarioTonnage {
   scenarioId: string;
-  tonnage: number;
+  newTonnage?: number;
+  canceledTonnage?: number;
+  tonnageDifference?: number;
 }

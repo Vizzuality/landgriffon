@@ -4,12 +4,12 @@ export function getDiffMaterialsScenariosComparison(
   scenarioIdOne: string,
   scenarioIdTwo: string,
   indicatorId: string,
-): ScenariosImpactTable {
+): any {
   return {
     scenariosImpactTable: [
       {
         indicatorShortName: 'Deforestation',
-        indicatorId: indicatorId,
+        indicatorId: '7064fbb6-8148-42fa-9018-33526ecb14ae',
         groupBy: 'material',
         rows: [
           {
@@ -23,8 +23,16 @@ export function getDiffMaterialsScenariosComparison(
                     year: 2020,
                     scenariosImpacts: [
                       {
+                        scenarioId: scenarioIdTwo,
+                        newImpact: 0,
+                        canceledImpact: 1200,
+                        impactResult: -1200,
+                      },
+                      {
                         scenarioId: scenarioIdOne,
-                        impact: 900,
+                        newImpact: 900,
+                        canceledImpact: 1200,
+                        impactResult: -300,
                       },
                     ],
                     isProjected: false,
@@ -33,8 +41,16 @@ export function getDiffMaterialsScenariosComparison(
                     year: 2021,
                     scenariosImpacts: [
                       {
+                        scenarioId: scenarioIdTwo,
+                        newImpact: 0,
+                        canceledImpact: 1218,
+                        impactResult: -1218,
+                      },
+                      {
                         scenarioId: scenarioIdOne,
-                        impact: 913.5,
+                        newImpact: 913.5,
+                        canceledImpact: 1218,
+                        impactResult: -304.5,
                       },
                     ],
                     isProjected: true,
@@ -50,7 +66,9 @@ export function getDiffMaterialsScenariosComparison(
                     scenariosImpacts: [
                       {
                         scenarioId: scenarioIdTwo,
-                        impact: 1800,
+                        newImpact: 1800,
+                        canceledImpact: 0,
+                        impactResult: 1800,
                       },
                     ],
                     isProjected: false,
@@ -60,7 +78,9 @@ export function getDiffMaterialsScenariosComparison(
                     scenariosImpacts: [
                       {
                         scenarioId: scenarioIdTwo,
-                        impact: 1827,
+                        newImpact: 1827,
+                        canceledImpact: 0,
+                        impactResult: 1827,
                       },
                     ],
                     isProjected: true,
@@ -75,8 +95,16 @@ export function getDiffMaterialsScenariosComparison(
                     year: 2020,
                     scenariosImpacts: [
                       {
+                        scenarioId: scenarioIdTwo,
+                        newImpact: 0,
+                        canceledImpact: 1200,
+                        impactResult: -1200,
+                      },
+                      {
                         scenarioId: scenarioIdOne,
-                        impact: 1000,
+                        newImpact: 1000,
+                        canceledImpact: 1200,
+                        impactResult: -200,
                       },
                     ],
                     isProjected: false,
@@ -85,8 +113,16 @@ export function getDiffMaterialsScenariosComparison(
                     year: 2021,
                     scenariosImpacts: [
                       {
+                        scenarioId: scenarioIdTwo,
+                        newImpact: 0,
+                        canceledImpact: 1218,
+                        impactResult: -1218,
+                      },
+                      {
                         scenarioId: scenarioIdOne,
-                        impact: 1015,
+                        newImpact: 1015,
+                        canceledImpact: 1218,
+                        impactResult: -203,
                       },
                     ],
                     isProjected: true,
@@ -99,12 +135,16 @@ export function getDiffMaterialsScenariosComparison(
                 year: 2020,
                 scenariosImpacts: [
                   {
-                    scenarioId: scenarioIdOne,
-                    impact: 1900,
+                    scenarioId: scenarioIdTwo,
+                    newImpact: 1800,
+                    canceledImpact: 2400,
+                    impactResult: -600,
                   },
                   {
-                    scenarioId: scenarioIdTwo,
-                    impact: 1800,
+                    scenarioId: scenarioIdOne,
+                    newImpact: 1900,
+                    canceledImpact: 2400,
+                    impactResult: -500,
                   },
                 ],
                 isProjected: false,
@@ -113,12 +153,16 @@ export function getDiffMaterialsScenariosComparison(
                 year: 2021,
                 scenariosImpacts: [
                   {
-                    scenarioId: scenarioIdOne,
-                    impact: 1928.5,
+                    scenarioId: scenarioIdTwo,
+                    newImpact: 1827,
+                    canceledImpact: 2436,
+                    impactResult: -609,
                   },
                   {
-                    scenarioId: scenarioIdTwo,
-                    impact: 1827,
+                    scenarioId: scenarioIdOne,
+                    newImpact: 1928.5,
+                    canceledImpact: 2436,
+                    impactResult: -507.5,
                   },
                 ],
                 isProjected: true,
@@ -138,12 +182,16 @@ export function getDiffMaterialsScenariosComparison(
         year: 2020,
         values: [
           {
-            scenarioId: scenarioIdOne,
-            tonnage: 2005.12,
+            scenarioId: scenarioIdTwo,
+            newTonnage: 1002.56,
+            canceledTonnage: 2005.12,
+            tonnageDifference: -1002.56,
           },
           {
-            scenarioId: scenarioIdTwo,
-            tonnage: 1002.56,
+            scenarioId: scenarioIdOne,
+            newTonnage: 2005.12,
+            canceledTonnage: 2005.12,
+            tonnageDifference: 0,
           },
         ],
         isProjected: false,
@@ -152,12 +200,16 @@ export function getDiffMaterialsScenariosComparison(
         year: 2021,
         values: [
           {
-            scenarioId: scenarioIdOne,
-            tonnage: 2035.1968,
+            scenarioId: scenarioIdTwo,
+            newTonnage: 1017.5984,
+            canceledTonnage: 2035.1968,
+            tonnageDifference: -1017.5984,
           },
           {
-            scenarioId: scenarioIdTwo,
-            tonnage: 1017.5984,
+            scenarioId: scenarioIdOne,
+            newTonnage: 2035.1968,
+            canceledTonnage: 2035.1968,
+            tonnageDifference: 0,
           },
         ],
         isProjected: true,

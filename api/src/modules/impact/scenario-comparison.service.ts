@@ -5,6 +5,7 @@ import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-record
 import {
   ImpactTableData,
   ScenarioComparisonImpact,
+  ScenarioComparisonTonnes,
   ScenariosImpactTableData,
 } from 'modules/sourcing-records/sourcing-record.repository';
 import { Indicator } from 'modules/indicators/indicator.entity';
@@ -18,7 +19,10 @@ import { ImpactTableEntityType } from 'types/impact-table-entity.type';
 import { DEFAULT_PAGINATION, FetchSpecification } from 'nestjs-base-service';
 import { PaginatedEntitiesDto } from 'modules/impact/dto/paginated-entities.dto';
 import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
-import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
+import {
+  LOCATION_TYPES,
+  SOURCING_LOCATION_TYPE_BY_INTERVENTION,
+} from 'modules/sourcing-locations/sourcing-location.entity';
 import { PaginationMeta } from 'utils/app-base.service';
 import { GetScenarioComparisonDto } from 'modules/impact/dto/get-scenario-comparison.dto';
 import {
@@ -112,25 +116,43 @@ export class ScenarioComparisonService {
   ): ScenariosImpactTableData[] {
     const dataForScenarioImpactTable: ScenariosImpactTableData[] = [];
 
+    /**Processing the impact data so that each entity (material, supplier, etc) for each requested year
+     * has canceled and replaced impacts  + cancelled and replaced tonnes grouped by scenarioId -
+     * in the properties scenarioImpacts and scenarioTonnes
+     */
     impactData.forEach((impactData: ImpactTableData) => {
-      const existingScenarioDataIndex: number =
-        dataForScenarioImpactTable.findIndex((el: ImpactTableData) => {
-          el.name === impactData.name && el.year === impactData.year;
+      const existingScenarioData: ScenariosImpactTableData | undefined =
+        dataForScenarioImpactTable.find((el: ImpactTableData) => {
+          return el.name === impactData.name && el.year === impactData.year;
         });
 
-      if (existingScenarioDataIndex > -1) {
+      if (existingScenarioData) {
         dataForScenarioImpactTable[
-          existingScenarioDataIndex
+          dataForScenarioImpactTable.indexOf(existingScenarioData)
         ].scenariosImpacts.push({
           scenarioId: impactData.scenarioId as string,
-          impact: impactData.impact,
+          ...(impactData.typeByIntervention ===
+            SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING && {
+            newImpact: impactData.impact,
+          }),
+          ...(impactData.typeByIntervention ===
+            SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED && {
+            canceledImpact: impactData.impact,
+          }),
         });
 
         dataForScenarioImpactTable[
-          existingScenarioDataIndex
+          dataForScenarioImpactTable.indexOf(existingScenarioData)
         ].scenariosTonnes.push({
           scenarioId: impactData.scenarioId as string,
-          tonnage: Number(impactData.tonnes),
+          ...(impactData.typeByIntervention ===
+            SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING && {
+            newTonnage: Number(impactData.tonnes),
+          }),
+          ...(impactData.typeByIntervention ===
+            SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED && {
+            canceledTonnage: Number(impactData.tonnes),
+          }),
         });
       } else {
         const newComparisonData: ScenariosImpactTableData = {
@@ -138,19 +160,111 @@ export class ScenarioComparisonService {
           scenariosImpacts: [
             {
               scenarioId: impactData.scenarioId as string,
-              impact: impactData.impact,
+              ...(impactData.typeByIntervention ===
+                SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING && {
+                newImpact: impactData.impact,
+              }),
+              ...(impactData.typeByIntervention ===
+                SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED && {
+                canceledImpact: impactData.impact,
+              }),
             },
           ],
           scenariosTonnes: [
             {
               scenarioId: impactData.scenarioId as string,
-              tonnage: Number(impactData.tonnes),
+              ...(impactData.typeByIntervention ===
+                SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING && {
+                newTonnage: Number(impactData.tonnes),
+              }),
+              ...(impactData.typeByIntervention ===
+                SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED && {
+                canceledTonnage: Number(impactData.tonnes),
+              }),
             },
           ],
         };
         dataForScenarioImpactTable.push(newComparisonData);
       }
     });
+
+    /** Reducing scenarioImapcts by grouping them by scenarioId and calculating impactResult as the difference
+     * between newImpact and canceledImpacts
+     */
+
+    dataForScenarioImpactTable.forEach(
+      (scenarioImpactElement: ScenariosImpactTableData) => {
+        // First we proccess and reduce scenario impacts
+        const groupedScenarioImpacts: ScenarioComparisonImpact[] =
+          Object.values(
+            scenarioImpactElement.scenariosImpacts.reduce(
+              (
+                result: { [index: string]: ScenarioComparisonImpact },
+                item: ScenarioComparisonImpact,
+              ) => {
+                const { newImpact, canceledImpact, impactResult, scenarioId } =
+                  item;
+                const key: string = scenarioId;
+                const prevItem: ScenarioComparisonImpact = result[key] || {};
+                const {
+                  newImpact: prevNewImpact = 0,
+                  canceledImpact: prevCanceledImpact = 0,
+                } = prevItem;
+
+                result[key] = {
+                  scenarioId,
+                  newImpact: (prevItem ? prevNewImpact : 0) + (newImpact || 0),
+                  canceledImpact:
+                    (prevItem ? prevCanceledImpact : 0) + (canceledImpact || 0),
+                };
+                result[key].impactResult =
+                  (result[key].newImpact || 0) -
+                  (result[key].canceledImpact || 0);
+                return result;
+              },
+              {},
+            ),
+          );
+
+        scenarioImpactElement.scenariosImpacts = groupedScenarioImpacts;
+
+        // Then we do the same for tonnages
+        const groupedScenarioTonnes: ScenarioComparisonTonnes[] = Object.values(
+          scenarioImpactElement.scenariosTonnes.reduce(
+            (
+              result: { [index: string]: ScenarioComparisonTonnes },
+              item: ScenarioComparisonTonnes,
+            ) => {
+              const {
+                newTonnage,
+                canceledTonnage,
+                tonnageDifference,
+                scenarioId,
+              } = item;
+              const key: string = scenarioId;
+              const prevItem: ScenarioComparisonTonnes = result[key] || {};
+              const {
+                newTonnage: prevNewTonnage = 0,
+                canceledTonnage: prevCanceledTonnage = 0,
+              } = prevItem;
+
+              result[key] = {
+                scenarioId,
+                newTonnage: (prevItem ? prevNewTonnage : 0) + (newTonnage || 0),
+                canceledTonnage:
+                  (prevItem ? prevCanceledTonnage : 0) + (canceledTonnage || 0),
+              };
+              result[key].tonnageDifference =
+                (result[key].newTonnage || 0) -
+                (result[key].canceledTonnage || 0);
+              return result;
+            },
+            {},
+          ),
+        );
+        scenarioImpactElement.scenariosTonnes = groupedScenarioTonnes;
+      },
+    );
 
     return dataForScenarioImpactTable;
   }
@@ -339,16 +453,25 @@ export class ScenarioComparisonService {
                 ? calculatedData[namesByIndicatorIndex].values[
                     rowValuesIndex - 1
                   ].scenariosImpacts
-                : [{ scenarioId: 'none', impact: 0 }];
+                : [{ scenarioId: 'none' }];
 
             const projectedScenariosImpacts: ScenarioComparisonImpact[] =
               lastYearsValue.map((scenarioImpact: ScenarioImpact) => {
                 const newScenarioImpact: ScenarioImpact = JSON.parse(
                   JSON.stringify(scenarioImpact),
                 );
-                newScenarioImpact.impact =
-                  newScenarioImpact.impact +
-                  (newScenarioImpact.impact * this.growthRate) / 100;
+                newScenarioImpact.newImpact =
+                  (newScenarioImpact.newImpact || 0) +
+                  ((newScenarioImpact.newImpact || 0) * this.growthRate) / 100;
+                newScenarioImpact.canceledImpact =
+                  (newScenarioImpact.canceledImpact || 0) +
+                  ((newScenarioImpact.canceledImpact || 0) * this.growthRate) /
+                    100;
+
+                newScenarioImpact.impactResult =
+                  newScenarioImpact.newImpact -
+                  newScenarioImpact.canceledImpact;
+
                 return newScenarioImpact;
               });
             calculatedData[namesByIndicatorIndex].values.push({
@@ -413,12 +536,25 @@ export class ScenarioComparisonService {
               acc: { [index: string]: ScenarioTonnage },
               scenarioTonnage: ScenarioTonnage,
             ) => {
-              const { scenarioId, tonnage } = scenarioTonnage;
+              const {
+                scenarioId,
+                newTonnage,
+                canceledTonnage,
+                tonnageDifference,
+              } = scenarioTonnage;
               acc[scenarioId] = {
                 scenarioId,
-                tonnage:
-                  (acc[scenarioId] ? acc[scenarioId].tonnage : 0) + tonnage,
+                newTonnage:
+                  (acc[scenarioId] ? acc[scenarioId].newTonnage || 0 : 0) +
+                  (newTonnage || 0),
+                canceledTonnage:
+                  (acc[scenarioId] ? acc[scenarioId].canceledTonnage || 0 : 0) +
+                  (canceledTonnage || 0),
               };
+
+              acc[scenarioId].tonnageDifference =
+                (acc[scenarioId].newTonnage || 0) -
+                (acc[scenarioId].canceledTonnage || 0);
 
               return acc;
             },
@@ -439,9 +575,17 @@ export class ScenarioComparisonService {
             const newScenarioTonnage: ScenarioTonnage = JSON.parse(
               JSON.stringify(scenarioTonnage),
             );
-            newScenarioTonnage.tonnage =
-              newScenarioTonnage.tonnage +
-              (newScenarioTonnage.tonnage * this.growthRate) / 100;
+            newScenarioTonnage.newTonnage =
+              (scenarioTonnage.newTonnage || 0) +
+              ((newScenarioTonnage.newTonnage || 0) * this.growthRate) / 100;
+            newScenarioTonnage.canceledTonnage =
+              (newScenarioTonnage.canceledTonnage || 0) +
+              ((newScenarioTonnage.canceledTonnage || 0) * this.growthRate) /
+                100;
+
+            newScenarioTonnage.tonnageDifference =
+              (newScenarioTonnage.newTonnage || 0) -
+              (newScenarioTonnage.canceledTonnage || 0);
             return newScenarioTonnage;
           });
         purchasedTonnes.push({
@@ -508,11 +652,19 @@ export class ScenarioComparisonService {
               acc: { [index: string]: ScenarioImpact },
               scenarioImpact: ScenarioImpact,
             ) => {
-              const { scenarioId, impact } = scenarioImpact;
+              const { scenarioId, newImpact, canceledImpact } = scenarioImpact;
               acc[scenarioId] = {
                 scenarioId,
-                impact: (acc[scenarioId] ? acc[scenarioId].impact : 0) + impact,
+                newImpact:
+                  (acc[scenarioId] ? acc[scenarioId].newImpact || 0 : 0) +
+                  (newImpact || 0),
+                canceledImpact:
+                  (acc[scenarioId] ? acc[scenarioId].canceledImpact || 0 : 0) +
+                  (canceledImpact || 0),
               };
+              acc[scenarioId].impactResult =
+                (acc[scenarioId].newImpact || 0) -
+                (acc[scenarioId].canceledImpact || 0);
 
               return acc;
             },

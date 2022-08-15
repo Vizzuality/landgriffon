@@ -88,12 +88,28 @@ describe('Scenario comparison test suite (e2e)', () => {
       preconditions.indicator.id,
     );
 
-    expect(response.body.data.scenariosImpactTable).toEqual(
-      expectedScenariosTable.scenariosImpactTable,
+    expect(
+      response.body.data.scenariosImpactTable[0].rows[0].values[0]
+        .scenariosImpacts,
+    ).toEqual(
+      expect.arrayContaining(
+        expectedScenariosTable.scenariosImpactTable[0].rows[0].values[0]
+          .scenariosImpacts,
+      ),
     );
 
-    expect(response.body.data.purchasedTonnes).toEqual(
-      expectedScenariosTable.purchasedTonnes,
+    expect(
+      response.body.data.scenariosImpactTable[0].rows[0].children[0].values[0]
+        .scenariosImpacts,
+    ).toEqual(
+      expect.arrayContaining(
+        expectedScenariosTable.scenariosImpactTable[0].rows[0].children[0]
+          .values[0].scenariosImpacts,
+      ),
+    );
+
+    expect(response.body.data.purchasedTonnes[0].values).toEqual(
+      expect.arrayContaining(expectedScenariosTable.purchasedTonnes[0].values),
     );
   });
 });

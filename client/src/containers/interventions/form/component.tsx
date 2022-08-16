@@ -66,7 +66,17 @@ const schemaValidation = yup.object({
         return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
       });
     }
-    return yup.string().required('City, address or coordinates field is required');
+    return yup.string().when('newLocationType', (locationType) => {
+      if (
+        [LocationTypes.aggregationPoint, LocationTypes.pointOfProduction].includes(
+          locationType?.value,
+        )
+      ) {
+        return yup.string().required('City, address or coordinates field is required');
+      }
+
+      return optionSchema.nullable();
+    });
   }),
 
   // Material
@@ -242,7 +252,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
           analyze changes.
         </p>
       </div>
-      <div className="space-y-4 border-gray-100 border-l-2 pl-10">
+      <div className="pl-10 space-y-4 border-l-2 border-gray-100">
         <div>
           <label className={LABEL_CLASSNAMES}>
             Percentage <sup>*</sup>
@@ -368,7 +378,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
       <div className="flex flex-col justify-center pr-10">
         <h2>2. Type of intervention</h2>
       </div>
-      <div className="border-gray-100 border-l-2 pl-10">
+      <div className="pl-10 border-l-2 border-gray-100">
         <Controller
           name="interventionType"
           control={control}
@@ -391,7 +401,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                     data-testid="intervention-type-option"
                   >
                     {({ active, checked }) => (
-                      <div className="flex space-x-4 items-center">
+                      <div className="flex items-center space-x-4">
                         <InterventionTypeIcon
                           interventionType={value}
                           variant={active || checked ? 'light' : 'default'}
@@ -418,7 +428,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
           </div>
           {/* Those options depending on intervention type selected by the user */}
 
-          <div className="space-y-10 border-gray-100 border-l-2 pl-10">
+          <div className="pl-10 space-y-10 border-l-2 border-gray-100">
             {currentInterventionType === InterventionTypes.Material && (
               <div className="space-y-4">
                 <h3>New material</h3>
@@ -448,7 +458,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
               <Disclosure as="div" className="space-y-4">
                 {({ open }) => (
                   <>
-                    <div className="flex justify-between items-center w-full">
+                    <div className="flex items-center justify-between w-full">
                       <h3>New location</h3>
                       <Disclosure.Button
                         className={classNames(
@@ -517,7 +527,9 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                             )}
                           />
                         </div>
-                        {locationType?.value === LocationTypes.aggregationPoint && (
+                        {[LocationTypes.aggregationPoint, LocationTypes.pointOfProduction].includes(
+                          locationType?.value,
+                        ) && (
                           <>
                             <div data-testid="city-address-coordinates-field">
                               <label className={LABEL_CLASSNAMES}>
@@ -528,7 +540,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                                 {...register('cityAddressCoordinates')}
                                 error={errors?.newLocationAddressInput?.message}
                               />
-                              <div className="text-xs text-gray-500 mt-1">
+                              <div className="mt-1 text-xs text-gray-500">
                                 Add lat and long coordinates separated by comma, e.g. 40, -3
                               </div>
                             </div>
@@ -543,7 +555,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                         )}
                         {locationType?.value === LocationTypes.aggregationPoint && (
                           <div className="hidden">
-                            <div className="flex space-x-2 w-full">
+                            <div className="flex w-full space-x-2">
                               <Input
                                 {...register('newLocationLatitude')}
                                 type="number"
@@ -575,11 +587,11 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
               <Disclosure as="div" className="space-y-4">
                 {({ open }) => (
                   <>
-                    <div className="flex justify-between items-center w-full">
+                    <div className="flex items-center justify-between w-full">
                       {currentInterventionType === InterventionTypes.Material ? (
                         <div>
                           <h3 className="inline-block">Supplier</h3>{' '}
-                          <span className="text-regular text-gray-500">(optional)</span>
+                          <span className="text-gray-500 text-regular">(optional)</span>
                         </div>
                       ) : (
                         <h3>New supplier</h3>
@@ -656,11 +668,11 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
             <Disclosure as="div" className="space-y-4">
               {({ open }) => (
                 <>
-                  <div className="flex justify-between items-center w-full">
+                  <div className="flex items-center justify-between w-full">
                     {currentInterventionType !== InterventionTypes.Efficiency ? (
                       <div>
                         <h3 className="inline-block">Impacts per ton</h3>{' '}
-                        <span className="text-regular text-gray-500">(optional)</span>
+                        <span className="text-gray-500 text-regular">(optional)</span>
                       </div>
                     ) : (
                       <h3>Impacts per ton</h3>
@@ -733,7 +745,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
       )}
 
       <div className="col-span-2">
-        <div className="text-sm text-gray-500 text-right mb-6">
+        <div className="mb-6 text-sm text-right text-gray-500">
           Fields marked with (*) are mandatory.
         </div>
         <div className="flex justify-end space-x-6">

@@ -21,10 +21,10 @@ const InterventionPhrase: React.FC<InterventionPhraseProps> = ({ intervention, s
     [intervention.replacedBusinessUnits],
   );
 
-  const suppliers = useMemo(
-    () => <strong>{intervention.replacedSuppliers[0].name}</strong>,
-    [intervention.replacedSuppliers],
-  );
+  const suppliers = useMemo(() => {
+    if (intervention.replacedSuppliers.length)
+      return <strong>{intervention.replacedSuppliers[0].name}</strong>;
+  }, [intervention.replacedSuppliers]);
 
   const regions = useMemo(
     () => <strong>{intervention.replacedAdminRegions[0].name}</strong>,

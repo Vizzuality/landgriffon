@@ -43,10 +43,10 @@ const CreateInterventionPage: React.FC = () => {
         <title>Create intervention for scenario | Landgriffon</title>
       </Head>
       <Link href={`/admin/scenarios/${query.scenarioId}/edit`} passHref>
-        <BackLink className="mb-6 flex xl:sticky xl:top-0">Back to scenario</BackLink>
+        <BackLink className="flex mb-6 xl:sticky xl:top-0">Back to scenario</BackLink>
       </Link>
       <div className="grid grid-cols-12 gap-6">
-        <div className="col-start-2 col-span-10 xl:col-start-3 xl:col-span-8">
+        <div className="col-span-10 col-start-2 xl:col-start-3 xl:col-span-8">
           <h1 data-testid="page-title">New intervention</h1>
           <InterventionForm onSubmit={handleSubmit} isSubmitting={createIntervention.isLoading} />
         </div>

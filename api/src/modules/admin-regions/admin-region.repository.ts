@@ -98,8 +98,8 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
       this.logger.error(
         `Could not find any Admin Region that intersects with Coordinates: LAT: ${coordinates.lat} LONG: ${coordinates.lng}`,
       );
-      throw new NotFoundException(
-        `No Admin Region where coordinates ${coordinates.lat}, ${coordinates.lng} are could been found`,
+      throw new GeoCodingError(
+        `Coordinates ${coordinates.lat}, ${coordinates.lng} are not inside ${sourcingLocation.locationCountryInput}`,
       );
     }
 

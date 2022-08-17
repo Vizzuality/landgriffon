@@ -193,6 +193,12 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
   );
 
   useEffect(() => {
+    if (optionsYears?.length) {
+      setValue('startYear', optionsYears[optionsYears.length - 1]);
+    }
+  }, [optionsYears, setValue]);
+
+  useEffect(() => {
     if (currentInterventionType === InterventionTypes.SupplierLocation) {
       ['newMaterialId'].forEach((field) => resetField(field));
     } else if (currentInterventionType === InterventionTypes.Efficiency) {
@@ -356,10 +362,10 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
           <Controller
             name="startYear"
             control={control}
-            defaultValue={optionsYears[0]}
             render={({ field }) => (
               <Select
                 {...field}
+                instanceId="startYear"
                 showSearch
                 current={field.value}
                 options={optionsYears}

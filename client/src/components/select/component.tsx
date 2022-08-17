@@ -93,6 +93,7 @@ const SEARCH_OPTIONS = {
 const Select: React.FC<SelectProps> = React.forwardRef<HTMLInputElement, SelectProps>(
   (
     {
+      instanceId,
       disabled = false,
       label,
       options = [],
@@ -245,6 +246,7 @@ const Select: React.FC<SelectProps> = React.forwardRef<HTMLInputElement, SelectP
       <div className={classNames({ 'w-fit': theme === 'inline-primary' })}>
         <input ref={ref} className="hidden" />
         <ReactSelect
+          instanceId={instanceId}
           onMenuOpen={() => setIsMenuOpen(true)}
           onMenuClose={() => setIsMenuOpen(false)}
           styles={styles}

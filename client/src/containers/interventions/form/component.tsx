@@ -49,7 +49,7 @@ const schemaValidation = yup.object({
   materialIds: yup.array().of(optionSchema).required(),
   businessUnitIds: yup.array().of(optionSchema),
   supplierIds: yup.array().of(optionSchema),
-  adminRegionIds: yup.array().of(optionSchema).required(),
+  adminRegionIds: yup.array().of(optionSchema),
 
   // Supplier
   newT1SupplierId: optionSchema.nullable(),
@@ -310,9 +310,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
           />
         </div>
         <div>
-          <label className={LABEL_CLASSNAMES}>
-            Region <sup>*</sup>
-          </label>
+          <label className={LABEL_CLASSNAMES}>Region</label>
           <Controller
             name="adminRegionIds"
             control={control}

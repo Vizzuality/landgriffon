@@ -83,22 +83,10 @@ const schemaValidation = yup.object({
   newMaterialId: optionSchema,
 
   // Coefficients
-  DF_LUC_T: yup
-    .number()
-    .nullable()
-    .transform((_, val) => (val === Number(val) ? val : null)),
-  UWU_T: yup
-    .number()
-    .nullable()
-    .transform((_, val) => (val === Number(val) ? val : null)),
-  BL_LUC_T: yup
-    .number()
-    .nullable()
-    .transform((_, val) => (val === Number(val) ? val : null)),
-  GHG_LUC_T: yup
-    .number()
-    .nullable()
-    .transform((_, val) => (val === Number(val) ? val : null)),
+  DF_LUC_T: yup.number().nullable(),
+  UWU_T: yup.number().nullable(),
+  BL_LUC_T: yup.number().nullable(),
+  GHG_LUC_T: yup.number().nullable(),
 });
 
 const LABEL_CLASSNAMES = 'text-sm';
@@ -704,8 +692,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                         <Input
                           {...register('GHG_LUC_T')}
                           type="number"
-                          placeholder="0"
-                          // defaultValue={0}
+                          defaultValue={0}
                           error={errors?.GHG_LUC_T?.message}
                         />
                       </div>
@@ -714,8 +701,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                         <Input
                           {...register('DF_LUC_T')}
                           type="number"
-                          placeholder="0"
-                          // defaultValue={0}
+                          defaultValue={0}
                           error={errors?.DF_LUC_T?.message}
                         />
                       </div>
@@ -724,8 +710,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                         <Input
                           {...register('UWU_T')}
                           type="number"
-                          placeholder="0"
-                          // defaultValue={0}
+                          defaultValue={0}
                           error={errors?.UWU_T?.message}
                         />
                       </div>
@@ -734,8 +719,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                         <Input
                           {...register('BL_LUC_T')}
                           type="number"
-                          placeholder="0"
-                          // defaultValue={0}
+                          defaultValue={0}
                           error={errors?.BL_LUC_T?.message}
                         />
                       </div>

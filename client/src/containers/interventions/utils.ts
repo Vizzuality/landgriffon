@@ -1,4 +1,5 @@
 import type { InterventionDto, InterventionFormData } from './types';
+import { InterventionTypes } from './enums';
 import type { SelectOption } from 'components/select/types';
 
 function emptyStringIsNull(value: string): string | null {
@@ -39,8 +40,6 @@ export function parseInterventionFormDataToDto(
     ...rest
   } = interventionFormData;
 
-  const thereIsCoefficients = !!(DF_LUC_T || UWU_T || BL_LUC_T || GHG_LUC_T);
-
   const result: InterventionDto = {
     ...rest,
     type: interventionType,
@@ -53,13 +52,17 @@ export function parseInterventionFormDataToDto(
 
     newMaterialId: getValue(newMaterialId) as string,
 
-    newLocationType: getValue(newLocationType) as string,
-    newLocationCountryInput: newLocationCountryInput?.label,
+    // * location-related fields are not sent when the intervention type is "Change production efficiency"
+    ...(interventionType !== InterventionTypes.Efficiency && {
+      newLocationType: getValue(newLocationType) as string,
+      newLocationCountryInput: newLocationCountryInput?.label,
+    }),
 
     newT1SupplierId: getValue(newT1SupplierId) as string,
     newProducerId: getValue(newProducerId) as string,
 
-    ...(thereIsCoefficients
+    // * coefficients are only sent when the intervention type is "Change production efficiency"
+    ...(interventionType === InterventionTypes.Efficiency
       ? {
           newIndicatorCoefficients: {
             DF_LUC_T,

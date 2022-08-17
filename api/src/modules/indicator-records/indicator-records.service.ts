@@ -400,7 +400,7 @@ export class IndicatorRecordsService extends AppBaseService<
 
     for (const indicator of indicators) {
       const type: INDICATOR_TYPES = indicator.nameCode as INDICATOR_TYPES;
-      if (!newIndicatorCoefficients[type]) {
+      if (newIndicatorCoefficients[type] === undefined) {
         throw new NotFoundException(
           `Required coefficient for indicator ${type} was not provided`,
         );

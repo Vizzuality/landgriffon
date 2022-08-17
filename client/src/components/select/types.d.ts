@@ -12,6 +12,7 @@ type Styles = Readonly<{
 }>;
 
 export type SelectProps = {
+  instanceId?: number | string;
   showSearch?: boolean;
   disabled?: boolean;
   loading?: boolean;

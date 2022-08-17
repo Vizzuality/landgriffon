@@ -1,1 +1,3 @@
-export class GeoCodingError extends Error {}
+import { BadRequestException } from '@nestjs/common';
+
+export class GeoCodingError extends BadRequestException {}

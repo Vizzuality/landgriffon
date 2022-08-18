@@ -203,13 +203,16 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
     }
   }, [currentInterventionType, resetField]);
 
-  useEffect(() => setValue('scenarioId', query?.scenarioId), [query?.scenarioId, setValue]);
-
   useEffect(() => {
-    if (currentInterventionType === InterventionTypes.Efficiency) {
-      setValue('newLocationType', { label: 'Unknown', value: LocationTypes.unknown });
+    // * if a location type doesn't require coordinates, the coordinates fields are reset to avoid sending them unintentionally
+    if (locationType?.value === LocationTypes.countryOfProduction) {
+      resetField('cityAddressCoordinates');
+      resetField('newLocationLatitude');
+      resetField('newLocationLongitude');
     }
-  }, [currentInterventionType, setValue]);
+  }, [locationType, resetField]);
+
+  useEffect(() => setValue('scenarioId', query?.scenarioId), [query?.scenarioId, setValue]);
 
   // When city, address or coordinates input are valid coordinates, set the location coordinates inputs
   useEffect(() => {

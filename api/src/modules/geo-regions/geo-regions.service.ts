@@ -63,13 +63,13 @@ export class GeoRegionsService extends AppBaseService<
   async saveGeoRegionAsRadius(
     newGeoRegionValues: LocationGeoRegionDto,
   ): Promise<GeoRegion> {
-    const previouslyExistingGeoRegion: GeoRegion | undefined =
-      await this.geoRegionRepository.getGeomByHashedName({
+    const previouslyExistingGeoRegion: GeoRegion[] =
+      await this.geoRegionRepository.getGeomRadiusByHashedName({
         lat: newGeoRegionValues.coordinates.lat,
         lng: newGeoRegionValues.coordinates.lng,
       });
-    if (previouslyExistingGeoRegion) {
-      return previouslyExistingGeoRegion;
+    if (previouslyExistingGeoRegion.length) {
+      return previouslyExistingGeoRegion[0];
     }
     return this.geoRegionRepository.saveGeoRegionAsRadius(newGeoRegionValues);
   }
@@ -77,13 +77,13 @@ export class GeoRegionsService extends AppBaseService<
   async saveGeoRegionAsPoint(
     newGeoRegionValues: LocationGeoRegionDto,
   ): Promise<Pick<GeoRegion, 'id'>> {
-    const previouslyExistingGeoRegion: GeoRegion | undefined =
-      await this.geoRegionRepository.getGeomByHashedName({
+    const previouslyExistingGeoRegion: GeoRegion[] =
+      await this.geoRegionRepository.getGeomPointByHashedName({
         lat: newGeoRegionValues.coordinates.lat,
         lng: newGeoRegionValues.coordinates.lng,
       });
-    if (previouslyExistingGeoRegion) {
-      return previouslyExistingGeoRegion;
+    if (previouslyExistingGeoRegion.length) {
+      return previouslyExistingGeoRegion[0];
     }
     return this.geoRegionRepository.saveGeoRegionAsPoint(newGeoRegionValues);
   }

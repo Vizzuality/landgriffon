@@ -62,28 +62,28 @@ export class GeoRegionsService extends AppBaseService<
 
   async saveGeoRegionAsRadius(
     newGeoRegionValues: LocationGeoRegionDto,
-  ): Promise<GeoRegion> {
+  ): Promise<string> {
     const previouslyExistingGeoRegion: GeoRegion[] =
       await this.geoRegionRepository.getGeomRadiusByHashedName({
         lat: newGeoRegionValues.coordinates.lat,
         lng: newGeoRegionValues.coordinates.lng,
       });
     if (previouslyExistingGeoRegion.length) {
-      return previouslyExistingGeoRegion[0];
+      return previouslyExistingGeoRegion[0].id;
     }
     return this.geoRegionRepository.saveGeoRegionAsRadius(newGeoRegionValues);
   }
 
   async saveGeoRegionAsPoint(
     newGeoRegionValues: LocationGeoRegionDto,
-  ): Promise<Pick<GeoRegion, 'id'>> {
+  ): Promise<string> {
     const previouslyExistingGeoRegion: GeoRegion[] =
       await this.geoRegionRepository.getGeomPointByHashedName({
         lat: newGeoRegionValues.coordinates.lat,
         lng: newGeoRegionValues.coordinates.lng,
       });
     if (previouslyExistingGeoRegion.length) {
-      return previouslyExistingGeoRegion[0];
+      return previouslyExistingGeoRegion[0].id;
     }
     return this.geoRegionRepository.saveGeoRegionAsPoint(newGeoRegionValues);
   }

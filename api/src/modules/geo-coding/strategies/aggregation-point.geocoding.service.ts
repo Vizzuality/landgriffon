@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseStrategy } from 'modules/geo-coding/strategies/base-strategy';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
-import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { GeocodeResponse } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
@@ -24,7 +23,7 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
      * If coordinates, create a new geo-region: a 50KM radius around the given point
      */
     if (sourcingData.locationLatitude && sourcingData.locationLongitude) {
-      const geoRegionId: Pick<GeoRegion, 'id'> =
+      const geoRegionId: string =
         await this.geoRegionService.saveGeoRegionAsRadius({
           name: sourcingData.locationCountryInput,
           coordinates: {
@@ -131,7 +130,7 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
          * If it's neither AdminRegion Level 1 nor Level 2, should be a GADM Level 0, which we can look it up in the db
          * by its name
          */
-        const geoRegionId: GeoRegion =
+        const geoRegionId: string =
           await this.geoRegionService.saveGeoRegionAsRadius({
             name: sourcingData.locationCountryInput,
             coordinates: {

@@ -1,19 +1,19 @@
-before(() => {
-  cy.login();
-  cy.visit('/admin/scenarios');
+beforeEach(() => {
+  cy.intercept('GET', '/api/v1/scenarios/**/interventions', {
+    statusCode: 200,
+    fixture: 'scenario-interventions.json',
+  });
 
   cy.intercept('GET', '/api/v1/scenarios?sort=-updatedAt&disablePagination=true', {
     statusCode: 200,
     fixture: 'scenarios.json',
   });
 
-  cy.intercept('GET', '/api/v1/scenarios/**/interventions', {
-    statusCode: 200,
-    fixture: 'scenario-interventions.json',
-  });
+  cy.login();
+  cy.visit('/admin/scenarios');
 });
 
-after(() => {
+afterEach(() => {
   cy.logout();
 });
 

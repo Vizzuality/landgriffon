@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useForm, Controller } from 'react-hook-form';
@@ -111,6 +111,9 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
     resolver: yupResolver(schemaValidation),
   });
 
+  const closeSupplierRef = useRef<() => void>(null);
+  const closeImpactsRef = useRef<() => void>(null);
+
   const currentMaterialIds = watch('materialIds');
   const currentBusinessUnitIds = watch('businessUnitIds');
   const currentLocationIds = watch('adminRegionIds');
@@ -201,7 +204,23 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
         'newLocationLongitude',
       ].forEach((field) => resetField(field));
     }
-  }, [currentInterventionType, resetField]);
+
+    // * restes "impacts per ton" coefficients whenever the intervention type changes
+    resetField('DF_LUC_T', { defaultValue: 0 });
+    resetField('UWU_T', { defaultValue: 0 });
+    resetField('BL_LUC_T', { defaultValue: 0 });
+    resetField('GHG_LUC_T', { defaultValue: 0 });
+
+    // * closes "Supplier" panel when the user changes the intervention type
+    if (closeSupplierRef.current !== null) {
+      closeSupplierRef.current();
+    }
+
+    // * closes "Impacts per ton" panel when the user changes the intervention type
+    if (closeImpactsRef.current !== null) {
+      closeImpactsRef.current();
+    }
+  }, [currentInterventionType, resetField, closeSupplierRef]);
 
   useEffect(() => {
     // * if a location type doesn't require coordinates, the coordinates fields are reset to avoid sending them unintentionally
@@ -580,17 +599,101 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
             {(currentInterventionType === InterventionTypes.Material ||
               currentInterventionType === InterventionTypes.SupplierLocation) && (
               <Disclosure as="div" className="space-y-4">
-                {({ open }) => (
+                {({ open, close }) => {
+                  closeSupplierRef.current = close;
+
+                  return (
+                    <>
+                      <div className="flex items-center justify-between w-full">
+                        <div>
+                          <h3 className="inline-block">Supplier</h3>{' '}
+                          <span className="text-gray-500 text-regular">(optional)</span>
+                        </div>
+                        <Disclosure.Button
+                          className={classNames(
+                            'border-primary border w-6 h-6 rounded flex items-center justify-center',
+                            open ? 'bg-primary' : 'bg-transparent',
+                          )}
+                        >
+                          {open ? (
+                            <MinusIcon className="w-5 h-5 text-white" />
+                          ) : (
+                            <PlusIcon className="w-5 h-5 text-primary" />
+                          )}
+                        </Disclosure.Button>
+                      </div>
+                      <Disclosure.Panel>
+                        <div className="space-y-4">
+                          <div>
+                            <label className={LABEL_CLASSNAMES}>Tier 1 supplier</label>
+                            <Controller
+                              name="newT1SupplierId"
+                              control={control}
+                              defaultValue={null}
+                              render={({ field }) => (
+                                <Select
+                                  {...field}
+                                  showSearch
+                                  loading={isLoadingSuppliers}
+                                  current={field.value}
+                                  options={optionsSuppliers}
+                                  placeholder="Select"
+                                  onChange={(value) => setValue('newT1SupplierId', value)}
+                                  error={!!errors?.newSupplierId?.message}
+                                  allowEmpty
+                                />
+                              )}
+                            />
+                          </div>
+                          <div>
+                            <label className={LABEL_CLASSNAMES}>Producer</label>
+                            <Controller
+                              name="newProducerId"
+                              control={control}
+                              defaultValue={null}
+                              render={({ field }) => (
+                                <Select
+                                  {...field}
+                                  showSearch
+                                  loading={isLoadingProducers}
+                                  current={field.value}
+                                  options={optionsProducers}
+                                  placeholder="Select"
+                                  onChange={(value) => setValue('newProducerId', value)}
+                                  error={!!errors?.newProducerId?.message}
+                                  allowEmpty
+                                />
+                              )}
+                            />
+                          </div>
+                        </div>
+                      </Disclosure.Panel>
+                    </>
+                  );
+                }}
+              </Disclosure>
+            )}
+
+            <Disclosure as="div" className="space-y-4">
+              {({ open, close }) => {
+                closeImpactsRef.current = close;
+
+                return (
                   <>
                     <div className="flex items-center justify-between w-full">
-                      <div>
-                        <h3 className="inline-block">Supplier</h3>{' '}
-                        <span className="text-gray-500 text-regular">(optional)</span>
-                      </div>
+                      {currentInterventionType !== InterventionTypes.Efficiency ? (
+                        <div>
+                          <h3 className="inline-block">Impacts per ton</h3>{' '}
+                          <span className="text-gray-500 text-regular">(optional)</span>
+                        </div>
+                      ) : (
+                        <h3>Impacts per ton</h3>
+                      )}
                       <Disclosure.Button
                         className={classNames(
                           'border-primary border w-6 h-6 rounded flex items-center justify-center',
                           open ? 'bg-primary' : 'bg-transparent',
+                          currentInterventionType === InterventionTypes.Efficiency && 'hidden',
                         )}
                       >
                         {open ? (
@@ -600,127 +703,51 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                         )}
                       </Disclosure.Button>
                     </div>
-                    <Disclosure.Panel>
+                    <Disclosure.Panel
+                      static={currentInterventionType === InterventionTypes.Efficiency}
+                    >
                       <div className="space-y-4">
                         <div>
-                          <label className={LABEL_CLASSNAMES}>Tier 1 supplier</label>
-                          <Controller
-                            name="newT1SupplierId"
-                            control={control}
-                            defaultValue={null}
-                            render={({ field }) => (
-                              <Select
-                                {...field}
-                                showSearch
-                                loading={isLoadingSuppliers}
-                                current={field.value}
-                                options={optionsSuppliers}
-                                placeholder="Select"
-                                onChange={(value) => setValue('newT1SupplierId', value)}
-                                error={!!errors?.newSupplierId?.message}
-                                allowEmpty
-                              />
-                            )}
+                          <label className={LABEL_CLASSNAMES}>Carbon emission</label>
+                          <Input
+                            {...register('GHG_LUC_T')}
+                            type="number"
+                            defaultValue={0}
+                            error={errors?.GHG_LUC_T?.message}
                           />
                         </div>
                         <div>
-                          <label className={LABEL_CLASSNAMES}>Producer</label>
-                          <Controller
-                            name="newProducerId"
-                            control={control}
-                            defaultValue={null}
-                            render={({ field }) => (
-                              <Select
-                                {...field}
-                                showSearch
-                                loading={isLoadingProducers}
-                                current={field.value}
-                                options={optionsProducers}
-                                placeholder="Select"
-                                onChange={(value) => setValue('newProducerId', value)}
-                                error={!!errors?.newProducerId?.message}
-                                allowEmpty
-                              />
-                            )}
+                          <label className={LABEL_CLASSNAMES}>Deforestation risk</label>
+                          <Input
+                            {...register('DF_LUC_T')}
+                            type="number"
+                            defaultValue={0}
+                            error={errors?.DF_LUC_T?.message}
+                          />
+                        </div>
+                        <div>
+                          <label className={LABEL_CLASSNAMES}>Water withdrawal</label>
+                          <Input
+                            {...register('UWU_T')}
+                            type="number"
+                            defaultValue={0}
+                            error={errors?.UWU_T?.message}
+                          />
+                        </div>
+                        <div>
+                          <label className={LABEL_CLASSNAMES}>Biodiversity impact</label>
+                          <Input
+                            {...register('BL_LUC_T')}
+                            type="number"
+                            defaultValue={0}
+                            error={errors?.BL_LUC_T?.message}
                           />
                         </div>
                       </div>
                     </Disclosure.Panel>
                   </>
-                )}
-              </Disclosure>
-            )}
-
-            <Disclosure as="div" className="space-y-4">
-              {({ open }) => (
-                <>
-                  <div className="flex items-center justify-between w-full">
-                    {currentInterventionType !== InterventionTypes.Efficiency ? (
-                      <div>
-                        <h3 className="inline-block">Impacts per ton</h3>{' '}
-                        <span className="text-gray-500 text-regular">(optional)</span>
-                      </div>
-                    ) : (
-                      <h3>Impacts per ton</h3>
-                    )}
-                    <Disclosure.Button
-                      className={classNames(
-                        'border-primary border w-6 h-6 rounded flex items-center justify-center',
-                        open ? 'bg-primary' : 'bg-transparent',
-                        currentInterventionType === InterventionTypes.Efficiency && 'hidden',
-                      )}
-                    >
-                      {open ? (
-                        <MinusIcon className="w-5 h-5 text-white" />
-                      ) : (
-                        <PlusIcon className="w-5 h-5 text-primary" />
-                      )}
-                    </Disclosure.Button>
-                  </div>
-                  <Disclosure.Panel
-                    static={currentInterventionType === InterventionTypes.Efficiency}
-                  >
-                    <div className="space-y-4">
-                      <div>
-                        <label className={LABEL_CLASSNAMES}>Carbon emission</label>
-                        <Input
-                          {...register('GHG_LUC_T')}
-                          type="number"
-                          defaultValue={0}
-                          error={errors?.GHG_LUC_T?.message}
-                        />
-                      </div>
-                      <div>
-                        <label className={LABEL_CLASSNAMES}>Deforestation risk</label>
-                        <Input
-                          {...register('DF_LUC_T')}
-                          type="number"
-                          defaultValue={0}
-                          error={errors?.DF_LUC_T?.message}
-                        />
-                      </div>
-                      <div>
-                        <label className={LABEL_CLASSNAMES}>Water withdrawal</label>
-                        <Input
-                          {...register('UWU_T')}
-                          type="number"
-                          defaultValue={0}
-                          error={errors?.UWU_T?.message}
-                        />
-                      </div>
-                      <div>
-                        <label className={LABEL_CLASSNAMES}>Biodiversity impact</label>
-                        <Input
-                          {...register('BL_LUC_T')}
-                          type="number"
-                          defaultValue={0}
-                          error={errors?.BL_LUC_T?.message}
-                        />
-                      </div>
-                    </div>
-                  </Disclosure.Panel>
-                </>
-              )}
+                );
+              }}
             </Disclosure>
           </div>
         </>

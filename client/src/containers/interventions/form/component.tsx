@@ -583,21 +583,14 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                 {({ open }) => (
                   <>
                     <div className="flex items-center justify-between w-full">
-                      {currentInterventionType === InterventionTypes.Material ? (
-                        <div>
-                          <h3 className="inline-block">Supplier</h3>{' '}
-                          <span className="text-gray-500 text-regular">(optional)</span>
-                        </div>
-                      ) : (
-                        <h3>New supplier</h3>
-                      )}
+                      <div>
+                        <h3 className="inline-block">Supplier</h3>{' '}
+                        <span className="text-gray-500 text-regular">(optional)</span>
+                      </div>
                       <Disclosure.Button
                         className={classNames(
                           'border-primary border w-6 h-6 rounded flex items-center justify-center',
                           open ? 'bg-primary' : 'bg-transparent',
-                          {
-                            hidden: currentInterventionType === InterventionTypes.SupplierLocation,
-                          },
                         )}
                       >
                         {open ? (
@@ -607,9 +600,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                         )}
                       </Disclosure.Button>
                     </div>
-                    <Disclosure.Panel
-                      static={currentInterventionType === InterventionTypes.SupplierLocation}
-                    >
+                    <Disclosure.Panel>
                       <div className="space-y-4">
                         <div>
                           <label className={LABEL_CLASSNAMES}>Tier 1 supplier</label>

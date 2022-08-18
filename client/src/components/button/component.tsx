@@ -1,5 +1,4 @@
 import cx from 'classnames';
-import type { SVGProps } from 'react';
 import { forwardRef } from 'react';
 import Loading from 'components/loading';
 
@@ -28,7 +27,7 @@ export type AnchorButtonProps = {
   theme?: 'primary' | 'secondary' | 'textLight';
   size?: 'xs' | 'base' | 'xl' | 'text';
   loading?: boolean;
-  icon?: SVGProps<SVGElement>;
+  icon?: React.ReactNode;
 };
 
 // Button props

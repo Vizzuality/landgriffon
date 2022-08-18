@@ -43,6 +43,7 @@ const Cell = <T, C>({
   const isFirstColumn = context.table.getAllColumns()[0].id === context.column.id;
 
   const renderedChildren = useMemo(
+    // @ts-expect-error I have to fix this types later
     () => renderChildren(context.column.columnDef.meta.format, children),
     [context.column.columnDef.meta.format, children],
   );
@@ -65,19 +66,21 @@ const Cell = <T, C>({
       {...props}
     >
       <div className="w-full mx-auto my-auto truncate">
-        {isFirstColumn && context.row.getCanExpand() && (
-          <div
-            className="absolute top-1/2 -translate-y-1/2 -translate-x-[15px] cursor-pointer"
-            onClick={context.row.getToggleExpandedHandler()}
-          >
-            <ChevronRightIcon
-              className={classNames('w-4 h-4 text-gray-900', {
-                'rotate-90': context.row.getIsExpanded(),
-              })}
-            />
-          </div>
-        )}
-        {renderedChildren}
+        <>
+          {isFirstColumn && context.row.getCanExpand() && (
+            <div
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-[15px] cursor-pointer"
+              onClick={context.row.getToggleExpandedHandler()}
+            >
+              <ChevronRightIcon
+                className={classNames('w-4 h-4 text-gray-900', {
+                  'rotate-90': context.row.getIsExpanded(),
+                })}
+              />
+            </div>
+          )}
+          {renderedChildren}
+        </>
       </div>
     </div>
   );

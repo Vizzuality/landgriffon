@@ -95,23 +95,33 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
   }
 
   /**
-   * @description: Find an existing GeoRegion by it's hashed name using coordinates. The name is a unique field
+   * @description: Find an existing GeoRegion by its hashed name using coordinates. The name is a unique field
    *               so we avoid having multiple same GeoRegions. Searching by the hashed name is more performant
-   *               that using geospatial computations to determine a existing geometry (theGeom)
+   *               that using geospatial computations to determine an existing geometry (theGeom)
    * @param coordinates
    */
 
-  async getGeomByHashedName(coordinates: {
+  async getGeomPointByHashedName(coordinates: {
     lat: number;
     lng: number;
-  }): Promise<GeoRegion | undefined> {
-    return this.createQueryBuilder()
-      .select()
-      .where('name === :hashedName')
-      .setParameter(
-        'hashedName',
-        `Point of Production - ${coordinates.lng}-${coordinates.lat}`,
-      )
-      .getOne();
+  }): Promise<GeoRegion[]> {
+    return this.query(
+      `SELECT * FROM geo_region where name = hashtext($1)::varchar `,
+      [`Point of Production - ${coordinates.lng}-${coordinates.lat}`],
+    );
+  }
+
+  async getGeomRadiusByHashedName(coordinates: {
+    lat: number;
+    lng: number;
+  }): Promise<GeoRegion[]> {
+    return this.query(
+      `SELECT * FROM geo_region where name = hashtext(concat($1::text, (SELECT ST_BUFFER(ST_SetSRID(ST_POINT($2,$3),4326)::geometry, 0.5))))::varchar `,
+      [
+        `${coordinates.lng}-${coordinates.lat}, radius - `,
+        coordinates.lng,
+        coordinates.lat,
+      ],
+    );
   }
 }

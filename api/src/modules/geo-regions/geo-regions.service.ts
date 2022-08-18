@@ -71,9 +71,7 @@ export class GeoRegionsService extends AppBaseService<
     if (previouslyExistingGeoRegion) {
       return previouslyExistingGeoRegion;
     }
-    return await this.geoRegionRepository.saveGeoRegionAsRadius(
-      newGeoRegionValues,
-    );
+    return this.geoRegionRepository.saveGeoRegionAsRadius(newGeoRegionValues);
   }
 
   async saveGeoRegionAsPoint(
@@ -87,9 +85,7 @@ export class GeoRegionsService extends AppBaseService<
     if (previouslyExistingGeoRegion) {
       return previouslyExistingGeoRegion;
     }
-    return await this.geoRegionRepository.saveGeoRegionAsPoint(
-      newGeoRegionValues,
-    );
+    return this.geoRegionRepository.saveGeoRegionAsPoint(newGeoRegionValues);
   }
 
   async deleteGeoRegionsCreatedByUser(): Promise<void> {

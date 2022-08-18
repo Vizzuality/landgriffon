@@ -37,9 +37,6 @@ describe('Scenarios', () => {
   });
 
   it('should allow create new scenarios and come back', () => {
-    // required as it will navigate to another page
-    cy.login();
-
     cy.get('[data-testid="scenario-add-button"]').should('have.text', 'Add scenario').click();
 
     cy.url().should('contain', '/admin/scenarios/new');

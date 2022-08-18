@@ -1,12 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { BaseStrategy } from 'modules/geo-coding/strategies/base-strategy';
 import { GeocodeResponse } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 
 @Injectable()
 export class PointOfProductionGeocodingStrategy extends BaseStrategy {
+  logger: Logger = new Logger(PointOfProductionGeocodingStrategy.name);
   async geoCodePointOfProduction(sourcingData: SourcingData): Promise<any> {
     if (!sourcingData.locationCountryInput)
       throw new Error(
@@ -39,7 +41,10 @@ export class PointOfProductionGeocodingStrategy extends BaseStrategy {
           )
         ).adminRegionId;
       } catch (e) {
-        await this.geoRegionService.remove(geoRegionId as unknown as string);
+        if (e instanceof GeoCodingError) {
+          await this.geoRegionService.remove(geoRegionId as unknown as string);
+        }
+
         throw e;
       }
 

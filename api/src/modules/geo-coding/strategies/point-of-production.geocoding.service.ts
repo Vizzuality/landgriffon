@@ -4,7 +4,6 @@ import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { BaseStrategy } from 'modules/geo-coding/strategies/base-strategy';
 import { GeocodeResponse } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 
 @Injectable()
 export class PointOfProductionGeocodingStrategy extends BaseStrategy {
@@ -41,10 +40,7 @@ export class PointOfProductionGeocodingStrategy extends BaseStrategy {
           )
         ).adminRegionId;
       } catch (e) {
-        if (e instanceof GeoCodingError) {
-          await this.geoRegionService.remove(geoRegionId as unknown as string);
-        }
-
+        await this.geoRegionService.remove(geoRegionId as unknown as string);
         throw e;
       }
 

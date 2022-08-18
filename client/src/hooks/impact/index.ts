@@ -12,6 +12,7 @@ import { useIndicators } from 'hooks/indicators';
 
 import type { ImpactData, ImpactRanking, APIpaginationRequest } from 'types';
 import { useStore } from 'react-redux';
+import type { Store } from 'store';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   placeholderData: {
@@ -44,7 +45,7 @@ type ImpactRankingResponse = UseQueryResult<ImpactRanking, unknown>;
 export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataResponse = (
   pagination,
 ) => {
-  const store = useStore();
+  const store = useStore() as Store;
   const { data: indicators } = useIndicators();
   const { layer } = useAppSelector(analysisFilters);
   const { isComparisonEnabled, scenarioToCompare, currentScenario } = useAppSelector(scenarios);
@@ -104,7 +105,7 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
 export function useImpactRanking(
   params = { maxRankingEntities: 5, sort: 'ASC' },
 ): ImpactRankingResponse {
-  const store = useStore();
+  const store = useStore() as Store;
   const { data: indicators } = useIndicators();
   const { layer } = useAppSelector(analysisFilters);
   const filters = filtersForTabularAPI(store.getState());

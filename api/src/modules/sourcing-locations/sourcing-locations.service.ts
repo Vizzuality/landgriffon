@@ -237,4 +237,10 @@ export class SourcingLocationsService extends AppBaseService<
 
     return { data: locationTypeParser(locationTypes) };
   }
+
+  async findByGeoRegionId(
+    geoRegionId: string,
+  ): Promise<SourcingLocation | undefined> {
+    return this.sourcingLocationRepository.findOne({ where: { geoRegionId } });
+  }
 }

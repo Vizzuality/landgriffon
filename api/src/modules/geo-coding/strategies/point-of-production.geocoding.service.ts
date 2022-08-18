@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
-import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { BaseStrategy } from 'modules/geo-coding/strategies/base-strategy';
 import { GeocodeResponse } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
@@ -19,7 +18,7 @@ export class PointOfProductionGeocodingStrategy extends BaseStrategy {
       );
 
     if (sourcingData.locationLongitude && sourcingData.locationLatitude) {
-      const geoRegionId: Pick<GeoRegion, 'id'> =
+      const geoRegionId: string =
         await this.geoRegionService.saveGeoRegionAsPoint({
           name: sourcingData.locationCountryInput,
           coordinates: {
@@ -67,7 +66,7 @@ export class PointOfProductionGeocodingStrategy extends BaseStrategy {
         sourcingData.locationAddressInput,
         sourcingData.locationCountryInput,
       );
-      const geoRegionId: Pick<GeoRegion, 'id'> =
+      const geoRegionId: string =
         await this.geoRegionService.saveGeoRegionAsPoint({
           name: sourcingData.locationCountryInput,
           coordinates: {

@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+##  2022-08-18
+### Fixes
+Added a guard in GeoRegion Service to try find either a previously created Point or Radius
+geometry in case some coordinates are sent for a intervention, and said coordinates
+had been used previously (on a intervention or import process) to create a GeoRegion
+Avoiding to create a new one
+Also after creating or getting a previously generated georegion, we try to validate
+that the provided country matches the coordinate/address information. If not, we delete 
+the created georegion but after checking that said georegion is not already included in sourcing locations
+
+
 ##  2022-08-01
 ### Added
 Added [LANDGRIF-813](https://vizzuality.atlassian.net/browse/LANDGRIF-813)

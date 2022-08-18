@@ -28,7 +28,7 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
    */
   async saveGeoRegionAsRadius(
     newGeoRegionValues: LocationGeoRegionDto,
-  ): Promise<GeoRegion> {
+  ): Promise<string> {
     const selectQuery: SelectQueryBuilder<any> = getManager()
       .createQueryBuilder()
       .select(`hashtext(concat($3::text, points.radius))`)
@@ -67,7 +67,7 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
    */
   async saveGeoRegionAsPoint(
     newGeoRegionValues: LocationGeoRegionDto,
-  ): Promise<Pick<GeoRegion, 'id'>> {
+  ): Promise<string> {
     const res: InsertResult = await this.createQueryBuilder()
       .insert()
       .values({

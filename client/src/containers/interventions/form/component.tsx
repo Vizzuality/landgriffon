@@ -80,13 +80,13 @@ const schemaValidation = yup.object({
   }),
 
   // Material
-  newMaterialId: optionSchema,
+  newMaterialId: optionSchema.required(),
 
   // Coefficients
-  DF_LUC_T: yup.number().nullable(),
-  UWU_T: yup.number().nullable(),
-  BL_LUC_T: yup.number().nullable(),
-  GHG_LUC_T: yup.number().nullable(),
+  DF_LUC_T: yup.number(),
+  UWU_T: yup.number(),
+  BL_LUC_T: yup.number(),
+  GHG_LUC_T: yup.number(),
 });
 
 const LABEL_CLASSNAMES = 'text-sm';
@@ -550,7 +550,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                             <div className="flex w-full space-x-2">
                               <Input
                                 {...register('newLocationLatitude')}
-                                type="number"
+                                type="hidden"
                                 placeholder="Latitude"
                                 min={-90}
                                 max={90}
@@ -558,7 +558,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                               />
                               <Input
                                 {...register('newLocationLongitude')}
-                                type="number"
+                                type="hidden"
                                 placeholder="Longitude"
                                 min={-180}
                                 max={180}

@@ -1,19 +1,19 @@
-before(() => {
-  cy.login();
-  cy.visit('/admin/scenarios');
+beforeEach(() => {
+  cy.intercept('GET', '/api/v1/scenarios/**/interventions', {
+    statusCode: 200,
+    fixture: 'scenario-interventions.json',
+  });
 
   cy.intercept('GET', '/api/v1/scenarios?sort=-updatedAt&disablePagination=true', {
     statusCode: 200,
     fixture: 'scenarios.json',
   });
 
-  cy.intercept('GET', '/api/v1/scenarios/**/interventions', {
-    statusCode: 200,
-    fixture: 'scenario-interventions.json',
-  });
+  cy.login();
+  cy.visit('/admin/scenarios');
 });
 
-after(() => {
+afterEach(() => {
   cy.logout();
 });
 
@@ -37,9 +37,6 @@ describe('Scenarios', () => {
   });
 
   it('should allow create new scenarios and come back', () => {
-    // required as it will navigate to another page
-    cy.login();
-
     cy.get('[data-testid="scenario-add-button"]').should('have.text', 'Add scenario').click();
 
     cy.url().should('contain', '/admin/scenarios/new');

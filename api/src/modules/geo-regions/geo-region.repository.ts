@@ -93,4 +93,25 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
 
     return res.raw[0].id;
   }
+
+  /**
+   * @description: Find an existing GeoRegion by it's hashed name using coordinates. The name is a unique field
+   *               so we avoid having multiple same GeoRegions. Searching by the hashed name is more performant
+   *               that using geospatial computations to determine a existing geometry (theGeom)
+   * @param coordinates
+   */
+
+  async getGeomByHashedName(coordinates: {
+    lat: number;
+    lng: number;
+  }): Promise<GeoRegion | undefined> {
+    return this.createQueryBuilder()
+      .select()
+      .where('name === :hashedName')
+      .setParameter(
+        'hashedName',
+        `Point of Production - ${coordinates.lng}-${coordinates.lat}`,
+      )
+      .getOne();
+  }
 }

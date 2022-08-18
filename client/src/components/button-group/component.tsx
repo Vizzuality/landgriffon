@@ -1,5 +1,5 @@
-const ButtonGroup: React.FC = ({ children }) => (
-  <div className="relative z-0 inline-flex border border-gray-300 shadow-sm rounded-md bg-white">
+const ButtonGroup: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <div className="relative z-0 inline-flex bg-white border border-gray-300 rounded-md shadow-sm">
     {children}
   </div>
 );

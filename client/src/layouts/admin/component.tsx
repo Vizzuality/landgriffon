@@ -13,19 +13,19 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
   currentTab,
   title = 'Admin',
   children,
-}: AdminLayoutProps) => (
+}) => (
   <ApplicationLayout>
     <section
       aria-labelledby="primary-heading"
-      className="min-w-0 flex-1 h-screen flex flex-col overflow-y-auto bg-gray-100"
+      className="flex flex-col flex-1 h-screen min-w-0 overflow-y-auto bg-gray-100"
     >
       {loading && <PageLoading />}
 
-      <header className="sticky top-0 bg-primary z-20">
-        <div className="flex items-stretch justify-between px-12 rounded-tl-3xl bg-white border-b border-gray-100">
-          <h1 className="text-left my-8">{title}</h1>
+      <header className="sticky top-0 z-20 bg-primary">
+        <div className="flex items-stretch justify-between px-12 bg-white border-b border-gray-100 rounded-tl-3xl">
+          <h1 className="my-8 text-left">{title}</h1>
 
-          <div className="flex text-sm space-x-10">
+          <div className="flex space-x-10 text-sm">
             {Object.values(ADMIN_TABS).map((tab) => (
               <Link key={tab.name} href={tab.href}>
                 <a

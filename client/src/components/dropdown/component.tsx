@@ -1,25 +1,25 @@
 import { Menu } from '@headlessui/react';
 
-export const Dropdown: React.FC = ({ children, ...props }) => (
+export const Dropdown: React.FC<React.PropsWithChildren> = ({ children, ...props }) => (
   <Menu as="div" className="relative inline-block text-left" {...props}>
     {children}
   </Menu>
 );
 
-export const Button: React.FC = ({ children, ...props }) => (
+export const Button: React.FC<React.PropsWithChildren> = ({ children, ...props }) => (
   <Menu.Button {...props}>{children}</Menu.Button>
 );
 
-export const Items: React.FC = ({ children, ...props }) => (
+export const Items: React.FC<React.PropsWithChildren> = ({ children, ...props }) => (
   <Menu.Items
-    className="origin-top-right absolute right-0 mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+    className="absolute right-0 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
     {...props}
   >
     {children}
   </Menu.Items>
 );
 
-export const Item: React.FC = ({ children, ...props }) => (
+export const Item: React.FC<React.PropsWithChildren> = ({ children, ...props }) => (
   <Menu.Item>
     <div {...props}>{children}</div>
   </Menu.Item>

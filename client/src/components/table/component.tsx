@@ -37,7 +37,7 @@ const columnToColumnDef = <T,>(
       format,
     },
     cell: (context) => {
-      const value = context.getValue();
+      const value = context.getValue() as React.ReactNode;
       return (
         <Cell {...column} align={align} context={context}>
           {value}

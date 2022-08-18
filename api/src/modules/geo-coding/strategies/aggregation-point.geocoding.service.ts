@@ -48,7 +48,13 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
           )
         ).adminRegionId;
       } catch (e) {
-        await this.geoRegionService.remove(geoRegionId as unknown as string);
+        const existingSourcingLocation: SourcingLocation | undefined =
+          await this.findExistingSourcingLocationByGeoRegionId(
+            geoRegionId as unknown as string,
+          );
+        if (!existingSourcingLocation) {
+          await this.geoRegionService.remove(geoRegionId as unknown as string);
+        }
         throw e;
       }
 

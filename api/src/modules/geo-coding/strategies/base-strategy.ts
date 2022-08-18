@@ -10,6 +10,7 @@ import {
 } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { AddressComponent } from '@googlemaps/google-maps-services-js';
 import { GeocodeResult } from '@googlemaps/google-maps-services-js/dist/common';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 
 /**
  * @note: Landgriffon Geocoding strategy doc:
@@ -130,5 +131,11 @@ export abstract class BaseStrategy {
     return !!(
       sourcingData.locationAddressInput && sourcingData.locationLatitude
     );
+  }
+
+  async findExistingSourcingLocationByGeoRegionId(
+    geoRegionId: string,
+  ): Promise<SourcingLocation | undefined> {
+    return this.sourcingLocationService.findByGeoRegionId(geoRegionId);
   }
 }

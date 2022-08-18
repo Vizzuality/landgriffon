@@ -30,7 +30,7 @@ jobs:
           build: yarn build
           start: yarn start
           browser: chrome
-          wait-on: http://localhost:3000/auth/sign-in
+          wait-on: http://localhost:3000/auth/signin
           config-file: cypress.config.ts
           command-prefix: yarn dlx
           command: yarn cypress:headless

@@ -205,18 +205,22 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
       ].forEach((field) => resetField(field));
     }
 
-    // * restes "impacts per ton" coefficients whenever the intervention type changes
+    // * resets "impacts per ton" coefficients whenever the intervention type changes
     resetField('DF_LUC_T', { defaultValue: 0 });
     resetField('UWU_T', { defaultValue: 0 });
     resetField('BL_LUC_T', { defaultValue: 0 });
     resetField('GHG_LUC_T', { defaultValue: 0 });
 
-    // * closes "Supplier" panel when the user changes the intervention type
+    // * resets supplier and producer info whenever the intervention type changes
+    resetField('newT1SupplierId');
+    resetField('newProducerId');
+
+    // * closes "Supplier" panel whenever the intervention type changes
     if (closeSupplierRef.current !== null) {
       closeSupplierRef.current();
     }
 
-    // * closes "Impacts per ton" panel when the user changes the intervention type
+    // * closes "Impacts per ton" panel whenever the intervention type changes
     if (closeImpactsRef.current !== null) {
       closeImpactsRef.current();
     }

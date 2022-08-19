@@ -56,8 +56,29 @@ const schemaValidation = yup.object({
   newProducerId: optionSchema.nullable(),
 
   // Location
-  newLocationType: optionSchema.nullable(),
-  newLocationCountryInput: optionSchema.nullable(),
+  newLocationType: yup.lazy(() => {
+    return optionSchema.when('interventionType', (interventionType) => {
+      if (
+        [InterventionTypes.Material, InterventionTypes.SupplierLocation].includes(interventionType)
+      ) {
+        return yup.object().required('Location type field is required');
+      }
+
+      return yup.object().nullable();
+    });
+  }),
+  // optionSchema.nullable(),
+  newLocationCountryInput: yup.lazy(() => {
+    return optionSchema.when('interventionType', (interventionType) => {
+      if (
+        [InterventionTypes.Material, InterventionTypes.SupplierLocation].includes(interventionType)
+      ) {
+        return yup.object().required('Country field is required');
+      }
+
+      return yup.object().nullable();
+    });
+  }),
 
   cityAddressCoordinates: yup.lazy((value) => {
     if (isCoordinates(value)) {
@@ -79,8 +100,8 @@ const schemaValidation = yup.object({
     });
   }),
 
-  // Material
-  newMaterialId: optionSchema.required(),
+  // New material
+  newMaterialId: yup.object().required(),
 
   // Coefficients
   DF_LUC_T: yup.number(),
@@ -107,6 +128,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
     resetField,
     handleSubmit,
     formState: { errors },
+    clearErrors,
   } = useForm({
     resolver: yupResolver(schemaValidation),
   });
@@ -294,7 +316,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
           <Controller
             name="materialIds"
             control={control}
-            render={({ field }) => (
+            render={({ field, fieldState: { invalid } }) => (
               <MaterialsSelect
                 {...field}
                 multiple={false}
@@ -303,7 +325,10 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                 businessUnitIds={currentBusinessUnitIds?.map(({ value }) => value)}
                 supplierIds={currentSupplierIds?.map(({ value }) => value)}
                 originIds={currentLocationIds?.map(({ value }) => value)}
-                onChange={(selected) => setValue('materialIds', selected && [selected])}
+                onChange={(selected) => {
+                  if (invalid) clearErrors('materialIds');
+                  setValue('materialIds', selected && [selected]);
+                }}
                 error={!!errors?.materialIds?.message}
               />
             )}
@@ -457,12 +482,15 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                   <Controller
                     name="newMaterialId"
                     control={control}
-                    render={({ field }) => (
+                    render={({ field, fieldState: { invalid } }) => (
                       <MaterialsSelect
                         {...field}
                         multiple={false}
                         current={field.value}
-                        onChange={(selected) => setValue('newMaterialId', selected)}
+                        onChange={(selected) => {
+                          if (invalid) clearErrors('newMaterialId');
+                          setValue('newMaterialId', selected);
+                        }}
                         error={!!errors?.newMaterialId?.message}
                       />
                     )}
@@ -510,7 +538,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                           <Controller
                             name="newLocationType"
                             control={control}
-                            render={({ field }) => (
+                            render={({ field, fieldState: { invalid } }) => (
                               <Select
                                 {...field}
                                 showSearch
@@ -518,7 +546,10 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                                 current={field.value}
                                 options={optionsLocationTypes}
                                 placeholder="Select"
-                                onChange={(value) => setValue('newLocationType', value)}
+                                onChange={(value) => {
+                                  if (invalid) clearErrors('newLocationType');
+                                  setValue('newLocationType', value);
+                                }}
                                 error={!!errors?.newLocationType?.message}
                               />
                             )}
@@ -531,7 +562,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                           <Controller
                             name="newLocationCountryInput"
                             control={control}
-                            render={({ field }) => (
+                            render={({ field, fieldState: { invalid } }) => (
                               <Select
                                 {...field}
                                 showSearch
@@ -539,7 +570,10 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                                 current={field.value}
                                 options={optionsCountries}
                                 placeholder="Select"
-                                onChange={(value) => setValue('newLocationCountryInput', value)}
+                                onChange={(value) => {
+                                  if (invalid) clearErrors('newLocationCountryInput');
+                                  setValue('newLocationCountryInput', value);
+                                }}
                                 error={!!errors?.newLocationCountryInput?.message}
                               />
                             )}
@@ -556,7 +590,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                               <Input
                                 type="text"
                                 {...register('cityAddressCoordinates')}
-                                error={errors?.newLocationAddressInput?.message}
+                                error={errors?.cityAddressCoordinates?.message}
                               />
                               <div className="mt-1 text-xs text-gray-500">
                                 Add lat and long coordinates separated by comma, e.g. 40, -3

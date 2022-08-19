@@ -61,17 +61,27 @@ export function parseInterventionFormDataToDto(
     newT1SupplierId: getValue(newT1SupplierId) as string,
     newProducerId: getValue(newProducerId) as string,
 
-    // * coefficients are only sent when the intervention type is "Change production efficiency"
+    // * for "Change production efficiency" intervention type, coeficients are always sent even if the user hasn't filled them (default to 0).
+    // * for other intervention types, coeficients are sent only if the user has filled any of them.
     ...(interventionType === InterventionTypes.Efficiency
       ? {
           newIndicatorCoefficients: {
-            DF_LUC_T,
-            UWU_T,
-            BL_LUC_T,
-            GHG_LUC_T,
+            DF_LUC_T: DF_LUC_T || 0,
+            UWU_T: UWU_T || 0,
+            BL_LUC_T: BL_LUC_T || 0,
+            GHG_LUC_T: GHG_LUC_T || 0,
           },
         }
-      : {}),
+      : {
+          ...((DF_LUC_T || UWU_T || BL_LUC_T || GHG_LUC_T) && {
+            newIndicatorCoefficients: {
+              DF_LUC_T: DF_LUC_T || 0,
+              UWU_T: UWU_T || 0,
+              BL_LUC_T: BL_LUC_T || 0,
+              GHG_LUC_T: GHG_LUC_T || 0,
+            },
+          }),
+        }),
   };
 
   return result;

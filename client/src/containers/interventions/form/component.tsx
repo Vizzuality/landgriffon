@@ -21,9 +21,10 @@ import SuppliersSelect from 'containers/suppliers/select';
 import Input from 'components/forms/input';
 import { AnchorLink, Button } from 'components/button';
 import Select from 'components/select';
+import InfoToolTip from 'components/info-tooltip/component';
 
 import InterventionTypeIcon from './intervention-type-icon';
-import { InterventionTypes, LocationTypes } from '../enums';
+import { InterventionTypes, LocationTypes, InfoTooltip } from '../enums';
 import { isCoordinates } from 'utils/coordinates';
 
 import type { SelectOptions } from 'components/select/types';
@@ -474,7 +475,10 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
           <div className="pl-10 space-y-10 border-l-2 border-gray-100">
             {currentInterventionType === InterventionTypes.Material && (
               <div className="space-y-4">
-                <h3>New material</h3>
+                <div className="flex items-center space-x-1">
+                  <h3>New material</h3>
+                  <InfoToolTip info={InfoTooltip.newMaterial} />
+                </div>
                 <div>
                   <label className={LABEL_CLASSNAMES}>
                     New material <sup>*</sup>
@@ -505,7 +509,10 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                 {({ open }) => (
                   <>
                     <div className="flex items-center justify-between w-full">
-                      <h3>New location</h3>
+                      <div className="flex items-center space-x-1">
+                        <h3>New location</h3>
+                        <InfoToolTip info={InfoTooltip.supplierLocation} />
+                      </div>
                       <Disclosure.Button
                         className={classNames(
                           'border-primary border w-6 h-6 rounded flex items-center justify-center',
@@ -643,9 +650,10 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                   return (
                     <>
                       <div className="flex items-center justify-between w-full">
-                        <div>
+                        <div className="flex items-center space-x-1">
                           <h3 className="inline-block">Supplier</h3>{' '}
                           <span className="text-gray-500 text-regular">(optional)</span>
+                          <InfoToolTip info={InfoTooltip.newSupplier} />
                         </div>
                         <Disclosure.Button
                           className={classNames(
@@ -719,14 +727,13 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                 return (
                   <>
                     <div className="flex items-center justify-between w-full">
-                      {currentInterventionType !== InterventionTypes.Efficiency ? (
-                        <div>
-                          <h3 className="inline-block">Impacts per ton</h3>{' '}
-                          <span className="text-gray-500 text-regular">(optional)</span>
-                        </div>
-                      ) : (
+                      <div className="flex items-center space-x-1">
                         <h3>Impacts per ton</h3>
-                      )}
+                        {currentInterventionType !== InterventionTypes.Efficiency && (
+                          <span className="text-gray-500 text-regular">(optional)</span>
+                        )}
+                        <InfoToolTip info={InfoTooltip.supplierImpactsPerTon} />
+                      </div>
                       <Disclosure.Button
                         className={classNames(
                           'border-primary border w-6 h-6 rounded flex items-center justify-center',

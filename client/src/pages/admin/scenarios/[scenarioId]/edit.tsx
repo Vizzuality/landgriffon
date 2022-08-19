@@ -96,10 +96,10 @@ const UpdateScenarioPage: React.FC = () => {
         <title>Edit scenario | Landgriffon</title>
       </Head>
       <Link href="/admin/scenarios" passHref>
-        <BackLink className="mb-6 flex xl:sticky xl:top-0">Back to scenarios</BackLink>
+        <BackLink className="flex mb-6 xl:sticky xl:top-0">Back to scenarios</BackLink>
       </Link>
       <div className="grid grid-cols-12 gap-6">
-        <div className="col-start-3 col-span-8">
+        <div className="col-span-8 col-start-3">
           <h1>Edit scenario</h1>
           {isLoading && <Loading />}
           {!isLoading && data && (
@@ -113,20 +113,20 @@ const UpdateScenarioPage: React.FC = () => {
                 <h2 className="mb-4">Growth rates</h2>
                 <div className="grid grid-cols-8 gap-4">
                   <div className="col-span-4">
-                    <label className="block text-sm mb-2">Business unit</label>
+                    <label className="block mb-2 text-sm">Business unit</label>
                     <Select current={null} disabled options={[]} />
                   </div>
                   <div className="col-span-2">
-                    <label className="block text-sm mb-2">Growth rate (linear)</label>
+                    <label className="block mb-2 text-sm">Growth rate (linear)</label>
                     <Input name="growth-rate" placeholder="0 % per year" disabled />
                   </div>
-                  <div className="flex col-span-2 items-end">
+                  <div className="flex items-end col-span-2">
                     <Button disabled theme="secondary" className="w-full h-[40px]">
                       Add growth rate
                     </Button>
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-2 p-2 border rounded-md border-gray-300 mt-4 mb-2">
+                <div className="flex flex-wrap gap-2 p-2 mt-4 mb-2 border border-gray-300 rounded-md">
                   <div className="flex items-center rounded-full bg-blue py-0.5 px-3 text-sm">
                     Entire company +1.5%/y
                     <button type="button" disabled>
@@ -134,7 +134,7 @@ const UpdateScenarioPage: React.FC = () => {
                     </button>
                   </div>
                 </div>
-                <p className="text-xs mx-2">
+                <p className="mx-2 text-xs">
                   Add as many you want, more specific growth rates override less specific ones.
                 </p>
               </div>
@@ -145,7 +145,7 @@ const UpdateScenarioPage: React.FC = () => {
                   {!isInterventionsLoading && interventions.length > 0 && (
                     <Link href={`/admin/scenarios/${data.id}/interventions/new`} passHref>
                       <AnchorLink theme="secondary" className="text-gray-900">
-                        <PlusIcon className="h-5 w-5 mr-2 text-gray-900" aria-hidden="true" />
+                        <PlusIcon className="w-5 h-5 mr-2 text-gray-900" aria-hidden="true" />
                         Add intervention
                       </AnchorLink>
                     </Link>
@@ -157,7 +157,7 @@ const UpdateScenarioPage: React.FC = () => {
                     {interventions.map((intervention) => (
                       <div
                         key={intervention.id}
-                        className="flex items-center p-4 bg-yellow rounded-md space-x-4"
+                        className="flex items-center p-4 space-x-4 rounded-md bg-yellow"
                       >
                         <div className="flex flex-1 space-x-2">
                           <Toggle
@@ -168,7 +168,7 @@ const UpdateScenarioPage: React.FC = () => {
                             }
                           />
                           <div>
-                            <InterventionPhrase intervention={intervention} />
+                            <InterventionPhrase intervention={intervention} short />
                           </div>
                         </div>
                         <Dropdown>
@@ -199,14 +199,14 @@ const UpdateScenarioPage: React.FC = () => {
                   </div>
                 )}
                 {!isInterventionsLoading && interventions.length === 0 && (
-                  <div className="bg-gray-100 rounded-md px-10 py-16 space-y-6 text-center">
+                  <div className="px-10 py-16 space-y-6 text-center bg-gray-100 rounded-md">
                     <p className="text-sm">
                       Each scenario should be formed by at least one intervention in your supply
                       chain.
                     </p>
                     <Link href={`/admin/scenarios/${data.id}/interventions/new`} passHref>
                       <AnchorLink theme="secondary" className="text-gray-900">
-                        <PlusIcon className="h-5 w-5 mr-2 text-gray-900" aria-hidden="true" />
+                        <PlusIcon className="w-5 h-5 mr-2 text-gray-900" aria-hidden="true" />
                         Add intervention
                       </AnchorLink>
                     </Link>

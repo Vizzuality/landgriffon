@@ -51,7 +51,7 @@ const InterventionPhrase: React.FC<InterventionPhraseProps> = ({ intervention, s
     if (intervention.type === InterventionTypes.SupplierLocation) {
       return (
         <>
-          Switch {materials} from <strong>{newRegion}</strong> in {year}
+          Source {materials} from <strong>{newRegion}</strong> in {year}
           {!short && <>for {business}</>}
         </>
       );
@@ -65,7 +65,7 @@ const InterventionPhrase: React.FC<InterventionPhraseProps> = ({ intervention, s
               {' '}
               for {business} and {suppliers}
             </>
-          )}
+          )}{' '}
           in {regions}
         </>
       );

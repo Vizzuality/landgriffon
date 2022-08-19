@@ -30,7 +30,7 @@ const CreateInterventionPage: React.FC = () => {
         },
         onError: (error: ErrorResponse) => {
           const { errors } = error.response?.data;
-          errors.forEach(({ title }) => toast.error(title));
+          errors.forEach(({ meta }) => toast.error(meta.rawError.response.message));
         },
       });
     },

@@ -57,13 +57,13 @@ const customStyles: (theme: SelectProps['theme'], error?: boolean) => StylesConf
     control: (provided, { isFocused }) => ({
       ...provided,
       boxShadow: 'none',
-      ...(error && tw`border-2 border-red-600`),
       ...(theme === 'inline-primary' &&
         tw`border border-l-0 border-r-0 border-t-0 border-b-2 border-b-primary shadow-none rounded-none min-w-[30px] p-0 min-h-0`),
       ...(theme === 'default' && tw`w-full border rounded-md`),
       ...tw`px-4 gap-x-0.5`,
       ...(theme === 'default-bordernone' && tw`px-1 border-0`),
       ...(isFocused && tw`ring-1 ring-primary`),
+      ...(error && tw`border-2 border-red-600`),
     }),
     singleValue: (provided) => ({
       ...provided,
@@ -278,6 +278,7 @@ const Select: React.FC<SelectProps> = React.forwardRef<HTMLInputElement, SelectP
                     <ChevronDownIcon
                       className={classNames('h-4 w-4 text-gray-900', {
                         'rotate-180': menuIsOpen,
+                        'stroke-red-700': error,
                       })}
                     />
                   )

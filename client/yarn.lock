@@ -15229,9 +15229,9 @@ __metadata:
     react-hook-form: 7.27.1
     react-hot-toast: 2.2.0
     react-map-gl: 6.1.15
-    react-query: ^3.39.2
+    react-query: 3.39.2
     react-range: 1.8.12
-    react-redux: ^8.0.2
+    react-redux: 8.0.2
     react-select: 5.3.2
     react-spring: 9.4.2
     rooks: 5.10.0
@@ -18820,7 +18820,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-query@npm:^3.39.2":
+"react-query@npm:3.39.2":
   version: 3.39.2
   resolution: "react-query@npm:3.39.2"
   dependencies:
@@ -18848,7 +18848,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-redux@npm:^8.0.2":
+"react-redux@npm:8.0.2":
   version: 8.0.2
   resolution: "react-redux@npm:8.0.2"
   dependencies:

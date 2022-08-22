@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { OverlayProvider } from '@react-aria/overlays';
@@ -21,8 +21,20 @@ const DEFAULT_SEO: DefaultSeoProps = {
   titleTemplate: '%s - Landgriffon',
 };
 
-const MyApp: NextPage<AppProps> = ({ Component, pageProps }) => {
+export type Layout = React.FC<React.PropsWithChildren>;
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  Layout?: Layout;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
+
+const MyApp: NextPage<AppPropsWithLayout> = ({ Component, pageProps }) => {
   const store = useMemo(() => initStore(pageProps.query), [pageProps.query]);
+
   return (
     <>
       <Head>
@@ -35,7 +47,13 @@ const MyApp: NextPage<AppProps> = ({ Component, pageProps }) => {
             <SessionProvider session={pageProps.session}>
               <OverlayProvider>
                 <SSRProvider>
-                  <Component {...pageProps} />
+                  {Component.Layout ? (
+                    <Component.Layout>
+                      <Component {...pageProps} />
+                    </Component.Layout>
+                  ) : (
+                    <Component {...pageProps} />
+                  )}
                 </SSRProvider>
               </OverlayProvider>
             </SessionProvider>

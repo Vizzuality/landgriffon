@@ -776,6 +776,8 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                             type="number"
                             defaultValue={0}
                             error={errors?.GHG_LUC_T?.message}
+                            theme="inside-unit"
+                            unit="tC02e"
                           />
                         </div>
                         <div>
@@ -785,6 +787,8 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                             type="number"
                             defaultValue={0}
                             error={errors?.DF_LUC_T?.message}
+                            theme="inside-unit"
+                            unit="Ha"
                           />
                         </div>
                         <div>
@@ -794,6 +798,8 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                             type="number"
                             defaultValue={0}
                             error={errors?.UWU_T?.message}
+                            theme="inside-unit"
+                            unit="100m3"
                           />
                         </div>
                         <div>
@@ -803,6 +809,8 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                             type="number"
                             defaultValue={0}
                             error={errors?.BL_LUC_T?.message}
+                            theme="inside-unit"
+                            unit="PDF"
                           />
                         </div>
                       </div>

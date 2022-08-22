@@ -1,4 +1,3 @@
-export type AnalysisLayoutProps = {
+export type AnalysisLayoutProps = React.PropsWithChildren<{
   loading?: boolean;
-  children: React.ReactNode;
-};
+}>;

@@ -19,6 +19,7 @@ import { ImportDataConsumer } from 'modules/import-data/workers/import-data.cons
 import { ImportDataService } from 'modules/import-data/import-data.service';
 import { TasksModule } from 'modules/tasks/tasks.module';
 import { importQueueName } from 'modules/import-data/workers/import-queue.name';
+import { ScenariosModule } from 'modules/scenarios/scenarios.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { importQueueName } from 'modules/import-data/workers/import-queue.name';
     GeoRegionsModule,
     IndicatorRecordsModule,
     TasksModule,
+    ScenariosModule,
   ],
   providers: [
     SourcingDataImportService,

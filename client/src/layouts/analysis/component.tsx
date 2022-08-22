@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState, Children, isValidElement, cloneElement } from 'react';
-import dynamic from 'next/dynamic';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Transition } from '@headlessui/react';
 import classNames from 'classnames';
@@ -11,10 +10,10 @@ import ApplicationLayout from 'layouts/application';
 import PageLoading from 'containers/page-loading';
 import CollapseButton from 'containers/collapse-button';
 import type { AnalysisLayoutProps } from './types';
-
-const AnalysisVisualizationNoSSR = dynamic(() => import('containers/analysis-visualization'), {
-  ssr: false,
-});
+import { NextSeo } from 'next-seo';
+import Scenarios from 'containers/scenarios';
+import AnalysisFilters from 'containers/analysis-visualization/analysis-filters';
+import ModeControl from 'containers/analysis-visualization/mode-control';
 
 const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({ loading = false, children }) => {
   const asideRef = useRef<HTMLDivElement>(null);
@@ -31,16 +30,11 @@ const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({ loading = false, childr
   }, [asideRef]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const clonedChildren = Children.map(children, (Child) => {
-    if (isValidElement(Child)) {
-      return cloneElement(Child, { scrollref: scrollRef });
-    }
-    return null;
-  });
 
   return (
     <ApplicationLayout>
       <>
+        <NextSeo title="Analysis" />
         {loading && <PageLoading />}
 
         {/* Primary column */}
@@ -68,7 +62,19 @@ const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({ loading = false, childr
               'backdrop-blur-3xl blur-sm pointer-events-none': !isSubContentCollapsed,
             })}
           >
-            <AnalysisVisualizationNoSSR />
+            <div
+              className={classNames(
+                {
+                  'absolute top-6 left-6 xl:left-12 right-6 z-10': visualizationMode === 'map',
+                  'py-6 pr-6 pl-6 xl:pl-12': visualizationMode !== 'map',
+                },
+                'flex gap-2 flex-wrap justify-between',
+              )}
+            >
+              <AnalysisFilters />
+              <ModeControl />
+            </div>
+            {children}
           </div>
         </section>
 
@@ -93,7 +99,7 @@ const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({ loading = false, childr
               ref={scrollRef}
               className="relative flex flex-col h-full px-12 overflow-y-auto bg-white lg:h-screen w-96 rounded-tl-3xl"
             >
-              {clonedChildren}
+              <Scenarios scrollref={scrollRef} />
             </div>
           </Transition>
         </aside>

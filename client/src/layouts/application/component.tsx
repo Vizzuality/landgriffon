@@ -2,17 +2,12 @@ import Sidebar from 'containers/sidebar';
 // import HeaderMobile from 'containers/mobile-header';
 import { Toaster } from 'react-hot-toast';
 
-type ApplicationLayoutProps = {
-  children: React.ReactNode;
-};
-
-const ApplicationLayout: React.FC<ApplicationLayoutProps> = (props: ApplicationLayoutProps) => {
-  const { children } = props;
-
+const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
     <div className="h-full min-w-[1024px] min-h-screen flex">
       {/* Navigation */}
       <Sidebar />
+
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         {/* Mobile top navigation */}
         {/* <HeaderMobile /> */}

@@ -73,7 +73,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           />
           {unit && <span className={THEMES[theme].unit}>{unit}</span>}
         </div>
-        {error && showHint && <Hint>{error}</Hint>}
+        {error && showHint && <Hint data-testid={`hint-input-${props.name}`}>{error}</Hint>}
       </div>
     );
   },

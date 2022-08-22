@@ -1,0 +1,14 @@
+{
+  "data": {
+    "type": "scenarios",
+    "id": "some-random-id",
+    "attributes": {
+      "title": "scenario mockup name",
+      "description": "scenario mockup description",
+      "status": "inactive",
+      "metadata": null,
+      "createdAt": "2022-08-22T09:41:09.420Z",
+      "updatedAt": "2022-08-22T09:41:09.420Z"
+    }
+  }
+}

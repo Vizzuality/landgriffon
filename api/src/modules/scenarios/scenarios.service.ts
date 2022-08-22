@@ -21,11 +21,11 @@ export class ScenariosService extends AppBaseService<
 > {
   constructor(
     @InjectRepository(ScenarioRepository)
-    protected readonly repository: ScenarioRepository,
+    protected readonly scenarioRepository: ScenarioRepository,
     protected readonly scenarioInterventionService: ScenarioInterventionsService,
   ) {
     super(
-      repository,
+      scenarioRepository,
       scenarioResource.name.singular,
       scenarioResource.name.plural,
     );
@@ -47,7 +47,9 @@ export class ScenariosService extends AppBaseService<
   }
 
   async getScenarioById(id: number): Promise<Scenario> {
-    const found: Scenario | undefined = await this.repository.findOne(id);
+    const found: Scenario | undefined = await this.scenarioRepository.findOne(
+      id,
+    );
 
     if (!found) {
       throw new NotFoundException(`Scenario with ID "${id}" not found`);
@@ -64,5 +66,9 @@ export class ScenariosService extends AppBaseService<
         id,
       );
     return this.scenarioInterventionService.serialize(interventions);
+  }
+
+  async clearTable(): Promise<void> {
+    await this.scenarioRepository.delete({});
   }
 }

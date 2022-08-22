@@ -28,6 +28,7 @@ import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-c
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 import { TasksService } from 'modules/tasks/tasks.service';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
+import { ScenariosService } from 'modules/scenarios/scenarios.service';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -72,6 +73,7 @@ export class SourcingDataImportService {
     protected readonly geoCodingService: GeoCodingAbstractClass,
     protected readonly indicatorRecordsService: IndicatorRecordsService,
     protected readonly tasksService: TasksService,
+    protected readonly scenarioService: ScenariosService,
   ) {}
 
   async importSourcingData(filePath: string, taskId: string): Promise<any> {
@@ -189,6 +191,7 @@ export class SourcingDataImportService {
   async cleanDataBeforeImport(): Promise<void> {
     this.logger.log('Cleaning database before import...');
     try {
+      await this.scenarioService.clearTable();
       await this.indicatorRecordsService.clearTable();
       await this.businessUnitService.clearTable();
       await this.supplierService.clearTable();

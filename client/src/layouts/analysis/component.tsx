@@ -7,15 +7,14 @@ import { useAppSelector } from 'store/hooks';
 import { analysisUI } from 'store/features/analysis/ui';
 
 import ApplicationLayout from 'layouts/application';
-import PageLoading from 'containers/page-loading';
 import CollapseButton from 'containers/collapse-button';
-import type { AnalysisLayoutProps } from './types';
 import { NextSeo } from 'next-seo';
 import Scenarios from 'containers/scenarios';
 import AnalysisFilters from 'containers/analysis-visualization/analysis-filters';
 import ModeControl from 'containers/analysis-visualization/mode-control';
+import type { Layout } from 'pages/_app';
 
-const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({ loading = false, children }) => {
+const AnalysisLayout: Layout = ({ children }) => {
   const asideRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<DOMRect>(null);
   const { visualizationMode, isSidebarCollapsed, isSubContentCollapsed } =
@@ -35,7 +34,6 @@ const AnalysisLayout: React.FC<AnalysisLayoutProps> = ({ loading = false, childr
     <ApplicationLayout>
       <>
         <NextSeo title="Analysis" />
-        {loading && <PageLoading />}
 
         {/* Primary column */}
         <section

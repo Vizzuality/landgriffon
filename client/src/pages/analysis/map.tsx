@@ -1,12 +1,12 @@
 import AnalysisMap from 'containers/analysis-visualization/analysis-map';
 import useEffectOnce from 'hooks/once';
 import AnalysisLayout from 'layouts/analysis';
-import type { NextPage } from 'next';
 import { NextSeo } from 'next-seo';
+import type { NextPageWithLayout } from 'pages/_app';
 import { setVisualizationMode } from 'store/features/analysis';
 import { useAppDispatch } from 'store/hooks';
 
-const MapPage: NextPage = () => {
+const MapPage: NextPageWithLayout = () => {
   const dispatch = useAppDispatch();
 
   useEffectOnce(() => {
@@ -14,12 +14,14 @@ const MapPage: NextPage = () => {
   });
 
   return (
-    <AnalysisLayout>
+    <>
       <NextSeo title="Map View" />
       <AnalysisMap />
-    </AnalysisLayout>
+    </>
   );
 };
+
+MapPage.Layout = AnalysisLayout;
 
 export async function getServerSideProps({ query }) {
   return { props: { query } };

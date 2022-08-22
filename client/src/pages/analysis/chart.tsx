@@ -1,12 +1,12 @@
 import AnalysisTable from 'containers/analysis-visualization/analysis-table';
 import useEffectOnce from 'hooks/once';
 import AnalysisLayout from 'layouts/analysis';
-import type { NextPage } from 'next';
 import { NextSeo } from 'next-seo';
+import type { NextPageWithLayout } from 'pages/_app';
 import { setVisualizationMode } from 'store/features/analysis';
 import { useAppDispatch } from 'store/hooks';
 
-const ChartPage: NextPage = () => {
+const ChartPage: NextPageWithLayout = () => {
   const dispatch = useAppDispatch();
 
   useEffectOnce(() => {
@@ -14,12 +14,14 @@ const ChartPage: NextPage = () => {
   });
 
   return (
-    <AnalysisLayout>
+    <>
       <NextSeo title="Chart View" />
       <AnalysisTable />
-    </AnalysisLayout>
+    </>
   );
 };
+
+ChartPage.Layout = AnalysisLayout;
 
 export async function getServerSideProps({ query }) {
   return { props: { query } };

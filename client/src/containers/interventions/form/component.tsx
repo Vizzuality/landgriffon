@@ -81,23 +81,22 @@ const schemaValidation = yup.object({
     });
   }),
 
-  cityAddressCoordinates: yup.lazy((value) => {
-    if (isCoordinates(value)) {
-      return yup.string().test('is-coordinates', 'Coordinates should be valid', (value) => {
-        const [lat, lng] = value.split(',').map((coordinate) => parseFloat(coordinate));
-        return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
-      });
-    }
+  cityAddressCoordinates: yup.lazy(() => {
     return yup.string().when('newLocationType', (locationType) => {
       if (
         [LocationTypes.aggregationPoint, LocationTypes.pointOfProduction].includes(
           locationType?.value,
         )
       ) {
-        return yup.string().required('City, address or coordinates field is required');
+        return yup
+          .string()
+          .test('is-coordinates', 'Coordinates should be valid (-90/90, -180/180)', (value) => {
+            const [lat, lng] = value.split(',').map((coordinate) => parseFloat(coordinate));
+            return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+          });
       }
 
-      return optionSchema.nullable();
+      return yup.string().nullable();
     });
   }),
 

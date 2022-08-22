@@ -1,10 +1,9 @@
 beforeEach(() => {
-  // cy.login();
-  // cy.visit('/admin/scenarios/new');
   cy.createScenario();
+  cy.visit('/admin/scenarios/some-random-id/interventions/new');
 });
 
-after(() => {
+afterEach(() => {
   cy.logout();
 });
 

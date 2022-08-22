@@ -102,7 +102,13 @@ const schemaValidation = yup.object({
   }),
 
   // New material
-  newMaterialId: yup.object().required(),
+  newMaterialId: yup.object().when('interventionType', (interventionType) => {
+    if (InterventionTypes.Material === interventionType) {
+      return yup.object().required('New material field is required');
+    }
+
+    return yup.object().nullable();
+  }),
 
   // Coefficients
   DF_LUC_T: yup.number(),
@@ -248,6 +254,18 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
       closeImpactsRef.current();
     }
   }, [currentInterventionType, resetField, closeSupplierRef]);
+
+  useEffect(() => {
+    clearErrors([
+      'newMaterialId',
+      'newT1SupplierId',
+      'newProducerId',
+      'cityAddressCoordinates',
+      'newLocationType',
+      'newLocationCountryInput',
+      'newLocationAddressInput',
+    ]);
+  }, [currentInterventionType, clearErrors]);
 
   useEffect(() => {
     // * if a location type doesn't require coordinates, the coordinates fields are reset to avoid sending them unintentionally

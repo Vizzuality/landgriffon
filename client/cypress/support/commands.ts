@@ -21,6 +21,15 @@ Cypress.Commands.add('login', (): Cypress.Chainable => {
   );
 });
 
+Cypress.Commands.add('createScenario', (): void => {
+  cy.log('Creates a scenario');
+
+  cy.login().visit('/admin/scenarios/new');
+  cy.get('[data-testid="scenario-name-input"]').type('scenario mockup name');
+  cy.get('[data-testid="scenario-description-input"]').type('scenario mockup description');
+  cy.get('[data-testid="create-scenario-button"]').click();
+});
+
 Cypress.Commands.add('logout', (): Cypress.Chainable => {
   cy.log('logout');
   return cy.wrap(signOut({ redirect: false }));

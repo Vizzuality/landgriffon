@@ -11,6 +11,7 @@ declare global {
        */
       login(): Chainable<Element>;
       logout(): Chainable<Element>;
+      createScenario(): Chainable<Element>;
     }
   }
 }

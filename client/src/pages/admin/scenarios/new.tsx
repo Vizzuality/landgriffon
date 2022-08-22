@@ -41,12 +41,12 @@ const CreateScenarioPage: React.FC = () => {
         <title>Create new scenario | Landgriffon</title>
       </Head>
       <Link href="/admin/scenarios" passHref>
-        <BackLink className="mb-6 flex xl:sticky xl:top-0" data-testid="scenario-back-button">
+        <BackLink className="flex mb-6 xl:sticky xl:top-0" data-testid="scenario-back-button">
           Back to scenarios
         </BackLink>
       </Link>
       <div className="grid grid-cols-12 gap-6">
-        <div className="col-start-3 col-span-8">
+        <div className="col-span-8 col-start-3">
           <h1>New scenario</h1>
           <ScenarioForm isSubmitting={createScenario.isLoading} onSubmit={handleCreateScenario} />
         </div>

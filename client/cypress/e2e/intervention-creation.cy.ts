@@ -1,6 +1,7 @@
-before(() => {
-  cy.login();
-  cy.visit('/admin/scenarios/1/interventions/new');
+beforeEach(() => {
+  // cy.login();
+  // cy.visit('/admin/scenarios/new');
+  cy.createScenario();
 });
 
 after(() => {

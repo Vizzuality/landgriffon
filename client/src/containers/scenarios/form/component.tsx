@@ -48,6 +48,7 @@ const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
           aria-label="Name"
           autoFocus
           error={errors?.title?.message}
+          data-testid="scenario-name-input"
         />
       </div>
       <div>
@@ -62,6 +63,7 @@ const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
           className="w-full"
           error={errors?.description?.message}
           defaultValue={scenario?.description}
+          data-testid="scenario-description-input"
         />
       </div>
       {children}
@@ -69,7 +71,7 @@ const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
         <Link href="/admin/scenarios" passHref>
           <AnchorLink theme="secondary">Cancel</AnchorLink>
         </Link>
-        <Button loading={isSubmitting} type="submit">
+        <Button loading={isSubmitting} type="submit" data-testid="create-scenario-button">
           Save scenario
         </Button>
       </div>

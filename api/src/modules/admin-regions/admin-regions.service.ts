@@ -24,6 +24,7 @@ import { MaterialsService } from 'modules/materials/materials.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 
 @Injectable()
 export class AdminRegionsService extends AppBaseService<
@@ -95,7 +96,6 @@ export class AdminRegionsService extends AppBaseService<
     return this.adminRegionRepository.saveListToTree(importData, 'mpath');
   }
 
-  // TODO: proper typing after validating this works
   async getAdminAndGeoRegionIdByCountryIsoAlpha2(
     countryIsoAlpha2Code: string,
   ): Promise<{ id: string; geoRegionId: string }> {
@@ -114,17 +114,26 @@ export class AdminRegionsService extends AppBaseService<
     return adminAndGeoRegionId;
   }
 
-  async getAdminRegionByName(adminRegionName: string): Promise<AdminRegion> {
-    const adminRegion: AdminRegion | undefined =
-      await this.adminRegionRepository.findOne({
-        where: { name: adminRegionName },
-      });
+  async getAdminRegionAndGeoRegionIdsByAdminRegionName(
+    adminRegionName: string,
+  ): Promise<{ adminRegionId: string; geoRegionId: string }> {
+    const adminRegionAndGeoRegionIds: any = await this.adminRegionRepository
+      .createQueryBuilder('adminRegion')
+      .select('adminRegion.id', 'adminRegionId')
+      .addSelect('geoRegion.id', 'geoRegionId')
+      .innerJoin(
+        GeoRegion,
+        'geoRegion',
+        'adminRegion.geoRegionId = geoRegion.id',
+      )
+      .where('adminRegion.name = :adminRegionName', { adminRegionName })
+      .getRawOne();
 
-    if (!adminRegion)
-      throw new Error(
+    if (!adminRegionAndGeoRegionIds)
+      throw new NotFoundException(
         `An Admin Region with name ${adminRegionName} could not been found`,
       );
-    return adminRegion;
+    return adminRegionAndGeoRegionIds;
   }
 
   async getAdminRegionIdByCoordinatesAndLevel(

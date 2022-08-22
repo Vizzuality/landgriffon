@@ -9,7 +9,7 @@ export function getDiffMaterialsScenariosComparison(
     scenariosImpactTable: [
       {
         indicatorShortName: 'Deforestation',
-        indicatorId: '7064fbb6-8148-42fa-9018-33526ecb14ae',
+        indicatorId: indicatorId,
         groupBy: 'material',
         rows: [
           {

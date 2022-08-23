@@ -1,5 +1,5 @@
-import type { ButtonHTMLAttributes } from 'react';
+import type { HTMLAttributes } from 'react';
 
-export type ButtonGroupItemProps = ButtonHTMLAttributes & {
+export type ButtonGroupItemProps = HTMLAttributes<HTMLButtonElement> & {
   active?: boolean;
 };

@@ -14,6 +14,11 @@ const nextConfig = {
         permanent: false,
       },
       {
+        source: '/analysis',
+        destination: '/analysis/map',
+        permanent: false,
+      },
+      {
         source: '/admin',
         destination: '/admin/data',
         permanent: false,

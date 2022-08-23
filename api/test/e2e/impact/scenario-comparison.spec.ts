@@ -22,6 +22,8 @@ import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.e
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { createTwoScenariosPreconditions } from './scenario-impact-preconditions/two-scenarios.preconditions';
 import { getDiffMaterialsScenariosComparison } from './scenario-comparison-responses/diff-materials-comparison.reponse';
+import { createMixedScenariosPreconditions } from './scenario-comparison-preconditions/mixed-scenarios.preconditions';
+import { getMultiInterventionsScenariosComparison } from './scenario-comparison-responses/multi-interventions-comparison.response';
 
 describe('Scenario comparison test suite (e2e)', () => {
   let app: INestApplication;
@@ -59,7 +61,7 @@ describe('Scenario comparison test suite (e2e)', () => {
     await app.close();
   });
 
-  test('When I request data for comaprison table', async () => {
+  test('When I request data for comaprison table for 2 single interventions scenario, then I should get correct data within expected structure', async () => {
     const preconditions: {
       newScenario1: Scenario;
       newScenario2: Scenario;
@@ -85,6 +87,60 @@ describe('Scenario comparison test suite (e2e)', () => {
     const expectedScenariosTable = getDiffMaterialsScenariosComparison(
       preconditions.newScenario1.id,
       preconditions.newScenario2.id,
+      preconditions.indicator.id,
+    );
+
+    expect(
+      response.body.data.scenariosImpactTable[0].rows[0].values[0]
+        .scenariosImpacts,
+    ).toEqual(
+      expect.arrayContaining(
+        expectedScenariosTable.scenariosImpactTable[0].rows[0].values[0]
+          .scenariosImpacts,
+      ),
+    );
+
+    expect(
+      response.body.data.scenariosImpactTable[0].rows[0].children[0].values[0]
+        .scenariosImpacts,
+    ).toEqual(
+      expect.arrayContaining(
+        expectedScenariosTable.scenariosImpactTable[0].rows[0].children[0]
+          .values[0].scenariosImpacts,
+      ),
+    );
+
+    expect(response.body.data.purchasedTonnes[0].values).toEqual(
+      expect.arrayContaining(expectedScenariosTable.purchasedTonnes[0].values),
+    );
+  });
+
+  test('When I request data for comaprison table for 2 multiple interventions scenario, then I should get correct data within expected structure', async () => {
+    const preconditions: {
+      indicator: Indicator;
+      newScenarioChangeSupplier: Scenario;
+      newScenarioChangeMaterial: Scenario;
+    } = await createMixedScenariosPreconditions();
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/impact/scenarios-table')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .query({
+        'indicatorIds[]': [preconditions.indicator.id],
+        endYear: 2021,
+        startYear: 2020,
+        groupBy: 'material',
+        scenarioIds: [
+          preconditions.newScenarioChangeSupplier.id,
+          preconditions.newScenarioChangeMaterial.id,
+        ],
+      });
+
+    expect(response.status).toBe(HttpStatus.OK);
+
+    const expectedScenariosTable = getMultiInterventionsScenariosComparison(
+      preconditions.newScenarioChangeSupplier.id,
+      preconditions.newScenarioChangeMaterial.id,
       preconditions.indicator.id,
     );
 

@@ -316,8 +316,9 @@ const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(
           })}
           className={classNames('relative w-full', {
             [THEMES[theme].wrapper]: theme === 'default',
+            'ring-[1.5px] ring-primary': theme === 'default' && isOpen && !error,
             'flex flex-row justify-between items-center gap-1': theme === 'default',
-            'border-2 border-red-600': theme === 'default' && error,
+            'ring-1 ring-red-600': theme === 'default' && error,
             'w-fit': theme === 'inline-primary',
           })}
         >

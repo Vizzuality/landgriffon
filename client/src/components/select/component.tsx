@@ -7,7 +7,6 @@ import type {
   ControlProps,
   OptionProps,
   InputProps,
-  ValueContainerProps,
 } from 'react-select';
 import ReactSelect, { defaultTheme, components } from 'react-select';
 import { ChevronDownIcon } from '@heroicons/react/outline';
@@ -167,27 +166,18 @@ const Select: React.FC<SelectProps> = React.forwardRef<HTMLInputElement, SelectP
     const Control: React.FC<ControlProps> = useCallback(
       ({ children, ...rest }) => (
         <div ref={reference}>
-          <components.Control {...rest}>{children}</components.Control>
+          <components.Control {...rest}>
+            {hideValueWhenMenuOpen && !rest.menuIsOpen && label && (
+              <div className="text-gray-600">{label}</div>
+            )}
+            {children}
+          </components.Control>
           {theme === 'inline-primary' && (
             <div className="mt-0.5 border-t-primary border-t-4 border-x-4 border-x-transparent mx-auto w-0 h-0" />
           )}
         </div>
       ),
-      [reference, theme],
-    );
-
-    const ValueContainer: React.FC<ValueContainerProps> = useCallback(
-      ({ children, ...rest }) => {
-        return (
-          <>
-            {hideValueWhenMenuOpen && !isMenuOpen && label && (
-              <div className="text-gray-600">{label}</div>
-            )}
-            <components.ValueContainer {...rest}>{children}</components.ValueContainer>
-          </>
-        );
-      },
-      [hideValueWhenMenuOpen, isMenuOpen, label],
+      [hideValueWhenMenuOpen, label, reference, theme],
     );
 
     const Input: React.FC<InputProps> = useCallback(
@@ -286,7 +276,6 @@ const Select: React.FC<SelectProps> = React.forwardRef<HTMLInputElement, SelectP
             Menu,
             Control,
             Input,
-            ValueContainer,
           }}
         />
       </div>

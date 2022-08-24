@@ -99,7 +99,9 @@ export class ScenarioInterventionsService extends AppBaseService<
   async getScenarioInterventionsByScenarioId(
     scenarioId: string,
   ): Promise<ScenarioIntervention[]> {
-    return this.scenarioInterventionRepository.find({ scenarioId });
+    return this.scenarioInterventionRepository.getScenarioInterventionsByScenarioId(
+      scenarioId,
+    );
   }
 
   async createScenarioIntervention(

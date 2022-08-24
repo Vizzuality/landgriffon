@@ -1,12 +1,12 @@
 beforeEach(() => {
   cy.intercept('GET', '/api/v1/scenarios/**/interventions', {
     statusCode: 200,
-    fixture: 'scenario-interventions.json',
+    fixture: 'scenario/scenario-interventions',
   });
 
   cy.intercept('GET', '/api/v1/scenarios?sort=-updatedAt&disablePagination=true', {
     statusCode: 200,
-    fixture: 'scenarios.json',
+    fixture: 'scenario/scenarios',
   });
 
   cy.login();

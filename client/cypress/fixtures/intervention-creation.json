@@ -1,0 +1,381 @@
+{
+  "data": {
+    "type": "scenarioInterventions",
+    "id": "random-intervention-id",
+    "attributes": {
+      "title": "Untitled",
+      "description": null,
+      "status": "active",
+      "startYear": 2020,
+      "type": "Switch to a new material",
+      "createdAt": "2022-08-24T07:40:15.014Z",
+      "updatedAt": "2022-08-24T07:40:15.014Z",
+      "replacedMaterials": [
+        {
+          "createdAt": "2022-07-20T10:02:04.932Z",
+          "updatedAt": "2022-07-20T10:02:04.932Z",
+          "id": "80d52237-bb4a-4f25-9133-cbbebaa68734",
+          "parentId": null,
+          "name": "Cotton",
+          "description": "Cotton",
+          "hsCodeId": "52",
+          "earthstatId": null,
+          "mapspamId": null,
+          "status": "active",
+          "metadata": {
+            "name": "Global cotton distribution in 2010",
+            "source": "International Food Policy Research Institute, 2019, “Global Spatially-Disaggregated Crop Production Statistics Data for 2010 Version 2.0”, https://doi.org/10.7910/DVN/PRFF8V, Harvard Dataverse, V4",
+            "license": "CC0 1.0",
+            "cautions": "Global distributions of cotton in 2010 expressed in tonnes (T).",
+            "citation": "International Food Policy Research Institute, 2019, “Global Spatially-Disaggregated Crop Production Statistics Data for 2010 Version 2.0”, https://doi.org/10.7910/DVN/PRFF8V, Harvard Dataverse, V4",
+            "datasets": ["SPAM 2010 v2.0 Global Data (Updated 2020-07-15)"],
+            "overview": "'All crops' represent all of the crops that are included in the tool as displayed in the menu. Pixel colors are shaded by level of production. The crop layers displayed on the map reflect 2010 data regardless of the timeframe selected.",
+            "resolution": "10km x 10km",
+            "date of content": "2010",
+            "geographic coverage": "Global coverage",
+            "frequency of updates": ""
+          },
+          "datasetId": "spam_cott"
+        }
+      ],
+      "replacedBusinessUnits": [
+        {
+          "id": "f0a3354b-7ead-4ae2-878f-c4bf3a00fe26",
+          "name": "Womens clothes",
+          "description": null,
+          "status": "inactive",
+          "metadata": null
+        }
+      ],
+      "replacedAdminRegions": [
+        {
+          "id": "cc72c8a8-f8b1-42b1-8c92-88f24659feb8",
+          "parentId": null,
+          "gadmId": "VNM",
+          "level": 0,
+          "name": "Vietnam",
+          "description": null,
+          "status": "inactive",
+          "isoA2": "VN",
+          "isoA3": "VNM",
+          "geoRegionId": "df5d0321-e1f6-429d-a5a7-6232a5af32be"
+        },
+        {
+          "id": "5a395655-f4a2-4a74-955d-6130416dc2e7",
+          "parentId": "476be5a2-33e0-412b-8e44-c95a4b78f8db",
+          "gadmId": "CHN.16_1",
+          "level": 1,
+          "name": "Jiangxi",
+          "description": null,
+          "status": "inactive",
+          "isoA2": null,
+          "isoA3": null,
+          "geoRegionId": "d9c4c36b-6d16-4795-abe9-987b5440ff3d"
+        },
+        {
+          "id": "00723ddf-f062-4034-a483-b8ba2405118d",
+          "parentId": "476be5a2-33e0-412b-8e44-c95a4b78f8db",
+          "gadmId": "CHN.28_1",
+          "level": 1,
+          "name": "Xinjiang Uygur",
+          "description": null,
+          "status": "inactive",
+          "isoA2": null,
+          "isoA3": null,
+          "geoRegionId": "0717a782-3a71-47d0-952f-5a84a7622486"
+        },
+        {
+          "id": "47244bd3-9d2f-49fd-85cd-d7bc0adbcf6f",
+          "parentId": "476be5a2-33e0-412b-8e44-c95a4b78f8db",
+          "gadmId": "CHN.12_1",
+          "level": 1,
+          "name": "Henan",
+          "description": null,
+          "status": "inactive",
+          "isoA2": null,
+          "isoA3": null,
+          "geoRegionId": "cf7e8ca6-8321-4150-a986-9ff92d29be0b"
+        },
+        {
+          "id": "3efec62a-0f72-45b2-8a31-39df5e575431",
+          "parentId": null,
+          "gadmId": "BRA",
+          "level": 0,
+          "name": "Brazil",
+          "description": null,
+          "status": "inactive",
+          "isoA2": "BR",
+          "isoA3": "BRA",
+          "geoRegionId": "342ac1fa-8053-46ac-88a3-9e7d351f65d9"
+        },
+        {
+          "id": "476be5a2-33e0-412b-8e44-c95a4b78f8db",
+          "parentId": null,
+          "gadmId": "CHN",
+          "level": 0,
+          "name": "China",
+          "description": null,
+          "status": "inactive",
+          "isoA2": "CN",
+          "isoA3": "CHN",
+          "geoRegionId": "dc07c66e-e360-4395-a5bd-638506fe36ba"
+        },
+        {
+          "id": "705d0dca-a67b-4676-a87a-62b663c32ec3",
+          "parentId": null,
+          "gadmId": "IND",
+          "level": 0,
+          "name": "India",
+          "description": null,
+          "status": "inactive",
+          "isoA2": "IN",
+          "isoA3": "IND",
+          "geoRegionId": "353d7abb-3758-4866-8042-6e06758368a9"
+        },
+        {
+          "id": "71679dce-b553-4b3d-8159-a3d4fd0f5aa5",
+          "parentId": "29b26021-e81b-4615-8420-6760a9cc8550",
+          "gadmId": "ARG.3.1_1",
+          "level": 2,
+          "name": "Almirante Brown",
+          "description": null,
+          "status": "inactive",
+          "isoA2": null,
+          "isoA3": null,
+          "geoRegionId": "04507b48-0d34-4884-af5a-0aa2129c3e6d"
+        },
+        {
+          "id": "32818f18-f97f-4125-9c48-6de13f5ba980",
+          "parentId": "ef784f92-f515-40d1-8010-3f7429160ba6",
+          "gadmId": "CHN.13.11_1",
+          "level": 2,
+          "name": "Tianmen",
+          "description": null,
+          "status": "inactive",
+          "isoA2": null,
+          "isoA3": null,
+          "geoRegionId": "2323b2bd-eab0-456b-a0f2-8ba360135120"
+        },
+        {
+          "id": "e90eedc3-dce7-4fdd-bf56-43e23ed76ba9",
+          "parentId": "47244bd3-9d2f-49fd-85cd-d7bc0adbcf6f",
+          "gadmId": "CHN.12.8_1",
+          "level": 2,
+          "name": "Nanyang",
+          "description": null,
+          "status": "inactive",
+          "isoA2": null,
+          "isoA3": null,
+          "geoRegionId": "d2309588-9ab0-4be3-874b-faa4c9c4ec51"
+        },
+        {
+          "id": "d562c86f-249d-448c-92f9-9a8adbb05ee6",
+          "parentId": "997c582e-55d3-4dbb-bd4f-224dbbc29b95",
+          "gadmId": "CMR.1.5_1",
+          "level": 2,
+          "name": "Vina",
+          "description": null,
+          "status": "inactive",
+          "isoA2": null,
+          "isoA3": null,
+          "geoRegionId": "8d689333-bb77-4c45-8eb0-cb9ca2f93c2b"
+        },
+        {
+          "id": "ac8c9d8b-7756-4ff0-b968-9ca21731fcbf",
+          "parentId": null,
+          "gadmId": "TUR",
+          "level": 0,
+          "name": "Turkey",
+          "description": null,
+          "status": "inactive",
+          "isoA2": "TR",
+          "isoA3": "TUR",
+          "geoRegionId": "0a0adcfa-d2c9-4be4-9dd3-40a9a6bef260"
+        },
+        {
+          "id": "d0c8f74d-dad2-487a-bf1e-84af43fb1b45",
+          "parentId": null,
+          "gadmId": "USA",
+          "level": 0,
+          "name": "United States",
+          "description": null,
+          "status": "inactive",
+          "isoA2": "US",
+          "isoA3": "USA",
+          "geoRegionId": "4e40e99f-d1f5-44c1-8c5b-b95f24508603"
+        },
+        {
+          "id": "717e14ed-2cd4-42a8-8a47-731d1bcb9918",
+          "parentId": null,
+          "gadmId": "UZB",
+          "level": 0,
+          "name": "Uzbekistan",
+          "description": null,
+          "status": "inactive",
+          "isoA2": "UZ",
+          "isoA3": "UZB",
+          "geoRegionId": "e9e7f293-ca8c-4094-9d5b-24a7057078d1"
+        },
+        {
+          "id": "4b9e06b7-125b-4fb8-b350-1a65e6ef6251",
+          "parentId": "eea97816-c4a8-4b62-96ff-9cb7add4b0ed",
+          "gadmId": "AUS.5.91_1",
+          "level": 2,
+          "name": "Moree Plains",
+          "description": null,
+          "status": "inactive",
+          "isoA2": null,
+          "isoA3": null,
+          "geoRegionId": "60b531d5-ab82-476a-8940-fa1675dee48d"
+        },
+        {
+          "id": "a536fe69-d07a-4001-a3bf-dc0da47c3739",
+          "parentId": "eea97816-c4a8-4b62-96ff-9cb7add4b0ed",
+          "gadmId": "AUS.5.69_1",
+          "level": 2,
+          "name": "Inverell",
+          "description": null,
+          "status": "inactive",
+          "isoA2": null,
+          "isoA3": null,
+          "geoRegionId": "8a861600-322a-4fa9-a75e-abf07b45f6c7"
+        },
+        {
+          "id": "6c22d56b-bcff-479a-9d54-4e4998095d02",
+          "parentId": "a7288987-5d94-47d0-b89f-3ea05448133a",
+          "gadmId": "GRC.8.1_1",
+          "level": 2,
+          "name": "Central Greece",
+          "description": null,
+          "status": "inactive",
+          "isoA2": null,
+          "isoA3": null,
+          "geoRegionId": "ff6b4a5b-e9ed-46e8-bbe3-b270fb747b58"
+        },
+        {
+          "id": "205c682d-4e92-47a1-a161-fe0c8578b553",
+          "parentId": "40ce0a55-e169-4eae-a7e9-e7794b0125f7",
+          "gadmId": "PER.23.4_1",
+          "level": 2,
+          "name": "Lamas",
+          "description": null,
+          "status": "inactive",
+          "isoA2": null,
+          "isoA3": null,
+          "geoRegionId": "538877b7-d4b9-4658-b8d7-a7eeff7980dc"
+        },
+        {
+          "id": "d821c125-75d0-43eb-97cb-8b19c189afac",
+          "parentId": "4166d83c-8484-4cdd-bd4b-efa4382aac29",
+          "gadmId": "SWZ.4.7_1",
+          "level": 2,
+          "name": "Mtsambama",
+          "description": null,
+          "status": "inactive",
+          "isoA2": null,
+          "isoA3": null,
+          "geoRegionId": "62f243ea-1e1a-4da1-a941-73d87186d38f"
+        },
+        {
+          "id": "04381016-ab25-4a67-a91a-24a0de830b0c",
+          "parentId": "c53c3f0b-415b-482e-ba05-568dafcbb68f",
+          "gadmId": "USA.3.12_1",
+          "level": 2,
+          "name": "Pinal",
+          "description": null,
+          "status": "inactive",
+          "isoA2": null,
+          "isoA3": null,
+          "geoRegionId": "bf5cf6fe-0886-4129-94f5-531258743959"
+        },
+        {
+          "id": "15f913b4-8f85-43d7-83db-c53bee2bbd88",
+          "parentId": "c53c3f0b-415b-482e-ba05-568dafcbb68f",
+          "gadmId": "USA.3.8_1",
+          "level": 2,
+          "name": "Maricopa",
+          "description": null,
+          "status": "inactive",
+          "isoA2": null,
+          "isoA3": null,
+          "geoRegionId": "5e2b8034-9e05-42ad-b53d-93858d73f011"
+        },
+        {
+          "id": "7a40ab75-8243-443e-a20b-be3dab2d61af",
+          "parentId": "d9be83b0-e393-41d1-97b9-0fbdc8df8e9c",
+          "gadmId": "UZB.6.4_1",
+          "level": 2,
+          "name": "Kasbi",
+          "description": null,
+          "status": "inactive",
+          "isoA2": null,
+          "isoA3": null,
+          "geoRegionId": "2c95ecaa-b266-4e60-8fa6-40a508d79e7f"
+        },
+        {
+          "id": "18945125-d209-4c8d-9f60-cd39d980f090",
+          "parentId": null,
+          "gadmId": "BGD",
+          "level": 0,
+          "name": "Bangladesh",
+          "description": null,
+          "status": "inactive",
+          "isoA2": "BD",
+          "isoA3": "BGD",
+          "geoRegionId": "61771ca2-f69e-4652-acf6-a860f0d10d65"
+        }
+      ],
+      "replacedSuppliers": [
+        {
+          "createdAt": "2022-08-10T06:29:58.888Z",
+          "updatedAt": "2022-08-10T06:29:58.888Z",
+          "id": "84bab2c3-4769-463b-9e8f-9e975ee61841",
+          "parentId": null,
+          "name": "Moll",
+          "description": null,
+          "status": "active",
+          "metadata": null
+        }
+      ],
+      "newMaterial": {
+        "createdAt": "2022-07-20T10:02:04.932Z",
+        "updatedAt": "2022-07-20T10:02:04.932Z",
+        "id": "ed626334-1a6a-43c2-b52f-a61e94e756b4",
+        "parentId": null,
+        "name": "Cereals",
+        "description": "Cereals",
+        "hsCodeId": "10",
+        "earthstatId": null,
+        "mapspamId": null,
+        "status": "active",
+        "metadata": {
+          "name": "Global cereals distribution in 2000",
+          "source": "Monfreda, C., N. Ramankutty, and J. A. Foley (2008), Farming the planet: 2. Geographic distribution of crop areas, yields, physiological types, and net primary production in the year 2000, Global Biogeochem. Cycles, 22, GB1022, doi: 10.1029/2007GB002947.",
+          "license": "CC BY 4.0",
+          "cautions": "Global distributions of cereals in 2000 expressed in tonnes (T).",
+          "citation": "Monfreda, C., N. Ramankutty, and J. A. Foley (2008), Farming the planet: 2. Geographic distribution of crop areas, yields, physiological types, and net primary production in the year 2000, Global Biogeochem. Cycles, 22, GB1022, doi: 10.1029/2007GB002947.",
+          "datasets": ["Earthstat Harvested Area and Yield for 175 Crops"],
+          "overview": "'All crops' represent all of the crops that are included in the tool as displayed in the menu. Pixel colors are shaded by level of production. The crop layers displayed on the map reflect 2000 data regardless of the timeframe selected.",
+          "resolution": "10km x 10km",
+          "date of content": "2000",
+          "geographic coverage": "Global coverage",
+          "frequency of updates": ""
+        },
+        "datasetId": "es_allcereals"
+      },
+      "newAdminRegion": {
+        "id": "c1bff320-2ed4-441a-9e34-c1c1af7aac73",
+        "parentId": null,
+        "gadmId": "ALB",
+        "level": 0,
+        "name": "Albania",
+        "description": null,
+        "status": "inactive",
+        "isoA2": "AL",
+        "isoA3": "ALB",
+        "geoRegionId": "75b30eed-70ae-4b17-bd34-882f3d7eafcd"
+      },
+      "percentage": 100
+    }
+  }
+}

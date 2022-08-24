@@ -335,20 +335,22 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
             name="materialIds"
             control={control}
             render={({ field, fieldState: { invalid } }) => (
-              <MaterialsSelect
-                {...field}
-                multiple={false}
-                withSourcingLocations
-                current={field.value}
-                businessUnitIds={currentBusinessUnitIds?.map(({ value }) => value)}
-                supplierIds={currentSupplierIds?.map(({ value }) => value)}
-                originIds={currentLocationIds?.map(({ value }) => value)}
-                onChange={(selected) => {
-                  if (invalid) clearErrors('materialIds');
-                  setValue('materialIds', selected && [selected]);
-                }}
-                error={!!errors?.materialIds?.message}
-              />
+              <div data-testid="materials-select">
+                <MaterialsSelect
+                  {...field}
+                  multiple={false}
+                  withSourcingLocations
+                  current={field.value}
+                  businessUnitIds={currentBusinessUnitIds?.map(({ value }) => value)}
+                  supplierIds={currentSupplierIds?.map(({ value }) => value)}
+                  originIds={currentLocationIds?.map(({ value }) => value)}
+                  onChange={(selected) => {
+                    if (invalid) clearErrors('materialIds');
+                    setValue('materialIds', selected && [selected]);
+                  }}
+                  error={!!errors?.materialIds?.message}
+                />
+              </div>
             )}
           />
         </div>
@@ -368,6 +370,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                 current={field.value}
                 onChange={(selected) => setValue('businessUnitIds', selected ?? [])}
                 error={!!errors?.businessUnitIds?.message}
+                data-testid="business-units-select"
               />
             )}
           />
@@ -388,6 +391,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                 current={field.value}
                 onChange={(selected) => setValue('adminRegionIds', selected ?? [])}
                 error={!!errors?.adminRegionIds?.message}
+                data-testid="location-select"
               />
             )}
           />
@@ -408,6 +412,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                 current={field.value}
                 onChange={(selected) => setValue('supplierIds', selected ?? [])}
                 error={!!errors?.supplierIds?.message}
+                data-testid="supplier-ids-select"
               />
             )}
           />
@@ -420,17 +425,19 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
             name="startYear"
             control={control}
             render={({ field }) => (
-              <Select
-                {...field}
-                instanceId="startYear"
-                showSearch
-                current={field.value}
-                options={optionsYears}
-                placeholder="Select a year"
-                onChange={(value) => setValue('startYear', value)}
-                loading={isLoadingYears}
-                error={!!errors?.startYear?.message}
-              />
+              <div data-testid="startYear-select">
+                <Select
+                  {...field}
+                  instanceId="startYear"
+                  showSearch
+                  current={field.value}
+                  options={optionsYears}
+                  placeholder="Select a year"
+                  onChange={(value) => setValue('startYear', value)}
+                  loading={isLoadingYears}
+                  error={!!errors?.startYear?.message}
+                />
+              </div>
             )}
           />
         </div>
@@ -504,16 +511,18 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                     name="newMaterialId"
                     control={control}
                     render={({ field, fieldState: { invalid } }) => (
-                      <MaterialsSelect
-                        {...field}
-                        multiple={false}
-                        current={field.value}
-                        onChange={(selected) => {
-                          if (invalid) clearErrors('newMaterialId');
-                          setValue('newMaterialId', selected);
-                        }}
-                        error={!!errors?.newMaterialId?.message}
-                      />
+                      <div data-testid="new-material-select">
+                        <MaterialsSelect
+                          {...field}
+                          multiple={false}
+                          current={field.value}
+                          onChange={(selected) => {
+                            if (invalid) clearErrors('newMaterialId');
+                            setValue('newMaterialId', selected);
+                          }}
+                          error={!!errors?.newMaterialId?.message}
+                        />
+                      </div>
                     )}
                   />
                 </div>
@@ -563,19 +572,22 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                             name="newLocationType"
                             control={control}
                             render={({ field, fieldState: { invalid } }) => (
-                              <Select
-                                {...field}
-                                showSearch
-                                loading={isLoadingProducers}
-                                current={field.value}
-                                options={optionsLocationTypes}
-                                placeholder="Select"
-                                onChange={(value) => {
-                                  if (invalid) clearErrors('newLocationType');
-                                  setValue('newLocationType', value);
-                                }}
-                                error={!!errors?.newLocationType?.message}
-                              />
+                              <div data-testid="new-location-select">
+                                <Select
+                                  {...field}
+                                  showSearch
+                                  loading={isLoadingProducers}
+                                  current={field.value}
+                                  options={optionsLocationTypes}
+                                  placeholder="Select"
+                                  onChange={(value) => {
+                                    if (invalid) clearErrors('newLocationType');
+                                    setValue('newLocationType', value);
+                                  }}
+                                  error={!!errors?.newLocationType?.message}
+                                  data-testid="new-location-select"
+                                />
+                              </div>
                             )}
                           />
                         </div>
@@ -587,19 +599,21 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                             name="newLocationCountryInput"
                             control={control}
                             render={({ field, fieldState: { invalid } }) => (
-                              <Select
-                                {...field}
-                                showSearch
-                                loading={isLoadingCountries}
-                                current={field.value}
-                                options={optionsCountries}
-                                placeholder="Select"
-                                onChange={(value) => {
-                                  if (invalid) clearErrors('newLocationCountryInput');
-                                  setValue('newLocationCountryInput', value);
-                                }}
-                                error={!!errors?.newLocationCountryInput?.message}
-                              />
+                              <div data-testid="new-location-country-select">
+                                <Select
+                                  {...field}
+                                  showSearch
+                                  loading={isLoadingCountries}
+                                  current={field.value}
+                                  options={optionsCountries}
+                                  placeholder="Select"
+                                  onChange={(value) => {
+                                    if (invalid) clearErrors('newLocationCountryInput');
+                                    setValue('newLocationCountryInput', value);
+                                  }}
+                                  error={!!errors?.newLocationCountryInput?.message}
+                                />
+                              </div>
                             )}
                           />
                         </div>
@@ -694,17 +708,19 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                               control={control}
                               defaultValue={null}
                               render={({ field }) => (
-                                <Select
-                                  {...field}
-                                  showSearch
-                                  loading={isLoadingSuppliers}
-                                  current={field.value}
-                                  options={optionsSuppliers}
-                                  placeholder="Select"
-                                  onChange={(value) => setValue('newT1SupplierId', value)}
-                                  error={!!errors?.newSupplierId?.message}
-                                  allowEmpty
-                                />
+                                <div data-testid="new-t1-supplier-select">
+                                  <Select
+                                    {...field}
+                                    showSearch
+                                    loading={isLoadingSuppliers}
+                                    current={field.value}
+                                    options={optionsSuppliers}
+                                    placeholder="Select"
+                                    onChange={(value) => setValue('newT1SupplierId', value)}
+                                    error={!!errors?.newSupplierId?.message}
+                                    allowEmpty
+                                  />
+                                </div>
                               )}
                             />
                           </div>
@@ -715,17 +731,19 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                               control={control}
                               defaultValue={null}
                               render={({ field }) => (
-                                <Select
-                                  {...field}
-                                  showSearch
-                                  loading={isLoadingProducers}
-                                  current={field.value}
-                                  options={optionsProducers}
-                                  placeholder="Select"
-                                  onChange={(value) => setValue('newProducerId', value)}
-                                  error={!!errors?.newProducerId?.message}
-                                  allowEmpty
-                                />
+                                <div data-testid="new-producer-select">
+                                  <Select
+                                    {...field}
+                                    showSearch
+                                    loading={isLoadingProducers}
+                                    current={field.value}
+                                    options={optionsProducers}
+                                    placeholder="Select"
+                                    onChange={(value) => setValue('newProducerId', value)}
+                                    error={!!errors?.newProducerId?.message}
+                                    allowEmpty
+                                  />
+                                </div>
                               )}
                             />
                           </div>
@@ -780,6 +798,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                             error={errors?.GHG_LUC_T?.message}
                             theme="inside-unit"
                             unit="tC02e"
+                            data-testid="GHG_LUC_T-input"
                           />
                         </div>
                         <div>
@@ -793,6 +812,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                             error={errors?.DF_LUC_T?.message}
                             theme="inside-unit"
                             unit="Ha"
+                            data-testid="DF_LUC_T-input"
                           />
                         </div>
                         <div>
@@ -806,6 +826,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                             error={errors?.UWU_T?.message}
                             theme="inside-unit"
                             unit="100m3"
+                            data-testid="UWU_T-input"
                           />
                         </div>
                         <div>
@@ -819,6 +840,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                             error={errors?.BL_LUC_T?.message}
                             theme="inside-unit"
                             unit="PDF"
+                            data-testid="BL_LUC_T-input"
                           />
                         </div>
                       </div>
@@ -839,7 +861,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
           <Link href="/admin/scenarios" passHref>
             <AnchorLink theme="secondary">Cancel</AnchorLink>
           </Link>
-          <Button loading={isSubmitting} type="submit">
+          <Button loading={isSubmitting} type="submit" data-testid="intervention-submit-btn">
             Save intervention
           </Button>
         </div>

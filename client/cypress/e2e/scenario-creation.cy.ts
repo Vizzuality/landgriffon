@@ -3,7 +3,7 @@ beforeEach(() => {
 
   cy.intercept('POST', '/api/v1/scenarios', {
     statusCode: 201,
-    fixture: 'scenario-creation',
+    fixture: 'scenario/scenario-creation',
   }).as('scenarioCreation');
 });
 

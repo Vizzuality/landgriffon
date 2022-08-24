@@ -1,0 +1,67 @@
+{
+  "data": [
+    {
+      "type": "materials",
+      "id": "67f6906f-400c-4d22-95e9-ae4074ee6d1f",
+      "attributes": {
+        "name": "Animal or vegetable fats and oils",
+        "description": "Animal or vegetable fats and oils and their cleavage products; prepared animal fats; animal or vegetable waxes",
+        "hsCodeId": "15",
+        "parentId": null,
+        "children": [
+          {
+            "id": "52370288-8c6c-4f31-919c-d30538d39ee3",
+            "parentId": "67f6906f-400c-4d22-95e9-ae4074ee6d1f",
+            "name": "Palm oil and its fractions",
+            "description": "Palm oil and its fractions; whether or not refined, but not chemically modified",
+            "createdAt": "2022-07-20T10:02:04.932Z",
+            "updatedAt": "2022-07-20T10:02:04.932Z",
+            "hsCodeId": "1511",
+            "children": []
+          }
+        ],
+        "createdAt": "2022-07-20T10:02:04.932Z",
+        "updatedAt": "2022-07-20T10:02:04.932Z"
+      }
+    },
+    {
+      "type": "materials",
+      "id": "80d52237-bb4a-4f25-9133-cbbebaa68734",
+      "attributes": {
+        "name": "Cotton",
+        "description": "Cotton",
+        "hsCodeId": "52",
+        "parentId": null,
+        "children": [],
+        "createdAt": "2022-07-20T10:02:04.932Z",
+        "updatedAt": "2022-07-20T10:02:04.932Z"
+      }
+    },
+    {
+      "type": "materials",
+      "id": "41822942-3957-4526-9dc5-a80d94419a1e",
+      "attributes": {
+        "name": "Raw hides, skins and leather",
+        "description": "Raw hides and skins (other than furskins) and leather",
+        "hsCodeId": "41",
+        "parentId": null,
+        "children": [],
+        "createdAt": "2022-07-20T10:02:04.932Z",
+        "updatedAt": "2022-07-20T10:02:04.932Z"
+      }
+    },
+    {
+      "type": "materials",
+      "id": "0d7b1be5-dc86-47b8-ba3a-25190a275011",
+      "attributes": {
+        "name": "Rubber and articles thereof",
+        "description": "Rubber and articles thereof",
+        "hsCodeId": "40",
+        "parentId": null,
+        "children": [],
+        "createdAt": "2022-07-20T10:02:04.932Z",
+        "updatedAt": "2022-07-20T10:02:04.932Z"
+      }
+    }
+  ]
+}

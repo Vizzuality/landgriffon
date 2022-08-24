@@ -1,0 +1,8 @@
+{
+  "data": [
+    { "label": "Point of production", "value": "point-of-production" },
+    { "label": "Aggregation point", "value": "aggregation-point" },
+    { "label": "Country of production", "value": "country-of-production" },
+    { "label": "Unknown", "value": "unknown" }
+  ]
+}

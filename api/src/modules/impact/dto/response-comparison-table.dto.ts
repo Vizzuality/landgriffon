@@ -30,8 +30,8 @@ export class ScenariosImpactTableDataByIndicator {
   groupBy: string;
   @ApiProperty({ type: () => ScenariosImpactTableRows, isArray: true })
   rows: ScenariosImpactTableRows[];
-  @ApiProperty({ type: () => YearSumData, isArray: true })
-  yearSum?: YearSumData[];
+  @ApiProperty({ type: () => ScenariosYearSumData, isArray: true })
+  yearSum: ScenariosYearSumData[];
   @ApiProperty()
   metadata: { unit: string };
   @ApiProperty({ type: () => ScenariosImpactTableRowsValues, isArray: true })
@@ -67,17 +67,11 @@ export class ScenarioImpact {
   impactResult?: number;
 }
 
-export class YearSumData {
+export class ScenariosYearSumData {
   @ApiProperty()
   year: number;
   @ApiProperty()
-  value: number;
-  @ApiPropertyOptional()
-  interventionValue?: number;
-  @ApiPropertyOptional()
-  absoluteDifference?: number;
-  @ApiPropertyOptional()
-  percentageDifference?: number;
+  values: ScenarioImpact[];
 }
 
 export class ScenariosImpactTablePurchasedTonnes {

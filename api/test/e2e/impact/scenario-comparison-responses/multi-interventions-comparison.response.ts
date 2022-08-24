@@ -283,7 +283,42 @@ export function getMultiInterventionsScenariosComparison(
             ],
           },
         ],
-        yearSum: [],
+        yearSum: [
+          {
+            year: 2020,
+            values: [
+              {
+                scenarioId: scenarioIdTwo,
+                newImpact: 3000,
+                canceledImpact: 4200,
+                impactResult: -1200,
+              },
+              {
+                scenarioId: scenarioIdOne,
+                newImpact: 4200,
+                canceledImpact: 4200,
+                impactResult: 0,
+              },
+            ],
+          },
+          {
+            year: 2021,
+            values: [
+              {
+                scenarioId: scenarioIdTwo,
+                newImpact: 3045,
+                canceledImpact: 4263,
+                impactResult: -1218,
+              },
+              {
+                scenarioId: scenarioIdOne,
+                newImpact: 4263,
+                canceledImpact: 4263,
+                impactResult: 0,
+              },
+            ],
+          },
+        ],
         metadata: {
           unit: 'm3/year',
         },

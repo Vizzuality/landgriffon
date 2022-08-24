@@ -484,6 +484,59 @@ export class ScenarioComparisonService {
         }
       }
 
+      //Once we have all data, projected or not, append the total sum of impact by year and indicator
+      rangeOfYears.forEach((year: number, indexOfYear: number) => {
+        const allScenariosValues: ScenariosImpactTableRowsValues[] = [];
+        calculatedData.forEach((row: ScenariosImpactTableRows) => {
+          allScenariosValues.push(...row.values);
+        });
+
+        const allValuesForTheYear: ScenariosImpactTableRowsValues[] =
+          allScenariosValues.filter(
+            (scenarioValues: ScenariosImpactTableRowsValues) => {
+              return scenarioValues.year === year;
+            },
+          );
+
+        let allScenariosImpacts: ScenarioImpact[] = [];
+        allValuesForTheYear.forEach(
+          (scenarioValue: ScenariosImpactTableRowsValues) => {
+            allScenariosImpacts.push(...scenarioValue.scenariosImpacts);
+          },
+        );
+
+        const totalSumByYear: ScenarioImpact[] = Object.values(
+          allScenariosImpacts.reduce(
+            (
+              acc: { [index: string]: ScenarioImpact },
+              scenarioImpact: ScenarioImpact,
+            ) => {
+              const { scenarioId, newImpact, canceledImpact } = scenarioImpact;
+              acc[scenarioId] = {
+                scenarioId,
+                newImpact:
+                  (acc[scenarioId] ? acc[scenarioId].newImpact || 0 : 0) +
+                  (newImpact || 0),
+                canceledImpact:
+                  (acc[scenarioId] ? acc[scenarioId].canceledImpact || 0 : 0) +
+                  (canceledImpact || 0),
+              };
+              acc[scenarioId].impactResult =
+                (acc[scenarioId].newImpact || 0) -
+                (acc[scenarioId].canceledImpact || 0);
+
+              return acc;
+            },
+            {},
+          ),
+        );
+
+        scenariosImpactTable[indicatorValuesIndex].yearSum.push({
+          year,
+          values: totalSumByYear,
+        });
+      });
+
       // copy and populate tree skeleton for each indicator
       const skeleton: ScenariosImpactTableRows[] = JSON.parse(
         JSON.stringify(entities),

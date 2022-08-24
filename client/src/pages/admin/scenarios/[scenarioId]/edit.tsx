@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import classnames from 'classnames';
 import toast from 'react-hot-toast';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -157,7 +158,10 @@ const UpdateScenarioPage: React.FC = () => {
                     {interventions.map((intervention) => (
                       <div
                         key={intervention.id}
-                        className="flex items-center p-4 space-x-4 rounded-md bg-yellow"
+                        className={classnames('flex items-center p-4 space-x-4 rounded-md', {
+                          'bg-gray-100': intervention.status === LocationStatus.inactive,
+                          'bg-yellow': intervention.status === LocationStatus.active,
+                        })}
                       >
                         <div className="flex flex-1 space-x-2">
                           <Toggle

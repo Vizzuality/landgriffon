@@ -1,10 +1,9 @@
 import Head from 'next/head';
 import React, { useMemo } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider, Hydrate } from '@tanstack/react-query';
 import { OverlayProvider } from '@react-aria/overlays';
 import { SSRProvider } from '@react-aria/ssr';
-import { Hydrate } from 'react-query/hydration';
 import { SessionProvider } from 'next-auth/react';
 import initStore from 'store';
 

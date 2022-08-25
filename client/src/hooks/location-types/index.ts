@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import type { UseQueryResult, UseQueryOptions } from 'react-query';
-import { useQuery } from 'react-query';
+import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { apiRawService } from 'services/api';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {

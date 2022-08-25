@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import type { UseQueryOptions, UseQueryResult } from 'react-query';
-import { useQuery } from 'react-query';
+import type { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { useAppSelector } from 'store/hooks';
 import { filtersForTabularAPI } from 'store/features/analysis/selector';

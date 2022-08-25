@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { apiRawService } from 'services/api';
 import { setLayer } from 'store/features/analysis/map';
 import { useAppDispatch } from 'store/hooks';

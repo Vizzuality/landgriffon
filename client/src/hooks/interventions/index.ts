@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import { useQuery, useMutation } from 'react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { apiService } from 'services/api';
 
-import type { UseQueryResult, UseQueryOptions } from 'react-query';
-import type { Intervention } from 'containers/interventions/types';
+import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
+import type { Intervention, InterventionDto } from 'containers/interventions/types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   placeholderData: [],
@@ -128,7 +128,7 @@ export function useInterventions(queryParams = {}): ResponseInterventionsData {
 }
 
 export function useCreateNewIntervention() {
-  const createIntervention = (data) =>
+  const createIntervention = (data: InterventionDto) =>
     apiService.request({
       method: 'POST',
       url: '/scenario-interventions',
@@ -136,24 +136,24 @@ export function useCreateNewIntervention() {
     });
 
   return useMutation(createIntervention, {
-    mutationKey: 'addIntervention',
+    mutationKey: ['createIntervention'],
   });
 }
 
 export function useDeleteIntervention() {
-  const deleteIntervention = (id) =>
+  const deleteIntervention = (id: string) =>
     apiService.request({
       method: 'DELETE',
       url: `/scenario-interventions/${id}`,
     });
 
   return useMutation(deleteIntervention, {
-    mutationKey: 'deleteIntervention',
+    mutationKey: ['deleteIntervention'],
   });
 }
 
 export function useUpdateIntervention() {
-  const updateIntervention = ({ id, data }) =>
+  const updateIntervention = ({ id, data }: { id: string; data: Omit<InterventionDto, 'id'> }) =>
     apiService.request({
       method: 'PATCH',
       data,
@@ -161,7 +161,7 @@ export function useUpdateIntervention() {
     });
 
   return useMutation(updateIntervention, {
-    mutationKey: 'editIntervention',
+    mutationKey: ['editIntervention'],
   });
 }
 

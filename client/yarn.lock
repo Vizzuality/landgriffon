@@ -14531,7 +14531,7 @@ __metadata:
     lottie-react: 2.2.1
     next: 12.2.5
     next-auth: 4.10.3
-    next-seo: ^5.5.0
+    next-seo: 5.5.0
     nyc: 15.1.0
     nyc-report-lcov-absolute: 1.0.0
     pino: 8.1.0
@@ -15759,7 +15759,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-seo@npm:^5.5.0":
+"next-seo@npm:5.5.0":
   version: 5.5.0
   resolution: "next-seo@npm:5.5.0"
   peerDependencies:

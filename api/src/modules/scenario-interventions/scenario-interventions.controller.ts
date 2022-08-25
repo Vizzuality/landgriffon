@@ -92,12 +92,8 @@ export class ScenarioInterventionsController {
   })
   @UsePipes(ValidationPipe)
   @Post()
-  async create(
-    @Body() dto: CreateScenarioInterventionDto,
-  ): Promise<ScenarioIntervention> {
-    return this.scenarioInterventionsService.serialize(
-      await this.scenarioInterventionsService.createScenarioIntervention(dto),
-    );
+  async create(@Body() dto: CreateScenarioInterventionDto): Promise<void> {
+    await this.scenarioInterventionsService.createScenarioIntervention(dto);
   }
 
   @ApiOperation({ description: 'Update a scenario intervention' })

@@ -61,15 +61,6 @@ export class ScenarioInterventionsService extends AppBaseService<
     );
   }
 
-  // TODO: take this out somewhere else
-  // Avoid type casting
-  /**
-   * @description: Applies percentage selected by the user, to existing tonnage
-   * @param sourcingLocations
-   * @param customPercentage
-   * @private
-   */
-
   get serializerConfig(): JSONAPISerializerConfig<ScenarioIntervention> {
     return {
       attributes: [
@@ -159,9 +150,8 @@ export class ScenarioInterventionsService extends AppBaseService<
 
     // Creating Indicator records for newly created Sourcing Locations of type canceled
     // Since a user could apply a percentage to apply for a record in the actual data
-
     for (const sourcingLocation of newCancelledByInterventionLocationsData) {
-      for await (const sourcingRecord of sourcingLocation.sourcingRecords) {
+      for (const sourcingRecord of sourcingLocation.sourcingRecords) {
         const indicatorRecordsWithNewTonnage: IndicatorRecord[] =
           await this.indicatorRecordsService.createIndicatorRecordsBySourcingRecords(
             {
@@ -265,7 +255,6 @@ export class ScenarioInterventionsService extends AppBaseService<
      *
      *
      */
-    //TODO: Extend intervention with app base repository to save in chunk including all related resources
     const newIntervention: ScenarioIntervention =
       await this.scenarioInterventionRepository.save(newScenarioIntervention);
 

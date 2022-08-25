@@ -1,4 +1,5 @@
 import {
+  Check,
   Column,
   Entity,
   JoinColumn,
@@ -58,6 +59,7 @@ export const sourcingLocationResource: BaseServiceResource = {
 };
 
 @Entity()
+@Check('(num_nonnulls("scenarioInterventionId","interventionType") in (0,2))')
 export class SourcingLocation extends TimestampedBaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')

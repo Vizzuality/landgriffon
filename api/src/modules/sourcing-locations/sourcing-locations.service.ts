@@ -135,9 +135,7 @@ export class SourcingLocationsService extends AppBaseService<
           'sl.locationLongitude',
           'sl.locationLatitude',
           'sr.year',
-          `sr.tonnage * ${
-            createInterventionDto.percentage / 100
-          } as sr.tonnage`,
+          'sr.tonnage',
         ])
         .leftJoin('sl.sourcingRecords', 'sr')
         .where('sl."materialId" IN (:...materialIds)', {

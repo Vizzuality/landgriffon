@@ -774,6 +774,8 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                           <Input
                             {...register('GHG_LUC_T')}
                             type="number"
+                            step={0.001}
+                            min={0}
                             defaultValue={0}
                             error={errors?.GHG_LUC_T?.message}
                             theme="inside-unit"
@@ -785,6 +787,8 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                           <Input
                             {...register('DF_LUC_T')}
                             type="number"
+                            step={0.001}
+                            min={0}
                             defaultValue={0}
                             error={errors?.DF_LUC_T?.message}
                             theme="inside-unit"
@@ -796,6 +800,8 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                           <Input
                             {...register('UWU_T')}
                             type="number"
+                            step={0.001}
+                            min={0}
                             defaultValue={0}
                             error={errors?.UWU_T?.message}
                             theme="inside-unit"
@@ -807,6 +813,8 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                           <Input
                             {...register('BL_LUC_T')}
                             type="number"
+                            step={0.001}
+                            min={0}
                             defaultValue={0}
                             error={errors?.BL_LUC_T?.message}
                             theme="inside-unit"

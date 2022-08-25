@@ -22,7 +22,7 @@ type LayerCategoriesApiResponse = {
 
 const useContextualLayers = () => {
   const dispatch = useAppDispatch();
-  const query = useQuery(
+  return useQuery(
     ['contextual-layers'],
     () =>
       apiRawService
@@ -43,8 +43,6 @@ const useContextualLayers = () => {
       },
     },
   );
-
-  return query;
 };
 
 export default useContextualLayers;

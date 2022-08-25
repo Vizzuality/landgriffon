@@ -29,6 +29,7 @@ export class InterventionGeneratorService {
   ): Promise<CreateScenarioInterventionDto> {
     const dtoWithDescendants: CreateScenarioInterventionDto = { ...dto };
 
+    // A Material Id is always required
     dtoWithDescendants.materialIds =
       await this.materialService.getMaterialsDescendants(dto.materialIds);
 
@@ -51,6 +52,13 @@ export class InterventionGeneratorService {
     return dtoWithDescendants;
   }
 
+  /**
+   * @description: For each cancelled location, get all elements: AdminRegions, BU, Suppliers, Materials
+   *               to be added as replaced Elements of the Intervention
+   * @param newIntervention
+   * @param cancelledSourcingLocations
+   */
+
   async addReplacedElementsToIntervention(
     newIntervention: ScenarioIntervention,
     cancelledSourcingLocations: SourcingLocation[],
@@ -59,6 +67,7 @@ export class InterventionGeneratorService {
     const adminRegionsIds: string[] = [];
     const businessUnitIds: string[] = [];
     const supplierIds: string[] = [];
+    // Get Ids for all the elements to avoid a round trip to DB for each Id
     for (const sourcingLocation of cancelledSourcingLocations) {
       if (sourcingLocation.materialId) {
         materialIds.push(sourcingLocation.materialId);
@@ -80,9 +89,11 @@ export class InterventionGeneratorService {
 
     newIntervention.replacedMaterials =
       await this.materialService.getMaterialsById(materialIds);
+    // If Ids are received, get those
     if (adminRegionsIds.length) {
       newIntervention.replacedAdminRegions =
         await this.adminRegionService.getAdminRegionsById(adminRegionsIds);
+      // If no Id is received, the user want to replace all of them present in Sourcing Locations
     } else {
       newIntervention.replacedAdminRegions =
         await this.adminRegionService.getAdminRegionWithSourcingLocations(

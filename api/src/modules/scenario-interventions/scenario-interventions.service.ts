@@ -20,6 +20,7 @@ import { UpdateScenarioInterventionDto } from 'modules/scenario-interventions/dt
 import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
+  LOCATION_TYPES,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
@@ -116,7 +117,7 @@ export class ScenarioInterventionsService extends AppBaseService<
 
   async createScenarioIntervention(
     dto: CreateScenarioInterventionDto,
-  ): Promise<void> {
+  ): Promise<Partial<ScenarioIntervention>> {
     /**
      *  Getting descendants of adminRegions, materials, suppliers adn businessUnits received as filters, if exists
      */
@@ -135,6 +136,13 @@ export class ScenarioInterventionsService extends AppBaseService<
     if (!actualSourcingDataWithTonnage.length) {
       throw new BadRequestException('No actual data for requested filters');
     }
+
+    // Applying percentage received from user to the volume of tonnes of filter-matching Sourcing Locations
+    actualSourcingDataWithTonnage.forEach((sl: SourcingLocation) => {
+      sl.sourcingRecords.map((sr: SourcingRecord) => {
+        sr.tonnage = sr.tonnage * (dto.percentage / 100);
+      });
+    });
 
     /**
      * NEW SOURCING LOCATIONS #1 - Basically copies of the actual existing Sourcing Locations that will be replaced by intervention,
@@ -236,7 +244,7 @@ export class ScenarioInterventionsService extends AppBaseService<
         break;
 
       case SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY:
-        const newEfficiencyChangeInterventionLocations: CreateSourcingLocationDto[] =
+        const newEfficiencyChangeInterventionLocations: SourcingLocation[] =
           await this.createNewSourcingLocationsForIntervention(
             actualSourcingDataWithTonnage,
             SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
@@ -258,11 +266,18 @@ export class ScenarioInterventionsService extends AppBaseService<
      *
      */
     //TODO: Extend intervention with app base repository to save in chunk including all related resources
-    await this.scenarioInterventionRepository.insert(newScenarioIntervention);
+    const newIntervention: ScenarioIntervention =
+      await this.scenarioInterventionRepository.save(newScenarioIntervention);
+
+    return {
+      id: newIntervention.id,
+      title: newScenarioIntervention.title,
+      updatedById: newIntervention.updatedById,
+    };
     // TODO: try to use insert
-    await this.sourcingLocationsService.save(
-      newCancelledByInterventionLocationsData,
-    );
+    // await this.sourcingLocationsService.save(
+    //   newCancelledByInterventionLocationsData,
+    // );
 
     //return this.scenarioInterventionRepository.save(newScenarioIntervention);
   }
@@ -310,7 +325,7 @@ export class ScenarioInterventionsService extends AppBaseService<
         (sourcingRecord: { year: number; tonnage: number }) => {
           return {
             year: sourcingRecord.year,
-            tonnage: sourcingRecord.tonnage * (dto.percentage / 100),
+            tonnage: sourcingRecord.tonnage,
           };
         },
       );
@@ -464,14 +479,40 @@ export class ScenarioInterventionsService extends AppBaseService<
   }
 
   private async createReplacingSourcingLocationsForIntervention(
-    newInterventionLocation: CreateSourcingLocationDto[],
+    newInterventionLocations: SourcingData[],
     newIndicatorCoefficients: IndicatorCoefficientsDto | undefined,
     newScenarioIntervention: ScenarioIntervention,
   ): Promise<void> {
-    const newInterventionSourcingLocations: SourcingLocation[] =
-      await this.sourcingLocationsService.save(newInterventionLocation);
+    const createdSourcingLocations: SourcingLocation[] = [];
 
-    for (const sourcingLocation of newInterventionSourcingLocations) {
+    for (const location of newInterventionLocations) {
+      const newInterventionLocation: SourcingLocation = new SourcingLocation();
+      newInterventionLocation.materialId = location.materialId;
+      newInterventionLocation.locationType =
+        location.locationType as LOCATION_TYPES;
+      newInterventionLocation.locationCountryInput =
+        location.locationCountryInput;
+      newInterventionLocation.locationAddressInput =
+        location.locationAddressInput;
+      newInterventionLocation.locationLatitude = location.locationLatitude;
+      newInterventionLocation.locationLongitude = location.locationLongitude;
+      newInterventionLocation.t1SupplierId = location.t1SupplierId;
+      newInterventionLocation.producerId = location.producerId;
+      newInterventionLocation.businessUnitId =
+        location.businessUnitId as string;
+      newInterventionLocation.geoRegionId = location.geoRegionId as string;
+      newInterventionLocation.adminRegionId = location.adminRegionId as string;
+      newInterventionLocation.sourcingRecords = location.sourcingRecords.map(
+        (elem: any) => {
+          return { year: elem.year, tonnage: elem.tonnage } as SourcingRecord;
+        },
+      );
+      newInterventionLocation.interventionType =
+        SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING;
+      createdSourcingLocations.push(newInterventionLocation);
+    }
+
+    for (const sourcingLocation of createdSourcingLocations) {
       for await (const sourcingRecord of sourcingLocation.sourcingRecords) {
         await this.indicatorRecordsService.createIndicatorRecordsBySourcingRecords(
           {
@@ -486,8 +527,7 @@ export class ScenarioInterventionsService extends AppBaseService<
       }
     }
 
-    newScenarioIntervention.newSourcingLocations =
-      newInterventionSourcingLocations;
+    newScenarioIntervention.newSourcingLocations = createdSourcingLocations;
   }
 
   static createInterventionInstance(
@@ -515,7 +555,7 @@ export class ScenarioInterventionsService extends AppBaseService<
   async updateIntervention(
     id: string,
     dto: UpdateScenarioInterventionDto,
-  ): Promise<ScenarioIntervention> {
+  ): Promise<Partial<ScenarioIntervention>> {
     for (const k of Object.keys(dto)) {
       if (!this.basicUpdateColumns.includes(k)) {
         return await this.replaceScenarioIntervention(id, dto);
@@ -531,22 +571,25 @@ export class ScenarioInterventionsService extends AppBaseService<
   async replaceScenarioIntervention(
     id: string,
     dto: UpdateScenarioInterventionDto,
-  ): Promise<ScenarioIntervention> {
-    // const currentScenarioIntervention: ScenarioIntervention =
-    //   await this.repository.findOneOrFail({ id });
-    // const createScenarioDto: CreateScenarioInterventionDto = {
-    //   ...(currentScenarioIntervention.createDto as unknown as CreateScenarioInterventionDto),
-    //   ...dto,
-    // };
-    // const newScenarioIntervention: ScenarioIntervention =
-    //   await this.createScenarioIntervention(createScenarioDto);
-    //
-    // await this.repository.remove(currentScenarioIntervention);
-    // // since we create new intervention, updatedBy must be set manually
-    // newScenarioIntervention.updatedById = dto.updatedById;
-    // await this.repository.save(newScenarioIntervention);
-    //return newScenarioIntervention;
-    return [] as unknown as ScenarioIntervention;
+  ): Promise<Partial<ScenarioIntervention>> {
+    const currentScenarioIntervention: ScenarioIntervention =
+      await this.repository.findOneOrFail({ id });
+    const createScenarioDto: CreateScenarioInterventionDto = {
+      ...(currentScenarioIntervention.createDto as unknown as CreateScenarioInterventionDto),
+      ...dto,
+    };
+    const newScenarioIntervention: Partial<ScenarioIntervention> =
+      await this.createScenarioIntervention(createScenarioDto);
+
+    await this.repository.remove(currentScenarioIntervention);
+    // since we create new intervention, updatedBy must be set manually
+    newScenarioIntervention.updatedById = dto.updatedById;
+    await this.repository.save(newScenarioIntervention);
+
+    return {
+      id: newScenarioIntervention.id,
+      updatedById: newScenarioIntervention.updatedById,
+    };
   }
 
   updateNewSupplierLocationTonnage(

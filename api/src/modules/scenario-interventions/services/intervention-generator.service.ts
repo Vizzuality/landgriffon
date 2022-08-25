@@ -81,46 +81,32 @@ export class InterventionGeneratorService {
       if (sourcingLocation.producerId || sourcingLocation.t1SupplierId) {
         supplierIds.push(
           sourcingLocation.producerId
-            ? sourcingLocation.producerId
-            : sourcingLocation.t1SupplierId,
+            ? (sourcingLocation.producerId as string)
+            : (sourcingLocation.t1SupplierId as string),
         );
       }
     }
 
+    /**Canceled Sourcing locations already have the ids of AdminRegion, Material and Business Unit that will be canceled by the intervention
+     * Fetching those entities to add them as 'replaced' to the intervention
+     *
+     */
     newIntervention.replacedMaterials =
       await this.materialService.getMaterialsById(materialIds);
-    // If Ids are received, get those
-    if (adminRegionsIds.length) {
-      newIntervention.replacedAdminRegions =
-        await this.adminRegionService.getAdminRegionsById(adminRegionsIds);
-      // If no Id is received, the user want to replace all of them present in Sourcing Locations
-    } else {
-      newIntervention.replacedAdminRegions =
-        await this.adminRegionService.getAdminRegionWithSourcingLocations(
-          {},
-          false,
-        );
-    }
-    if (businessUnitIds) {
-      newIntervention.replacedBusinessUnits =
-        await this.businessUnitService.getBusinessUnitsById(businessUnitIds);
-    } else {
-      newIntervention.replacedBusinessUnits =
-        await this.businessUnitService.getBusinessUnitWithSourcingLocations(
-          {},
-          false,
-        );
-    }
+
+    newIntervention.replacedAdminRegions =
+      await this.adminRegionService.getAdminRegionsById(adminRegionsIds);
+
+    newIntervention.replacedBusinessUnits =
+      await this.businessUnitService.getBusinessUnitsById(businessUnitIds);
+
+    /** t1SupplierId and producerId columns are not obligatorey for Sourcing location, so if Canceles Sourcing Locations have suppliers or producer -
+     *  they will be added as replaced, else - replacedSuppliers will be empty
+     */
 
     if (supplierIds.length) {
       newIntervention.replacedSuppliers =
         await this.suppliersService.getSuppliersById(supplierIds);
-    } else {
-      newIntervention.replacedSuppliers =
-        await this.suppliersService.getSuppliersWithSourcingLocations(
-          {},
-          false,
-        );
     }
 
     newIntervention.replacedSourcingLocations = cancelledSourcingLocations;

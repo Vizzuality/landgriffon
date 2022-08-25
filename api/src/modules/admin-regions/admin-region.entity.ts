@@ -95,7 +95,7 @@ export class AdminRegion extends BaseEntity {
   @ApiPropertyOptional()
   @OneToMany(
     () => SourcingLocation,
-    (srcLoc: SourcingLocation) => srcLoc.material,
+    (srcLoc: SourcingLocation) => srcLoc.adminRegion,
   )
   sourcingLocations: SourcingLocation[];
 

@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useQueryClient } from 'react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { Menu } from '@headlessui/react';
 import { XIcon, PlusIcon, DotsVerticalIcon } from '@heroicons/react/solid';
 
@@ -49,7 +49,7 @@ const UpdateScenarioPage: React.FC = () => {
         {
           onSuccess: () => {
             toast.success('Your changes were successfully saved.');
-            queryClient.invalidateQueries('scenariosList');
+            queryClient.invalidateQueries(['scenariosList']);
           },
           onError: (error: ErrorResponse) => {
             const { errors } = error.response?.data;
@@ -68,7 +68,7 @@ const UpdateScenarioPage: React.FC = () => {
         {
           onSuccess: () => {
             toast.success('Intervention has been successfully updated.');
-            queryClient.invalidateQueries('scenarioInterventions');
+            queryClient.invalidateQueries(['scenarioInterventions']);
           },
           onError: (error: ErrorResponse) => {
             const { errors } = error.response?.data;
@@ -84,7 +84,7 @@ const UpdateScenarioPage: React.FC = () => {
       deleteIntervention.mutate(interventionId, {
         onSuccess: () => {
           toast.success('Intervention has been successfully deleted.');
-          queryClient.invalidateQueries('scenarioInterventions');
+          queryClient.invalidateQueries(['scenarioInterventions']);
         },
       });
     },

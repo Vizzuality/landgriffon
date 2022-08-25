@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import type { UseQueryResult, UseInfiniteQueryResult } from 'react-query';
-import { useQuery, useQueryClient, useInfiniteQuery, useMutation } from 'react-query';
+import type { UseQueryResult, UseInfiniteQueryResult } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useInfiniteQuery, useMutation } from '@tanstack/react-query';
 
 import { apiService } from 'services/api';
 import { useAppSelector } from 'store/hooks';
@@ -139,9 +139,9 @@ export function useDeleteScenario() {
         url: `/scenarios/${decodeURIComponent(id as string)}`,
       }),
     {
-      mutationKey: 'deleteScenario',
+      mutationKey: ['deleteScenario'],
       onSuccess: () => {
-        queryClient.invalidateQueries('scenariosList');
+        queryClient.invalidateQueries(['scenariosList']);
       },
     },
   );
@@ -156,7 +156,7 @@ export function useUpdateScenario() {
     });
 
   return useMutation(updateScenario, {
-    mutationKey: 'editScenario',
+    mutationKey: ['editScenario'],
   });
 }
 
@@ -169,6 +169,6 @@ export function useCreateScenario() {
     });
 
   return useMutation(createScenario, {
-    mutationKey: 'createScenario',
+    mutationKey: ['createScenario'],
   });
 }

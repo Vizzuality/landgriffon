@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
-import type { QueryFunction, UseQueryOptions, UseQueryResult } from 'react-query';
-import { useQueries } from 'react-query';
-import { useQuery } from 'react-query';
+import type { QueryFunction, UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import chroma from 'chroma-js';
 import type { ScaleOrdinal, ScaleThreshold } from 'd3-scale';
 import { scaleThreshold, scaleOrdinal } from 'd3-scale';
@@ -239,8 +238,8 @@ export const useAllContextualLayersData = (options: Partial<UseQueryOptions> = {
     resolution: origins?.length ? 6 : 4,
   };
 
-  const queries = useQueries(
-    Object.values(layers)
+  const queries = useQueries({
+    queries: Object.values(layers)
       .filter((layer) => layer.isContextual)
       .map((layer) => ({
         queryKey: ['h3-data-contextual', layer.id, urlParams],
@@ -255,7 +254,7 @@ export const useAllContextualLayersData = (options: Partial<UseQueryOptions> = {
         select: (data: H3APIResponse) => ({ ...data, layerId: layer.id }),
         enabled: (options.enabled ?? true) && layer.active && !!layer.id && !!urlParams.year,
       })),
-  );
+  });
 
   const map = useMemo(
     () =>

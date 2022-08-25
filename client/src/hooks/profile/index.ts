@@ -1,7 +1,7 @@
 import type { AxiosPromise } from 'axios';
 import { useMemo } from 'react';
-import type { UseQueryResult, UseQueryOptions } from 'react-query';
-import { useQuery, useQueryClient, useMutation } from 'react-query';
+import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 
 import { apiService } from 'services/api';
 
@@ -17,7 +17,7 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions<ProfilePayload> = {
 
 export function useProfile(): ResponseData {
   const fetchProfile = useQuery(
-    'profile',
+    ['profile'],
     async () =>
       apiService
         .request({
@@ -50,8 +50,8 @@ export function useUpdateProfile() {
       });
 
   return useMutation<unknown, ErrorResponse, ProfilePayload>(patchProfile, {
-    mutationKey: 'update-profile',
-    onSuccess: () => queryClient.invalidateQueries('profile'),
+    mutationKey: ['update-profile'],
+    onSuccess: () => queryClient.invalidateQueries(['profile']),
   });
 }
 
@@ -69,6 +69,6 @@ export function useUpdatePassword() {
       });
 
   return useMutation<unknown, ErrorResponse, PasswordPayload>(patchPassword, {
-    mutationKey: 'update-password',
+    mutationKey: ['update-password'],
   });
 }

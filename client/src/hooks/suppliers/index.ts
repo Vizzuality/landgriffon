@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import type { UseQueryResult, UseQueryOptions } from 'react-query';
-import { useQuery } from 'react-query';
+import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { apiService } from 'services/api';
 import type { Supplier } from 'types';
 

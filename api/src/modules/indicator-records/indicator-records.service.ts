@@ -287,7 +287,7 @@ export class IndicatorRecordsService extends AppBaseService<
       },
     );
 
-    return this.indicatorRecordRepository.save(indicatorRecords);
+    return indicatorRecords;
   }
 
   /**

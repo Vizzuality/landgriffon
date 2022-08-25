@@ -110,7 +110,12 @@ export class SourcingLocationsService extends AppBaseService<
     return await this.sourcingLocationRepository.saveChunks(sourcingLocations);
   }
 
-  async findFilteredSourcingLocationsForIntervention(
+  /**
+   * @description: Find Sourcing Locations by filters applying the custom percentage
+   * @param createInterventionDto
+   */
+
+  async findSourcingLocationsWithAppliedPercentageForSourcingRecords(
     createInterventionDto: CreateScenarioInterventionDto,
   ): Promise<SourcingLocation[]> {
     const queryBuilder: SelectQueryBuilder<SourcingLocation> =
@@ -130,7 +135,9 @@ export class SourcingLocationsService extends AppBaseService<
           'sl.locationLongitude',
           'sl.locationLatitude',
           'sr.year',
-          'sr.tonnage',
+          `sr.tonnage * ${
+            createInterventionDto.percentage / 100
+          } as sr.tonnage`,
         ])
         .leftJoin('sl.sourcingRecords', 'sr')
         .where('sl."materialId" IN (:...materialIds)', {
@@ -172,6 +179,7 @@ export class SourcingLocationsService extends AppBaseService<
         }),
       );
     }
+    const query: any = queryBuilder.getQueryAndParameters();
 
     return queryBuilder.getMany();
   }

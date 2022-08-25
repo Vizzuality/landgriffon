@@ -1,0 +1,26 @@
+{
+  "errors": [
+      {
+          "status": "400",
+          "title": "Bad Request Exception",
+          "meta": {
+              "timestamp": "2022-08-25T09:10:24.763Z",
+              "path": "/api/v1/scenarios/12345",
+              "type": "Error",
+              "rawError": {
+                  "response": {
+                      "statusCode": 400,
+                      "message": [
+                          "Something went wrong during intervention creation"
+                      ],
+                      "error": "Bad Request"
+                  },
+                  "status": 400,
+                  "message": "Bad Request Exception",
+                  "name": "BadRequestException"
+              },
+              "stack": ""
+          }
+      }
+  ]
+}

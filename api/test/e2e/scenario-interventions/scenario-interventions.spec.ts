@@ -210,24 +210,10 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(response.status).toBe(HttpStatus.CREATED);
 
-      const createdScenarioIntervention =
-        await scenarioInterventionRepository.findOne(response.body.data.id);
-
-      if (!createdScenarioIntervention) {
-        throw new Error('Error loading created Scenario intervention');
-      }
-
-      expect(createdScenarioIntervention.title).toEqual(
-        'test scenario intervention',
-      );
-
-      expect(response).toHaveJSONAPIAttributes([
-        ...expectedJSONAPIAttributes,
-        'replacedMaterials',
-        'replacedBusinessUnits',
-        'replacedAdminRegions',
-        'replacedSuppliers',
-      ]);
+      const allInterventions: [ScenarioIntervention[], number] =
+        await scenarioInterventionRepository.findAndCount();
+      expect(allInterventions[1]).toEqual(1);
+      expect(typeof allInterventions[0][0].id).toBe('string');
 
       const allSourcingLocations: [SourcingLocation[], number] =
         await sourcingLocationRepository.findAndCount();
@@ -266,7 +252,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(canceledSourcingLocations.length).toBe(1);
       expect(canceledSourcingLocations[0].scenarioInterventionId).toEqual(
-        response.body.data.id,
+        allInterventions[0][0].id,
       );
       expect(canceledSourcingLocations[0].materialId).toEqual(
         preconditions.material1Descendant.id,
@@ -287,7 +273,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
       expect(canceledSourcingRecords.length).toBe(1);
-      expect(canceledSourcingRecords[0].tonnage).toEqual('500');
+      expect(canceledSourcingRecords[0].tonnage).toEqual('250');
 
       const newSourcingLocations: SourcingLocation[] =
         await sourcingLocationRepository.find({
@@ -298,7 +284,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(newSourcingLocations.length).toBe(1);
       expect(newSourcingLocations[0].scenarioInterventionId).toEqual(
-        response.body.data.id,
+        allInterventions[0][0].id,
       );
       expect(newSourcingLocations[0].adminRegionId).toEqual(
         preconditions.adminRegion1Descendant.id,
@@ -312,7 +298,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
       expect(newSourcingRecords.length).toBe(1);
-      expect(newSourcingRecords[0].tonnage).toEqual('500');
+      expect(newSourcingRecords[0].tonnage).toEqual('250');
     });
   });
 
@@ -352,24 +338,14 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(response.status).toBe(HttpStatus.CREATED);
 
-      const createdScenarioIntervention =
-        await scenarioInterventionRepository.findOne(response.body.data.id);
+      const allInterventions: [ScenarioIntervention[], number] =
+        await scenarioInterventionRepository.findAndCount();
+      expect(allInterventions[1]).toEqual(1);
+      expect(typeof allInterventions[0][0].id).toBe('string');
 
-      if (!createdScenarioIntervention) {
-        throw new Error('Error loading created Scenario intervention');
-      }
-
-      expect(createdScenarioIntervention.title).toEqual(
+      expect(allInterventions[0][0].title).toEqual(
         'scenario intervention supplier',
       );
-
-      expect(response).toHaveJSONAPIAttributes([
-        ...expectedJSONAPIAttributes,
-        'replacedMaterials',
-        'replacedBusinessUnits',
-        'replacedAdminRegions',
-        'replacedSuppliers',
-      ]);
 
       const allSourcingLocations: [SourcingLocation[], number] =
         await sourcingLocationRepository.findAndCount();
@@ -388,7 +364,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(canceledSourcingLocations.length).toBe(1);
       expect(canceledSourcingLocations[0].scenarioInterventionId).toEqual(
-        response.body.data.id,
+        allInterventions[0][0].id,
       );
       expect(canceledSourcingLocations[0].materialId).toEqual(
         preconditions.material1Descendant.id,
@@ -405,7 +381,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
       expect(canceledSourcingRecords.length).toBe(1);
-      expect(canceledSourcingRecords[0].tonnage).toEqual('500');
+      expect(canceledSourcingRecords[0].tonnage).toEqual('250');
 
       const newSourcingLocations: SourcingLocation[] =
         await sourcingLocationRepository.find({
@@ -416,7 +392,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(newSourcingLocations.length).toBe(1);
       expect(newSourcingLocations[0].scenarioInterventionId).toEqual(
-        response.body.data.id,
+        allInterventions[0][0].id,
       );
       expect(newSourcingLocations[0].materialId).toEqual(
         preconditions.material1Descendant.id,
@@ -434,7 +410,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
       expect(newSourcingRecords.length).toBe(1);
-      expect(newSourcingRecords[0].tonnage).toEqual('500');
+      expect(newSourcingRecords[0].tonnage).toEqual('250');
     });
 
     test('Create a scenario intervention of type Change of supplier location with start year for which there are multiple years, should be successful', async () => {
@@ -471,24 +447,14 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(response.status).toBe(HttpStatus.CREATED);
 
-      const createdScenarioIntervention =
-        await scenarioInterventionRepository.findOne(response.body.data.id);
+      const allInterventions: [ScenarioIntervention[], number] =
+        await scenarioInterventionRepository.findAndCount();
+      expect(allInterventions[1]).toEqual(1);
+      expect(typeof allInterventions[0][0].id).toBe('string');
 
-      if (!createdScenarioIntervention) {
-        throw new Error('Error loading created Scenario intervention');
-      }
-
-      expect(createdScenarioIntervention.title).toEqual(
+      expect(allInterventions[0][0].title).toEqual(
         'scenario intervention supplier',
       );
-
-      expect(response).toHaveJSONAPIAttributes([
-        ...expectedJSONAPIAttributes,
-        'replacedMaterials',
-        'replacedBusinessUnits',
-        'replacedAdminRegions',
-        'replacedSuppliers',
-      ]);
 
       const allSourcingLocations: [SourcingLocation[], number] =
         await sourcingLocationRepository.findAndCount();
@@ -507,7 +473,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(canceledSourcingLocations.length).toBe(2);
       expect(canceledSourcingLocations[0].scenarioInterventionId).toEqual(
-        response.body.data.id,
+        allInterventions[0][0].id,
       );
       expect(canceledSourcingLocations[0].materialId).toEqual(
         preconditions.material1Descendant.id,
@@ -537,7 +503,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(newSourcingLocations.length).toBe(1);
       expect(newSourcingLocations[0].scenarioInterventionId).toEqual(
-        response.body.data.id,
+        allInterventions[0][0].id,
       );
       expect(newSourcingLocations[0].materialId).toEqual(
         preconditions.material1Descendant.id,
@@ -555,7 +521,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
       expect(newSourcingRecords.length).toBe(2);
-      expect(newSourcingRecords[0].tonnage).toEqual('500');
+      expect(newSourcingRecords[0].tonnage).toEqual('250');
       expect(newSourcingRecords[0].year).toEqual(2018);
       expect(newSourcingRecords[1].year).toEqual(2019);
     });
@@ -606,26 +572,14 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(response.status).toBe(HttpStatus.CREATED);
 
-      const createdScenarioIntervention =
-        await scenarioInterventionRepository.findOne(response.body.data.id);
+      const allInterventions: [ScenarioIntervention[], number] =
+        await scenarioInterventionRepository.findAndCount();
+      expect(allInterventions[1]).toEqual(1);
+      expect(typeof allInterventions[0][0].id).toBe('string');
 
-      if (!createdScenarioIntervention) {
-        throw new Error('Error loading created Scenario intervention');
-      }
-
-      expect(createdScenarioIntervention.title).toEqual(
+      expect(allInterventions[0][0].title).toEqual(
         'scenario intervention material',
       );
-
-      expect(response).toHaveJSONAPIAttributes([
-        ...expectedJSONAPIAttributes,
-        'replacedMaterials',
-        'replacedBusinessUnits',
-        'replacedAdminRegions',
-        'replacedSuppliers',
-        'newAdminRegion',
-        'newMaterial',
-      ]);
 
       const allSourcingLocations: [SourcingLocation[], number] =
         await sourcingLocationRepository.findAndCount();
@@ -653,7 +607,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(newSourcingLocations.length).toBe(1);
       expect(newSourcingLocations[0].scenarioInterventionId).toEqual(
-        response.body.data.id,
+        allInterventions[0][0].id,
       );
       expect(newSourcingLocations[0].materialId).toEqual(replacingMaterial.id);
       expect(newSourcingLocations[0].adminRegionId).not.toEqual(
@@ -1207,7 +1161,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const preconditions: ScenarioInterventionPreconditions =
         await createInterventionPreconditionsWithMultipleYearRecords();
 
-      const responseOnCreate = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1230,21 +1184,26 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
       expect(HttpStatus.CREATED);
-      const scenarioIntervention =
-        await scenarioInterventionRepository.findOneOrFail(
-          responseOnCreate.body.data.id,
-        );
+
+      const allInterventions: [ScenarioIntervention[], number] =
+        await scenarioInterventionRepository.findAndCount();
+      expect(allInterventions[1]).toEqual(1);
+
       const sourcingRecordsCountBeforeUpdate: number =
         await sourcingRecordRepository.count();
       expect(sourcingRecordsCountBeforeUpdate).toEqual(8);
 
       const response = await request(app.getHttpServer())
-        .patch(`/api/v1/scenario-interventions/${scenarioIntervention.id}`)
+        .patch(`/api/v1/scenario-interventions/${allInterventions[0][0].id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           startYear: 2019,
         })
         .expect(HttpStatus.OK);
+
+      const allInterventionsAfterUpdate: [ScenarioIntervention[], number] =
+        await scenarioInterventionRepository.findAndCount();
+      expect(allInterventionsAfterUpdate[1]).toEqual(1);
 
       const updatedScenarioIntervention =
         await scenarioInterventionRepository.findOneOrFail(
@@ -1253,13 +1212,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       expect(updatedScenarioIntervention.updatedById).toEqual(userId);
 
       // Note: Update response does not retrieve the related resources
-      expect(response).toHaveJSONAPIAttributes([
-        ...expectedJSONAPIAttributes,
-        'replacedMaterials',
-        'replacedBusinessUnits',
-        'replacedAdminRegions',
-        'replacedSuppliers',
-      ]);
+
       const sourcingRecordsCountAfterUpdate: number =
         await sourcingRecordRepository.count();
       expect(sourcingRecordsCountAfterUpdate).toEqual(6);
@@ -1573,7 +1526,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           });
 
-        responseAdminRegions.body.data.attributes.replacedAdminRegions.every(
+        const createdScenarioIntervention1 =
+          await scenarioInterventionRepository.findOneOrFail(
+            responseAdminRegions.body.data.id,
+          );
+
+        createdScenarioIntervention1.replacedAdminRegions.every(
           (adminRegion: any) =>
             expect(parseInt(adminRegion.name.split(':')[1]) % 2 === 0).toBe(
               true,
@@ -1593,9 +1551,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           });
 
-        responseBusinessUnits.body.data.attributes.replacedBusinessUnits.forEach(
-          (bu: any) =>
-            expect(bu.name.includes('child business unit')).toBe(true),
+        const createdScenarioIntervention2 =
+          await scenarioInterventionRepository.findOneOrFail(
+            responseBusinessUnits.body.data.id,
+          );
+
+        createdScenarioIntervention2.replacedBusinessUnits.forEach((bu: any) =>
+          expect(bu.name.includes('child business unit')).toBe(true),
         );
 
         const responseSuppliers = await request(app.getHttpServer())
@@ -1610,9 +1572,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           });
 
-        expect(
-          responseSuppliers.body.data.attributes.replacedSuppliers[0].name,
-        ).toEqual(childSupplier.name);
+        const createdScenarioIntervention3 =
+          await scenarioInterventionRepository.findOneOrFail(
+            responseSuppliers.body.data.id,
+          );
+        expect(createdScenarioIntervention3.replacedSuppliers[0].name).toEqual(
+          childSupplier.name,
+        );
       },
     );
 

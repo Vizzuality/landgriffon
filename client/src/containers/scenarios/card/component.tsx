@@ -31,13 +31,13 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
   }, [data?.id, deleteScenario]);
 
   return (
-    <div className="rounded-md bg-white p-6 space-y-6 shadow-sm" data-testid="scenario-card">
+    <div className="p-6 space-y-6 bg-white rounded-md shadow-sm" data-testid="scenario-card">
       <h2 className="text-lg">{data.title}</h2>
-      {data.description && <p className="text-gray-500 text-xs leading-5">{data.description}</p>}
+      {data.description && <p className="text-xs leading-5 text-gray-500">{data.description}</p>}
       {/* TO-DO: Fix growth rate of 1.5% meanwhile is implemented in the API */}
       <div>
         <h3 className="text-xs">Growth rates</h3>
-        <div className="flex space-x-4 mt-2">
+        <div className="flex mt-2 space-x-4">
           <div className="rounded-full bg-blue py-0.5 px-3 text-xs">Entire company +1.5%/yr</div>
         </div>
       </div>
@@ -48,7 +48,7 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
           interventions &&
           interventions.map((intervention) => (
             <div
-              className="flex space-x-4 mt-2"
+              className="flex mt-2 space-x-4"
               key={intervention.id}
               data-testid="scenario-interventions-item"
             >
@@ -65,15 +65,15 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
         <Button theme="secondary" onClick={handleDeleteScenario}>
           Delete
         </Button>
-        <div className="flex flex-1 justify-end items-center gap-4">
-          <div className="text-xs text-right text-gray-400 leading-4">
+        <div className="flex items-center justify-end flex-1 gap-4">
+          <div className="text-xs leading-4 text-right text-gray-400">
             Modified:
             <br /> {format(new Date(data.updatedAt), 'yyyy/MM/dd')}
           </div>
           <Link href={`/admin/scenarios/${data.id}/edit`} passHref>
             <AnchorLink theme="secondary">Edit</AnchorLink>
           </Link>
-          <Link href={`/analysis?mode=table&scenarioId=${data.id}`} passHref>
+          <Link href={{ pathname: `/analysis/table`, query: { scenarioId: data.id } }} passHref>
             <AnchorLink theme="primary">Analyze</AnchorLink>
           </Link>
         </div>

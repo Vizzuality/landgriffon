@@ -1,4 +1,4 @@
-import AnalysisTable from 'containers/analysis-visualization/analysis-table';
+import AnalysisChart from 'containers/analysis-visualization/analysis-chart';
 import useEffectOnce from 'hooks/once';
 import AnalysisLayout from 'layouts/analysis';
 import { NextSeo } from 'next-seo';
@@ -16,7 +16,7 @@ const ChartPage: NextPageWithLayout = () => {
   return (
     <>
       <NextSeo title="Chart View" />
-      <AnalysisTable />
+      <AnalysisChart />
     </>
   );
 };

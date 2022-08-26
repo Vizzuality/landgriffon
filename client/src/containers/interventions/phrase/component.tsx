@@ -22,7 +22,7 @@ const InterventionPhrase: React.FC<InterventionPhraseProps> = ({ intervention, s
   );
 
   const suppliers = useMemo(() => {
-    if (intervention.replacedSuppliers.length)
+    if (intervention.replacedSuppliers?.length)
       return <strong>{intervention.replacedSuppliers[0].name}</strong>;
   }, [intervention.replacedSuppliers]);
 

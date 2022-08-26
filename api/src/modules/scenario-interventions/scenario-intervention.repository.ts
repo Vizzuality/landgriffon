@@ -13,6 +13,7 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
         'intervention.description',
         'intervention.type',
         'intervention.startYear',
+        'intervention.status',
         'intervention.endYear',
         'intervention.percentage',
         'replacedAdminRegions.id',

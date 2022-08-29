@@ -24,6 +24,7 @@ import { createTwoScenariosPreconditions } from './scenario-impact-preconditions
 import { getDiffMaterialsScenariosComparison } from './scenario-comparison-responses/diff-materials-comparison.reponse';
 import { createMixedScenariosPreconditions } from './scenario-comparison-preconditions/mixed-scenarios.preconditions';
 import { getMultiInterventionsScenariosComparison } from './scenario-comparison-responses/multi-interventions-comparison.response';
+import { getGroupedBySupplierScenariosComparison } from './scenario-comparison-responses/supplier-comparison.response';
 
 describe('Scenario comparison test suite (e2e)', () => {
   let app: INestApplication;
@@ -190,6 +191,58 @@ describe('Scenario comparison test suite (e2e)', () => {
       expect.arrayContaining(
         expectedScenariosTable.scenariosImpactTable[0].rows[0].children[0]
           .values[0].scenariosImpacts,
+      ),
+    );
+
+    expect(
+      response.body.data.scenariosImpactTable[0].yearSum[0].values,
+    ).toEqual(
+      expect.arrayContaining(
+        expectedScenariosTable.scenariosImpactTable[0].yearSum[0].values,
+      ),
+    );
+
+    expect(response.body.data.purchasedTonnes[0].values).toEqual(
+      expect.arrayContaining(expectedScenariosTable.purchasedTonnes[0].values),
+    );
+  });
+
+  test('When I request data for comaprison table for 2 multiple interventions scenario grouped by material, then I should get correct data within expected structure', async () => {
+    const preconditions: {
+      indicator: Indicator;
+      newScenarioChangeSupplier: Scenario;
+      newScenarioChangeMaterial: Scenario;
+    } = await createMixedScenariosPreconditions();
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/impact/scenarios-table')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .query({
+        'indicatorIds[]': [preconditions.indicator.id],
+        endYear: 2021,
+        startYear: 2020,
+        groupBy: 'supplier',
+        scenarioIds: [
+          preconditions.newScenarioChangeSupplier.id,
+          preconditions.newScenarioChangeMaterial.id,
+        ],
+      });
+
+    expect(response.status).toBe(HttpStatus.OK);
+
+    const expectedScenariosTable = getGroupedBySupplierScenariosComparison(
+      preconditions.newScenarioChangeSupplier.id,
+      preconditions.newScenarioChangeMaterial.id,
+      preconditions.indicator.id,
+    );
+
+    expect(
+      response.body.data.scenariosImpactTable[0].rows[0].values[0]
+        .scenariosImpacts,
+    ).toEqual(
+      expect.arrayContaining(
+        expectedScenariosTable.scenariosImpactTable[0].rows[0].values[0]
+          .scenariosImpacts,
       ),
     );
 

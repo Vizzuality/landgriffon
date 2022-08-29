@@ -56,6 +56,7 @@ const customStyles: (theme: SelectProps['theme'], error?: boolean) => StylesConf
     control: (provided, { isFocused }) => ({
       ...provided,
       boxShadow: 'none',
+      backgroundColor: 'transparent',
       ...(theme === 'inline-primary' &&
         tw`border border-l-0 border-r-0 border-t-0 border-b-2 border-b-primary shadow-none rounded-none min-w-[30px] p-0 min-h-0`),
       ...(theme === 'default' && tw`w-full border rounded-md`),

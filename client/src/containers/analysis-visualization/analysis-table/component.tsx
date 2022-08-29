@@ -177,9 +177,8 @@ const AnalysisTable: React.FC = () => {
       {
         id: 'datesRangeChart',
         fieldAccessor: (row) => row.values,
-        title: 'Range',
+        title: `${years?.[0]}-${years?.[years?.length - 1]}`,
         className: 'px-2 mx-auto',
-        // style: { paddingLeft: 'inherit' },
         format: (value) => {
           const chartConfig = datesRangeChartConfig(value);
           return (

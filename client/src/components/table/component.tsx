@@ -137,7 +137,7 @@ const Table = <T,>({
           })}
         >
           <table className="w-full border-separate table-fixed border-spacing-0">
-            <thead className="border-b border-b-gray-300 bg-gray-50">
+            <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableHeaderRow key={headerGroup.id} headerGroup={headerGroup} />
               ))}

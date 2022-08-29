@@ -102,14 +102,25 @@ export const HeaderCell = <T, C>({
   const isSorted = column.getIsSorted();
   return (
     <div
-      className={classNames(className, 'py-1 my-auto text-xs text-left text-gray-500 uppercase', {
+      className={classNames(className, 'py-2 my-auto text-sm text-left text-gray-500 uppercase', {
         'pl-[25px]': isFirstColumn,
       })}
     >
-      <div className={classNames('flex flex-row justify-start gap-2', getAlignmentClasses(align))}>
-        <div className="w-full">{children}</div>
+      <div
+        className={classNames(
+          'flex flex-row justify-center items-center gap-2',
+          getAlignmentClasses(align),
+        )}
+      >
+        <div className="">{children}</div>
         {column.getCanSort() && (
-          <div className="w-5 h-5 cursor-pointer" onClick={column.getToggleSortingHandler()}>
+          <div
+            className={classNames('w-5 h-5 cursor-pointer ', {
+              'text-gray-400 hover:text-gray-500': !isSorted,
+              'text-gray-500': isSorted,
+            })}
+            onClick={column.getToggleSortingHandler()}
+          >
             {isSorted === 'asc' && <SortAscendingIcon />}
             {isSorted === 'desc' && <SortDescendingIcon />}
             {!isSorted && <SelectorIcon />}

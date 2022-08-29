@@ -3,16 +3,20 @@ import { forwardRef } from 'react';
 import Loading from 'components/loading';
 
 const COMMON_CLASSNAMES =
-  'inline-flex items-center overflow-hidden justify-center rounded-md cursor-pointer';
+  'inline-flex items-center overflow-hidden justify-center rounded-md cursor-pointer transition-colors';
 const PRIMARY =
   'border-transparent shadow-sm text-white bg-primary hover:bg-green-800 focus:outline-offset-2 focus:outline focus:outline-green-600';
 const SECONDARY =
-  'border border-gray-300 focus:border-primary shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-green-700';
+  'border border-gray-300 focus:border-primary shadow-sm text-gray-700 bg-white hover:bg-gray-600 focus:outline-none focus:ring-1 focus:ring-green-700';
+
+const TERTIARY =
+  'border-transparent shadow-sm text-white bg-gray-500 hover:bg-gray-700 focus:outline-offset-2 focus:outline focus:outline-gray-500/20';
 
 export const THEME = {
   default: COMMON_CLASSNAMES,
   primary: PRIMARY,
   secondary: SECONDARY,
+  tertiary: TERTIARY,
   textLight: 'bg-transparent text-gray-500 focus:outline-none focus:text-black',
 };
 
@@ -24,7 +28,7 @@ const SIZE = {
 };
 
 export type AnchorButtonProps = {
-  theme?: 'primary' | 'secondary' | 'textLight';
+  theme?: 'primary' | 'secondary' | 'tertiary' | 'textLight';
   size?: 'xs' | 'base' | 'xl' | 'text';
   loading?: boolean;
   icon?: React.ReactNode;

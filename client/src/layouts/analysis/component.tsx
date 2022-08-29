@@ -8,11 +8,11 @@ import { analysisUI } from 'store/features/analysis/ui';
 
 import ApplicationLayout from 'layouts/application';
 import CollapseButton from 'containers/collapse-button';
-import { NextSeo } from 'next-seo';
 import Scenarios from 'containers/scenarios';
 import AnalysisFilters from 'containers/analysis-visualization/analysis-filters';
 import ModeControl from 'containers/analysis-visualization/mode-control';
 import type { Layout } from 'pages/_app';
+import Head from 'next/head';
 
 const AnalysisLayout: Layout = ({ children }) => {
   const asideRef = useRef<HTMLDivElement>(null);
@@ -33,8 +33,9 @@ const AnalysisLayout: Layout = ({ children }) => {
   return (
     <ApplicationLayout>
       <>
-        <NextSeo title="Analysis" />
-
+        <Head>
+          <title>Analysis - LandGriffon</title>
+        </Head>
         {/* Primary column */}
         <section
           aria-labelledby="primary-heading"

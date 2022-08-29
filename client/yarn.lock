@@ -14531,7 +14531,6 @@ __metadata:
     lottie-react: 2.2.1
     next: 12.2.5
     next-auth: 4.10.3
-    next-seo: 5.5.0
     nyc: 15.1.0
     nyc-report-lcov-absolute: 1.0.0
     pino: 8.1.0
@@ -15756,17 +15755,6 @@ __metadata:
     nodemailer:
       optional: true
   checksum: 7c78fe88a8be3a7fb1947d151ed3cb45e549f652acbf7aeadcae405a4a62998d068656702df88f4e240ad5348b8f8428b0c4d3f5dd5a870fb2e6c1597130b815
-  languageName: node
-  linkType: hard
-
-"next-seo@npm:5.5.0":
-  version: 5.5.0
-  resolution: "next-seo@npm:5.5.0"
-  peerDependencies:
-    next: ^8.1.1-canary.54 || >=9.0.0
-    react: ">=16.0.0"
-    react-dom: ">=16.0.0"
-  checksum: 3202c4e84db533ad116d629482e766eb954053d5630275eb75c3e4234cf3ae354e4c2284a7659c0480570670f292b122ee3d11e9b2f23588030d0d5b1f9cb37d
   languageName: node
   linkType: hard
 

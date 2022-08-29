@@ -12,14 +12,8 @@ import type { AppProps } from 'next/app';
 
 import 'styles/globals.css';
 import type { NextPage } from 'next';
-import type { DefaultSeoProps } from 'next-seo';
-import { DefaultSeo } from 'next-seo';
 
 const queryClient = new QueryClient();
-
-const DEFAULT_SEO: DefaultSeoProps = {
-  titleTemplate: '%s - Landgriffon',
-};
 
 export type Layout = React.FC<React.PropsWithChildren>;
 
@@ -41,7 +35,6 @@ const MyApp: NextPage<AppPropsWithLayout> = ({ Component, pageProps }) => {
         <meta name="viewport" content="width=1024" />
       </Head>
       <ReduxProvider store={store}>
-        <DefaultSeo {...DEFAULT_SEO} />
         <QueryClientProvider client={queryClient}>
           <Hydrate state={pageProps.dehydratedState}>
             <SessionProvider session={pageProps.session}>

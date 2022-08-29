@@ -1,7 +1,7 @@
 import AnalysisTable from 'containers/analysis-visualization/analysis-table';
 import useEffectOnce from 'hooks/once';
 import AnalysisLayout from 'layouts/analysis';
-import { NextSeo } from 'next-seo';
+import Head from 'next/head';
 import type { NextPageWithLayout } from 'pages/_app';
 import { setVisualizationMode } from 'store/features/analysis';
 import { useAppDispatch } from 'store/hooks';
@@ -14,7 +14,9 @@ const TablePage: NextPageWithLayout = () => {
   });
   return (
     <>
-      <NextSeo title="Table View" />
+      <Head>
+        <title>Table View - LandGriffon</title>
+      </Head>
       <AnalysisTable />
     </>
   );

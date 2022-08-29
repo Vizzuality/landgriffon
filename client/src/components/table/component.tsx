@@ -1,9 +1,12 @@
 import type { ColumnHelper, DeepKeys, Row, TableOptions } from '@tanstack/react-table';
-import { getExpandedRowModel } from '@tanstack/react-table';
-import { createColumnHelper } from '@tanstack/react-table';
-import { getCoreRowModel } from '@tanstack/react-table';
-import { useReactTable } from '@tanstack/react-table';
+import {
+  getExpandedRowModel,
+  createColumnHelper,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import classNames from 'classnames';
+import omit from 'lodash/omit';
 import Loading from 'components/loading';
 import Pagination from 'components/pagination';
 import PageSizeSelector from 'components/pagination/pageSizeSelector';
@@ -39,7 +42,7 @@ const columnToColumnDef = <T,>(
     cell: (context) => {
       const value = context.getValue() as React.ReactNode;
       return (
-        <Cell {...column} align={align} context={context}>
+        <Cell {...omit(column, ['enableSorting'])} align={align} context={context}>
           {value}
         </Cell>
       );
@@ -117,7 +120,9 @@ const Table = <T,>({
     },
     [allExpandGroupRows, table],
   );
+
   const bodyRows = table.getExpandedRowModel().rows;
+
   return (
     <div className="w-full space-y-5">
       <div className="relative w-full overflow-hidden shadow-xl rounded-2xl">

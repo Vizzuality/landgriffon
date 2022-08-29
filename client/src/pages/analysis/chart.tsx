@@ -5,6 +5,7 @@ import Head from 'next/head';
 import type { NextPageWithLayout } from 'pages/_app';
 import { setVisualizationMode } from 'store/features/analysis';
 import { useAppDispatch } from 'store/hooks';
+import TitleTemplate from 'utils/titleTemplate';
 
 const ChartPage: NextPageWithLayout = () => {
   const dispatch = useAppDispatch();
@@ -16,7 +17,7 @@ const ChartPage: NextPageWithLayout = () => {
   return (
     <>
       <Head>
-        <title>Chart View - LandGriffon</title>
+        <TitleTemplate title="Chart View" />
       </Head>
       <AnalysisChart />
     </>

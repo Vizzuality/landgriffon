@@ -1,10 +1,10 @@
 import AnalysisMap from 'containers/analysis-visualization/analysis-map';
 import useEffectOnce from 'hooks/once';
 import AnalysisLayout from 'layouts/analysis';
-import Head from 'next/head';
 import type { NextPageWithLayout } from 'pages/_app';
 import { setVisualizationMode } from 'store/features/analysis';
 import { useAppDispatch } from 'store/hooks';
+import TitleTemplate from 'utils/titleTemplate';
 
 const MapPage: NextPageWithLayout = () => {
   const dispatch = useAppDispatch();
@@ -15,9 +15,7 @@ const MapPage: NextPageWithLayout = () => {
 
   return (
     <>
-      <Head>
-        <title>Map View - LandGriffon</title>
-      </Head>
+      <TitleTemplate title="Map View" />
       <AnalysisMap />
     </>
   );

@@ -85,8 +85,10 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
   }, [content, update, isOpen]);
 
   return (
-    <button type="button" {...getReferenceProps({ ref: reference, className: 'relative' })}>
-      {children}
+    <>
+      <button type="button" {...getReferenceProps({ ref: reference, className: 'relative' })}>
+        {children}
+      </button>
       {isOpen && (
         <div
           {...getFloatingProps({
@@ -96,7 +98,7 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
               position: strategy,
               top: y ?? '',
               left: x ?? '',
-              zIndex: 100,
+              // zIndex: 100,
             },
           })}
         >
@@ -117,7 +119,7 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
           />
         </div>
       )}
-    </button>
+    </>
   );
 };
 

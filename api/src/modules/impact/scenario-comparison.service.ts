@@ -202,8 +202,7 @@ export class ScenarioComparisonService {
                 result: { [index: string]: ScenarioComparisonImpact },
                 item: ScenarioComparisonImpact,
               ) => {
-                const { newImpact, canceledImpact, impactResult, scenarioId } =
-                  item;
+                const { newImpact, canceledImpact, scenarioId } = item;
                 const key: string = scenarioId;
                 const prevItem: ScenarioComparisonImpact = result[key] || {};
                 const {
@@ -235,12 +234,7 @@ export class ScenarioComparisonService {
               result: { [index: string]: ScenarioComparisonTonnes },
               item: ScenarioComparisonTonnes,
             ) => {
-              const {
-                newTonnage,
-                canceledTonnage,
-                tonnageDifference,
-                scenarioId,
-              } = item;
+              const { newTonnage, canceledTonnage, scenarioId } = item;
               const key: string = scenarioId;
               const prevItem: ScenarioComparisonTonnes = result[key] || {};
               const {
@@ -485,7 +479,7 @@ export class ScenarioComparisonService {
       }
 
       //Once we have all data, projected or not, append the total sum of impact by year and indicator
-      rangeOfYears.forEach((year: number, indexOfYear: number) => {
+      rangeOfYears.forEach((year: number) => {
         const allScenariosValues: ScenariosImpactTableRowsValues[] = [];
         calculatedData.forEach((row: ScenariosImpactTableRows) => {
           allScenariosValues.push(...row.values);
@@ -498,7 +492,7 @@ export class ScenarioComparisonService {
             },
           );
 
-        let allScenariosImpacts: ScenarioImpact[] = [];
+        const allScenariosImpacts: ScenarioImpact[] = [];
         allValuesForTheYear.forEach(
           (scenarioValue: ScenariosImpactTableRowsValues) => {
             allScenariosImpacts.push(...scenarioValue.scenariosImpacts);
@@ -589,12 +583,8 @@ export class ScenarioComparisonService {
               acc: { [index: string]: ScenarioTonnage },
               scenarioTonnage: ScenarioTonnage,
             ) => {
-              const {
-                scenarioId,
-                newTonnage,
-                canceledTonnage,
-                tonnageDifference,
-              } = scenarioTonnage;
+              const { scenarioId, newTonnage, canceledTonnage } =
+                scenarioTonnage;
               acc[scenarioId] = {
                 scenarioId,
                 newTonnage:

@@ -1,5 +1,3 @@
-import { ScenariosImpactTable } from 'modules/impact/dto/response-comparison-table.dto';
-
 export function getGroupedBySupplierScenariosComparison(
   scenarioIdOne: string,
   scenarioIdTwo: string,

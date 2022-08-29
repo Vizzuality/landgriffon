@@ -9,6 +9,7 @@ module.exports = {
     'prettier/prettier': ['error'],
     'react/button-has-type': ['warn'],
     'no-console': ['warn'],
+    'no-debugger': ['warn'],
     '@typescript-eslint/consistent-type-imports': ['warn'],
   },
 };

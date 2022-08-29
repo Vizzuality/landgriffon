@@ -11,6 +11,7 @@ import type { AppProps } from 'next/app';
 
 import 'styles/globals.css';
 import type { NextPage } from 'next';
+import TitleTemplate from 'utils/titleTemplate';
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const MyApp: NextPage<AppPropsWithLayout> = ({ Component, pageProps }) => {
       </Head>
       <ReduxProvider store={store}>
         <QueryClientProvider client={queryClient}>
+          <TitleTemplate titleTemplate="%s - LandGriffon" />
           <Hydrate state={pageProps.dehydratedState}>
             <SessionProvider session={pageProps.session}>
               <OverlayProvider>

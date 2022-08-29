@@ -12,7 +12,7 @@ import Scenarios from 'containers/scenarios';
 import AnalysisFilters from 'containers/analysis-visualization/analysis-filters';
 import ModeControl from 'containers/analysis-visualization/mode-control';
 import type { Layout } from 'pages/_app';
-import Head from 'next/head';
+import TitleTemplate from 'utils/titleTemplate';
 
 const AnalysisLayout: Layout = ({ children }) => {
   const asideRef = useRef<HTMLDivElement>(null);
@@ -33,9 +33,7 @@ const AnalysisLayout: Layout = ({ children }) => {
   return (
     <ApplicationLayout>
       <>
-        <Head>
-          <title>Analysis - LandGriffon</title>
-        </Head>
+        <TitleTemplate title="Analysis" />
         {/* Primary column */}
         <section
           aria-labelledby="primary-heading"

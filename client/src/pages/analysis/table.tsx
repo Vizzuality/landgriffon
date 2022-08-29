@@ -1,10 +1,10 @@
 import AnalysisTable from 'containers/analysis-visualization/analysis-table';
 import useEffectOnce from 'hooks/once';
 import AnalysisLayout from 'layouts/analysis';
-import Head from 'next/head';
 import type { NextPageWithLayout } from 'pages/_app';
 import { setVisualizationMode } from 'store/features/analysis';
 import { useAppDispatch } from 'store/hooks';
+import TitleTemplate from 'utils/titleTemplate';
 
 const TablePage: NextPageWithLayout = () => {
   const dispatch = useAppDispatch();
@@ -14,9 +14,7 @@ const TablePage: NextPageWithLayout = () => {
   });
   return (
     <>
-      <Head>
-        <title>Table View - LandGriffon</title>
-      </Head>
+      <TitleTemplate title="Table View" />
       <AnalysisTable />
     </>
   );

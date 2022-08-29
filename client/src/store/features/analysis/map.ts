@@ -108,40 +108,38 @@ export const analysisMapSlice = createSlice({
         layer: Partial<Layer>;
       }>,
     ) => {
-      // only one contextual layer active at the same time, set the rest as disabled
-      if (
-        'active' in action.payload.layer &&
-        action.payload.layer.active &&
-        (('isContextual' in action.payload.layer && action.payload.layer.isContextual) ||
-          state.layers[action.payload.id]?.isContextual)
-      ) {
-        Object.keys(state.layers).forEach((layerId) => {
-          const layer = state.layers[layerId];
-          if (layer.active && layerId !== action.payload.id && layer.isContextual) {
-            layer.active = false;
-          }
-        });
-      }
+      const layers = {
+        ...state.layers,
+        [action.payload.id]: {
+          ...DEFAULT_LAYER_ATTRIBUTES,
+          ...state.layers[action.payload.id],
+          ...action.payload.layer,
+        },
+      };
 
-      state.layers[action.payload.id] = {
-        ...DEFAULT_LAYER_ATTRIBUTES,
-        ...state.layers[action.payload.id],
-        ...action.payload.layer,
+      return {
+        ...state,
+        layers,
       };
     },
     setLayerDeckGLProps: (
       state,
       action: PayloadAction<{
         id: Layer['id'];
-        props: DeckGLConstructorProps;
+        props: Partial<DeckGLConstructorProps>;
       }>,
     ) => {
-      state.layerDeckGLProps[action.payload.id] = {
-        ...DEFAULT_DECKGL_PROPS,
-        ...state.layerDeckGLProps[action.payload.id],
-        ...action.payload.props,
+      return {
+        ...state,
+        layerDeckGLProps: {
+          ...state.layerDeckGLProps,
+          [action.payload.id]: {
+            ...DEFAULT_DECKGL_PROPS,
+            ...state.layerDeckGLProps[action.payload.id],
+            ...action.payload.props,
+          },
+        },
       };
-      return state;
     },
     setLayerOrder: (state, action: PayloadAction<Layer['id'][]>) => {
       Object.values(state.layers).forEach((layer) => {

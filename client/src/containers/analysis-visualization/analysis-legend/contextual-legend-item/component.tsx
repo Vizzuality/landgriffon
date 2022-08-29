@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 
 import { useAppDispatch } from 'store/hooks';
-import { setLayer } from 'store/features/analysis/map';
+import { setLayer, setLayerDeckGLProps } from 'store/features/analysis/map';
 
 import LegendItem from 'components/legend/item';
 import type { Layer } from 'types';
@@ -10,6 +10,7 @@ import LegendTypeCategorical from 'components/legend/types/categorical';
 import LegendTypeChoropleth from 'components/legend/types/choropleth';
 import LegendTypeGradient from 'components/legend/types/gradient';
 import { useContextualLayer } from 'hooks/layers/contextual';
+import useContextualLayers from 'hooks/layers/getContextualLayers';
 
 interface ContextualLegendItemProps {
   layer: Layer;
@@ -18,11 +19,13 @@ interface ContextualLegendItemProps {
 const ContextualLegendItem: React.FC<ContextualLegendItemProps> = ({ layer }) => {
   const dispatch = useAppDispatch();
 
-  const { isLoading } = useContextualLayer(layer.id);
+  const { isFetching: areLayersLoading } = useContextualLayers();
+  const { isFetching: isFetchingData } = useContextualLayer(layer.id);
 
   const handleActive = useCallback(
-    (active) => {
+    (active: boolean) => {
       dispatch(setLayer({ id: layer.id, layer: { active } }));
+      dispatch(setLayerDeckGLProps({ id: layer.id, props: { visible: active } }));
     },
     [dispatch, layer],
   );
@@ -60,7 +63,7 @@ const ContextualLegendItem: React.FC<ContextualLegendItemProps> = ({ layer }) =>
 
   return (
     <LegendItem
-      isLoading={isLoading}
+      isLoading={areLayersLoading || isFetchingData}
       name="Baseline water stress"
       info={layer.metadata.description}
       opacity={layer.opacity}

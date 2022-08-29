@@ -184,11 +184,7 @@ const fetchContextualLayerData: QueryFunction<
     // Adding color to the response
     .then((response) => responseContextualParser(response));
 
-export const useH3ContextualData = (
-  id: string,
-  // params: Partial<WaterH3APIParams>,
-  options: Partial<UseQueryOptions>,
-): H3ContextualResponse => {
+export const useH3ContextualData = (id: string, options: Partial<UseQueryOptions> = {}) => {
   const filters = useAppSelector(analysisFilters);
   const { startYear, materials, indicator, suppliers, origins, locationTypes } = filters;
   const urlParams = {
@@ -200,6 +196,7 @@ export const useH3ContextualData = (
     ...(locationTypes?.length ? { locationTypes: locationTypes?.map(({ value }) => value) } : {}),
     resolution: origins?.length ? 6 : 4,
   };
+
   const query = useQuery(['h3-data-contextual', id, urlParams], fetchContextualLayerData, {
     ...DEFAULT_QUERY_OPTIONS,
     placeholderData: {
@@ -213,7 +210,7 @@ export const useH3ContextualData = (
       },
     },
     ...options,
-    enabled: options.enabled && !!id && !!urlParams.year,
+    enabled: (options.enabled ?? true) && !!id && !!urlParams.year,
   });
 
   const { data, isError } = query;
@@ -228,7 +225,7 @@ export const useH3ContextualData = (
   );
 };
 
-export const useAllContextualLayersData = (options?: Partial<UseQueryOptions>) => {
+export const useAllContextualLayersData = (options: Partial<UseQueryOptions> = {}) => {
   const { layers } = useAppSelector(analysisMap);
   const filters = useAppSelector(analysisFilters);
   const { startYear, materials, indicator, suppliers, origins, locationTypes } = filters;
@@ -250,11 +247,8 @@ export const useAllContextualLayersData = (options?: Partial<UseQueryOptions>) =
         queryFn: fetchContextualLayerData,
         ...DEFAULT_QUERY_OPTIONS,
         ...options,
-        enabled:
-          ('enabled' in (options || {}) ? options.enabled : true) &&
-          layer.active &&
-          !!layer.id &&
-          !!urlParams.year,
+        keepPreviousData: true,
+        enabled: (options.enabled ?? true) && layer.active && !!layer.id && !!urlParams.year,
         select: (data: H3APIResponse) => ({ ...data, layerId: layer.id }),
       })),
   );

@@ -130,32 +130,6 @@ export async function createMixedScenariosPreconditions(): Promise<{
       scenario: newScenarioChangeMaterial,
     });
 
-  // Sourcing Locations - real ones
-
-  const cottonSourcingLocation: SourcingLocation = await createSourcingLocation(
-    {
-      material: cotton,
-      businessUnit: businessUnitClothes,
-      t1Supplier: supplierATextile,
-      adminRegion,
-    },
-  );
-
-  const woolSourcingLocation: SourcingLocation = await createSourcingLocation({
-    material: wool,
-    businessUnit: businessUnitClothes,
-    t1Supplier: supplierBTextile,
-    adminRegion,
-  });
-
-  const palmOilSourcingLocation: SourcingLocation =
-    await createSourcingLocation({
-      material: palmOil,
-      businessUnit: businessUnitFood,
-      t1Supplier: supplierAOils,
-      adminRegion,
-    });
-
   // SOURCING LOCATIONS OF SCENARIOS
 
   // SCENARIO ONE - Change of suppliers

@@ -84,36 +84,41 @@ const AnalysisMap: React.FC = () => {
   const contextualData = useAllContextualLayersData();
 
   const layers = useMemo(() => {
-    const legends = Object.values(layerDeckGLProps).map((props) => {
-      const layerInfo = layersMetadata[props.id];
+    const legends = Object.values(layerDeckGLProps)
+      .map((props) => {
+        const layerInfo = layersMetadata[props.id];
+        if (!layerInfo) {
+          return null;
+        }
 
-      const data = layerInfo.isContextual ? contextualData.get(props.id)?.data : impactData;
+        const data = layerInfo.isContextual ? contextualData.get(props.id)?.data : impactData;
 
-      return new H3HexagonLayer({
-        ...props,
-        data,
-        getHexagon: (d) => d.h,
-        getFillColor: (d) => d.c,
-        getLineColor: (d) => d.c,
-        onHover: ({ object, x, y, viewport }) => {
-          dispatch(
-            setTooltipPosition({
-              x,
-              y,
-              viewport: viewport ? { width: viewport.width, height: viewport.height } : null,
-            }),
-          );
-          dispatch(
-            setTooltipData({
-              id: props.id,
-              name: layerInfo.metadata?.name || layerInfo.metadata?.legend.name,
-              value: object?.v,
-              unit: layerInfo.metadata?.legend.unit,
-            }),
-          );
-        },
-      });
-    });
+        return new H3HexagonLayer({
+          ...props,
+          data,
+          getHexagon: (d) => d.h,
+          getFillColor: (d) => d.c,
+          getLineColor: (d) => d.c,
+          onHover: ({ object, x, y, viewport }) => {
+            dispatch(
+              setTooltipPosition({
+                x,
+                y,
+                viewport: viewport ? { width: viewport.width, height: viewport.height } : null,
+              }),
+            );
+            dispatch(
+              setTooltipData({
+                id: props.id,
+                name: layerInfo.metadata?.name || layerInfo.metadata?.legend.name,
+                value: object?.v,
+                unit: layerInfo.metadata?.legend.unit,
+              }),
+            );
+          },
+        });
+      })
+      .filter((l) => !!l);
     return sortBy(legends, (l) => layersMetadata[l.id].order).reverse();
   }, [contextualData, dispatch, impactData, layerDeckGLProps, layersMetadata]);
 

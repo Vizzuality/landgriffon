@@ -21,6 +21,7 @@ export const Legend: React.FC = () => {
 
   const dispatch = useAppDispatch();
   const { data: upstreamLayers } = useContextualLayers();
+
   const { layers } = useAppSelector(analysisMap);
 
   useEffect(() => {

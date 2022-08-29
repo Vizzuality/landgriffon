@@ -112,6 +112,7 @@ export const analysisMapSlice = createSlice({
         ...state.layers,
         [action.payload.id]: {
           ...DEFAULT_LAYER_ATTRIBUTES,
+          id: action.payload.id,
           ...state.layers[action.payload.id],
           ...action.payload.layer,
         },
@@ -119,6 +120,16 @@ export const analysisMapSlice = createSlice({
 
       return {
         ...state,
+        layerDeckGLProps: {
+          ...state.layerDeckGLProps,
+          [action.payload.id]: {
+            ...DEFAULT_DECKGL_PROPS,
+            id: action.payload.id,
+            ...state.layerDeckGLProps[action.payload.id],
+            visible: layers[action.payload.id].active,
+            opacity: layers[action.payload.id].opacity,
+          },
+        },
         layers,
       };
     },

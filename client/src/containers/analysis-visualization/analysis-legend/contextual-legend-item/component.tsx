@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 
 import { useAppDispatch } from 'store/hooks';
-import { setLayer, setLayerDeckGLProps } from 'store/features/analysis/map';
+import { setLayer } from 'store/features/analysis/map';
 
 import LegendItem from 'components/legend/item';
 import type { Layer } from 'types';
@@ -25,7 +25,6 @@ const ContextualLegendItem: React.FC<ContextualLegendItemProps> = ({ layer }) =>
   const handleActive = useCallback(
     (active: boolean) => {
       dispatch(setLayer({ id: layer.id, layer: { active } }));
-      dispatch(setLayerDeckGLProps({ id: layer.id, props: { visible: active } }));
     },
     [dispatch, layer],
   );

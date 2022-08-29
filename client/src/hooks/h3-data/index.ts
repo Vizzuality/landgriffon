@@ -246,10 +246,14 @@ export const useAllContextualLayersData = (options: Partial<UseQueryOptions> = {
         queryKey: ['h3-data-contextual', layer.id, urlParams],
         queryFn: fetchContextualLayerData,
         ...DEFAULT_QUERY_OPTIONS,
-        ...options,
         keepPreviousData: true,
-        enabled: (options.enabled ?? true) && layer.active && !!layer.id && !!urlParams.year,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        staleTime: 10 * 60 * 1000, // 10 minutes
+        ...options,
         select: (data: H3APIResponse) => ({ ...data, layerId: layer.id }),
+        enabled: (options.enabled ?? true) && layer.active && !!layer.id && !!urlParams.year,
       })),
   );
 

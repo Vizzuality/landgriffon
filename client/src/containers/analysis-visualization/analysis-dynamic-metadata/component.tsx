@@ -78,7 +78,6 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
             key={origin.value}
             data={origin}
             onClick={() => handleRemoveBadge('origins', origins, origin)}
-            className="pl-0"
             removable
           >
             {origin.label}
@@ -95,7 +94,6 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
             key={supplier.value}
             data={supplier}
             onClick={() => handleRemoveBadge('suppliers', suppliers, supplier)}
-            className="pl-0"
             removable
           >
             {supplier.label}
@@ -112,7 +110,6 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
             key={locationType.value}
             data={locationType}
             onClick={() => handleRemoveBadge('locationTypes', locationTypes, locationType)}
-            className="pl-0"
             removable
           >
             {locationType.label}
@@ -123,9 +120,9 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
   );
 
   return (
-    <div className={`flex items-start justify-start text-xs ${className}`}>
-      <div className="items-start mr-1.5 mt-1">
-        <InformationCircleIcon className="shrink-0 w-4 h-4 text-gray-900" />
+    <div className={`flex items-center justify-start text-xs space-x-1 ${className}`}>
+      <div className="items-start">
+        <InformationCircleIcon className="w-4 h-4 text-gray-900 shrink-0" />
       </div>
       {!!scenarioToCompare && (
         <p>

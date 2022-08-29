@@ -216,28 +216,28 @@ const AnalysisTable: React.FC = () => {
 
   return (
     <>
-      <div className="flex justify-between">
+      <div className="flex justify-between px-6 xl:pl-12">
         <div className="flex items-end justify-between w-full">
           <AnalysisDynamicMetadata />
           <div>
             <LinkButton
               href={csv}
-              theme="secondary"
+              theme="tertiary"
               size="base"
               className="flex-shrink-0"
               disabled={isLoading}
               download="report.csv"
             >
-              <DownloadIcon className="w-5 h-4 mr-2 text-black" />
-              Download
+              <DownloadIcon className="w-5 h-4 mr-2 text-white" />
+              Download Data
             </LinkButton>
-            <div className="mt-3 font-sans text-xs font-bold leading-4 text-center text-gray-500 uppercase">
+            <div className="mt-3 font-sans text-xs font-bold leading-4 text-right text-gray-500 uppercase">
               Total {totalRows} {totalRows === 1 ? 'row' : 'rows'}
             </div>
           </div>
         </div>
       </div>
-      <div className="relative mt-5">
+      <div className="relative px-6 mt-5 xl:pl-12">
         <Table {...tableProps} />
       </div>
     </>

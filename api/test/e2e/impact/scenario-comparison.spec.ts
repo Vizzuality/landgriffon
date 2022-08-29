@@ -61,7 +61,36 @@ describe('Scenario comparison test suite (e2e)', () => {
     await app.close();
   });
 
-  test('When I request data for comaprison table for 2 single interventions scenario, then I should get correct data within expected structure', async () => {
+  test('When I request scenario comparison with just 1 scenarioId, then I should get proper error message', async () => {
+    const preconditions: {
+      newScenario1: Scenario;
+      newScenario2: Scenario;
+      indicator: Indicator;
+    } = await createTwoScenariosPreconditions();
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/impact/scenarios-table')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .query({
+        'indicatorIds[]': [preconditions.indicator.id],
+        endYear: 2021,
+        startYear: 2020,
+        groupBy: 'material',
+        scenarioIds: [preconditions.newScenario1.id],
+      });
+
+    expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+    expect(response).toHaveErrorMessage(
+      HttpStatus.BAD_REQUEST,
+      'Bad Request Exception',
+      [
+        'scenarioIds must contain at least 2 elements',
+        'scenarioIds must contain not more than 2 elements',
+      ],
+    );
+  });
+
+  test('When I request data for comaprison table for 2 single interventions scenario grouped by material, then I should get correct data within expected structure', async () => {
     const preconditions: {
       newScenario1: Scenario;
       newScenario2: Scenario;
@@ -115,7 +144,7 @@ describe('Scenario comparison test suite (e2e)', () => {
     );
   });
 
-  test('When I request data for comaprison table for 2 multiple interventions scenario, then I should get correct data within expected structure', async () => {
+  test('When I request data for comaprison table for 2 multiple interventions scenario grouped by material, then I should get correct data within expected structure', async () => {
     const preconditions: {
       indicator: Indicator;
       newScenarioChangeSupplier: Scenario;

@@ -1,3 +1,4 @@
+import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { apiRawService } from 'services/api';
 import { setLayer } from 'store/features/analysis/map';
@@ -20,7 +21,7 @@ type LayerCategoriesApiResponse = {
   data: CategoryWithLayers[];
 };
 
-const useContextualLayers = () => {
+const useContextualLayers = (options: UseQueryOptions<LayerCategoriesApiResponse['data']> = {}) => {
   const dispatch = useAppDispatch();
   return useQuery(
     ['contextual-layers'],
@@ -29,7 +30,13 @@ const useContextualLayers = () => {
         .get<LayerCategoriesApiResponse>('/contextual-layers/categories')
         .then(({ data }) => data.data),
     {
+      refetchOnMount: false,
+      refetchOnWindowFocus: true,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      keepPreviousData: true,
+      ...options,
       onSuccess: (data) => {
+        options?.onSuccess?.(data);
         const allLayers = data.flatMap((data) => data.layers);
 
         allLayers.forEach((layer, i) => {

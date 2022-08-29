@@ -1,7 +1,7 @@
 import AnalysisChart from 'containers/analysis-visualization/analysis-chart';
 import useEffectOnce from 'hooks/once';
 import AnalysisLayout from 'layouts/analysis';
-import { NextSeo } from 'next-seo';
+import Head from 'next/head';
 import type { NextPageWithLayout } from 'pages/_app';
 import { setVisualizationMode } from 'store/features/analysis';
 import { useAppDispatch } from 'store/hooks';
@@ -15,7 +15,9 @@ const ChartPage: NextPageWithLayout = () => {
 
   return (
     <>
-      <NextSeo title="Chart View" />
+      <Head>
+        <title>Chart View - LandGriffon</title>
+      </Head>
       <AnalysisChart />
     </>
   );

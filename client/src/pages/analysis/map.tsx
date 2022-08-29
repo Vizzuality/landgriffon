@@ -1,7 +1,7 @@
 import AnalysisMap from 'containers/analysis-visualization/analysis-map';
 import useEffectOnce from 'hooks/once';
 import AnalysisLayout from 'layouts/analysis';
-import { NextSeo } from 'next-seo';
+import Head from 'next/head';
 import type { NextPageWithLayout } from 'pages/_app';
 import { setVisualizationMode } from 'store/features/analysis';
 import { useAppDispatch } from 'store/hooks';
@@ -15,7 +15,9 @@ const MapPage: NextPageWithLayout = () => {
 
   return (
     <>
-      <NextSeo title="Map View" />
+      <Head>
+        <title>Map View - LandGriffon</title>
+      </Head>
       <AnalysisMap />
     </>
   );

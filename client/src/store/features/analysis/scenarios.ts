@@ -5,7 +5,7 @@ import type { Scenario } from 'containers/scenarios/types';
 
 export type ScenariosState = {
   isComparisonEnabled: boolean;
-  comparisonMode: 'percentage' | 'absolute' | 'both';
+  comparisonMode: 'relative' | 'absolute';
   currentScenario: Scenario['id'];
   scenarioToCompare: Scenario['id'];
   // To remove
@@ -23,7 +23,7 @@ type FeatureState = RootState & { analysis: ScenariosState };
 // Define the initial state using that type
 export const initialState: ScenariosState = {
   isComparisonEnabled: false,
-  comparisonMode: null,
+  comparisonMode: 'relative',
   currentScenario: null,
   scenarioToCompare: null,
   searchTerm: null,

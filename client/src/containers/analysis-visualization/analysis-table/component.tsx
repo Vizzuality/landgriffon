@@ -9,6 +9,7 @@ import { useAppSelector } from 'store/hooks';
 import { DownloadIcon } from '@heroicons/react/outline';
 import type { TableProps } from 'components/table/component';
 import Table from 'components/table/component';
+import { getSortedRowModel } from '@tanstack/react-table';
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { ColumnDefinition } from 'components/table/column';
 import LineChart from 'components/chart/line';
@@ -157,6 +158,7 @@ const AnalysisTable: React.FC = () => {
           return data.values.find((value) => value.year === year).value;
         },
         format: BIG_NUMBER_FORMAT,
+        enableSorting: true,
       } as ColumnDefinition<TableDataType, number>;
     },
     [showComparison],
@@ -206,6 +208,8 @@ const AnalysisTable: React.FC = () => {
       isLoading: isFetching,
       data: tableData,
       columns: baseColumns,
+      manualSorting: false,
+      getSortedRowModel: getSortedRowModel(),
     }),
     [baseColumns, isFetching, metadata.totalPages, tableData, tableState, totalRows],
   );

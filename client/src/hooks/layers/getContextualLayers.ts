@@ -1,4 +1,3 @@
-import type { UseQueryResult } from 'react-query';
 import { useQuery } from 'react-query';
 import { apiRawService } from 'services/api';
 import { setLayer } from 'store/features/analysis/map';
@@ -12,24 +11,32 @@ interface ContextualLayerApiResponse {
   metadata: LayerMetadata;
 }
 
-interface ApiResponse {
-  data: { category: string; layers: ContextualLayerApiResponse[] }[];
+export interface CategoryWithLayers {
+  category: string;
+  layers: ContextualLayerApiResponse[];
 }
+
+type LayerCategoriesApiResponse = {
+  data: CategoryWithLayers[];
+};
 
 const useContextualLayers = () => {
   const dispatch = useAppDispatch();
-  const query = useQuery<UseQueryResult<ApiResponse>, unknown, ContextualLayerApiResponse[]>(
+  const query = useQuery(
     ['contextual-layers'],
-    () => apiRawService.get('/contextual-layers/categories'),
+    () =>
+      apiRawService
+        .get<LayerCategoriesApiResponse>('/contextual-layers/categories')
+        .then(({ data }) => data.data),
     {
-      select: ({ data }) =>
-        data.data.flatMap((d) => d.layers).map((layer, i) => ({ ...layer, order: i + 1 })),
       onSuccess: (data) => {
-        data.forEach((layer) => {
+        const allLayers = data.flatMap((data) => data.layers);
+
+        allLayers.forEach((layer, i) => {
           dispatch(
             setLayer({
               id: layer.id,
-              layer: { ...layer, isContextual: true },
+              layer: { ...layer, isContextual: true, order: i + 1 },
             }),
           );
         });

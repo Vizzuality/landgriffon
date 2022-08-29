@@ -20,7 +20,7 @@ const ContextualLegendItem: React.FC<ContextualLegendItemProps> = ({ layer }) =>
   const dispatch = useAppDispatch();
 
   const { isFetching: areLayersLoading } = useContextualLayers();
-  const { isFetching: isFetchingData } = useContextualLayer(layer.id);
+  const { isLoading: isLoadingData } = useContextualLayer(layer.id);
 
   const handleActive = useCallback(
     (active: boolean) => {
@@ -63,8 +63,8 @@ const ContextualLegendItem: React.FC<ContextualLegendItemProps> = ({ layer }) =>
 
   return (
     <LegendItem
-      isLoading={areLayersLoading || isFetchingData}
-      name="Baseline water stress"
+      isLoading={areLayersLoading || isLoadingData}
+      name={layer.metadata.name}
       info={layer.metadata.description}
       opacity={layer.opacity}
       {...layer.metadata.legend}

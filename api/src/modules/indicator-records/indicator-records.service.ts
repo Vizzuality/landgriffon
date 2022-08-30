@@ -166,9 +166,11 @@ export class IndicatorRecordsService extends AppBaseService<
       INDICATOR_TYPES.BIODIVERSITY_LOSS,
     ];
 
-    const rawData: SourcingRecordsWithIndicatorRawDataDto[] =
-      //await this.indicatorRecordRepository.getIndicatorRawDataForAllSourcingRecords();
-      await this.impactCalculatorService.calculateAllSourcingRecords();
+    const rawData: SourcingRecordsWithIndicatorRawDataDto[] = config.get(
+      'featureFlags.simpleImportCalculations',
+    )
+      ? await this.indicatorRecordRepository.getIndicatorRawDataForAllSourcingRecords()
+      : await this.impactCalculatorService.calculateAllSourcingRecords();
 
     const calculatedData2: IndicatorRecordCalculatedValuesDto[] = rawData.map(
       (sourcingRecordData: SourcingRecordsWithIndicatorRawDataDto) => {

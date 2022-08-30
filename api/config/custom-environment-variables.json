@@ -48,5 +48,8 @@
   },
   "map": {
     "distributed": "DISTRIBUTED_MAP"
+  },
+  "featureFlags": {
+    "simpleImportCalculations": "SIMPLE_IMPORT_CALCULATIONS"
   }
 }

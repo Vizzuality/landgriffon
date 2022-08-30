@@ -395,6 +395,7 @@ describe('Indicator Records Service', () => {
         MATERIAL_TO_H3_TYPE.HARVEST,
       );
 
+      //ACT
       const calculatedRecords =
         await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
           sourcingData,
@@ -480,7 +481,6 @@ describe('Indicator Records Service', () => {
       );
 
       //ACT
-
       await indicatorRecordService.createIndicatorRecordsForAllSourcingRecords();
 
       //ASSERT
@@ -846,8 +846,10 @@ describe('Indicator Records Service', () => {
     expect(createdRecords.length).toEqual(1);
     expect(createdRecords[0].sourcingRecordId).toEqual(sourcingRecordId);
     expect(createdRecords[0].status).toEqual(INDICATOR_RECORD_STATUS.SUCCESS);
-    expect(createdRecords[0].value).toEqual(recordValue);
-    expect(createdRecords[0].scaler).toEqual(scalerValue);
+    expect(createdRecords[0].value).toBeCloseTo(recordValue);
+    if (scalerValue) {
+      expect(createdRecords[0].scaler).toBeCloseTo(scalerValue);
+    }
     expect(createdRecords[0].materialH3DataId).toEqual(materialH3Data.h3DataId);
     //Inidicator Coefficients are not checked because it's not used
   }
@@ -870,7 +872,7 @@ describe('Indicator Records Service', () => {
     expect(cachedData).toBeDefined();
     expect(cachedData?.data).toBeDefined();
     expect(cachedData?.type).toEqual(type);
-    expect((cachedData?.data as CachedRawValue).rawValue).toEqual(value);
+    expect((cachedData?.data as CachedRawValue).rawValue).toBeCloseTo(value, 5);
   }
 
   async function createPreconditions(): Promise<any> {

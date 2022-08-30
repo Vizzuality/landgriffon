@@ -125,7 +125,8 @@ export class ScenarioInterventionsService extends AppBaseService<
       await this.interventionGenerator.addDescendantsEntitiesForFiltering(dto);
 
     /**
-     * Getting Sourcing Locations and Sourcing Records for start year of all Materials of the intervention with applied filters
+     * Getting Sourcing Locations and Sourcing Records and Indicator records
+     * for start year of all Materials of the intervention with applied filters
      */
 
     const actualSourcingDataWithTonnage: SourcingLocation[] =
@@ -137,10 +138,18 @@ export class ScenarioInterventionsService extends AppBaseService<
       throw new BadRequestException('No actual data for requested filters');
     }
 
-    // Applying percentage received from user to the volume of tonnes of filter-matching Sourcing Locations
+    /**
+     * Applying percentage received from user to the volume of tonnes of filter-matching Sourcing Locations
+     * and to values of Indicator Records
+     */
+
     actualSourcingDataWithTonnage.forEach((sl: SourcingLocation) => {
-      sl.sourcingRecords.map((sr: SourcingRecord) => {
+      sl.sourcingRecords.forEach((sr: SourcingRecord) => {
         sr.tonnage = sr.tonnage * (dto.percentage / 100);
+
+        sr.indicatorRecords.map((ir: IndicatorRecord) => {
+          ir.value = ir.value * (dto.percentage / 100);
+        });
       });
     });
 
@@ -156,26 +165,6 @@ export class ScenarioInterventionsService extends AppBaseService<
         actualSourcingDataWithTonnage,
         SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
       );
-
-    // Creating Indicator records for newly created Sourcing Locations of type canceled
-    // Since a user could apply a percentage to apply for a record in the actual data
-
-    for (const sourcingLocation of newCancelledByInterventionLocationsData) {
-      for await (const sourcingRecord of sourcingLocation.sourcingRecords) {
-        const indicatorRecordsWithNewTonnage: IndicatorRecord[] =
-          await this.indicatorRecordsService.createIndicatorRecordsBySourcingRecords(
-            {
-              sourcingRecordId: sourcingRecord.id,
-              tonnage: sourcingRecord.tonnage,
-              geoRegionId: sourcingLocation.geoRegionId,
-              materialId: sourcingLocation.materialId,
-              year: sourcingRecord.year,
-            },
-            dto.newIndicatorCoefficients,
-          );
-        sourcingRecord.indicatorRecords = indicatorRecordsWithNewTonnage;
-      }
-    }
 
     /**
      *  Creating New Intervention to be saved in scenario_interventions table
@@ -469,7 +458,11 @@ export class ScenarioInterventionsService extends AppBaseService<
       newCancelledInterventionLocation.adminRegionId = location.adminRegionId;
       newCancelledInterventionLocation.sourcingRecords =
         location.sourcingRecords.map((elem: any) => {
-          return { year: elem.year, tonnage: elem.tonnage } as SourcingRecord;
+          return {
+            year: elem.year,
+            tonnage: elem.tonnage,
+            indicatorRecords: elem.indicatorRecords,
+          } as SourcingRecord;
         });
       newCancelledInterventionLocation.interventionType = canceledOrReplacing;
       cancelledSourcingLocations.push(newCancelledInterventionLocation);

@@ -148,6 +148,30 @@ async function createIndicatorRecord(
   return indicatorRecord.save();
 }
 
+async function createIndicatorRecordForIntervention(
+  additionalData: Partial<IndicatorRecord> = {},
+  sourcingRecord: SourcingRecord,
+): Promise<IndicatorRecord> {
+  const basicMaterial: Material = await createMaterial();
+  const basicH3: H3Data = await createH3Data();
+  const basicMaterialToH3: MaterialToH3 = await createMaterialToH3(
+    basicMaterial.id,
+    basicH3.id,
+    MATERIAL_TO_H3_TYPE.HARVEST,
+  );
+  const indicatorRecord = IndicatorRecord.merge(
+    new IndicatorRecord(),
+    {
+      value: 2000,
+      sourcingRecordId: sourcingRecord.id,
+      materialH3DataId: basicMaterialToH3.h3DataId,
+    },
+    additionalData,
+  );
+
+  return indicatorRecord.save();
+}
+
 // Alternate version that doesn't crete a Matching Sourcing Record
 async function createIndicatorRecordV2(
   additionalData: Partial<IndicatorRecord> = {},
@@ -428,4 +452,5 @@ export {
   createUnit,
   createUnitConversion,
   createGeoRegion,
+  createIndicatorRecordForIntervention,
 };

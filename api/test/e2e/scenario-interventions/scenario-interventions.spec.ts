@@ -57,6 +57,14 @@ import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
 import { ScenariosModule } from 'modules/scenarios/scenarios.module';
 import { In } from 'typeorm';
 import { range } from 'lodash';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
+import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
+import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { Unit } from 'modules/units/unit.entity';
+import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
+import { Indicator } from 'modules/indicators/indicator.entity';
+import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -109,6 +117,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   let sourcingRecordRepository: SourcingRecordRepository;
   let adminRegionRepository: AdminRegionRepository;
   let businessUnitRepository: BusinessUnitRepository;
+  let indicatorRecordRepository: IndicatorRecordRepository;
   let supplierRepository: SupplierRepository;
   let materialRepository: MaterialRepository;
   let geoRegionRepository: GeoRegionRepository;
@@ -145,6 +154,10 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     sourcingRecordRepository = moduleFixture.get<SourcingRecordRepository>(
       SourcingRecordRepository,
     );
+
+    indicatorRecordRepository = moduleFixture.get<IndicatorRecordRepository>(
+      IndicatorRecordRepository,
+    );
     adminRegionRepository = moduleFixture.get<AdminRegionRepository>(
       AdminRegionRepository,
     );
@@ -166,15 +179,23 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   });
 
   afterEach(async () => {
-    await sourcingLocationRepository.delete({});
-    await sourcingRecordRepository.delete({});
-    await scenarioInterventionRepository.delete({});
-    await scenarioRepository.delete({});
-    await adminRegionRepository.delete({});
-    await geoRegionRepository.delete({});
-    await materialRepository.delete({});
-    await businessUnitRepository.delete({});
-    await supplierRepository.delete({});
+    await clearEntityTables([
+      ScenarioIntervention,
+      IndicatorRecord,
+      MaterialToH3,
+      H3Data,
+      Material,
+      Indicator,
+      Unit,
+      BusinessUnit,
+      AdminRegion,
+      GeoRegion,
+      Supplier,
+      SourcingRecord,
+      SourcingLocation,
+      SourcingLocationGroup,
+      Scenario,
+    ]);
   });
 
   afterAll(async () => {
@@ -185,6 +206,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     test('Create a scenario intervention of type Change of production efficiency, with correct data should be successful', async () => {
       const preconditions: ScenarioInterventionPreconditions =
         await createInterventionPreconditions();
+
+      const allSourcingLocationsB: [SourcingLocation[], number] =
+        await sourcingLocationRepository.findAndCount();
+
+      const allSourcingRecordsB: [SourcingRecord[], number] =
+        await sourcingRecordRepository.findAndCount();
 
       const response = await request(app.getHttpServer())
         .post('/api/v1/scenario-interventions')
@@ -383,6 +410,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       expect(canceledSourcingRecords.length).toBe(1);
       expect(canceledSourcingRecords[0].tonnage).toEqual('250');
 
+      const canceledIndicatorRecords: IndicatorRecord[] =
+        await indicatorRecordRepository.find({
+          where: { sourcingRecordId: canceledSourcingRecords[0].id },
+        });
+      expect(canceledIndicatorRecords.length).toBe(4);
+
       const newSourcingLocations: SourcingLocation[] =
         await sourcingLocationRepository.find({
           where: {
@@ -411,6 +444,11 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(newSourcingRecords.length).toBe(1);
       expect(newSourcingRecords[0].tonnage).toEqual('250');
+
+      const newIndicatorRecords: IndicatorRecord[] =
+        await indicatorRecordRepository.find({
+          where: { sourcingRecordId: newSourcingRecords[0].id },
+        });
     });
 
     test('Create a scenario intervention of type Change of supplier location with start year for which there are multiple years, should be successful', async () => {
@@ -1716,7 +1754,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     });
   });
 
-  describe('Cascade delete os Scenario', () => {
+  describe('Cascade delete of Scenario', () => {
     test('When Scenario is deleted, related interventions must be deleted as well', async () => {
       const scenarioIntervention: ScenarioIntervention =
         await createScenarioIntervention();

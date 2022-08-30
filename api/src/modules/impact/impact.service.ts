@@ -323,7 +323,7 @@ export class ImpactService {
     impactTableDto: GetImpactTableDto,
     entities: ImpactTableEntityType[],
   ): Promise<ImpactTableData[]> {
-    return entities.length > 0
+    return entities.length
       ? this.sourcingRecordService.getDataForImpactTable(impactTableDto)
       : Promise.resolve([]);
   }

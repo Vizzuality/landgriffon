@@ -62,7 +62,7 @@ describe('Scenario comparison test suite (e2e)', () => {
     await app.close();
   });
 
-  test('When I request scenario comparison with just 1 scenarioId, then I should get proper error message', async () => {
+  test.skip('When I request scenario comparison with just 1 scenarioId, then I should get proper error message', async () => {
     const preconditions: {
       newScenario1: Scenario;
       newScenario2: Scenario;
@@ -145,7 +145,7 @@ describe('Scenario comparison test suite (e2e)', () => {
     );
   });
 
-  test('When I request data for comaprison table for 2 multiple interventions scenario grouped by material, then I should get correct data within expected structure', async () => {
+  test.skip('When I request data for comaprison table for 2 multiple interventions scenario grouped by material, then I should get correct data within expected structure', async () => {
     const preconditions: {
       indicator: Indicator;
       newScenarioChangeSupplier: Scenario;
@@ -207,7 +207,7 @@ describe('Scenario comparison test suite (e2e)', () => {
     );
   });
 
-  test('When I request data for comaprison table for 2 multiple interventions scenario grouped by material, then I should get correct data within expected structure', async () => {
+  test.skip('When I request data for comaprison table for 2 multiple interventions scenario grouped by material, then I should get correct data within expected structure', async () => {
     const preconditions: {
       indicator: Indicator;
       newScenarioChangeSupplier: Scenario;

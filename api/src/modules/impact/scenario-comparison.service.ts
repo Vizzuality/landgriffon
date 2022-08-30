@@ -6,7 +6,7 @@ import {
   ImpactTableData,
   ScenarioComparisonImpact,
   ScenarioComparisonTonnes,
-  ScenariosImpactTableData,
+  ScenariosImpactTableData as ScenariosComparisonImpactTableData,
 } from 'modules/sourcing-records/sourcing-record.repository';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { range } from 'lodash';
@@ -28,7 +28,7 @@ import { GetScenarioComparisonDto } from 'modules/impact/dto/get-scenario-compar
 import {
   PaginatedScenariosImpactTable,
   ScenarioImpact,
-  ScenariosImpactTable,
+  ScenariosImpactTable as ScenariosComparisonTable,
   ScenariosImpactTableDataByIndicator,
   ScenariosImpactTablePurchasedTonnes,
   ScenariosImpactTableRows,
@@ -63,6 +63,8 @@ export class ScenarioComparisonService {
     );
 
     //Getting Descendants Ids for the filters, in case Parent Ids were received
+
+    // TODO no cambiar dto original
     await this.loadDescendantEntityIds(scenarioComparisonDto);
 
     const entities: ImpactTableEntityType[] = await this.getEntityTree(
@@ -80,13 +82,13 @@ export class ScenarioComparisonService {
       paginatedEntities.entities,
     );
 
-    const scenarioComparisonImpactData: ScenariosImpactTableData[] =
+    const scenarioComparisonImpactData: ScenariosComparisonImpactTableData[] =
       await this.getScenarioComparisonImpactData(
         scenarioComparisonDto,
         paginatedEntities.entities,
       );
 
-    const comparisonTable: ScenariosImpactTable =
+    const comparisonTable: ScenariosComparisonTable =
       this.buildScenarioComparisonTable(
         scenarioComparisonDto,
         indicators,
@@ -104,7 +106,7 @@ export class ScenarioComparisonService {
   async getScenarioComparisonImpactData(
     scenarioComparisonDto: GetScenarioComparisonDto,
     entities: ImpactTableEntityType[],
-  ): Promise<ScenariosImpactTableData[]> {
+  ): Promise<ScenariosComparisonImpactTableData[]> {
     const impactDataForBothSceanrios: ImpactTableData[] =
       await this.getImapctDataForScenario(scenarioComparisonDto, entities);
 
@@ -113,18 +115,19 @@ export class ScenarioComparisonService {
 
   private groupScenarioComparisonData(
     impactData: ImpactTableData[],
-  ): ScenariosImpactTableData[] {
-    const dataForScenarioImpactTable: ScenariosImpactTableData[] = [];
+  ): ScenariosComparisonImpactTableData[] {
+    const dataForScenarioImpactTable: ScenariosComparisonImpactTableData[] = [];
 
     /**Processing the impact data so that each entity (material, supplier, etc) for each requested year
      * has canceled and replaced impacts  + cancelled and replaced tonnes grouped by scenarioId -
      * in the properties scenarioImpacts and scenarioTonnes
      */
     impactData.forEach((impactData: ImpactTableData) => {
-      const existingScenarioData: ScenariosImpactTableData | undefined =
-        dataForScenarioImpactTable.find((el: ImpactTableData) => {
-          return el.name === impactData.name && el.year === impactData.year;
-        });
+      const existingScenarioData:
+        | ScenariosComparisonImpactTableData
+        | undefined = dataForScenarioImpactTable.find((el: ImpactTableData) => {
+        return el.name === impactData.name && el.year === impactData.year;
+      });
 
       if (existingScenarioData) {
         dataForScenarioImpactTable[
@@ -155,7 +158,7 @@ export class ScenarioComparisonService {
           }),
         });
       } else {
-        const newComparisonData: ScenariosImpactTableData = {
+        const newComparisonData: ScenariosComparisonImpactTableData = {
           ...impactData,
           scenariosImpacts: [
             {
@@ -193,7 +196,7 @@ export class ScenarioComparisonService {
      */
 
     dataForScenarioImpactTable.forEach(
-      (scenarioImpactElement: ScenariosImpactTableData) => {
+      (scenarioImpactElement: ScenariosComparisonImpactTableData) => {
         // First we proccess and reduce scenario impacts
         const groupedScenarioImpacts: ScenarioComparisonImpact[] =
           Object.values(
@@ -387,9 +390,9 @@ export class ScenarioComparisonService {
   private buildScenarioComparisonTable(
     queryDto: GetImpactTableDto,
     indicators: Indicator[],
-    dataForComparisonTable: ScenariosImpactTableData[],
+    dataForComparisonTable: ScenariosComparisonImpactTableData[],
     entities: ScenariosImpactTableRows[],
-  ): ScenariosImpactTable {
+  ): ScenariosComparisonTable {
     this.logger.log('Building Scenario Comparison Table...');
     const { groupBy, startYear, endYear } = queryDto;
     const scenariosImpactTable: ScenariosImpactTableDataByIndicator[] = [];
@@ -407,15 +410,16 @@ export class ScenarioComparisonService {
         metadata: { unit: indicator.unit.symbol },
       });
       // Filter the raw data by Indicator
-      const scenariosdDataByIndicator: ScenariosImpactTableData[] =
+      const scenariosdDataByIndicator: ScenariosComparisonImpactTableData[] =
         dataForComparisonTable.filter(
-          (data: ScenariosImpactTableData) => data.indicatorId === indicator.id,
+          (data: ScenariosComparisonImpactTableData) =>
+            data.indicatorId === indicator.id,
         );
       // Get unique entity names for aggregations from raw data
       const namesByIndicator: string[] = [
         ...new Set(
           scenariosdDataByIndicator.map(
-            (el: ScenariosImpactTableData) => el.name,
+            (el: ScenariosComparisonImpactTableData) => el.name,
           ),
         ),
       ];
@@ -428,9 +432,9 @@ export class ScenarioComparisonService {
         });
         let rowValuesIndex: number = 0;
         for (const year of rangeOfYears) {
-          const dataForYear: ScenariosImpactTableData | undefined =
+          const dataForYear: ScenariosComparisonImpactTableData | undefined =
             scenariosdDataByIndicator.find(
-              (data: ScenariosImpactTableData) =>
+              (data: ScenariosComparisonImpactTableData) =>
                 data.year === year && data.name === name,
             );
           //If the year requested by the users exist in the raw data, append its value. There will always be a first valid value to start with
@@ -554,21 +558,21 @@ export class ScenarioComparisonService {
 
   private getTotalPurchasedVolumeByYear(
     rangeOfYears: number[],
-    scenarioComparisonImpactData: ScenariosImpactTableData[],
+    scenarioComparisonImpactData: ScenariosComparisonImpactTableData[],
   ): ScenariosImpactTablePurchasedTonnes[] {
     const purchasedTonnes: ScenariosImpactTablePurchasedTonnes[] = [];
     rangeOfYears.forEach((year: number, yearIndex: number) => {
-      const dataAvailableForTheYear: ScenariosImpactTableData[] =
+      const dataAvailableForTheYear: ScenariosComparisonImpactTableData[] =
         scenarioComparisonImpactData.filter(
-          (el: ScenariosImpactTableData) => el.year === year,
+          (el: ScenariosComparisonImpactTableData) => el.year === year,
         );
 
       if (dataAvailableForTheYear.length > 0) {
-        const impactDataWithCombinedTonnes: ScenariosImpactTableData =
+        const impactDataWithCombinedTonnes: ScenariosComparisonImpactTableData =
           dataAvailableForTheYear.reduce(
             (
-              acc: ScenariosImpactTableData,
-              currentValue: ScenariosImpactTableData,
+              acc: ScenariosComparisonImpactTableData,
+              currentValue: ScenariosComparisonImpactTableData,
             ) => {
               acc.scenariosTonnes = acc.scenariosTonnes.concat(
                 currentValue.scenariosTonnes,

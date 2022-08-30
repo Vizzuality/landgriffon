@@ -1,5 +1,8 @@
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
-import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import {
+  LOCATION_TYPES,
+  SourcingLocation,
+} from 'modules/sourcing-locations/sourcing-location.entity';
 
 export abstract class GeoCodingAbstractClass {
   abstract geoCodeLocations(
@@ -11,5 +14,6 @@ export abstract class GeoCodingAbstractClass {
     locationLatitude?: number;
     locationLongitude?: number;
     locationCountryInput: string;
+    locationType: LOCATION_TYPES;
   }): Promise<SourcingLocation>;
 }

@@ -55,31 +55,33 @@ export class GeoCodingService extends GeoCodingAbstractClass {
     return geoCodedSourcingData;
   }
 
-  async geoCodeSourcingLocation(
-    sourcingLocation: SourcingLocation,
-  ): Promise<SourcingLocation> {
+  async geoCodeSourcingLocation(locationInfo: {
+    locationAddressInput?: string;
+    locationLatitude?: number;
+    locationLongitude?: number;
+    locationCountryInput: string;
+    locationType: LOCATION_TYPES;
+  }): Promise<SourcingLocation> {
     let geoCodedSourcingLocation: Partial<SourcingData> = {};
-    if (sourcingLocation.locationType === LOCATION_TYPES.UNKNOWN) {
+    if (locationInfo.locationType === LOCATION_TYPES.UNKNOWN) {
       geoCodedSourcingLocation = await this.geoCodeUnknownLocationType(
-        sourcingLocation,
+        locationInfo as SourcingData,
       );
     }
-    if (
-      sourcingLocation.locationType === LOCATION_TYPES.COUNTRY_OF_PRODUCTION
-    ) {
+    if (locationInfo.locationType === LOCATION_TYPES.COUNTRY_OF_PRODUCTION) {
       geoCodedSourcingLocation = (await this.geoCodeCountryOfProduction(
-        sourcingLocation,
+        locationInfo as SourcingData,
       )) as SourcingData;
     }
 
-    if (sourcingLocation.locationType === LOCATION_TYPES.AGGREGATION_POINT) {
+    if (locationInfo.locationType === LOCATION_TYPES.AGGREGATION_POINT) {
       geoCodedSourcingLocation = (await this.geoCodeAggregationPoint(
-        sourcingLocation,
+        locationInfo as SourcingData,
       )) as SourcingData;
     }
-    if (sourcingLocation.locationType === LOCATION_TYPES.POINT_OF_PRODUCTION) {
+    if (locationInfo.locationType === LOCATION_TYPES.POINT_OF_PRODUCTION) {
       geoCodedSourcingLocation = await this.geoCodePointOfProduction(
-        sourcingLocation,
+        locationInfo as SourcingData,
       );
     }
     return geoCodedSourcingLocation as SourcingLocation;

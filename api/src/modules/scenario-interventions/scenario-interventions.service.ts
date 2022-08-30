@@ -18,13 +18,12 @@ import { ScenarioInterventionRepository } from 'modules/scenario-interventions/s
 import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
 import { UpdateScenarioInterventionDto } from 'modules/scenario-interventions/dto/update.scenario-intervention.dto';
 import {
+  LOCATION_TYPES,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
-  LOCATION_TYPES,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
-import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 import { InterventionGeneratorService } from 'modules/scenario-interventions/services/intervention-generator.service';
@@ -109,6 +108,9 @@ export class ScenarioInterventionsService extends AppBaseService<
   async createScenarioIntervention(
     dto: CreateScenarioInterventionDto,
   ): Promise<Partial<ScenarioIntervention>> {
+    let adminRegionId: string = '';
+    let geoRegionId: string = '';
+    let locationWarning: string | undefined;
     /**
      *  Getting descendants of adminRegions, materials, suppliers adn businessUnits received as filters, if exists
      */
@@ -116,20 +118,33 @@ export class ScenarioInterventionsService extends AppBaseService<
     //    There is only one location, get its adminRegionId and geoRegionId, as it will be shared to all created sourcing-locations
     //    No matter the interventionType
 
-    // TODO: COnditionally launch this depending on interventionType
+    // TODO: Conditionally launch this depending on interventionType
     //       extract it to an external function: validateNewLocation
-    const { adminRegionId, geoRegionId } =
-      await this.geoCodingService.geoCodeSourcingLocation(dto);
+
+    if (dto.type !== SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY) {
+      const {
+        adminRegionId: adminId,
+        geoRegionId: geoId,
+        locationWarning: warning,
+      } = await this.geoCodingService.geoCodeSourcingLocation({
+        locationLongitude: dto.newLocationLongitude,
+        locationLatitude: dto.newLocationLatitude,
+        locationAddressInput: dto.newLocationAddressInput,
+        locationCountryInput: dto.newLocationCountryInput,
+        locationType: dto.newLocationType,
+      });
+      adminRegionId = adminId;
+      geoRegionId = geoId;
+      locationWarning = warning;
+    }
 
     const dtoWithDescendants: CreateScenarioInterventionDto =
       await this.interventionGenerator.addDescendantsEntitiesForFiltering(dto);
-
     /**
      * Getting Sourcing Locations and Sourcing Records for start year of all Materials of the intervention with applied filters
      */
-
     const actualSourcingDataWithTonnage: SourcingLocation[] =
-      await this.sourcingLocationsService.findSourcingLocationsWithAppliedPercentageForSourcingRecords(
+      await this.sourcingLocationsService.findSourcingLocationsWithSourcingRecords(
         dtoWithDescendants,
       );
 
@@ -195,14 +210,13 @@ export class ScenarioInterventionsService extends AppBaseService<
      * Depending on the intervention type
      */
 
-    let newInterventionWithReplacingElements: ScenarioIntervention;
-
     switch (dto.type) {
       case SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL:
         const newMaterialInterventionLocation: SourcingData[] =
           await this.createNewReplacingSourcingLocationsForNewMaterialIntervention(
             dto,
             actualSourcingDataWithTonnage,
+            { adminRegionId, geoRegionId, locationWarning },
           );
 
         // Mutates the original isntance adding the new Replacing elements: new Admin Region etc
@@ -225,6 +239,7 @@ export class ScenarioInterventionsService extends AppBaseService<
           await this.createNewReplacingSourcingLocationsForNewSupplierIntervention(
             dto,
             actualSourcingDataWithTonnage,
+            { adminRegionId, geoRegionId, locationWarning },
           );
 
         await this.interventionGenerator.addReplacingElementsToIntervention(
@@ -293,6 +308,11 @@ export class ScenarioInterventionsService extends AppBaseService<
   async createNewReplacingSourcingLocationsForNewMaterialIntervention(
     dto: CreateScenarioInterventionDto,
     sourcingData: SourcingLocation[],
+    locationData: {
+      adminRegionId: string;
+      geoRegionId: string;
+      locationWarning: string | undefined;
+    },
   ): Promise<SourcingData[]> {
     const sourcingRecords: { year: number; tonnage: number }[] = [];
     /**
@@ -316,48 +336,33 @@ export class ScenarioInterventionsService extends AppBaseService<
       );
     });
 
-    const intervenedSourcingRecords: { year: number; tonnage: number }[] =
-      sourcingRecords.map(
-        (sourcingRecord: { year: number; tonnage: number }) => {
-          return {
-            year: sourcingRecord.year,
-            tonnage: sourcingRecord.tonnage,
-          };
-        },
-      );
-
-    const newInterventionLocationDataForGeoCoding: SourcingData[] = [
-      {
-        materialId: dto.newMaterialId as string,
-        locationType: dto.newLocationType,
-        locationAddressInput: dto.newLocationAddressInput,
-        locationCountryInput: dto.newLocationCountryInput,
-        locationLongitude: dto.newLocationLongitude,
-        locationLatitude: dto.newLocationLatitude,
-        t1SupplierId: dto.newT1SupplierId,
-        producerId: dto.newProducerId,
-        businessUnitId: sourcingData[0].businessUnitId,
-        sourcingRecords: intervenedSourcingRecords,
+    const intervenedSourcingRecords: SourcingRecord[] = sourcingRecords.map(
+      (sourcingRecord: { year: number; tonnage: number }) => {
+        return {
+          year: sourcingRecord.year,
+          tonnage: sourcingRecord.tonnage,
+        } as SourcingRecord;
       },
-    ];
+    );
 
-    // TODO: Delete this and add the adminRegionId and geoRegionId obtained in the beginning of the process
+    const newInterventionLocationDataForGeoCoding: SourcingLocation = {
+      materialId: dto.newMaterialId as string,
+      locationType: dto.newLocationType,
+      locationAddressInput: dto.newLocationAddressInput,
+      locationCountryInput: dto.newLocationCountryInput,
+      locationLongitude: dto.newLocationLongitude,
+      locationLatitude: dto.newLocationLatitude,
+      t1SupplierId: dto.newT1SupplierId,
+      producerId: dto.newProducerId,
+      businessUnitId: sourcingData[0].businessUnitId,
+      sourcingRecords: intervenedSourcingRecords,
+      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+      adminRegionId: locationData.adminRegionId,
+      geoRegionId: locationData.geoRegionId,
+      locationWarning: locationData.locationWarning,
+    } as SourcingLocation;
 
-    const geoCodedNewInterventionLocation: SourcingData[] =
-      await this.geoCodingService.geoCodeLocations(
-        newInterventionLocationDataForGeoCoding,
-      );
-
-    const newSourcingLocationData: SourcingData[] = [
-      {
-        ...geoCodedNewInterventionLocation[0],
-        ...{
-          interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
-        },
-      },
-    ];
-
-    return newSourcingLocationData;
+    return [newInterventionLocationDataForGeoCoding];
   }
 
   /**
@@ -369,25 +374,12 @@ export class ScenarioInterventionsService extends AppBaseService<
   async createNewReplacingSourcingLocationsForNewSupplierIntervention(
     dto: CreateScenarioInterventionDto,
     sourcingData: SourcingLocation[],
+    locationData: {
+      adminRegionId: string;
+      geoRegionId: string;
+      locationWarning: string | undefined;
+    },
   ): Promise<SourcingData[]> {
-    const locationSampleForGeoCoding: SourcingData[] = [
-      {
-        materialId: sourcingData[0].materialId,
-        locationType: dto.newLocationType,
-        locationAddressInput: dto.newLocationAddressInput,
-        locationCountryInput: dto.newLocationCountryInput,
-        locationLatitude: dto.newLocationLatitude,
-        locationLongitude: dto.newLocationLongitude,
-        t1SupplierId: dto.newT1SupplierId,
-        producerId: dto.newProducerId,
-        businessUnitId: sourcingData[0].businessUnitId,
-        sourcingRecords: sourcingData[0].sourcingRecords,
-      },
-    ];
-
-    const geoCodedLocationSample: SourcingData[] =
-      await this.geoCodingService.geoCodeLocations(locationSampleForGeoCoding);
-
     const newSourcingLocationData: SourcingData[] = [];
     for (const location of sourcingData) {
       const identicalSourcingLocationDataIndex: number | undefined =
@@ -418,9 +410,9 @@ export class ScenarioInterventionsService extends AppBaseService<
           t1SupplierId: dto.newT1SupplierId,
           producerId: dto.newProducerId,
           businessUnitId: location.businessUnitId,
-          geoRegionId: geoCodedLocationSample[0].geoRegionId,
-          adminRegionId: geoCodedLocationSample[0].adminRegionId,
-          locationWarning: geoCodedLocationSample[0].locationWarning,
+          geoRegionId: locationData.geoRegionId,
+          adminRegionId: locationData.adminRegionId,
+          locationWarning: locationData.locationWarning,
           sourcingRecords: location.sourcingRecords.map((elem: any) => {
             return { year: elem.year, tonnage: elem.tonnage };
           }),

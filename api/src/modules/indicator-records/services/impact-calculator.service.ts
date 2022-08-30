@@ -21,8 +21,6 @@ export class ImpactCalculatorService {
     materialId: string,
     year: number,
   ): Promise<any[]> {
-    // MAIN LOGIC
-
     // STEPS
     /**
      * 1. Get material h3 data table and column name
@@ -90,6 +88,7 @@ export class ImpactCalculatorService {
     const values: SelectQueryBuilder<unknown> = await connection
       .createQueryBuilder()
 
+      //SELECT aggregation statements
       .select(`sum( "harvestH3"."${harvestH3.h3columnName}" )`, 'harvestedArea')
       .addSelect(
         `sum( "producerH3"."${producerH3.h3columnName}" )`,
@@ -113,6 +112,7 @@ export class ImpactCalculatorService {
         `sum( "waterH3"."${waterH3.h3columnName}" * 0.001)`,
         'rawWater',
       )
+      //FROM
       .from(
         `(select * from get_h3_uncompact_geo_region('${georegionId}', 6))`,
         'geoRegion',
@@ -242,8 +242,18 @@ export class ImpactCalculatorService {
     return result;
   }
 
+  /**
+   * Generates a Map that contains for each Indicator Type the corresponding H3Data (if there's H3Data present for the year 2010 and 2020, and 2013
+   * is requested, it will return the H3Data of 2010)
+   * NOTE: implemented here to be able to reuse the connection object used in the main calculation SQL query and use the
+   * transaction capability
+   * @param connection
+   * @param queryRunner
+   * @param indicatorTypes
+   * @param year
+   */
   getIndicatorH3sByTypeAndClosestYear(
-    connecttion: Connection,
+    connection: Connection,
     queryRunner: QueryRunner,
     indicatorTypes: INDICATOR_TYPES[],
     year: number,
@@ -253,7 +263,7 @@ export class ImpactCalculatorService {
         previousValue: Promise<Map<INDICATOR_TYPES, H3Data>>,
         currentIndicatorType: INDICATOR_TYPES,
       ) => {
-        const queryBuilder: SelectQueryBuilder<H3Data> = connecttion
+        const queryBuilder: SelectQueryBuilder<H3Data> = connection
           .createQueryBuilder()
           .select(' h3data.*')
           .from(H3Data, 'h3data')
@@ -284,8 +294,19 @@ export class ImpactCalculatorService {
     );
   }
 
+  /**
+   * Generates a Map that contains, for the given materialId, the corresponding H3Data for each of the material's
+   * MATERIAL_TO_H3_TYPE, closest to the given year (if there's H3Data present for the year 2010 and 2020, and 2013
+   * is requested, it will return the H3Data of 2010)
+   * NOTE: implemented here to be able to reuse the connection object used in the main calculation SQL query and use the
+   * transaction capability
+   * @param connection
+   * @param queryRunner
+   * @param materialId
+   * @param year
+   */
   getAllMaterialH3sByClosestYear(
-    connecttion: Connection,
+    connection: Connection,
     queryRunner: QueryRunner,
     materialId: string,
     year: number,
@@ -295,7 +316,7 @@ export class ImpactCalculatorService {
         previousValue: Promise<Map<MATERIAL_TO_H3_TYPE, H3Data>>,
         currentMaterialToH3Type: MATERIAL_TO_H3_TYPE,
       ) => {
-        const queryBuilder: SelectQueryBuilder<H3Data> = connecttion
+        const queryBuilder: SelectQueryBuilder<H3Data> = connection
           .createQueryBuilder()
           .select('h3data.*')
           .from(H3Data, 'h3data')

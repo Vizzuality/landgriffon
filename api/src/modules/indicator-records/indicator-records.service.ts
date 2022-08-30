@@ -169,8 +169,8 @@ export class IndicatorRecordsService extends AppBaseService<
     const rawData: SourcingRecordsWithIndicatorRawDataDto[] = config.get(
       'featureFlags.simpleImportCalculations',
     )
-      ? await this.indicatorRecordRepository.getIndicatorRawDataForAllSourcingRecords()
-      : await this.impactCalculatorService.calculateAllSourcingRecords();
+      ? await this.impactCalculatorService.calculateAllSourcingRecords()
+      : await this.indicatorRecordRepository.getIndicatorRawDataForAllSourcingRecords();
 
     const calculatedData2: IndicatorRecordCalculatedValuesDto[] = rawData.map(
       (sourcingRecordData: SourcingRecordsWithIndicatorRawDataDto) => {

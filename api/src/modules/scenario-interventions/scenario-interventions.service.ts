@@ -112,6 +112,15 @@ export class ScenarioInterventionsService extends AppBaseService<
     /**
      *  Getting descendants of adminRegions, materials, suppliers adn businessUnits received as filters, if exists
      */
+    // TODO: Validate and GeoLocate the location (if any)
+    //    There is only one location, get its adminRegionId and geoRegionId, as it will be shared to all created sourcing-locations
+    //    No matter the interventionType
+
+    // TODO: COnditionally launch this depending on interventionType
+    //       extract it to an external function: validateNewLocation
+    const { adminRegionId, geoRegionId } =
+      await this.geoCodingService.geoCodeSourcingLocation(dto);
+
     const dtoWithDescendants: CreateScenarioInterventionDto =
       await this.interventionGenerator.addDescendantsEntitiesForFiltering(dto);
 
@@ -135,7 +144,7 @@ export class ScenarioInterventionsService extends AppBaseService<
       });
     });
 
-    /**
+    /*
      * NEW SOURCING LOCATIONS #1 - Basically copies of the actual existing Sourcing Locations that will be replaced by intervention,
      * saved one more time but with the scenarioInterventionId and type 'CANCELED' related to intervention
      */
@@ -174,13 +183,12 @@ export class ScenarioInterventionsService extends AppBaseService<
     const newScenarioIntervention: ScenarioIntervention =
       ScenarioInterventionsService.createInterventionInstance(dto);
 
-    // Add replaced Entities to new Scenario Intervention
+    //Mutates the intervention instance adding replaced Entities to new Scenario Intervention
 
-    const newInterventionWithReplacedElements: ScenarioIntervention =
-      await this.interventionGenerator.addReplacedElementsToIntervention(
-        newScenarioIntervention,
-        newCancelledByInterventionLocationsData,
-      );
+    await this.interventionGenerator.addReplacedElementsToIntervention(
+      newScenarioIntervention,
+      newCancelledByInterventionLocationsData,
+    );
 
     /**
      * NEW SOURCING LOCATIONS #2 - The ones of the Intervention, will replace the CANCELED ones
@@ -197,17 +205,17 @@ export class ScenarioInterventionsService extends AppBaseService<
             actualSourcingDataWithTonnage,
           );
 
-        newInterventionWithReplacingElements =
-          await this.interventionGenerator.addReplacingElementsToIntervention(
-            newInterventionWithReplacedElements,
-            newMaterialInterventionLocation,
-            SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
-          );
-
+        // Mutates the original isntance adding the new Replacing elements: new Admin Region etc
+        await this.interventionGenerator.addReplacingElementsToIntervention(
+          newScenarioIntervention,
+          newMaterialInterventionLocation,
+          SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+        );
+        // Mutates the original isntance adding the new Sourcing Locations of type created
         await this.createReplacingSourcingLocationsForIntervention(
           newMaterialInterventionLocation,
           dto.newIndicatorCoefficients,
-          newInterventionWithReplacedElements,
+          newScenarioIntervention,
         );
 
         break;
@@ -219,17 +227,16 @@ export class ScenarioInterventionsService extends AppBaseService<
             actualSourcingDataWithTonnage,
           );
 
-        newInterventionWithReplacingElements =
-          await this.interventionGenerator.addReplacingElementsToIntervention(
-            newInterventionWithReplacedElements,
-            newSupplerInterventionLocations,
-            SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-          );
+        await this.interventionGenerator.addReplacingElementsToIntervention(
+          newScenarioIntervention,
+          newSupplerInterventionLocations,
+          SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+        );
 
         await this.createReplacingSourcingLocationsForIntervention(
           newSupplerInterventionLocations,
           dto.newIndicatorCoefficients,
-          newInterventionWithReplacedElements,
+          newScenarioIntervention,
         );
         break;
 
@@ -243,7 +250,7 @@ export class ScenarioInterventionsService extends AppBaseService<
         await this.createReplacingSourcingLocationsForIntervention(
           newEfficiencyChangeInterventionLocations,
           dto.newIndicatorCoefficients,
-          newInterventionWithReplacedElements,
+          newScenarioIntervention,
         );
 
         break;
@@ -333,6 +340,8 @@ export class ScenarioInterventionsService extends AppBaseService<
         sourcingRecords: intervenedSourcingRecords,
       },
     ];
+
+    // TODO: Delete this and add the adminRegionId and geoRegionId obtained in the beginning of the process
 
     const geoCodedNewInterventionLocation: SourcingData[] =
       await this.geoCodingService.geoCodeLocations(

@@ -4,7 +4,10 @@ import { PointOfProductionGeocodingStrategy } from 'modules/geo-coding/strategie
 import { CountryOfProductionGeoCodingStrategy } from 'modules/geo-coding/strategies/country-of-production.geocoding.service';
 import { UnknownLocationGeoCodingStrategy } from 'modules/geo-coding/strategies/unknown-location.geocoding.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
-import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
+import {
+  LOCATION_TYPES,
+  SourcingLocation,
+} from 'modules/sourcing-locations/sourcing-location.entity';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 
 @Injectable()
@@ -50,6 +53,36 @@ export class GeoCodingService extends GeoCodingAbstractClass {
     }
 
     return geoCodedSourcingData;
+  }
+
+  async geoCodeSourcingLocation(
+    sourcingLocation: SourcingLocation,
+  ): Promise<SourcingLocation> {
+    let geoCodedSourcingLocation: Partial<SourcingData> = {};
+    if (sourcingLocation.locationType === LOCATION_TYPES.UNKNOWN) {
+      geoCodedSourcingLocation = await this.geoCodeUnknownLocationType(
+        sourcingLocation,
+      );
+    }
+    if (
+      sourcingLocation.locationType === LOCATION_TYPES.COUNTRY_OF_PRODUCTION
+    ) {
+      geoCodedSourcingLocation = (await this.geoCodeCountryOfProduction(
+        sourcingLocation,
+      )) as SourcingData;
+    }
+
+    if (sourcingLocation.locationType === LOCATION_TYPES.AGGREGATION_POINT) {
+      geoCodedSourcingLocation = (await this.geoCodeAggregationPoint(
+        sourcingLocation,
+      )) as SourcingData;
+    }
+    if (sourcingLocation.locationType === LOCATION_TYPES.POINT_OF_PRODUCTION) {
+      geoCodedSourcingLocation = await this.geoCodePointOfProduction(
+        sourcingLocation,
+      );
+    }
+    return geoCodedSourcingLocation as SourcingLocation;
   }
 
   async geoCodeAggregationPoint(

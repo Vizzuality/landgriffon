@@ -111,11 +111,11 @@ export class SourcingLocationsService extends AppBaseService<
   }
 
   /**
-   * @description: Find Sourcing Locations by filters applying the custom percentage
+   * @description: Find Sourcing Locations and their Sourcing Records applying the filter
    * @param createInterventionDto
    */
 
-  async findSourcingLocationsWithAppliedPercentageForSourcingRecords(
+  async findSourcingLocationsWithSourcingRecords(
     createInterventionDto: CreateScenarioInterventionDto,
   ): Promise<SourcingLocation[]> {
     const queryBuilder: SelectQueryBuilder<SourcingLocation> =
@@ -177,7 +177,6 @@ export class SourcingLocationsService extends AppBaseService<
         }),
       );
     }
-    const query: any = queryBuilder.getQueryAndParameters();
 
     return queryBuilder.getMany();
   }

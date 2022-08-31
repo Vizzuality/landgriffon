@@ -1,5 +1,5 @@
 import type { InterventionDto, InterventionFormData } from './types';
-import { InterventionTypes } from './enums';
+import { InterventionTypes, LocationTypes } from './enums';
 import type { SelectOption } from 'components/select/types';
 
 function emptyStringIsNull(value: string): string | null {
@@ -33,6 +33,7 @@ export function parseInterventionFormDataToDto(
     newProducerId,
     newLocationType,
     newLocationCountryInput,
+    newLocationAddressInput,
     DF_LUC_T,
     UWU_T,
     BL_LUC_T,
@@ -57,6 +58,16 @@ export function parseInterventionFormDataToDto(
       newLocationType: getValue(newLocationType) as string,
       newLocationCountryInput: newLocationCountryInput?.label,
     }),
+
+    // * if an address is provided for certain location types, latitude and longitudes are nullified
+    ...([LocationTypes.aggregationPoint, LocationTypes.pointOfProduction].includes(
+      newLocationType.value as LocationTypes,
+    ) &&
+      newLocationAddressInput && {
+        newLocationAddressInput,
+        newLocationLatitude: null,
+        newLocationLongitude: null,
+      }),
 
     newT1SupplierId: getValue(newT1SupplierId) as string,
     newProducerId: getValue(newProducerId) as string,

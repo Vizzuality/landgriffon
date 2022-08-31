@@ -81,12 +81,13 @@ const schemaValidation = yup.object({
     });
   }),
 
-  cityAddressCoordinates: yup.lazy(() => {
+  cityAddressCoordinates: yup.lazy((_value) => {
     return yup.string().when('newLocationType', (locationType) => {
       if (
         [LocationTypes.aggregationPoint, LocationTypes.pointOfProduction].includes(
           locationType?.value,
-        )
+        ) &&
+        isCoordinates(_value)
       ) {
         return yup
           .string()

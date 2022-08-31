@@ -17,7 +17,10 @@ import {
   createSupplier,
 } from '../../entity-mocks';
 import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
-import { INDICATOR_RECORD_STATUS } from 'modules/indicator-records/indicator-record.entity';
+import {
+  INDICATOR_RECORD_STATUS,
+  IndicatorRecord,
+} from 'modules/indicator-records/indicator-record.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
@@ -203,16 +206,17 @@ describe('Indicator Records Service', () => {
       };
 
       //ACT
-      await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
-        sourcingData,
-        providedCoefficients,
-      );
+      const calculatedIndicators =
+        await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
+          sourcingData,
+          providedCoefficients,
+        );
 
       //ASSERT
-      const allIndicators = await indicatorRecordRepository.find();
-      expect(allIndicators.length).toEqual(4);
 
-      //Value is provided coeff * tonnage, and scaler is null, because it's based on production coefficient, and it's not provided
+      expect(calculatedIndicators.length).toEqual(4);
+
+      // Value is provided coeff * tonnage, and scaler is null, because it's based on production coefficient, and it's not provided
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.DEFORESTATION,
         indicatorPreconditions.deforestation,
@@ -220,6 +224,7 @@ describe('Indicator Records Service', () => {
         sourcingData.sourcingRecordId,
         350,
         null,
+        calculatedIndicators,
       );
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.BIODIVERSITY_LOSS,
@@ -228,6 +233,7 @@ describe('Indicator Records Service', () => {
         sourcingData.sourcingRecordId,
         100,
         null,
+        calculatedIndicators,
       );
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.CARBON_EMISSIONS,
@@ -236,6 +242,7 @@ describe('Indicator Records Service', () => {
         sourcingData.sourcingRecordId,
         400,
         null,
+        calculatedIndicators,
       );
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
@@ -244,6 +251,7 @@ describe('Indicator Records Service', () => {
         sourcingData.sourcingRecordId,
         200,
         null,
+        calculatedIndicators,
       );
     });
 
@@ -387,14 +395,14 @@ describe('Indicator Records Service', () => {
         MATERIAL_TO_H3_TYPE.HARVEST,
       );
 
-      //ACT
-      await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
-        sourcingData,
-      );
+      const calculatedRecords =
+        await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
+          sourcingData,
+        );
 
       //ASSERT
-      const allIndicators = await indicatorRecordRepository.find();
-      expect(allIndicators.length).toEqual(4);
+      // const allIndicators = await indicatorRecordRepository.find();
+      expect(calculatedRecords.length).toEqual(4);
 
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.DEFORESTATION,
@@ -403,6 +411,7 @@ describe('Indicator Records Service', () => {
         sourcingData.sourcingRecordId,
         80.74534161490683,
         1610,
+        calculatedRecords,
       );
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.BIODIVERSITY_LOSS,
@@ -411,6 +420,7 @@ describe('Indicator Records Service', () => {
         sourcingData.sourcingRecordId,
         148944.0999601198,
         1610,
+        calculatedRecords,
       );
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.CARBON_EMISSIONS,
@@ -419,6 +429,7 @@ describe('Indicator Records Service', () => {
         sourcingData.sourcingRecordId,
         14.894409937888199,
         1610,
+        calculatedRecords,
       );
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
@@ -427,11 +438,12 @@ describe('Indicator Records Service', () => {
         sourcingData.sourcingRecordId,
         0.07700000181794166,
         1610,
+        calculatedRecords,
       );
     });
 
     test('When creating all indicators records, it should create the indicator records properly', async () => {
-      //ARRANGE
+      //ARRANGE;
       const indicatorPreconditions = await createPreconditions();
 
       const h3Material1 = await h3DataMock({
@@ -468,6 +480,7 @@ describe('Indicator Records Service', () => {
       );
 
       //ACT
+
       await indicatorRecordService.createIndicatorRecordsForAllSourcingRecords();
 
       //ASSERT
@@ -627,13 +640,14 @@ describe('Indicator Records Service', () => {
       );
 
       //ACT
-      await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
-        sourcingData,
-      );
+      const calculatedRecords =
+        await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
+          sourcingData,
+        );
 
       //ASSERT
-      const allIndicators = await indicatorRecordRepository.find();
-      expect(allIndicators.length).toEqual(4);
+      //const allIndicators = await indicatorRecordRepository.find();
+      expect(calculatedRecords.length).toEqual(4);
 
       await checkCreatedIndicatorRecord(
         INDICATOR_TYPES.BIODIVERSITY_LOSS,
@@ -642,6 +656,7 @@ describe('Indicator Records Service', () => {
         sourcingData.sourcingRecordId,
         1125,
         200,
+        calculatedRecords,
       );
     });
 
@@ -755,9 +770,10 @@ describe('Indicator Records Service', () => {
       );
 
       //ACT
-      await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
-        sourcingData,
-      );
+      const calculatedRecords =
+        await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
+          sourcingData,
+        );
 
       //ASSERT
 
@@ -802,6 +818,7 @@ describe('Indicator Records Service', () => {
    * @param sourcingRecordId
    * @param recordValue
    * @param scalerValue
+   * @param calculatedIndicatorRecords
    */
   async function checkCreatedIndicatorRecord(
     indicatorType: INDICATOR_TYPES,
@@ -810,18 +827,28 @@ describe('Indicator Records Service', () => {
     sourcingRecordId: string,
     recordValue: number,
     scalerValue: number | null,
+    calculatedIndicatorRecords?: IndicatorRecord[],
   ): Promise<void> {
-    const indicatorRecords = await indicatorRecordRepository.find({
-      where: { indicatorId: h3Data.indicatorId, sourcingRecordId },
-    });
-    expect(indicatorRecords.length).toEqual(1);
-    expect(indicatorRecords[0].sourcingRecordId).toEqual(sourcingRecordId);
-    expect(indicatorRecords[0].status).toEqual(INDICATOR_RECORD_STATUS.SUCCESS);
-    expect(indicatorRecords[0].value).toEqual(recordValue);
-    expect(indicatorRecords[0].scaler).toEqual(scalerValue);
-    expect(indicatorRecords[0].materialH3DataId).toEqual(
-      materialH3Data.h3DataId,
-    );
+    let createdRecords: IndicatorRecord[];
+
+    if (calculatedIndicatorRecords?.length) {
+      createdRecords = calculatedIndicatorRecords.filter(
+        (record: IndicatorRecord) =>
+          record.indicatorId === h3Data.indicatorId &&
+          record.sourcingRecordId === sourcingRecordId,
+      );
+    } else {
+      createdRecords = await indicatorRecordRepository.find({
+        where: { indicatorId: h3Data.indicatorId, sourcingRecordId },
+      });
+    }
+
+    expect(createdRecords.length).toEqual(1);
+    expect(createdRecords[0].sourcingRecordId).toEqual(sourcingRecordId);
+    expect(createdRecords[0].status).toEqual(INDICATOR_RECORD_STATUS.SUCCESS);
+    expect(createdRecords[0].value).toEqual(recordValue);
+    expect(createdRecords[0].scaler).toEqual(scalerValue);
+    expect(createdRecords[0].materialH3DataId).toEqual(materialH3Data.h3DataId);
     //Inidicator Coefficients are not checked because it's not used
   }
 

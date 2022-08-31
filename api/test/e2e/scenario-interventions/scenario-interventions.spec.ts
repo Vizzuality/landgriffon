@@ -57,6 +57,14 @@ import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
 import { ScenariosModule } from 'modules/scenarios/scenarios.module';
 import { In } from 'typeorm';
 import { range } from 'lodash';
+import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
+import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
+import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { Indicator } from 'modules/indicators/indicator.entity';
+import { Unit } from 'modules/units/unit.entity';
+import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -109,6 +117,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   let sourcingRecordRepository: SourcingRecordRepository;
   let adminRegionRepository: AdminRegionRepository;
   let businessUnitRepository: BusinessUnitRepository;
+  let indicatorRecordRepository: IndicatorRecordRepository;
   let supplierRepository: SupplierRepository;
   let materialRepository: MaterialRepository;
   let geoRegionRepository: GeoRegionRepository;
@@ -158,6 +167,10 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     materialRepository =
       moduleFixture.get<MaterialRepository>(MaterialRepository);
 
+    indicatorRecordRepository = moduleFixture.get<IndicatorRecordRepository>(
+      IndicatorRecordRepository,
+    );
+
     app = getApp(moduleFixture);
     await app.init();
     const tokenWithId = await saveUserAndGetTokenWithUserId(moduleFixture, app);
@@ -166,15 +179,23 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   });
 
   afterEach(async () => {
-    await sourcingLocationRepository.delete({});
-    await sourcingRecordRepository.delete({});
-    await scenarioInterventionRepository.delete({});
-    await scenarioRepository.delete({});
-    await adminRegionRepository.delete({});
-    await geoRegionRepository.delete({});
-    await materialRepository.delete({});
-    await businessUnitRepository.delete({});
-    await supplierRepository.delete({});
+    await clearEntityTables([
+      ScenarioIntervention,
+      IndicatorRecord,
+      MaterialToH3,
+      H3Data,
+      Material,
+      Indicator,
+      Unit,
+      BusinessUnit,
+      AdminRegion,
+      GeoRegion,
+      Supplier,
+      SourcingRecord,
+      SourcingLocation,
+      SourcingLocationGroup,
+      Scenario,
+    ]);
   });
 
   afterAll(async () => {
@@ -274,6 +295,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(canceledSourcingRecords.length).toBe(1);
       expect(canceledSourcingRecords[0].tonnage).toEqual('250');
+
+      const canceledIndicatorRecords: IndicatorRecord[] =
+        await indicatorRecordRepository.find({
+          where: { sourcingRecordId: canceledSourcingRecords[0].id },
+        });
+      expect(canceledIndicatorRecords.length).toBe(4);
 
       const newSourcingLocations: SourcingLocation[] =
         await sourcingLocationRepository.find({
@@ -382,6 +409,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(canceledSourcingRecords.length).toBe(1);
       expect(canceledSourcingRecords[0].tonnage).toEqual('250');
+
+      const canceledIndicatorRecords: IndicatorRecord[] =
+        await indicatorRecordRepository.find({
+          where: { sourcingRecordId: canceledSourcingRecords[0].id },
+        });
+      expect(canceledIndicatorRecords.length).toBe(4);
 
       const newSourcingLocations: SourcingLocation[] =
         await sourcingLocationRepository.find({

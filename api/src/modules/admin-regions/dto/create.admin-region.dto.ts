@@ -16,7 +16,7 @@ import {
 export class CreateAdminRegionDto {
   @IsString()
   @MinLength(2)
-  @MaxLength(40)
+  @MaxLength(100)
   @ApiProperty()
   @IsNotEmpty()
   name!: string;

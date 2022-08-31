@@ -4,6 +4,9 @@ import { Material } from 'modules/materials/material.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
+import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
+import { Indicator } from 'modules/indicators/indicator.entity';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import {
   createAdminRegion,
   createBusinessUnit,
@@ -12,6 +15,9 @@ import {
   createSourcingLocation,
   createSourcingRecord,
   createSupplier,
+  createIndicator,
+  createIndicatorRecord,
+  createIndicatorRecordForIntervention,
 } from '../entity-mocks';
 
 export interface ScenarioInterventionPreconditions {
@@ -68,11 +74,63 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
     adminRegionId: adminRegion1Descendant.id,
   });
 
-  await createSourcingRecord({
+  const indicator1: Indicator = await createIndicator({
+    name: 'def',
+    nameCode: 'ind1',
+  });
+  const indicator2: Indicator = await createIndicator({
+    name: 'carb',
+    nameCode: 'ind2',
+  });
+  const indicator3: Indicator = await createIndicator({
+    name: 'biod',
+    nameCode: 'ind3',
+  });
+  const indicator4: Indicator = await createIndicator({
+    name: 'watr',
+    nameCode: 'ind4',
+  });
+
+  const sourcingRecord1: SourcingRecord = await createSourcingRecord({
     sourcingLocationId: sourcingLocation1.id,
     year: 2018,
     tonnage: 500,
   });
+  const indicatorRecord1: IndicatorRecord =
+    await createIndicatorRecordForIntervention(
+      {
+        indicator: indicator1,
+        value: 1200,
+      },
+      sourcingRecord1,
+    );
+
+  const indicatorRecord2: IndicatorRecord =
+    await createIndicatorRecordForIntervention(
+      {
+        indicator: indicator2,
+        value: 1200,
+      },
+      sourcingRecord1,
+    );
+
+  const indicatorRecord3: IndicatorRecord =
+    await createIndicatorRecordForIntervention(
+      {
+        indicator: indicator3,
+        value: 1200,
+      },
+      sourcingRecord1,
+    );
+
+  const indicatorRecord4: IndicatorRecord =
+    await createIndicatorRecordForIntervention(
+      {
+        indicator: indicator4,
+        value: 1100,
+      },
+      sourcingRecord1,
+    );
 
   const sourcingLocation2: SourcingLocation = await createSourcingLocation({
     materialId: material2.id,
@@ -81,11 +139,47 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
     adminRegionId: adminRegion2.id,
   });
 
-  await createSourcingRecord({
+  const sourcingRecord2: SourcingRecord = await createSourcingRecord({
     sourcingLocationId: sourcingLocation2.id,
     year: 2018,
     tonnage: 600,
   });
+
+  const indicatorRecord5: IndicatorRecord =
+    await createIndicatorRecordForIntervention(
+      {
+        indicator: indicator1,
+        value: 2000,
+      },
+      sourcingRecord2,
+    );
+
+  const indicatorRecord6: IndicatorRecord =
+    await createIndicatorRecordForIntervention(
+      {
+        indicator: indicator2,
+        value: 2200,
+      },
+      sourcingRecord2,
+    );
+
+  const indicatorRecord7: IndicatorRecord =
+    await createIndicatorRecordForIntervention(
+      {
+        indicator: indicator3,
+        value: 2200,
+      },
+      sourcingRecord2,
+    );
+
+  const indicatorRecord8: IndicatorRecord =
+    await createIndicatorRecordForIntervention(
+      {
+        indicator: indicator4,
+        value: 2100,
+      },
+      sourcingRecord2,
+    );
 
   return {
     scenario,

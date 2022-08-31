@@ -136,8 +136,12 @@ export class SourcingLocationsService extends AppBaseService<
           'sl.locationLatitude',
           'sr.year',
           'sr.tonnage',
+          'ir.value',
+          'ir.indicatorId',
+          'ir.materialH3DataId',
         ])
         .leftJoin('sl.sourcingRecords', 'sr')
+        .leftJoin('sr.indicatorRecords', 'ir')
         .where('sl."materialId" IN (:...materialIds)', {
           materialIds: createInterventionDto.materialIds,
         })

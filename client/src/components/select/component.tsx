@@ -59,9 +59,9 @@ const customStyles: (theme: SelectProps['theme'], error?: boolean) => StylesConf
       backgroundColor: 'transparent',
       ...(theme === 'inline-primary' &&
         tw`border border-l-0 border-r-0 border-t-0 border-b-2 border-b-primary shadow-none rounded-none min-w-[30px] p-0 min-h-0`),
-      ...(theme === 'default' && tw`w-full border rounded-md`),
+      ...(theme === 'default' && tw`w-full bg-white border rounded-md`),
       ...tw`px-4 gap-x-0.5`,
-      ...(theme === 'default-bordernone' && tw`px-1 border-0`),
+      ...(theme === 'default-bordernone' && tw`px-1 bg-white border-0`),
       ...(isFocused && tw`ring-1 ring-primary`),
       ...(error && tw`border-2 border-red-600`),
     }),

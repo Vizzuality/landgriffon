@@ -171,18 +171,24 @@ const Table = <T,>({
         </div>
       </div>
 
-      <div className="flex flex-row justify-between">
-        <PageSizeSelector onChange={onChangePageSize} pageSize={pagination.pageSize} />
-        <Pagination
-          showSummary={pagination.showSummary ?? true}
-          totalPages={pagination.pageCount}
-          totalItems={pagination.totalItems}
-          numItems={pagination.itemNumber ?? pagination.pageSize}
-          currentPage={pagination.pageIndex}
-          onPageClick={(newPage) => {
-            table.setPageIndex(newPage);
-          }}
-        />
+      <div className="flex flex-row">
+        <div className="flex items-center space-x-2 basis-1/2">
+          <span className="text-sm text-gray-500">Rows per page</span>
+          <PageSizeSelector onChange={onChangePageSize} pageSize={pagination.pageSize} />
+        </div>
+
+        <div className="flex-1">
+          <Pagination
+            showSummary={pagination.showSummary ?? true}
+            totalPages={pagination.pageCount}
+            totalItems={pagination.totalItems}
+            numItems={pagination.itemNumber ?? pagination.pageSize}
+            currentPage={pagination.pageIndex}
+            onPageClick={(newPage) => {
+              table.setPageIndex(newPage);
+            }}
+          />
+        </div>
       </div>
     </div>
   );

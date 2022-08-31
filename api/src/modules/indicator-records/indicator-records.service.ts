@@ -305,7 +305,7 @@ export class IndicatorRecordsService extends AppBaseService<
       indicatorId: indicator.id,
       status: INDICATOR_RECORD_STATUS.SUCCESS,
       sourcingRecordId: calculatedValues.sourcingRecordId,
-      scaler: calculatedValues.production,
+      scaler: calculatedValues.production ?? null,
       materialH3DataId: calculatedValues.materialH3DataId,
     });
   }

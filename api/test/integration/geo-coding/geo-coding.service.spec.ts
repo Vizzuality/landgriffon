@@ -59,9 +59,12 @@ describe('GeoCoding Service (Integration Testing)', () => {
   describe('Unknown Location type tests', () => {
     test('When a unknown location type without country is sent, proper error message must be received', async () => {
       jest
-        .spyOn(adminRegionService, 'getAdminAndGeoRegionIdByCountryIsoAlpha2')
+        .spyOn(
+          adminRegionService,
+          'getAdminRegionAndGeoRegionIdsByAdminRegionName',
+        )
         .mockResolvedValue({
-          id: 'ddb17f37-4e6a-4494-95c8-26ed830317df',
+          adminRegionId: 'ddb17f37-4e6a-4494-95c8-26ed830317df',
           geoRegionId: 'ddb17f37-4e6a-4494-95c8-26ed830317df',
         });
       jest
@@ -86,9 +89,12 @@ describe('GeoCoding Service (Integration Testing)', () => {
 
     test('When a unknown location type with coordinates or address is sent, proper error message must be received', async () => {
       jest
-        .spyOn(adminRegionService, 'getAdminAndGeoRegionIdByCountryIsoAlpha2')
+        .spyOn(
+          adminRegionService,
+          'getAdminRegionAndGeoRegionIdsByAdminRegionName',
+        )
         .mockResolvedValue({
-          id: 'ddb17f37-4e6a-4494-95c8-26ed830317df',
+          adminRegionId: 'ddb17f37-4e6a-4494-95c8-26ed830317df',
           geoRegionId: 'ddb17f37-4e6a-4494-95c8-26ed830317df',
         });
       jest
@@ -133,9 +139,12 @@ describe('GeoCoding Service (Integration Testing)', () => {
 
     test('When a unknown location types with coordinates is sent, then a sourcingLocation should be returned with Admin and GeoRegion IDs found in the DB', async () => {
       jest
-        .spyOn(adminRegionService, 'getAdminAndGeoRegionIdByCountryIsoAlpha2')
+        .spyOn(
+          adminRegionService,
+          'getAdminRegionAndGeoRegionIdsByAdminRegionName',
+        )
         .mockResolvedValue({
-          id: 'ddb17f37-4e6a-4494-95c8-26ed830317df',
+          adminRegionId: 'ddb17f37-4e6a-4494-95c8-26ed830317df',
           geoRegionId: 'ddb17f37-4e6a-4494-95c8-26ed830317df',
         });
       jest

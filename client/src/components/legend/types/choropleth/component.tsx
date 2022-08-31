@@ -30,7 +30,7 @@ export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
       </ul>
 
       <ul className="flex w-full m-0">
-        {min && (
+        {(!!min || min === 0) && (
           <li className="relative flex justify-start w-0 text-xs">
             <span className="absolute w-4 truncate left">{min}</span>
           </li>

@@ -73,7 +73,7 @@ describe('AdminRegionsModule (e2e)', () => {
       'Bad Request Exception',
       [
         'name should not be empty',
-        'name must be shorter than or equal to 40 characters',
+        'name must be shorter than or equal to 100 characters',
         'name must be longer than or equal to 2 characters',
         'name must be a string',
       ],

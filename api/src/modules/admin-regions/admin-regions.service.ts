@@ -96,24 +96,6 @@ export class AdminRegionsService extends AppBaseService<
     return this.adminRegionRepository.saveListToTree(importData, 'mpath');
   }
 
-  async getAdminAndGeoRegionIdByCountryIsoAlpha2(
-    countryIsoAlpha2Code: string,
-  ): Promise<{ id: string; geoRegionId: string }> {
-    const adminAndGeoRegionId: any = await this.adminRegionRepository
-      .createQueryBuilder('ar')
-      .select('id')
-      .addSelect('"geoRegionId"')
-      .where('ar.isoA2 = :countryIsoAlpha2Code', {
-        countryIsoAlpha2Code: countryIsoAlpha2Code,
-      })
-      .getRawOne();
-    if (!adminAndGeoRegionId)
-      throw new Error(
-        `An Admin Region with ${countryIsoAlpha2Code} ISO Alpha 2 code could not been found`,
-      );
-    return adminAndGeoRegionId;
-  }
-
   async getAdminRegionAndGeoRegionIdsByAdminRegionName(
     adminRegionName: string,
   ): Promise<{ adminRegionId: string; geoRegionId: string }> {

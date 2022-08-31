@@ -19,6 +19,7 @@ const ComparisonCell: React.FC<ComparisonCellProps> = ({
 }) => {
   const { comparisonMode } = useAppSelector(scenarios);
   if (isNaN(interventionValue)) return <>{BIG_NUMBER_FORMAT(value)}</>;
+
   return (
     <div className="mx-auto w-fit">
       <div className="flex flex-row gap-1">
@@ -28,8 +29,8 @@ const ComparisonCell: React.FC<ComparisonCellProps> = ({
             'my-auto text-xs font-semibold text-gray-500 rounded-[4px] px-1 py-0.5',
             {
               'bg-green-400/40 text-green-700':
-                (comparisonMode === 'relative' && percentageDifference < 0) ||
-                (comparisonMode === 'absolute' && absoluteDifference < 0),
+                (comparisonMode === 'relative' && percentageDifference <= 0) ||
+                (comparisonMode === 'absolute' && absoluteDifference <= 0),
               'bg-red-600/20 text-red-700':
                 (comparisonMode === 'relative' && percentageDifference > 0) ||
                 (comparisonMode === 'absolute' && absoluteDifference > 0),

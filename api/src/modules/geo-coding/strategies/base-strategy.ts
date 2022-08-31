@@ -11,6 +11,7 @@ import {
 import { AddressComponent } from '@googlemaps/google-maps-services-js';
 import { GeocodeResult } from '@googlemaps/google-maps-services-js/dist/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 
 /**
  * @note: Landgriffon Geocoding strategy doc:
@@ -121,7 +122,7 @@ export abstract class BaseStrategy {
       countrySet.add(this.getCountryNameFromGeocodeResult(result));
     });
     if (countrySet.size > 1) {
-      throw new Error(
+      throw new GeoCodingError(
         `Address outside provided country: ${address}, ${country}`,
       );
     }

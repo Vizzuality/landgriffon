@@ -61,7 +61,7 @@ export function parseInterventionFormDataToDto(
 
     // * if an address is provided for certain location types, latitude and longitudes are nullified
     ...([LocationTypes.aggregationPoint, LocationTypes.pointOfProduction].includes(
-      newLocationType.value as LocationTypes,
+      newLocationType?.value as LocationTypes,
     ) &&
       newLocationAddressInput && {
         newLocationAddressInput,

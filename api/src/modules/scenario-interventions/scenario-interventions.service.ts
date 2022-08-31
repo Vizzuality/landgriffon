@@ -122,20 +122,24 @@ export class ScenarioInterventionsService extends AppBaseService<
     //       extract it to an external function: validateNewLocation
 
     if (dto.type !== SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY) {
+      const result: SourcingData[] =
+        await this.geoCodingService.geoCodeLocations([
+          {
+            locationLongitude: dto.newLocationLongitude,
+            locationLatitude: dto.newLocationLatitude,
+            locationAddressInput: dto.newLocationAddressInput,
+            locationCountryInput: dto.newLocationCountryInput,
+            locationType: dto.newLocationType,
+          } as SourcingData,
+        ]);
       const {
         adminRegionId: adminId,
         geoRegionId: geoId,
         locationWarning: warning,
-      } = await this.geoCodingService.geoCodeSourcingLocation({
-        locationLongitude: dto.newLocationLongitude,
-        locationLatitude: dto.newLocationLatitude,
-        locationAddressInput: dto.newLocationAddressInput,
-        locationCountryInput: dto.newLocationCountryInput,
-        locationType: dto.newLocationType,
-      });
-      adminRegionId = adminId;
-      geoRegionId = geoId;
-      locationWarning = warning;
+      } = result[0];
+      adminRegionId = adminId as string;
+      geoRegionId = geoId as string;
+      locationWarning = warning as string;
     }
 
     const dtoWithDescendants: CreateScenarioInterventionDto =

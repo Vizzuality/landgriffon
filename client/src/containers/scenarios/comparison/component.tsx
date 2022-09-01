@@ -18,7 +18,7 @@ const ScenariosComparison: FC = () => {
   });
   const options: SelectOption[] = useMemo(() => {
     const filteredData = data.filter(
-      ({ scenarioInterventions }) => scenarioInterventions.length > 0,
+      ({ scenarioInterventions }) => scenarioInterventions?.length > 0,
     );
     if (currentScenario === 'actual-data') {
       return filteredData.map(({ id, title }) => ({ label: title, value: id }));

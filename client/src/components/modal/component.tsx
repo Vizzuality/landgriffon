@@ -18,7 +18,7 @@ export const Modal: React.FC<ModalProps> = ({
   children,
   className,
   onDismiss,
-}: ModalProps) => {
+}) => {
   const containerRef = useRef();
   const { overlayProps } = useOverlay(
     {
@@ -87,11 +87,11 @@ export const Modal: React.FC<ModalProps> = ({
                 >
                   {dismissable && (
                     <div className="relative flex items-center mb-4">
-                      <div className="font-medium text-lg">{title}</div>
+                      <div className="text-lg font-medium">{title}</div>
                       <button
                         type="button"
                         onClick={onDismiss}
-                        className="absolute flex items-center rounded-md px-4 py-4 text-sm text-gray-300 -right-4 -top-4 focus:text-black hover:text-black"
+                        className="absolute flex items-center px-4 py-4 text-sm text-gray-300 rounded-md -right-4 -top-4 focus:text-black hover:text-black"
                       >
                         <XIcon className="w-6 h-6 text-gray-500" />
                       </button>

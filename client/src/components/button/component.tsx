@@ -22,7 +22,7 @@ export const THEME = {
 
 const SIZE = {
   xs: 'font-medium text-xs px-2.5 py-1.5',
-  base: 'font-medium text-sm px-4 py-2',
+  base: 'font-medium text-sm px-4 py-2 h-10',
   xl: 'font-medium text-base px-6 py-3',
   text: 'font-normal text-sm p-0',
 };
@@ -161,7 +161,12 @@ export const Button: React.FC<ButtonProps> = ({
     disabled={loading || disabled}
     {...restProps}
   >
-    {icon && <span className="w-5 h-5 mr-4">{icon}</span>}
+    {icon && theme === 'primary' && (
+      <span className="inline-flex justify-center items-center rounded-full w-5 h-5 mr-4 bg-white">
+        {icon}
+      </span>
+    )}
+    {icon && theme !== 'primary' && <span className="inline-block mr-2">{icon}</span>}
     {loading ? <Loading className="text-white" /> : children}
   </button>
 );

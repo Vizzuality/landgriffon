@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   offset,
   useFloating,
@@ -9,6 +9,7 @@ import {
   useClick,
   safePolygon,
   useDismiss,
+  autoUpdate,
 } from '@floating-ui/react-dom-interactions';
 
 import type { Placement } from '@floating-ui/core';
@@ -24,7 +25,7 @@ interface TooltipProps {
   hoverTrigger?: boolean;
 }
 
-const THEME: Record<TooltipProps['theme'], string> = {
+const THEME: Record<Required<TooltipProps>['theme'], string> = {
   light: 'bg-white',
   dark: 'bg-gray-900',
 };
@@ -56,12 +57,12 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
     strategy,
     middlewareData: { arrow: { x: arrowX, y: arrowY } = {} },
     placement: floatingPlacement,
-    update,
     context,
   } = useFloating({
     open: isOpen,
     onOpenChange: setIsOpen,
     placement,
+    whileElementsMounted: autoUpdate,
     strategy: 'fixed',
     middleware: [
       offset({ mainAxis: arrow ? 15 : 10 }),
@@ -79,10 +80,6 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
     useClick(context, { enabled: !hoverTrigger, toggle: true }),
     useDismiss(context),
   ]);
-
-  useLayoutEffect(() => {
-    update();
-  }, [content, update, isOpen]);
 
   return (
     <>

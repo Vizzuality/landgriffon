@@ -29,7 +29,14 @@ const PageSizeSelector: React.FC<PageSizeSelectorProps> = ({
     [onChange],
   );
 
-  return <Select current={currentPageOption} options={sizeOptions} onChange={handleChange} />;
+  return (
+    <Select
+      instanceId="page-selector"
+      current={currentPageOption}
+      options={sizeOptions}
+      onChange={handleChange}
+    />
+  );
 };
 
 export default PageSizeSelector;

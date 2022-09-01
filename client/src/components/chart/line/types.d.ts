@@ -5,7 +5,7 @@ type ChartData = Readonly<{
   y: string | number;
 }>;
 
-type LinesConfig = Readonly<{
+export type LinesConfig = Readonly<{
   stroke: string;
   width: string | number;
   strokeDasharray?: string;

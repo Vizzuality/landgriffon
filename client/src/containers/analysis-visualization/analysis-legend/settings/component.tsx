@@ -1,7 +1,9 @@
+import classNames from 'classnames';
+import Accordion from 'components/accordion';
 import InfoToolTip from 'components/info-tooltip';
 import Toggle from 'components/toggle';
 import type { CategoryWithLayers } from 'hooks/layers/getContextualLayers';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { analysisMap, setLayer } from 'store/features/analysis';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 
@@ -37,48 +39,57 @@ const LayerSettings: React.FC<LayerSettingsProps> = ({ layer }) => {
       <div className="text-sm">{layer.metadata.name}</div>
       <div>
         <InfoToolTip info={layer.metadata.description} />
-        <Toggle onChange={onToggleActive} active={layerState.active} />
+        <Toggle onChange={onToggleActive} active={layerState.active || false} />
       </div>
     </div>
   );
 };
 
-const SettingsCategory: React.FC<SettingsCategoryProps> = ({
-  category: { category, layers },
-  isExpanded,
-  onExpandedChange,
-}) => {
-  const { layers: layersState } = useAppSelector(analysisMap);
-
-  const activeLayersInCategory = layers.filter((layer) => layersState[layer.id].active).length;
-
+const CategoryHeader: React.FC<{
+  category: CategoryWithLayers['category'];
+  activeLayers?: number;
+}> = ({ category, activeLayers }) => {
   return (
-    <div>
-      {/* TODO: lacking category description? Talk with design/back */}
+    <div className="flex flex-row justify-between">
       <div className="text-sm font-semibold">{category}</div>
-      <div>
-        {layers.map((layer) => (
-          <LayerSettings layer={layer} key={layer.id} />
-        ))}
+      <div
+        className={classNames(
+          'w-4 h-4 my-auto text-xs font-semibold text-center text-white rounded-full bg-green-700',
+        )}
+      >
+        {activeLayers}
       </div>
     </div>
+  );
+};
+
+const CategorySettings: React.FC<{ category: CategoryWithLayers }> = ({
+  category: { category, layers },
+}) => {
+  const { layers: layerState } = useAppSelector(analysisMap);
+  const activeLayers = useMemo(
+    () => layers.filter((layer) => !!layerState[layer.id].active).length,
+    [layerState, layers],
+  );
+
+  return (
+    <Accordion.Entry header={<CategoryHeader activeLayers={activeLayers} category={category} />}>
+      asd
+    </Accordion.Entry>
   );
 };
 
 const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [] }) => {
-  const [expandedCategory, setExpandedCategory] = useState<
-    LegendSettingsProps['categories'][number]['category'] | null
-  >(null);
+  const accordionEntries = useMemo(
+    () => categories.map((cat) => <CategorySettings key={cat.category} category={cat} />),
+    [categories],
+  );
+
   return (
     <div>
-      {categories.map((category) => (
-        <SettingsCategory
-          key={category.category}
-          category={category}
-          isExpanded={expandedCategory === category.category}
-          onExpandedChange={() => setExpandedCategory(category.category)}
-        />
-      ))}
+      <Accordion>
+        <>{accordionEntries}</>
+      </Accordion>
     </div>
   );
 };

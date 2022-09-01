@@ -114,7 +114,7 @@ export const Legend: React.FC = () => {
           />
         </button>
       </div>
-      <Modal title="test" open={showSettings} onDismiss={dismissLegendSettings}>
+      <Modal title="Contextual Layers" open={showSettings} onDismiss={dismissLegendSettings}>
         <Settings categories={layersByCategory || []} />
       </Modal>
     </>

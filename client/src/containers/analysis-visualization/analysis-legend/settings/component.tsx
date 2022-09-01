@@ -1,45 +1,37 @@
 import classNames from 'classnames';
 import Accordion from 'components/accordion';
+import { Button } from 'components/button';
 import InfoToolTip from 'components/info-tooltip';
 import Toggle from 'components/toggle';
 import type { CategoryWithLayers } from 'hooks/layers/getContextualLayers';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { analysisMap, setLayer } from 'store/features/analysis';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
+import type { Layer } from 'types';
 
 interface LegendSettingsProps {
   categories: CategoryWithLayers[];
 }
 
-interface SettingsCategoryProps {
-  category: CategoryWithLayers;
-  isExpanded: boolean;
-  onExpandedChange: (isExpanded: boolean) => void;
-}
-
 interface LayerSettingsProps {
-  layer: SettingsCategoryProps['category']['layers'][number];
+  layer: Layer;
+  onChange: (id: Layer['id'], layer: Partial<Layer>) => void;
 }
 
-const LayerSettings: React.FC<LayerSettingsProps> = ({ layer }) => {
-  const layers = useAppSelector(analysisMap);
-  const layerState = useMemo(() => layers.layers[layer.id], [layers.layers, layer.id]);
-
-  const dispatch = useAppDispatch();
+const LayerSettings = ({ layer, onChange }: LayerSettingsProps) => {
   const onToggleActive = useCallback(
     (active: boolean) => {
-      // TODO: the fetch doesn't trigger until we exit the settings. We can leave it as-is, trigger it here or prefetch it so it's faster when going back
-      dispatch(setLayer({ id: layer.id, layer: { ...layer, active } }));
+      onChange(layer.id, { active });
     },
-    [dispatch, layer],
+    [layer.id, onChange],
   );
 
   return (
     <div className="flex flex-row justify-between">
-      <div className="text-sm">{layer.metadata.name}</div>
+      <div className="text-sm">{layer?.metadata?.name}</div>
       <div>
-        <InfoToolTip info={layer.metadata.description} />
-        <Toggle onChange={onToggleActive} active={layerState.active || false} />
+        <InfoToolTip info={layer?.metadata?.description} />
+        <Toggle onChange={onToggleActive} active={!!layer.active} />
       </div>
     </div>
   );
@@ -63,33 +55,87 @@ const CategoryHeader: React.FC<{
   );
 };
 
-const CategorySettings: React.FC<{ category: CategoryWithLayers }> = ({
-  category: { category, layers },
-}) => {
-  const { layers: layerState } = useAppSelector(analysisMap);
-  const activeLayers = useMemo(
-    () => layers.filter((layer) => !!layerState[layer.id].active).length,
-    [layerState, layers],
-  );
+interface CategorySettingsProps {
+  category: CategoryWithLayers['category'];
+  layers: Layer[];
+  onLayerStateChange: (id: Layer['id'], state: Partial<Layer>) => void;
+}
+
+const CategorySettings = ({ category, layers, onLayerStateChange }: CategorySettingsProps) => {
+  const activeLayers = useMemo(() => layers.filter((layer) => !!layer.active).length, [layers]);
 
   return (
     <Accordion.Entry header={<CategoryHeader activeLayers={activeLayers} category={category} />}>
-      asd
+      <div>
+        {layers.map((layer) => (
+          <LayerSettings onChange={onLayerStateChange} layer={layer} key={layer.id} />
+        ))}
+      </div>
     </Accordion.Entry>
   );
 };
 
 const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [] }) => {
-  const accordionEntries = useMemo(
-    () => categories.map((cat) => <CategorySettings key={cat.category} category={cat} />),
-    [categories],
+  const { layers: initialLayerState } = useAppSelector(analysisMap);
+
+  const [localLayerState, setLocalLayerState] = useState(() => initialLayerState);
+
+  const layerStateByCategory = useMemo(
+    () =>
+      Object.fromEntries(
+        categories.map(({ category, layers }) => {
+          return [category, layers.map(({ id }) => localLayerState[id])];
+        }),
+      ),
+    [categories, localLayerState],
   );
+
+  const handleLayerStateChange = useCallback<CategorySettingsProps['onLayerStateChange']>(
+    (id, state) => {
+      setLocalLayerState((currentState) => ({
+        ...currentState,
+        [id]: { ...currentState[id], ...state },
+      }));
+    },
+    [],
+  );
+
+  const accordionEntries = useMemo(
+    () =>
+      categories.map((cat) => (
+        <CategorySettings
+          layers={layerStateByCategory[cat.category]}
+          onLayerStateChange={handleLayerStateChange}
+          key={cat.category}
+          category={cat.category}
+        />
+      )),
+    [categories, handleLayerStateChange, layerStateByCategory],
+  );
+
+  const dispatch = useAppDispatch();
+  const handleApply = useCallback(() => {
+    Object.values(localLayerState).forEach((layer) => {
+      dispatch(
+        setLayer({
+          id: layer.id,
+          layer,
+        }),
+      );
+    });
+  }, [dispatch, localLayerState]);
 
   return (
     <div>
       <Accordion>
         <>{accordionEntries}</>
       </Accordion>
+      <div className="flex flex-row justify-between">
+        <Button theme="textLight">Cancel</Button>
+        <Button onClick={handleApply} theme="secondary">
+          Apply
+        </Button>
+      </div>
     </div>
   );
 };

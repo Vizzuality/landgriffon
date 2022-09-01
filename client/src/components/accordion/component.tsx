@@ -14,12 +14,7 @@ type AccordionProps =
     }
   | Required<React.PropsWithChildren>;
 
-const AccordionEntry: React.FC<AccordionEntryProps> = ({
-  header,
-  children,
-  expanded,
-  onExpandedChange,
-}) => {
+const AccordionEntry = ({ header, children, expanded, onExpandedChange }: AccordionEntryProps) => {
   const [localIsExpanded, setLocalIsExpanded] = useState(expanded ?? false);
 
   useEffect(() => {
@@ -56,7 +51,7 @@ const AccordionEntry: React.FC<AccordionEntryProps> = ({
   );
 };
 
-const AccordionRoot: React.FC<AccordionProps> = (props) => {
+const Accordion = (props: AccordionProps) => {
   return (
     <div className="divide-y">
       {'children' in props
@@ -66,6 +61,6 @@ const AccordionRoot: React.FC<AccordionProps> = (props) => {
   );
 };
 
-const Accordion = Object.assign(AccordionRoot, { Entry: AccordionEntry });
+Accordion.Entry = AccordionEntry;
 
 export default Accordion;

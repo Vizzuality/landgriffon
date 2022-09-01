@@ -79,6 +79,7 @@ const YearsFilter: React.FC = () => {
     <Select
       numeric
       label="in"
+      instanceId="year-selector"
       hideValueWhenMenuOpen
       loading={isLoading}
       current={selectedOption}

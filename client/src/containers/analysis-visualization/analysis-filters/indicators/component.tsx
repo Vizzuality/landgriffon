@@ -57,6 +57,7 @@ const IndicatorsFilter: React.FC = () => {
 
   return (
     <Select
+      instanceId="indicator-selector"
       onChange={handleChange}
       loading={isFetching}
       options={options}

@@ -13,6 +13,7 @@ import { getSortedRowModel } from '@tanstack/react-table';
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { ColumnDefinition } from 'components/table/column';
 import LineChart from 'components/chart/line';
+import type { LinesConfig } from 'components/chart/line/types';
 import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 
 import type { ImpactTableData } from 'types';
@@ -79,31 +80,28 @@ const AnalysisTable: React.FC = () => {
     return !isLoading && impactTable.length === 1 ? impactTable[0].rows.length : impactTable.length;
   }, [isLoading, impactTable]);
 
-  const datesRangeChartConfig = (data) => {
-    const chartData = data.map(({ year, value }) => ({
-      x: year,
-      y: value,
-    }));
-
-    const xAxisValues = chartData.map(({ x }) => x);
+  const datesRangeChartConfig = (data, config: Pick<LinesConfig, 'dataKey' | 'stroke'>) => {
+    const xAxisValues = data.map(({ x }) => x);
     const xMaxValue = Math.max(...xAxisValues);
     const xMinValue = Math.min(...xAxisValues);
     const min = xMaxValue - xMinValue;
 
+    const { dataKey, stroke } = config;
+
     return {
       lines: [
         {
-          stroke: '#909194',
-          width: '100%',
-          dataKey: 'primary_line',
-          data: chartData.filter(({ x }) => x < xMinValue + min / 2),
-        },
-        {
-          stroke: '#909194',
+          stroke,
           width: '100%',
           strokeDasharray: '3 3',
-          dataKey: 'secondary_line',
-          data: chartData,
+          dataKey: `${dataKey}_path`,
+          data,
+        },
+        {
+          stroke,
+          width: '100%',
+          dataKey: `${dataKey}_values`,
+          data: data.filter(({ x }) => x < xMinValue + min / 2),
         },
       ],
     };
@@ -179,18 +177,53 @@ const AnalysisTable: React.FC = () => {
         fieldAccessor: (row) => row.values,
         title: `${years?.[0]}-${years?.[years?.length - 1]}`,
         className: 'px-2 mx-auto',
-        format: (value) => {
-          const chartConfig = datesRangeChartConfig(value);
+        format: (values: TableDataType['values']) => {
+          const actualData = values.map(({ year, value }) => ({
+            x: year,
+            y: value,
+          }));
+          const actualDataChartConfig = datesRangeChartConfig(actualData, {
+            dataKey: 'actual_data',
+            // ? gray/400
+            stroke: '#AEB1B5',
+          });
+          const interventionData = showComparison
+            ? values.map(({ year, interventionValue }) => ({
+                x: year,
+                y: interventionValue,
+              }))
+            : [];
+          const interventionDataChartConfig = showComparison
+            ? datesRangeChartConfig(interventionData, {
+                dataKey: 'intervention',
+                // ? gray/900
+                stroke: '#15181F',
+              })
+            : null;
+
           return (
-            <div className="h-20 overflow-hidden translate-y-1/3">
-              <LineChart chartConfig={chartConfig} />
+            <div className="h-20 overflow-hidden">
+              <LineChart
+                margin={{
+                  left: 0,
+                  top: 20,
+                  bottom: 20,
+                  right: 20,
+                }}
+                chartConfig={{
+                  lines: [
+                    ...actualDataChartConfig.lines,
+                    ...(showComparison ? interventionDataChartConfig.lines : []),
+                  ],
+                }}
+              />
             </div>
           );
         },
       },
       ...years.map((year) => comparisonColumn(year)),
     ],
-    [comparisonColumn, years],
+    [comparisonColumn, years, showComparison],
   );
 
   const tableProps = useMemo<TableProps<TableDataType>>(

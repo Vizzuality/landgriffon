@@ -1,20 +1,23 @@
-import Button from 'components/button';
-import Search from 'components/search';
+import { useMemo, useState } from 'react';
+import { merge } from 'lodash';
+import Head from 'next/head';
+import { ExclamationIcon, PlusIcon } from '@heroicons/react/solid';
+import { useDebounce } from '@react-hook/debounce';
+import { format } from 'date-fns';
+
+import useModal from 'hooks/modals';
+import { useSourcingLocations, useSourcingLocationsMaterials } from 'hooks/sourcing-locations';
+
+import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import DownloadMaterialsDataButton from 'containers/admin/download-materials-data-button';
 import NoDataUpload from 'containers/admin/no-data-upload';
 import NoResults from 'containers/admin/no-results';
 import UploadDataSourceModal from 'containers/admin/upload-data-source-modal';
 import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range';
-import useModal from 'hooks/modals';
-import { useSourcingLocationsMaterials } from 'hooks/sourcing-locations';
-import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
-import { merge } from 'lodash';
-import Head from 'next/head';
-import { useMemo, useState } from 'react';
-import Table from 'components/table';
+import Button from 'components/button';
+import Search from 'components/search';
 
-import { ExclamationIcon } from '@heroicons/react/solid';
-import { useDebounce } from '@react-hook/debounce';
+import Table from 'components/table';
 
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { ColumnDefinition } from 'components/table/column';
@@ -28,6 +31,13 @@ const AdminDataPage: React.FC = () => {
   });
   const [sorting, setSorting] = useState<SortingState>([]);
   const [dataDownloadError, setDataDownloadError] = useState<string>();
+
+  // Getting sourcing locations to extract the update date
+  const { data: sourcingLocations, isLoading: isSourcingLocationsLoading } = useSourcingLocations({
+    fields: 'updatedAt',
+    'page[number]': 1,
+    'page[size]': 1,
+  });
 
   const {
     data: sourcingData,
@@ -103,35 +113,43 @@ const AdminDataPage: React.FC = () => {
   );
 
   return (
-    <AdminLayout currentTab={ADMIN_TABS.DATA} title="Actual data">
+    <AdminLayout currentTab={ADMIN_TABS.DATA} title="Manage data">
       <Head>
-        <title>Admin data | Landgriffon</title>
+        <title>Manage data | Landgriffon</title>
       </Head>
-      <div className="flex justify-end gap-3">
+
+      {/* Toolbar */}
+      <div className="flex gap-2 w-full">
+        <div className="flex-1">
+          {!(!hasData && !isFetchingData && !isSearching) && (
+            <Search placeholder="Search table" onChange={setSearchText} />
+          )}
+        </div>
+        {!(!hasData && !isFetchingData && !isSearching) && (
+          <YearsRangeFilter
+            startYear={startYear}
+            endYear={endYear}
+            years={allYears}
+            onChange={setYearsRange}
+          />
+        )}
         <DownloadMaterialsDataButton
           onDownloading={() => setDataDownloadError(null)}
           onError={setDataDownloadError}
         />
-        <Button theme="primary" onClick={openUploadDataSourceModal}>
+        <Button
+          theme="primary"
+          onClick={openUploadDataSourceModal}
+          icon={<PlusIcon className="w-4 h-4 text-primary" />}
+        >
           Upload data source
         </Button>
       </div>
-      <UploadDataSourceModal
-        open={isUploadDataSourceModalOpen}
-        onDismiss={closeUploadDataSourceModal}
-      />
+
+      {/* Content when empty */}
       {!hasData && !isFetchingData && !isSearching && <NoDataUpload />}
       {!(!hasData && !isFetchingData && !isSearching) && (
         <div className="flex flex-col-reverse items-center justify-between md:flex-row">
-          <div className="flex w-full gap-2 md:w-auto">
-            <Search placeholder="Search table" onChange={setSearchText} />
-            <YearsRangeFilter
-              startYear={startYear}
-              endYear={endYear}
-              years={allYears}
-              onChange={setYearsRange}
-            />
-          </div>
           {dataDownloadError && (
             <div className="flex items-center text-sm text-yellow-800">
               <ExclamationIcon className="w-5 h-5 mr-3 text-yellow-400" aria-hidden="true" />
@@ -140,8 +158,17 @@ const AdminDataPage: React.FC = () => {
           )}
         </div>
       )}
+
+      {/* Content when data */}
       {!hasData && isSearching && <NoResults />}
       <div className="mt-5">
+        {sourcingLocations && !isSourcingLocationsLoading && (
+          <div className="flex w-full justify-end mb-4">
+            <span className="text-gray-400 text-sm">
+              Last update: {format(new Date(sourcingLocations.data[0]?.updatedAt), 'd MMM yyyy')}
+            </span>
+          </div>
+        )}
         <Table
           theme="striped"
           getSubRows={(row) => row.children}
@@ -179,6 +206,11 @@ const AdminDataPage: React.FC = () => {
           onPaginationChange={setPagination}
         />
       </div>
+
+      <UploadDataSourceModal
+        open={isUploadDataSourceModalOpen}
+        onDismiss={closeUploadDataSourceModal}
+      />
     </AdminLayout>
   );
 };

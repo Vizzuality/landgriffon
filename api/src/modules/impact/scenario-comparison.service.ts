@@ -29,9 +29,9 @@ import {
   PaginatedScenariosImpactTable,
   ScenarioImpact,
   ScenariosImpactTable as ScenariosComparisonTable,
-  ScenariosImpactTableDataByIndicator,
+  ScenariosImpactTableDataByIndicator as ScenariosComparisonImpactTableDataByIndicator,
   ScenariosImpactTablePurchasedTonnes,
-  ScenariosImpactTableRows,
+  ScenariosImpactTableRows as ScenariosComparisonImpactTableRows,
   ScenariosImpactTableRowsValues,
   ScenarioTonnage,
 } from 'modules/impact/dto/response-comparison-table.dto';
@@ -54,6 +54,7 @@ export class ScenarioComparisonService {
     scenarioComparisonDto: GetScenarioComparisonDto,
     fetchSpecification: FetchSpecification,
   ): Promise<PaginatedScenariosImpactTable> {
+    // Retrieving all the indicators, selected by the user
     const indicators: Indicator[] =
       await this.indicatorService.getIndicatorsById(
         scenarioComparisonDto.indicatorIds,
@@ -62,32 +63,48 @@ export class ScenarioComparisonService {
       'Retrieving data from DB to build Scenario Comparison Table...',
     );
 
-    //Getting Descendants Ids for the filters, in case Parent Ids were received
+    /** Getting Descendants Ids for the filters, in case Parent Ids were received,
+     * adding them to the new dto without mutating the original one
+     */
 
-    // TODO no cambiar dto original
-    await this.loadDescendantEntityIds(scenarioComparisonDto);
+    const scenarioComparisonDtoWithDescendants: GetScenarioComparisonDto =
+      await this.loadDescendantEntityIds(scenarioComparisonDto);
 
+    /** Getting all the entities according to user filters and chosen 'groupBy'
+     * ex. if groupBy = material, entities will be all the materials within user filters
+     */
     const entities: ImpactTableEntityType[] = await this.getEntityTree(
-      scenarioComparisonDto,
+      scenarioComparisonDtoWithDescendants,
     );
 
+    /**
+     * Paginating the entites found in the previpus steps, according to fetch specification
+     */
     const paginatedEntities: PaginatedEntitiesDto =
       ScenarioComparisonService.paginateRootEntities(
         entities,
         fetchSpecification,
       );
 
+    /** Updating entities for them to have 'parent - child' tree structure */
     this.updateGroupByCriteriaFromEntityTree(
-      scenarioComparisonDto,
+      scenarioComparisonDtoWithDescendants,
       paginatedEntities.entities,
     );
 
+    /** Getting Impact data (Indocator records) for the scenarios requested by user
+     * and according to the selected filters. This data will be used later to fill
+     * the entities structure, in 'buildScenarioComparisonTable
+     */
     const scenarioComparisonImpactData: ScenariosComparisonImpactTableData[] =
       await this.getScenarioComparisonImpactData(
-        scenarioComparisonDto,
+        scenarioComparisonDtoWithDescendants,
         paginatedEntities.entities,
       );
 
+    /** Final step - building scenario comparison table by recursivle filling the entities inside each idicator (table rows)
+     * with the impact data fpund in the previous step
+     */
     const comparisonTable: ScenariosComparisonTable =
       this.buildScenarioComparisonTable(
         scenarioComparisonDto,
@@ -107,9 +124,16 @@ export class ScenarioComparisonService {
     scenarioComparisonDto: GetScenarioComparisonDto,
     entities: ImpactTableEntityType[],
   ): Promise<ScenariosComparisonImpactTableData[]> {
+    /** Fist we retieve all the impacts (Indicator Recors) according to dto filter
+     * Result will be flat array of objects for each impact (IR) of the scenarios
+     */
     const impactDataForBothSceanrios: ImpactTableData[] =
       await this.getImapctDataForScenario(scenarioComparisonDto, entities);
 
+    /** Before returning the impacts we need to process them and aggregate impacts for both sceanrios
+     * within one year and material/supplier/etc, so that scnerioImapcts are represented in format of
+     * ScenariosComparisonImpactTableData
+     */
     return this.groupScenarioComparisonData(impactDataForBothSceanrios);
   }
 
@@ -267,25 +291,29 @@ export class ScenarioComparisonService {
   }
 
   private async loadDescendantEntityIds(
-    impactTableDto: GetImpactTableDto,
-  ): Promise<GetImpactTableDto> {
-    if (impactTableDto.originIds)
-      impactTableDto.originIds =
+    scenarioCompariosonTableDto: GetScenarioComparisonDto,
+  ): Promise<GetScenarioComparisonDto> {
+    const scenarioCompariosonTableDtoWithDescentants: GetScenarioComparisonDto =
+      {
+        ...scenarioCompariosonTableDto,
+      };
+    if (scenarioCompariosonTableDtoWithDescentants.originIds)
+      scenarioCompariosonTableDtoWithDescentants.originIds =
         await this.adminRegionsService.getAdminRegionDescendants(
-          impactTableDto.originIds,
+          scenarioCompariosonTableDtoWithDescentants.originIds,
         );
-    if (impactTableDto.materialIds)
-      impactTableDto.materialIds =
+    if (scenarioCompariosonTableDtoWithDescentants.materialIds)
+      scenarioCompariosonTableDtoWithDescentants.materialIds =
         await this.materialsService.getMaterialsDescendants(
-          impactTableDto.materialIds,
+          scenarioCompariosonTableDtoWithDescentants.materialIds,
         );
-    if (impactTableDto.supplierIds)
-      impactTableDto.supplierIds =
+    if (scenarioCompariosonTableDtoWithDescentants.supplierIds)
+      scenarioCompariosonTableDtoWithDescentants.supplierIds =
         await this.suppliersService.getSuppliersDescendants(
-          impactTableDto.supplierIds,
+          scenarioCompariosonTableDtoWithDescentants.supplierIds,
         );
 
-    return impactTableDto;
+    return scenarioCompariosonTableDtoWithDescentants;
   }
 
   /**
@@ -318,7 +346,7 @@ export class ScenarioComparisonService {
         );
       }
       case GROUP_BY_VALUES.REGION: {
-        return this.adminRegionsService.getAdminRegionTreeWithSourcingLocations(
+        return this.adminRegionsService.getAdminRegionWithSourcingLocations(
           treeOptions,
         );
       }
@@ -328,7 +356,7 @@ export class ScenarioComparisonService {
         );
       }
       case GROUP_BY_VALUES.BUSINESS_UNIT:
-        return this.businessUnitsService.getBusinessUnitTreeWithSourcingLocations(
+        return this.businessUnitsService.getBusinessUnitWithSourcingLocations(
           treeOptions,
         );
 
@@ -350,26 +378,26 @@ export class ScenarioComparisonService {
    * @private
    */
   private updateGroupByCriteriaFromEntityTree(
-    impactTableDto: GetImpactTableDto,
+    sceanrioComparisonTableDto: GetScenarioComparisonDto,
     entities: ImpactTableEntityType[],
   ): void {
-    switch (impactTableDto.groupBy) {
+    switch (sceanrioComparisonTableDto.groupBy) {
       case GROUP_BY_VALUES.MATERIAL:
-        impactTableDto.materialIds = this.getIdsFromTree(
+        sceanrioComparisonTableDto.materialIds = this.getIdsFromTree(
           entities,
-          impactTableDto.materialIds,
+          sceanrioComparisonTableDto.materialIds,
         );
         break;
       case GROUP_BY_VALUES.REGION:
-        impactTableDto.originIds = this.getIdsFromTree(
+        sceanrioComparisonTableDto.originIds = this.getIdsFromTree(
           entities,
-          impactTableDto.originIds,
+          sceanrioComparisonTableDto.originIds,
         );
         break;
       case GROUP_BY_VALUES.SUPPLIER:
-        impactTableDto.supplierIds = this.getIdsFromTree(
+        sceanrioComparisonTableDto.supplierIds = this.getIdsFromTree(
           entities,
-          impactTableDto.materialIds,
+          sceanrioComparisonTableDto.materialIds,
         );
         break;
       default:
@@ -391,17 +419,18 @@ export class ScenarioComparisonService {
     queryDto: GetImpactTableDto,
     indicators: Indicator[],
     dataForComparisonTable: ScenariosComparisonImpactTableData[],
-    entities: ScenariosImpactTableRows[],
+    entities: ScenariosComparisonImpactTableRows[],
   ): ScenariosComparisonTable {
     this.logger.log('Building Scenario Comparison Table...');
     const { groupBy, startYear, endYear } = queryDto;
-    const scenariosImpactTable: ScenariosImpactTableDataByIndicator[] = [];
+    const scenariosComparisonImpactTable: ScenariosComparisonImpactTableDataByIndicator[] =
+      [];
     // Create a range of years by start and endYears
     const rangeOfYears: number[] = range(startYear, endYear + 1);
     // Append data by indicator and add its unit.symbol as metadata. We need awareness of this loop during the whole process
     indicators.forEach((indicator: Indicator, indicatorValuesIndex: number) => {
-      const calculatedData: ScenariosImpactTableRows[] = [];
-      scenariosImpactTable.push({
+      const calculatedData: ScenariosComparisonImpactTableRows[] = [];
+      scenariosComparisonImpactTable.push({
         indicatorShortName: indicator.shortName as string,
         indicatorId: indicator.id,
         groupBy: groupBy,
@@ -410,7 +439,7 @@ export class ScenarioComparisonService {
         metadata: { unit: indicator.unit.symbol },
       });
       // Filter the raw data by Indicator
-      const scenariosdDataByIndicator: ScenariosComparisonImpactTableData[] =
+      const scenariosComparisonDataByIndicator: ScenariosComparisonImpactTableData[] =
         dataForComparisonTable.filter(
           (data: ScenariosComparisonImpactTableData) =>
             data.indicatorId === indicator.id,
@@ -418,7 +447,7 @@ export class ScenarioComparisonService {
       // Get unique entity names for aggregations from raw data
       const namesByIndicator: string[] = [
         ...new Set(
-          scenariosdDataByIndicator.map(
+          scenariosComparisonDataByIndicator.map(
             (el: ScenariosComparisonImpactTableData) => el.name,
           ),
         ),
@@ -433,11 +462,11 @@ export class ScenarioComparisonService {
         let rowValuesIndex: number = 0;
         for (const year of rangeOfYears) {
           const dataForYear: ScenariosComparisonImpactTableData | undefined =
-            scenariosdDataByIndicator.find(
+            scenariosComparisonDataByIndicator.find(
               (data: ScenariosComparisonImpactTableData) =>
                 data.year === year && data.name === name,
             );
-          //If the year requested by the users exist in the raw data, append its value. There will always be a first valid value to start with
+          //If the year requested by the users exist in the raw data, append its scenarios impacts values. There will always be a first valid value to start with
           if (dataForYear) {
             calculatedData[namesByIndicatorIndex].values.push({
               year: dataForYear.year,
@@ -453,6 +482,7 @@ export class ScenarioComparisonService {
                   ].scenariosImpacts
                 : [{ scenarioId: 'none' }];
 
+            // After we found previous year, we need to multiply each scenario impact by growth rate
             const projectedScenariosImpacts: ScenarioComparisonImpact[] =
               lastYearsValue.map((scenarioImpact: ScenarioImpact) => {
                 const newScenarioImpact: ScenarioImpact = JSON.parse(
@@ -482,13 +512,15 @@ export class ScenarioComparisonService {
         }
       }
 
-      //Once we have all data, projected or not, append the total sum of impact by year and indicator
+      //Once we have all data, projected or not, append the total sum of scenario impacts by year and indicator
       rangeOfYears.forEach((year: number) => {
+        // First we are creating array of all the scenario values objects we have (values contain year, scenarioImpacts and isProjected boolean)
         const allScenariosValues: ScenariosImpactTableRowsValues[] = [];
-        calculatedData.forEach((row: ScenariosImpactTableRows) => {
+        calculatedData.forEach((row: ScenariosComparisonImpactTableRows) => {
           allScenariosValues.push(...row.values);
         });
 
+        // Then we filter it to have only scenario values for the current year of iteration
         const allValuesForTheYear: ScenariosImpactTableRowsValues[] =
           allScenariosValues.filter(
             (scenarioValues: ScenariosImpactTableRowsValues) => {
@@ -496,12 +528,15 @@ export class ScenarioComparisonService {
             },
           );
 
+        // Now we are going to process the array of scenario values and extract just their scenarioImpacts
         const allScenariosImpacts: ScenarioImpact[] = [];
         allValuesForTheYear.forEach(
           (scenarioValue: ScenariosImpactTableRowsValues) => {
             allScenariosImpacts.push(...scenarioValue.scenariosImpacts);
           },
         );
+
+        // After we have all the scenarioImpacts in one array, we will reduce the array to aggregate and groupBy scenarioId
 
         const totalSumByYear: ScenarioImpact[] = Object.values(
           allScenariosImpacts.reduce(
@@ -529,27 +564,30 @@ export class ScenarioComparisonService {
           ),
         );
 
-        scenariosImpactTable[indicatorValuesIndex].yearSum.push({
+        scenariosComparisonImpactTable[indicatorValuesIndex].yearSum.push({
           year,
           values: totalSumByYear,
         });
       });
 
       // copy and populate tree skeleton for each indicator
-      const skeleton: ScenariosImpactTableRows[] = JSON.parse(
+      const skeleton: ScenariosComparisonImpactTableRows[] = JSON.parse(
         JSON.stringify(entities),
       );
       skeleton.forEach((entity: any) => {
         this.populateValuesRecursively(entity, calculatedData, rangeOfYears);
       });
 
-      scenariosImpactTable[indicatorValuesIndex].rows = skeleton;
+      scenariosComparisonImpactTable[indicatorValuesIndex].rows = skeleton;
     });
 
     const purchasedTonnes: ScenariosImpactTablePurchasedTonnes[] =
       this.getTotalPurchasedVolumeByYear(rangeOfYears, dataForComparisonTable);
 
-    return { scenariosImpactTable, purchasedTonnes };
+    return {
+      scenariosImpactTable: scenariosComparisonImpactTable,
+      purchasedTonnes,
+    };
   }
 
   /**
@@ -651,8 +689,8 @@ export class ScenarioComparisonService {
    * aggregated data of parent entity and all its children
    */
   private populateValuesRecursively(
-    entity: ScenariosImpactTableRows,
-    calculatedRows: ScenariosImpactTableRows[],
+    entity: ScenariosComparisonImpactTableRows,
+    calculatedRows: ScenariosComparisonImpactTableRows[],
     rangeOfYears: number[],
   ): ScenariosImpactTableRowsValues[] {
     entity.values = [];
@@ -665,23 +703,26 @@ export class ScenarioComparisonService {
     }
 
     const valuesToAggregate: ScenariosImpactTableRowsValues[][] = [];
-    const selfData: ScenariosImpactTableRows | undefined = calculatedRows.find(
-      (item: ScenariosImpactTableRows) => item.name === entity.name,
-    );
-    if (selfData) valuesToAggregate.push(selfData.values);
-    entity.children.forEach((childEntity: ScenariosImpactTableRows) => {
-      valuesToAggregate.push(
-        /*
-         * first aggregate data of child entity and then add returned value for
-         * parents aggregation
-         */
-        this.populateValuesRecursively(
-          childEntity,
-          calculatedRows,
-          rangeOfYears,
-        ),
+    const selfData: ScenariosComparisonImpactTableRows | undefined =
+      calculatedRows.find(
+        (item: ScenariosComparisonImpactTableRows) => item.name === entity.name,
       );
-    });
+    if (selfData) valuesToAggregate.push(selfData.values);
+    entity.children.forEach(
+      (childEntity: ScenariosComparisonImpactTableRows) => {
+        valuesToAggregate.push(
+          /*
+           * first aggregate data of child entity and then add returned value for
+           * parents aggregation
+           */
+          this.populateValuesRecursively(
+            childEntity,
+            calculatedRows,
+            rangeOfYears,
+          ),
+        );
+      },
+    );
     for (const [
       valueIndex,
       SceanriosImpactTableRowsValues,
@@ -728,7 +769,7 @@ export class ScenarioComparisonService {
 
   private buildImpactTableRowsSkeleton(
     entities: ImpactTableEntityType[],
-  ): ScenariosImpactTableRows[] {
+  ): ScenariosComparisonImpactTableRows[] {
     return entities.map((item: ImpactTableEntityType) => {
       return {
         name: item.name || '',

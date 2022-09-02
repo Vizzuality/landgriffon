@@ -10,12 +10,7 @@ export const Controls: React.FC<ControlsProps> = ({
   className = 'absolute bottom-10 left-2',
   children,
 }: ControlsProps) => (
-  <div
-    className={cx({
-      'w-10': true,
-      [className]: !!className,
-    })}
-  >
+  <div className={cx('w-10', className)}>
     {Children.map(children, (child, i) => (
       <div
         className={cx({

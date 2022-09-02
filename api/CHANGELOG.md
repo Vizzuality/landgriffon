@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+
+##  2022-09-102
+### Fixes
+Fixes a issue where the Canceled Sourcing Locations would have a default 'unknown' location type, 
+as the query for filtering the original ones at the beginning of the intervention creation didn't have a 
+select for this field, therefore the instance prop was null,
+and the DB persist it of the default enumerable value, 'unknown'
+
+
+
 ##  2022-08-18
 ### Fixes
 Added a guard in GeoRegion Service to try find either a previously created Point or Radius

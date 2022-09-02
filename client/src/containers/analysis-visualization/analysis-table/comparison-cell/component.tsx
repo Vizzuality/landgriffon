@@ -14,7 +14,7 @@ const ComparisonCell: React.FC<ComparisonCellProps> = ({
   if (isNaN(interventionValue)) return <>{BIG_NUMBER_FORMAT(value)}</>;
   return (
     <div className="mx-auto w-fit">
-      <div className="my-auto text-right text-gray-400 line-through text-xxs">
+      <div className="my-auto text-right text-gray-400 line-through text-2xs">
         {NUMBER_FORMAT(value)}
       </div>
       <div className="flex flex-row gap-1">

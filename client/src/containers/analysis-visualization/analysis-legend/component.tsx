@@ -68,7 +68,11 @@ export const Legend: React.FC = () => {
         }}
       >
         {orderedLayers.map((layer) => (
-          <SortableItem key={layer.id} id={layer.id}>
+          <SortableItem
+            className={classNames({ hidden: !layer.active })}
+            key={layer.id}
+            id={layer.id}
+          >
             {LegendToShow(layer)}
           </SortableItem>
         ))}
@@ -81,7 +85,7 @@ export const Legend: React.FC = () => {
     <>
       <div className="relative">
         {showLegend && (
-          <div className="absolute bottom-0 z-10 flex flex-col flex-grow max-w-xs overflow-hidden bg-white border border-gray-200 rounded-lg shadow-sm right-12 w-80 md:h-[75vh]">
+          <div className="absolute bottom-0 z- flex flex-col flex-grow max-w-xs overflow-hidden bg-white border border-gray-200 rounded-lg shadow-sm right-12 w-80 md:max-h-[75vh]">
             <div className="overflow-y-auto">
               <>
                 <div className="flex items-center justify-between px-4 py-2">

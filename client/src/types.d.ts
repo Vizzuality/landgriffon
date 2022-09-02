@@ -228,8 +228,8 @@ export type Layer = {
   id: string;
   isContextual: boolean;
   order?: number;
-  active?: boolean;
-  opacity?: number;
+  active: boolean;
+  opacity: number;
   metadata?: WithRequiredProperty<Partial<LayerMetadata>, 'legend'>;
   loading?: boolean;
 };

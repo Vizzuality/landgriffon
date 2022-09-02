@@ -4,8 +4,9 @@ import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap, setLayer } from 'store/features/analysis/map';
 import { analysisFilters } from 'store/features/analysis';
 
-import LegendItem from 'components/legend/item';
 import LegendTypeChoropleth from 'components/legend/types/choropleth';
+import type { Legend } from 'types';
+import LegendItem from 'components/legend/item';
 
 const LAYER_ID = 'impact';
 const INFO_METADATA = {
@@ -35,19 +36,12 @@ const ImpactLayer = () => {
     [dispatch],
   );
 
-  const handleActive = useCallback(
-    (active) => {
-      dispatch(setLayer({ id: LAYER_ID, layer: { active } }));
-    },
-    [dispatch],
-  );
-
-  const legendItems = useMemo(
+  const legendItems: Legend['items'] = useMemo(
     () =>
-      impactLayer.metadata?.legend.items.map((item) => ({
+      impactLayer.metadata?.legend?.items?.map((item) => ({
         ...item,
         label: item.label || `${item.value}`,
-      })),
+      })) || [],
     [impactLayer.metadata?.legend.items],
   );
 
@@ -55,13 +49,10 @@ const ImpactLayer = () => {
   // TO-DO: add Loading component
   return (
     <LegendItem
-      name={impactLayer.metadata.legend.name}
       info={INFO_METADATA[`impact-${indicator?.value}`]}
       {...impactLayer.metadata.legend}
       opacity={impactLayer.opacity}
-      active={impactLayer.active}
       onChangeOpacity={handleOpacity}
-      onActiveChange={handleActive}
       isLoading={impactLayer.loading}
       main
     >

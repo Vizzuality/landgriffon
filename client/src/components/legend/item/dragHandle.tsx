@@ -1,8 +1,11 @@
 import { SortableListenersContext } from 'components/sortable/component';
+import type { HTMLAttributes } from 'react';
 import { useContext } from 'react';
 import cx from 'classnames';
 
-const DragHandle: React.FC = () => {
+import DragHandleSvg from 'components/icons/dragHandle';
+
+const DragHandle: React.FC<HTMLAttributes<HTMLDivElement>> = ({ className, ...props }) => {
   const sortableListeners = useContext(SortableListenersContext);
 
   if (!sortableListeners) {
@@ -11,18 +14,21 @@ const DragHandle: React.FC = () => {
 
   return (
     <div
-      className={cx('grid grid-cols-2 grid-rows-3 w-3 h-4', {
-        'cursor-grab': !sortableListeners.isDragging,
-        'cursor-grabbing': sortableListeners.isDragging,
-      })}
+      className={cx(
+        className,
+        'p-0.5 pt-1 text-gray-600 h-fit',
+        // 'flex flex-row w-[0.625rem] p-0.5 pt-1 h-[1.125rem]',
+        // 'grid grid-cols-2 grid-rows-3 gap-x-0.5 gap-y-[0.1875rem] h-fit',
+        {
+          'cursor-grab': !sortableListeners.isDragging,
+          'cursor-grabbing': sortableListeners.isDragging,
+        },
+      )}
+      {...props}
       {...sortableListeners.attributes}
       {...sortableListeners.listeners}
     >
-      {Array(6)
-        .fill(true)
-        .map((_, i) => (
-          <div className="rounded-full bg-gray-300 w-[3px] h-[3px] m-auto" key={i} />
-        ))}
+      <DragHandleSvg />
     </div>
   );
 };

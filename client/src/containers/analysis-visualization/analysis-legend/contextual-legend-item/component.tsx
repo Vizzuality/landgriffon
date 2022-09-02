@@ -16,7 +16,7 @@ interface ContextualLegendItemProps {
   layer: Layer;
 }
 
-const ContextualLegendItem: React.FC<ContextualLegendItemProps> = ({ layer }) => {
+const ContextualLegendItem = ({ layer }: ContextualLegendItemProps) => {
   const dispatch = useAppDispatch();
 
   const { isFetching: areLayersLoading } = useContextualLayers();
@@ -62,14 +62,14 @@ const ContextualLegendItem: React.FC<ContextualLegendItemProps> = ({ layer }) =>
 
   return (
     <LegendItem
+      id={layer.id}
       isLoading={areLayersLoading || isLoadingData}
-      name={layer.metadata.name}
-      info={layer.metadata.description}
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      name={layer.metadata!.legend.name}
+      info={layer.metadata?.description}
       opacity={layer.opacity}
-      {...layer.metadata.legend}
+      {...layer.metadata?.legend}
       onChangeOpacity={handleOpacity}
-      onActiveChange={handleActive}
-      active={layer.active}
     >
       {Legend}
     </LegendItem>

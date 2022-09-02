@@ -13,7 +13,7 @@ export const LegendTypeCategorical: React.FC<LegendTypeCategoricalProps> = ({
   if (items.length === 0) return null;
 
   return (
-    <div className={cx('px-4 w-full max-w-full', className)}>
+    <div className={cx('w-full max-w-full', className)}>
       <ul className="flex w-full">
         {items.map(({ color }) => (
           <li

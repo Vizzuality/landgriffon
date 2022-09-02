@@ -28,9 +28,9 @@ const LayerSettings = ({ layer, onChange }: LayerSettingsProps) => {
 
   return (
     <div className="flex flex-row justify-between">
-      <div className="text-sm">{layer?.metadata?.name}</div>
+      <div className="text-sm">{layer.metadata?.name}</div>
       <div>
-        <InfoToolTip info={layer?.metadata?.description} />
+        <InfoToolTip info={layer.metadata?.description} />
         <Toggle onChange={onToggleActive} active={!!layer.active} />
       </div>
     </div>

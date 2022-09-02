@@ -31,6 +31,11 @@ export const Legend: React.FC = () => {
 
   const { layers } = useAppSelector(analysisMap);
 
+  const activeContextualLayers = useMemo(
+    () => Object.values(layers).filter((l) => l.isContextual && l.active).length,
+    [layers],
+  );
+
   useEffect(() => {
     upstreamLayers?.forEach((layer, i) => {
       dispatch(setLayer({ id: layer.id, layer: { ...layer, order: i + 1, isContextual: true } }));
@@ -93,12 +98,17 @@ export const Legend: React.FC = () => {
                   <button
                     type="button"
                     aria-expanded={showSettings}
-                    className="text-primary py-1.5 px-1.5"
+                    className="text-primary py-1.5 px-1.5 flex flex-row gap-2 place-items-center"
                     onClick={handleToggleShowLegendSettinngs}
                   >
                     <span className="my-auto text-xs font-semibold underline underline-offset-2">
                       Contextual Layers
                     </span>
+                    {activeContextualLayers > 0 && (
+                      <div className="w-4 h-4 font-semibold text-white rounded-full bg-primary text-2xs">
+                        <div className="my-auto translate-y-0.5">{activeContextualLayers}</div>
+                      </div>
+                    )}
                   </button>
                 </div>
                 {Legend}
@@ -118,7 +128,12 @@ export const Legend: React.FC = () => {
           />
         </button>
       </div>
-      <Modal title="Contextual Layers" open={showSettings} onDismiss={dismissLegendSettings}>
+      <Modal
+        size="fit"
+        title="Contextual Layers"
+        open={showSettings}
+        onDismiss={dismissLegendSettings}
+      >
         <Settings onApply={dismissLegendSettings} categories={layersByCategory || []} />
       </Modal>
     </>

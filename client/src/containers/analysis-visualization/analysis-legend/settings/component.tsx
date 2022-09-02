@@ -28,9 +28,9 @@ const LayerSettings = ({ layer, onChange }: LayerSettingsProps) => {
   );
 
   return (
-    <div className="flex flex-row justify-between">
-      <div className="text-sm">{layer.metadata?.name}</div>
-      <div>
+    <div className="flex flex-row justify-between gap-5 p-2 pl-8 place-items-center">
+      <div className="flex-grow text-sm">{layer.metadata?.name}</div>
+      <div className="flex flex-row gap-2 place-items-center">
         <InfoToolTip info={layer.metadata?.description} />
         <Toggle onChange={onToggleActive} active={!!layer.active} />
       </div>
@@ -40,17 +40,18 @@ const LayerSettings = ({ layer, onChange }: LayerSettingsProps) => {
 
 const CategoryHeader: React.FC<{
   category: CategoryWithLayers['category'];
-  activeLayers?: number;
+  activeLayers: number;
 }> = ({ category, activeLayers }) => {
   return (
     <div className="flex flex-row justify-between">
-      <div className="text-sm font-semibold">{category}</div>
+      <div className="text-sm font-semibold text-gray-500">{category}</div>
       <div
         className={classNames(
-          'w-4 h-4 my-auto text-xs font-semibold text-center text-white rounded-full bg-green-700',
+          'w-4 h-4 my-auto text-xs font-semibold text-center text-white rounded-full',
+          activeLayers === 0 ? 'bg-gray-200' : 'bg-primary',
         )}
       >
-        {activeLayers}
+        <div className="my-auto -translate-y-px">{activeLayers}</div>
       </div>
     </div>
   );
@@ -67,11 +68,9 @@ const CategorySettings = ({ category, layers, onLayerStateChange }: CategorySett
 
   return (
     <Accordion.Entry header={<CategoryHeader activeLayers={activeLayers} category={category} />}>
-      <div>
-        {layers.map((layer) => (
-          <LayerSettings onChange={onLayerStateChange} layer={layer} key={layer.id} />
-        ))}
-      </div>
+      {layers.map((layer) => (
+        <LayerSettings onChange={onLayerStateChange} layer={layer} key={layer.id} />
+      ))}
     </Accordion.Entry>
   );
 };
@@ -128,10 +127,13 @@ const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onAppl
   }, [dispatch, localLayerState, onApply]);
 
   return (
-    <div>
-      <Accordion>
-        <>{accordionEntries}</>
-      </Accordion>
+    <div className="h-[400px] flex flex-col justify-between gap-5 w-96">
+      <div className="max-h-full p-0.5 overflow-y-auto">
+        <Accordion>
+          <>{accordionEntries}</>
+        </Accordion>
+      </div>
+
       <div className="flex flex-row justify-between">
         <Button theme="textLight">Cancel</Button>
         <Button onClick={handleApply} theme="secondary">

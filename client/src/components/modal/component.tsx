@@ -14,12 +14,12 @@ export const Modal: React.FC<ModalProps> = ({
   title,
   open,
   dismissable = true,
-  size = 'default',
+  size = 'fit',
   children,
   className,
   onDismiss,
 }) => {
-  const containerRef = useRef();
+  const containerRef = useRef<HTMLDivElement>(null);
   const { overlayProps } = useOverlay(
     {
       isKeyboardDismissDisabled: !dismissable,
@@ -80,10 +80,7 @@ export const Modal: React.FC<ModalProps> = ({
                       delay: 0,
                     },
                   }}
-                  className={classNames(CONTENT_CLASSES[size], { [className]: !!className })}
-                  style={{
-                    maxHeight: '90%',
-                  }}
+                  className={classNames('max-h-[90%]', CONTENT_CLASSES[size], className)}
                 >
                   {dismissable && (
                     <div className="relative flex items-center mb-4">
@@ -97,8 +94,7 @@ export const Modal: React.FC<ModalProps> = ({
                       </button>
                     </div>
                   )}
-
-                  <div>{children}</div>
+                  {children}
                 </motion.div>
               </div>
             </FocusScope>

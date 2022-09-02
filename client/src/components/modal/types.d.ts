@@ -17,7 +17,7 @@ export interface ModalProps {
   /**
    * Size (width) of the modal
    */
-  size?: 'narrow' | 'default' | 'wide';
+  size?: 'narrow' | 'default' | 'wide' | 'fit';
   children?: ReactNode;
   /**
    * Class name to assign to the modal

@@ -255,12 +255,6 @@ export class ScenarioInterventionsService extends AppBaseService<
       title: newScenarioIntervention.title,
       updatedById: newIntervention.updatedById,
     };
-    // TODO: try to use insert
-    // await this.sourcingLocationsService.save(
-    //   newCancelledByInterventionLocationsData,
-    // );
-
-    //return this.scenarioInterventionRepository.save(newScenarioIntervention);
   }
 
   /**

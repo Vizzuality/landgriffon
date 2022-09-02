@@ -184,8 +184,8 @@ const AnalysisTable: React.FC = () => {
           }));
           const actualDataChartConfig = datesRangeChartConfig(actualData, {
             dataKey: 'actual_data',
-            // ? gray/400
-            stroke: '#AEB1B5',
+            // ? gray/400 or gray/500
+            stroke: showComparison ? '#AEB1B5' : '#60626A',
           });
           const interventionData = showComparison
             ? values.map(({ year, interventionValue }) => ({

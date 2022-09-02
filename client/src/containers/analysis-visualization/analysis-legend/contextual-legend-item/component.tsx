@@ -22,13 +22,6 @@ const ContextualLegendItem = ({ layer }: ContextualLegendItemProps) => {
   const { isFetching: areLayersLoading } = useContextualLayers();
   const { isLoading: isLoadingData } = useContextualLayer(layer.id);
 
-  const handleActive = useCallback(
-    (active: boolean) => {
-      dispatch(setLayer({ id: layer.id, layer: { active } }));
-    },
-    [dispatch, layer],
-  );
-
   const handleOpacity = useCallback(
     (opacity: number) => {
       if (opacity === layer.opacity) return;

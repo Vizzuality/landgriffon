@@ -11,6 +11,7 @@ import type { Layer } from 'types';
 
 interface LegendSettingsProps {
   categories: CategoryWithLayers[];
+  onApply?: (layers: Layer[]) => void;
 }
 
 interface LayerSettingsProps {
@@ -75,7 +76,7 @@ const CategorySettings = ({ category, layers, onLayerStateChange }: CategorySett
   );
 };
 
-const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [] }) => {
+const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onApply }) => {
   const { layers: initialLayerState } = useAppSelector(analysisMap);
 
   const [localLayerState, setLocalLayerState] = useState(() => initialLayerState);
@@ -122,8 +123,9 @@ const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [] }) => {
           layer,
         }),
       );
+      onApply?.(Object.values(localLayerState));
     });
-  }, [dispatch, localLayerState]);
+  }, [dispatch, localLayerState, onApply]);
 
   return (
     <div>

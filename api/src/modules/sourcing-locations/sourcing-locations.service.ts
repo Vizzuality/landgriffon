@@ -134,6 +134,7 @@ export class SourcingLocationsService extends AppBaseService<
           'sl.locationAddressInput',
           'sl.locationLongitude',
           'sl.locationLatitude',
+          'sl.locationType',
           'sr.year',
           'sr.tonnage',
           'ir.value',
@@ -149,7 +150,8 @@ export class SourcingLocationsService extends AppBaseService<
           startYear: createInterventionDto.startYear,
         })
 
-        .andWhere('sl.interventionType IS NULL');
+        .andWhere('sl.interventionType IS NULL')
+        .andWhere('sl.scenarioInterventionId IS NULL');
 
     // Optional filters:
 

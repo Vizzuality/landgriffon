@@ -27,6 +27,7 @@ import { Material } from 'modules/materials/material.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import {
+  LOCATION_TYPES,
   LOCATION_TYPES_PARAMS,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
@@ -1729,6 +1730,141 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         expect(intervention).toBeTruthy();
         expect(intervention!.newMaterial.id).toEqual(newMaterial.id);
         expect(intervention!.newAdminRegion.id).toEqual(newAdminRegion.id);
+      },
+    );
+
+    test(
+      'When I create a new Intervention to switch to a new Material Or new Supplier' +
+        'Then the Locations Canceled by said intervention should have the same locationType as the new location of the intervention',
+      async () => {
+        // ARRANGE
+
+        // Requirements for GeoCoding Mock
+        const geoRegion: GeoRegion = await createGeoRegion();
+        const newAdminRegion: AdminRegion = await createAdminRegion({
+          geoRegion,
+          name: 'new admin region',
+        });
+
+        // Not included in Sourcing Locations
+        const parentAdminRegion: AdminRegion = await createAdminRegion({
+          name: 'parent admin region',
+        });
+        // Included in Sourcing Locations
+        const childAdminRegion: AdminRegion = await createAdminRegion({
+          name: 'child admin region',
+          parent: parentAdminRegion,
+        });
+        // Included in Sourcing Locations
+        const grandChildAdminRegion: AdminRegion = await createAdminRegion({
+          name: 'grand child admin region',
+          parent: childAdminRegion,
+        });
+        // Not included in Sourcing Locations
+        const parentMaterial: Material = await createMaterial({
+          name: 'parent material',
+        });
+        // Included in Sourcing Locations
+        const childMaterial: Material = await createMaterial({
+          name: 'child material',
+          parent: parentMaterial,
+        });
+
+        // New Material that should be included in the intervention
+        const newMaterial: Material = await createMaterial({
+          name: 'new material',
+        });
+        // Included in Sourcing Locations
+        const grandChildMaterial: Material = await createMaterial({
+          name: 'grand child material',
+          parent: childMaterial,
+        });
+        // Not included in Sourcing Locations
+        const parentBusinessUnit: BusinessUnit = await createBusinessUnit({
+          name: 'parent business unit',
+        });
+        // Included in Sourcing Locations
+        const childBusinessUnit: BusinessUnit = await createBusinessUnit({
+          name: 'child business unit',
+          parent: parentBusinessUnit,
+        });
+        // Not included in Sourcing Locations
+        const parentSupplier: Supplier = await createSupplier({
+          name: 'parent supplier',
+        });
+
+        const childSupplier: Supplier = await createSupplier({
+          name: 'child supplier',
+          parent: parentSupplier,
+        });
+
+        const sourcingRecord1: SourcingRecord = await createSourcingRecord({
+          year: 2020,
+        });
+        const sourcingRecord2: SourcingRecord = await createSourcingRecord({
+          year: 2020,
+        });
+
+        const sourcingLocationAggregationPoint = await createSourcingLocation({
+          adminRegion: grandChildAdminRegion,
+          material: grandChildMaterial,
+          businessUnit: childBusinessUnit,
+          t1Supplier: childSupplier,
+          sourcingRecords: [sourcingRecord1],
+          locationType: LOCATION_TYPES.AGGREGATION_POINT,
+        });
+
+        const sourcingLocationPointOfProduction = await createSourcingLocation({
+          adminRegion: childAdminRegion,
+          material: childMaterial,
+          businessUnit: childBusinessUnit,
+          t1Supplier: childSupplier,
+          sourcingRecords: [sourcingRecord2],
+          locationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
+        });
+        const scenario: Scenario = await createScenario();
+
+        const response = await request(app.getHttpServer())
+          .post('/api/v1/scenario-interventions')
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send({
+            title: 'scenario intervention material',
+            startYear: 2020,
+            percentage: 50,
+            scenarioId: scenario.id,
+            materialIds: [parentMaterial.id],
+            supplierIds: [parentSupplier.id],
+            businessUnitIds: [parentBusinessUnit.id],
+            adminRegionIds: [parentAdminRegion.id],
+            type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+            newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
+            newLocationCountryInput: 'Spain',
+            newMaterialId: newMaterial.id,
+          });
+
+        const canceledSourcingLocations = await sourcingLocationRepository.find(
+          {
+            where: {
+              interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+            },
+          },
+        );
+
+        console.log(canceledSourcingLocations);
+
+        expect(canceledSourcingLocations).toHaveLength(2);
+        expect(
+          canceledSourcingLocations.find(
+            (location: SourcingLocation) =>
+              location.locationType === LOCATION_TYPES.AGGREGATION_POINT,
+          ),
+        ).toBeTruthy();
+        expect(
+          canceledSourcingLocations.find(
+            (location: SourcingLocation) =>
+              location.locationType === LOCATION_TYPES.POINT_OF_PRODUCTION,
+          ),
+        ).toBeTruthy();
       },
     );
   });

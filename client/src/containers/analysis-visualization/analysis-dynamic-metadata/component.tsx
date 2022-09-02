@@ -33,7 +33,8 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
   className,
 }: AnalysisDynamicMetadataTypes) => {
   const dispatch = useAppDispatch();
-  const { currentScenario, scenarioToCompare, comparisonMode } = useAppSelector(scenarios);
+  const { currentScenario, scenarioToCompare, comparisonMode, isComparisonEnabled } =
+    useAppSelector(scenarios);
   const { data: scenario } = useScenario(currentScenario);
   const { data: scenarioB } = useScenario(scenarioToCompare);
 
@@ -140,6 +141,11 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
     </ul>
   );
 
+  const shouldDisplayComparePhrase = useMemo(
+    () => isComparisonEnabled && scenarioToCompare && scenarioToCompare !== 'actual-data',
+    [isComparisonEnabled, scenarioToCompare],
+  );
+
   return (
     <div
       className={classNames('flex items-center justify-start text-xs space-x-1', {
@@ -149,7 +155,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
       <div className="items-start">
         <InformationCircleIcon className="w-4 h-4 text-gray-900 shrink-0" />
       </div>
-      {!!scenarioToCompare && (
+      {shouldDisplayComparePhrase && (
         <div className="flex items-baseline space-x-0.5">
           <span>Viewing</span>
           <Select
@@ -165,7 +171,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
           </span>
         </div>
       )}
-      {!scenarioToCompare && (
+      {!shouldDisplayComparePhrase && (
         <p className="flex-wrap items-center">
           Viewing {values} <span className="whitespace-nowrap">Impact values for</span>
           <span className="font-bold whitespace-nowrap"> {scenario1} </span>

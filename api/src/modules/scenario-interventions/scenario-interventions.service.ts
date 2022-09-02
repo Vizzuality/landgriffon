@@ -601,6 +601,6 @@ export class ScenarioInterventionsService extends AppBaseService<
         ]);
       return geoCodedLocation[0] as SourcingLocation;
     }
-    return [] as unknown as SourcingLocation;
+    return {} as unknown as SourcingLocation;
   }
 }

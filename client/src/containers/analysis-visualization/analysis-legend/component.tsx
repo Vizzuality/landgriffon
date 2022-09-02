@@ -9,7 +9,7 @@ import useContextualLayers from 'hooks/layers/getContextualLayers';
 import ContextualLegendItem from './contextual-legend-item';
 import ImpactLayer from './impact-legend-item';
 import classNames from 'classnames';
-import { ChevronDoubleRightIcon, CogIcon } from '@heroicons/react/solid';
+import { ChevronDoubleRightIcon } from '@heroicons/react/solid';
 import Settings from './settings';
 import Modal from 'components/modal';
 
@@ -87,22 +87,22 @@ export const Legend: React.FC = () => {
         {showLegend && (
           <div className="absolute bottom-0 z- flex flex-col flex-grow max-w-xs overflow-hidden bg-white border border-gray-200 rounded-lg shadow-sm right-12 w-80 md:max-h-[75vh]">
             <div className="overflow-y-auto">
-              <>
-                <div className="flex items-center justify-between px-4 py-2">
-                  <div className="text-sm font-semibold text-gray-900">Legend</div>
+              <div className="divide-y divide-gray-100">
+                <div className="flex items-center justify-between px-2 py-1 place-items-center">
+                  <div className="px-2 text-sm text-gray-900">Legend</div>
                   <button
                     type="button"
                     aria-expanded={showSettings}
-                    className="text-xs text-green-700"
+                    className="text-primary py-1.5 px-1.5"
                     onClick={handleToggleShowLegendSettinngs}
                   >
-                    <span>
-                      <CogIcon className="w-5 h-5" />
+                    <span className="my-auto text-xs font-semibold underline underline-offset-2">
+                      Contextual Layers
                     </span>
                   </button>
                 </div>
                 {Legend}
-              </>
+              </div>
             </div>
           </div>
         )}

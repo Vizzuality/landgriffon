@@ -117,7 +117,7 @@ export class ImpactCalculatorService {
               sourcingRecord.geoRegionId,
               sourcingRecord.materialId,
               sourcingRecord.year,
-              5, // Max resolution
+              6, // Max resolution
             );
 
           return this.createResultInstance(

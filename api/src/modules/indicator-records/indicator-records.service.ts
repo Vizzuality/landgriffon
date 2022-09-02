@@ -166,11 +166,8 @@ export class IndicatorRecordsService extends AppBaseService<
       INDICATOR_TYPES.BIODIVERSITY_LOSS,
     ];
 
-    const rawData: SourcingRecordsWithIndicatorRawDataDto[] = config.get(
-      'featureFlags.simpleImportCalculations',
-    )
-      ? await this.impactCalculatorService.calculateAllSourcingRecords()
-      : await this.indicatorRecordRepository.getIndicatorRawDataForAllSourcingRecords();
+    const rawData: SourcingRecordsWithIndicatorRawDataDto[] =
+      await this.indicatorRecordRepository.getIndicatorRawDataForAllSourcingRecords();
 
     const calculatedData2: IndicatorRecordCalculatedValuesDto[] = rawData.map(
       (sourcingRecordData: SourcingRecordsWithIndicatorRawDataDto) => {
@@ -215,6 +212,55 @@ export class IndicatorRecordsService extends AppBaseService<
           IndicatorRecord.merge(new IndicatorRecord(), {
             value: calculatedIndicatorRecords.values.get(indicator),
             indicatorId: indicatorMap[indicator].id,
+            status: INDICATOR_RECORD_STATUS.SUCCESS,
+            sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
+            scaler: calculatedIndicatorRecords.production,
+            materialH3DataId: calculatedIndicatorRecords.materialH3DataId,
+          }),
+        );
+      }
+    }
+    await this.indicatorRecordRepository.saveChunks(indicatorRecords);
+  }
+
+  async createIndicatorRecordsForAllSourcingRecordsV2(): Promise<void> {
+    //Calculate raw impact Data for all available indicators on the system
+    const indicators: Indicator[] =
+      await this.indicatorService.getAllIndicators();
+
+    const rawData: SourcingRecordsWithIndicatorRawDataDto[] =
+      await this.impactCalculatorService.calculateAllRawValuesForAllSourcingRecords(
+        indicators,
+      );
+
+    const calculatedData: IndicatorRecordCalculatedValuesDto[] = rawData.map(
+      (sourcingRecordData: SourcingRecordsWithIndicatorRawDataDto) => {
+        // Small DTO transformation for calculation method
+        const indicatorComputedRawDataDto: IndicatorComputedRawDataDto = {
+          harvestedArea: sourcingRecordData.harvestedArea,
+          production: sourcingRecordData.production,
+          indicatorValues: sourcingRecordData.indicatorValues,
+        };
+
+        return this.calculateIndicatorValues(
+          sourcingRecordData.sourcingRecordId,
+          sourcingRecordData.tonnage,
+          sourcingRecordData.materialH3DataId,
+          indicatorComputedRawDataDto,
+        );
+      },
+    );
+
+    // Create IndicatorRecord instances
+    const indicatorRecords: IndicatorRecord[] = [];
+    for (const calculatedIndicatorRecords of calculatedData) {
+      for (const indicator of indicators) {
+        indicatorRecords.push(
+          IndicatorRecord.merge(new IndicatorRecord(), {
+            value: calculatedIndicatorRecords.values.get(
+              indicator.nameCode as INDICATOR_TYPES,
+            ),
+            indicatorId: indicator.id,
             status: INDICATOR_RECORD_STATUS.SUCCESS,
             sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
             scaler: calculatedIndicatorRecords.production,

@@ -59,6 +59,7 @@ import { SupplierRepository } from '../../../src/modules/suppliers/supplier.repo
 import { GeoRegionRepository } from '../../../src/modules/geo-regions/geo-region.repository';
 import { MaterialRepository } from '../../../src/modules/materials/material.repository';
 import { CachedDataRepository } from '../../../src/modules/cached-data/cached-data.repository';
+import * as config from 'config';
 
 describe('Indicator Records Service', () => {
   let indicatorRecordRepository: IndicatorRecordRepository;
@@ -481,7 +482,10 @@ describe('Indicator Records Service', () => {
       );
 
       //ACT
-      await indicatorRecordService.createIndicatorRecordsForAllSourcingRecords();
+      // TODO remove feature flag selection, once the solution has been approved
+      config.get('featureFlags.simpleImportCalculations')
+        ? await indicatorRecordService.createIndicatorRecordsForAllSourcingRecordsV2()
+        : await indicatorRecordService.createIndicatorRecordsForAllSourcingRecords();
 
       //ASSERT
       const allIndicators = await indicatorRecordRepository.find();

@@ -51,9 +51,6 @@ import {
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
-import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
-import { SupplierRepository } from 'modules/suppliers/supplier.repository';
-import { MaterialRepository } from 'modules/materials/material.repository';
 import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
 import { ScenariosModule } from 'modules/scenarios/scenarios.module';
 import { In } from 'typeorm';
@@ -109,6 +106,30 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           geoRegionId: geoRegion.id,
         }));
     },
+    geoCodeSourcingLocation: async (sourcingData: any): Promise<any> => {
+      const geoRegion: GeoRegion | undefined =
+        await geoRegionRepository.findOne({
+          name: 'ABC',
+        });
+      if (geoRegion === undefined) {
+        throw new Error('Could not find expected mock GeoRegion with name=ABC');
+      }
+      const adminRegion: AdminRegion | undefined =
+        await adminRegionRepository.findOne({
+          geoRegionId: geoRegion.id,
+        });
+      if (adminRegion === undefined) {
+        throw new Error(
+          'Could not find expected mock AdminRegion for GeoRegion with name=ABC',
+        );
+      }
+
+      return {
+        ...sourcingData,
+        adminRegionId: adminRegion.id,
+        geoRegionId: geoRegion.id,
+      };
+    },
   };
 
   let app: INestApplication;
@@ -117,10 +138,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   let sourcingLocationRepository: SourcingLocationRepository;
   let sourcingRecordRepository: SourcingRecordRepository;
   let adminRegionRepository: AdminRegionRepository;
-  let businessUnitRepository: BusinessUnitRepository;
   let indicatorRecordRepository: IndicatorRecordRepository;
-  let supplierRepository: SupplierRepository;
-  let materialRepository: MaterialRepository;
   let geoRegionRepository: GeoRegionRepository;
   let jwtToken: string;
   let userId: string;
@@ -160,13 +178,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     );
     geoRegionRepository =
       moduleFixture.get<GeoRegionRepository>(GeoRegionRepository);
-    businessUnitRepository = moduleFixture.get<BusinessUnitRepository>(
-      BusinessUnitRepository,
-    );
-    supplierRepository =
-      moduleFixture.get<SupplierRepository>(SupplierRepository);
-    materialRepository =
-      moduleFixture.get<MaterialRepository>(MaterialRepository);
 
     indicatorRecordRepository = moduleFixture.get<IndicatorRecordRepository>(
       IndicatorRecordRepository,
@@ -1684,6 +1695,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         const sourcingRecord1: SourcingRecord = await createSourcingRecord({
           year: 2020,
         });
+
         const sourcingRecord2: SourcingRecord = await createSourcingRecord({
           year: 2020,
         });

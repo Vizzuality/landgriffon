@@ -41,6 +41,7 @@ const optionSchema = yup.object({
 });
 
 const schemaValidation = yup.object({
+  title: yup.string().max(140).required(),
   interventionType: yup.string().required(),
   startYear: optionSchema.required(),
   percentage: yup.number().moreThan(0).max(100).required(),
@@ -68,7 +69,6 @@ const schemaValidation = yup.object({
       return yup.object().nullable();
     });
   }),
-  // optionSchema.nullable(),
   newLocationCountryInput: yup.lazy(() => {
     return optionSchema.when('interventionType', (interventionType) => {
       if (
@@ -314,6 +314,12 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
         </p>
       </div>
       <div className="pl-10 space-y-4 border-l-2 border-gray-100">
+        <div>
+          <label className={LABEL_CLASSNAMES}>
+            Title <sup>*</sup>
+          </label>
+          <Input {...register('title')} type="text" error={errors?.title?.message} />
+        </div>
         <div>
           <label className={LABEL_CLASSNAMES}>
             Percentage <sup>*</sup>

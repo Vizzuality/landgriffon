@@ -10,6 +10,7 @@ export type IndicatorCoefficients = {
 
 export type Intervention = Readonly<{
   id: string;
+  title: string;
   type: InterventionTypes;
   status: LocationStatus;
   startYear: number;

@@ -1,39 +1,36 @@
-import type { FC } from 'react';
-import { useCallback, useState } from 'react';
+import type { ChangeEvent } from 'react';
+import { useCallback } from 'react';
 import { SearchIcon, XIcon } from '@heroicons/react/solid';
 
 import Input from 'components/forms/input';
 
-import type { SearchProps } from './types';
+type SearchProps = Omit<React.ComponentProps<typeof Input>, 'type' | 'icon'> & {
+  onChange: (value: string) => void;
+  value: string;
+};
 
-export const Search: FC<SearchProps> = (props: SearchProps) => {
-  const { onChange } = props;
-  const [value, setValue] = useState<SearchProps['value']>(null);
-
+export const Search = (props: SearchProps) => {
+  const { onChange, value } = props;
   const handleChange = useCallback(
-    (e) => {
-      if (onChange) onChange(e.target.value);
-      setValue(e.target.value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      onChange?.(e.target.value);
     },
     [onChange],
   );
 
   const handleReset = useCallback(() => {
-    if (onChange) onChange('');
-    setValue('');
+    onChange?.('');
   }, [onChange]);
 
   return (
     <div className="relative flex items-center w-full">
       <Input
         {...props}
-        value={value}
         icon={SearchIcon}
         type="search"
-        className="h-full"
+        className="w-full h-full"
         onChange={handleChange}
       />
-
       {value && value !== '' && (
         <button
           className="absolute z-10 flex items-center self-center justify-center w-5 h-5 right-3 r-2"

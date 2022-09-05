@@ -153,7 +153,13 @@ export function useDeleteIntervention() {
 }
 
 export function useUpdateIntervention() {
-  const updateIntervention = ({ id, data }: { id: string; data: Omit<InterventionDto, 'id'> }) =>
+  const updateIntervention = ({
+    id,
+    data,
+  }: {
+    id: string;
+    data: Partial<Omit<InterventionDto, 'id'>>;
+  }) =>
     apiService.request({
       method: 'PATCH',
       data,

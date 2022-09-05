@@ -62,7 +62,7 @@ const UpdateScenarioPage: React.FC = () => {
   );
 
   const handleInterventionToggle = useCallback(
-    (interventionId, isActive) =>
+    (interventionId: string, isActive: boolean) =>
       updateIntervention.mutate(
         { id: interventionId, data: { status: isActive ? 'active' : 'inactive' } },
         {

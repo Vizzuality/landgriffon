@@ -4,9 +4,8 @@ import { SearchIcon, XIcon } from '@heroicons/react/solid';
 
 import Input from 'components/forms/input';
 
-type SearchProps = Omit<React.ComponentProps<typeof Input>, 'type' | 'icon'> & {
+type SearchProps = Omit<React.ComponentProps<typeof Input>, 'type' | 'icon' | 'onChange'> & {
   onChange: (value: string) => void;
-  value: string;
 };
 
 export const Search = (props: SearchProps) => {

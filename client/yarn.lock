@@ -7705,7 +7705,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"attr-accept@npm:^2.2.1":
+"attr-accept@npm:^2.2.2":
   version: 2.2.2
   resolution: "attr-accept@npm:2.2.2"
   checksum: 496f7249354ab53e522510c1dc8f67a1887382187adde4dc205507d2f014836a247073b05e9d9ea51e2e9c7f71b0d2aa21730af80efa9af2d68303e5f0565c4d
@@ -11668,12 +11668,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"file-selector@npm:^0.2.2":
-  version: 0.2.4
-  resolution: "file-selector@npm:0.2.4"
+"file-selector@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "file-selector@npm:0.6.0"
   dependencies:
-    tslib: ^2.0.3
-  checksum: 83341e7416352c7de0caf433b33c8d007d3c298c17d6ba0e70168af82bb045d905ddd6f4bc3ca764a2035c6f18eae7f52223dc6a784056f61b8391c351f88323
+    tslib: ^2.4.0
+  checksum: 7d051b6e5d793f3c6e2ab287ba5e7c2c6a0971bccc9d56e044c8047ba483e18f60fc0b5771c951dc707c0d15f4f36ccb4f1f1aaf385d21ec8f7700dadf8325ba
   languageName: node
   linkType: hard
 
@@ -14531,7 +14531,7 @@ __metadata:
     react: 18.2.0
     react-csv: 2.2.2
     react-dom: 18.2.0
-    react-dropzone: 11.5.1
+    react-dropzone: 14.2.2
     react-hook-form: 7.27.1
     react-hot-toast: 2.2.0
     react-map-gl: 6.1.19
@@ -17799,16 +17799,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dropzone@npm:11.5.1":
-  version: 11.5.1
-  resolution: "react-dropzone@npm:11.5.1"
+"react-dropzone@npm:14.2.2":
+  version: 14.2.2
+  resolution: "react-dropzone@npm:14.2.2"
   dependencies:
-    attr-accept: ^2.2.1
-    file-selector: ^0.2.2
-    prop-types: ^15.7.2
+    attr-accept: ^2.2.2
+    file-selector: ^0.6.0
+    prop-types: ^15.8.1
   peerDependencies:
-    react: ">= 16.8"
-  checksum: 54d801ca5b952d9e00913c516bcb3b961d34058116d0444ac3ce911e98e777fbd936fb60e81c0739664f68bf1dd1bdc6a1477d0b50b46ffe986140671562110d
+    react: ">= 16.8 || 18.0.0"
+  checksum: ef9ea7b3b5734e8eade2d29efc26da410dd7d6d046216331f6a51e2df4459c35f3a8f950fa7f723f3db6b0ead8aa68f58f6adbd39b98575c9fc8d8dfe02b671f
   languageName: node
   linkType: hard
 

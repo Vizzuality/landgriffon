@@ -16,7 +16,7 @@ const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
           {children}
         </main>
       </div>
-      <Toaster position="bottom-center" containerClassName="test-toast-message" />
+      <Toaster position="bottom-center" containerClassName="test-toast-message text-sm" />
     </div>
   );
 };

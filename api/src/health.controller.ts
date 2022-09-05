@@ -2,7 +2,6 @@ import {
   HealthCheck,
   HealthCheckService,
   MicroserviceHealthIndicator,
-  TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
 import { Transport, RedisOptions } from '@nestjs/microservices';
 import { Controller, Get } from '@nestjs/common';
@@ -18,7 +17,6 @@ export class HealthController {
   constructor(
     private health: HealthCheckService,
     private microservice: MicroserviceHealthIndicator,
-    private db: TypeOrmHealthIndicator,
   ) {}
 
   @Public()
@@ -33,7 +31,6 @@ export class HealthController {
             url: `redis://${redisConfig.host}:${redisConfig.port}`,
           },
         }),
-      (): Promise<HealthIndicatorResult> => this.db.pingCheck('typeorm'),
     ]);
   }
 }

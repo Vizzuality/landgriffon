@@ -152,7 +152,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
         [className]: !!className,
       })}
     >
-      <div className="items-start">
+      <div className="items-start -translate-y-[3px]">
         <InformationCircleIcon className="w-4 h-4 text-gray-900 shrink-0" />
       </div>
       {shouldDisplayComparePhrase && (

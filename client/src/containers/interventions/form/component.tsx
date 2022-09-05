@@ -318,7 +318,12 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
           <label className={LABEL_CLASSNAMES}>
             Title <sup>*</sup>
           </label>
-          <Input {...register('title')} type="text" error={errors?.title?.message} />
+          <Input
+            {...register('title')}
+            type="text"
+            data-testid="title-input"
+            error={errors?.title?.message}
+          />
         </div>
         <div>
           <label className={LABEL_CLASSNAMES}>

@@ -46,6 +46,9 @@ describe('Intervention creation', () => {
 
     cy.url().should('contains', '/interventions/new');
 
+    // types title of the intervention
+    cy.get('[data-testid="title-input"]').type('Lorem ipsum title');
+
     // selects a material
     cy.wait('@scenarioRawMaterials').then(() => {
       const $inputSelect = cy.get('[data-testid="materials-select"]');
@@ -117,6 +120,9 @@ describe('Intervention creation', () => {
       statusCode: 400,
       fixture: 'intervention/failed-intervention-creation-dto',
     }).as('failedInterventionCreation');
+
+    // types title of the intervention
+    cy.get('[data-testid="title-input"]').type('Lorem ipsum title');
 
     // selects a material
     cy.wait('@scenarioRawMaterials').then(() => {

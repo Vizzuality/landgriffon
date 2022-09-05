@@ -17,7 +17,6 @@ import {
 
 import CleanLayout from 'layouts/clean';
 import ScenarioForm from 'containers/scenarios/form';
-import InterventionPhrase from 'containers/interventions/phrase';
 import { LocationStatus } from 'containers/interventions/enums';
 import BackLink from 'components/back-link';
 import Loading from 'components/loading';
@@ -171,9 +170,7 @@ const UpdateScenarioPage: React.FC = () => {
                               handleInterventionToggle(intervention.id, isActive)
                             }
                           />
-                          <div>
-                            <InterventionPhrase intervention={intervention} short />
-                          </div>
+                          <div>{intervention.title}</div>
                         </div>
                         <Dropdown>
                           <Dropdown.Button>

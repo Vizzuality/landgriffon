@@ -78,7 +78,7 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
     ...(currentScenario && currentScenario !== 'actual-data'
       ? { scenarioId: currentScenario }
       : {}),
-    ...(isComparisonEnabled ? { scenarioId: scenarioToCompare } : {}),
+    ...(isComparisonEnabled && scenarioToCompare ? { scenarioId: scenarioToCompare } : {}),
   };
 
   const query = useQuery(

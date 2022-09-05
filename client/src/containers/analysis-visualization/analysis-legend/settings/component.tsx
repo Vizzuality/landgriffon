@@ -2,12 +2,15 @@ import classNames from 'classnames';
 import Accordion from 'components/accordion';
 import { Button } from 'components/button';
 import InfoToolTip from 'components/info-tooltip';
+import Search from 'components/search';
 import Toggle from 'components/toggle';
+import useFuse from 'hooks/fuse';
 import type { CategoryWithLayers } from 'hooks/layers/getContextualLayers';
 import { useCallback, useMemo, useState } from 'react';
 import { analysisMap, setLayer } from 'store/features/analysis';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import type { Layer } from 'types';
+import type Fuse from 'fuse.js';
 
 interface LegendSettingsProps {
   categories: CategoryWithLayers[];
@@ -60,12 +63,16 @@ const CategoryHeader: React.FC<{
 interface CategorySettingsProps {
   category: CategoryWithLayers['category'];
   layers: Layer[];
+  activeLayers: number;
   onLayerStateChange: (id: Layer['id'], state: Partial<Layer>) => void;
 }
 
-const CategorySettings = ({ category, layers, onLayerStateChange }: CategorySettingsProps) => {
-  const activeLayers = useMemo(() => layers.filter((layer) => !!layer.active).length, [layers]);
-
+const CategorySettings = ({
+  category,
+  layers,
+  onLayerStateChange,
+  activeLayers,
+}: CategorySettingsProps) => {
   return (
     <Accordion.Entry header={<CategoryHeader activeLayers={activeLayers} category={category} />}>
       {layers.map((layer) => (
@@ -75,20 +82,16 @@ const CategorySettings = ({ category, layers, onLayerStateChange }: CategorySett
   );
 };
 
+const FUSE_OPTIONS: Fuse.IFuseOptions<CategoryWithLayers['layers'][number]> = {
+  keys: ['name', 'metadata.name', 'metadata.description'],
+  shouldSort: false,
+  threshold: 0.3,
+};
+
 const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onApply }) => {
   const { layers: initialLayerState } = useAppSelector(analysisMap);
 
   const [localLayerState, setLocalLayerState] = useState(() => initialLayerState);
-
-  const layerStateByCategory = useMemo(
-    () =>
-      Object.fromEntries(
-        categories.map(({ category, layers }) => {
-          return [category, layers.map(({ id }) => localLayerState[id])];
-        }),
-      ),
-    [categories, localLayerState],
-  );
 
   const handleLayerStateChange = useCallback<CategorySettingsProps['onLayerStateChange']>(
     (id, state) => {
@@ -98,19 +101,6 @@ const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onAppl
       }));
     },
     [],
-  );
-
-  const accordionEntries = useMemo(
-    () =>
-      categories.map((cat) => (
-        <CategorySettings
-          layers={layerStateByCategory[cat.category]}
-          onLayerStateChange={handleLayerStateChange}
-          key={cat.category}
-          category={cat.category}
-        />
-      )),
-    [categories, handleLayerStateChange, layerStateByCategory],
   );
 
   const dispatch = useAppDispatch();
@@ -126,14 +116,57 @@ const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onAppl
     });
   }, [dispatch, localLayerState, onApply]);
 
-  return (
-    <div className="h-[400px] flex flex-col justify-between gap-5 w-96">
-      <div className="max-h-full p-0.5 overflow-y-auto">
-        <Accordion>
-          <>{accordionEntries}</>
-        </Accordion>
-      </div>
+  const flatLayers = useMemo(() => categories.flatMap(({ layers }) => layers), [categories]);
 
+  const {
+    reset,
+    result,
+    search: setSearchText,
+    term: searchText,
+  } = useFuse(flatLayers, FUSE_OPTIONS);
+
+  const filteredLayersIds = useMemo(() => result.map((item) => item.id), [result]);
+
+  const layerStateByCategory = useMemo(() => {
+    return Object.fromEntries(
+      categories.map(({ category, layers }) => {
+        return [
+          category,
+          layers
+            .filter((layer) => filteredLayersIds.includes(layer.id))
+            .map(({ id }) => localLayerState[id]),
+        ];
+      }),
+    );
+  }, [categories, filteredLayersIds, localLayerState]);
+
+  const accordionEntries = useMemo(
+    () =>
+      categories.map((cat) => (
+        <CategorySettings
+          activeLayers={cat.layers.filter((layer) => localLayerState[layer.id].active).length}
+          layers={layerStateByCategory[cat.category]}
+          onLayerStateChange={handleLayerStateChange}
+          key={cat.category}
+          category={cat.category}
+        />
+      )),
+    [categories, handleLayerStateChange, layerStateByCategory, localLayerState],
+  );
+
+  return (
+    <div className="h-[400px] w-96 flex flex-col items-stretch gap-5">
+      <div className="w-full">
+        <Search
+          onChange={setSearchText}
+          value={searchText}
+          placeholder="Search layers"
+          onReset={reset}
+        />
+      </div>
+      <div className="max-h-full p-0.5 overflow-y-auto flex-grow">
+        <Accordion>{accordionEntries}</Accordion>
+      </div>
       <div className="flex flex-row justify-between">
         <Button theme="textLight">Cancel</Button>
         <Button onClick={handleApply} theme="secondary">

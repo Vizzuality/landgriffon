@@ -22,8 +22,6 @@ const THEMES = {
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   theme?: 'default' | 'inline-primary' | 'inside-unit';
-  className?: string;
-  type?: string;
   // https://github.com/tailwindlabs/heroicons/issues/64#issuecomment-859168741
   icon?: (props: React.ComponentProps<'svg'>) => JSX.Element;
   unit?: string;

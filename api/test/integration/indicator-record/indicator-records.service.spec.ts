@@ -61,7 +61,7 @@ import { MaterialRepository } from '../../../src/modules/materials/material.repo
 import { CachedDataRepository } from '../../../src/modules/cached-data/cached-data.repository';
 import * as config from 'config';
 
-describe('Indicator Records Service', () => {
+describe.skip('Indicator Records Service', () => {
   let indicatorRecordRepository: IndicatorRecordRepository;
   let indicatorRepository: IndicatorRepository;
   let h3DataRepository: H3DataRepository;

@@ -73,6 +73,7 @@ export const Anchor: React.FC<AnchorProps> = ({
   className,
   disabled,
   href,
+  icon,
   ...restProps
 }: AnchorProps) => {
   // Anchor element doesn't support disabled attribute
@@ -91,6 +92,7 @@ export const Anchor: React.FC<AnchorProps> = ({
       } as AnchorProps)}
       {...restProps}
     >
+      {icon && <span className="inline-block mr-2">{icon}</span>}
       {children}
     </a>
   );
@@ -106,6 +108,7 @@ export const AnchorLink = forwardRef<HTMLAnchorElement, AnchorProps>(
       className,
       disabled,
       href,
+      icon,
       ...restProps
     }: AnchorProps,
     ref,
@@ -115,6 +118,7 @@ export const AnchorLink = forwardRef<HTMLAnchorElement, AnchorProps>(
     if (disabled) {
       return (
         <span {...restProps} ref={ref}>
+          {icon && <span className="inline-block mr-2">{icon}</span>}
           {children}
         </span>
       );
@@ -131,6 +135,7 @@ export const AnchorLink = forwardRef<HTMLAnchorElement, AnchorProps>(
         {...restProps}
         ref={ref}
       >
+        {icon && <span className="inline-block mr-2">{icon}</span>}
         {children}
       </a>
     );
@@ -161,12 +166,7 @@ export const Button: React.FC<ButtonProps> = ({
     disabled={loading || disabled}
     {...restProps}
   >
-    {icon && theme === 'primary' && (
-      <span className="inline-flex justify-center items-center rounded-full w-5 h-5 mr-4 bg-white">
-        {icon}
-      </span>
-    )}
-    {icon && theme !== 'primary' && <span className="inline-block mr-2">{icon}</span>}
+    {icon && <span className="inline-block mr-2">{icon}</span>}
     {loading ? <Loading className="text-white" /> : children}
   </button>
 );

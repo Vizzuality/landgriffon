@@ -8,7 +8,7 @@ const AuthenticationLayout: React.FC<React.PropsWithChildren> = ({ children }) =
       <LandgriffonLogo />
     </div>
     <div className="flex flex-col justify-center flex-1 pt-12">{children}</div>
-    <Toaster position="bottom-center" />
+    <Toaster position="bottom-center" toastOptions={{ className: 'text-sm' }} />
   </div>
 );
 

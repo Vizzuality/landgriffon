@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { merge } from 'lodash';
 import Head from 'next/head';
-import { ExclamationIcon, PlusIcon } from '@heroicons/react/solid';
+import { ExclamationIcon, PlusIcon, DownloadIcon } from '@heroicons/react/solid';
 import { useDebounce } from '@react-hook/debounce';
 import { format } from 'date-fns';
 
@@ -10,11 +10,11 @@ import { useSourcingLocations, useSourcingLocationsMaterials } from 'hooks/sourc
 
 import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import DownloadMaterialsDataButton from 'containers/admin/download-materials-data-button';
-import NoDataUpload from 'containers/admin/no-data-upload';
 import NoResults from 'containers/admin/no-results';
 import UploadDataSourceModal from 'containers/admin/upload-data-source-modal';
 import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range';
-import Button from 'components/button';
+import DataUploader from 'containers/data-uploader';
+import Button, { Anchor } from 'components/button';
 import Search from 'components/search';
 
 import Table from 'components/table';
@@ -118,36 +118,33 @@ const AdminDataPage: React.FC = () => {
         <title>Manage data | Landgriffon</title>
       </Head>
 
-      {/* Toolbar */}
-      <div className="flex gap-2 w-full">
-        <div className="flex-1">
-          {!(!hasData && !isFetchingData && !isSearching) && (
-            <Search placeholder="Search table" onChange={setSearchText} />
-          )}
-        </div>
-        {!(!hasData && !isFetchingData && !isSearching) && (
-          <YearsRangeFilter
-            startYear={startYear}
-            endYear={endYear}
-            years={allYears}
-            onChange={setYearsRange}
-          />
-        )}
-        <DownloadMaterialsDataButton
-          onDownloading={() => setDataDownloadError(null)}
-          onError={setDataDownloadError}
-        />
-        <Button
-          theme="primary"
-          onClick={openUploadDataSourceModal}
-          icon={<PlusIcon className="w-4 h-4 text-primary" />}
-        >
-          Upload data source
-        </Button>
-      </div>
-
       {/* Content when empty */}
-      {!hasData && !isFetchingData && !isSearching && <NoDataUpload />}
+      {sourcingLocations.data.length === 0 && (
+        <div className="flex items-center justify-center w-full h-full">
+          <div className="space-y-10">
+            <div className="space-y-4 text-lg text-center">
+              <p className="font-semibold">
+                1. Download the Excel template and fill it with your data.
+              </p>
+              <Anchor
+                href="/files/data-template.xlsx"
+                download
+                target="_blank"
+                rel="noopener noreferrer"
+                icon={<DownloadIcon className="w-5 h-5 text-white" aria-hidden="true" />}
+              >
+                Download template
+              </Anchor>
+            </div>
+            <div className="space-y-4 text-lg text-center">
+              <p className="font-semibold">2. Upload the filled Excel file.</p>
+              <DataUploader />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* {!hasData && !isFetchingData && !isSearching && <NoDataUpload />}
       {!(!hasData && !isFetchingData && !isSearching) && (
         <div className="flex flex-col-reverse items-center justify-between md:flex-row">
           {dataDownloadError && (
@@ -157,55 +154,89 @@ const AdminDataPage: React.FC = () => {
             </div>
           )}
         </div>
-      )}
+      )} */}
 
       {/* Content when data */}
-      {!hasData && isSearching && <NoResults />}
-      <div className="mt-5">
-        {sourcingLocations && !isSourcingLocationsLoading && sourcingLocations.data.length && (
-          <div className="flex w-full justify-end mb-4">
-            <span className="text-gray-400 text-sm">
-              Last update: {format(new Date(sourcingLocations.data[0].updatedAt), 'd MMM yyyy')}
-            </span>
+      {sourcingLocations.data?.length > 0 && (
+        <>
+          <div className="flex w-full gap-2">
+            <div className="flex-1">
+              {!(!hasData && !isFetchingData && !isSearching) && (
+                <Search placeholder="Search table" onChange={setSearchText} />
+              )}
+            </div>
+            {!(!hasData && !isFetchingData && !isSearching) && (
+              <YearsRangeFilter
+                startYear={startYear}
+                endYear={endYear}
+                years={allYears}
+                onChange={setYearsRange}
+              />
+            )}
+            <DownloadMaterialsDataButton
+              onDownloading={() => setDataDownloadError(null)}
+              onError={setDataDownloadError}
+            />
+            <Button
+              theme="primary"
+              onClick={openUploadDataSourceModal}
+              icon={
+                <span className="inline-flex items-center justify-center w-5 h-5 mr-4 bg-white rounded-full">
+                  <PlusIcon className="w-4 h-4 text-primary" />
+                </span>
+              }
+            >
+              Upload data source
+            </Button>
           </div>
-        )}
-        <Table
-          theme="striped"
-          getSubRows={(row) => row.children}
-          isLoading={isFetchingData}
-          data={data}
-          onSortingChange={setSorting}
-          columns={[
-            {
-              id: 'material',
-              header: 'Material',
-              size: 280,
-              align: 'left',
-              isSticky: true,
-              enableSorting: true,
-            },
-            { id: 'businessUnit', header: 'Business Unit' },
-            { id: 't1Supplier', header: 'T1 Supplier' },
-            { id: 'producer', header: 'Producer' },
-            { id: 'locationType', header: 'Location Type' },
-            { id: 'country', header: 'Country' },
-            ...yearsColumns,
-          ]}
-          state={{
-            pagination: {
-              pageIndex: sourcingMetadata.page,
-              pageSize: sourcingMetadata.size,
-            },
-            sorting,
-          }}
-          paginationProps={{
-            itemNumber: data.length,
-            totalItems: sourcingMetadata.totalItems,
-            pageCount: sourcingMetadata.totalPages,
-          }}
-          onPaginationChange={setPagination}
-        />
-      </div>
+          {!hasData && isSearching && <NoResults />}
+          <div className="mt-5">
+            {!isSourcingLocationsLoading && (
+              <div className="flex justify-end w-full mb-4">
+                <span className="text-sm text-gray-400">
+                  Last update: {format(new Date(sourcingLocations.data[0].updatedAt), 'd MMM yyyy')}
+                </span>
+              </div>
+            )}
+            <Table
+              theme="striped"
+              getSubRows={(row) => row.children}
+              isLoading={isFetchingData}
+              data={data}
+              onSortingChange={setSorting}
+              columns={[
+                {
+                  id: 'material',
+                  header: 'Material',
+                  size: 280,
+                  align: 'left',
+                  isSticky: true,
+                  enableSorting: true,
+                },
+                { id: 'businessUnit', header: 'Business Unit' },
+                { id: 't1Supplier', header: 'T1 Supplier' },
+                { id: 'producer', header: 'Producer' },
+                { id: 'locationType', header: 'Location Type' },
+                { id: 'country', header: 'Country' },
+                ...yearsColumns,
+              ]}
+              state={{
+                pagination: {
+                  pageIndex: sourcingMetadata.page,
+                  pageSize: sourcingMetadata.size,
+                },
+                sorting,
+              }}
+              paginationProps={{
+                itemNumber: data.length,
+                totalItems: sourcingMetadata.totalItems,
+                pageCount: sourcingMetadata.totalPages,
+              }}
+              onPaginationChange={setPagination}
+            />
+          </div>
+        </>
+      )}
 
       <UploadDataSourceModal
         open={isUploadDataSourceModalOpen}

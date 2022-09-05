@@ -175,7 +175,7 @@ const AnalysisTable: React.FC = () => {
       {
         id: 'datesRangeChart',
         fieldAccessor: (row) => row.values,
-        title: `${years?.[0]}-${years?.[years?.length - 1]}`,
+        title: years?.length ? `${years[0]}-${years[years.length - 1]}` : '-',
         className: 'px-2 mx-auto',
         format: (values: TableDataType['values']) => {
           const actualData = values.map(({ year, value }) => ({

@@ -162,10 +162,10 @@ const AdminDataPage: React.FC = () => {
       {/* Content when data */}
       {!hasData && isSearching && <NoResults />}
       <div className="mt-5">
-        {sourcingLocations && !isSourcingLocationsLoading && (
+        {sourcingLocations && !isSourcingLocationsLoading && sourcingLocations.data.length && (
           <div className="flex w-full justify-end mb-4">
             <span className="text-gray-400 text-sm">
-              Last update: {format(new Date(sourcingLocations.data[0]?.updatedAt), 'd MMM yyyy')}
+              Last update: {format(new Date(sourcingLocations.data[0].updatedAt), 'd MMM yyyy')}
             </span>
           </div>
         )}

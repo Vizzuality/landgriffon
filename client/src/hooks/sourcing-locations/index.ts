@@ -22,7 +22,7 @@ type SourcingLocationResponse = {
 };
 
 const DEFAULT_QUERY_OPTIONS = {
-  placeholderData: { data: [], meta: { page: 1, size: 1, totalItems: 1, totalPages: 1 } },
+  placeholderData: { data: [], meta: { page: 1, size: 25, totalItems: 0, totalPages: 0 } },
   retry: false,
   keepPreviousData: false,
   refetchOnWindowFocus: false,
@@ -71,7 +71,11 @@ export function useSourcingLocationsMaterials(
           url: '/sourcing-locations/materials',
           params,
         })
-        .then((response) => response.data),
+        // .then((response) => response.data),
+        .then(() => ({
+          data: [],
+          meta: { page: 1, size: 1, totalItems: 1, totalPages: 1 },
+        })),
     {
       ...DEFAULT_QUERY_OPTIONS,
       ...queryOptions,

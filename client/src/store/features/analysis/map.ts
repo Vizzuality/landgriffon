@@ -11,7 +11,7 @@ const INITIAL_VIEW_STATE = {
   zoom: 2,
 };
 
-const DEFAULT_LAYER_ATTRIBUTES: Partial<Layer> = {
+const DEFAULT_LAYER_ATTRIBUTES = {
   order: 0,
   active: false,
   opacity: 0.7,

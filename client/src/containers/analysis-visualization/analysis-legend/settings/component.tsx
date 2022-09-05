@@ -67,6 +67,12 @@ interface CategorySettingsProps {
   onLayerStateChange: (id: Layer['id'], state: Partial<Layer>) => void;
 }
 
+const NoMatches = () => (
+  <div className="p-2 text-sm text-gray-500">
+    There are no layers matching your query for this category
+  </div>
+);
+
 const CategorySettings = ({
   category,
   layers,
@@ -75,9 +81,13 @@ const CategorySettings = ({
 }: CategorySettingsProps) => {
   return (
     <Accordion.Entry header={<CategoryHeader activeLayers={activeLayers} category={category} />}>
-      {layers.map((layer) => (
-        <LayerSettings onChange={onLayerStateChange} layer={layer} key={layer.id} />
-      ))}
+      {layers.length ? (
+        layers.map((layer) => (
+          <LayerSettings onChange={onLayerStateChange} layer={layer} key={layer.id} />
+        ))
+      ) : (
+        <NoMatches />
+      )}
     </Accordion.Entry>
   );
 };

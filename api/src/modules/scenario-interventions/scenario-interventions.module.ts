@@ -11,7 +11,10 @@ import { MaterialsModule } from 'modules/materials/materials.module';
 import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
 import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
-import { InterventionGeneratorService } from 'modules/scenario-interventions/services/intervention-generator.service';
+import { InterventionBuilder } from 'modules/scenario-interventions/services/intervention-builder.service';
+import { NewMaterialIntervention } from 'modules/scenario-interventions/strategies/new-material.intervention.strategy';
+import { NewSupplierLocationIntervention } from 'modules/scenario-interventions/strategies/new-supplier-location.intervention.strategy';
+import { ChangeProductionEfficiencyIntervention } from 'modules/scenario-interventions/strategies/change-production-efficiency.intervention.strategy';
 
 @Module({
   imports: [
@@ -25,7 +28,13 @@ import { InterventionGeneratorService } from 'modules/scenario-interventions/ser
     SuppliersModule,
   ],
   controllers: [ScenarioInterventionsController],
-  providers: [ScenarioInterventionsService, InterventionGeneratorService],
+  providers: [
+    ScenarioInterventionsService,
+    InterventionBuilder,
+    NewMaterialIntervention,
+    NewSupplierLocationIntervention,
+    ChangeProductionEfficiencyIntervention,
+  ],
   exports: [ScenarioInterventionsService],
 })
 export class ScenarioInterventionsModule {}

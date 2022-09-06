@@ -123,6 +123,11 @@ export const Legend: React.FC = () => {
         )}
         <div className="relative">
           <ToggleShowLegendButton showLegend={showLegend} toggleLegend={handleShowLegend} />
+          {activeLayerNumber && !showLegend && (
+            <div className="absolute bottom-0 right-0 w-4 h-4 m-auto text-xs font-semibold text-white rounded-full translate-x-1/3 translate-y-1/3 bg-primary">
+              <div className="m-auto -translate-y-px w-fit">{activeLayerNumber}</div>
+            </div>
+          )}
         </div>
       </div>
       <Modal

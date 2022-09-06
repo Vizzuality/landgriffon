@@ -14,7 +14,6 @@ module.exports = {
       fontSize: {
         xs: '0.75rem', // 12px
         '2xs': '0.625rem', // 10px
-        '3xs': '0.5rem', // 8px
       },
       height: {
         'screen-minus-header': "calc(100vh - theme('spacing.16'))",

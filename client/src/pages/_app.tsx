@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 import { QueryClient, QueryClientProvider, Hydrate } from '@tanstack/react-query';
 import { OverlayProvider } from '@react-aria/overlays';
@@ -12,8 +12,6 @@ import type { AppProps } from 'next/app';
 import 'styles/globals.css';
 import type { NextPage } from 'next';
 import TitleTemplate from 'utils/titleTemplate';
-
-const queryClient = new QueryClient();
 
 export type Layout = React.FC<React.PropsWithChildren>;
 
@@ -28,6 +26,7 @@ type AppPropsWithLayout = AppProps & {
 
 const MyApp: NextPage<AppPropsWithLayout> = ({ Component, pageProps }) => {
   const store = useMemo(() => initStore(pageProps.query), [pageProps.query]);
+  const [queryClient] = useState(() => new QueryClient());
 
   return (
     <>

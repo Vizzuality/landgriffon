@@ -44,9 +44,9 @@ export const LegendItem = ({
           </div>
         )}
         {name && (
-          <div className={classNames('w-full flex', { hidden: isLoading })}>
+          <div className={classNames('w-full flex text-gray-500', { hidden: isLoading })}>
             <div className="flex items-start justify-between flex-grow">
-              <div className="max-w-[210px] text-sm text-gray-500 flex flex-row justify-start gap-x-1">
+              <div className="max-w-[210px] text-sm flex flex-row justify-start gap-x-1">
                 <div className="max-w-full">{name}</div>
               </div>
               {showToolbar && info && (
@@ -61,9 +61,9 @@ export const LegendItem = ({
           </div>
         )}
         {!isLoading && children && (
-          <div className="flex flex-row gap-2">
+          <div className="flex flex-row gap-2 text-gray-500">
             <div className="flex-grow min-w-0">{children}</div>
-            {unit && <div className="-mt-0.5 w-8 text-gray-500 text-3xs">({unit})</div>}
+            {unit && <div className="-mt-0.5 w-8 text-2xs">({unit})</div>}
           </div>
         )}
       </div>

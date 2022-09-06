@@ -6,7 +6,7 @@ export type LegendTypeCategoricalProps = {
   items: Legend['items'];
 };
 
-export const LegendTypeCategorical: React.FC<LegendTypeCategoricalProps> = ({
+export const LegendTypeCategorical = ({
   className = '',
   items = [],
 }: LegendTypeCategoricalProps) => {

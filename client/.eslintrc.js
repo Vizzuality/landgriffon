@@ -1,5 +1,4 @@
 module.exports = {
-  plugins: ['@typescript-eslint', 'prettier'],
   extends: [
     'next/core-web-vitals',
     'plugin:@typescript-eslint/recommended',
@@ -11,5 +10,11 @@ module.exports = {
     'no-console': ['warn'],
     'no-debugger': ['warn'],
     '@typescript-eslint/consistent-type-imports': ['warn'],
+    '@typescript-eslint/no-unused-vars': [
+      'warn',
+      {
+        ignoreRestSiblings: true,
+      },
+    ],
   },
 };

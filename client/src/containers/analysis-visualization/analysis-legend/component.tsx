@@ -12,6 +12,7 @@ import classNames from 'classnames';
 import { ChevronDoubleRightIcon } from '@heroicons/react/solid';
 import Settings from './settings';
 import Modal from 'components/modal';
+import SandwichIcon from 'components/icons/sandwich';
 
 const sortByOrder: (layers: Record<string, Layer>) => Layer[] = (layers) => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -31,9 +32,13 @@ export const Legend: React.FC = () => {
 
   const { layers } = useAppSelector(analysisMap);
 
-  const activeContextualLayers = useMemo(
-    () => Object.values(layers).filter((l) => l.isContextual && l.active).length,
+  const activeLayerNumber = useMemo(
+    () => Object.values(layers).filter((l) => l.active).length,
     [layers],
+  );
+  const activeContextualLayers = useMemo(
+    () => (layers['impact']?.active ? activeLayerNumber - 1 : activeLayerNumber),
+    [activeLayerNumber, layers],
   );
 
   useEffect(() => {
@@ -116,17 +121,9 @@ export const Legend: React.FC = () => {
             </div>
           </div>
         )}
-        <button
-          type="button"
-          className="relative flex items-center justify-center w-full h-10 bg-white border border-gray-100 rounded-lg p-1.5"
-          onClick={handleShowLegend}
-        >
-          <ChevronDoubleRightIcon
-            className={classNames('transition-transform', {
-              'rotate-180': showLegend,
-            })}
-          />
-        </button>
+        <div className="relative">
+          <ToggleShowLegendButton showLegend={showLegend} toggleLegend={handleShowLegend} />
+        </div>
       </div>
       <Modal
         size="fit"
@@ -137,6 +134,36 @@ export const Legend: React.FC = () => {
         <Settings onApply={dismissLegendSettings} categories={layersByCategory || []} />
       </Modal>
     </>
+  );
+};
+
+const ToggleShowLegendButton = ({
+  showLegend,
+  toggleLegend,
+}: {
+  showLegend: boolean;
+  toggleLegend: () => void;
+}) => {
+  return (
+    <button
+      type="button"
+      className={classNames(
+        'transition-[background] relative flex items-center justify-center w-full h-10 bg-white border rounded-lg p-1.5 border-gray-100 hover:border-primary hover:bg-primary hover:bg-opacity-50 hover:text-black group',
+        {
+          'text-primary': showLegend,
+        },
+      )}
+      onClick={toggleLegend}
+    >
+      <ChevronDoubleRightIcon
+        className={classNames('transition-transform w-full hidden group-hover:block', {
+          'rotate-180': showLegend,
+        })}
+      />
+      <div className="group-hover:hidden">
+        <SandwichIcon />
+      </div>
+    </button>
   );
 };
 

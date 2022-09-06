@@ -16,7 +16,7 @@ const DragHandle: React.FC<HTMLAttributes<HTMLDivElement>> = ({ className, ...pr
     <div
       className={cx(
         className,
-        'p-0.5 pt-1 text-gray-600 h-fit',
+        'p-0.5 pt-1 text-gray-400 h-fit',
         // 'flex flex-row w-[0.625rem] p-0.5 pt-1 h-[1.125rem]',
         // 'grid grid-cols-2 grid-rows-3 gap-x-0.5 gap-y-[0.1875rem] h-fit',
         {

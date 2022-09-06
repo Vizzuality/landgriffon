@@ -99,7 +99,9 @@ const FUSE_OPTIONS: Fuse.IFuseOptions<CategoryWithLayers['layers'][number]> = {
 };
 
 const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onApply }) => {
-  const { layers: initialLayerState } = useAppSelector(analysisMap);
+  const {
+    layers: { impact, ...initialLayerState },
+  } = useAppSelector(analysisMap);
 
   const [localLayerState, setLocalLayerState] = useState(() => initialLayerState);
 
@@ -164,6 +166,11 @@ const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onAppl
     [categories, handleLayerStateChange, layerStateByCategory, localLayerState],
   );
 
+  const localSelectedLayerNumber = useMemo(
+    () => Object.values(localLayerState).filter((l) => l.active).length,
+    [localLayerState],
+  );
+
   return (
     <div className="h-[400px] w-96 flex flex-col items-stretch gap-5">
       <div className="w-full">
@@ -173,6 +180,9 @@ const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onAppl
           placeholder="Search layers"
           onReset={reset}
         />
+      </div>
+      <div className="text-sm text-right underline text-primary underline-offset-[3px]">
+        Selected layers ({localSelectedLayerNumber})
       </div>
       <div className="max-h-full p-0.5 overflow-y-auto flex-grow">
         <Accordion>{accordionEntries}</Accordion>

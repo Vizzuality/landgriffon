@@ -33,7 +33,7 @@ const IndicatorsFilter: React.FC = () => {
   }, [data, visualizationMode]);
 
   useEffect(() => {
-    if (isFetched && options.length) {
+    if (isFetched && options.length && !options.find((o) => o.value === filters.indicator?.value)) {
       dispatch(
         setFilter({
           id: 'indicator',
@@ -41,7 +41,7 @@ const IndicatorsFilter: React.FC = () => {
         }),
       );
     }
-  }, [options, isFetched, dispatch]);
+  }, [options, isFetched, dispatch, filters.indicator]);
 
   const handleChange: SelectProps['onChange'] = useCallback(
     (selected) => {

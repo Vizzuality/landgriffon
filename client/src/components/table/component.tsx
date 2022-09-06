@@ -12,7 +12,7 @@ import Cell, { HeaderCell } from './cell';
 import type { ColumnDefinition } from './column';
 import TableRow, { TableHeaderRow } from './row';
 
-export interface TableProps<T = unknown>
+export interface TableProps<T>
   extends Omit<TableOptions<T>, 'columns' | 'getCoreRowModel' | 'pageCount'> {
   columns: ColumnDefinition<T, unknown>[];
   isLoading?: boolean;

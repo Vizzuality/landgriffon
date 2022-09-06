@@ -37,27 +37,29 @@ export const LegendItem = ({
       })}
     >
       <DragHandle className="invisible group-hover:visible" />
-      <div className="flex-grow">
+      <div className="flex-grow space-y-2">
         {isLoading && (
           <div className="flex justify-center w-full align-center">
             <Loading />
           </div>
         )}
         {name && (
-          <div className={classNames('w-full flex text-gray-500', { hidden: isLoading })}>
-            <div className="flex items-start justify-between flex-grow">
-              <div className="max-w-[210px] text-sm flex flex-row justify-start gap-x-1">
-                <div className="max-w-full">{name}</div>
-              </div>
-              {showToolbar && info && (
-                <div className="flex items-center">
-                  <div className="flex items-center space-x-1 mt-0.5">
-                    <OpacityControl opacity={opacity} onChange={onChangeOpacity} />
-                    <InfoToolTip icon="outline" info={info} />
-                  </div>
-                </div>
-              )}
+          <div
+            className={classNames('flex items-start justify-between flex-grow', {
+              hidden: isLoading,
+            })}
+          >
+            <div className="flex flex-row justify-start text-sm gap-x-1">
+              <div className="max-w-full">{name}</div>
             </div>
+            {showToolbar && info && (
+              <div className="flex flex-row items-center">
+                <div className="flex items-center space-x-1 mt-0.5">
+                  <OpacityControl opacity={opacity} onChange={onChangeOpacity} />
+                  <InfoToolTip icon="outline" info={info} />
+                </div>
+              </div>
+            )}
           </div>
         )}
         {!isLoading && children && (

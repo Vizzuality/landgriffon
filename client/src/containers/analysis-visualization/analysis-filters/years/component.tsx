@@ -69,9 +69,11 @@ const YearsFilter: React.FC = () => {
   // Update filters when data changes
   useEffect(() => {
     if (data?.length && !isLoading) {
-      dispatch(setFilters({ startYear: data[data.length - 1], endYear: null }));
+      dispatch(
+        setFilters({ ...(startYear ? {} : { startYear: data[data.length - 1] }), endYear: null }),
+      );
     }
-  }, [dispatch, isLoading, data]);
+  }, [dispatch, isLoading, data, startYear]);
 
   return (
     <Select

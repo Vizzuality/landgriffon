@@ -45,7 +45,7 @@ const MoreFilters: React.FC = () => {
   );
 
   // Initial state from redux
-  const [selectedFilters, setSelectedFilters] = useState<MoreFiltersState>(moreFilters);
+  const [selectedFilters, setSelectedFilters] = useState(moreFilters);
 
   const materialIds = useMemo(
     () => selectedFilters.materials.map(({ value }) => value),
@@ -161,7 +161,7 @@ const MoreFilters: React.FC = () => {
           },
         })}
       >
-        <div className="w-80 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 ">
+        <div className="rounded-lg shadow-lg w-80 ring-1 ring-black ring-opacity-5 ">
           <div className="relative p-4 bg-white rounded-lg">
             <div className="flex justify-between mb-4">
               <div>Filter by</div>

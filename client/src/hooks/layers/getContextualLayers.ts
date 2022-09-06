@@ -28,8 +28,8 @@ const useContextualLayers = (options: UseQueryOptions<LayerCategoriesApiResponse
     () =>
       apiRawService
         .get<LayerCategoriesApiResponse>('/contextual-layers/categories')
-        .then(({ data }) => data.data),
-    // TODO: remove categories without layers just in case
+        .then(({ data }) => data.data)
+        .then((data) => data.filter((category) => category.layers.length > 0)),
     {
       refetchOnMount: false,
       refetchOnWindowFocus: true,

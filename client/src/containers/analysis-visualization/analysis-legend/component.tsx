@@ -111,7 +111,7 @@ export const Legend: React.FC = () => {
                     </span>
                     {activeContextualLayers > 0 && (
                       <div className="w-4 h-4 font-semibold text-white rounded-full bg-primary text-2xs">
-                        <div className="my-auto translate-y-0.5">{activeContextualLayers}</div>
+                        <div className="m-auto translate-y-px w-fit">{activeContextualLayers}</div>
                       </div>
                     )}
                   </button>

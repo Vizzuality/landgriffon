@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 import { QueryClient, QueryClientProvider, Hydrate } from '@tanstack/react-query';
 import { OverlayProvider } from '@react-aria/overlays';
@@ -25,7 +25,7 @@ type AppPropsWithLayout = AppProps & {
 };
 
 const MyApp: NextPage<AppPropsWithLayout> = ({ Component, pageProps }) => {
-  const store = useMemo(() => initStore(pageProps.query), [pageProps.query]);
+  const [store] = useState(() => initStore(pageProps.query));
   const [queryClient] = useState(() => new QueryClient());
 
   return (

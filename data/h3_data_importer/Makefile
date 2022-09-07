@@ -7,7 +7,6 @@
 PARALLELIZATION_FACTOR=10
 
 WORKDIR_MAPSPAM=data/mapspam
-WORKDIR_EARTHSTAT=data/earthstat
 WORKDIR_GLW3=data/glw3
 WORKDIR_WATER_FOOTPRINT=data/waterFootprint
 WORKDIR_BIODIVERSITY=data/biodiversity
@@ -24,7 +23,7 @@ all:
 	make -j 2 crop indicators
 
 crop:
-	make -j 2 convert-mapspam-crop-production convert-earthstat-crop-production convert-earthstat-crop-harvest convert-mapspam-crop-harvest convert-glw3-livestock
+	make -j 2 convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock
 
 # NOTE: The ingestion below is commented in order to avoid ingesting data, we don't have indicator for in the database yet
 # once the new indicators have been defined and ingested we will need to update the indicator code in for each on the indicator commented below and allow the ingestion.
@@ -75,86 +74,6 @@ convert-mapspam-crop-production: extract-mapspam-crop-production
 
 convert-mapspam-crop-harvest: extract-mapspam-crop-harvest
 	python tiff_folder_to_h3_table.py $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha h3_grid_spam2010v2r0_global_ha harvest_area spam 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
-
-
-##############################################
-# Earthstat crop production and harvest area #
-##############################################
-
-# Download earthstat crop production
-download-earthstat-crop-production:
-	mkdir -p $(WORKDIR_EARTHSTAT)
-	wget -q -O $(WORKDIR_EARTHSTAT)/HarvestedAreaYield175Crops_Geotiff.zip https://s3.us-east-2.amazonaws.com/earthstatdata/HarvestedAreaYield175Crops_Geotiff.zip
-
-# Unzip to folder
-# Only extract the files that contain production. Set the no data to 0 as the mapspam datasets.
-extract-earthstat-crop-production: download-earthstat-crop-production
-	mkdir -p $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod
-	rm -rf $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/*
-	unzip -j -o -u $(WORKDIR_EARTHSTAT)/HarvestedAreaYield175Crops_Geotiff.zip *_Production.tif -d $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod
-	gdal_calc.py --calc "A+B" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/papaya_Production.tif --A_band 1 -B $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/watermelon_Production.tif --outfile $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/melonpapaya_Production.tif
-	gdal_calc.py --calc "A+B+C+D+E+F+G+H" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/almond_Production.tif --A_band 1 \
-	-B $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/brazil_Production.tif -C $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/cashew_Production.tif -D $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/chestnut_Production.tif -E $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/hazelnut_Production.tif \
-	-F $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/nutnes_Production.tif -G $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/pistachio_Production.tif -H $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/walnut_Production.tif --outfile $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/allnuts_Production.tif
-	gdal_calc.py --calc "A+B+C+D+E+F+G+H+I+J" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/coffee_Production.tif --A_band 1 -B $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/tea_Production.tif -C $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/mate_Production.tif \
-	-D $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/pepper_Production.tif -E $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/vanilla_Production.tif -F $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/cinnamon_Production.tif -G $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/clove_Production.tif \
-	-H $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/nutmeg_Production.tif -I $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/aniseetc_Production.tif -J $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/ginger_Production.tif --outfile $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/allcoffee_Production.tif
-	gdal_calc.py --calc "A+B+C+D+E+F+G+H+I" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/wheat_Production.tif --A_band 1 -B $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/rye_Production.tif -C $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/barley_Production.tif \
-	-D $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/oats_Production.tif -E $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/maize_Production.tif -F $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/rice_Production.tif -G $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/sorghum_Production.tif \
-	-H $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/buckwheat_Production.tif -I $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/cerealnes_Production.tif --outfile $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/allcereals_Production.tif
-	gdal_calc.py --calc "A+B+C+D" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/apricot_Production.tif --A_band 1 -B $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/cherry_Production.tif -C $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/peachetc_Production.tif \
-	-D $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/plum_Production.tif --outfile $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/allappricot_Production.tif
-	gdal_calc.py --calc "A+B+C" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/apple_Production.tif --A_band 1 -B $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/pear_Production.tif -C $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/quince_Production.tif \
-	--outfile $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/allapple_Production.tif
-	gdal_calc.py --calc "A+B+C+D+E+F+G+H+I" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/allnuts_Production.tif --A_band 1 -B $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/banana_Production.tif -C $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/fig_Production.tif \
-	-D $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/citrusnes_Production.tif -E $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/grape_Production.tif -F $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/melonpapaya_Production.tif -G $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/allapple_Production.tif \
-	-H $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/allappricot_Production.tif -I $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/fruitnes_Production.tif --outfile $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/fruitnuts_Production.tif
-	for tiffile in $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/*.tif; do \
-		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
-		output_file="$(WORKDIR_EARTHSTAT)/earthstat2000_global_prod/earthstat2000_global_$${table_name}.tif";\
-		gdal_translate -a_nodata 0 -of GTiff "$${tiffile}" "$${output_file}";\
-		rm -f "$${tiffile}";\
-	done
-
-# Unzip to folder
-# Only extract the files that contain harvest area fraction. Set the no data to 0 as the mapspam datasets.
-extract-earthstat-crop-harvest: download-earthstat-crop-production
-	mkdir -p $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha
-	rm -rf $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/*
-	unzip -j -o -u $(WORKDIR_EARTHSTAT)/HarvestedAreaYield175Crops_Geotiff.zip *_HarvestedAreaHectares.tif -d $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha
-	gdal_calc.py --calc "A+B" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/papaya_HarvestedAreaHectares.tif --A_band 1 -B $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/watermelon_HarvestedAreaHectares.tif --outfile $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/melonpapaya_HarvestedAreaHectares.tif
-	gdal_calc.py --calc "A+B+C+D+E+F+G+H" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/almond_HarvestedAreaHectares.tif --A_band 1 \
-	-B $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/brazil_HarvestedAreaHectares.tif -C $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/cashew_HarvestedAreaHectares.tif -D $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/chestnut_HarvestedAreaHectares.tif -E $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/hazelnut_HarvestedAreaHectares.tif \
-	-F $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/nutnes_HarvestedAreaHectares.tif -G $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/pistachio_HarvestedAreaHectares.tif -H $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/walnut_HarvestedAreaHectares.tif --outfile $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/allnuts_HarvestedAreaHectares.tif
-	gdal_calc.py --calc "A+B+C+D+E+F+G+H+I+J" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/coffee_HarvestedAreaHectares.tif --A_band 1 -B $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/tea_HarvestedAreaHectares.tif -C $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/mate_HarvestedAreaHectares.tif \
-	-D $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/pepper_HarvestedAreaHectares.tif -E $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/vanilla_HarvestedAreaHectares.tif -F $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/cinnamon_HarvestedAreaHectares.tif -G $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/clove_HarvestedAreaHectares.tif \
-	-H $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/nutmeg_HarvestedAreaHectares.tif -I $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/aniseetc_HarvestedAreaHectares.tif -J $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/ginger_HarvestedAreaHectares.tif --outfile $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/allcoffee_HarvestedAreaHectares.tif
-	gdal_calc.py --calc "A+B+C+D+E+F+G+H+I" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/wheat_HarvestedAreaHectares.tif --A_band 1 -B $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/rye_HarvestedAreaHectares.tif -C $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/barley_HarvestedAreaHectares.tif \
-	-D $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/oats_HarvestedAreaHectares.tif -E $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/maize_HarvestedAreaHectares.tif -F $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/rice_HarvestedAreaHectares.tif -G $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/sorghum_HarvestedAreaHectares.tif \
-	-H $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/buckwheat_HarvestedAreaHectares.tif -I $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/cerealnes_HarvestedAreaHectares.tif --outfile $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/allcereals_HarvestedAreaHectares.tif
-	gdal_calc.py --calc "A+B+C+D" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/apricot_HarvestedAreaHectares.tif --A_band 1 -B $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/cherry_HarvestedAreaHectares.tif -C $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/peachetc_HarvestedAreaHectares.tif \
-	-D $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/plum_HarvestedAreaHectares.tif --outfile $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/allappricot_HarvestedAreaHectares.tif
-	gdal_calc.py --calc "A+B+C" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/apple_HarvestedAreaHectares.tif --A_band 1 -B $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/pear_HarvestedAreaHectares.tif -C $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/quince_HarvestedAreaHectares.tif \
-	--outfile $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/allapple_HarvestedAreaHectares.tif
-	gdal_calc.py --calc "A+B+C+D+E+F+G+H+I" --format GTiff --type Float32 -A $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/allnuts_HarvestedAreaHectares.tif --A_band 1 -B $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/banana_HarvestedAreaHectares.tif -C $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/fig_HarvestedAreaHectares.tif \
-	-D $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/citrusnes_HarvestedAreaHectares.tif -E $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/grape_HarvestedAreaHectares.tif -F $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/melonpapaya_HarvestedAreaHectares.tif -G $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/allapple_HarvestedAreaHectares.tif \
-	-H $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/allappricot_HarvestedAreaHectares.tif -I $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/fruitnes_HarvestedAreaHectares.tif --outfile $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/fruitnuts_HarvestedAreaHectares.tif
-	for tiffile in $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/*.tif; do \
-		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
-		output_file="$(WORKDIR_EARTHSTAT)/earthstat2000_global_ha/earthstat2000_global_$${table_name}.tif";\
-		gdal_translate -a_nodata 0 -of GTiff "$${tiffile}" "$${output_file}";\
-		rm -f "$${tiffile}";\
-	done
-
-# <table>: <tiff_folder>
-# Convert the tiffs in the folder to h3indexes at resolution 6
-# and import to a table called "h3_grid_earthstat2000_global_prod"
-convert-earthstat-crop-production: extract-earthstat-crop-production
-	python tiff_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/earthstat2000_global_prod h3_grid_earthstat2000_global_prod production es 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
-
-# and import to a table called "h3_grid_earthstat2000_global_ha"
-convert-earthstat-crop-harvest: extract-earthstat-crop-harvest
-	python tiff_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/earthstat2000_global_ha h3_grid_earthstat2000_global_ha harvest_area es 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 # DOWNLOAD PASTURE AND CROPLAND DATASET
  #https://s3.us-east-2.amazonaws.com/earthstatdata/CroplandPastureArea2000_Geotiff.zip

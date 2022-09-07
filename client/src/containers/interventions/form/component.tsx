@@ -132,6 +132,8 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
 }) => {
   const { query } = useRouter();
 
+  console.log('intervention', intervention);
+
   const {
     register,
     control,
@@ -141,9 +143,85 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     handleSubmit,
     formState: { errors },
     clearErrors,
+    getValues,
   } = useForm({
     resolver: yupResolver(schemaValidation),
+    ...(intervention && {
+      defaultValues: {
+        title: intervention?.title,
+        scenarioId: null,
+        percentage: intervention.percentage,
+        startYear: {
+          label: intervention.startYear.toString(),
+          value: intervention.startYear,
+        },
+        materialIds: intervention.replacedMaterials.map(({ id, name }) => ({
+          label: name,
+          value: id,
+        })),
+        businessUnitIds: intervention.replacedBusinessUnits.map(({ id, name }) => ({
+          label: name,
+          value: id,
+        })),
+        adminRegionIds: intervention.replacedAdminRegions.map(({ id, name }) => ({
+          label: name,
+          value: id,
+        })),
+        supplierIds: intervention.replacedSuppliers.map(({ id, name }) => ({
+          label: name,
+          value: id,
+        })),
+        interventionType: intervention.type,
+        newMaterialId: [
+          {
+            label: intervention.newMaterial?.name,
+            value: intervention.newMaterial?.id,
+          },
+        ],
+        newLocationType: [
+          {
+            // label: intervention.newLocationType,
+            value: intervention.newLocationType.replace(/(\s)/g, '-'),
+          },
+        ],
+        // New location
+        newLocationCountryInput: intervention.newAdminRegion
+          ? [
+              {
+                label: intervention.newAdminRegion.name,
+                value: intervention.newAdminRegion.id,
+              },
+            ]
+          : [],
+        newLocationAddressInput: intervention?.newLocationAddressInput || null,
+        // New supplier/producer
+        newT1SupplierId: intervention?.newT1Supplier
+          ? [
+              {
+                label: intervention.newT1Supplier.name,
+                value: intervention.newT1Supplier.id,
+              },
+            ]
+          : [],
+        newProducerId: intervention?.newProducer
+          ? [
+              {
+                label: intervention.newProducer.name,
+                value: intervention.newProducer.id,
+              },
+            ]
+          : [],
+        // coefficients
+        DF_LUC_T: intervention?.newIndicatorCoefficients?.DF_LUC_T || 0,
+        UWU_T: intervention?.newIndicatorCoefficients?.UWU_T || 0,
+        BL_LUC_T: intervention?.newIndicatorCoefficients?.BL_LUC_T || 0,
+        GHG_LUC_T: intervention?.newIndicatorCoefficients?.GHG_LUC_T || 0,
+      },
+    }),
   });
+
+  console.log('intervention', intervention);
+  console.log('values', getValues());
 
   const closeSupplierRef = useRef<() => void>(null);
   const closeImpactsRef = useRef<() => void>(null);
@@ -154,6 +232,12 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   const currentSupplierIds = watch('supplierIds');
   const currentInterventionType = watch('interventionType');
   const locationType = watch('newLocationType');
+  const currentT1SupplierId = watch('newT1SupplierId');
+  const currentProducerId = watch('newProducerId');
+  const DF_LUC_T = watch('DF_LUC_T');
+  const UWU_T = watch('UWU_T');
+  const BL_LUC_T = watch('BL_LUC_T');
+  const GHG_LUC_T = watch('GHG_LUC_T');
 
   // Suppliers
   const { data: suppliers, isLoading: isLoadingSuppliers } = useSuppliersTypes({
@@ -218,10 +302,12 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   );
 
   useEffect(() => {
-    if (optionsYears?.length) {
+    // ? defaults to latest year unless the user is editing an intervention,
+    // ? in that case, the start year will come from the intervention itself.
+    if (optionsYears?.length && !intervention) {
       setValue('startYear', optionsYears[optionsYears.length - 1]);
     }
-  }, [optionsYears, setValue]);
+  }, [optionsYears, setValue, intervention]);
 
   useEffect(() => {
     if (currentInterventionType === InterventionTypes.SupplierLocation) {
@@ -240,10 +326,13 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     }
 
     // * resets "impacts per ton" coefficients whenever the intervention type changes
-    resetField('DF_LUC_T', { defaultValue: 0 });
-    resetField('UWU_T', { defaultValue: 0 });
-    resetField('BL_LUC_T', { defaultValue: 0 });
-    resetField('GHG_LUC_T', { defaultValue: 0 });
+
+    if (!intervention) {
+      resetField('DF_LUC_T', { defaultValue: 0 });
+      resetField('UWU_T', { defaultValue: 0 });
+      resetField('BL_LUC_T', { defaultValue: 0 });
+      resetField('GHG_LUC_T', { defaultValue: 0 });
+    }
 
     // * resets supplier and producer info whenever the intervention type changes
     resetField('newT1SupplierId');
@@ -258,7 +347,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     if (closeImpactsRef.current !== null) {
       closeImpactsRef.current();
     }
-  }, [currentInterventionType, resetField, closeSupplierRef]);
+  }, [currentInterventionType, resetField, closeSupplierRef, intervention]);
 
   useEffect(() => {
     clearErrors([
@@ -303,6 +392,16 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     });
     return () => subscription.unsubscribe();
   }, [resetField, setValue, watch]);
+
+  const areCoefficientsEdited = useMemo(
+    () => DF_LUC_T !== 0 || GHG_LUC_T !== 0 || UWU_T !== 0 || BL_LUC_T !== 0,
+    [DF_LUC_T, GHG_LUC_T, UWU_T, BL_LUC_T],
+  );
+
+  const areSupplierEdited = useMemo(
+    () => Boolean(currentT1SupplierId.length || currentProducerId.length),
+    [currentT1SupplierId, currentProducerId],
+  );
 
   return (
     <form
@@ -716,7 +815,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                           )}
                         </Disclosure.Button>
                       </div>
-                      <Disclosure.Panel>
+                      <Disclosure.Panel static={areSupplierEdited}>
                         <div className="space-y-4">
                           <div>
                             <label className={LABEL_CLASSNAMES}>Tier 1 supplier</label>
@@ -801,7 +900,10 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                       </Disclosure.Button>
                     </div>
                     <Disclosure.Panel
-                      static={currentInterventionType === InterventionTypes.Efficiency}
+                      static={
+                        currentInterventionType === InterventionTypes.Efficiency ||
+                        areCoefficientsEdited
+                      }
                     >
                       <div className="space-y-4">
                         <div>

@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -39,6 +40,8 @@ export class ScenarioInterventionsService extends AppBaseService<
     'updatedById',
     'status',
   ];
+
+  logger: Logger = new Logger(ScenarioInterventionsService.name);
 
   constructor(
     @InjectRepository(ScenarioInterventionRepository)
@@ -103,6 +106,8 @@ export class ScenarioInterventionsService extends AppBaseService<
     dto: CreateScenarioInterventionDto,
   ): Promise<Partial<ScenarioIntervention>> {
     // Validate new location. If it's validated, get the geolocated info. If not, throw an exception
+
+    this.logger.log('Creating new Intervention...');
 
     const { adminRegionId, geoRegionId, locationWarning } =
       (await this.validateNewLocation(dto)) ||
@@ -176,6 +181,7 @@ export class ScenarioInterventionsService extends AppBaseService<
         { adminRegionId, geoRegionId, locationWarning },
       );
 
+    this.logger.log(`Calculating new Impact for Intervention...`);
     await this.interventionBuilder.calculateNewImpactForNewLocations(
       newLocations,
       dto.newIndicatorCoefficients,
@@ -190,6 +196,8 @@ export class ScenarioInterventionsService extends AppBaseService<
      */
     const savedIntervention: ScenarioIntervention =
       await this.scenarioInterventionRepository.save(newIntervention);
+
+    this.logger.log(`New Intervention with Id: ${savedIntervention.id} saved.`);
 
     return {
       id: savedIntervention.id,

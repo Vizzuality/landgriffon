@@ -41,7 +41,7 @@ const optionSchema = yup.object({
 });
 
 const schemaValidation = yup.object({
-  title: yup.string().max(140).required(),
+  title: yup.string().max(60).required(),
   interventionType: yup.string().required(),
   startYear: optionSchema.required(),
   percentage: yup.number().moreThan(0).max(100).required(),

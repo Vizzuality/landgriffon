@@ -30,7 +30,7 @@ export class CreateScenarioInterventionDto {
   @IsString()
   @IsOptional()
   @MinLength(2)
-  @MaxLength(40)
+  @MaxLength(60)
   @ApiProperty({
     description: 'Title of the Intervention',
     type: String,

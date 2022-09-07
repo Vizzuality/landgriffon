@@ -122,7 +122,17 @@ export function useIntervention({
           params,
         })
         .then(({ data: responseData }) => responseData.data),
-    { ...DEFAULT_QUERY_OPTIONS, ...options, enabled: !!interventionId },
+    {
+      ...DEFAULT_QUERY_OPTIONS,
+      ...options,
+      enabled: !!interventionId,
+      // select: (intervention: Intervention) => ({
+      //   ...intervention,
+      //   //! As of date, the API returns this value with spaces instead of hyphens, so it needs to be parsed previously.
+      //   //! This can be removed once the change is done in the API
+      //   // newLocationType: intervention.newLocationType.replace(/(\s)/g, '-'),
+      // }),
+    },
   );
   return query as UseQueryResult<Intervention>;
 }

@@ -5,7 +5,6 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useQueryClient } from '@tanstack/react-query';
-import { Menu } from '@headlessui/react';
 import { XIcon, PlusIcon, DotsVerticalIcon } from '@heroicons/react/solid';
 
 import { useScenario, useUpdateScenario } from 'hooks/scenarios';
@@ -184,7 +183,12 @@ const UpdateScenarioPage: React.FC = () => {
                                 <a className="block p-2 text-sm">Edit</a>
                               </Link>
                             </Dropdown.Item> */}
-                            <Menu.Item>
+                            <Dropdown.Item>
+                              <Link
+                                href={`/admin/scenarios/${data.id}/interventions/${intervention.id}/edit`}
+                              >
+                                <a className="block p-2 text-sm">Edit</a>
+                              </Link>
                               <button
                                 type="button"
                                 className="block p-2 text-sm"
@@ -192,7 +196,7 @@ const UpdateScenarioPage: React.FC = () => {
                               >
                                 Delete
                               </button>
-                            </Menu.Item>
+                            </Dropdown.Item>
                           </Dropdown.Items>
                         </Dropdown>
                       </div>

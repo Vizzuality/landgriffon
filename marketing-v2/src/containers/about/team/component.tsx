@@ -39,7 +39,7 @@ const Team: React.FC = () => {
                 <Icon icon={TEAM_SVG} className="w-16 h-16" />
               </div>
               <h3 className="text-3xl font-medium text-white font-display">
-                Our team brings diverse expertize to ensure the best service for your business.
+                Our team brings diverse expertise to ensure the best service for your business.
               </h3>
             </FadeIn>
 

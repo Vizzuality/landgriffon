@@ -22,16 +22,15 @@ const Step06: React.FC = () => {
 
         <div className="space-y-5">
           <p className="text-xl">
-            Based on a deeper understanding of your supply chain and the most effective
-            opportunities for action, you can improve your environmental impact while continuing to
-            evolve for the future.
+            With a deeper understanding of your supply chain and the opportunities for action, you
+            can improve your environmental impact and evolve for the future.
           </p>
         </div>
       </div>
 
       <div className="w-full space-y-20">
         <div className="space-y-10">
-          <h4 className="text-2xl border-b border-black pb-2.5">Improve measurements. </h4>
+          <h4 className="text-2xl border-b border-black pb-2.5">Grow your knowledge. </h4>
 
           <ul className="space-y-5 font-light">
             <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
@@ -55,9 +54,7 @@ const Step06: React.FC = () => {
         </div>
 
         <div className="space-y-10">
-          <h4 className="text-2xl border-b border-black pb-2.5">
-            Streamline or expand the software.
-          </h4>
+          <h4 className="text-2xl border-b border-black pb-2.5">Optimize your tools.</h4>
 
           <ul className="space-y-5 font-light">
             <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
@@ -68,7 +65,7 @@ const Step06: React.FC = () => {
             <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
               <p>
                 <strong className="font-semibold">Integrate </strong> with internal systems for more
-                effective use across your operations
+                effective use across your operations.
               </p>
             </li>
           </ul>
@@ -76,12 +73,12 @@ const Step06: React.FC = () => {
 
         <div className="space-y-10">
           <h4 className="text-2xl border-b border-black pb-2.5">
-            Make ambitious but achievable goals.
+            Make ambitious and achievable goals.
           </h4>
 
           <ul className="space-y-5 font-light">
             <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
-              <p>Revise targets and KPIs to match your plan of action</p>
+              <p>Set targets and KPIs to make the change that’s needed.</p>
             </li>
           </ul>
         </div>

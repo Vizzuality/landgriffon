@@ -20,7 +20,7 @@ const Step01: React.FC = () => {
 
         <div className="space-y-5">
           <p className="text-xl">
-            Farm level impacts are direct impacts resulting from the production of agricultural
+            Farm-level indicators estimate the impacts resulting from the production of agricultural
             products.
           </p>
           <p className="text-xl">
@@ -52,20 +52,22 @@ const Step01: React.FC = () => {
           <ul className="space-y-5 font-light">
             <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
               <p className="font-semibold">Water use.</p>
-              <p>Blue water footprint (water withdrawals) (m3) Source: Water Footprint Network</p>
+              <p>Blue water footprint (water consumption).</p>
+              <p>Source: Water Footprint Network.</p>
             </li>
             <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
               <p className="font-semibold">Unsustainable water use. </p>
-              <p>
-                Excess water withdrawals in high water stress regions (m3) Source: Aqueduct, water
-                use
-              </p>
+              <p>Water use in high water stress regions.</p>
+              <p>Source: Aqueduct, water use.</p>
             </li>
             <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
               <p className="font-semibold">Land use. </p>
-              <p>
-                Total land used for agricultural production (ha) Source: MapSPAM, EarthStat, FAOSTAT
-              </p>
+              <p>Total land used for agricultural production.</p>
+              <p>Source: MapSPAM, EarthStat, FAOSTAT.</p>
+            </li>
+            <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
+              <p className="font-semibold">Custom farm-level indicators. </p>
+              <p>Add data sources or adjust metrics to better measure your business impacts.</p>
             </li>
           </ul>
         </div>

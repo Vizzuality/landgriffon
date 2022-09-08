@@ -73,6 +73,9 @@ const expectedJSONAPIAttributes: string[] = [
   'createdAt',
   'updatedAt',
   'percentage',
+  'newIndicatorCoefficients',
+  'newLocationType',
+  'newLocationAddressInput',
 ];
 
 describe('ScenarioInterventionsModule (e2e)', () => {

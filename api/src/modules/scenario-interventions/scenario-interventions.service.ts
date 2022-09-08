@@ -110,12 +110,7 @@ export class ScenarioInterventionsService extends AppBaseService<
     this.logger.log('Creating new Intervention...');
 
     const { adminRegionId, geoRegionId, locationWarning } =
-      (await this.validateNewLocation(dto)) ||
-      ({} as {
-        adminRegionId: string;
-        geoRegionId: string;
-        locationWarning: string | undefined;
-      });
+      await this.validateNewLocation(dto);
 
     /**
      *  Getting descendants of adminRegions, materials, suppliers adn businessUnits received as filters, if exists
@@ -337,7 +332,14 @@ export class ScenarioInterventionsService extends AppBaseService<
 
   private async validateNewLocation(
     dto: CreateScenarioInterventionDto,
-  ): Promise<SourcingLocation | undefined> {
+  ): Promise<
+    | SourcingLocation
+    | {
+        adminRegionId: string;
+        geoRegionId: string;
+        locationWarning: string;
+      }
+  > {
     if (dto.type !== SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY) {
       return this.geoCodingService.geoCodeSourcingLocation({
         locationLongitude: dto.newLocationLongitude,
@@ -347,6 +349,10 @@ export class ScenarioInterventionsService extends AppBaseService<
         locationType: dto.newLocationType,
       });
     }
-    return;
+    return {} as {
+      adminRegionId: string;
+      geoRegionId: string;
+      locationWarning: string;
+    };
   }
 }

@@ -35,10 +35,10 @@ import { SOURCING_LOCATION_TYPE_BY_INTERVENTION } from 'modules/sourcing-locatio
 import { PaginationMeta } from 'utils/app-base.service';
 
 @Injectable()
-export class ImpactService {
+export class ActualVsScenarioImpactService {
   //TODO: Hack to set a expected growing rate. This needs to be stored in the DB in the future
   growthRate: number = 1.5;
-  logger: Logger = new Logger(ImpactService.name);
+  logger: Logger = new Logger(ActualVsScenarioImpactService.name);
 
   constructor(
     private readonly indicatorService: IndicatorsService,

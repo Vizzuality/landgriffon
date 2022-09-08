@@ -1,8 +1,10 @@
 import cx from 'classnames';
 import Icon from 'components/icon';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import DOWNLOAD_SVG from 'svgs/ui/icn_download.svg?sprite';
+import methodologyPDF from '';
 
 const Step02: React.FC = () => {
   return (
@@ -21,7 +23,7 @@ const Step02: React.FC = () => {
           </div>
         </header>
 
-        <div className="space-y-5">
+        <div className="max-w-sm space-y-5">
           <p className="text-xl">
             Landscape level indicators include impacts resulting from the conversion of natural
             ecosystems to productive agriculture.
@@ -35,14 +37,16 @@ const Step02: React.FC = () => {
           </p>
         </div>
 
-        <button
-          type="button"
-          className="hidden items-center py-8 font-semibold text-white bg-black border border-black px-14 hover:bg-black/75 space-x-2.5"
-        >
-          <span>Download Methodology</span>
-
-          <Icon icon={DOWNLOAD_SVG} className="w-4 h-4 fill-white" />
-        </button>
+        <div className="items-center inline-block px-20 py-6 font-semibold text-white bg-black border-2 border-black">
+          <a
+            href="/docs/LandGriffon_Methodology_Executive_Summary.pdf"
+            download
+            className="flex items-center space-x-5"
+          >
+            <span>Download Methodology</span>
+            <Icon icon={DOWNLOAD_SVG} className="w-3 h-3 fill-white" />
+          </a>
+        </div>
       </div>
 
       <div className="w-full space-y-20">

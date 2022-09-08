@@ -86,11 +86,13 @@ export class GetImpactTableDto {
   )
   @Type(() => String)
   locationTypes?: LOCATION_TYPES_PARAMS[];
+}
 
+export class GetActualVsScenarioImpactTabledto extends GetImpactTableDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsUUID(4)
-  scenarioId?: string;
+  scenarioId: string;
 }
 
 export class GetRankedImpactTableDto extends GetImpactTableDto {

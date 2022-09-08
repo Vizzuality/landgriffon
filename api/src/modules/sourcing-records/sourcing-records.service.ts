@@ -10,12 +10,16 @@ import {
 } from 'modules/sourcing-records/sourcing-record.entity';
 import { AppInfoDTO } from 'dto/info.dto';
 import {
+  ActualVsScenarioImpactTableData,
   ImpactTableData,
   SourcingRecordRepository,
 } from 'modules/sourcing-records/sourcing-record.repository';
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sourcing-record.dto';
-import { GetImpactTableDto } from 'modules/impact/dto/get-impact-table.dto';
+import {
+  GetActualVsScenarioImpactTabledto,
+  GetImpactTableDto,
+} from 'modules/impact/dto/get-impact-table.dto';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 
@@ -93,6 +97,14 @@ export class SourcingRecordsService extends AppBaseService<
   ): Promise<ImpactTableData[]> {
     return this.sourcingRecordRepository.getDataForImpactTable(
       getImpactTableDto,
+    );
+  }
+
+  async getDataForActualVsScebarioImpactTable(
+    getActualVsScenarioImpactTableDto: GetActualVsScenarioImpactTabledto,
+  ): Promise<ActualVsScenarioImpactTableData[]> {
+    return this.sourcingRecordRepository.getDataForActualVsScenarioImpactTable(
+      getActualVsScenarioImpactTableDto,
     );
   }
 

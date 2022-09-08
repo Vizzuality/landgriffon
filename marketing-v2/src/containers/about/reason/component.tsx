@@ -33,7 +33,7 @@ const Rason: React.FC = () => {
 
               <div className="w-full space-y-5">
                 <p className="font-bold">
-                  As a community, we will transform agricultural supply chains to achieve:{' '}
+                  As a community, we aim to transform agricultural supply chains to achieve:{' '}
                 </p>
 
                 <ul className="space-y-5 font-light">
@@ -49,9 +49,6 @@ const Rason: React.FC = () => {
                   <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-white">
                     Sustainable use of freshwater resources.
                   </li>
-                  <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-white">
-                    Sustainable business evolution.
-                  </li>
                 </ul>
               </div>
             </div>
@@ -63,19 +60,19 @@ const Rason: React.FC = () => {
         <div className="space-y-10 text-white md:space-y-20">
           <FadeIn>
             <h2 className="text-5xl font-black text-white uppercase font-display md:text-7xl">
-              The LandGriffon ecosystem;
+              The LandGriffon ecosystem:
               <span className="text-blue-500"> a consortium of experts. </span>
             </h2>
           </FadeIn>
           <FadeIn>
             <p className="inline-block text-2xl font-bold leading-relaxed text-black bg-blue-500 px-2.5 -mx-2.5 mb-5">
-              We combine design, science, technology, sustainability and business.
+              We combine design, science, technology, sustainability, and business.
             </p>
             <p className="text-2xl font-light leading-relaxed">
-              We are motivated to use our expertise in environmental monitoring, designing
-              user-centric scientific applications, and artificial intelligence-based satellite
-              monitoring to help companies secure this future. We help companies access, understand,
-              and efficiently use the data and recommendations of the sustainability community.
+              LandGriffon builds on our expertise in environmental data, user-centric design, and
+              artificial intelligence-based satellite monitoring. We help companies access,
+              understand, and efficiently use the data and recommendations of the sustainability
+              community. Together we can transform sustainable ambitions into action.
               <strong className="font-bold">
                 Together we can transform sustainable ambitions into action.
               </strong>

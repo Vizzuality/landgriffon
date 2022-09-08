@@ -37,24 +37,24 @@ const Step05: React.FC = () => {
             <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
               <p>
                 <strong className="font-semibold">Audit.</strong> Better measure and verify supplier
-                activities
+                activities.
               </p>
             </li>
             <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
               <p>
                 <strong className="font-semibold">Engage. </strong> Understand the local context,
-                landscape, and community
+                landscape, and community.
               </p>
             </li>
             <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
               <p>
                 <strong className="font-semibold">Invest. </strong> Work with key suppliers to
-                improve practices
+                improve practices.
               </p>
             </li>
             <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
               <p>
-                <strong className="font-semibold">Divest. </strong> Remove the worst offenders
+                <strong className="font-semibold">Divest. </strong> Remove the worst offenders.
               </p>
             </li>
           </ul>
@@ -67,13 +67,13 @@ const Step05: React.FC = () => {
             <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
               <p>
                 <strong className="font-semibold">Product formula. </strong> Identify lower impact
-                alternatives
+                alternatives.
               </p>
             </li>
             <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
               <p>
                 <strong className="font-semibold">Growth. </strong> Focus on high value to impact
-                business lines
+                business lines.
               </p>
             </li>
           </ul>
@@ -86,7 +86,7 @@ const Step05: React.FC = () => {
             <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
               <p>
                 <strong className="font-semibold">Communicate. </strong> Show progress internally
-                and externally
+                and externally.
               </p>
             </li>
           </ul>

@@ -24,14 +24,13 @@ const Step03: React.FC = () => {
 
         <div className="space-y-5">
           <p className="text-xl">
-            The software measures environmental impacts and risks throughout your supply chain,
-            using the most up-to-date and recognised science based indicators. By layering this with
-            your procurement data, we build a picture of what environmental impacts are linked to
-            your supply chain and where.
+            The software measures environmental impacts and risks from agricultural production using
+            trusted data sources. By layering this with your procurement data, we build a picture of
+            what environmental impacts are linked to your supply chain and where.
           </p>
           <Link href="/methodology">
             <a className="inline-block py-8 font-semibold text-center text-white bg-black border border-black px-14 hover:bg-black/75">
-              Learn more about the science behind
+              Learn more about the LandGriffon methodology
             </a>
           </Link>
         </div>
@@ -40,7 +39,7 @@ const Step03: React.FC = () => {
       <div className="w-full space-y-20">
         <div className="space-y-10">
           <h4 className="text-2xl border-b border-black pb-2.5">
-            Indicators used to analyze impact:
+            Base indicators used to analyze impact:
           </h4>
 
           <ul className="space-y-5 font-light">
@@ -69,7 +68,7 @@ const Step03: React.FC = () => {
 
         <div className="space-y-10">
           <h4 className="text-2xl border-b border-black pb-2.5">
-            Additional sources that can be added:
+            Add indicators and data sources:
           </h4>
 
           <ul className="space-y-5 font-light">
@@ -78,11 +77,8 @@ const Step03: React.FC = () => {
               <p>Override LandGriffon estimates.</p>
             </li>
             <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
-              <p className="font-semibold">Add licensed data</p>
-              <p>
-                (e.g. NatureMetrics, MapleCroft, Quantis, Geofootprint), your own indicators, or
-                custom metrics
-              </p>
+              <p className="font-semibold">Custom environmental, social, and financial metrics:</p>
+              <p>Bring your own indicators, proprietary data sources, or any other data.</p>
             </li>
           </ul>
         </div>

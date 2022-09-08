@@ -99,7 +99,7 @@ const Chart: React.FC = () => {
         <div className="space-y-10">
           <FadeIn>
             <h2 className="text-4xl font-black uppercase md:text-6xl font-display">
-              The LandGriffon methodology is open to evolution and customization
+              The LandGriffon platform is designed for evolution and customization
             </h2>
           </FadeIn>
           <FadeIn>

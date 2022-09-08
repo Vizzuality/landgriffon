@@ -57,8 +57,8 @@ const Values: React.FC = () => {
                     Innovation
                   </h3>
                   <p className="max-w-4xl mx-auto text-2xl font-light text-center">
-                    Allow the technology to do the pedantic labor while you focus on the important
-                    work; taking action.
+                    To make technology do the pedantic labor while you focus on the important work;
+                    taking action.
                   </p>
                 </div>
                 <Scale className="absolute top-0 left-0 z-0 w-52 h-52">
@@ -71,7 +71,7 @@ const Values: React.FC = () => {
                     Adaptability
                   </h3>
                   <p className="max-w-4xl mx-auto text-2xl font-light text-center">
-                    Designed to fit your business needs, now and as they evolve.
+                    To fit each business’s unique needs, now and as they evolve.
                   </p>
                 </div>
                 <Scale className="absolute top-0 right-0 z-0 w-40 h-40">

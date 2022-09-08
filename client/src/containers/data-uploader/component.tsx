@@ -61,7 +61,7 @@ const UploadDataSourceModal: React.FC = () => {
   });
 
   return (
-    <div className="relative w-[640px]">
+    <div className="relative w-full max-w-[640px]">
       <div className="relative z-10 p-4 bg-white shadow-lg rounded-xl">
         <FileDropzone
           {...uploadOptions}

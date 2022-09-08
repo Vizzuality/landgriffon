@@ -2,18 +2,22 @@ import { useDropzone } from 'react-dropzone';
 
 import UploadIcon from 'components/icons/upload-icon';
 
+import { bytesToMegabytes } from 'utils/units';
+
 import type { FileDropZoneProps } from './types';
 
 const defaultDropzoneProps: FileDropZoneProps = {
   multiple: false,
   maxFiles: 1,
+  maxSize: 10000000,
 };
 
 const FileDropZone: React.FC<FileDropZoneProps> = (dropZoneOptions) => {
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const options = {
     ...defaultDropzoneProps,
     ...dropZoneOptions,
-  });
+  };
+  const { getRootProps, getInputProps, isDragActive } = useDropzone(options);
 
   return (
     <div
@@ -36,7 +40,9 @@ const FileDropZone: React.FC<FileDropZoneProps> = (dropZoneOptions) => {
             <strong className="text-primary">Upload a file</strong> or drag and drop
           </p>
         )}
-        <p className="text-xs">Max supported file: XLS 10MB</p>
+        <p className="text-xs">
+          Max supported file: XLS {Number(bytesToMegabytes(options.maxSize)).toFixed(2)} MB
+        </p>
       </div>
     </div>
   );

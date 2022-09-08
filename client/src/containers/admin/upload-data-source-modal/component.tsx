@@ -8,6 +8,7 @@ import Modal from 'components/modal';
 import Uploader from 'containers/uploader';
 
 import type { UploadDataSourceModalProps } from './types';
+import DataUploader from 'containers/data-uploader';
 
 const UploadDataSourceModal: React.FC<UploadDataSourceModalProps> = ({
   open,
@@ -30,14 +31,14 @@ const UploadDataSourceModal: React.FC<UploadDataSourceModalProps> = ({
 
   return (
     <Modal title="Upload data source" open={open} onDismiss={onDismiss}>
-      <Uploader
+      {/* <Uploader
         disabled={uploaded}
         url="/import/sourcing-data"
         fileTypes={['xlsx']}
         header="Upload the complete data file to update the data source"
         footer={
           <a
-            className="flex mt-4 underline text-xs cursor-pointer"
+            className="flex mt-4 text-xs underline cursor-pointer"
             href="/files/data-template.xlsx"
             target="_blank"
             rel="noopener noreferrer"
@@ -56,7 +57,8 @@ const UploadDataSourceModal: React.FC<UploadDataSourceModalProps> = ({
           setUploaded(true);
         }}
         onError={() => setIsUploading(false)}
-      />
+      /> */}
+      <DataUploader />
 
       <div className="flex justify-end gap-3 mt-8">
         {!uploaded && (

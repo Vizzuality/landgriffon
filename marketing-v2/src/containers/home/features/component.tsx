@@ -43,9 +43,17 @@ const Features: React.FC = () => {
                 </div>
 
                 <p className="text-xl">
-                  LandGriffon brings together the most trusted indicator data from across the
-                  sustainability community. Learn more about the indicators we use.
+                  LandGriffon brings together the most trusted data from across the sustainability
+                  community.
                 </p>
+                <Link href="/methodology">
+                  <a className="flex items-center justify-between space-x-5">
+                    <span className="font-semibold underline">
+                      Learn more about the indicators we use.
+                    </span>
+                    <Icon icon={ARROW_RIGHT_SVG} className="w-12 h-12" />
+                  </a>
+                </Link>
               </FadeIn>
             </li>
             <li>

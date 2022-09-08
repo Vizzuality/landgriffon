@@ -23,19 +23,16 @@ const Step04: React.FC = () => {
 
         <div className="space-y-5">
           <p className="text-xl">
-            Overview your environmental impact over time, retrospectively and using prediction
-            modeling. For example, create scenarios through forecasting your growth strategy and
-            sustainability decisions. With LandGriffon you can see your complete supply chain and
-            find opportunities.
+            Understand your environmental impact over time and create scenarios forecasting your
+            growth strategy and sustainability decisions. With LandGriffon you can see your complete
+            supply chain and find opportunities.
           </p>
         </div>
       </div>
 
       <div className="w-full space-y-20">
         <div className="space-y-10">
-          <h4 className="text-2xl border-b border-black pb-2.5">
-            Analyze your current supply chain:
-          </h4>
+          <h4 className="text-2xl border-b border-black pb-2.5">Analyze your supply chain:</h4>
 
           <ul className="space-y-5 font-light">
             <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">

@@ -40,7 +40,7 @@ const Hero: React.FC = () => {
           transition={{ duration: 0.75, delay: 0.1 }}
         >
           <h1 className="text-5xl font-black text-black uppercase font-display md:text-7xl">
-            A unique methodology using world-renowned datasets to analyze impacts.
+            Analyze impacts with world-renowned datasets.
           </h1>
         </motion.div>
 
@@ -70,7 +70,7 @@ const Hero: React.FC = () => {
             <h3 className="text-xl font-black text-black uppercase font-display">
               BUILT ON TRUSTED SCIENTIFIC DATA:
             </h3>
-            <p className="text-2xl pb-3">
+            <p className="pb-3 text-2xl">
               Landgriffon is built on open access data produced by leading researchers, NGOs, and
               government programs such as Copernicus, making it easier for you to take advantage of
               this scientific knowledge.

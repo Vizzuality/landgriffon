@@ -119,7 +119,7 @@ const FAQS = [
         </p>
         <p>
           Second, we believe the sustainable revolution we urgently need will only come from sharing
-          knowledge and expertize. If others can learn from and apply our impact analysis, and
+          knowledge and expertise. If others can learn from and apply our impact analysis, and
           likewise, push us to improve, then we have a much greater chance at successfully tackling
           global issues. These issues require radical forms of collaboration. Open source
           methodology is one such example.

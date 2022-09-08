@@ -18,7 +18,7 @@ const Developed: React.FC = () => {
                   {' '}
                   LandGriffon is made up of a consortium of experts
                 </strong>
-                , combining the disciplines of design, science, technology, sustainability and
+                , combining the disciplines of design, science, technology, sustainability, and
                 business.
               </h3>
               <h3 className="text-2xl font-light text-white">

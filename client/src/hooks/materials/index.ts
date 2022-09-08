@@ -1,8 +1,7 @@
-import { useMemo } from 'react';
-import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
+import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { apiService } from 'services/api';
-import type { Material } from 'types';
+import type { Material, MaterialTreeItem } from 'types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   placeholderData: [],
@@ -11,8 +10,6 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   refetchOnWindowFocus: false,
   staleTime: 2 * 60 * 1000, // 2 minutes max stale time
 };
-
-type ResponseData = UseQueryResult<Material[]>;
 
 export type MaterialsTreesParams = {
   depth?: number;
@@ -24,42 +21,33 @@ export type MaterialsTreesParams = {
   scenarioId?: string;
 };
 
-export function useMaterials(): ResponseData {
+export function useMaterials() {
   const query = useQuery(
     ['materials'],
     async () =>
       apiService
-        .request({
+        .request<Material>({
           method: 'GET',
           url: '/materials',
         })
-        .then(({ data: responseData }) => responseData.data),
+        .then((data) => data.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
     },
   );
 
-  const { data, isError } = query;
-
-  return useMemo<ResponseData>(
-    () =>
-      ({
-        ...query,
-        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as ResponseData,
-      } as ResponseData),
-    [query, isError, data],
-  );
+  return query;
 }
 
 export function useMaterialsTrees(
   params: MaterialsTreesParams = {},
   options: UseQueryOptions = {},
-): ResponseData {
+) {
   const query = useQuery(
     ['materials-trees', params],
     async () =>
       apiService
-        .request({
+        .request<{ data: MaterialTreeItem[] }>({
           method: 'GET',
           url: '/materials/trees',
           params,
@@ -71,13 +59,5 @@ export function useMaterialsTrees(
     },
   );
 
-  const { data, isError } = query;
-  return useMemo<ResponseData>(
-    () =>
-      ({
-        ...query,
-        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as ResponseData,
-      } as ResponseData),
-    [query, isError, data],
-  );
+  return query;
 }

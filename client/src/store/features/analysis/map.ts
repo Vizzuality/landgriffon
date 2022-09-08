@@ -80,6 +80,13 @@ export const initialState: AnalysisMapState = {
       active: true,
       isContextual: false,
     },
+    material: {
+      id: 'material',
+      ...DEFAULT_LAYER_ATTRIBUTES,
+      order: 1,
+      active: true,
+      isContextual: false,
+    },
   },
   tooltipData: [],
   tooltipPosition: {

@@ -13,7 +13,7 @@ import type { LegendItem as LegendItemProp } from 'types';
 
 const LAYER_ID = 'impact'; // should match with redux
 
-export const useImpactLayer: () => ReturnType<typeof useH3ImpactData> = () => {
+export const useImpactLayer = () => {
   const dispatch = useAppDispatch();
   const { indicator, startYear } = useAppSelector(analysisFilters);
   const {

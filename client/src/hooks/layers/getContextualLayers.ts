@@ -21,7 +21,9 @@ type LayerCategoriesApiResponse = {
   data: CategoryWithLayers[];
 };
 
-const useContextualLayers = (options: UseQueryOptions<LayerCategoriesApiResponse['data']> = {}) => {
+const useContextualLayers = (
+  options: Omit<UseQueryOptions<LayerCategoriesApiResponse['data']>, 'select'> = {},
+) => {
   const dispatch = useAppDispatch();
   return useQuery(
     ['contextual-layers'],
@@ -38,13 +40,14 @@ const useContextualLayers = (options: UseQueryOptions<LayerCategoriesApiResponse
       ...options,
       onSuccess: (data) => {
         options?.onSuccess?.(data);
-        const allLayers = data.flatMap((data) => data.layers);
 
+        const allLayers = data.flatMap((data) => data.layers);
         allLayers.forEach((layer, i) => {
           dispatch(
             setLayer({
               id: layer.id,
-              layer: { ...layer, isContextual: true, order: i + 1 },
+              // TODO: don't hardcode this
+              layer: { ...layer, isContextual: true, order: i + 2 },
             }),
           );
         });

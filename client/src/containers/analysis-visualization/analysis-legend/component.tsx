@@ -13,6 +13,7 @@ import { ChevronDoubleRightIcon } from '@heroicons/react/solid';
 import Settings from './settings';
 import Modal from 'components/modal';
 import SandwichIcon from 'components/icons/sandwich';
+import MaterialLayer from './material-legend-item';
 
 const sortByOrder: (layers: Record<string, Layer>) => Layer[] = (layers) => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -31,6 +32,10 @@ export const Legend: React.FC = () => {
   );
 
   const { layers } = useAppSelector(analysisMap);
+  const nonContextualLayersNumber = useMemo(
+    () => Object.values(layers).filter((layer) => !layer.isContextual).length,
+    [layers],
+  );
 
   const activeLayerNumber = useMemo(
     () => Object.values(layers).filter((l) => l.active).length,
@@ -43,9 +48,14 @@ export const Legend: React.FC = () => {
 
   useEffect(() => {
     upstreamLayers?.forEach((layer, i) => {
-      dispatch(setLayer({ id: layer.id, layer: { ...layer, order: i + 1, isContextual: true } }));
+      dispatch(
+        setLayer({
+          id: layer.id,
+          layer: { ...layer, order: i + nonContextualLayersNumber, isContextual: true },
+        }),
+      );
     });
-  }, [dispatch, upstreamLayers]);
+  }, [dispatch, nonContextualLayersNumber, upstreamLayers]);
 
   const handleShowLegend = useCallback(() => {
     setShowLegend((show) => !show);
@@ -63,7 +73,13 @@ export const Legend: React.FC = () => {
 
   const LegendToShow = useCallback(
     (layer: Layer) =>
-      layer.isContextual ? <ContextualLegendItem layer={layer} /> : <ImpactLayer />,
+      layer.isContextual ? (
+        <ContextualLegendItem layer={layer} />
+      ) : layer.id === 'impact' ? (
+        <ImpactLayer />
+      ) : layer.id === 'material' ? (
+        <MaterialLayer />
+      ) : null,
     [],
   );
 

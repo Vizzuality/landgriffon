@@ -13,9 +13,9 @@ import { apiRawService } from 'services/api';
 import { COLOR_RAMPS, useColors } from 'utils/colors';
 
 import type { AxiosResponse } from 'axios';
+import type { H3APIResponse } from 'types';
 import type {
   RGBColor,
-  H3APIResponse,
   H3Item,
   MaterialH3APIParams,
   RiskH3APIParams,
@@ -32,11 +32,10 @@ type H3ImpactResponse = H3APIResponse & {
     unit: string;
   };
 };
-type H3ImpactDataResponse = UseQueryResult<H3ImpactResponse, unknown>;
 type H3DataResponse = UseQueryResult<H3APIResponse, unknown>;
 type H3ContextualResponse = H3DataResponse; // UseQueryResult<{ data: H3Data; metadata: LayerMetadata }, unknown>;
 
-const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
+const DEFAULT_QUERY_OPTIONS = {
   placeholderData: {
     data: [],
     metadata: {
@@ -49,18 +48,16 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   refetchOnWindowFocus: false,
 };
 
-const responseParser = (response: AxiosResponse, colors: RGBColor[]): H3APIResponse => {
-  const { data, metadata } = response.data;
-  const { quantiles } = metadata;
-  const threshold = quantiles.slice(1, -1);
+const responseParser = (response: H3APIResponse, colors: RGBColor[]): H3APIResponse => {
+  const threshold = response.metadata.quantiles.slice(1, -1);
   const scale = scaleThreshold<H3Item['v'], RGBColor>().domain(threshold).range(colors);
-  const h3DataWithColor = data.map(
+  const h3DataWithColor = response.data.map(
     (d: H3Item): H3Item => ({
       ...d,
       c: scale(d.v as H3Item['v']),
     }),
   );
-  return { data: h3DataWithColor, metadata };
+  return { ...response, data: h3DataWithColor };
 };
 
 type ScalesType = ScaleOrdinal<H3Item['v'], H3Item['c']> | ScaleThreshold<H3Item['v'], H3Item['c']>;
@@ -101,22 +98,36 @@ const responseContextualParser = (response: AxiosResponse<H3APIResponse>): H3API
   return { data: h3DataWithColor, metadata };
 };
 
-export function useH3MaterialData(
+export const useH3MaterialData = <T = H3APIResponse>(
   params: Partial<MaterialH3APIParams> = {},
-  options: Partial<UseQueryOptions> = {},
-): H3DataResponse {
+  options: Partial<UseQueryOptions<H3APIResponse, unknown, T>> = {},
+) => {
   const colors = useColors('material', COLOR_RAMPS);
+  const filters = useAppSelector(analysisFilters);
+  const { startYear, materials, indicator, suppliers, origins, locationTypes } = filters;
+
+  const urlParams: ImpactH3APIParams = {
+    year: startYear,
+    indicatorId: indicator?.value && indicator?.value === 'all' ? null : indicator?.value,
+    ...(materials?.length ? { materialIds: materials?.map(({ value }) => value) } : {}),
+    ...(suppliers?.length ? { supplierIds: suppliers?.map(({ value }) => value) } : {}),
+    ...(origins?.length ? { originIds: origins?.map(({ value }) => value) } : {}),
+    ...(locationTypes?.length ? { locationTypes: locationTypes?.map(({ value }) => value) } : {}),
+    ...params,
+    resolution: origins?.length ? 6 : 4,
+  };
+
   const query = useQuery(
     ['h3-data-material', params],
     async () =>
       apiRawService
-        .get('/h3/map/material', {
+        .get<H3APIResponse>('/h3/map/material', {
           params: {
-            ...params,
-            resolution: 4,
+            ...urlParams,
           },
         })
         // Adding color to the response
+        .then((response) => response.data)
         .then((response) => responseParser(response, colors)),
     {
       ...DEFAULT_QUERY_OPTIONS,
@@ -124,17 +135,8 @@ export function useH3MaterialData(
     },
   );
 
-  const { data, isError } = query;
-
-  return useMemo<H3DataResponse>(
-    () =>
-      ({
-        ...query,
-        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as H3APIResponse,
-      } as H3DataResponse),
-    [query, isError, data],
-  );
-}
+  return query;
+};
 
 export function useH3RiskData(
   params: Partial<RiskH3APIParams> = {},
@@ -151,6 +153,7 @@ export function useH3RiskData(
             resolution: 4,
           },
         })
+        .then((response) => response.data)
         // Adding color to the response
         .then((response) => responseParser(response, colors)),
     {
@@ -269,10 +272,10 @@ export const useAllContextualLayersData = (options: Partial<UseQueryOptions> = {
   return map;
 };
 
-export function useH3ImpactData(
+export const useH3ImpactData = <T = H3ImpactResponse>(
   params: Partial<ImpactH3APIParams> = {},
-  options: Partial<UseQueryOptions> = {},
-): H3ImpactDataResponse {
+  options: Partial<UseQueryOptions<H3ImpactResponse, unknown, T>> = {},
+) => {
   const filters = useAppSelector(analysisFilters);
   const { startYear, materials, indicator, suppliers, origins, locationTypes } = filters;
 
@@ -288,15 +291,16 @@ export function useH3ImpactData(
     resolution: origins?.length ? 6 : 4,
   };
 
-  const isEnable = !!(urlParams.indicatorId && urlParams.year);
+  const isEnable = (options.enabled ?? true) && !!(urlParams.indicatorId && urlParams.year);
 
-  const query = useQuery(
+  const query = useQuery<unknown, unknown, T>(
     ['h3-data-impact', filters],
     async () =>
       apiRawService
-        .get('/h3/map/impact', {
+        .get<H3APIResponse>('/h3/map/impact', {
           params: urlParams,
         })
+        .then((response) => response.data)
         // Adding color to the response
         .then((response) => responseParser(response, colors)),
     {
@@ -306,14 +310,5 @@ export function useH3ImpactData(
     },
   );
 
-  const { data, isError } = query;
-
-  return useMemo(
-    () =>
-      ({
-        ...query,
-        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as H3APIResponse,
-      } as H3ImpactDataResponse),
-    [query, isError, data],
-  );
-}
+  return query;
+};

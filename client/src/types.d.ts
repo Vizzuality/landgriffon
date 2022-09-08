@@ -88,8 +88,29 @@ export type Group = {
 
 export type Material = {
   id: string;
+  hsCodeId: string;
   name: string;
-  children: Material[];
+  parentId: Material['id'];
+  status: string | 'active';
+  metadata: {
+    cautions: string;
+    citation: string;
+    datasets: string[];
+    'date of content': string;
+    'frequency of updates': string;
+    'geographic coverage': string;
+    license: string;
+    name: string;
+    overview: string;
+    resolution: string;
+    source: string;
+  };
+};
+
+export type MaterialTreeItem = {
+  id: string;
+  name: string;
+  children: MaterialTreeItem[];
 };
 
 export type SourcingLocation = {
@@ -259,6 +280,7 @@ export type LayerMetadata = {
   source: string;
   legend: Legend;
   unit: string;
+  quantiles: number[];
 };
 
 // Metadata info

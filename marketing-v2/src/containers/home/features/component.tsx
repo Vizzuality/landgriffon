@@ -71,7 +71,7 @@ const Features: React.FC = () => {
                 <Link href="/methodology">
                   <a className="flex items-center justify-between space-x-5">
                     <span className="font-semibold underline">
-                      Learn more about the data and science behind LandGriffon.
+                      Learn more about our methodology.
                     </span>
                     <Icon icon={ARROW_RIGHT_SVG} className="w-12 h-12" />
                   </a>

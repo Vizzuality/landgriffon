@@ -104,18 +104,20 @@ export const useH3MaterialData = <T = H3APIResponse>(
 ) => {
   const colors = useColors('material', COLOR_RAMPS);
   const filters = useAppSelector(analysisFilters);
-  const { startYear, materials, indicator, suppliers, origins, locationTypes } = filters;
+  const { startYear, materialId, indicator, suppliers, origins, locationTypes } = filters;
 
-  const urlParams: ImpactH3APIParams = {
+  const urlParams = {
     year: startYear,
-    indicatorId: indicator?.value && indicator?.value === 'all' ? null : indicator?.value,
-    ...(materials?.length ? { materialIds: materials?.map(({ value }) => value) } : {}),
-    ...(suppliers?.length ? { supplierIds: suppliers?.map(({ value }) => value) } : {}),
-    ...(origins?.length ? { originIds: origins?.map(({ value }) => value) } : {}),
-    ...(locationTypes?.length ? { locationTypes: locationTypes?.map(({ value }) => value) } : {}),
+    materialId,
+    // indicatorId: indicator?.value && indicator?.value === 'all' ? null : indicator?.value,
+    // ...(suppliers?.length ? { supplierIds: suppliers?.map(({ value }) => value) } : {}),
+    // ...(origins?.length ? { originIds: origins?.map(({ value }) => value) } : {}),
+    // ...(locationTypes?.length ? { locationTypes: locationTypes?.map(({ value }) => value) } : {}),
     ...params,
     resolution: origins?.length ? 6 : 4,
   };
+
+  const enabled = (options.enabled ?? true) && !!startYear && !!materialId;
 
   const query = useQuery(
     ['h3-data-material', params],
@@ -132,6 +134,7 @@ export const useH3MaterialData = <T = H3APIResponse>(
     {
       ...DEFAULT_QUERY_OPTIONS,
       ...options,
+      enabled,
     },
   );
 

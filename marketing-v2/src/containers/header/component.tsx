@@ -19,14 +19,16 @@ const Header: React.FC = () => {
   const prevDirection = useRef<string | number>(0);
   const { scrollY } = useViewportScroll();
 
-  const Y = scrollY.get() > 80;
+  const scrollYPixels = scrollY.get() > 80;
+  console.log('scrollY.get()', scrollY.get());
+  console.log('Y', Y);
   const directionY = useMemo(() => {
     switch (scrollDirection) {
       case 'UP':
         prevDirection.current = 0;
         return 0;
       case 'DOWN':
-        if (Y) {
+        if (scrollYPixels) {
           prevDirection.current = '-100%';
           return '-100%';
         }

@@ -1,10 +1,8 @@
 import cx from 'classnames';
 import Icon from 'components/icon';
 import Image from 'next/image';
-import Link from 'next/link';
 
 import DOWNLOAD_SVG from 'svgs/ui/icn_download.svg?sprite';
-import methodologyPDF from '';
 
 const Step02: React.FC = () => {
   return (

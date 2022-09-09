@@ -11,7 +11,7 @@ interface ScrollDownProps {
 const ScrollDown: React.FC<ScrollDownProps> = ({ theme }: ScrollDownProps) => {
   return (
     <div className="absolute top-0 left-0 z-20 hidden w-full h-full pointer-events-none xl:block">
-      <div className="absolute -right-6 bottom-40 animate-bounce">
+      <div className="absolute -right-6 bottom-28 animate-bounce">
         <div className="-rotate-90 ">
           <div className="flex items-center space-x-5">
             <Icon

@@ -1,0 +1,135 @@
+"""
+The script converts the csv with country data to H3 grid cells using the already populated geo_region and admin_region
+tables to get the h3 hexes for each country. This way it only uses a sql join and avoid doing geo-spatial operations and
+querys.
+
+Postgres connection params read from environment:
+ - API_POSTGRES_HOST
+ - API_POSTGRES_USER
+ - API_POSTGRES_PASSWORD
+ - API_POSTGRES_DATABASE
+
+Usage:
+    csv_to_h3_table.py <table> <column> <year>
+
+Arguments:
+    <file>            Path to the csv file with the hdi data.
+    <table>           Postgresql table to create or overwrite.
+    <column>          Column to insert HDI data into.
+    <year>            Year of the data used.
+    <iso3_column>     Column with the country iso3 code.
+"""
+
+import argparse
+import logging
+import os
+from io import StringIO
+from pathlib import Path
+
+import pandas as pd
+from psycopg2.extensions import connection
+from psycopg2.pool import ThreadedConnectionPool
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger("indicator_coefficient_importer")
+
+postgres_thread_pool = ThreadedConnectionPool(
+    1,
+    50,
+    host=os.getenv("API_POSTGRES_HOST"),
+    port=os.getenv("API_POSTGRES_PORT"),
+    user=os.getenv("API_POSTGRES_USERNAME"),
+    password=os.getenv("API_POSTGRES_PASSWORD"),
+)
+
+
+def load_data(filename: Path) -> pd.DataFrame:
+    df = pd.read_csv(filename)
+    df["hs_2017_code"] = df["hs_2017_code"].astype(str)
+    return df
+
+
+def get_admin_region_ids_from_countries(conn, countries: list) -> pd.DataFrame:
+    with conn.cursor() as cur:
+        cur.execute(
+            """select id, name from admin_region ar where ar.name = any(%s);""",
+            (countries,),
+        )
+        return pd.DataFrame.from_records(
+            cur.fetchall(), columns=["adminRegionId", "country"]
+        )
+
+
+def get_material_ids_from_hs_codes(conn, hs_codes: list) -> pd.DataFrame:
+    with conn.cursor() as cur:
+        cur.execute(
+            """select id, "hsCodeId" from material m where m."hsCodeId" = any(%s)""",
+            (hs_codes,),
+        )
+        return pd.DataFrame.from_records(
+            cur.fetchall(), columns=["materialId", "hs_2017_code"]
+        )
+
+
+def copy_from_stringio(conn: connection, df: pd.DataFrame, table: str):
+    """
+    Save the dataframe in memory
+    and use copy_from() to copy it to the table
+    """
+    # save dataframe to an in memory buffer
+    buffer = StringIO()
+    df.to_csv(buffer, index=False, header=False, na_rep="NULL")
+    buffer.seek(0)
+    log.info(f"Copying {len(df)} records into {table}...")
+    with conn:
+        with conn.cursor() as cursor:
+            cursor.copy_from(buffer, table, sep=",", columns=df.columns, null="NULL")
+    log.info("Done!")
+
+
+def main(conn: connection, data: pd.DataFrame, indicator_code: str):
+    with conn:  # do the selects in it's own transaction separated from the insert
+        with conn.cursor() as cursor:
+            # get Unsustainable water use indicator id
+            cursor.execute(
+                """select id from indicator where indicator."nameCode" = %s;""",
+                (indicator_code,),
+            )
+            # should be UWU_T for unsustainable water
+            indicator_id = cursor.fetchone()[0]
+        # add admin region ID to dataframe so we can insert all rows at once
+        # without having to query for the IDs every time
+        admin_region_ids = get_admin_region_ids_from_countries(
+            conn, list(data.country.unique())
+        )
+
+        # same with material ID
+        material_ids = get_material_ids_from_hs_codes(
+            conn, data.hs_2017_code.astype(str).to_list()
+        )
+
+    data = pd.merge(data, admin_region_ids, on="country")
+    data = pd.merge(data, material_ids, on="hs_2017_code")
+    data["indicatorId"] = indicator_id
+    data_to_insert = data[
+        ["value", "year", "adminRegionId", "indicatorId", "materialId"]
+    ]
+    # insert all the data!
+    copy_from_stringio(conn, data_to_insert, "indicator_coefficient")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Process and ingest csv dataset with per country data."
+    )
+    parser.add_argument("file", help="file path to the csv")
+    parser.add_argument("indicator_code", help="Name code of the indicator")
+    args = parser.parse_args()
+
+    data = load_data(Path(args.file))
+    data["year"] = 2005  # NOTE: year is hardcoded for WUW indicator coeffcients!
+    conn = postgres_thread_pool.getconn()
+
+    main(conn, data, args.indicator_code)
+
+    postgres_thread_pool.putconn(conn, close=True)

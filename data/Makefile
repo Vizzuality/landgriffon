@@ -30,3 +30,7 @@ seed-h3-tables:
 seed-contextual-layers:
 	@echo "Starting seeding contextual layers... "
 	cd ./h3_data_importer && make contextual-layers
+
+seed-indicator-coefficients:
+	@echo "Starting seeding indicator coeficients... "
+	cd ./indicator_coefficient_importer && make

@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useScrollDirection } from 'react-use-scroll-direction';
-import { motion } from 'framer-motion';
+import { motion, useViewportScroll } from 'framer-motion';
 
 import Icon from 'components/icon';
 
@@ -11,23 +11,22 @@ import CLOSE_SVG from 'svgs/ui/close.svg?sprite';
 import { useMemo, useRef, useState } from 'react';
 
 import Nav from './nav';
-import useScrollPosition from 'hooks/scroll';
 
 const Header: React.FC = () => {
   const [open, setOpen] = useState(false);
 
   const { scrollDirection } = useScrollDirection();
-  const scrollPosition = useScrollPosition();
   const prevDirection = useRef<string | number>(0);
+  const { scrollY } = useViewportScroll();
 
+  const Y = scrollY.get() > 80;
   const directionY = useMemo(() => {
     switch (scrollDirection) {
       case 'UP':
         prevDirection.current = 0;
         return 0;
       case 'DOWN':
-        if (scrollPosition > 80) {
-          console.log('scrollY', window.scrollY);
+        if (Y) {
           prevDirection.current = '-100%';
           return '-100%';
         }
@@ -36,7 +35,7 @@ const Header: React.FC = () => {
       default:
         return prevDirection.current;
     }
-  }, [scrollDirection, scrollPosition]);
+  }, [scrollDirection, Y]);
 
   return (
     <>

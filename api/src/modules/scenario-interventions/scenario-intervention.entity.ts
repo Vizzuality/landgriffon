@@ -22,7 +22,12 @@ import {
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
-
+import {
+  REPLACED_ADMIN_REGIONS_TABLE_NAME,
+  REPLACED_BUSINESS_UNITS_TABLE_NAME,
+  REPLACED_MATERIALS_TABLE_NAME,
+  REPLACED_SUPPLIERS_TABLE_NAME,
+} from 'modules/scenario-interventions/intermediate-table-names/intermediate.table.names';
 export enum SCENARIO_INTERVENTION_STATUS {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
@@ -114,19 +119,19 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
    * Relationships with other entities - links of replaced relationships on this intervention
    */
   @ManyToMany(() => Material, { eager: true })
-  @JoinTable()
+  @JoinTable({ name: REPLACED_MATERIALS_TABLE_NAME })
   replacedMaterials: Material[];
 
   @ManyToMany(() => BusinessUnit, { eager: true })
-  @JoinTable()
+  @JoinTable({ name: REPLACED_BUSINESS_UNITS_TABLE_NAME })
   replacedBusinessUnits: BusinessUnit[];
 
   @ManyToMany(() => Supplier, { eager: true })
-  @JoinTable()
+  @JoinTable({ name: REPLACED_SUPPLIERS_TABLE_NAME })
   replacedSuppliers: Supplier[];
 
   @ManyToMany(() => AdminRegion, { eager: true })
-  @JoinTable()
+  @JoinTable({ name: REPLACED_ADMIN_REGIONS_TABLE_NAME })
   replacedAdminRegions: AdminRegion[];
 
   @OneToMany(
@@ -135,7 +140,7 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
       sourcingLocations.scenarioIntervention,
     { cascade: true, onDelete: 'CASCADE' },
   )
-  replacedSourcingLocations?: SourcingLocation[];
+  replacedSourcingLocations: SourcingLocation[];
 
   /**
    * Relationships with other entities - list of "ne" relationships

@@ -15,7 +15,7 @@ const Hero: React.FC = () => {
         }}
       ></div>
       <Wrapper>
-        <div className="space-y-5">
+        <div className="space-y-9">
           <motion.div
             className="relative"
             initial={{ opacity: 0, y: 20 }}

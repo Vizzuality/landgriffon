@@ -48,7 +48,7 @@ const Footer: React.FC = () => {
           <ul className="flex items-center justify-start space-x-10">
             <li>
               <a href="https://twitter.com/LandGriffon_" target="_blank" rel="noreferrer noopener">
-                <Icon icon={TWITTER_SVG} className="w-5 h-5" />
+                <Icon icon={TWITTER_SVG} className="w-5 h-5 fill-black" />
               </a>
             </li>
             <li>
@@ -57,7 +57,7 @@ const Footer: React.FC = () => {
                 target="_blank"
                 rel="noreferrer noopener"
               >
-                <Icon icon={LINKEDIN_SVG} className="w-5 h-5" />
+                <Icon icon={LINKEDIN_SVG} className="w-5 h-5 fill-black" />
               </a>
             </li>
             <li>
@@ -66,7 +66,7 @@ const Footer: React.FC = () => {
                 target="_blank"
                 rel="noreferrer noopener"
               >
-                <Icon icon={MEDIUM_SVG} className="w-5 h-5" />
+                <Icon icon={MEDIUM_SVG} className="w-5 h-5 fill-black" />
               </a>
             </li>
           </ul>

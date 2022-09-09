@@ -48,13 +48,13 @@ const BLOGPOSTS = [
 ];
 
 const BlogPosts: FC = () => {
-  const [slide, setSlide] = useState(0);
+  const [slide, setSlide] = useState(1);
 
   return (
-    <section className="relative py-12 bg-blue-600 md:py-32">
+    <section className="relative py-12 bg-blue-600 border-t border-white/10 md:py-32">
       <div className="flex flex-col m-4 md:m-0">
         <FadeIn>
-          <div className="flex justify-center space-y-5 pb-16 md:space-y-20">
+          <div className="flex justify-center pb-16 space-y-5 md:space-y-20">
             <h2 className="text-4xl font-black text-white uppercase md:text-6xl font-display">
               Discover our journey
             </h2>
@@ -62,7 +62,7 @@ const BlogPosts: FC = () => {
         </FadeIn>
         <FadeIn>
           <div className="relative h-96 blog-carousel">
-            <div className="absolute z-10 h-full w-96 left-0 top-0 md:bg-gradient-to-r md:from-blue-600" />
+            <div className="absolute top-0 left-0 z-10 h-full w-96 md:bg-gradient-to-r md:from-blue-600" />
             <Carousel
               slide={slide}
               slides={BLOGPOSTS}
@@ -72,7 +72,7 @@ const BlogPosts: FC = () => {
                 setSlide(i);
               }}
             />
-            <div className="absolute z-10 h-full w-96 right-0 top-0 md:bg-gradient-to-l md:from-blue-600" />
+            <div className="absolute top-0 right-0 z-10 h-full w-96 md:bg-gradient-to-l md:from-blue-600" />
           </div>
           <div className="flex justify-center py-5 mt-10">
             {BLOGPOSTS.map((post, i) => {
@@ -85,7 +85,7 @@ const BlogPosts: FC = () => {
                     setSlide(i);
                   }}
                   className={cx({
-                    'relative w-28 h-0.5 border border-white': true,
+                    'relative w-28 h-0.5 border border-white/20': true,
                   })}
                 >
                   {slide === i && (

@@ -72,7 +72,7 @@ const Rason: React.FC = () => {
               LandGriffon builds on our expertise in environmental data, user-centric design, and
               artificial intelligence-based satellite monitoring. We help companies access,
               understand, and efficiently use the data and recommendations of the sustainability
-              community. Together we can transform sustainable ambitions into action.
+              community.{''}
               <strong className="font-bold">
                 Together we can transform sustainable ambitions into action.
               </strong>

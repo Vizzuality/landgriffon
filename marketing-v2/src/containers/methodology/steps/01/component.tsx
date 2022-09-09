@@ -28,12 +28,6 @@ const Step01: React.FC = () => {
             whether that is exact producer locations, a weighted map of commodity production, or
             country level sourcing.
           </p>
-
-          <p className="text-xl">
-            The accuracy of insights will vary depending on how accurate your inputted data is, but
-            for all levels it gives a valuable direction as to where action and attention needs to
-            be prioritized.
-          </p>
         </div>
       </div>
 

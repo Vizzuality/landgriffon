@@ -1,25 +1,3 @@
-"""
-The script converts the csv with country data to H3 grid cells using the already populated geo_region and admin_region
-tables to get the h3 hexes for each country. This way it only uses a sql join and avoid doing geo-spatial operations and
-querys.
-
-Postgres connection params read from environment:
- - API_POSTGRES_HOST
- - API_POSTGRES_USER
- - API_POSTGRES_PASSWORD
- - API_POSTGRES_DATABASE
-
-Usage:
-    csv_to_h3_table.py <table> <column> <year>
-
-Arguments:
-    <file>            Path to the csv file with the hdi data.
-    <table>           Postgresql table to create or overwrite.
-    <column>          Column to insert HDI data into.
-    <year>            Year of the data used.
-    <iso3_column>     Column with the country iso3 code.
-"""
-
 import argparse
 import logging
 import os
@@ -71,7 +49,7 @@ def get_material_ids_from_hs_codes(conn, hs_codes: list) -> pd.DataFrame:
         )
 
 
-def copy_from_stringio(conn: connection, df: pd.DataFrame, table: str):
+def copy_from_stringio(conn: connection, df: pd.DataFrame):
     """
     Save the dataframe in memory
     and use copy_from() to copy it to the table
@@ -80,15 +58,21 @@ def copy_from_stringio(conn: connection, df: pd.DataFrame, table: str):
     buffer = StringIO()
     df.to_csv(buffer, index=False, header=False, na_rep="NULL")
     buffer.seek(0)
-    log.info(f"Copying {len(df)} records into {table}...")
+    log.info(f"Copying {len(df)} records into indicator_coefficient...")
     with conn:
         with conn.cursor() as cursor:
-            cursor.copy_from(buffer, table, sep=",", columns=df.columns, null="NULL")
+            cursor.copy_from(
+                buffer,
+                "indicator_coefficient",
+                sep=",",
+                columns=df.columns,
+                null="NULL",
+            )
     log.info("Done!")
 
 
 def main(conn: connection, data: pd.DataFrame, indicator_code: str):
-    with conn:  # do the selects in it's own transaction separated from the insert
+    with conn:  # get all the IDs in their own transaction separated from the insert
         with conn.cursor() as cursor:
             # get Unsustainable water use indicator id
             cursor.execute(
@@ -115,19 +99,19 @@ def main(conn: connection, data: pd.DataFrame, indicator_code: str):
         ["value", "year", "adminRegionId", "indicatorId", "materialId"]
     ]
     # insert all the data!
-    copy_from_stringio(conn, data_to_insert, "indicator_coefficient")
+    copy_from_stringio(conn, data_to_insert)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Process and ingest csv dataset with per country data."
+        description="Process and ingest csv data with per country data into indicator_coefficient table."
     )
     parser.add_argument("file", help="file path to the csv")
     parser.add_argument("indicator_code", help="Name code of the indicator")
     args = parser.parse_args()
 
     data = load_data(Path(args.file))
-    data["year"] = 2005  # NOTE: year is hardcoded for WUW indicator coeffcients!
+    data["year"] = 2005  # NOTE: year is hardcoded for UWU indicator coefficients!
     conn = postgres_thread_pool.getconn()
 
     main(conn, data, args.indicator_code)

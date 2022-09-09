@@ -11791,7 +11791,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"history@npm:^5.2.0":
+"history@npm:^5.0.0, history@npm:^5.2.0":
   version: 5.3.0
   resolution: "history@npm:5.3.0"
   dependencies:
@@ -13485,6 +13485,7 @@ __metadata:
     react-redux: 7.2.4
     react-scroll-percentage: 4.2.0
     react-use-cookie: ^1.4.0
+    react-use-scroll-direction: ^0.1.0
     rooks: 5.10.0
     sharp: 0.29.3
     start-server-and-test: 1.14.0
@@ -16943,6 +16944,17 @@ __metadata:
   peerDependencies:
     react: ">=16.8"
   checksum: 79e4494ab60858e7e6cbdbe5d55e8968f9d66100b6914de759c6db18b894d4c137976b91551bfc0226eec44101c06751fe9091ac30a0e24f480a00d5a3f6f595
+  languageName: node
+  linkType: hard
+
+"react-use-scroll-direction@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "react-use-scroll-direction@npm:0.1.0"
+  dependencies:
+    history: ^5.0.0
+  peerDependencies:
+    react: ">=16"
+  checksum: 5d5d8a95381612023bb1a8d489a73e38658d04bb32f0df7d2dabb1200156a3c60af1151cd86f2feb80a7922dda676c649446b1979fb6f15ec8a9a3cc83c5423d
   languageName: node
   linkType: hard
 

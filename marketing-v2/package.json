@@ -51,6 +51,7 @@
     "react-redux": "7.2.4",
     "react-scroll-percentage": "4.2.0",
     "react-use-cookie": "^1.4.0",
+    "react-use-scroll-direction": "^0.1.0",
     "rooks": "5.10.0",
     "sharp": "0.29.3",
     "tailwindcss": "3.0.24",

@@ -1,9 +1,9 @@
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { apiService } from 'services/api';
-import type { Material, MaterialTreeItem } from 'types';
+import type { Material, MaterialTreeItem, PaginationMetadata } from 'types';
 
-const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
+const DEFAULT_QUERY_OPTIONS = {
   placeholderData: [],
   retry: false,
   keepPreviousData: true,
@@ -21,33 +21,46 @@ export type MaterialsTreesParams = {
   scenarioId?: string;
 };
 
-export function useMaterials() {
+interface MaterialApiResponse {
+  metadata: PaginationMetadata;
+  data: Material[];
+}
+
+export const useMaterials = <T = MaterialApiResponse>(
+  options?: Partial<UseQueryOptions<MaterialApiResponse, unknown, T>>,
+) => {
   const query = useQuery(
     ['materials'],
     async () =>
       apiService
-        .request<Material>({
+        .request<MaterialApiResponse>({
           method: 'GET',
           url: '/materials',
         })
         .then((data) => data.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
+      placeholderData: { data: [], metadata: null },
+      ...options,
     },
   );
 
   return query;
+};
+
+interface MaterialsTreeResponse {
+  data: MaterialTreeItem[];
 }
 
-export function useMaterialsTrees(
+export const useMaterialsTrees = <T = MaterialTreeItem[]>(
   params: MaterialsTreesParams = {},
-  options: UseQueryOptions = {},
-) {
+  options: UseQueryOptions<MaterialTreeItem[], unknown, T> = {},
+) => {
   const query = useQuery(
     ['materials-trees', params],
     async () =>
       apiService
-        .request<{ data: MaterialTreeItem[] }>({
+        .request<MaterialsTreeResponse>({
           method: 'GET',
           url: '/materials/trees',
           params,
@@ -60,4 +73,4 @@ export function useMaterialsTrees(
   );
 
   return query;
-}
+};

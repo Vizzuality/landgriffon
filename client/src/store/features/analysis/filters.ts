@@ -2,7 +2,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 
 import type { RootState } from 'store';
-import type { Indicator } from 'types';
+import type { Indicator, Material } from 'types';
 
 type Option = {
   label: string;
@@ -20,6 +20,9 @@ export type AnalysisFiltersState = {
   origins: Option[];
   suppliers: Option[];
   locationTypes: Option[];
+
+  // used for the material layer
+  materialId: Material['id'];
 };
 
 type FeatureState = RootState & { 'analysis/filters': AnalysisFiltersState };
@@ -36,6 +39,7 @@ export const initialState: AnalysisFiltersState = {
   origins: [],
   suppliers: [],
   locationTypes: [],
+  materialId: null,
 };
 
 export const analysisFiltersSlice = createSlice({

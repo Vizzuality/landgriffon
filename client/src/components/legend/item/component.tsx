@@ -37,7 +37,7 @@ export const LegendItem = ({
       })}
     >
       <DragHandle className="invisible group-hover:visible" />
-      <div className="flex-grow space-y-2">
+      <div className="flex-grow min-w-0 space-y-2">
         {isLoading && (
           <div className="flex justify-center w-full align-center">
             <Loading />
@@ -49,9 +49,7 @@ export const LegendItem = ({
               hidden: isLoading,
             })}
           >
-            <div className="flex flex-row justify-start text-sm gap-x-1">
-              <div className="max-w-full">{name}</div>
-            </div>
+            <div className="flex-grow max-w-full min-w-0 text-sm text-left">{name}</div>
             {showToolbar && info && (
               <div className="flex flex-row items-center">
                 <div className="flex items-center space-x-1 mt-0.5">

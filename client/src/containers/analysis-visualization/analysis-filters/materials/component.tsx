@@ -5,8 +5,7 @@ import type { MaterialsTreesParams } from 'hooks/materials';
 import { useMaterialsTrees } from 'hooks/materials';
 
 import TreeSelect from 'components/tree-select';
-
-import type { TreeSelectProps } from 'components/tree-select/types';
+import type { TreeSelectOption, TreeSelectProps } from 'components/tree-select/types';
 
 interface MaterialsFilterProps
   extends MaterialsTreesParams,
@@ -15,8 +14,8 @@ interface MaterialsFilterProps
       'current' | 'multiple' | 'onChange' | 'theme' | 'ellipsis' | 'fitContent'
     > {}
 
-const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
-  multiple,
+const MaterialsFilter = ({
+  multiple = false,
   current,
   depth = 1,
   supplierIds,
@@ -25,11 +24,11 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
   locationTypes,
   withSourcingLocations, // Do not a default; backend will override depth if this is set at all
   scenarioId,
-  onChange = () => null,
+  onChange,
   theme,
   ellipsis,
   fitContent,
-}) => {
+}: MaterialsFilterProps) => {
   const { data, isFetching } = useMaterialsTrees(
     {
       depth,
@@ -46,7 +45,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
     },
   );
 
-  const treeOptions: TreeSelectProps['options'] = useMemo(
+  const treeOptions = useMemo(
     () =>
       sortBy(
         data?.map(({ name, id, children }) => ({
@@ -61,13 +60,13 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
 
   return (
     <TreeSelect
-      multiple={multiple}
+      multiple={multiple as false}
       showSearch
       loading={isFetching}
       options={treeOptions}
       placeholder="Materials"
-      onChange={onChange}
-      current={current}
+      onChange={onChange as (value: TreeSelectOption) => void}
+      current={current as TreeSelectOption}
       theme={theme}
       fitContent={fitContent}
       ellipsis={ellipsis}

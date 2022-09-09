@@ -26,6 +26,7 @@ import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-lo
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { InterventionBuilder } from 'modules/scenario-interventions/services/intervention-builder.service';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { InsertResult } from 'typeorm';
 
 @Injectable()
 export class ScenarioInterventionsService extends AppBaseService<
@@ -192,15 +193,19 @@ export class ScenarioInterventionsService extends AppBaseService<
      *
      *
      */
-    const savedIntervention: ScenarioIntervention =
-      await this.scenarioInterventionRepository.save(newIntervention);
+    const savedIntervention: InsertResult =
+      await this.scenarioInterventionRepository.saveNewIntervention(
+        newIntervention,
+      );
 
-    this.logger.log(`New Intervention with Id: ${savedIntervention.id} saved.`);
+    this.logger.log(
+      `New Intervention with Id: ${savedIntervention.identifiers[0].id} saved.`,
+    );
 
     return {
-      id: savedIntervention.id,
-      title: savedIntervention.title,
-      updatedById: savedIntervention.updatedById,
+      id: savedIntervention.identifiers[0].id,
+      title: newIntervention.title,
+      updatedById: newIntervention.updatedById,
     };
   }
 

@@ -13,6 +13,8 @@ import {
   createAdminRegion,
   createBusinessUnit,
   createGeoRegion,
+  createIndicatorRecord,
+  createIndicatorSource,
   createMaterial,
   createScenario,
   createScenarioIntervention,
@@ -63,6 +65,7 @@ import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { Unit } from 'modules/units/unit.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
+import { FourMockIndicatorRecords } from '../../utils/indicator-records-preconditions';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -160,7 +163,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       .overrideProvider(GeoCodingAbstractClass)
       .useValue(geoCodingServiceMock)
       .overrideProvider(IndicatorRecordsService)
-      .useValue({ createIndicatorRecordsBySourcingRecords: () => null })
+      .useValue({
+        createIndicatorRecordsBySourcingRecords: () => FourMockIndicatorRecords,
+      })
       .compile();
 
     scenarioInterventionRepository =
@@ -1864,8 +1869,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             },
           },
         );
-
-        console.log(canceledSourcingLocations);
 
         expect(canceledSourcingLocations).toHaveLength(2);
         expect(

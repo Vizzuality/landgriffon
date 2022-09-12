@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
+import { XCircleIcon } from '@heroicons/react/solid';
 
 import { useUploadDataSource } from 'hooks/sourcing-data';
 import { useTask } from 'hooks/tasks';
@@ -7,7 +8,6 @@ import { useTask } from 'hooks/tasks';
 import FileDropzone from 'components/file-dropzone';
 
 import type { FileDropZoneProps } from 'components/file-dropzone/types';
-import { XCircleIcon } from '@heroicons/react/solid';
 
 const MAX_SIZE = Number(process.env.NEXT_PUBLIC_FILE_UPLOADER_MAX_SIZE || '10000000');
 
@@ -60,6 +60,9 @@ const UploadDataSourceModal: React.FC = () => {
     refetchInterval: (data) => (data?.status === 'failed' ? false : 5000),
   });
 
+  const isUploadingAndProcessing =
+    (isFetched && isLoading) || uploadDataSource.isLoading || data?.status === 'processing';
+
   return (
     <div className="relative w-full max-w-[640px]">
       <div className="relative z-10 p-4 bg-white shadow-lg rounded-xl">
@@ -67,10 +70,11 @@ const UploadDataSourceModal: React.FC = () => {
           {...uploadOptions}
           onDrop={handleOnDrop}
           onDropRejected={handleFileRejected}
+          disabled={isUploadingAndProcessing}
         />
       </div>
 
-      {(uploadDataSource.isLoading || isLoading || data?.status === 'processing') && (
+      {isUploadingAndProcessing && (
         <div className="absolute w-full px-20">
           <div className="px-10 py-4 bg-white rounded-b-xl">
             <div className="w-full h-[4px] rounded bg-gradient-to-r from-[#5FCFF9] via-[#42A56A] to-[#F5CA7D]" />
@@ -90,9 +94,11 @@ const UploadDataSourceModal: React.FC = () => {
             {data.errors.length > 1 && 's'} with your file. Please correct them and try again.
           </p>
           <ul className="pl-12 mt-2 space-y-2 list-disc">
-            {data.errors.map((error) => (
-              <li key={error.Error}>{error.Error}</li>
-            ))}
+            {data.errors.map((error) =>
+              Object.values(error).map((errorMessage) => (
+                <li key={errorMessage}>{errorMessage}</li>
+              )),
+            )}
           </ul>
         </div>
       )}

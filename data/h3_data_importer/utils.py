@@ -5,6 +5,7 @@ from re import sub
 
 import jsonschema
 from jsonschema import ValidationError
+from psycopg2.extensions import connection
 
 log = logging.getLogger(__name__)  # here we can use __name__ because it is an imported module
 
@@ -18,7 +19,7 @@ def snakify(s):
     return sub(r"(?<!^)(?=[A-Z])", "_", s).lower()
 
 
-def get_contextual_layer_category_enum(conn) -> set:
+def get_contextual_layer_category_enum(conn: connection) -> set:
     """Get the enum of contextual layer categories"""
     with conn:
         with conn.cursor() as cursor:
@@ -28,7 +29,13 @@ def get_contextual_layer_category_enum(conn) -> set:
 
 
 def insert_to_h3_data_and_contextual_layer_tables(
-    table: str, column: str, h3_res: int, dataset: str, category: str, year: int, connection
+    table: str,
+    column: str,
+    h3_res: int,
+    dataset: str,
+    category: str,
+    year: int,
+    connection: connection,
 ):
     categories_enum = get_contextual_layer_category_enum(connection)
     if category not in categories_enum:
@@ -39,9 +46,7 @@ def insert_to_h3_data_and_contextual_layer_tables(
         with connection.cursor() as cursor:
             # remove existing entries
             cursor.execute(f"""DELETE FROM "h3_data" WHERE "h3tableName" = '{table}';""")
-            cursor.execute(
-                f"""DELETE FROM "contextual_layer" WHERE "name" = '{dataset}'"""
-            )
+            cursor.execute(f"""DELETE FROM "contextual_layer" WHERE "name" = '{dataset}'""")
 
             # insert new entries
             log.info("Inserting record into h3_data table...")
@@ -61,7 +66,8 @@ def insert_to_h3_data_and_contextual_layer_tables(
             contextual_data_id = cursor.fetchall()[0][0]
             # insert contextual_layer entry id into h3_table
             cursor.execute(
-                f"""update "h3_data"  set "contextualLayerId" = '{contextual_data_id}' where  "h3tableName" = '{table}';"""
+                f"""update "h3_data"  set "contextualLayerId" = '{contextual_data_id}' 
+                where  "h3tableName" = '{table}';"""
             )
 
 
@@ -88,3 +94,19 @@ def get_metadata(table: str) -> dict:
             # todo: should we raise exception or return empty metadata and keep going?
             raise e
         return metadata
+
+
+def link_to_indicator_table(connection: connection, indicator_code: str, h3_column_name: str):
+    """Gets indicatorID and links it to the h3table corresponding entry"""
+    with connection:
+        with connection.cursor() as cursor:
+            cursor.execute(f"""select id from "indicator" where "nameCode" = '{indicator_code}'""")
+            indicator_id = cursor.fetchall()[0][0]
+            if indicator_id:
+                cursor.execute(
+                    f"""update "h3_data"  set "indicatorId" = '{indicator_id}' 
+                    where  "h3columnName" = '{h3_column_name}'"""
+                )
+                log.info(f"Updated indicatorId '{indicator_id}' in h3_data for {h3_column_name}")
+            else:
+                log.error(f"Indicator with name code {indicator_code} does not exist")

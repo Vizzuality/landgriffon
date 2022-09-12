@@ -367,7 +367,7 @@ const TreeSelect = ({
           ) : (
             <div className="inline-flex items-center min-w-0 my-auto">
               {selected ? (
-                <span className="font-bold truncate">{selected.label}</span>
+                <span className="min-w-0 font-bold truncate">{selected.label}</span>
               ) : (
                 // the placeholder is in the search input already
                 showSearch || <span className="text-gray-500">{placeholder}</span>

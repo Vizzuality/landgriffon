@@ -1,16 +1,14 @@
-import type { UseQueryResult, UseQueryOptions } from 'react-query';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { apiService } from 'services/api';
 
+import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
 import type { APIMetadataPagination } from 'types';
 
 type Task = {
   id: string;
   type: string;
   status: string;
-  errors?: {
-    Error: string;
-  }[];
+  errors?: Record<string, string>[];
 };
 
 type TaskAPIResponse = Task;

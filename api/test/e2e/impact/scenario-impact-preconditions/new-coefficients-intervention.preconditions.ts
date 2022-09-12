@@ -28,9 +28,15 @@ export async function createNewCoefficientsInterventionPreconditions(): Promise<
   indicator: Indicator;
   scenarioIntervention: ScenarioIntervention;
 }> {
+  // Creating Admin Regions
   const adminRegion: AdminRegion = await createAdminRegion({
     name: 'India',
   });
+  const adminRegionBrazil: AdminRegion = await createAdminRegion({
+    name: 'Brazil',
+  });
+
+  // Creating Indicator
   const unit: Unit = await createUnit({ shortName: 'fakeUnit' });
   const indicator: Indicator = await createIndicator({
     name: 'Deforestation',
@@ -38,6 +44,7 @@ export async function createNewCoefficientsInterventionPreconditions(): Promise<
     nameCode: INDICATOR_TYPES.DEFORESTATION,
   });
 
+  // Creating Materials
   const textile: Material = await createMaterial({ name: 'Textile' });
 
   const wool: Material = await createMaterial({
@@ -49,9 +56,17 @@ export async function createNewCoefficientsInterventionPreconditions(): Promise<
     parent: textile,
   });
 
+  const rubber: Material = await createMaterial({
+    name: 'Rubber',
+  });
+
+  // Creating Business Unit
+
   const businessUnit: BusinessUnit = await createBusinessUnit({
     name: 'Fake Business Unit',
   });
+
+  // Creating Supplier
 
   const supplier: Supplier = await createSupplier({
     name: 'Fake Supplier',
@@ -61,7 +76,17 @@ export async function createNewCoefficientsInterventionPreconditions(): Promise<
 
   const scenarioIntervention: ScenarioIntervention =
     await createScenarioIntervention();
+
   // Sourcing Locations - real ones
+
+  const rubberSourcingLocation: SourcingLocation = await createSourcingLocation(
+    {
+      material: rubber,
+      businessUnit,
+      t1Supplier: supplier,
+      adminRegion: adminRegionBrazil,
+    },
+  );
 
   const cottonSourcingLocation: SourcingLocation = await createSourcingLocation(
     {
@@ -149,14 +174,19 @@ export async function createNewCoefficientsInterventionPreconditions(): Promise<
   const indicatorRecordCottonCancelled: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
-      value: 1200,
+      value: -1200,
     });
 
   const indicatorRecordWoolCancelled: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
-      value: 1200,
+      value: -1200,
     });
+
+  const indicatorRecordRubber: IndicatorRecord = await createIndicatorRecord({
+    indicator,
+    value: 3000,
+  });
 
   // Sourcing Records + Indicator Records for Real Sourcing Locations
 
@@ -170,6 +200,12 @@ export async function createNewCoefficientsInterventionPreconditions(): Promise<
     year: 2020,
     indicatorRecords: [indicatorRecordWool],
     sourcingLocation: woolSourcingLocation,
+  });
+
+  await createSourcingRecord({
+    year: 2020,
+    indicatorRecords: [indicatorRecordRubber],
+    sourcingLocation: rubberSourcingLocation,
   });
 
   // Sourcing Records + Indicator Records for Canceled Sourcing Locations

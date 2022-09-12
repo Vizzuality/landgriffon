@@ -8,10 +8,9 @@ Postgres connection params read from environment:
  - API_POSTGRES_DATABASE
 
 Usage:
-    vector_folder_to_h3_table.py <folder> <table> <column> <dataset> <category> <year> [--h3-res=6]
-
+    vector_folder_to_h3_table.py <folder> <table> <column> <dataset> <category> <year> [--indicator] [--h3-res=6]
 Arguments:
-    <folder>          Folder containing GeoTiffs.
+    <folder>          Folder containing vector file.
     <table>           Postgresql table to overwrite.
     <column>          Column name of the feature to keep.
     <dataset>         Dataset name
@@ -19,8 +18,10 @@ Arguments:
     <year>            Year of the imported dataset
 Options:
     -h                Show help
+    --indicator=<indicator_code>    Indicator nameCode
     --h3-res=<res>    h3 resolution to use [default: 6].
 """
+import argparse
 import logging
 import os
 from io import StringIO
@@ -33,7 +34,8 @@ import psycopg2
 from docopt import docopt
 from h3ronpy import vector
 from psycopg2.pool import ThreadedConnectionPool
-from utils import insert_to_h3_data_and_contextual_layer_tables, slugify
+from utils import (insert_to_h3_data_and_contextual_layer_tables,
+                   link_to_indicator_table, slugify)
 
 DTYPES_TO_PG = {
     "object": "text",
@@ -144,7 +146,16 @@ def insert_to_h3_grid_table(
     log.info(f"{len(df)} values written to database.")
 
 
-def main(folder, table, column, dataset, category, year, h3_res):
+def main(
+    folder: str,
+    table: str,
+    column: str,
+    dataset: str,
+    category: str,
+    year: int,
+    h3_res: str,
+    indicator_code: str,
+):
     vec_extensions = "gpkg shp json geojson".split()
     path = Path(folder)
     vectors = []
@@ -159,7 +170,8 @@ def main(folder, table, column, dataset, category, year, h3_res):
         df = vector_file_to_h3dataframe(vectors[0], column, h3_res)
         create_h3_grid_table(table, df, conn)
         insert_to_h3_grid_table(table, df, conn)  # apply multiprocessing here if needed
-        column = slugify(column)  # slugify the column name to follow the convention of db column naming
+        # slugify the column name to follow the convention of db column naming
+        column = slugify(column)
         insert_to_h3_data_and_contextual_layer_tables(table, column, h3_res, dataset, category, year, conn)
     else:
         mssg = (
@@ -167,18 +179,41 @@ def main(folder, table, column, dataset, category, year, h3_res):
             f" For now we only support folders with just one vector file."
         )
         logging.error(mssg)
-        return
+        return  # gracefully exit without exception
+
+    if indicator_code:  # if given, consider layer as indicator update h3_table
+        link_to_indicator_table(
+            conn,
+            indicator_code,
+            column
+        )
+
     postgres_thread_pool.putconn(conn, close=True)
 
 
 if __name__ == "__main__":
-    args = docopt(__doc__)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("folder", help="Folder containing vector file.")
+    parser.add_argument("table", help="postgresql table to overwrite.")
+    parser.add_argument("column", help="Column name of the feature to keep.")
+    parser.add_argument("dataset", help="Dataset name")
+    parser.add_argument(
+        "category",
+        help="Dataset category",
+        choices=["Environmental datasets", "Business datasets", "Food and agriculture", "Default"]
+    )
+    parser.add_argument("year", type=int, help="Year of the imported dataset")
+    parser.add_argument("--indicator", help="Indicator nameCode", default=None)
+    parser.add_argument("--h3-res", help="h3 resolution to use", dest="h3res", default=6, type=int)
+    args = parser.parse_args()
+
     main(
-        args["<folder>"],
-        args["<table>"],
-        args["<column>"],
-        args["<dataset>"],
-        args["<category>"],
-        args["<year>"],
-        int(args["--h3-res"]),
+        args.folder,
+        args.table,
+        args.column,
+        args.dataset,
+        args.category,
+        args.year,
+        args.h3res,
+        args.indicator,
     )

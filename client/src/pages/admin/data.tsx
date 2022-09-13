@@ -152,17 +152,17 @@ const AdminDataPage: React.FC = () => {
           columns={[
             {
               id: 'material',
-              title: 'Material',
+              header: 'Material',
               size: 280,
               align: 'left',
               isSticky: true,
               enableSorting: true,
             },
-            { id: 'businessUnit', title: 'Business Unit' },
-            { id: 't1Supplier', title: 'T1 Supplier' },
-            { id: 'producer', title: 'Producer' },
-            { id: 'locationType', title: 'Location Type' },
-            { id: 'country', title: 'Country' },
+            { id: 'businessUnit', header: 'Business Unit' },
+            { id: 't1Supplier', header: 'T1 Supplier' },
+            { id: 'producer', header: 'Producer' },
+            { id: 'locationType', header: 'Location Type' },
+            { id: 'country', header: 'Country' },
             ...yearsColumns,
           ]}
           state={{

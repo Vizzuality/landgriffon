@@ -3,6 +3,7 @@ import { flexRender } from '@tanstack/react-table';
 import classNames from 'classnames';
 import type { HTMLAttributes } from 'react';
 import { useMemo } from 'react';
+import CellWrapper from './cell';
 
 interface TableRowProps<T> extends HTMLAttributes<HTMLTableRowElement> {
   row: Row<T>;
@@ -39,7 +40,9 @@ const TableRow = <T,>({ row, theme, isLast, ...props }: TableRowProps<T>) => {
                 cell.column.columnDef.meta.isSticky === 'right',
             })}
           >
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            <CellWrapper context={cell.getContext()}>
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </CellWrapper>
           </td>
         ))}
       </tr>

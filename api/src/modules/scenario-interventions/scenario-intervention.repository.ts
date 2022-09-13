@@ -162,22 +162,21 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
       this.logger.log(
         `Saving ${impacts.length} Indicator Records for Intervention with Id: ${newIntervention.id}`,
       );
-      // LOGs suggest to insert one a t a time
-      for (const [index, dataChunk] of chunk(impacts, 1000).entries()) {
+      const insertPromises: Array<Promise<InsertResult>> = [];
+      for (const [index, dataChunk] of chunk(impacts, 10).entries()) {
         this.logger.debug(
           `Inserting chunk #${index} (${dataChunk.length} items)...`,
         );
-        const promises: Promise<InsertResult>[] = dataChunk.map(
-          (row: IndicatorRecord) =>
-            queryRunner.manager
-              .createQueryBuilder()
-              .insert()
-              .into(IndicatorRecord)
-              .values(row)
-              .execute(),
+        insertPromises.push(
+          queryRunner.manager
+            .createQueryBuilder()
+            .insert()
+            .into(IndicatorRecord)
+            .values(dataChunk)
+            .execute(),
         );
-        await Promise.all(promises);
       }
+      await Promise.all(insertPromises);
       // LOGs suggest being inserted once
       await queryRunner.manager
         .createQueryBuilder()

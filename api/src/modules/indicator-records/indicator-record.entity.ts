@@ -1,5 +1,4 @@
 import {
-  AfterInsert,
   Column,
   Entity,
   getManager,
@@ -42,7 +41,7 @@ export enum INDICATOR_RECORD_STATUS {
 export class IndicatorRecord extends TimestampedBaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  id: string;
 
   @ApiProperty()
   @Column({ type: 'float', nullable: true })
@@ -104,7 +103,7 @@ export class IndicatorRecord extends TimestampedBaseEntity {
   @Column({ nullable: false })
   materialH3DataId: string;
 
-  @AfterInsert()
+  //@AfterInsert()
   static async updateImpactView(): Promise<void> {
     await getManager().query(
       `REFRESH MATERIALIZED VIEW ${IMPACT_VIEW_NAME} WITH DATA`,

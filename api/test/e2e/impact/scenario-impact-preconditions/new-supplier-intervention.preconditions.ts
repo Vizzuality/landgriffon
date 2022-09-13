@@ -141,13 +141,13 @@ export async function createNewSupplierInterventionPreconditions(): Promise<{
   const indicatorRecordCottonCancelled: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
-      value: 1200,
+      value: -1200,
     });
 
   const indicatorRecordWoolCancelled: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
-      value: 1200,
+      value: -1200,
     });
 
   const indicatorRecordWoolReplacing: IndicatorRecord =

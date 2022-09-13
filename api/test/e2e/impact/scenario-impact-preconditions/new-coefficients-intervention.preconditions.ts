@@ -153,12 +153,12 @@ export async function createNewCoefficientsInterventionPreconditions(): Promise<
   const indicatorRecordCottonReplacing: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
-      value: 1000,
+      value: 400,
     });
   const indicatorRecord1WoolReplacing: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
-      value: 1000,
+      value: 500,
     });
 
   const indicatorRecordCotton: IndicatorRecord = await createIndicatorRecord({
@@ -168,19 +168,19 @@ export async function createNewCoefficientsInterventionPreconditions(): Promise<
 
   const indicatorRecordWool: IndicatorRecord = await createIndicatorRecord({
     indicator,
-    value: 1200,
+    value: 1500,
   });
 
   const indicatorRecordCottonCancelled: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
-      value: -1200,
+      value: -600,
     });
 
   const indicatorRecordWoolCancelled: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
-      value: -1200,
+      value: -750,
     });
 
   const indicatorRecordRubber: IndicatorRecord = await createIndicatorRecord({

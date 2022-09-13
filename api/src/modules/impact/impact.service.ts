@@ -79,13 +79,6 @@ export class ImpactService {
         paginatedEntities.entities,
       );
 
-    // If Impact table is for Scenario Comparison, data for Impact table shall be processed accordingly
-
-    if (impactTableDto.scenarioId) {
-      dataForImpactTable =
-        ImpactService.processDataForScenarioImpactTable(dataForImpactTable);
-    }
-
     const impactTable: ImpactTable = this.buildImpactTable(
       impactTableDto,
       indicators,
@@ -258,9 +251,6 @@ export class ImpactService {
       ...(impactTableDto.supplierIds && {
         supplierIds: impactTableDto.supplierIds,
       }),
-      ...(impactTableDto.scenarioId && {
-        scenarioId: impactTableDto.scenarioId,
-      }),
     };
     switch (impactTableDto.groupBy) {
       case GROUP_BY_VALUES.MATERIAL: {
@@ -384,9 +374,6 @@ export class ImpactService {
               year: dataForYear.year,
               value: dataForYear.impact,
               isProjected: false,
-              ...(queryDto.scenarioId && {
-                interventionValue: dataForYear.interventionImpact,
-              }),
             });
             // If the year requested does no exist in the raw data, project its value getting the latest value (previous year which comes in ascendant order)
           } else {
@@ -396,21 +383,11 @@ export class ImpactService {
                     rowValuesIndex - 1
                   ].value
                 : 0;
-            const lastYearsInterventionValue: number =
-              rowValuesIndex > 0
-                ? calculatedData[namesByIndicatorIndex].values[
-                    rowValuesIndex - 1
-                  ].interventionValue || 0
-                : 0;
+
             calculatedData[namesByIndicatorIndex].values.push({
               year: year,
               value: lastYearsValue + (lastYearsValue * this.growthRate) / 100,
               isProjected: true,
-              ...(queryDto.scenarioId && {
-                interventionValue:
-                  lastYearsInterventionValue +
-                  (lastYearsInterventionValue * this.growthRate) / 100,
-              }),
             });
           }
           ++rowValuesIndex;
@@ -433,56 +410,25 @@ export class ImpactService {
         );
 
         let totalInterventionSumByYear: number | null = null;
-        if (queryDto.scenarioId) {
-          totalInterventionSumByYear = calculatedData.reduce(
-            (accumulator: number, currentValue: ImpactTableRows): number => {
-              if (currentValue.values[indexOfYear].year === year)
-                accumulator += Number.isFinite(
-                  currentValue.values[indexOfYear].interventionValue,
-                )
-                  ? currentValue.values[indexOfYear].interventionValue || 0
-                  : 0;
-              return accumulator;
-            },
-            0,
-          );
-        }
+
         impactTable[indicatorValuesIndex].yearSum.push({
           year,
           value: totalSumByYear,
-          ...(totalInterventionSumByYear && {
-            interventionValue: totalInterventionSumByYear,
-            absoluteDifference: totalInterventionSumByYear - totalSumByYear,
-            percentageDifference:
-              ((totalInterventionSumByYear - totalSumByYear) / totalSumByYear) *
-              100,
-          }),
         });
       });
       // copy and populate tree skeleton for each indicator
       const skeleton: ImpactTableRows[] = JSON.parse(JSON.stringify(entities));
       skeleton.forEach((entity: any) => {
-        this.populateValuesRecursively(
-          entity,
-          calculatedData,
-          rangeOfYears,
-          queryDto.scenarioId,
-        );
+        this.populateValuesRecursively(entity, calculatedData, rangeOfYears);
       });
 
-      impactTable[indicatorValuesIndex].rows = queryDto.scenarioId
-        ? skeleton
-        : skeleton.filter(
-            (item: ImpactTableRows) =>
-              item.children.length > 0 || item.values[0].value > 0,
-          );
+      impactTable[indicatorValuesIndex].rows = skeleton.filter(
+        (item: ImpactTableRows) =>
+          item.children.length > 0 || item.values[0].value > 0,
+      );
     });
     const purchasedTonnes: ImpactTablePurchasedTonnes[] =
-      this.getTotalPurchasedVolumeByYear(
-        rangeOfYears,
-        dataForImpactTable,
-        queryDto.scenarioId,
-      );
+      this.getTotalPurchasedVolumeByYear(rangeOfYears, dataForImpactTable);
     this.logger.log('Impact Table built');
 
     return { impactTable, purchasedTonnes };
@@ -580,19 +526,6 @@ export class ImpactService {
           ImpactTableRowsValues.value + item[valueIndex].value;
         entity.values[valueIndex].isProjected =
           item[valueIndex].isProjected || entity.values[valueIndex].isProjected;
-        if (scenarioId) {
-          entity.values[valueIndex].interventionValue =
-            (ImpactTableRowsValues.interventionValue ?? 0) +
-            (item[valueIndex].interventionValue || 0);
-          entity.values[valueIndex].absoluteDifference =
-            (entity.values[valueIndex].interventionValue || 0) -
-            entity.values[valueIndex].value;
-          entity.values[valueIndex].percentageDifference =
-            (((entity.values[valueIndex].interventionValue || 0) -
-              entity.values[valueIndex].value) /
-              entity.values[valueIndex].value) *
-            100;
-        }
       });
     }
     return entity.values;
@@ -656,50 +589,5 @@ export class ImpactService {
         page,
       }),
     };
-  }
-
-  /**
-   * @description Function that processes impact data for a Scenario, retrieved from DB,
-   * finds 2 objects with same groupBy name (material, supplier, etc) and year, sbut with different
-   * intervention type (replacing or canceled) and reduces it to 1 object with impact value 'before Intervention',
-   * impact value of the Intervention and absolute / percentage differences between them
-   */
-
-  private static processDataForScenarioImpactTable(
-    dataForImpactTable: ImpactTableData[],
-  ): ImpactTableData[] {
-    const dataForScenarioImpactTable: { [index: string]: ImpactTableData } =
-      dataForImpactTable.reduce(
-        (
-          result: { [index: string]: ImpactTableData },
-          item: ImpactTableData,
-        ) => {
-          const { impact, typeByIntervention, ...commonProperties } = item;
-          const key: string = Object.values(commonProperties).join('-');
-          const prevItem: ImpactTableData = result[key] || {};
-          const {
-            impact: prevImpact = 0,
-            interventionImpact: prevInterventionImpact = 0,
-          } = prevItem;
-
-          result[key] = {
-            ...item,
-            impact:
-              typeByIntervention ===
-              SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED
-                ? impact
-                : prevImpact,
-            interventionImpact:
-              typeByIntervention ===
-              SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING
-                ? impact
-                : prevInterventionImpact,
-          };
-          return result;
-        },
-        {},
-      );
-
-    return Object.values(dataForScenarioImpactTable);
   }
 }

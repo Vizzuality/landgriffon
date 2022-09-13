@@ -71,7 +71,7 @@ export class YearSumData {
   @ApiProperty()
   value: number;
   @ApiPropertyOptional()
-  interventionValue?: number;
+  scenarioValue?: number;
   @ApiPropertyOptional()
   absoluteDifference?: number;
   @ApiPropertyOptional()
@@ -84,7 +84,7 @@ export class ImpactTableRowsValues {
   @ApiProperty()
   value: number;
   @ApiPropertyOptional()
-  interventionValue?: number;
+  scenarioValue?: number;
   @ApiPropertyOptional()
   absoluteDifference?: number;
   @ApiPropertyOptional()

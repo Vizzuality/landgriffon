@@ -101,12 +101,12 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       this.createBasicSelectQuery(getActualVsScenarioImapctTable);
 
     impactDataQueryBuilder
-      .innerJoin(
+      .leftJoin(
         ScenarioIntervention,
         'scenarioIntervention',
         'sourcingLocation.scenarioInterventionId = scenarioIntervention.id',
       )
-      .innerJoin(
+      .leftJoin(
         Scenario,
         'scenario',
         'scenarioIntervention.scenarioId = scenario.id',
@@ -115,7 +115,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       new Brackets((qb: WhereExpressionBuilder) => {
         qb.where('scenario.id = :scenarioId', {
           scenarioId: getActualVsScenarioImapctTable.scenarioId,
-        }).orWhere('sourcingLocation.scenarioInterventionId = null');
+        }).orWhere('scenario.id is null');
       }),
     );
 
@@ -128,6 +128,8 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       impactDataQueryBuilder,
       getActualVsScenarioImapctTable,
     );
+
+    const sql = impactDataQueryBuilder.getSql();
 
     const dataForActualVsScenarioImpactTable: ActualVsScenarioImpactTableData[] =
       await impactDataQueryBuilder.getRawMany();

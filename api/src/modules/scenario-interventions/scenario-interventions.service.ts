@@ -73,6 +73,8 @@ export class ScenarioInterventionsService extends AppBaseService<
         'newLocationType',
         'newIndicatorCoefficients',
         'newLocationAddressInput',
+        'newLocationLatitudeInput',
+        'newLocationLongitudeInput',
         'replacedMaterials',
         'replacedBusinessUnits',
         'replacedAdminRegions',
@@ -294,6 +296,8 @@ export class ScenarioInterventionsService extends AppBaseService<
     scenarioIntervention.newLocationType = dto.newLocationType;
     scenarioIntervention.newLocationCountryInput = dto.newLocationCountryInput;
     scenarioIntervention.newLocationAddressInput = dto.newLocationAddressInput;
+    scenarioIntervention.newLocationLatitudeInput = dto.newLocationLatitude;
+    scenarioIntervention.newLocationLongitudeInput = dto.newLocationLongitude;
     scenarioIntervention.createDto = dto as unknown as JSON;
 
     return scenarioIntervention;

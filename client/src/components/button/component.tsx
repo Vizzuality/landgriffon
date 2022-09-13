@@ -1,24 +1,35 @@
 import cx from 'classnames';
 import { forwardRef } from 'react';
 import Loading from 'components/loading';
+import classNames from 'classnames';
 
 const COMMON_CLASSNAMES =
-  'inline-flex items-center overflow-hidden justify-center rounded-md cursor-pointer transition-colors';
+  'shadow-sm inline-flex items-center overflow-hidden justify-center rounded-md cursor-pointer disabled:opacity-50 disabled:pointer-events-none disabled:hover:bg-green-700';
+
 const PRIMARY =
-  'border-transparent shadow-sm text-white bg-primary hover:bg-green-800 focus:outline-offset-2 focus:outline focus:outline-green-600';
-const SECONDARY =
-  'border border-gray-300 focus:border-primary shadow-sm text-gray-700 bg-white hover:bg-gray-600 focus:outline-none focus:ring-1 focus:ring-green-700';
+  'shadow-sm border-transparent text-white bg-primary hover:bg-green-800 focus:outline-offset-2 focus:outline focus:outline-green-600';
+
+const BASE_BORDER =
+  'border bg-transparent focus:outline-offset-2 focus:outline focus:outline-none focus:ring-1';
+
+const SECONDARY = classNames(
+  BASE_BORDER,
+  'border border-gray-300 focus:border-primary text-gray-700 hover:bg-gray-50 focus:ring-green-700',
+);
 
 const TERTIARY =
   'border-transparent shadow-sm text-white bg-gray-500 hover:bg-gray-700 focus:outline-offset-2 focus:outline focus:outline-gray-500/20';
+
+const PRIMARY_LIGHT = classNames(BASE_BORDER, 'text-primary border-primary');
 
 export const THEME = {
   default: COMMON_CLASSNAMES,
   primary: PRIMARY,
   secondary: SECONDARY,
   tertiary: TERTIARY,
-  textLight: 'bg-transparent text-gray-500 focus:outline-none focus:text-black',
-};
+  textLight: '!shadow-none bg-transparent text-gray-500 focus:outline-none focus:text-black',
+  primaryLight: PRIMARY_LIGHT,
+} as const;
 
 const SIZE = {
   xs: 'font-medium text-xs px-2.5 py-1.5',
@@ -28,7 +39,7 @@ const SIZE = {
 };
 
 export type AnchorButtonProps = {
-  theme?: 'primary' | 'secondary' | 'tertiary' | 'textLight';
+  theme?: keyof typeof THEME;
   size?: 'xs' | 'base' | 'xl' | 'text';
   loading?: boolean;
   icon?: React.ReactNode;
@@ -54,14 +65,11 @@ const hasHref = (props: ButtonProps | AnchorProps): props is AnchorProps => 'hre
 
 function buildClassName({
   className,
-  disabled,
   size = 'base',
   theme = 'primary',
   loading = false,
 }: AnchorProps) {
-  return cx(COMMON_CLASSNAMES, THEME[theme], SIZE[size], {
-    [className]: !!className,
-    'opacity-50 pointer-events-none hover:bg-green-700': disabled,
+  return cx(COMMON_CLASSNAMES, THEME[theme], SIZE[size], className, {
     'pointer-events-none hover:bg-green-700': loading,
   });
 }
@@ -158,7 +166,6 @@ export const Button: React.FC<ButtonProps> = ({
     type="button"
     className={buildClassName({
       className,
-      disabled,
       size,
       theme,
       loading,

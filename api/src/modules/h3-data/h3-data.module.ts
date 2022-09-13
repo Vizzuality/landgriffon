@@ -11,10 +11,13 @@ import { H3DataYearsService } from 'modules/h3-data/services/h3-data-years.servi
 import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
+import { H3DataMapService } from 'modules/h3-data/h3-data-map.service';
+import { H3DataMapRepository } from 'modules/h3-data/h3-data-map.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([H3DataRepository]),
+    TypeOrmModule.forFeature([H3DataMapRepository]),
     MaterialsModule,
     IndicatorsModule,
     UnitConversionsModule,
@@ -24,7 +27,7 @@ import { BusinessUnitsModule } from 'modules/business-units/business-units.modul
     BusinessUnitsModule,
   ],
   controllers: [H3DataController],
-  providers: [H3DataService, H3DataYearsService],
+  providers: [H3DataService, H3DataMapService, H3DataYearsService],
   exports: [H3DataService, H3DataYearsService],
 })
 export class H3DataModule {}

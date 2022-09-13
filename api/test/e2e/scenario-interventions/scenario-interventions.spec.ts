@@ -80,6 +80,8 @@ const expectedJSONAPIAttributes: string[] = [
   'newIndicatorCoefficients',
   'newLocationType',
   'newLocationAddressInput',
+  'newLocationLatitudeInput',
+  'newLocationLongitudeInput',
 ];
 
 describe('ScenarioInterventionsModule (e2e)', () => {
@@ -196,6 +198,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   });
 
   afterEach(async () => {
+    jest.clearAllMocks();
     await clearEntityTables([
       ScenarioIntervention,
       IndicatorRecord,
@@ -2105,4 +2108,55 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       expect(sourcingRecordsAfterDelete.length).toBe(0);
     });
   });
+  test(
+    'When I create a new Intervention using coordinates as new location info, ' +
+      'And I GET the new Intervention once its created' +
+      'Then the created information should have this information',
+    async () => {
+      jest
+        .spyOn(indicatorRecordRepository, 'getH3SumOverGeoRegionSQL')
+        .mockResolvedValue(1000);
+      jest
+        .spyOn(indicatorRecordRepository, 'getIndicatorRecordRawValue')
+        .mockResolvedValue(1000);
+      const preconditions = await createInterventionPreconditions();
+      const geoRegion: GeoRegion = await createGeoRegion();
+      await createAdminRegion({
+        isoA2: 'ABC',
+        geoRegion,
+      });
+
+      //CREATE
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'scenario intervention supplier',
+          startYear: 2018,
+          percentage: 50,
+          scenarioId: preconditions.scenario.id,
+          materialIds: [preconditions.material1.id],
+          supplierIds: [preconditions.supplier1.id],
+          businessUnitIds: [preconditions.businessUnit1.id],
+          adminRegionIds: [preconditions.adminRegion1.id],
+          type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          newLocationType: LOCATION_TYPES_PARAMS.POINT_OF_PRODUCTION,
+          newLocationCountryInput: 'Spain',
+          newLocationLatitude: -4,
+          newLocationLongitude: -60,
+        });
+
+      // GET
+      const response2 = await request(app.getHttpServer())
+        .get(`/api/v1/scenario-interventions/${response.body.data.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`);
+
+      expect(response2.body.data.attributes.newLocationLatitudeInput).toEqual(
+        '-4',
+      );
+      expect(response2.body.data.attributes.newLocationLongitudeInput).toEqual(
+        '-60',
+      );
+    },
+  );
 });

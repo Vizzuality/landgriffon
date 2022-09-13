@@ -182,6 +182,14 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   newLocationAddressInput?: string;
 
   @ApiPropertyOptional()
+  @Column({ type: 'decimal', nullable: true })
+  newLocationLatitudeInput?: number;
+
+  @ApiPropertyOptional()
+  @Column({ type: 'decimal', nullable: true })
+  newLocationLongitudeInput?: number;
+
+  @ApiPropertyOptional()
   @Column({ nullable: true })
   newMaterialTonnageRatio?: number;
 

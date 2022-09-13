@@ -32,7 +32,7 @@ const dataToCsv: (tableData: AnalysisTableProps) => string = (tableData) => {
   str +=
     tableData.columns
       // .filter(({ dataType }) => ['number', 'string'].includes(dataType))
-      .map((column) => column.title || column.id)
+      .map((column) => column.header || column.id)
       .join(';') + LINE_SEPARATOR;
 
   tableData.data.forEach(({ name, values }) => {
@@ -134,30 +134,21 @@ const AnalysisTable: React.FC = () => {
     (year: number) => ColumnDefinition<TableDataType, number | ComparisonCellProps>
   >(
     (year) => {
-      if (showComparison) {
-        return {
-          id: `${year}`,
-          title: `${year}`,
-          fieldAccessor: (data) => {
-            return data.values.find((value) => value.year === year) as Required<
-              TableDataType['values'][0]
-            >;
-          },
-          format: (data) => {
-            return <ComparisonCell {...data} />;
-          },
-        } as ColumnDefinition<TableDataType, ComparisonCellProps>;
-      }
-
       return {
         id: `${year}`,
         title: `${year}`,
-        fieldAccessor: (data) => {
-          return data.values.find((value) => value.year === year).value;
+        enableSorting: !showComparison,
+        cell: ({ row: { original: data } }) => {
+          const value = data.values.find((value) => value.year === year) as Required<
+            TableDataType['values'][0]
+          >;
+          if (showComparison) {
+            return <ComparisonCell {...value} />;
+          }
+
+          return BIG_NUMBER_FORMAT(value.value);
         },
-        format: BIG_NUMBER_FORMAT,
-        enableSorting: true,
-      } as ColumnDefinition<TableDataType, number>;
+      } as ColumnDefinition<TableDataType, ComparisonCellProps>;
     },
     [showComparison],
   );
@@ -165,19 +156,21 @@ const AnalysisTable: React.FC = () => {
   const baseColumns = useMemo<ColumnDefinition<TableDataType, unknown>[]>(
     () => [
       {
-        id: 'indicatorId',
-        title: '',
-        fieldAccessor: (data) => data.name,
+        id: 'name',
+        header: '',
         align: 'left',
         isSticky: true,
         size: 260,
       },
       {
         id: 'datesRangeChart',
-        fieldAccessor: (row) => row.values,
-        title: years?.length ? `${years[0]}-${years[years.length - 1]}` : '-',
+        header: years?.length ? `${years[0]}-${years[years.length - 1]}` : '-',
         className: 'px-2 mx-auto',
-        format: (values: TableDataType['values']) => {
+        cell: ({
+          row: {
+            original: { values },
+          },
+        }) => {
           const actualData = values.map(({ year, value }) => ({
             x: year,
             y: value,
@@ -240,6 +233,7 @@ const AnalysisTable: React.FC = () => {
       isLoading: isFetching,
       data: tableData,
       columns: baseColumns,
+      // TODO: move this inside and ~abstract~
       manualSorting: false,
       getSortedRowModel: getSortedRowModel(),
     }),

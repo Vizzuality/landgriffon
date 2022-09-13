@@ -4,15 +4,13 @@ import {
   SortAscendingIcon,
   SortDescendingIcon,
 } from '@heroicons/react/solid';
-import type { CellContext, ColumnMeta, HeaderContext } from '@tanstack/react-table';
+import type { CellContext, HeaderContext } from '@tanstack/react-table';
 import classNames from 'classnames';
-import type { HTMLAttributes } from 'react';
 import { useMemo } from 'react';
 
-type CellProps<T, C> = {
+interface CellProps<T, C> {
   context: CellContext<T, C>;
-  align?: 'left' | 'center' | 'right';
-} & Partial<HTMLAttributes<HTMLDivElement>>;
+}
 
 const getAlignmentClasses = (align: 'left' | 'center' | 'right') => {
   switch (align) {
@@ -26,44 +24,23 @@ const getAlignmentClasses = (align: 'left' | 'center' | 'right') => {
   }
 };
 
-const renderChildren = <T, C>(format: ColumnMeta<T, C>['format'], children: C) => {
-  if (!children) return '-';
-
-  return format ? format(children) : children;
-};
-
-const Cell = <T, C>({
-  style: styleProp,
-  children,
-  className,
-  context,
-  align = 'center',
-  ...props
-}: React.PropsWithChildren<CellProps<T, C>>) => {
+const CellWrapper = <T, C>({ children, context }: React.PropsWithChildren<CellProps<T, C>>) => {
   const isFirstColumn = context.table.getAllColumns()[0].id === context.column.id;
-
-  const renderedChildren = useMemo(
-    // @ts-expect-error I have to fix this types later
-    () => renderChildren(context.column.columnDef.meta.format, children),
-    [context.column.columnDef.meta.format, children],
-  );
-
+  const { align } = context.cell.column.columnDef.meta;
   const style = useMemo(
     () => ({
       paddingLeft: isFirstColumn ? `${context.row.depth * 20 + 25}px` : '25px',
-      ...styleProp,
     }),
-    [context.row.depth, isFirstColumn, styleProp],
+    [context.row.depth, isFirstColumn],
   );
 
   return (
     <div
       style={style}
-      className={classNames(getAlignmentClasses(align), {
-        'pr-5 relative flex items-center justify-start w-full h-20 truncate': !className,
-        [className]: !!className,
-      })}
-      {...props}
+      className={classNames(
+        getAlignmentClasses(align),
+        'pr-5 relative flex items-center justify-start w-full h-20 truncate',
+      )}
     >
       <div className="w-full mx-auto my-auto truncate">
         <>
@@ -79,7 +56,7 @@ const Cell = <T, C>({
               />
             </div>
           )}
-          {renderedChildren}
+          {children || '-'}
         </>
       </div>
     </div>
@@ -112,7 +89,7 @@ export const HeaderCell = <T, C>({
           getAlignmentClasses(align),
         )}
       >
-        <div className="">{children}</div>
+        <div>{children}</div>
         {column.getCanSort() && (
           <div
             className={classNames('w-5 h-5 cursor-pointer ', {
@@ -131,4 +108,4 @@ export const HeaderCell = <T, C>({
   );
 };
 
-export default Cell;
+export default CellWrapper;

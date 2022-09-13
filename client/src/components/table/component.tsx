@@ -1,4 +1,4 @@
-import type { ColumnHelper, DeepKeys, Row, TableOptions } from '@tanstack/react-table';
+import type { ColumnHelper, Row, TableOptions } from '@tanstack/react-table';
 import {
   getExpandedRowModel,
   createColumnHelper,
@@ -6,12 +6,10 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import classNames from 'classnames';
-import omit from 'lodash/omit';
 import Loading from 'components/loading';
 import Pagination from 'components/pagination';
 import PageSizeSelector from 'components/pagination/pageSizeSelector';
 import React, { useCallback, useMemo } from 'react';
-import Cell, { HeaderCell } from './cell';
 import type { ColumnDefinition } from './column';
 import TableRow, { TableHeaderRow } from './row';
 
@@ -29,29 +27,21 @@ export interface TableProps<T>
 }
 
 const columnToColumnDef = <T,>(
-  { format, align, isSticky, fieldAccessor, ...column }: ColumnDefinition<T, unknown>,
+  {
+    align,
+    isSticky = false,
+    cell = ({ row: { original } }) => original[column.id],
+    ...column
+  }: ColumnDefinition<T, unknown>,
   columnHelper: ColumnHelper<T>,
 ) => {
-  return columnHelper.accessor(fieldAccessor || (column.id as DeepKeys<T>), {
+  return columnHelper.display({
     ...column,
+    cell,
     meta: {
-      isSticky: isSticky || false,
-      align: align || 'center',
-      format,
+      isSticky,
+      align: align ?? 'center',
     },
-    cell: (context) => {
-      const value = context.getValue() as React.ReactNode;
-      return (
-        <Cell {...omit(column, ['enableSorting'])} align={align} context={context}>
-          {value}
-        </Cell>
-      );
-    },
-    header: (context) => (
-      <HeaderCell align={align} {...column} context={context}>
-        {column.title ?? column.id}
-      </HeaderCell>
-    ),
     enableSorting: !!column.enableSorting,
   });
 };
@@ -84,11 +74,6 @@ const Table = <T,>({
     },
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
-    defaultColumn: {
-      cell: (info) => info.getValue(),
-      header: (info) => <span className="capitalize">{info.header.column.id}</span>,
-      footer: null,
-    },
     columns: columnDefs,
     ...options,
   });

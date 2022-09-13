@@ -5,8 +5,6 @@ export type SelectOption<T = string> = {
   disabled?: boolean;
 };
 
-export type SelectOptions<T = string> = SelectOption<T>[];
-
 type Styles = Readonly<{
   border: boolean;
 }>;

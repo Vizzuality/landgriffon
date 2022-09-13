@@ -3,7 +3,7 @@ import { flexRender } from '@tanstack/react-table';
 import classNames from 'classnames';
 import type { HTMLAttributes } from 'react';
 import { useMemo } from 'react';
-import CellWrapper from './cell';
+import CellWrapper, { HeaderCell } from './cell';
 
 interface TableRowProps<T> extends HTMLAttributes<HTMLTableRowElement> {
   row: Row<T>;
@@ -69,9 +69,11 @@ export const TableHeaderRow = <T,>({ headerGroup }: TableHeaderRowProps<T>) => {
           key={header.id}
           style={{ width: header.column.getSize() }}
         >
-          {header.isPlaceholder
-            ? null
-            : flexRender(header.column.columnDef.header, header.getContext())}
+          {header.isPlaceholder ? null : (
+            <HeaderCell context={header.getContext()}>
+              {flexRender(header.column.columnDef.header, header.getContext())}
+            </HeaderCell>
+          )}
         </th>
       ))}
     </tr>

@@ -233,7 +233,6 @@ const AnalysisTable: React.FC = () => {
       isLoading: isFetching,
       data: tableData,
       columns: baseColumns,
-      // TODO: move this inside and ~abstract~
       manualSorting: false,
       getSortedRowModel: getSortedRowModel(),
     }),

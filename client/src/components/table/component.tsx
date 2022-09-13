@@ -1,4 +1,5 @@
 import type { ColumnHelper, Row, TableOptions } from '@tanstack/react-table';
+import { getSortedRowModel } from '@tanstack/react-table';
 import {
   getExpandedRowModel,
   createColumnHelper,
@@ -74,6 +75,7 @@ const Table = <T,>({
     },
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     columns: columnDefs,
     ...options,
   });

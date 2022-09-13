@@ -26,7 +26,7 @@ const getAlignmentClasses = (align: 'left' | 'center' | 'right') => {
 
 const CellWrapper = <T, C>({ children, context }: React.PropsWithChildren<CellProps<T, C>>) => {
   const isFirstColumn = context.table.getAllColumns()[0].id === context.column.id;
-  const { align } = context.cell.column.columnDef.meta;
+  const { align } = context.column.columnDef.meta;
   const style = useMemo(
     () => ({
       paddingLeft: isFirstColumn ? `${context.row.depth * 20 + 25}px` : '25px',
@@ -64,22 +64,21 @@ const CellWrapper = <T, C>({ children, context }: React.PropsWithChildren<CellPr
 };
 
 interface HeaderCellProps<T, C> {
-  className?: string;
-  align?: 'left' | 'center' | 'right';
   context: HeaderContext<T, C>;
 }
 
 export const HeaderCell = <T, C>({
   children,
-  className,
-  align = 'center',
-  context: { column, table },
+  context,
 }: React.PropsWithChildren<HeaderCellProps<T, C>>) => {
-  const isFirstColumn = table.getAllColumns()[0].id === column.id;
-  const isSorted = column.getIsSorted();
+  const isFirstColumn = context.table.getAllColumns()[0].id === context.column.id;
+  const isSorted = context.column.getIsSorted();
+
+  const { align } = context.column.columnDef.meta;
+
   return (
     <div
-      className={classNames(className, 'py-2 my-auto text-sm text-left text-gray-500 uppercase', {
+      className={classNames('py-2 my-auto text-sm text-left text-gray-500 uppercase', {
         'pl-[25px]': isFirstColumn,
       })}
     >
@@ -90,13 +89,13 @@ export const HeaderCell = <T, C>({
         )}
       >
         <div>{children}</div>
-        {column.getCanSort() && (
+        {context.column.getCanSort() && (
           <div
             className={classNames('w-5 h-5 cursor-pointer ', {
               'text-gray-400 hover:text-gray-500': !isSorted,
               'text-gray-500': isSorted,
             })}
-            onClick={column.getToggleSortingHandler()}
+            onClick={context.column.getToggleSortingHandler()}
           >
             {isSorted === 'asc' && <SortAscendingIcon />}
             {isSorted === 'desc' && <SortDescendingIcon />}

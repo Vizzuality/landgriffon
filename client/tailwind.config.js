@@ -57,7 +57,7 @@ module.exports = {
         50: '#EBF6F1',
       },
       // theme
-      primary: '#078A3C',
+      primary: { DEFAULT: '#078A3C', dark: '#00634A', light: '#34D399' },
       blue: '#A9E0F5',
       yellow: '#F9DFB1',
     },

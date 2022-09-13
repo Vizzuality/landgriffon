@@ -12,7 +12,7 @@ module.exports = {
         sans: ['Public Sans', 'sans-serif'],
       },
       fontSize: {
-        xs: '0.75rem', // 12px
+        xs: ['0.75rem', '1rem'], // 12px
         '2xs': '0.625rem', // 10px
       },
       height: {

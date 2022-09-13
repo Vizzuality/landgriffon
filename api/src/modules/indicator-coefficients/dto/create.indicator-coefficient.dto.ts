@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class CreateIndicatorCoefficientDto {
   @IsNumber()
@@ -11,9 +11,4 @@ export class CreateIndicatorCoefficientDto {
   @IsNotEmpty()
   @ApiProperty()
   year!: number;
-
-  @IsString()
-  @IsOptional()
-  @ApiPropertyOptional()
-  indicatorSourceId?: string;
 }

@@ -1,5 +1,4 @@
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
-import { IndicatorSource } from 'modules/indicator-sources/indicator-source.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import {
   SCENARIO_INTERVENTION_TYPE,
@@ -102,11 +101,6 @@ async function createIndicatorCoefficient(
     additionalData,
   );
 
-  if (!indicatorCoefficient.indicatorSourceId) {
-    const indicatorSource: IndicatorSource = await createIndicatorSource();
-    indicatorCoefficient.indicatorSource = indicatorSource;
-  }
-
   return indicatorCoefficient.save();
 }
 
@@ -193,20 +187,6 @@ async function createIndicatorRecordForIntervention(
   );
 
   return indicatorRecord.save();
-}
-
-async function createIndicatorSource(
-  additionalData: Partial<IndicatorSource> = {},
-): Promise<IndicatorSource> {
-  const indicatorSource = IndicatorSource.merge(
-    new IndicatorSource(),
-    {
-      title: 'Indicator Source title',
-    },
-    additionalData,
-  );
-
-  return indicatorSource.save();
 }
 
 async function createSupplier(
@@ -438,7 +418,6 @@ export {
   createIndicatorCoefficient,
   createIndicatorRecord,
   createIndicatorRecordV2,
-  createIndicatorSource,
   createMaterial,
   createMaterialToH3,
   createSupplier,

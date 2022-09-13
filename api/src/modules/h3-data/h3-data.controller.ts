@@ -10,19 +10,22 @@ import {
 import { H3DataService } from 'modules/h3-data/h3-data.service';
 import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 import { GetMaterialH3ByResolutionDto } from 'modules/h3-data/dto/get-material-h3-by-resolution.dto';
-import { GetRiskMapH3Dto } from 'modules/h3-data/dto/get-risk-map.dto';
 import {
   H3MapResponse,
   H3DataResponse,
 } from 'modules/h3-data/dto/h3-map-response.dto';
 import { GetYearsByLayerAndMaterialsDto } from 'modules/h3-data/dto/get-years-by-layer-and-materials.dto';
 import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
+import { H3DataMapService } from 'modules/h3-data/h3-data-map.service';
 
 @Controller('/api/v1/h3')
 @ApiTags(H3Data.name)
 @ApiBearerAuth()
 export class H3DataController {
-  constructor(protected readonly h3DataService: H3DataService) {}
+  constructor(
+    protected readonly h3DataService: H3DataService,
+    protected readonly h3DataMapService: H3DataMapService,
+  ) {}
 
   @ApiOperation({ description: 'Retrieve H3 data providing its name' })
   @ApiOkResponse({ type: H3DataResponse })
@@ -69,7 +72,7 @@ export class H3DataController {
   ): Promise<{ data: number[] }> {
     const { materialIds, indicatorId, layer } = queryParams;
     const availableYears: number[] =
-      await this.h3DataService.getYearsByLayerType(
+      await this.h3DataService.getAvailableYearsByLayerType(
         layer,
         materialIds,
         indicatorId,
@@ -77,7 +80,9 @@ export class H3DataController {
     return { data: availableYears };
   }
 
-  @ApiOperation({ description: 'Get h3 indexes by ID in a given resolution' })
+  @ApiOperation({
+    description: 'Get a Material map of h3 indexes by ID in a given resolution',
+  })
   @ApiQuery({ type: GetMaterialH3ByResolutionDto })
   @ApiOkResponse({
     type: H3MapResponse,
@@ -86,36 +91,13 @@ export class H3DataController {
     description: 'Bad Request. Incorrect or missing parameters',
   })
   @Get('/map/material')
-  async getH3ByIdAndResolution(
+  async getMaterialMap(
     @Query(ValidationPipe)
     queryParams: GetMaterialH3ByResolutionDto,
   ): Promise<H3MapResponse> {
     const { materialId, resolution, year } = queryParams;
-    return await this.h3DataService.getMaterialMapByResolution(
+    return await this.h3DataMapService.getMaterialMapByResolutionAndYear(
       materialId,
-      resolution,
-      year,
-    );
-  }
-
-  @ApiOperation({
-    description:
-      'Get a calculated H3 risk map given a Material and a Indicator',
-  })
-  @ApiOkResponse({
-    type: H3MapResponse,
-  })
-  @ApiBadRequestResponse({
-    description: 'Bad Request. Incorrect or missing parameters',
-  })
-  @Get('/map/risk')
-  async getRiskMap(
-    @Query(ValidationPipe) queryParams: GetRiskMapH3Dto,
-  ): Promise<H3MapResponse> {
-    const { materialId, indicatorId, resolution, year } = queryParams;
-    return await this.h3DataService.getRiskMapByResolution(
-      materialId,
-      indicatorId,
       resolution,
       year,
     );
@@ -135,6 +117,6 @@ export class H3DataController {
   async getImpactMap(
     @Query(ValidationPipe) getImpactMapDto: GetImpactMapDto,
   ): Promise<H3MapResponse> {
-    return this.h3DataService.getImpactMapByResolution(getImpactMapDto);
+    return this.h3DataMapService.getImpactMapByResolution(getImpactMapDto);
   }
 }

@@ -28,7 +28,7 @@ export class H3DataYearsService {
     private readonly sourcingRecordService: SourcingRecordsService,
   ) {}
 
-  async getYearsByLayerType(
+  async getAvailableYearsByLayerType(
     layerType: string,
     materialIds?: string[],
     indicatorId?: string,
@@ -62,6 +62,7 @@ export class H3DataYearsService {
       );
     }
 
+    let h3DataIds: string[] | undefined = undefined;
     if (materialIds?.length) {
       const materialsToH3s: MaterialToH3[] =
         await this.materialToH3Service.find({
@@ -70,21 +71,19 @@ export class H3DataYearsService {
           },
         });
 
-      return this.h3DataRepository.getYears({
-        layerType: LAYER_TYPES.MATERIAL,
-        h3DataIds: materialsToH3s.map(
-          (materialToH3: MaterialToH3) => materialToH3.h3DataId,
-        ),
-      });
-    } else {
-      return this.h3DataRepository.getYears({
-        layerType: LAYER_TYPES.MATERIAL,
-      });
+      h3DataIds = materialsToH3s.map(
+        (materialToH3: MaterialToH3) => materialToH3.h3DataId,
+      );
     }
+
+    return this.h3DataRepository.getAvailableYearsForContextualLayer({
+      layerType: LAYER_TYPES.MATERIAL,
+      h3DataIds,
+    });
   }
 
   async getAvailableYearsForRiskLayer(indicatorId?: string): Promise<number[]> {
-    return this.h3DataRepository.getYears({
+    return this.h3DataRepository.getAvailableYearsForContextualLayer({
       layerType: LAYER_TYPES.RISK,
       indicatorId,
     });

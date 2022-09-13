@@ -1,34 +1,17 @@
 import {
-  Brackets,
   EntityRepository,
   getManager,
   Repository,
   SelectQueryBuilder,
-  WhereExpressionBuilder,
 } from 'typeorm';
 import {
   H3Data,
   H3IndexValueData,
   LAYER_TYPES,
 } from 'modules/h3-data/h3-data.entity';
-import {
-  Logger,
-  NotFoundException,
-  ServiceUnavailableException,
-} from '@nestjs/common';
-import {
-  Indicator,
-  INDICATOR_TYPES,
-} from 'modules/indicators/indicator.entity';
-import {
-  LOCATION_TYPES_PARAMS,
-  SourcingLocation,
-} from 'modules/sourcing-locations/sourcing-location.entity';
-import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
-import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
+import { Logger, NotFoundException } from '@nestjs/common';
+import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
-import { ImpactMaterializedView } from 'modules/impact/views/impact.materialized-view.entity';
-import { IndicatorRiskMapSQLStrategies } from 'modules/h3-data/strategies/risk-map.strategies';
 
 /**
  * @note: Column aliases are marked as 'h' and 'v' so that DB returns data in the format the consumer needs to be
@@ -119,139 +102,6 @@ export class H3DataRepository extends Repository<H3Data> {
    *
    */
 
-  async getMaterialMapByResolution(
-    materialH3Data: H3Data,
-    resolution: number,
-  ): Promise<{ materialMap: H3IndexValueData[]; quantiles: number[] }> {
-    const tmpTableName: string = H3DataRepository.generateRandomTableName();
-    try {
-      const query: string = getManager()
-        .createQueryBuilder()
-        .select(`h3_to_parent(h3index, ${resolution})`, 'h')
-        .addSelect(`round(sum("${materialH3Data.h3columnName}"))`, 'v')
-        .from(materialH3Data.h3tableName, 'h3table')
-        .where(`"h3table"."${materialH3Data.h3columnName}" is not null`)
-        .andWhere(`"${materialH3Data.h3columnName}" <> 0`)
-        .groupBy('h')
-        .getSql();
-
-      await getManager().query(
-        `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${query});`,
-      );
-      const materialMap: any = await getManager().query(
-        `SELECT *
-         FROM "${tmpTableName}"
-         WHERE "${tmpTableName}".v > 0;`,
-      );
-      const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
-
-      await getManager().query(`DROP TABLE "${tmpTableName}"`);
-
-      this.logger.log('Material Map generated');
-      return { materialMap, quantiles };
-    } catch (err) {
-      this.logger.error(err);
-      throw new ServiceUnavailableException(
-        'Material Map could not been generated',
-      );
-    }
-  }
-
-  /**
-   * @param indicator Indicator data of a Indicator
-   * @param resolution Integer value that represent the resolution which the h3 response should be calculated
-   * @param year
-   * @param materialIds
-   * @param originIds
-   * @param supplierIds
-   * @param locationTypes
-   */
-  async getImpactMap(
-    indicator: Indicator,
-    resolution: number,
-    year: number,
-    materialIds?: string[],
-    originIds?: string[],
-    supplierIds?: string[],
-    locationTypes?: LOCATION_TYPES_PARAMS[],
-  ): Promise<{ impactMap: H3IndexValueData[]; quantiles: number[] }> {
-    const subqueryBuilder: SelectQueryBuilder<any> = getManager()
-      .createQueryBuilder()
-      .select('sl.geoRegionId', 'geoRegionId')
-      .addSelect('ir.materialH3DataId', 'materialH3DataId')
-      .addSelect('sum(ir.value/ir.scaler)', 'scaled_value')
-      .from(SourcingLocation, 'sl')
-      .leftJoin(SourcingRecord, 'sr', 'sl.id = sr.sourcingLocationId')
-      .leftJoin(IndicatorRecord, 'ir', 'sr.id = ir.sourcingRecordId')
-      .where('ir.value > 0')
-      .andWhere('ir.scaler >= 1')
-      .andWhere('sl.scenarioInterventionId IS NULL')
-      .andWhere('ir.indicatorId = :indicatorId', { indicatorId: indicator.id })
-      .andWhere('sr.year = :year', { year })
-      .groupBy('sl.geoRegionId')
-      .addGroupBy('ir.materialH3DataId');
-    if (materialIds) {
-      subqueryBuilder.andWhere('sl.material IN (:...materialIds)', {
-        materialIds,
-      });
-    }
-    if (supplierIds) {
-      subqueryBuilder.andWhere(
-        new Brackets((qb: WhereExpressionBuilder) => {
-          qb.where('sl.t1SupplierId IN (:...supplierIds)', {
-            supplierIds,
-          }).orWhere('sl.producerId IN (:...supplierIds)', { supplierIds });
-        }),
-      );
-    }
-    if (originIds) {
-      subqueryBuilder.andWhere('sl.adminRegionId IN (:...originIds)', {
-        originIds,
-      });
-    }
-    if (locationTypes) {
-      subqueryBuilder.andWhere('sl.locationType IN (:...locationTypes)', {
-        locationTypes,
-      });
-    }
-
-    const selectQueryBuilder: SelectQueryBuilder<any> = getManager()
-      .createQueryBuilder()
-      .select(`impactview.h3index`, `h3index`)
-      .addSelect(`sum(impactview.value * reduced.scaled_value)`, `sum`)
-      .from('(' + subqueryBuilder.getSql() + ')', 'reduced')
-      .leftJoin(
-        ImpactMaterializedView,
-        'impactview',
-        '(impactview."geoRegionId" = reduced."geoRegionId" AND impactview."h3DataId" = reduced."materialH3DataId")',
-      )
-      .groupBy('impactview.h3index')
-      .setParameters(subqueryBuilder.getParameters());
-
-    const withDynamicResolution: SelectQueryBuilder<any> = getManager()
-      .createQueryBuilder()
-      .addSelect(`h3_to_parent(q.h3index, ${resolution})`, `h`)
-      .addSelect(`round(sum(sum)::numeric, 2)`, `v`)
-      .from(`( ${selectQueryBuilder.getSql()} )`, `q`)
-      .groupBy('h');
-
-    const [queryString, params] = subqueryBuilder.getQueryAndParameters();
-
-    const tmpTableName: string = H3DataRepository.generateRandomTableName();
-    await getManager().query(
-      `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${withDynamicResolution.getSql()})`,
-      params,
-    );
-    const impactMap: any = await getManager().query(
-      `SELECT * FROM "${tmpTableName}"
-      WHERE "${tmpTableName}".v > 0;`,
-    );
-    const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
-    await getManager().query(`DROP TABLE "${tmpTableName}";`);
-    this.logger.log('Impact Map generated');
-    return { impactMap, quantiles };
-  }
-
   /**
    * @debt: Refactor this to use queryBuilder. Even tho all values are previously validated, this isn't right, but
    * has been don for the time being to unblock FE. Check with Data if calculus is accurate
@@ -277,7 +127,7 @@ export class H3DataRepository extends Repository<H3Data> {
     }
   }
 
-  async getYears(yearsRequestParams: {
+  async getAvailableYearsForContextualLayer(yearsRequestParams: {
     layerType: LAYER_TYPES;
     h3DataIds?: string[] | null;
     indicatorId?: string;
@@ -340,55 +190,6 @@ export class H3DataRepository extends Repository<H3Data> {
       .orderBy('year', 'DESC')
       .getRawMany();
     return years.map((elem: { year: number }) => elem.year);
-  }
-
-  async getRiskMapByResolution(
-    indicatorType: INDICATOR_TYPES,
-    indicatorH3s: Map<INDICATOR_TYPES, H3Data>,
-    materialH3s: Map<MATERIAL_TO_H3_TYPE, H3Data>,
-    resolution: number,
-    calculusFactor: number,
-  ): Promise<{ riskMap: H3IndexValueData[]; quantiles: number[] }> {
-    const indicatorRiskSQL: SelectQueryBuilder<any> =
-      IndicatorRiskMapSQLStrategies.strategies[indicatorType](
-        indicatorH3s,
-        materialH3s,
-        calculusFactor,
-      );
-
-    const baseRiskMapSQLTable: string =
-      IndicatorRiskMapSQLStrategies.baseRiskMapSQLTable;
-    const baseRiskMapSQLColumn: string =
-      IndicatorRiskMapSQLStrategies.baseRiskMapSQLColumn;
-
-    const query: string = getManager()
-      .createQueryBuilder()
-      .select(
-        `h3_to_parent(${baseRiskMapSQLTable}.h3index, ${resolution})`,
-        'h',
-      )
-      .addSelect(
-        `round(sum(${baseRiskMapSQLTable}.${baseRiskMapSQLColumn}))`,
-        'v',
-      )
-      .from(`(${indicatorRiskSQL.getQuery()})`, baseRiskMapSQLTable)
-      .groupBy('h')
-      .getSql();
-
-    // Generate Temporary table in order to be able to calculate Quantiles
-    const tmpTableName: string = H3DataRepository.generateRandomTableName();
-    await getManager().query(
-      `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${query});`,
-    );
-    const riskMap: any = await getManager().query(
-      `SELECT *
-       FROM "${tmpTableName}"
-       WHERE "${tmpTableName}".v > 0;`,
-    );
-    const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
-    await getManager().query(`DROP TABLE "${tmpTableName}"`);
-    this.logger.log(indicatorType + ' Map generated');
-    return { riskMap, quantiles };
   }
 
   /**

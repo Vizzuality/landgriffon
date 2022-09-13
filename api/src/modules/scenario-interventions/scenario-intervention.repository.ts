@@ -118,12 +118,16 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
     const replacedAdminRegionsToSave: ReplacedAdminRegion[] = [];
     const replacedBusinessUnitsToSave: ReplacedBusinessUnits[] = [];
     const replacedMaterialsToSave: ReplacedMaterial[] = [];
-    for (const supplier of replacedSuppliers) {
-      replacedSuppliersToSave.push({
-        supplierId: supplier.id,
-        scenarioInterventionId: newIntervention.id,
-      });
+    // We could have replaced suppliers or not, as this can be null for actual Sourcing Location data
+    if (replacedSuppliers.length) {
+      for (const supplier of replacedSuppliers) {
+        replacedSuppliersToSave.push({
+          supplierId: supplier.id,
+          scenarioInterventionId: newIntervention.id,
+        });
+      }
     }
+
     for (const region of replacedAdminRegions) {
       replacedAdminRegionsToSave.push({
         adminRegionId: region.id,
@@ -214,7 +218,7 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
     } catch (err) {
       // rollback changes before throwing error
       await queryRunner.rollbackTransaction();
-      this.logger.error(err);
+      this.logger.error('Intervention could not been saved: ' + err);
       throw new ServiceUnavailableException(
         'Intervention could not been saved: ' + err,
       );

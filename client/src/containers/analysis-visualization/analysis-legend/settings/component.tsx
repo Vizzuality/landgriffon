@@ -54,7 +54,7 @@ const CategoryHeader: React.FC<{
           activeLayers === 0 ? 'bg-gray-200' : 'bg-primary',
         )}
       >
-        <div className="my-auto -translate-y-px">{activeLayers}</div>
+        {activeLayers}
       </div>
     </div>
   );
@@ -189,7 +189,7 @@ const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onAppl
       </div>
       <div className="flex flex-row justify-between">
         <Button theme="textLight">Cancel</Button>
-        <Button onClick={handleApply} theme="secondary">
+        <Button onClick={handleApply} theme="primaryLight" className="text-primary border-primary">
           Apply
         </Button>
       </div>

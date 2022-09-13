@@ -28,7 +28,7 @@ import InterventionTypeIcon from './intervention-type-icon';
 import { InterventionTypes, LocationTypes, InfoTooltip } from '../enums';
 import { isCoordinates } from 'utils/coordinates';
 
-import type { SelectOptions } from 'components/select/types';
+import type { SelectOption } from 'components/select/types';
 import type { Intervention, InterventionFormData } from '../types';
 
 type InterventionFormProps = {
@@ -258,7 +258,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   const { data: suppliers, isLoading: isLoadingSuppliers } = useSuppliersTypes({
     type: 't1supplier',
   });
-  const optionsSuppliers = useMemo<SelectOptions>(
+  const optionsSuppliers = useMemo<SelectOption[]>(
     () =>
       suppliers.map((supplier) => ({
         label: supplier.name,
@@ -271,7 +271,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   const { data: producers, isLoading: isLoadingProducers } = useSuppliersTypes({
     type: 'producer',
   });
-  const optionsProducers = useMemo<SelectOptions>(
+  const optionsProducers = useMemo<SelectOption[]>(
     () =>
       producers.map((producer) => ({
         label: producer.name,
@@ -281,7 +281,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   );
   // Location types
   const { data: locationTypes } = useLocationTypes();
-  const optionsLocationTypes: SelectOptions<LocationTypes> = useMemo(
+  const optionsLocationTypes: SelectOption<LocationTypes>[] = useMemo(
     () =>
       locationTypes.map(({ label, value }) => ({
         label: `${label[0].toUpperCase()}${label.substring(1)}`,
@@ -292,7 +292,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
 
   // Countries
   const { data: countries, isLoading: isLoadingCountries } = useAdminRegionsTrees({ depth: 0 });
-  const optionsCountries: SelectOptions = useMemo(
+  const optionsCountries = useMemo<SelectOption[]>(
     () =>
       sortBy(
         countries.map(({ name, id }) => ({
@@ -306,7 +306,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
 
   // Years
   const { data: years, isLoading: isLoadingYears } = useSourcingRecordsYears();
-  const optionsYears: SelectOptions<number> = useMemo(
+  const optionsYears: SelectOption<number>[] = useMemo(
     () =>
       years.map((year) => ({
         label: year.toString(),

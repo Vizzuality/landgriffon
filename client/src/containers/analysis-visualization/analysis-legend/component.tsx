@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import Sortable from 'components/sortable';
 import { SortableItem } from 'components/sortable/component';
@@ -10,7 +10,7 @@ import ContextualLegendItem from './contextual-legend-item';
 import ImpactLayer from './impact-legend-item';
 import classNames from 'classnames';
 import { ChevronDoubleRightIcon } from '@heroicons/react/solid';
-import Settings from './settings';
+import LegendSettings from './settings';
 import Modal from 'components/modal';
 import SandwichIcon from 'components/icons/sandwich';
 import MaterialLayer from './material-legend-item';
@@ -25,11 +25,6 @@ export const Legend: React.FC = () => {
   const [showSettings, setShowSettings] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
-  const { data: layersByCategory } = useContextualLayers();
-  const upstreamLayers = useMemo(
-    () => layersByCategory?.flatMap(({ layers }) => layers),
-    [layersByCategory],
-  );
 
   const { layers } = useAppSelector(analysisMap);
   const nonContextualLayersNumber = useMemo(
@@ -37,25 +32,29 @@ export const Legend: React.FC = () => {
     [layers],
   );
 
+  const { data: layersByCategory, isSuccess: areContextualLayersLoaded } = useContextualLayers({
+    onSuccess: (data) => {
+      const allLayers = data.flatMap((data) => data.layers);
+      allLayers.forEach((layer, i) => {
+        dispatch(
+          setLayer({
+            id: layer.id,
+            layer: { ...layer, isContextual: true, order: i + nonContextualLayersNumber },
+          }),
+        );
+      });
+    },
+  });
+
   const activeLayerNumber = useMemo(
     () => Object.values(layers).filter((l) => l.active).length,
     [layers],
   );
   const activeContextualLayers = useMemo(
-    () => (layers['impact']?.active ? activeLayerNumber - 1 : activeLayerNumber),
+    () =>
+      activeLayerNumber - Object.values(layers).filter((l) => !l.isContextual && l.active).length,
     [activeLayerNumber, layers],
   );
-
-  useEffect(() => {
-    upstreamLayers?.forEach((layer, i) => {
-      dispatch(
-        setLayer({
-          id: layer.id,
-          layer: { ...layer, order: i + nonContextualLayersNumber, isContextual: true },
-        }),
-      );
-    });
-  }, [dispatch, nonContextualLayersNumber, upstreamLayers]);
 
   const handleShowLegend = useCallback(() => {
     setShowLegend((show) => !show);
@@ -117,17 +116,18 @@ export const Legend: React.FC = () => {
                 <div className="flex items-center justify-between px-2 py-1 place-items-center">
                   <div className="px-2 text-sm text-gray-900">Legend</div>
                   <button
+                    disabled={!areContextualLayersLoaded}
                     type="button"
                     aria-expanded={showSettings}
-                    className="text-primary py-1.5 px-1.5 flex flex-row gap-2 place-items-center"
+                    className="disabled:cursor-not-allowed disabled:text-gray-500 text-primary py-1.5 px-1.5 flex flex-row gap-2 place-items-center"
                     onClick={handleToggleShowLegendSettinngs}
                   >
                     <span className="my-auto text-xs font-semibold underline underline-offset-2">
                       Contextual Layers
                     </span>
                     {activeContextualLayers > 0 && (
-                      <div className="w-4 h-4 font-semibold text-white rounded-full bg-primary text-2xs">
-                        <div className="m-auto translate-y-px w-fit">{activeContextualLayers}</div>
+                      <div className="w-4 h-4 text-xs font-semibold text-center text-white rounded-full bg-primary">
+                        {activeContextualLayers}
                       </div>
                     )}
                   </button>
@@ -139,9 +139,9 @@ export const Legend: React.FC = () => {
         )}
         <div className="relative">
           <ToggleShowLegendButton showLegend={showLegend} toggleLegend={handleShowLegend} />
-          {activeLayerNumber && !showLegend && (
-            <div className="absolute bottom-0 right-0 w-4 h-4 m-auto text-xs font-semibold text-white rounded-full translate-x-1/3 translate-y-1/3 bg-primary">
-              <div className="m-auto -translate-y-px w-fit">{activeLayerNumber}</div>
+          {activeLayerNumber && (
+            <div className="box-content absolute bottom-0 right-0 w-4 h-4 m-auto text-xs font-semibold text-center text-white border border-white rounded-full translate-x-1/3 translate-y-1/3 bg-primary">
+              {activeLayerNumber}
             </div>
           )}
         </div>
@@ -152,7 +152,7 @@ export const Legend: React.FC = () => {
         open={showSettings}
         onDismiss={dismissLegendSettings}
       >
-        <Settings onApply={dismissLegendSettings} categories={layersByCategory || []} />
+        <LegendSettings onApply={dismissLegendSettings} categories={layersByCategory || []} />
       </Modal>
     </>
   );
@@ -169,10 +169,8 @@ const ToggleShowLegendButton = ({
     <button
       type="button"
       className={classNames(
-        'transition-[background] relative flex items-center justify-center w-full h-10 bg-white border rounded-lg p-1.5 border-gray-100 hover:border-primary hover:bg-primary hover:bg-opacity-50 hover:text-black group',
-        {
-          'text-primary': showLegend,
-        },
+        'transition-colors relative flex items-center justify-center w-10 h-10 rounded-lg p-1.5 ',
+        showLegend ? 'text-white bg-primary hover:bg-primary-dark' : 'bg-white hover:text-primary',
       )}
       onClick={toggleLegend}
     >

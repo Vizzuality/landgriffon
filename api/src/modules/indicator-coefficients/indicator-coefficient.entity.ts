@@ -37,10 +37,6 @@ export class IndicatorCoefficient extends TimestampedBaseEntity {
   @ApiPropertyOptional()
   adminRegion: AdminRegion;
 
-  @Column()
-  @ApiProperty()
-  indicatorSourceId!: string;
-
   @ManyToOne(() => User, (user: User) => user.indicatorCoefficients)
   @ApiProperty({ type: () => User })
   user!: User;

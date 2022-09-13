@@ -92,8 +92,8 @@ def main(conn: connection, data: pd.DataFrame, indicator_code: str):
             conn, data.hs_2017_code.astype(str).to_list()
         )
 
-    data = pd.merge(data, admin_region_ids, on="country")
-    data = pd.merge(data, material_ids, on="hs_2017_code")
+    data = pd.merge(data, admin_region_ids, on="country", how="left")
+    data = pd.merge(data, material_ids, on="hs_2017_code", how="left")
     data["indicatorId"] = indicator_id
     data_to_insert = data[
         ["value", "year", "adminRegionId", "indicatorId", "materialId"]

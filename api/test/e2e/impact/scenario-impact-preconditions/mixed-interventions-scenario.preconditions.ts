@@ -109,7 +109,7 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
 
   // Scenario Intervention 1 - Change supplier for wool
 
-  const sourcingLocation1Cancelled: SourcingLocation =
+  const sourcingLocation1CanceledWool: SourcingLocation =
     await createSourcingLocation({
       material: wool,
       businessUnit,
@@ -121,7 +121,7 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
 
   // Scenario Intervention 2 - Replace cotton with linen
 
-  const sourcingLocation2Cancelled: SourcingLocation =
+  const sourcingLocation2CanceledCotton: SourcingLocation =
     await createSourcingLocation({
       material: cotton,
       businessUnit,
@@ -135,7 +135,7 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
 
   // Scenario Intervention 1 - Change supplier for wool
 
-  const sourcingLocation1Replacing: SourcingLocation =
+  const sourcingLocation1ReplacingWool: SourcingLocation =
     await createSourcingLocation({
       material: wool,
       businessUnit,
@@ -145,7 +145,7 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
     });
 
-  const sourcingLocation2Replacing: SourcingLocation =
+  const sourcingLocation2ReplacingLinen: SourcingLocation =
     await createSourcingLocation({
       material: linen,
       businessUnit,
@@ -164,31 +164,31 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
 
   const indicatorRecordWool: IndicatorRecord = await createIndicatorRecord({
     indicator,
-    value: 1200,
+    value: 1500,
   });
 
-  const indicatorRecord1Cancelled: IndicatorRecord =
+  const indicatorRecord1CanceledWool: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
-      value: 1200,
+      value: -1500,
     });
 
-  const indicatorRecord2Cancelled: IndicatorRecord =
+  const indicatorRecord2CanceledCotton: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
-      value: 1100,
+      value: -1200,
     });
 
-  const indicatorRecord1Replacing: IndicatorRecord =
+  const indicatorRecord1ReplacingWool: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
-      value: 1000,
+      value: 950,
     });
 
-  const indicatorRecord2Replacing: IndicatorRecord =
+  const indicatorRecord2ReplacingLinen: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
-      value: 900,
+      value: 1150,
     });
 
   // Sourcing Records + Indicator Records for Real Sourcing Locations
@@ -209,28 +209,28 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
 
   await createSourcingRecord({
     year: 2020,
-    indicatorRecords: [indicatorRecord1Cancelled],
-    sourcingLocation: sourcingLocation1Cancelled,
+    indicatorRecords: [indicatorRecord1CanceledWool],
+    sourcingLocation: sourcingLocation1CanceledWool,
   });
 
   await createSourcingRecord({
     year: 2020,
-    indicatorRecords: [indicatorRecord2Cancelled],
-    sourcingLocation: sourcingLocation2Cancelled,
+    indicatorRecords: [indicatorRecord2CanceledCotton],
+    sourcingLocation: sourcingLocation2CanceledCotton,
   });
 
   // Sourcing Records + Indicator Records for Replacing Sourcing Location
 
   await createSourcingRecord({
     year: 2020,
-    indicatorRecords: [indicatorRecord1Replacing],
-    sourcingLocation: sourcingLocation1Replacing,
+    indicatorRecords: [indicatorRecord1ReplacingWool],
+    sourcingLocation: sourcingLocation1ReplacingWool,
   });
 
   await createSourcingRecord({
     year: 2020,
-    indicatorRecords: [indicatorRecord2Replacing],
-    sourcingLocation: sourcingLocation2Replacing,
+    indicatorRecords: [indicatorRecord2ReplacingLinen],
+    sourcingLocation: sourcingLocation2ReplacingLinen,
   });
 
   return { indicator, newScenario };

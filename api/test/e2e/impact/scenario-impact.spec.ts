@@ -32,10 +32,12 @@ import { Supplier } from 'modules/suppliers/supplier.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
+import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
 
 describe('Impact Table and Charts test suite (e2e)', () => {
   let app: INestApplication;
   let jwtToken: string;
+  let indicatorRecordRepository: IndicatorRecordRepository;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -45,6 +47,10 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     app = getApp(moduleFixture);
     await app.init();
     jwtToken = await saveUserAndGetToken(moduleFixture, app);
+
+    indicatorRecordRepository = moduleFixture.get<IndicatorRecordRepository>(
+      IndicatorRecordRepository,
+    );
   });
 
   afterEach(async () => {
@@ -76,7 +82,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     } = await createNewCoefficientsInterventionPreconditions();
 
     const response = await request(app.getHttpServer())
-      .get('/api/v1/impact/table')
+      .get('/api/v1/impact/actual-vs-scenario')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         'indicatorIds[]': [preconditions.indicator.id],
@@ -99,7 +105,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     } = await createNewMaterialInterventionPreconditions();
 
     const response = await request(app.getHttpServer())
-      .get('/api/v1/impact/table')
+      .get('/api/v1/impact/actual-vs-scenario')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         'indicatorIds[]': [preconditions.indicator.id],
@@ -122,7 +128,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     } = await createNewSupplierInterventionPreconditions();
 
     const response = await request(app.getHttpServer())
-      .get('/api/v1/impact/table')
+      .get('/api/v1/impact/actual-vs-scenario')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         'indicatorIds[]': [preconditions.indicator.id],
@@ -145,7 +151,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     } = await createMultipleInterventionsPreconditions();
 
     const response1 = await request(app.getHttpServer())
-      .get('/api/v1/impact/table')
+      .get('/api/v1/impact/actual-vs-scenario')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         'indicatorIds[]': [preconditions.indicator.id],
@@ -161,7 +167,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     );
 
     const response2 = await request(app.getHttpServer())
-      .get('/api/v1/impact/table')
+      .get('/api/v1/impact/actual-vs-scenario')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         'indicatorIds[]': [preconditions.indicator.id],

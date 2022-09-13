@@ -127,25 +127,25 @@ export async function createNewMaterialInterventionPreconditions(): Promise<{
 
   const indicatorRecordWool: IndicatorRecord = await createIndicatorRecord({
     indicator,
-    value: 1200,
+    value: 1500,
   });
 
   const indicatorRecordCottonCancelled: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
-      value: 1200,
+      value: -800,
     });
 
   const indicatorRecordWoolCancelled: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
-      value: 1200,
+      value: -1000,
     });
 
   const indicatorRecordLinenReplacing: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
-      value: 1800,
+      value: 750,
     });
 
   // Sourcing Records + Indicator Records for Real Sourcing Locations

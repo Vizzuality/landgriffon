@@ -1,3 +1,4 @@
+/** @type import('eslint').Linter.Config */
 module.exports = {
   extends: [
     'next/core-web-vitals',
@@ -17,4 +18,12 @@ module.exports = {
       },
     ],
   },
+  overrides: [
+    {
+      files: ['*.js'],
+      rules: {
+        '@typescript-eslint/no-var-requires': ['off'],
+      },
+    },
+  ],
 };

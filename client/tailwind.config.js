@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const forms = require('@tailwindcss/forms');
 const typography = require('@tailwindcss/typography');
 const colors = require('tailwindcss/colors');
 
+/** @type import('tailwindcss').Config */
 module.exports = {
   content: ['./**/*.ts', './**/*.tsx'],
   darkMode: 'media', // 'media' or 'class'
@@ -61,9 +61,6 @@ module.exports = {
       blue: '#A9E0F5',
       yellow: '#F9DFB1',
     },
-  },
-  variants: {
-    extend: {},
   },
   plugins: [forms, typography],
 };

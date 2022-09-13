@@ -27,6 +27,7 @@ import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-c
 import { InterventionBuilder } from 'modules/scenario-interventions/services/intervention-builder.service';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { InsertResult } from 'typeorm';
+import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 
 @Injectable()
 export class ScenarioInterventionsService extends AppBaseService<
@@ -258,7 +259,13 @@ export class ScenarioInterventionsService extends AppBaseService<
           return {
             year: elem.year,
             tonnage: elem.tonnage,
-            indicatorRecords: elem.indicatorRecords,
+            indicatorRecords: elem.indicatorRecords.map(
+              (impact: IndicatorRecord) => ({
+                value: impact.value,
+                indicatorId: impact.indicatorId,
+                materialH3DataId: impact.materialH3DataId,
+              }),
+            ),
           } as SourcingRecord;
         });
       newCancelledInterventionLocation.interventionType = canceledOrReplacing;

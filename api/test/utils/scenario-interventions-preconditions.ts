@@ -5,20 +5,25 @@ import { Scenario } from 'modules/scenarios/scenario.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
-import { Indicator } from 'modules/indicators/indicator.entity';
+import {
+  Indicator,
+  INDICATOR_TYPES,
+} from 'modules/indicators/indicator.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import {
   createAdminRegion,
   createBusinessUnit,
+  createH3Data,
+  createIndicator,
+  createIndicatorRecordForIntervention,
   createMaterial,
+  createMaterialToH3,
   createScenario,
   createSourcingLocation,
   createSourcingRecord,
   createSupplier,
-  createIndicator,
-  createIndicatorRecord,
-  createIndicatorRecordForIntervention,
 } from '../entity-mocks';
+import { MATERIAL_TO_H3_TYPE } from '../../src/modules/materials/material-to-h3.entity';
 
 export interface ScenarioInterventionPreconditions {
   scenario: Scenario;
@@ -76,20 +81,46 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
 
   const indicator1: Indicator = await createIndicator({
     name: 'def',
-    nameCode: 'ind1',
+    nameCode: INDICATOR_TYPES.CARBON_EMISSIONS,
   });
   const indicator2: Indicator = await createIndicator({
     name: 'carb',
-    nameCode: 'ind2',
+    nameCode: INDICATOR_TYPES.BIODIVERSITY_LOSS,
   });
   const indicator3: Indicator = await createIndicator({
     name: 'biod',
-    nameCode: 'ind3',
+    nameCode: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
   });
   const indicator4: Indicator = await createIndicator({
     name: 'watr',
-    nameCode: 'ind4',
+    nameCode: INDICATOR_TYPES.DEFORESTATION,
   });
+
+  const h3data1 = await createH3Data({ indicatorId: indicator1.id });
+  const h3data2 = await createH3Data({ indicatorId: indicator2.id });
+  const h3data3 = await createH3Data({ indicatorId: indicator3.id });
+  const h3data4 = await createH3Data({ indicatorId: indicator4.id });
+  const harvest = await createMaterialToH3(
+    material1Descendant.id,
+    h3data1.id,
+    MATERIAL_TO_H3_TYPE.HARVEST,
+  );
+  const producer = await createMaterialToH3(
+    material1Descendant.id,
+    h3data1.id,
+    MATERIAL_TO_H3_TYPE.PRODUCER,
+  );
+
+  const harvest1 = await createMaterialToH3(
+    material2.id,
+    h3data1.id,
+    MATERIAL_TO_H3_TYPE.HARVEST,
+  );
+  const producer1 = await createMaterialToH3(
+    material2.id,
+    h3data1.id,
+    MATERIAL_TO_H3_TYPE.PRODUCER,
+  );
 
   const sourcingRecord1: SourcingRecord = await createSourcingRecord({
     sourcingLocationId: sourcingLocation1.id,

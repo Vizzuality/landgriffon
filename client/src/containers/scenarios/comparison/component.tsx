@@ -13,9 +13,12 @@ const ScenariosComparison: FC = () => {
   const dispatch = useAppDispatch();
   const { currentScenario, scenarioToCompare, isComparisonEnabled } = useAppSelector(scenarios);
 
-  const { data } = useScenarios({
-    params: { disablePagination: true, include: 'scenarioInterventions' },
+  const {
+    data: { data },
+  } = useScenarios({
+    params: { disablePagination: true, include: 'scenarioInterventions', currentScenario },
   });
+
   const options: SelectOption[] = useMemo(() => {
     const filteredData = data.filter(
       ({ scenarioInterventions }) => scenarioInterventions?.length > 0,

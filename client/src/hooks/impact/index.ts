@@ -46,7 +46,7 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
   pagination,
 ) => {
   const store = useStore() as Store;
-  const { data: indicators } = useIndicators();
+  const { data: indicators } = useIndicators({ select: (data) => data.data });
   const { layer } = useAppSelector(analysisFilters);
   const { isComparisonEnabled, scenarioToCompare, currentScenario } = useAppSelector(scenarios);
   const filters = filtersForTabularAPI(store.getState());
@@ -109,7 +109,7 @@ export function useImpactRanking(
   params = { maxRankingEntities: 5, sort: 'ASC' },
 ): ImpactRankingResponse {
   const store = useStore() as Store;
-  const { data: indicators } = useIndicators();
+  const { data: indicators } = useIndicators({ select: (data) => data.data });
   const { layer } = useAppSelector(analysisFilters);
   const filters = filtersForTabularAPI(store.getState());
 

@@ -15,7 +15,9 @@ const IndicatorsFilter: React.FC = () => {
   const filters = useAppSelector(analysisFilters);
   const dispatch = useAppDispatch();
 
-  const { data, isFetching, isFetched, error } = useIndicators();
+  const { data, isFetching, isFetched, error } = useIndicators({
+    select: (data) => data.data,
+  });
 
   const options: SelectProps['options'] = useMemo(() => {
     const ALL = {

@@ -1,5 +1,9 @@
 import { useMemo } from 'react';
-import type { UseQueryResult, UseInfiniteQueryResult } from '@tanstack/react-query';
+import type {
+  UseQueryResult,
+  UseInfiniteQueryResult,
+  UseQueryOptions,
+} from '@tanstack/react-query';
 import { useQuery, useQueryClient, useInfiniteQuery, useMutation } from '@tanstack/react-query';
 
 import { apiService } from 'services/api';
@@ -10,8 +14,12 @@ import { scenarios } from 'store/features/analysis/scenarios';
 import type { AxiosResponse } from 'axios';
 import type { Scenario } from 'containers/scenarios/types';
 import type { Intervention } from 'containers/scenarios/types';
+import type { APIMetadataPagination } from 'types';
 
-type ResponseData = UseQueryResult<Scenario[]>;
+type ResponseData = {
+  data: Scenario[];
+  meta: APIMetadataPagination;
+};
 type ResponseInfiniteData = UseInfiniteQueryResult<
   AxiosResponse<{
     data: Scenario[];
@@ -40,7 +48,13 @@ const DEFAULT_INFINITE_QUERY_OPTIONS = {
   refetchOnWindowFocus: false,
 };
 
-export function useScenarios({ params = {}, options = {} }): ResponseData {
+export const useScenarios = <T = ResponseData>({
+  params = {},
+  options = {},
+}: {
+  params: Record<string, unknown>;
+  options?: UseQueryOptions<ResponseData, unknown, T>;
+}) => {
   const { sort, filter, searchTerm } = useAppSelector(scenarios);
 
   //this should come from API
@@ -53,24 +67,25 @@ export function useScenarios({ params = {}, options = {} }): ResponseData {
     ...params,
   };
 
-  const response: ResponseData = useQuery<Scenario[]>(
+  const query = useQuery(
     ['scenariosList', sort, filter, searchTerm],
     async () =>
       apiService
-        .request({
+        .request<ResponseData>({
           method: 'GET',
           url: '/scenarios',
           params: paramsResult,
         })
-        .then(({ data: responseData }) => responseData.data),
+        .then(({ data }) => data),
     {
       ...DEFAULT_QUERY_OPTIONS,
-      placeholderData: [],
+      placeholderData: { data: [], meta: {} },
       ...options,
     },
   );
-  return useMemo((): ResponseData => response, [response]);
-}
+
+  return query;
+};
 
 export function useInfiniteScenarios(QueryParams: QueryParams): ResponseInfiniteData {
   const { searchTerm, ...restParams } = QueryParams;

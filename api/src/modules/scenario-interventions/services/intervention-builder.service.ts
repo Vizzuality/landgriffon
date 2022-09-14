@@ -126,6 +126,14 @@ export class InterventionBuilder {
     return newIntervention;
   }
 
+  /**
+   * @description: Add new replacing elements to the intervention instance. Since the new locations are created
+   *               according to the new data the user wants apply for that intervention, we can get these elements
+   *               using the the locations. i.e, we could not use the dto to determine the new Admin Regions, as this
+   *               will only be known after the geocoding
+   *
+   */
+
   async addReplacingElementsToIntervention(
     newIntervention: ScenarioIntervention,
     newSourcingLocations: SourcingData[],
@@ -139,6 +147,18 @@ export class InterventionBuilder {
         await this.adminRegionService.getAdminRegionById(
           newSourcingLocations[0].adminRegionId!,
         );
+      if (newSourcingLocations[0].producerId) {
+        newIntervention.newProducer =
+          await this.suppliersService.getSupplierById(
+            newSourcingLocations[0].producerId,
+          );
+      }
+      if (newSourcingLocations[0].t1SupplierId) {
+        newIntervention.newT1Supplier =
+          await this.suppliersService.getSupplierById(
+            newSourcingLocations[0].t1SupplierId,
+          );
+      }
     }
     if (type === SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER) {
       if (newSourcingLocations[0].producerId) {

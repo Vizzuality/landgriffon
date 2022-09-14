@@ -932,8 +932,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .send();
 
-      console.log(response.body.errors);
-
       expect(HttpStatus.BAD_REQUEST);
 
       expect(response).toHaveErrorMessage(
@@ -1540,8 +1538,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             adminRegionIds: [parentAdminRegion.id],
             type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           });
-
-        console.log(response.body);
 
         const intervention: ScenarioIntervention | undefined =
           await scenarioInterventionRepository.findOne(response.body.data.id);

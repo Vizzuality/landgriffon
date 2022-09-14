@@ -8,6 +8,11 @@ import { useTask } from 'hooks/tasks';
 import FileDropzone from 'components/file-dropzone';
 
 import type { FileDropZoneProps } from 'components/file-dropzone/types';
+import classNames from 'classnames';
+
+type DataUploaderProps = {
+  inline: boolean; // Visually it removes a shadow when it's true
+};
 
 const MAX_SIZE = Number(process.env.NEXT_PUBLIC_FILE_UPLOADER_MAX_SIZE || '10000000');
 
@@ -19,7 +24,7 @@ const uploadOptions = {
   maxSize: MAX_SIZE,
 };
 
-const UploadDataSourceModal: React.FC = () => {
+const DataUploader: React.FC<DataUploaderProps> = ({ inline }) => {
   const [taskId, setTaskId] = useState<string>(null);
   const uploadDataSource = useUploadDataSource();
 
@@ -64,8 +69,10 @@ const UploadDataSourceModal: React.FC = () => {
     (isFetched && isLoading) || uploadDataSource.isLoading || data?.status === 'processing';
 
   return (
-    <div className="relative w-full max-w-[640px]">
-      <div className="relative z-10 p-4 bg-white shadow-lg rounded-xl">
+    <div className="relative w-[640px]">
+      <div
+        className={classNames('relative z-10 bg-white rounded-xl', { 'p-4 shadow-lg': !inline })}
+      >
         <FileDropzone
           {...uploadOptions}
           onDrop={handleOnDrop}
@@ -106,4 +113,4 @@ const UploadDataSourceModal: React.FC = () => {
   );
 };
 
-export default UploadDataSourceModal;
+export default DataUploader;

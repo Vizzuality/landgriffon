@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 
 import useModal from 'hooks/modals';
 import { useSourcingLocations, useSourcingLocationsMaterials } from 'hooks/sourcing-locations';
+import { useTasks } from 'hooks/tasks';
 
 import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import DownloadMaterialsDataButton from 'containers/admin/download-materials-data-button';
@@ -31,6 +32,11 @@ const AdminDataPage: React.FC = () => {
   });
   const [sorting, setSorting] = useState<SortingState>([]);
   const [dataDownloadError, setDataDownloadError] = useState<string>();
+
+  // Getting last task available
+  const { data: tasks } = useTasks({ 'page[size]': 1, sort: '-createdAt' });
+  const lastTask = tasks?.[0];
+  console.log(lastTask);
 
   // Getting sourcing locations to extract the update date
   const { data: sourcingLocations, isLoading: isSourcingLocationsLoading } = useSourcingLocations({

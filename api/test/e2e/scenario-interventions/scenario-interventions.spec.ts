@@ -576,6 +576,119 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       expect(newSourcingRecords[0].year).toEqual(2018);
       expect(newSourcingRecords[1].year).toEqual(2019);
     });
+
+    test('Create a scenario intervention of type Change of supplier location with start year for which there are multiple years, should be successful', async () => {
+      const preconditions: ScenarioInterventionPreconditions =
+        await createInterventionPreconditionsForSupplierChange();
+
+      const geoRegion: GeoRegion = await createGeoRegion();
+      await createAdminRegion({
+        isoA2: 'ABC',
+        geoRegion,
+      });
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'scenario intervention supplier',
+          startYear: 2018,
+          percentage: 50,
+          scenarioId: preconditions.scenario.id,
+          materialIds: [preconditions.material1.id],
+          businessUnitIds: [preconditions.businessUnit1.id],
+          adminRegionIds: [preconditions.adminRegion1.id],
+          type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
+          newLocationCountryInput: 'Spain',
+          newIndicatorCoefficients: {
+            GHG_LUC_T: 1,
+            DF_LUC_T: 10,
+            UWU_T: 5,
+            BL_LUC_T: 3,
+          },
+        });
+
+      expect(response.status).toBe(HttpStatus.CREATED);
+
+      const allInterventions: [ScenarioIntervention[], number] =
+        await scenarioInterventionRepository.findAndCount();
+      expect(allInterventions[1]).toEqual(1);
+      expect(typeof allInterventions[0][0].id).toBe('string');
+
+      expect(allInterventions[0][0].title).toEqual(
+        'scenario intervention supplier',
+      );
+
+      const allSourcingLocations: [SourcingLocation[], number] =
+        await sourcingLocationRepository.findAndCount();
+      const allSourcingRecords: [SourcingRecord[], number] =
+        await sourcingRecordRepository.findAndCount();
+
+      expect(allSourcingLocations[1]).toEqual(6);
+      expect(allSourcingRecords[1]).toEqual(12);
+
+      const canceledSourcingLocations: SourcingLocation[] =
+        await sourcingLocationRepository.find({
+          where: {
+            interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+          },
+        });
+
+      expect(canceledSourcingLocations.length).toBe(2);
+      expect(canceledSourcingLocations[0].scenarioInterventionId).toEqual(
+        allInterventions[0][0].id,
+      );
+      expect(canceledSourcingLocations[0].materialId).toEqual(
+        preconditions.material1Descendant.id,
+      );
+      expect(canceledSourcingLocations[0].adminRegionId).toEqual(
+        preconditions.adminRegion1Descendant.id,
+      );
+
+      const canceledSourcingRecords: SourcingRecord[] =
+        await sourcingRecordRepository.find({
+          where: {
+            sourcingLocationId: In([
+              canceledSourcingLocations[0].id,
+              canceledSourcingLocations[1].id,
+            ]),
+          },
+        });
+
+      expect(canceledSourcingRecords.length).toBe(4);
+
+      const newSourcingLocations: SourcingLocation[] =
+        await sourcingLocationRepository.find({
+          where: {
+            interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+          },
+        });
+
+      expect(newSourcingLocations.length).toBe(1);
+      expect(newSourcingLocations[0].scenarioInterventionId).toEqual(
+        allInterventions[0][0].id,
+      );
+      expect(newSourcingLocations[0].materialId).toEqual(
+        preconditions.material1Descendant.id,
+      );
+      expect(newSourcingLocations[0].adminRegionId).not.toEqual(
+        preconditions.adminRegion1Descendant.id,
+      );
+      expect(newSourcingLocations[0].geoRegionId).toEqual(geoRegion.id);
+
+      const newSourcingRecords: SourcingRecord[] =
+        await sourcingRecordRepository.find({
+          where: {
+            sourcingLocationId: canceledSourcingLocations[0].id,
+          },
+        });
+
+      expect(newSourcingRecords.length).toBe(2);
+      expect(newSourcingRecords[0].tonnage).toEqual('250');
+      expect(newSourcingRecords[0].year).toEqual(2018);
+      expect(newSourcingRecords[1].year).toEqual(2019);
+    });
   });
 
   describe('Scenario interventions - Creating intervention of type - Change of material', () => {
@@ -932,8 +1045,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .send();
 
-      console.log(response.body.errors);
-
       expect(HttpStatus.BAD_REQUEST);
 
       expect(response).toHaveErrorMessage(
@@ -1232,14 +1343,21 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         );
       expect(updatedScenarioIntervention.updatedById).toEqual(userId);
 
-      expect(response.body.data.attributes.title).toEqual(
-        'updated test scenario intervention',
-      );
-      expect(response.body.data.attributes.status).toEqual(
-        SCENARIO_INTERVENTION_STATUS.INACTIVE,
-      );
-
-      // Note: Update response does not retrieve the related resources
+      // expect(response.status).toBe(HttpStatus.OK);
+      // const updatedScenarioIntervention =
+      //   await scenarioInterventionRepository.findOneOrFail(
+      //     scenarioIntervention.id,
+      //   );
+      // expect(updatedScenarioIntervention.updatedById).toEqual(userId);
+      //
+      // expect(response.body.data.attributes.title).toEqual(
+      //   'updated test scenario intervention',
+      // );
+      // expect(response.body.data.attributes.status).toEqual(
+      //   SCENARIO_INTERVENTION_STATUS.INACTIVE,
+      // );
+      //
+      // // Note: Update response does not retrieve the related resources
       expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
     });
 
@@ -1540,8 +1658,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             adminRegionIds: [parentAdminRegion.id],
             type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           });
-
-        console.log(response.body);
 
         const intervention: ScenarioIntervention | undefined =
           await scenarioInterventionRepository.findOne(response.body.data.id);

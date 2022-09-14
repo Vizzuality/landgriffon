@@ -46,7 +46,7 @@ const ComparisonCell: React.FC<ComparisonCellProps> = ({
           )}
         </div>
       </div>
-      <div className="my-auto text-left text-gray-400 text-xxs">
+      <div className="my-auto text-xs text-left text-gray-400">
         Actual data: {NUMBER_FORMAT(value)}
       </div>
     </div>

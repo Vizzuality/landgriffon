@@ -71,11 +71,7 @@ export function useSourcingLocationsMaterials(
           url: '/sourcing-locations/materials',
           params,
         })
-        // .then((response) => response.data),
-        .then(() => ({
-          data: [],
-          meta: { page: 1, size: 1, totalItems: 1, totalPages: 1 },
-        })),
+        .then((response) => response.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
       ...queryOptions,

@@ -32,19 +32,6 @@ const AdminDataPage: React.FC = () => {
     pageIndex: 1,
   });
   const [sorting, setSorting] = useState<SortingState>([]);
-  // const [dataDownloadError, setDataDownloadError] = useState<string>();
-
-  // Getting last task available
-  const { data: tasks } = useTasks(
-    {
-      'page[size]': 1,
-      sort: '-createdAt',
-    },
-    {
-      refetchInterval: 10000,
-    },
-  );
-  const lastTask = tasks?.[0] as Task;
 
   // Getting sourcing locations to extract the update date
   const { data: sourcingLocations, isLoading: isSourcingLocationsLoading } = useSourcingLocations({
@@ -56,6 +43,7 @@ const AdminDataPage: React.FC = () => {
   const {
     data: sourcingData,
     meta: sourcingMetadata,
+    isFetched: isFetchedSourcingData,
     isFetching: isFetchingSourcingData,
   } = useSourcingLocationsMaterials(
     {
@@ -73,6 +61,19 @@ const AdminDataPage: React.FC = () => {
       keepPreviousData: true,
     },
   );
+
+  // Getting last task available
+  const { data: tasks } = useTasks(
+    {
+      'page[size]': 1,
+      sort: '-createdAt',
+    },
+    {
+      enabled: isFetchedSourcingData && sourcingData?.length === 0,
+      refetchInterval: 10000,
+    },
+  );
+  const lastTask = tasks?.[0] as Task;
 
   const {
     isOpen: isUploadDataSourceModalOpen,

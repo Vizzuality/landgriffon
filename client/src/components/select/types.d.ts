@@ -11,7 +11,7 @@ type Styles = Readonly<{
   border: boolean;
 }>;
 
-export type SelectProps<T> = {
+export type SelectProps<T = string> = {
   instanceId?: number | string;
   showSearch?: boolean;
   disabled?: boolean;

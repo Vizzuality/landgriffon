@@ -20,7 +20,7 @@ const AdminEditTargetModal: React.FC<EditTargetModalProps> = ({ title, open, onD
   const { data, isLoading } = useSourcingRecordsYears();
   const { data: targets } = useTargets();
 
-  const [selectedOption, setSelectedOption] = useState<SelectProps['current']>(null);
+  const [selectedOption, setSelectedOption] = useState<SelectProps<number>['current']>(null);
 
   const targetYearsArray: TargetYear[] = useMemo(
     // TO-DO: use indicatorID to filter the target years needed in each case
@@ -33,7 +33,7 @@ const AdminEditTargetModal: React.FC<EditTargetModalProps> = ({ title, open, onD
 
   const [targetYears, setTargetYearsValues] = useState<TargetYear[]>(targetYearsArray);
 
-  const yearOptions: SelectProps['options'] = useMemo(
+  const yearOptions: SelectProps<number>['options'] = useMemo(
     () =>
       data?.map((year) => ({
         label: year.toString(),
@@ -68,14 +68,14 @@ const AdminEditTargetModal: React.FC<EditTargetModalProps> = ({ title, open, onD
 
   return (
     <Modal title={title} open={open} onDismiss={onDismiss} dismissable>
-      <p className="text-md text-gray-500 mb-8">
+      <p className="mb-8 text-gray-500 text-md">
         Set up the baseline year and the targets for this indicator.
       </p>
       <legend className="flex font-medium leading-5">
         <span className="mr-2.5">Baseline Year</span>
         <InfoTooltip info />
       </legend>
-      <div className="mt-5 pb-4 grid grid-cols-2 gap-y-4 gap-x-6 sm:grid-cols-2">
+      <div className="grid grid-cols-2 pb-4 mt-5 gap-y-4 gap-x-6 sm:grid-cols-2">
         <div className="block font-medium text-gray-900">
           <Select
             numeric
@@ -89,8 +89,8 @@ const AdminEditTargetModal: React.FC<EditTargetModalProps> = ({ title, open, onD
           />
         </div>
         <div className="block font-medium text-gray-700">
-          <div className="bg-green-50 rounded-md py-2 px-6 text-center">
-            <div className="text-gray-900 text-base">2.37M tCO2e</div>
+          <div className="px-6 py-2 text-center rounded-md bg-green-50">
+            <div className="text-base text-gray-900">2.37M tCO2e</div>
           </div>
         </div>
       </div>

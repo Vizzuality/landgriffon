@@ -17,7 +17,7 @@ const YearsFilter: React.FC = () => {
 
   const [years, setYears] = useState(data);
 
-  const [selectedOption, setSelectedOption] = useState<SelectProps['current']>(null);
+  const [selectedOption, setSelectedOption] = useState<SelectProps<number>['current']>(null);
 
   useEffect(() => {
     setSelectedOption({
@@ -30,7 +30,7 @@ const YearsFilter: React.FC = () => {
     setYears([...range(data[0], data[data.length - 1] + 3)]);
   }, [data]);
   const lastAvailableYear = data[data.length - 1];
-  const yearOptions: SelectProps['options'] = useMemo(
+  const yearOptions: SelectProps<number>['options'] = useMemo(
     () =>
       years?.map((year) => ({
         label: year.toString(),
@@ -58,7 +58,7 @@ const YearsFilter: React.FC = () => {
     [data, years],
   );
 
-  const handleChange: SelectProps['onChange'] = useCallback(
+  const handleChange: SelectProps<number>['onChange'] = useCallback(
     (option) => {
       setSelectedOption(option);
       dispatch(setFilter({ id: 'startYear', value: option.value }));

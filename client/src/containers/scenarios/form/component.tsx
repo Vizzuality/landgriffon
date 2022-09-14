@@ -7,18 +7,20 @@ import Input from 'components/forms/input';
 import Textarea from 'components/forms/textarea';
 import { AnchorLink, Button } from 'components/button';
 
-import type { Scenario } from '../types';
+import type { Scenario, ScenarioFormData } from '../types';
 
 type ScenarioFormProps = {
   scenario?: Scenario;
   isSubmitting?: boolean;
-  onSubmit?: (scenario: Scenario) => void;
+  onSubmit?: (scenario: ScenarioFormData) => void;
 };
 
 const schemaValidation = yup.object({
   title: yup.string().min(2).required('Title must have at least two characters'),
   description: yup.string(),
 });
+
+type SubSchema = yup.InferType<typeof schemaValidation>;
 
 const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
   children,
@@ -30,7 +32,7 @@ const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<SubSchema>({
     resolver: yupResolver(schemaValidation),
   });
 

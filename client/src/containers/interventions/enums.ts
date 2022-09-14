@@ -4,11 +4,11 @@ export enum InterventionTypes {
   Efficiency = 'Change production efficiency',
 }
 
-export enum LocationTypes {
+export const enum LocationTypes {
   unknown = 'unknown',
-  aggregationPoint = 'aggregation-point',
-  pointOfProduction = 'point-of-production',
-  countryOfProduction = 'country-of-production',
+  aggregationPoint = 'aggregation point',
+  pointOfProduction = 'point of production',
+  countryOfProduction = 'country of production',
 }
 
 export enum LocationStatus {

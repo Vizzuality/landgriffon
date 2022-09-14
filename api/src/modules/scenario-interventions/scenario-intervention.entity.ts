@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   JoinTable,
   ManyToMany,
@@ -112,6 +113,7 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   @JoinColumn({ name: 'scenarioId' })
   scenario!: Scenario;
 
+  @Index()
   @Column({ nullable: false })
   scenarioId!: string;
 

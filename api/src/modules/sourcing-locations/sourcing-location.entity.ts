@@ -2,6 +2,7 @@ import {
   Check,
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -224,6 +225,8 @@ export class SourcingLocation extends TimestampedBaseEntity {
   @ManyToOne(() => ScenarioIntervention, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'scenarioInterventionId' })
   scenarioIntervention: ScenarioIntervention;
+
+  @Index()
   @Column({ nullable: true })
   @ApiPropertyOptional()
   scenarioInterventionId?: string;

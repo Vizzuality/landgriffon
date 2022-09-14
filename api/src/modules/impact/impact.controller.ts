@@ -57,7 +57,7 @@ export class ImpactController {
     type: PaginatedImpactTable,
   })
   @JSONAPIPaginationQueryParams()
-  @Get('actual-vs-scenario')
+  @Get('compare/scenario/vs/actual')
   async getActualVsScenarioImpactTable(
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
     @Query(ValidationPipe)

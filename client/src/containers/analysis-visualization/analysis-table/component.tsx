@@ -17,7 +17,6 @@ import type { LinesConfig } from 'components/chart/line/types';
 import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 
 import type { ImpactTableData } from 'types';
-import type { ComparisonCellProps } from './comparison-cell/component';
 import ComparisonCell from './comparison-cell/component';
 import classNames from 'classnames';
 
@@ -131,10 +130,8 @@ const AnalysisTable: React.FC = () => {
     [impactTable],
   );
 
-  const comparisonColumn = useCallback<
-    (year: number) => ColumnDefinition<TableDataType, number | ComparisonCellProps>
-  >(
-    (year) => {
+  const comparisonColumn = useCallback<(year: number) => ColumnDefinition<TableDataType>>(
+    (year: number) => {
       return {
         id: `${year}`,
         title: `${year}`,
@@ -149,12 +146,12 @@ const AnalysisTable: React.FC = () => {
 
           return BIG_NUMBER_FORMAT(value.value);
         },
-      } as ColumnDefinition<TableDataType, ComparisonCellProps>;
+      };
     },
     [showComparison],
   );
 
-  const baseColumns = useMemo<ColumnDefinition<TableDataType, unknown>[]>(
+  const baseColumns = useMemo<ColumnDefinition<TableDataType>[]>(
     () => [
       {
         id: 'name',

@@ -68,7 +68,7 @@ export const useScenarios = <T = ResponseData>({
   };
 
   const query = useQuery(
-    ['scenariosList', sort, filter, searchTerm],
+    ['scenariosList', sort, paramsResult, searchTerm],
     async () =>
       apiService
         .request<ResponseData>({

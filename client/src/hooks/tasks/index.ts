@@ -30,6 +30,7 @@ export type LocationType = {
 };
 
 export function useTasks(
+  params: Record<string, string | number | boolean> = {},
   options: UseQueryOptions<TasksAPIResponse> = {},
 ): UseQueryResult<TasksAPIResponse> {
   const query = useQuery<TasksAPIResponse>(
@@ -39,6 +40,7 @@ export function useTasks(
         .request({
           method: 'GET',
           url: '/tasks',
+          params,
         })
         .then(({ data: responseData }) => responseData.data),
     {

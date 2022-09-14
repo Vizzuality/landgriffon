@@ -292,7 +292,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
 
   // Years
   const { data: years, isLoading: isLoadingYears } = useSourcingRecordsYears();
-  const optionsYears: SelectOptions = useMemo(
+  const optionsYears: SelectOptions<number> = useMemo(
     () =>
       years.map((year) => ({
         label: year.toString(),

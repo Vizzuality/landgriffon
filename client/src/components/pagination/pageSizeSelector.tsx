@@ -13,7 +13,7 @@ const PageSizeSelector: React.FC<PageSizeSelectorProps> = ({
   availableSizes,
   pageSize,
 }) => {
-  const currentPageOption = useMemo<SelectOption>(
+  const currentPageOption = useMemo<SelectOption<number>>(
     () => ({ label: `${pageSize}`, value: pageSize }),
     [pageSize],
   );
@@ -22,7 +22,7 @@ const PageSizeSelector: React.FC<PageSizeSelectorProps> = ({
     [availableSizes],
   );
 
-  const handleChange = useCallback<SelectProps['onChange']>(
+  const handleChange = useCallback<SelectProps<number>['onChange']>(
     (option) => {
       onChange(option.value as number);
     },

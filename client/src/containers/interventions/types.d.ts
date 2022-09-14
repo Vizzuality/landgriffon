@@ -41,12 +41,15 @@ export type Intervention = {
   newProducer: Producer;
   newLocationType: LocationTypes;
   newLocationAddressInput?: string;
+  newLocationCountryInput?: string;
+  newLocationLatitudeInput?: string;
+  newLocationLongitudeInput?: string;
   newIndicatorCoefficients: IndicatorCoefficients;
 };
 
 export type InterventionFormData = {
   interventionType: string;
-  startYear: SelectOption;
+  startYear: SelectOption<number>;
   percentage: number;
   scenarioId: string;
 
@@ -65,7 +68,7 @@ export type InterventionFormData = {
   newLocationLatitude?: number;
   newLocationLongitude?: number;
 
-  newMaterialId?: SelectOption;
+  newMaterialId?: SelectOption[];
 
   DF_LUC_T?: IndicatorCoefficients['DF_LUC_T'];
   UWU_T?: IndicatorCoefficients['UWU_T'];

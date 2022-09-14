@@ -36,8 +36,8 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
-  const [startYearOptions, setStartYearOptions] = useState<SelectOption[]>();
-  const [endYearOptions, setEndYearOptions] = useState<SelectOption[]>();
+  const [startYearOptions, setStartYearOptions] = useState<SelectOption<number>[]>();
+  const [endYearOptions, setEndYearOptions] = useState<SelectOption<number>[]>();
 
   useEffect(() => {
     if (!years.length) return;

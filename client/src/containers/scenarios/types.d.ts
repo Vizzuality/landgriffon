@@ -6,6 +6,12 @@ export type Scenario = {
   scenarioInterventions?: Intervention[];
 };
 
+export type ScenarioFormData = {
+  id?: Scenario['id'];
+  title: Scenario['title'];
+  description?: Scenario['description'];
+};
+
 export type Scenarios = Scenario[];
 
 export type ScenarioInterventionsGrowthItem = Readonly<{

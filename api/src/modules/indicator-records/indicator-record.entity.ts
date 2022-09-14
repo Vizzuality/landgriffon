@@ -2,6 +2,7 @@ import {
   Column,
   Entity,
   getManager,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -71,6 +72,8 @@ export class IndicatorRecord extends TimestampedBaseEntity {
   )
   @JoinColumn({ name: 'sourcingRecordId' })
   sourcingRecord: SourcingRecord;
+
+  @Index()
   @Column()
   sourcingRecordId: string;
 

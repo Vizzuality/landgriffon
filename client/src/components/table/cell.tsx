@@ -39,25 +39,24 @@ const CellWrapper = <T, C>({ children, context }: React.PropsWithChildren<CellPr
       style={style}
       className={classNames(
         getAlignmentClasses(align),
-        'pr-5 relative flex items-center justify-start w-full h-20 truncate',
+        'pr-5 relative flex items-center justify-start w-full h-20',
       )}
     >
-      <div className="w-full mx-auto my-auto truncate">
-        <>
-          {isFirstColumn && context.row.getCanExpand() && (
-            <div
-              className="absolute top-1/2 -translate-y-1/2 -translate-x-[15px] cursor-pointer"
-              onClick={context.row.getToggleExpandedHandler()}
-            >
+      <div className="w-full mx-auto my-auto space-x-2">
+        {isFirstColumn && context.row.getCanExpand() ? (
+          <div className="cursor-pointer" onClick={context.row.getToggleExpandedHandler()}>
+            <div className="absolute -translate-x-5 -translate-y-1/2 top-1/2">
               <ChevronRightIcon
                 className={classNames('w-4 h-4 text-gray-900', {
                   'rotate-90': context.row.getIsExpanded(),
                 })}
               />
             </div>
-          )}
-          {children || '-'}
-        </>
+            {children || '-'}
+          </div>
+        ) : (
+          <>{children || '-'}</>
+        )}
       </div>
     </div>
   );

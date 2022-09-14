@@ -2,14 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { apiService } from 'services/api';
 
 import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
-import type { APIMetadataPagination } from 'types';
-
-type Task = {
-  id: string;
-  type: string;
-  status: string;
-  errors?: Record<string, string>[];
-};
+import type { APIMetadataPagination, Task } from 'types';
 
 type TaskAPIResponse = Task;
 
@@ -20,7 +13,7 @@ type TasksAPIResponse = {
 
 const DEFAULT_QUERY_OPTIONS = {
   retry: false,
-  keepPreviousData: false,
+  keepPreviousData: true,
   refetchOnWindowFocus: false,
 };
 

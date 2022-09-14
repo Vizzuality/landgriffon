@@ -242,19 +242,6 @@ export class ScenarioInterventionsService extends AppBaseService<
   ): Promise<SourcingLocation[]> {
     const cancelledSourcingLocations: SourcingLocation[] = [];
     for (const location of sourcingLocations) {
-      // Canceled Indocator Records should be saved as negative values
-      if (
-        canceledOrReplacing === SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED
-      ) {
-        location.sourcingRecords.forEach((sourcingRecord: SourcingRecord) => {
-          sourcingRecord.indicatorRecords.map(
-            (indicatorRecord: IndicatorRecord) => {
-              indicatorRecord.value = -indicatorRecord.value;
-            },
-          );
-        });
-      }
-
       const newCancelledInterventionLocation: SourcingLocation =
         new SourcingLocation();
       newCancelledInterventionLocation.materialId = location.materialId;

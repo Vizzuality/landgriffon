@@ -7,12 +7,15 @@ import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 import {
   LOCATION_TYPES,
+  SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import {
   createAdminRegion,
   createBusinessUnit,
   createMaterial,
+  createScenario,
+  createScenarioIntervention,
   createSourcingLocation,
   createSupplier,
 } from '../../entity-mocks';
@@ -239,4 +242,170 @@ describe('SourcingLocationsModule (e2e)', () => {
       );
     });
   });
+  describe('Location Types Smart Filters - Filter by Scenario', () => {
+    test(
+      'When I query a Location Types endpoint ' +
+        'And I filter them by Scenario' +
+        'And I filter it by a Material and a Origin' +
+        'Then I should receive location types from actual data and those that are present in some intervention of said Scenario',
+      async () => {
+        const parentMaterial1: Material = await createMaterial({
+          name: 'parentMaterial1',
+        });
+
+        const childMaterial1: Material = await createMaterial({
+          name: 'childMaterial1',
+          parentId: parentMaterial1.id,
+        });
+
+        const scenario = await createScenario();
+
+        const parentMaterial2 = await createMaterial({
+          name: 'parent of a child material that is not part of intervention1',
+        });
+        const childMaterial2 = await createMaterial({
+          name: 'child material that is part of a intervention',
+          parent: parentMaterial2,
+        });
+
+        const intervention = await createScenarioIntervention({
+          scenario,
+        });
+
+        await createSourcingLocation({
+          materialId: childMaterial2.id,
+          interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+          locationType: LOCATION_TYPES.AGGREGATION_POINT,
+          scenarioInterventionId: intervention.id,
+        });
+
+        await createSourcingLocation({
+          materialId: childMaterial2.id,
+          interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+          locationType: LOCATION_TYPES.AGGREGATION_POINT,
+          scenarioInterventionId: intervention.id,
+        });
+
+        const material2: Material = await createMaterial({
+          name: 'supplier2Material',
+        });
+
+        await createSourcingLocation({
+          locationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+          materialId: childMaterial1.id,
+        });
+
+        await createSourcingLocation({
+          locationType: LOCATION_TYPES.UNKNOWN,
+        });
+
+        const response = await request(app.getHttpServer())
+          .get('/api/v1/sourcing-locations/location-types')
+          .query({
+            scenarioId: scenario.id,
+          })
+          .set('Authorization', `Bearer ${jwtToken}`);
+        expect(HttpStatus.OK);
+        expect(response.body.data).toHaveLength(3);
+        expect(response.body.data).toEqual([
+          { label: 'Unknown', value: 'unknown' },
+          { label: 'Aggregation point', value: 'aggregation-point' },
+          { label: 'Country of production', value: 'country-of-production' },
+        ]);
+      },
+    );
+  });
+  test(
+    'When I query a Material Tree endpoint ' +
+      'And I query the ones with sourcing locations' +
+      'And I filter them by Scenario' +
+      'And I filter them by a some Origin and Supplier' +
+      'Then I should receive a tree list of materials where there are sourcing-locations for, and are present in some intervention of said Scenario, matching said filters',
+    async () => {
+      const parentMaterial1: Material = await createMaterial({
+        name: 'parentMaterial1',
+      });
+
+      const childMaterial1: Material = await createMaterial({
+        name: 'childMaterial1',
+        parentId: parentMaterial1.id,
+      });
+
+      const scenario = await createScenario();
+
+      const parentMaterial2 = await createMaterial({
+        name: 'parent of a child material that is not part of intervention1',
+      });
+      const childMaterial2 = await createMaterial({
+        name: 'child material that is part of a intervention',
+        parent: parentMaterial2,
+      });
+
+      const adminRegionThatShouldShowResults = await createAdminRegion();
+      const adminRegionThatShouldNOTShowResults = await createAdminRegion();
+      const supplierThatShouldShowResults = await createSupplier();
+      const supplierThatShouldNOTShowResults = await createSupplier();
+
+      const intervention = await createScenarioIntervention({
+        scenario,
+      });
+
+      await createSourcingLocation({
+        materialId: childMaterial2.id,
+        interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+        locationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
+        adminRegion: adminRegionThatShouldShowResults,
+        t1Supplier: supplierThatShouldShowResults,
+        scenarioInterventionId: intervention.id,
+      });
+
+      const material2: Material = await createMaterial({
+        name: 'supplier2Material',
+      });
+
+      const material3: Material = await createMaterial({
+        name: 'supplier3Material',
+      });
+      await createSourcingLocation({
+        locationType: LOCATION_TYPES.AGGREGATION_POINT,
+        materialId: childMaterial1.id,
+        adminRegion: adminRegionThatShouldShowResults,
+        t1Supplier: supplierThatShouldShowResults,
+      });
+
+      await createSourcingLocation({
+        locationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+        materialId: material2.id,
+        adminRegion: adminRegionThatShouldNOTShowResults,
+        producer: supplierThatShouldNOTShowResults,
+      });
+
+      await createSourcingLocation({
+        locationType: LOCATION_TYPES.UNKNOWN,
+        materialId: material3.id,
+      });
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/sourcing-locations/location-types')
+        .query({
+          scenarioId: scenario.id,
+          'originIds[]': [adminRegionThatShouldShowResults.id],
+          'supplierIds[]': [supplierThatShouldShowResults.id],
+        })
+        .set('Authorization', `Bearer ${jwtToken}`);
+
+      expect(HttpStatus.OK);
+      expect(response.body.data).toHaveLength(2);
+      expect(response.body.data).toEqual([
+        {
+          label: 'Aggregation point',
+          value: 'aggregation-point',
+        },
+        {
+          label: 'Point of production',
+          value: 'point-of-production',
+        },
+      ]);
+    },
+  );
 });

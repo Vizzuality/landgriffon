@@ -11,7 +11,6 @@ import { Logger, NotFoundException } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetAdminRegionTreeWithOptionsDto } from 'modules/admin-regions/dto/get-admin-region-tree-with-options.dto';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
-import { Scenario } from 'modules/scenarios/scenario.entity';
 import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 
 @EntityRepository(AdminRegion)
@@ -159,10 +158,12 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
   }
 
   /**
-   ** @description Retrieves Admin Regions and their ancestors (in a plain format) when there are associated Sourcing Locations
+   * @description Get all admin regions that are present in Sourcing Locations with given filters
+   *              Additionally if withAncestry set to true (default) it will return the ancestry of each
+   *              element up to the root
    */
 
-  async getSourcingDataAdminRegions(
+  async getAdminRegionsFromSourcingLocations(
     adminRegionTreeOptions: GetAdminRegionTreeWithOptionsDto,
     withAncestry: boolean = true,
   ): Promise<AdminRegion[]> {
@@ -206,55 +207,28 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
 
     if (adminRegionTreeOptions.scenarioId) {
       queryBuilder
-        .innerJoin(
+        .leftJoin(
           ScenarioIntervention,
           'scenarioIntervention',
           'sl.scenarioInterventionId = scenarioIntervention.id',
         )
-        .innerJoin(
-          Scenario,
-          'scenario',
-          'scenarioIntervention.scenarioId = scenario.id',
-        )
-        .andWhere('scenario.id = :scenarioId', {
-          scenarioId: adminRegionTreeOptions.scenarioId,
-        });
+        .andWhere(
+          new Brackets((qb: WhereExpressionBuilder) => {
+            qb.where('scenarioIntervention.scenarioId = :scenarioId', {
+              scenarioId: adminRegionTreeOptions.scenarioId,
+            }).orWhere('sl.scenarioInterventionId is null');
+          }),
+        );
     } else {
       queryBuilder.andWhere('sl.scenarioInterventionId is null');
+      queryBuilder.andWhere('sl.interventionType is null');
     }
+
     if (!withAncestry) {
-      return queryBuilder.select().getMany();
+      return queryBuilder.getMany();
     }
     queryBuilder.select('ar.id');
 
-    const [subQuery, subQueryParams]: [string, any[]] =
-      queryBuilder.getQueryAndParameters();
-
-    // Recursively find elements and their ancestry given Ids of the subquery above
-    const result: AdminRegion[] = await this.query(
-      `
-        with recursive adminregion_tree as (
-            select m.id, m."parentId", m."name"
-            from admin_region m
-            where id in
-                        (${subQuery})
-            union all
-            select c.id, c."parentId", c."name"
-            from admin_region c
-            join adminregion_tree p on p."parentId" = c.id
-        )
-        select distinct *
-        from adminregion_tree
-        order by name`,
-
-      subQueryParams,
-    ).catch((err: Error) =>
-      this.logger.error(
-        `Query failed for retrieving Admin Regions with Sourcing Locations: `,
-        err,
-      ),
-    );
-
-    return result;
+    return this.getEntityAncestry<AdminRegion>(queryBuilder, AdminRegion.name);
   }
 }

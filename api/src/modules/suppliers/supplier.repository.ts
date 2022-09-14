@@ -1,4 +1,9 @@
-import { EntityRepository, SelectQueryBuilder } from 'typeorm';
+import {
+  Brackets,
+  EntityRepository,
+  SelectQueryBuilder,
+  WhereExpressionBuilder,
+} from 'typeorm';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
@@ -6,7 +11,6 @@ import { Logger } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-tree-with-options.dto';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
-import { Scenario } from 'modules/scenarios/scenario.entity';
 
 @EntityRepository(Supplier)
 export class SupplierRepository extends ExtendedTreeRepository<
@@ -16,10 +20,12 @@ export class SupplierRepository extends ExtendedTreeRepository<
   logger: Logger = new Logger(SupplierRepository.name);
 
   /**
-   * @description Retrieves suppliers and it's ancestors (in a plain format) there are registered sourcingLocations for
+   * @description Get all suppliers that are present in Sourcing Locations with given filters
+   *              Additionally if withAncestry set to true (default) it will return the ancestry of each
+   *              element up to the root
    */
 
-  async getSourcingDataSuppliers(
+  async getSuppliersFromSourcingLocations(
     supplierTreeOptions: GetSupplierTreeWithOptions,
     withAncestry: boolean = true,
   ): Promise<Supplier[]> {
@@ -63,21 +69,21 @@ export class SupplierRepository extends ExtendedTreeRepository<
 
     if (supplierTreeOptions.scenarioId) {
       queryBuilder
-        .innerJoin(
+        .leftJoin(
           ScenarioIntervention,
           'scenarioIntervention',
           'sl.scenarioInterventionId = scenarioIntervention.id',
         )
-        .innerJoin(
-          Scenario,
-          'scenario',
-          'scenarioIntervention.scenarioId = scenario.id',
-        )
-        .andWhere('scenario.id = :scenarioId', {
-          scenarioId: supplierTreeOptions.scenarioId,
-        });
+        .andWhere(
+          new Brackets((qb: WhereExpressionBuilder) => {
+            qb.where('scenarioIntervention.scenarioId = :scenarioId', {
+              scenarioId: supplierTreeOptions.scenarioId,
+            }).orWhere('sl.scenarioInterventionId is null');
+          }),
+        );
     } else {
       queryBuilder.andWhere('sl.scenarioInterventionId is null');
+      queryBuilder.andWhere('sl.interventionType is null');
     }
 
     if (!withAncestry) {
@@ -85,33 +91,6 @@ export class SupplierRepository extends ExtendedTreeRepository<
     }
     queryBuilder.select('s.id');
 
-    const [subQuery, subQueryParams]: [string, any[]] =
-      queryBuilder.getQueryAndParameters();
-
-    // Recursively find elements and their ancestry given Ids of the subquery above
-    const result: Supplier[] = await this.query(
-      `
-        with recursive supplier_tree as (
-            select m.id, m."parentId", m."name", m."description"
-            from supplier m
-            where id in
-                        (${subQuery})
-            union all
-            select c.id, c."parentId", c."name", c."description"
-            from supplier c
-            join supplier_tree p on p."parentId" = c.id
-        )
-        select distinct *
-        from supplier_tree
-        order by name`,
-      subQueryParams,
-    ).catch((err: Error) =>
-      this.logger.error(
-        `Query Failed for retrieving supplier with sourcing locations: `,
-        err,
-      ),
-    );
-
-    return result;
+    return this.getEntityAncestry<Supplier>(queryBuilder, Supplier.name);
   }
 }

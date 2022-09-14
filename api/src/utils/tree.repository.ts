@@ -1,5 +1,7 @@
-import { TreeRepository } from 'typeorm';
+import { SelectQueryBuilder, TreeRepository } from 'typeorm';
 import { isEqual } from 'lodash';
+import { Logger, ServiceUnavailableException } from '@nestjs/common';
+import { camelToSnake } from 'utils/helpers/camel-to-underscore.helper';
 
 interface WithExplodedPath {
   explodedPath: string[];
@@ -13,6 +15,45 @@ export class ExtendedTreeRepository<
   Entity,
   CreateDto extends { parent?: Entity },
 > extends TreeRepository<Entity> {
+  logger: Logger = new Logger(this.constructor.name);
+
+  /**
+   * @description: Returns a flat array of given elements Ids ancestry up to the root
+   *
+   */
+  async getEntityAncestry<Entity>(
+    queryBuilder: SelectQueryBuilder<Entity>,
+    entityName: string,
+  ): Promise<Entity[]> {
+    const [subQuery, subQueryParams]: [string, any[]] =
+      queryBuilder.getQueryAndParameters();
+    const snakeCasedEntityName: string = camelToSnake(entityName);
+    return this.query(
+      `
+        with recursive ${snakeCasedEntityName}_tree as (
+            select entity.id, entity."parentId", entity."name"
+            from ${snakeCasedEntityName} entity
+            where id in
+                        (${subQuery})
+            union all
+            select "parent".id, "parent"."parentId", "parent"."name"
+            from ${snakeCasedEntityName} "parent"
+            join ${snakeCasedEntityName}_tree "child" on "child"."parentId" = "parent".id
+        )
+        select distinct *
+        from ${snakeCasedEntityName}_tree
+        order by name`,
+      subQueryParams,
+    ).catch((err: typeof Error) => {
+      this.logger.error(
+        `Recursive query failed for subquery: ${subQuery}, with params: ${subQueryParams}: ${err}`,
+      );
+      throw new ServiceUnavailableException(
+        `Could not retrieve Materials tree, contact your administrator`,
+      );
+    });
+  }
+
   /**
    * Takes a list of DTO objects and saves them as a tree
    * It uses importData[pathKey]:string as a fully realized materialized path

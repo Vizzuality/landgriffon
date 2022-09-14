@@ -65,4 +65,9 @@ export class GetBusinessUnitTreeWithOptionsDto {
   )
   @Type(() => String)
   locationTypes?: LOCATION_TYPES_PARAMS[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID(4)
+  scenarioId?: string;
 }

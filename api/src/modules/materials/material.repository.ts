@@ -7,11 +7,10 @@ import {
 import { Material } from 'modules/materials/material.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
-import { Logger, NotFoundException } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
-import { Scenario } from 'modules/scenarios/scenario.entity';
 
 @EntityRepository(Material)
 export class MaterialRepository extends ExtendedTreeRepository<
@@ -21,17 +20,19 @@ export class MaterialRepository extends ExtendedTreeRepository<
   logger: Logger = new Logger(MaterialRepository.name);
 
   /**
-   * @description Retrieves materials and it's ancestors (in a plain format) there are registered sourcingLocations for
+   * @description Get all materials that are present in Sourcing Locations with given filters
+   *              Additionally if withAncestry set to true (default) it will return the ancestry of each
+   *              element up to the root
    */
 
-  async getSourcingDataMaterialsWithAncestry(
+  async getMaterialsFromSourcingLocations(
     materialTreeOptions: GetMaterialTreeWithOptionsDto,
+    withAncestry: boolean = true,
   ): Promise<Material[]> {
     // Join and filters over materials present in sourcing-locations. Resultant query returns IDs of elements meeting the filters
     const queryBuilder: SelectQueryBuilder<Material> = this.createQueryBuilder(
       'm',
     )
-      .select('m.id')
       .innerJoin(SourcingLocation, 'sl', 'sl.materialId = m.id')
       .distinct(true);
 
@@ -67,52 +68,33 @@ export class MaterialRepository extends ExtendedTreeRepository<
         locationTypes: materialTreeOptions.locationTypes,
       });
     }
+    // TODO: we could externalise this to something generic as well
     if (materialTreeOptions.scenarioId) {
       queryBuilder
-        .innerJoin(
+        .leftJoin(
           ScenarioIntervention,
           'scenarioIntervention',
           'sl.scenarioInterventionId = scenarioIntervention.id',
         )
-        .innerJoin(
-          Scenario,
-          'scenario',
-          'scenarioIntervention.scenarioId = scenario.id',
-        )
-        .andWhere('scenario.id = :scenarioId', {
-          scenarioId: materialTreeOptions.scenarioId,
-        });
+        .andWhere(
+          new Brackets((qb: WhereExpressionBuilder) => {
+            qb.where('scenarioIntervention.scenarioId = :scenarioId', {
+              scenarioId: materialTreeOptions.scenarioId,
+            }).orWhere('sl.scenarioInterventionId is null');
+          }),
+        );
     } else {
       queryBuilder.andWhere('sl.scenarioInterventionId is null');
+      queryBuilder.andWhere('sl.interventionType is null');
     }
 
-    const [subQuery, subQueryParams]: [string, any[]] =
-      queryBuilder.getQueryAndParameters();
+    if (!withAncestry) {
+      return queryBuilder.getMany();
+    }
+
+    queryBuilder.select('m.id');
 
     // Recursively find elements and their ancestry given Ids of the subquery above
-    const result: Material[] = await this.query(
-      `
-        with recursive material_tree as (
-            select m.id, m."parentId", m."name", m.description, m."createdAt", m."updatedAt", m."hsCodeId"
-            from material m
-            where id in
-                        (${subQuery})
-            union all
-            select c.id, c."parentId", c."name", c.description, c."createdAt", c."updatedAt", c."hsCodeId"
-            from material c
-            join material_tree p on p."parentId" = c.id
-        )
-        select distinct *
-        from material_tree
-        order by name`,
-      subQueryParams,
-    ).catch((err: Error) =>
-      this.logger.error(
-        `Query Failed for retrieving materials with sourcing locations: `,
-        err,
-      ),
-    );
-
-    return result;
+    return this.getEntityAncestry<Material>(queryBuilder, Material.name);
   }
 }

@@ -6,9 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
+##  2022-09-16
+### Added
+Added [LANDGRIF-874](https://vizzuality.atlassian.net/browse/LANDGRIF-874)
+Accept a optional Scenario id for all the smart filters returning a hierarchical response
 
 
-##  2022-09-102
+##  2022-09-10
 ### Fixes
 Fixes a issue where the Canceled Sourcing Locations would have a default 'unknown' location type, 
 as the query for filtering the original ones at the beginning of the intervention creation didn't have a 
@@ -32,6 +36,8 @@ the created georegion but after checking that said georegion is not already incl
 ### Added
 Added [LANDGRIF-813](https://vizzuality.atlassian.net/browse/LANDGRIF-813)
 Adds endpoint to retrieve location types supported by the platform
+Refactor recursive sql query to be implemented in ExtendedTreeRepository, which is
+extended by all the required entity repositories, minor improves on naming and readability
 
 
 ##  2022-07-15

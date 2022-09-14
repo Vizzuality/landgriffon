@@ -166,7 +166,7 @@ export class SuppliersService extends AppBaseService<
     withAncesty: boolean = true,
   ): Promise<any> {
     const supplierLineage: Supplier[] =
-      await this.supplierRepository.getSourcingDataSuppliers(
+      await this.supplierRepository.getSuppliersFromSourcingLocations(
         supplierTreeOptions,
         withAncesty,
       );

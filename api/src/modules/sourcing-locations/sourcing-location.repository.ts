@@ -8,6 +8,7 @@ import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.e
 import { GetLocationTypesDto } from 'modules/sourcing-locations/dto/location-types-options.sourcing-locations.dto';
 import { AppBaseRepository } from 'utils/app-base.repository';
 import { NotFoundException } from '@nestjs/common';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 
 @EntityRepository(SourcingLocation)
 export class SourcingLocationRepository extends AppBaseRepository<SourcingLocation> {
@@ -43,6 +44,25 @@ export class SourcingLocationRepository extends AppBaseRepository<SourcingLocati
       queryBuilder.andWhere('sl.adminRegionId IN (:...originIds)', {
         originIds: locationTypesOptions.originIds,
       });
+    }
+
+    if (locationTypesOptions.scenarioId) {
+      queryBuilder
+        .leftJoin(
+          ScenarioIntervention,
+          'scenarioIntervention',
+          'sl.scenarioInterventionId = scenarioIntervention.id',
+        )
+        .andWhere(
+          new Brackets((qb: WhereExpressionBuilder) => {
+            qb.where('scenarioIntervention.scenarioId = :scenarioId', {
+              scenarioId: locationTypesOptions.scenarioId,
+            }).orWhere('sl.scenarioInterventionId is null');
+          }),
+        );
+    } else {
+      queryBuilder.andWhere('sl.scenarioInterventionId is null');
+      queryBuilder.andWhere('sl.interventionType is null');
     }
 
     const locationTypes: { locationType: string }[] =

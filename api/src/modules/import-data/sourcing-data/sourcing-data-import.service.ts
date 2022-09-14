@@ -144,15 +144,15 @@ export class SourcingDataImportService {
         await this.indicatorRecordsService.createIndicatorRecordsForAllSourcingRecords();
         this.logger.log('Indicator Records generated');
         // TODO: Hack to force m.view refresh once Indicator Records are persisted. This should be automagically
-        //       done by the AfterInser() event listener placed in indicator-record.entity.ts
+        //       done by the AfterInsert() event listener placed in indicator-record.entity.ts
         await IndicatorRecord.updateImpactView();
       } catch (err: any) {
         if (err instanceof MissingH3DataError) {
           throw new MissingH3DataError(
             `Missing H3 Data to calculate Impact in Import`,
           );
-          throw err;
         }
+        throw err;
       }
     } finally {
       await this.fileService.deleteDataFromFS(filePath);

@@ -264,7 +264,7 @@ export class ImpactService {
     };
     switch (impactTableDto.groupBy) {
       case GROUP_BY_VALUES.MATERIAL: {
-        return this.materialsService.getMaterialsTreeWithSourcingLocations(
+        return this.materialsService.getMaterialsTreeFromSourcingLocations(
           treeOptions,
         );
       }

@@ -93,11 +93,6 @@ export class ScenariosController {
     );
   }
 
-  /**
-   * @todo: I haven't founf a way to retrieve intervention relations
-   *        extending nestjs-base-service via extendGetByIdQuery.
-   *        this should be retrieved by /scenarios?include=scenarioInterventions
-   */
   @ApiOperation({
     description: 'Find all Interventions that belong to a given Scenario Id',
   })

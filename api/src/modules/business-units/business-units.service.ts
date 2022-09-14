@@ -119,7 +119,7 @@ export class BusinessUnitsService extends AppBaseService<
     withAncestry: boolean = true,
   ): Promise<BusinessUnit[]> {
     const businessUnitsLineage: BusinessUnit[] =
-      await this.businessUnitRepository.getSourcingDataBusinessUnits(
+      await this.businessUnitRepository.getBusinessUnitsFromSourcingLocations(
         businessUnitTreeOptions,
         withAncestry,
       );

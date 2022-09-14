@@ -12,10 +12,10 @@ import ScenarioItem from 'containers/scenarios/item';
 
 import { ACTUAL_DATA } from '../constants';
 
-import type { Scenario, Scenarios } from '../types';
+import type { Scenario } from '../types';
 
 type ScenariosListProps = {
-  data: Scenarios;
+  data: Scenario[];
 };
 
 const isScenarioSelected: (scenarioId: Scenario['id'], currentId: Scenario['id']) => boolean = (

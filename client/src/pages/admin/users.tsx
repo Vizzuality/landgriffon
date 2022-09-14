@@ -42,7 +42,7 @@ const AdminUsersPage: React.FC = () => {
         { id: 'name', header: 'Name', size: 110 },
         { id: 'email', header: 'Email' },
         { id: 'title', header: 'Title' },
-        { id: 'role', titheaderle: 'Role' },
+        { id: 'role', header: 'Role' },
       ].map((column) => ({ align: 'left', ...column })),
       data: tableData,
       theme: 'striped',

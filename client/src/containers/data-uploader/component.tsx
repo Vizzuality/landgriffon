@@ -1,17 +1,17 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { XCircleIcon } from '@heroicons/react/solid';
+import classNames from 'classnames';
 
 import { useUploadDataSource } from 'hooks/sourcing-data';
-import { useTask } from 'hooks/tasks';
 
 import FileDropzone from 'components/file-dropzone';
 
 import type { FileDropZoneProps } from 'components/file-dropzone/types';
-import classNames from 'classnames';
+import type { Task } from 'types';
 
 type DataUploaderProps = {
-  inline: boolean; // Visually it removes a shadow when it's true
+  inline?: boolean; // Visually it removes a shadow when it's true
+  task?: Task;
 };
 
 const MAX_SIZE = Number(process.env.NEXT_PUBLIC_FILE_UPLOADER_MAX_SIZE || '10000000');
@@ -24,14 +24,11 @@ const uploadOptions = {
   maxSize: MAX_SIZE,
 };
 
-const DataUploader: React.FC<DataUploaderProps> = ({ inline }) => {
-  const [taskId, setTaskId] = useState<string>(null);
+const DataUploader: React.FC<DataUploaderProps> = ({ inline = false, task }) => {
   const uploadDataSource = useUploadDataSource();
 
   const handleOnDrop: FileDropZoneProps['onDrop'] = useCallback(
     (acceptedFiles) => {
-      setTaskId(null);
-
       const formData = new FormData();
 
       acceptedFiles.forEach((file) => {
@@ -39,9 +36,6 @@ const DataUploader: React.FC<DataUploaderProps> = ({ inline }) => {
       });
 
       uploadDataSource.mutate(formData, {
-        onSuccess: (response) => {
-          setTaskId(response.data.id);
-        },
         onError: () => {
           toast.error('There was an error uploading the file. Try again later.');
         },
@@ -60,13 +54,7 @@ const DataUploader: React.FC<DataUploaderProps> = ({ inline }) => {
     });
   }, []);
 
-  const { data, isFetched, isLoading } = useTask(taskId, {
-    enabled: !!taskId,
-    refetchInterval: (data) => (data?.status === 'failed' ? false : 5000),
-  });
-
-  const isUploadingAndProcessing =
-    (isFetched && isLoading) || uploadDataSource.isLoading || data?.status === 'processing';
+  const isUploadingAndProcessing = uploadDataSource.isLoading || task?.status === 'processing';
 
   return (
     <div className="relative w-[640px]">
@@ -87,26 +75,9 @@ const DataUploader: React.FC<DataUploaderProps> = ({ inline }) => {
             <div className="w-full h-[4px] rounded bg-gradient-to-r from-[#5FCFF9] via-[#42A56A] to-[#F5CA7D]" />
             <p className="text-xs text-left text-gray-500">
               {uploadDataSource.isLoading && 'Uploading file...'}
-              {(isLoading || data?.status === 'processing') && 'Processing file...'}
+              {task?.status === 'processing' && 'Processing file...'}
             </p>
           </div>
-        </div>
-      )}
-
-      {isFetched && !isLoading && !uploadDataSource.isLoading && data.errors.length > 0 && (
-        <div className="p-4 mt-6 text-sm text-left text-red-600 rounded-md bg-red-50">
-          <p>
-            <XCircleIcon className="inline-block w-5 h-5 mr-2 text-red-600 align-top" />
-            There {data.errors.length === 1 ? 'is' : 'are'} {data.errors.length} error
-            {data.errors.length > 1 && 's'} with your file. Please correct them and try again.
-          </p>
-          <ul className="pl-12 mt-2 space-y-2 list-disc">
-            {data.errors.map((error) =>
-              Object.values(error).map((errorMessage) => (
-                <li key={errorMessage}>{errorMessage}</li>
-              )),
-            )}
-          </ul>
         </div>
       )}
     </div>

@@ -1,3 +1,5 @@
+import type { ButtonProps } from 'components/button/component';
+
 export type DownloadMaterialsDataButtonProps = {
   /** Classnames to apply to the component */
   className?: string;
@@ -7,4 +9,6 @@ export type DownloadMaterialsDataButtonProps = {
   onSuccess?: () => void;
   /** Callback on error downloading data/file */
   onError?: (error: undefined | string) => void;
+
+  buttonProps?: ButtonProps;
 };

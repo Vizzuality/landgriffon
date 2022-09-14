@@ -24,6 +24,7 @@ const DownloadMaterialsDataButton: React.FC<DownloadMaterialsDataButtonProps> = 
   onDownloading = noop,
   onSuccess = noop,
   onError = noop,
+  buttonProps = {},
 }: DownloadMaterialsDataButtonProps) => {
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
@@ -79,7 +80,11 @@ const DownloadMaterialsDataButton: React.FC<DownloadMaterialsDataButtonProps> = 
       onSuccess={handleOnSuccess}
       onError={handleOnError}
     >
-      <Button theme="secondary" icon={<DownloadIcon className="w-4 h-4 text-gray-500" />}>
+      <Button
+        theme="secondary"
+        icon={<DownloadIcon className="w-4 h-4 text-gray-500" />}
+        {...buttonProps}
+      >
         Download
         {isDownloading && <Loading className="ml-2" />}
       </Button>

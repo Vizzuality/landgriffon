@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { merge } from 'lodash';
 import Head from 'next/head';
-import { ExclamationIcon, PlusIcon, DownloadIcon } from '@heroicons/react/solid';
+import { PlusIcon, DownloadIcon, XCircleIcon } from '@heroicons/react/solid';
 import { useDebounce } from '@react-hook/debounce';
 import { format } from 'date-fns';
 
@@ -12,17 +12,18 @@ import { useTasks } from 'hooks/tasks';
 import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
 import DownloadMaterialsDataButton from 'containers/admin/download-materials-data-button';
 import NoResults from 'containers/admin/no-results';
-import UploadDataSourceModal from 'containers/admin/upload-data-source-modal';
 import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range';
 import DataUploader from 'containers/data-uploader';
 import Button, { Anchor } from 'components/button';
 import Search from 'components/search';
+import Modal from 'components/modal';
 
 import Table from 'components/table';
 
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { ColumnDefinition } from 'components/table/column';
-import type { SourcingLocation } from 'types';
+import type { SourcingLocation, Task } from 'types';
+import toast from 'react-hot-toast';
 
 const AdminDataPage: React.FC = () => {
   const [searchText, setSearchText] = useDebounce('', 250);
@@ -31,12 +32,19 @@ const AdminDataPage: React.FC = () => {
     pageIndex: 1,
   });
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [dataDownloadError, setDataDownloadError] = useState<string>();
+  // const [dataDownloadError, setDataDownloadError] = useState<string>();
 
   // Getting last task available
-  const { data: tasks } = useTasks({ 'page[size]': 1, sort: '-createdAt' });
-  const lastTask = tasks?.[0];
-  console.log(lastTask);
+  const { data: tasks } = useTasks(
+    {
+      'page[size]': 1,
+      sort: '-createdAt',
+    },
+    {
+      refetchInterval: 10000,
+    },
+  );
+  const lastTask = tasks?.[0] as Task;
 
   // Getting sourcing locations to extract the update date
   const { data: sourcingLocations, isLoading: isSourcingLocationsLoading } = useSourcingLocations({
@@ -125,7 +133,7 @@ const AdminDataPage: React.FC = () => {
       </Head>
 
       {/* Content when empty */}
-      {sourcingLocations.data.length === 0 && (
+      {(lastTask?.status === 'processing' || sourcingLocations.data.length === 0) && (
         <div className="flex items-center justify-center w-full h-full">
           <div className="space-y-10">
             <div className="space-y-4 text-lg text-center">
@@ -144,23 +152,30 @@ const AdminDataPage: React.FC = () => {
             </div>
             <div className="space-y-4 text-lg text-center">
               <p className="font-semibold">2. Upload the filled Excel file.</p>
-              <DataUploader />
+              <DataUploader task={lastTask} />
+
+              {lastTask?.errors.length > 0 && (
+                <div className="p-4 mt-6 text-sm text-left text-red-600 rounded-md bg-red-50">
+                  <p>
+                    <XCircleIcon className="inline-block w-5 h-5 mr-2 text-red-600 align-top" />
+                    There {lastTask.errors.length === 1 ? 'is' : 'are'} {lastTask.errors.length}{' '}
+                    error
+                    {lastTask.errors.length > 1 && 's'} with your file. Please correct them and try
+                    again.
+                  </p>
+                  <ul className="pl-12 mt-2 space-y-2 list-disc">
+                    {lastTask.errors.map((error) =>
+                      Object.values(error).map((errorMessage) => (
+                        <li key={errorMessage}>{errorMessage}</li>
+                      )),
+                    )}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>
       )}
-
-      {/* {!hasData && !isFetchingData && !isSearching && <NoDataUpload />}
-      {!(!hasData && !isFetchingData && !isSearching) && (
-        <div className="flex flex-col-reverse items-center justify-between md:flex-row">
-          {dataDownloadError && (
-            <div className="flex items-center text-sm text-yellow-800">
-              <ExclamationIcon className="w-5 h-5 mr-3 text-yellow-400" aria-hidden="true" />
-              {dataDownloadError}
-            </div>
-          )}
-        </div>
-      )} */}
 
       {/* Content when data */}
       {sourcingLocations.data?.length > 0 && (
@@ -179,10 +194,7 @@ const AdminDataPage: React.FC = () => {
                 onChange={setYearsRange}
               />
             )}
-            <DownloadMaterialsDataButton
-              onDownloading={() => setDataDownloadError(null)}
-              onError={setDataDownloadError}
-            />
+            <DownloadMaterialsDataButton onError={(errorMessage) => toast.error(errorMessage)} />
             <Button
               theme="primary"
               onClick={openUploadDataSourceModal}
@@ -191,6 +203,7 @@ const AdminDataPage: React.FC = () => {
                   <PlusIcon className="w-4 h-4 text-primary" />
                 </span>
               }
+              disabled={lastTask?.status === 'processing'}
             >
               Upload data source
             </Button>
@@ -244,10 +257,26 @@ const AdminDataPage: React.FC = () => {
         </>
       )}
 
-      <UploadDataSourceModal
+      <Modal
+        title="Upload data source"
         open={isUploadDataSourceModalOpen}
         onDismiss={closeUploadDataSourceModal}
-      />
+      >
+        <div>
+          <p className="text-sm text-gray-500">
+            Upload a new file will replace all the current data.
+          </p>
+          <div className="mt-10">
+            <DataUploader inline task={lastTask} />
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-3 mt-8">
+          <Button theme="secondary" onClick={closeUploadDataSourceModal}>
+            Cancel
+          </Button>
+        </div>
+      </Modal>
     </AdminLayout>
   );
 };

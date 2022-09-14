@@ -55,12 +55,16 @@ def copy_from_stringio(conn: connection, df: pd.DataFrame):
     and use copy_from() to copy it to the table
     """
     # save dataframe to an in memory buffer
+
+    
     buffer = StringIO()
     df.to_csv(buffer, index=False, header=False, na_rep="NULL")
     buffer.seek(0)
-    log.info(f"Copying {len(df)} records into indicator_coefficient...")
     with conn:
         with conn.cursor() as cursor:
+            log.info(f"Deleting records in table indicator_coefficient before importing new data...")
+            cursor.execute(f"delete from indicator_coefficient;")
+            log.info(f"Copying {len(df)} records into indicator_coefficient...")
             cursor.copy_from(
                 buffer,
                 "indicator_coefficient",

@@ -19,6 +19,7 @@ import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 import type { ImpactTableData } from 'types';
 import type { ComparisonCellProps } from './comparison-cell/component';
 import ComparisonCell from './comparison-cell/component';
+import classNames from 'classnames';
 
 type TableDataType = ImpactTableData['rows'][0];
 
@@ -161,6 +162,16 @@ const AnalysisTable: React.FC = () => {
         align: 'left',
         isSticky: true,
         size: 260,
+        cell: ({ row: { original, depth } }) => {
+          return (
+            <div>
+              <span className={classNames({ 'font-bold': depth === 0 })}>
+                {/* @ts-expect-error the parent and the children have different data types */}
+                {original.name} {depth === 0 && <span>({original.metadata.unit})</span>}
+              </span>
+            </div>
+          );
+        },
       },
       {
         id: 'datesRangeChart',

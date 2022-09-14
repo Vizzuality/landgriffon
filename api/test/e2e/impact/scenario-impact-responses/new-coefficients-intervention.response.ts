@@ -194,4 +194,27 @@ export const newCoefficientsScenarioInterventionTable = {
       },
     },
   ],
+
+  purchasedTonnes: [
+    {
+      year: 2020,
+      value: 3007.68,
+      isProjected: false,
+    },
+    {
+      year: 2021,
+      value: 3052.7952,
+      isProjected: true,
+    },
+    {
+      year: 2022,
+      value: 3098.587128,
+      isProjected: true,
+    },
+    {
+      year: 2023,
+      value: 3145.06593492,
+      isProjected: true,
+    },
+  ],
 };

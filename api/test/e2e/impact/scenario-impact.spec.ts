@@ -96,6 +96,9 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     expect(response.body.data.impactTable[0].rows).toEqual(
       newCoefficientsScenarioInterventionTable.impactTable[0].rows,
     );
+    expect(response.body.data.purchasedTonnes).toEqual(
+      newCoefficientsScenarioInterventionTable.purchasedTonnes,
+    );
   });
 
   test('When I request data for Impact table for a Scenario with Intervention of type New Material I should get the expected results', async () => {

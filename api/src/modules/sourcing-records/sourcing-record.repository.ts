@@ -32,14 +32,13 @@ export class ImpactTableData {
   name: string;
   tonnes: string;
   impact: number;
+  typeByIntervention: SOURCING_LOCATION_TYPE_BY_INTERVENTION | null;
 }
 
 export class ActualVsScenarioImpactTableData extends ImpactTableData {
   scenarioImpact?: number;
   absoluteDifference?: number;
   percentageDifference?: number;
-  scenarioInterventionId: string | null;
-  typeByIntervention: SOURCING_LOCATION_TYPE_BY_INTERVENTION | null;
 }
 
 @EntityRepository(SourcingRecord)

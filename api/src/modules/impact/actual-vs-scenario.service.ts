@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   GetActualVsScenarioImpactTabledto,
   GetImpactTableDto,
-  GetRankedImpactTableDto,
 } from 'modules/impact/dto/get-impact-table.dto';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
@@ -14,7 +13,6 @@ import { Indicator } from 'modules/indicators/indicator.entity';
 import { range } from 'lodash';
 import {
   ImpactTable,
-  ImpactTableDataAggregatedValue,
   ImpactTableDataByIndicator,
   ImpactTablePurchasedTonnes,
   ImpactTableRows,
@@ -62,9 +60,8 @@ export class ActualVsScenarioImpactService {
     //Getting Descendants Ids for the filters, in case Parent Ids were received
     await this.loadDescendantEntityIds(actualVsScenarioImpactTableDto);
 
-    // Get full entity tree in cate ids are not passed, otherwise get trees based on
+    // Get full entity tree in case ids are not passed, otherwise get trees based on
     // given ids and add children and parent ids to them to get full data for aggregations
-    // TODO check if tree ids search is redundant
     const entities: ImpactTableEntityType[] =
       await this.getScenarioAndActualEntityTrees(
         actualVsScenarioImpactTableDto,
@@ -81,7 +78,7 @@ export class ActualVsScenarioImpactService {
       paginatedEntities.entities,
     );
 
-    const dataForActualVsScenarioImpactTable: ActualVsScenarioImpactTableData[] =
+    const dataForActualVsScenarioImpactTable: ImpactTableData[] =
       await this.getDataForActualVsScenarioImpactTable(
         actualVsScenarioImpactTableDto,
         paginatedEntities.entities,
@@ -92,11 +89,13 @@ export class ActualVsScenarioImpactService {
         dataForActualVsScenarioImpactTable,
       );
 
-    const impactTable: ImpactTable = this.buildImpactTable(
+    const impactTable: ImpactTable = this.buildActualVsScenarioImpactTable(
       actualVsScenarioImpactTableDto,
       indicators,
       processedDataForComparison,
-      this.buildImpactTableRowsSkeleton(paginatedEntities.entities),
+      this.buildActualVsScenarioImpactTableRowsSkeleton(
+        paginatedEntities.entities,
+      ),
     );
 
     return { data: impactTable, metadata: paginatedEntities.metadata };
@@ -229,10 +228,10 @@ export class ActualVsScenarioImpactService {
       : Promise.resolve([]);
   }
 
-  private buildImpactTable(
+  private buildActualVsScenarioImpactTable(
     queryDto: GetActualVsScenarioImpactTabledto,
     indicators: Indicator[],
-    dataForImpactTable: ActualVsScenarioImpactTableData[],
+    dataForActualVsScenarioImpactTable: ActualVsScenarioImpactTableData[],
     entities: ImpactTableRows[],
   ): ImpactTable {
     this.logger.log('Building Impact Table...');
@@ -253,7 +252,7 @@ export class ActualVsScenarioImpactService {
       });
       // Filter the raw data by Indicator
       const dataByIndicator: ActualVsScenarioImpactTableData[] =
-        dataForImpactTable.filter(
+        dataForActualVsScenarioImpactTable.filter(
           (data: ActualVsScenarioImpactTableData) =>
             data.indicatorId === indicator.id,
         );
@@ -328,20 +327,20 @@ export class ActualVsScenarioImpactService {
         );
 
         let totalScenarioSumByYear: number | null = null;
-        if (queryDto.scenarioId) {
-          totalScenarioSumByYear = calculatedData.reduce(
-            (accumulator: number, currentValue: ImpactTableRows): number => {
-              if (currentValue.values[indexOfYear].year === year)
-                accumulator += Number.isFinite(
-                  currentValue.values[indexOfYear].scenarioValue,
-                )
-                  ? currentValue.values[indexOfYear].scenarioValue || 0
-                  : 0;
-              return accumulator;
-            },
-            0,
-          );
-        }
+
+        totalScenarioSumByYear = calculatedData.reduce(
+          (accumulator: number, currentValue: ImpactTableRows): number => {
+            if (currentValue.values[indexOfYear].year === year)
+              accumulator += Number.isFinite(
+                currentValue.values[indexOfYear].scenarioValue,
+              )
+                ? currentValue.values[indexOfYear].scenarioValue || 0
+                : 0;
+            return accumulator;
+          },
+          0,
+        );
+
         impactTable[indicatorValuesIndex].yearSum.push({
           year,
           value: totalSumByYear,
@@ -355,12 +354,7 @@ export class ActualVsScenarioImpactService {
       // copy and populate tree skeleton for each indicator
       const skeleton: ImpactTableRows[] = JSON.parse(JSON.stringify(entities));
       skeleton.forEach((entity: any) => {
-        this.populateValuesRecursively(
-          entity,
-          calculatedData,
-          rangeOfYears,
-          queryDto.scenarioId,
-        );
+        this.populateValuesRecursively(entity, calculatedData, rangeOfYears);
       });
 
       impactTable[indicatorValuesIndex].rows = queryDto.scenarioId
@@ -373,8 +367,7 @@ export class ActualVsScenarioImpactService {
     const purchasedTonnes: ImpactTablePurchasedTonnes[] =
       this.getTotalPurchasedVolumeByYear(
         rangeOfYears,
-        dataForImpactTable,
-        queryDto.scenarioId,
+        dataForActualVsScenarioImpactTable,
       );
     this.logger.log('Impact Table built');
 
@@ -384,7 +377,6 @@ export class ActualVsScenarioImpactService {
   private getTotalPurchasedVolumeByYear(
     rangeOfYears: number[],
     dataForImpactTable: ImpactTableData[],
-    scenarioId?: string,
   ): ImpactTablePurchasedTonnes[] {
     const purchasedTonnes: ImpactTablePurchasedTonnes[] = [];
     rangeOfYears.forEach((year: number) => {
@@ -422,8 +414,6 @@ export class ActualVsScenarioImpactService {
         });
       }
     });
-    if (scenarioId)
-      purchasedTonnes.map((el: ImpactTablePurchasedTonnes) => (el.value /= 2));
 
     return purchasedTonnes;
   }
@@ -436,7 +426,6 @@ export class ActualVsScenarioImpactService {
     entity: ImpactTableRows,
     calculatedRows: ImpactTableRows[],
     rangeOfYears: number[],
-    scenarioId?: string,
   ): ImpactTableRowsValues[] {
     entity.values = [];
     for (const year of rangeOfYears) {
@@ -463,7 +452,6 @@ export class ActualVsScenarioImpactService {
           childEntity,
           calculatedRows,
           rangeOfYears,
-          scenarioId,
         ),
       );
     });
@@ -473,25 +461,24 @@ export class ActualVsScenarioImpactService {
           ImpactTableRowsValues.value + item[valueIndex].value;
         entity.values[valueIndex].isProjected =
           item[valueIndex].isProjected || entity.values[valueIndex].isProjected;
-        if (scenarioId) {
-          entity.values[valueIndex].scenarioValue =
-            (ImpactTableRowsValues.scenarioValue ?? 0) +
-            (item[valueIndex].scenarioValue || 0);
-          entity.values[valueIndex].absoluteDifference =
-            (entity.values[valueIndex].scenarioValue || 0) -
-            entity.values[valueIndex].value;
-          entity.values[valueIndex].percentageDifference =
-            (((entity.values[valueIndex].scenarioValue || 0) -
-              entity.values[valueIndex].value) /
-              entity.values[valueIndex].value) *
-            100;
-        }
+
+        entity.values[valueIndex].scenarioValue =
+          (ImpactTableRowsValues.scenarioValue ?? 0) +
+          (item[valueIndex].scenarioValue || 0);
+        entity.values[valueIndex].absoluteDifference =
+          (entity.values[valueIndex].scenarioValue || 0) -
+          entity.values[valueIndex].value;
+        entity.values[valueIndex].percentageDifference =
+          (((entity.values[valueIndex].scenarioValue || 0) -
+            entity.values[valueIndex].value) /
+            entity.values[valueIndex].value) *
+          100;
       });
     }
     return entity.values;
   }
 
-  private buildImpactTableRowsSkeleton(
+  private buildActualVsScenarioImpactTableRowsSkeleton(
     entities: ImpactTableEntityType[],
   ): ImpactTableRows[] {
     return entities.map((item: ImpactTableEntityType) => {
@@ -499,7 +486,7 @@ export class ActualVsScenarioImpactService {
         name: item.name || '',
         children:
           item.children.length > 0
-            ? this.buildImpactTableRowsSkeleton(item.children)
+            ? this.buildActualVsScenarioImpactTableRowsSkeleton(item.children)
             : [],
         values: [],
       };
@@ -552,32 +539,29 @@ export class ActualVsScenarioImpactService {
   }
 
   private static processDataForComparison(
-    dataForActualVsScenarioImpactTable: ActualVsScenarioImpactTableData[],
+    dataForActualVsScenarioImpactTable: ImpactTableData[],
   ): ActualVsScenarioImpactTableData[] {
     const result: ActualVsScenarioImpactTableData[] = [];
 
     // Geting array with sourcing data  for real existing locations
     const realSourcingData: ActualVsScenarioImpactTableData[] =
-      dataForActualVsScenarioImpactTable.filter(
-        (el: ActualVsScenarioImpactTableData) => {
-          return el.typeByIntervention === null;
-        },
-      );
+      dataForActualVsScenarioImpactTable.filter((el: ImpactTableData) => {
+        return el.typeByIntervention === null;
+      });
 
     // Geting array with sourcing data for locations created by Scenario
-    const scenarioSourcingData: ActualVsScenarioImpactTableData[] =
-      dataForActualVsScenarioImpactTable.filter(
-        (el: ActualVsScenarioImpactTableData) => {
-          return el.typeByIntervention !== null;
-        },
-      );
+    const scenarioSourcingData: ImpactTableData[] =
+      dataForActualVsScenarioImpactTable.filter((el: ImpactTableData) => {
+        return el.typeByIntervention !== null;
+      });
 
     // By default, if real sourcing data is not affected by scenario - we assume that real impact and scenario impact are the same
-    realSourcingData.map((data: ActualVsScenarioImpactTableData) => {
+
+    realSourcingData.map((data) => {
       return (data.scenarioImpact = data.impact);
     });
 
-    // Start iterating real data to check if it has been affecyted by Scenario and calcuating scenarioImpact
+    // Start iterating real data to check if it has been affected by Scenario and calculating scenarioImpact
     realSourcingData.forEach((realData: ActualVsScenarioImpactTableData) => {
       scenarioSourcingData.forEach(
         (scenarioData: ActualVsScenarioImpactTableData) => {
@@ -597,7 +581,7 @@ export class ActualVsScenarioImpactService {
 
     /**
      * We need to check if some of the scenario data has no real data
-     * (for example, if scenario objective is to use a new material that has never been purchased before, so tehre is no 'real' data for this materis)
+     * (for example, if scenario objective is to use a new material that has never been purchased before, so there is no 'real' data for this material)
      * In that case impact value (actual or real impact, without Scenario, should be 0)*/
 
     scenarioSourcingData.forEach(

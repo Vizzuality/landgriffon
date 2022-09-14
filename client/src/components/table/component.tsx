@@ -16,7 +16,7 @@ import TableRow, { TableHeaderRow } from './row';
 
 export interface TableProps<T>
   extends Omit<TableOptions<T>, 'columns' | 'getCoreRowModel' | 'pageCount'> {
-  columns: ColumnDefinition<T, unknown>[];
+  columns: ColumnDefinition<T>[];
   isLoading?: boolean;
   theme?: 'default' | 'striped';
   paginationProps?: {
@@ -33,7 +33,7 @@ const columnToColumnDef = <T,>(
     isSticky = false,
     cell = ({ row: { original } }) => original[column.id],
     ...column
-  }: ColumnDefinition<T, unknown>,
+  }: ColumnDefinition<T>,
   columnHelper: ColumnHelper<T>,
 ) => {
   return columnHelper.display({

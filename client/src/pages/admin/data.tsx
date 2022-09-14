@@ -92,13 +92,12 @@ const AdminDataPage: React.FC = () => {
 
   const data = useMemo(() => merge(sourcingData, yearsData.data), [sourcingData, yearsData.data]);
 
-  const yearsColumns = useMemo<ColumnDefinition<SourcingLocation[], string>[]>(
+  const yearsColumns = useMemo<ColumnDefinition<SourcingLocation[]>[]>(
     () =>
       yearsData.columns.map((column) => ({
         id: column.id,
         title: column.title,
         enableHiding: !column.visible,
-        // size: 70,
       })),
     [yearsData.columns],
   );

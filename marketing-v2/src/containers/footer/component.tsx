@@ -4,6 +4,7 @@ import Icon from 'components/icon';
 
 import Wrapper from 'containers/wrapper';
 
+import GITHUB_SVG from 'svgs/social/github.svg?sprite';
 import TWITTER_SVG from 'svgs/social/twitter.svg?sprite';
 import LINKEDIN_SVG from 'svgs/social/linkedin.svg?sprite';
 import MEDIUM_SVG from 'svgs/social/medium.svg?sprite';
@@ -46,6 +47,15 @@ const Footer: React.FC = () => {
       <Wrapper>
         <div className="pb-6 space-y-5 md:flex md:justify-between md:pb-32 md:space-y-0">
           <ul className="flex items-center justify-start space-x-10">
+            <li>
+              <a
+                href="https://github.com/Vizzuality/landgriffon"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                <Icon icon={GITHUB_SVG} className="w-5 h-5 fill-black" />
+              </a>
+            </li>
             <li>
               <a href="https://twitter.com/LandGriffon_" target="_blank" rel="noreferrer noopener">
                 <Icon icon={TWITTER_SVG} className="w-5 h-5 fill-black" />

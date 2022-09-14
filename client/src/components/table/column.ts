@@ -18,6 +18,6 @@ export type DisplayColumnDefProps<T, C> = RequiredKeys<
   'id'
 >;
 
-export type ColumnDefinition<T = unknown, C = T> = DisplayColumnDefProps<T, C> &
-  ColumnMeta<T, C> &
+export type ColumnDefinition<T> = DisplayColumnDefProps<T, T> &
+  ColumnMeta<T, T> &
   Pick<HTMLAttributes<HTMLDivElement>, 'className'>;

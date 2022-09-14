@@ -164,8 +164,12 @@ const AnalysisTable: React.FC = () => {
         size: 260,
         cell: ({ row: { original, depth } }) => {
           return (
-            <div>
-              <span className={classNames({ 'font-bold': depth === 0 })}>
+            <div className="overflow-hidden text-ellipsis" title={original.name}>
+              <span
+                className={classNames({
+                  'font-bold': depth === 0,
+                })}
+              >
                 {/* @ts-expect-error the parent and the children have different data types */}
                 {original.name} {depth === 0 && <span>({original.metadata.unit})</span>}
               </span>

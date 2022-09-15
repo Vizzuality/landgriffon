@@ -8,23 +8,12 @@ import TreeSelect from 'components/tree-select';
 
 import type { TreeSelectProps } from 'components/tree-select/types';
 
-type MaterialsFilterProps = {
-  current: TreeSelectProps['current'];
-  multiple?: TreeSelectProps['multiple'];
-  /** Tree depth. Defaults to `1` */
-  depth?: MaterialsTreesParams['depth'];
-  /** Only materials with sourcing locations. */
-  withSourcingLocations?: MaterialsTreesParams['withSourcingLocations'];
-  onChange?: TreeSelectProps['onChange'];
-  theme?: 'default' | 'inline-primary';
-  currentOptions?: TreeSelectProps['current'];
-  ellipsis?: TreeSelectProps['ellipsis'];
-  fitContent?: TreeSelectProps['fitContent'];
-  businessUnitIds?: MaterialsTreesParams['businessUnitIds'];
-  supplierIds?: MaterialsTreesParams['supplierIds'];
-  originIds?: MaterialsTreesParams['originIds'];
-  locationTypes?: MaterialsTreesParams['locationTypes'];
-};
+interface MaterialsFilterProps
+  extends MaterialsTreesParams,
+    Pick<
+      TreeSelectProps,
+      'current' | 'multiple' | 'onChange' | 'theme' | 'ellipsis' | 'fitContent'
+    > {}
 
 const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
   multiple,
@@ -35,6 +24,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
   originIds,
   locationTypes,
   withSourcingLocations, // Do not a default; backend will override depth if this is set at all
+  scenarioId,
   onChange = () => null,
   theme,
   ellipsis,
@@ -48,6 +38,7 @@ const MaterialsFilter: React.FC<MaterialsFilterProps> = ({
       originIds,
       locationTypes,
       withSourcingLocations,
+      scenarioId,
     },
     {
       // 2 minutes stale time

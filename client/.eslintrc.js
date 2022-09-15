@@ -8,6 +8,7 @@ module.exports = {
   rules: {
     'prettier/prettier': ['error'],
     'react/button-has-type': ['warn'],
+    'require-await': ['error'],
     'no-console': ['warn'],
     'no-debugger': ['warn'],
     '@typescript-eslint/consistent-type-imports': ['warn'],

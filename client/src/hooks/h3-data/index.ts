@@ -120,9 +120,7 @@ export const useH3MaterialData = <T = H3APIResponse>(
     () =>
       apiRawService
         .get<H3APIResponse>('/h3/map/material', {
-          params: {
-            ...urlParams,
-          },
+          params: urlParams,
         })
         // Adding color to the response
         .then((response) => response.data)

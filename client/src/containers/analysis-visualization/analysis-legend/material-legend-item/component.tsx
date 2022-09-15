@@ -33,7 +33,7 @@ const INFO_METADATA = {
 
 const MaterialLayer = () => {
   const dispatch = useAppDispatch();
-  const { indicator, materialId, origins, suppliers, locationTypes } =
+  const { indicator, materialId, origins, suppliers, locationTypes, startYear } =
     useAppSelector(analysisFilters);
 
   const originIds = useMemo(() => origins.map(({ value }) => value), [origins]);
@@ -50,38 +50,31 @@ const MaterialLayer = () => {
     [dispatch],
   );
 
-  const onDataSuccess = useCallback(
-    (data: ReturnType<typeof useH3MaterialData>['data']) => {
-      console.log('data', data);
-
-      // dispatch(
-      //   setLayer({
-      //     id: LAYER_ID,
-      //     layer: {
-      //       metadata: {
-      //         legend: {
-      //           id: `${LAYER_ID}-${indicator.value}`,
-      //           type: 'basic',
-      //           name: `${indicator.label} in ${'TODO'}`,
-      //           unit: data.metadata.unit,
-      //           min: !!data.metadata.quantiles.length && NUMBER_FORMAT(data.metadata.quantiles[0]),
-      //           items: data.metadata.quantiles.slice(1).map(
-      //             (v, index): LegendItemsProps => ({
-      //               value: NUMBER_FORMAT(v),
-      //               color: COLOR_RAMPS[LAYER_ID][index],
-      //             }),
-      //           ),
-      //         },
-      //       },
-      //     },
-      //   }),
-      // );
+  const { isFetching, isFetched, data } = useH3MaterialData(undefined, {
+    onSuccess: (data) => {
+      dispatch(
+        setLayer({
+          id: LAYER_ID,
+          layer: {
+            metadata: {
+              legend: {
+                id: `${LAYER_ID}-${indicator.value}`,
+                type: 'basic',
+                name: `${indicator.label} in ${startYear}`,
+                unit: data.metadata.unit,
+                min: !!data.metadata.quantiles.length && NUMBER_FORMAT(data.metadata.quantiles[0]),
+                items: data.metadata.quantiles.slice(1).map(
+                  (v, index): LegendItemsProps => ({
+                    value: NUMBER_FORMAT(v),
+                    color: COLOR_RAMPS[LAYER_ID][index],
+                  }),
+                ),
+              },
+            },
+          },
+        }),
+      );
     },
-    [dispatch, indicator?.label, indicator?.value],
-  );
-
-  const { data } = useH3MaterialData(undefined, {
-    onSuccess: onDataSuccess,
   });
 
   const { data: materials } = useMaterials({
@@ -127,18 +120,22 @@ const MaterialLayer = () => {
   return (
     <LegendItem
       name={layer.active ? Selector : 'Material Production'}
-      info={INFO_METADATA[`impact-${indicator?.value}`]}
-      {...layer.metadata?.legend}
+      info={INFO_METADATA[`material-${indicator?.value}`]}
+      {...data.metadata?.legend}
+      unit={data.metadata?.unit}
+      showToolbar
       opacity={layer.opacity}
       onChangeOpacity={handleOpacity}
-      isLoading={layer.loading}
+      isLoading={isFetching}
       main
     >
-      {/* <LegendTypeChoropleth
-        className="flex-1 text-sm text-gray-500"
-        min={layer.metadata.legend.min}
-        items={legendItems}
-      /> */}
+      {isFetched && (
+        <LegendTypeChoropleth
+          className="text-sm text-gray-500"
+          min={data.metadata.legend?.min}
+          items={legendItems}
+        />
+      )}
     </LegendItem>
   );
 };

@@ -29,7 +29,6 @@ import { DEFAULT_PAGINATION, FetchSpecification } from 'nestjs-base-service';
 import { PaginatedEntitiesDto } from 'modules/impact/dto/paginated-entities.dto';
 import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
-import { SOURCING_LOCATION_TYPE_BY_INTERVENTION } from 'modules/sourcing-locations/sourcing-location.entity';
 import { PaginationMeta } from 'utils/app-base.service';
 
 @Injectable()
@@ -154,7 +153,7 @@ export class ActualVsScenarioImpactService {
     };
     switch (getActualVsScenarioImpactTableDto.groupBy) {
       case GROUP_BY_VALUES.MATERIAL: {
-        return this.materialsService.getMaterialsTreeWithSourcingLocations(
+        return this.materialsService.getMaterialsTreeFromSourcingLocations(
           treeOptions,
         );
       }
@@ -557,7 +556,7 @@ export class ActualVsScenarioImpactService {
 
     // By default, if real sourcing data is not affected by scenario - we assume that real impact and scenario impact are the same
 
-    realSourcingData.map((data) => {
+    realSourcingData.map((data: ActualVsScenarioImpactTableData) => {
       return (data.scenarioImpact = data.impact);
     });
 

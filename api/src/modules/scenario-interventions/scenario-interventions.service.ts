@@ -72,6 +72,7 @@ export class ScenarioInterventionsService extends AppBaseService<
         'scenario',
         'newLocationType',
         'newIndicatorCoefficients',
+        'newLocationCountryInput',
         'newLocationAddressInput',
         'newLocationLatitudeInput',
         'newLocationLongitudeInput',

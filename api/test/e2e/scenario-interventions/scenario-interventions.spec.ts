@@ -79,6 +79,7 @@ const expectedJSONAPIAttributes: string[] = [
   'percentage',
   'newIndicatorCoefficients',
   'newLocationType',
+  'newLocationCountryInput',
   'newLocationAddressInput',
   'newLocationLatitudeInput',
   'newLocationLongitudeInput',

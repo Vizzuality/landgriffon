@@ -50,11 +50,11 @@ export const LegendItem = ({
             })}
           >
             <div className="flex-grow max-w-full min-w-0 text-sm text-left">{name}</div>
-            {showToolbar && info && (
+            {showToolbar && (
               <div className="flex flex-row items-center">
-                <div className="flex items-center space-x-1 mt-0.5">
+                <div className="flex items-center gap-x-1 mt-0.5">
                   <OpacityControl opacity={opacity} onChange={onChangeOpacity} />
-                  <InfoToolTip icon="outline" info={info} />
+                  {info && <InfoToolTip icon="outline" info={info} />}
                 </div>
               </div>
             )}

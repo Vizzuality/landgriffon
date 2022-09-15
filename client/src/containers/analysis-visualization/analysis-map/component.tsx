@@ -24,7 +24,7 @@ import SatelliteMapStyle from './styles/map-style-satellite.json';
 
 import type { BasemapValue } from 'components/map/controls/basemap/types';
 import type { ViewState } from 'react-map-gl/src/mapbox/mapbox';
-import { useAllContextualLayersData } from 'hooks/h3-data';
+import { useAllContextualLayersData, useH3MaterialData } from 'hooks/h3-data';
 import { sortBy } from 'lodash';
 
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
@@ -81,6 +81,8 @@ const AnalysisMap: React.FC = () => {
     data: { data: impactData },
   } = useImpactLayer();
 
+  const { data: materialData } = useH3MaterialData();
+
   const contextualData = useAllContextualLayersData();
 
   const layers = useMemo(() => {
@@ -91,7 +93,11 @@ const AnalysisMap: React.FC = () => {
           return null;
         }
 
-        const data = layerInfo.isContextual ? contextualData.get(props.id)?.data : impactData;
+        const data = layerInfo.isContextual
+          ? contextualData.get(props.id)?.data
+          : layerInfo.id === 'material'
+          ? materialData?.data
+          : impactData;
 
         return new H3HexagonLayer({
           ...props,
@@ -120,7 +126,7 @@ const AnalysisMap: React.FC = () => {
       })
       .filter((l) => !!l);
     return sortBy(legends, (l) => layersMetadata[l.id].order).reverse();
-  }, [contextualData, dispatch, impactData, layerDeckGLProps, layersMetadata]);
+  }, [contextualData, dispatch, impactData, layerDeckGLProps, layersMetadata, materialData?.data]);
 
   const handleAfterRender = useCallback(() => setIsRendering(false), []);
 

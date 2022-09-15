@@ -25,7 +25,8 @@ const COLOR_SCALE = chroma.scale([
 
 export function useAnalysisChart(params): AnalysisChart {
   const filters = useAppSelector(analysisFilters);
-  const { data, isLoading, isFetching } = useImpactRanking(params);
+  const queryResponse = useImpactRanking(params);
+  const { data, isLoading, isFetching } = queryResponse;
 
   const parsedImpact = data?.impactTable.map((data) => {
     const projectedYears = uniq(

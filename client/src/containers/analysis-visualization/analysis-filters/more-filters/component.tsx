@@ -21,6 +21,7 @@ import {
   useInteractions,
 } from '@floating-ui/react-dom-interactions';
 import { Transition } from '@headlessui/react';
+import { scenarios } from 'store/features/analysis';
 
 type MoreFiltersState = {
   materials: AnalysisFiltersState['materials'];
@@ -39,6 +40,9 @@ const INITIAL_FILTERS: MoreFiltersState = {
 const MoreFilters: React.FC = () => {
   const dispatch = useAppDispatch();
   const { materials, origins, suppliers, locationTypes } = useAppSelector(analysisFilters);
+
+  const { currentScenario } = useAppSelector(scenarios);
+
   const moreFilters: MoreFiltersState = useMemo(
     () => ({ materials, origins, suppliers, locationTypes }),
     [materials, origins, suppliers, locationTypes],
@@ -178,6 +182,7 @@ const MoreFilters: React.FC = () => {
                   originIds={originIds}
                   supplierIds={supplierIds}
                   locationTypes={locationTypesValues}
+                  scenarioId={currentScenario}
                   current={selectedFilters.materials}
                   fitContent
                   onChange={(values) => handleChangeFilter('materials', values)}

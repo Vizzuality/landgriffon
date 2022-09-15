@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { apiRawService } from 'services/api';
+import type { BaseTreeSearchParams } from 'containers/analysis-visualization/analysis-filters/more-filters/types';
 
 import type { LocationTypes } from 'containers/interventions/enums';
 
@@ -12,13 +13,9 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   refetchOnWindowFocus: false,
 };
 
-export type LocationTypesParams = {
-  materialIds?: string[];
+export interface LocationTypesParams extends BaseTreeSearchParams {
   supplierIds?: string[];
-  businessUnitIds?: string[];
-  originIds?: string[];
-  scenarioId?: string;
-};
+}
 
 export type LocationType = {
   label: string;

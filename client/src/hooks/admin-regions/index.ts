@@ -3,6 +3,7 @@ import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { apiService } from 'services/api';
 import type { OriginRegion } from 'types';
+import type { BaseTreeSearchParams } from 'containers/analysis-visualization/analysis-filters/more-filters/types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   placeholderData: [],
@@ -13,15 +14,11 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
 
 type ResponseData = UseQueryResult<OriginRegion[]>;
 
-export type AdminRegionsTreesParams = {
-  depth?: number;
+export interface AdminRegionsTreesParams extends BaseTreeSearchParams {
   withSourcingLocations?: boolean;
-  materialIds?: string[];
   supplierIds?: string[];
-  businessUnitIds?: string[];
   locationTypes?: string[];
-  scenarioId?: string;
-};
+}
 
 export function useAdminRegions(): ResponseData {
   const query = useQuery(

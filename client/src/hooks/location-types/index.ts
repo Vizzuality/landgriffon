@@ -17,6 +17,7 @@ export type LocationTypesParams = {
   supplierIds?: string[];
   businessUnitIds?: string[];
   originIds?: string[];
+  scenarioId?: string;
 };
 
 export type LocationType = {

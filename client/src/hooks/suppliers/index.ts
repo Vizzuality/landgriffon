@@ -20,6 +20,7 @@ export type SuppliersTreesParams = {
   originIds?: string[];
   businessUnitIds?: string[];
   locationTypes?: string[];
+  scenarioId?: string;
 };
 
 export function useSuppliers(params): ResponseData {

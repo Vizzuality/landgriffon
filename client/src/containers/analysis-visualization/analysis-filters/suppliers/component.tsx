@@ -7,22 +7,12 @@ import { useSuppliersTrees } from 'hooks/suppliers';
 
 import type { TreeSelectProps } from 'components/tree-select/types';
 
-type SuppliersFilterProps = {
-  current: TreeSelectProps['current'];
-  multiple?: TreeSelectProps['multiple'];
-  /** Tree depth. Defaults to `1` */
-  depth?: SuppliersTreesParams['depth'];
-  /** Only suppliers with sourcing locations. */
-  withSourcingLocations?: SuppliersTreesParams['withSourcingLocations'];
-  originIds?: SuppliersTreesParams['originIds'];
-  businessUnitIds?: SuppliersTreesParams['businessUnitIds'];
-  materialIds?: SuppliersTreesParams['materialIds'];
-  locationTypes?: SuppliersTreesParams['locationTypes'];
-  onChange?: TreeSelectProps['onChange'];
-  theme?: 'default' | 'inline-primary';
-  ellipsis?: TreeSelectProps['ellipsis'];
-  fitContent?: TreeSelectProps['fitContent'];
-};
+interface SuppliersFilterProps
+  extends SuppliersTreesParams,
+    Pick<
+      TreeSelectProps,
+      'current' | 'multiple' | 'onChange' | 'theme' | 'ellipsis' | 'fitContent'
+    > {}
 
 const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
   multiple,
@@ -33,6 +23,7 @@ const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
   businessUnitIds,
   materialIds,
   locationTypes,
+  scenarioId,
   onChange,
   theme,
   ellipsis,
@@ -46,6 +37,7 @@ const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
       materialIds,
       locationTypes,
       withSourcingLocations,
+      scenarioId,
     },
     {
       // 2 minutes stale time

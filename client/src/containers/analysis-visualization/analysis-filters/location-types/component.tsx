@@ -8,18 +8,9 @@ import type { LocationTypesParams } from 'hooks/location-types';
 import { useLocationTypes } from 'hooks/location-types';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
-type LocationTypeFilterProps = {
-  current: TreeSelectProps['current'];
-  onChange?: TreeSelectProps['onChange'];
-  theme?: TreeSelectProps['theme'];
-  optionsLocationTypes?: TreeSelectProps['current'];
-  ellipsis?: TreeSelectProps['ellipsis'];
-  fitContent?: TreeSelectProps['fitContent'];
-  materialIds?: LocationTypesParams['materialIds'];
-  supplierIds?: LocationTypesParams['supplierIds'];
-  businessUnitIds?: LocationTypesParams['businessUnitIds'];
-  originIds?: LocationTypesParams['originIds'];
-};
+interface LocationTypeFilterProps
+  extends LocationTypesParams,
+    Pick<TreeSelectProps, 'current' | 'onChange' | 'theme' | 'ellipsis' | 'fitContent'> {}
 
 const LocationTypesFilter: React.FC<LocationTypeFilterProps> = ({
   current,
@@ -31,12 +22,14 @@ const LocationTypesFilter: React.FC<LocationTypeFilterProps> = ({
   supplierIds,
   businessUnitIds,
   originIds,
+  scenarioId,
 }) => {
   const { data } = useLocationTypes({
     materialIds,
     supplierIds,
     businessUnitIds,
     originIds,
+    scenarioId,
   });
 
   const options: TreeSelectProps['options'] = useMemo(

@@ -20,6 +20,7 @@ export type AdminRegionsTreesParams = {
   supplierIds?: string[];
   businessUnitIds?: string[];
   locationTypes?: string[];
+  scenarioId?: string;
 };
 
 export function useAdminRegions(): ResponseData {

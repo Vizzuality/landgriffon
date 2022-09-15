@@ -198,6 +198,7 @@ const MoreFilters: React.FC = () => {
                   materialIds={materialIds}
                   supplierIds={supplierIds}
                   locationTypes={locationTypesValues}
+                  scenarioId={scenarioId}
                   current={selectedFilters.origins}
                   fitContent
                   onChange={(values) => handleChangeFilter('origins', values)}

@@ -6,22 +6,12 @@ import type { AdminRegionsTreesParams } from 'hooks/admin-regions';
 import { useAdminRegionsTrees } from 'hooks/admin-regions';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
-type OriginRegionsFilterProps = {
-  current: TreeSelectProps['current'];
-  multiple?: TreeSelectProps['multiple'];
-  /** Tree depth. Defaults to `1` */
-  depth?: AdminRegionsTreesParams['depth'];
-  /** Only regions with sourcing locations. */
-  withSourcingLocations?: AdminRegionsTreesParams['withSourcingLocations'];
-  onChange?: TreeSelectProps['onChange'];
-  theme?: 'default' | 'inline-primary';
-  ellipsis?: TreeSelectProps['ellipsis'];
-  fitContent?: TreeSelectProps['fitContent'];
-  businessUnitIds?: AdminRegionsTreesParams['businessUnitIds'];
-  supplierIds?: AdminRegionsTreesParams['supplierIds'];
-  materialIds?: AdminRegionsTreesParams['materialIds'];
-  locationTypes?: AdminRegionsTreesParams['locationTypes'];
-};
+interface OriginRegionsFilterProps
+  extends AdminRegionsTreesParams,
+    Pick<
+      TreeSelectProps,
+      'current' | 'multiple' | 'onChange' | 'theme' | 'ellipsis' | 'fitContent'
+    > {}
 
 const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
   multiple,
@@ -32,6 +22,7 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
   businessUnitIds,
   materialIds,
   locationTypes,
+  scenarioId,
   onChange,
   theme,
   ellipsis,
@@ -45,6 +36,7 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
       businessUnitIds,
       materialIds,
       locationTypes,
+      scenarioId,
     },
     {
       // 2 minutes stale time

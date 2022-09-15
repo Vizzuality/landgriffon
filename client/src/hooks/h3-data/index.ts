@@ -104,15 +104,11 @@ export const useH3MaterialData = <T = H3APIResponse>(
 ) => {
   const colors = useColors('material', COLOR_RAMPS);
   const filters = useAppSelector(analysisFilters);
-  const { startYear, materialId, indicator, suppliers, origins, locationTypes } = filters;
+  const { startYear, materialId, origins } = filters;
 
   const urlParams = {
     year: startYear,
     materialId,
-    // indicatorId: indicator?.value && indicator?.value === 'all' ? null : indicator?.value,
-    // ...(suppliers?.length ? { supplierIds: suppliers?.map(({ value }) => value) } : {}),
-    // ...(origins?.length ? { originIds: origins?.map(({ value }) => value) } : {}),
-    // ...(locationTypes?.length ? { locationTypes: locationTypes?.map(({ value }) => value) } : {}),
     ...params,
     resolution: origins?.length ? 6 : 4,
   };
@@ -120,8 +116,8 @@ export const useH3MaterialData = <T = H3APIResponse>(
   const enabled = (options.enabled ?? true) && !!startYear && !!materialId;
 
   const query = useQuery(
-    ['h3-data-material', params],
-    async () =>
+    ['h3-data-material', urlParams],
+    () =>
       apiRawService
         .get<H3APIResponse>('/h3/map/material', {
           params: {
@@ -148,7 +144,7 @@ export function useH3RiskData(
   const colors = useColors('risk', COLOR_RAMPS);
   const query = useQuery(
     ['h3-data-risk', params],
-    async () =>
+    () =>
       apiRawService
         .get('/h3/map/risk', {
           params: {
@@ -181,7 +177,7 @@ export function useH3RiskData(
 const fetchContextualLayerData: QueryFunction<
   H3APIResponse,
   ['h3-data-contextual', Layer['id'], Record<string, string>]
-> = async ({ queryKey: [, id, urlParams] }) =>
+> = ({ queryKey: [, id, urlParams] }) =>
   apiRawService
     .get(`/contextual-layers/${id}/h3data`, {
       params: urlParams,
@@ -298,7 +294,7 @@ export const useH3ImpactData = <T = H3ImpactResponse>(
 
   const query = useQuery<unknown, unknown, T>(
     ['h3-data-impact', filters],
-    async () =>
+    () =>
       apiRawService
         .get<H3APIResponse>('/h3/map/impact', {
           params: urlParams,

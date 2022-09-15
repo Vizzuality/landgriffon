@@ -90,7 +90,7 @@ export function useScenarioInterventions({
 }) {
   const query = useQuery(
     ['scenarioInterventions', scenarioId, params],
-    async () =>
+    () =>
       apiService
         .request({
           method: 'GET',
@@ -140,7 +140,7 @@ export function useIntervention({
 export function useInterventions(queryParams = {}): ResponseInterventionsData {
   const response = useQuery(
     ['interventionsList', queryParams],
-    async () =>
+    () =>
       apiService
         .request({
           method: 'GET',
@@ -208,7 +208,7 @@ export function useUpdateIntervention() {
 export function useInterventionsIndicators(queryParams = {}): ResponseInterventionsIndicators {
   const response = useQuery(
     ['interventionsIndicators', queryParams],
-    async () =>
+    () =>
       apiService
         .request({
           method: 'GET',

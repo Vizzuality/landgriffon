@@ -31,7 +31,7 @@ export const useMaterials = <T = MaterialApiResponse>(
 ) => {
   const query = useQuery(
     ['materials'],
-    async () =>
+    () =>
       apiService
         .request<MaterialApiResponse>({
           method: 'GET',
@@ -58,7 +58,7 @@ export const useMaterialsTrees = <T = MaterialTreeItem[]>(
 ) => {
   const query = useQuery(
     ['materials-trees', params],
-    async () =>
+    () =>
       apiService
         .request<MaterialsTreeResponse>({
           method: 'GET',

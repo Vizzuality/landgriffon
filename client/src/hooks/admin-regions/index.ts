@@ -23,7 +23,7 @@ export interface AdminRegionsTreesParams extends BaseTreeSearchParams {
 export function useAdminRegions(): ResponseData {
   const query = useQuery(
     ['admin-regions'],
-    async () =>
+    () =>
       apiService
         .request({
           method: 'GET',
@@ -53,7 +53,7 @@ export function useAdminRegionsTrees(
 ): ResponseData {
   const query = useQuery(
     ['admin-regions-trees', params],
-    async () =>
+    () =>
       apiService
         .request({
           method: 'GET',

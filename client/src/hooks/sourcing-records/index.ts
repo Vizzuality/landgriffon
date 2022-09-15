@@ -20,7 +20,7 @@ export function useSourcingRecordsYears(
   const { params = {}, options = {} } = props;
   const result = useQuery<SourcingRecordsYearsData>(
     ['SourcingRecordYears'],
-    async () =>
+    () =>
       apiRawService
         .request<{ data: SourcingRecordsYearsData }>({
           method: 'GET',

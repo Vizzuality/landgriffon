@@ -18,7 +18,7 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions<ProfilePayload> = {
 export function useProfile(): ResponseData {
   const fetchProfile = useQuery(
     ['profile'],
-    async () =>
+    () =>
       apiService
         .request({
           method: 'GET',

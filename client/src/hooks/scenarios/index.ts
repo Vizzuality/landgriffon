@@ -67,9 +67,15 @@ export const useScenarios = <T = ResponseData>({
     ...params,
   };
 
+<<<<<<< HEAD
   const query = useQuery(
     ['scenariosList', sort, paramsResult, searchTerm],
     async () =>
+=======
+  const response: ResponseData = useQuery<Scenario[]>(
+    ['scenariosList', sort, filter, searchTerm],
+    () =>
+>>>>>>> adb0ea10 (Fix some queries inmediatly returning)
       apiService
         .request<ResponseData>({
           method: 'GET',
@@ -116,7 +122,7 @@ export function useInfiniteScenarios(QueryParams: QueryParams): ResponseInfinite
 export function useScenario(id: Scenario['id']): ResponseDataScenario {
   const response: ResponseDataScenario = useQuery(
     ['scenario', id],
-    async () =>
+    () =>
       apiService
         .request({
           method: 'GET',
@@ -132,7 +138,7 @@ export function useScenario(id: Scenario['id']): ResponseDataScenario {
 export function useScenarioInterventions(id: Scenario['id']): ResponseInterventionsData {
   const response: ResponseInterventionsData = useQuery(
     ['interventions-by-scenario', id],
-    async () =>
+    () =>
       apiService
         .request({
           method: 'GET',

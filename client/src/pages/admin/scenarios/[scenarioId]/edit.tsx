@@ -187,11 +187,11 @@ const UpdateScenarioPage: React.FC = () => {
                               <Link
                                 href={`/admin/scenarios/${data.id}/interventions/${intervention.id}/edit`}
                               >
-                                <a className="block p-2 text-sm">Edit</a>
+                                <a className="block px-3 py-2 text-sm">Edit</a>
                               </Link>
                               <button
                                 type="button"
-                                className="block p-2 text-sm"
+                                className="block px-3 py-2 text-sm"
                                 onClick={() => handleDeleteIntervention(intervention.id)}
                               >
                                 Delete

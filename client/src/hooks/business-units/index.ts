@@ -25,7 +25,7 @@ export type BusinessUnitsTreesParams = {
 export function useBusinessUnits(): ResponseData {
   const query = useQuery(
     ['business-units'],
-    async () =>
+    () =>
       apiService
         .request({
           method: 'GET',
@@ -52,7 +52,7 @@ export function useBusinessUnits(): ResponseData {
 export function useBusinessUnitsTrees(params: BusinessUnitsTreesParams): ResponseData {
   const query = useQuery(
     ['business-units-trees', params],
-    async () =>
+    () =>
       apiService
         .request({
           method: 'GET',

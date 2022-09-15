@@ -19,7 +19,7 @@ export const useIndicators = <T = ResponseData>(
 ) => {
   const query = useQuery(
     ['indicators'],
-    async () =>
+    () =>
       apiService
         .request<ResponseData>({
           method: 'GET',
@@ -39,7 +39,7 @@ export const useIndicators = <T = ResponseData>(
 export function useIndicator(id: Indicator['id']): ResponseIndicatorData {
   const query = useQuery(
     ['indicators', id],
-    async () =>
+    () =>
       apiService
         .request({
           method: 'GET',

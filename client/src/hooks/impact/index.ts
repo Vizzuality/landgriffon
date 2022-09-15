@@ -84,7 +84,7 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
 
   const query = useQuery(
     ['impact-data', layer, params],
-    async () =>
+    () =>
       apiRawService
         .get('/impact/compare/scenario/vs/actual', { params })
         .then((response) => response.data),
@@ -117,7 +117,7 @@ export function useImpactRanking(
 ): UseQueryResult<ImpactRanking, unknown> {
   const query = useQuery<ImpactRanking>(
     ['impact-ranking', params],
-    async () =>
+    () =>
       apiRawService
         .get('/impact/ranking', {
           params,

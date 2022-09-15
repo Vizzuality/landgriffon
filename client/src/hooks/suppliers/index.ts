@@ -22,7 +22,7 @@ export interface SuppliersTreesParams extends BaseTreeSearchParams {
 export function useSuppliers(params): ResponseData {
   const query = useQuery(
     ['suppliers', params],
-    async () =>
+    () =>
       apiService
         .request({
           method: 'GET',
@@ -53,7 +53,7 @@ export function useSuppliersTrees(
 ): ResponseData {
   const query = useQuery(
     ['suppliers-trees', params],
-    async () =>
+    () =>
       apiService
         .request({
           method: 'GET',
@@ -79,7 +79,7 @@ export function useSuppliersTrees(
 export function useSuppliersTypes(params: { type: 't1supplier' | 'producer' }): ResponseData {
   const query = useQuery(
     ['suppliers', params],
-    async () =>
+    () =>
       apiService
         .request({
           method: 'GET',

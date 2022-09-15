@@ -21,7 +21,7 @@ export function useYears(
 ): YearsResponse {
   const result = useQuery(
     ['years', layer, materials, indicator],
-    async () =>
+    () =>
       apiRawService
         .request<YearsData>({
           method: 'GET',

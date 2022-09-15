@@ -41,7 +41,7 @@ export function useSourcingLocations(
 ) {
   const query = useQuery<SourcingLocationResponse>(
     ['sourcingLocations', params],
-    async () =>
+    () =>
       apiService
         .request({
           method: 'GET',
@@ -64,7 +64,7 @@ export function useSourcingLocationsMaterials(
 ): SourcingLocationsMaterialsDataResponse {
   const query = useQuery(
     ['sourcingLocationsMaterials', params],
-    async () =>
+    () =>
       apiService
         .request({
           method: 'GET',

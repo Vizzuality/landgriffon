@@ -34,21 +34,27 @@ const CellWrapper = <T, C>({ children, context }: React.PropsWithChildren<CellPr
     [context.row.depth, isFirstColumn],
   );
 
+  const isExpandible = isFirstColumn && context.row.getCanExpand();
+  const isExpanded = isExpandible && context.row.getIsExpanded();
+  const toggleExpand = context.row.getToggleExpandedHandler();
+
   return (
     <div
+      onClick={isExpandible ? toggleExpand : undefined}
       style={style}
       className={classNames(
         getAlignmentClasses(align),
         'pr-5 relative flex items-center justify-start w-full h-20',
+        { 'cursor-pointer': isExpandible },
       )}
     >
       <div className="w-full mx-auto my-auto space-x-2">
-        {isFirstColumn && context.row.getCanExpand() ? (
-          <div className="cursor-pointer" onClick={context.row.getToggleExpandedHandler()}>
+        {isExpandible ? (
+          <div>
             <div className="absolute -translate-x-5 -translate-y-1/2 top-1/2">
               <ChevronRightIcon
                 className={classNames('w-4 h-4 text-gray-900', {
-                  'rotate-90': context.row.getIsExpanded(),
+                  'rotate-90': isExpanded,
                 })}
               />
             </div>

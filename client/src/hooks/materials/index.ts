@@ -3,7 +3,6 @@ import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { apiService } from 'services/api';
 import type { Material } from 'types';
-import { ACTUAL_DATA } from 'containers/scenarios/constants';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   placeholderData: [],
@@ -63,10 +62,7 @@ export function useMaterialsTrees(
         .request({
           method: 'GET',
           url: '/materials/trees',
-          params: {
-            ...params,
-            scenarioId: params.scenarioId === ACTUAL_DATA.id ? undefined : params.scenarioId,
-          },
+          params,
         })
         .then(({ data: responseData }) => responseData.data),
     {

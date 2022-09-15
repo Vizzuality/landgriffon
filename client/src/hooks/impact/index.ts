@@ -12,6 +12,8 @@ import { useIndicators } from 'hooks/indicators';
 
 import type { ImpactData, ImpactRanking, APIpaginationRequest } from 'types';
 import { useStore } from 'react-redux';
+
+import type { ImpactTabularAPIParams } from 'types';
 import type { Store } from 'store';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
@@ -29,7 +31,7 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   refetchOnWindowFocus: false,
 };
 
-const DEFAULT_QUERY_RANKING_OPTIONS: UseQueryOptions = {
+const DEFAULT_QUERY_RANKING_OPTIONS: UseQueryOptions<ImpactRanking> = {
   placeholderData: {
     impactTable: [],
     purchasedTonnes: [],
@@ -40,7 +42,6 @@ const DEFAULT_QUERY_RANKING_OPTIONS: UseQueryOptions = {
 };
 
 type ImpactDataResponse = UseQueryResult<ImpactData, unknown>;
-type ImpactRankingResponse = UseQueryResult<ImpactRanking, unknown>;
 
 export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataResponse = (
   pagination,
@@ -105,54 +106,30 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
   );
 };
 
+type ImpactRankingParams = ImpactTabularAPIParams & {
+  maxRankingEntities: number;
+  sort: string;
+};
+
 export function useImpactRanking(
-  params = { maxRankingEntities: 5, sort: 'ASC' },
-): ImpactRankingResponse {
-  const store = useStore() as Store;
-  const { data: indicators } = useIndicators({ select: (data) => data.data });
-  const { layer } = useAppSelector(analysisFilters);
-  const filters = filtersForTabularAPI(store.getState());
-
-  const isEnable =
-    !!filters?.indicatorId &&
-    !!indicators?.length &&
-    !!filters.startYear &&
-    !!filters.endYear &&
-    filters.endYear !== filters.startYear;
-
-  const indicatorIds = indicators.map(({ id }) => id);
-
-  const query = useQuery(
-    ['impact-ranking', layer, indicatorIds, filters, params],
+  params: Partial<ImpactRankingParams> = { maxRankingEntities: 5, sort: 'ASC' },
+  options: UseQueryOptions<ImpactRanking> = {},
+): UseQueryResult<ImpactRanking, unknown> {
+  const query = useQuery<ImpactRanking>(
+    ['impact-ranking', params],
     async () =>
       apiRawService
         .get('/impact/ranking', {
-          params: {
-            indicatorIds: filters.indicatorId === 'all' ? indicatorIds : [filters.indicatorId],
-            startYear: filters.startYear,
-            endYear: filters.endYear,
-            groupBy: filters.groupBy,
-            ...filters,
-            ...params,
-          },
+          params,
         })
         .then((response) => {
           return response.data;
         }),
     {
       ...DEFAULT_QUERY_RANKING_OPTIONS,
-      enabled: layer === 'impact' && isEnable,
+      ...options,
     },
   );
 
-  const { data, isError } = query;
-
-  return useMemo<ImpactRankingResponse>(
-    () =>
-      ({
-        ...query,
-        data: (isError ? DEFAULT_QUERY_RANKING_OPTIONS.placeholderData : data) as ImpactData,
-      } as ImpactRankingResponse),
-    [query, isError, data],
-  );
+  return query;
 }

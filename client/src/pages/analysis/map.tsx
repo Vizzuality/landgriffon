@@ -1,10 +1,16 @@
-import AnalysisMap from 'containers/analysis-visualization/analysis-map';
 import useEffectOnce from 'hooks/once';
-import AnalysisLayout from 'layouts/analysis';
-import type { NextPageWithLayout } from 'pages/_app';
+
 import { setVisualizationMode } from 'store/features/analysis';
 import { useAppDispatch } from 'store/hooks';
+
+import ApplicationLayout from 'layouts/application';
+import AnalysisLayout from 'layouts/analysis';
+
+import AnalysisMap from 'containers/analysis-visualization/analysis-map';
 import TitleTemplate from 'utils/titleTemplate';
+
+import type { NextPageWithLayout } from 'pages/_app';
+import type { ReactElement } from 'react';
 
 const MapPage: NextPageWithLayout = () => {
   const dispatch = useAppDispatch();
@@ -21,7 +27,13 @@ const MapPage: NextPageWithLayout = () => {
   );
 };
 
-MapPage.Layout = AnalysisLayout;
+MapPage.Layout = function getLayout(page: ReactElement) {
+  return (
+    <ApplicationLayout>
+      <AnalysisLayout>{page}</AnalysisLayout>
+    </ApplicationLayout>
+  );
+};
 
 export async function getServerSideProps({ query }) {
   return { props: { query } };

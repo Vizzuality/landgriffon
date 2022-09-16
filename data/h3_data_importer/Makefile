@@ -377,7 +377,7 @@ transform-deforestation-file:
 		--outfile  "$(WORKDIR_DEFORESTATION)/$${table_name}.tif"; \
 	gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r sum -tr 0.0833333333333286 0.0833333333333286 -multi -of GTiff -wo NUM_THREADS=ALL_CPUS \
 	"$(WORKDIR_DEFORESTATION)/$${table_name}.tif" "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
-	gdal_calc.py --quiet --calc "A/2833882.6666666665" --format GTiff --type Float32 --NoDataValue 0.0 \
+	gdal_calc.py --quiet --calc "A/111111.11111109848" --format GTiff --type Float32 --NoDataValue 0.0 \
 		-A "$(WORKDIR_DEFORESTATION)/Loss_$${table_name}_10km.tif" \
 		--outfile  "$(WORKDIR_DEFORESTATION)/Loss_$${table_name}_10km.tif"; \
 	rm -f "$(WORKDIR_DEFORESTATION)/$${table_name}.tif"

@@ -39,18 +39,6 @@ export class H3DataMapService {
     private readonly h3DataYearsService: H3DataYearsService,
   ) {}
 
-  async getYearsByLayerType(
-    layerType: string,
-    materialIds?: string[],
-    indicatorId?: string,
-  ): Promise<number[]> {
-    return this.h3DataYearsService.getAvailableYearsByLayerType(
-      layerType,
-      materialIds,
-      indicatorId,
-    );
-  }
-
   async getMaterialMapByResolutionAndYear(
     materialId: string,
     resolution: number,
@@ -131,6 +119,7 @@ export class H3DataMapService {
       getImpactMapDto.originIds,
       getImpactMapDto.supplierIds,
       getImpactMapDto.locationTypes,
+      getImpactMapDto.scenarioId,
     );
 
     const materialsH3DataYears: MaterialsH3DataYears[] =

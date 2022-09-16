@@ -4,6 +4,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
   Max,
   Min,
 } from 'class-validator';
@@ -81,4 +82,15 @@ export class GetImpactMapDto {
   )
   @Type(() => String)
   locationTypes?: LOCATION_TYPES_PARAMS[];
+
+  @ApiPropertyOptional({
+    name: 'scenarioId',
+    description:
+      'The scenarioID, whose information will be included in the response. That is, ' +
+      'the impact of all indicator records related to the interventions of that scenarioId, ' +
+      'will be aggregated into the response map data, along the actual data.',
+  })
+  @IsOptional()
+  @IsUUID()
+  scenarioId?: string;
 }

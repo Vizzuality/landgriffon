@@ -1,10 +1,10 @@
 {
     "$schema": "./contextual_metadata_schema.json",
-    "name": "Forest loss due to land use change",
-    "description": "Forest loss due to land use change (ha) measures the conversion of forest to other land use that has been likely produced due to the presence of nearby commodity driven agriculture, independent whether human induced or not.",
+    "name": "Density of tree cover loss",
+    "description": "Density of tree cover loss layer measures the density of areas of gross tree cover loss.",
     "aggType": "mode",
     "legend": {
-        "name": "Forest loss",
+        "name": "Density of tree cover loss",
         "id": "",
         "unit": null,
         "min": 0,

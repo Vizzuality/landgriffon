@@ -83,7 +83,10 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
 
   const query = useQuery(
     ['impact-data', layer, params],
-    async () => apiRawService.get('/impact/table', { params }).then((response) => response.data),
+    async () =>
+      apiRawService
+        .get('/impact/compare/scenario/vs/actual', { params })
+        .then((response) => response.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
       enabled: layer === 'impact' && isEnable,

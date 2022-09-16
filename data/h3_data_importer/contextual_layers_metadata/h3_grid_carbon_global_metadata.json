@@ -1,12 +1,12 @@
 {
     "$schema": "./contextual_metadata_schema.json",
-    "name": "Carbon emissions due to land use change",
-    "description": "Carbon emissions due to land use change (tCO2e) measures the release of biomass carbon associated with the forest that were lost near to a corpland area for a specific agricultural commodity.",
+    "name": "Net forest GHG flux - 2001-2021",
+    "description": "Net forest GHG flux -2001-2021 (tCO2e/ha) displays the net exchange of carbon between forest and the atmosphere between 2001 and 2021, calculated as the difference between forest carbon emissions from stand-replacing forest disturbances and carbon removals from forest growth.",
     "aggType": "sum",
     "legend": {
-        "name": "Carbon emissions due to land use change",
+        "name": "Net forest GHG flux - 2001-2021",
         "id": "",
-        "unit": "tCO2e",
+        "unit": "tCO2e/ha",
         "min": 0,
         "type": "range",
         "items": [
@@ -42,7 +42,7 @@
             }
         ]
     },
-    "source": "Global Forest Watch",
+    "source": "Harris, N.L., D.A. Gibbs, A. Baccini, R.A. Birdsey, S. de Bruin, M. Farina, L. Fatoyinbo, M.C. Hansen, M. Herold, R.A. Houghton, P.V. Potapov, D. Requena Suarez, R.M. Roman-Cuesta, S.S. Saatchi, C.M. Slay, S.A. Turubanova, A. Tyukavina. 2021. Global maps of twenty-first century forest carbon fluxes. Nature Climate Change. https://doi.org/10.1038/s41558-020-00976-6",
     "license":  "CC BY 4.0"
 }
 

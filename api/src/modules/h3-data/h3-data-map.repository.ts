@@ -20,6 +20,7 @@ import {
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { ImpactMaterializedView } from 'modules/impact/views/impact.materialized-view.entity';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 
 /**
  * @note: Column aliases are marked as 'h' and 'v' so that DB returns data in the format the consumer needs to be
@@ -127,6 +128,7 @@ export class H3DataMapRepository extends Repository<H3Data> {
    * @param originIds
    * @param supplierIds
    * @param locationTypes
+   * @param scenarioId
    */
   async getImpactMap(
     indicator: Indicator,
@@ -136,6 +138,7 @@ export class H3DataMapRepository extends Repository<H3Data> {
     originIds?: string[],
     supplierIds?: string[],
     locationTypes?: LOCATION_TYPES_PARAMS[],
+    scenarioId?: string,
   ): Promise<{ impactMap: H3IndexValueData[]; quantiles: number[] }> {
     const subqueryBuilder: SelectQueryBuilder<any> = getManager()
       .createQueryBuilder()
@@ -145,13 +148,33 @@ export class H3DataMapRepository extends Repository<H3Data> {
       .from(SourcingLocation, 'sl')
       .leftJoin(SourcingRecord, 'sr', 'sl.id = sr.sourcingLocationId')
       .leftJoin(IndicatorRecord, 'ir', 'sr.id = ir.sourcingRecordId')
-      .where('ir.value > 0')
+      .where('ABS(ir.value) > 0')
       .andWhere('ir.scaler >= 1')
-      .andWhere('sl.scenarioInterventionId IS NULL')
       .andWhere('ir.indicatorId = :indicatorId', { indicatorId: indicator.id })
       .andWhere('sr.year = :year', { year })
       .groupBy('sl.geoRegionId')
       .addGroupBy('ir.materialH3DataId');
+
+    //Having a scenarioId present as an argument, will change the query to include
+    // *all* indicator records of the interventions pertaining to that scanerio (both
+    // the CANCELLED and REPLACING records)
+    if (scenarioId) {
+      subqueryBuilder
+        .leftJoin(
+          ScenarioIntervention,
+          'si',
+          'si.id = sl.scenarioInterventionId',
+        )
+        .andWhere(
+          new Brackets((qb: WhereExpressionBuilder) => {
+            qb.where('sl.scenarioInterventionId IS NULL');
+            qb.orWhere('si.scenarioId = :scenarioId', { scenarioId });
+          }),
+        );
+    } else {
+      subqueryBuilder.andWhere('sl.scenarioInterventionId IS NULL');
+    }
+
     if (materialIds) {
       subqueryBuilder.andWhere('sl.material IN (:...materialIds)', {
         materialIds,

@@ -358,5 +358,64 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         indicatorDataYear: 2020,
       });
     });
+
+    test('When I get a calculated H3 Water Impact Map with the necessary input values and Scenario Id property, then the response should include both actual data and Scenario data for the given id', async () => {
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/h3/map/impact`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          indicatorId: impactMapMockData.indicatorId,
+          'locationTypes[]': [
+            LOCATION_TYPES_PARAMS.AGGREGATION_POINT,
+            LOCATION_TYPES_PARAMS.UNKNOWN,
+          ],
+          year: 2020,
+          resolution: 6,
+          scenarioId: impactMapMockData.scenarioId,
+        });
+
+      expect(response.body.data).toEqual(
+        expect.arrayContaining([
+          { h: '861203a4fffffff', v: '208.40' },
+          { h: '861203a5fffffff', v: '118.40' },
+          { h: '861203a6fffffff', v: '90.00' },
+        ]),
+      );
+      expect(response.body.metadata).toBeDefined();
+      expect(response.body.metadata.unit).toEqual('tonnes');
+      expect(response.body.metadata.indicatorDataYear).toEqual(2020);
+      expect(
+        toBeCloseToArray(
+          response.body.metadata.quantiles,
+          [0, 99.46856, 108.95416, 118.4, 148.406, 178.466, 208.4],
+          5,
+        ),
+      ).toBeTruthy();
+    });
   });
 });
+
+/**
+ * Check that the numbers on all elements of the received array are close to to the
+ * corresponding elements of the expected array
+ * @param receivedNumbers
+ * @param expectedNumbers
+ * @param numDigits
+ */
+function toBeCloseToArray(
+  receivedNumbers: number[],
+  expectedNumbers: number[],
+  numDigits?: number,
+): boolean {
+  if (receivedNumbers.length !== expectedNumbers.length) {
+    throw new Error(
+      `Received: ${receivedNumbers}. Expected: ${expectedNumbers}`,
+    );
+  }
+
+  for (let i = 0; i < receivedNumbers.length; i++) {
+    expect(receivedNumbers[i]).toBeCloseTo(expectedNumbers[i], numDigits);
+  }
+
+  return true;
+}

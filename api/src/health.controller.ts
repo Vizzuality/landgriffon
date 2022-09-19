@@ -10,7 +10,7 @@ import { HealthCheckResult } from '@nestjs/terminus/dist/health-check/health-che
 import { Public } from 'decorators/public.decorator';
 import * as config from 'config';
 
-const redisConfig: any = config.get('redis');
+const queueConfig: any = config.get('queue');
 
 @Controller('health')
 export class HealthController {
@@ -28,7 +28,7 @@ export class HealthController {
         this.microservice.pingCheck<RedisOptions>('redis', {
           transport: Transport.REDIS,
           options: {
-            url: `redis://${redisConfig.host}:${redisConfig.port}`,
+            url: `redis://${queueConfig.host}:${queueConfig.port}`,
           },
         }),
     ]);

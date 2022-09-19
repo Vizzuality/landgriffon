@@ -20,13 +20,17 @@
   "import": {
     "missingDataFallbackStrategy": "IMPORT_MISSING_DATA_FALLBACK_STRATEGY"
   },
-  "redis": {
-    "host": "REDIS_HOST",
-    "port": "REDIS_PORT",
-    "importQueueName": "REDIS_IMPORT_QUEUE_NAME"
+  "queue": {
+    "host": "QUEUE_HOST",
+    "port": "QUEUE_PORT",
+    "database": "QUEUE_DATABASE",
+    "importQueueName": "IMPORT_QUEUE_NAME"
   },
   "geocodingCache": {
     "enabled": "GEOCODING_CACHE_ENABLED",
+    "host": "GEOCODING_CACHE_HOST",
+    "port": "GEOCODING_CACHE_PORT",
+    "database": "GEOCODING_CACHE_DATABASE",
     "TTL": "GEOCODING_CACHE_TTL"
   },
   "db": {
@@ -37,7 +41,11 @@
     "database": "DB_DATABASE",
     "synchronize": "DB_SYNCHRONIZE",
     "migrationsRun": "DB_MIGRATIONS_RUN",
-    "batchChunkSize": "CHUNK_SIZE_FOR_BATCH_DB_OPERATIONS"
+    "batchChunkSize": "CHUNK_SIZE_FOR_BATCH_DB_OPERATIONS",
+    "cacheEnabled": "DB_CACHE_ENABLED",
+    "cacheHost": "DB_CACHE_HOST",
+    "cachePort": "DB_CACHE_PORT",
+    "cacheDatabase": "DB_CACHE_DATABASE"
   },
   "fileUploads": {
     "sizeLimit": "FILE_SIZE_LIMIT",

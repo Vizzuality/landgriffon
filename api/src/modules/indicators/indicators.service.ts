@@ -106,7 +106,9 @@ export class IndicatorsService extends AppBaseService<
   }
 
   async findAllUnpaginated(): Promise<Indicator[]> {
-    return this.indicatorRepository.find();
+    return this.indicatorRepository.find({
+      cache: 1000,
+    });
   }
 
   async getIndicatorsAndRelatedH3DataIds(): Promise<

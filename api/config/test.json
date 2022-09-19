@@ -13,7 +13,8 @@
     "database": "landgriffon_test",
     "synchronize": true,
     "dropSchema": true,
-    "logging": ["error"]
+    "logging": ["error"],
+    "cacheEnabled": false
   },
   "auth": {
     "requireUserAccountActivation": false,

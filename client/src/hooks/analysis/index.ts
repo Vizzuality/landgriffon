@@ -98,7 +98,7 @@ export function useAnalysisChart(params): AnalysisChart {
         });
 
         return {
-          id: `${i}`,
+          id: `${id}-item-${i}`,
           date: `01/01/${y}`,
           current: !calculated,
           ...chs,

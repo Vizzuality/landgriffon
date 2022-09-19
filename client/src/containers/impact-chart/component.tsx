@@ -1,23 +1,24 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useStore } from 'react-redux';
 import omit from 'lodash/omit';
+import chroma from 'chroma-js';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 
-import { useAppSelector, useAppDispatch } from 'store/hooks';
-import { setVisualizationMode } from 'store/features/analysis';
-import { analysisFilters } from 'store/features/analysis/filters';
 import { filtersForTabularAPI } from 'store/features/analysis/selector';
 import { useImpactRanking } from 'hooks/impact';
-import { useIndicators } from 'hooks/indicators';
 
-import ApplicationLayout from 'layouts/application';
-import AnalysisLayout from 'layouts/analysis';
-import AnalysisChart from 'containers/analysis-visualization/analysis-chart';
-import Chart from 'components/chart';
-import AreaStacked from 'components/chart/area-stacked';
-import Widget from 'components/widget';
-import Legend from 'containers/analysis-visualization/analysis-chart/analysis-chart-legend';
-
+import LegendChart from 'components/chart/legend';
 import Loading from 'components/loading';
+import { NUMBER_FORMAT } from 'utils/number-format';
 
 import type { Store } from 'store';
 import type { Indicator } from 'types';
@@ -26,9 +27,13 @@ type ImpactChartProps = {
   indicator: Indicator;
 };
 
+const COLOR_SCALE = chroma.scale(['#2D7A5B', '#39A163', '#9AC864', '#D9E77F', '#FFF9C7']);
+
 const ImpactChart: React.FC<ImpactChartProps> = ({ indicator }) => {
   const store: Store = useStore();
   const filters = filtersForTabularAPI(store.getState());
+
+  console.log(filters);
 
   const params = {
     maxRankingEntities: 5,
@@ -43,7 +48,7 @@ const ImpactChart: React.FC<ImpactChartProps> = ({ indicator }) => {
     !!filters.endYear &&
     filters.endYear !== filters.startYear;
 
-  const { data, isLoading } = useImpactRanking(
+  const { data, isFetched, isLoading } = useImpactRanking(
     {
       maxRankingEntities: 5,
       sort: 'DES',
@@ -55,10 +60,10 @@ const ImpactChart: React.FC<ImpactChartProps> = ({ indicator }) => {
   );
 
   const chartData = useMemo(() => {
-    const { indicatorId, indicatorShortName, rows, yearSum, metadata } =
-      data?.impactTable?.[0] || {};
+    const { indicatorShortName, rows, yearSum, metadata } = data?.impactTable?.[0] || {};
     const result = [];
     const keys = [];
+
     yearSum?.forEach(({ year }) => {
       const items = {};
       rows?.forEach((row) => {
@@ -67,80 +72,81 @@ const ImpactChart: React.FC<ImpactChartProps> = ({ indicator }) => {
       });
       result.push({ date: year, ...items });
     });
+
+    if (result?.[0]) {
+      Object.keys(result[0]).forEach((key) => key !== 'date' && keys.push(key));
+    }
+
+    const colorScale = COLOR_SCALE.colors(keys.length);
+
     return {
       data: result,
       keys,
       name: indicatorShortName,
-      id: `impact-chart-item-${indicatorId}`,
       unit: metadata?.unit,
+      colors: keys.reduce(
+        (acc, k, i) => ({
+          ...acc,
+          [k]: k === 'Other' || k === 'Others' ? '#E4E4E4' : colorScale[i],
+        }),
+        {},
+      ),
     };
   }, [data]);
 
-  const legendData = useMemo(() => {
-    const { rows, metadata, others } = data?.impactTable?.[0] || {};
-    const result = [];
-    rows?.forEach((row) => {
-      result.push({ name: row.name });
-    });
-    if (others?.numberOfAggregatedEntities > 0) {
-      result.push({ name: `Others (${others.numberOfAggregatedEntities})` });
-    }
-    return {
-      items: result,
-      unit: metadata?.unit,
-    };
-  }, [data]);
-  console.log('data: ', data);
-  console.log('chart data: ', chartData);
-  console.log('legend data: ', legendData);
+  const renderLegend = useCallback((props) => {
+    return <LegendChart {...props} />;
+  }, []);
 
   return (
     <div className="p-6 bg-white rounded-md shadow-sm">
       {isLoading && <Loading className="w-5 h-5 m-auto text-primary" />}
-      {!isLoading && chartData && (
+      {!isLoading && isFetched && chartData && (
         <div>
           <h2 className="flex-shrink-0 text-base">
             {chartData.name} ({chartData.unit})
           </h2>
           <div className="relative flex-grow mt-3">
-            <div className="flex justify-between">
-              <ul className="grid grid-cols-3 gap-2">
-                {legendData.items.map((item) => (
-                  <li key={item.name} className="flex items-center space-x-1">
-                    <div className="w-2 h-3 rounded shrink-0 grow-0 bg-primary"></div>
-                    <div className="overflow-hidden text-2xs whitespace-nowrap text-ellipsis">
-                      {item.name}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-              <div>
-                <div></div>
-                <div className="text-xs whitespace-nowrap">Projected data</div>
+            {chartData && (
+              <div className="h-[370px] text-xs">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={chartData.data}
+                    margin={{
+                      top: 0,
+                      right: 0,
+                      left: 0,
+                      bottom: 0,
+                    }}
+                  >
+                    <Legend verticalAlign="top" content={renderLegend} height={70} />
+                    <CartesianGrid vertical={false} />
+                    <XAxis dataKey="date" axisLine={false} tickLine={false} />
+                    <YAxis
+                      axisLine={false}
+                      label={{ value: chartData.unit, angle: -90, position: 'insideLeft' }}
+                      tickLine={false}
+                      tickFormatter={NUMBER_FORMAT}
+                    />
+                    <Tooltip />
+                    {chartData.keys.map((key) => (
+                      <Area
+                        key={key}
+                        type="monotone"
+                        dataKey={key}
+                        stackId="1"
+                        stroke={chartData.colors[key]}
+                        strokeWidth={0}
+                        fill={chartData.colors[key]}
+                        fillOpacity={0.9}
+                        animationEasing="ease"
+                        animationDuration={500}
+                      />
+                    ))}
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
-            </div>
-
-            <div className="h-[300px]">
-              <Chart>
-                <AreaStacked
-                  id={chartData.id}
-                  title={chartData.name}
-                  yAxisLabel={chartData.unit}
-                  data={chartData.data}
-                  margin={{ top: 12, right: 8, bottom: 30, left: 60 }}
-                  keys={chartData.keys}
-                  // colors={colors}
-                  // activeArea={activeArea}
-                  // target={120}
-                  // projection={projection}
-                  settings={{
-                    tooltip: true,
-                    projection: true,
-                    target: true,
-                  }}
-                />
-              </Chart>
-            </div>
+            )}
           </div>
         </div>
       )}

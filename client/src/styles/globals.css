@@ -47,6 +47,11 @@
   h4 {
     @apply text-xs font-normal;
   }
+
+  /* Fixing override from TailwindCSS base styles */
+  text[type=number] {
+    font-size: inherit;
+  }
 }
 
 @layer utilities {
@@ -84,4 +89,9 @@
 
 .rc-tree-title {
   @apply w-full text-gray-900;
+}
+
+/* Recharts */
+.recharts-label {
+  @apply text-xs fill-gray-400;
 }

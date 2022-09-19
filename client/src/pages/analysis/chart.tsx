@@ -15,6 +15,7 @@ import TitleTemplate from 'utils/titleTemplate';
 import type { ReactElement } from 'react';
 import type { NextPageWithLayout } from 'pages/_app';
 import type { Indicator } from 'types';
+import classNames from 'classnames';
 
 const ChartPage: NextPageWithLayout = () => {
   const dispatch = useAppDispatch();
@@ -44,7 +45,12 @@ const ChartPage: NextPageWithLayout = () => {
         </div>
       )}
       {!isLoading && activeIndicators?.length > 0 && (
-        <div className="grid grid-cols-2 gap-6">
+        <div
+          className={classNames('grid gap-6', {
+            'grid-cols-1': activeIndicators?.length === 1,
+            'grid-cols-1 2xl:grid-cols-2': activeIndicators?.length > 1,
+          })}
+        >
           {activeIndicators.map((indicator) => (
             <ImpactChart key={`impact-chart-${indicator.id}`} indicator={indicator} />
           ))}

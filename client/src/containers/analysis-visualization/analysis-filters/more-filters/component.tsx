@@ -212,6 +212,7 @@ const MoreFilters: React.FC = () => {
                   materialIds={materialIds}
                   originIds={originIds}
                   locationTypes={locationTypesValues}
+                  scenarioId={scenarioId}
                   current={selectedFilters.suppliers}
                   fitContent
                   onChange={(values) => handleChangeFilter('suppliers', values)}
@@ -225,6 +226,7 @@ const MoreFilters: React.FC = () => {
                   materialIds={materialIds}
                   originIds={originIds}
                   supplierIds={supplierIds}
+                  scenarioId={scenarioId}
                   onChange={(values) => handleChangeFilter('locationTypes', values)}
                 />
               </div>

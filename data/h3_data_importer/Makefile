@@ -370,16 +370,17 @@ download-deforestation: download-deforestation-list
 transform-deforestation-file:
 	@echo "Transforming deforestation file $(FILE) ... "
 	table_name=`basename -s .tif $(FILE) | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
-	wget -q -O "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" $(FILE) ; \
+	wget -q -O "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" $(FILE); \
 	rm -f "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
-	gdal_calc.py --quiet --calc "(A>19)" --format GTiff --type Float32 --NoDataValue 0.0 \
+	gdal_calc.py --quiet --calc "(A>19)" --format GTiff --type Float32 --NoDataValue 0.0 --overwrite \
 		-A "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" \
 		--outfile  "$(WORKDIR_DEFORESTATION)/$${table_name}.tif"; \
 	gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r sum -tr 0.0833333333333286 0.0833333333333286 -multi -of GTiff -wo NUM_THREADS=ALL_CPUS \
-	"$(WORKDIR_DEFORESTATION)/$${table_name}.tif" "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
-	gdal_calc.py --quiet --calc "A/111111.11111109848" --format GTiff --type Float32 --NoDataValue 0.0 \
-		-A "$(WORKDIR_DEFORESTATION)/Loss_$${table_name}_10km.tif" \
-		--outfile  "$(WORKDIR_DEFORESTATION)/Loss_$${table_name}_10km.tif"; \
+		"$(WORKDIR_DEFORESTATION)/$${table_name}.tif" \
+		"$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
+	gdal_calc.py --quiet --calc "A/111111.11111109848" --format GTiff --type Float32 --NoDataValue 0.0 --overwrite \
+		-A "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif" \
+		--outfile  "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
 	rm -f "$(WORKDIR_DEFORESTATION)/$${table_name}.tif"
 
 preprocess-deforestation: download-deforestation

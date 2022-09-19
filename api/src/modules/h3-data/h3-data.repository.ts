@@ -417,6 +417,7 @@ export class H3DataRepository extends Repository<H3Data> {
       })
       .andWhere('materialsToH3s.type = :type', { type })
       .orderBy(`ABS(h3data.year - ${year})`, 'ASC')
+      .cache(1000)
       .limit(1);
     return queryBuilder.getRawOne();
   }

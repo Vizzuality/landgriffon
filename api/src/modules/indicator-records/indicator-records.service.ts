@@ -527,7 +527,7 @@ export class IndicatorRecordsService extends AppBaseService<
   }
 
   /**
-   * his functions calculates (or gets from the Cached Data if present) the indicator raw value
+   * This functions calculates (or gets from the Cached Data if present) the indicator raw value
    * for the given indicators, material and geoRegion, and puts the result on the cache if needed.
    * @param geoRegionId
    * @param indicatorType

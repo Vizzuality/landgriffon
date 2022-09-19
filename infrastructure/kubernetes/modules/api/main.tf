@@ -119,7 +119,7 @@ resource "kubernetes_deployment" "api_deployment" {
           }
 
           env {
-            name = "REDIS_HOST"
+            name = "QUEUE_HOST"
             value_from {
               secret_key_ref {
                 name = "db"
@@ -129,11 +129,21 @@ resource "kubernetes_deployment" "api_deployment" {
           }
 
           env {
-            name = "REDIS_IMPORT_QUEUE_NAME"
+            name = "GEOCODING_CACHE_HOST"
             value_from {
               secret_key_ref {
                 name = "db"
-                key  = "REDIS_IMPORT_QUEUE_NAME"
+                key  = "REDIS_HOST"
+              }
+            }
+          }
+
+          env {
+            name = "DB_CACHE_HOST"
+            value_from {
+              secret_key_ref {
+                name = "db"
+                key  = "REDIS_HOST"
               }
             }
           }

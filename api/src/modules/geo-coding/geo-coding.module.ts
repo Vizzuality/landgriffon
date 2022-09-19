@@ -17,7 +17,6 @@ import { GoogleMapsGeocoder } from 'modules/geo-coding/geocoders/google-maps.geo
 import * as redisStore from 'cache-manager-redis-store';
 import * as config from 'config';
 
-const redisConfig: any = config.get('redis');
 const geocodingCacheConfig: any = config.get('geocodingCache');
 
 const geocodingCacheTTL: number = parseInt(
@@ -34,8 +33,9 @@ const geocodingCacheEnabled: boolean =
     SourcingLocationsModule,
     CacheModule.register({
       store: redisStore,
-      host: redisConfig.host,
-      port: redisConfig.port,
+      host: geocodingCacheConfig.host,
+      port: geocodingCacheConfig.port,
+      db: geocodingCacheConfig.database,
       ttl: geocodingCacheTTL,
     }),
   ],

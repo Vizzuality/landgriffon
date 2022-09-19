@@ -36,7 +36,7 @@ import { ContextualLayersModule } from 'modules/contextual-layers/contextual-lay
 import { CachedDataModule } from 'modules/cached-data/cached-data.module';
 import * as config from 'config';
 
-const redisConfig: any = config.get('redis');
+const queueConfig: any = config.get('queue');
 
 @Module({
   imports: [
@@ -44,8 +44,9 @@ const redisConfig: any = config.get('redis');
     TypeOrmModule.forRoot(typeOrmConfig),
     BullModule.forRoot({
       redis: {
-        host: redisConfig.host,
-        port: redisConfig.port,
+        host: queueConfig.host,
+        port: queueConfig.port,
+        db: queueConfig.database,
       },
       settings: { lockDuration: 10000000, maxStalledCount: 0 },
     }),

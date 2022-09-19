@@ -9,6 +9,7 @@
 - [PostgreSQL](https://www.postgresql.org/) v13.2 or greater
 - [Postgis](https://postgis.net/) v3.1 or greater
 - [PostgreSQL bindings for H3](https://github.com/bytesandbrains/h3-pg) v3.7.1 or greater
+- [Redis](https://redis.io/) v6 or greater
 
 ## Documentation
 
@@ -28,6 +29,11 @@ Be sure to review the installation process for both these extensions and follow 
 You also need to manually create a database prior to the first execution of this API, and both extensions above need to be enabled for said database.
 
 Once that's in place, you can start the application, which will populate the database structure.
+
+### Redis
+
+Redis is used as a message broker, as well as for caching certain precomputed results. While caching can be disabled using
+configuration environment variables, it is required for message broker operations. 
 
 ### Application setup
 

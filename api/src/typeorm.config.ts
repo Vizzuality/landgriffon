@@ -21,6 +21,17 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   cli: {
     migrationsDir: 'migrations',
   },
+  cache:
+    dbConfig.cacheEnabled === true || dbConfig.cacheEnabled === 'true'
+      ? {
+          type: 'redis',
+          options: {
+            host: dbConfig.cacheHost,
+            port: dbConfig.cachePort ? parseInt(dbConfig.cachePort) : 6379,
+            db: dbConfig.cacheDatabase ? parseInt(dbConfig.cacheDatabase) : 1,
+          },
+        }
+      : false,
   uuidExtension: 'pgcrypto',
   entities: [ImpactMaterializedView],
 };

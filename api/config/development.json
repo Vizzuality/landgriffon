@@ -12,14 +12,8 @@
   "auth": {
     "requireUserAccountActivation": false,
     "jwt": {
-      "expiresIn": "1m",
       "secret": "myVeryBadJWTSecretForTests"
     }
-  },
-  "redis": {
-    "host": "localhost",
-    "port": 6379,
-    "importQueueName": "excel-import"
   },
   "map": {
     "distributed": true

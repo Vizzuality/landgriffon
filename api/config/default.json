@@ -25,13 +25,17 @@
   "import": {
     "missingDataFallbackStrategy": "fallback"
   },
-  "redis": {
+  "queue": {
     "host": "localhost",
     "port": 6379,
+    "database": 1,
     "importQueueName": "excel-import"
   },
   "geocodingCache": {
     "enabled": true,
+    "host": "localhost",
+    "port": 6379,
+    "database": 2,
     "TTL": 86400
   },
   "db": {
@@ -45,7 +49,10 @@
     "migrationsRun": true,
     "dropSchema": false,
     "logging": true,
-    "batchChunkSize": 50
+    "batchChunkSize": 50,
+    "cacheEnabled": true,
+    "cacheHost": "localhost",
+    "cacheDatabase": 3
   },
   "fileUploads": {
     "sizeLimit": 8388608,

@@ -15,7 +15,6 @@ import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { Material } from 'modules/materials/material.entity';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
-import { GetScenarioMapDto } from 'modules/h3-data/dto/get-scenario-map.dto';
 import { H3DataMapRepository } from 'modules/h3-data/h3-data-map.repository';
 
 /**
@@ -140,8 +139,8 @@ export class H3DataMapService {
   }
 
   private async updateDtoEntityDescendants(
-    mapDto: GetScenarioMapDto | GetImpactMapDto,
-  ): Promise<GetScenarioMapDto | GetImpactMapDto> {
+    mapDto: GetImpactMapDto,
+  ): Promise<GetImpactMapDto> {
     if (mapDto.originIds) {
       mapDto.originIds =
         await this.adminRegionService.getAdminRegionDescendants(

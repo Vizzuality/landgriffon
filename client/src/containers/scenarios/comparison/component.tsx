@@ -3,7 +3,10 @@ import { useCallback, useMemo, useEffect } from 'react';
 
 import { useScenarios } from 'hooks/scenarios';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { scenarios, setScenarioToCompare } from 'store/features/analysis/scenarios';
+import {
+  scenarios as scenariosSelector,
+  setScenarioToCompare,
+} from 'store/features/analysis/scenarios';
 
 import Select from 'components/select';
 
@@ -11,23 +14,23 @@ import type { SelectOption } from 'components/select/types';
 
 const ScenariosComparison: FC = () => {
   const dispatch = useAppDispatch();
-  const { currentScenario, scenarioToCompare, isComparisonEnabled } = useAppSelector(scenarios);
+  const { currentScenario, scenarioToCompare, isComparisonEnabled } =
+    useAppSelector(scenariosSelector);
 
-  const {
-    data: { data },
-  } = useScenarios({
+  const { data: scenarios } = useScenarios({
     params: { disablePagination: true, include: 'scenarioInterventions', currentScenario },
+    options: {
+      select: (data) => data.data,
+    },
   });
 
   const options = useMemo<SelectOption[]>(() => {
-    const filteredData = data.filter(
-      ({ scenarioInterventions }) => scenarioInterventions?.length > 0,
+    const filteredData = scenarios.filter(
+      ({ id, scenarioInterventions }) =>
+        id !== currentScenario && scenarioInterventions?.length > 0,
     );
-    if (currentScenario === 'actual-data') {
-      return filteredData.map(({ id, title }) => ({ label: title, value: id }));
-    }
-    return [{ label: 'Actual Data', value: 'actual-data' }];
-  }, [currentScenario, data]);
+    return filteredData.map(({ id, title }) => ({ label: title, value: id }));
+  }, [currentScenario, scenarios]);
   const selected = useMemo(
     () => options.find(({ value }) => value === scenarioToCompare),
     [scenarioToCompare, options],

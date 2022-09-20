@@ -70,9 +70,13 @@ const QUERY_PARAMS_MAP: QueryParams = {
 };
 
 const formatParam = (param: string): string | boolean | number => {
-  if (param === 'true' || param === 'false') return Boolean(param === 'true');
+  if (['true', 'false'].includes(param)) return param === 'true';
   if (!Number.isNaN(Number(param))) return Number(param);
-  if (checkValidJSON(param)) return JSON.parse(param);
+  if (checkValidJSON(param)) {
+    const obj = JSON.parse(param);
+    if (typeof obj === 'string') return param;
+    return obj;
+  }
   return param;
 };
 
@@ -120,7 +124,9 @@ const querySyncMiddleware: Middleware = () => (next) => (action) => {
           {
             query: {
               ...query,
-              [param]: checkValidJSON(JSON.stringify(currentStateValue))
+              [param]: ['string', 'number'].includes(typeof currentStateValue)
+                ? currentStateValue
+                : checkValidJSON(JSON.stringify(currentStateValue))
                 ? JSON.stringify(currentStateValue)
                 : currentStateValue,
             },

@@ -8,7 +8,7 @@ import useEffectOnce from 'hooks/once';
 
 import ApplicationLayout from 'layouts/application';
 import AnalysisLayout from 'layouts/analysis';
-import ImpactChart from 'containers/impact-chart';
+import AnalysisChart from 'containers/analysis-chart';
 import Loading from 'components/loading';
 import TitleTemplate from 'utils/titleTemplate';
 
@@ -25,9 +25,9 @@ const ChartPage: NextPageWithLayout = () => {
   const { data, isLoading } = useIndicators();
 
   const activeIndicators: Indicator[] = useMemo(() => {
-    if (indicator?.value === 'all') return data;
-    if (data?.length) {
-      return data.filter((indicatorData) => indicatorData.id === indicator?.value);
+    if (indicator?.value === 'all') return data?.data;
+    if (data?.data.length) {
+      return data.data.filter((indicatorData) => indicatorData.id === indicator?.value);
     }
     return [];
   }, [data, indicator]);
@@ -52,7 +52,7 @@ const ChartPage: NextPageWithLayout = () => {
           })}
         >
           {activeIndicators.map((indicator) => (
-            <ImpactChart key={`impact-chart-${indicator.id}`} indicator={indicator} />
+            <AnalysisChart key={`analysis-chart-${indicator.id}`} indicator={indicator} />
           ))}
         </div>
       )}

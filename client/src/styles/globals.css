@@ -51,6 +51,7 @@
   /* Fixing override from TailwindCSS base styles */
   text[type=number] {
     font-size: inherit;
+    font-weight: inherit;
   }
 }
 

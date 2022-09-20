@@ -2,6 +2,7 @@ import {
   Connection,
   EntityRepository,
   getConnection,
+  InsertQueryBuilder,
   InsertResult,
   QueryRunner,
   Repository,
@@ -24,10 +25,12 @@ import {
   ReplacedSuppliers,
 } from 'modules/scenario-interventions/intermediate-table-names/intermediate.table.names';
 import { chunk } from 'lodash';
+import * as config from 'config';
 
 @EntityRepository(ScenarioIntervention)
 export class ScenarioInterventionRepository extends Repository<ScenarioIntervention> {
   logger: Logger = new Logger(ScenarioInterventionRepository.name);
+
   async getScenarioInterventionsByScenarioId(
     scenarioId: string,
   ): Promise<ScenarioIntervention[]> {
@@ -85,6 +88,9 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
     const locations: SourcingLocation[] = [];
     const records: SourcingRecord[] = [];
     const impacts: IndicatorRecord[] = [];
+
+    const dbConfig: any = config.get('db');
+    const batchChunkSize: number = parseInt(`${dbConfig.batchChunkSize}`, 10);
 
     newIntervention.id = uuidv4();
     const {
@@ -162,16 +168,41 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
       this.logger.log(
         `Saving ${records.length} Sourcing Records for Intervention with Id: ${newIntervention.id}`,
       );
-      await queryRunner.manager.insert(SourcingRecord, records);
+      const sourcingRecordInsertPromises: Array<Promise<InsertResult>> = [];
+
+      for (const [index, dataChunk] of chunk(
+        records,
+        batchChunkSize,
+      ).entries()) {
+        this.logger.debug(
+          `Inserting sourcing record chunk #${index} (${dataChunk.length} items)...`,
+        );
+
+        sourcingRecordInsertPromises.push(
+          queryRunner.manager
+            .createQueryBuilder()
+            .insert()
+            .into(SourcingRecord)
+            .values(dataChunk)
+            .execute(),
+        );
+      }
+      this.logger.log(
+        `Saving ${sourcingRecordInsertPromises.length} Sourcing Records chunks`,
+      );
+      await Promise.all(sourcingRecordInsertPromises);
       this.logger.log(
         `Saving ${impacts.length} Indicator Records for Intervention with Id: ${newIntervention.id}`,
       );
-      const insertPromises: Array<Promise<InsertResult>> = [];
-      for (const [index, dataChunk] of chunk(impacts, 10).entries()) {
+      const indicatorRecordInsertPromises: Array<Promise<InsertResult>> = [];
+      for (const [index, dataChunk] of chunk(
+        impacts,
+        batchChunkSize,
+      ).entries()) {
         this.logger.debug(
-          `Inserting chunk #${index} (${dataChunk.length} items)...`,
+          `Inserting indicator record chunk #${index} (${dataChunk.length} items)...`,
         );
-        insertPromises.push(
+        indicatorRecordInsertPromises.push(
           queryRunner.manager
             .createQueryBuilder()
             .insert()
@@ -180,29 +211,33 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
             .execute(),
         );
       }
-      await Promise.all(insertPromises);
-      // LOGs suggest being inserted once
+      this.logger.log(
+        `Saving ${indicatorRecordInsertPromises.length} Indicator Records chunks`,
+      );
+      await Promise.all(indicatorRecordInsertPromises);
+
+      this.logger.log(`Replacing suppliers...`);
       await queryRunner.manager
         .createQueryBuilder()
         .insert()
         .into(REPLACED_SUPPLIERS_TABLE_NAME)
         .values(replacedSuppliersToSave)
         .execute();
-      //
+      this.logger.log(`Replacing admin regions...`);
       await queryRunner.manager
         .createQueryBuilder()
         .insert()
         .into(REPLACED_ADMIN_REGIONS_TABLE_NAME)
         .values(replacedAdminRegionsToSave)
         .execute();
-
+      this.logger.log(`Replacing materials...`);
       await queryRunner.manager
         .createQueryBuilder()
         .insert()
         .into(REPLACED_MATERIALS_TABLE_NAME)
         .values(replacedMaterialsToSave)
         .execute();
-
+      this.logger.log(`Replacing business units...`);
       await queryRunner.manager
         .createQueryBuilder()
         .insert()

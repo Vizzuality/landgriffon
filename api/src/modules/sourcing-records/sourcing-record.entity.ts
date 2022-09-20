@@ -66,5 +66,5 @@ export class SourcingRecord extends TimestampedBaseEntity {
    */
   @ManyToOne(() => User, (user: User) => user.id)
   @ApiProperty()
-  updatedById?: string;
+  updatedBy?: string;
 }

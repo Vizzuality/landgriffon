@@ -12,6 +12,7 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   password: dbConfig.password,
   database: dbConfig.database,
   logging: dbConfig.logging,
+  maxQueryExecutionTime: dbConfig.maxQueryExecutionTime,
   autoLoadEntities: true,
   synchronize: dbConfig.synchronize === true || dbConfig.synchronize === 'true',
   migrations: [__dirname + '/migrations/*.{ts,js}'],

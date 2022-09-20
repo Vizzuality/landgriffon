@@ -196,9 +196,9 @@ export class ScenarioInterventionsService extends AppBaseService<
     /**
      * After both sets of new Sourcing Locations with Sourcing Record (and Impact Records in the future) for the start year has been created
      * and added as relations to the new Scenario Intervention, saving the new Scenario intervention in database
-     *
-     *
      */
+    this.logger.log(`Saving intervention...`);
+
     const savedIntervention: InsertResult =
       await this.scenarioInterventionRepository.saveNewIntervention(
         newIntervention,

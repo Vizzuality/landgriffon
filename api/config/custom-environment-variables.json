@@ -42,6 +42,7 @@
     "synchronize": "DB_SYNCHRONIZE",
     "migrationsRun": "DB_MIGRATIONS_RUN",
     "batchChunkSize": "CHUNK_SIZE_FOR_BATCH_DB_OPERATIONS",
+    "maxQueryExecutionTime": "DB_SLOW_QUERY_LOG_THRESHOLD",
     "cacheEnabled": "DB_CACHE_ENABLED",
     "cacheHost": "DB_CACHE_HOST",
     "cachePort": "DB_CACHE_PORT",

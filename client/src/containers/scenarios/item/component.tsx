@@ -1,6 +1,6 @@
 import { Fragment, useCallback, useEffect } from 'react';
 import { format } from 'date-fns';
-import { Popover, RadioGroup, Switch, Transition } from '@headlessui/react';
+import { Popover, RadioGroup, Transition } from '@headlessui/react';
 import { DotsVerticalIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
 import toast from 'react-hot-toast';
@@ -35,7 +35,7 @@ const DROPDOWN_ITEM_CLASSNAME =
 
 const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: ScenariosItemProps) => {
   const dispatch = useAppDispatch();
-  const { currentScenario, isComparisonEnabled } = useAppSelector(scenarios);
+  const { currentScenario, scenarioToCompare } = useAppSelector(scenarios);
 
   const { x, y, reference, floating, strategy } = useFloating({
     placement: 'right',
@@ -65,6 +65,11 @@ const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: Scenarios
     // Disabling comparison when is not selected
     if (!isSelected) dispatch(setComparisonEnabled(false));
   }, [dispatch, isSelected]);
+
+  useEffect(() => {
+    // Disabling comparison when is not selected
+    dispatch(setComparisonEnabled(!!currentScenario && !!scenarioToCompare));
+  }, [dispatch, currentScenario, scenarioToCompare]);
 
   return (
     <li className="col-span-1 last-of-type:mb-6">
@@ -203,7 +208,7 @@ const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: Scenarios
         {isComparisonAvailable && isSelected && (
           <div className="p-4 border-t border-primary">
             <div className="flex justify-between">
-              <label className="block text-sm">Compare with</label>
+              {/* <label className="block text-sm">Compare with</label>
               <Switch
                 checked={isComparisonEnabled}
                 onChange={(isEnabled) => dispatch(setComparisonEnabled(isEnabled))}
@@ -228,7 +233,7 @@ const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: Scenarios
                     'pointer-events-none absolute left-0 inline-block h-4 w-4 border border-gray-200 rounded-full bg-white shadow transform ring-0 transition-transform ease-in-out duration-100',
                   )}
                 />
-              </Switch>
+              </Switch> */}
             </div>
             <ScenariosComparison />
           </div>

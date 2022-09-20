@@ -126,7 +126,7 @@ export function useScenario(id: Scenario['id']): ResponseDataScenario {
     { ...DEFAULT_QUERY_OPTIONS, enabled: !!id && id !== 'actual-data' },
   );
 
-  return useMemo<ResponseDataScenario>((): ResponseDataScenario => response, [response]);
+  return useMemo<ResponseDataScenario>(() => response, [response]);
 }
 
 export function useScenarioInterventions(id: Scenario['id']): ResponseInterventionsData {

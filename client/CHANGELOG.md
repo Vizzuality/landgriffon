@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Redesign the Legend [LANDGRIF_727](https://vizzuality.atlassian.net/browse/LANDGRIF-727)
 - Applied redesign of Actual data [LANDGRIF-810](https://vizzuality.atlassian.net/browse/LANDGRIF-810)
 - Redesign of charts for Impact data
+_ Updated scenarios list according new design
 
 ### Fixed
 

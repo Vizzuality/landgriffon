@@ -1,5 +1,5 @@
 import { Fragment, useCallback, useEffect } from 'react';
-import { format } from 'date-fns';
+import { differenceInDays, format, formatDistanceToNowStrict } from 'date-fns';
 import { Popover, RadioGroup, Transition } from '@headlessui/react';
 import { DotsVerticalIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
@@ -21,6 +21,8 @@ import { ACTUAL_DATA } from '../constants';
 import type { ErrorResponse } from 'types';
 import type { Scenario } from '../types';
 import { offset, useFloating } from '@floating-ui/react-dom';
+import { DatabaseIcon } from '@heroicons/react/outline';
+import { useMemo } from 'react';
 
 interface ScenariosItemProps {
   scenario: Scenario;
@@ -32,6 +34,25 @@ const DROPDOWN_BUTTON_CLASSNAME =
   'w-8 h-8 inline-flex items-center justify-center text-gray-900 rounded-full bg-transparent hover:text-green-800';
 const DROPDOWN_ITEM_CLASSNAME =
   'block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 hover:text-gray-900';
+
+const formatTimeAgo = (date: Date) => {
+  // const diffDays = differenceInDays(new Date(), subDays(new Date(), 1.5));
+  const diffDays = differenceInDays(new Date(), date);
+
+  const formattedHour = format(date, 'HH:mm');
+
+  if (diffDays === 0) {
+    return `Today ${formattedHour}`;
+  }
+  if (diffDays === 1) {
+    return `Yesterday ${formattedHour}`;
+  }
+
+  return `${formatDistanceToNowStrict(date, {
+    addSuffix: true,
+    unit: 'day',
+  })} ${formattedHour}`;
+};
 
 const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: ScenariosItemProps) => {
   const dispatch = useAppDispatch();
@@ -71,11 +92,16 @@ const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: Scenarios
     dispatch(setComparisonEnabled(!!currentScenario && !!scenarioToCompare));
   }, [dispatch, currentScenario, scenarioToCompare]);
 
+  const formattedUpdatedAgo = useMemo(
+    () => (scenario.updatedAt ? formatTimeAgo(new Date(scenario.updatedAt)) : null),
+    [scenario.updatedAt],
+  );
+
   return (
     <li className="col-span-1 last-of-type:mb-6">
       <div
         className={classNames(
-          'rounded-md border',
+          'rounded-md shadow-sm border p-4 space-y-4',
           isSelected ? 'border-primary' : 'border-gray-300',
         )}
       >
@@ -88,7 +114,7 @@ const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: Scenarios
           >
             {({ checked }) => (
               <>
-                <div className="flex justify-center flex-shrink-0 w-10 py-4 items-top">
+                <div className="flex justify-center flex-shrink-0 w-10 items-top">
                   {(scenario.id === ACTUAL_DATA.id || isComparisonAvailable) && (
                     <span
                       className={classNames(
@@ -101,7 +127,7 @@ const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: Scenarios
                     </span>
                   )}
                 </div>
-                <div className="flex-1 py-4 pr-4 truncate space-y-2">
+                <div className="flex-1 pr-4 truncate space-y-2">
                   <h2
                     className={classNames(
                       'text-sm font-medium truncate',
@@ -119,13 +145,15 @@ const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: Scenarios
                   )}
                   <div>
                     {scenario.id === ACTUAL_DATA.id && (
-                      <span className="text-sm text-gray-500">Based on your uploaded data</span>
+                      <span className="text-sm text-gray-500 flex flex-row place-items-center">
+                        <span>
+                          <DatabaseIcon className="w-4 h-4" />
+                        </span>
+                        <span>Based on your uploaded data</span>
+                      </span>
                     )}
                     {scenario.id !== ACTUAL_DATA.id && scenario.updatedAt && (
-                      <span className="text-gray-400 text-xs">{`Last edited ${format(
-                        new Date(scenario.updatedAt),
-                        'yyyy/MM/dd',
-                      )}`}</span>
+                      <span className="text-gray-400 text-xs">Modified: {formattedUpdatedAgo}</span>
                     )}
                   </div>
                 </div>
@@ -206,35 +234,7 @@ const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: Scenarios
           )}
         </div>
         {isComparisonAvailable && isSelected && (
-          <div className="p-4 border-t border-primary">
-            <div className="flex justify-between">
-              {/* <label className="block text-sm">Compare with</label>
-              <Switch
-                checked={isComparisonEnabled}
-                onChange={(isEnabled) => dispatch(setComparisonEnabled(isEnabled))}
-                className="relative inline-flex items-center justify-center flex-shrink-0 w-8 h-4 rounded-full cursor-pointer group focus:outline-none"
-              >
-                <label className="sr-only">Comparison scenario setting</label>
-                <span
-                  aria-hidden="true"
-                  className="absolute w-full h-full rounded-md pointer-events-none"
-                />
-                <span
-                  aria-hidden="true"
-                  className={classNames(
-                    isComparisonEnabled ? 'bg-primary' : 'bg-gray-200',
-                    'pointer-events-none absolute h-3 w-7 mx-auto rounded-full transition-colors ease-in-out duration-100',
-                  )}
-                />
-                <span
-                  aria-hidden="true"
-                  className={classNames(
-                    isComparisonEnabled ? 'translate-x-4' : 'translate-x-0',
-                    'pointer-events-none absolute left-0 inline-block h-4 w-4 border border-gray-200 rounded-full bg-white shadow transform ring-0 transition-transform ease-in-out duration-100',
-                  )}
-                />
-              </Switch> */}
-            </div>
+          <div className="">
             <ScenariosComparison />
           </div>
         )}

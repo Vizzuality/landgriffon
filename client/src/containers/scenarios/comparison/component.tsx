@@ -50,12 +50,13 @@ const ScenariosComparison: FC = () => {
   }, [selected, dispatch, options, scenarioToCompare]);
 
   return (
-    <div className="mt-2 space-y-1">
+    <div>
+      <div className="text-gray-900 text-sm">Compare with:</div>
       <Select
         showSearch
         current={selected}
         options={options}
-        placeholder="Select scenario to compare"
+        placeholder="Select what to compare"
         allowEmpty
         onChange={handleOnChange}
       />

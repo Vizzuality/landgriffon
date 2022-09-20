@@ -4,28 +4,28 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class IndicatorCoefficientsDto {
   @ApiProperty()
-  @Max(100)
+  @Max(1000000)
   @Min(0)
   @IsNotEmpty()
   @IsNumber()
   [INDICATOR_TYPES.DEFORESTATION]: number;
 
   @ApiProperty()
-  @Max(100)
+  @Max(1000000)
   @Min(0)
   @IsNotEmpty()
   @IsNumber()
   [INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE]: number;
 
   @ApiProperty()
-  @Max(100)
+  @Max(1000000)
   @Min(0)
   @IsNotEmpty()
   @IsNumber()
   [INDICATOR_TYPES.BIODIVERSITY_LOSS]: number;
 
   @ApiProperty()
-  @Max(100)
+  @Max(1000000)
   @Min(0)
   @IsNotEmpty()
   @IsNumber()

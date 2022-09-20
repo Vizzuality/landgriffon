@@ -21,6 +21,7 @@ for the API app.
 * `DB_CACHE_HOST` (string): hostname in which the Redis server can be reached.
 * `DB_CACHE_PORT` (number): port in which the Redis server can be reached.
 * `DB_CACHE_DATABASE` (number): Redis logical database number to be used for caching. Defaults to "3".
+* `DB_SLOW_QUERY_LOG_THRESHOLD` (number): Threshold, in milliseconds, past which a query will be logged asa "slow query". Defaults to "null".
 
 
 ### Geocoding cache config

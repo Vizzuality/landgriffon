@@ -4,7 +4,8 @@
     "loggerLevel": [
       "error",
       "warn",
-      "log"
+      "log",
+      "debug"
     ]
   },
   "auth": {
@@ -48,8 +49,9 @@
     "synchronize": false,
     "migrationsRun": true,
     "dropSchema": false,
-    "logging": true,
-    "batchChunkSize": 50,
+    "logging": false,
+    "batchChunkSize": 2000,
+    "maxQueryExecutionTime": null,
     "cacheEnabled": true,
     "cacheHost": "localhost",
     "cacheDatabase": 3

@@ -12,6 +12,7 @@
   "auth": {
     "requireUserAccountActivation": false,
     "jwt": {
+      "expiresIn": "30 days",
       "secret": "myVeryBadJWTSecretForTests"
     }
   },

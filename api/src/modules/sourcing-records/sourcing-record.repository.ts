@@ -42,6 +42,13 @@ export class ActualVsScenarioImpactTableData extends ImpactTableData {
   percentageDifference?: number;
 }
 
+export class ScenarioVsScenarioImpactTableData extends ImpactTableData {
+  scenarioOneImpact?: number;
+  scenarioTwoImapct?: number;
+  absoluteDifference?: number;
+  percentageDifference?: number;
+}
+
 export class ScenariosImpactTableData extends ImpactTableData {
   scenariosImpacts: ScenarioComparisonImpact[];
   scenariosTonnes: ScenarioComparisonTonnes[];

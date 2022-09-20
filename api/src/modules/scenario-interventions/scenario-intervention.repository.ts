@@ -119,7 +119,7 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
     const replacedBusinessUnitsToSave: ReplacedBusinessUnits[] = [];
     const replacedMaterialsToSave: ReplacedMaterial[] = [];
     // We could have replaced suppliers or not, as this can be null for actual Sourcing Location data
-    if (replacedSuppliers.length) {
+    if (replacedSuppliers?.length) {
       for (const supplier of replacedSuppliers) {
         replacedSuppliersToSave.push({
           supplierId: supplier.id,

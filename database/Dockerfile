@@ -14,4 +14,4 @@ RUN pgxn install "h3==${PG_H3_VERSION}"
 
 COPY entrypoint.sh /usr/local/bin/
 
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT entrypoint.sh "${PG_H3_VERSION}"

@@ -12,6 +12,7 @@ import Loading from 'components/loading';
 const ScenariosAdminPage: React.FC = () => {
   const { data, isLoading } = useScenarios({
     params: { disablePagination: true },
+    options: { select: (data) => data.data },
   });
 
   return (
@@ -22,16 +23,15 @@ const ScenariosAdminPage: React.FC = () => {
       <div className="flex justify-end mb-6">
         <Link href="/admin/scenarios/new" passHref>
           <AnchorLink theme="primary" data-testid="scenario-add-button">
-            <PlusIcon className="h-5 w-5" aria-hidden="true" />
+            <PlusIcon className="w-5 h-5" aria-hidden="true" />
             Add scenario
           </AnchorLink>
         </Link>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
         {isLoading && <Loading />}
         {!isLoading &&
-          data &&
-          data.map((scenarioData) => (
+          data?.map((scenarioData) => (
             <ScenarioCard key={`scenario-card-${scenarioData.id}`} data={scenarioData} />
           ))}
       </div>

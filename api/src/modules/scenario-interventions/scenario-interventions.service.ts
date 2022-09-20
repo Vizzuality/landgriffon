@@ -26,6 +26,8 @@ import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-lo
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { InterventionBuilder } from 'modules/scenario-interventions/services/intervention-builder.service';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { InsertResult } from 'typeorm';
+import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 
 @Injectable()
 export class ScenarioInterventionsService extends AppBaseService<
@@ -70,7 +72,10 @@ export class ScenarioInterventionsService extends AppBaseService<
         'scenario',
         'newLocationType',
         'newIndicatorCoefficients',
+        'newLocationCountryInput',
         'newLocationAddressInput',
+        'newLocationLatitudeInput',
+        'newLocationLongitudeInput',
         'replacedMaterials',
         'replacedBusinessUnits',
         'replacedAdminRegions',
@@ -78,6 +83,8 @@ export class ScenarioInterventionsService extends AppBaseService<
         'newMaterial',
         'newBusinessUnit',
         'newAdminRegion',
+        'newT1Supplier',
+        'newProducer',
         'percentage',
       ],
       keyForAttribute: 'camelCase',
@@ -192,15 +199,19 @@ export class ScenarioInterventionsService extends AppBaseService<
      *
      *
      */
-    const savedIntervention: ScenarioIntervention =
-      await this.scenarioInterventionRepository.save(newIntervention);
+    const savedIntervention: InsertResult =
+      await this.scenarioInterventionRepository.saveNewIntervention(
+        newIntervention,
+      );
 
-    this.logger.log(`New Intervention with Id: ${savedIntervention.id} saved.`);
+    this.logger.log(
+      `New Intervention with Id: ${savedIntervention.identifiers[0].id} saved.`,
+    );
 
     return {
-      id: savedIntervention.id,
-      title: savedIntervention.title,
-      updatedById: savedIntervention.updatedById,
+      id: savedIntervention.identifiers[0].id,
+      title: newIntervention.title,
+      updatedById: newIntervention.updatedById,
     };
   }
 
@@ -253,7 +264,13 @@ export class ScenarioInterventionsService extends AppBaseService<
           return {
             year: elem.year,
             tonnage: elem.tonnage,
-            indicatorRecords: elem.indicatorRecords,
+            indicatorRecords: elem.indicatorRecords.map(
+              (impact: IndicatorRecord) => ({
+                value: impact.value,
+                indicatorId: impact.indicatorId,
+                materialH3DataId: impact.materialH3DataId,
+              }),
+            ),
           } as SourcingRecord;
         });
       newCancelledInterventionLocation.interventionType = canceledOrReplacing;
@@ -280,6 +297,8 @@ export class ScenarioInterventionsService extends AppBaseService<
     scenarioIntervention.newLocationType = dto.newLocationType;
     scenarioIntervention.newLocationCountryInput = dto.newLocationCountryInput;
     scenarioIntervention.newLocationAddressInput = dto.newLocationAddressInput;
+    scenarioIntervention.newLocationLatitudeInput = dto.newLocationLatitude;
+    scenarioIntervention.newLocationLongitudeInput = dto.newLocationLongitude;
     scenarioIntervention.createDto = dto as unknown as JSON;
 
     return scenarioIntervention;

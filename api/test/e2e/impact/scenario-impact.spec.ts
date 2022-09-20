@@ -76,7 +76,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     } = await createNewCoefficientsInterventionPreconditions();
 
     const response = await request(app.getHttpServer())
-      .get('/api/v1/impact/table')
+      .get('/api/v1/impact/compare/scenario/vs/actual')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         'indicatorIds[]': [preconditions.indicator.id],
@@ -90,6 +90,9 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     expect(response.body.data.impactTable[0].rows).toEqual(
       newCoefficientsScenarioInterventionTable.impactTable[0].rows,
     );
+    expect(response.body.data.purchasedTonnes).toEqual(
+      newCoefficientsScenarioInterventionTable.purchasedTonnes,
+    );
   });
 
   test('When I request data for Impact table for a Scenario with Intervention of type New Material I should get the expected results', async () => {
@@ -99,7 +102,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     } = await createNewMaterialInterventionPreconditions();
 
     const response = await request(app.getHttpServer())
-      .get('/api/v1/impact/table')
+      .get('/api/v1/impact/compare/scenario/vs/actual')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         'indicatorIds[]': [preconditions.indicator.id],
@@ -122,7 +125,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     } = await createNewSupplierInterventionPreconditions();
 
     const response = await request(app.getHttpServer())
-      .get('/api/v1/impact/table')
+      .get('/api/v1/impact/compare/scenario/vs/actual')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         'indicatorIds[]': [preconditions.indicator.id],
@@ -145,7 +148,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     } = await createMultipleInterventionsPreconditions();
 
     const response1 = await request(app.getHttpServer())
-      .get('/api/v1/impact/table')
+      .get('/api/v1/impact/compare/scenario/vs/actual')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         'indicatorIds[]': [preconditions.indicator.id],
@@ -161,7 +164,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     );
 
     const response2 = await request(app.getHttpServer())
-      .get('/api/v1/impact/table')
+      .get('/api/v1/impact/compare/scenario/vs/actual')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         'indicatorIds[]': [preconditions.indicator.id],

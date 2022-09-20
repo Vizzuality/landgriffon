@@ -1,5 +1,6 @@
 import { Controller, Get, Query, ValidationPipe } from '@nestjs/common';
 import {
+  GetActualVsScenarioImpactTabledto,
   GetImpactTableDto,
   GetRankedImpactTableDto,
 } from 'modules/impact/dto/get-impact-table.dto';
@@ -19,12 +20,16 @@ import {
   ProcessFetchSpecification,
 } from 'nestjs-base-service';
 import { JSONAPIPaginationQueryParams } from 'decorators/json-api-parameters.decorator';
+import { ActualVsScenarioImpactService } from './actual-vs-scenario.service';
 
 @Controller('/api/v1/impact')
 @ApiTags('Impact')
 @ApiBearerAuth()
 export class ImpactController {
-  constructor(private readonly impactService: ImpactService) {}
+  constructor(
+    private readonly impactService: ImpactService,
+    private readonly actualVsScenarioiImpactService: ActualVsScenarioImpactService,
+  ) {}
 
   @ApiOperation({
     description: 'Get data for Impact Table',
@@ -40,6 +45,26 @@ export class ImpactController {
   ): Promise<PaginatedImpactTable> {
     return await this.impactService.getImpactTable(
       impactTableDto,
+      fetchSpecification,
+    );
+  }
+
+  @ApiOperation({
+    description:
+      'Get data for comapring Actual data with Scenario in form of Impact Table',
+  })
+  @ApiOkResponse({
+    type: PaginatedImpactTable,
+  })
+  @JSONAPIPaginationQueryParams()
+  @Get('compare/scenario/vs/actual')
+  async getActualVsScenarioImpactTable(
+    @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
+    @Query(ValidationPipe)
+    actualvsScenarioImpactTableDto: GetActualVsScenarioImpactTabledto,
+  ): Promise<PaginatedImpactTable> {
+    return await this.actualVsScenarioiImpactService.getActualVsScenarioImpactTable(
+      actualvsScenarioImpactTableDto,
       fetchSpecification,
     );
   }

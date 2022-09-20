@@ -47,7 +47,7 @@ Default.args = {
   theme: 'default',
   error: false,
   hideValueWhenMenuOpen: false,
-} as Partial<SelectProps>;
+} as Partial<SelectProps<string>>;
 
 export const Empty = Template.bind({});
 Empty.args = { ...Default.args, options: [] };

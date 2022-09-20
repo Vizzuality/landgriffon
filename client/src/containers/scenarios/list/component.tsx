@@ -2,16 +2,20 @@ import { useEffect, useState, useCallback } from 'react';
 import { RadioGroup } from '@headlessui/react';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
-import { scenarios, setCurrentScenario } from 'store/features/analysis/scenarios';
+import {
+  scenarios,
+  setCurrentScenario,
+  setScenarioToCompare,
+} from 'store/features/analysis/scenarios';
 
 import ScenarioItem from 'containers/scenarios/item';
 
 import { ACTUAL_DATA } from '../constants';
 
-import type { Scenario, Scenarios } from '../types';
+import type { Scenario } from '../types';
 
 type ScenariosListProps = {
-  data: Scenarios;
+  data: Scenario[];
 };
 
 const isScenarioSelected: (scenarioId: Scenario['id'], currentId: Scenario['id']) => boolean = (
@@ -25,7 +29,13 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
 
   const [selected, setSelected] = useState(null);
 
-  const handleOnChange = useCallback(({ id }) => dispatch(setCurrentScenario(id)), [dispatch]);
+  const handleOnChange = useCallback(
+    ({ id }) => {
+      dispatch(setCurrentScenario(id));
+      dispatch(setScenarioToCompare(null));
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     if (data && !currentScenario) {
@@ -43,7 +53,7 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
   return (
     <RadioGroup value={selected} onChange={handleOnChange}>
       <RadioGroup.Label className="sr-only">Scenarios</RadioGroup.Label>
-      <ul className="overflow-auto my-2 grid grid-cols-1 gap-5 sm:gap-2 sm:grid-cols-2 lg:grid-cols-1 relative">
+      <ul className="relative grid grid-cols-1 gap-5 my-2 overflow-auto sm:gap-2 sm:grid-cols-2 lg:grid-cols-1">
         <ScenarioItem
           data={ACTUAL_DATA}
           isSelected={isScenarioSelected(ACTUAL_DATA.id, currentScenario)}

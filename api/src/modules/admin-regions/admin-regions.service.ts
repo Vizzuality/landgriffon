@@ -155,7 +155,7 @@ export class AdminRegionsService extends AppBaseService<
     withAncestry: boolean = true,
   ): Promise<AdminRegion[]> {
     const adminRegionLineage: AdminRegion[] =
-      await this.adminRegionRepository.getSourcingDataAdminRegions(
+      await this.adminRegionRepository.getAdminRegionsFromSourcingLocations(
         adminRegionTreeOptions,
         withAncestry,
       );

@@ -46,7 +46,7 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
   pagination,
 ) => {
   const store = useStore() as Store;
-  const { data: indicators } = useIndicators();
+  const { data: indicators } = useIndicators({ select: (data) => data.data });
   const { layer } = useAppSelector(analysisFilters);
   const { isComparisonEnabled, scenarioToCompare, currentScenario } = useAppSelector(scenarios);
   const filters = filtersForTabularAPI(store.getState());
@@ -78,12 +78,15 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
     ...(currentScenario && currentScenario !== 'actual-data'
       ? { scenarioId: currentScenario }
       : {}),
-    ...(isComparisonEnabled ? { scenarioId: scenarioToCompare } : {}),
+    ...(isComparisonEnabled && scenarioToCompare ? { scenarioId: scenarioToCompare } : {}),
   };
 
   const query = useQuery(
     ['impact-data', layer, params],
-    async () => apiRawService.get('/impact/table', { params }).then((response) => response.data),
+    async () =>
+      apiRawService
+        .get('/impact/compare/scenario/vs/actual', { params })
+        .then((response) => response.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
       enabled: layer === 'impact' && isEnable,
@@ -106,7 +109,7 @@ export function useImpactRanking(
   params = { maxRankingEntities: 5, sort: 'ASC' },
 ): ImpactRankingResponse {
   const store = useStore() as Store;
-  const { data: indicators } = useIndicators();
+  const { data: indicators } = useIndicators({ select: (data) => data.data });
   const { layer } = useAppSelector(analysisFilters);
   const filters = filtersForTabularAPI(store.getState());
 

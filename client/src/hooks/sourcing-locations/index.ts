@@ -16,21 +16,51 @@ type SourcingLocationsMaterialsAPIResponse = {
 type SourcingLocationsMaterialsDataResponse = UseQueryResult &
   SourcingLocationsMaterialsAPIResponse;
 
-export type SourcingLocationsParams = {
-  search?: string;
-  'page[number]'?: number;
-  'page[size]'?: number;
-} & Partial<ApiSortParams>;
+type SourcingLocationResponse = {
+  data: { type: string; updatedAt: string }[];
+  meta: APIMetadataPagination;
+};
 
-const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
-  placeholderData: [],
+const DEFAULT_QUERY_OPTIONS = {
+  placeholderData: { data: [], meta: { page: 1, size: 25, totalItems: 0, totalPages: 0 } },
   retry: false,
   keepPreviousData: false,
   refetchOnWindowFocus: false,
 };
+
+export type SourcingLocationsParams = {
+  search?: string;
+  fields?: string;
+  'page[number]'?: number;
+  'page[size]'?: number;
+} & Partial<ApiSortParams>;
+
+export function useSourcingLocations(
+  params: SourcingLocationsParams,
+  queryOptions?: UseQueryOptions<SourcingLocationResponse>,
+) {
+  const query = useQuery<SourcingLocationResponse>(
+    ['sourcingLocations', params],
+    async () =>
+      apiService
+        .request({
+          method: 'GET',
+          url: '/sourcing-locations',
+          params,
+        })
+        .then((response) => response.data),
+    {
+      ...(DEFAULT_QUERY_OPTIONS as UseQueryOptions<SourcingLocationResponse>),
+      ...queryOptions,
+    },
+  );
+
+  return query;
+}
+
 export function useSourcingLocationsMaterials(
   params: SourcingLocationsParams,
-  queryOptions?: Partial<UseQueryOptions>,
+  queryOptions?: UseQueryOptions<SourcingLocationsMaterialsAPIResponse>,
 ): SourcingLocationsMaterialsDataResponse {
   const query = useQuery(
     ['sourcingLocationsMaterials', params],
@@ -62,7 +92,7 @@ export function useSourcingLocationsMaterials(
           ((response as SourcingLocationsMaterialsAPIResponse).data || []).map((data) => ({
             id: uuidv4(),
             ...data,
-          })) || DEFAULT_QUERY_OPTIONS.placeholderData,
+          })) || [],
         meta: (response as SourcingLocationsMaterialsAPIResponse).meta || {},
       } as SourcingLocationsMaterialsDataResponse),
     [query, response],

@@ -1,15 +1,18 @@
-import type { ChangeEvent } from 'react';
 import { useCallback } from 'react';
 import { SearchIcon, XIcon } from '@heroicons/react/solid';
 
 import Input from 'components/forms/input';
+import classNames from 'classnames';
+
+import type { ChangeEvent } from 'react';
 
 type SearchProps = Omit<React.ComponentProps<typeof Input>, 'type' | 'icon' | 'onChange'> & {
   onChange: (value: string) => void;
 };
 
-export const Search = (props: SearchProps) => {
-  const { onChange, value } = props;
+export const Search: React.FC<SearchProps> = (props: SearchProps) => {
+  const { onChange, className, value } = props;
+
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       onChange?.(e.target.value);
@@ -22,7 +25,7 @@ export const Search = (props: SearchProps) => {
   }, [onChange]);
 
   return (
-    <div className="relative flex items-center w-full">
+    <div className={classNames('relative flex items-center', className)}>
       <Input
         {...props}
         icon={SearchIcon}

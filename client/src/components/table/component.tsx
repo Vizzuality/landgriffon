@@ -1,20 +1,22 @@
-import type { ColumnHelper, DeepKeys, Row, TableOptions } from '@tanstack/react-table';
-import { getExpandedRowModel } from '@tanstack/react-table';
-import { createColumnHelper } from '@tanstack/react-table';
-import { getCoreRowModel } from '@tanstack/react-table';
-import { useReactTable } from '@tanstack/react-table';
+import type { ColumnHelper, Row, TableOptions } from '@tanstack/react-table';
+import { getSortedRowModel } from '@tanstack/react-table';
+import {
+  getExpandedRowModel,
+  createColumnHelper,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import classNames from 'classnames';
 import Loading from 'components/loading';
 import Pagination from 'components/pagination';
 import PageSizeSelector from 'components/pagination/pageSizeSelector';
 import React, { useCallback, useMemo } from 'react';
-import Cell, { HeaderCell } from './cell';
 import type { ColumnDefinition } from './column';
 import TableRow, { TableHeaderRow } from './row';
 
-export interface TableProps<T = unknown>
+export interface TableProps<T>
   extends Omit<TableOptions<T>, 'columns' | 'getCoreRowModel' | 'pageCount'> {
-  columns: ColumnDefinition<T, unknown>[];
+  columns: ColumnDefinition<T>[];
   isLoading?: boolean;
   theme?: 'default' | 'striped';
   paginationProps?: {
@@ -26,29 +28,21 @@ export interface TableProps<T = unknown>
 }
 
 const columnToColumnDef = <T,>(
-  { format, align, isSticky, fieldAccessor, ...column }: ColumnDefinition<T, unknown>,
+  {
+    align,
+    isSticky = false,
+    cell = ({ row: { original } }) => original[column.id],
+    ...column
+  }: ColumnDefinition<T>,
   columnHelper: ColumnHelper<T>,
 ) => {
-  return columnHelper.accessor(fieldAccessor || (column.id as DeepKeys<T>), {
+  return columnHelper.display({
     ...column,
+    cell,
     meta: {
-      isSticky: isSticky || false,
-      align: align || 'center',
-      format,
+      isSticky,
+      align: align ?? 'center',
     },
-    cell: (context) => {
-      const value = context.getValue() as React.ReactNode;
-      return (
-        <Cell {...column} align={align} context={context}>
-          {value}
-        </Cell>
-      );
-    },
-    header: (context) => (
-      <HeaderCell align={align} {...column} context={context}>
-        {column.title ?? column.id}
-      </HeaderCell>
-    ),
     enableSorting: !!column.enableSorting,
   });
 };
@@ -81,11 +75,7 @@ const Table = <T,>({
     },
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
-    defaultColumn: {
-      cell: (info) => info.getValue(),
-      header: (info) => <span className="capitalize">{info.header.column.id}</span>,
-      footer: null,
-    },
+    getSortedRowModel: getSortedRowModel(),
     columns: columnDefs,
     ...options,
   });
@@ -117,7 +107,9 @@ const Table = <T,>({
     },
     [allExpandGroupRows, table],
   );
+
   const bodyRows = table.getExpandedRowModel().rows;
+
   return (
     <div className="w-full space-y-5">
       <div className="relative w-full overflow-hidden shadow-xl rounded-2xl">
@@ -132,7 +124,7 @@ const Table = <T,>({
           })}
         >
           <table className="w-full border-separate table-fixed border-spacing-0">
-            <thead className="border-b border-b-gray-300 bg-gray-50">
+            <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableHeaderRow key={headerGroup.id} headerGroup={headerGroup} />
               ))}
@@ -166,18 +158,24 @@ const Table = <T,>({
         </div>
       </div>
 
-      <div className="flex flex-row justify-between">
-        <PageSizeSelector onChange={onChangePageSize} pageSize={pagination.pageSize} />
-        <Pagination
-          showSummary={pagination.showSummary ?? true}
-          totalPages={pagination.pageCount}
-          totalItems={pagination.totalItems}
-          numItems={pagination.itemNumber ?? pagination.pageSize}
-          currentPage={pagination.pageIndex}
-          onPageClick={(newPage) => {
-            table.setPageIndex(newPage);
-          }}
-        />
+      <div className="flex flex-row">
+        <div className="flex items-center space-x-2 basis-1/2">
+          <span className="text-sm text-gray-500">Rows per page</span>
+          <PageSizeSelector onChange={onChangePageSize} pageSize={pagination.pageSize} />
+        </div>
+
+        <div className="flex-1">
+          <Pagination
+            showSummary={pagination.showSummary ?? true}
+            totalPages={pagination.pageCount}
+            totalItems={pagination.totalItems}
+            numItems={pagination.itemNumber ?? pagination.pageSize}
+            currentPage={pagination.pageIndex}
+            onPageClick={(newPage) => {
+              table.setPageIndex(newPage);
+            }}
+          />
+        </div>
       </div>
     </div>
   );

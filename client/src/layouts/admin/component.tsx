@@ -43,7 +43,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
         </div>
       </header>
 
-      <section className="px-12 py-6">{children}</section>
+      <section className="flex-1 px-12 py-6">{children}</section>
     </section>
   </ApplicationLayout>
 );

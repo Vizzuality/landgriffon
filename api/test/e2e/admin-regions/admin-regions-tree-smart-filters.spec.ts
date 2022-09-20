@@ -5,7 +5,10 @@ import { AppModule } from 'app.module';
 import {
   createAdminRegion,
   createMaterial,
+  createScenario,
+  createScenarioIntervention,
   createSourcingLocation,
+  createSupplier,
 } from '../../entity-mocks';
 import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
@@ -15,11 +18,14 @@ import { Material } from 'modules/materials/material.entity';
 import {
   LOCATION_TYPES,
   LOCATION_TYPES_PARAMS,
+  SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { clearEntityTables } from '../../utils/database-test-helper';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { Scenario } from 'modules/scenarios/scenario.entity';
 
 describe('Admin Regions - Get trees - Smart Filters', () => {
   let app: INestApplication;
@@ -36,7 +42,15 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
   });
 
   afterEach(async () => {
-    await clearEntityTables([Supplier, BusinessUnit, SourcingLocation]);
+    await clearEntityTables([
+      Scenario,
+      ScenarioIntervention,
+      AdminRegion,
+      Material,
+      Supplier,
+      BusinessUnit,
+      SourcingLocation,
+    ]);
   });
 
   afterAll(async () => {
@@ -212,4 +226,169 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
       ).toBe(undefined);
     },
   );
+  describe('Admin Regions Smart Filters - Filter by Scenario', () => {
+    test(
+      'When I query a Admin Regions Tree endpoint ' +
+        'And I query the ones with sourcing locations' +
+        'And I filter them by Scenario' +
+        'And I filter them by a related Location Types' +
+        'Then I should receive a tree list of materials where there are sourcing-locations for, and are present in some intervention of said Scenario',
+      async () => {
+        const baseMaterial = await createMaterial();
+        const parentAdminRegion: AdminRegion = await createAdminRegion({
+          name: 'Parent Admin Region',
+        });
+
+        const childAdminRegion: AdminRegion = await createAdminRegion({
+          name: 'Child Admin Region',
+          parentId: parentAdminRegion.id,
+        });
+
+        const scenario = await createScenario();
+
+        const parentAdminRegion2 = await createAdminRegion({
+          name: 'parent of a child admin region that is not part of intervention1',
+        });
+        const childAdminRegion2 = await createAdminRegion({
+          name: 'child material that is part of a intervention',
+          parent: parentAdminRegion2,
+        });
+
+        const intervention = await createScenarioIntervention({
+          scenario,
+        });
+
+        await createSourcingLocation({
+          materialId: baseMaterial.id,
+          interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+          locationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
+          scenarioInterventionId: intervention.id,
+          adminRegion: childAdminRegion,
+        });
+
+        await createSourcingLocation({
+          locationType: LOCATION_TYPES.AGGREGATION_POINT,
+          materialId: baseMaterial.id,
+          adminRegion: childAdminRegion2,
+        });
+
+        const response = await request(app.getHttpServer())
+          .get('/api/v1/admin-regions/trees')
+          .query({
+            withSourcingLocations: true,
+            scenarioId: scenario.id,
+            'locationTypes[]': [LOCATION_TYPES_PARAMS.POINT_OF_PRODUCTION],
+          })
+          .set('Authorization', `Bearer ${jwtToken}`);
+
+        expect(HttpStatus.OK);
+        expect(response.body.data).toHaveLength(1);
+        expect(response.body.data[0].id).toEqual(parentAdminRegion.id);
+        expect(response.body.data[0].attributes.children[0].id).toEqual(
+          childAdminRegion.id,
+        );
+      },
+    );
+    test(
+      'When I query a Admin Regions Tree endpoint ' +
+        'And I query the ones with sourcing locations' +
+        'And I filter them by Scenario' +
+        'And I filter them by a some Material and Supplier' +
+        'Then I should receive a tree list of materials where there are sourcing-locations for, and are present in some intervention of said Scenario, matching said filters',
+      async () => {
+        const parentMaterial1: Material = await createMaterial({
+          name: 'parentMaterial1',
+        });
+
+        const childMaterial1: Material = await createMaterial({
+          name: 'childMaterial1',
+          parent: parentMaterial1,
+        });
+
+        const scenario = await createScenario({
+          title: 'Scenario For this test',
+        });
+
+        const intervention = await createScenarioIntervention({
+          scenario,
+        });
+
+        const parentMaterial2 = await createMaterial({
+          name: 'parent of a child material that is not part of intervention1',
+        });
+        const childMaterial2 = await createMaterial({
+          name: 'child material that is part of a intervention',
+          parent: parentMaterial2,
+        });
+
+        const adminRegion = await createAdminRegion({
+          name: 'AdminRegionThatShouldShown',
+        });
+        const adminRegion2 = await createAdminRegion({
+          name: 'AdminRegionThatShouldShown 2',
+        });
+        const adminRegions3 = await createAdminRegion({
+          name: 'AdminRegionThatShouldNotShown',
+        });
+        const supplier = await createSupplier();
+
+        await createSourcingLocation({
+          material: childMaterial1,
+          interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+          locationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
+          adminRegion,
+          t1Supplier: supplier,
+          scenarioInterventionId: intervention.id,
+        });
+
+        const material2: Material = await createMaterial({
+          name: 'supplier2Material',
+        });
+
+        const material3: Material = await createMaterial({
+          name: 'supplier3Material',
+        });
+        await createSourcingLocation({
+          locationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
+          material: childMaterial2,
+          adminRegion: adminRegion2,
+          t1Supplier: supplier,
+        });
+
+        await createSourcingLocation({
+          locationType: LOCATION_TYPES.AGGREGATION_POINT,
+          materialId: material2.id,
+          adminRegion: adminRegions3,
+        });
+
+        await createSourcingLocation({
+          locationType: LOCATION_TYPES.UNKNOWN,
+          materialId: material3.id,
+          adminRegion: adminRegion2,
+        });
+
+        const response = await request(app.getHttpServer())
+          .get('/api/v1/admin-regions/trees')
+          .query({
+            withSourcingLocations: true,
+            scenarioId: scenario.id,
+            'materialIds[]': [parentMaterial1.id, parentMaterial2.id],
+            'supplierIds[]': [supplier.id],
+          })
+          .set('Authorization', `Bearer ${jwtToken}`);
+
+        expect(HttpStatus.OK);
+        expect(response.body.data).toHaveLength(2);
+
+        expect(response.body.data[0].id).toEqual(adminRegion.id);
+        expect(response.body.data[1].id).toEqual(adminRegion2.id);
+
+        expect(
+          response.body.data.find(
+            (region: AdminRegion) => region.id === adminRegions3.id,
+          ),
+        ).toBe(undefined);
+      },
+    );
+  });
 });

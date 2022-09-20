@@ -2,6 +2,9 @@ import { useMemo } from 'react';
 import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { apiRawService } from 'services/api';
+import type { BaseTreeSearchParams } from 'containers/analysis-visualization/analysis-filters/more-filters/types';
+
+import type { LocationTypes } from 'containers/interventions/enums';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   placeholderData: [],
@@ -10,16 +13,13 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   refetchOnWindowFocus: false,
 };
 
-export type LocationTypesParams = {
-  materialIds?: string[];
+export interface LocationTypesParams extends BaseTreeSearchParams {
   supplierIds?: string[];
-  businessUnitIds?: string[];
-  originIds?: string[];
-};
+}
 
 export type LocationType = {
   label: string;
-  value: 'point-of-production' | 'aggregation-point' | 'country-of-production' | 'unknown';
+  value: LocationTypes;
 };
 
 type ResponseData = UseQueryResult<LocationType[]>;
@@ -32,7 +32,7 @@ export function useLocationTypes(
     ['location-types', JSON.stringify(params)],
     () =>
       apiRawService
-        .request({
+        .request<{ data: LocationType[] }>({
           method: 'GET',
           url: '/sourcing-locations/location-types',
           params,

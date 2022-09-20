@@ -21,6 +21,8 @@ import {
   useInteractions,
 } from '@floating-ui/react-dom-interactions';
 import { Transition } from '@headlessui/react';
+import { scenarios } from 'store/features/analysis';
+import { ACTUAL_DATA } from 'containers/scenarios/constants';
 
 type MoreFiltersState = {
   materials: AnalysisFiltersState['materials'];
@@ -39,13 +41,17 @@ const INITIAL_FILTERS: MoreFiltersState = {
 const MoreFilters: React.FC = () => {
   const dispatch = useAppDispatch();
   const { materials, origins, suppliers, locationTypes } = useAppSelector(analysisFilters);
+
+  const { currentScenario } = useAppSelector(scenarios);
+  const scenarioId = currentScenario === ACTUAL_DATA.id ? undefined : currentScenario;
+
   const moreFilters: MoreFiltersState = useMemo(
     () => ({ materials, origins, suppliers, locationTypes }),
     [materials, origins, suppliers, locationTypes],
   );
 
   // Initial state from redux
-  const [selectedFilters, setSelectedFilters] = useState<MoreFiltersState>(moreFilters);
+  const [selectedFilters, setSelectedFilters] = useState(moreFilters);
 
   const materialIds = useMemo(
     () => selectedFilters.materials.map(({ value }) => value),
@@ -161,7 +167,7 @@ const MoreFilters: React.FC = () => {
           },
         })}
       >
-        <div className="w-80 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 ">
+        <div className="rounded-lg shadow-lg w-80 ring-1 ring-black ring-opacity-5 ">
           <div className="relative p-4 bg-white rounded-lg">
             <div className="flex justify-between mb-4">
               <div>Filter by</div>
@@ -178,6 +184,7 @@ const MoreFilters: React.FC = () => {
                   originIds={originIds}
                   supplierIds={supplierIds}
                   locationTypes={locationTypesValues}
+                  scenarioId={scenarioId}
                   current={selectedFilters.materials}
                   fitContent
                   onChange={(values) => handleChangeFilter('materials', values)}
@@ -191,6 +198,7 @@ const MoreFilters: React.FC = () => {
                   materialIds={materialIds}
                   supplierIds={supplierIds}
                   locationTypes={locationTypesValues}
+                  scenarioId={scenarioId}
                   current={selectedFilters.origins}
                   fitContent
                   onChange={(values) => handleChangeFilter('origins', values)}
@@ -204,6 +212,7 @@ const MoreFilters: React.FC = () => {
                   materialIds={materialIds}
                   originIds={originIds}
                   locationTypes={locationTypesValues}
+                  scenarioId={scenarioId}
                   current={selectedFilters.suppliers}
                   fitContent
                   onChange={(values) => handleChangeFilter('suppliers', values)}
@@ -217,6 +226,7 @@ const MoreFilters: React.FC = () => {
                   materialIds={materialIds}
                   originIds={originIds}
                   supplierIds={supplierIds}
+                  scenarioId={scenarioId}
                   onChange={(values) => handleChangeFilter('locationTypes', values)}
                 />
               </div>

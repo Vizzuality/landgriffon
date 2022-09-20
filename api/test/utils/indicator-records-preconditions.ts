@@ -86,3 +86,22 @@ export const createWorldToCalculateIndicatorRecords =
       ],
     };
   };
+
+export const FourMockIndicatorRecords = [
+  {
+    value: 600,
+    indicatorId: '8f7f5bab-46fb-40e2-9031-99c06d155289',
+  },
+  {
+    value: 600,
+    indicatorId: 'e0f788eb-aaba-4a23-85f3-936ef672a723',
+  },
+  {
+    value: 600,
+    indicatorId: '04ac7860-75a2-4ad6-9dff-25205f5ce0ac',
+  },
+  {
+    value: 550,
+    indicatorId: 'ce4780ad-fe11-48eb-9d98-3b14dc33f7be',
+  },
+];

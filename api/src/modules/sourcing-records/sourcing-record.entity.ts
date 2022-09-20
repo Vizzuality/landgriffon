@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   JoinTable,
   ManyToOne,
   OneToMany,
@@ -44,6 +45,8 @@ export class SourcingRecord extends TimestampedBaseEntity {
   )
   @JoinTable()
   sourcingLocation: SourcingLocation;
+
+  @Index()
   @Column({ nullable: true })
   sourcingLocationId: string;
 

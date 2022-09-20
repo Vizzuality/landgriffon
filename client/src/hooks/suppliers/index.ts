@@ -3,6 +3,7 @@ import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { apiService } from 'services/api';
 import type { Supplier } from 'types';
+import type { BaseTreeSearchParams } from 'containers/analysis-visualization/analysis-filters/more-filters/types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   placeholderData: [],
@@ -13,14 +14,10 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
 
 type ResponseData = UseQueryResult<Supplier[]>;
 
-export type SuppliersTreesParams = {
-  depth?: number;
+export interface SuppliersTreesParams extends BaseTreeSearchParams {
   withSourcingLocations?: boolean;
-  materialIds?: string[];
-  originIds?: string[];
-  businessUnitIds?: string[];
   locationTypes?: string[];
-};
+}
 
 export function useSuppliers(params): ResponseData {
   const query = useQuery(

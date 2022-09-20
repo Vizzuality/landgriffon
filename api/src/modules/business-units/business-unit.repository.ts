@@ -10,6 +10,7 @@ import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.busines
 import { Logger } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetBusinessUnitTreeWithOptionsDto } from 'modules/business-units/dto/get-business-unit-tree-with-options.dto';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 
 @EntityRepository(BusinessUnit)
 export class BusinessUnitRepository extends ExtendedTreeRepository<
@@ -19,10 +20,11 @@ export class BusinessUnitRepository extends ExtendedTreeRepository<
   logger: Logger = new Logger(BusinessUnitRepository.name);
 
   /**
-   * @description Retrieves business-units and it's ancestors (in a plain format) there are registered sourcingLocations for
+   * @description Get all business units that are present in Sourcing Locations with given filters
+   *              Additionally if withAncestry set to true (default) it will return the ancestry of each
+   *              element up to the root
    */
-
-  async getSourcingDataBusinessUnits(
+  async getBusinessUnitsFromSourcingLocations(
     businessUnitTreeOptions: GetBusinessUnitTreeWithOptionsDto,
     withAncestry: boolean = true,
   ): Promise<BusinessUnit[]> {
@@ -60,38 +62,34 @@ export class BusinessUnitRepository extends ExtendedTreeRepository<
       });
     }
 
+    if (businessUnitTreeOptions.scenarioId) {
+      queryBuilder
+        .leftJoin(
+          ScenarioIntervention,
+          'scenarioIntervention',
+          'sl.scenarioInterventionId = scenarioIntervention.id',
+        )
+        .andWhere(
+          new Brackets((qb: WhereExpressionBuilder) => {
+            qb.where('scenarioIntervention.scenarioId = :scenarioId', {
+              scenarioId: businessUnitTreeOptions.scenarioId,
+            }).orWhere('sl.scenarioInterventionId is null');
+          }),
+        );
+    } else {
+      queryBuilder.andWhere('sl.scenarioInterventionId is null');
+      queryBuilder.andWhere('sl.interventionType is null');
+    }
+
     if (!withAncestry) {
       return queryBuilder.getMany();
     }
     queryBuilder.select('bu.id');
 
-    const [subQuery, subQueryParams]: [string, any[]] =
-      queryBuilder.getQueryAndParameters();
-
     // Recursively find elements and their ancestry given Ids of the subquery above
-    const result: BusinessUnit[] = await this.query(
-      `
-        with recursive businessunit_tree as (
-            select m.id, m."parentId", m."name", m."description"
-            from business_unit m
-            where id in
-                        (${subQuery})
-            union all
-            select c.id, c."parentId", c."name", c."description"
-            from business_unit c
-            join businessunit_tree p on p."parentId" = c.id
-        )
-        select distinct *
-        from businessunit_tree
-        order by name`,
-      subQueryParams,
-    ).catch((err: Error) =>
-      this.logger.error(
-        `Query Failed for retrieving business-units with sourcing locations: `,
-        err,
-      ),
+    return this.getEntityAncestry<BusinessUnit>(
+      queryBuilder,
+      BusinessUnit.name,
     );
-
-    return result;
   }
 }

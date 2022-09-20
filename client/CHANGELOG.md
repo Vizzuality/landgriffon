@@ -7,10 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
 ### Changed
 
+- Send `scenarioId` param alongside analysis filters [LANDGRIF-891](https://vizzuality.atlassian.net/browse/LANDGRIF-891)
 - Same input for city, address and coordinates for intervention form [LANDGRIF-821](https://vizzuality.atlassian.net/browse/LANDGRIF-821)
 - Redesign the Legend [LANDGRIF_727](https://vizzuality.atlassian.net/browse/LANDGRIF-727)
+- Applied redesign of Actual data [LANDGRIF-810](https://vizzuality.atlassian.net/browse/LANDGRIF-810)
+
+### Fixed
+
+- Smart filters not being persisted between pages
 
 ## [2022.08.03]
 

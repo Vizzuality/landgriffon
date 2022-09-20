@@ -6,13 +6,8 @@ function emptyStringIsNull(value: string): string | null {
   return value === '' ? null : value;
 }
 
-function getValue(option: SelectOption): SelectOption['value'] {
-  if (option?.value) {
-    const valueToNumber = Number(option.value);
-    if (!Number.isNaN(valueToNumber)) return valueToNumber;
-    return emptyStringIsNull(option.value as string);
-  }
-  return null;
+function getValue<T>(option: SelectOption<T>): SelectOption<T>['value'] {
+  return option.value;
 }
 
 export function parseInterventionFormDataToDto(
@@ -44,18 +39,18 @@ export function parseInterventionFormDataToDto(
   const result: InterventionDto = {
     ...rest,
     type: interventionType,
-    startYear: getValue(startYear) as number,
+    startYear: getValue(startYear) as unknown as number,
 
-    materialIds: materialIds?.map(getValue) as string[],
-    businessUnitIds: businessUnitIds?.map(getValue) as string[],
-    supplierIds: supplierIds?.map(getValue) as string[],
-    adminRegionIds: adminRegionIds?.map(getValue) as string[],
+    materialIds: materialIds?.map(getValue).map(emptyStringIsNull) as string[],
+    businessUnitIds: businessUnitIds?.map(getValue).map(emptyStringIsNull) as string[],
+    supplierIds: supplierIds?.map(getValue).map(emptyStringIsNull) as string[],
+    adminRegionIds: adminRegionIds?.map(getValue).map(emptyStringIsNull) as string[],
 
-    newMaterialId: getValue(newMaterialId) as string,
+    newMaterialId: newMaterialId?.length ? newMaterialId[0].value : null,
 
     // * location-related fields are not sent when the intervention type is "Change production efficiency"
     ...(interventionType !== InterventionTypes.Efficiency && {
-      newLocationType: getValue(newLocationType) as string,
+      newLocationType: emptyStringIsNull(getValue(newLocationType) as string),
       newLocationCountryInput: newLocationCountryInput?.label,
     }),
 
@@ -69,8 +64,8 @@ export function parseInterventionFormDataToDto(
         newLocationLongitude: null,
       }),
 
-    newT1SupplierId: getValue(newT1SupplierId) as string,
-    newProducerId: getValue(newProducerId) as string,
+    newT1SupplierId: emptyStringIsNull(getValue(newT1SupplierId) as string),
+    newProducerId: emptyStringIsNull(getValue(newProducerId) as string),
 
     // * for "Change production efficiency" intervention type, coeficients are always sent even if the user hasn't filled them (default to 0).
     // * for other intervention types, coeficients are sent only if the user has filled any of them.

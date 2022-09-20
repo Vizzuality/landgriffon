@@ -13,7 +13,9 @@ import {
   createAdminRegion,
   createBusinessUnit,
   createGeoRegion,
+  createH3Data,
   createMaterial,
+  createMaterialToH3,
   createScenario,
   createScenarioIntervention,
   createSourcingLocation,
@@ -50,7 +52,6 @@ import {
 } from '../../utils/scenario-interventions-preconditions';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
-import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
 import { ScenariosModule } from 'modules/scenarios/scenarios.module';
 import { In } from 'typeorm';
@@ -58,7 +59,10 @@ import { range } from 'lodash';
 import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
 import { clearEntityTables } from '../../utils/database-test-helper';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
-import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
+import {
+  MATERIAL_TO_H3_TYPE,
+  MaterialToH3,
+} from 'modules/materials/material-to-h3.entity';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { Unit } from 'modules/units/unit.entity';
@@ -75,7 +79,10 @@ const expectedJSONAPIAttributes: string[] = [
   'percentage',
   'newIndicatorCoefficients',
   'newLocationType',
+  'newLocationCountryInput',
   'newLocationAddressInput',
+  'newLocationLatitudeInput',
+  'newLocationLongitudeInput',
 ];
 
 describe('ScenarioInterventionsModule (e2e)', () => {
@@ -159,8 +166,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     })
       .overrideProvider(GeoCodingAbstractClass)
       .useValue(geoCodingServiceMock)
-      .overrideProvider(IndicatorRecordsService)
-      .useValue({ createIndicatorRecordsBySourcingRecords: () => null })
       .compile();
 
     scenarioInterventionRepository =
@@ -194,6 +199,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   });
 
   afterEach(async () => {
+    jest.clearAllMocks();
     await clearEntityTables([
       ScenarioIntervention,
       IndicatorRecord,
@@ -219,9 +225,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
   describe('Scenario interventions - Creating intervention of type - Change of production efficiency', () => {
     test('Create a scenario intervention of type Change of production efficiency, with correct data should be successful', async () => {
-      const preconditions: ScenarioInterventionPreconditions =
-        await createInterventionPreconditions();
-
+      const preconditions = await createInterventionPreconditions();
       const response = await request(app.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -587,6 +591,17 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       });
 
       const replacingMaterial: Material = await createMaterial();
+      const h3data = await createH3Data();
+      await createMaterialToH3(
+        replacingMaterial.id,
+        h3data.id,
+        MATERIAL_TO_H3_TYPE.HARVEST,
+      );
+      await createMaterialToH3(
+        replacingMaterial.id,
+        h3data.id,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
 
       const response = await request(app.getHttpServer())
         .post('/api/v1/scenario-interventions')
@@ -689,6 +704,17 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
         const replacingMaterial: Material = await createMaterial();
+        const h3data = await createH3Data();
+        await createMaterialToH3(
+          replacingMaterial.id,
+          h3data.id,
+          MATERIAL_TO_H3_TYPE.HARVEST,
+        );
+        await createMaterialToH3(
+          replacingMaterial.id,
+          h3data.id,
+          MATERIAL_TO_H3_TYPE.PRODUCER,
+        );
 
         const response = await request(app.getHttpServer())
           .post('/api/v1/scenario-interventions')
@@ -775,6 +801,17 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
         const replacingMaterial: Material = await createMaterial();
+        const h3data = await createH3Data();
+        await createMaterialToH3(
+          replacingMaterial.id,
+          h3data.id,
+          MATERIAL_TO_H3_TYPE.HARVEST,
+        );
+        await createMaterialToH3(
+          replacingMaterial.id,
+          h3data.id,
+          MATERIAL_TO_H3_TYPE.PRODUCER,
+        );
 
         const response = await request(app.getHttpServer())
           .post('/api/v1/scenario-interventions')
@@ -1372,6 +1409,17 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   });
 
   describe('Scenario Interventions - Only replacing / replaced elements as part of a Intervention', () => {
+    beforeAll(async () => {
+      await createInterventionPreconditions();
+      jest
+        .spyOn(indicatorRecordRepository, 'getH3SumOverGeoRegionSQL')
+        .mockResolvedValue(1000);
+      jest
+        .spyOn(indicatorRecordRepository, 'getIndicatorRecordRawValue')
+        .mockResolvedValue(1000);
+    });
+    afterAll(() => jest.clearAllMocks());
+
     test(
       'When I create an Intervention, But I receive as filters only Parent Element Ids' +
         'And these Parent Element Ids are not present in Sourcing Locations' +
@@ -1403,11 +1451,36 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           name: 'child material',
           parent: parentMaterial,
         });
+        // childMaterial Indicator calculation dependencies
+        const h3DataChild = await createH3Data();
+        await createMaterialToH3(
+          childMaterial.id,
+          h3DataChild.id,
+          MATERIAL_TO_H3_TYPE.PRODUCER,
+        );
+        await createMaterialToH3(
+          childMaterial.id,
+          h3DataChild.id,
+          MATERIAL_TO_H3_TYPE.HARVEST,
+        );
         // Included in Sourcing Locations
         const grandChildMaterial: Material = await createMaterial({
           name: 'grand child material',
           parent: childMaterial,
         });
+
+        // childMaterial Indicator calculation dependencies
+        await createMaterialToH3(
+          grandChildMaterial.id,
+          h3DataChild.id,
+          MATERIAL_TO_H3_TYPE.PRODUCER,
+        );
+        await createMaterialToH3(
+          grandChildMaterial.id,
+          h3DataChild.id,
+          MATERIAL_TO_H3_TYPE.HARVEST,
+        );
+
         // Not included in Sourcing Locations
         const parentBusinessUnit: BusinessUnit = await createBusinessUnit({
           name: 'parent business unit',
@@ -1509,11 +1582,35 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           name: 'child material',
           parent: parentMaterial,
         });
+        // childMaterial Indicator calculation dependencies
+        const h3DataChild = await createH3Data();
+        await createMaterialToH3(
+          childMaterial.id,
+          h3DataChild.id,
+          MATERIAL_TO_H3_TYPE.PRODUCER,
+        );
+        await createMaterialToH3(
+          childMaterial.id,
+          h3DataChild.id,
+          MATERIAL_TO_H3_TYPE.HARVEST,
+        );
         // Included in Sourcing Locations
         const grandChildMaterial: Material = await createMaterial({
           name: 'grand child material',
           parent: childMaterial,
         });
+
+        // childMaterial Indicator calculation dependencies
+        await createMaterialToH3(
+          grandChildMaterial.id,
+          h3DataChild.id,
+          MATERIAL_TO_H3_TYPE.PRODUCER,
+        );
+        await createMaterialToH3(
+          grandChildMaterial.id,
+          h3DataChild.id,
+          MATERIAL_TO_H3_TYPE.HARVEST,
+        );
         // Not included in Sourcing Locations
         const parentBusinessUnit: BusinessUnit = await createBusinessUnit({
           name: 'parent business unit',
@@ -1666,16 +1763,52 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           name: 'child material',
           parent: parentMaterial,
         });
-
-        // New Material that should be included in the intervention
-        const newMaterial: Material = await createMaterial({
-          name: 'new material',
-        });
+        // childMaterial Indicator calculation dependencies
+        const h3DataChild = await createH3Data();
+        await createMaterialToH3(
+          childMaterial.id,
+          h3DataChild.id,
+          MATERIAL_TO_H3_TYPE.PRODUCER,
+        );
+        await createMaterialToH3(
+          childMaterial.id,
+          h3DataChild.id,
+          MATERIAL_TO_H3_TYPE.HARVEST,
+        );
         // Included in Sourcing Locations
         const grandChildMaterial: Material = await createMaterial({
           name: 'grand child material',
           parent: childMaterial,
         });
+
+        // childMaterial Indicator calculation dependencies
+        await createMaterialToH3(
+          grandChildMaterial.id,
+          h3DataChild.id,
+          MATERIAL_TO_H3_TYPE.PRODUCER,
+        );
+        await createMaterialToH3(
+          grandChildMaterial.id,
+          h3DataChild.id,
+          MATERIAL_TO_H3_TYPE.HARVEST,
+        );
+
+        // New Material that should be included in the intervention
+        const newMaterial: Material = await createMaterial({
+          name: 'new material',
+        });
+
+        await createMaterialToH3(
+          newMaterial.id,
+          h3DataChild.id,
+          MATERIAL_TO_H3_TYPE.PRODUCER,
+        );
+        await createMaterialToH3(
+          newMaterial.id,
+          h3DataChild.id,
+          MATERIAL_TO_H3_TYPE.HARVEST,
+        );
+
         // Not included in Sourcing Locations
         const parentBusinessUnit: BusinessUnit = await createBusinessUnit({
           name: 'parent business unit',
@@ -1741,7 +1874,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         const intervention: ScenarioIntervention | undefined =
           await scenarioInterventionRepository.findOne(response.body.data.id);
 
-        // ASSERT
+        //ASSERT;
         expect(intervention).toBeTruthy();
         expect(intervention!.newMaterial.id).toEqual(newMaterial.id);
         expect(intervention!.newAdminRegion.id).toEqual(newAdminRegion.id);
@@ -1784,16 +1917,51 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           name: 'child material',
           parent: parentMaterial,
         });
-
-        // New Material that should be included in the intervention
-        const newMaterial: Material = await createMaterial({
-          name: 'new material',
-        });
+        // childMaterial Indicator calculation dependencies
+        const h3DataChild = await createH3Data();
+        await createMaterialToH3(
+          childMaterial.id,
+          h3DataChild.id,
+          MATERIAL_TO_H3_TYPE.PRODUCER,
+        );
+        await createMaterialToH3(
+          childMaterial.id,
+          h3DataChild.id,
+          MATERIAL_TO_H3_TYPE.HARVEST,
+        );
         // Included in Sourcing Locations
         const grandChildMaterial: Material = await createMaterial({
           name: 'grand child material',
           parent: childMaterial,
         });
+
+        // childMaterial Indicator calculation dependencies
+        await createMaterialToH3(
+          grandChildMaterial.id,
+          h3DataChild.id,
+          MATERIAL_TO_H3_TYPE.PRODUCER,
+        );
+        await createMaterialToH3(
+          grandChildMaterial.id,
+          h3DataChild.id,
+          MATERIAL_TO_H3_TYPE.HARVEST,
+        );
+
+        // New Material that should be included in the intervention
+        const newMaterial: Material = await createMaterial({
+          name: 'new material',
+        });
+
+        await createMaterialToH3(
+          newMaterial.id,
+          h3DataChild.id,
+          MATERIAL_TO_H3_TYPE.PRODUCER,
+        );
+        await createMaterialToH3(
+          newMaterial.id,
+          h3DataChild.id,
+          MATERIAL_TO_H3_TYPE.HARVEST,
+        );
         // Not included in Sourcing Locations
         const parentBusinessUnit: BusinessUnit = await createBusinessUnit({
           name: 'parent business unit',
@@ -1864,8 +2032,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             },
           },
         );
-
-        console.log(canceledSourcingLocations);
 
         expect(canceledSourcingLocations).toHaveLength(2);
         expect(
@@ -1939,4 +2105,55 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       expect(sourcingRecordsAfterDelete.length).toBe(0);
     });
   });
+  test(
+    'When I create a new Intervention using coordinates as new location info, ' +
+      'And I GET the new Intervention once its created' +
+      'Then the created information should have this information',
+    async () => {
+      jest
+        .spyOn(indicatorRecordRepository, 'getH3SumOverGeoRegionSQL')
+        .mockResolvedValue(1000);
+      jest
+        .spyOn(indicatorRecordRepository, 'getIndicatorRecordRawValue')
+        .mockResolvedValue(1000);
+      const preconditions = await createInterventionPreconditions();
+      const geoRegion: GeoRegion = await createGeoRegion();
+      await createAdminRegion({
+        isoA2: 'ABC',
+        geoRegion,
+      });
+
+      //CREATE
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'scenario intervention supplier',
+          startYear: 2018,
+          percentage: 50,
+          scenarioId: preconditions.scenario.id,
+          materialIds: [preconditions.material1.id],
+          supplierIds: [preconditions.supplier1.id],
+          businessUnitIds: [preconditions.businessUnit1.id],
+          adminRegionIds: [preconditions.adminRegion1.id],
+          type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          newLocationType: LOCATION_TYPES_PARAMS.POINT_OF_PRODUCTION,
+          newLocationCountryInput: 'Spain',
+          newLocationLatitude: -4,
+          newLocationLongitude: -60,
+        });
+
+      // GET
+      const response2 = await request(app.getHttpServer())
+        .get(`/api/v1/scenario-interventions/${response.body.data.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`);
+
+      expect(response2.body.data.attributes.newLocationLatitudeInput).toEqual(
+        '-4',
+      );
+      expect(response2.body.data.attributes.newLocationLongitudeInput).toEqual(
+        '-60',
+      );
+    },
+  );
 });

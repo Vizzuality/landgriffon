@@ -1,28 +1,53 @@
+import classNames from 'classnames';
+import { format } from 'd3-format';
+import { useAppSelector } from 'store/hooks';
+import { scenarios } from 'store/features/analysis/scenarios';
 import { NUMBER_FORMAT, BIG_NUMBER_FORMAT } from 'utils/number-format';
 
 export interface ComparisonCellProps {
   value: number;
   interventionValue: number;
   absoluteDifference: number;
+  percentageDifference: number;
 }
 
 const ComparisonCell: React.FC<ComparisonCellProps> = ({
   value,
   interventionValue,
   absoluteDifference,
+  percentageDifference,
 }) => {
+  const { comparisonMode } = useAppSelector(scenarios);
   if (isNaN(interventionValue)) return <>{BIG_NUMBER_FORMAT(value)}</>;
+
   return (
     <div className="mx-auto w-fit">
-      <div className="my-auto text-right text-gray-400 line-through text-2xs">
-        {NUMBER_FORMAT(value)}
-      </div>
       <div className="flex flex-row gap-1">
-        <div className="my-auto text-sm text-gray-900">{NUMBER_FORMAT(interventionValue)}</div>
-        <div className="my-auto text-xs font-semibold text-gray-500">
-          ({absoluteDifference > 0 && '+'}
-          {NUMBER_FORMAT(absoluteDifference)})
+        <div className="my-auto text-base text-gray-900">{NUMBER_FORMAT(interventionValue)}</div>
+        <div
+          className={classNames(
+            'my-auto text-xs font-semibold text-gray-500 rounded-[4px] px-1 py-0.5',
+            {
+              'bg-green-400/40 text-green-700':
+                (comparisonMode === 'relative' && percentageDifference <= 0) ||
+                (comparisonMode === 'absolute' && absoluteDifference <= 0),
+              'bg-red-600/20 text-red-700':
+                (comparisonMode === 'relative' && percentageDifference > 0) ||
+                (comparisonMode === 'absolute' && absoluteDifference > 0),
+            },
+          )}
+        >
+          {comparisonMode === 'relative' && `${format(',.2f')(percentageDifference)}%`}
+          {comparisonMode === 'absolute' && (
+            <>
+              {absoluteDifference > 0 && '+'}
+              {NUMBER_FORMAT(absoluteDifference)}
+            </>
+          )}
         </div>
+      </div>
+      <div className="my-auto text-xs text-left text-gray-400">
+        Actual data: {NUMBER_FORMAT(value)}
       </div>
     </div>
   );

@@ -24,26 +24,38 @@ import Select from 'components/select';
 import InfoToolTip from 'components/info-tooltip/component';
 
 import InterventionTypeIcon from './intervention-type-icon';
+// import type { LocationTypes } from '../enums';
 import { InterventionTypes, LocationTypes, InfoTooltip } from '../enums';
 import { isCoordinates } from 'utils/coordinates';
 
 import type { SelectOptions } from 'components/select/types';
-import type { InterventionFormData } from '../types';
+import type { Intervention, InterventionFormData } from '../types';
 
 type InterventionFormProps = {
+  intervention?: Intervention;
   isSubmitting?: boolean;
   onSubmit?: (interventionFormData: InterventionFormData) => void;
 };
 
 const optionSchema = yup.object({
-  value: yup.string(),
   label: yup.string(),
+  value: yup.string(),
+});
+
+const locationTypeSchema = yup.object({
+  label: yup.string(),
+  value: yup.mixed<LocationTypes>(),
 });
 
 const schemaValidation = yup.object({
   title: yup.string().max(60).required(),
   interventionType: yup.string().required(),
-  startYear: optionSchema.required(),
+  startYear: yup
+    .object({
+      label: yup.string(),
+      value: yup.number(),
+    })
+    .required(),
   percentage: yup.number().moreThan(0).max(100).required(),
   scenarioId: yup.string().required(),
 
@@ -59,14 +71,14 @@ const schemaValidation = yup.object({
 
   // Location
   newLocationType: yup.lazy(() => {
-    return optionSchema.when('interventionType', (interventionType) => {
+    return locationTypeSchema.when('interventionType', (interventionType) => {
       if (
         [InterventionTypes.Material, InterventionTypes.SupplierLocation].includes(interventionType)
       ) {
-        return yup.object().required('Location type field is required');
+        return locationTypeSchema.required('Location type field is required');
       }
 
-      return yup.object().nullable();
+      return locationTypeSchema.nullable();
     });
   }),
   newLocationCountryInput: yup.lazy(() => {
@@ -102,13 +114,19 @@ const schemaValidation = yup.object({
   }),
 
   // New material
-  newMaterialId: yup.object().when('interventionType', (interventionType) => {
-    if (InterventionTypes.Material === interventionType) {
-      return yup.object().required('New material field is required');
-    }
+  newMaterialId: yup
+    .array()
+    .of(optionSchema)
+    .when('interventionType', (interventionType) => {
+      if (InterventionTypes.Material === interventionType) {
+        return yup.array().of(optionSchema).required('New material field is required');
+      }
 
-    return yup.object().nullable();
-  }),
+      return yup.array().of(optionSchema).nullable();
+    }),
+  newLocationAddressInput: yup.string(),
+  newLocationLongitude: yup.number().min(-180).max(180),
+  newLocationLatitude: yup.number().min(-90).max(90),
 
   // Coefficients
   DF_LUC_T: yup.number(),
@@ -124,8 +142,16 @@ const TYPES_OF_INTERVENTIONS = Object.values(InterventionTypes).map((interventio
   label: interventionType,
 }));
 
-const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSubmit }) => {
-  const { query } = useRouter();
+type SubSchema = yup.InferType<typeof schemaValidation>;
+
+const InterventionForm: React.FC<InterventionFormProps> = ({
+  intervention,
+  isSubmitting,
+  onSubmit,
+}) => {
+  const {
+    query: { scenarioId },
+  } = useRouter();
 
   const {
     register,
@@ -136,19 +162,97 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
     handleSubmit,
     formState: { errors },
     clearErrors,
-  } = useForm({
+  } = useForm<SubSchema>({
     resolver: yupResolver(schemaValidation),
+    ...(intervention && {
+      defaultValues: {
+        title: intervention?.title,
+        scenarioId: null,
+        percentage: intervention.percentage,
+        startYear: {
+          label: intervention.startYear.toString(),
+          value: intervention.startYear,
+        },
+        materialIds: intervention.replacedMaterials.map(({ id, name }) => ({
+          label: name,
+          value: id,
+        })),
+        businessUnitIds: intervention.replacedBusinessUnits.map(({ id, name }) => ({
+          label: name,
+          value: id,
+        })),
+        adminRegionIds: intervention.replacedAdminRegions.map(({ id, name }) => ({
+          label: name,
+          value: id,
+        })),
+        supplierIds: intervention.replacedSuppliers.map(({ id, name }) => ({
+          label: name,
+          value: id,
+        })),
+        interventionType: intervention.type,
+        newMaterialId: [
+          {
+            label: intervention.newMaterial?.name,
+            value: intervention.newMaterial?.id,
+          },
+        ],
+        newLocationType: {
+          label: intervention.newLocationType,
+          value: intervention.newLocationType,
+        },
+        // New location
+        newLocationCountryInput: intervention.newLocationCountryInput
+          ? {
+              label: intervention.newLocationCountryInput,
+              value: intervention.newLocationCountryInput,
+            }
+          : {},
+        cityAddressCoordinates:
+          intervention.newLocationAddressInput ||
+          (intervention.newLocationLatitudeInput &&
+            intervention.newLocationLongitudeInput &&
+            `${intervention.newLocationLatitudeInput},${intervention.newLocationLongitudeInput}`) ||
+          '',
+        newLocationAddressInput: intervention?.newLocationAddressInput || null,
+        // New supplier/producer
+        newT1SupplierId: intervention?.newT1Supplier
+          ? {
+              label: intervention.newT1Supplier.name,
+              value: intervention.newT1Supplier.id,
+            }
+          : null,
+        newProducerId: intervention?.newProducer
+          ? {
+              label: intervention.newProducer.name,
+              value: intervention.newProducer.id,
+            }
+          : null,
+        // coefficients
+        DF_LUC_T: intervention?.newIndicatorCoefficients?.DF_LUC_T || 0,
+        UWU_T: intervention?.newIndicatorCoefficients?.UWU_T || 0,
+        BL_LUC_T: intervention?.newIndicatorCoefficients?.BL_LUC_T || 0,
+        GHG_LUC_T: intervention?.newIndicatorCoefficients?.GHG_LUC_T || 0,
+      },
+    }),
   });
 
   const closeSupplierRef = useRef<() => void>(null);
   const closeImpactsRef = useRef<() => void>(null);
 
-  const currentMaterialIds = watch('materialIds');
-  const currentBusinessUnitIds = watch('businessUnitIds');
-  const currentLocationIds = watch('adminRegionIds');
-  const currentSupplierIds = watch('supplierIds');
-  const currentInterventionType = watch('interventionType');
-  const locationType = watch('newLocationType');
+  const {
+    materialIds: currentMaterialIds,
+    businessUnitIds: currentBusinessUnitIds,
+    adminRegionIds: currentLocationIds,
+    supplierIds: currentSupplierIds,
+    interventionType: currentInterventionType,
+    newLocationType: locationType,
+    newT1SupplierId: currentT1SupplierId,
+    newProducerId: currentProducerId,
+    DF_LUC_T,
+    UWU_T,
+    BL_LUC_T,
+    GHG_LUC_T,
+  } = watch();
 
   // Suppliers
   const { data: suppliers, isLoading: isLoadingSuppliers } = useSuppliersTypes({
@@ -175,10 +279,9 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
       })),
     [producers],
   );
-
   // Location types
   const { data: locationTypes } = useLocationTypes({});
-  const optionsLocationTypes: SelectOptions = useMemo(
+  const optionsLocationTypes: SelectOptions<LocationTypes> = useMemo(
     () =>
       locationTypes.map(({ label, value }) => ({
         label,
@@ -203,7 +306,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
 
   // Years
   const { data: years, isLoading: isLoadingYears } = useSourcingRecordsYears();
-  const optionsYears: SelectOptions = useMemo(
+  const optionsYears: SelectOptions<number> = useMemo(
     () =>
       years.map((year) => ({
         label: year.toString(),
@@ -213,32 +316,38 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
   );
 
   useEffect(() => {
-    if (optionsYears?.length) {
+    // ? defaults to latest year unless the user is editing an intervention,
+    // ? in that case, the start year will come from the intervention itself.
+    if (optionsYears?.length && !intervention) {
       setValue('startYear', optionsYears[optionsYears.length - 1]);
     }
-  }, [optionsYears, setValue]);
+  }, [optionsYears, setValue, intervention]);
 
   useEffect(() => {
     if (currentInterventionType === InterventionTypes.SupplierLocation) {
-      ['newMaterialId'].forEach((field) => resetField(field));
+      (['newMaterialId'] as const).forEach((field) => resetField(field));
     } else if (currentInterventionType === InterventionTypes.Efficiency) {
-      [
-        'newMaterialId',
-        'newT1SupplierId',
-        'newProducerId',
-        'cityAddressCoordinates',
-        'newLocationCountryInput',
-        'newLocationAddressInput',
-        'newLocationLatitude',
-        'newLocationLongitude',
-      ].forEach((field) => resetField(field));
+      (
+        [
+          'newMaterialId',
+          'newT1SupplierId',
+          'newProducerId',
+          'cityAddressCoordinates',
+          'newLocationCountryInput',
+          'newLocationAddressInput',
+          'newLocationLatitude',
+          'newLocationLongitude',
+        ] as const
+      ).forEach((field) => resetField(field));
     }
 
     // * resets "impacts per ton" coefficients whenever the intervention type changes
-    resetField('DF_LUC_T', { defaultValue: 0 });
-    resetField('UWU_T', { defaultValue: 0 });
-    resetField('BL_LUC_T', { defaultValue: 0 });
-    resetField('GHG_LUC_T', { defaultValue: 0 });
+    if (!intervention) {
+      resetField('DF_LUC_T', { defaultValue: 0 });
+      resetField('UWU_T', { defaultValue: 0 });
+      resetField('BL_LUC_T', { defaultValue: 0 });
+      resetField('GHG_LUC_T', { defaultValue: 0 });
+    }
 
     // * resets supplier and producer info whenever the intervention type changes
     resetField('newT1SupplierId');
@@ -253,7 +362,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
     if (closeImpactsRef.current !== null) {
       closeImpactsRef.current();
     }
-  }, [currentInterventionType, resetField, closeSupplierRef]);
+  }, [currentInterventionType, resetField, closeSupplierRef, intervention]);
 
   useEffect(() => {
     clearErrors([
@@ -276,14 +385,14 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
     }
   }, [locationType, resetField]);
 
-  useEffect(() => setValue('scenarioId', query?.scenarioId), [query?.scenarioId, setValue]);
+  useEffect(() => setValue('scenarioId', scenarioId as string), [scenarioId, setValue]);
 
   // When city, address or coordinates input are valid coordinates, set the location coordinates inputs
   useEffect(() => {
     const subscription = watch(({ cityAddressCoordinates }, { name, type }) => {
       if (name === 'cityAddressCoordinates' && type === 'change') {
         if (isCoordinates(cityAddressCoordinates)) {
-          const [lat, lng]: [number, number] = cityAddressCoordinates
+          const [lat, lng]: number[] = cityAddressCoordinates
             .split(',')
             .map((coordinate: string) => Number.parseFloat(coordinate));
           setValue('newLocationLatitude', lat);
@@ -298,6 +407,16 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
     });
     return () => subscription.unsubscribe();
   }, [resetField, setValue, watch]);
+
+  const areCoefficientsEdited = useMemo(
+    () => DF_LUC_T !== 0 || GHG_LUC_T !== 0 || UWU_T !== 0 || BL_LUC_T !== 0,
+    [DF_LUC_T, GHG_LUC_T, UWU_T, BL_LUC_T],
+  );
+
+  const areSupplierEdited = useMemo(
+    () => Boolean(currentT1SupplierId || currentProducerId),
+    [currentT1SupplierId, currentProducerId],
+  );
 
   return (
     <form
@@ -360,7 +479,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                     if (invalid) clearErrors('materialIds');
                     setValue('materialIds', selected && [selected]);
                   }}
-                  error={!!errors?.materialIds?.message}
+                  error={!!errors?.materialIds}
                 />
               </div>
             )}
@@ -381,7 +500,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                 withSourcingLocations
                 current={field.value}
                 onChange={(selected) => setValue('businessUnitIds', selected ?? [])}
-                error={!!errors?.businessUnitIds?.message}
+                error={!!errors?.businessUnitIds}
                 data-testid="business-units-select"
               />
             )}
@@ -402,7 +521,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                 withSourcingLocations
                 current={field.value}
                 onChange={(selected) => setValue('adminRegionIds', selected ?? [])}
-                error={!!errors?.adminRegionIds?.message}
+                error={!!errors?.adminRegionIds}
                 data-testid="location-select"
               />
             )}
@@ -423,7 +542,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                 withSourcingLocations
                 current={field.value}
                 onChange={(selected) => setValue('supplierIds', selected ?? [])}
-                error={!!errors?.supplierIds?.message}
+                error={!!errors?.supplierIds}
                 data-testid="supplier-ids-select"
               />
             )}
@@ -447,7 +566,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                   placeholder="Select a year"
                   onChange={(value) => setValue('startYear', value)}
                   loading={isLoadingYears}
-                  error={!!errors?.startYear?.message}
+                  error={!!errors?.startYear}
                 />
               </div>
             )}
@@ -530,9 +649,9 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                           current={field.value}
                           onChange={(selected) => {
                             if (invalid) clearErrors('newMaterialId');
-                            setValue('newMaterialId', selected);
+                            setValue('newMaterialId', [selected]);
                           }}
-                          error={!!errors?.newMaterialId?.message}
+                          error={!!errors?.newMaterialId}
                         />
                       </div>
                     )}
@@ -596,7 +715,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                                     if (invalid) clearErrors('newLocationType');
                                     setValue('newLocationType', value);
                                   }}
-                                  error={!!errors?.newLocationType?.message}
+                                  error={!!errors?.newLocationType}
                                   data-testid="new-location-select"
                                 />
                               </div>
@@ -623,7 +742,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                                     if (invalid) clearErrors('newLocationCountryInput');
                                     setValue('newLocationCountryInput', value);
                                   }}
-                                  error={!!errors?.newLocationCountryInput?.message}
+                                  error={!!errors?.newLocationCountryInput}
                                 />
                               </div>
                             )}
@@ -711,7 +830,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                           )}
                         </Disclosure.Button>
                       </div>
-                      <Disclosure.Panel>
+                      <Disclosure.Panel static={areSupplierEdited}>
                         <div className="space-y-4">
                           <div>
                             <label className={LABEL_CLASSNAMES}>Tier 1 supplier</label>
@@ -729,7 +848,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                                     options={optionsSuppliers}
                                     placeholder="Select"
                                     onChange={(value) => setValue('newT1SupplierId', value)}
-                                    error={!!errors?.newSupplierId?.message}
+                                    error={!!errors?.newT1SupplierId}
                                     allowEmpty
                                   />
                                 </div>
@@ -752,7 +871,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                                     options={optionsProducers}
                                     placeholder="Select"
                                     onChange={(value) => setValue('newProducerId', value)}
-                                    error={!!errors?.newProducerId?.message}
+                                    error={!!errors?.newProducerId}
                                     allowEmpty
                                   />
                                 </div>
@@ -796,7 +915,10 @@ const InterventionForm: React.FC<InterventionFormProps> = ({ isSubmitting, onSub
                       </Disclosure.Button>
                     </div>
                     <Disclosure.Panel
-                      static={currentInterventionType === InterventionTypes.Efficiency}
+                      static={
+                        currentInterventionType === InterventionTypes.Efficiency ||
+                        areCoefficientsEdited
+                      }
                     >
                       <div className="space-y-4">
                         <div>

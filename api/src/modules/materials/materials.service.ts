@@ -168,16 +168,22 @@ export class MaterialsService extends AppBaseService<
    * @description Get a tree of Materials with registered sourcing locations
    */
 
-  async getMaterialsTreeWithSourcingLocations(
+  async getMaterialsTreeFromSourcingLocations(
     materialTreeOptions: GetMaterialTreeWithOptionsDto,
   ): Promise<Material[]> {
     const materialLineage: Material[] =
-      await this.materialRepository.getSourcingDataMaterialsWithAncestry(
+      await this.materialRepository.getMaterialsFromSourcingLocations(
         materialTreeOptions,
       );
     return this.buildTree<Material>(materialLineage, null);
   }
 
+  /**
+   * @description: Returns a tree of Materials, either from the main Material table, or
+   *               starting from those that are present in Sourcing Locations, building the tree up
+   *               to the root.
+   * @param materialTreeOptions
+   */
   async getTrees(
     materialTreeOptions: GetMaterialTreeWithOptionsDto,
   ): Promise<Material[]> {
@@ -200,7 +206,7 @@ export class MaterialsService extends AppBaseService<
             materialTreeOptions.supplierIds,
           );
       }
-      return this.getMaterialsTreeWithSourcingLocations(materialTreeOptions);
+      return this.getMaterialsTreeFromSourcingLocations(materialTreeOptions);
     }
 
     return this.findTreesWithOptions({ depth: materialTreeOptions.depth });

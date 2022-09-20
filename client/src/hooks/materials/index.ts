@@ -21,6 +21,7 @@ export type MaterialsTreesParams = {
   businessUnitIds?: string[];
   originIds?: string[];
   locationTypes?: string[];
+  scenarioId?: string;
 };
 
 export function useMaterials(): ResponseData {

@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { flatten, noop, pick, uniq } from 'lodash';
+import { DownloadIcon } from '@heroicons/react/solid';
 
-import type { DownloaderHeadersType, DownloaderTransformProps } from 'containers/downloader';
 import Downloader from 'containers/downloader';
 
 import Button from 'components/button';
 import Loading from 'components/loading';
 
+import type { DownloaderHeadersType, DownloaderTransformProps } from 'containers/downloader';
 import type { DownloadMaterialsDataButtonProps } from './types';
 
 const DEFAULT_HEADERS: DownloaderHeadersType[] = [
@@ -23,6 +24,7 @@ const DownloadMaterialsDataButton: React.FC<DownloadMaterialsDataButtonProps> = 
   onDownloading = noop,
   onSuccess = noop,
   onError = noop,
+  buttonProps = {},
 }: DownloadMaterialsDataButtonProps) => {
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
@@ -78,7 +80,11 @@ const DownloadMaterialsDataButton: React.FC<DownloadMaterialsDataButtonProps> = 
       onSuccess={handleOnSuccess}
       onError={handleOnError}
     >
-      <Button theme="secondary">
+      <Button
+        theme="secondary"
+        icon={<DownloadIcon className="w-4 h-4 text-gray-500" />}
+        {...buttonProps}
+      >
         Download
         {isDownloading && <Loading className="ml-2" />}
       </Button>

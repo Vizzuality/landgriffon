@@ -4,7 +4,7 @@ import { PaginationMeta } from 'utils/app-base.service';
 export class ImpactTable {
   @ApiProperty({ type: () => ImpactTableDataByIndicator, isArray: true })
   impactTable: ImpactTableDataByIndicator[];
-  @ApiProperty({ type: () => ImpactTableDataByIndicator, isArray: true })
+  @ApiProperty({ type: () => ImpactTablePurchasedTonnes, isArray: true })
   purchasedTonnes: ImpactTablePurchasedTonnes[];
 }
 
@@ -71,7 +71,7 @@ export class YearSumData {
   @ApiProperty()
   value: number;
   @ApiPropertyOptional()
-  interventionValue?: number;
+  scenarioValue?: number;
   @ApiPropertyOptional()
   absoluteDifference?: number;
   @ApiPropertyOptional()
@@ -84,7 +84,7 @@ export class ImpactTableRowsValues {
   @ApiProperty()
   value: number;
   @ApiPropertyOptional()
-  interventionValue?: number;
+  scenarioValue?: number;
   @ApiPropertyOptional()
   absoluteDifference?: number;
   @ApiPropertyOptional()

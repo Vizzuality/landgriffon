@@ -5,11 +5,8 @@ import { AppModule } from 'app.module';
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
 import { IndicatorCoefficientsModule } from 'modules/indicator-coefficients/indicator-coefficients.module';
 import { IndicatorCoefficientRepository } from 'modules/indicator-coefficients/indicator-coefficient.repository';
-import { IndicatorSource } from 'modules/indicator-sources/indicator-source.entity';
-import {
-  createIndicatorCoefficient,
-  createIndicatorSource,
-} from '../../entity-mocks';
+
+import { createIndicatorCoefficient } from '../../entity-mocks';
 import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 
@@ -47,13 +44,10 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
 
   describe('Indicator coefficients - Create', () => {
     test('Create an indicator coefficient should be successful (happy case)', async () => {
-      const indicatorSource: IndicatorSource = await createIndicatorSource();
-
       const response = await request(app.getHttpServer())
         .post('/api/v1/indicator-coefficients')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
-          indicatorSourceId: indicatorSource.id,
           year: 2000,
         })
         .expect(HttpStatus.CREATED);

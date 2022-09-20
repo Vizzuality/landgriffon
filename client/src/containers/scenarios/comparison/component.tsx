@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import type { Dispatch, FC } from 'react';
 import { useCallback, useMemo, useEffect } from 'react';
 
 import { useScenarios } from 'hooks/scenarios';
@@ -13,10 +13,13 @@ const ScenariosComparison: FC = () => {
   const dispatch = useAppDispatch();
   const { currentScenario, scenarioToCompare, isComparisonEnabled } = useAppSelector(scenarios);
 
-  const { data } = useScenarios({
-    params: { disablePagination: true, include: 'scenarioInterventions' },
+  const {
+    data: { data },
+  } = useScenarios({
+    params: { disablePagination: true, include: 'scenarioInterventions', currentScenario },
   });
-  const options: SelectOption[] = useMemo(() => {
+
+  const options = useMemo<SelectOption[]>(() => {
     const filteredData = data.filter(
       ({ scenarioInterventions }) => scenarioInterventions?.length > 0,
     );
@@ -30,9 +33,9 @@ const ScenariosComparison: FC = () => {
     [scenarioToCompare, options],
   );
 
-  const handleOnChange = useCallback(
+  const handleOnChange = useCallback<Dispatch<SelectOption>>(
     (current) => {
-      dispatch(setScenarioToCompare(current.value));
+      dispatch(setScenarioToCompare(current.value as string));
     },
     [dispatch],
   );

@@ -308,3 +308,10 @@ export type WithRequiredProperty<Type, Key extends keyof Type> = Type &
   {
     [Property in Key]-?: Type[Property];
   };
+
+export type Task = {
+  id: string;
+  type: string;
+  status: string;
+  errors?: Record<string, string>[];
+};

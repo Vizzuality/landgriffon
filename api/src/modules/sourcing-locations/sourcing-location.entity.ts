@@ -2,6 +2,7 @@ import {
   Check,
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -176,6 +177,7 @@ export class SourcingLocation extends TimestampedBaseEntity {
   @JoinColumn({ name: 't1SupplierId' })
   t1Supplier: Supplier;
 
+  @Index()
   @Column({ nullable: true })
   t1SupplierId?: string;
 
@@ -189,6 +191,8 @@ export class SourcingLocation extends TimestampedBaseEntity {
   )
   @JoinColumn({ name: 'producerId' })
   producer: Supplier;
+
+  @Index()
   @Column({ nullable: true })
   producerId?: string;
 
@@ -224,6 +228,8 @@ export class SourcingLocation extends TimestampedBaseEntity {
   @ManyToOne(() => ScenarioIntervention, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'scenarioInterventionId' })
   scenarioIntervention: ScenarioIntervention;
+
+  @Index()
   @Column({ nullable: true })
   @ApiPropertyOptional()
   scenarioInterventionId?: string;

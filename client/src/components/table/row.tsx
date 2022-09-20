@@ -3,6 +3,7 @@ import { flexRender } from '@tanstack/react-table';
 import classNames from 'classnames';
 import type { HTMLAttributes } from 'react';
 import { useMemo } from 'react';
+import CellWrapper, { HeaderCell } from './cell';
 
 interface TableRowProps<T> extends HTMLAttributes<HTMLTableRowElement> {
   row: Row<T>;
@@ -23,7 +24,7 @@ const TableRow = <T,>({ row, theme, isLast, ...props }: TableRowProps<T>) => {
             }}
             className={classNames('h-full border-transparent', {
               'border-l-4': theme === 'default' && i === 0,
-              'border-l-green-700': theme === 'default' && row.getIsSelected() && i === 0,
+              'border-l-primary': theme === 'default' && row.getIsSelected() && i === 0,
               'bg-white': theme === 'default',
 
               'group-odd:bg-white group-even:bg-gray-50 group-hover:bg-gray-100':
@@ -39,7 +40,9 @@ const TableRow = <T,>({ row, theme, isLast, ...props }: TableRowProps<T>) => {
                 cell.column.columnDef.meta.isSticky === 'right',
             })}
           >
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            <CellWrapper context={cell.getContext()}>
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </CellWrapper>
           </td>
         ))}
       </tr>
@@ -57,7 +60,7 @@ export const TableHeaderRow = <T,>({ headerGroup }: TableHeaderRowProps<T>) => {
     <tr key={headerGroup.id}>
       {headerGroup.headers.map((header) => (
         <th
-          className={classNames('sticky z-[2] top-0 border-b border-b-gray-300 bg-gray-50', {
+          className={classNames('sticky z-[2] top-0 border-b-4 border-b-gray-100 bg-gray-50', {
             'left-0 z-[3]':
               header.column.columnDef.meta.isSticky ||
               header.column.columnDef.meta.isSticky === 'left',
@@ -66,9 +69,11 @@ export const TableHeaderRow = <T,>({ headerGroup }: TableHeaderRowProps<T>) => {
           key={header.id}
           style={{ width: header.column.getSize() }}
         >
-          {header.isPlaceholder
-            ? null
-            : flexRender(header.column.columnDef.header, header.getContext())}
+          {header.isPlaceholder ? null : (
+            <HeaderCell context={header.getContext()}>
+              {flexRender(header.column.columnDef.header, header.getContext())}
+            </HeaderCell>
+          )}
         </th>
       ))}
     </tr>

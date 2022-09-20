@@ -1,5 +1,6 @@
 import type { FC } from 'react';
 import { useMemo, useCallback } from 'react';
+import classNames from 'classnames';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { useScenario } from 'hooks/scenarios';
 import { useIndicator } from 'hooks/indicators';
@@ -7,14 +8,22 @@ import { useIndicator } from 'hooks/indicators';
 import { InformationCircleIcon } from '@heroicons/react/solid';
 import { scenarios } from 'store/features/analysis/scenarios';
 import { analysisFilters, setFilters } from 'store/features/analysis/filters';
+import { setComparisonMode } from 'store/features/analysis/scenarios';
+import type { ScenariosState } from 'store/features/analysis/scenarios';
 
 import Badge from 'components/badge/component';
+import Select from 'components/select';
 
 const values = 'absolute';
 const materialArticle = 'of';
 const originArticle = 'in';
 const supplierArticle = 'from';
 const locationTypeArticle = 'aggregated by';
+
+const DATA_VIEW_OPTIONS: { label: string; value: ScenariosState['comparisonMode'] }[] = [
+  { label: 'absolute', value: 'absolute' },
+  { label: 'relative', value: 'relative' },
+];
 
 type AnalysisDynamicMetadataTypes = {
   className?: string;
@@ -24,7 +33,8 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
   className,
 }: AnalysisDynamicMetadataTypes) => {
   const dispatch = useAppDispatch();
-  const { currentScenario, scenarioToCompare } = useAppSelector(scenarios);
+  const { currentScenario, scenarioToCompare, comparisonMode, isComparisonEnabled } =
+    useAppSelector(scenarios);
   const { data: scenario } = useScenario(currentScenario);
   const { data: scenarioB } = useScenario(scenarioToCompare);
 
@@ -47,6 +57,18 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
       dispatch(setFilters({ [id]: filteredKeys }));
     },
     [dispatch],
+  );
+
+  const handleDataViewChange = useCallback(
+    ({ value }: typeof DATA_VIEW_OPTIONS[0]) => {
+      dispatch(setComparisonMode(value));
+    },
+    [dispatch],
+  );
+
+  const currentDataViewOption = useMemo(
+    () => DATA_VIEW_OPTIONS.find(({ value }) => value === comparisonMode),
+    [comparisonMode],
   );
 
   const {
@@ -78,7 +100,6 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
             key={origin.value}
             data={origin}
             onClick={() => handleRemoveBadge('origins', origins, origin)}
-            className="pl-0"
             removable
           >
             {origin.label}
@@ -95,7 +116,6 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
             key={supplier.value}
             data={supplier}
             onClick={() => handleRemoveBadge('suppliers', suppliers, supplier)}
-            className="pl-0"
             removable
           >
             {supplier.label}
@@ -112,7 +132,6 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
             key={locationType.value}
             data={locationType}
             onClick={() => handleRemoveBadge('locationTypes', locationTypes, locationType)}
-            className="pl-0"
             removable
           >
             {locationType.label}
@@ -122,21 +141,37 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
     </ul>
   );
 
+  const shouldDisplayComparePhrase = useMemo(
+    () => isComparisonEnabled && scenarioToCompare && scenarioToCompare !== 'actual-data',
+    [isComparisonEnabled, scenarioToCompare],
+  );
+
   return (
-    <div className={`flex items-start justify-start text-xs ${className}`}>
-      <div className="items-start mr-1.5 mt-1">
-        <InformationCircleIcon className="shrink-0 w-4 h-4 text-gray-900" />
+    <div
+      className={classNames('flex items-center justify-start text-xs space-x-1', {
+        [className]: !!className,
+      })}
+    >
+      <div className="items-start -translate-y-[3px]">
+        <InformationCircleIcon className="w-4 h-4 text-gray-900 shrink-0" />
       </div>
-      {!!scenarioToCompare && (
-        <p>
-          Viewing {values} Impact values for
-          <span className="font-bold whitespace-nowrap">{scenario1}</span>
-          <span className="font-bold whitespace-nowrap">
+      {shouldDisplayComparePhrase && (
+        <div className="flex items-baseline space-x-0.5">
+          <span>Viewing</span>
+          <Select
+            theme="inline-primary"
+            current={currentDataViewOption}
+            options={DATA_VIEW_OPTIONS}
+            onChange={handleDataViewChange}
+          />
+          <span>Impact values for </span>
+          <span className="font-bold">{scenario1}</span>
+          <span className="font-bold">
             {!!compareTemplate && ' compared to'} {compareTemplate}
           </span>
-        </p>
+        </div>
       )}
-      {!scenarioToCompare && (
+      {!shouldDisplayComparePhrase && (
         <p className="flex-wrap items-center">
           Viewing {values} <span className="whitespace-nowrap">Impact values for</span>
           <span className="font-bold whitespace-nowrap"> {scenario1} </span>

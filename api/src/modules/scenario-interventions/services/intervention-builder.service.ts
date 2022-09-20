@@ -69,56 +69,29 @@ export class InterventionBuilder {
    *               to be added as replaced Elements of the Intervention
    * @param newIntervention
    * @param cancelledSourcingLocations
+   * @param dto
    */
 
   async addReplacedElementsToIntervention(
     newIntervention: ScenarioIntervention,
     cancelledSourcingLocations: SourcingLocation[],
+    dto: CreateScenarioInterventionDto,
   ): Promise<ScenarioIntervention> {
-    const materialIds: string[] = [];
-    const adminRegionsIds: string[] = [];
-    const businessUnitIds: string[] = [];
-    const supplierIds: string[] = [];
-    // Get Ids for all the elements to avoid a round trip to DB for each Id
-    for (const sourcingLocation of cancelledSourcingLocations) {
-      if (sourcingLocation.materialId) {
-        materialIds.push(sourcingLocation.materialId);
-      }
-      if (sourcingLocation.adminRegionId) {
-        adminRegionsIds.push(sourcingLocation.adminRegionId);
-      }
-      if (sourcingLocation.businessUnitId) {
-        businessUnitIds.push(sourcingLocation.businessUnitId);
-      }
-      if (sourcingLocation.producerId || sourcingLocation.t1SupplierId) {
-        supplierIds.push(
-          sourcingLocation.producerId
-            ? (sourcingLocation.producerId as string)
-            : (sourcingLocation.t1SupplierId as string),
-        );
-      }
-    }
-
-    /**Canceled Sourcing locations already have the ids of AdminRegion, Material and Business Unit that will be canceled by the intervention
-     * Fetching those entities to add them as 'replaced' to the intervention
-     *
-     */
     newIntervention.replacedMaterials =
-      await this.materialService.getMaterialsById(materialIds);
-
-    newIntervention.replacedAdminRegions =
-      await this.adminRegionService.getAdminRegionsById(adminRegionsIds);
-
-    newIntervention.replacedBusinessUnits =
-      await this.businessUnitService.getBusinessUnitsById(businessUnitIds);
-
-    /** t1SupplierId and producerId columns are not obligatorey for Sourcing location, so if Canceles Sourcing Locations have suppliers or producer -
-     *  they will be added as replaced, else - replacedSuppliers will be empty
-     */
-
-    if (supplierIds.length) {
+      await this.materialService.getMaterialsById(dto.materialIds);
+    if (dto.adminRegionIds?.length) {
+      newIntervention.replacedAdminRegions =
+        await this.adminRegionService.getAdminRegionsById(dto.adminRegionIds);
+    }
+    if (dto.businessUnitIds?.length) {
+      newIntervention.replacedBusinessUnits =
+        await this.businessUnitService.getBusinessUnitsById(
+          dto.businessUnitIds,
+        );
+    }
+    if (dto.supplierIds?.length) {
       newIntervention.replacedSuppliers =
-        await this.suppliersService.getSuppliersById(supplierIds);
+        await this.suppliersService.getSuppliersById(dto.supplierIds);
     }
 
     newIntervention.replacedSourcingLocations = cancelledSourcingLocations;

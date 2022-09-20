@@ -176,6 +176,7 @@ export class ScenarioInterventionsService extends AppBaseService<
     await this.interventionBuilder.addReplacedElementsToIntervention(
       newIntervention,
       newCancelledByInterventionLocationsData,
+      dto,
     );
 
     const newLocations: SourcingLocation[] =

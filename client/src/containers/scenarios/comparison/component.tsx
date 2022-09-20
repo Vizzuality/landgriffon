@@ -14,8 +14,7 @@ import type { SelectOption } from 'components/select/types';
 
 const ScenariosComparison: FC = () => {
   const dispatch = useAppDispatch();
-  const { currentScenario, scenarioToCompare, isComparisonEnabled } =
-    useAppSelector(scenariosSelector);
+  const { currentScenario, scenarioToCompare } = useAppSelector(scenariosSelector);
 
   const { data: scenarios } = useScenarios({
     params: { disablePagination: true, include: 'scenarioInterventions', currentScenario },
@@ -38,7 +37,7 @@ const ScenariosComparison: FC = () => {
 
   const handleOnChange = useCallback<Dispatch<SelectOption>>(
     (current) => {
-      dispatch(setScenarioToCompare(current.value as string));
+      dispatch(setScenarioToCompare(current?.value));
     },
     [dispatch],
   );
@@ -57,7 +56,7 @@ const ScenariosComparison: FC = () => {
         current={selected}
         options={options}
         placeholder="Select scenario to compare"
-        disabled={!isComparisonEnabled}
+        allowEmpty
         onChange={handleOnChange}
       />
     </div>

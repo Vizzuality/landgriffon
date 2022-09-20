@@ -16,6 +16,7 @@ import analysisMap, {
 import analysisScenarios, {
   setCurrentScenario,
   initialState as analysisScenariosInitialState,
+  setScenarioToCompare,
 } from 'store/features/analysis/scenarios';
 
 const staticReducers = {
@@ -66,6 +67,12 @@ const QUERY_PARAMS_MAP: QueryParams = {
     rootState: 'analysis/scenarios',
     action: setCurrentScenario,
     defaultValue: analysisScenariosInitialState.currentScenario,
+  },
+  compareScenarioId: {
+    stateName: 'scenarioToCompare',
+    rootState: 'analysis/scenarios',
+    action: setScenarioToCompare,
+    defaultValue: analysisScenariosInitialState.scenarioToCompare,
   },
 };
 

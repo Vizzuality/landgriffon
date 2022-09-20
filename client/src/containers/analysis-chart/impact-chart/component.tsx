@@ -114,7 +114,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                   data={chartData.values}
                   margin={{
                     top: 0,
-                    right: 0,
+                    right: 20,
                     left: 0,
                     bottom: 0,
                   }}
@@ -148,6 +148,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                     axisLine={false}
                     tick={{ fill: '#15181F', fontWeight: 300 }}
                     tickLine={false}
+                    tickMargin={8}
                   />
                   <YAxis
                     axisLine={false}
@@ -187,6 +188,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                       animationEasing="ease"
                       animationDuration={500}
                       tooltipType="none"
+                      legendType="none"
                     />
                   ))}
                 </AreaChart>

@@ -3,9 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { apiRawService } from 'services/api';
 
 import type { UseQueryOptions } from '@tanstack/react-query';
-import type { ImpactData } from 'types';
+import type { APIpaginationRequest, ImpactData } from 'types';
 
-const DEFAULT_QUERY_OPTIONS: UseQueryOptions<ImpactData> = {
+const DEFAULT_QUERY_OPTIONS = {
   placeholderData: {
     data: {
       impactTable: [],
@@ -23,16 +23,34 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions<ImpactData> = {
   refetchOnWindowFocus: false,
 };
 
-export const useImpactData = (
-  params: Record<string, unknown> = {},
-  options: UseQueryOptions<ImpactData> = {},
+interface UseImpactDataParams {
+  indicatorIds: string[];
+  startYear: number;
+  endYear: number;
+  groupBy?: string;
+}
+
+export const useImpactData = <T = ImpactData>(
+  params?: UseImpactDataParams & APIpaginationRequest,
+  options: UseQueryOptions<ImpactData, unknown, T> = {},
 ) => {
-  const query = useQuery<ImpactData>(
+  const enabled =
+    (options.enabled ?? true) &&
+    !!params.indicatorIds.length &&
+    !!params.startYear &&
+    !!params.endYear &&
+    params.endYear !== params.startYear;
+
+  const query = useQuery(
     ['impact-data', params],
-    () => apiRawService.get('/impact/table', { params }).then((response) => response.data),
+    () =>
+      apiRawService
+        .get<ImpactData>('/impact/compare/scenario/vs/actual', { params })
+        .then((response) => response.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
       ...options,
+      enabled,
     },
   );
 

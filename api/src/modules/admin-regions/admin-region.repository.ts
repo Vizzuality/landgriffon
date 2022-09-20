@@ -205,20 +205,32 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
       });
     }
 
-    if (adminRegionTreeOptions.scenarioId) {
-      queryBuilder
-        .leftJoin(
-          ScenarioIntervention,
-          'scenarioIntervention',
-          'sl.scenarioInterventionId = scenarioIntervention.id',
-        )
-        .andWhere(
+    if (
+      adminRegionTreeOptions.scenarioIds ||
+      adminRegionTreeOptions.scenarioIds
+    ) {
+      queryBuilder.leftJoin(
+        ScenarioIntervention,
+        'scenarioIntervention',
+        'sl.scenarioInterventionId = scenarioIntervention.id',
+      );
+      if (adminRegionTreeOptions.scenarioIds) {
+        queryBuilder.andWhere(
+          new Brackets((qb: WhereExpressionBuilder) => {
+            qb.where('scenarioIntervention.scenarioId IN (:...scenarioIds)', {
+              scenarioIds: adminRegionTreeOptions.scenarioIds,
+            }).orWhere('sl.scenarioInterventionId is null');
+          }),
+        );
+      } else if (adminRegionTreeOptions.scenarioIds) {
+        queryBuilder.andWhere(
           new Brackets((qb: WhereExpressionBuilder) => {
             qb.where('scenarioIntervention.scenarioId = :scenarioId', {
               scenarioId: adminRegionTreeOptions.scenarioId,
             }).orWhere('sl.scenarioInterventionId is null');
           }),
         );
+      }
     } else {
       queryBuilder.andWhere('sl.scenarioInterventionId is null');
       queryBuilder.andWhere('sl.interventionType is null');

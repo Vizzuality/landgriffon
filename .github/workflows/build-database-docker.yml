@@ -30,3 +30,11 @@ jobs:
           context: database
           push: true
           tags: vizzuality/landgriffon-database:${{ github.ref != 'refs/heads/main' && 'staging' || 'production' }}
+
+      - name: Push "latest" tag to Docker Hub
+        if: ${{ github.ref == 'refs/heads/main' }}
+        uses: docker/build-push-action@v2
+        with:
+          context: database
+          push: true
+          tags: vizzuality/landgriffon-database:latest

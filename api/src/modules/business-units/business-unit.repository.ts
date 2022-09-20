@@ -62,20 +62,32 @@ export class BusinessUnitRepository extends ExtendedTreeRepository<
       });
     }
 
-    if (businessUnitTreeOptions.scenarioId) {
-      queryBuilder
-        .leftJoin(
-          ScenarioIntervention,
-          'scenarioIntervention',
-          'sl.scenarioInterventionId = scenarioIntervention.id',
-        )
-        .andWhere(
+    if (
+      businessUnitTreeOptions.scenarioIds ||
+      businessUnitTreeOptions.scenarioId
+    ) {
+      queryBuilder.leftJoin(
+        ScenarioIntervention,
+        'scenarioIntervention',
+        'sl.scenarioInterventionId = scenarioIntervention.id',
+      );
+      if (businessUnitTreeOptions.scenarioIds) {
+        queryBuilder.andWhere(
+          new Brackets((qb: WhereExpressionBuilder) => {
+            qb.where('scenarioIntervention.scenarioId IN (:...scenarioIds)', {
+              scenarioIds: businessUnitTreeOptions.scenarioIds,
+            }).orWhere('sl.scenarioInterventionId is null');
+          }),
+        );
+      } else if (businessUnitTreeOptions.scenarioIds) {
+        queryBuilder.andWhere(
           new Brackets((qb: WhereExpressionBuilder) => {
             qb.where('scenarioIntervention.scenarioId = :scenarioId', {
               scenarioId: businessUnitTreeOptions.scenarioId,
             }).orWhere('sl.scenarioInterventionId is null');
           }),
         );
+      }
     } else {
       queryBuilder.andWhere('sl.scenarioInterventionId is null');
       queryBuilder.andWhere('sl.interventionType is null');

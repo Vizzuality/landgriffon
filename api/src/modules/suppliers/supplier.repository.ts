@@ -67,20 +67,29 @@ export class SupplierRepository extends ExtendedTreeRepository<
       });
     }
 
-    if (supplierTreeOptions.scenarioId) {
-      queryBuilder
-        .leftJoin(
-          ScenarioIntervention,
-          'scenarioIntervention',
-          'sl.scenarioInterventionId = scenarioIntervention.id',
-        )
-        .andWhere(
+    if (supplierTreeOptions.scenarioId || supplierTreeOptions.scenarioIds) {
+      queryBuilder.leftJoin(
+        ScenarioIntervention,
+        'scenarioIntervention',
+        'sl.scenarioInterventionId = scenarioIntervention.id',
+      );
+      if (supplierTreeOptions.scenarioIds) {
+        queryBuilder.andWhere(
+          new Brackets((qb: WhereExpressionBuilder) => {
+            qb.where('scenarioIntervention.scenarioId IN (:...scenarioIds)', {
+              scenarioIds: supplierTreeOptions.scenarioIds,
+            }).orWhere('sl.scenarioInterventionId is null');
+          }),
+        );
+      } else if (supplierTreeOptions.scenarioIds) {
+        queryBuilder.andWhere(
           new Brackets((qb: WhereExpressionBuilder) => {
             qb.where('scenarioIntervention.scenarioId = :scenarioId', {
               scenarioId: supplierTreeOptions.scenarioId,
             }).orWhere('sl.scenarioInterventionId is null');
           }),
         );
+      }
     } else {
       queryBuilder.andWhere('sl.scenarioInterventionId is null');
       queryBuilder.andWhere('sl.interventionType is null');

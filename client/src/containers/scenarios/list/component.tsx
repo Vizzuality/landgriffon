@@ -23,14 +23,14 @@ const isScenarioSelected: (scenarioId: Scenario['id'], currentId: Scenario['id']
   currentId,
 ): boolean => scenarioId.toString() === currentId?.toString();
 
-const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProps) => {
+const ScenariosList = ({ data }: ScenariosListProps) => {
   const { currentScenario } = useAppSelector(scenarios);
   const dispatch = useAppDispatch();
 
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState<Scenario | null>(null);
 
   const handleOnChange = useCallback(
-    ({ id }) => {
+    ({ id }: Scenario) => {
       dispatch(setCurrentScenario(id));
       dispatch(setScenarioToCompare(null));
     },
@@ -55,15 +55,14 @@ const ScenariosList: React.FC<ScenariosListProps> = ({ data }: ScenariosListProp
       <RadioGroup.Label className="sr-only">Scenarios</RadioGroup.Label>
       <ul className="relative grid grid-cols-1 gap-5 my-2 overflow-auto sm:gap-2 sm:grid-cols-2 lg:grid-cols-1">
         <ScenarioItem
-          data={ACTUAL_DATA}
+          scenario={ACTUAL_DATA}
           isSelected={isScenarioSelected(ACTUAL_DATA.id, currentScenario)}
         />
         {data.map((item) => (
           <ScenarioItem
             key={item.id}
-            data={item}
+            scenario={item}
             isSelected={isScenarioSelected(item.id, currentScenario)}
-            onClick={setSelected}
           />
         ))}
       </ul>

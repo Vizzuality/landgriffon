@@ -200,7 +200,7 @@ const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: Scenarios
             </div>
           )}
         </div>
-        {isComparisonAvailable && (
+        {isComparisonAvailable && isSelected && (
           <div className="p-4 border-t border-primary">
             <div className="flex justify-between">
               <label className="block text-sm">Compare with</label>

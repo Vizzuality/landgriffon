@@ -30,7 +30,7 @@ const Sidebar: React.FC = () => {
         <Dialog
           as="div"
           static
-          className="fixed inset-0 z-40 flex hidden"
+          className="fixed inset-0 z-40 hidden"
           open={isMenuMobileOpen}
           onClose={handleOnClose}
         >

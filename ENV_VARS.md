@@ -17,6 +17,7 @@ for the API app.
 * `DB_SYNCHRONIZE` (boolean): if set to "true", model changes will be automatically applied to the database on app startup. Defaults to "false".
 * `DB_MIGRATIONS_RUN` (boolean): if set to "true", pending migrations will be automatically applied to the database on app startup. Defaults to "true".
 * `CHUNK_SIZE_FOR_BATCH_DB_OPERATIONS` (number): when batch-saving data, determines how many records are saved per operation. Defaults to "50".
+* `DB_DEBUG_LOGGING` (boolean): if the database debug logging should be enabled. Defaults to "false".
 * `DB_CACHE_ENABLED` (boolean): if the database cache is enabled. Defaults to "true".
 * `DB_CACHE_HOST` (string): hostname in which the Redis server can be reached.
 * `DB_CACHE_PORT` (number): port in which the Redis server can be reached.

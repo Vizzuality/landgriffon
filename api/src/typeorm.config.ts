@@ -11,7 +11,7 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   username: dbConfig.username,
   password: dbConfig.password,
   database: dbConfig.database,
-  logging: dbConfig.logging,
+  logging: dbConfig.logging === true || dbConfig.logging === 'true',
   maxQueryExecutionTime: dbConfig.maxQueryExecutionTime,
   autoLoadEntities: true,
   synchronize: dbConfig.synchronize === true || dbConfig.synchronize === 'true',

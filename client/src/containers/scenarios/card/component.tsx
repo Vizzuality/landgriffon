@@ -57,9 +57,10 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
         {isInterventionsLoading && <Loading />}
         {!isInterventionsLoading && interventions && (
           <div>
-            <div className="flex flex-wrap" data-testid="scenario-interventions-item">
+            <div className="flex flex-wrap">
               {interventions.slice(0, 2).map((intervention) => (
                 <div
+                  data-testid="scenario-interventions-item"
                   key={intervention.id}
                   className="mr-2 mb-2 rounded-full bg-yellow py-0.5 px-3 text-xs"
                 >

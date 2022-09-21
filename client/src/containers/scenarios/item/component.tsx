@@ -23,6 +23,7 @@ import type { Scenario } from '../types';
 import { offset, useFloating } from '@floating-ui/react-dom';
 import { DatabaseIcon } from '@heroicons/react/outline';
 import { useMemo } from 'react';
+import { Button } from 'components/button';
 
 interface ScenariosItemProps {
   scenario: Scenario;
@@ -110,11 +111,11 @@ const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: Scenarios
             disabled={!isComparisonAvailable}
             key={scenario.id}
             value={scenario}
-            className="flex justify-between flex-1 truncate items-top"
+            className="flex justify-between flex-1 truncate items-top gap-2"
           >
             {({ checked }) => (
               <>
-                <div className="flex justify-center flex-shrink-0 w-10 items-top">
+                <div className="flex justify-center flex-shrink-0 items-top">
                   {(scenario.id === ACTUAL_DATA.id || isComparisonAvailable) && (
                     <span
                       className={classNames(
@@ -152,86 +153,24 @@ const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: Scenarios
                         <span>Based on your uploaded data</span>
                       </span>
                     )}
+
                     {scenario.id !== ACTUAL_DATA.id && scenario.updatedAt && (
-                      <span className="text-gray-400 text-xs">Modified: {formattedUpdatedAgo}</span>
+                      <div className="flex w-full min-w-0 flex-row justify-between place-items-center">
+                        <div className="text-gray-400 text-xs">Modified: {formattedUpdatedAgo}</div>
+                        <div>
+                          <Link href={`/admin/scenarios/${scenario.id}/edit`}>
+                            <a>
+                              <Button theme="secondary">Edit</Button>
+                            </a>
+                          </Link>
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
               </>
             )}
           </RadioGroup.Option>
-          {scenario.id !== ACTUAL_DATA.id && (
-            <div className="flex-shrink-0 pr-2">
-              <Popover as="div" className="relative inline-block text-left">
-                {({ open }) => (
-                  <>
-                    <div>
-                      <Popover.Button ref={reference} className={DROPDOWN_BUTTON_CLASSNAME}>
-                        <span className="sr-only">Open options</span>
-                        <DotsVerticalIcon className="w-5 h-5" aria-hidden="true" />
-                      </Popover.Button>
-                    </div>
-
-                    {open &&
-                      createPortal(
-                        <Popover.Panel
-                          ref={floating}
-                          style={{
-                            position: strategy,
-                            top: y ?? '',
-                            left: x ?? '',
-                          }}
-                          static
-                          className="z-10 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                        >
-                          <Transition
-                            show={open}
-                            as={Fragment}
-                            enter="transition ease-out duration-100"
-                            enterFrom="transform opacity-0 scale-95"
-                            enterTo="transform opacity-100 scale-100"
-                            leave="transition ease-in duration-75"
-                            leaveFrom="transform opacity-100 scale-100"
-                            leaveTo="transform opacity-0 scale-95"
-                          >
-                            <div className="py-1">
-                              <div>
-                                <Link href={`/admin/scenarios/${scenario.id}/edit`}>
-                                  <a
-                                    className={classNames('text-gray-700', DROPDOWN_ITEM_CLASSNAME)}
-                                  >
-                                    Edit
-                                  </a>
-                                </Link>
-                              </div>
-                              <div>
-                                <button
-                                  type="button"
-                                  className={classNames('text-gray-700', DROPDOWN_ITEM_CLASSNAME)}
-                                  onClick={handleDelete}
-                                >
-                                  Delete
-                                </button>
-                              </div>
-                              {/* <div>
-                                <button
-                                  type="button"
-                                  className={classNames('text-gray-700', DROPDOWN_ITEM_CLASSNAME)}
-                                  onClick={handleShare}
-                                >
-                                  Shared
-                                </button>
-                              </div> */}
-                            </div>
-                          </Transition>
-                        </Popover.Panel>,
-                        document.body,
-                      )}
-                  </>
-                )}
-              </Popover>
-            </div>
-          )}
         </div>
         {isComparisonAvailable && isSelected && (
           <div className="">

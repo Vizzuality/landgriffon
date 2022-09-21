@@ -12,6 +12,7 @@ import { setComparisonMode } from 'store/features/analysis/scenarios';
 import type { ScenariosState } from 'store/features/analysis/scenarios';
 
 import Badge from 'components/badge/component';
+import type { SelectOption } from 'components/select';
 import Select from 'components/select';
 
 const values = 'absolute';
@@ -20,7 +21,7 @@ const originArticle = 'in';
 const supplierArticle = 'from';
 const locationTypeArticle = 'aggregated by';
 
-const DATA_VIEW_OPTIONS: { label: string; value: ScenariosState['comparisonMode'] }[] = [
+const DATA_VIEW_OPTIONS: SelectOption<ScenariosState['comparisonMode']>[] = [
   { label: 'absolute', value: 'absolute' },
   { label: 'relative', value: 'relative' },
 ];

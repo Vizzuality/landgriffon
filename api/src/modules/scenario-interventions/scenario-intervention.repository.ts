@@ -2,7 +2,6 @@ import {
   Connection,
   EntityRepository,
   getConnection,
-  InsertQueryBuilder,
   InsertResult,
   QueryRunner,
   Repository,
@@ -124,7 +123,7 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
     const replacedAdminRegionsToSave: ReplacedAdminRegion[] = [];
     const replacedBusinessUnitsToSave: ReplacedBusinessUnits[] = [];
     const replacedMaterialsToSave: ReplacedMaterial[] = [];
-    // We could have replaced suppliers or not, as this can be null for actual Sourcing Location data
+
     if (replacedSuppliers?.length) {
       for (const supplier of replacedSuppliers) {
         replacedSuppliersToSave.push({
@@ -133,24 +132,29 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
         });
       }
     }
-
-    for (const region of replacedAdminRegions) {
-      replacedAdminRegionsToSave.push({
-        adminRegionId: region.id,
-        scenarioInterventionId: newIntervention.id,
-      });
+    if (replacedAdminRegions?.length) {
+      for (const region of replacedAdminRegions) {
+        replacedAdminRegionsToSave.push({
+          adminRegionId: region.id,
+          scenarioInterventionId: newIntervention.id,
+        });
+      }
     }
-    for (const material of replacedMaterials) {
-      replacedMaterialsToSave.push({
-        materialId: material.id,
-        scenarioInterventionId: newIntervention.id,
-      });
+    if (replacedMaterials?.length) {
+      for (const material of replacedMaterials) {
+        replacedMaterialsToSave.push({
+          materialId: material.id,
+          scenarioInterventionId: newIntervention.id,
+        });
+      }
     }
-    for (const unit of replacedBusinessUnits) {
-      replacedBusinessUnitsToSave.push({
-        businessUnitId: unit.id,
-        scenarioInterventionId: newIntervention.id,
-      });
+    if (replacedBusinessUnits?.length) {
+      for (const unit of replacedBusinessUnits) {
+        replacedBusinessUnitsToSave.push({
+          businessUnitId: unit.id,
+          scenarioInterventionId: newIntervention.id,
+        });
+      }
     }
 
     try {

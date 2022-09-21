@@ -1422,9 +1422,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
     test(
       'When I create an Intervention, But I receive as filters only Parent Element Ids' +
-        'And these Parent Element Ids are not present in Sourcing Locations' +
         'Then the created Interventions should only have as replaced' +
-        'Those Elements that are present in Sourcing Locations',
+        'Those Elements that has been received as filters' +
+        'Regardless being present in Sourcing Locations or not',
       async () => {
         // ARRANGE
 
@@ -1545,26 +1545,26 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
         // ASSERT
         expect(intervention).toBeTruthy();
-        expect(intervention?.replacedAdminRegions).toHaveLength(2);
-        expect(
-          intervention?.replacedAdminRegions
-            .map((el: AdminRegion) => el.id)
-            .sort(),
-        ).toEqual([childAdminRegion.id, grandChildAdminRegion.id].sort());
-        expect(
-          intervention?.replacedMaterials.map((el: Material) => el.id).sort(),
-        ).toEqual([childMaterial.id, grandChildMaterial.id].sort());
-        expect(intervention?.replacedBusinessUnits[0].id).toEqual(
-          childBusinessUnit.id,
+        expect(intervention?.replacedAdminRegions).toHaveLength(1);
+        expect(intervention?.replacedAdminRegions[0].id).toEqual(
+          parentAdminRegion.id,
         );
-        expect(intervention?.replacedSuppliers[0].id).toEqual(childSupplier.id);
+        expect(intervention?.replacedMaterials[0].id).toEqual(
+          parentMaterial.id,
+        );
+        expect(intervention?.replacedBusinessUnits[0].id).toEqual(
+          parentBusinessUnit.id,
+        );
+        expect(intervention?.replacedSuppliers[0].id).toEqual(
+          parentSupplier.id,
+        );
       },
     );
 
     test(
       'When I create a new Intervention' +
-        'And I dont select any Admin Region' +
-        'Then I should see all Admin Regions present in Sourcing Locations as replaced Admin Regions',
+        'And I dont select any Element to filter (AR, BR, SUP...)' +
+        'Then I should not see any element as replaced by the interventions',
       async () => {
         for (const num of range(1, 20)) {
           const adminRegion: AdminRegion = await createAdminRegion({
@@ -1577,6 +1577,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         const parentMaterial: Material = await createMaterial({
           name: 'parent material',
         });
+
         // Included in Sourcing Locations
         const childMaterial: Material = await createMaterial({
           name: 'child material',
@@ -1629,6 +1630,10 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         const parentSupplier: Supplier = await createSupplier({
           name: 'parent supplier',
         });
+
+        const parentSupplier2: Supplier = await createSupplier({
+          name: 'parent supplier2',
+        });
         //Included in Sourcing Locations
         const childSupplier: Supplier = await createSupplier({
           name: 'child supplier',
@@ -1639,6 +1644,10 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           year: 2020,
         });
         const sourcingRecord2: SourcingRecord = await createSourcingRecord({
+          year: 2020,
+        });
+
+        const sourcingRecord3: SourcingRecord = await createSourcingRecord({
           year: 2020,
         });
 
@@ -1655,6 +1664,14 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           t1Supplier: childSupplier,
           sourcingRecords: [sourcingRecord2],
         });
+
+        await createSourcingLocation({
+          material: childMaterial,
+          businessUnit: childBusinessUnit2,
+          producer: parentSupplier2,
+          sourcingRecords: [sourcingRecord3],
+        });
+
         const scenario: Scenario = await createScenario();
 
         const responseAdminRegions = await request(app.getHttpServer())
@@ -1666,7 +1683,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             percentage: 50,
             scenarioId: scenario.id,
             materialIds: [parentMaterial.id],
-            supplierIds: [parentSupplier.id],
+            supplierIds: [parentSupplier.id, parentSupplier2.id],
             businessUnitIds: [parentBusinessUnit.id],
             type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           });
@@ -1676,12 +1693,21 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             responseAdminRegions.body.data.id,
           );
 
-        createdScenarioIntervention1.replacedAdminRegions.every(
-          (adminRegion: any) =>
-            expect(parseInt(adminRegion.name.split(':')[1]) % 2 === 0).toBe(
-              true,
-            ),
+        expect(createdScenarioIntervention1.replacedAdminRegions).toHaveLength(
+          0,
         );
+        expect(createdScenarioIntervention1.replacedMaterials[0].id).toEqual(
+          parentMaterial.id,
+        );
+        expect(
+          createdScenarioIntervention1.replacedSuppliers
+            .map((sup: Supplier) => sup.id)
+            .sort(),
+        ).toEqual([parentSupplier.id, parentSupplier2.id].sort());
+
+        expect(
+          createdScenarioIntervention1.replacedBusinessUnits[0].id,
+        ).toEqual(parentBusinessUnit.id);
 
         const responseBusinessUnits = await request(app.getHttpServer())
           .post('/api/v1/scenario-interventions')
@@ -1701,8 +1727,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             responseBusinessUnits.body.data.id,
           );
 
-        createdScenarioIntervention2.replacedBusinessUnits.forEach((bu: any) =>
-          expect(bu.name.includes('child business unit')).toBe(true),
+        expect(createdScenarioIntervention2.replacedBusinessUnits).toHaveLength(
+          0,
         );
 
         const responseSuppliers = await request(app.getHttpServer())
@@ -1721,9 +1747,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           await scenarioInterventionRepository.findOneOrFail(
             responseSuppliers.body.data.id,
           );
-        expect(createdScenarioIntervention3.replacedSuppliers[0].name).toEqual(
-          childSupplier.name,
-        );
+        expect(createdScenarioIntervention3.replacedSuppliers).toHaveLength(0);
       },
     );
 

@@ -77,8 +77,10 @@ export class InterventionBuilder {
     cancelledSourcingLocations: SourcingLocation[],
     dto: CreateScenarioInterventionDto,
   ): Promise<ScenarioIntervention> {
-    newIntervention.replacedMaterials =
-      await this.materialService.getMaterialsById(dto.materialIds);
+    if (dto.materialIds?.length) {
+      newIntervention.replacedMaterials =
+        await this.materialService.getMaterialsById(dto.materialIds);
+    }
     if (dto.adminRegionIds?.length) {
       newIntervention.replacedAdminRegions =
         await this.adminRegionService.getAdminRegionsById(dto.adminRegionIds);

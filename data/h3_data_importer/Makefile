@@ -17,6 +17,7 @@ WORKDIR_ABOVEGROUNDBIOMASS=data/satelligence/above_ground_biomass
 WORKDIR_SATDEFORESTATION=data/satelligence/deforestation
 WORKDIR_AQUEDUCT=data/contextual/aqueduct
 WORKDIR_HDI=data/contextual/hdi
+WORKDIR_GHG=data/forest_ghg
 
 all:
 	make clean
@@ -364,15 +365,16 @@ download-deforestation: download-deforestation-list
 	cat $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear.txt | xargs -P $(PARALLELIZATION_FACTOR) -I {} /bin/bash -c 'make transform-deforestation-file FILE={}'
 
 
+# table_name = 00N_000W
 # 1st gdal_cal do convert to pixel mask of 2020 deforestation events
-# the resampling sums the pixels then divide by the number of original pixels fit in 
+# the resampling sums the pixels then divide by the number of original pixels fit in
 # resampled pixel to get the % of area afected by deforestation
 transform-deforestation-file:
 	@echo "Transforming deforestation file $(FILE) ... "
-	table_name=`basename -s .tif $(FILE) | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
+	table_name=`basename -s .tif $(FILE) | tr -d ' \t\n\r' | grep -oP "\d{2}[A-Z]_\d{3}[A-Z]"; \
 	wget -q -O "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" $(FILE); \
 	rm -f "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
-	gdal_calc.py --quiet --calc "(A>19)" --format GTiff --type Float32 --NoDataValue 0.0 --overwrite \
+	gdal_calc.py --quiet --calc "(A>19)" --format GTiff --co NBITS=1 --co compress=PACKBIT --NoDataValue 0 --overwrite \
 		-A "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" \
 		--outfile  "$(WORKDIR_DEFORESTATION)/$${table_name}.tif"; \
 	gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r sum -tr 0.0833333333333286 0.0833333333333286 -multi -of GTiff -wo NUM_THREADS=ALL_CPUS \
@@ -380,8 +382,8 @@ transform-deforestation-file:
 		"$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
 	gdal_calc.py --quiet --calc "A/111111.11111109848" --format GTiff --type Float32 --NoDataValue 0.0 --overwrite \
 		-A "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif" \
-		--outfile  "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
-	rm -f "$(WORKDIR_DEFORESTATION)/$${table_name}.tif"
+		--outfile  "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"
+	@echo "Done transforming deforestation file $(FILE)"
 
 preprocess-deforestation: download-deforestation
 	@echo "Preprocessing deforestation data... "
@@ -395,32 +397,41 @@ preprocess-deforestation: download-deforestation
 convert-deforestation: preprocess-deforestation
 	@echo "Converting deforestation data... "
 	python tiff_folder_to_h3_table.py data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles h3_grid_deforestation_global \
-		indicator DF_LUC_T 2020 --h3-res=6 --thread-count=$$(( $(PARALLELIZATION_FACTOR) ))
+		indicator DF_LUC_T 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --contextual
 
-# CARBON EMISSIONS
-# Download net carbon flux:
-# @todo update with net flux from gfw - issues accessing the raw data in terms of permissions
-#https://services2.arcgis.com/g8WusZB13b9OegfU/arcgis/rest/services/Forest_greenhouse_gas_net_flux/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson
-#"https://opendata.arcgis.com/api/v3/datasets/d33587b6aee248faa2f388aaac96f92c_0/downloads?spatialRefId=4326&formats=csv"
-download-carbon:
-	mkdir -p $(WORKDIR_CARBON)
-	wget -O $(WORKDIR_CARBON)/GHGEmissions_Geotiff.zip https://s3.us-east-2.amazonaws.com/earthstatdata/GHGEmissions_Geotiff.zip
 
-#unzip to folder
-preprocess-carbon: download-carbon
-	mkdir -p $(WORKDIR_CARBON)/GHGEmissions
-	rm -rf $(WORKDIR_CARBON)/GHGEmissions/*
-	unzip -j -o -u $(WORKDIR_CARBON)/GHGEmissions_Geotiff.zip */hectare_emissions.tif -d $(WORKDIR_CARBON)/GHGEmissions
-	for tiffile in $(WORKDIR_CARBON)/GHGEmissions/*.tif; do \
-		table_name=`basename -s .tif "$$tiffile" | tr -d ' \t\n\r' | tr [:upper:] [:lower:]`; \
-		output_file="$(WORKDIR_CARBON)/GHGEmissions/earthstat2000_global_$${table_name}.tif";\
-		gdal_translate -a_nodata 0 -of GTiff "$${tiffile}" "$${output_file}";\
-		rm -f "$${tiffile}";\
-	done
+download-forestGHG-list:
+	@echo "Downloading Forest Greenhouse Gas emission tiles list..."
+	mkdir -p $(WORKDIR_GHG)
+	mkdir -p $(WORKDIR_GHG)/resampled
+	wget -q -O $(WORKDIR_GHG)/forest_ghg_sources_list.json https://services2.arcgis.com/g8WusZB13b9OegfU/arcgis/rest/services/Forest_greenhouse_gas_emissions/FeatureServer/0/query\?where\=1%3D1\&outFields\=\*\&outSR\=4326\&f\=json
+	python parse_forest_ghg_list.py $(WORKDIR_GHG)/forest_ghg_sources_list.json "Mg_CO2e_px_download" | xargs -P $(PARALLELIZATION_FACTOR) -L1 /bin/bash -c 'make transform-forestGHG NAME=$$0 URL=$$1'
 
-# translate to h3 and import
-convert-carbon: preprocess-carbon
-	python tiff_folder_to_h3_table.py $(WORKDIR_CARBON)/GHGEmissions h3_grid_carbon_global indicator GHG_LUC_T 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --contextual
+# todo: Check an alternative source of the tiles since de GFW endpoints are super slow and it takes more than one hour to download them all
+transform-forestGHG:
+	@echo "Downloading and massaging tile $(NAME)..."
+	wget -q -O "$(WORKDIR_GHG)/$(NAME).tif" "$(URL)"
+	gdal_calc.py --quiet --calc "(A*B)" --format GTiff --type Float32 --NoDataValue 0 \
+		-A "$(WORKDIR_GHG)/$(NAME).tif" \
+		-B "$(WORKDIR_DEFORESTATION)/$(NAME).tif" \
+		--outfile "$(WORKDIR_GHG)/$(NAME)_2020.tif"
+	rm "$(WORKDIR_DEFORESTATION)/$(NAME).tif" "$(WORKDIR_GHG)/$(NAME).tif"
+	gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r sum -tr 0.0833333333333286 0.0833333333333286 -multi -of GTiff -wo NUM_THREADS=ALL_CPUS \
+		"$(WORKDIR_GHG)/$(NAME)_2020.tif" \
+		"$(WORKDIR_GHG)/resampled/$(NAME)_2020_10km.tif"
+	@echo "Done transforming GHG tile $(NAME)"
+
+preprocess-forestGHG: download-forestGHG-list
+	mkdir -p $(WORKDIR_GHG)/resampled/merged_tiles
+	gdalbuildvrt $(WORKDIR_GHG)/resampled/merged_tiles/forest_GHG_2020.vrt $(WORKDIR_GHG)/resampled/*.tif
+	gdal_translate -q -of GTiff -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 \
+		$(WORKDIR_GHG)/resampled/merged_tiles/forest_GHG_2020.vrt \
+		$(WORKDIR_GHG)/resampled/merged_tiles/forest_GHG_2020.tif
+	python rolling_average.py $(WORKDIR_GHG)/resampled/merged_tiles/forest_GHG_2020.tif $(WORKDIR_GHG)/resampled/merged_tiles/forest_GHG_2020_buffered.tif
+
+convert-forestGHG: preprocess-forestGHG
+	@echo "Converting forest GHG data..."
+	python tiff_folder_to_h3_table.py $(WORKDIR_GHG)/resampled/merged_tiles h3_grid_ghg_global indicator GHG_LUC_T 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --contextual
 
 ##################################
 #        Satelligence data       #
@@ -497,7 +508,7 @@ extract-aqueduct-contextual: download-aqueduct-contextual
 	unzip -u $(WORKDIR_AQUEDUCT)/Y2019M07D12_Aqueduct30_V01.zip  -d $(WORKDIR_AQUEDUCT)/
 
 convert-aqueduct-contextual: extract-aqueduct-contextual
-	python vector_folder_to_h3_table.py $(WORKDIR_AQUEDUCT)/Y2019M07D12_Aqueduct30_V01/baseline/annual h3_grid_aqueduct_global bws_cat aqueduct "Environmental datasets" 2019 --indicator=UWUSR_T --h3-res=6 
+	python vector_folder_to_h3_table.py $(WORKDIR_AQUEDUCT)/Y2019M07D12_Aqueduct30_V01/baseline/annual h3_grid_aqueduct_global bws_cat aqueduct "Environmental datasets" 2019 --indicator=UWUSR_T --h3-res=6
 
 
 download-hdi-contextual:

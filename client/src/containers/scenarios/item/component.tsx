@@ -1,26 +1,16 @@
-import { Fragment, useCallback, useEffect } from 'react';
+import { Fragment, useEffect } from 'react';
 import { differenceInDays, format, formatDistanceToNowStrict } from 'date-fns';
-import { Popover, RadioGroup, Transition } from '@headlessui/react';
-import { DotsVerticalIcon } from '@heroicons/react/solid';
+import { RadioGroup } from '@headlessui/react';
 import classNames from 'classnames';
-import toast from 'react-hot-toast';
-import { createPortal } from 'react-dom';
 import Link from 'next/link';
 
-import {
-  setCurrentScenario,
-  scenarios,
-  setComparisonEnabled,
-} from 'store/features/analysis/scenarios';
+import { scenarios, setComparisonEnabled } from 'store/features/analysis/scenarios';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 
 import ScenariosComparison from 'containers/scenarios/comparison';
-import { useDeleteScenario } from 'hooks/scenarios';
 import { ACTUAL_DATA } from '../constants';
 
-import type { ErrorResponse } from 'types';
 import type { Scenario } from '../types';
-import { offset, useFloating } from '@floating-ui/react-dom';
 import { DatabaseIcon } from '@heroicons/react/outline';
 import { useMemo } from 'react';
 import { Button } from 'components/button';
@@ -30,11 +20,6 @@ interface ScenariosItemProps {
   isComparisonAvailable: boolean;
   isSelected: boolean;
 }
-
-const DROPDOWN_BUTTON_CLASSNAME =
-  'w-8 h-8 inline-flex items-center justify-center text-gray-900 rounded-full bg-transparent hover:text-green-800';
-const DROPDOWN_ITEM_CLASSNAME =
-  'block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 hover:text-gray-900';
 
 const formatTimeAgo = (date: Date) => {
   // const diffDays = differenceInDays(new Date(), subDays(new Date(), 1.5));
@@ -58,30 +43,6 @@ const formatTimeAgo = (date: Date) => {
 const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: ScenariosItemProps) => {
   const dispatch = useAppDispatch();
   const { currentScenario, scenarioToCompare } = useAppSelector(scenarios);
-
-  const { x, y, reference, floating, strategy } = useFloating({
-    placement: 'right',
-    middleware: [offset({ mainAxis: 10 })],
-  });
-
-  const deleteScenario = useDeleteScenario();
-
-  const handleDelete = useCallback(() => {
-    deleteScenario.mutate(scenario.id, {
-      onSuccess: () => {
-        if (currentScenario === scenario.id) dispatch(setCurrentScenario(ACTUAL_DATA.id));
-        toast.success('Scenario successfully deleted.');
-      },
-      onError: (error: ErrorResponse) => {
-        const { errors } = error.response?.data;
-        errors.forEach(({ title }) => toast.error(title));
-      },
-    });
-  }, [deleteScenario, scenario.id, currentScenario, dispatch]);
-
-  // const handleShare = useCallback(() => {
-  //   console.log('published scenarios');
-  // }, []);
 
   useEffect(() => {
     // Disabling comparison when is not selected

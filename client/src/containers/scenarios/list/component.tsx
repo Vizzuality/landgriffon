@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { RadioGroup } from '@headlessui/react';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
@@ -27,12 +27,17 @@ const ScenariosList = ({ data }: ScenariosListProps) => {
   const { currentScenario } = useAppSelector(scenarios);
   const dispatch = useAppDispatch();
 
-  const [selected, setSelected] = useState<Scenario | null>(null);
+  const selected = useMemo(
+    () => data.find(({ id }) => isScenarioSelected(id, currentScenario)) || null,
+    [currentScenario, data],
+  );
 
   const handleOnChange = useCallback(
     ({ id }: Scenario) => {
-      dispatch(setCurrentScenario(id));
-      dispatch(setScenarioToCompare(null));
+      dispatch(setCurrentScenario(id)).payload;
+      setTimeout(() => {
+        dispatch(setScenarioToCompare(null));
+      }, 10);
     },
     [dispatch],
   );
@@ -40,13 +45,6 @@ const ScenariosList = ({ data }: ScenariosListProps) => {
   useEffect(() => {
     if (data && !currentScenario) {
       dispatch(setCurrentScenario(ACTUAL_DATA.id as string)); // first option of the list by default
-    }
-    if (data && currentScenario) {
-      if (currentScenario === ACTUAL_DATA.id) {
-        setSelected(ACTUAL_DATA);
-      } else {
-        setSelected(data.find(({ id }) => isScenarioSelected(id, currentScenario)));
-      }
     }
   }, [data, currentScenario, dispatch]);
 

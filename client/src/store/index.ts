@@ -116,26 +116,31 @@ const getPreloadedState = (query = {}) => {
 };
 
 // Custom middleware to sync URL params and the store
-const querySyncMiddleware: Middleware = () => (next) => (action) => {
+const querySyncMiddleware: Middleware = () => (next) => async (action) => {
   const { query, isReady } = router;
+
   if (!isReady) return next(action);
 
-  Object.entries(QUERY_PARAMS_MAP).forEach(([param, queryState]) => {
+  Object.entries(QUERY_PARAMS_MAP).forEach(async ([param, queryState]) => {
     if (action.type === queryState.action.type) {
+      const { [param]: currentQueryValue, ...queryWithoutParam } = query;
       const currentStateValue = action.payload;
-      const currentQueryValue = query[param];
 
       // Only update when URL the param value is different
       if (currentQueryValue !== currentStateValue) {
-        router.push(
+        await router.push(
           {
             query: {
-              ...query,
-              [param]: ['string', 'number'].includes(typeof currentStateValue)
-                ? currentStateValue
-                : checkValidJSON(JSON.stringify(currentStateValue))
-                ? JSON.stringify(currentStateValue)
-                : currentStateValue,
+              ...queryWithoutParam,
+              ...(!!currentStateValue
+                ? {
+                    [param]: ['string', 'number'].includes(typeof currentStateValue)
+                      ? currentStateValue
+                      : checkValidJSON(JSON.stringify(currentStateValue))
+                      ? JSON.stringify(currentStateValue)
+                      : currentStateValue,
+                  }
+                : {}),
             },
           },
           null,

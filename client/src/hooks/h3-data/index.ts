@@ -24,7 +24,8 @@ import type {
   Layer,
   Legend,
 } from 'types';
-import { analysisMap } from 'store/features/analysis';
+import { analysisMap, scenarios } from 'store/features/analysis';
+import { ACTUAL_DATA } from 'containers/scenarios/constants';
 
 type H3ImpactResponse = H3APIResponse & {
   metadata: {
@@ -270,8 +271,9 @@ export const useH3ImpactData = <T = H3ImpactResponse>(
   params: Partial<ImpactH3APIParams> = {},
   options: Partial<UseQueryOptions<H3ImpactResponse, unknown, T>> = {},
 ) => {
-  const filters = useAppSelector(analysisFilters);
-  const { startYear, materials, indicator, suppliers, origins, locationTypes } = filters;
+  const { startYear, materials, indicator, suppliers, origins, locationTypes } =
+    useAppSelector(analysisFilters);
+  const { currentScenario } = useAppSelector(scenarios);
 
   const colors = useColors('impact', COLOR_RAMPS);
   const urlParams: ImpactH3APIParams = {
@@ -281,14 +283,15 @@ export const useH3ImpactData = <T = H3ImpactResponse>(
     ...(suppliers?.length ? { supplierIds: suppliers?.map(({ value }) => value) } : {}),
     ...(origins?.length ? { originIds: origins?.map(({ value }) => value) } : {}),
     ...(locationTypes?.length ? { locationTypes: locationTypes?.map(({ value }) => value) } : {}),
+    ...(currentScenario !== ACTUAL_DATA.id ? { scenarioId: currentScenario } : {}),
     ...params,
     resolution: origins?.length ? 6 : 4,
   };
 
   const isEnable = (options.enabled ?? true) && !!(urlParams.indicatorId && urlParams.year);
 
-  const query = useQuery<unknown, unknown, T>(
-    ['h3-data-impact', filters],
+  const query = useQuery(
+    ['h3-data-impact', urlParams],
     () =>
       apiRawService
         .get<H3APIResponse>('/h3/map/impact', {

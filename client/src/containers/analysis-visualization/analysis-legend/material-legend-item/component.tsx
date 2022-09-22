@@ -1,4 +1,3 @@
-import type { ComponentProps } from 'react';
 import { useCallback, useMemo } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
@@ -15,6 +14,7 @@ import { COLOR_RAMPS } from 'utils/colors';
 import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
 import { useMaterials } from 'hooks/materials';
 import { setFilter } from 'store/features/analysis/filters';
+import type { TreeSelectOption } from 'components/tree-select/types';
 
 const LAYER_ID = 'material';
 const INFO_METADATA = {
@@ -95,8 +95,8 @@ const MaterialLayer = () => {
     [materials],
   );
 
-  const handleMaterialChange = useCallback<ComponentProps<typeof Materials>['onChange']>(
-    (material) => {
+  const handleMaterialChange = useCallback(
+    (material: TreeSelectOption) => {
       dispatch(setFilter({ id: 'materialId', value: material?.value }));
     },
     [dispatch],

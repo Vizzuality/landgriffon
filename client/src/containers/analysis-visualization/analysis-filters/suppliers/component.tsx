@@ -7,14 +7,14 @@ import { useSuppliersTrees } from 'hooks/suppliers';
 
 import type { TreeSelectProps } from 'components/tree-select/types';
 
-interface SuppliersFilterProps
+interface SuppliersFilterProps<IsMulti extends boolean>
   extends SuppliersTreesParams,
     Pick<
-      TreeSelectProps,
+      TreeSelectProps<IsMulti>,
       'current' | 'multiple' | 'onChange' | 'theme' | 'ellipsis' | 'fitContent'
     > {}
 
-const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
+const SuppliersFilter = <IsMulti extends boolean>({
   multiple,
   current,
   depth = 1,
@@ -28,7 +28,7 @@ const SuppliersFilter: React.FC<SuppliersFilterProps> = ({
   theme,
   ellipsis,
   fitContent,
-}) => {
+}: SuppliersFilterProps<IsMulti>) => {
   const { data, isFetching } = useSuppliersTrees(
     {
       depth,

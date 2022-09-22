@@ -50,7 +50,7 @@ const SEARCH_OPTIONS = {
   threshold: 0.4,
 };
 
-const TreeSelect = ({
+const TreeSelect = <IsMulti extends boolean = false>({
   current: currentRaw,
   loading,
   maxBadges = 5,
@@ -68,9 +68,9 @@ const TreeSelect = ({
   label,
   autoFocus = false,
   ref,
-}: TreeSelectProps & { ref?: Ref<HTMLInputElement> }) => {
+}: TreeSelectProps<IsMulti> & { ref?: Ref<HTMLInputElement> }) => {
   const current = useMemo(() => {
-    if (currentRaw === null) {
+    if (!currentRaw) {
       return null;
     }
     if (Array.isArray(currentRaw)) {
@@ -142,11 +142,13 @@ const TreeSelect = ({
   // Selection for non-multiple
   const handleSelect: TreeProps['onSelect'] = useCallback(
     (keys, { node }) => {
-      const currentSelection = { label: node.title as string, value: node.key };
+      const currentSelection: TreeSelectOption = { label: node.title as string, value: node.key };
       setSelectedKeys(keys);
       setSelected(currentSelection);
-      if (multiple === false) {
-        onChange?.(currentSelection);
+
+      if (!multiple) {
+        // TODO: type inference is not working here
+        onChange?.(currentSelection as TreeSelectProps<IsMulti>['current']);
       }
       setIsOpen(false);
     },
@@ -169,10 +171,10 @@ const TreeSelect = ({
       const filteredValues = CHECKED_STRATEGIES[checkedStrategy](checkedKeys, checkedNodes);
 
       // TO-DO: this function is repeated
-      const checkedOptions = [];
+      const checkedOptions: TreeSelectOption[] = [];
       if (filteredValues) {
         (filteredValues as string[]).forEach((key) => {
-          const recursiveSearch = (arr) => {
+          const recursiveSearch = (arr: TreeSelectOption[]) => {
             arr.forEach((opt) => {
               if (opt.value === key) checkedOptions.push(opt);
               if (opt.children) recursiveSearch(opt.children);
@@ -182,7 +184,7 @@ const TreeSelect = ({
         });
       }
       if (multiple) {
-        onChange?.(checkedOptions);
+        onChange?.(checkedOptions as TreeSelectProps<IsMulti>['current']);
       }
       setCheckedKeys(filteredValues);
     },
@@ -251,7 +253,7 @@ const TreeSelect = ({
         });
       }
       if (multiple) {
-        onChange?.(checkedOptions);
+        onChange?.(checkedOptions as TreeSelectProps<IsMulti>['current']);
       }
       setCheckedKeys(filteredKeys);
     },
@@ -267,7 +269,7 @@ const TreeSelect = ({
       setCheckedKeys([]);
     }
     if (current && current.length) {
-      const currentKeys = current.map(({ value }) => value);
+      const currentKeys = (current as TreeSelectOption[]).map(({ value }) => value);
       setSelected(current[0]);
       setSelectedKeys(currentKeys);
       setCheckedKeys(currentKeys);

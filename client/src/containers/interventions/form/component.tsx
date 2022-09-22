@@ -142,7 +142,7 @@ const TYPES_OF_INTERVENTIONS = Object.values(InterventionTypes).map((interventio
   label: interventionType,
 }));
 
-type SubSchema = yup.InferType<typeof schemaValidation>;
+type SubSchema = typeof schemaValidation['__outputType'];
 
 const InterventionForm: React.FC<InterventionFormProps> = ({
   intervention,
@@ -167,7 +167,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     ...(intervention && {
       defaultValues: {
         title: intervention?.title,
-        scenarioId: null,
+        scenarioId: '',
         percentage: intervention.percentage,
         startYear: {
           label: intervention.startYear.toString(),
@@ -234,6 +234,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
         GHG_LUC_T: intervention?.newIndicatorCoefficients?.GHG_LUC_T || 0,
       },
     }),
+    shouldFocusError: true,
   });
 
   const closeSupplierRef = useRef<() => void>(null);
@@ -465,19 +466,19 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
           <Controller
             name="materialIds"
             control={control}
-            render={({ field, fieldState: { invalid } }) => (
+            render={({ field: { onChange, value, ...field }, fieldState: { invalid } }) => (
               <div data-testid="materials-select">
                 <MaterialsSelect
                   {...field}
                   multiple={false}
                   withSourcingLocations
-                  current={field.value}
+                  current={value?.[0]}
                   businessUnitIds={currentBusinessUnitIds?.map(({ value }) => value)}
                   supplierIds={currentSupplierIds?.map(({ value }) => value)}
                   originIds={currentLocationIds?.map(({ value }) => value)}
                   onChange={(selected) => {
                     if (invalid) clearErrors('materialIds');
-                    setValue('materialIds', selected && [selected]);
+                    onChange?.(selected && [selected]);
                   }}
                   error={!!errors?.materialIds}
                 />
@@ -490,7 +491,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
           <Controller
             name="businessUnitIds"
             control={control}
-            render={({ field }) => (
+            render={({ field: { value, ...field } }) => (
               <BusinessUnitsSelect
                 {...field}
                 multiple
@@ -498,8 +499,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                 supplierIds={currentSupplierIds?.map(({ value }) => value)}
                 originIds={currentLocationIds?.map(({ value }) => value)}
                 withSourcingLocations
-                current={field.value}
-                onChange={(selected) => setValue('businessUnitIds', selected ?? [])}
+                current={value}
                 error={!!errors?.businessUnitIds}
                 data-testid="business-units-select"
               />
@@ -511,7 +511,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
           <Controller
             name="adminRegionIds"
             control={control}
-            render={({ field }) => (
+            render={({ field: { value, ...field } }) => (
               <LocationsSelect
                 {...field}
                 multiple
@@ -519,8 +519,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                 supplierIds={currentSupplierIds?.map(({ value }) => value)}
                 businessUnitIds={currentBusinessUnitIds?.map(({ value }) => value)}
                 withSourcingLocations
-                current={field.value}
-                onChange={(selected) => setValue('adminRegionIds', selected ?? [])}
+                current={value}
                 error={!!errors?.adminRegionIds}
                 data-testid="location-select"
               />
@@ -532,7 +531,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
           <Controller
             name="supplierIds"
             control={control}
-            render={({ field }) => (
+            render={({ field: { value, ...field } }) => (
               <SuppliersSelect
                 {...field}
                 multiple
@@ -540,8 +539,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                 businessUnitIds={currentBusinessUnitIds?.map(({ value }) => value)}
                 originIds={currentLocationIds?.map(({ value }) => value)}
                 withSourcingLocations
-                current={field.value}
-                onChange={(selected) => setValue('supplierIds', selected ?? [])}
+                current={value}
                 error={!!errors?.supplierIds}
                 data-testid="supplier-ids-select"
               />
@@ -555,13 +553,13 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
           <Controller
             name="startYear"
             control={control}
-            render={({ field }) => (
+            render={({ field: { value, ...field } }) => (
               <div data-testid="startYear-select">
                 <Select
                   {...field}
                   instanceId="startYear"
                   showSearch
-                  current={field.value}
+                  current={value}
                   options={optionsYears}
                   placeholder="Select a year"
                   onChange={(value) => setValue('startYear', value)}
@@ -641,15 +639,15 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                   <Controller
                     name="newMaterialId"
                     control={control}
-                    render={({ field, fieldState: { invalid } }) => (
+                    render={({ field: { onChange, value, ...field }, fieldState: { invalid } }) => (
                       <div data-testid="new-material-select">
                         <MaterialsSelect
                           {...field}
                           multiple={false}
-                          current={field.value}
+                          current={value?.[0]}
                           onChange={(selected) => {
                             if (invalid) clearErrors('newMaterialId');
-                            setValue('newMaterialId', [selected]);
+                            onChange?.(selected ? [selected] : []);
                           }}
                           error={!!errors?.newMaterialId}
                         />
@@ -817,18 +815,20 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                           <span className="text-gray-500 text-regular">(optional)</span>
                           <InfoToolTip info={InfoTooltip.newSupplier} />
                         </div>
-                        <Disclosure.Button
-                          className={classNames(
-                            'border-primary border w-6 h-6 rounded flex items-center justify-center',
-                            open ? 'bg-primary' : 'bg-transparent',
-                          )}
-                        >
-                          {open ? (
-                            <MinusIcon className="w-5 h-5 text-white" />
-                          ) : (
-                            <PlusIcon className="w-5 h-5 text-primary" />
-                          )}
-                        </Disclosure.Button>
+                        {areSupplierEdited || (
+                          <Disclosure.Button
+                            className={classNames(
+                              'border-primary border w-6 h-6 rounded flex items-center justify-center',
+                              open ? 'bg-primary' : 'bg-transparent',
+                            )}
+                          >
+                            {open ? (
+                              <MinusIcon className="w-5 h-5 text-white" />
+                            ) : (
+                              <PlusIcon className="w-5 h-5 text-primary" />
+                            )}
+                          </Disclosure.Button>
+                        )}
                       </div>
                       <Disclosure.Panel static={areSupplierEdited}>
                         <div className="space-y-4">

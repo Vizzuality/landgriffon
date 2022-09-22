@@ -38,7 +38,7 @@ const INITIAL_FILTERS: MoreFiltersState = {
   locationTypes: [],
 };
 
-const MoreFilters: React.FC = () => {
+const MoreFilters = () => {
   const dispatch = useAppDispatch();
   const { materials, origins, suppliers, locationTypes } = useAppSelector(analysisFilters);
 

@@ -5,17 +5,17 @@ import type { MaterialsTreesParams } from 'hooks/materials';
 import { useMaterialsTrees } from 'hooks/materials';
 
 import TreeSelect from 'components/tree-select';
-import type { TreeSelectOption, TreeSelectProps } from 'components/tree-select/types';
+import type { TreeSelectProps } from 'components/tree-select/types';
 
-interface MaterialsFilterProps
+interface MaterialsFilterProps<IsMulti extends boolean>
   extends MaterialsTreesParams,
     Pick<
-      TreeSelectProps,
+      TreeSelectProps<IsMulti>,
       'current' | 'multiple' | 'onChange' | 'theme' | 'ellipsis' | 'fitContent'
     > {}
 
-const MaterialsFilter = ({
-  multiple = false,
+const MaterialsFilter = <IsMulti extends boolean = false>({
+  multiple,
   current,
   depth = 1,
   supplierIds,
@@ -28,7 +28,7 @@ const MaterialsFilter = ({
   theme,
   ellipsis,
   fitContent,
-}: MaterialsFilterProps) => {
+}: MaterialsFilterProps<IsMulti>) => {
   const { data, isFetching } = useMaterialsTrees(
     {
       depth,
@@ -60,13 +60,13 @@ const MaterialsFilter = ({
 
   return (
     <TreeSelect
-      multiple={multiple as false}
+      multiple={multiple}
       showSearch
       loading={isFetching}
       options={treeOptions}
       placeholder="Materials"
-      onChange={onChange as (value: TreeSelectOption) => void}
-      current={current as TreeSelectOption}
+      onChange={onChange}
+      current={current}
       theme={theme}
       fitContent={fitContent}
       ellipsis={ellipsis}

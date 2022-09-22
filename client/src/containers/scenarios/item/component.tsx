@@ -71,7 +71,7 @@ const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: Scenarios
           <RadioGroup.Option
             disabled={!isComparisonAvailable}
             key={scenario.id}
-            value={scenario}
+            value={scenario.id}
             className="flex justify-between flex-1 truncate items-top gap-2"
           >
             {({ checked }) => (

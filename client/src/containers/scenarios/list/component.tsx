@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useCallback } from 'react';
 import { RadioGroup } from '@headlessui/react';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
@@ -27,13 +27,8 @@ const ScenariosList = ({ data }: ScenariosListProps) => {
   const { currentScenario } = useAppSelector(scenarios);
   const dispatch = useAppDispatch();
 
-  const selected = useMemo(
-    () => data.find(({ id }) => isScenarioSelected(id, currentScenario)) || null,
-    [currentScenario, data],
-  );
-
   const handleOnChange = useCallback(
-    ({ id }: Scenario) => {
+    (id: Scenario['id']) => {
       dispatch(setCurrentScenario(id)).payload;
       setTimeout(() => {
         dispatch(setScenarioToCompare(null));
@@ -49,7 +44,7 @@ const ScenariosList = ({ data }: ScenariosListProps) => {
   }, [data, currentScenario, dispatch]);
 
   return (
-    <RadioGroup value={selected} onChange={handleOnChange}>
+    <RadioGroup value={currentScenario} onChange={handleOnChange}>
       <RadioGroup.Label className="sr-only">Scenarios</RadioGroup.Label>
       <ul className="relative grid grid-cols-1 gap-5 my-2 overflow-auto sm:gap-2 sm:grid-cols-2 lg:grid-cols-1">
         <ScenarioItem

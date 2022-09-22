@@ -49,6 +49,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
 
   afterEach(async () => {
     await clearEntityTables([
+      Scenario,
       IndicatorRecord,
       MaterialToH3,
       H3Data,

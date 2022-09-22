@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
-  GetActualVsScenarioImpactTabledto,
+  GetActualVsScenarioImpactTableDto,
   GetImpactTableDto,
-} from 'modules/impact/dto/get-impact-table.dto';
+} from 'modules/impact/dto/impact-table.dto';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import {
@@ -47,7 +47,7 @@ export class ActualVsScenarioImpactService {
   ) {}
 
   async getActualVsScenarioImpactTable(
-    actualVsScenarioImpactTableDto: GetActualVsScenarioImpactTabledto,
+    actualVsScenarioImpactTableDto: GetActualVsScenarioImpactTableDto,
     fetchSpecification: FetchSpecification,
   ): Promise<PaginatedImpactTable> {
     const indicators: Indicator[] =
@@ -101,7 +101,7 @@ export class ActualVsScenarioImpactService {
   }
 
   /**
-   * Modifies the ImpactTabledto such that, for each entityIds that is populated,
+   * @description: Modifies the ImpactTabledto such that, for each entityIds that is populated,
    * the ids of their descendants are added, in-place
    * @param impactTableDto
    * @private
@@ -135,7 +135,7 @@ export class ActualVsScenarioImpactService {
    * @private
    */
   private async getScenarioAndActualEntityTrees(
-    getActualVsScenarioImpactTableDto: GetActualVsScenarioImpactTabledto,
+    getActualVsScenarioImpactTableDto: GetActualVsScenarioImpactTableDto,
   ): Promise<ImpactTableEntityType[]> {
     const treeOptions: GetMaterialTreeWithOptionsDto = {
       ...(getActualVsScenarioImpactTableDto.materialIds && {
@@ -217,7 +217,7 @@ export class ActualVsScenarioImpactService {
   }
 
   private getDataForActualVsScenarioImpactTable(
-    actualVsScenarioImpactTableDto: GetActualVsScenarioImpactTabledto,
+    actualVsScenarioImpactTableDto: GetActualVsScenarioImpactTableDto,
     entities: ImpactTableEntityType[],
   ): Promise<ActualVsScenarioImpactTableData[]> {
     return entities.length > 0
@@ -228,7 +228,7 @@ export class ActualVsScenarioImpactService {
   }
 
   private buildActualVsScenarioImpactTable(
-    queryDto: GetActualVsScenarioImpactTabledto,
+    queryDto: GetActualVsScenarioImpactTableDto,
     indicators: Indicator[],
     dataForActualVsScenarioImpactTable: ActualVsScenarioImpactTableData[],
     entities: ImpactTableRows[],

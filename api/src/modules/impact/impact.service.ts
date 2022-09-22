@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   GetImpactTableDto,
   GetRankedImpactTableDto,
-} from 'modules/impact/dto/get-impact-table.dto';
+} from 'modules/impact/dto/impact-table.dto';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import { ImpactTableData } from 'modules/sourcing-records/sourcing-record.repository';
@@ -27,7 +27,6 @@ import { DEFAULT_PAGINATION, FetchSpecification } from 'nestjs-base-service';
 import { PaginatedEntitiesDto } from 'modules/impact/dto/paginated-entities.dto';
 import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
-import { SOURCING_LOCATION_TYPE_BY_INTERVENTION } from 'modules/sourcing-locations/sourcing-location.entity';
 import { PaginationMeta } from 'utils/app-base.service';
 
 @Injectable()
@@ -73,7 +72,7 @@ export class ImpactService {
       paginatedEntities.entities,
     );
 
-    let dataForImpactTable: ImpactTableData[] =
+    const dataForImpactTable: ImpactTableData[] =
       await this.getDataForImpactTable(
         impactTableDto,
         paginatedEntities.entities,
@@ -233,7 +232,7 @@ export class ImpactService {
   }
 
   /**
-   * Returns an array of ImpactTable Entities, determined by the grouBy field and properties
+   * @description Returns an array of ImpactTable Entities, determined by the groupBy field and properties
    * of the GetImpactTableDto
    * @param impactTableDto
    * @private
@@ -250,6 +249,9 @@ export class ImpactService {
       }),
       ...(impactTableDto.supplierIds && {
         supplierIds: impactTableDto.supplierIds,
+      }),
+      ...(impactTableDto.scenarioId && {
+        scenarioId: impactTableDto.scenarioId,
       }),
     };
     switch (impactTableDto.groupBy) {
@@ -409,7 +411,7 @@ export class ImpactService {
           0,
         );
 
-        let totalInterventionSumByYear: number | null = null;
+        const totalInterventionSumByYear: number | null = null;
 
         impactTable[indicatorValuesIndex].yearSum.push({
           year,

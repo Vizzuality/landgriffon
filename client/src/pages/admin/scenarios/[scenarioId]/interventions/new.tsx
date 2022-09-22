@@ -12,14 +12,16 @@ import { parseInterventionFormDataToDto } from 'containers/interventions/utils';
 import BackLink from 'components/back-link';
 
 import type { ErrorResponse } from 'types';
+import type { InterventionFormData } from 'containers/interventions/types';
 
 const CreateInterventionPage: React.FC = () => {
   const { query } = useRouter();
   const createIntervention = useCreateNewIntervention();
 
   const handleSubmit = useCallback(
-    (interventionFormData) => {
+    (interventionFormData: InterventionFormData) => {
       const interventionDto = parseInterventionFormDataToDto(interventionFormData);
+
       createIntervention.mutate(interventionDto, {
         onSuccess: () => {
           toast.success(`Intervention was created successfully`);

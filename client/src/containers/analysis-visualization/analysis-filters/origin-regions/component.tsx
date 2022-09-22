@@ -6,14 +6,14 @@ import type { AdminRegionsTreesParams } from 'hooks/admin-regions';
 import { useAdminRegionsTrees } from 'hooks/admin-regions';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
-interface OriginRegionsFilterProps
+interface OriginRegionsFilterProps<IsMulti extends boolean>
   extends AdminRegionsTreesParams,
     Pick<
-      TreeSelectProps,
+      TreeSelectProps<IsMulti>,
       'current' | 'multiple' | 'onChange' | 'theme' | 'ellipsis' | 'fitContent'
     > {}
 
-const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
+const OriginRegionsFilter = <IsMulti extends boolean>({
   multiple,
   current,
   depth = 1,
@@ -27,7 +27,7 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
   theme,
   ellipsis,
   fitContent,
-}) => {
+}: OriginRegionsFilterProps<IsMulti>) => {
   const { data, isFetching } = useAdminRegionsTrees(
     {
       depth,
@@ -44,7 +44,7 @@ const OriginRegionsFilter: React.FC<OriginRegionsFilterProps> = ({
     },
   );
 
-  const treeOptions: TreeSelectProps['options'] = useMemo(
+  const treeOptions = useMemo<TreeSelectProps<IsMulti>['options']>(
     () =>
       sortBy(
         data?.map(({ name, id, children }) => ({

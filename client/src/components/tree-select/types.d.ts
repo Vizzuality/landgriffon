@@ -32,16 +32,25 @@ interface CommonTreeProps {
   // onChange?: (selected: Multi extends true ? TreeSelectOption[] : TreeSelectOption) => void;
 }
 
-type MultipleTreeProps = CommonTreeProps & {
-  multiple: true;
-  current: TreeSelectOption[];
-  onChange?: (selected: TreeSelectOption[]) => void;
-};
+// interface MultipleTreeProps {
+//   multiple: true;
+//   current: TreeSelectOption[];
+//   onChange?: (selected: TreeSelectOption[]) => void;
+// }
 
-type SingleTreeProps = CommonTreeProps & {
-  multiple?: false;
-  current: TreeSelectOption;
-  onChange?: (selected: TreeSelectOption) => void;
-};
+// interface SingleTreeProps {
+//   multiple?: false;
+//   current: TreeSelectOption;
+//   onChange?: (selected: TreeSelectOption) => void;
+// }
 
-export type TreeSelectProps = SingleTreeProps | MultipleTreeProps;
+// interface TreeSelectPropsWithoutMultiple<IsMulti extends boolean> extends CommonTreeProps {
+//   current: IsMulti extends true ? TreeSelectOption[] : TreeSelectOption;
+//   onChange?: (selected: IsMulti extends true ? TreeSelectOption[] : TreeSelectOption) => void;
+// }
+
+export interface TreeSelectProps<IsMulti extends boolean = false> extends CommonTreeProps {
+  multiple?: IsMulti;
+  current: IsMulti extends true ? TreeSelectOption[] : TreeSelectOption | null;
+  onChange?: (selected: IsMulti extends true ? TreeSelectOption[] : TreeSelectOption) => void;
+}

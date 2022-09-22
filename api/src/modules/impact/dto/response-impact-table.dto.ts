@@ -88,6 +88,10 @@ export class ImpactTableRowsValues {
   @ApiPropertyOptional()
   scenarioValue?: number;
   @ApiPropertyOptional()
+  scenarioOneValue?: number;
+  @ApiPropertyOptional()
+  scenarioTwoValue?: number;
+  @ApiPropertyOptional()
   absoluteDifference?: number;
   @ApiPropertyOptional()
   percentageDifference?: number;

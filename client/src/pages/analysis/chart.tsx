@@ -68,7 +68,7 @@ ChartPage.Layout = function getLayout(page: ReactElement) {
   );
 };
 
-export async function getServerSideProps({ query }) {
+export function getServerSideProps({ query }) {
   return { props: { query } };
 }
 

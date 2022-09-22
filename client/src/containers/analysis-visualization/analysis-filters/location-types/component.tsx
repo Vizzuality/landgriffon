@@ -1,3 +1,4 @@
+import type { Dispatch } from 'react';
 import React, { useMemo } from 'react';
 import { sortBy } from 'lodash';
 
@@ -6,11 +7,14 @@ import TreeSelect from 'components/tree-select';
 // hooks
 import type { LocationTypesParams } from 'hooks/location-types';
 import { useLocationTypes } from 'hooks/location-types';
-import type { TreeSelectProps } from 'components/tree-select/types';
+import type { TreeSelectOption, TreeSelectProps } from 'components/tree-select/types';
 
 interface LocationTypeFilterProps
   extends LocationTypesParams,
-    Pick<TreeSelectProps, 'current' | 'onChange' | 'theme' | 'ellipsis' | 'fitContent'> {}
+    Pick<TreeSelectProps, 'theme' | 'ellipsis' | 'fitContent'> {
+  current: TreeSelectOption[];
+  onChange?: Dispatch<TreeSelectOption[]>;
+}
 
 const LocationTypesFilter: React.FC<LocationTypeFilterProps> = ({
   current,

@@ -67,15 +67,9 @@ export const useScenarios = <T = ResponseData>({
     ...params,
   };
 
-<<<<<<< HEAD
   const query = useQuery(
-    ['scenariosList', sort, paramsResult, searchTerm],
-    async () =>
-=======
-  const response: ResponseData = useQuery<Scenario[]>(
-    ['scenariosList', sort, filter, searchTerm],
+    ['scenariosList', sort, paramsResult],
     () =>
->>>>>>> adb0ea10 (Fix some queries inmediatly returning)
       apiService
         .request<ResponseData>({
           method: 'GET',

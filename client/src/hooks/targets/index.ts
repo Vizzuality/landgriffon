@@ -54,7 +54,7 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions<Target[]> = {
 export function useTargets(queryParams: QueryParams = null): ResponseData {
   const response: ResponseData = useQuery<Target[]>(
     ['targetsList', queryParams],
-    async () =>
+    () =>
       apiService
         .request({
           method: 'GET',

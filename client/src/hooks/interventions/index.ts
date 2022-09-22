@@ -114,7 +114,7 @@ export function useIntervention({
 }) {
   const query = useQuery(
     ['fetchIntervention', interventionId, params],
-    async () =>
+    () =>
       apiService
         .request({
           method: 'GET',

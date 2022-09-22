@@ -42,7 +42,7 @@ const Downloader: React.FC<DownloaderProps> = ({
           : { headers: propsHeaders, data: data.data },
       );
 
-  const handleClick = async () => {
+  const handleClick = () => {
     onDownloading();
     switch (type) {
       case 'csv':

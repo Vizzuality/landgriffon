@@ -11,9 +11,10 @@ import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import {
-  GetActualVsScenarioImpactTabledto,
+  GetActualVsScenarioImpactTableDto,
+  BaseImpactTableDto,
   GetImpactTableDto,
-} from 'modules/impact/dto/get-impact-table.dto';
+} from 'modules/impact/dto/impact-table.dto';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { Material } from 'modules/materials/material.entity';
@@ -22,7 +23,6 @@ import { Supplier } from 'modules/suppliers/supplier.entity';
 import { Logger, NotFoundException } from '@nestjs/common';
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
-import { Scenario } from 'modules/scenarios/scenario.entity';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 
 export class ImpactTableData {
@@ -69,17 +69,22 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
     return sourcingRecordsYears.map((elem: { year: number }) => elem.year);
   }
 
+  /**
+   * @deprecated: Will be removed to impact repository
+   */
   async getDataForImpactTable(
     getImpactTaleDto: GetImpactTableDto,
   ): Promise<ImpactTableData[]> {
     const impactDataQueryBuilder: SelectQueryBuilder<SourcingRecord> =
       this.createBasicSelectQuery(getImpactTaleDto);
 
+    // Decide to select just actual data or scenario with actual data
+    this.handleSourceDataSelect(impactDataQueryBuilder, getImpactTaleDto);
+
     // Adding received entity filters to query
     this.addEntityFiltersToQuery(impactDataQueryBuilder, getImpactTaleDto);
 
     // Adding received group by option to query
-
     this.addGroupAndOrderByToQuery(impactDataQueryBuilder, getImpactTaleDto);
 
     const dataForImpactTable: ImpactTableData[] =
@@ -94,10 +99,10 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
   }
 
   async getDataForActualVsScenarioImpactTable(
-    getActualVsScenarioImapctTable: GetActualVsScenarioImpactTabledto,
+    getActualVsScenarioImpactTable: GetActualVsScenarioImpactTableDto,
   ): Promise<ActualVsScenarioImpactTableData[]> {
     const impactDataQueryBuilder: SelectQueryBuilder<SourcingRecord> =
-      this.createBasicSelectQuery(getActualVsScenarioImapctTable);
+      this.createBasicSelectQuery(getActualVsScenarioImpactTable);
 
     impactDataQueryBuilder.leftJoin(
       ScenarioIntervention,
@@ -107,19 +112,19 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
     impactDataQueryBuilder.andWhere(
       new Brackets((qb: WhereExpressionBuilder) => {
         qb.where('scenarioIntervention.scenarioId = :scenarioId', {
-          scenarioId: getActualVsScenarioImapctTable.scenarioId,
+          scenarioId: getActualVsScenarioImpactTable.scenarioId,
         }).orWhere('sourcingLocation.scenarioInterventionId is null');
       }),
     );
 
     this.addEntityFiltersToQuery(
       impactDataQueryBuilder,
-      getActualVsScenarioImapctTable,
+      getActualVsScenarioImpactTable,
     );
 
     this.addGroupAndOrderByToQuery(
       impactDataQueryBuilder,
-      getActualVsScenarioImapctTable,
+      getActualVsScenarioImpactTable,
     );
 
     const dataForActualVsScenarioImpactTable: ActualVsScenarioImpactTableData[] =
@@ -134,7 +139,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
   }
 
   private createBasicSelectQuery(
-    impactDataDto: GetActualVsScenarioImpactTabledto | GetImpactTableDto,
+    impactDataDto: GetActualVsScenarioImpactTableDto | BaseImpactTableDto,
   ): SelectQueryBuilder<SourcingRecord> {
     const basicSelectQuery: SelectQueryBuilder<SourcingRecord> =
       this.createQueryBuilder('sourcingRecords')
@@ -192,7 +197,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
 
   private addEntityFiltersToQuery(
     selectQueryBuilder: SelectQueryBuilder<SourcingRecord>,
-    impactDataDto: GetActualVsScenarioImpactTabledto | GetImpactTableDto,
+    impactDataDto: GetActualVsScenarioImpactTableDto | GetImpactTableDto,
   ): SelectQueryBuilder<SourcingRecord> {
     if (impactDataDto.materialIds) {
       selectQueryBuilder.andWhere(
@@ -237,7 +242,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
 
   private addGroupAndOrderByToQuery(
     selectQueryBuilder: SelectQueryBuilder<SourcingRecord>,
-    impactDataDto: GetActualVsScenarioImpactTabledto | GetImpactTableDto,
+    impactDataDto: GetActualVsScenarioImpactTableDto | BaseImpactTableDto,
   ): SelectQueryBuilder<SourcingRecord> {
     switch (impactDataDto.groupBy) {
       case GROUP_BY_VALUES.MATERIAL:
@@ -278,5 +283,36 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       .addOrderBy('name');
 
     return selectQueryBuilder;
+  }
+
+  /**
+   * @description: Conditionally decide to add Scenario AND Actual Data,
+   *               or just Actual data
+   */
+
+  private handleSourceDataSelect(
+    queryBuilder: SelectQueryBuilder<SourcingRecord>,
+    dto: GetImpactTableDto,
+  ): SelectQueryBuilder<SourcingRecord> {
+    if (dto.scenarioId) {
+      queryBuilder
+        .leftJoin(
+          ScenarioIntervention,
+          'scenarioIntervention',
+          'sourcingLocation.scenarioInterventionId = scenarioIntervention.id',
+        )
+        .andWhere(
+          new Brackets((qb: WhereExpressionBuilder) => {
+            qb.where('scenarioIntervention.scenarioId = :scenarioId', {
+              scenarioId: dto.scenarioId,
+            }).orWhere('sourcingLocation.scenarioInterventionId is null');
+          }),
+        );
+    } else {
+      queryBuilder.andWhere('sourcingLocation.scenarioInterventionId is null');
+      queryBuilder.andWhere('sourcingLocation.interventionType is null');
+    }
+
+    return queryBuilder;
   }
 }

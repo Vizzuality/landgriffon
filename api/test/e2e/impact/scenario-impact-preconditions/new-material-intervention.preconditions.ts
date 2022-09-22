@@ -27,6 +27,8 @@ import { INDICATOR_TYPES } from '../../../../src/modules/indicators/indicator.en
 export async function createNewMaterialInterventionPreconditions(): Promise<{
   indicator: Indicator;
   scenarioIntervention: ScenarioIntervention;
+  replacingMaterials: Record<string, Material>;
+  replacedMaterials: Record<string, Material>;
 }> {
   const adminRegion: AdminRegion = await createAdminRegion({
     name: 'India',
@@ -184,5 +186,10 @@ export async function createNewMaterialInterventionPreconditions(): Promise<{
     sourcingLocation: linenSourcingLocationReplacing,
   });
 
-  return { indicator, scenarioIntervention };
+  return {
+    indicator,
+    scenarioIntervention,
+    replacedMaterials: { wool, cotton },
+    replacingMaterials: { linen },
+  };
 }

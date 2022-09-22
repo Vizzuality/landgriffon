@@ -7,7 +7,7 @@ import { BusinessUnitsModule } from 'modules/business-units/business-units.modul
 import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { MaterialsModule } from 'modules/materials/materials.module';
-import { ActualVsScenarioImpactService } from './actual-vs-scenario.service';
+import { ActualVsScenarioImpactService } from 'modules/impact/comparison/actual-vs-scenario.service';
 
 @Module({
   imports: [

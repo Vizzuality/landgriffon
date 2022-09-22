@@ -18,7 +18,7 @@ import {
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { transformLocationType } from 'utils/transform-location-type.util';
 
-export class GetImpactTableDto {
+export class BaseImpactTableDto {
   @ApiProperty({
     name: 'indicatorIds[]',
   })
@@ -88,14 +88,24 @@ export class GetImpactTableDto {
   locationTypes?: LOCATION_TYPES_PARAMS[];
 }
 
-export class GetActualVsScenarioImpactTabledto extends GetImpactTableDto {
-  @ApiPropertyOptional()
-  @IsOptional()
+export class GetActualVsScenarioImpactTableDto extends BaseImpactTableDto {
+  @ApiProperty()
+  @IsNotEmpty()
   @IsUUID(4)
   scenarioId: string;
 }
 
-export class GetRankedImpactTableDto extends GetImpactTableDto {
+export class GetImpactTableDto extends BaseImpactTableDto {
+  @ApiPropertyOptional({
+    description:
+      'Include in the response elements that are being intervened in a Scenario,',
+  })
+  @IsOptional()
+  @IsUUID(4)
+  scenarioId?: string;
+}
+
+export class GetRankedImpactTableDto extends BaseImpactTableDto {
   @ApiProperty({
     description:
       'The maximum number of entities to show in the Impact Table. If the result includes more than that, they will be' +
@@ -116,5 +126,13 @@ export class GetRankedImpactTableDto extends GetImpactTableDto {
   @IsIn(['ASC', 'DES'], {
     message: `sort property must be either 'ASC' (Ascendant) or 'DES' (Descendent)`,
   })
-  sort?: string; // ASC or DESC, will be DESC by default
+  sort?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Include in the response elements that are being intervened in a Scenario,',
+  })
+  @IsOptional()
+  @IsUUID(4)
+  scenarioId?: string;
 }

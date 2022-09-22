@@ -73,11 +73,6 @@ export class GetAdminRegionTreeWithOptionsDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsUUID(4)
-  scenarioId?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
   @IsUUID('4', { each: true })
   scenarioIds?: string[];
 }

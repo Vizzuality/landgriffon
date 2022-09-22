@@ -69,29 +69,20 @@ export class MaterialRepository extends ExtendedTreeRepository<
       });
     }
     // TODO: we could externalise this to something generic as well
-    if (materialTreeOptions.scenarioId || materialTreeOptions.scenarioIds) {
+    if (materialTreeOptions.scenarioIds) {
       queryBuilder.leftJoin(
         ScenarioIntervention,
         'scenarioIntervention',
         'sl.scenarioInterventionId = scenarioIntervention.id',
       );
-      if (materialTreeOptions.scenarioIds) {
-        queryBuilder.andWhere(
-          new Brackets((qb: WhereExpressionBuilder) => {
-            qb.where('scenarioIntervention.scenarioId IN (:...scenarioIds)', {
-              scenarioIds: materialTreeOptions.scenarioIds,
-            }).orWhere('sl.scenarioInterventionId is null');
-          }),
-        );
-      } else if (materialTreeOptions.scenarioIds) {
-        queryBuilder.andWhere(
-          new Brackets((qb: WhereExpressionBuilder) => {
-            qb.where('scenarioIntervention.scenarioId = :scenarioId', {
-              scenarioId: materialTreeOptions.scenarioId,
-            }).orWhere('sl.scenarioInterventionId is null');
-          }),
-        );
-      }
+
+      queryBuilder.andWhere(
+        new Brackets((qb: WhereExpressionBuilder) => {
+          qb.where('scenarioIntervention.scenarioId IN (:...scenarioIds)', {
+            scenarioIds: materialTreeOptions.scenarioIds,
+          }).orWhere('sl.scenarioInterventionId is null');
+        }),
+      );
     } else {
       queryBuilder.andWhere('sl.scenarioInterventionId is null');
       queryBuilder.andWhere('sl.interventionType is null');

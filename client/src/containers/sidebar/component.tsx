@@ -1,17 +1,20 @@
 import { Fragment, useCallback } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { CollectionIcon, CogIcon, XIcon, QuestionMarkCircleIcon } from '@heroicons/react/outline';
+import { CollectionIcon, ChartBarIcon, XIcon } from '@heroicons/react/outline';
+
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { ui, setMenuMobileOpen } from 'store/features/ui';
+
 import MobileNavigation from 'containers/navigation/mobile';
 import DesktopNavigation from 'containers/navigation/desktop';
 import UserDropdown from 'containers/user-dropdown';
+import LandgriffonLogo from 'containers/logo';
+
 import type { NavigationList } from 'containers/navigation/types';
 
 const navigationItems: NavigationList = [
-  { name: 'Analysis', href: '/analysis', icon: CollectionIcon },
-  { name: 'Admin', href: '/admin', icon: CogIcon },
-  { name: 'Help', href: '#', icon: QuestionMarkCircleIcon },
+  { name: 'Data', href: '/admin', icon: CollectionIcon },
+  { name: 'Analysis', href: '/analysis', icon: ChartBarIcon },
 ];
 
 const Sidebar: React.FC = () => {
@@ -74,12 +77,7 @@ const Sidebar: React.FC = () => {
               </Transition.Child>
               <div className="pt-5 pb-4">
                 <div className="flex items-center flex-shrink-0 px-4">
-                  {/* Logo has been removed temporally */}
-                  {/* <img
-                    className="w-auto h-8"
-                    src="https://tailwindui.com/img/logos/workflow-mark.svg?color=white"
-                    alt="Landgriffon"
-                  /> */}
+                  <LandgriffonLogo />
                 </div>
                 <MobileNavigation items={navigationItems} />
               </div>
@@ -97,13 +95,14 @@ const Sidebar: React.FC = () => {
       {/* Static sidebar for desktop */}
       <div className="flex lg:flex-shrink-0">
         <div className="flex flex-col w-28">
-          <div className="flex-1 flex flex-col min-h-0 overflow-y-auto bg-primary">
+          <div className="flex flex-col flex-1 min-h-0 overflow-y-auto bg-primary">
             <div className="flex-1">
               {/* TODO: Logo should be here */}
+              <LandgriffonLogo className="flex justify-center my-12" />
               <DesktopNavigation items={navigationItems} />
             </div>
 
-            <div className="flex-shrink-0 flex pb-5">
+            <div className="flex flex-shrink-0 pb-5">
               <UserDropdown />
             </div>
           </div>

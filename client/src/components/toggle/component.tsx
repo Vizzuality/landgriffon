@@ -1,3 +1,4 @@
+import type { MouseEventHandler } from 'react';
 import { useCallback } from 'react';
 import { Switch } from '@headlessui/react';
 import classNames from 'classnames';
@@ -5,6 +6,13 @@ import classNames from 'classnames';
 type ToggleProps = {
   active: boolean;
   onChange?: (active: boolean) => void;
+};
+
+/**
+ * Prevents the event from propagating. For example, if there's a toggle inside an Accordion header
+ */
+const handleClick: MouseEventHandler = (e) => {
+  e.stopPropagation();
 };
 
 const Toggle: React.FC<ToggleProps> = ({ active, onChange }) => {
@@ -20,6 +28,7 @@ const Toggle: React.FC<ToggleProps> = ({ active, onChange }) => {
       checked={active}
       onChange={handleChange}
       className="relative inline-flex items-center justify-center flex-shrink-0 w-8 h-5 rounded-full cursor-pointer group focus:outline-none"
+      onClick={handleClick}
     >
       <span className="sr-only">Use setting</span>
       <span

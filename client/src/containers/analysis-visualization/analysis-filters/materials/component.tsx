@@ -12,11 +12,10 @@ interface MaterialsFilterProps<IsMulti extends boolean>
     Pick<
       TreeSelectProps<IsMulti>,
       'current' | 'multiple' | 'onChange' | 'theme' | 'ellipsis' | 'fitContent'
-    > {}
+    >,
+    Partial<Pick<TreeSelectProps<IsMulti>, 'options'>> {}
 
 const MaterialsFilter = <IsMulti extends boolean = false>({
-  multiple,
-  current,
   depth = 1,
   supplierIds,
   businessUnitIds,
@@ -24,10 +23,8 @@ const MaterialsFilter = <IsMulti extends boolean = false>({
   locationTypes,
   withSourcingLocations, // Do not a default; backend will override depth if this is set at all
   scenarioId,
-  onChange,
-  theme,
-  ellipsis,
-  fitContent,
+  options,
+  ...props
 }: MaterialsFilterProps<IsMulti>) => {
   const { data, isFetching } = useMaterialsTrees(
     {
@@ -47,6 +44,7 @@ const MaterialsFilter = <IsMulti extends boolean = false>({
 
   const treeOptions = useMemo(
     () =>
+      options ??
       sortBy(
         data?.map(({ name, id, children }) => ({
           label: name,
@@ -55,21 +53,16 @@ const MaterialsFilter = <IsMulti extends boolean = false>({
         })),
         'label',
       ),
-    [data],
+    [data, options],
   );
 
   return (
     <TreeSelect
-      multiple={multiple}
       showSearch
       loading={isFetching}
       options={treeOptions}
       placeholder="Materials"
-      onChange={onChange}
-      current={current}
-      theme={theme}
-      fitContent={fitContent}
-      ellipsis={ellipsis}
+      {...props}
     />
   );
 };

@@ -83,7 +83,14 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
 
   return (
     <>
-      <button type="button" {...getReferenceProps({ ref: reference, className: 'relative' })}>
+      <button
+        type="button"
+        {...getReferenceProps({
+          ref: reference,
+          className: 'relative',
+          onClick: (e) => e.stopPropagation(),
+        })}
+      >
         {children}
       </button>
       {isOpen && (

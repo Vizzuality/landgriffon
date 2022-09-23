@@ -311,7 +311,7 @@ const TreeSelect = <IsMulti extends boolean = false>({
   }, [currentOptions.length, handleSearch, placeholder, resetSearch, searchTerm, selected, theme]);
 
   return (
-    <div className="min-w-0">
+    <div className="min-w-0 ">
       <input ref={ref} className="hidden" />
       <div
         {...getReferenceProps({

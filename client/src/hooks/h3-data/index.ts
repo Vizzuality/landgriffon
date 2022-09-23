@@ -113,7 +113,7 @@ export const useH3MaterialData = <T = H3APIResponse>(
     resolution: origins?.length ? 6 : 4,
   };
 
-  const enabled = (options.enabled ?? true) && !!startYear && !!materialId;
+  const enabled = (options.enabled ?? true) && !!urlParams.year && !!urlParams.materialId;
 
   const query = useQuery(
     ['h3-data-material', urlParams],
@@ -183,7 +183,10 @@ const fetchContextualLayerData: QueryFunction<
     // Adding color to the response
     .then((response) => responseContextualParser(response));
 
-export const useH3ContextualData = (id: string, options: Partial<UseQueryOptions> = {}) => {
+export const useH3ContextualData = <T = H3APIResponse>(
+  id: string,
+  options: UseQueryOptions<H3APIResponse, unknown, T> = {},
+) => {
   const filters = useAppSelector(analysisFilters);
   const { startYear, materials, indicator, suppliers, origins, locationTypes } = filters;
   const urlParams = {
@@ -212,16 +215,7 @@ export const useH3ContextualData = (id: string, options: Partial<UseQueryOptions
     enabled: (options.enabled ?? true) && !!id && !!urlParams.year,
   });
 
-  const { data, isError } = query;
-
-  return useMemo<H3ContextualResponse>(
-    () =>
-      ({
-        ...query,
-        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as H3ContextualResponse,
-      } as H3ContextualResponse),
-    [query, isError, data],
-  );
+  return query;
 };
 
 export const useAllContextualLayersData = (options: Partial<UseQueryOptions> = {}) => {
@@ -310,31 +304,39 @@ export const useH3ImpactData = <T = H3ImpactResponse>(
   return query;
 };
 
-export const useH3Data = <T = H3APIResponse>(
-  id: Layer['id'],
-  options: UseQueryOptions<H3APIResponse, unknown, T> = {},
-) => {
+interface UseH3DataProps<T> {
+  id: Layer['id'];
+  params?: Partial<MaterialH3APIParams & ImpactH3APIParams>;
+  options?: UseQueryOptions<H3APIResponse, unknown, T>;
+}
+
+export const useH3Data = <T = H3APIResponse>({
+  id,
+  params: { materialId } = {},
+  options = {},
+}: UseH3DataProps<T>) => {
+  const { enabled = true } = options;
   const isContextual = !['impact', 'material'].includes(id);
   const isMaterial = id === 'material';
   const isImpact = id === 'impact';
 
   const materialQuery = useH3MaterialData(
-    {},
+    { materialId },
     {
       ...options,
-      enabled: isMaterial && options.enabled,
+      enabled: enabled && isMaterial,
     },
   );
   const impactQuery = useH3ImpactData(
     {},
     {
       ...options,
-      enabled: isImpact && options.enabled,
+      enabled: enabled && isImpact,
     },
   );
   const contextualQuery = useH3ContextualData(id, {
     ...options,
-    enabled: isContextual && options.enabled,
+    enabled: enabled && isContextual,
   });
 
   if (isImpact) return impactQuery;

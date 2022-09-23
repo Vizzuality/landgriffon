@@ -147,8 +147,8 @@ export const Legend: React.FC = () => {
         </div>
       </div>
       <Modal
-        // size="fit"
-        size="wide"
+        size="fit"
+        // size="wide"
         title="Contextual Layers"
         open={showSettings}
         dismissable={false}

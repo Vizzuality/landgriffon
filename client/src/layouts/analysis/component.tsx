@@ -9,7 +9,7 @@ import { analysisUI } from 'store/features/analysis/ui';
 import CollapseButton from 'containers/collapse-button';
 import Scenarios from 'containers/scenarios';
 import AnalysisFilters from 'containers/analysis-visualization/analysis-filters';
-import ModeControl from 'containers/analysis-visualization/mode-control';
+import ModeControl from 'containers/mode-control';
 import TitleTemplate from 'utils/titleTemplate';
 
 const AnalysisLayout: React.FC<React.PropsWithChildren> = ({ children }) => {

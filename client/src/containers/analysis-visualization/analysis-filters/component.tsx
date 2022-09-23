@@ -11,7 +11,7 @@ const AnalysisFilters: React.FC = () => {
   const { visualizationMode } = useAppSelector(analysisUI);
 
   return (
-    <div className="inline-flex gap-2 flex-wrap">
+    <div className="inline-flex flex-wrap gap-2">
       <IndicatorsFilter />
       {visualizationMode !== 'map' && <GroupByFilter />}
       {visualizationMode === 'map' && <YearsFilter />}

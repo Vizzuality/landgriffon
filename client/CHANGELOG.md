@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Smart filters not being persisted between pages
 - Showing errors in the sign-up form
 - Loading more consistent for the auth pages
+- Wrong mode selector in the analysis page
 
 ## [2022.08.03]
 

@@ -50,7 +50,7 @@ const MaterialLayer = () => {
     [dispatch],
   );
 
-  const { isFetching, isFetched, data } = useH3MaterialData(undefined, {
+  const { isFetching, isSuccess, data } = useH3MaterialData(undefined, {
     onSuccess: (data) => {
       dispatch(
         setLayer({
@@ -121,15 +121,15 @@ const MaterialLayer = () => {
     <LegendItem
       name={layer.active ? Selector : 'Material Production'}
       info={INFO_METADATA[`material-${indicator?.value}`]}
-      {...data.metadata?.legend}
-      unit={data.metadata?.unit}
+      {...data?.metadata?.legend}
+      unit={data?.metadata?.unit}
       showToolbar
       opacity={layer.opacity}
       onChangeOpacity={handleOpacity}
       isLoading={isFetching}
       main
     >
-      {isFetched && (
+      {isSuccess && (
         <LegendTypeChoropleth
           className="text-sm text-gray-500"
           min={data.metadata.legend?.min}

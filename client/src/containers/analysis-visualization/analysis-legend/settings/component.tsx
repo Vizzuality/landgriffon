@@ -6,15 +6,18 @@ import Search from 'components/search';
 import Toggle from 'components/toggle';
 import useFuse from 'hooks/fuse';
 import type { CategoryWithLayers } from 'hooks/layers/getContextualLayers';
+import type { Dispatch } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { analysisMap, setLayer } from 'store/features/analysis';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import type { Layer } from 'types';
 import type Fuse from 'fuse.js';
+import PreviewMap from './previewMap';
 
 interface LegendSettingsProps {
   categories: CategoryWithLayers[];
-  onApply?: (layers: Layer[]) => void;
+  onApply?: Dispatch<Layer[]>;
+  onDismiss?: () => void;
 }
 
 interface LayerSettingsProps {
@@ -98,7 +101,7 @@ const FUSE_OPTIONS: Fuse.IFuseOptions<CategoryWithLayers['layers'][number]> = {
   threshold: 0.3,
 };
 
-const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onApply }) => {
+const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsProps) => {
   const {
     layers: { impact, ...initialLayerState },
   } = useAppSelector(analysisMap);
@@ -172,27 +175,36 @@ const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onAppl
   );
 
   return (
-    <div className="h-[400px] w-96 flex flex-col items-stretch gap-5">
-      <div className="w-full">
-        <Search
-          onChange={setSearchText}
-          value={searchText}
-          placeholder="Search layers"
-          onReset={reset}
-        />
+    <div className="flex flex-row">
+      <div className="h-[400px] w-96 flex flex-col items-stretch gap-5 p-6">
+        <div className="w-full">
+          <Search
+            onChange={setSearchText}
+            value={searchText}
+            placeholder="Search layers"
+            onReset={reset}
+          />
+        </div>
+        <div className="text-sm text-right underline text-primary underline-offset-[3px]">
+          Selected layers ({localSelectedLayerNumber})
+        </div>
+        <div className="max-h-full p-0.5 overflow-y-auto flex-grow">
+          <Accordion>{accordionEntries}</Accordion>
+        </div>
+        <div className="flex flex-row justify-between">
+          <Button theme="textLight" onClick={onDismiss}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleApply}
+            theme="primaryLight"
+            className="text-primary border-primary"
+          >
+            Apply
+          </Button>
+        </div>
       </div>
-      <div className="text-sm text-right underline text-primary underline-offset-[3px]">
-        Selected layers ({localSelectedLayerNumber})
-      </div>
-      <div className="max-h-full p-0.5 overflow-y-auto flex-grow">
-        <Accordion>{accordionEntries}</Accordion>
-      </div>
-      <div className="flex flex-row justify-between">
-        <Button theme="textLight">Cancel</Button>
-        <Button onClick={handleApply} theme="primaryLight" className="text-primary border-primary">
-          Apply
-        </Button>
-      </div>
+      <PreviewMap className="flex-grow" />
     </div>
   );
 };

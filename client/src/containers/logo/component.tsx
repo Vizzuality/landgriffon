@@ -3,7 +3,7 @@ import type { HTMLAttributes } from 'react';
 
 const LandgriffonLogo: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => (
   <div {...props}>
-    <Image src="/landgriffon-logo-white.svg" width="196" height="16" alt="Landgriffon logo" />
+    <Image src="/logo-landgriffon.png" width="50" height="50" alt="Landgriffon logo" />
   </div>
 );
 

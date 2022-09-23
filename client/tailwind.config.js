@@ -22,6 +22,9 @@ module.exports = {
         125: '30.875rem',
         250: '48.75rem',
       },
+      backgroundImage: {
+        auth: 'linear-gradient(240.36deg, #2E34B0 0%, #0C1063 68.13%)',
+      },
     },
     colors: {
       black: colors.black,

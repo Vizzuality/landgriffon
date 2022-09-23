@@ -1,6 +1,13 @@
-import { Controller, Get, Query, ValidationPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  UseInterceptors,
+  ValidationPipe,
+} from '@nestjs/common';
 import {
   GetActualVsScenarioImpactTableDto,
+  GetScenarioVsScenarioImpactTableDto,
   GetImpactTableDto,
   GetRankedImpactTableDto,
 } from 'modules/impact/dto/impact-table.dto';
@@ -21,6 +28,9 @@ import {
 } from 'nestjs-base-service';
 import { JSONAPIPaginationQueryParams } from 'decorators/json-api-parameters.decorator';
 import { ActualVsScenarioImpactService } from 'modules/impact/comparison/actual-vs-scenario.service';
+import { PaginatedScenariosImpactTable } from 'modules/impact/dto/response-comparison-table.dto';
+import { SetScenarioIdsInterceptor } from './set-scenario-ids.interceptor';
+import { ScenarioVsScenarioImpactService } from './scenario-vs-scenario.service';
 
 @Controller('/api/v1/impact')
 @ApiTags('Impact')
@@ -29,6 +39,7 @@ export class ImpactController {
   constructor(
     private readonly impactService: ImpactService,
     private readonly actualVsScenarioImpactService: ActualVsScenarioImpactService,
+    private readonly scenarioVsScenarioService: ScenarioVsScenarioImpactService,
   ) {}
 
   @ApiOperation({
@@ -56,13 +67,14 @@ export class ImpactController {
     type: PaginatedImpactTable,
   })
   @JSONAPIPaginationQueryParams()
-  @Get('scenarios-table')
+  @UseInterceptors(SetScenarioIdsInterceptor)
+  @Get('compare/scenario/vs/scenario')
   async getTwoScenariosImpactTable(
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
     @Query(ValidationPipe)
-    twoScenariosImpactTableDto: GetScenarioComparisonDto,
-  ): Promise<PaginatedScenariosImpactTable> {
-    return await this.scenarioComparisonService.getScenarioComparisonTable(
+    twoScenariosImpactTableDto: GetScenarioVsScenarioImpactTableDto,
+  ): Promise<PaginatedImpactTable> {
+    return await this.scenarioVsScenarioService.getScenarioVsScenarioImpactTable(
       twoScenariosImpactTableDto,
       fetchSpecification,
     );

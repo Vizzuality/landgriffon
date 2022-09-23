@@ -44,7 +44,7 @@ export class ActualVsScenarioImpactTableData extends ImpactTableData {
 
 export class ScenarioVsScenarioImpactTableData extends ImpactTableData {
   scenarioOneImpact?: number;
-  scenarioTwoImapct?: number;
+  scenarioTwoImpact?: number;
   absoluteDifference?: number;
   percentageDifference?: number;
 }

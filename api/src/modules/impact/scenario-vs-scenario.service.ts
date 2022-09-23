@@ -34,10 +34,10 @@ import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.ent
 import { PaginationMeta } from 'utils/app-base.service';
 
 @Injectable()
-export class ActualVsScenarioImpactService {
+export class ScenarioVsScenarioImpactService {
   //TODO: Hack to set a expected growing rate. This needs to be stored in the DB in the future
   growthRate: number = 1.5;
-  logger: Logger = new Logger(ActualVsScenarioImpactService.name);
+  logger: Logger = new Logger(ScenarioVsScenarioImpactService.name);
 
   constructor(
     private readonly indicatorService: IndicatorsService,
@@ -61,7 +61,25 @@ export class ActualVsScenarioImpactService {
     //Getting Descendants Ids for the filters, in case Parent Ids were received
     await this.loadDescendantEntityIds(scenarioVsScenarioImpactTableDto);
 
-    // Getting entities that correspond to Scenario 1 and filtered actual data
+    // Getting entities and processing that correspond to Scenario 1 and filtered actual data
+
+    const entities: ImpactTableEntityType[] =
+      await this.getScenariosAndActualEntityTrees(
+        scenarioVsScenarioImpactTableDto,
+      );
+
+    const paginatedEntities: PaginatedEntitiesDto =
+      ScenarioVsScenarioImpactService.paginateRootEntities(
+        entities,
+        fetchSpecification,
+      );
+
+    this.updateGroupByCriteriaFromEntityTree(
+      scenarioVsScenarioImpactTableDto,
+      paginatedEntities.entities,
+    );
+
+    // Getting and proceesing impact data separetely for each scenario for further merge
 
     const { scenarioOneId, scenarioTwoId, ...generalDto } =
       scenarioVsScenarioImpactTableDto;
@@ -76,42 +94,16 @@ export class ActualVsScenarioImpactService {
       ...generalDto,
     };
 
-    const entities: ImpactTableEntityType[] =
-      await this.getScenariosAndActualEntityTrees(
-        scenarioVsScenarioImpactTableDto,
-      );
-
-    const paginatedEntities: PaginatedEntitiesDto =
-      ActualVsScenarioImpactService.paginateRootEntities(
-        entities,
-        fetchSpecification,
-      );
-
-    this.updateGroupByCriteriaFromEntityTree(
-      scenarioVsScenarioImpactTableDto,
-      paginatedEntities.entities,
-    );
-
     const dataForScenarioOneAndActual: ImpactTableData[] =
       await this.getDataForActualVsScenarioImpactTable(
         scenarioOneDto,
         paginatedEntities.entities,
       );
 
-    const processedDataForScenarioOne: ActualVsScenarioImpactTableData[] =
-      ActualVsScenarioImpactService.processDataForComparison(
-        dataForScenarioOneAndActual,
-      );
-
     const dataForScenarioTwoAndActual: ImpactTableData[] =
       await this.getDataForActualVsScenarioImpactTable(
         scenarioTwoDto,
         paginatedEntities.entities,
-      );
-
-    const processedDataForScenarioTwo: ActualVsScenarioImpactTableData[] =
-      ActualVsScenarioImpactService.processDataForComparison(
-        dataForScenarioTwoAndActual,
       );
 
     // const impactTable: ImpactTable = this.buildActualVsScenarioImpactTable(
@@ -636,8 +628,75 @@ export class ActualVsScenarioImpactService {
     return result;
   }
 
-  private static mergeScenariosData(
-    scenarioOneDto: ActualVsScenarioImpactTableData,
-    scenarioTwoDto: ActualVsScenarioImpactTableData,
-  ): ScenarioVsScenarioImpactTableData[] {}
+  private static processTwoScenariosData(
+    dataForScenarioOne: ImpactTableData[],
+    dataForScenarioTwo: ImpactTableData[],
+  ): ScenarioVsScenarioImpactTableData[] {
+    const processedDataForScenarioOneAndActual: ActualVsScenarioImpactTableData[] =
+      ScenarioVsScenarioImpactService.processDataForComparison(
+        dataForScenarioOne,
+      );
+    const scenarioOneDataForScenarioComparison: ScenarioVsScenarioImpactTableData[] =
+      processedDataForScenarioOneAndActual.map((scenarioData: any) => {
+        scenarioData.scenarioOneImpact = scenarioData.scenarioImpact;
+        scenarioData.scenarioTwoImpact = 0;
+        delete scenarioData.scenarioImpact;
+        return scenarioData;
+      });
+
+    const processedDataForScenarioTwoAndActual: ActualVsScenarioImpactTableData[] =
+      ScenarioVsScenarioImpactService.processDataForComparison(
+        dataForScenarioTwo,
+      );
+
+    const scenarioTwoDataForScenarioComparison: ScenarioVsScenarioImpactTableData[] =
+      processedDataForScenarioTwoAndActual.map((scenarioData: any) => {
+        scenarioData.scenarioOneImpact = 0;
+        scenarioData.scenarioTwoImpact = scenarioData.scenarioImpact;
+        delete scenarioData.scenarioImpact;
+        return scenarioData;
+      });
+
+    return this.mergeTwoScenariosData(
+      scenarioOneDataForScenarioComparison,
+      scenarioTwoDataForScenarioComparison,
+    );
+  }
+
+  private static mergeTwoScenariosData(
+    scenarioOneData: ScenarioVsScenarioImpactTableData[],
+    scenarioTwoData: ScenarioVsScenarioImpactTableData[],
+  ): ScenarioVsScenarioImpactTableData[] {
+    const mergedScenariosData: ScenarioVsScenarioImpactTableData[] =
+      scenarioOneData.concat(scenarioTwoData);
+
+    const finalScenariosData: ScenarioVsScenarioImpactTableData[] =
+      mergedScenariosData.reduce(
+        (
+          accumulator: ScenarioVsScenarioImpactTableData[],
+          currentValue: ScenarioVsScenarioImpactTableData,
+        ) => {
+          const existingData = accumulator.find((item) => {
+            return (
+              item.name === currentValue.name && item.year === currentValue.year
+            );
+          });
+
+          if (existingData) {
+            existingData.scenarioOneImpact =
+              (existingData.scenarioOneImpact || 0) +
+              (currentValue.scenarioOneImpact || 0);
+            existingData.scenarioTwoImpact =
+              (existingData.scenarioTwoImpact || 0) +
+              (currentValue.scenarioTwoImpact || 0);
+          } else {
+            accumulator.push(currentValue);
+          }
+          return accumulator;
+        },
+        [],
+      );
+
+    return finalScenariosData;
+  }
 }

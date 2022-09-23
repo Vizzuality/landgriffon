@@ -5,7 +5,6 @@ import { isObject } from 'lodash';
 
 import ui from 'store/features/ui';
 import analysisUI, {
-  setVisualizationMode,
   setSidebarCollapsed,
   initialState as analysisUIInitialState,
 } from 'store/features/analysis/ui';
@@ -55,12 +54,6 @@ const QUERY_PARAMS_MAP: QueryParams = {
     rootState: 'analysis/ui',
     action: setSidebarCollapsed,
     defaultValue: analysisUIInitialState.isSidebarCollapsed,
-  },
-  mode: {
-    stateName: 'visualizationMode',
-    rootState: 'analysis/ui',
-    action: setVisualizationMode,
-    defaultValue: analysisUIInitialState.visualizationMode,
   },
   map: {
     stateName: 'viewState',

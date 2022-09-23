@@ -4,26 +4,28 @@ import { useAppSelector } from 'store/hooks';
 import { scenarios } from 'store/features/analysis/scenarios';
 import { NUMBER_FORMAT, BIG_NUMBER_FORMAT } from 'utils/number-format';
 
+const PERCENTAGE_FORMAT = format(',.2%');
+
 export interface ComparisonCellProps {
   value: number;
-  interventionValue: number;
+  scenarioValue: number;
   absoluteDifference: number;
   percentageDifference: number;
 }
 
 const ComparisonCell: React.FC<ComparisonCellProps> = ({
   value,
-  interventionValue,
+  scenarioValue,
   absoluteDifference,
   percentageDifference,
 }) => {
   const { comparisonMode } = useAppSelector(scenarios);
-  if (isNaN(interventionValue)) return <>{BIG_NUMBER_FORMAT(value)}</>;
+  if (isNaN(scenarioValue)) return <>{BIG_NUMBER_FORMAT(value)}</>;
 
   return (
     <div className="mx-auto w-fit">
       <div className="flex flex-row gap-1">
-        <div className="my-auto text-base text-gray-900">{NUMBER_FORMAT(interventionValue)}</div>
+        <div className="my-auto text-base text-gray-900">{NUMBER_FORMAT(scenarioValue)}</div>
         <div
           className={classNames(
             'my-auto text-xs font-semibold text-gray-500 rounded-[4px] px-1 py-0.5',
@@ -37,7 +39,7 @@ const ComparisonCell: React.FC<ComparisonCellProps> = ({
             },
           )}
         >
-          {comparisonMode === 'relative' && `${format(',.2f')(percentageDifference)}%`}
+          {comparisonMode === 'relative' && `${PERCENTAGE_FORMAT(percentageDifference)}%`}
           {comparisonMode === 'absolute' && (
             <>
               {absoluteDifference > 0 && '+'}

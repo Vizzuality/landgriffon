@@ -140,10 +140,7 @@ const AnalysisTable: React.FC = () => {
           const value = data.values.find((value) => value.year === year) as Required<
             TableDataType['values'][0]
           >;
-          if (showComparison) {
-            return <ComparisonCell {...value} />;
-          }
-
+          if (showComparison) return <ComparisonCell {...value} />;
           return BIG_NUMBER_FORMAT(value.value);
         },
       };
@@ -194,9 +191,9 @@ const AnalysisTable: React.FC = () => {
             stroke: showComparison ? '#AEB1B5' : '#60626A',
           });
           const interventionData = showComparison
-            ? values.map(({ year, interventionValue }) => ({
+            ? values.map(({ year, scenarioValue }) => ({
                 x: year,
-                y: interventionValue,
+                y: scenarioValue,
               }))
             : [];
           const interventionDataChartConfig = showComparison

@@ -309,3 +309,35 @@ export const useH3ImpactData = <T = H3ImpactResponse>(
 
   return query;
 };
+
+export const useH3Data = <T = H3APIResponse>(
+  id: Layer['id'],
+  options: UseQueryOptions<H3APIResponse, unknown, T> = {},
+) => {
+  const isContextual = !['impact', 'material'].includes(id);
+  const isMaterial = id === 'material';
+  const isImpact = id === 'impact';
+
+  const materialQuery = useH3MaterialData(
+    {},
+    {
+      ...options,
+      enabled: isMaterial && options.enabled,
+    },
+  );
+  const impactQuery = useH3ImpactData(
+    {},
+    {
+      ...options,
+      enabled: isImpact && options.enabled,
+    },
+  );
+  const contextualQuery = useH3ContextualData(id, {
+    ...options,
+    enabled: isContextual && options.enabled,
+  });
+
+  if (isImpact) return impactQuery;
+  if (isMaterial) return materialQuery;
+  return contextualQuery;
+};

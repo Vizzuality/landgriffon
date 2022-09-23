@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Showing errors in the sign-up form
 - Loading more consistent for the auth pages
 - Wrong mode selector in the analysis page
+- Reset indicators selector when changing the mode in analysis page [LANDGRIF-901](https://vizzuality.atlassian.net/browse/LANDGRIF-901)
+- Indicator name concatenates boolean variable in table view [LANDGRIF-902](https://vizzuality.atlassian.net/browse/LANDGRIF-902)
 
 ## [2022.08.03]
 

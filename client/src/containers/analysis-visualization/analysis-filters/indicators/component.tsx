@@ -45,6 +45,11 @@ const IndicatorsFilter: React.FC = () => {
     }
   }, [options, isFetched, dispatch, filters.indicator]);
 
+  // Reset indicator filter when visualization mode changes
+  useEffect(() => {
+    dispatch(setFilter({ id: 'indicator', value: options[0] }));
+  }, [dispatch, options, visualizationMode]);
+
   const handleChange: SelectProps['onChange'] = useCallback(
     (selected) => {
       dispatch(

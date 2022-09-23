@@ -34,7 +34,7 @@ indicators:
 	# Processing deforestation data is quite intensive, so we do it separately, so we can allocate all threads to it
 		# There is probably a better way to do this, that future me will learn about - in the future.
 	make convert-deforestation
-
+	make convert-forestGHG
 contextual-layers:
 	make convert-aqueduct-contextual convert-hdi-contextual
 
@@ -371,13 +371,13 @@ download-deforestation: download-deforestation-list
 # resampled pixel to get the % of area afected by deforestation
 transform-deforestation-file:
 	@echo "Transforming deforestation file $(FILE) ... "
-	table_name=`basename -s .tif $(FILE) | tr -d ' \t\n\r' | grep -oP "\d{2}[A-Z]_\d{3}[A-Z]"; \
-	wget -q -O "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" $(FILE); \
+	table_name=`basename -s .tif $(FILE) | tr -d ' \t\n\r' | grep -oP "\d{2}[A-Z]_\d{3}[A-Z]"`; \
+ 	wget -q -O "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" $(FILE); \
 	rm -f "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
-	gdal_calc.py --quiet --calc "(A>19)" --format GTiff --co NBITS=1 --co compress=PACKBIT --NoDataValue 0 --overwrite \
+	gdal_calc.py --quiet --calc "(A>19)" --format GTiff --co NBITS=1 --co compress=PACKBITS --NoDataValue 0 --overwrite \
 		-A "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" \
 		--outfile  "$(WORKDIR_DEFORESTATION)/$${table_name}.tif"; \
-	gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r sum -tr 0.0833333333333286 0.0833333333333286 -multi -of GTiff -wo NUM_THREADS=ALL_CPUS \
+	gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r sum -tr 0.0833333333333286 0.0833333333333286 -multi -of GTiff  -ot UInt32 -wo NUM_THREADS=ALL_CPUS \
 		"$(WORKDIR_DEFORESTATION)/$${table_name}.tif" \
 		"$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
 	gdal_calc.py --quiet --calc "A/111111.11111109848" --format GTiff --type Float32 --NoDataValue 0.0 --overwrite \
@@ -397,7 +397,7 @@ preprocess-deforestation: download-deforestation
 convert-deforestation: preprocess-deforestation
 	@echo "Converting deforestation data... "
 	python tiff_folder_to_h3_table.py data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles h3_grid_deforestation_global \
-		indicator DF_LUC_T 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --contextual
+		indicator DF_LUC_T 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 
 download-forestGHG-list:
@@ -411,15 +411,10 @@ download-forestGHG-list:
 transform-forestGHG:
 	@echo "Downloading and massaging tile $(NAME)..."
 	wget -q -O "$(WORKDIR_GHG)/$(NAME).tif" "$(URL)"
-	gdal_calc.py --quiet --calc "(A*B)" --format GTiff --type Float32 --NoDataValue 0 \
-		-A "$(WORKDIR_GHG)/$(NAME).tif" \
-		-B "$(WORKDIR_DEFORESTATION)/$(NAME).tif" \
-		--outfile "$(WORKDIR_GHG)/$(NAME)_2020.tif"
-	rm "$(WORKDIR_DEFORESTATION)/$(NAME).tif" "$(WORKDIR_GHG)/$(NAME).tif"
-	gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r sum -tr 0.0833333333333286 0.0833333333333286 -multi -of GTiff -wo NUM_THREADS=ALL_CPUS \
-		"$(WORKDIR_GHG)/$(NAME)_2020.tif" \
+	python preprocess_forestGHG.py --nodata 0 \
+		"$(WORKDIR_GHG)/$(NAME).tif" \
+		"$(WORKDIR_DEFORESTATION)/$(NAME).tif" \
 		"$(WORKDIR_GHG)/resampled/$(NAME)_2020_10km.tif"
-	@echo "Done transforming GHG tile $(NAME)"
 
 preprocess-forestGHG: download-forestGHG-list
 	mkdir -p $(WORKDIR_GHG)/resampled/merged_tiles
@@ -431,7 +426,7 @@ preprocess-forestGHG: download-forestGHG-list
 
 convert-forestGHG: preprocess-forestGHG
 	@echo "Converting forest GHG data..."
-	python tiff_folder_to_h3_table.py $(WORKDIR_GHG)/resampled/merged_tiles h3_grid_ghg_global indicator GHG_LUC_T 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --contextual
+	python tiff_folder_to_h3_table.py $(WORKDIR_GHG)/resampled/merged_tiles h3_grid_ghg_global indicator GHG_LUC_T 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 ##################################
 #        Satelligence data       #

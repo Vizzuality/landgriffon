@@ -16,11 +16,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Redesign the Legend [LANDGRIF_727](https://vizzuality.atlassian.net/browse/LANDGRIF-727)
 - Applied redesign of Actual data [LANDGRIF-810](https://vizzuality.atlassian.net/browse/LANDGRIF-810)
 - Redesign of charts for Impact data
-_ Updated scenarios list according new design
+- Updated scenarios list according new design
+- Changed the background of the authentication pages
 
 ### Fixed
 
 - Smart filters not being persisted between pages
+- Showing errors in the sign-up form
+- Loading more consistent for the auth pages
 
 ## [2022.08.03]
 

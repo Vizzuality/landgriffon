@@ -22,10 +22,10 @@ const authorizedRequest = async (config) => {
   return config;
 };
 
-const onResponseError = (error) => {
+const onResponseError = async (error) => {
   // Any status codes that falls outside the range of 2xx cause this function to trigger
   if (error.response.status === 401) {
-    signOut();
+    await signOut();
   }
   // Do something with response error
   return Promise.reject(error);

@@ -138,7 +138,6 @@ const AnalysisMap: React.FC = () => {
         mapStyle={mapStyle}
         initialViewState={localViewState}
         onViewStateChange={({ viewState }) => {
-          // setViewState(viewState);
           setDebouncedViewState({
             longitude: viewState.longitude,
             latitude: viewState.latitude,

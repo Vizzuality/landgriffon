@@ -1,13 +1,12 @@
-import type { HTMLAttributes } from 'react';
 import { useMemo } from 'react';
-import classNames from 'classnames';
 import Map from 'components/map';
-import type { Layer } from 'types';
+import type { Layer, Material } from 'types';
 import { useH3Data } from 'hooks/h3-data';
 import { H3HexagonLayer } from '@deck.gl/geo-layers/typed';
 
-interface PreviewMapProps extends Pick<HTMLAttributes<HTMLDivElement>, 'className'> {
+interface PreviewMapProps {
   selectedLayerId?: Layer['id'];
+  selectedMaterialId?: Material['id'];
 }
 
 const BASE_LAYER_PROPS = {
@@ -16,10 +15,12 @@ const BASE_LAYER_PROPS = {
   getLineColor: (d) => d.c,
 };
 
-const PreviewMap = ({ selectedLayerId, className }: PreviewMapProps) => {
-  const {
-    data: { data },
-  } = useH3Data(selectedLayerId);
+const PreviewMap = ({ selectedLayerId, selectedMaterialId }: PreviewMapProps) => {
+  const { data } = useH3Data({
+    id: selectedLayerId,
+    params: { materialId: selectedMaterialId },
+    options: { enabled: !!selectedLayerId, select: (response) => response.data },
+  });
 
   const h3Layer = useMemo(() => {
     return new H3HexagonLayer({
@@ -29,9 +30,7 @@ const PreviewMap = ({ selectedLayerId, className }: PreviewMapProps) => {
   }, [data]);
 
   return (
-    <div className={classNames('relative', className)}>
-      <Map initialViewState={{ minZoom: 0, zoom: 0 }} layers={[h3Layer]} mapStyle="terrain"></Map>
-    </div>
+    <Map initialViewState={{ minZoom: 0, zoom: 0 }} layers={[h3Layer]} mapStyle="terrain"></Map>
   );
 };
 

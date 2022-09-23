@@ -147,12 +147,19 @@ export const Legend: React.FC = () => {
         </div>
       </div>
       <Modal
-        size="fit"
+        // size="fit"
+        size="wide"
         title="Contextual Layers"
         open={showSettings}
+        dismissable={false}
         onDismiss={dismissLegendSettings}
+        className="!p-0"
       >
-        <LegendSettings onApply={dismissLegendSettings} categories={layersByCategory || []} />
+        <LegendSettings
+          onApply={dismissLegendSettings}
+          onDismiss={dismissLegendSettings}
+          categories={layersByCategory || []}
+        />
       </Modal>
     </>
   );

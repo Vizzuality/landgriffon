@@ -24,6 +24,7 @@ import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { ColumnDefinition } from 'components/table/column';
 import type { SourcingLocation, Task } from 'types';
 import toast from 'react-hot-toast';
+import Loading from 'components/loading';
 
 const AdminDataPage: React.FC = () => {
   const [searchText, setSearchText] = useDebounce('', 250);
@@ -63,13 +64,16 @@ const AdminDataPage: React.FC = () => {
   );
 
   // Getting last task available
-  const { data: tasks } = useTasks(
+  const {
+    data: tasks,
+    isLoading: tasksIsLoading,
+    isFetched: tasksIsFetched,
+  } = useTasks(
     {
       'page[size]': 1,
       sort: '-createdAt',
     },
     {
-      enabled: isFetchedSourcingData && sourcingData?.length === 0,
       refetchInterval: 10000,
     },
   );
@@ -133,53 +137,61 @@ const AdminDataPage: React.FC = () => {
         <title>Manage data | Landgriffon</title>
       </Head>
 
-      {/* Content when empty */}
-      {(lastTask?.status === 'processing' || sourcingLocations.data.length === 0) && (
+      {(tasksIsLoading || isFetchingSourcingData) && (
         <div className="flex items-center justify-center w-full h-full">
-          <div className="space-y-10">
-            <div className="space-y-4 text-lg text-center">
-              <p className="font-semibold">
-                1. Download the Excel template and fill it with your data.
-              </p>
-              <Anchor
-                href="/files/data-template.xlsx"
-                download
-                target="_blank"
-                rel="noopener noreferrer"
-                icon={<DownloadIcon className="w-5 h-5 text-white" aria-hidden="true" />}
-              >
-                Download template
-              </Anchor>
-            </div>
-            <div className="space-y-4 text-lg text-center">
-              <p className="font-semibold">2. Upload the filled Excel file.</p>
-              <DataUploader task={lastTask} />
-
-              {lastTask?.errors.length > 0 && (
-                <div className="p-4 mt-6 text-sm text-left text-red-600 rounded-md bg-red-50">
-                  <p>
-                    <XCircleIcon className="inline-block w-5 h-5 mr-2 text-red-600 align-top" />
-                    There {lastTask.errors.length === 1 ? 'is' : 'are'} {lastTask.errors.length}{' '}
-                    error
-                    {lastTask.errors.length > 1 && 's'} with your file. Please correct them and try
-                    again.
-                  </p>
-                  <ul className="pl-12 mt-2 space-y-2 list-disc">
-                    {lastTask.errors.map((error) =>
-                      Object.values(error).map((errorMessage) => (
-                        <li key={errorMessage}>{errorMessage}</li>
-                      )),
-                    )}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </div>
+          <Loading className="text-primary" />
         </div>
       )}
 
+      {/* Content when empty */}
+      {tasksIsFetched &&
+        isFetchedSourcingData &&
+        (lastTask?.status === 'processing' || sourcingLocations.data.length === 0) && (
+          <div className="flex items-center justify-center w-full h-full">
+            <div className="space-y-10">
+              <div className="space-y-4 text-lg text-center">
+                <p className="font-semibold">
+                  1. Download the Excel template and fill it with your data.
+                </p>
+                <Anchor
+                  href="/files/data-template.xlsx"
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  icon={<DownloadIcon className="w-5 h-5 text-white" aria-hidden="true" />}
+                >
+                  Download template
+                </Anchor>
+              </div>
+              <div className="space-y-4 text-lg text-center">
+                <p className="font-semibold">2. Upload the filled Excel file.</p>
+                <DataUploader task={lastTask} />
+
+                {lastTask?.errors.length > 0 && (
+                  <div className="p-4 mt-6 text-sm text-left text-red-600 rounded-md bg-red-50">
+                    <p>
+                      <XCircleIcon className="inline-block w-5 h-5 mr-2 text-red-600 align-top" />
+                      There {lastTask.errors.length === 1 ? 'is' : 'are'} {lastTask.errors.length}{' '}
+                      error
+                      {lastTask.errors.length > 1 && 's'} with your file. Please correct them and
+                      try again.
+                    </p>
+                    <ul className="pl-12 mt-2 space-y-2 list-disc">
+                      {lastTask.errors.map((error) =>
+                        Object.values(error).map((errorMessage) => (
+                          <li key={errorMessage}>{errorMessage}</li>
+                        )),
+                      )}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
       {/* Content when data */}
-      {sourcingLocations.data?.length > 0 && (
+      {isFetchedSourcingData && sourcingLocations.data?.length > 0 && (
         <>
           <div className="flex w-full gap-2">
             <div className="flex-1">

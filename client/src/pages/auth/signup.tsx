@@ -44,6 +44,7 @@ const SignUp: NextPageWithLayout = () => {
 
   const signUp = useMutation(signUpService, {
     onSuccess: () => {
+      toast.success('Account created successfully');
       // Redirect to sign-in when user is created successfully
       router.push('/auth/signin');
     },

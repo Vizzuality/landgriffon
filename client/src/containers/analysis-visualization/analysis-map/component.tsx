@@ -1,6 +1,4 @@
 import { useCallback, useMemo, useState } from 'react';
-import DeckGL from '@deck.gl/react';
-import { StaticMap } from 'react-map-gl';
 import { XCircleIcon } from '@heroicons/react/solid';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
 
@@ -19,20 +17,11 @@ import BasemapControl from 'components/map/controls/basemap';
 
 import { NUMBER_FORMAT } from 'utils/number-format';
 
-import DefaultMapStyle from './styles/map-style.json';
-import SatelliteMapStyle from './styles/map-style-satellite.json';
-
 import type { BasemapValue } from 'components/map/controls/basemap/types';
-import type { ViewState } from 'react-map-gl/src/mapbox/mapbox';
 import { useAllContextualLayersData, useH3MaterialData } from 'hooks/h3-data';
 import { sortBy } from 'lodash';
-
-const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
-
-const MAP_STYLES = {
-  terrain: DefaultMapStyle,
-  satellite: SatelliteMapStyle,
-};
+import type { MapStyle, ViewState } from 'components/map';
+import Map from 'components/map/component';
 
 const INITIAL_VIEW_STATE = {
   longitude: 0,
@@ -52,16 +41,16 @@ const AnalysisMap: React.FC = () => {
     layerDeckGLProps,
     layers: layersMetadata,
   } = useAppSelector(analysisMap);
-  const [isRendering, setIsRendering] = useState<boolean>(false);
+
   const [localViewState, setLocalViewState] = useState<ViewState>({
     ...INITIAL_VIEW_STATE,
     ...viewState, // store has priority over local state
   });
-  const [mapStyle, setMapStyle] = useState<BasemapValue>('terrain');
+  const [mapStyle, setMapStyle] = useState<MapStyle>('terrain');
 
   // Debounced view state update to avoid too many updates in the store
   const updateViewState = useCallback(
-    (viewState) =>
+    (viewState) => {
       dispatch(
         // viewState have more attributes we want to save in the store
         setViewState({
@@ -69,7 +58,8 @@ const AnalysisMap: React.FC = () => {
           latitude: viewState.latitude,
           zoom: viewState.zoom,
         }),
-      ),
+      );
+    },
     [dispatch],
   );
   const setDebouncedViewState = useDebounce(updateViewState, 300);
@@ -128,8 +118,6 @@ const AnalysisMap: React.FC = () => {
     return sortBy(legends, (l) => layersMetadata[l.id].order).reverse();
   }, [contextualData, dispatch, impactData, layerDeckGLProps, layersMetadata, materialData?.data]);
 
-  const handleAfterRender = useCallback(() => setIsRendering(false), []);
-
   const onZoomChange = useCallback(
     (zoom) => {
       setLocalViewState((state) => ({ ...state, zoom, transitionDuration: 250 }));
@@ -144,28 +132,20 @@ const AnalysisMap: React.FC = () => {
 
   return (
     <>
-      {(isFetching || isRendering) && <PageLoading />}
-      <DeckGL
+      {isFetching && <PageLoading />}
+      <Map
+        layers={layers}
+        mapStyle={mapStyle}
         initialViewState={localViewState}
-        // do not add useCallback here, it will cause performance issues on the map
         onViewStateChange={({ viewState }) => {
-          setViewState(viewState);
+          // setViewState(viewState);
           setDebouncedViewState({
             longitude: viewState.longitude,
             latitude: viewState.latitude,
             zoom: viewState.zoom,
           });
         }}
-        controller
-        layers={layers}
-        onAfterRender={handleAfterRender}
       >
-        <StaticMap
-          viewState={localViewState}
-          mapStyle={MAP_STYLES[mapStyle]}
-          mapboxApiAccessToken={MAPBOX_API_TOKEN}
-          className="-z-10"
-        />
         {!!tooltipData.length && (
           <PopUp
             position={{
@@ -187,7 +167,7 @@ const AnalysisMap: React.FC = () => {
             </div>
           </PopUp>
         )}
-      </DeckGL>
+      </Map>
       {isError && (
         <div className="absolute z-10 p-4 rounded-md top-20 left-12 bg-red-50">
           <div className="flex">

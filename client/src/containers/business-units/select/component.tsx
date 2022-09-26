@@ -25,23 +25,25 @@ interface BusinessUnitsFilterProps
   locationTypes?: BusinessUnitsTreesParams['locationTypes'];
 }
 
-const BusinessUnitsFilter = ({
-  current,
-  depth = 1,
-  ellipsis,
-  error,
-  fitContent,
-  multiple,
-  theme = 'default',
-  withSourcingLocations, // Do not a default; backend will override depth if this is set at all
-  supplierIds,
-  materialIds,
-  originIds,
-  locationTypes,
-  onChange,
-  ref,
-  ...props
-}: BusinessUnitsFilterProps & { ref?: Ref<HTMLInputElement> }) => {
+const InnerBusinessUnitsFilter = (
+  {
+    current,
+    depth = 1,
+    ellipsis,
+    error,
+    fitContent,
+    multiple,
+    theme = 'default',
+    withSourcingLocations, // Do not a default; backend will override depth if this is set at all
+    supplierIds,
+    materialIds,
+    originIds,
+    locationTypes,
+    onChange,
+    ...props
+  }: BusinessUnitsFilterProps,
+  ref: Ref<HTMLInputElement>,
+) => {
   const { data, isFetching } = useBusinessUnitsTrees({
     depth,
     withSourcingLocations,
@@ -102,6 +104,8 @@ const BusinessUnitsFilter = ({
   );
 };
 
-BusinessUnitsFilter.displayName = 'BusinessUnitsFilter';
+const BusinessUnitsFilter = React.forwardRef(InnerBusinessUnitsFilter) as (
+  props: BusinessUnitsFilterProps & { ref?: Ref<HTMLInputElement> },
+) => React.ReactElement;
 
 export default BusinessUnitsFilter;

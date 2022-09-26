@@ -91,25 +91,27 @@ const SEARCH_OPTIONS = {
   threshold: 0.4,
 };
 
-const Select = <T,>({
-  instanceId,
-  disabled = false,
-  label,
-  options = [],
-  defaultValue = null,
-  current = null,
-  allowEmpty = false,
-  loading = false,
-  placeholder = null,
-  onChange,
-  onSearch,
-  theme = 'default',
-  error = false,
-  showSearch = false,
-  hideValueWhenMenuOpen = false,
-  numeric = false,
-  ref,
-}: SelectProps<T> & { ref?: Ref<HTMLInputElement> }) => {
+const InnerSelect = <T,>(
+  {
+    instanceId,
+    disabled = false,
+    label,
+    options = [],
+    defaultValue = null,
+    current = null,
+    allowEmpty = false,
+    loading = false,
+    placeholder = null,
+    onChange,
+    onSearch,
+    theme = 'default',
+    error = false,
+    showSearch = false,
+    hideValueWhenMenuOpen = false,
+    numeric = false,
+  }: SelectProps<T>,
+  ref: Ref<HTMLInputElement>,
+) => {
   const { result: optionsResult, search: setSearchTerm } = useFuse(options, SEARCH_OPTIONS);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -280,6 +282,10 @@ const Select = <T,>({
   );
 };
 
-Select.displayName = 'Select';
+const Select = React.forwardRef(InnerSelect) as <T>(
+  props: SelectProps<T> & {
+    ref?: Ref<HTMLInputElement>;
+  },
+) => React.ReactElement;
 
 export default Select;

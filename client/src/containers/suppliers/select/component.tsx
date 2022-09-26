@@ -1,5 +1,5 @@
 import type { Ref } from 'react';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import TreeSelect from 'components/tree-select';
 import { sortBy } from 'lodash';
 
@@ -24,22 +24,24 @@ interface SuppliersFilterProps<IsMulti extends boolean>
   theme?: 'default' | 'inline-primary';
 }
 
-const SuppliersFilter = <IsMulti extends boolean>({
-  multiple,
-  current,
-  depth = 1,
-  withSourcingLocations, // Do not a default; backend will override depth if this is set at all
-  materialIds,
-  businessUnitIds,
-  originIds,
-  onChange,
-  theme = 'default',
-  ellipsis,
-  fitContent,
-  error,
-  ref,
-  ...props
-}: SuppliersFilterProps<IsMulti> & { ref?: Ref<HTMLInputElement> }) => {
+const InnerSuppliersFilter = <IsMulti extends boolean>(
+  {
+    multiple,
+    current,
+    depth = 1,
+    withSourcingLocations, // Do not a default; backend will override depth if this is set at all
+    materialIds,
+    businessUnitIds,
+    originIds,
+    onChange,
+    theme = 'default',
+    ellipsis,
+    fitContent,
+    error,
+    ...props
+  }: SuppliersFilterProps<IsMulti>,
+  ref: Ref<HTMLInputElement>,
+) => {
   const { data, isFetching } = useSuppliersTrees({
     depth,
     withSourcingLocations,
@@ -100,6 +102,10 @@ const SuppliersFilter = <IsMulti extends boolean>({
   );
 };
 
-SuppliersFilter.displayName = 'SuppliersFilter';
+const SuppliersFilter = React.forwardRef(InnerSuppliersFilter) as <IsMulti extends boolean>(
+  props: SuppliersFilterProps<IsMulti> & {
+    ref?: Ref<HTMLInputElement>;
+  },
+) => React.ReactElement;
 
 export default SuppliersFilter;

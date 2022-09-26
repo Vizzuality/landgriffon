@@ -6,6 +6,7 @@ import { sortBy } from 'lodash';
 import type { AdminRegionsTreesParams } from 'hooks/admin-regions';
 import { useAdminRegionsTrees } from 'hooks/admin-regions';
 import type { TreeSelectOption, TreeSelectProps } from 'components/tree-select/types';
+import React from 'react';
 
 interface OriginRegionsFilterProps<IsMulti extends boolean>
   extends Omit<TreeSelectProps<IsMulti>, 'options'> {
@@ -19,22 +20,24 @@ interface OriginRegionsFilterProps<IsMulti extends boolean>
   theme?: 'default' | 'inline-primary';
 }
 
-const OriginRegionsFilter = <IsMulti extends boolean>({
-  multiple,
-  current,
-  depth = 1,
-  withSourcingLocations, // Do not a default; backend will override depth if this is set at all
-  materialIds,
-  supplierIds,
-  businessUnitIds,
-  onChange,
-  theme = 'default',
-  ellipsis,
-  error,
-  fitContent,
-  ref,
-  ...props
-}: OriginRegionsFilterProps<IsMulti> & { ref?: Ref<HTMLInputElement> }) => {
+const InnerOriginRegionsFilter = <IsMulti extends boolean>(
+  {
+    multiple,
+    current,
+    depth = 1,
+    withSourcingLocations, // Do not a default; backend will override depth if this is set at all
+    materialIds,
+    supplierIds,
+    businessUnitIds,
+    onChange,
+    theme = 'default',
+    ellipsis,
+    error,
+    fitContent,
+    ...props
+  }: OriginRegionsFilterProps<IsMulti>,
+  ref: Ref<HTMLInputElement>,
+) => {
   const { data, isFetching } = useAdminRegionsTrees({
     depth,
     withSourcingLocations,
@@ -95,6 +98,8 @@ const OriginRegionsFilter = <IsMulti extends boolean>({
   );
 };
 
-OriginRegionsFilter.displayName = 'OriginRegionsFilter';
+const OriginRegionsFilter = React.forwardRef(InnerOriginRegionsFilter) as <IsMulti extends boolean>(
+  props: OriginRegionsFilterProps<IsMulti> & { ref?: Ref<HTMLInputElement> },
+) => JSX.Element;
 
 export default OriginRegionsFilter;

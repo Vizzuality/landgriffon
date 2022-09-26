@@ -134,6 +134,7 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
   const {
     layers: { impact, ..._initialLayerState },
   } = useAppSelector(analysisMap);
+
   const [localLayerState, setLocalLayerState] = useState(_initialLayerState);
   const [localMaterial, setLocalMaterial] = useState(materialId);
   const [selectedLayerForPreview, setSelectedLayerForPreview] = useState<Layer['id'] | null>(null);

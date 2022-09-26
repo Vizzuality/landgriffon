@@ -106,7 +106,7 @@ export const Modal: React.FC<ModalProps> = ({
                   {theme === 'minimal' && dismissable && (
                     <div
                       onClick={onDismiss}
-                      className="absolute cursor-pointer right-0 top-4 translate-x-1/2 p-6 bg-white rounded-full"
+                      className="absolute z-30 cursor-pointer right-0 top-4 translate-x-1/2 p-6 bg-white rounded-full"
                     >
                       <XIcon className="w-4 h-4" />
                     </div>

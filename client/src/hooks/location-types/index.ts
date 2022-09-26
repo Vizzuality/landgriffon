@@ -25,11 +25,11 @@ export type LocationType = {
 type ResponseData = UseQueryResult<LocationType[]>;
 
 export function useLocationTypes(
-  params: LocationTypesParams,
+  params: LocationTypesParams = {},
   options: UseQueryOptions = {},
 ): ResponseData {
   const query = useQuery(
-    ['location-types', JSON.stringify(params)],
+    ['location-types', params],
     () =>
       apiRawService
         .request<{ data: LocationType[] }>({

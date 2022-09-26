@@ -124,7 +124,7 @@ const schemaValidation = yup.object({
 
       return yup.array().of(optionSchema).nullable();
     }),
-  newLocationAddressInput: yup.string(),
+  newLocationAddressInput: yup.string().nullable(),
   newLocationLongitude: yup.number().min(-180).max(180),
   newLocationLatitude: yup.number().min(-90).max(90),
 
@@ -280,11 +280,11 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     [producers],
   );
   // Location types
-  const { data: locationTypes } = useLocationTypes({});
+  const { data: locationTypes } = useLocationTypes();
   const optionsLocationTypes: SelectOptions<LocationTypes> = useMemo(
     () =>
       locationTypes.map(({ label, value }) => ({
-        label,
+        label: `${label[0].toUpperCase()}${label.substring(1)}`,
         value,
       })),
     [locationTypes],

@@ -1,43 +1,35 @@
 import argparse
 import logging
 
-from rasterio.enums import Resampling
-import rioxarray
+import rasterio as rio
+from tqdm import tqdm
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("preprocess_forestGHG")
 
 
-def main(ghg_file: str, hansen_file: str, outfile: str, nodata: int = 0):
-    ghg = rioxarray.open_rasterio(ghg_file)
-    loss = rioxarray.open_rasterio(hansen_file)
+def main(ghg_file: str, hansen_file: str, outfile: str):
+    with rio.open(ghg_file) as ref:
+        with rio.open(hansen_file) as hansen_src:
+            dest_profile = ref.profile.copy()
+            with rio.open(outfile, "w", **dest_profile) as dest:
+                windows = list(ref.block_windows(1))
+                log.info(f"Filtering {ghg_file}...")
+                for ij, win in tqdm(windows):
+                    # sanity check that window transform is the same
+                    ref_window_transfrom = ref.window_transform(win)
+                    if ref_window_transfrom != hansen_src.window_transform(win):
+                        log.error(
+                            f"{ghg_file} and {hansen_file} don't have the same Transform in window {ij}."
+                            f" Can't compute masking."
+                        )
+                        raise ValueError("Rasters have different transform")
 
-    if ghg.rio.transform() != loss.rio.transform():
-        log.error(
-            f"{ghg_file} and {hansen_file} don't have the same Transform. Can't compute masking."
-        )
-        raise ValueError("Rasters have different transform")
+                    ghg = ref.read(1, window=win)
+                    hansen = hansen_src.read(1, window=win)
+                    result = ghg * hansen
 
-    log.info(f"Masking {ghg_file} with {hansen_file}...")
-    # loss should be already a mask of 0 1 so multiplying will keep only the pixels
-    # that are 1 in hansen forest loss
-    ghg.data *= loss.data
-
-    del loss  # free some memory
-    # reproject to 0.083 degrees per pixel
-    downscale_factor = ghg.rio.resolution()[0] / 0.0833333333333286
-
-    new_width = int(ghg.rio.width * downscale_factor)
-    new_height = int(ghg.rio.height * downscale_factor)
-
-    log.info(f"Resampling {ghg_file} to 0.083 degrees..")
-    ghg_10km = ghg.rio.reproject(
-        ghg.rio.crs,
-        shape=(new_height, new_width),
-        resampling=Resampling.sum,
-    ).rio.set_nodata(nodata)
-    ghg_10km.rio.to_raster(outfile)
-    log.info(f"Done writing results to {outfile}")
+                    dest.write(result, window=win, indexes=1)
 
 
 if __name__ == "__main__":
@@ -45,6 +37,5 @@ if __name__ == "__main__":
     parser.add_argument("ghg_file")
     parser.add_argument("hansen_file")
     parser.add_argument("outfile")
-    parser.add_argument("--nodata", default=0)
     args = parser.parse_args()
-    main(args.ghg_file, args.hansen_file, args.outfile, nodata=args.nodata)
+    main(args.ghg_file, args.hansen_file, args.outfile)

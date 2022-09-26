@@ -97,7 +97,7 @@ const MaterialSettings = ({
             originIds={originIds}
             supplierIds={supplierIds}
             locationTypes={locationTypeIds}
-            // fitContent
+            fitContent
             withSourcingLocations
             onChange={handleMaterialChange}
           />

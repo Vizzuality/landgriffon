@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import type { QueryFunction, UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import chroma from 'chroma-js';
@@ -105,17 +105,19 @@ export const useH3MaterialData = <T = H3APIResponse>(
   const filters = useAppSelector(analysisFilters);
   const { startYear, materialId, origins } = filters;
 
-  const urlParams = {
-    year: startYear,
-    materialId,
-    ...params,
-    resolution: origins?.length ? 6 : 4,
-  };
+  const urlParams = useMemo(
+    () => ({
+      year: startYear,
+      materialId,
+      resolution: origins?.length ? 6 : 4,
+      ...params,
+    }),
+    [materialId, origins?.length, params, startYear],
+  );
 
   const enabled = (options.enabled ?? true) && !!urlParams.year && !!urlParams.materialId;
 
-  const query = useQuery(
-    ['h3-data-material', urlParams],
+  const fetchMaterialData = useCallback(
     () =>
       apiRawService
         .get<H3APIResponse>('/h3/map/material', {
@@ -124,12 +126,14 @@ export const useH3MaterialData = <T = H3APIResponse>(
         // Adding color to the response
         .then((response) => response.data)
         .then((response) => responseParser(response, colors)),
-    {
-      ...DEFAULT_QUERY_OPTIONS,
-      ...options,
-      enabled,
-    },
+    [colors, urlParams],
   );
+
+  const query = useQuery(['h3-data-material', urlParams], fetchMaterialData, {
+    ...DEFAULT_QUERY_OPTIONS,
+    ...options,
+    enabled,
+  });
 
   return query;
 };
@@ -312,31 +316,31 @@ interface UseH3DataProps<T> {
 export const useH3Data = <T = H3APIResponse>({
   id,
   params: { materialId, year } = {},
-  options = {},
+  options: { enabled = true, ...options } = {},
 }: UseH3DataProps<T>) => {
-  const { enabled = true } = options;
   const isContextual = !['impact', 'material'].includes(id);
   const isMaterial = id === 'material';
   const isImpact = id === 'impact';
 
-  const materialQuery = useH3MaterialData(
-    { materialId, year },
-    {
-      ...options,
-      enabled: enabled && isMaterial && !!year,
-    },
+  const materialParams = useMemo(() => ({ materialId, year }), [materialId, year]);
+  const materialOptions = useMemo(
+    () => ({ ...options, enabled: enabled && isMaterial && !!year }),
+    [enabled, isMaterial, options, year],
   );
-  const impactQuery = useH3ImpactData(
-    { year },
-    {
-      ...options,
-      enabled: enabled && isImpact,
-    },
+  const materialQuery = useH3MaterialData(materialParams, materialOptions);
+
+  const impactParams = useMemo(() => ({ year }), [year]);
+  const impactOptions = useMemo(
+    () => ({ ...options, enabled: enabled && isImpact }),
+    [enabled, isImpact, options],
   );
-  const contextualQuery = useH3ContextualData(id, {
-    ...options,
-    enabled: enabled && isContextual,
-  });
+  const impactQuery = useH3ImpactData(impactParams, impactOptions);
+
+  const contextualOptions = useMemo(
+    () => ({ ...options, enabled: enabled && isContextual }),
+    [enabled, isContextual, options],
+  );
+  const contextualQuery = useH3ContextualData(id, contextualOptions);
 
   if (isImpact) return impactQuery;
   if (isMaterial) return materialQuery;

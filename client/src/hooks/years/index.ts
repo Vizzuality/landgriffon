@@ -1,10 +1,10 @@
-import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
+import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
 import { apiRawService } from 'services/api';
 import type { AnalysisState } from 'store/features/analysis';
 
-const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
+const DEFAULT_QUERY_OPTIONS = {
   placeholderData: [],
   retry: false,
   keepPreviousData: false,
@@ -12,18 +12,20 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
 };
 
 type YearsData = number[];
-type YearsResponse = UseQueryResult<YearsData>;
 
-export function useYears(
+export const useYears = <T = YearsData>(
   layer: AnalysisState['analysis/filters']['layer'],
   materials: AnalysisState['analysis/filters']['materials'],
   indicator: AnalysisState['analysis/filters']['indicator'],
-): YearsResponse {
-  const result = useQuery(
+  options: UseQueryOptions<YearsData, unknown, T> = {},
+) => {
+  const enabled = (options.enabled ?? true) && !!indicator;
+
+  const query = useQuery(
     ['years', layer, materials, indicator],
     () =>
       apiRawService
-        .request<YearsData>({
+        .request<{ data: YearsData }>({
           method: 'GET',
           url: '/h3/years',
           params: {
@@ -35,21 +37,14 @@ export function useYears(
               ? { indicatorId: indicator.value }
               : {}),
           },
-          transformResponse: (response) => {
-            try {
-              const parsedData = JSON.parse(response);
-              return parsedData.data;
-            } catch (error) {
-              return response;
-            }
-          },
         })
-        .then((response) => response.data),
+        .then((response) => response.data.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
-      enabled: !!indicator,
+      ...options,
+      enabled,
     },
   );
 
-  return result as YearsResponse;
-}
+  return query;
+};

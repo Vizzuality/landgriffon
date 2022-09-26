@@ -74,6 +74,7 @@ export const initialState: AnalysisMapState = {
   userLayers: [],
   layers: {
     impact: {
+      ...DEFAULT_LAYER_ATTRIBUTES,
       id: 'impact',
       ...DEFAULT_LAYER_ATTRIBUTES,
       order: 0,
@@ -81,10 +82,9 @@ export const initialState: AnalysisMapState = {
       isContextual: false,
     },
     material: {
-      id: 'material',
       ...DEFAULT_LAYER_ATTRIBUTES,
+      id: 'material',
       order: 1,
-      active: true,
       isContextual: false,
     },
   },

@@ -1,23 +1,23 @@
-import { EyeOffIcon, EyeIcon } from '@heroicons/react/outline';
 import Accordion from 'components/accordion';
 import InfoToolTip from 'components/info-tooltip';
 import type { SelectOption } from 'components/select';
 import Toggle from 'components/toggle';
 import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
 import { useMaterials } from 'hooks/materials';
-import type { Dispatch, MouseEventHandler } from 'react';
+import type { Dispatch } from 'react';
 import { useCallback } from 'react';
 import { useMemo } from 'react';
 import { analysisFilters } from 'store/features/analysis';
 import { useAppSelector } from 'store/hooks';
 import type { Layer, Material } from 'types';
+import TogglePreview from './togglePreview';
 
 interface MaterialEntryProps {
   layer: Layer;
   onChange: (id: string, layer: Partial<Layer>) => void;
   materialId?: Material['id'];
   onChangeMaterial: Dispatch<Material['id']>;
-  onPreviewChange: Dispatch<Layer['id']>;
+  onPreviewChange: (id: Layer['id'], active: boolean) => void;
   isPreview: boolean;
 }
 const MaterialSettings = ({
@@ -33,8 +33,7 @@ const MaterialSettings = ({
     placeholderData: { data: [], metadata: {} },
   });
 
-  const { indicator, origins, suppliers, locationTypes, startYear } =
-    useAppSelector(analysisFilters);
+  const { origins, suppliers, locationTypes } = useAppSelector(analysisFilters);
 
   const originIds = useMemo(() => origins.map(({ value }) => value), [origins]);
   const supplierIds = useMemo(() => suppliers.map(({ value }) => value), [suppliers]);
@@ -64,21 +63,14 @@ const MaterialSettings = ({
     [materialId, materialOptions],
   );
 
-  const handlePreview = useCallback<MouseEventHandler>(
-    (e) => {
-      e.stopPropagation();
-      onPreviewChange?.(layer.id);
+  const handleTogglePreview = useCallback(
+    (active: boolean) => {
+      onPreviewChange(layer.id, active);
     },
     [layer.id, onPreviewChange],
   );
 
-  const toggleIconProps = useMemo(
-    () => ({
-      onClick: handlePreview,
-      className: 'w-4 h-4',
-    }),
-    [handlePreview],
-  );
+  const canPreview = !!materialId;
 
   return (
     <Accordion.Entry
@@ -88,7 +80,11 @@ const MaterialSettings = ({
           <div className="flex flex-row place-items-center gap-2">
             <InfoToolTip icon="outline" info="TODO" />
             <div className="w-0.5 h-full bg-gray-200 rounded-full" />
-            {isPreview ? <EyeOffIcon {...toggleIconProps} /> : <EyeIcon {...toggleIconProps} />}
+            <TogglePreview
+              disabled={!canPreview}
+              isPreviewActive={isPreview}
+              onPreviewChange={handleTogglePreview}
+            />
             <Toggle active={!!layer.active} onChange={handleToggleActive} />
           </div>
         </div>

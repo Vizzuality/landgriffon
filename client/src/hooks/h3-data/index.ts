@@ -33,7 +33,6 @@ type H3ImpactResponse = H3APIResponse & {
   };
 };
 type H3DataResponse = UseQueryResult<H3APIResponse, unknown>;
-type H3ContextualResponse = H3DataResponse; // UseQueryResult<{ data: H3Data; metadata: LayerMetadata }, unknown>;
 
 const DEFAULT_QUERY_OPTIONS = {
   placeholderData: {
@@ -312,7 +311,7 @@ interface UseH3DataProps<T> {
 
 export const useH3Data = <T = H3APIResponse>({
   id,
-  params: { materialId } = {},
+  params: { materialId, year } = {},
   options = {},
 }: UseH3DataProps<T>) => {
   const { enabled = true } = options;
@@ -321,14 +320,14 @@ export const useH3Data = <T = H3APIResponse>({
   const isImpact = id === 'impact';
 
   const materialQuery = useH3MaterialData(
-    { materialId },
+    { materialId, year },
     {
       ...options,
-      enabled: enabled && isMaterial,
+      enabled: enabled && isMaterial && !!year,
     },
   );
   const impactQuery = useH3ImpactData(
-    {},
+    { year },
     {
       ...options,
       enabled: enabled && isImpact,

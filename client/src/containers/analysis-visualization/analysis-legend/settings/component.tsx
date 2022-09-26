@@ -15,6 +15,7 @@ import type Fuse from 'fuse.js';
 import PreviewMap from './previewMap';
 import { analysisFilters } from 'store/features/analysis/filters';
 import MaterialSettings from './materialSettings';
+import TogglePreview from './togglePreview';
 
 interface LegendSettingsProps {
   categories: CategoryWithLayers[];
@@ -25,10 +26,16 @@ interface LegendSettingsProps {
 interface LayerSettingsProps {
   layer: Layer;
   onChange: (id: Layer['id'], layer: Partial<Layer>) => void;
-  onPreviewChange: (id: Layer['id']) => void;
+  onPreviewChange: (id: Layer['id'], active: boolean) => void;
+  isPreviewActive: boolean;
 }
 
-const LayerSettings = ({ layer, onChange, onPreviewChange }: LayerSettingsProps) => {
+const LayerSettings = ({
+  layer,
+  onChange,
+  onPreviewChange,
+  isPreviewActive,
+}: LayerSettingsProps) => {
   const onToggleActive = useCallback(
     (active: boolean) => {
       onChange(layer.id, { active });
@@ -36,13 +43,19 @@ const LayerSettings = ({ layer, onChange, onPreviewChange }: LayerSettingsProps)
     [layer.id, onChange],
   );
 
-  // TODO: preview this
+  const handlePreviewToggle = useCallback(
+    (active: boolean) => {
+      onPreviewChange(layer.id, active);
+    },
+    [layer.id, onPreviewChange],
+  );
 
   return (
     <div className="flex flex-row justify-between gap-5 p-2 pl-8 place-items-center">
       <div className="flex-grow text-sm">{layer.metadata?.name}</div>
       <div className="flex flex-row gap-2 place-items-center">
         <InfoToolTip info={layer.metadata?.description} />
+        <TogglePreview isPreviewActive={isPreviewActive} onPreviewChange={handlePreviewToggle} />
         <Toggle onChange={onToggleActive} active={!!layer.active} />
       </div>
     </div>
@@ -68,12 +81,12 @@ const CategoryHeader: React.FC<{
   );
 };
 
-interface CategorySettingsProps {
+interface CategorySettingsProps extends Pick<LayerSettingsProps, 'onPreviewChange'> {
   category: CategoryWithLayers['category'];
   layers: Layer[];
   activeLayers: number;
   onLayerStateChange: (id: Layer['id'], state: Partial<Layer>) => void;
-  onPreviewChange: (id: Layer['id']) => void;
+  activePreviewLayerId?: Layer['id'];
 }
 
 const NoMatches = () => (
@@ -88,12 +101,14 @@ const CategorySettings = ({
   onLayerStateChange,
   activeLayers,
   onPreviewChange,
+  activePreviewLayerId,
 }: CategorySettingsProps) => {
   return (
     <Accordion.Entry header={<CategoryHeader activeLayers={activeLayers} category={category} />}>
       {layers.length ? (
         layers.map((layer) => (
           <LayerSettings
+            isPreviewActive={layer.id === activePreviewLayerId}
             onPreviewChange={onPreviewChange}
             onChange={onLayerStateChange}
             layer={layer}
@@ -123,15 +138,11 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
   const [localMaterial, setLocalMaterial] = useState(materialId);
   const [selectedLayerForPreview, setSelectedLayerForPreview] = useState<Layer['id'] | null>(null);
 
-  const handleTogglePreview = useCallback(
-    (id: Layer['id']) => {
-      if (selectedLayerForPreview === id) {
-        setSelectedLayerForPreview(null);
-      } else {
-        setSelectedLayerForPreview(id);
-      }
+  const handleTogglePreview = useCallback<CategorySettingsProps['onPreviewChange']>(
+    (id, active) => {
+      setSelectedLayerForPreview(active ? id : null);
     },
-    [selectedLayerForPreview],
+    [],
   );
 
   const handleLayerStateChange = useCallback<CategorySettingsProps['onLayerStateChange']>(
@@ -188,6 +199,7 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
     () =>
       categories.map((cat) => (
         <CategorySettings
+          activePreviewLayerId={selectedLayerForPreview}
           activeLayers={cat.layers.filter((layer) => localLayerState[layer.id].active).length}
           layers={layerStateByCategory[cat.category]}
           onLayerStateChange={handleLayerStateChange}
@@ -202,6 +214,7 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
       handleTogglePreview,
       layerStateByCategory,
       localLayerState,
+      selectedLayerForPreview,
     ],
   );
 

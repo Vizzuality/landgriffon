@@ -16,6 +16,7 @@ import PreviewMap from './previewMap';
 import { analysisFilters } from 'store/features/analysis/filters';
 import MaterialSettings from './materialSettings';
 import TogglePreview from './togglePreview';
+import { EyeIcon } from '@heroicons/react/solid';
 
 interface LegendSettingsProps {
   categories: CategoryWithLayers[];
@@ -270,6 +271,18 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
             selectedMaterialId={localMaterial}
             selectedLayerId={selectedLayerForPreview}
           />
+          <div className="absolute bg-black text-sm text-white flex flex-row top-3 left-3 rounded-md h-fit">
+            <div className="font-bold p-3">Preview layers</div>
+            {!selectedLayerForPreview && (
+              <>
+                <div className="bg-white w-0.5 self-stretch" />
+                <div className="p-3">
+                  Click the eye icon <EyeIcon className="w-4 h-4 inline" /> next to the layer name
+                  to preview
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>

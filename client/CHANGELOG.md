@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Indicator name concatenates boolean variable in table view [LANDGRIF-902](https://vizzuality.atlassian.net/browse/LANDGRIF-902)
 - Compare not showing in table view [LANDGRIF-903](https://vizzuality.atlassian.net/browse/LANDGRIF-903)
 - Added loading in the data section before load the table
+- An issue where scenario description was not updated correctly
 
 ## [2022.08.03]
 

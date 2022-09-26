@@ -28,8 +28,12 @@ const ScenariosAdminPage: React.FC = () => {
           </AnchorLink>
         </Link>
       </div>
+      {isLoading && (
+        <div className="flex justify-center">
+          <Loading className="text-primary" />
+        </div>
+      )}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
-        {isLoading && <Loading />}
         {!isLoading &&
           data?.map((scenarioData) => (
             <ScenarioCard key={`scenario-card-${scenarioData.id}`} data={scenarioData} />

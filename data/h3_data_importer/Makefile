@@ -374,7 +374,7 @@ transform-deforestation-file:
 	table_name=`basename -s .tif $(FILE) | tr -d ' \t\n\r' | grep -oP "\d{2}[A-Z]_\d{3}[A-Z]"`; \
  	wget -q -O "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" $(FILE); \
 	rm -f "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
-	gdal_calc.py --quiet --calc "(A>19)" --format GTiff --co NBITS=1 --co compress=PACKBITS --co sparse_ok=TRUE --co tiled=YES --co BLOCKXSIZE=400 --co BLOCKYSIZE=400  --NoDataValue 0 --overwrite \
+	gdal_calc.py --quiet --calc "(A>19)" --format GTiff --co NBITS=1 --co compress=PACKBITS --co tiled=YES --co BLOCKXSIZE=400 --co BLOCKYSIZE=400  --NoDataValue 0 --overwrite \
 		-A "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" \
 		--outfile  "$(WORKDIR_DEFORESTATION)/$${table_name}.tif"; \
 	gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r sum -tr 0.0833333333333286 0.0833333333333286 -multi -of GTiff  -ot UInt32 -wo NUM_THREADS=ALL_CPUS \
@@ -411,14 +411,14 @@ download-forestGHG-list:
 transform-forestGHG:
 	@echo "Downloading and massaging tile $(NAME)..."
 	wget -q -O "$(WORKDIR_GHG)/$(NAME).tif" "$(URL)"
-	python preprocess_forestGHG.py --nodata 0 \
+	python preprocess_forestGHG.py \
 		"$(WORKDIR_GHG)/$(NAME).tif" \
 		"$(WORKDIR_DEFORESTATION)/$(NAME).tif" \
 		"$(WORKDIR_GHG)/$(NAME)_2020.tif"
 	rm "$(WORKDIR_GHG)/$(NAME).tif" "$(WORKDIR_DEFORESTATION)/$(NAME).tif"
-	gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r sum -tr 0.0833333333333286 0.0833333333333286 -multi -of GTiff  -ot Float32 -wo NUM_THREADS=ALL_CPUS \
+	gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r sum -tr 0.0833333333333286 0.0833333333333286 -multi -of GTiff -ot Float32 -wo NUM_THREADS=ALL_CPUS \
 		"$(WORKDIR_GHG)/$(NAME)_2020.tif" \
-		"$(WORKDIR_GHG)/resampled/$(NAME)_2020_10km.tif" \
+		"$(WORKDIR_GHG)/resampled/$(NAME)_2020_10km.tif"
 
 preprocess-forestGHG: download-forestGHG-list
 	mkdir -p $(WORKDIR_GHG)/resampled/merged_tiles

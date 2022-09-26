@@ -148,12 +148,10 @@ export const Legend: React.FC = () => {
       </div>
       <Modal
         size="fit"
-        // size="wide"
+        theme="minimal"
         title="Contextual Layers"
         open={showSettings}
-        dismissable={false}
         onDismiss={dismissLegendSettings}
-        className="!p-0"
       >
         <LegendSettings
           onApply={dismissLegendSettings}

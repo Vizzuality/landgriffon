@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import type { CONTENT_CLASSES } from './constants';
 
 export interface ModalProps {
   /**
@@ -17,7 +18,7 @@ export interface ModalProps {
   /**
    * Size (width) of the modal
    */
-  size?: 'narrow' | 'default' | 'wide' | 'fit';
+  size?: keyof typeof CONTENT_CLASSES;
   children?: ReactNode;
   /**
    * Class name to assign to the modal
@@ -28,4 +29,5 @@ export interface ModalProps {
    * pressing the escape key
    */
   onDismiss: () => void;
+  theme?: 'default' | 'minimal';
 }

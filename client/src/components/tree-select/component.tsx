@@ -22,6 +22,7 @@ import Loading from 'components/loading';
 import { CHECKED_STRATEGIES } from './utils';
 
 import type { TreeSelectProps, TreeSelectOption } from './types';
+import React from 'react';
 
 const THEMES = {
   default: {
@@ -50,25 +51,27 @@ const SEARCH_OPTIONS = {
   threshold: 0.4,
 };
 
-const TreeSelect = <IsMulti extends boolean = false>({
-  current: currentRaw,
-  loading,
-  maxBadges = 5,
-  multiple,
-  options = [],
-  placeholder,
-  showSearch = false,
-  onChange,
-  onSearch,
-  theme = 'default',
-  ellipsis = false,
-  error = false,
-  fitContent = false,
-  checkedStrategy = 'PARENT', // by default show child
-  label,
-  autoFocus = false,
-  ref,
-}: TreeSelectProps<IsMulti> & { ref?: Ref<HTMLInputElement> }) => {
+const InnerTreeSelect = <IsMulti extends boolean>(
+  {
+    current: currentRaw,
+    loading,
+    maxBadges = 5,
+    multiple,
+    options = [],
+    placeholder,
+    showSearch = false,
+    onChange,
+    onSearch,
+    theme = 'default',
+    ellipsis = false,
+    error = false,
+    fitContent = false,
+    checkedStrategy = 'PARENT', // by default show child
+    label,
+    autoFocus = false,
+  }: TreeSelectProps<IsMulti>,
+  ref: Ref<HTMLInputElement>,
+) => {
   const current = useMemo(() => {
     if (!currentRaw) {
       return null;
@@ -474,6 +477,10 @@ const flattenKeys: (root: TreeSelectOption) => TreeSelectOption['value'][] = (ro
   return keys;
 };
 
-TreeSelect.displayName = 'TreeSelect';
+const TreeSelect = React.forwardRef(InnerTreeSelect) as <IsMulti extends boolean = false>(
+  props: TreeSelectProps<IsMulti> & {
+    ref?: Ref<HTMLDivElement>;
+  },
+) => React.ReactElement;
 
 export default TreeSelect;

@@ -21,22 +21,24 @@ type MaterialsFilterProps<IsMulti extends boolean> = Omit<TreeSelectProps<IsMult
   locationTypes?: MaterialsTreesParams['locationTypes'];
 };
 
-const MaterialsFilter = <IsMulti extends boolean>({
-  multiple,
-  current,
-  depth = 1,
-  supplierIds,
-  businessUnitIds,
-  originIds,
-  locationTypes,
-  withSourcingLocations, // Do not a default; backend will override depth if this is set at all
-  onChange = () => null,
-  theme,
-  error,
-  ellipsis,
-  fitContent,
-  ref,
-}: MaterialsFilterProps<IsMulti> & { ref?: Ref<HTMLInputElement> }) => {
+const InnerMaterialsFilter = <IsMulti extends boolean>(
+  {
+    multiple,
+    current,
+    depth = 1,
+    supplierIds,
+    businessUnitIds,
+    originIds,
+    locationTypes,
+    withSourcingLocations, // Do not a default; backend will override depth if this is set at all
+    onChange = () => null,
+    theme,
+    error,
+    ellipsis,
+    fitContent,
+  }: MaterialsFilterProps<IsMulti>,
+  ref: Ref<HTMLInputElement>,
+) => {
   const { data, isFetching } = useMaterialsTrees(
     {
       depth,
@@ -83,6 +85,7 @@ const MaterialsFilter = <IsMulti extends boolean>({
   );
 };
 
-MaterialsFilter.displayName = 'MaterialsFilter';
-
+const MaterialsFilter = React.forwardRef(InnerMaterialsFilter) as <IsMulti extends boolean>(
+  props: MaterialsFilterProps<IsMulti> & { ref?: Ref<HTMLInputElement> },
+) => React.ReactElement;
 export default MaterialsFilter;

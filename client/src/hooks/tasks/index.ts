@@ -3,6 +3,7 @@ import { apiService } from 'services/api';
 
 import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
 import type { APIMetadataPagination, Task } from 'types';
+import type { LocationTypes } from 'containers/interventions/enums';
 
 type TaskAPIResponse = Task;
 
@@ -19,7 +20,11 @@ const DEFAULT_QUERY_OPTIONS = {
 
 export type LocationType = {
   label: string;
-  value: 'point-of-production' | 'aggregation-point' | 'country-of-production' | 'unknown';
+  value:
+    | LocationTypes.pointOfProduction
+    | LocationTypes.aggregationPoint
+    | LocationTypes.countryOfProduction
+    | LocationTypes.unknown;
 };
 
 export function useTasks(

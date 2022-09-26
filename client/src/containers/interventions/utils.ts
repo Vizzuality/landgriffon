@@ -7,7 +7,7 @@ function emptyStringIsNull(value: string): string | null {
 }
 
 function getValue<T>(option: SelectOption<T>): SelectOption<T>['value'] {
-  return option.value;
+  return option?.value;
 }
 
 export function parseInterventionFormDataToDto(

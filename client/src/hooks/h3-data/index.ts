@@ -12,7 +12,7 @@ import { apiRawService } from 'services/api';
 
 import { COLOR_RAMPS, useColors } from 'utils/colors';
 
-import type { AxiosResponse } from 'axios';
+import type { AxiosError, AxiosResponse } from 'axios';
 import type { H3APIResponse } from 'types';
 import type {
   RGBColor,
@@ -99,7 +99,7 @@ const responseContextualParser = (response: AxiosResponse<H3APIResponse>): H3API
 
 export const useH3MaterialData = <T = H3APIResponse>(
   params: Partial<MaterialH3APIParams> = {},
-  options: Partial<UseQueryOptions<H3APIResponse, unknown, T>> = {},
+  options: Partial<UseQueryOptions<H3APIResponse, AxiosError, T>> = {},
 ) => {
   const colors = useColors('material', COLOR_RAMPS);
   const filters = useAppSelector(analysisFilters);

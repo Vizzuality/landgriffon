@@ -50,7 +50,7 @@ const MaterialLayer = () => {
     [dispatch],
   );
 
-  const { isFetching, isSuccess, data } = useH3MaterialData(undefined, {
+  const { isFetching, isSuccess, data, isError, error } = useH3MaterialData(undefined, {
     onSuccess: (data) => {
       dispatch(
         setLayer({
@@ -135,6 +135,9 @@ const MaterialLayer = () => {
           min={data.metadata.legend?.min}
           items={legendItems}
         />
+      )}
+      {isError && error.response?.status === 404 && (
+        <div className="text-sm text-red-500">No data found for this parameters</div>
       )}
     </LegendItem>
   );

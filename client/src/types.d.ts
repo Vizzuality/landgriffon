@@ -36,7 +36,7 @@ export type CommonH3APIParams = {
   resolution: number;
 };
 
-export type MaterialH3APIParams = CommonH3APIParams & {
+export type MaterialH3APIParams = Omit<CommonH3APIParams, 'year'> & {
   materialId: string;
 };
 

@@ -103,16 +103,16 @@ export const useH3MaterialData = <T = H3APIResponse>(
 ) => {
   const colors = useColors('material', COLOR_RAMPS);
   const filters = useAppSelector(analysisFilters);
-  const { startYear, materialId, origins } = filters;
+  const { materialId, origins } = filters;
 
   const urlParams = useMemo(
     () => ({
-      year: startYear,
       materialId,
       resolution: origins?.length ? 6 : 4,
       ...params,
+      year: 2010,
     }),
-    [materialId, origins?.length, params, startYear],
+    [materialId, origins?.length, params],
   );
 
   const enabled = (options.enabled ?? true) && !!urlParams.year && !!urlParams.materialId;
@@ -322,10 +322,10 @@ export const useH3Data = <T = H3APIResponse>({
   const isMaterial = id === 'material';
   const isImpact = id === 'impact';
 
-  const materialParams = useMemo(() => ({ materialId, year }), [materialId, year]);
+  const materialParams = useMemo(() => ({ materialId }), [materialId]);
   const materialOptions = useMemo(
-    () => ({ ...options, enabled: enabled && isMaterial && !!year }),
-    [enabled, isMaterial, options, year],
+    () => ({ ...options, enabled: enabled && isMaterial }),
+    [enabled, isMaterial, options],
   );
   const materialQuery = useH3MaterialData(materialParams, materialOptions);
 

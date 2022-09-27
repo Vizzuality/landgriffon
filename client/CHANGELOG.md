@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Redesign of charts for Impact data
 - Updated scenarios list according new design
 - Changed the background of the authentication pages
+- Updated styles for the menu in the new "Data" (before Admin) section
 
 ### Fixed
 

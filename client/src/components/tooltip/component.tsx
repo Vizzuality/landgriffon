@@ -23,6 +23,7 @@ interface TooltipProps {
   theme?: 'light' | 'dark';
   placement?: Placement;
   hoverTrigger?: boolean;
+  enabled?: boolean;
 }
 
 const THEME: Record<Required<TooltipProps>['theme'], string> = {
@@ -45,6 +46,7 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
   theme = 'light',
   placement = 'top',
   hoverTrigger = false,
+  enabled = true,
 }) => {
   const arrowRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -93,7 +95,7 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
       >
         {children}
       </button>
-      {isOpen && (
+      {isOpen && enabled && (
         <div
           {...getFloatingProps({
             className: classNames(className, 'drop-shadow-md w-fit relative'),

@@ -64,10 +64,6 @@ const MaterialLayer = () => {
     },
   });
 
-  const { data: materials } = useMaterials({
-    select: (response) => response.data,
-  });
-
   const { data: material } = useMaterial(materialId);
 
   const legendItems = useMemo<Legend['items']>(
@@ -79,11 +75,6 @@ const MaterialLayer = () => {
     [layer.metadata?.legend.items],
   );
 
-  const materialOptions = useMemo(
-    () => materials.map((material) => ({ label: material.name, value: material.id })),
-    [materials],
-  );
-
   const handleMaterialChange = useCallback(
     (material: TreeSelectOption) => {
       dispatch(setFilter({ id: 'materialId', value: material?.value }));
@@ -92,19 +83,17 @@ const MaterialLayer = () => {
   );
 
   const Selector = useMemo(() => {
-    const current = materialOptions.find((material) => material.value === materialId);
-
     return (
       <Materials
         withSourcingLocations
         originIds={originIds}
         supplierIds={supplierIds}
         locationTypes={locationTypeIds}
-        current={current ?? null}
+        current={material ? { label: material.name, value: material.id } : null}
         onChange={handleMaterialChange}
       />
     );
-  }, [handleMaterialChange, locationTypeIds, materialId, materialOptions, originIds, supplierIds]);
+  }, [handleMaterialChange, locationTypeIds, material, originIds, supplierIds]);
 
   return (
     <LegendItem

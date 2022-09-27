@@ -71,7 +71,9 @@ const AnalysisMap: React.FC = () => {
     data: { data: impactData },
   } = useImpactLayer();
 
-  const { data: materialData } = useH3MaterialData();
+  const { data: materialData } = useH3MaterialData(undefined, {
+    keepPreviousData: false,
+  });
 
   const contextualData = useAllContextualLayersData();
 

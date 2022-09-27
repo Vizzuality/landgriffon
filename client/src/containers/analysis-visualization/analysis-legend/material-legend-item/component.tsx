@@ -20,12 +20,7 @@ const LAYER_ID = 'material';
 
 const MaterialLayer = () => {
   const dispatch = useAppDispatch();
-  const { indicator, materialId, origins, suppliers, locationTypes } =
-    useAppSelector(analysisFilters);
-
-  const originIds = useMemo(() => origins.map(({ value }) => value), [origins]);
-  const supplierIds = useMemo(() => suppliers.map(({ value }) => value), [suppliers]);
-  const locationTypeIds = useMemo(() => locationTypes.map(({ value }) => value), [locationTypes]);
+  const { indicator, materialId } = useAppSelector(analysisFilters);
 
   const {
     layers: { [LAYER_ID]: layer },
@@ -85,15 +80,11 @@ const MaterialLayer = () => {
   const Selector = useMemo(() => {
     return (
       <Materials
-        withSourcingLocations
-        originIds={originIds}
-        supplierIds={supplierIds}
-        locationTypes={locationTypeIds}
         current={material ? { label: material.name, value: material.id } : null}
         onChange={handleMaterialChange}
       />
     );
-  }, [handleMaterialChange, locationTypeIds, material, originIds, supplierIds]);
+  }, [handleMaterialChange, material]);
 
   return (
     <LegendItem

@@ -9,8 +9,6 @@ import type { Dispatch } from 'react';
 import { useState } from 'react';
 import { useCallback } from 'react';
 import { useMemo } from 'react';
-import { analysisFilters } from 'store/features/analysis';
-import { useAppSelector } from 'store/hooks';
 import type { Layer, Material } from 'types';
 import TogglePreview from './togglePreview';
 
@@ -32,13 +30,7 @@ const MaterialSettings = ({
 }: MaterialEntryProps) => {
   const { data: material } = useMaterial(materialId);
 
-  const { origins, suppliers, locationTypes } = useAppSelector(analysisFilters);
-
   const [isAccordionOpen, setIsAccordionOpen] = useState(!!materialId || layer.active);
-
-  const originIds = useMemo(() => origins.map(({ value }) => value), [origins]);
-  const supplierIds = useMemo(() => suppliers.map(({ value }) => value), [suppliers]);
-  const locationTypeIds = useMemo(() => locationTypes.map(({ value }) => value), [locationTypes]);
 
   const handleToggleActive = useCallback(
     (active: boolean) => {
@@ -104,15 +96,7 @@ const MaterialSettings = ({
     >
       <div className="flex flex-row justify-between gap-5 p-2 pl-8 place-items-center max-w-full">
         <div className="flex-grow">
-          <Materials
-            current={current ?? null}
-            originIds={originIds}
-            supplierIds={supplierIds}
-            locationTypes={locationTypeIds}
-            fitContent
-            withSourcingLocations
-            onChange={handleMaterialChange}
-          />
+          <Materials current={current ?? null} onChange={handleMaterialChange} />
         </div>
       </div>
     </Accordion.Entry>

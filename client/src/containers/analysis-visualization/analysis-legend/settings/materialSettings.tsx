@@ -6,6 +6,7 @@ import ToolTip from 'components/tooltip';
 import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
 import { useMaterial } from 'hooks/materials';
 import type { Dispatch } from 'react';
+import { useState } from 'react';
 import { useCallback } from 'react';
 import { useMemo } from 'react';
 import { analysisFilters } from 'store/features/analysis';
@@ -33,6 +34,8 @@ const MaterialSettings = ({
 
   const { origins, suppliers, locationTypes } = useAppSelector(analysisFilters);
 
+  const [isAccordionOpen, setIsAccordionOpen] = useState(!!materialId || layer.active);
+
   const originIds = useMemo(() => origins.map(({ value }) => value), [origins]);
   const supplierIds = useMemo(() => suppliers.map(({ value }) => value), [suppliers]);
   const locationTypeIds = useMemo(() => locationTypes.map(({ value }) => value), [locationTypes]);
@@ -40,6 +43,7 @@ const MaterialSettings = ({
   const handleToggleActive = useCallback(
     (active: boolean) => {
       onChange?.(layer.id, { active });
+      setIsAccordionOpen(true);
     },
     [layer.id, onChange],
   );
@@ -67,6 +71,8 @@ const MaterialSettings = ({
 
   return (
     <Accordion.Entry
+      expanded={isAccordionOpen}
+      onExpandedChange={setIsAccordionOpen}
       header={
         <div className="flex flex-row justify-between">
           <div className="text-sm font-semibold text-gray-500">Food and agriculture</div>

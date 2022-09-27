@@ -26,6 +26,20 @@ interface MaterialApiResponse {
   data: Material[];
 }
 
+export const useMaterial = <T = Material>(
+  id: Material['id'],
+  { enabled, ...options }: Partial<UseQueryOptions<Material, unknown, T>> = {},
+) => {
+  const query = useQuery(
+    ['material', id],
+    () =>
+      apiService.get<{ data: Material }>(`/materials/${id}`).then((response) => response.data.data),
+    { ...options, enabled: (enabled ?? true) && !!id },
+  );
+
+  return query;
+};
+
 export const useMaterials = <T = MaterialApiResponse>(
   options?: Partial<UseQueryOptions<MaterialApiResponse, unknown, T>>,
 ) => {

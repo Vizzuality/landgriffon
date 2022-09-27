@@ -76,10 +76,10 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
 
   const { getReferenceProps, getFloatingProps } = useInteractions([
     useHover(context, {
-      enabled: hoverTrigger,
+      enabled: hoverTrigger && enabled,
       handleClose: safePolygon({ restMs: 50 }),
     }),
-    useClick(context, { enabled: !hoverTrigger, toggle: true }),
+    useClick(context, { enabled: !hoverTrigger && enabled, toggle: true }),
     useDismiss(context),
   ]);
 

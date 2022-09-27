@@ -5,7 +5,7 @@ import NoData from 'containers/admin/no-data';
 import TargetsList from 'containers/targets/list';
 import { useIndicators } from 'hooks/indicators';
 import { useTargets } from 'hooks/targets';
-import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
+import AdminLayout from 'layouts/admin';
 import Head from 'next/head';
 import { useCallback, useMemo } from 'react';
 
@@ -39,7 +39,7 @@ const AdminTargetsPage: React.FC = () => {
   }, [indicators]);
 
   return (
-    <AdminLayout currentTab={ADMIN_TABS.TARGETS}>
+    <AdminLayout title="Targets">
       <Head>
         <title>Admin targets | Landgriffon</title>
       </Head>

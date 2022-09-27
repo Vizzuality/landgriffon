@@ -79,7 +79,7 @@ const MaterialSettings = ({
               enabled={!canPreview}
               theme="dark"
               content={
-                <div className="bg-black rounded-md text-white p-2 w-36 text-center">
+                <div className="bg-black rounded-md text-white text-sm p-2 w-36 text-center">
                   A material must be selected in order to see the preview
                 </div>
               }

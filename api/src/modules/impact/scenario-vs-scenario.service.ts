@@ -384,7 +384,8 @@ export class ScenarioVsScenarioImpactService {
             (scenarioOneTotalSumByYear || 0) - scenarioTwoTotalSumByYear,
           percentageDifference:
             ((scenarioOneTotalSumByYear || 0 - scenarioTwoTotalSumByYear) /
-              scenarioTwoTotalSumByYear) *
+              ((scenarioOneTotalSumByYear || 0 + scenarioTwoTotalSumByYear) /
+                2)) *
             100,
         });
       });
@@ -511,7 +512,9 @@ export class ScenarioVsScenarioImpactService {
           entity.values[valueIndex].percentageDifference =
             (((entity.values[valueIndex].scenarioOneValue || 0) -
               (entity.values[valueIndex].scenarioTwoValue || 0)) /
-              (entity.values[valueIndex].scenarioTwoValue || 0)) *
+              (((entity.values[valueIndex].scenarioOneValue || 0) +
+                (entity.values[valueIndex].scenarioTwoValue || 0)) /
+                2)) *
             100;
         },
       );

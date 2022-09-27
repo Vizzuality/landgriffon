@@ -2,6 +2,7 @@ import Accordion from 'components/accordion';
 import InfoToolTip from 'components/info-tooltip';
 import type { SelectOption } from 'components/select';
 import Toggle from 'components/toggle';
+import ToolTip from 'components/tooltip';
 import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
 import { useMaterials } from 'hooks/materials';
 import type { Dispatch } from 'react';
@@ -80,11 +81,24 @@ const MaterialSettings = ({
           <div className="flex flex-row place-items-center gap-2">
             <InfoToolTip icon="outline" info="TODO" />
             <div className="w-0.5 h-full bg-gray-200 rounded-full" />
-            <TogglePreview
-              disabled={!canPreview}
-              isPreviewActive={isPreview}
-              onPreviewChange={handleTogglePreview}
-            />
+            <ToolTip
+              className="z-10"
+              hoverTrigger
+              enabled={!canPreview}
+              theme="dark"
+              content={
+                <div className="bg-black rounded-md text-white p-2 w-36 text-center">
+                  A material must be selected in order to see the preview
+                </div>
+              }
+            >
+              <TogglePreview
+                disabled={!canPreview}
+                isPreviewActive={isPreview}
+                onPreviewChange={handleTogglePreview}
+              />
+            </ToolTip>
+
             <Toggle active={!!layer.active} onChange={handleToggleActive} />
           </div>
         </div>

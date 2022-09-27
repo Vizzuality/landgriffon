@@ -63,7 +63,7 @@ export const LegendItem = ({
         {!isLoading && children && (
           <div className="flex flex-row gap-2 text-gray-500">
             <div className="flex-grow min-w-0">{children}</div>
-            {unit && <div className="-mt-0.5 w-8 text-2xs">({unit})</div>}
+            <div className="-mt-0.5 w-8 text-2xs">{unit && <>({unit})</>}</div>
           </div>
         )}
       </div>

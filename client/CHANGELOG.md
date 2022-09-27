@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Readded material layer to the map as a contextual layer [LANDGRIF-827](https://vizzuality.atlassian.net/browse/LANDGRIF-827)
+- Add map preview to legend settings modal [LANDGRIF-827](https://vizzuality.atlassian.net/browse/LANDGRIF-827)
+
 ### Changed
 
 - Send `scenarioId` param alongside analysis filters [LANDGRIF-891](https://vizzuality.atlassian.net/browse/LANDGRIF-891)

@@ -4,7 +4,7 @@ import type { SelectOption } from 'components/select';
 import Toggle from 'components/toggle';
 import ToolTip from 'components/tooltip';
 import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
-import { useMaterials } from 'hooks/materials';
+import { useMaterial } from 'hooks/materials';
 import type { Dispatch } from 'react';
 import { useCallback } from 'react';
 import { useMemo } from 'react';
@@ -29,21 +29,13 @@ const MaterialSettings = ({
   onPreviewChange,
   isPreview,
 }: MaterialEntryProps) => {
-  const { data: materials } = useMaterials({
-    select: (response) => response.data,
-    placeholderData: { data: [], metadata: {} },
-  });
+  const { data: material } = useMaterial(materialId);
 
   const { origins, suppliers, locationTypes } = useAppSelector(analysisFilters);
 
   const originIds = useMemo(() => origins.map(({ value }) => value), [origins]);
   const supplierIds = useMemo(() => suppliers.map(({ value }) => value), [suppliers]);
   const locationTypeIds = useMemo(() => locationTypes.map(({ value }) => value), [locationTypes]);
-
-  const materialOptions = useMemo(
-    () => materials.map((material) => ({ label: material.name, value: material.id })),
-    [materials],
-  );
 
   const handleToggleActive = useCallback(
     (active: boolean) => {
@@ -60,8 +52,8 @@ const MaterialSettings = ({
   );
 
   const current = useMemo(
-    () => materialOptions.find((material) => material.value === materialId) ?? null,
-    [materialId, materialOptions],
+    () => (material ? { label: material.name, value: material.id } : null),
+    [material],
   );
 
   const handleTogglePreview = useCallback(

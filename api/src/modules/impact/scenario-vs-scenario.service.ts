@@ -13,14 +13,6 @@ import {
 } from 'modules/sourcing-records/sourcing-record.repository';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { range } from 'lodash';
-import {
-  ImpactTable,
-  ImpactTableDataByIndicator,
-  ImpactTablePurchasedTonnes,
-  ImpactTableRows,
-  ImpactTableRowsValues,
-  PaginatedImpactTable,
-} from 'modules/impact/dto/response-impact-table.dto';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
@@ -35,8 +27,10 @@ import { PaginationMeta } from 'utils/app-base.service';
 import {
   ScenarioVsScenarioImpactTable,
   ScenarioVsScenarioImpactTableDataByIndicator,
+  ScenarioVsScenarioImpactTablePurchasedTonnes,
   ScenarioVsScenarioImpactTableRows,
   ScenarioVsScenarioImpactTableRowsValues,
+  ScenarioVsScenarioPaginatedImpactTable,
 } from './dto/response-scenario-scenario.dto';
 
 @Injectable()
@@ -57,7 +51,7 @@ export class ScenarioVsScenarioImpactService {
   async getScenarioVsScenarioImpactTable(
     scenarioVsScenarioImpactTableDto: GetScenarioVsScenarioImpactTableDto,
     fetchSpecification: FetchSpecification,
-  ): Promise<PaginatedImpactTable> {
+  ): Promise<ScenarioVsScenarioPaginatedImpactTable> {
     const indicators: Indicator[] =
       await this.indicatorService.getIndicatorsById(
         scenarioVsScenarioImpactTableDto.indicatorIds,
@@ -70,9 +64,7 @@ export class ScenarioVsScenarioImpactService {
     // Getting entities and processing that correspond to Scenario 1 and filtered actual data
 
     const entities: ImpactTableEntityType[] =
-      await this.getScenariosAndActualEntityTrees(
-        scenarioVsScenarioImpactTableDto,
-      );
+      await this.getScenariosEntityTrees(scenarioVsScenarioImpactTableDto);
 
     const paginatedEntities: PaginatedEntitiesDto =
       ScenarioVsScenarioImpactService.paginateRootEntities(
@@ -118,16 +110,20 @@ export class ScenarioVsScenarioImpactService {
         dataForScenarioTwoAndActual,
       );
 
-    const impactTable: ImpactTable = this.buildScenarioVsScenarioImpactTable(
-      scenarioVsScenarioImpactTableDto,
-      indicators,
-      processedScenarioVsScenarioData,
-      this.buildActualVsScenarioImpactTableRowsSkeleton(
-        paginatedEntities.entities,
-      ),
-    );
+    const scenarioVsScenarioImpactTable: ScenarioVsScenarioImpactTable =
+      this.buildScenarioVsScenarioImpactTable(
+        scenarioVsScenarioImpactTableDto,
+        indicators,
+        processedScenarioVsScenarioData,
+        this.buildScenarioVsScenarioImpactTableRowsSkeleton(
+          paginatedEntities.entities,
+        ),
+      );
 
-    return { data: impactTable, metadata: paginatedEntities.metadata };
+    return {
+      data: scenarioVsScenarioImpactTable,
+      metadata: paginatedEntities.metadata,
+    };
   }
 
   /**
@@ -137,34 +133,34 @@ export class ScenarioVsScenarioImpactService {
    * @private
    */
   private async loadDescendantEntityIds(
-    impactTableDto: GetImpactTableDto,
+    scenarioVsScenarioImpactTableDto: GetScenarioVsScenarioImpactTableDto,
   ): Promise<GetImpactTableDto> {
-    if (impactTableDto.originIds)
-      impactTableDto.originIds =
+    if (scenarioVsScenarioImpactTableDto.originIds)
+      scenarioVsScenarioImpactTableDto.originIds =
         await this.adminRegionsService.getAdminRegionDescendants(
-          impactTableDto.originIds,
+          scenarioVsScenarioImpactTableDto.originIds,
         );
-    if (impactTableDto.materialIds)
-      impactTableDto.materialIds =
+    if (scenarioVsScenarioImpactTableDto.materialIds)
+      scenarioVsScenarioImpactTableDto.materialIds =
         await this.materialsService.getMaterialsDescendants(
-          impactTableDto.materialIds,
+          scenarioVsScenarioImpactTableDto.materialIds,
         );
-    if (impactTableDto.supplierIds)
-      impactTableDto.supplierIds =
+    if (scenarioVsScenarioImpactTableDto.supplierIds)
+      scenarioVsScenarioImpactTableDto.supplierIds =
         await this.suppliersService.getSuppliersDescendants(
-          impactTableDto.supplierIds,
+          scenarioVsScenarioImpactTableDto.supplierIds,
         );
 
-    return impactTableDto;
+    return scenarioVsScenarioImpactTableDto;
   }
 
   /**
-   * Returns an array of ImpactTable Entities, determined by the grouBy field and properties
+   * Returns an array of ScenarioVsScenarioImpactTable Entities, determined by the grouBy field and properties
    * of the GetImpactTableDto
    * @param getActualVsScenarioImpactTableDto
    * @private
    */
-  private async getScenariosAndActualEntityTrees(
+  private async getScenariosEntityTrees(
     getScenarioVsScenarioImpactTableDto: GetScenarioVsScenarioImpactTableDto,
   ): Promise<ImpactTableEntityType[]> {
     const treeOptions: GetMaterialTreeWithOptionsDto = {
@@ -263,7 +259,7 @@ export class ScenarioVsScenarioImpactService {
     queryDto: GetScenarioVsScenarioImpactTableDto,
     indicators: Indicator[],
     dataForActualVsScenarioImpactTable: ScenarioVsScenarioImpactTableData[],
-    entities: ImpactTableRows[],
+    entities: ScenarioVsScenarioImpactTableRows[],
   ): ScenarioVsScenarioImpactTable {
     this.logger.log('Building Impact Table...');
     const { groupBy, startYear, endYear } = queryDto;
@@ -393,14 +389,16 @@ export class ScenarioVsScenarioImpactService {
         });
       });
       // copy and populate tree skeleton for each indicator
-      const skeleton: ImpactTableRows[] = JSON.parse(JSON.stringify(entities));
+      const skeleton: ScenarioVsScenarioImpactTableRows[] = JSON.parse(
+        JSON.stringify(entities),
+      );
       skeleton.forEach((entity: any) => {
         this.populateValuesRecursively(entity, calculatedData, rangeOfYears);
       });
 
       impactTable[indicatorValuesIndex].rows = skeleton;
     });
-    const purchasedTonnes: ImpactTablePurchasedTonnes[] =
+    const purchasedTonnes: ScenarioVsScenarioImpactTablePurchasedTonnes[] =
       this.getTotalPurchasedVolumeByYear(
         rangeOfYears,
         dataForActualVsScenarioImpactTable,
@@ -413,14 +411,14 @@ export class ScenarioVsScenarioImpactService {
   private getTotalPurchasedVolumeByYear(
     rangeOfYears: number[],
     dataForImpactTable: ImpactTableData[],
-  ): ImpactTablePurchasedTonnes[] {
-    const purchasedTonnes: ImpactTablePurchasedTonnes[] = [];
+  ): ScenarioVsScenarioImpactTablePurchasedTonnes[] {
+    const purchasedTonnes: ScenarioVsScenarioImpactTablePurchasedTonnes[] = [];
     rangeOfYears.forEach((year: number) => {
       const valueOfPurchasedTonnesByYear: number = dataForImpactTable.reduce(
         (accumulator: number, currentValue: ImpactTableData): number => {
           if (currentValue.year === year) {
             accumulator += Number.isFinite(+currentValue.tonnes)
-              ? +currentValue.tonnes // TODO!!!!!!!!!!!!!!!!!!
+              ? +currentValue.tonnes
               : 0;
           }
           return accumulator;
@@ -521,15 +519,15 @@ export class ScenarioVsScenarioImpactService {
     return entity.values;
   }
 
-  private buildActualVsScenarioImpactTableRowsSkeleton(
+  private buildScenarioVsScenarioImpactTableRowsSkeleton(
     entities: ImpactTableEntityType[],
-  ): ImpactTableRows[] {
+  ): ScenarioVsScenarioImpactTableRows[] {
     return entities.map((item: ImpactTableEntityType) => {
       return {
         name: item.name || '',
         children:
           item.children.length > 0
-            ? this.buildActualVsScenarioImpactTableRowsSkeleton(item.children)
+            ? this.buildScenarioVsScenarioImpactTableRowsSkeleton(item.children)
             : [],
         values: [],
       };

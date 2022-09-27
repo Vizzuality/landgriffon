@@ -79,16 +79,19 @@ const MaterialLayer = () => {
 
   const Selector = useMemo(() => {
     return (
-      <Materials
-        current={material ? { label: material.name, value: material.id } : null}
-        onChange={handleMaterialChange}
-      />
+      <div>
+        <div>Material Production</div>
+        <Materials
+          current={material ? { label: material.name, value: material.id } : null}
+          onChange={handleMaterialChange}
+        />
+      </div>
     );
   }, [handleMaterialChange, material]);
 
   return (
     <LegendItem
-      name={layer.active ? Selector : 'Material Production'}
+      name={Selector}
       info={material?.metadata.name}
       {...data?.metadata?.legend}
       unit={data?.metadata?.unit}

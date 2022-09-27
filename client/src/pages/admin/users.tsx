@@ -3,11 +3,14 @@ import Head from 'next/head';
 import { useDebounce } from '@react-hook/debounce';
 import { PlusIcon } from '@heroicons/react/solid';
 
-import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
+import { useUsers } from 'hooks/users';
+
+import AdminLayout from 'layouts/admin';
 import Button from 'components/button';
 import Search from 'components/search';
-import type { TableProps } from 'components/table/component';
 import Table from 'components/table';
+
+import type { TableProps } from 'components/table/component';
 import type { PaginationState } from '@tanstack/react-table';
 
 interface UserData {
@@ -18,21 +21,21 @@ interface UserData {
 }
 
 const AdminUsersPage: React.FC = () => {
-  const [searchText, setSearchText] = useDebounce('', 250);
-
-  const tableData: UserData[] = Array(100)
-    .fill(undefined)
-    .map((_, index) => ({
-      name: `Name: ${index}`,
-      email: `Email: ${index}`,
-      title: `Title: ${index}`,
-      role: `Role: ${index}`,
-    }));
-
   const [paginationState, setPaginationState] = useState<PaginationState>({
     pageIndex: 1,
     pageSize: 10,
   });
+  const { data, isLoading } = useUsers({
+    'page[size]': paginationState.pageSize,
+    'page[number]': paginationState.pageIndex,
+  });
+  const [searchText, setSearchText] = useDebounce('', 250);
+
+  const tableData: UserData[] = data?.data?.map((user) => ({
+    name: user.displayName,
+    email: user.email,
+    active: user.isActive.toString(),
+  }));
 
   const tableProps = useMemo<TableProps<UserData>>(
     () => ({
@@ -41,8 +44,7 @@ const AdminUsersPage: React.FC = () => {
       columns: [
         { id: 'name', header: 'Name', size: 110 },
         { id: 'email', header: 'Email' },
-        { id: 'title', header: 'Title' },
-        { id: 'role', header: 'Role' },
+        { id: 'active', header: 'Is active' },
       ].map((column) => ({ align: 'left', ...column })),
       data: tableData,
       theme: 'striped',
@@ -51,7 +53,7 @@ const AdminUsersPage: React.FC = () => {
   );
 
   return (
-    <AdminLayout currentTab={ADMIN_TABS.USERS}>
+    <AdminLayout>
       <Head>
         <title>Admin users | Landgriffon</title>
       </Head>
@@ -66,7 +68,7 @@ const AdminUsersPage: React.FC = () => {
           </Button>
         </div>
       </div>
-      <Table {...tableProps} />
+      {!isLoading && tableData?.length > 0 && <Table {...tableProps} />}
     </AdminLayout>
   );
 };

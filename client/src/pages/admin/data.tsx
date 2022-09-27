@@ -9,7 +9,7 @@ import useModal from 'hooks/modals';
 import { useSourcingLocations, useSourcingLocationsMaterials } from 'hooks/sourcing-locations';
 import { useTasks } from 'hooks/tasks';
 
-import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
+import AdminLayout from 'layouts/admin';
 import DownloadMaterialsDataButton from 'containers/admin/download-materials-data-button';
 import NoResults from 'containers/admin/no-results';
 import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range';
@@ -132,7 +132,7 @@ const AdminDataPage: React.FC = () => {
   );
 
   return (
-    <AdminLayout currentTab={ADMIN_TABS.DATA} title="Manage data">
+    <AdminLayout title="Manage data">
       <Head>
         <title>Manage data | Landgriffon</title>
       </Head>

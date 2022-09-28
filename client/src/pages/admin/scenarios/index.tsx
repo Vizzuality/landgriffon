@@ -4,7 +4,7 @@ import { PlusIcon } from '@heroicons/react/solid';
 
 import { useScenarios } from 'hooks/scenarios';
 
-import AdminLayout, { ADMIN_TABS } from 'layouts/admin';
+import AdminLayout from 'layouts/admin';
 import ScenarioCard from 'containers/scenarios/card';
 import { AnchorLink } from 'components/button';
 import Loading from 'components/loading';
@@ -16,7 +16,7 @@ const ScenariosAdminPage: React.FC = () => {
   });
 
   return (
-    <AdminLayout currentTab={ADMIN_TABS.SCENARIOS} title="Manage scenarios data">
+    <AdminLayout title="Manage scenarios data">
       <Head>
         <title>Admin scenarios | Landgriffon</title>
       </Head>

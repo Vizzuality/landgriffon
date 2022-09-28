@@ -3,16 +3,16 @@ import React, { useCallback, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import type {
   Theme,
-  StylesConfig,
   MenuProps,
   ControlProps,
-  OptionProps,
   InputProps,
+  SelectComponentsConfig,
+  GroupBase,
 } from 'react-select';
 import ReactSelect, { defaultTheme, components } from 'react-select';
 import { ChevronDownIcon } from '@heroicons/react/outline';
-import tw from 'twin.macro';
 
+import type { UseFuseOptions } from 'hooks/fuse';
 import useFuse from 'hooks/fuse';
 
 import Loading from 'components/loading';
@@ -38,60 +38,90 @@ const DEFAULT_THEME: Theme = {
   },
 };
 
-const customStyles: <T>(theme: SelectProps<T>['theme'], error?: boolean) => StylesConfig = (
-  theme,
-  error = false,
-) => {
+const getComponents = <
+  OptionValue,
+  IsMulti extends boolean = false,
+  Group extends GroupBase<SelectOption<OptionValue>> = GroupBase<SelectOption<OptionValue>>,
+>(
+  theme: SelectProps<OptionValue>['theme'],
+  error: boolean,
+): SelectComponentsConfig<SelectOption<OptionValue>, IsMulti, Group> => {
   return {
-    container: (provided) => ({
-      ...provided,
-      ...tw`text-sm`,
-      ...(theme === 'default' && tw`shadow-sm`),
-    }),
-    option: (provided, { isDisabled, isSelected }) => ({
-      ...provided,
-      ...tw`text-gray-900 truncate cursor-pointer hover:bg-green-50`,
-      ...(isDisabled && tw`bg-primary`),
-      ...(isSelected && tw`text-white hover:bg-primary`),
-    }),
-    control: (provided, { isFocused }) => ({
-      ...provided,
-      boxShadow: 'none',
-      backgroundColor: 'transparent',
-      ...(theme === 'inline-primary' &&
-        tw`border border-l-0 border-r-0 border-t-0 border-b-2 border-b-primary shadow-none rounded-none min-w-[30px] p-0 min-h-0`),
-      ...(theme === 'default' && tw`w-full bg-white border rounded-md`),
-      ...tw`px-4 gap-x-0.5`,
-      ...(theme === 'default-bordernone' && tw`px-1 bg-white border-0`),
-      ...(isFocused && tw`ring-1 ring-primary`),
-      ...(error && tw`border-2 border-red-600`),
-    }),
-    singleValue: (provided) => ({
-      ...provided,
-      ...tw`my-auto`,
-      ...(theme === 'inline-primary' && tw`font-bold text-primary`),
-    }),
-    indicatorsContainer: (provided) => ({
-      ...provided,
-      ...(theme === 'inline-primary' ? tw`hidden` : tw`ml-2 mr-1 w-min`),
-    }),
-    indicatorSeparator: () => tw`hidden`,
-    menu: (provided) => ({
-      ...provided,
-      ...tw`static h-auto my-0 overflow-hidden border rounded-md shadow-md border-gray-50 min-w-[11rem]`,
-    }),
-    menuList: (provided) => ({ ...provided, ...tw`py-0` }),
-    valueContainer: (provided) => ({ ...provided, ...tw`px-0` }),
+    SelectContainer: ({ className, ...props }) => (
+      <components.SelectContainer
+        {...props}
+        className={classNames(className, `text-sm`, { 'shadow-sm': theme == 'default' })}
+      />
+    ),
+    SingleValue: ({ className, ...props }) => (
+      <components.SingleValue
+        className={classNames(className, 'my-auto', {
+          'font-bold text-primary': theme === 'inline-primary',
+        })}
+        {...props}
+      />
+    ),
+    IndicatorsContainer: ({ className, ...props }) => (
+      <components.IndicatorsContainer
+        className={classNames(className, theme === 'inline-primary' ? 'hidden' : 'ml-2 mr-1 w-min')}
+        {...props}
+      />
+    ),
+    IndicatorSeparator: null,
+    MenuList: ({ className, ...props }) => (
+      <components.MenuList className={classNames(className, 'py-0')} {...props} />
+    ),
+    ValueContainer: ({ className, ...props }) => (
+      <components.ValueContainer className={classNames(className, 'px-0')} {...props} />
+    ),
+    Option: ({ className, children, ...props }) => {
+      return (
+        <components.Option
+          {...props}
+          className={classNames(
+            className,
+            'text-gray-900 truncate cursor-pointer hover:bg-green-50',
+            props.isFocused ? 'bg-green-50 text-primary' : 'text-gray-900',
+            {
+              'bg-green-50 text-white hover:bg-primary': props.isSelected,
+              'text-opacity-50 cursor-default bg-primary': props.isDisabled,
+            },
+          )}
+        >
+          <div className="flex flex-row gap-x-2">
+            <div
+              className={classNames(
+                props.isSelected ? 'font-semibold' : 'font-normal',
+                'block truncate',
+              )}
+            >
+              {children}
+            </div>
+            {props.data.extraInfo && (
+              <div>
+                <span className="text-xs italic text-gray-600">{props.data.extraInfo}</span>
+              </div>
+            )}
+          </div>
+        </components.Option>
+      );
+    },
+    LoadingIndicator: () => <Loading className="text-primary" />,
+    DropdownIndicator:
+      theme === 'default' || theme === 'default-bordernone'
+        ? ({ selectProps: { menuIsOpen } }) => (
+            <ChevronDownIcon
+              className={classNames('h-4 w-4 text-gray-900', {
+                'rotate-180': menuIsOpen,
+                'stroke-red-700': error,
+              })}
+            />
+          )
+        : null,
   };
 };
 
-const SEARCH_OPTIONS = {
-  includeScore: false,
-  keys: ['label'],
-  threshold: 0.4,
-};
-
-const InnerSelect = <T,>(
+const InnerSelect = <OptionValue, IsMulti extends boolean = false>(
   {
     instanceId,
     disabled = false,
@@ -109,9 +139,22 @@ const InnerSelect = <T,>(
     showSearch = false,
     hideValueWhenMenuOpen = false,
     numeric = false,
-  }: SelectProps<T>,
+    ...props
+  }: SelectProps<OptionValue, IsMulti>,
   ref: Ref<HTMLInputElement>,
 ) => {
+  type Option = SelectOption<OptionValue>;
+  type Group = GroupBase<Option>;
+
+  const SEARCH_OPTIONS = useMemo<UseFuseOptions<Option>>(
+    () => ({
+      includeScore: false,
+      keys: ['label'],
+      threshold: 0.4,
+    }),
+    [],
+  );
+
   const { result: optionsResult, search: setSearchTerm } = useFuse(options, SEARCH_OPTIONS);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -144,31 +187,49 @@ const InnerSelect = <T,>(
     middleware: [offset({ mainAxis: 4 }), flip(), shift()],
   });
 
-  const Menu: React.FC<MenuProps> = useCallback(
-    ({ children, ...rest }) => (
-      <div
-        ref={floating}
-        className="z-20"
-        style={{
-          position: strategy,
-          top: y ?? '',
-          left: x ?? '',
-          minWidth:
-            theme === 'inline-primary'
-              ? '300px'
-              : (referenceElement.current as HTMLElement)?.offsetWidth,
-        }}
-      >
-        <components.Menu {...rest}>{children}</components.Menu>
-      </div>
-    ),
+  const Menu = useCallback(
+    ({ className, ...rest }: MenuProps<Option, IsMulti, Group>) => {
+      return (
+        <div
+          ref={floating}
+          className="z-20"
+          style={{
+            position: strategy,
+            top: y ?? '',
+            left: x ?? '',
+            minWidth:
+              theme === 'inline-primary'
+                ? '300px'
+                : (referenceElement.current as HTMLElement)?.offsetWidth,
+          }}
+        >
+          <components.Menu
+            className={classNames(
+              className,
+              'static h-auto my-0 overflow-hidden border rounded-md shadow-md border-gray-50 min-w-[11rem]',
+            )}
+            {...rest}
+          />
+        </div>
+      );
+    },
     [floating, referenceElement, strategy, theme, x, y],
   );
 
-  const Control: React.FC<ControlProps> = useCallback(
-    ({ children, ...rest }) => (
+  const Control = useCallback(
+    ({ children, className, ...rest }: ControlProps<Option, IsMulti, Group>) => (
       <div ref={reference}>
-        <components.Control {...rest}>
+        <components.Control
+          className={classNames(className, 'shadow-none bg-transparent px-4 gap-x-0.5', {
+            'border border-l-0 border-r-0 border-t-0 border-b-2 border-b-primary shadow-none rounded-none min-w-[30px] p-0 min-h-0':
+              theme === 'inline-primary',
+            'w-full bg-white border rounded-md': theme === 'default',
+            'px-1 bg-white border-0': theme === 'default-bordernone',
+            'ring-1 ring-primary': rest.isFocused,
+            'border-2 border-red-600': error,
+          })}
+          {...rest}
+        >
           {hideValueWhenMenuOpen && !rest.menuIsOpen && label && (
             <div className="text-gray-600">{label}</div>
           )}
@@ -179,11 +240,11 @@ const InnerSelect = <T,>(
         )}
       </div>
     ),
-    [hideValueWhenMenuOpen, label, reference, theme],
+    [error, hideValueWhenMenuOpen, label, reference, theme],
   );
 
-  const Input: React.FC<InputProps> = useCallback(
-    ({ children, onChange, ...rest }) => {
+  const Input = useCallback(
+    ({ children, onChange, ...rest }: InputProps<Option, IsMulti, Group>) => {
       return (
         <components.Input
           {...rest}
@@ -200,53 +261,26 @@ const InnerSelect = <T,>(
     [numeric],
   );
 
-  const Option: React.FC<OptionProps<SelectOption<T>>> = useCallback(
-    ({ innerProps, innerRef, isSelected, isFocused, isDisabled, data: { label, extraInfo } }) => (
-      <div {...innerProps} ref={innerRef}>
-        <div
-          className={classNames(
-            isFocused ? ' bg-green-50 text-primary' : 'text-gray-900',
-            isSelected && 'bg-green-50 text-primary',
-            'cursor-pointer select-none relative py-2 px-4',
-            isDisabled && 'text-opacity-50 cursor-default',
-          )}
-        >
-          <div className="flex flex-row gap-x-2">
-            <div
-              className={classNames(isSelected ? 'font-semibold' : 'font-normal', 'block truncate')}
-            >
-              {label}
-            </div>
-            {extraInfo && (
-              <div>
-                <span className="text-xs italic text-gray-600">{extraInfo}</span>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    ),
-    [],
+  const customComponents = useMemo(
+    () => getComponents<OptionValue, IsMulti, Group>(theme, error),
+    [theme, error],
   );
-
-  const styles = useMemo(() => customStyles(theme, error), [error, theme]);
 
   return (
     <div className={classNames({ 'w-fit': theme === 'inline-primary' })}>
       <input ref={ref} className="hidden" />
-      <ReactSelect
+      <ReactSelect<SelectOption<OptionValue>, IsMulti, Group>
+        // menuIsOpen
+        isOptionDisabled={(option) => option.disabled}
+        isOptionSelected={(option) => option.value === current?.value}
         instanceId={instanceId}
         defaultValue={defaultValue}
         onMenuOpen={() => setIsMenuOpen(true)}
         onMenuClose={() => setIsMenuOpen(false)}
-        styles={styles}
         placeholder={placeholder}
         onInputChange={handleSearch}
         onChange={handleChange}
-        options={optionsResult.map(({ disabled, ...option }) => ({
-          ...option,
-          isDisabled: disabled,
-        }))}
+        options={optionsResult}
         value={hideValueWhenMenuOpen && isMenuOpen ? null : current}
         isDisabled={disabled}
         isLoading={loading}
@@ -259,24 +293,12 @@ const InnerSelect = <T,>(
             : DEFAULT_THEME
         }
         components={{
-          Option,
-          IndicatorSeparator: null,
-          LoadingIndicator: () => <Loading className="text-primary" />,
-          DropdownIndicator:
-            theme === 'default' || theme === 'default-bordernone'
-              ? ({ selectProps: { menuIsOpen } }) => (
-                  <ChevronDownIcon
-                    className={classNames('h-4 w-4 text-gray-900', {
-                      'rotate-180': menuIsOpen,
-                      'stroke-red-700': error,
-                    })}
-                  />
-                )
-              : null,
           Menu,
           Control,
           Input,
+          ...customComponents,
         }}
+        {...props}
       />
     </div>
   );

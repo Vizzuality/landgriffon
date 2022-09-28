@@ -186,6 +186,9 @@ export type ImpactTableData = {
   yearSum: {
     year: number;
     value: number;
+    scenarioValue: number;
+    absoluteDifference: number;
+    percentageDifference: number;
   }[];
 };
 

@@ -54,9 +54,14 @@ const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: Scenarios
     dispatch(setComparisonEnabled(!!currentScenario && !!scenarioToCompare));
   }, [dispatch, currentScenario, scenarioToCompare]);
 
-  const formattedUpdatedAgo = useMemo(
-    () => (scenario.updatedAt ? formatTimeAgo(new Date(scenario.updatedAt)) : null),
+  const updatedAt = useMemo(
+    () => (scenario.updatedAt ? new Date(scenario.updatedAt) : null),
     [scenario.updatedAt],
+  );
+
+  const formattedUpdatedAgo = useMemo(
+    () => (updatedAt ? formatTimeAgo(new Date(updatedAt)) : null),
+    [updatedAt],
   );
 
   return (
@@ -116,8 +121,10 @@ const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: Scenarios
                     )}
 
                     {scenario.id !== ACTUAL_DATA.id && scenario.updatedAt && (
-                      <div className="flex w-full min-w-0 flex-row justify-between place-items-center">
-                        <div className="text-gray-400 text-xs">Modified: {formattedUpdatedAgo}</div>
+                      <div className="flex gap-1 w-full min-w-0 flex-row justify-between place-items-center">
+                        <div className="text-gray-400 text-xs" title={updatedAt?.toLocaleString()}>
+                          Modified: {formattedUpdatedAgo}
+                        </div>
                         <div>
                           <Link href={`/admin/scenarios/${scenario.id}/edit`}>
                             <a>

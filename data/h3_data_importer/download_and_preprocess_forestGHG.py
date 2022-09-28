@@ -4,6 +4,7 @@ import logging
 from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
+from typing import Union
 
 import numpy as np
 import rasterio as rio
@@ -13,6 +14,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from tqdm import tqdm
 from urllib3 import Retry
+from urllib3.exceptions import MaxRetryError
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("preprocess_forestGHG")
@@ -33,7 +35,7 @@ def parse_json(json_file: str) -> tuple[str, str]:
         yield attrs["tile_id"], attrs["Mg_CO2e_px_download"]
 
 
-def download_ghg(url: str, name: str, store_path: str) -> Path:
+def download_ghg(url: str, name: str, store_path: str) -> Union[Path, None]:
     """Download a GHG tile and save .tig
 
     Returns
@@ -43,14 +45,15 @@ def download_ghg(url: str, name: str, store_path: str) -> Path:
     log.info(f"Downloading {name} tile from {url}")
     with requests.Session() as s:
         # define some retry policies because GFW api is flaky as hell
-        retries = Retry(total=5, backoff_factor=1, status_forcelist=[413, 429, 502, 503, 504])
-        s.mount("https://", HTTPAdapter(max_retries=retries))
-        r = s.get(url, stream=True)
-        filename = Path(store_path) / f"{name}.tif"
-        if r.status_code != 200 and retries.is_exhausted():
-            log.error(f"Tile {name} download returned bad status code {r.status_code}. Url: {url}")
-            raise Exception(f"Couldn't download GHG tile {name}")
-        else:
+        try:
+            retries = Retry(total=5, backoff_factor=1, status_forcelist=[413, 429, 502, 503, 504])
+            s.mount("https://", HTTPAdapter(max_retries=retries))
+            r = s.get(url, stream=True)
+        except MaxRetryError:
+            log.error(f"Tile {name} download returned bad status code {r.status_code} and retries failed. Url: {url}")
+            return
+        if r.status_code == 200:
+            filename = Path(store_path) / f"{name}.tif"
             total = int(r.headers.get("content-length", 0))
             with open(filename, "wb") as f, tqdm(
                 desc=name,
@@ -62,7 +65,10 @@ def download_ghg(url: str, name: str, store_path: str) -> Path:
                 for chunk in r.iter_content(chunk_size=1024):
                     size = f.write(chunk)
                     bar.update(size)
-    return filename
+            return filename
+        else:
+            log.error(f"Tile {name} download returned bad status code {r.status_code}. Url: {url}")
+            return
 
 
 def process_ghg(ghg_file: Path, hansen_file: Path, outfile: Path) -> Path:
@@ -116,6 +122,8 @@ def resample_ghg(ghg_file: Path, dst_file: Path, dst_resolution: tuple[float, fl
 
 def main(out_folder, hansen_folder, tile_name, url):
     filename = download_ghg(url, tile_name, out_folder)
+    if not filename:
+        return  # early return to avoid exceptions since the download failed.
     hansen_file = Path(hansen_folder) / f"{tile_name}.tif"
     if not hansen_file.exists():
         log.error(f"Couldn't find hansen tile {hansen_file} to use as mask.")

@@ -1,10 +1,19 @@
 import cx from 'classnames';
 import Icon from 'components/icon';
+import Modal from 'components/modal';
+import MethodologyForm from 'containers/methodology-form';
+import useModal from 'hooks/modals';
 import Image from 'next/image';
 
 import DOWNLOAD_SVG from 'svgs/ui/icn_download.svg?sprite';
 
 const Step02: React.FC = () => {
+  const {
+    isOpen: isMethodologyFormModalOpen,
+    open: openMethodologyFormModal,
+    close: closeMethodologyFormModal,
+  } = useModal();
+
   return (
     <article
       className={cx({
@@ -36,14 +45,18 @@ const Step02: React.FC = () => {
         </div>
 
         <div className="items-center inline-block px-20 py-6 font-semibold text-white bg-black border-2 border-black">
-          <a
-            href="/docs/LandGriffon_Methodology_Executive_Summary.pdf"
-            download
-            className="flex items-center space-x-5"
+          <button type="submit" onClick={openMethodologyFormModal}>
+            Click here to get our Methodology
+          </button>
+          <Modal
+            title="Methodology"
+            size="wide"
+            open={isMethodologyFormModalOpen}
+            onDismiss={closeMethodologyFormModal}
+            dismissable
           >
-            <span>Download Methodology</span>
-            <Icon icon={DOWNLOAD_SVG} className="w-3 h-3 fill-white" />
-          </a>
+            <MethodologyForm />
+          </Modal>
         </div>
       </div>
 

@@ -400,27 +400,14 @@ convert-deforestation: preprocess-deforestation
 		indicator DF_LUC_T 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 
-download-forestGHG-list:
+download-process-forestGHG-list:
 	@echo "Downloading Forest Greenhouse Gas emission tiles list..."
 	mkdir -p $(WORKDIR_GHG)
 	mkdir -p $(WORKDIR_GHG)/resampled
 	wget -q -O $(WORKDIR_GHG)/forest_ghg_sources_list.json https://services2.arcgis.com/g8WusZB13b9OegfU/arcgis/rest/services/Forest_greenhouse_gas_emissions/FeatureServer/0/query\?where\=1%3D1\&outFields\=\*\&outSR\=4326\&f\=json
-	python parse_forest_ghg_list.py $(WORKDIR_GHG)/forest_ghg_sources_list.json "Mg_CO2e_px_download" | xargs -P $(PARALLELIZATION_FACTOR) -L1 /bin/bash -c 'make transform-forestGHG NAME=$$0 URL=$$1'
+	python download_and_preprocess_forestGHG.py --processes $(PARALLELIZATION_FACTOR) $(WORKDIR_GHG)/forest_ghg_sources_list.json $(WORKDIR_GHG) $(WORKDIR_DEFORESTATION)
 
-# todo: Check an alternative source of the tiles since de GFW endpoints are super slow and it takes more than one hour to download them all
-transform-forestGHG:
-	@echo "Downloading and massaging tile $(NAME)..."
-	wget -q -O "$(WORKDIR_GHG)/$(NAME).tif" "$(URL)"
-	python preprocess_forestGHG.py \
-		"$(WORKDIR_GHG)/$(NAME).tif" \
-		"$(WORKDIR_DEFORESTATION)/$(NAME).tif" \
-		"$(WORKDIR_GHG)/$(NAME)_2020.tif"
-	rm "$(WORKDIR_GHG)/$(NAME).tif" "$(WORKDIR_DEFORESTATION)/$(NAME).tif"
-	gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r sum -tr 0.0833333333333286 0.0833333333333286 -multi -of GTiff -ot Float32 -wo NUM_THREADS=ALL_CPUS \
-		"$(WORKDIR_GHG)/$(NAME)_2020.tif" \
-		"$(WORKDIR_GHG)/resampled/$(NAME)_2020_10km.tif"
-
-preprocess-forestGHG: download-forestGHG-list
+preprocess-forestGHG: download-process-forestGHG-list
 	mkdir -p $(WORKDIR_GHG)/resampled/merged_tiles
 	gdalbuildvrt $(WORKDIR_GHG)/resampled/merged_tiles/forest_GHG_2020.vrt $(WORKDIR_GHG)/resampled/*.tif
 	gdal_translate -q -of GTiff -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 \

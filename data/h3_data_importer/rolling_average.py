@@ -18,9 +18,9 @@ def main(filename: str, out_file: str, radius: int = 50):
     else:  # TODO: check if non geographic crs have affine values in meters
         y_size_km = -transform[4] / 1000  # transform in meters
     radius_in_pixels = int(radius // y_size_km)
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, ksize=(radius_in_pixels, radius_in_pixels))
-    
-    # apply the buffer using opencv filter function. 
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, ksize=(radius_in_pixels*2, radius_in_pixels*2))
+
+    # apply the buffer using opencv filter function.
     # It calculates the cross-croletation instead of the convolution but
     # since we are using a simetric kernel it does not matter.
     # Also it is 100x faster than scipy´s convolve ¯\_(ツ)_/¯

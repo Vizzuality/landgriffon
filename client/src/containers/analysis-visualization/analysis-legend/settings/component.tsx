@@ -4,6 +4,7 @@ import { Button } from 'components/button';
 import InfoToolTip from 'components/info-tooltip';
 import Search from 'components/search';
 import Toggle from 'components/toggle';
+import type { UseFuseOptions } from 'hooks/fuse';
 import useFuse from 'hooks/fuse';
 import type { CategoryWithLayers } from 'hooks/layers/getContextualLayers';
 import type { Dispatch } from 'react';
@@ -11,7 +12,6 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { analysisMap, setFilter, setLayer } from 'store/features/analysis';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import type { Layer } from 'types';
-import type Fuse from 'fuse.js';
 import PreviewMap from './previewMap';
 import { analysisFilters } from 'store/features/analysis/filters';
 import MaterialSettings from './materialSettings';
@@ -123,7 +123,7 @@ const CategorySettings = ({
   );
 };
 
-const FUSE_OPTIONS: Fuse.IFuseOptions<CategoryWithLayers['layers'][number]> = {
+const FUSE_OPTIONS: UseFuseOptions<CategoryWithLayers['layers'][number]> = {
   keys: ['name', 'metadata.name', 'metadata.description'],
   shouldSort: false,
   threshold: 0.3,

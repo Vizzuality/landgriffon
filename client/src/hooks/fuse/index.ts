@@ -1,3 +1,4 @@
+import type { DeepKeys } from '@tanstack/react-table';
 import Fuse from 'fuse.js';
 import type { ChangeEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
@@ -9,10 +10,11 @@ interface UseFuseReturn<T> {
   reset: () => void;
 }
 
-const useFuse: <T>(data: T[], options?: Fuse.IFuseOptions<T>) => UseFuseReturn<T> = (
-  data,
-  options = {},
-) => {
+export interface UseFuseOptions<T> extends Omit<Fuse.IFuseOptions<T>, 'keys'> {
+  keys?: DeepKeys<T>[];
+}
+
+const useFuse = <T>(data: T[], options: UseFuseOptions<T> = {}): UseFuseReturn<T> => {
   const [term, setTerm] = useState('');
 
   const search = useCallback<UseFuseReturn<unknown>['search']>((search) => {
@@ -25,7 +27,7 @@ const useFuse: <T>(data: T[], options?: Fuse.IFuseOptions<T>) => UseFuseReturn<T
 
   const reset = useCallback(() => setTerm(''), []);
 
-  const fuse = useMemo(() => new Fuse(data, options), [data, options]);
+  const fuse = useMemo(() => new Fuse(data, options as Fuse.IFuseOptions<T>), [data, options]);
   const result = useMemo(
     () => (term ? fuse.search(term).map((result) => result.item) : data),
     [data, fuse, term],

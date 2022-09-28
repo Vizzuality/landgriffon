@@ -1,35 +1,39 @@
-import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
 import { apiService } from 'services/api';
 
-const DEFAULT_QUERY_OPTIONS = {
-  placeholderData: [],
-  retry: false,
-  keepPreviousData: false,
-  refetchOnWindowFocus: false,
-};
+import type { UseQueryOptions } from '@tanstack/react-query';
+import type { UserPayload } from 'types';
 
-type YearsData = number[];
-
-export const useUsers = <T = YearsData>(
-  params?: Record<string, unknown>,
-  options?: UseQueryOptions<YearsData, unknown, T> = {},
+export const useUsers = (
+  params: Record<string, unknown> = {},
+  options: UseQueryOptions<UserPayload> = {},
 ) => {
-  const query = useQuery(
+  const queryOptions: UseQueryOptions<UserPayload> = {
+    placeholderData: {
+      data: [],
+      meta: {
+        pageNumber: 1,
+        pageSize: 10,
+      },
+    },
+    retry: false,
+    keepPreviousData: false,
+    refetchOnWindowFocus: false,
+    ...options,
+  };
+
+  const query = useQuery<UserPayload>(
     ['users', params],
     () =>
       apiService
-        .request<{ data: YearsData }>({
+        .request({
           method: 'GET',
           url: '/users',
           params,
         })
         .then((response) => response.data),
-    {
-      ...DEFAULT_QUERY_OPTIONS,
-      ...options,
-    },
+    queryOptions,
   );
 
   return query;

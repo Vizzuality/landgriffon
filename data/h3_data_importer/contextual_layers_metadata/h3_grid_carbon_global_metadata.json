@@ -1,7 +1,7 @@
 {
     "$schema": "./contextual_metadata_schema.json",
-    "name": "Net forest GHG flux - 2001-2021",
-    "description": "Net forest GHG flux -2001-2021 (tCO2e/ha) displays the net exchange of carbon between forest and the atmosphere between 2001 and 2021, calculated as the difference between forest carbon emissions from stand-replacing forest disturbances and carbon removals from forest growth.",
+    "name": "Forest GHG emissions - 2001-2021",
+    "description": "Forest GHG emissions -2001-2021 (tCO2e/ha) displays the net forest greenhouse gas emissions from stand-replacing disturbances.",
     "aggType": "sum",
     "legend": {
         "name": "Net forest GHG flux - 2001-2021",

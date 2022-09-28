@@ -274,20 +274,23 @@ const AdminDataPage: React.FC = () => {
         title="Upload data source"
         open={isUploadDataSourceModalOpen}
         onDismiss={closeUploadDataSourceModal}
+        theme="default"
       >
         <div>
-          <p className="text-sm text-gray-500">
-            Upload a new file will replace all the current data.
-          </p>
-          <div className="mt-10">
-            <DataUploader inline task={lastTask} />
+          <div>
+            <p className="text-sm text-gray-500">
+              Upload a new file will replace all the current data.
+            </p>
+            <div className="mt-10">
+              <DataUploader inline task={lastTask} />
+            </div>
           </div>
-        </div>
 
-        <div className="flex justify-end gap-3 mt-8">
-          <Button theme="secondary" onClick={closeUploadDataSourceModal}>
-            Cancel
-          </Button>
+          <div className="flex justify-end gap-3 mt-8">
+            <Button theme="secondary" onClick={closeUploadDataSourceModal}>
+              Cancel
+            </Button>
+          </div>
         </div>
       </Modal>
     </AdminLayout>

@@ -337,3 +337,18 @@ export type Task = {
   status: string;
   errors?: Record<string, string>[];
 };
+
+// User
+export type User = {
+  displayName: string;
+  email: string;
+  isActive: boolean;
+};
+
+export type UserPayload = {
+  data: User[];
+  meta: {
+    pageSize: number;
+    pageNumber: number;
+  };
+};

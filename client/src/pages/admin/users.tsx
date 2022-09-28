@@ -12,13 +12,7 @@ import Table from 'components/table';
 
 import type { TableProps } from 'components/table/component';
 import type { PaginationState } from '@tanstack/react-table';
-
-interface UserData {
-  name: string;
-  email: string;
-  title: string;
-  role: string;
-}
+import type { User } from 'types';
 
 const AdminUsersPage: React.FC = () => {
   const [paginationState, setPaginationState] = useState<PaginationState>({
@@ -31,20 +25,24 @@ const AdminUsersPage: React.FC = () => {
   });
   const [searchText, setSearchText] = useDebounce('', 250);
 
-  const tableData: UserData[] = data?.data?.map((user) => ({
-    name: user.displayName,
+  const tableData: User[] = data?.data?.map((user) => ({
+    displayName: user.displayName,
     email: user.email,
-    active: user.isActive.toString(),
+    isActive: user.isActive,
   }));
 
-  const tableProps = useMemo<TableProps<UserData>>(
+  const tableProps = useMemo<TableProps<User>>(
     () => ({
       onPaginationChange: setPaginationState,
       state: { pagination: paginationState },
       columns: [
-        { id: 'name', header: 'Name', size: 110 },
+        { id: 'displayName', header: 'Name', size: 110 },
         { id: 'email', header: 'Email' },
-        { id: 'active', header: 'Is active' },
+        {
+          id: 'isActive',
+          header: 'Active',
+          cell: ({ row }) => (row.original.isActive ? 'Yes' : 'No'),
+        },
       ].map((column) => ({ align: 'left', ...column })),
       data: tableData,
       theme: 'striped',

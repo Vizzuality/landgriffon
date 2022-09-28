@@ -76,7 +76,7 @@ const InnerBusinessUnitsFilter = (
     currentIds?.forEach((key) => {
       const recursiveSearch = (arr: TreeSelectProps<true>['options']) => {
         arr.forEach((opt) => {
-          if (opt.value === key.value) checkedOptions.push(opt);
+          if (opt.value === key?.value) checkedOptions.push(opt);
           if (opt.children) recursiveSearch(opt.children);
         });
       };

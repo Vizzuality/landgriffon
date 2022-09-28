@@ -8,6 +8,7 @@ import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { MaterialsModule } from 'modules/materials/materials.module';
 import { ActualVsScenarioImpactService } from 'modules/impact/comparison/actual-vs-scenario.service';
+import { ScenarioVsScenarioImpactService } from './scenario-vs-scenario.service';
 
 @Module({
   imports: [
@@ -18,8 +19,16 @@ import { ActualVsScenarioImpactService } from 'modules/impact/comparison/actual-
     SuppliersModule,
     MaterialsModule,
   ],
-  providers: [ImpactService, ActualVsScenarioImpactService],
+  providers: [
+    ImpactService,
+    ActualVsScenarioImpactService,
+    ScenarioVsScenarioImpactService,
+  ],
   controllers: [ImpactController],
-  exports: [ImpactService, ActualVsScenarioImpactService],
+  exports: [
+    ImpactService,
+    ActualVsScenarioImpactService,
+    ScenarioVsScenarioImpactService,
+  ],
 })
 export class ImpactModule {}

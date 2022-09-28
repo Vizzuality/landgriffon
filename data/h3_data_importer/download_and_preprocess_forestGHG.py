@@ -10,7 +10,9 @@ import rasterio as rio
 from rasterio.enums import Resampling
 from rasterio.warp import calculate_default_transform, reproject
 import requests
+from requests.adapters import HTTPAdapter
 from tqdm import tqdm
+from urllib3 import Retry
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("preprocess_forestGHG")
@@ -39,23 +41,27 @@ def download_ghg(url: str, name: str, store_path: str) -> Path:
     file_name: Path
     """
     log.info(f"Downloading {name} tile from {url}")
-    r = requests.get(url, stream=True)
-    filename = Path(store_path) / f"{name}.tif"
-    if r.status_code == 200:
-        total = int(r.headers.get("content-length", 0))
-        with open(filename, "wb") as f, tqdm(
-            desc=name,
-            total=total,
-            unit="iB",
-            unit_scale=True,
-            unit_divisor=1024,
-        ) as bar:
-            for chunk in r.iter_content(chunk_size=1024):
-                size = f.write(chunk)
-                bar.update(size)
-    else:
-        log.error(f"Tile {name} download returned bad status code {r.status_code}. Url: {url}")
-        raise Exception(f"Couldn't download GHG tile {name}")
+    with requests.Session() as s:
+        # define some retry policies because GFW api is flaky as hell
+        retries = Retry(total=5, backoff_factor=1, status_forcelist=[413, 429, 502, 503, 504])
+        s.mount("https://", HTTPAdapter(max_retries=retries))
+        r = s.get(url, stream=True)
+        filename = Path(store_path) / f"{name}.tif"
+        if r.status_code != 200 and retries.is_exhausted():
+            log.error(f"Tile {name} download returned bad status code {r.status_code}. Url: {url}")
+            raise Exception(f"Couldn't download GHG tile {name}")
+        else:
+            total = int(r.headers.get("content-length", 0))
+            with open(filename, "wb") as f, tqdm(
+                desc=name,
+                total=total,
+                unit="iB",
+                unit_scale=True,
+                unit_divisor=1024,
+            ) as bar:
+                for chunk in r.iter_content(chunk_size=1024):
+                    size = f.write(chunk)
+                    bar.update(size)
     return filename
 
 
@@ -112,11 +118,11 @@ def main(out_folder, hansen_folder, tile_name, url):
     filename = download_ghg(url, tile_name, out_folder)
     hansen_file = Path(hansen_folder) / f"{tile_name}.tif"
     if not hansen_file.exists():
-        log.error(f"Couldn't find hansen tile {tile_name} to use as mask.")
+        log.error(f"Couldn't find hansen tile {hansen_file} to use as mask.")
         raise FileNotFoundError(f"Hansen tile {tile_name} not found")
     out_file = filename.with_name(filename.stem + "_2020" + filename.suffix)
     ghg_file = process_ghg(filename, hansen_file, out_file)
-    resampled_out_file = Path(out_folder) / "resampled" / out_file.with_name(out_file.stem + "_10km" + out_file.suffix)
+    resampled_out_file = Path(out_folder) / "resampled" / (out_file.stem + "_10km" + out_file.suffix)
     resample_ghg(ghg_file, resampled_out_file, (0.0833333333333286, 0.0833333333333286))
     log.info(f"Done with {tile_name}")
 

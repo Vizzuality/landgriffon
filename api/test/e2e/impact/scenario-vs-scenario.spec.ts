@@ -24,9 +24,6 @@ import {
   getSameMaterialScenarioComparisonResponse,
   getScenarioComparisonResponseBySupplier,
 } from './scenario-vs-scenario-responses/same-materials-scenarios.reponse';
-import { createMixedScenariosPreconditions } from './scenario-vs-scenario-preconditions/mixed-scenarios.preconditions';
-import { getMultiInterventionsScenariosComparison } from './scenario-vs-scenario-responses/multi-interventions-comparison.response';
-import { getGroupedBySupplierScenariosComparison } from './scenario-vs-scenario-responses/supplier-comparison.response';
 import { createSameMaterialScenariosPreconditions } from './scenario-vs-scenario-preconditions/same-materials-scenarios.preconditions';
 
 describe('Scenario comparison test suite (e2e)', () => {

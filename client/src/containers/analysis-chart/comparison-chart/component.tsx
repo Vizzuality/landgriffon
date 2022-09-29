@@ -107,7 +107,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                     vertical={false}
                   />
                   <XAxis
-                    dataKey="date"
+                    dataKey="year"
                     axisLine={false}
                     tick={{ fill: '#15181F', fontWeight: 300 }}
                     tickLine={false}

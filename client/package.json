@@ -116,6 +116,7 @@
     "eslint-config-next": "12.2.3",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-prettier": "3.4.0",
+    "eslint-plugin-storybook": "^0.6.4",
     "istanbul-reports": "3.0.0",
     "nyc": "15.1.0",
     "nyc-report-lcov-absolute": "1.0.0",

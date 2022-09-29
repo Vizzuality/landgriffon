@@ -19,7 +19,8 @@ import { useImpactComparison } from 'hooks/impact/comparison';
 
 import Loading from 'components/loading';
 import { NUMBER_FORMAT } from 'utils/number-format';
-import LegendChart from './legend';
+import CustomLegend from './legend';
+import CustomTooltip from './tooltip';
 
 import type { Store } from 'store';
 import type { Indicator } from 'types';
@@ -70,8 +71,12 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
     };
   }, [data]);
 
-  const renderLegend = useCallback((props) => {
-    return <LegendChart {...props} />;
+  const renderLegend = useCallback((props) => <CustomLegend {...props} />, []);
+
+  const renderTooltip = useCallback((props) => {
+    if (props && props.active && props.payload && props.payload.length) {
+      return <CustomTooltip {...props} />;
+    }
   }, []);
 
   return (
@@ -96,10 +101,10 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                 >
                   <Legend verticalAlign="top" content={renderLegend} height={70} />
                   <CartesianGrid
-                    vertical={false}
                     stroke="#15181F"
                     strokeWidth={1}
                     strokeOpacity={0.15}
+                    vertical={false}
                   />
                   <XAxis
                     dataKey="date"
@@ -110,32 +115,31 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                   />
                   <YAxis
                     axisLine={false}
+                    domain={['auto', 'auto']}
                     label={{ value: chartData.unit, angle: -90, position: 'insideLeft' }}
                     tick={{ fill: '#15181F', fontWeight: 300 }}
                     tickLine={false}
                     tickFormatter={NUMBER_FORMAT}
                   />
-                  <Tooltip
-                    formatter={NUMBER_FORMAT}
-                    animationDuration={500}
-                    itemStyle={{ color: '#15181F' }}
-                  />
+                  <Tooltip animationDuration={500} content={renderTooltip} />
+                  {/* Actual data */}
                   <Line
-                    type="monotone"
-                    dataKey="scenarioValue"
-                    stroke="#078A3C"
-                    strokeWidth={1}
-                    fillOpacity={0.9}
                     animationEasing="ease"
                     animationDuration={500}
-                  />
-                  <Line
-                    type="monotone"
                     dataKey="value"
-                    stroke="#3F59E0"
-                    strokeWidth={1}
+                    stroke="#AEB1B5"
+                    strokeWidth={2}
+                    type="linear"
+                  />
+                  {/* Scenario */}
+                  <Line
                     animationEasing="ease"
                     animationDuration={500}
+                    dataKey="scenarioValue"
+                    fillOpacity={0.9}
+                    stroke="#3F59E0"
+                    strokeWidth={2}
+                    type="linear"
                   />
                 </LineChart>
               </ResponsiveContainer>

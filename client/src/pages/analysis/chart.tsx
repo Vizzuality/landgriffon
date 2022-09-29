@@ -9,6 +9,7 @@ import useEffectOnce from 'hooks/once';
 import ApplicationLayout from 'layouts/application';
 import AnalysisLayout from 'layouts/analysis';
 import AnalysisChart from 'containers/analysis-chart';
+import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
 import Loading from 'components/loading';
 import TitleTemplate from 'utils/titleTemplate';
 
@@ -45,16 +46,21 @@ const ChartPage: NextPageWithLayout = () => {
         </div>
       )}
       {!isLoading && activeIndicators?.length > 0 && (
-        <div
-          className={classNames('grid gap-6', {
-            'grid-cols-1': activeIndicators?.length === 1,
-            'grid-cols-1 2xl:grid-cols-2': activeIndicators?.length > 1,
-          })}
-        >
-          {activeIndicators.map((indicator) => (
-            <AnalysisChart key={`analysis-chart-${indicator.id}`} indicator={indicator} />
-          ))}
-        </div>
+        <>
+          <div className="mb-6">
+            <AnalysisDynamicMetadata />
+          </div>
+          <div
+            className={classNames('grid gap-6', {
+              'grid-cols-1': activeIndicators?.length === 1,
+              'grid-cols-1 2xl:grid-cols-2': activeIndicators?.length > 1,
+            })}
+          >
+            {activeIndicators.map((indicator) => (
+              <AnalysisChart key={`analysis-chart-${indicator.id}`} indicator={indicator} />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

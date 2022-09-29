@@ -95,6 +95,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Use SWC instead of Babel
 - Upgrade Tailwind to version 3.0.24
 - Upgrade to Yarn version 3.2.1
 - Upgrade to Node LTS 16.15.0
@@ -109,6 +110,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Fixed select with errors having two borders in some ocassions
 - `nyc` was not working running `yarn test`
 - Collapsed button sometimes appears in the middle [LANDGRIF-678](https://vizzuality.atlassian.net/browse/LANDGRIF-678)
 - Interventions pannel should close when navigating to "Analysis" throught breadcrumbs [LANDGRIF-657](https://vizzuality.atlassian.net/browse/LANDGRIF-657)

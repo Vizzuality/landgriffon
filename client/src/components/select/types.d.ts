@@ -14,16 +14,19 @@ type Styles = Readonly<{
 export interface SelectProps<OptionValue = string, IsMulti extends boolean = false>
   extends Omit<
     Props<SelectOption<OptionValue>, IsMulti, GroupBase<SelectOption<OptionValue>>>,
-    'options'
+    'value' | 'isSearchable' | 'label' | 'placeholder' | 'isClearable' | 'isLoading' | 'isDisabled'
   > {
   instanceId?: number | string;
   showSearch?: boolean;
   disabled?: boolean;
   loading?: boolean;
   label?: string;
-  options: OptionsOrGroups<SelectOption<OptionValue>, GroupBase<SelectOption<OptionValue>>>;
-  defaultValue?: SelectOption<OptionValue>;
-  current?: SelectOption<OptionValue> | null;
+  current?: Props<
+    SelectOption<OptionValue>,
+    IsMulti,
+    GroupBase<SelectOption<OptionValue>>
+  >['value'];
+  allowEmpty?: boolean;
   placeholder?: string;
   allowEmpty?: boolean;
   onChange?: (selected: SelectOption<OptionValue>) => unknown;

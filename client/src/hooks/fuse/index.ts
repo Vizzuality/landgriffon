@@ -3,21 +3,25 @@ import Fuse from 'fuse.js';
 import type { ChangeEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
-interface UseFuseReturn<T> {
-  result: T[];
+type UseFuseReturn<T> = Readonly<{
+  result: readonly T[];
   search: (search: string | ChangeEvent<HTMLInputElement>) => void;
   term: string;
   reset: () => void;
-}
+}>;
+
+type SeparateDots<T> = T extends `${infer A}.${infer B}` ? [A, ...SeparateDots<B>] : [T];
+
+type KeyType<T> = SeparateDots<DeepKeys<T>> | DeepKeys<T>;
 
 export interface UseFuseOptions<T> extends Omit<Fuse.IFuseOptions<T>, 'keys'> {
-  keys?: DeepKeys<T>[];
+  keys?: (KeyType<T> | { name: KeyType<T>; weight: number })[];
 }
 
-const useFuse = <T>(data: T[], options: UseFuseOptions<T> = {}): UseFuseReturn<T> => {
+const useFuse = <T>(data: readonly T[], options: UseFuseOptions<T> = {}): UseFuseReturn<T> => {
   const [term, setTerm] = useState('');
 
-  const search = useCallback<UseFuseReturn<unknown>['search']>((search) => {
+  const search = useCallback<UseFuseReturn<T>['search']>((search) => {
     if (typeof search === 'string') {
       setTerm(search);
     } else {

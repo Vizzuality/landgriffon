@@ -6,6 +6,7 @@ import useModal from 'hooks/modals';
 import Image from 'next/image';
 
 import DOWNLOAD_SVG from 'svgs/ui/icn_download.svg?sprite';
+import DOCUMENT_SVG from 'svgs/ui/document.svg?sprite';
 
 const Step02: React.FC = () => {
   const {
@@ -25,7 +26,7 @@ const Step02: React.FC = () => {
         <header className="relative">
           <div className="relative z-10 space-y-5">
             <h3 className="font-black md:leading-[100px] uppercase text-7xl md:text-9xl font-display">
-              Landscape level
+              Land scape level
             </h3>
           </div>
         </header>
@@ -44,20 +45,40 @@ const Step02: React.FC = () => {
           </p>
         </div>
 
-        <div className="items-center inline-block px-20 py-6 font-semibold text-white bg-black border-2 border-black">
-          <button type="submit" onClick={openMethodologyFormModal}>
-            Click here to get our Methodology
-          </button>
-          <Modal
-            title="Methodology"
-            size="wide"
-            open={isMethodologyFormModalOpen}
-            onDismiss={closeMethodologyFormModal}
-            dismissable
-          >
-            <MethodologyForm />
-          </Modal>
+        <div
+          className="relative h-56 pl-8 overflow-hidden font-semibold text-white border-2 border-blue-900 cursor-pointer group pt-7 w-96"
+          style={{
+            backgroundImage: `url('/images/methodology/methodology_bg.jpg')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center bottom',
+          }}
+          onClick={openMethodologyFormModal}
+        >
+          <div className="absolute flex items-center justify-center transition-colors bg-white h-9 top-3 right-3 w-9 group-hover:bg-orange-500">
+            <Icon icon={DOCUMENT_SVG} className="w-5 h-5" />
+          </div>
+
+          <div className="w-4/5">
+            <p className="text-2xl font-black uppercase font-display">
+              Learn more about the science behind
+            </p>
+          </div>
+
+          <div className="absolute bottom-0 left-0 flex items-center justify-between w-full px-8 py-3 space-x-5 transition-opacity opacity-0 group-hover:opacity-100 bg-white/10">
+            <p className="font-bold">Read our methodology document to find out how it works.</p>
+            <Icon icon={DOWNLOAD_SVG} className="w-5 h-5 fill-white" />
+          </div>
         </div>
+
+        <Modal
+          title="To download our Methodology, please fill in the following fields"
+          size="wide"
+          open={isMethodologyFormModalOpen}
+          onDismiss={closeMethodologyFormModal}
+          dismissable
+        >
+          <MethodologyForm close={closeMethodologyFormModal} />
+        </Modal>
       </div>
 
       <div className="w-full space-y-20">

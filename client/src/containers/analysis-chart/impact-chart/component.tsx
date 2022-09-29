@@ -158,8 +158,9 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                     tickFormatter={NUMBER_FORMAT}
                   />
                   <Tooltip
-                    formatter={NUMBER_FORMAT}
                     animationDuration={500}
+                    contentStyle={{ borderRadius: '8px', borderColor: '#D1D5DB' }}
+                    formatter={NUMBER_FORMAT}
                     itemStyle={{ color: '#15181F' }}
                   />
                   {chartData.keys.map((key) => (

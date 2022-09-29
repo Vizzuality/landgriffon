@@ -8,7 +8,7 @@ import Select from 'components/select';
 
 import { useIndicators } from 'hooks/indicators';
 
-import type { SelectProps } from 'components/select/types';
+import type { SelectOption, SelectProps } from 'components/select/types';
 
 const IndicatorsFilter: React.FC = () => {
   const { visualizationMode } = useAppSelector(analysisUI);
@@ -35,7 +35,11 @@ const IndicatorsFilter: React.FC = () => {
   }, [data, visualizationMode]);
 
   useEffect(() => {
-    if (isFetched && options.length && !options.find((o) => o.value === filters.indicator?.value)) {
+    if (
+      isFetched &&
+      options.length &&
+      !options.find((o) => (o as SelectOption).value === filters.indicator?.value)
+    ) {
       dispatch(
         setFilter({
           id: 'indicator',

@@ -146,7 +146,7 @@ const InnerSelect = <OptionValue, IsMulti extends boolean = false>(
   type Option = SelectOption<OptionValue>;
   type Group = GroupBase<Option>;
 
-  const SEARCH_OPTIONS = useMemo<UseFuseOptions<Option>>(
+  const SEARCH_OPTIONS = useMemo<UseFuseOptions<Option | Group>>(
     () => ({
       includeScore: false,
       keys: ['label'],
@@ -272,7 +272,7 @@ const InnerSelect = <OptionValue, IsMulti extends boolean = false>(
       <ReactSelect<SelectOption<OptionValue>, IsMulti, Group>
         // menuIsOpen
         isOptionDisabled={(option) => option.disabled}
-        isOptionSelected={(option) => option.value === current?.value}
+        isOptionSelected={(option) => option.value === (current as Option)?.value}
         instanceId={instanceId}
         defaultValue={defaultValue}
         onMenuOpen={() => setIsMenuOpen(true)}

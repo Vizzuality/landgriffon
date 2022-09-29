@@ -4,7 +4,7 @@ import { analysisFilters, setFilter } from 'store/features/analysis/filters';
 
 import Select from 'components/select';
 
-import type { SelectProps } from 'components/select/types';
+import type { SelectOption, SelectProps } from 'components/select/types';
 import type { Group } from 'types';
 
 const GROUP_BY_OPTIONS: Group[] = [
@@ -55,8 +55,8 @@ const GroupByFilter: React.FC = () => {
     [],
   );
 
-  const currentValue: SelectProps['current'] = useMemo(
-    () => options.find((group) => group.value === filters.by),
+  const currentValue: SelectOption = useMemo(
+    () => (options as SelectOption[]).find((group) => group.value === filters.by),
     [filters.by, options],
   );
 

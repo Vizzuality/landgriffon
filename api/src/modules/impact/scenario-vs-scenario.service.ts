@@ -263,13 +263,14 @@ export class ScenarioVsScenarioImpactService {
   ): ScenarioVsScenarioImpactTable {
     this.logger.log('Building Impact Table...');
     const { groupBy, startYear, endYear } = queryDto;
-    const impactTable: ScenarioVsScenarioImpactTableDataByIndicator[] = [];
+    const scenarioVsScenarioImpactTable: ScenarioVsScenarioImpactTableDataByIndicator[] =
+      [];
     // Create a range of years by start and endYears
     const rangeOfYears: number[] = range(startYear, endYear + 1);
     // Append data by indicator and add its unit.symbol as metadata. We need awareness of this loop during the whole process
     indicators.forEach((indicator: Indicator, indicatorValuesIndex: number) => {
       const calculatedData: ScenarioVsScenarioImpactTableRows[] = [];
-      impactTable.push({
+      scenarioVsScenarioImpactTable.push({
         indicatorShortName: indicator.shortName as string,
         indicatorId: indicator.id,
         groupBy: groupBy,
@@ -376,7 +377,7 @@ export class ScenarioVsScenarioImpactService {
           0,
         );
 
-        impactTable[indicatorValuesIndex].yearSum.push({
+        scenarioVsScenarioImpactTable[indicatorValuesIndex].yearSum.push({
           year,
           scenarioOneValue: scenarioOneTotalSumByYear,
           scenarioTwoValue: scenarioTwoTotalSumByYear,
@@ -397,7 +398,7 @@ export class ScenarioVsScenarioImpactService {
         this.populateValuesRecursively(entity, calculatedData, rangeOfYears);
       });
 
-      impactTable[indicatorValuesIndex].rows = skeleton;
+      scenarioVsScenarioImpactTable[indicatorValuesIndex].rows = skeleton;
     });
     const purchasedTonnes: ScenarioVsScenarioImpactTablePurchasedTonnes[] =
       this.getTotalPurchasedVolumeByYear(
@@ -406,7 +407,7 @@ export class ScenarioVsScenarioImpactService {
       );
     this.logger.log('Impact Table built');
 
-    return { impactTable, purchasedTonnes };
+    return { scenarioVsScenarioImpactTable, purchasedTonnes };
   }
 
   private getTotalPurchasedVolumeByYear(

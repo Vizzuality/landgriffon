@@ -4,7 +4,7 @@ import logging
 from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
-from typing import Union
+from typing import Union, Tuple
 
 import numpy as np
 import rasterio as rio
@@ -20,7 +20,7 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("preprocess_forestGHG")
 
 
-def parse_json(json_file: str) -> tuple[str, str]:
+def parse_json(json_file: str) -> Tuple[str, str]:
     """Parse GHG tiles list from json
 
     Returns
@@ -96,7 +96,7 @@ def process_ghg(ghg_file: Path, hansen_file: Path, outfile: Path) -> Path:
     return outfile
 
 
-def resample_ghg(ghg_file: Path, dst_file: Path, dst_resolution: tuple[float, float]):
+def resample_ghg(ghg_file: Path, dst_file: Path, dst_resolution: Tuple[float, float]):
     log.info(f"Resampling {ghg_file} to resolution {dst_resolution}...")
     with rio.open(ghg_file) as src:
         dst_transf, dst_width, dst_height = calculate_default_transform(

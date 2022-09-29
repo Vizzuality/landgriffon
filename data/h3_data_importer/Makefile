@@ -9,8 +9,6 @@ PARALLELIZATION_FACTOR=10
 WORKDIR_MAPSPAM=data/mapspam
 WORKDIR_GLW3=data/glw3
 WORKDIR_WATER_FOOTPRINT=data/waterFootprint
-WORKDIR_BIODIVERSITY=data/biodiversity
-WORKDIR_CARBON=data/gfw_carbon
 WORKDIR_DEFORESTATION=data/hansen_loss
 WORKDIR_SPECIESRICHNESS=data/satelligence/species_richness
 WORKDIR_ABOVEGROUNDBIOMASS=data/satelligence/above_ground_biomass
@@ -30,9 +28,9 @@ crop:
 # once the new indicators have been defined and ingested we will need to update the indicator code in for each on the indicator commented below and allow the ingestion.
 # convert-speciesRichness convert-aboveGroundBiomass convert-satDeforestation
 indicators:
-	make -j 2 convert-water-footprint convert-biodiversity convert-carbon
+	make convert-water-footprint
 	# Processing deforestation data is quite intensive, so we do it separately, so we can allocate all threads to it
-		# There is probably a better way to do this, that future me will learn about - in the future.
+	# There is probably a better way to do this, that future me will learn about - in the future.
 	make convert-deforestation
 	make convert-forestGHG
 contextual-layers:
@@ -62,7 +60,7 @@ extract-mapspam-crop-production: download-mapspam-crop-production
 	mkdir -p $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod
 	unzip -u $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod.geotiff.zip *_A.tif -d $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod
 	gdal_calc.py --quiet --calc "A+B+C+D" --format GTiff --type Float32 \
-		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TROF_A.tif \
+		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TEMF_A.tif \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_GROU_A.tif \
 		-C $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_BANA_A.tif \
 		-D $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TROF_A.tif \
@@ -111,7 +109,7 @@ extract-mapspam-crop-production: download-mapspam-crop-production
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TEMF_A.tif \
 		-C $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TROF_A.tif \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_VegeTemfTrof_A.tif
-	gdal_calc.py--quiet --calc "A+B" --format GTiff --type Float32 \
+	gdal_calc.py --quiet --calc "A+B" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TROF_A.tif \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TEMF_A.tif \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TrofTemf_A.tif
@@ -123,10 +121,10 @@ extract-mapspam-crop-harvest: download-mapspam-crop-harvest
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/*_A.tif \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_All_A.tif
 	gdal_calc.py --quiet --calc "A+B+C+D" --format GTiff --type Float32 \
-		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TROF_A.tif --A_band 1 \
+		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TEMF_A.tif --A_band 1 \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_GROU_A.tif --B_band 1 \
 		-C $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_BANA_A.tif --C_band 1 \
-		-D $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TROF_A.tif --C_band 1 \
+		-D $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TROF_A.tif --D_band 1 \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TemfGrouBanaTrof_A.tif
 	gdal_calc.py --quiet --calc "A+B+C" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_ACOF_A.tif --A_band 1 \
@@ -197,11 +195,11 @@ download-pasture:
 #remove no data values
 extract-pasture: download-pasture
 	unzip -j -o -u $(WORKDIR_GLW3)/pasture/harvestArea/CroplandPastureArea2000_Geotiff.zip */Pasture2000_5m.tif -d $(WORKDIR_GLW3)/pasture/harvestArea
-	gdal_translate -a_nodata -3.402823e+38 -of GTiff $(WORKDIR_GLW3)/pasture/harvestArea/Pasture2000_5m.tif \
-	$(WORKDIR_GLW3)/pasture/harvestArea/es_pasture_global.tif
-	rm -f $(WORKDIR_GLW3)/pasture/harvestArea/Pasture2000_5m.tif
-	gdal_calc.py --calc "A*10*100" --format GTiff --type Float32 --NoDataValue -3.402823e+38 -A $(WORKDIR_GLW3)/pasture/harvestArea/es_pasture_global.tif \
-	 --A_band 1 --outfile $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif;
+
+	gdal_calc.py --calc "(A>0)*(A*10*10*100)" --format GTiff --type Float32 --NoDataValue=0 \
+		-A $(WORKDIR_GLW3)/pasture/harvestArea/Pasture2000_5m.tif --A_band 1 \
+	 	--outfile $(WORKDIR_GLW3)/pasture/harvestArea/global2000_pasture_ha.tif;
+
 	rm -f $(WORKDIR_GLW3)/pasture/harvestArea/es_pasture_global.tif
 
 ##########################################
@@ -318,40 +316,6 @@ get-bwf_irrigated_prod: extract-water-footprint
 convert-water-footprint: get-bwf_irrigated_prod
 	python tiff_folder_to_h3_table.py $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint h3_grid_wf_global indicator UWU_T 2005 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --contextual
 
-# BIODIVERSITY
-#Download biodiversity datasets
-download-biodiversity:
-	mkdir -p $(WORKDIR_BIODIVERSITY)
-	wget -q -O $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow.zip https://files.worldwildlife.org/wwfcmsprod/files/Publication/file/6kcchn7e3u_official_teow.zip?_ga=2.147270832.688271325.1631720232-1851544340.1631720232
-
-#extract wwf ecoregions and merge with lcia biodiversity indicators
-extract-biodiversity: download-biodiversity
-	mkdir -p $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow
-	unzip -jn -o -u $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow.zip -d $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow
-
-# join attributes of csv and ecoregions to get the biodiversity risk values
-preprocess-biodiversity: extract-biodiversity
-	mapshaper $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow/wwf_terr_ecos.shp -simplify 10% planar keep-shapes \
-	-clean \
-	-join ./LCIA_UNEP_SETAC/Ch6_PSL_regional_ecoregions_v01.csv keys=eco_code,eco_code \
-	-o $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow/wwf_terr_ecos_m.shp force
-
-# rasterize biodiversity dataset
-rasterize-biodiversity: preprocess-biodiversity
-	mkdir -p $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow/lcia_psl_regional
-	make rasterize-biodiversity-file ATTRIBUTE_NAME=Permanent_ TIF=lcia_psl_r_permanent_crops.tif & \
-	wait
-
-rasterize-biodiversity-file:
-	gdal_rasterize -l wwf_terr_ecos_m -a $(ATTRIBUTE_NAME) -tr 0.0833333333333286 0.0833333333333286 -a_nodata 0.0 \
-    	-te -180.0 -90.0 180.0 90.0 -ot Float32 \
-    	-of GTiff $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow/wwf_terr_ecos_m.shp $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow/lcia_psl_regional/$(TIF)
-
-# convert the biodiversity rasters to h3 tables
-convert-biodiversity: rasterize-biodiversity
-	python tiff_folder_to_h3_table.py $(WORKDIR_BIODIVERSITY)/6kcchn7e3u_official_teow/lcia_psl_regional h3_grid_bio_global indicator BL_LUC_T 2015 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --contextual
-
-
 # DEFORESTATION
 #text: https://storage.googleapis.com/earthenginepartners-hansen/GFC-2020-v1.8/lossyear.txt
 download-deforestation-list:
@@ -410,7 +374,7 @@ download-process-forestGHG-list:
 preprocess-forestGHG: download-process-forestGHG-list
 	mkdir -p $(WORKDIR_GHG)/resampled/merged_tiles
 	gdalbuildvrt $(WORKDIR_GHG)/resampled/merged_tiles/forest_GHG_2020.vrt $(WORKDIR_GHG)/resampled/*.tif
-	gdal_translate -q -of GTiff -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 \
+	gdal_translate -q -of GTiff -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co COMPRESS=DEFLATE -co PREDICTOR=3 -co ZLEVEL=9 -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 \
 		$(WORKDIR_GHG)/resampled/merged_tiles/forest_GHG_2020.vrt \
 		$(WORKDIR_GHG)/resampled/merged_tiles/forest_GHG_2020.tif
 	python rolling_average.py $(WORKDIR_GHG)/resampled/merged_tiles/forest_GHG_2020.tif $(WORKDIR_GHG)/resampled/merged_tiles/forest_GHG_2020_buffered.tif

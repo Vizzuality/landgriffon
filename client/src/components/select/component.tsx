@@ -8,6 +8,7 @@ import type {
   InputProps,
   SelectComponentsConfig,
   GroupBase,
+  StylesConfig,
 } from 'react-select';
 import ReactSelect, { defaultTheme, components } from 'react-select';
 import { ChevronDownIcon } from '@heroicons/react/outline';
@@ -50,7 +51,9 @@ const getComponents = <
     SelectContainer: ({ className, ...props }) => (
       <components.SelectContainer
         {...props}
-        className={classNames(className, `text-sm`, { 'shadow-sm': theme == 'default' })}
+        className={classNames(className, 'text-sm', {
+          'shadow-sm': theme == 'default',
+        })}
       />
     ),
     SingleValue: ({ className, ...props }) => (
@@ -68,44 +71,41 @@ const getComponents = <
       />
     ),
     IndicatorSeparator: null,
-    MenuList: ({ className, ...props }) => (
-      <components.MenuList className={classNames(className, 'py-0')} {...props} />
-    ),
     ValueContainer: ({ className, ...props }) => (
       <components.ValueContainer className={classNames(className, 'px-0')} {...props} />
     ),
-    Option: ({ className, children, ...props }) => {
-      return (
-        <components.Option
-          {...props}
-          className={classNames(
-            className,
-            'text-gray-900 truncate cursor-pointer hover:bg-green-50',
-            props.isFocused ? 'bg-green-50 text-primary' : 'text-gray-900',
-            {
-              'bg-green-50 text-white hover:bg-primary': props.isSelected,
-              'text-opacity-50 cursor-default bg-primary': props.isDisabled,
-            },
-          )}
-        >
-          <div className="flex flex-row gap-x-2">
-            <div
-              className={classNames(
-                props.isSelected ? 'font-semibold' : 'font-normal',
-                'block truncate',
-              )}
-            >
-              {children}
-            </div>
-            {props.data.extraInfo && (
-              <div>
-                <span className="text-xs italic text-gray-600">{props.data.extraInfo}</span>
-              </div>
+    Option: ({ className, children, ...props }) => (
+      <components.Option
+        {...props}
+        className={classNames(
+          className,
+          'text-gray-900 truncate cursor-pointer hover:bg-green-50',
+          props.isFocused ? 'bg-green-50 text-primary' : 'text-gray-900',
+          {
+            'bg-green-50': props.isSelected,
+            'text-opacity-50 cursor-default': props.isDisabled,
+          },
+        )}
+      >
+        <div className="flex flex-row gap-x-2">
+          <div
+            className={classNames(
+              {
+                'font-semibold text-primary': props.isSelected,
+              },
+              'block truncate',
             )}
+          >
+            {children}
           </div>
-        </components.Option>
-      );
-    },
+          {props.data.extraInfo && (
+            <div>
+              <span className="text-xs italic text-gray-600">{props.data.extraInfo}</span>
+            </div>
+          )}
+        </div>
+      </components.Option>
+    ),
     LoadingIndicator: () => <Loading className="text-primary" />,
     DropdownIndicator:
       theme === 'default' || theme === 'default-bordernone'
@@ -120,6 +120,35 @@ const getComponents = <
         : null,
   };
 };
+
+const STYLES: StylesConfig = {
+  control: (provided) => {
+    delete provided.boxShadow;
+    delete provided.borderColor;
+    delete provided.borderWidth;
+    delete provided.borderStyle;
+    return provided;
+  },
+  menuList: (provided) => {
+    delete provided.paddingTop;
+    delete provided.paddingBottom;
+
+    return provided;
+  },
+  menu: (provided) => {
+    delete provided.marginTop;
+    delete provided.marginBottom;
+
+    return provided;
+  },
+  option: (provided) => {
+    delete provided.backgroundColor;
+
+    return provided;
+  },
+};
+
+const IS_OPTION_DISABLED = <T,>(option: SelectOption<T>) => !!option.disabled;
 
 const InnerSelect = <OptionValue, IsMulti extends boolean = false>(
   {
@@ -206,7 +235,7 @@ const InnerSelect = <OptionValue, IsMulti extends boolean = false>(
           <components.Menu
             className={classNames(
               className,
-              'static h-auto my-0 overflow-hidden border rounded-md shadow-md border-gray-50 min-w-[11rem]',
+              'static h-auto overflow-hidden border rounded-md shadow-md border-gray-50 min-w-[11rem]',
             )}
             {...rest}
           />
@@ -220,13 +249,14 @@ const InnerSelect = <OptionValue, IsMulti extends boolean = false>(
     ({ children, className, ...rest }: ControlProps<Option, IsMulti, Group>) => (
       <div ref={reference}>
         <components.Control
-          className={classNames(className, 'shadow-none bg-transparent px-4 gap-x-0.5', {
+          className={classNames(className, 'bg-transparent px-4 gap-x-0.5', {
             'border border-l-0 border-r-0 border-t-0 border-b-2 border-b-primary shadow-none rounded-none min-w-[30px] p-0 min-h-0':
               theme === 'inline-primary',
             'w-full bg-white border rounded-md': theme === 'default',
             'px-1 bg-white border-0': theme === 'default-bordernone',
-            'ring-1 ring-primary': rest.isFocused,
-            'border-2 border-red-600': error,
+            // '': !error, // focus.isFocused,
+            '!border-primary !border-2': rest.isFocused && !error,
+            '!border-2 !border-red-600': error,
           })}
           {...rest}
         >
@@ -266,13 +296,17 @@ const InnerSelect = <OptionValue, IsMulti extends boolean = false>(
     [theme, error],
   );
 
+  const isOptionSelected = useCallback<SelectProps<OptionValue>['isOptionSelected']>(
+    (option) => option.value === (current as Option)?.value,
+    [current],
+  );
+
   return (
     <div className={classNames({ 'w-fit': theme === 'inline-primary' })}>
       <input ref={ref} className="hidden" />
       <ReactSelect<SelectOption<OptionValue>, IsMulti, Group>
-        // menuIsOpen
-        isOptionDisabled={(option) => option.disabled}
-        isOptionSelected={(option) => option.value === (current as Option)?.value}
+        isOptionDisabled={IS_OPTION_DISABLED}
+        isOptionSelected={isOptionSelected}
         instanceId={instanceId}
         defaultValue={defaultValue}
         onMenuOpen={() => setIsMenuOpen(true)}
@@ -287,11 +321,8 @@ const InnerSelect = <OptionValue, IsMulti extends boolean = false>(
         isClearable={allowEmpty}
         isSearchable={showSearch}
         noOptionsMessage={() => <div className="p-2">No results</div>}
-        theme={
-          error
-            ? { ...DEFAULT_THEME, colors: { ...DEFAULT_THEME.colors, primary25: 'red' } }
-            : DEFAULT_THEME
-        }
+        theme={DEFAULT_THEME}
+        styles={STYLES}
         components={{
           Menu,
           Control,

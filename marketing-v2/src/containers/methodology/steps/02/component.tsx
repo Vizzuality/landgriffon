@@ -26,7 +26,7 @@ const Step02: React.FC = () => {
         <header className="relative">
           <div className="relative z-10 space-y-5">
             <h3 className="font-black md:leading-[100px] uppercase text-7xl md:text-9xl font-display">
-              Land scape level
+              Land- scape level
             </h3>
           </div>
         </header>

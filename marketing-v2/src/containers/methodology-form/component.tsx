@@ -83,7 +83,7 @@ const MethodologyForm: React.FC<MethodologyFormProps> = ({ close }) => {
 
                   <div className="w-full">
                     <label htmlFor="email" className="font-bold ">
-                      Email adress
+                      Email
                     </label>
                     <input
                       id="email"

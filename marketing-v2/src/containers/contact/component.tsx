@@ -174,7 +174,7 @@ const Contact: React.FC = () => {
 
                 <div className="w-full">
                   <label htmlFor="email" className="font-bold ">
-                    Email adress
+                    Email address
                   </label>
                   <input
                     id="email"

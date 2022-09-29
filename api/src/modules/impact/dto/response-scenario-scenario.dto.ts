@@ -2,10 +2,16 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationMeta } from 'utils/app-base.service';
 
 export class ScenarioVsScenarioImpactTable {
-  @ApiProperty({ type: () => ImpactTableDataByIndicator, isArray: true })
-  impactTable: ImpactTableDataByIndicator[];
-  @ApiProperty({ type: () => ImpactTablePurchasedTonnes, isArray: true })
-  purchasedTonnes: ImpactTablePurchasedTonnes[];
+  @ApiProperty({
+    type: () => ScenarioVsScenarioImpactTableDataByIndicator,
+    isArray: true,
+  })
+  scenarioVsScenarioImpactTable: ScenarioVsScenarioImpactTableDataByIndicator[];
+  @ApiProperty({
+    type: () => ScenarioVsScenarioImpactTablePurchasedTonnes,
+    isArray: true,
+  })
+  purchasedTonnes: ScenarioVsScenarioImpactTablePurchasedTonnes[];
 }
 
 export class ScenarioVsScenarioPaginatedImpactTable {

@@ -31,6 +31,7 @@ import { ActualVsScenarioImpactService } from 'modules/impact/comparison/actual-
 import { PaginatedScenariosImpactTable } from 'modules/impact/dto/response-comparison-table.dto';
 import { SetScenarioIdsInterceptor } from './set-scenario-ids.interceptor';
 import { ScenarioVsScenarioImpactService } from './scenario-vs-scenario.service';
+import { ScenarioVsScenarioPaginatedImpactTable } from './dto/response-scenario-scenario.dto';
 
 @Controller('/api/v1/impact')
 @ApiTags('Impact')
@@ -73,7 +74,7 @@ export class ImpactController {
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
     @Query(ValidationPipe)
     scenarioVsScenarioImpactTableDto: GetScenarioVsScenarioImpactTableDto,
-  ): Promise<PaginatedImpactTable> {
+  ): Promise<ScenarioVsScenarioPaginatedImpactTable> {
     return await this.scenarioVsScenarioService.getScenarioVsScenarioImpactTable(
       scenarioVsScenarioImpactTableDto,
       fetchSpecification,

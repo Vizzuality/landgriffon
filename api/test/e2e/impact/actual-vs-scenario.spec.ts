@@ -7,18 +7,18 @@ import { Indicator } from 'modules/indicators/indicator.entity';
 import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
-import { createNewMaterialInterventionPreconditions } from './scenario-impact-preconditions/new-material-intervention.preconditions';
-import { createNewCoefficientsInterventionPreconditions } from './scenario-impact-preconditions/new-coefficients-intervention.preconditions';
-import { newCoefficientsScenarioInterventionTable } from './scenario-impact-responses/new-coefficients-intervention.response';
-import { newMaterialScenarioInterventionTable } from './scenario-impact-responses/new-materials-intervention.response';
-import { createNewSupplierInterventionPreconditions } from './scenario-impact-preconditions/new-supplier-intervention.preconditions';
-import { newSupplierScenarioInterventionTable } from './scenario-impact-responses/new-supplier-intervention.response';
-import { createMultipleInterventionsPreconditions } from './scenario-impact-preconditions/mixed-interventions-scenario.preconditions';
+import { createNewMaterialInterventionPreconditions } from './actual-vs-scenario-preconditions/new-material-intervention.preconditions';
+import { createNewCoefficientsInterventionPreconditions } from './actual-vs-scenario-preconditions/new-coefficients-intervention.preconditions';
+import { newCoefficientsScenarioInterventionTable } from './actual-vs-scenario-responses/new-coefficients-intervention.response';
+import { newMaterialScenarioInterventionTable } from './actual-vs-scenario-responses/new-materials-intervention.response';
+import { createNewSupplierInterventionPreconditions } from './actual-vs-scenario-preconditions/new-supplier-intervention.preconditions';
+import { newSupplierScenarioInterventionTable } from './actual-vs-scenario-responses/new-supplier-intervention.response';
+import { createMultipleInterventionsPreconditions } from './actual-vs-scenario-preconditions/mixed-interventions-scenario.preconditions';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import {
   mixedInterventionsScenarioTable,
   mixedInterventionsScenarioTable2019,
-} from './scenario-impact-responses/mixed-interventions-scenario.response';
+} from './actual-vs-scenario-responses/mixed-interventions-scenario.response';
 import { clearEntityTables } from '../../utils/database-test-helper';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';

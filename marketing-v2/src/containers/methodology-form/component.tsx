@@ -18,9 +18,12 @@ const schema = yup.object().shape({
   information: yup.bool().oneOf([true]),
 });
 
-const MethodologyForm: React.FC = () => {
+interface MethodologyFormProps {
+  close: () => void;
+}
+
+const MethodologyForm: React.FC<MethodologyFormProps> = ({ close }) => {
   const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   const { register, handleSubmit, formState } = useForm({
     resolver: yupResolver(schema),
@@ -37,7 +40,7 @@ const MethodologyForm: React.FC = () => {
         {
           onSuccess: () => {
             setSubmitting(false);
-            setSuccess(true);
+            close();
           },
           onError: () => {
             setSubmitting(false);
@@ -45,7 +48,7 @@ const MethodologyForm: React.FC = () => {
         },
       );
     },
-    [saveNewsLetterMutation],
+    [close, saveNewsLetterMutation],
   );
 
   return (
@@ -58,30 +61,13 @@ const MethodologyForm: React.FC = () => {
             </div>
           )}
 
-          {success && (
-            <div className="absolute top-0 left-0 z-20 flex flex-col items-center justify-center w-full h-full py-20 space-y-5 bg-orange-500 xl:px-20">
-              <h2 className="text-4xl font-black uppercase md:text-6xl font-display">Thank you</h2>
-              <p className="text-xl font-light">We will be in touch soon.</p>
-
-              <div>
-                <button
-                  type="button"
-                  className="py-8 mt-5 font-semibold text-black bg-transparent border border-black px-14 hover:bg-black/10"
-                  onClick={() => setSuccess(false)}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          )}
-
           <div>
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="space-y-6">
                 <div className="flex flex-col space-y-5 md:flex-row md:items-end md:justify-between md:space-y-0 md:space-x-10">
                   <div className="w-full">
                     <label htmlFor="name" className="font-bold ">
-                      First and last name
+                      Full name
                     </label>
                     <input
                       id="name"
@@ -90,7 +76,7 @@ const MethodologyForm: React.FC = () => {
                           true,
                         'border-red-500': errors.name,
                       })}
-                      placeholder="Write your name"
+                      placeholder="Enter your first and last name here"
                       {...register('name')}
                     />
                   </div>
@@ -113,7 +99,7 @@ const MethodologyForm: React.FC = () => {
                 </div>
                 <div className="w-full">
                   <label htmlFor="company" className="font-bold ">
-                    Company name
+                    Name of company or organization
                   </label>
                   <input
                     id="company"
@@ -122,7 +108,7 @@ const MethodologyForm: React.FC = () => {
                         true,
                       'border-red-500': errors.company,
                     })}
-                    placeholder="Write your company name"
+                    placeholder="Enter the name of your organization here. If you’re downloading the methodology for personal interest, please write “personal”"
                     {...register('company')}
                   />
                 </div>
@@ -140,9 +126,8 @@ const MethodologyForm: React.FC = () => {
                     <label className="font-light" htmlFor="terms">
                       I agree with LandGriffon’s{' '}
                       <Link href="/privacy-policy">
-                        <a className="font-semibold text-black underline">Privacy Policy</a>
-                      </Link>{' '}
-                      and to receive the LandGriffon email newsletter.
+                        <a className="font-semibold text-black underline">Privacy Policy.</a>
+                      </Link>
                     </label>
                   </div>
 
@@ -156,7 +141,8 @@ const MethodologyForm: React.FC = () => {
                       })}
                     />
                     <label className="font-light" htmlFor="information">
-                      I want to receive more information about Ladgriffon.
+                      I want to be added to the LandGriffon mailing list for occasional updates
+                      through the email newsletter.
                     </label>
                   </div>
                 </div>

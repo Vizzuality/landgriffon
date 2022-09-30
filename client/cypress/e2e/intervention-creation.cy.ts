@@ -29,6 +29,7 @@ beforeEach(() => {
     fixture: 'scenario/scenario-location-countries',
   }).as('scenarioLocationCountries');
 
+  cy.login();
   cy.createScenario();
   cy.visit('/admin/scenarios/some-random-id/interventions/new');
 });

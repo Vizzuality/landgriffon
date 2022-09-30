@@ -6,5 +6,6 @@ export default defineConfig({
     screenshotOnRunFailure: false,
     video: false,
     videoUploadOnPasses: false,
+    experimentalSessionAndOrigin: true,
   },
 });

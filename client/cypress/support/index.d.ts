@@ -9,7 +9,7 @@ declare global {
        * Custom command to login.
        * @example cy.login()
        */
-      login(): Chainable<Element>;
+      login(credentials?: { username?: string; password?: string }): Chainable<null>;
       logout(): Chainable<Element>;
       createScenario(): Chainable<Element>;
     }

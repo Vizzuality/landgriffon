@@ -1,10 +1,7 @@
 import classNames from 'classnames';
-import { format } from 'd3-format';
 import { useAppSelector } from 'store/hooks';
 import { scenarios } from 'store/features/analysis/scenarios';
 import { NUMBER_FORMAT, BIG_NUMBER_FORMAT } from 'utils/number-format';
-
-const PERCENTAGE_FORMAT = format(',.2%');
 
 export interface ComparisonCellProps {
   value: number;
@@ -39,7 +36,7 @@ const ComparisonCell: React.FC<ComparisonCellProps> = ({
             },
           )}
         >
-          {comparisonMode === 'relative' && `${PERCENTAGE_FORMAT(percentageDifference)}%`}
+          {comparisonMode === 'relative' && `${NUMBER_FORMAT(percentageDifference)}%`}
           {comparisonMode === 'absolute' && (
             <>
               {absoluteDifference > 0 && '+'}
@@ -48,7 +45,7 @@ const ComparisonCell: React.FC<ComparisonCellProps> = ({
           )}
         </div>
       </div>
-      <div className="my-auto text-xs text-left text-gray-400">
+      <div className="my-auto text-xs text-left text-gray-400 whitespace-nowrap">
         Actual data: {NUMBER_FORMAT(value)}
       </div>
     </div>

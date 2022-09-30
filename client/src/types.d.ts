@@ -208,6 +208,7 @@ export type PaginationMetadata = {
 export type ImpactData = {
   data: {
     impactTable: ImpactTableData[];
+    purchasedTonnes?: PurchasedTonnesData[];
   };
   metadata: PaginationMetadata;
 };

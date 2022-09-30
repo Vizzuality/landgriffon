@@ -31,7 +31,7 @@ import {
   ScenarioVsScenarioImpactTableRows,
   ScenarioVsScenarioImpactTableRowsValues,
   ScenarioVsScenarioPaginatedImpactTable,
-} from './dto/response-scenario-scenario.dto';
+} from 'modules/impact/dto/response-scenario-scenario.dto';
 
 @Injectable()
 export class ScenarioVsScenarioImpactService {
@@ -361,7 +361,7 @@ export class ScenarioVsScenarioImpactService {
           0,
         );
 
-        const scenarioTwoTotalSumByYear = calculatedData.reduce(
+        const scenarioTwoTotalSumByYear: number = calculatedData.reduce(
           (
             accumulator: number,
             currentValue: ScenarioVsScenarioImpactTableRows,
@@ -702,11 +702,13 @@ export class ScenarioVsScenarioImpactService {
           accumulator: ScenarioVsScenarioImpactTableData[],
           currentValue: ScenarioVsScenarioImpactTableData,
         ) => {
-          const existingData = accumulator.find((item) => {
-            return (
-              item.name === currentValue.name && item.year === currentValue.year
-            );
-          });
+          const existingData: ScenarioVsScenarioImpactTableData | undefined =
+            accumulator.find((item: ScenarioVsScenarioImpactTableData) => {
+              return (
+                item.name === currentValue.name &&
+                item.year === currentValue.year
+              );
+            });
 
           if (existingData) {
             existingData.scenarioOneImpact =

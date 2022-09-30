@@ -1913,7 +1913,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
         // Requirements for GeoCoding Mock
         const geoRegion: GeoRegion = await createGeoRegion();
-        const newAdminRegion: AdminRegion = await createAdminRegion({
+        await createAdminRegion({
           geoRegion,
           name: 'new admin region',
         });
@@ -2012,7 +2012,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           year: 2020,
         });
 
-        const sourcingLocationAggregationPoint = await createSourcingLocation({
+        await createSourcingLocation({
           adminRegion: grandChildAdminRegion,
           material: grandChildMaterial,
           businessUnit: childBusinessUnit,
@@ -2021,7 +2021,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           locationType: LOCATION_TYPES.AGGREGATION_POINT,
         });
 
-        const sourcingLocationPointOfProduction = await createSourcingLocation({
+        await createSourcingLocation({
           adminRegion: childAdminRegion,
           material: childMaterial,
           businessUnit: childBusinessUnit,
@@ -2031,7 +2031,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
         const scenario: Scenario = await createScenario();
 
-        const response = await request(app.getHttpServer())
+        await request(app.getHttpServer())
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({

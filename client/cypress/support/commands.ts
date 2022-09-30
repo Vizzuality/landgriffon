@@ -10,21 +10,30 @@ import { signIn, signOut } from 'next-auth/react';
 // https://on.cypress.io/custom-commands
 // ***********************************************
 
-Cypress.Commands.add('login', (): Cypress.Chainable => {
-  cy.log('🔐 Sign in with Next Auth');
-  return cy.wrap(
-    signIn('credentials', {
-      redirect: false,
-      username: Cypress.env('USERNAME'),
-      password: Cypress.env('PASSWORD'),
-    }),
-  );
-});
+Cypress.Commands.add(
+  'login',
+  ({
+    username = Cypress.env('USERNAME'),
+    password = Cypress.env('PASSWORD'),
+  } = {}): Cypress.Chainable => {
+    cy.log('🔐 Sign in with Next Auth');
+
+    return cy.session(['login', username, password], () => {
+      cy.wrap(
+        signIn('credentials', {
+          redirect: false,
+          username,
+          password,
+        }),
+      );
+    });
+  },
+);
 
 Cypress.Commands.add('createScenario', (): void => {
   cy.log('Creates a scenario');
 
-  cy.login().visit('/admin/scenarios/new');
+  cy.visit('/admin/scenarios/new');
   cy.get('[data-testid="scenario-name-input"]').type('scenario mockup name');
   cy.get('[data-testid="scenario-description-input"]').type('scenario mockup description');
   cy.get('[data-testid="create-scenario-button"]').click();

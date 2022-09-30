@@ -56,7 +56,7 @@ export const newCoefficientsScenarioInterventionTable = {
                   scenarioValue: 1000,
                   isProjected: false,
                   absoluteDifference: -200,
-                  percentageDifference: -16.666666666666664,
+                  percentageDifference: -18.181818181818183,
                 },
                 {
                   year: 2021,
@@ -64,7 +64,7 @@ export const newCoefficientsScenarioInterventionTable = {
                   scenarioValue: 1015,
                   isProjected: true,
                   absoluteDifference: -203,
-                  percentageDifference: -16.666666666666664,
+                  percentageDifference: -18.181818181818183,
                 },
                 {
                   year: 2022,
@@ -72,7 +72,7 @@ export const newCoefficientsScenarioInterventionTable = {
                   scenarioValue: 1030.225,
                   isProjected: true,
                   absoluteDifference: -206.04500000000007,
-                  percentageDifference: -16.666666666666675,
+                  percentageDifference: -18.181818181818187,
                 },
                 {
                   year: 2023,
@@ -80,7 +80,7 @@ export const newCoefficientsScenarioInterventionTable = {
                   scenarioValue: 1045.678375,
                   isProjected: true,
                   absoluteDifference: -209.135675,
-                  percentageDifference: -16.666666666666664,
+                  percentageDifference: -18.181818181818183,
                 },
               ],
             },
@@ -94,7 +94,7 @@ export const newCoefficientsScenarioInterventionTable = {
                   scenarioValue: 1250,
                   isProjected: false,
                   absoluteDifference: -250,
-                  percentageDifference: -16.666666666666664,
+                  percentageDifference: -18.181818181818183,
                 },
                 {
                   year: 2021,
@@ -102,7 +102,7 @@ export const newCoefficientsScenarioInterventionTable = {
                   scenarioValue: 1268.75,
                   isProjected: true,
                   absoluteDifference: -253.75,
-                  percentageDifference: -16.666666666666664,
+                  percentageDifference: -18.181818181818183,
                 },
                 {
                   year: 2022,
@@ -110,7 +110,7 @@ export const newCoefficientsScenarioInterventionTable = {
                   scenarioValue: 1287.78125,
                   isProjected: true,
                   absoluteDifference: -257.5562500000001,
-                  percentageDifference: -16.66666666666667,
+                  percentageDifference: -18.181818181818187,
                 },
                 {
                   year: 2023,
@@ -118,7 +118,7 @@ export const newCoefficientsScenarioInterventionTable = {
                   scenarioValue: 1307.09796875,
                   isProjected: true,
                   absoluteDifference: -261.4195937500001,
-                  percentageDifference: -16.66666666666667,
+                  percentageDifference: -18.181818181818183,
                 },
               ],
             },
@@ -130,7 +130,7 @@ export const newCoefficientsScenarioInterventionTable = {
               scenarioValue: 2250,
               isProjected: false,
               absoluteDifference: -450,
-              percentageDifference: -16.666666666666664,
+              percentageDifference: -18.181818181818183,
             },
             {
               year: 2021,
@@ -138,7 +138,7 @@ export const newCoefficientsScenarioInterventionTable = {
               scenarioValue: 2283.75,
               isProjected: true,
               absoluteDifference: -456.75,
-              percentageDifference: -16.666666666666664,
+              percentageDifference: -18.181818181818183,
             },
             {
               year: 2022,
@@ -146,7 +146,7 @@ export const newCoefficientsScenarioInterventionTable = {
               scenarioValue: 2318.00625,
               isProjected: true,
               absoluteDifference: -463.60125000000016,
-              percentageDifference: -16.66666666666667,
+              percentageDifference: -18.181818181818187,
             },
             {
               year: 2023,
@@ -154,7 +154,7 @@ export const newCoefficientsScenarioInterventionTable = {
               scenarioValue: 2352.77634375,
               isProjected: true,
               absoluteDifference: -470.5552687500003,
-              percentageDifference: -16.66666666666668,
+              percentageDifference: -18.181818181818194,
             },
           ],
         },
@@ -165,7 +165,7 @@ export const newCoefficientsScenarioInterventionTable = {
           value: 5700,
           scenarioValue: 5250,
           absoluteDifference: -450,
-          percentageDifference: 92.10526315789474,
+          percentageDifference: 200,
           isProjected: false,
         },
         {
@@ -173,7 +173,7 @@ export const newCoefficientsScenarioInterventionTable = {
           value: 5785.5,
           scenarioValue: 5328.75,
           absoluteDifference: -456.75,
-          percentageDifference: 92.10526315789474,
+          percentageDifference: 200,
           isProjected: true,
         },
         {
@@ -181,7 +181,7 @@ export const newCoefficientsScenarioInterventionTable = {
           value: 5872.282499999999,
           scenarioValue: 5408.68125,
           absoluteDifference: -463.6012499999997,
-          percentageDifference: 92.10526315789474,
+          percentageDifference: 200,
           isProjected: true,
         },
         {
@@ -189,7 +189,7 @@ export const newCoefficientsScenarioInterventionTable = {
           value: 5960.3667375,
           scenarioValue: 5489.81146875,
           absoluteDifference: -470.5552687500003,
-          percentageDifference: 92.10526315789474,
+          percentageDifference: 200,
           isProjected: true,
         },
       ],

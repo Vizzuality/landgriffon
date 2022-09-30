@@ -47,22 +47,16 @@ export async function createNewMaterialInterventionPreconditions(
         nameCode: INDICATOR_TYPES.DEFORESTATION,
       });
 
-  const textile: Material = customMaterials
-    ? customMaterials.textile
-    : await createMaterial({ name: 'Textile' });
+  const textile: Material = await createMaterial({ name: 'Textile' });
 
-  const wool: Material = customMaterials
-    ? customMaterials.wool
-    : await createMaterial({
-        name: 'Wool',
-        parent: textile,
-      });
-  const cotton: Material = customMaterials
-    ? customMaterials.cotton
-    : await createMaterial({
-        name: 'Cotton',
-        parent: textile,
-      });
+  const wool: Material = await createMaterial({
+    name: 'Wool',
+    parent: textile,
+  });
+  const cotton: Material = await createMaterial({
+    name: 'Cotton',
+    parent: textile,
+  });
 
   const linen: Material = await createMaterial({
     name: 'Linen',

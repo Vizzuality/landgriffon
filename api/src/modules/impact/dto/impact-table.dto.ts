@@ -94,7 +94,10 @@ export class GetActualVsScenarioImpactTableDto extends BaseImpactTableDto {
   @IsUUID(4)
   scenarioId: string;
 
-  // check decorator to create new property - scenarioIds - array of ids
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID(4, { each: true })
+  scenarioIds?: string[];
 }
 
 export class GetImpactTableDto extends BaseImpactTableDto {
@@ -117,7 +120,10 @@ export class GetScenarioVsScenarioImpactTableDto extends GetImpactTableDto {
   @IsUUID(4)
   scenarioTwoId: string;
 
-  // check decorator to create new property - scenarioIds - array of ids
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID(4, { each: true })
+  scenarioIds?: string[];
 }
 
 export class GetRankedImpactTableDto extends BaseImpactTableDto {

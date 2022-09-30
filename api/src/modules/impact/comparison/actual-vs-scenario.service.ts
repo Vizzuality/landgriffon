@@ -147,8 +147,8 @@ export class ActualVsScenarioImpactService {
       ...(getActualVsScenarioImpactTableDto.supplierIds && {
         supplierIds: getActualVsScenarioImpactTableDto.supplierIds,
       }),
-      ...(getActualVsScenarioImpactTableDto.scenarioId && {
-        scenarioId: getActualVsScenarioImpactTableDto.scenarioId,
+      ...(getActualVsScenarioImpactTableDto.scenarioIds && {
+        scenarioIds: getActualVsScenarioImpactTableDto.scenarioIds,
       }),
     };
     switch (getActualVsScenarioImpactTableDto.groupBy) {

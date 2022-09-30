@@ -1,24 +1,26 @@
-import LinkButton from 'components/button';
-import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
-import { useImpactData } from 'hooks/impact';
-import { uniq } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
+import classNames from 'classnames';
+import { DownloadIcon } from '@heroicons/react/outline';
+import { getSortedRowModel } from '@tanstack/react-table';
+import { uniq } from 'lodash';
+
+import { useImpactData } from 'hooks/impact';
+import { useImpactComparison } from 'hooks/impact/comparison';
 import { scenarios } from 'store/features/analysis/scenarios';
 import { useAppSelector } from 'store/hooks';
 
-import { DownloadIcon } from '@heroicons/react/outline';
-import type { TableProps } from 'components/table/component';
+import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
+import LinkButton from 'components/button';
 import Table from 'components/table/component';
-import { getSortedRowModel } from '@tanstack/react-table';
-import type { PaginationState, SortingState } from '@tanstack/react-table';
-import type { ColumnDefinition } from 'components/table/column';
 import LineChart from 'components/chart/line';
-import type { LinesConfig } from 'components/chart/line/types';
 import { BIG_NUMBER_FORMAT } from 'utils/number-format';
-
-import type { ImpactTableData } from 'types';
 import ComparisonCell from './comparison-cell/component';
-import classNames from 'classnames';
+
+import type { PaginationState, SortingState } from '@tanstack/react-table';
+import type { TableProps } from 'components/table/component';
+import type { ColumnDefinition } from 'components/table/column';
+import type { LinesConfig } from 'components/chart/line/types';
+import type { ImpactTableData } from 'types';
 
 type TableDataType = ImpactTableData['rows'][0];
 

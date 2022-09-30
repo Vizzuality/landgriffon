@@ -28,10 +28,9 @@ import {
 } from 'nestjs-base-service';
 import { JSONAPIPaginationQueryParams } from 'decorators/json-api-parameters.decorator';
 import { ActualVsScenarioImpactService } from 'modules/impact/comparison/actual-vs-scenario.service';
-import { PaginatedScenariosImpactTable } from 'modules/impact/dto/response-comparison-table.dto';
-import { SetScenarioIdsInterceptor } from './set-scenario-ids.interceptor';
-import { ScenarioVsScenarioImpactService } from './scenario-vs-scenario.service';
-import { ScenarioVsScenarioPaginatedImpactTable } from './dto/response-scenario-scenario.dto';
+import { SetScenarioIdsInterceptor } from 'modules/impact/set-scenario-ids.interceptor';
+import { ScenarioVsScenarioImpactService } from 'modules/impact/scenario-vs-scenario.service';
+import { ScenarioVsScenarioPaginatedImpactTable } from 'modules/impact/dto/response-scenario-scenario.dto';
 
 @Controller('/api/v1/impact')
 @ApiTags('Impact')

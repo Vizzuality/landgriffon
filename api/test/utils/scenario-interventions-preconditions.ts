@@ -97,26 +97,26 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
   });
 
   const h3data1 = await createH3Data({ indicatorId: indicator1.id });
-  const h3data2 = await createH3Data({ indicatorId: indicator2.id });
-  const h3data3 = await createH3Data({ indicatorId: indicator3.id });
-  const h3data4 = await createH3Data({ indicatorId: indicator4.id });
-  const harvest = await createMaterialToH3(
+  await createH3Data({ indicatorId: indicator2.id });
+  await createH3Data({ indicatorId: indicator3.id });
+  await createH3Data({ indicatorId: indicator4.id });
+  await createMaterialToH3(
     material1Descendant.id,
     h3data1.id,
     MATERIAL_TO_H3_TYPE.HARVEST,
   );
-  const producer = await createMaterialToH3(
+  await createMaterialToH3(
     material1Descendant.id,
     h3data1.id,
     MATERIAL_TO_H3_TYPE.PRODUCER,
   );
 
-  const harvest1 = await createMaterialToH3(
+  await createMaterialToH3(
     material2.id,
     h3data1.id,
     MATERIAL_TO_H3_TYPE.HARVEST,
   );
-  const producer1 = await createMaterialToH3(
+  await createMaterialToH3(
     material2.id,
     h3data1.id,
     MATERIAL_TO_H3_TYPE.PRODUCER,
@@ -127,41 +127,38 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
     year: 2018,
     tonnage: 500,
   });
-  const indicatorRecord1: IndicatorRecord =
-    await createIndicatorRecordForIntervention(
-      {
-        indicator: indicator1,
-        value: 1200,
-      },
-      sourcingRecord1,
-    );
 
-  const indicatorRecord2: IndicatorRecord =
-    await createIndicatorRecordForIntervention(
-      {
-        indicator: indicator2,
-        value: 1200,
-      },
-      sourcingRecord1,
-    );
+  await createIndicatorRecordForIntervention(
+    {
+      indicator: indicator1,
+      value: 1200,
+    },
+    sourcingRecord1,
+  );
 
-  const indicatorRecord3: IndicatorRecord =
-    await createIndicatorRecordForIntervention(
-      {
-        indicator: indicator3,
-        value: 1200,
-      },
-      sourcingRecord1,
-    );
+  await createIndicatorRecordForIntervention(
+    {
+      indicator: indicator2,
+      value: 1200,
+    },
+    sourcingRecord1,
+  );
 
-  const indicatorRecord4: IndicatorRecord =
-    await createIndicatorRecordForIntervention(
-      {
-        indicator: indicator4,
-        value: 1100,
-      },
-      sourcingRecord1,
-    );
+  await createIndicatorRecordForIntervention(
+    {
+      indicator: indicator3,
+      value: 1200,
+    },
+    sourcingRecord1,
+  );
+
+  await createIndicatorRecordForIntervention(
+    {
+      indicator: indicator4,
+      value: 1100,
+    },
+    sourcingRecord1,
+  );
 
   const sourcingLocation2: SourcingLocation = await createSourcingLocation({
     materialId: material2.id,
@@ -176,41 +173,37 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
     tonnage: 600,
   });
 
-  const indicatorRecord5: IndicatorRecord =
-    await createIndicatorRecordForIntervention(
-      {
-        indicator: indicator1,
-        value: 2000,
-      },
-      sourcingRecord2,
-    );
+  await createIndicatorRecordForIntervention(
+    {
+      indicator: indicator1,
+      value: 2000,
+    },
+    sourcingRecord2,
+  );
 
-  const indicatorRecord6: IndicatorRecord =
-    await createIndicatorRecordForIntervention(
-      {
-        indicator: indicator2,
-        value: 2200,
-      },
-      sourcingRecord2,
-    );
+  await createIndicatorRecordForIntervention(
+    {
+      indicator: indicator2,
+      value: 2200,
+    },
+    sourcingRecord2,
+  );
 
-  const indicatorRecord7: IndicatorRecord =
-    await createIndicatorRecordForIntervention(
-      {
-        indicator: indicator3,
-        value: 2200,
-      },
-      sourcingRecord2,
-    );
+  await createIndicatorRecordForIntervention(
+    {
+      indicator: indicator3,
+      value: 2200,
+    },
+    sourcingRecord2,
+  );
 
-  const indicatorRecord8: IndicatorRecord =
-    await createIndicatorRecordForIntervention(
-      {
-        indicator: indicator4,
-        value: 2100,
-      },
-      sourcingRecord2,
-    );
+  await createIndicatorRecordForIntervention(
+    {
+      indicator: indicator4,
+      value: 2100,
+    },
+    sourcingRecord2,
+  );
 
   return {
     scenario,

@@ -76,6 +76,8 @@ export class YearSumData {
   absoluteDifference?: number;
   @ApiPropertyOptional()
   percentageDifference?: number;
+  @ApiProperty()
+  isProjected?: boolean;
 }
 
 export class ImpactTableRowsValues {

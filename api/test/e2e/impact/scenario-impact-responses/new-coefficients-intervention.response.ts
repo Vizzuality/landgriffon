@@ -166,6 +166,7 @@ export const newCoefficientsScenarioInterventionTable = {
           scenarioValue: 5250,
           absoluteDifference: -450,
           percentageDifference: 92.10526315789474,
+          isProjected: false,
         },
         {
           year: 2021,
@@ -173,6 +174,7 @@ export const newCoefficientsScenarioInterventionTable = {
           scenarioValue: 5328.75,
           absoluteDifference: -456.75,
           percentageDifference: 92.10526315789474,
+          isProjected: true,
         },
         {
           year: 2022,
@@ -180,6 +182,7 @@ export const newCoefficientsScenarioInterventionTable = {
           scenarioValue: 5408.68125,
           absoluteDifference: -463.6012499999997,
           percentageDifference: 92.10526315789474,
+          isProjected: true,
         },
         {
           year: 2023,
@@ -187,6 +190,7 @@ export const newCoefficientsScenarioInterventionTable = {
           scenarioValue: 5489.81146875,
           absoluteDifference: -470.5552687500003,
           percentageDifference: 92.10526315789474,
+          isProjected: true,
         },
       ],
       metadata: {

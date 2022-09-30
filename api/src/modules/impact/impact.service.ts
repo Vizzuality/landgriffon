@@ -411,8 +411,6 @@ export class ImpactService {
           0,
         );
 
-        const totalInterventionSumByYear: number | null = null;
-
         impactTable[indicatorValuesIndex].yearSum.push({
           year,
           value: totalSumByYear,

@@ -33,10 +33,6 @@ beforeEach(() => {
   cy.visit('/admin/scenarios/some-random-id/interventions/new');
 });
 
-afterEach(() => {
-  cy.logout();
-});
-
 describe('Intervention creation', () => {
   it('a user creates an intervetion – Switch to new material flow (successful creation)', () => {
     cy.intercept('POST', '/api/v1/scenario-interventions', {
@@ -58,12 +54,8 @@ describe('Intervention creation', () => {
     });
 
     // selects a year
-    cy.wait('@scenarioYears').then(() => {
-      const $inputSelect = cy.get('[data-testid="startYear-select"]');
-      $inputSelect.click();
-      $inputSelect.find('input:not(.hidden)').type('2017{enter}');
-    });
-
+    cy.wait('@scenarioYears');
+    cy.get('[data-testid="startYear-select"]').click().find('input:visible').type('2017{enter}');
     // selects the first intervention type: Switch to new material
     cy.get('[data-testid="intervention-type-option"]').first().click();
 
@@ -90,18 +82,18 @@ describe('Intervention creation', () => {
     });
 
     // waits for scenario location types request and selects an option
-    cy.wait('@scenarioLocationTypes').then(() => {
-      const $inputSelect = cy.get('[data-testid="new-location-select"]');
-      $inputSelect.click();
-      $inputSelect.find('input:not(.hidden)').type('Country of production{enter}');
-    });
+    cy.wait('@scenarioLocationTypes');
+    cy.get('[data-testid="new-location-select"]')
+      .click()
+      .find('input:visible')
+      .type('Country of production{enter}');
 
     // waits for scenario location countries request and selects an option
-    cy.wait('@scenarioLocationCountries').then(() => {
-      const $inputSelect = cy.get('[data-testid="new-location-country-select"]');
-      $inputSelect.click();
-      $inputSelect.find('input:not(.hidden)').type('Botswana{enter}');
-    });
+    cy.wait('@scenarioLocationCountries');
+    cy.get('[data-testid="new-location-country-select"]')
+      .click()
+      .find('input:visible')
+      .type('Botswana{enter}');
 
     // submits intervention
     cy.get('[data-testid="intervention-submit-btn"]').click();
@@ -133,11 +125,8 @@ describe('Intervention creation', () => {
     });
 
     // selects a year
-    cy.wait('@scenarioYears').then(() => {
-      const $inputSelect = cy.get('[data-testid="startYear-select"]');
-      $inputSelect.click();
-      $inputSelect.find('input:not(.hidden)').type('2017{enter}');
-    });
+    cy.wait('@scenarioYears');
+    cy.get('[data-testid="startYear-select"]').click().find('input:visible').type('2017{enter}');
 
     // selects the first intervention type: Switch to new material
     cy.get('[data-testid="intervention-type-option"]').first().click();
@@ -165,18 +154,18 @@ describe('Intervention creation', () => {
     });
 
     // waits for scenario location types request and selects an option
-    cy.wait('@scenarioLocationTypes').then(() => {
-      const $inputSelect = cy.get('[data-testid="new-location-select"]');
-      $inputSelect.click();
-      $inputSelect.find('input:not(.hidden)').type('Country of production{enter}');
-    });
+    cy.wait('@scenarioLocationTypes');
+    cy.get('[data-testid="new-location-select"]')
+      .click()
+      .find('input:visible')
+      .type('Country of production{enter}');
 
     // waits for scenario location countries request and selects an option
-    cy.wait('@scenarioLocationCountries').then(() => {
-      const $inputSelect = cy.get('[data-testid="new-location-country-select"]');
-      $inputSelect.click();
-      $inputSelect.find('input:not(.hidden)').type('Botswana{enter}');
-    });
+    cy.wait('@scenarioLocationCountries');
+    cy.get('[data-testid="new-location-country-select"]')
+      .click()
+      .find('input:visible')
+      .type('Botswana{enter}');
 
     // submits intervention
     cy.get('[data-testid="intervention-submit-btn"]').click();

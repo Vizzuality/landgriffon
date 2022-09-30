@@ -63,7 +63,7 @@ const Header: React.FC = () => {
 
         <button
           type="button"
-          className="block px-4 lg:hidden"
+          className="block px-4 h-14 lg:hidden"
           onClick={() => {
             setOpen(!open);
           }}

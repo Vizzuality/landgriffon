@@ -91,6 +91,9 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     expect(response.body.data.impactTable[0].rows).toEqual(
       newCoefficientsScenarioInterventionTable.impactTable[0].rows,
     );
+    expect(response.body.data.impactTable[0].yearSum).toEqual(
+      newCoefficientsScenarioInterventionTable.impactTable[0].yearSum,
+    );
     expect(response.body.data.purchasedTonnes).toEqual(
       newCoefficientsScenarioInterventionTable.purchasedTonnes,
     );

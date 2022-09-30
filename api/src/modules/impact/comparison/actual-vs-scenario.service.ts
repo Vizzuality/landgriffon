@@ -340,6 +340,13 @@ export class ActualVsScenarioImpactService {
           0,
         );
 
+        const yearData: ImpactTableRowsValues | undefined =
+          calculatedData[0].values.find(
+            (tableRowValue: ImpactTableRowsValues) => {
+              return tableRowValue.year === year;
+            },
+          );
+
         impactTable[indicatorValuesIndex].yearSum.push({
           year,
           value: totalSumByYear,
@@ -348,6 +355,7 @@ export class ActualVsScenarioImpactService {
           percentageDifference:
             ((totalScenarioSumByYear || 0 - totalSumByYear) / totalSumByYear) *
             100,
+          isProjected: yearData?.isProjected,
         });
       });
       // copy and populate tree skeleton for each indicator

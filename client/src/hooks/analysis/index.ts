@@ -6,7 +6,7 @@ import compact from 'lodash/compact';
 import chroma from 'chroma-js';
 
 import { useAppSelector } from 'store/hooks';
-import { useImpactRanking } from 'hooks/impact';
+import { useImpactRanking } from 'hooks/impact/ranking';
 import { analysisFilters } from 'store/features/analysis/filters';
 
 import type { AnalysisChart } from './types';

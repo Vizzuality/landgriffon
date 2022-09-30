@@ -10,10 +10,9 @@ import { scenarios } from 'store/features/analysis/scenarios';
 import { apiRawService } from 'services/api';
 import { useIndicators } from 'hooks/indicators';
 
-import type { ImpactData, ImpactRanking, APIpaginationRequest } from 'types';
+import type { ImpactData, APIpaginationRequest } from 'types';
 import { useStore } from 'react-redux';
 
-import type { ImpactTabularAPIParams } from 'types';
 import type { Store } from 'store';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
@@ -25,16 +24,6 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
     metadata: {
       unit: null,
     },
-  },
-  retry: false,
-  keepPreviousData: true,
-  refetchOnWindowFocus: false,
-};
-
-const DEFAULT_QUERY_RANKING_OPTIONS: UseQueryOptions<ImpactRanking> = {
-  placeholderData: {
-    impactTable: [],
-    purchasedTonnes: [],
   },
   retry: false,
   keepPreviousData: true,
@@ -84,10 +73,7 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
 
   const query = useQuery(
     ['impact-data', layer, params],
-    () =>
-      apiRawService
-        .get('/impact/compare/scenario/vs/actual', { params })
-        .then((response) => response.data),
+    () => apiRawService.get('/impact/table', { params }).then((response) => response.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
       enabled: layer === 'impact' && isEnable,
@@ -105,31 +91,3 @@ export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataRes
     [query, isError, data],
   );
 };
-
-type ImpactRankingParams = ImpactTabularAPIParams & {
-  maxRankingEntities: number;
-  sort: string;
-};
-
-export function useImpactRanking(
-  params: Partial<ImpactRankingParams> = { maxRankingEntities: 5, sort: 'ASC' },
-  options: UseQueryOptions<ImpactRanking> = {},
-): UseQueryResult<ImpactRanking, unknown> {
-  const query = useQuery<ImpactRanking>(
-    ['impact-ranking', params],
-    () =>
-      apiRawService
-        .get('/impact/ranking', {
-          params,
-        })
-        .then((response) => {
-          return response.data;
-        }),
-    {
-      ...DEFAULT_QUERY_RANKING_OPTIONS,
-      ...options,
-    },
-  );
-
-  return query;
-}

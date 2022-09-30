@@ -14,7 +14,7 @@ import {
 } from 'recharts';
 
 import { filtersForTabularAPI } from 'store/features/analysis/selector';
-import { useImpactRanking } from 'hooks/impact';
+import { useImpactRanking } from 'hooks/impact/ranking';
 
 import Loading from 'components/loading';
 import { NUMBER_FORMAT } from 'utils/number-format';

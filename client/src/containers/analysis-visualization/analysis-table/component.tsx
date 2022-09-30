@@ -1,13 +1,16 @@
 import { useCallback, useMemo, useState } from 'react';
+import { useStore } from 'react-redux';
 import classNames from 'classnames';
 import { DownloadIcon } from '@heroicons/react/outline';
 import { getSortedRowModel } from '@tanstack/react-table';
 import { uniq } from 'lodash';
 
+import { useAppSelector } from 'store/hooks';
+import { filtersForTabularAPI } from 'store/features/analysis/selector';
+import { scenarios } from 'store/features/analysis/scenarios';
+import { useIndicators } from 'hooks/indicators';
 import { useImpactData } from 'hooks/impact';
 import { useImpactComparison } from 'hooks/impact/comparison';
-import { scenarios } from 'store/features/analysis/scenarios';
-import { useAppSelector } from 'store/hooks';
 
 import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
 import LinkButton from 'components/button';
@@ -16,6 +19,7 @@ import LineChart from 'components/chart/line';
 import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 import ComparisonCell from './comparison-cell/component';
 
+import type { Store } from 'store';
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { TableProps } from 'components/table/component';
 import type { ColumnDefinition } from 'components/table/column';
@@ -59,12 +63,55 @@ const AnalysisTable: React.FC = () => {
     () => ({ pagination: paginationState, sorting: sortingState }),
     [paginationState, sortingState],
   );
-  const { scenarioToCompare, isComparisonEnabled } = useAppSelector(scenarios);
+
+  // data from redux
+  const store = useStore() as Store;
+  const { scenarioToCompare, isComparisonEnabled, currentScenario } = useAppSelector(scenarios);
+  const { data: indicators } = useIndicators({ select: (data) => data.data });
+  const filters = filtersForTabularAPI(store.getState());
 
   const showComparison = useMemo(
     () => isComparisonEnabled && !!scenarioToCompare,
     [isComparisonEnabled, scenarioToCompare],
   );
+
+  const { indicatorId, ...restFilters } = filters;
+
+  const isEnable =
+    !!indicatorId &&
+    !!indicators?.length &&
+    !!filters.startYear &&
+    !!filters.endYear &&
+    filters.endYear !== filters.startYear;
+
+  const indicatorIds = useMemo(() => {
+    if (indicatorId === 'all') {
+      return indicators.map((indicator) => indicator.id);
+    }
+    if (indicatorId) return [indicatorId];
+    return [];
+  }, [indicators, indicatorId]);
+
+  const params = {
+    indicatorIds,
+    startYear: filters.startYear,
+    endYear: filters.endYear,
+    groupBy: filters.groupBy,
+    ...restFilters,
+    ...(currentScenario && currentScenario !== 'actual-data'
+      ? { scenarioId: currentScenario }
+      : {}),
+    ...(isComparisonEnabled && scenarioToCompare ? { scenarioId: scenarioToCompare } : {}),
+    'page[number]': paginationState.pageIndex,
+    'page[size]': paginationState.pageSize,
+  };
+
+  const impactData = useImpactData(params, {
+    enabled: !isComparisonEnabled && isEnable,
+  });
+  const impactComparisonData = useImpactComparison(params, {
+    enabled: isComparisonEnabled && isEnable,
+  });
 
   const {
     data: {
@@ -73,10 +120,10 @@ const AnalysisTable: React.FC = () => {
     },
     isLoading,
     isFetching,
-  } = useImpactData({
-    'page[number]': paginationState.pageIndex,
-    'page[size]': paginationState.pageSize,
-  });
+  } = useMemo(() => {
+    if (isComparisonEnabled && scenarioToCompare) return impactComparisonData;
+    return impactData;
+  }, [impactComparisonData, impactData, isComparisonEnabled, scenarioToCompare]);
 
   const totalRows = useMemo(() => {
     return !isLoading && impactTable.length === 1 ? impactTable[0].rows.length : impactTable.length;

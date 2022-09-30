@@ -1,28 +1,21 @@
-import { useMemo } from 'react';
-import type { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
-import { useAppSelector } from 'store/hooks';
-import { filtersForTabularAPI } from 'store/features/analysis/selector';
-import { analysisFilters } from 'store/features/analysis/filters';
-import { scenarios } from 'store/features/analysis/scenarios';
-
 import { apiRawService } from 'services/api';
-import { useIndicators } from 'hooks/indicators';
 
-import type { ImpactData, APIpaginationRequest } from 'types';
-import { useStore } from 'react-redux';
+import type { UseQueryOptions } from '@tanstack/react-query';
+import type { ImpactData } from 'types';
 
-import type { Store } from 'store';
-
-const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
+const DEFAULT_QUERY_OPTIONS: UseQueryOptions<ImpactData> = {
   placeholderData: {
     data: {
       impactTable: [],
       purchasedTonnes: [],
     },
     metadata: {
-      unit: null,
+      page: 1,
+      size: 1,
+      totalItems: 1,
+      totalPages: 1,
     },
   },
   retry: false,
@@ -30,64 +23,18 @@ const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   refetchOnWindowFocus: false,
 };
 
-type ImpactDataResponse = UseQueryResult<ImpactData, unknown>;
-
-export const useImpactData: (pagination?: APIpaginationRequest) => ImpactDataResponse = (
-  pagination,
+export const useImpactData = (
+  params: Record<string, unknown> = {},
+  options: UseQueryOptions<ImpactData> = {},
 ) => {
-  const store = useStore() as Store;
-  const { data: indicators } = useIndicators({ select: (data) => data.data });
-  const { layer } = useAppSelector(analysisFilters);
-  const { isComparisonEnabled, scenarioToCompare, currentScenario } = useAppSelector(scenarios);
-  const filters = filtersForTabularAPI(store.getState());
-  const { indicatorId, ...restFilters } = filters;
-
-  const isEnable =
-    !!indicatorId &&
-    !!indicators?.length &&
-    !!filters.startYear &&
-    !!filters.endYear &&
-    filters.endYear !== filters.startYear;
-
-  const indicatorIds = useMemo(() => {
-    if (indicatorId === 'all') {
-      return indicators.map((indicator) => indicator.id);
-    }
-    if (indicatorId) return [indicatorId];
-    return [];
-  }, [indicators, indicatorId]);
-
-  const params = {
-    indicatorIds,
-    startYear: filters.startYear,
-    endYear: filters.endYear,
-    groupBy: filters.groupBy,
-    ...pagination,
-    ...restFilters,
-    ...pagination,
-    ...(currentScenario && currentScenario !== 'actual-data'
-      ? { scenarioId: currentScenario }
-      : {}),
-    ...(isComparisonEnabled && scenarioToCompare ? { scenarioId: scenarioToCompare } : {}),
-  };
-
-  const query = useQuery(
-    ['impact-data', layer, params],
+  const query = useQuery<ImpactData>(
+    ['impact-data', params],
     () => apiRawService.get('/impact/table', { params }).then((response) => response.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
-      enabled: layer === 'impact' && isEnable,
+      ...options,
     },
   );
 
-  const { data, isError } = query;
-
-  return useMemo<ImpactDataResponse>(
-    () =>
-      ({
-        ...query,
-        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as ImpactData,
-      } as ImpactDataResponse),
-    [query, isError, data],
-  );
+  return query;
 };

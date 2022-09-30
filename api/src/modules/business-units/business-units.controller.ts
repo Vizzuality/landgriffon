@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -38,6 +39,7 @@ import { UpdateBusinessUnitDto } from 'modules/business-units/dto/update.busines
 import { PaginationMeta } from 'utils/app-base.service';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
 import { GetBusinessUnitTreeWithOptionsDto } from 'modules/business-units/dto/get-business-unit-tree-with-options.dto';
+import { SetScenarioIdsInterceptor } from 'modules/impact/set-scenario-ids.interceptor';
 
 @Controller(`/api/v1/business-units`)
 @ApiTags(businessUnitResource.className)
@@ -83,6 +85,7 @@ export class BusinessUnitsController {
   })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
+  @UseInterceptors(SetScenarioIdsInterceptor)
   @Get('/trees')
   // TODO: Implement Tree response similar to other entities as Admin-Regions
   async getTrees(

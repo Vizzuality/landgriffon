@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -38,6 +39,7 @@ import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { PaginationMeta } from 'utils/app-base.service';
 import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-tree-with-options.dto';
 import { GetSupplierByType } from 'modules/suppliers/dto/get-supplier-by-type.dto';
+import { SetScenarioIdsInterceptor } from 'modules/impact/set-scenario-ids.interceptor';
 
 @Controller(`/api/v1/suppliers`)
 @ApiTags(supplierResource.className)
@@ -86,6 +88,7 @@ export class SuppliersController {
   })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
+  @UseInterceptors(SetScenarioIdsInterceptor)
   @Get('/trees')
   async getTrees(
     @Query(ValidationPipe) supplierTreeOptions: GetSupplierTreeWithOptions,

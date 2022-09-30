@@ -50,8 +50,8 @@ const Methodology = (req: NextApiRequest, res: NextApiResponse): void => {
 
     const data = {
       list_ids: information
-        ? ['d2008d48-54fc-47ad-80d4-30fa831581ba', '1b704de4-643f-4531-b6cb-63fea0e6ad2a']
-        : ['d2008d48-54fc-47ad-80d4-30fa831581ba'],
+        ? ['0ee4b8ab-2088-44c1-b7cc-5eab97a49fda', '1b704de4-643f-4531-b6cb-63fea0e6ad2a']
+        : ['0ee4b8ab-2088-44c1-b7cc-5eab97a49fda'],
       contacts: [
         {
           email,

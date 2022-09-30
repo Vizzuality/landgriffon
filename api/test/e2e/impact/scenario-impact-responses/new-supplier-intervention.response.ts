@@ -15,7 +15,7 @@ export const newSupplierScenarioInterventionTable = {
               scenarioValue: 0,
               isProjected: false,
               absoluteDifference: -2400,
-              percentageDifference: -100,
+              percentageDifference: -200,
             },
             {
               year: 2021,
@@ -23,7 +23,7 @@ export const newSupplierScenarioInterventionTable = {
               scenarioValue: 0,
               isProjected: true,
               absoluteDifference: -2436,
-              percentageDifference: -100,
+              percentageDifference: -200,
             },
             {
               year: 2022,
@@ -31,7 +31,7 @@ export const newSupplierScenarioInterventionTable = {
               scenarioValue: 0,
               isProjected: true,
               absoluteDifference: -2472.54,
-              percentageDifference: -100,
+              percentageDifference: -200,
             },
             {
               year: 2023,
@@ -39,7 +39,7 @@ export const newSupplierScenarioInterventionTable = {
               scenarioValue: 0,
               isProjected: true,
               absoluteDifference: -2509.6281,
-              percentageDifference: -100,
+              percentageDifference: -200,
             },
           ],
         },
@@ -53,7 +53,7 @@ export const newSupplierScenarioInterventionTable = {
               scenarioValue: 1900,
               isProjected: false,
               absoluteDifference: 1900,
-              percentageDifference: null,
+              percentageDifference: 200,
             },
             {
               year: 2021,
@@ -61,7 +61,7 @@ export const newSupplierScenarioInterventionTable = {
               scenarioValue: 1928.5,
               isProjected: true,
               absoluteDifference: 1928.5,
-              percentageDifference: null,
+              percentageDifference: 200,
             },
             {
               year: 2022,
@@ -69,7 +69,7 @@ export const newSupplierScenarioInterventionTable = {
               scenarioValue: 1957.4275,
               isProjected: true,
               absoluteDifference: 1957.4275,
-              percentageDifference: null,
+              percentageDifference: 200,
             },
             {
               year: 2023,
@@ -77,7 +77,7 @@ export const newSupplierScenarioInterventionTable = {
               scenarioValue: 1986.7889125,
               isProjected: true,
               absoluteDifference: 1986.7889125,
-              percentageDifference: null,
+              percentageDifference: 200,
             },
           ],
         },

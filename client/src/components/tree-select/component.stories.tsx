@@ -15,7 +15,7 @@ export default {
     },
     options: { table: { disable: true } },
     checkedStrategy: {
-      options: ['ALL', 'CHILDREN', 'PARENT'],
+      options: ['ALL', 'CHILD', 'PARENT'],
       control: { type: 'radio' },
     },
   },
@@ -36,6 +36,13 @@ Default.args = {
   label: 'Label',
   options: [
     {
+      value: 'deep',
+      label: 'Deep',
+      children: [
+        { value: 'deeper', label: 'Deeper', children: [{ value: 'deepest', label: 'Deepest' }] },
+      ],
+    },
+    {
       value: 'ocean',
       label: 'Ocean',
       color: '#00B8D9',
@@ -43,7 +50,16 @@ Default.args = {
       children: [
         { value: 'blue2', label: 'Blue2', color: '#0052CC', isDisabled: true },
         { value: 'purple2', label: 'Purple2', color: '#5243AA' },
-        { value: 'red2', label: 'Red2', color: '#FF5630', isFixed: true },
+        {
+          value: 'red2',
+          label: 'Red2',
+          color: '#FF5630',
+          isFixed: true,
+          children: [
+            { value: 'blue3', label: 'Blue3', color: '#0052CC' },
+            { value: 'purple3', label: 'Purple3', color: '#5243AA' },
+          ],
+        },
       ],
     },
     { value: 'blue', label: 'Blue', color: '#0052CC', isDisabled: true },

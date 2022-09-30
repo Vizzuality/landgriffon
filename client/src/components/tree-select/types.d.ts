@@ -1,3 +1,5 @@
+import type { CHECKED_STRATEGIES } from './utils';
+
 export type TreeSelectOption = {
   label: string;
   value: string | number;
@@ -24,30 +26,9 @@ interface CommonTreeProps {
    * - `CHILD`: if parent is selected and also all children are selected, only children ids are in the values
    * - `ONLY_CHILD`: only for styling purpose, only children ids are in the values and just the first child is shown
    */
-  checkedStrategy?: 'ALL' | 'PARENT' | 'CHILD';
+  checkedStrategy?: keyof typeof CHECKED_STRATEGIES;
   checkedStrategyDisplay?: 'ONLY_CHILD';
-
-  // multiple: Multi;
-  // current: Multi extends true ? TreeSelectOption[] : TreeSelectOption;
-  // onChange?: (selected: Multi extends true ? TreeSelectOption[] : TreeSelectOption) => void;
 }
-
-// interface MultipleTreeProps {
-//   multiple: true;
-//   current: TreeSelectOption[];
-//   onChange?: (selected: TreeSelectOption[]) => void;
-// }
-
-// interface SingleTreeProps {
-//   multiple?: false;
-//   current: TreeSelectOption;
-//   onChange?: (selected: TreeSelectOption) => void;
-// }
-
-// interface TreeSelectPropsWithoutMultiple<IsMulti extends boolean> extends CommonTreeProps {
-//   current: IsMulti extends true ? TreeSelectOption[] : TreeSelectOption;
-//   onChange?: (selected: IsMulti extends true ? TreeSelectOption[] : TreeSelectOption) => void;
-// }
 
 export interface TreeSelectProps<IsMulti extends boolean = false> extends CommonTreeProps {
   multiple?: IsMulti;

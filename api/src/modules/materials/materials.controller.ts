@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -36,6 +37,7 @@ import { MaterialRepository } from 'modules/materials/material.repository';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
 import { PaginationMeta } from 'utils/app-base.service';
 import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
+import { SetScenarioIdsInterceptor } from 'modules/impact/set-scenario-ids.interceptor';
 
 @Controller(`/api/v1/materials`)
 @ApiTags(materialResource.className)
@@ -85,6 +87,7 @@ export class MaterialsController {
   })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
+  @UseInterceptors(SetScenarioIdsInterceptor)
   @Get('/trees')
   async getTrees(
     @Query(ValidationPipe) materialTreeOptions: GetMaterialTreeWithOptionsDto,

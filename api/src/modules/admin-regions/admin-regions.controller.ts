@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -38,6 +39,7 @@ import { UpdateAdminRegionDto } from 'modules/admin-regions/dto/update.admin-reg
 import { PaginationMeta } from 'utils/app-base.service';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
 import { GetAdminRegionTreeWithOptionsDto } from 'modules/admin-regions/dto/get-admin-region-tree-with-options.dto';
+import { SetScenarioIdsInterceptor } from 'modules/impact/set-scenario-ids.interceptor';
 
 @Controller(`/api/v1/admin-regions`)
 @ApiTags(adminRegionResource.className)
@@ -83,6 +85,7 @@ export class AdminRegionsController {
   })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
+  @UseInterceptors(SetScenarioIdsInterceptor)
   @Get('/trees')
   async getTrees(
     @Query(ValidationPipe)

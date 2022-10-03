@@ -1,5 +1,4 @@
 import { useCallback, useMemo } from 'react';
-import { useStore } from 'react-redux';
 import omit from 'lodash/omit';
 import chroma from 'chroma-js';
 import {
@@ -20,8 +19,8 @@ import Loading from 'components/loading';
 import { NUMBER_FORMAT } from 'utils/number-format';
 import LegendChart from './legend';
 
-import type { Store } from 'store';
 import type { Indicator } from 'types';
+import { useAppSelector } from 'store/hooks';
 
 type StackedAreaChartProps = {
   indicator: Indicator;
@@ -30,8 +29,7 @@ type StackedAreaChartProps = {
 const COLOR_SCALE = chroma.scale(['#2D7A5B', '#39A163', '#9AC864', '#D9E77F', '#FFF9C7']);
 
 const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
-  const store: Store = useStore();
-  const filters = filtersForTabularAPI(store.getState());
+  const filters = useAppSelector(filtersForTabularAPI);
 
   const params = {
     maxRankingEntities: 5,

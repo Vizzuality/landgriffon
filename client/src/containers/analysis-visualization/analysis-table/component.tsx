@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useState } from 'react';
-import { useStore } from 'react-redux';
 import classNames from 'classnames';
 import { DownloadIcon } from '@heroicons/react/outline';
 import { getSortedRowModel } from '@tanstack/react-table';
@@ -19,7 +18,6 @@ import LineChart from 'components/chart/line';
 import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 import ComparisonCell from './comparison-cell/component';
 
-import type { Store } from 'store';
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { TableProps } from 'components/table/component';
 import type { ColumnDefinition } from 'components/table/column';
@@ -64,11 +62,9 @@ const AnalysisTable: React.FC = () => {
     [paginationState, sortingState],
   );
 
-  // data from redux
-  const store = useStore() as Store;
   const { scenarioToCompare, isComparisonEnabled, currentScenario } = useAppSelector(scenarios);
   const { data: indicators } = useIndicators({ select: (data) => data.data });
-  const filters = filtersForTabularAPI(store.getState());
+  const filters = useAppSelector(filtersForTabularAPI);
 
   const showComparison = useMemo(
     () => isComparisonEnabled && !!scenarioToCompare,

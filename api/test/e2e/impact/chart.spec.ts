@@ -39,7 +39,7 @@ import {
   createUnit,
 } from '../../entity-mocks';
 import { range } from 'lodash';
-import { createNewMaterialInterventionPreconditions } from './scenario-impact-preconditions/new-material-intervention.preconditions';
+import { createNewMaterialInterventionPreconditions } from './actual-vs-scenario-preconditions/new-material-intervention.preconditions';
 
 describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
   let app: INestApplication;

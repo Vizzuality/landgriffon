@@ -49,7 +49,7 @@ import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
-import { createNewMaterialInterventionPreconditions } from './scenario-impact-preconditions/new-material-intervention.preconditions';
+import { createNewMaterialInterventionPreconditions } from './actual-vs-scenario-preconditions/new-material-intervention.preconditions';
 
 describe('Impact Table and Charts test suite (e2e)', () => {
   let app: INestApplication;

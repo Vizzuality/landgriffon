@@ -8,7 +8,7 @@ import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { MaterialsModule } from 'modules/materials/materials.module';
 import { ActualVsScenarioImpactService } from 'modules/impact/comparison/actual-vs-scenario.service';
-import { ScenarioVsScenarioImpactService } from './scenario-vs-scenario.service';
+import { ScenarioVsScenarioImpactService } from 'modules/impact/comparison/scenario-vs-scenario.service';
 
 @Module({
   imports: [

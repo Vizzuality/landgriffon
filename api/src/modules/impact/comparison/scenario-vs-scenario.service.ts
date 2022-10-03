@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
-  GetActualVsScenarioImpactTabledto,
+  GetActualVsScenarioImpactTableDto,
   GetImpactTableDto,
   GetScenarioVsScenarioImpactTableDto,
-} from 'modules/impact/dto/get-impact-table.dto';
+} from 'modules/impact/dto/impact-table.dto';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import {
@@ -82,12 +82,12 @@ export class ScenarioVsScenarioImpactService {
     const { scenarioOneId, scenarioTwoId, ...generalDto } =
       scenarioVsScenarioImpactTableDto;
 
-    const scenarioOneDto: GetActualVsScenarioImpactTabledto = {
+    const scenarioOneDto: GetActualVsScenarioImpactTableDto = {
       scenarioId: scenarioOneId,
       ...generalDto,
     };
 
-    const scenarioTwoDto: GetActualVsScenarioImpactTabledto = {
+    const scenarioTwoDto: GetActualVsScenarioImpactTableDto = {
       scenarioId: scenarioTwoId,
       ...generalDto,
     };
@@ -245,7 +245,7 @@ export class ScenarioVsScenarioImpactService {
   }
 
   private getDataForActualVsScenarioImpactTable(
-    actualVsScenarioImpactTableDto: GetActualVsScenarioImpactTabledto,
+    actualVsScenarioImpactTableDto: GetActualVsScenarioImpactTableDto,
     entities: ImpactTableEntityType[],
   ): Promise<ActualVsScenarioImpactTableData[]> {
     return entities.length > 0

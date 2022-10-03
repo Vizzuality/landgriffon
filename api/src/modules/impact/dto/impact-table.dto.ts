@@ -108,6 +108,11 @@ export class GetImpactTableDto extends BaseImpactTableDto {
   @IsOptional()
   @IsUUID(4)
   scenarioId?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID(4, { each: true })
+  scenarioIds?: string[];
 }
 export class GetScenarioVsScenarioImpactTableDto extends GetImpactTableDto {
   @ApiPropertyOptional()

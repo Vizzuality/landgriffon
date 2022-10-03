@@ -8,13 +8,13 @@ import LegendTypeChoropleth from 'components/legend/types/choropleth';
 import type { LegendItem as LegendItemsProps } from 'types';
 import type { Legend } from 'types';
 import LegendItem from 'components/legend/item';
-import { useH3MaterialData } from 'hooks/h3-data';
 import { NUMBER_FORMAT } from 'utils/number-format';
 import { COLOR_RAMPS } from 'utils/colors';
 import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
 import { useMaterial } from 'hooks/materials';
 import { setFilter } from 'store/features/analysis/filters';
 import type { TreeSelectOption } from 'components/tree-select/types';
+import useH3MaterialData from 'hooks/h3-data/material';
 
 const LAYER_ID = 'material';
 

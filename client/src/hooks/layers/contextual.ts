@@ -1,9 +1,9 @@
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisMap } from 'store/features/analysis/map';
 
-import { useH3ContextualData } from 'hooks/h3-data';
 import type { Layer } from 'types';
 import { setLayer } from 'store/features/analysis';
+import useH3ContextualData from 'hooks/h3-data/contextual';
 
 export const useContextualLayer = (id: Layer['id']) => {
   const dispatch = useAppDispatch();

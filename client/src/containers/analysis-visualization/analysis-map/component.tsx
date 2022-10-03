@@ -18,10 +18,11 @@ import BasemapControl from 'components/map/controls/basemap';
 import { NUMBER_FORMAT } from 'utils/number-format';
 
 import type { BasemapValue } from 'components/map/controls/basemap/types';
-import { useAllContextualLayersData, useH3MaterialData } from 'hooks/h3-data';
 import { sortBy } from 'lodash';
 import type { MapStyle, ViewState } from 'components/map';
 import Map from 'components/map/component';
+import { useAllContextualLayersData } from 'hooks/h3-data/contextual';
+import useH3MaterialData from 'hooks/h3-data/material';
 
 const INITIAL_VIEW_STATE = {
   longitude: 0,

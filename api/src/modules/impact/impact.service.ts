@@ -250,8 +250,8 @@ export class ImpactService {
       ...(impactTableDto.supplierIds && {
         supplierIds: impactTableDto.supplierIds,
       }),
-      ...(impactTableDto.scenarioId && {
-        scenarioId: impactTableDto.scenarioId,
+      ...(impactTableDto.scenarioIds && {
+        scenarioIds: impactTableDto.scenarioIds,
       }),
     };
     switch (impactTableDto.groupBy) {

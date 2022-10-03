@@ -21,7 +21,7 @@ const ScenarioItemContainer = (props: ScenarioItemContainerProps) => {
     }
   }, [dispatch, visualizationMode]);
 
-  return <Component {...props} isComparisonAvailable={visualizationMode !== 'chart'} />;
+  return <Component {...props} />;
 };
 
 export default ScenarioItemContainer;

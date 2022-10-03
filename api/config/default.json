@@ -66,5 +66,8 @@
 
   "map": {
     "distributed": true
+  },
+  "featureFlags": {
+    "simpleImportCalculations": "false"
   }
 }

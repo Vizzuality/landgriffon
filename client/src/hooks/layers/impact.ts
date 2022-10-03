@@ -3,15 +3,13 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
 import { analysisMap, setLayer, setLayerDeckGLProps } from 'store/features/analysis/map';
-
-import { useH3ImpactData } from 'hooks/h3-data';
-
 import { NUMBER_FORMAT } from 'utils/number-format';
 import { COLOR_RAMPS } from 'utils/colors';
 
 import type { LegendItem as LegendItemProp } from 'types';
 import { scenarios } from 'store/features/analysis';
 import { ACTUAL_DATA } from 'containers/scenarios/constants';
+import useH3ImpactData from 'hooks/h3-data/impact';
 
 const LAYER_ID = 'impact'; // should match with redux
 

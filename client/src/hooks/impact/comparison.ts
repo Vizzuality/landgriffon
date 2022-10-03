@@ -1,4 +1,4 @@
-import type { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
+import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
 import { apiRawService } from 'services/api';
@@ -7,10 +7,11 @@ import type { ImpactData } from 'types';
 
 import type { ImpactTabularAPIParams } from 'types';
 
-const DEFAULT_QUERY_OPTIONS: UseQueryOptions<ImpactData> = {
+const DEFAULT_QUERY_OPTIONS = {
   placeholderData: {
     data: {
       impactTable: [],
+      purchasedTonnes: [],
     },
     metadata: {
       page: 1,
@@ -28,15 +29,15 @@ type ImpactComparisonParams = ImpactTabularAPIParams & {
   scenarioId: string;
 };
 
-export function useImpactComparison(
+export const useImpactComparison = <T = ImpactData>(
   params: Partial<ImpactComparisonParams> = {},
-  options: UseQueryOptions<ImpactData> = {},
-): UseQueryResult<ImpactData> {
-  const query = useQuery<ImpactData>(
+  options: UseQueryOptions<ImpactData, unknown, T> = {},
+) => {
+  const query = useQuery(
     ['impact-ranking', params],
     () =>
       apiRawService
-        .get('/impact/compare/scenario/vs/actual', {
+        .get<ImpactData>('/impact/compare/scenario/vs/actual', {
           params,
         })
         .then((response) => response.data),
@@ -47,6 +48,4 @@ export function useImpactComparison(
   );
 
   return query;
-}
-
-export default useImpactComparison;
+};

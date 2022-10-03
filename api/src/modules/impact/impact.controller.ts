@@ -29,7 +29,7 @@ import {
 import { JSONAPIPaginationQueryParams } from 'decorators/json-api-parameters.decorator';
 import { ActualVsScenarioImpactService } from 'modules/impact/comparison/actual-vs-scenario.service';
 import { SetScenarioIdsInterceptor } from 'modules/impact/set-scenario-ids.interceptor';
-import { ScenarioVsScenarioImpactService } from 'modules/impact/scenario-vs-scenario.service';
+import { ScenarioVsScenarioImpactService } from 'modules/impact/comparison/scenario-vs-scenario.service';
 import { ScenarioVsScenarioPaginatedImpactTable } from 'modules/impact/dto/response-scenario-scenario.dto';
 
 @Controller('/api/v1/impact')

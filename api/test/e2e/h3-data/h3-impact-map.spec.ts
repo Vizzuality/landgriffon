@@ -322,20 +322,12 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a4fffffff', v: '123.40' },
-          { h: '861203a5fffffff', v: '123.40' },
+          { h: '861203a4fffffff', v: '617.00' },
+          { h: '861203a5fffffff', v: '617.00' },
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [
-          0,
-          +'123.40',
-          +'123.40',
-          +'123.40',
-          +'123.40',
-          +'123.40',
-          +'123.40',
-        ],
+        quantiles: [617, 407.22, 203.61, 0, -203.61, -407.22, -617],
         unit: 'tonnes',
         indicatorDataYear: 2020,
       });

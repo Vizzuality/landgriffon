@@ -8,7 +8,11 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  ApiHideProperty,
+  ApiProperty,
+  ApiPropertyOptional,
+} from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
@@ -95,6 +99,8 @@ export class GetActualVsScenarioImpactTableDto extends BaseImpactTableDto {
   scenarioId: string;
 
   // Property for internal api use (entity filters)
+  @ApiHideProperty()
+  @IsOptional()
   scenarioIds?: string[];
 }
 
@@ -108,6 +114,8 @@ export class GetImpactTableDto extends BaseImpactTableDto {
   scenarioId?: string;
 
   // Property for internal api use (entity filters)
+  @ApiHideProperty()
+  @IsOptional()
   scenarioIds?: string[];
 }
 export class GetScenarioVsScenarioImpactTableDto extends GetImpactTableDto {
@@ -122,6 +130,8 @@ export class GetScenarioVsScenarioImpactTableDto extends GetImpactTableDto {
   scenarioTwoId: string;
 
   // Property for internal api use (entity filters)
+  @ApiHideProperty()
+  @IsOptional()
   scenarioIds?: string[];
 }
 

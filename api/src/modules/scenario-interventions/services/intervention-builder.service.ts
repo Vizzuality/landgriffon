@@ -173,7 +173,7 @@ export class InterventionBuilder {
         sr.tonnage = sr.tonnage * (percentage / 100);
 
         sr.indicatorRecords.map((ir: IndicatorRecord) => {
-          ir.value = ir.value * (percentage / 100);
+          ir.value = -ir.value * (percentage / 100);
         });
       });
     });

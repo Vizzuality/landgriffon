@@ -94,9 +94,7 @@ export class GetActualVsScenarioImpactTableDto extends BaseImpactTableDto {
   @IsUUID(4)
   scenarioId: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsUUID(4, { each: true })
+  // Property for internal api use (entity filters)
   scenarioIds?: string[];
 }
 
@@ -109,9 +107,7 @@ export class GetImpactTableDto extends BaseImpactTableDto {
   @IsUUID(4)
   scenarioId?: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsUUID(4, { each: true })
+  // Property for internal api use (entity filters)
   scenarioIds?: string[];
 }
 export class GetScenarioVsScenarioImpactTableDto extends GetImpactTableDto {
@@ -125,9 +121,7 @@ export class GetScenarioVsScenarioImpactTableDto extends GetImpactTableDto {
   @IsUUID(4)
   scenarioTwoId: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsUUID(4, { each: true })
+  // Property for internal api use (entity filters)
   scenarioIds?: string[];
 }
 

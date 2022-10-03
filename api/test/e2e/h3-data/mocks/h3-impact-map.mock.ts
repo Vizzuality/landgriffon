@@ -51,6 +51,7 @@ export interface ImpactMapMockData {
   harvestH3DataOneId: string;
   harvestH3DataTwoId: string;
   scenarioId: string;
+  scenarioTwoId: string;
 }
 
 export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
@@ -135,7 +136,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
     sourcingRecordId: sourcingRecordOne.id,
     indicatorId: indicator.id,
     materialH3DataId: harvestH3Data.id,
-    scaler: 10000,
+    scaler: 2000,
     value: 1234,
   });
 
@@ -188,7 +189,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
     sourcingRecordId: sourcingRecordTwo.id,
     indicatorId: indicator.id,
     materialH3DataId: harvestH3Data.id,
-    scaler: 10000,
+    scaler: 2000,
     value: 1000,
   });
 
@@ -222,7 +223,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
     sourcingRecordId: cancelledSourcingRecordOne.id,
     indicatorId: indicator.id,
     materialH3DataId: harvestH3Data.id,
-    scaler: 10000,
+    scaler: 2000,
     value: -100,
   });
 
@@ -247,7 +248,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
     sourcingRecordId: replacedSourcingRecordOne.id,
     indicatorId: indicator.id,
     materialH3DataId: harvestH3Data.id,
-    scaler: 10000,
+    scaler: 2000,
     value: 50,
   });
 
@@ -278,7 +279,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
     sourcingRecordId: cancelledSourcingRecordTwo.id,
     indicatorId: indicator.id,
     materialH3DataId: harvestH3Data.id,
-    scaler: 10000,
+    scaler: 2000,
     value: -200,
   });
 
@@ -303,8 +304,79 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
     sourcingRecordId: replacedSourcingRecordTwo.id,
     indicatorId: indicator.id,
     materialH3DataId: harvestH3Data.id,
-    scaler: 10000,
+    scaler: 2000,
     value: 100,
+  });
+
+  //Scenario Two
+  const scenarioTwo: Scenario = await createScenario({
+    title: 'testScenario2',
+  });
+
+  const interventionScenarioTwo: ScenarioIntervention =
+    await createScenarioIntervention({ scenario: scenarioTwo });
+
+  const canceledSourcingLocationScenarioTwo: SourcingLocation =
+    await createSourcingLocation({
+      scenarioInterventionId: interventionScenarioTwo.id,
+      adminRegionId: adminRegionOne.id,
+      geoRegionId: geoRegionOne.id,
+      materialId: materialOne.id,
+      t1SupplierId: t1SupplierOne.id,
+      producerId: producerSupplierOne.id,
+      locationType: LOCATION_TYPES.AGGREGATION_POINT,
+      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+    });
+
+  const cancelledSourcingRecordScenarioTwo: SourcingRecord =
+    await createSourcingRecord({
+      sourcingLocation: canceledSourcingLocationScenarioTwo,
+      tonnage: 100,
+    });
+
+  await createIndicatorRecord({
+    sourcingRecordId: cancelledSourcingRecordScenarioTwo.id,
+    indicatorId: indicator.id,
+    materialH3DataId: harvestH3Data.id,
+    scaler: 2000,
+    value: -300,
+  });
+
+  const adminRegionThree: AdminRegion = await createAdminRegion({
+    name: 'Chemical Plant Zone',
+  });
+
+  const geoRegionThree: GeoRegion = await createGeoRegion({
+    h3Compact: ['861203a7fffffff'],
+    h3Flat: ['861203a7fffffff'],
+    h3FlatLength: 1,
+    name: 'CPZ',
+  });
+
+  const replacedSourcingLocationScenarioTwo: SourcingLocation =
+    await createSourcingLocation({
+      scenarioInterventionId: interventionScenarioTwo.id,
+      adminRegionId: adminRegionThree.id,
+      geoRegionId: geoRegionThree.id,
+      materialId: materialOne.id,
+      t1SupplierId: t1SupplierOne.id,
+      producerId: producerSupplierOne.id,
+      locationType: LOCATION_TYPES.AGGREGATION_POINT,
+      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+    });
+
+  const replacedSourcingRecordScenarioTwo: SourcingRecord =
+    await createSourcingRecord({
+      sourcingLocation: replacedSourcingLocationScenarioTwo,
+      tonnage: 100,
+    });
+
+  await createIndicatorRecord({
+    sourcingRecordId: replacedSourcingRecordScenarioTwo.id,
+    indicatorId: indicator.id,
+    materialH3DataId: harvestH3Data.id,
+    scaler: 1000,
+    value: 150,
   });
 
   return {
@@ -323,6 +395,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
     harvestH3DataOneId: harvestH3Data.id,
     harvestH3DataTwoId: harvestH3Data.id,
     scenarioId: scenario.id,
+    scenarioTwoId: scenarioTwo.id,
   };
 };
 

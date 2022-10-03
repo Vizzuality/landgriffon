@@ -114,16 +114,20 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
     expect(response.body.data).toEqual(
       expect.arrayContaining([
-        { h: '861203a6fffffff', v: '100.00' },
-        { h: '861203a5fffffff', v: '123.40' },
-        { h: '861203a4fffffff', v: '223.40' },
+        { h: '861203a6fffffff', v: '500.00' },
+        { h: '861203a5fffffff', v: '617.00' },
+        { h: '861203a4fffffff', v: '1117.00' },
       ]),
     );
-    expect(response.body.metadata).toEqual({
-      quantiles: [0, +107.80156, +115.61716, +123.4, +156.74, +190.14, +223.4],
-      unit: 'tonnes',
-      indicatorDataYear: 2020,
-    });
+    expect(response.body.metadata.unit).toEqual('tonnes');
+    expect(response.body.metadata.indicatorDataYear).toEqual(2020);
+    expect(
+      toBeCloseToArray(
+        response.body.metadata.quantiles,
+        [1117, 737.22, 368.61, 0, -368.61, -737.22, -1117],
+        5,
+      ),
+    ).toBeTruthy();
   });
 
   describe('Zoom levels', () => {
@@ -138,10 +142,10 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         });
 
       expect(response.body.data).toEqual(
-        expect.arrayContaining([{ h: '821207fffffffff', v: '446.80' }]),
+        expect.arrayContaining([{ h: '821207fffffffff', v: '2234.00' }]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [0, +446.8, +446.8, +446.8, +446.8, +446.8, +446.8],
+        quantiles: [2234, 1474.44, 737.22, 0, -737.22, -1474.44, -2234],
         unit: 'tonnes',
         indicatorDataYear: 2020,
       });
@@ -158,10 +162,10 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         });
 
       expect(response.body.data).toEqual(
-        expect.arrayContaining([{ h: '841203bffffffff', v: '446.80' }]),
+        expect.arrayContaining([{ h: '841203bffffffff', v: '2234.00' }]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [0, 446.8, 446.8, 446.8, 446.8, 446.8, 446.8],
+        quantiles: [2234, 1474.44, 737.22, 0, -737.22, -1474.44, -2234],
         unit: 'tonnes',
         indicatorDataYear: 2020,
       });
@@ -179,18 +183,20 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a6fffffff', v: '100.00' },
-          { h: '861203a5fffffff', v: '123.40' },
-          { h: '861203a4fffffff', v: '223.40' },
+          { h: '861203a6fffffff', v: '500.00' },
+          { h: '861203a5fffffff', v: '617.00' },
+          { h: '861203a4fffffff', v: '1117.00' },
         ]),
       );
-      expect(response.body.metadata).toEqual({
-        quantiles: [
-          0, +107.80156, +115.61716, +123.4, +156.74, +190.14, +223.4,
-        ],
-        unit: 'tonnes',
-        indicatorDataYear: 2020,
-      });
+      expect(response.body.metadata.unit).toEqual('tonnes');
+      expect(response.body.metadata.indicatorDataYear).toEqual(2020);
+      expect(
+        toBeCloseToArray(
+          response.body.metadata.quantiles,
+          [1117, 737.22, 368.61, 0, -368.61, -737.22, -1117],
+          5,
+        ),
+      ).toBeTruthy();
     });
   });
 
@@ -208,12 +214,12 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a4fffffff', v: '123.40' },
-          { h: '861203a5fffffff', v: '123.40' },
+          { h: '861203a4fffffff', v: '617.00' },
+          { h: '861203a5fffffff', v: '617.00' },
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [0, +123.4, +123.4, +123.4, +123.4, +123.4, +123.4],
+        quantiles: [617, 407.22, 203.61, 0, -203.61, -407.22, -617],
         unit: 'tonnes',
         indicatorDataYear: 2020,
         materialsH3DataYears: [
@@ -244,12 +250,12 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a4fffffff', v: '123.40' },
-          { h: '861203a5fffffff', v: '123.40' },
+          { h: '861203a4fffffff', v: '617.00' },
+          { h: '861203a5fffffff', v: '617.00' },
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [0, +123.4, +123.4, +123.4, +123.4, +123.4, +123.4],
+        quantiles: [617, 407.22, 203.61, 0, -203.61, -407.22, -617],
         unit: 'tonnes',
         indicatorDataYear: 2020,
       });
@@ -268,12 +274,12 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a4fffffff', v: '123.40' },
-          { h: '861203a5fffffff', v: '123.40' },
+          { h: '861203a4fffffff', v: '617.00' },
+          { h: '861203a5fffffff', v: '617.00' },
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [0, +123.4, +123.4, +123.4, +123.4, +123.4, +123.4],
+        quantiles: [617, 407.22, 203.61, 0, -203.61, -407.22, -617],
         unit: 'tonnes',
         indicatorDataYear: 2020,
       });
@@ -292,12 +298,12 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a4fffffff', v: '123.40' },
-          { h: '861203a5fffffff', v: '123.40' },
+          { h: '861203a4fffffff', v: '617.00' },
+          { h: '861203a5fffffff', v: '617.00' },
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [0, +123.4, +123.4, +123.4, +123.4, +123.4, +123.4],
+        quantiles: [617, 407.22, 203.61, 0, -203.61, -407.22, -617],
         unit: 'tonnes',
         indicatorDataYear: 2020,
       });
@@ -348,12 +354,12 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a4fffffff', v: '123.40' },
-          { h: '861203a5fffffff', v: '123.40' },
+          { h: '861203a4fffffff', v: '617.00' },
+          { h: '861203a5fffffff', v: '617.00' },
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [0, +123.4, +123.4, +123.4, +123.4, +123.4, +123.4],
+        quantiles: [617, 407.22, 203.61, 0, -203.61, -407.22, -617],
         unit: 'tonnes',
         indicatorDataYear: 2020,
       });
@@ -376,9 +382,9 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a4fffffff', v: '208.40' },
-          { h: '861203a5fffffff', v: '118.40' },
-          { h: '861203a6fffffff', v: '90.00' },
+          { h: '861203a4fffffff', v: '1042.00' },
+          { h: '861203a5fffffff', v: '592.00' },
+          { h: '861203a6fffffff', v: '450.00' },
         ]),
       );
       expect(response.body.metadata).toBeDefined();
@@ -387,7 +393,154 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(
         toBeCloseToArray(
           response.body.metadata.quantiles,
-          [0, 99.46856, 108.95416, 118.4, 148.406, 178.466, 208.4],
+          [1042, 687.72, 343.86, 0, -343.86, -687.72, -1042],
+          5,
+        ),
+      ).toBeTruthy();
+    });
+  });
+  describe('Actual vs Scenario Comparison Map', () => {
+    test('When I request a comparison map betwen actual H3 Water Impact Map data, and the data including a scenario with a given Id, then the response should have the difference between actual data and Scenario data', async () => {
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/h3/map/impact/compare/actual/vs/scenario`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          indicatorId: impactMapMockData.indicatorId,
+          'locationTypes[]': [
+            LOCATION_TYPES_PARAMS.AGGREGATION_POINT,
+            LOCATION_TYPES_PARAMS.UNKNOWN,
+          ],
+          year: 2020,
+          resolution: 6,
+          comparedScenarioId: impactMapMockData.scenarioId,
+          relative: false,
+        });
+
+      expect(response.body.data).toEqual(
+        expect.arrayContaining([
+          { h: '861203a4fffffff', v: '-75.00' },
+          { h: '861203a5fffffff', v: '-25.00' },
+          { h: '861203a6fffffff', v: '-50.00' },
+        ]),
+      );
+      expect(response.body.metadata).toBeDefined();
+      expect(response.body.metadata.unit).toEqual('tonnes');
+      expect(response.body.metadata.indicatorDataYear).toEqual(2020);
+      expect(
+        toBeCloseToArray(
+          response.body.metadata.quantiles,
+          [75, 49.5, 24.75, 0, -24.75, -49.5, -75],
+          5,
+        ),
+      ).toBeTruthy();
+    });
+
+    test('When I request a comparison map betwen actual H3 Water Impact Map data, and the data including a scenario with a given Id with relative property set to true, then the response should have the difference between actual data and Scenario data in percentages', async () => {
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/h3/map/impact/compare/actual/vs/scenario`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          indicatorId: impactMapMockData.indicatorId,
+          'locationTypes[]': [
+            LOCATION_TYPES_PARAMS.AGGREGATION_POINT,
+            LOCATION_TYPES_PARAMS.UNKNOWN,
+          ],
+          year: 2020,
+          resolution: 6,
+          comparedScenarioId: impactMapMockData.scenarioId,
+          relative: true,
+        });
+
+      expect(response.body.data).toEqual(
+        expect.arrayContaining([
+          { h: '861203a4fffffff', v: '-7.33' },
+          { h: '861203a5fffffff', v: '-2.07' },
+          { h: '861203a6fffffff', v: '-5.26' },
+        ]),
+      );
+      expect(response.body.metadata).toBeDefined();
+      expect(response.body.metadata.unit).toEqual('tonnes');
+      expect(response.body.metadata.indicatorDataYear).toEqual(2020);
+      expect(
+        toBeCloseToArray(
+          response.body.metadata.quantiles,
+          [7.33, 4.8378, 2.4189, 0, -2.4189, -4.8378, -7.33],
+          5,
+        ),
+      ).toBeTruthy();
+    });
+  });
+
+  describe('Scenario vs Scenario Comparison Map', () => {
+    test('When I request a comparison map between two scenarios (a baseScenario and a comparedScenario ids), then the response should have the difference between the data of of both scenarios', async () => {
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/h3/map/impact/compare/scenario/vs/scenario`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          indicatorId: impactMapMockData.indicatorId,
+          'locationTypes[]': [
+            LOCATION_TYPES_PARAMS.AGGREGATION_POINT,
+            LOCATION_TYPES_PARAMS.UNKNOWN,
+          ],
+          year: 2020,
+          resolution: 6,
+          baseScenarioId: impactMapMockData.scenarioId,
+          comparedScenarioId: impactMapMockData.scenarioTwoId,
+          relative: false,
+        });
+
+      expect(response.body.data).toEqual(
+        expect.arrayContaining([
+          { h: '861203a4fffffff', v: '-75.00' },
+          { h: '861203a5fffffff', v: '-125.00' },
+          { h: '861203a6fffffff', v: '50.00' },
+          { h: '861203a7fffffff', v: '150.00' },
+        ]),
+      );
+      expect(response.body.metadata).toBeDefined();
+      expect(response.body.metadata.unit).toEqual('tonnes');
+      expect(response.body.metadata.indicatorDataYear).toEqual(2020);
+      expect(
+        toBeCloseToArray(
+          response.body.metadata.quantiles,
+          [150, 99, 49.5, 0, -49.5, -99, -150],
+          5,
+        ),
+      ).toBeTruthy();
+    });
+
+    test('When I request a comparison map between two scenarios (a baseScenario and a comparedScenario ids) with relative property set to true, then the response should have the difference between the data of of both scenarios in percentages', async () => {
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/h3/map/impact/compare/scenario/vs/scenario`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          indicatorId: impactMapMockData.indicatorId,
+          'locationTypes[]': [
+            LOCATION_TYPES_PARAMS.AGGREGATION_POINT,
+            LOCATION_TYPES_PARAMS.UNKNOWN,
+          ],
+          year: 2020,
+          resolution: 6,
+          baseScenarioId: impactMapMockData.scenarioId,
+          comparedScenarioId: impactMapMockData.scenarioTwoId,
+          relative: true,
+        });
+
+      expect(response.body.data).toEqual(
+        expect.arrayContaining([
+          { h: '861203a4fffffff', v: '-6.54' },
+          { h: '861203a5fffffff', v: '-11.80' },
+          { h: '861203a6fffffff', v: '5.26' },
+          { h: '861203a7fffffff', v: '200.00' },
+        ]),
+      );
+      expect(response.body.metadata).toBeDefined();
+      expect(response.body.metadata.unit).toEqual('tonnes');
+      expect(response.body.metadata.indicatorDataYear).toEqual(2020);
+      expect(
+        toBeCloseToArray(
+          response.body.metadata.quantiles,
+          [200, 132, 66, 0, -66, -132, -200],
           5,
         ),
       ).toBeTruthy();

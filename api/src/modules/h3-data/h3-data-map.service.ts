@@ -9,7 +9,11 @@ import {
 } from 'modules/h3-data/dto/h3-map-response.dto';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { H3DataYearsService } from 'modules/h3-data/services/h3-data-years.service';
-import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
+import {
+  GetActualVsScenarioImpactMapDto,
+  GetImpactMapDto,
+  GetScenarioVsScenarioImpactMapDto,
+} from 'modules/h3-data/dto/get-impact-map.dto';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { Material } from 'modules/materials/material.entity';
@@ -77,49 +81,21 @@ export class H3DataMapService {
   }
 
   /**
-   * Returns a map of the impact values of the current actual data, by year and resolution
+   * Returns a map of the impact values, by year and resolution. Which data is taken into account
+   * depends on the incoming dto (Actual with/without Scenario, Actual vs Scenario or Scenario vs Scenario)
    * @param getImpactMapDto
    */
   async getImpactMapByResolution(
-    getImpactMapDto: GetImpactMapDto,
+    getImpactMapDto:
+      | GetImpactMapDto
+      | GetActualVsScenarioImpactMapDto
+      | GetScenarioVsScenarioImpactMapDto,
   ): Promise<H3MapResponse> {
-    const indicatorH3Data: H3Data | undefined =
-      await this.h3DataRepository.findOne({
-        where: { indicatorId: getImpactMapDto.indicatorId },
-      });
-
-    if (!indicatorH3Data)
-      throw new NotFoundException(
-        `There is no H3 Data for Indicator with ID: ${getImpactMapDto.indicatorId}`,
-      );
-
-    const indicator: Indicator = await this.indicatorService.getIndicatorById(
+    const { indicatorH3Data, indicator } = await this.loadIndicatorData(
       getImpactMapDto.indicatorId,
     );
 
-    if (!indicator.unit) {
-      throw new NotFoundException(
-        `Indicator with ID ${getImpactMapDto.indicatorId} has no unit`,
-      );
-    }
-
     await this.updateDtoEntityDescendants(getImpactMapDto);
-
-    this.logger.log(`Generating impact map for indicator ${indicator.name}...`);
-
-    const impactMap: {
-      impactMap: H3IndexValueData[];
-      quantiles: number[];
-    } = await this.h3DataRepository.getImpactMap(
-      indicator,
-      getImpactMapDto.resolution,
-      getImpactMapDto.year,
-      getImpactMapDto.materialIds,
-      getImpactMapDto.originIds,
-      getImpactMapDto.supplierIds,
-      getImpactMapDto.locationTypes,
-      getImpactMapDto.scenarioId,
-    );
 
     const materialsH3DataYears: MaterialsH3DataYears[] =
       await this.getMaterialsH3DataYearsList(
@@ -127,15 +103,58 @@ export class H3DataMapService {
         getImpactMapDto.materialIds,
       );
 
-    return {
-      data: impactMap.impactMap,
-      metadata: {
-        quantiles: impactMap.quantiles,
-        unit: indicator.unit.symbol,
-        indicatorDataYear: indicatorH3Data.year,
-        ...(materialsH3DataYears.length ? { materialsH3DataYears } : {}),
-      },
+    this.logger.log(`Generating impact map for indicator ${indicator.name}...`);
+
+    let impactMap: {
+      impactMap: H3IndexValueData[];
+      quantiles: number[];
     };
+
+    //Get the corresponding map data depending on the incoming DTO
+    if (getImpactMapDto instanceof GetScenarioVsScenarioImpactMapDto) {
+      impactMap = await this.h3DataRepository.getScenarioVsScenarioImpactMap(
+        getImpactMapDto,
+      );
+    } else if (getImpactMapDto instanceof GetActualVsScenarioImpactMapDto) {
+      impactMap = await this.h3DataRepository.getActualVsScenarioImpactMap(
+        getImpactMapDto,
+      );
+    } else {
+      impactMap = await this.h3DataRepository.getImpactMap(getImpactMapDto);
+    }
+
+    return this.constructH3MapResponse(
+      impactMap.impactMap,
+      impactMap.quantiles,
+      indicator,
+      indicatorH3Data,
+      materialsH3DataYears,
+    );
+  }
+
+  private async loadIndicatorData(indicatorId: string): Promise<{
+    indicatorH3Data: H3Data;
+    indicator: Indicator;
+  }> {
+    const indicatorH3Data: H3Data | undefined =
+      await this.h3DataRepository.findOne({ where: { indicatorId } });
+
+    if (!indicatorH3Data)
+      throw new NotFoundException(
+        `There is no H3 Data for Indicator with ID: ${indicatorId}`,
+      );
+
+    const indicator: Indicator = await this.indicatorService.getIndicatorById(
+      indicatorId,
+    );
+
+    if (!indicator.unit) {
+      throw new NotFoundException(
+        `Indicator with ID ${indicatorId} has no unit`,
+      );
+    }
+
+    return { indicatorH3Data, indicator };
   }
 
   private async updateDtoEntityDescendants(
@@ -199,5 +218,23 @@ export class H3DataMapService {
       }
     }
     return materialsH3DataYears;
+  }
+
+  private constructH3MapResponse(
+    impactMap: H3IndexValueData[],
+    quantiles: number[],
+    indicator: Indicator,
+    indicatorH3Data: H3Data,
+    materialsH3DataYears: MaterialsH3DataYears[],
+  ): H3MapResponse {
+    return {
+      data: impactMap,
+      metadata: {
+        quantiles: quantiles,
+        unit: indicator.unit.symbol,
+        indicatorDataYear: indicatorH3Data.year,
+        ...(materialsH3DataYears.length ? { materialsH3DataYears } : {}),
+      },
+    };
   }
 }

@@ -1,5 +1,4 @@
 import { useCallback, useMemo } from 'react';
-import { useStore } from 'react-redux';
 import omit from 'lodash/omit';
 import {
   LineChart,
@@ -22,7 +21,6 @@ import { NUMBER_FORMAT } from 'utils/number-format';
 import CustomLegend from './legend';
 import CustomTooltip from './tooltip';
 
-import type { Store } from 'store';
 import type { Indicator } from 'types';
 
 type StackedAreaChartProps = {
@@ -42,9 +40,8 @@ type ChartData = {
 };
 
 const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
-  const store: Store = useStore();
   const { scenarioToCompare } = useAppSelector(scenarios);
-  const filters = filtersForTabularAPI(store.getState());
+  const filters = useAppSelector(filtersForTabularAPI);
 
   const params = {
     ...omit(filters, 'indicatorId'),

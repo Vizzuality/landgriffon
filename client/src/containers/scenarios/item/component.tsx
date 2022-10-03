@@ -17,7 +17,6 @@ import { Button } from 'components/button';
 
 interface ScenariosItemProps {
   scenario: Scenario;
-  isComparisonAvailable: boolean;
   isSelected: boolean;
 }
 
@@ -40,7 +39,7 @@ const formatTimeAgo = (date: Date) => {
   })} ${formattedHour}`;
 };
 
-const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: ScenariosItemProps) => {
+const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
   const dispatch = useAppDispatch();
   const { currentScenario, scenarioToCompare } = useAppSelector(scenarios);
 
@@ -74,15 +73,14 @@ const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: Scenarios
       >
         <div className="flex items-center">
           <RadioGroup.Option
-            disabled={!isComparisonAvailable}
             key={scenario.id}
             value={scenario.id}
-            className="flex justify-between flex-1 truncate items-top gap-2"
+            className="flex justify-between flex-1 gap-2 truncate items-top"
           >
             {({ checked }) => (
               <>
                 <div className="flex justify-center flex-shrink-0 items-top">
-                  {(scenario.id === ACTUAL_DATA.id || isComparisonAvailable) && (
+                  {scenario.id === ACTUAL_DATA.id && (
                     <span
                       className={classNames(
                         checked ? 'bg-primary border-transparent' : 'bg-white border-gray-200',
@@ -94,7 +92,7 @@ const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: Scenarios
                     </span>
                   )}
                 </div>
-                <div className="flex-1 pr-4 truncate space-y-2">
+                <div className="flex-1 pr-4 space-y-2 truncate">
                   <h2
                     className={classNames(
                       'text-sm font-medium truncate',
@@ -105,14 +103,14 @@ const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: Scenarios
                   </h2>
                   {scenario.id !== ACTUAL_DATA.id && (
                     <div className="flex">
-                      <div className="bg-yellow text-xs px-2 rounded-full">
+                      <div className="px-2 text-xs rounded-full bg-yellow">
                         {scenario.scenarioInterventions.length} interventions
                       </div>
                     </div>
                   )}
                   <div>
                     {scenario.id === ACTUAL_DATA.id && (
-                      <span className="text-sm text-gray-500 flex flex-row place-items-center">
+                      <span className="flex flex-row text-sm text-gray-500 place-items-center">
                         <span>
                           <DatabaseIcon className="w-4 h-4" />
                         </span>
@@ -121,8 +119,8 @@ const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: Scenarios
                     )}
 
                     {scenario.id !== ACTUAL_DATA.id && scenario.updatedAt && (
-                      <div className="flex gap-1 w-full min-w-0 flex-row justify-between place-items-center">
-                        <div className="text-gray-400 text-xs" title={updatedAt?.toLocaleString()}>
+                      <div className="flex flex-row justify-between w-full min-w-0 gap-1 place-items-center">
+                        <div className="text-xs text-gray-400" title={updatedAt?.toLocaleString()}>
                           Modified: {formattedUpdatedAgo}
                         </div>
                         <div>
@@ -140,7 +138,7 @@ const ScenarioItem = ({ scenario, isSelected, isComparisonAvailable }: Scenarios
             )}
           </RadioGroup.Option>
         </div>
-        {isComparisonAvailable && isSelected && (
+        {isSelected && (
           <div className="">
             <ScenariosComparison />
           </div>

@@ -139,42 +139,6 @@ export const useH3MaterialData = <T = H3APIResponse>(
   return query;
 };
 
-export function useH3RiskData(
-  params: Partial<RiskH3APIParams> = {},
-  options: Partial<UseQueryOptions> = {},
-): H3DataResponse {
-  const colors = useColors('risk', COLOR_RAMPS);
-  const query = useQuery(
-    ['h3-data-risk', params],
-    () =>
-      apiRawService
-        .get('/h3/map/risk', {
-          params: {
-            ...params,
-            resolution: 4,
-          },
-        })
-        .then((response) => response.data)
-        // Adding color to the response
-        .then((response) => responseParser(response, colors)),
-    {
-      ...DEFAULT_QUERY_OPTIONS,
-      ...options,
-    },
-  );
-
-  const { data, isError } = query;
-
-  return useMemo<H3DataResponse>(
-    () =>
-      ({
-        ...query,
-        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as H3APIResponse,
-      } as H3DataResponse),
-    [query, isError, data],
-  );
-}
-
 // The fetch function is the same when fetching one or more layers
 const fetchContextualLayerData: QueryFunction<
   H3APIResponse,

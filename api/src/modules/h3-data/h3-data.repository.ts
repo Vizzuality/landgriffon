@@ -102,31 +102,6 @@ export class H3DataRepository extends Repository<H3Data> {
    *
    */
 
-  /**
-   * @debt: Refactor this to use queryBuilder. Even tho all values are previously validated, this isn't right, but
-   * has been don for the time being to unblock FE. Check with Data if calculus is accurate
-   */
-  async calculateQuantiles(tmpTableName: string): Promise<number[]> {
-    try {
-      const resultArray: number[] = await getManager().query(
-        `select 0                                    as min,
-                percentile_cont(0.1667) within group (order by v) as per16,
-                percentile_cont(0.3337) within group (order by v) as per33,
-                percentile_cont(0.50) within group (order by v)   as per50,
-                percentile_cont(0.6667) within group (order by v) as per66,
-                percentile_cont(0.8337) within group (order by v) as per83,
-                percentile_cont(1) within group (order by v)      as max
-         from "${tmpTableName}"
-         where v>0
-         `,
-      );
-      return Object.values(resultArray[0]);
-    } catch (err) {
-      this.logger.error(err);
-      throw new Error(`Quantiles could not been calculated`);
-    }
-  }
-
   async getAvailableYearsForContextualLayer(yearsRequestParams: {
     layerType: LAYER_TYPES;
     h3DataIds?: string[] | null;

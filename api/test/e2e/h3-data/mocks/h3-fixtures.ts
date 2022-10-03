@@ -8,8 +8,9 @@ export const h3BasicFixture = {
 
 export const h3BasicFixtureForScaler = {
   '861203a4fffffff': 1000,
-  '861203a6fffffff': 1000,
   '861203a5fffffff': 1000,
+  '861203a6fffffff': 1000,
+  '861203a7fffffff': 1000,
 };
 
 /**

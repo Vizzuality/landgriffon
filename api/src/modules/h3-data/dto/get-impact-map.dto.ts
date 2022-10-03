@@ -25,12 +25,12 @@ export enum GROUP_BY_VALUES {
   LOCATION_TYPE = 'location-type',
 }
 
-export class GetImpactMapDto {
+class BaseGetImpactMapDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
   @Type(() => String)
-  indicatorId: string;
+  indicatorId!: string;
 
   @ApiProperty()
   @Type(() => Number)
@@ -82,15 +82,76 @@ export class GetImpactMapDto {
   )
   @Type(() => String)
   locationTypes?: LOCATION_TYPES_PARAMS[];
+}
 
+export class GetImpactMapDto extends BaseGetImpactMapDto {
   @ApiPropertyOptional({
     name: 'scenarioId',
     description:
       'The scenarioID, whose information will be included in the response. That is, ' +
       'the impact of all indicator records related to the interventions of that scenarioId, ' +
-      'will be aggregated into the response map data, along the actual data.',
+      'will be aggregated into the response map data along the actual data.',
   })
   @IsOptional()
   @IsUUID()
   scenarioId?: string;
+}
+
+export class GetActualVsScenarioImpactMapDto extends BaseGetImpactMapDto {
+  @ApiProperty({
+    name: 'comparedScenarioId',
+    description:
+      'The id of the scenario against which the actual data will be compared to.',
+  })
+  @IsUUID()
+  @IsNotEmpty()
+  comparedScenarioId!: string;
+
+  @ApiProperty({
+    name: 'relative',
+    description:
+      'Indicates whether the result will be absolute difference values (false) or relative values in percentages (true)',
+  })
+  //@IsBoolean()
+  //@Type(() => Boolean)
+  // TODO this is a provisional workaround since class-transformer has issues with boolean values
+  // Might be worth doing a ToBoolean decorator if the use is more frequent
+  //https://stackoverflow.com/questions/59046629/boolean-parameter-in-request-body-is-always-true-in-nestjs-api
+  @Transform(({ value }: { value: any }) => {
+    return [true, 'enabled', 'true', 1, '1'].indexOf(value) > -1;
+  })
+  @IsNotEmpty()
+  relative!: boolean;
+}
+
+export class GetScenarioVsScenarioImpactMapDto extends BaseGetImpactMapDto {
+  @ApiProperty({
+    name: 'baseScenarioId',
+    description:
+      'The of the scenario that will be the base for the comparison.',
+  })
+  @IsUUID()
+  @IsNotEmpty()
+  baseScenarioId!: string;
+
+  @ApiProperty({
+    name: 'comparedScenarioId',
+    description:
+      'The id of the scenario against which the base Scenario will be compared to.',
+  })
+  @IsUUID()
+  @IsNotEmpty()
+  comparedScenarioId!: string;
+
+  @ApiProperty({
+    name: 'relative',
+    description:
+      'Indicates whether the result will be absolute difference values (false) or relative values in percentages (true)',
+  })
+  // TODO see GetActualVsScenarioImpactMapDto
+  @Transform(({ value }: { value: any }) => {
+    return [true, 'enabled', 'true', 1, '1'].indexOf(value) > -1;
+  })
+  @IsNotEmpty()
+  relative!: boolean;
 }

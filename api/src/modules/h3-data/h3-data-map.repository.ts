@@ -12,7 +12,6 @@ import {
   LAYER_TYPES,
 } from 'modules/h3-data/h3-data.entity';
 import { Logger, ServiceUnavailableException } from '@nestjs/common';
-import { Indicator } from 'modules/indicators/indicator.entity';
 import {
   LOCATION_TYPES_PARAMS,
   SourcingLocation,
@@ -21,6 +20,11 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { ImpactMaterializedView } from 'modules/impact/views/impact.materialized-view.entity';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import {
+  GetActualVsScenarioImpactMapDto,
+  GetImpactMapDto,
+  GetScenarioVsScenarioImpactMapDto,
+} from 'modules/h3-data/dto/get-impact-map.dto';
 
 /**
  * @note: Column aliases are marked as 'h' and 'v' so that DB returns data in the format the consumer needs to be
@@ -120,46 +124,54 @@ export class H3DataMapRepository extends Repository<H3Data> {
     }
   }
 
-  /**
-   * @param indicator Indicator data of a Indicator
-   * @param resolution Integer value that represent the resolution which the h3 response should be calculated
-   * @param year
-   * @param materialIds
-   * @param originIds
-   * @param supplierIds
-   * @param locationTypes
-   * @param scenarioId
-   */
   async getImpactMap(
-    indicator: Indicator,
-    resolution: number,
-    year: number,
-    materialIds?: string[],
-    originIds?: string[],
-    supplierIds?: string[],
-    locationTypes?: LOCATION_TYPES_PARAMS[],
-    scenarioId?: string,
+    dto: GetImpactMapDto,
   ): Promise<{ impactMap: H3IndexValueData[]; quantiles: number[] }> {
-    const subqueryBuilder: SelectQueryBuilder<any> = getManager()
-      .createQueryBuilder()
-      .select('sl.geoRegionId', 'geoRegionId')
-      .addSelect('ir.materialH3DataId', 'materialH3DataId')
-      .addSelect('sum(ir.value/ir.scaler)', 'scaled_value')
-      .from(SourcingLocation, 'sl')
-      .leftJoin(SourcingRecord, 'sr', 'sl.id = sr.sourcingLocationId')
-      .leftJoin(IndicatorRecord, 'ir', 'sr.id = ir.sourcingRecordId')
-      .where('ABS(ir.value) > 0')
-      .andWhere('ir.scaler >= 1')
-      .andWhere('ir.indicatorId = :indicatorId', { indicatorId: indicator.id })
-      .andWhere('sr.year = :year', { year })
-      .groupBy('sl.geoRegionId')
-      .addGroupBy('ir.materialH3DataId');
+    const baseQueryExtend = (baseQuery: SelectQueryBuilder<any>): void => {
+      //Having a scenarioId present as an argument, will change the query to include
+      // *all* indicator records of the interventions pertaining to that scenario (both
+      // the CANCELLED and REPLACING records)
+      if (dto.scenarioId) {
+        baseQuery
+          .leftJoin(
+            ScenarioIntervention,
+            'si',
+            'si.id = sl.scenarioInterventionId',
+          )
+          .andWhere(
+            new Brackets((qb: WhereExpressionBuilder) => {
+              qb.where('sl.scenarioInterventionId IS NULL');
+              qb.orWhere('si.scenarioId = :scenarioId', {
+                scenarioId: dto.scenarioId,
+              });
+            }),
+          );
+      } else {
+        baseQuery.andWhere('sl.scenarioInterventionId IS NULL');
+      }
 
-    //Having a scenarioId present as an argument, will change the query to include
-    // *all* indicator records of the interventions pertaining to that scanerio (both
-    // the CANCELLED and REPLACING records)
-    if (scenarioId) {
-      subqueryBuilder
+      baseQuery.addSelect('sum(ir.value/ir.scaler)', 'scaled_value');
+    };
+
+    return await this.baseGetImpactMap(
+      dto.indicatorId,
+      dto.resolution,
+      dto.year,
+      dto.materialIds,
+      dto.originIds,
+      dto.supplierIds,
+      dto.locationTypes,
+      baseQueryExtend,
+    );
+  }
+
+  async getActualVsScenarioImpactMap(
+    dto: GetActualVsScenarioImpactMapDto,
+  ): Promise<{ impactMap: H3IndexValueData[]; quantiles: number[] }> {
+    // TODO explanation
+    const baseQueryExtend = (baseQuery: SelectQueryBuilder<any>): void => {
+      //Add selection criteria to also select both comparedScenario in the select statement
+      baseQuery
         .leftJoin(
           ScenarioIntervention,
           'si',
@@ -168,13 +180,203 @@ export class H3DataMapRepository extends Repository<H3Data> {
         .andWhere(
           new Brackets((qb: WhereExpressionBuilder) => {
             qb.where('sl.scenarioInterventionId IS NULL');
-            qb.orWhere('si.scenarioId = :scenarioId', { scenarioId });
+            qb.orWhere('si.scenarioId = :scenarioId', {
+              scenarioId: dto.comparedScenarioId,
+            });
           }),
         );
-    } else {
-      subqueryBuilder.andWhere('sl.scenarioInterventionId IS NULL');
+
+      // Add the aggregation formula
+      // Absolute: 100 * ((compared - actual)  / scaler
+      // Relative: 100 * ((compared - actual) / ((compared + actual) / 2 ) / scaler
+      const sumDataWithScenario: string = 'sum(ir.value)';
+      const sumDataWithoutScenario: string =
+        'sum(case when si."scenarioId" is null then ir.value else 0 end)';
+      let aggregateExpression: string;
+
+      if (dto.relative) {
+        // TODO "edge" case when sumDataWithoutScenario is 0, the result will always be 200%, pending to search for a more accurate formula by Elena
+        aggregateExpression = `100 * ( ${sumDataWithScenario} - ${sumDataWithoutScenario}) / ( ( ${sumDataWithScenario} + ${sumDataWithoutScenario} ) / 2 ) / ir.scaler `;
+      } else {
+        aggregateExpression = `( ${sumDataWithScenario} - ${sumDataWithoutScenario} ) / ir.scaler `;
+      }
+
+      baseQuery.addSelect(aggregateExpression, 'scaled_value');
+    };
+
+    return await this.baseGetImpactMap(
+      dto.indicatorId,
+      dto.resolution,
+      dto.year,
+      dto.materialIds,
+      dto.originIds,
+      dto.supplierIds,
+      dto.locationTypes,
+      baseQueryExtend,
+    );
+  }
+
+  async getScenarioVsScenarioImpactMap(
+    dto: GetScenarioVsScenarioImpactMapDto,
+  ): Promise<{ impactMap: H3IndexValueData[]; quantiles: number[] }> {
+    const baseQueryExtend = (baseQuery: SelectQueryBuilder<any>): void => {
+      //Add selection criteria to also select both baseScenario and comparedScenario in the select statement
+      baseQuery
+        .leftJoin(
+          ScenarioIntervention,
+          'si',
+          'si.id = sl.scenarioInterventionId',
+        )
+        .andWhere(
+          new Brackets((qb: WhereExpressionBuilder) => {
+            qb.where('sl.scenarioInterventionId IS NULL');
+            qb.orWhere('si.scenarioId IN (:...scenarioIds)', {
+              scenarioIds: [dto.baseScenarioId, dto.comparedScenarioId],
+            });
+          }),
+        );
+
+      // Add the aggregation formula
+      // Absolute: 100 * ((compared - base)  / scaler
+      // Relative: 100 * ((compared - base) / ((compared + base) / 2 ) / scaler
+      const sumDataWithBaseScenario: string = `sum(case when si."scenarioId" = '${dto.baseScenarioId}' or si."scenarioId" is null then ir.value else 0 end)`;
+      const sumDataWitComparedScenario: string = `sum(case when si."scenarioId" = '${dto.comparedScenarioId}' or si."scenarioId" is null then ir.value else 0 end)`;
+      let aggregateExpression: string;
+
+      if (dto.relative) {
+        // TODO "edge" case when sumDataWithoutScenario is 0, the result will always be 200%, pending to search for a more accurate formula by Elena
+        aggregateExpression = `100 * (${sumDataWitComparedScenario} - ${sumDataWithBaseScenario}) / ( ( ${sumDataWitComparedScenario} + ${sumDataWithBaseScenario} ) / 2 ) / ir.scaler `;
+      } else {
+        aggregateExpression = `( ${sumDataWitComparedScenario} - ${sumDataWithBaseScenario} ) / ir.scaler `;
+      }
+
+      baseQuery.addSelect(aggregateExpression, 'scaled_value');
+    };
+
+    return await this.baseGetImpactMap(
+      dto.indicatorId,
+      dto.resolution,
+      dto.year,
+      dto.materialIds,
+      dto.originIds,
+      dto.supplierIds,
+      dto.locationTypes,
+      baseQueryExtend,
+    );
+  }
+
+  // TODO absolute comparing(x) - base(y)
+  // TODO relative comparing(x) - base(y) / ((scenario(x)+base(y))/2)
+
+  /**
+   * This functions is used as a basis for all Impact functions. It builds a query with differents levels of nesting
+   * to generate the map values. The base query will be "extended" by the incoming baseQueryExtend parameter, which is
+   * a fucntion that will receive baseMapQuery so that the appropiate aggregation formulas and further selection criteria
+   * can be added
+   * @param indicatorId Indicator data of a Indicator
+   * @param resolution Integer value that represent the resolution which the h3 response should be calculated
+   * @param year
+   * @param materialIds
+   * @param originIds
+   * @param supplierIds
+   * @param locationTypes
+   * @param baseQueryExtend
+   */
+  private async baseGetImpactMap(
+    indicatorId: string,
+    resolution: number,
+    year: number,
+    materialIds?: string[],
+    originIds?: string[],
+    supplierIds?: string[],
+    locationTypes?: LOCATION_TYPES_PARAMS[],
+    baseQueryExtend?: (baseQuery: SelectQueryBuilder<any>) => void,
+  ): Promise<{ impactMap: H3IndexValueData[]; quantiles: number[] }> {
+    let baseMapQuery: SelectQueryBuilder<any> = this.generateBaseMapSubQuery(
+      indicatorId,
+      year,
+    );
+
+    baseMapQuery = this.addSmartFilters(
+      baseMapQuery,
+      materialIds,
+      supplierIds,
+      originIds,
+      locationTypes,
+    );
+
+    if (baseQueryExtend) {
+      baseQueryExtend(baseMapQuery);
     }
 
+    const aggregatedResultQuery: SelectQueryBuilder<any> =
+      this.generateAggregatedQuery(baseMapQuery);
+
+    const withDynamicResolution: SelectQueryBuilder<any> =
+      this.generateWithDynamicResolutionQuery(
+        aggregatedResultQuery,
+        resolution,
+      );
+
+    // NOTE the query structure is like this: withDynamicResolution FROM (aggregatedResult FROM (baseMapQuery))
+    // the base query, which has the most parameters, is nested as a subquery 2 levels
+    // the statement below is made with the assumption that none of the queries above baseMapQuery have any query params
+    const [queryString, params] = baseMapQuery.getQueryAndParameters();
+
+    return this.executeQueryAndQuantiles(withDynamicResolution, params);
+  }
+
+  private async executeQueryAndQuantiles(
+    query: SelectQueryBuilder<any>,
+    params: any[],
+  ): Promise<{ impactMap: H3IndexValueData[]; quantiles: number[] }> {
+    const tmpTableName: string = H3DataMapRepository.generateRandomTableName();
+    await getManager().query(
+      `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${query.getSql()})`,
+      params,
+    );
+    const impactMap: any = await getManager().query(
+      `SELECT * FROM "${tmpTableName}"
+      WHERE ABS("${tmpTableName}".v) > 0;`,
+    );
+    const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
+    await getManager().query(`DROP TABLE "${tmpTableName}";`);
+
+    this.logger.log('Impact Map generated');
+
+    return { impactMap, quantiles };
+  }
+
+  private generateBaseMapSubQuery(
+    indicatorId: string,
+    year: number,
+  ): SelectQueryBuilder<any> {
+    return (
+      getManager()
+        .createQueryBuilder()
+        .select('sl.geoRegionId', 'geoRegionId')
+        .addSelect('ir.materialH3DataId', 'materialH3DataId')
+        // ATTENTION: a suitable aggregation formula must be added via baseQueryExtend received by baseGetImpactMap
+        .from(SourcingLocation, 'sl')
+        .leftJoin(SourcingRecord, 'sr', 'sl.id = sr.sourcingLocationId')
+        .leftJoin(IndicatorRecord, 'ir', 'sr.id = ir.sourcingRecordId')
+        .where('ABS(ir.value) > 0')
+        .andWhere('ir.scaler >= 1')
+        .andWhere(`ir.indicatorId = '${indicatorId}'`)
+        .andWhere(`sr.year = ${year}`)
+        .groupBy('sl.geoRegionId')
+        .addGroupBy('ir.materialH3DataId')
+        .addGroupBy('ir.scaler')
+    );
+  }
+
+  private addSmartFilters(
+    subqueryBuilder: SelectQueryBuilder<any>,
+    materialIds?: string[],
+    supplierIds?: string[],
+    originIds?: string[],
+    locationTypes?: string[],
+  ): SelectQueryBuilder<any> {
     if (materialIds) {
       subqueryBuilder.andWhere('sl.material IN (:...materialIds)', {
         materialIds,
@@ -199,42 +401,35 @@ export class H3DataMapRepository extends Repository<H3Data> {
         locationTypes,
       });
     }
+    return subqueryBuilder;
+  }
 
-    const selectQueryBuilder: SelectQueryBuilder<any> = getManager()
+  private generateAggregatedQuery(
+    baseMapQuery: SelectQueryBuilder<any>,
+  ): SelectQueryBuilder<any> {
+    return getManager()
       .createQueryBuilder()
       .select(`impactview.h3index`, `h3index`)
       .addSelect(`sum(impactview.value * reduced.scaled_value)`, `sum`)
-      .from('(' + subqueryBuilder.getSql() + ')', 'reduced')
+      .from('(' + baseMapQuery.getSql() + ')', 'reduced')
       .leftJoin(
         ImpactMaterializedView,
         'impactview',
         '(impactview."geoRegionId" = reduced."geoRegionId" AND impactview."h3DataId" = reduced."materialH3DataId")',
       )
-      .groupBy('impactview.h3index')
-      .setParameters(subqueryBuilder.getParameters());
+      .groupBy('impactview.h3index');
+  }
 
-    const withDynamicResolution: SelectQueryBuilder<any> = getManager()
+  private generateWithDynamicResolutionQuery(
+    aggregatedResultQuery: SelectQueryBuilder<any>,
+    resolution: number,
+  ): SelectQueryBuilder<any> {
+    return getManager()
       .createQueryBuilder()
       .addSelect(`h3_to_parent(q.h3index, ${resolution})`, `h`)
       .addSelect(`round(sum(sum)::numeric, 2)`, `v`)
-      .from(`( ${selectQueryBuilder.getSql()} )`, `q`)
+      .from(`( ${aggregatedResultQuery.getSql()} )`, `q`)
       .groupBy('h');
-
-    const [queryString, params] = subqueryBuilder.getQueryAndParameters();
-
-    const tmpTableName: string = H3DataMapRepository.generateRandomTableName();
-    await getManager().query(
-      `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${withDynamicResolution.getSql()})`,
-      params,
-    );
-    const impactMap: any = await getManager().query(
-      `SELECT * FROM "${tmpTableName}"
-      WHERE "${tmpTableName}".v > 0;`,
-    );
-    const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
-    await getManager().query(`DROP TABLE "${tmpTableName}";`);
-    this.logger.log('Impact Map generated');
-    return { impactMap, quantiles };
   }
 
   /**
@@ -266,19 +461,21 @@ export class H3DataMapRepository extends Repository<H3Data> {
    */
   private async calculateQuantiles(tmpTableName: string): Promise<number[]> {
     try {
-      const resultArray: number[] = await getManager().query(
-        `select 0                                    as min,
-                percentile_cont(0.1667) within group (order by v) as per16,
-                percentile_cont(0.3337) within group (order by v) as per33,
-                percentile_cont(0.50) within group (order by v)   as per50,
-                percentile_cont(0.6667) within group (order by v) as per66,
-                percentile_cont(0.8337) within group (order by v) as per83,
-                percentile_cont(1) within group (order by v)      as max
-         from "${tmpTableName}"
-         where v>0
+      const resultArray: any[] = await getManager().query(
+        `select greatest(abs(max(v)),abs(min(v))) max_val
+            from "${tmpTableName}"
          `,
       );
-      return Object.values(resultArray[0]);
+      const maxVal: number = resultArray[0].max_val;
+      return [
+        +maxVal,
+        0.66 * maxVal,
+        0.33 * maxVal,
+        0,
+        -0.33 * maxVal,
+        -0.66 * maxVal,
+        -maxVal,
+      ];
     } catch (err) {
       this.logger.error(err);
       throw new Error(`Quantiles could not been calculated`);

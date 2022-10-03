@@ -15,7 +15,11 @@ import {
   H3DataResponse,
 } from 'modules/h3-data/dto/h3-map-response.dto';
 import { GetYearsByLayerAndMaterialsDto } from 'modules/h3-data/dto/get-years-by-layer-and-materials.dto';
-import { GetImpactMapDto } from 'modules/h3-data/dto/get-impact-map.dto';
+import {
+  GetActualVsScenarioImpactMapDto,
+  GetImpactMapDto,
+  GetScenarioVsScenarioImpactMapDto,
+} from 'modules/h3-data/dto/get-impact-map.dto';
 import { H3DataMapService } from 'modules/h3-data/h3-data-map.service';
 
 @Controller('/api/v1/h3')
@@ -118,5 +122,41 @@ export class H3DataController {
     @Query(ValidationPipe) getImpactMapDto: GetImpactMapDto,
   ): Promise<H3MapResponse> {
     return this.h3DataMapService.getImpactMapByResolution(getImpactMapDto);
+  }
+
+  @ApiOperation({
+    description:
+      'Get a calculated H3 impact map given an Indicator, Year and Resolution comparing the actual data against the given Scenario. ' +
+      ' The resulting map will contain the difference between the actual data and the given scenario data plus actual data',
+  })
+  @ApiOkResponse({
+    type: H3MapResponse,
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad Request. Incorrect or missing parameters',
+  })
+  @Get('/map/impact/compare/actual/vs/scenario')
+  async getImpactActualVsScenarioComparisonMap(
+    @Query(ValidationPipe) dto: GetActualVsScenarioImpactMapDto,
+  ): Promise<H3MapResponse> {
+    return this.h3DataMapService.getImpactMapByResolution(dto);
+  }
+
+  @ApiOperation({
+    description:
+      'Get a calculated H3 impact map given an Indicator, Year and Resolution comparing the given Scenario against another Scenario. ' +
+      ' The resulting map will contain the difference between actual data and the given base scenario data, minus the actual data and the compared Scenario',
+  })
+  @ApiOkResponse({
+    type: H3MapResponse,
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad Request. Incorrect or missing parameters',
+  })
+  @Get('/map/impact/compare/scenario/vs/scenario')
+  async getImpactScenarioVsScenarioComparisonMap(
+    @Query(ValidationPipe) dto: GetScenarioVsScenarioImpactMapDto,
+  ): Promise<H3MapResponse> {
+    return this.h3DataMapService.getImpactMapByResolution(dto);
   }
 }

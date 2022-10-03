@@ -43,10 +43,7 @@ export const useImpactData = <T = ImpactData>(
 
   const query = useQuery(
     ['impact-data', params],
-    () =>
-      apiRawService
-        .get<ImpactData>('/impact/compare/scenario/vs/actual', { params })
-        .then((response) => response.data),
+    () => apiRawService.get('/impact/table', { params }).then((response) => response.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
       ...options,

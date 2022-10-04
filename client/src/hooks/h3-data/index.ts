@@ -6,6 +6,9 @@ import useH3ContextualData from './contextual';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import type { H3APIResponse } from 'types';
 import type { MaterialH3APIParams, ImpactH3APIParams, Layer } from 'types';
+import { storeToQueryParams } from './utils';
+import { useAppSelector } from 'store/hooks';
+import { analysisFilters, scenarios } from 'store/features/analysis';
 
 interface UseH3DataProps<T> {
   id: Layer['id'];
@@ -22,6 +25,22 @@ export const useH3Data = <T = H3APIResponse>({
   const isMaterial = id === 'material';
   const isImpact = id === 'impact';
 
+  const filters = useAppSelector(analysisFilters);
+  const { currentScenario, scenarioToCompare, isComparisonEnabled } = useAppSelector(scenarios);
+
+  const impactParams = useMemo(
+    () =>
+      storeToQueryParams({
+        ...filters,
+        currentScenario,
+        scenarioToCompare,
+        isComparisonEnabled,
+        materialId,
+        startYear: year,
+      }),
+    [currentScenario, filters, isComparisonEnabled, materialId, scenarioToCompare, year],
+  );
+
   const materialParams = useMemo(() => ({ materialId }), [materialId]);
   const materialOptions = useMemo(
     () => ({ ...options, enabled: enabled && isMaterial }),
@@ -29,7 +48,6 @@ export const useH3Data = <T = H3APIResponse>({
   );
   const materialQuery = useH3MaterialData(materialParams, materialOptions);
 
-  const impactParams = useMemo(() => ({ year }), [year]);
   const impactOptions = useMemo(
     () => ({ ...options, enabled: enabled && isImpact }),
     [enabled, isImpact, options],

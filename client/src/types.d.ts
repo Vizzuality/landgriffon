@@ -56,7 +56,7 @@ export type ImpactH3APIParams = CommonH3APIParams & {
   originIds?: OriginRegion['id'][];
   supplierIds?: Supplier['id'][];
   scenarioId?: Scenario['id'];
-  locationTypes?: LocationTypes[];
+  locationTypes?: string[];
 };
 
 export type ImpactTabularAPIParams = {

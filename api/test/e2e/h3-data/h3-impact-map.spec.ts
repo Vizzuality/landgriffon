@@ -124,7 +124,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     expect(
       toBeCloseToArray(
         response.body.metadata.quantiles,
-        [1117, 737.22, 368.61, 0, -368.61, -737.22, -1117],
+        [0, 539.0078, 578.0858, 617, 783.699999, 950.7, 1117],
         5,
       ),
     ).toBeTruthy();
@@ -145,7 +145,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         expect.arrayContaining([{ h: '821207fffffffff', v: '2234.00' }]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [2234, 1474.44, 737.22, 0, -737.22, -1474.44, -2234],
+        quantiles: [0, 2234, 2234, 2234, 2234, 2234, 2234],
         unit: 'tonnes',
         indicatorDataYear: 2020,
       });
@@ -165,7 +165,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         expect.arrayContaining([{ h: '841203bffffffff', v: '2234.00' }]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [2234, 1474.44, 737.22, 0, -737.22, -1474.44, -2234],
+        quantiles: [0, 2234, 2234, 2234, 2234, 2234, 2234],
         unit: 'tonnes',
         indicatorDataYear: 2020,
       });
@@ -193,7 +193,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(
         toBeCloseToArray(
           response.body.metadata.quantiles,
-          [1117, 737.22, 368.61, 0, -368.61, -737.22, -1117],
+          [0, 539.0078, 578.0858, 617, 783.699999, 950.7, 1117],
           5,
         ),
       ).toBeTruthy();
@@ -219,7 +219,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [617, 407.22, 203.61, 0, -203.61, -407.22, -617],
+        quantiles: [0, 617, 617, 617, 617, 617, 617],
         unit: 'tonnes',
         indicatorDataYear: 2020,
         materialsH3DataYears: [
@@ -255,7 +255,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [617, 407.22, 203.61, 0, -203.61, -407.22, -617],
+        quantiles: [0, 617, 617, 617, 617, 617, 617],
         unit: 'tonnes',
         indicatorDataYear: 2020,
       });
@@ -279,7 +279,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [617, 407.22, 203.61, 0, -203.61, -407.22, -617],
+        quantiles: [0, 617, 617, 617, 617, 617, 617],
         unit: 'tonnes',
         indicatorDataYear: 2020,
       });
@@ -303,7 +303,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [617, 407.22, 203.61, 0, -203.61, -407.22, -617],
+        quantiles: [0, 617, 617, 617, 617, 617, 617],
         unit: 'tonnes',
         indicatorDataYear: 2020,
       });
@@ -327,7 +327,15 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [617, 407.22, 203.61, 0, -203.61, -407.22, -617],
+        quantiles: [
+          0,
+          +'123.40',
+          +'123.40',
+          +'123.40',
+          +'123.40',
+          +'123.40',
+          +'123.40',
+        ],
         unit: 'tonnes',
         indicatorDataYear: 2020,
       });
@@ -351,13 +359,13 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [617, 407.22, 203.61, 0, -203.61, -407.22, -617],
+        quantiles: [0, 617, 617, 617, 617, 617, 617],
         unit: 'tonnes',
         indicatorDataYear: 2020,
       });
     });
 
-    test('When I get a calculated H3 Water Impact Map with the necessary input values and Scenario Id property, then the response should include both actual data and Scenario data for the given id', async () => {
+    test('When I get a calculated H3 Water Impact Map with the necessary input values and Scenario Id property, then the response should include both actual data and Scenario data for the given id, and the quantiles should be calculated differently', async () => {
       const response = await request(app.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)

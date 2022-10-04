@@ -109,7 +109,8 @@ export class H3DataController {
 
   @ApiOperation({
     description:
-      'Get a calculated H3 impact map given an Indicator, Year and Resolution',
+      'Get a calculated H3 impact map given an Indicator, Year and Resolution. Quantile calculation will be different ' +
+      'depending on whether an scenarioId is provided',
   })
   @ApiOkResponse({
     type: H3MapResponse,
@@ -145,7 +146,7 @@ export class H3DataController {
   @ApiOperation({
     description:
       'Get a calculated H3 impact map given an Indicator, Year and Resolution comparing the given Scenario against another Scenario. ' +
-      ' The resulting map will contain the difference between actual data and the given base scenario data, minus the actual data and the compared Scenario',
+      'The resulting map will contain the difference between actual data and the given base scenario data, minus the actual data and the compared Scenario.',
   })
   @ApiOkResponse({
     type: H3MapResponse,

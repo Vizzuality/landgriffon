@@ -162,6 +162,7 @@ export class H3DataMapRepository extends Repository<H3Data> {
       dto.supplierIds,
       dto.locationTypes,
       baseQueryExtend,
+      !!dto.scenarioId,
     );
   }
 
@@ -212,6 +213,7 @@ export class H3DataMapRepository extends Repository<H3Data> {
       dto.supplierIds,
       dto.locationTypes,
       baseQueryExtend,
+      true,
     );
   }
 
@@ -261,6 +263,7 @@ export class H3DataMapRepository extends Repository<H3Data> {
       dto.supplierIds,
       dto.locationTypes,
       baseQueryExtend,
+      true,
     );
   }
 
@@ -269,7 +272,7 @@ export class H3DataMapRepository extends Repository<H3Data> {
    * to generate the map values. The base query will be "extended" by the incoming baseQueryExtend parameter, which is
    * a function that will receive baseMapQuery so that the appropriate aggregation formulas and further selection criteria
    * can be added.
-   * ATTENTION: This baseQueryExtend function add a select statement with a an aggregation formula and alias "scaled_value"
+   * ATTENTION: This baseQueryExtend function must add a select statement with an aggregation formula and alias "scaled_value"
    * @param indicatorId Indicator data of a Indicator
    * @param resolution Integer value that represent the resolution which the h3 response should be calculated
    * @param year
@@ -278,6 +281,7 @@ export class H3DataMapRepository extends Repository<H3Data> {
    * @param supplierIds
    * @param locationTypes
    * @param baseQueryExtend
+   * @param quantilesWithScenario
    */
   //TODO Pending refactoring of Quantiles temp table, and aggregation formulas
   private async baseGetImpactMap(
@@ -289,6 +293,7 @@ export class H3DataMapRepository extends Repository<H3Data> {
     supplierIds?: string[],
     locationTypes?: LOCATION_TYPES_PARAMS[],
     baseQueryExtend?: (baseQuery: SelectQueryBuilder<any>) => void,
+    quantilesWithScenario?: boolean,
   ): Promise<{ impactMap: H3IndexValueData[]; quantiles: number[] }> {
     let baseMapQuery: SelectQueryBuilder<any> = this.generateBaseMapSubQuery(
       indicatorId,
@@ -321,12 +326,17 @@ export class H3DataMapRepository extends Repository<H3Data> {
     // the statement below is made with the assumption that none of the queries above baseMapQuery have any query params
     const [queryString, params] = baseMapQuery.getQueryAndParameters();
 
-    return this.executeQueryAndQuantiles(withDynamicResolution, params);
+    return this.executeQueryAndQuantiles(
+      withDynamicResolution,
+      params,
+      quantilesWithScenario,
+    );
   }
 
   private async executeQueryAndQuantiles(
     query: SelectQueryBuilder<any>,
     params: any[],
+    quantilesWithScenario?: boolean,
   ): Promise<{ impactMap: H3IndexValueData[]; quantiles: number[] }> {
     const tmpTableName: string = H3DataMapRepository.generateRandomTableName();
     await getManager().query(
@@ -337,7 +347,9 @@ export class H3DataMapRepository extends Repository<H3Data> {
       `SELECT * FROM "${tmpTableName}"
       WHERE ABS("${tmpTableName}".v) > 0;`,
     );
-    const quantiles: number[] = await this.calculateQuantiles(tmpTableName);
+    const quantiles: number[] = await (quantilesWithScenario
+      ? this.calculateQuantilesWithScenario(tmpTableName)
+      : this.calculateQuantiles(tmpTableName));
     await getManager().query(`DROP TABLE "${tmpTableName}";`);
 
     this.logger.log('Impact Map generated');
@@ -458,6 +470,31 @@ export class H3DataMapRepository extends Repository<H3Data> {
    * has been don for the time being to unblock FE. Check with Data if calculus is accurate
    */
   private async calculateQuantiles(tmpTableName: string): Promise<number[]> {
+    try {
+      const resultArray: number[] = await getManager().query(
+        `select 0                                    as min,
+                percentile_cont(0.1667) within group (order by v) as per16,
+                percentile_cont(0.3337) within group (order by v) as per33,
+                percentile_cont(0.50) within group (order by v)   as per50,
+                percentile_cont(0.6667) within group (order by v) as per66,
+                percentile_cont(0.8337) within group (order by v) as per83,
+                percentile_cont(1) within group (order by v)      as max
+         from "${tmpTableName}"
+         where v>0
+         `,
+      );
+      return Object.values(resultArray[0]);
+    } catch (err) {
+      this.logger.error(err);
+      throw new Error(`Quantiles could not been calculated`);
+    }
+  }
+  /**
+   * This quantile calculation is meant to be used only for comparison maps, and impact maps with scenarios
+   */
+  private async calculateQuantilesWithScenario(
+    tmpTableName: string,
+  ): Promise<number[]> {
     try {
       const resultArray: any[] = await getManager().query(
         `select greatest(abs(max(v)),abs(min(v))) max_val

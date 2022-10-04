@@ -11,6 +11,10 @@ import TitleTemplate from 'utils/titleTemplate';
 import type { NextPageWithLayout } from 'pages/_app';
 import type { ReactElement } from 'react';
 
+export const getServerSideProps = ({ query }) => {
+  return { props: { query } };
+};
+
 const TablePage: NextPageWithLayout = () => {
   const dispatch = useAppDispatch();
 

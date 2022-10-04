@@ -7,8 +7,6 @@ import { NUMBER_FORMAT } from 'utils/number-format';
 import { COLOR_RAMPS } from 'utils/colors';
 
 import type { LegendItem as LegendItemProp } from 'types';
-import { scenarios } from 'store/features/analysis';
-import { ACTUAL_DATA } from 'containers/scenarios/constants';
 import useH3ImpactData from 'hooks/h3-data/impact';
 import useH3ComparisonData from 'hooks/h3-data/impact/comparison';
 import { scenarios } from 'store/features/analysis';
@@ -18,24 +16,14 @@ const LAYER_ID = 'impact'; // should match with redux
 
 export const useImpactLayer = () => {
   const dispatch = useAppDispatch();
-<<<<<<< HEAD
-  const { indicator, startYear } = useAppSelector(analysisFilters);
-  const { currentScenario: scenarioId } = useAppSelector(scenarios);
-=======
   const filters = useAppSelector(analysisFilters);
   const { currentScenario, scenarioToCompare, isComparisonEnabled, comparisonMode } =
     useAppSelector(scenarios);
 
->>>>>>> 0d83774c (Show comparison data in map)
   const {
     layers: { [LAYER_ID]: impactLayer },
   } = useAppSelector(analysisMap);
 
-<<<<<<< HEAD
-  const query = useH3ImpactData({
-    scenarioId: scenarioId === ACTUAL_DATA.id ? undefined : scenarioId,
-  });
-=======
   const params = useMemo(
     () =>
       storeToQueryParams({
@@ -63,7 +51,6 @@ export const useImpactLayer = () => {
 
   const query = isComparisonEnabled ? comparisonQuery : normalQuery;
 
->>>>>>> 0d83774c (Show comparison data in map)
   const { data, isSuccess, isFetched } = query;
 
   // Populating legend

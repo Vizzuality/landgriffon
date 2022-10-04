@@ -22,6 +22,7 @@ import CustomLegend from './legend';
 import CustomTooltip from './tooltip';
 
 import type { Indicator } from 'types';
+import { ACTUAL_DATA } from 'containers/scenarios/constants';
 
 type StackedAreaChartProps = {
   indicator: Indicator;
@@ -46,7 +47,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
   const params = {
     ...omit(filters, 'indicatorId'),
     indicatorIds: [indicator.id],
-    scenarioId: scenarioToCompare,
+    scenarioId: scenarioToCompare === ACTUAL_DATA.id ? undefined : scenarioToCompare,
     disabledPagination: true,
   };
 

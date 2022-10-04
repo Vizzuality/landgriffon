@@ -10,17 +10,22 @@ import { NUMBER_FORMAT } from 'utils/number-format';
 import { COLOR_RAMPS } from 'utils/colors';
 
 import type { LegendItem as LegendItemProp } from 'types';
+import { scenarios } from 'store/features/analysis';
+import { ACTUAL_DATA } from 'containers/scenarios/constants';
 
 const LAYER_ID = 'impact'; // should match with redux
 
 export const useImpactLayer = () => {
   const dispatch = useAppDispatch();
   const { indicator, startYear } = useAppSelector(analysisFilters);
+  const { currentScenario: scenarioId } = useAppSelector(scenarios);
   const {
     layers: { [LAYER_ID]: impactLayer },
   } = useAppSelector(analysisMap);
 
-  const query = useH3ImpactData();
+  const query = useH3ImpactData({
+    scenarioId: scenarioId === ACTUAL_DATA.id ? undefined : scenarioId,
+  });
   const { data, isSuccess, isFetched } = query;
 
   // Populating legend

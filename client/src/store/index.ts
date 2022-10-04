@@ -116,7 +116,7 @@ const getPreloadedState = (query = {}) => {
 };
 
 // Custom middleware to sync URL params and the store
-const querySyncMiddleware: Middleware = () => (next) => async (action) => {
+const querySyncMiddleware: Middleware = () => (next) => (action) => {
   const { query, isReady } = router;
 
   if (!isReady) return next(action);

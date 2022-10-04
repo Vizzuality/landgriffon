@@ -28,14 +28,10 @@ export interface TableProps<T>
 }
 
 const columnToColumnDef = <T,>(
-  {
-    align,
-    isSticky = false,
-    cell = ({ row: { original } }) => original[column.id],
-    ...column
-  }: ColumnDefinition<T>,
+  { align, isSticky = false, ...column }: ColumnDefinition<T>,
   columnHelper: ColumnHelper<T>,
 ) => {
+  const cell = column.cell ?? (({ row: { original } }) => original[column.id]);
   return columnHelper.display({
     ...column,
     cell,

@@ -14,9 +14,15 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { NewMaterialIntervention } from 'modules/scenario-interventions/strategies/new-material.intervention.strategy';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
-import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
+import {
+  IndicatorCoefficientsDto,
+  IndicatorCoefficientsDtoV2,
+} from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
 import { NewSupplierLocationIntervention } from 'modules/scenario-interventions/strategies/new-supplier-location.intervention.strategy';
 import { ChangeProductionEfficiencyIntervention } from 'modules/scenario-interventions/strategies/change-production-efficiency.intervention.strategy';
+import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
+import * as config from 'config';
+const useNewMethodology: boolean = config.get('newMethodology') === 'true';
 
 /**
  * @description: This service consumes a previously created Intervention instance and takes care of building the full entity
@@ -34,6 +40,7 @@ export class InterventionBuilder {
     protected readonly indicatorRecordService: IndicatorRecordsService,
     protected readonly newSupplierLocationIntervention: NewSupplierLocationIntervention,
     protected readonly changeProductionEfficiencyIntervention: ChangeProductionEfficiencyIntervention,
+    protected readonly impactCalculator: ImpactCalculator,
   ) {}
 
   async addDescendantsEntitiesForFiltering(
@@ -194,17 +201,22 @@ export class InterventionBuilder {
   ): Promise<ScenarioIntervention> {
     for (const sourcingLocation of newSourcingLocations) {
       for await (const sourcingRecord of sourcingLocation.sourcingRecords) {
-        sourcingRecord.indicatorRecords =
-          await this.indicatorRecordService.createIndicatorRecordsBySourcingRecords(
-            {
-              sourcingRecordId: sourcingRecord.id,
-              tonnage: sourcingRecord.tonnage,
-              geoRegionId: sourcingLocation.geoRegionId,
-              materialId: sourcingLocation.materialId,
-              year: sourcingRecord.year,
-            },
-            newIndicatorCoefficients,
-          );
+        const sourcingData: any = {
+          sourcingRecordId: sourcingRecord.id,
+          tonnage: sourcingRecord.tonnage,
+          geoRegionId: sourcingLocation.geoRegionId,
+          materialId: sourcingLocation.materialId,
+          year: sourcingRecord.year,
+        };
+        sourcingRecord.indicatorRecords = useNewMethodology
+          ? await this.impactCalculator.createIndicatorRecordsBySourcingRecords(
+              sourcingData,
+              newIndicatorCoefficients as unknown as IndicatorCoefficientsDtoV2,
+            )
+          : await this.indicatorRecordService.createIndicatorRecordsBySourcingRecords(
+              sourcingData,
+              newIndicatorCoefficients,
+            );
       }
     }
 

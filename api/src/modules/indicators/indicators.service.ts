@@ -6,6 +6,7 @@ import {
 } from 'utils/app-base.service';
 import {
   Indicator,
+  INDICATOR_STATUS,
   INDICATOR_TYPES,
   indicatorResource,
 } from 'modules/indicators/indicator.entity';
@@ -14,8 +15,9 @@ import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto';
 import { UpdateIndicatorDto } from 'modules/indicators/dto/update.indicator.dto';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
-import { getManager } from 'typeorm';
+import { getManager, SelectQueryBuilder } from 'typeorm';
 import { IndicatorNameCodeWithRelatedH3 } from 'modules/indicators/dto/indicator-namecode-with-related-h3.dto';
+import { FetchSpecification } from 'nestjs-base-service';
 
 @Injectable()
 export class IndicatorsService extends AppBaseService<
@@ -54,6 +56,7 @@ export class IndicatorsService extends AppBaseService<
   async getIndicatorById(id: string): Promise<Indicator> {
     const found: Indicator | undefined = await this.indicatorRepository.findOne(
       id,
+      { where: { status: INDICATOR_STATUS.ACTIVE } },
     );
 
     if (!found) {
@@ -96,6 +99,7 @@ export class IndicatorsService extends AppBaseService<
   async getIndicatorsById(ids: string[]): Promise<Indicator[]> {
     const indicators: Indicator[] = await this.indicatorRepository.findByIds(
       ids,
+      { where: { status: INDICATOR_STATUS.ACTIVE } },
     );
     if (!indicators.length) {
       throw new NotFoundException(
@@ -108,6 +112,7 @@ export class IndicatorsService extends AppBaseService<
   async findAllUnpaginated(): Promise<Indicator[]> {
     return this.indicatorRepository.find({
       cache: 1000,
+      where: { status: INDICATOR_STATUS.ACTIVE },
     });
   }
 
@@ -131,5 +136,15 @@ export class IndicatorsService extends AppBaseService<
       );
     }
     return indicators;
+  }
+
+  async extendFindAllQuery(
+    queryBuilder: SelectQueryBuilder<Indicator>,
+    fetchSpecificacion: FetchSpecification,
+  ): Promise<SelectQueryBuilder<Indicator>> {
+    queryBuilder.andWhere(`${this.alias}.status = :status`, {
+      status: INDICATOR_STATUS.ACTIVE,
+    });
+    return queryBuilder;
   }
 }

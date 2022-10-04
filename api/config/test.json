@@ -25,5 +25,7 @@
   },
   "geolocation": {
     "gmapsApiKey": "myVeryBadJWTSecretForTests"
-  }
+  },
+
+  "newMethodology": "false"
 }

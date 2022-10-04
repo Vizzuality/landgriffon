@@ -3,7 +3,10 @@
  * on the fly
  * @note: This could be probably done within the DB in the future
  */
-import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
+import {
+  INDICATOR_TYPES,
+  INDICATOR_TYPES_NEW,
+} from 'modules/indicators/indicator.entity';
 
 export class IndicatorRecordCalculatedValuesDto {
   sourcingRecordId: string;
@@ -13,4 +16,14 @@ export class IndicatorRecordCalculatedValuesDto {
   landPerTon: number;
   landUse: number;
   values: Map<INDICATOR_TYPES, number>;
+}
+
+export class IndicatorRecordCalculatedValuesDtoV2 {
+  sourcingRecordId: string;
+  production: number;
+  materialH3DataId: string;
+
+  landPerTon: number;
+  landUse: number;
+  values: Map<INDICATOR_TYPES_NEW, number>;
 }

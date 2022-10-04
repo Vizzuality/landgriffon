@@ -70,9 +70,8 @@ jest.mock('config', () => {
   };
   return config;
 });
-// TODO: Skipped tests due to hardcoded Indicator h3 table and column names in stored procedures. If the new Indicator Record calc approach gets validated,
-//       Make improve said procedures by getting Indicator h3 data by Indicator Id and restore tests
-describe('Sourcing Data import', () => {
+// TODO: Restore when new methodology validated
+describe.skip('Sourcing Data import', () => {
   /**
    * @note: We are currently ignoring '#N/A' location type values in production code
    * so this mock filters them to avoid DB constraint errors for not be one of the allowed

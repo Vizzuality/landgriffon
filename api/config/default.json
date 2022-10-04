@@ -66,5 +66,6 @@
 
   "map": {
     "distributed": true
-  }
+  },
+  "newMethodology": false
 }

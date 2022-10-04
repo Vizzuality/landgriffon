@@ -19,6 +19,19 @@ export enum INDICATOR_STATUS {
   DELETED = 'deleted',
 }
 
+// TODO: Enum for new updated LG methodology
+export enum INDICATOR_TYPES_NEW {
+  LAND_USE = 'LI',
+  DEFORESTATION_RISK = 'DF_LUC_T',
+  CLIMATE_RISK = 'GHG_LUC_T',
+  WATER_USE = 'UWU_T',
+  UNSUSTAINABLE_WATER_USE = 'UWUSR_T',
+
+  //GREENHOUSE_GAS_EMISSIONS = 'GHG',
+  //SPECIES_LOSS = 'BL_LUC_S',
+  //ECOSYSTEM_LOSS = 'BL_LUC_E',
+}
+
 export enum INDICATOR_TYPES {
   BIODIVERSITY_LOSS = 'BL_LUC_T',
   UNSUSTAINABLE_WATER_USE = 'UWU_T',
@@ -64,7 +77,7 @@ export class Indicator extends BaseEntity {
     type: 'enum',
     enum: INDICATOR_STATUS,
     enumName: 'indicatorStatus',
-    default: INDICATOR_STATUS.INACTIVE,
+    default: INDICATOR_STATUS.ACTIVE,
   })
   @ApiProperty()
   status!: INDICATOR_STATUS;

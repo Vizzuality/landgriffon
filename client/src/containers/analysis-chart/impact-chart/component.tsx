@@ -21,6 +21,8 @@ import LegendChart from './legend';
 
 import type { Indicator } from 'types';
 import { useAppSelector } from 'store/hooks';
+import { scenarios } from 'store/features/analysis';
+import { ACTUAL_DATA } from 'containers/scenarios/constants';
 
 type StackedAreaChartProps = {
   indicator: Indicator;
@@ -30,12 +32,14 @@ const COLOR_SCALE = chroma.scale(['#2D7A5B', '#39A163', '#9AC864', '#D9E77F', '#
 
 const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
   const filters = useAppSelector(filtersForTabularAPI);
+  const { currentScenario: scenarioId } = useAppSelector(scenarios);
 
   const params = {
     maxRankingEntities: 5,
     sort: 'DES',
     ...omit(filters, 'indicatorId'),
     indicatorIds: [indicator.id],
+    scenarioId: scenarioId === ACTUAL_DATA.id ? undefined : scenarioId,
   };
 
   const enabled =

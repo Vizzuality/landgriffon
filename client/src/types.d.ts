@@ -1,4 +1,5 @@
 import type { ComparisonCellProps } from 'containers/analysis-visualization/analysis-table/comparison-cell/component';
+import type { Scenario } from 'containers/scenarios/types';
 
 export type RGBColor = [number, number, number];
 
@@ -49,10 +50,11 @@ export type WaterH3APIParams = MaterialH3APIParams & {
 };
 
 export type ImpactH3APIParams = CommonH3APIParams & {
-  indicatorId: string;
-  materialIds?: string[];
-  originIds?: string[];
-  supplierIds?: string[];
+  indicatorId: Indicator['id'];
+  materialIds?: Material['id'][];
+  originIds?: OriginRegion['id'][];
+  supplierIds?: Supplier['id'][];
+  scenarioId?: Scenario['id'];
 };
 
 export type ImpactTabularAPIParams = {
@@ -64,6 +66,7 @@ export type ImpactTabularAPIParams = {
   originIds?: string[];
   supplierIds?: string[];
   locationTypes?: string[];
+  scenarioId?: string;
 };
 
 type Unit = {

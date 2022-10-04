@@ -168,7 +168,6 @@ export class H3DataMapRepository extends Repository<H3Data> {
   async getActualVsScenarioImpactMap(
     dto: GetActualVsScenarioImpactMapDto,
   ): Promise<{ impactMap: H3IndexValueData[]; quantiles: number[] }> {
-    // TODO explanation
     const baseQueryExtend = (baseQuery: SelectQueryBuilder<any>): void => {
       //Add selection criteria to also select both comparedScenario in the select statement
       baseQuery
@@ -187,7 +186,7 @@ export class H3DataMapRepository extends Repository<H3Data> {
         );
 
       // Add the aggregation formula
-      // Absolute: 100 * ((compared - actual)  / scaler
+      // Absolute: ((compared - actual)  / scaler
       // Relative: 100 * ((compared - actual) / ((compared + actual) / 2 ) / scaler
       const sumDataWithScenario: string = 'sum(ir.value)';
       const sumDataWithoutScenario: string =
@@ -237,7 +236,7 @@ export class H3DataMapRepository extends Repository<H3Data> {
         );
 
       // Add the aggregation formula
-      // Absolute: 100 * ((compared - base)  / scaler
+      // Absolute: ((compared - base)  / scaler
       // Relative: 100 * ((compared - base) / ((compared + base) / 2 ) / scaler
       const sumDataWithBaseScenario: string = `sum(case when si."scenarioId" = '${dto.baseScenarioId}' or si."scenarioId" is null then ir.value else 0 end)`;
       const sumDataWitComparedScenario: string = `sum(case when si."scenarioId" = '${dto.comparedScenarioId}' or si."scenarioId" is null then ir.value else 0 end)`;
@@ -265,14 +264,12 @@ export class H3DataMapRepository extends Repository<H3Data> {
     );
   }
 
-  // TODO absolute comparing(x) - base(y)
-  // TODO relative comparing(x) - base(y) / ((scenario(x)+base(y))/2)
-
   /**
-   * This functions is used as a basis for all Impact functions. It builds a query with differents levels of nesting
+   * This functions is used as a basis for all Impact functions. It builds a query with different levels of nesting
    * to generate the map values. The base query will be "extended" by the incoming baseQueryExtend parameter, which is
-   * a fucntion that will receive baseMapQuery so that the appropiate aggregation formulas and further selection criteria
-   * can be added
+   * a function that will receive baseMapQuery so that the appropriate aggregation formulas and further selection criteria
+   * can be added.
+   * ATTENTION: This baseQueryExtend function add a select statement with a an aggregation formula and alias "scaled_value"
    * @param indicatorId Indicator data of a Indicator
    * @param resolution Integer value that represent the resolution which the h3 response should be calculated
    * @param year
@@ -282,6 +279,7 @@ export class H3DataMapRepository extends Repository<H3Data> {
    * @param locationTypes
    * @param baseQueryExtend
    */
+  //TODO Pending refactoring of Quantiles temp table, and aggregation formulas
   private async baseGetImpactMap(
     indicatorId: string,
     resolution: number,

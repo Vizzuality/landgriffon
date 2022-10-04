@@ -29,6 +29,8 @@ import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-
 import { TasksService } from 'modules/tasks/tasks.service';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { ScenariosService } from 'modules/scenarios/scenarios.service';
+import * as config from 'config';
+const useNewMethodology: boolean = config.get('newMethodology') === 'true';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -141,7 +143,12 @@ export class SourcingDataImportService {
       //       Getting H3 data for calculations is done within DB so we need to improve the error handling
       //       TBD: What to do when there is no H3 for a Material
       try {
-        await this.indicatorRecordsService.createIndicatorRecordsForAllSourcingRecords();
+        if (useNewMethodology) {
+          await this.indicatorRecordsService.calculateImpactWithNewMethodology();
+        } else {
+          await this.indicatorRecordsService.createIndicatorRecordsForAllSourcingRecords();
+        }
+
         this.logger.log('Indicator Records generated');
         // TODO: Hack to force m.view refresh once Indicator Records are persisted. This should be automagically
         //       done by the AfterInsert() event listener placed in indicator-record.entity.ts

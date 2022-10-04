@@ -23,9 +23,7 @@ import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
-import * as config from 'config';
 import { H3DataYearsService } from 'modules/h3-data/services/h3-data-years.service';
-import { SourcingRecordDataForImpact } from 'modules/sourcing-records/sourcing-records.service';
 import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import { IndicatorRecordCalculatedValuesDto } from 'modules/indicator-records/dto/indicator-record-calculated-values.dto';
 import { IndicatorNameCodeWithRelatedH3 } from 'modules/indicators/dto/indicator-namecode-with-related-h3.dto';
@@ -36,6 +34,7 @@ import {
   CACHED_DATA_TYPE,
   CachedData,
 } from 'modules/cached-data/cached.data.entity';
+import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 
 export interface CachedRawValue {
   rawValue: number;
@@ -52,6 +51,7 @@ export class IndicatorRecordsService extends AppBaseService<
     @InjectRepository(IndicatorRecordRepository)
     private readonly indicatorRecordRepository: IndicatorRecordRepository,
     private readonly indicatorService: IndicatorsService,
+    private readonly impactCalculator: ImpactCalculator,
     private readonly h3DataService: H3DataService,
     private readonly materialsToH3sService: MaterialsToH3sService,
     private readonly h3DataYearsService: H3DataYearsService,
@@ -78,61 +78,6 @@ export class IndicatorRecordsService extends AppBaseService<
       ],
       keyForAttribute: 'camelCase',
     };
-  }
-
-  private async getH3DataForSourcingRecord(
-    sourcingRecord: SourcingRecordDataForImpact,
-    type: MATERIAL_TO_H3_TYPE,
-  ): Promise<H3Data | null> {
-    let h3Table: H3Data | undefined =
-      await this.materialsToH3sService.findH3DataForMaterial({
-        materialId: sourcingRecord.materialId,
-        year: sourcingRecord.year,
-        type,
-      });
-
-    if (h3Table) {
-      return h3Table;
-    }
-
-    switch (config.get('import.missingDataFallbackStrategy')) {
-      case 'ignore':
-        this.logger.log(
-          `Cannot calculate impact for sourcing record - missing ${type} h3 data for material with ID "${sourcingRecord.materialId}" and year "${sourcingRecord.year}". Ignoring sourcing record`,
-        );
-        return null;
-      case 'fallback':
-        this.logger.debug(
-          `Missing ${type} h3 data for material with ID "${sourcingRecord.materialId}" and year "${sourcingRecord.year}". Falling back to different year`,
-        );
-        const h3DataYearToApply: number | undefined =
-          await this.h3DataYearsService.getClosestAvailableYearForMaterialH3(
-            sourcingRecord.materialId,
-            type,
-            sourcingRecord.year,
-          );
-        h3Table = await this.materialsToH3sService.findH3DataForMaterial({
-          materialId: sourcingRecord.materialId,
-          year: h3DataYearToApply,
-          type,
-        });
-        if (!h3Table) {
-          throw new MissingH3DataError(
-            `Cannot calculate impact for sourcing record - missing ${type} h3 data for material with ID "${sourcingRecord.materialId}" with year fallback strategy`,
-          );
-        }
-        return h3Table;
-      case 'error':
-        throw new MissingH3DataError(
-          `Cannot calculate impact for sourcing record - missing ${type} h3 data for material with ID "${sourcingRecord.materialId}" and year "${sourcingRecord.year}"`,
-        );
-      default:
-        throw new Error(
-          `Invalid missingDataFallbackStrategy strategy "${config.get(
-            'import.missingDataFallbackStrategy',
-          )}"`,
-        );
-    }
   }
 
   async getIndicatorRecordById(id: number): Promise<IndicatorRecord> {
@@ -621,5 +566,9 @@ export class IndicatorRecordsService extends AppBaseService<
       indicatorH3Ids: maoToMinifiedEntryArray(indicatorH3s),
       materialH3Ids: maoToMinifiedEntryArray(materialH3s),
     };
+  }
+
+  async calculateImpactWithNewMethodology(): Promise<void> {
+    return this.impactCalculator.calculateImpactForAllSourcingRecords();
   }
 }

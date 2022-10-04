@@ -15,6 +15,10 @@ import { InterventionBuilder } from 'modules/scenario-interventions/services/int
 import { NewMaterialIntervention } from 'modules/scenario-interventions/strategies/new-material.intervention.strategy';
 import { NewSupplierLocationIntervention } from 'modules/scenario-interventions/strategies/new-supplier-location.intervention.strategy';
 import { ChangeProductionEfficiencyIntervention } from 'modules/scenario-interventions/strategies/change-production-efficiency.intervention.strategy';
+import * as config from 'config';
+import { ScenarioInterventionsControllerV2 } from 'modules/scenario-interventions/interventions-controller-v2.controller';
+
+const useNewMethodology: boolean = config.get('newMethodology') === 'true';
 
 @Module({
   imports: [
@@ -27,7 +31,11 @@ import { ChangeProductionEfficiencyIntervention } from 'modules/scenario-interve
     AdminRegionsModule,
     SuppliersModule,
   ],
-  controllers: [ScenarioInterventionsController],
+  controllers: [
+    ...(useNewMethodology
+      ? [ScenarioInterventionsControllerV2]
+      : [ScenarioInterventionsController]),
+  ],
   providers: [
     ScenarioInterventionsService,
     InterventionBuilder,

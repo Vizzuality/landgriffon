@@ -91,7 +91,7 @@ export class H3DataMapService {
       | GetActualVsScenarioImpactMapDto
       | GetScenarioVsScenarioImpactMapDto,
   ): Promise<H3MapResponse> {
-    const { indicatorH3Data, indicator } = await this.loadIndicatorData(
+    const { indicator } = await this.loadIndicatorData(
       getImpactMapDto.indicatorId,
     );
 
@@ -127,23 +127,13 @@ export class H3DataMapService {
       impactMap.impactMap,
       impactMap.quantiles,
       indicator,
-      indicatorH3Data,
       materialsH3DataYears,
     );
   }
 
   private async loadIndicatorData(indicatorId: string): Promise<{
-    indicatorH3Data: H3Data;
     indicator: Indicator;
   }> {
-    const indicatorH3Data: H3Data | undefined =
-      await this.h3DataRepository.findOne({ where: { indicatorId } });
-
-    if (!indicatorH3Data)
-      throw new NotFoundException(
-        `There is no H3 Data for Indicator with ID: ${indicatorId}`,
-      );
-
     const indicator: Indicator = await this.indicatorService.getIndicatorById(
       indicatorId,
     );
@@ -154,7 +144,7 @@ export class H3DataMapService {
       );
     }
 
-    return { indicatorH3Data, indicator };
+    return { indicator };
   }
 
   private async updateDtoEntityDescendants(
@@ -224,7 +214,6 @@ export class H3DataMapService {
     impactMap: H3IndexValueData[],
     quantiles: number[],
     indicator: Indicator,
-    indicatorH3Data: H3Data,
     materialsH3DataYears: MaterialsH3DataYears[],
   ): H3MapResponse {
     return {
@@ -232,7 +221,6 @@ export class H3DataMapService {
       metadata: {
         quantiles: quantiles,
         unit: indicator.unit.symbol,
-        indicatorDataYear: indicatorH3Data.year,
         ...(materialsH3DataYears.length ? { materialsH3DataYears } : {}),
       },
     };

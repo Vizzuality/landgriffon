@@ -120,7 +120,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       ]),
     );
     expect(response.body.metadata.unit).toEqual('tonnes');
-    expect(response.body.metadata.indicatorDataYear).toEqual(2020);
     expect(
       toBeCloseToArray(
         response.body.metadata.quantiles,
@@ -147,7 +146,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(response.body.metadata).toEqual({
         quantiles: [0, 2234, 2234, 2234, 2234, 2234, 2234],
         unit: 'tonnes',
-        indicatorDataYear: 2020,
       });
     });
 
@@ -167,7 +165,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(response.body.metadata).toEqual({
         quantiles: [0, 2234, 2234, 2234, 2234, 2234, 2234],
         unit: 'tonnes',
-        indicatorDataYear: 2020,
       });
     });
 
@@ -189,7 +186,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         ]),
       );
       expect(response.body.metadata.unit).toEqual('tonnes');
-      expect(response.body.metadata.indicatorDataYear).toEqual(2020);
       expect(
         toBeCloseToArray(
           response.body.metadata.quantiles,
@@ -221,7 +217,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(response.body.metadata).toEqual({
         quantiles: [0, 617, 617, 617, 617, 617, 617],
         unit: 'tonnes',
-        indicatorDataYear: 2020,
         materialsH3DataYears: [
           {
             materialDataType: 'harvest',
@@ -257,7 +252,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(response.body.metadata).toEqual({
         quantiles: [0, 617, 617, 617, 617, 617, 617],
         unit: 'tonnes',
-        indicatorDataYear: 2020,
       });
     });
 
@@ -281,7 +275,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(response.body.metadata).toEqual({
         quantiles: [0, 617, 617, 617, 617, 617, 617],
         unit: 'tonnes',
-        indicatorDataYear: 2020,
       });
     });
 
@@ -305,7 +298,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(response.body.metadata).toEqual({
         quantiles: [0, 617, 617, 617, 617, 617, 617],
         unit: 'tonnes',
-        indicatorDataYear: 2020,
       });
     });
 
@@ -329,7 +321,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(response.body.metadata).toEqual({
         quantiles: [0, 617, 617, 617, 617, 617, 617],
         unit: 'tonnes',
-        indicatorDataYear: 2020,
       });
     });
 
@@ -353,7 +344,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(response.body.metadata).toEqual({
         quantiles: [0, 617, 617, 617, 617, 617, 617],
         unit: 'tonnes',
-        indicatorDataYear: 2020,
       });
     });
 
@@ -381,7 +371,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       );
       expect(response.body.metadata).toBeDefined();
       expect(response.body.metadata.unit).toEqual('tonnes');
-      expect(response.body.metadata.indicatorDataYear).toEqual(2020);
       expect(
         toBeCloseToArray(
           response.body.metadata.quantiles,
@@ -417,7 +406,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       );
       expect(response.body.metadata).toBeDefined();
       expect(response.body.metadata.unit).toEqual('tonnes');
-      expect(response.body.metadata.indicatorDataYear).toEqual(2020);
       expect(
         toBeCloseToArray(
           response.body.metadata.quantiles,
@@ -452,7 +440,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       );
       expect(response.body.metadata).toBeDefined();
       expect(response.body.metadata.unit).toEqual('tonnes');
-      expect(response.body.metadata.indicatorDataYear).toEqual(2020);
       expect(
         toBeCloseToArray(
           response.body.metadata.quantiles,
@@ -491,7 +478,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       );
       expect(response.body.metadata).toBeDefined();
       expect(response.body.metadata.unit).toEqual('tonnes');
-      expect(response.body.metadata.indicatorDataYear).toEqual(2020);
       expect(
         toBeCloseToArray(
           response.body.metadata.quantiles,
@@ -528,7 +514,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       );
       expect(response.body.metadata).toBeDefined();
       expect(response.body.metadata.unit).toEqual('tonnes');
-      expect(response.body.metadata.indicatorDataYear).toEqual(2020);
       expect(
         toBeCloseToArray(
           response.body.metadata.quantiles,

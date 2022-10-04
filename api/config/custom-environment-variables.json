@@ -58,5 +58,6 @@
   },
   "map": {
     "distributed": "DISTRIBUTED_MAP"
-  }
+  },
+  "newMethodology": "USE_NEW_METHODOLOGY"
 }

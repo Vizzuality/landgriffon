@@ -1,4 +1,5 @@
 import type { ComparisonCellProps } from 'containers/analysis-visualization/analysis-table/comparison-cell/component';
+import type { LocationTypes } from 'containers/interventions/enums';
 import type { Scenario } from 'containers/scenarios/types';
 
 export type RGBColor = [number, number, number];
@@ -55,6 +56,7 @@ export type ImpactH3APIParams = CommonH3APIParams & {
   originIds?: OriginRegion['id'][];
   supplierIds?: Supplier['id'][];
   scenarioId?: Scenario['id'];
+  locationTypes?: LocationTypes[];
 };
 
 export type ImpactTabularAPIParams = {

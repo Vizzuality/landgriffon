@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
@@ -10,20 +10,60 @@ import type { LegendItem as LegendItemProp } from 'types';
 import { scenarios } from 'store/features/analysis';
 import { ACTUAL_DATA } from 'containers/scenarios/constants';
 import useH3ImpactData from 'hooks/h3-data/impact';
+import useH3ComparisonData from 'hooks/h3-data/impact/comparison';
+import { scenarios } from 'store/features/analysis';
+import { storeToQueryParams } from 'hooks/h3-data/utils';
 
 const LAYER_ID = 'impact'; // should match with redux
 
 export const useImpactLayer = () => {
   const dispatch = useAppDispatch();
+<<<<<<< HEAD
   const { indicator, startYear } = useAppSelector(analysisFilters);
   const { currentScenario: scenarioId } = useAppSelector(scenarios);
+=======
+  const filters = useAppSelector(analysisFilters);
+  const { currentScenario, scenarioToCompare, isComparisonEnabled, comparisonMode } =
+    useAppSelector(scenarios);
+
+>>>>>>> 0d83774c (Show comparison data in map)
   const {
     layers: { [LAYER_ID]: impactLayer },
   } = useAppSelector(analysisMap);
 
+<<<<<<< HEAD
   const query = useH3ImpactData({
     scenarioId: scenarioId === ACTUAL_DATA.id ? undefined : scenarioId,
   });
+=======
+  const params = useMemo(
+    () =>
+      storeToQueryParams({
+        ...filters,
+        currentScenario,
+        scenarioToCompare,
+        isComparisonEnabled,
+      }),
+    [currentScenario, filters, isComparisonEnabled, scenarioToCompare],
+  );
+
+  const { indicator } = filters;
+  const { year } = params;
+
+  const normalQuery = useH3ImpactData(params, { enabled: !isComparisonEnabled });
+  const comparisonQuery = useH3ComparisonData(
+    {
+      ...params,
+      baseScenarioId: params.scenarioId,
+      comparedScenarioId: scenarioToCompare,
+      relative: comparisonMode === 'relative',
+    },
+    { enabled: isComparisonEnabled },
+  );
+
+  const query = isComparisonEnabled ? comparisonQuery : normalQuery;
+
+>>>>>>> 0d83774c (Show comparison data in map)
   const { data, isSuccess, isFetched } = query;
 
   // Populating legend
@@ -38,7 +78,7 @@ export const useImpactLayer = () => {
               legend: {
                 id: `${LAYER_ID}-${indicator.value}`,
                 type: 'basic',
-                name: `${indicator.label} in ${startYear}`,
+                name: `${indicator.label} in ${year}`,
                 unit: data.metadata.unit,
                 min: !!data.metadata.quantiles.length && NUMBER_FORMAT(data.metadata.quantiles[0]),
                 items: data.metadata.quantiles.slice(1).map(
@@ -53,7 +93,7 @@ export const useImpactLayer = () => {
         }),
       );
     }
-  }, [data, isSuccess, dispatch, indicator, query.isFetching, startYear]);
+  }, [data, isSuccess, dispatch, indicator, query.isFetching, year]);
 
   useEffect(() => {
     if (!isFetched) return;

@@ -1,6 +1,9 @@
 import type { UseQueryResult } from '@tanstack/react-query';
+import { ACTUAL_DATA } from 'containers/scenarios/constants';
 import type { ScaleOrdinal, ScaleThreshold } from 'd3-scale';
 import { scaleOrdinal, scaleThreshold } from 'd3-scale';
+import type { AnalysisFiltersState } from 'store/features/analysis/filters';
+import type { ScenariosState } from 'store/features/analysis/scenarios';
 import type { H3APIResponse, H3Item, Legend, RGBColor } from 'types';
 
 export type H3ImpactResponse = H3APIResponse & {
@@ -12,6 +15,27 @@ export type H3ImpactResponse = H3APIResponse & {
 export type H3DataResponse = UseQueryResult<H3APIResponse, unknown>;
 
 type ScalesType = ScaleOrdinal<H3Item['v'], H3Item['c']> | ScaleThreshold<H3Item['v'], H3Item['c']>;
+
+export const storeToQueryParams = ({
+  startYear,
+  indicator,
+  materials,
+  suppliers,
+  origins,
+  locationTypes,
+  currentScenario,
+}: Partial<AnalysisFiltersState & ScenariosState>) => {
+  return {
+    year: startYear,
+    indicatorId: indicator?.value === 'all' ? null : indicator?.value,
+    ...(materials?.length ? { materialIds: materials?.map(({ value }) => value) } : {}),
+    ...(suppliers?.length ? { supplierIds: suppliers?.map(({ value }) => value) } : {}),
+    ...(origins?.length ? { originIds: origins?.map(({ value }) => value) } : {}),
+    ...(locationTypes?.length ? { locationTypes: locationTypes?.map(({ value }) => value) } : {}),
+    ...(currentScenario !== ACTUAL_DATA.id ? { scenarioId: currentScenario } : {}),
+    resolution: origins?.length ? 6 : 4,
+  };
+};
 
 export const scaleByLegendType = (
   type: Legend['type'],

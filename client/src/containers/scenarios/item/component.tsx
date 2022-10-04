@@ -80,17 +80,15 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
             {({ checked }) => (
               <>
                 <div className="flex justify-center flex-shrink-0 items-top">
-                  {scenario.id === ACTUAL_DATA.id && (
-                    <span
-                      className={classNames(
-                        checked ? 'bg-primary border-transparent' : 'bg-white border-gray-200',
-                        'h-4 w-4 mt-0.5 cursor-pointer rounded-full border flex items-center justify-center',
-                      )}
-                      aria-hidden="true"
-                    >
-                      <span className="rounded-full bg-white w-1.5 h-1.5" />
-                    </span>
-                  )}
+                  <span
+                    className={classNames(
+                      checked ? 'bg-primary border-transparent' : 'bg-white border-gray-200',
+                      'h-4 w-4 mt-0.5 cursor-pointer rounded-full border flex items-center justify-center',
+                    )}
+                    aria-hidden="true"
+                  >
+                    <span className="rounded-full bg-white w-1.5 h-1.5" />
+                  </span>
                 </div>
                 <div className="flex-1 pr-4 space-y-2 truncate">
                   <h2

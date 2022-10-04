@@ -5,7 +5,7 @@ import { apiService } from 'services/api';
 import type { OriginRegion } from 'types';
 import type { BaseTreeSearchParams } from 'containers/analysis-visualization/analysis-filters/more-filters/types';
 
-const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
+const DEFAULT_QUERY_OPTIONS = {
   placeholderData: [],
   retry: false,
   keepPreviousData: true,
@@ -20,7 +20,9 @@ export interface AdminRegionsTreesParams extends BaseTreeSearchParams {
   locationTypes?: string[];
 }
 
-export function useAdminRegions(): ResponseData {
+export const useAdminRegions = <T = OriginRegion[]>(
+  options: UseQueryOptions<OriginRegion[], unknown, T>,
+) => {
   const query = useQuery(
     ['admin-regions'],
     () =>
@@ -28,37 +30,6 @@ export function useAdminRegions(): ResponseData {
         .request({
           method: 'GET',
           url: '/admin-regions',
-        })
-        .then(({ data: responseData }) => responseData.data),
-    {
-      ...DEFAULT_QUERY_OPTIONS,
-    },
-  );
-
-  const { data, isError } = query;
-
-  return useMemo<ResponseData>(
-    () =>
-      ({
-        ...query,
-        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as ResponseData,
-      } as ResponseData),
-    [query, isError, data],
-  );
-}
-
-export function useAdminRegionsTrees(
-  params: AdminRegionsTreesParams,
-  options: UseQueryOptions = {},
-): ResponseData {
-  const query = useQuery(
-    ['admin-regions-trees', params],
-    () =>
-      apiService
-        .request({
-          method: 'GET',
-          url: '/admin-regions/trees',
-          params,
         })
         .then(({ data: responseData }) => responseData.data),
     {
@@ -77,4 +48,27 @@ export function useAdminRegionsTrees(
       } as ResponseData),
     [query, isError, data],
   );
-}
+};
+
+export const useAdminRegionsTrees = <T = OriginRegion[]>(
+  params: AdminRegionsTreesParams,
+  options: UseQueryOptions<OriginRegion[], unknown, T> = {},
+) => {
+  const query = useQuery(
+    ['admin-regions-trees', params],
+    () =>
+      apiService
+        .request<{ data: OriginRegion[] }>({
+          method: 'GET',
+          url: '/admin-regions/trees',
+          params,
+        })
+        .then(({ data: responseData }) => responseData.data),
+    {
+      ...DEFAULT_QUERY_OPTIONS,
+      ...options,
+    },
+  );
+
+  return query;
+};

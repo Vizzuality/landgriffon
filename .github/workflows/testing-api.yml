@@ -1,0 +1,102 @@
+name: API Tests
+
+on:
+  push:
+
+  workflow_dispatch:
+
+env:
+  NODE_ENV: test
+  DB_HOST: localhost
+  DB_USERNAME: landgriffon
+  DB_PASSWORD: landgriffon
+  DB_DATABASE: landgriffon
+  GMAPS_API_KEY: secretApiKey
+
+jobs:
+  testing-api-e2e:
+    name: E2E Tests
+    runs-on: ubuntu-20.04
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: vizzuality/landgriffon-database:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: landgriffon
+          POSTGRES_PASSWORD: landgriffon
+          POSTGRES_DB: landgriffon
+
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js 16.13
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.13'
+
+      - name: Install API dependencies
+        working-directory: api
+        run: yarn install
+
+      - name: Run API tests + coverage
+        working-directory: api
+        run: yarn test:e2e
+
+#      - name: Generate API coverage artifact
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: api-report
+#          path: ${{github.workspace}}/api/coverage/lcov.info
+
+
+  testing-api-integration:
+    name: Integration Tests
+    runs-on: ubuntu-20.04
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: vizzuality/landgriffon-database:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: landgriffon
+          POSTGRES_PASSWORD: landgriffon
+          POSTGRES_DB: landgriffon
+
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js 16.13
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.13'
+
+      - name: Install API dependencies
+        working-directory: api
+        run: yarn install
+
+      - name: Run API tests + coverage
+        working-directory: api
+        run: yarn test:integration
+
+#      - name: Generate API coverage artifact
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: api-report
+#          path: ${{github.workspace}}/api/coverage/lcov.info

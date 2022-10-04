@@ -1,0 +1,14 @@
+version:  '3.7'
+services:
+  lgd-notebooks:
+      build:
+        context: ./
+        dockerfile: Dockerfile
+      volumes:
+        - ../data:/home/jovyan/work/datasets
+        - ./:/home/jovyan/work/notebooks
+      ports:
+        - 8080:8888
+      container_name: lgd_jupyter_notebook
+      command: "start-notebook.sh \
+        --NotebookApp.token=''"

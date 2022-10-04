@@ -1,0 +1,22 @@
+{
+  "db": {
+    "type": "postgres",
+    "host": "localhost",
+    "port": 5432,
+    "username": "landgriffon",
+    "password": "",
+    "database": "landgriffon",
+    "synchronize": true,
+    "migrationsRun": false
+  },
+  "auth": {
+    "requireUserAccountActivation": false,
+    "jwt": {
+      "expiresIn": "30 days",
+      "secret": "myVeryBadJWTSecretForTests"
+    }
+  },
+  "map": {
+    "distributed": true
+  }
+}

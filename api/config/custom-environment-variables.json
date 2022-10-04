@@ -1,0 +1,62 @@
+{
+  "server": {
+    "port": "SERVER_PORT"
+  },
+  "auth": {
+    "requireUserAuth": "REQUIRE_USER_AUTH",
+    "requireUserAccountActivation": "REQUIRE_USER_ACCOUNT_ACTIVATION",
+    "signUpIsPublic": "SIGN_UP_IS_PUBLIC",
+    "jwt": {
+      "expiresIn": "JWT_EXPIRES_IN",
+      "secret": "JWT_SECRET"
+    },
+    "password": {
+      "minLength": "PASSWORD_MIN_LENGTH",
+      "includeNumerics": "PASSWORD_INCLUDE_NUMERICS",
+      "includeUpperCase": "PASSWORD_INCLUDE_UPPER_CASE",
+      "includeSpecialCharacters": "PASSWORD_INCLUDE_SPECIAL_CHARACTERS"
+    }
+  },
+  "import": {
+    "missingDataFallbackStrategy": "IMPORT_MISSING_DATA_FALLBACK_STRATEGY"
+  },
+  "queue": {
+    "host": "QUEUE_HOST",
+    "port": "QUEUE_PORT",
+    "database": "QUEUE_DATABASE",
+    "importQueueName": "IMPORT_QUEUE_NAME"
+  },
+  "geocodingCache": {
+    "enabled": "GEOCODING_CACHE_ENABLED",
+    "host": "GEOCODING_CACHE_HOST",
+    "port": "GEOCODING_CACHE_PORT",
+    "database": "GEOCODING_CACHE_DATABASE",
+    "TTL": "GEOCODING_CACHE_TTL"
+  },
+  "db": {
+    "host": "DB_HOST",
+    "port": "DB_PORT",
+    "username": "DB_USERNAME",
+    "password": "DB_PASSWORD",
+    "database": "DB_DATABASE",
+    "synchronize": "DB_SYNCHRONIZE",
+    "migrationsRun": "DB_MIGRATIONS_RUN",
+    "batchChunkSize": "CHUNK_SIZE_FOR_BATCH_DB_OPERATIONS",
+    "logging": "DB_DEBUG_LOGGING",
+    "maxQueryExecutionTime": "DB_SLOW_QUERY_LOG_THRESHOLD",
+    "cacheEnabled": "DB_CACHE_ENABLED",
+    "cacheHost": "DB_CACHE_HOST",
+    "cachePort": "DB_CACHE_PORT",
+    "cacheDatabase": "DB_CACHE_DATABASE"
+  },
+  "fileUploads": {
+    "sizeLimit": "FILE_SIZE_LIMIT",
+    "storagePath": "FILE_STORAGE_PATH"
+  },
+  "geolocation": {
+    "gmapsApiKey": "GMAPS_API_KEY"
+  },
+  "map": {
+    "distributed": "DISTRIBUTED_MAP"
+  }
+}

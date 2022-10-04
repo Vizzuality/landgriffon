@@ -1,0 +1,6 @@
+id,unitId,unit1,unit2,factor
+4e8ff3aa-8980-44cb-97d4-bdb74612f078,4e8ff3aa-8980-44cb-97d4-bdb74612f078,hectare per year,square metre per year,10000
+933f8628-a34d-48c3-b81e-9dcb3e1fb37f,933f8628-a34d-48c3-b81e-9dcb3e1fb37f,cubic metre per year,millimetres per year,1000
+5daec381-8fc6-43b8-91f2-c54dc796ac85,5daec381-8fc6-43b8-91f2-c54dc796ac85,tonnes of carbon dioxide equivalent,tonnes of carbon dioxide equivalent,1
+80a0178c-6023-4d68-9b98-0f6e6246ce13,80a0178c-6023-4d68-9b98-0f6e6246ce13,Potentially Disappeared Fraction of Species per year,Potentially Disappeared Fraction of Species,1
+eef6ff38-b4f5-4f84-8157-045dcc5a65ff,eef6ff38-b4f5-4f84-8157-045dcc5a65ff,milimetres per year,cubic metres per year,0.0001

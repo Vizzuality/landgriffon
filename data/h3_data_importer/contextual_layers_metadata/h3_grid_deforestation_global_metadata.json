@@ -1,0 +1,27 @@
+{
+    "$schema": "./contextual_metadata_schema.json",
+    "name": "Density of tree cover loss",
+    "description": "Density of tree cover loss layer measures the density of areas of gross tree cover loss.",
+    "aggType": "mode",
+    "legend": {
+        "name": "Density of tree cover loss",
+        "id": "",
+        "unit": null,
+        "min": 0,
+        "type": "category",
+        "items": [
+            {
+                "value": 0,
+                "label": "No deforestation",
+                "color": "#FFFFFF"
+            },
+            {
+                "value": 1,
+                "label": "Deforestation",
+                "color": "#D4428E"
+            }
+        ]
+    },
+    "source": "\"Hansen, M. C., P. V. Potapov, R. Moore, M. Hancher, S. A. Turubanova, A. Tyukavina, D. Thau, S. V. Stehman, S. J. Goetz, T. R. Loveland, A. Kommareddy, A. Egorov, L. Chini, C. O. Justice, and J. R. G. Townshend. 2013. “High-Resolution Global Maps of 21st-Century Forest Cover Change.” Science 342 (15 November): 850–53. Data available from: https://glad.earthengine.app/view/global-forest-change.\",",
+    "license": "CC BY 4.0"
+}

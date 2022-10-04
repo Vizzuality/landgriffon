@@ -1,0 +1,29 @@
+{
+  "server": {
+    "loggerLevel": [
+      "error"
+    ]
+  },
+  "db": {
+    "type": "postgres",
+    "host": "localhost",
+    "port": 5432,
+    "username": "landgriffon",
+    "password": "",
+    "database": "landgriffon_test",
+    "synchronize": true,
+    "dropSchema": true,
+    "logging": ["error"],
+    "cacheEnabled": false
+  },
+  "auth": {
+    "requireUserAccountActivation": false,
+    "jwt": {
+      "expiresIn": "1d",
+      "secret": "myVeryBadJWTSecretForTests"
+    }
+  },
+  "geolocation": {
+    "gmapsApiKey": "myVeryBadJWTSecretForTests"
+  }
+}

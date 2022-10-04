@@ -1,0 +1,49 @@
+{
+    "$schema": "./contextual_metadata_schema.json",
+    "name": "Forest GHG emissions - 2001-2021",
+    "description": "Forest GHG emissions -2001-2021 (tCO2e/ha) displays the net forest greenhouse gas emissions from stand-replacing disturbances.",
+    "aggType": "sum",
+    "legend": {
+        "name": "Net forest GHG flux - 2001-2021",
+        "id": "",
+        "unit": "tCO2e/ha",
+        "min": 0,
+        "type": "range",
+        "items": [
+              {
+                "value": 1,
+                "label": "",
+                "color": "#ffc800"
+            },
+            {
+                "value": 10,
+                "label": "",
+                "color": "#efa100"
+            },
+            {
+                "value": 100,
+                "label": "",
+                "color": "#d97b00"
+            },
+            {
+                "value": 1000,
+                "label": "",
+                "color": "#ba5500"
+            },
+            {
+                "value": 10000,
+                "label": "",
+                "color": "#932f00"
+            },
+            {
+                "value": 100000,
+                "label": "",
+                "color": "#610000"
+            }
+        ]
+    },
+    "source": "Harris, N.L., D.A. Gibbs, A. Baccini, R.A. Birdsey, S. de Bruin, M. Farina, L. Fatoyinbo, M.C. Hansen, M. Herold, R.A. Houghton, P.V. Potapov, D. Requena Suarez, R.M. Roman-Cuesta, S.S. Saatchi, C.M. Slay, S.A. Turubanova, A. Tyukavina. 2021. Global maps of twenty-first century forest carbon fluxes. Nature Climate Change. https://doi.org/10.1038/s41558-020-00976-6",
+    "license":  "CC BY 4.0"
+}
+
+

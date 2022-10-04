@@ -1,0 +1,22 @@
+repos:
+    -   repo: https://github.com/pre-commit/pre-commit-hooks
+        rev: v2.3.0
+        hooks:
+        -   id: check-yaml
+        -   id: end-of-file-fixer
+        -   id: trailing-whitespace
+    # - repo: meta
+    #     hooks:
+    #       - id: check-hooks-apply
+    #       - id: check-useless-excludes
+    -   repo: https://github.com/pre-commit/mirrors-yapf
+        rev: ''
+        hooks:
+            - id: yapf
+              language: python
+              args: [-i, -vv]
+              types: [python]
+    -   repo: https://gitlab.com/PyCQA/flake8
+        rev: 3.8.3
+        hooks:
+        - id: flake8

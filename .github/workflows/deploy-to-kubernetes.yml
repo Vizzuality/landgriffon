@@ -1,0 +1,100 @@
+name: Deploy images to k8s
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'staging'
+      - 'test'
+      - 'vcf'
+      - 'tetrapack'
+      - 'diageo'
+    paths:
+      - 'api/**'
+      - 'client/**'
+      - '.github/**'
+  workflow_dispatch:
+
+jobs:
+  deploy_images_to_kubernetes:
+    name: Deploy updated Docker image to Kubernetes
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Wait for API image to be pushed to Docker Hub
+        uses: fountainhead/action-wait-for-check@v1.0.0
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          checkName: Push API Docker image to Docker Hub
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Wait for Client image to be pushed to Docker Hub
+        uses: fountainhead/action-wait-for-check@v1.0.0
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          checkName: Push Client Docker image to Docker Hub
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Configure SSH access to the bastion host
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/bastion.key
+          chmod 600 ~/.ssh/bastion.key
+        env:
+          SSH_KEY: ${{ secrets.BASTION_SSH_PRIVATE_KEY }}
+
+      - name: Add custom host data
+        run: |
+          sudo sh -c 'echo "127.0.0.1 ${{ secrets.EKS_HOST }}" >> /etc/hosts'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Install kubectl
+        run: |
+          sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+          echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+          sudo apt-get update
+          sudo apt-get install -y kubectl
+
+      - name: Config kubectl
+        run: |
+          mkdir ~/.kube
+          aws eks update-kubeconfig --name ${{ secrets.EKS_NAME }}
+          sed -i 's/\(eks.amazonaws.com\)/\1:4433/g' ~/.kube/config
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+
+      - name: Creating SSH tunnel
+        run: |
+          ssh -i ~/.ssh/bastion.key -o StrictHostKeyChecking=no -N -L 4433:${{ secrets.EKS_HOST }}:443 ${{ secrets.BASTION_USER }}@${{ secrets.BASTION_HOST }} -T &
+
+      - name: Extract branch name
+        shell: bash
+        run: |
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+        id: extract_branch
+
+      - name: Redeploy production pods
+        if: ${{ steps.extract_branch.outputs.branch == 'main' }}
+        run: |
+          kubectl rollout restart deployment api -n production
+          kubectl rollout restart deployment client -n production
+
+      - name: Redeploy pods for other branches
+        if: ${{ steps.extract_branch.outputs.branch != 'main' }}
+        run: |
+          kubectl rollout restart deployment api -n ${{ steps.extract_branch.outputs.branch }}
+          kubectl rollout restart deployment client -n ${{ steps.extract_branch.outputs.branch }}

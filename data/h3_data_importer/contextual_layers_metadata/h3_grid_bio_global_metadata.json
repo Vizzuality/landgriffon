@@ -1,0 +1,42 @@
+{
+    "$schema": "./contextual_metadata_schema.json",
+    "name": "LCIA Taxa aggregated characterization factors",
+    "description": "The LCIA taxa aggregated characterization factors for regional potential speciess loss in annual aggriculture (PDF) measures the potential speciess loss due to land use change at ecoregion level for different land uses.",
+    "aggType": "mean",
+    "legend": {
+        "name": "LCIA Taxa aggregated characterization factors",
+        "id": "",
+        "unit": "PDF",
+        "min": 0.02,
+        "type": "range",
+        "items": [
+            {
+                "value": 0.1,
+                "label": "",
+                "color": "#00688b"
+            },
+            {
+                "value": 1,
+                "label": "",
+                "color": "#009c9b"
+            },
+            {
+                "value": 10,
+                "label": "",
+                "color": "#00cd8e"
+            },
+            {
+                "value": 100,
+                "label": "",
+                "color": "#81f15e"
+            },
+            {
+                "value": 1000,
+                "label": "",
+                "color": "#ffff00"
+            }
+        ]
+    },
+    "source": "LCIA",
+    "license": ""
+}

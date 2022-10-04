@@ -1,0 +1,52 @@
+{
+  "data": [
+    {
+      "type": "scenarios",
+      "id": "8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7",
+      "attributes": {
+        "title": "Test: Change Rubber Location Cambodia",
+        "description": "",
+        "status": "inactive",
+        "metadata": null,
+        "createdAt": "2022-07-14T14:28:25.552Z",
+        "updatedAt": "2022-07-22T17:37:23.505Z"
+      }
+    },
+    {
+      "type": "scenarios",
+      "id": "7646039e-b2e0-4bd5-90fd-925e5868f9af",
+      "attributes": {
+        "title": "multiple interventions",
+        "description": "",
+        "status": "inactive",
+        "metadata": null,
+        "createdAt": "2022-07-21T09:42:00.862Z",
+        "updatedAt": "2022-07-22T16:06:05.291Z"
+      }
+    },
+    {
+      "type": "scenarios",
+      "id": "be640e30-b00b-4f9a-a964-f2fc3fe72bad",
+      "attributes": {
+        "title": "change material rubber ",
+        "description": "change rubber to leather",
+        "status": "inactive",
+        "metadata": null,
+        "createdAt": "2022-07-22T15:29:55.390Z",
+        "updatedAt": "2022-07-22T15:33:35.069Z"
+      }
+    },
+    {
+      "type": "scenarios",
+      "id": "23bf0326-de8c-4dc0-8bb2-70e871b15529",
+      "attributes": {
+        "title": "Scenario with interventions",
+        "description": "",
+        "status": "inactive",
+        "metadata": null,
+        "createdAt": "2022-07-12T09:38:37.169Z",
+        "updatedAt": "2022-07-15T07:46:21.730Z"
+      }
+    }
+  ]
+}

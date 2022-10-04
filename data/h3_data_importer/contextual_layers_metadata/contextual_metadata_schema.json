@@ -1,0 +1,107 @@
+{
+    "$defs": {
+        "LegendItem": {
+            "type": "object",
+            "description": "Legend entry",
+            "properties": {
+                "value": {
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "color": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string",
+                    "description": "Label of the value."
+                }
+            }
+        },
+        "Legend": {
+            "type": "object",
+            "description": "",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": ["string", "null"]
+                },
+                "min": {
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "category",
+                        "range"
+                    ],
+                    "description": "Type of the legend. if 'category', each value of the LegendItem represents a category. if 'range', the value represents the upper bound of the bin, being the Legend.min the start of the first bin."
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/LegendItem"
+                    }
+                }
+            },
+            "required": [
+                "name",
+                "unit",
+                "min",
+                "type",
+                "items"
+            ]
+        }
+    },
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "The name of the layer"
+        },
+        "description": {
+            "type": "string",
+            "description": "The description of the layer. Typically, the description of the feature column used. Used as body of the layer information to give context to the user"
+        },
+        "legend": {
+            "$ref": "#/$defs/Legend"
+        },
+        "aggType": {
+            "type": "string",
+            "enum": [
+                "sum",
+                "mean",
+                "median",
+                "min",
+                "max",
+                "mode"
+            ],
+            "description": "The aggregation type that should be used to resample the layer."
+        },
+        "source": {
+            "type": "string",
+            "description": "The citation of the layer"
+        },
+        "license": {
+            "type": "string",
+            "description": "The license of the layer"
+        }
+    },
+    "required": [
+        "name",
+        "description",
+        "legend",
+        "aggType",
+        "source",
+        "license"
+    ]
+}

@@ -1,0 +1,19 @@
+import { FC } from 'react';
+
+import cx from 'classnames';
+
+import type { IconProps } from './types';
+
+export const Icon: FC<IconProps> = ({ icon, className, style }: IconProps) => (
+  <svg
+    className={cx({
+      [className]: className,
+    })}
+    viewBox={icon?.viewBox || '0 0 32 32'}
+    style={style}
+  >
+    <use xlinkHref={`#${icon?.id || icon}`} />
+  </svg>
+);
+
+export default Icon;

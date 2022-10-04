@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@-webkit-keyframes autofill {
+  0%,100% {
+    color: #666;
+    @apply bg-transparent;
+  }
+}
+
+@layer base {
+  input[type='search']::-webkit-search-decoration,
+  input[type='search']::-webkit-search-cancel-button,
+  input[type='search']::-webkit-search-results-button,
+  input[type='search']::-webkit-search-results-decoration {
+    @apply appearance-none;
+  }
+
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    @apply m-0 appearance-none;
+  }
+
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+
+  body {
+    @apply antialiased text-gray-900;
+  }
+
+  h1 {
+    @apply text-3xl font-semibold;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold text-gray-900;
+  }
+
+  h3 {
+    @apply text-lg font-semibold;
+  }
+
+  h4 {
+    @apply text-xs font-normal;
+  }
+
+  /* Fixing override from TailwindCSS base styles */
+  text[type=number] {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+}
+
+@layer utilities {
+  /* We want a blur effect without having a high opacity background, but we still want the
+  background to be visible for the browsers that don't support backdrop-filter, so we double the
+  background opacity. This can be tested on Firefox. */ta
+  .bg-blur {
+    @apply bg-opacity-40;
+  }
+
+  @supports (backdrop-filter: blur(4px)) {
+    .bg-blur {
+      @apply bg-opacity-20;
+      backdrop-filter: blur(4px);
+    }
+  }
+}
+
+/* RC Tree checkbox override */
+.rc-tree-checkbox {
+  @apply flex-shrink-0 w-4 h-4 border border-gray-200 rounded;
+}
+
+.rc-tree-checkbox.rc-tree-checkbox-checked {
+  @apply bg-green-700;
+}
+
+.rc-tree-checkbox.rc-tree-checkbox-indeterminate {
+  @apply bg-green-200;
+}
+
+.rc-tree-node-content-wrapper {
+  @apply w-full overflow-hidden truncate text-ellipsis;
+}
+
+.rc-tree-title {
+  @apply w-full text-gray-900;
+}
+
+/* Recharts */
+.recharts-label {
+  @apply text-xs fill-gray-400;
+}

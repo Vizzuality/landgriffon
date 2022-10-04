@@ -1,0 +1,36 @@
+{
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
+  "moduleDirectories": [
+    "node_modules",
+    "src"
+  ],
+  "rootDir": "../",
+  "roots": [
+    "<rootDir>/src/",
+    "<rootDir>/test/"
+  ],
+  "testEnvironment": "node",
+  "testRegex": ".spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "setupFilesAfterEnv": ["./test/jest-custom-matchers.ts"],
+  "coverageReporters": [
+    [
+      "lcov",
+      {
+        "projectRoot": "../"
+      }
+    ],
+    "text-summary"
+  ],
+  "coveragePathIgnorePatterns": [
+    "<rootDir>/node_modules/",
+    "<rootDir>/test/"
+  ],
+  "testTimeout": 50000
+}

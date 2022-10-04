@@ -1,0 +1,13 @@
+.linkAnimation {
+  text-decoration: none;
+  background-image: linear-gradient(white 50%, white 50%);
+  background-size: 10000px 1px;
+  background-repeat: no-repeat;
+  background-position: 0 1em;
+  background-position: -10000px 1em;
+}
+
+.linkAnimation:hover {
+  background-position: 0 1em;
+  transition: background-position 2s ease-in-out;
+}

@@ -1,0 +1,74 @@
+name: Merge and upload code coverage reports
+on:
+  push:
+  workflow_dispatch:
+env:
+  CC_TEST_REPORTER_URL: https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+  CC_TEST_REPORTER_ID: 29691479b26fbb03a9d926e1d6b0bba99c7eae3bb235e26a8b269219fe3c62fc
+
+jobs:
+  coverage:
+    name: Uploading code coverage report
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Fetch Code Climate reporter CLI
+        run: curl -L $CC_TEST_REPORTER_URL > ${{github.workspace}}/cc-test-reporter
+      - name: Grant exec permissions
+        run: chmod +x cc-test-reporter
+
+      - name: Wait for API tests to run
+        uses: fountainhead/action-wait-for-check@v1.0.0
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          checkName: API Tests
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          timeoutSeconds: 3600
+
+      - name: Download API coverage report
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          workflow: testing-api.yml
+          commit: ${{ github.event.pull_request.head.sha || github.sha }}
+          name: api-report
+          path: ${{github.workspace}}/api/coverage
+
+      - name: Wait for Client tests to run
+        uses: fountainhead/action-wait-for-check@v1.0.0
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          checkName: Client Tests
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Download Client coverage report
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          workflow: testing-client.yml
+          commit: ${{ github.event.pull_request.head.sha || github.sha }}
+          name: client-report
+          path: ${{github.workspace}}/client/coverage
+
+      - name: Download Client test generated dependencies
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          workflow: testing-client.yml
+          commit: ${{ github.event.pull_request.head.sha || github.sha }}
+          name: next-dependency
+          path: ${{github.workspace}}/client/.next
+
+      - name: Format API Report
+        run: ./cc-test-reporter format-coverage -p landgriffon -t lcov -o api-coverage.json api/coverage/lcov.info
+
+      - name: Format Client Report
+        run: ./cc-test-reporter format-coverage -t lcov -o client-coverage.json client/coverage/lcov.info
+
+      - name: Merge API and Client coverage reports
+        run: ./cc-test-reporter sum-coverage *-coverage.json -p 2 -o total-coverage.json
+
+      - name: Upload merged coverage report to Code Climate
+        run: ./cc-test-reporter upload-coverage -i total-coverage.json

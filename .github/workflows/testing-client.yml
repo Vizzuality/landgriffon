@@ -1,0 +1,45 @@
+name: Client Tests
+
+on:
+  push:
+
+  workflow_dispatch:
+
+env:
+  NODE_ENV: test
+
+jobs:
+  testing-client:
+    name: Running client tests
+    runs-on: ubuntu-20.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 16.15
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.15'
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v4
+        with:
+          working-directory: client
+          install-command: yarn install --immutable
+          build: yarn build
+          start: yarn start
+          browser: chrome
+          wait-on: http://localhost:3000/auth/signin
+          config-file: cypress.config.ts
+          command-prefix: yarn dlx
+          command: yarn cypress:headless
+        env:
+          NEXT_PUBLIC_MAPBOX_API_TOKEN: ${{ secrets.NEXT_PUBLIC_MAPBOX_API_TOKEN }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.CYPRESS_API_URL }}
+          NEXT_TELEMETRY_DISABLED: 1
+          NEXTAUTH_URL: http://localhost:3000
+          NEXTAUTH_SECRET: nyanpony
+          CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
+          CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+          CYPRESS_API_URL: ${{ secrets.CYPRESS_API_URL }}

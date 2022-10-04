@@ -1,0 +1,70 @@
+{
+  "server": {
+    "port": 3000,
+    "loggerLevel": [
+      "error",
+      "warn",
+      "log",
+      "debug"
+    ]
+  },
+  "auth": {
+    "requireUserAuth": true,
+    "requireUserAccountActivation": true,
+    "signUpIsPublic": true,
+    "jwt": {
+      "expiresIn": "2h",
+      "secret": null
+    },
+    "password": {
+      "minLength": 6,
+      "includeNumerics": false,
+      "includeUpperCase": false,
+      "includeSpecialCharacters": false
+    }
+  },
+  "import": {
+    "missingDataFallbackStrategy": "fallback"
+  },
+  "queue": {
+    "host": "localhost",
+    "port": 6379,
+    "database": 1,
+    "importQueueName": "excel-import"
+  },
+  "geocodingCache": {
+    "enabled": true,
+    "host": "localhost",
+    "port": 6379,
+    "database": 2,
+    "TTL": 86400
+  },
+  "db": {
+    "type": "postgres",
+    "host": "localhost",
+    "port": 5432,
+    "username": "landgriffon",
+    "password": "",
+    "database": "landgriffon",
+    "synchronize": false,
+    "migrationsRun": true,
+    "dropSchema": false,
+    "logging": false,
+    "batchChunkSize": 2000,
+    "maxQueryExecutionTime": null,
+    "cacheEnabled": true,
+    "cacheHost": "localhost",
+    "cacheDatabase": 3
+  },
+  "fileUploads": {
+    "sizeLimit": 8388608,
+    "storagePath": "/tmp/csv-uploads"
+  },
+  "geolocation": {
+    "gmapsApiKey": null
+  },
+
+  "map": {
+    "distributed": true
+  }
+}

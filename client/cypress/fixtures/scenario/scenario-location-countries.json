@@ -1,0 +1,642 @@
+{
+  "data": [
+    {
+      "type": "adminRegions",
+      "id": "9931f903-aaf9-4714-9b5a-e39a541828e8",
+      "attributes": {
+        "name": "Botswana",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "8e21c208-b4e2-4ef0-b294-49b09c32d67f",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "eed18da1-8aa9-4e66-a240-bb5df19eca0b",
+      "attributes": {
+        "name": "Chad",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "2798e95c-063f-4a34-b9ad-4f74807f0497",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "f6962080-28b6-43bc-b7e4-bd9f363c2ce1",
+      "attributes": {
+        "name": "Mali",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "e6ae04ab-babb-4bf0-b9f9-d95dac8e1b19",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "a049f644-ae8a-4bf2-9370-3cc6e0154d3f",
+      "attributes": {
+        "name": "Nauru",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "d2ff465d-74da-46c9-8cc0-13d62e2ffadc",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "c1a6b18b-bb6d-4a98-97a0-e80c20abc167",
+      "attributes": {
+        "name": "New Zealand",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "4956daf2-f0db-4495-b441-974a91650409",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "c314f5da-86dc-4614-ac62-788590acfe26",
+      "attributes": {
+        "name": "Macedonia",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "a7bbd0cc-8669-4813-b134-bb139a5548b1",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "b5442a6b-b385-471b-b8d0-79b606423adb",
+      "attributes": {
+        "name": "Seychelles",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "0be1f9a9-2768-4c7b-9612-92217e8449ca",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "11a6be16-db09-47d4-83ed-d5344b9716d5",
+      "attributes": {
+        "name": "Togo",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "27b7c302-b6d6-4288-9e5d-4789b9342a26",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "780a95b0-a41c-4f52-a60d-52c7d5168f20",
+      "attributes": {
+        "name": "Turks and Caicos Islands",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "ec4ed887-cd94-4611-981a-5c1c4e3f84a0",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "8f91bfb8-f6e3-416e-9385-3d12ba816251",
+      "attributes": {
+        "name": "Bouvet Island",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "3eff552e-5a36-4f52-9cbc-38875aab688d",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "84b4f10b-cbda-4676-b13c-f15eaead55e5",
+      "attributes": {
+        "name": "Marshall Islands",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "71e1e114-9e2e-447c-b47a-702d711f973a",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "623d71d6-1507-4b94-a7c2-77cc46b34c8e",
+      "attributes": {
+        "name": "Moldova",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "06da82e8-f050-4215-b192-b9a795b35ad5",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "2a08fb59-d77d-49c6-8719-9996fba157af",
+      "attributes": {
+        "name": "Nicaragua",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "9d373374-1be5-490a-82b1-3c3492a473b3",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "ac68fe7a-bf4e-4508-b3e2-b0edfe2ba436",
+      "attributes": {
+        "name": "Oman",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "d0f677d6-186b-45b7-991c-811cabd7b5ec",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "1182238a-5e09-4298-9412-3ac6cbadafcf",
+      "attributes": {
+        "name": "Pakistan",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "f2d2c655-7c7f-4d01-8d69-2c81f136bd93",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "e54b89db-b5f7-4b11-9975-f03192a8480b",
+      "attributes": {
+        "name": "Panama",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "3d44cd39-3503-4a16-9fb8-f3ed7249e81e",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "cc43f013-bf94-44e9-8fee-56692c8ff18e",
+      "attributes": {
+        "name": "Serbia",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "0baa1727-602a-4cf8-bcd5-f220c342231c",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "e78ca084-2c76-4b5b-bb23-6267100ac16e",
+      "attributes": {
+        "name": "Sint Maarten",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "87b60c8f-53ea-4adf-9f3c-d3d832012b8d",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "8d560ce1-37c2-4c14-b1b4-110b4241e18d",
+      "attributes": {
+        "name": "Syria",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "4feca2ee-36d7-422a-b13c-4dbb69ae7a10",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "b3180b7d-bccf-413d-a559-547a0d9ed73f",
+      "attributes": {
+        "name": "Thailand",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "576af2e0-72a3-4e60-a95b-e18ee4a739db",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "6c9df037-4663-4716-acf5-9cf2572e1aca",
+      "attributes": {
+        "name": "Paracel Islands",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "340a7bd5-0ea9-4e65-baf4-0a7af2b875ad",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "52928aba-f355-48e5-92bf-bb258520a97a",
+      "attributes": {
+        "name": "Spratly Islands",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "4d3239c7-b4ca-4610-8b89-81f1ec2cd433",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "3355e5ea-695e-4d75-8b6a-ab6d26e8dd5c",
+      "attributes": {
+        "name": "Kosovo",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "97fd257e-b126-4af3-b06f-b9014d38d91e",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "752a23e2-b2fe-4db6-8c14-15947c905956",
+      "attributes": {
+        "name": "Northern Cyprus",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "6f679670-502f-4056-bbc9-d1d068bc8248",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "e73b3884-96a7-48c6-b287-3464fa2fdf92",
+      "attributes": {
+        "name": "Akrotiri and Dhekelia",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "ae175d7d-a335-4d5e-a75e-1b1b317962cc",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "bbef6ecc-51fd-4834-9d56-7c9091735a1d",
+      "attributes": {
+        "name": "Caspian Sea",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "1724e225-11c2-4865-be26-d5a33c0a3422",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "010fa7bf-0a7f-45cf-a03f-84c4912bc6b4",
+      "attributes": {
+        "name": "Clipperton Island",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "5fb221f0-410b-41e2-891b-0d80da89e418",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "a9108805-97c9-4423-aa8e-aed460070f79",
+      "attributes": {
+        "name": "Venezuela",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "c8882367-adfd-44e0-8222-e64948419aa1",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "cc72c8a8-f8b1-42b1-8c92-88f24659feb8",
+      "attributes": {
+        "name": "Vietnam",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "df5d0321-e1f6-429d-a5a7-6232a5af32be",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "136be3e5-85a3-4c11-bdac-dd923d09c71c",
+      "attributes": {
+        "name": "British Virgin Islands",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "280e4c2d-37c0-47c1-be1a-ebcf1a1fc113",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "6694cff5-b2de-4441-afd7-8e480d26c7d7",
+      "attributes": {
+        "name": "Yemen",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "a98dce74-b6d7-4faa-a1fe-1f588871cdc4",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "fbf0a930-0c69-4d50-bc51-65cc4bb1f584",
+      "attributes": {
+        "name": "Zambia",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "359346a7-fe45-4bac-9b30-0b1ca6d17086",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "8c35f012-c653-41fc-8248-fd7b0ff65b5b",
+      "attributes": {
+        "name": "Zimbabwe",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "530a7186-91ac-4982-8ada-a9cb837ce2b7",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "ebf39ba7-f5fe-4c17-a8fa-67662d691f06",
+      "attributes": {
+        "name": "Afghanistan",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "97c74130-3563-4b70-8446-f9bbcfae3b08",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "28c48373-eb93-4cb0-9322-cd3d8d95b1f2",
+      "attributes": {
+        "name": "Algeria",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "bcf43569-4079-4ec8-af94-ba91ba69d573",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "8bd7e578-f64f-4042-8a3a-2a7652ce850b",
+      "attributes": {
+        "name": "Angola",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "d3b9ffde-e15c-4a87-a726-242582b7a5fd",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "5ee8fa15-2f25-46ae-83e6-2ee43a5afc7b",
+      "attributes": {
+        "name": "Anguilla",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "de66e59e-72f7-43cc-a5ab-b1aa48840080",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "8917bfa8-4d71-44d8-81d6-5653a9138128",
+      "attributes": {
+        "name": "Antarctica",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "6fb9ce4b-7782-4755-b9b9-9d5bbc9d251f",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "29c676fa-c58c-43e0-a9ce-7d83213a6032",
+      "attributes": {
+        "name": "Armenia",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "271a11c5-e743-403b-9b50-e7f12295add1",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "5bd7284e-e9ca-47c5-b5d3-f2a978d1e3df",
+      "attributes": {
+        "name": "Azerbaijan",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "6cf5f980-aaf6-4297-90c4-11cfe85da2c4",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "0d222b82-e13a-4dff-86e1-60c6f2c10406",
+      "attributes": {
+        "name": "Bahamas",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "a516a9a9-1722-409e-8a0f-0a5919e2015b",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "d5d0baf5-6a17-464c-aa31-a9b463347db9",
+      "attributes": {
+        "name": "Bahrain",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "89ca77d1-ee0c-4acb-93d7-92336334e971",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "d035ba94-75f0-460a-ab3d-25ca8bb15359",
+      "attributes": {
+        "name": "Barbados",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "9047cda1-e107-4276-9943-f81e9d3af203",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "63035258-0a22-4b45-9d02-7fc6c293b71e",
+      "attributes": {
+        "name": "Bosnia and Herzegovina",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "ed583741-b31e-4c73-875d-33ec893f2b32",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "3efec62a-0f72-45b2-8a31-39df5e575431",
+      "attributes": {
+        "name": "Brazil",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "342ac1fa-8053-46ac-88a3-9e7d351f65d9",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "644422eb-a3a2-426b-bf39-fef27a017bff",
+      "attributes": {
+        "name": "British Indian Ocean Territory",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "f76d633b-bba2-4155-a9a9-863bd73c0ac8",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "25674344-7e03-4463-a28b-8be37e6d0fef",
+      "attributes": {
+        "name": "Brunei",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "1983522d-5bcd-4399-9e1d-7899f0a2ba96",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "7867fd86-fdee-43ed-b5c0-e24805799d3b",
+      "attributes": {
+        "name": "Burkina Faso",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "ad621a35-845a-45bc-8628-6ef0b38b25df",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "933cb650-831f-438b-8313-ee677539a24b",
+      "attributes": {
+        "name": "Cayman Islands",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "9071ff7d-8887-43c8-b685-57e89ac7fb0a",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "476be5a2-33e0-412b-8e44-c95a4b78f8db",
+      "attributes": {
+        "name": "China",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "dc07c66e-e360-4395-a5bd-638506fe36ba",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "5bd4892b-42e7-448c-a62e-08d8c35621c0",
+      "attributes": {
+        "name": "Cocos Islands",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "b51b77f3-f753-4e8c-b3cf-9e51eff595a2",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "7726af10-4c0f-4f24-a0d3-6438ab62b1c7",
+      "attributes": {
+        "name": "Curaçao",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "132f26b6-f19c-43ea-9f99-003ce40a2b78",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "2be53f8a-3541-487f-8da8-f5f35f8a4033",
+      "attributes": {
+        "name": "Cyprus",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "0a7cd3fe-d583-4dfc-b5e6-594c63538087",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "5c857bf4-ccc2-48bb-af9e-0b1a9afb5b5b",
+      "attributes": {
+        "name": "Czech Republic",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "3354115d-fe8e-47ad-bebb-01f94cc319a6",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "1d8a6b51-d78f-4356-bb14-52f8e1e5dc89",
+      "attributes": {
+        "name": "Djibouti",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "a061ccfc-80ad-48fb-8ebc-1a27deaa287a",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "9bb377ed-7b7b-4509-b3ee-7e9b7ec48f41",
+      "attributes": {
+        "name": "Dominica",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "9d52ad37-5a10-452b-a12f-e038138cbc76",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "6ab861b4-94e8-4ba2-93f4-d64be84bf06d",
+      "attributes": {
+        "name": "Dominican Republic",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "01bd57b2-d87b-4f3f-b97e-664ad05f9ee9",
+        "children": []
+      }
+    },
+    {
+      "type": "adminRegions",
+      "id": "6c4adeac-e1f4-4067-8c19-971a59c8ee71",
+      "attributes": {
+        "name": "El Salvador",
+        "description": null,
+        "status": "inactive",
+        "geoRegionId": "3dec4c73-be2d-451a-85cc-dfb3a6c5d0ce",
+        "children": []
+      }
+    }
+  ]
+}

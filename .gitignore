@@ -1,0 +1,16 @@
+.terraform/
+.terragrunt-cache/
+node_modules
+/api/dist
+/api/coverage
+.env
+
+## Data
+/data/datasets/**
+/data/h3_data_importer/data
+
+infrastructure/base/vars/*
+infrastructure/kubernetes/vars/*
+!infrastructure/base/vars/terraform.tfvars
+!infrastructure/kubernetes/vars/terraform.tfvars
+/infrastructure/kubernetes/bastion_tunnel.sh

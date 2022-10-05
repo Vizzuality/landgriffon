@@ -189,35 +189,56 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
           Indicator,
           'indicator',
           'indicator.id = indicatorRecord.indicatorId',
-        )
-        .leftJoin(
+        );
+
+    switch (impactDataDto.groupBy) {
+      case GROUP_BY_VALUES.MATERIAL:
+        basicSelectQuery.leftJoin(
           Material,
           'material',
           'material.id = sourcingLocation.materialId',
-        )
-        .leftJoin(
+        );
+        break;
+      case GROUP_BY_VALUES.REGION:
+        basicSelectQuery.leftJoin(
           AdminRegion,
           'adminRegion',
           'sourcingLocation.adminRegionId = adminRegion.id ',
-        )
-        .leftJoin(
+        );
+        break;
+      case GROUP_BY_VALUES.SUPPLIER:
+        basicSelectQuery.leftJoin(
           Supplier,
           'supplier',
           'sourcingLocation.producerId = supplier.id or sourcingLocation.t1SupplierId = supplier.id',
-        )
-        .leftJoin(
+        );
+        break;
+      case GROUP_BY_VALUES.BUSINESS_UNIT:
+        basicSelectQuery.leftJoin(
           BusinessUnit,
           'businessUnit',
           'sourcingLocation.businessUnitId = businessUnit.id',
-        )
+        );
+        break;
 
-        .where('sourcingRecords.year BETWEEN :startYear and :endYear', {
-          startYear: impactDataDto.startYear,
-          endYear: impactDataDto.endYear,
-        })
-        .andWhere('indicator.id IN (:...indicatorIds)', {
-          indicatorIds: impactDataDto.indicatorIds,
-        });
+      default:
+        basicSelectQuery;
+    }
+
+    basicSelectQuery
+      .leftJoin(
+        BusinessUnit,
+        'businessUnit',
+        'sourcingLocation.businessUnitId = businessUnit.id',
+      )
+
+      .where('sourcingRecords.year BETWEEN :startYear and :endYear', {
+        startYear: impactDataDto.startYear,
+        endYear: impactDataDto.endYear,
+      })
+      .andWhere('indicator.id IN (:...indicatorIds)', {
+        indicatorIds: impactDataDto.indicatorIds,
+      });
 
     return basicSelectQuery;
   }

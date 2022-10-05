@@ -1,14 +1,7 @@
 import ProjectedDataIcon from 'components/icons/projected-data';
+import type { Props as LegendProps } from 'recharts/types/component/Legend';
 
-type LegendChartProps = {
-  payload: {
-    value: string;
-    color: string;
-    type: string;
-  }[];
-};
-
-const LegendChart: React.FC<LegendChartProps> = ({ payload }) => (
+const LegendChart = ({ payload }: LegendProps) => (
   <div className="flex justify-between">
     <ul className="flex flex-wrap">
       {payload

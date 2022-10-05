@@ -8,7 +8,9 @@ import analysisUI, {
   setSidebarCollapsed,
   initialState as analysisUIInitialState,
 } from 'store/features/analysis/ui';
-import analysisFilters from 'store/features/analysis/filters';
+import analysisFilters, {
+  initialState as analysisFiltersInitialState,
+} from 'store/features/analysis/filters';
 import analysisMap, {
   setViewState,
   initialState as analysisMapInitialState,
@@ -18,6 +20,7 @@ import analysisScenarios, {
   initialState as analysisScenariosInitialState,
   setScenarioToCompare,
 } from 'store/features/analysis/scenarios';
+import type { AnalysisState } from './features/analysis';
 
 const staticReducers = {
   ui,
@@ -96,24 +99,26 @@ const checkValidJSON = (json: string) => {
   }
 };
 
-const getPreloadedState = (query = {}) => {
+const getPreloadedState = (
+  query: Record<string, string>,
   // It seems like is needed to specify the whole root object
   // because it doesn't merge with the original initial state
-  const preloadedState = {
+  previousState: AnalysisState = {
     'analysis/ui': { ...analysisUIInitialState },
     'analysis/map': { ...analysisMapInitialState },
     'analysis/scenarios': { ...analysisScenariosInitialState },
-  };
-
+    'analysis/filters': { ...analysisFiltersInitialState },
+  },
+) => {
   Object.keys(QUERY_PARAMS_MAP).forEach((param) => {
     const { stateName, rootState } = QUERY_PARAMS_MAP[param];
     if (query[param]) {
-      if (!preloadedState[rootState]) preloadedState[rootState] = {};
-      preloadedState[rootState][stateName] = formatParam(query[param]);
+      if (!previousState[rootState]) previousState[rootState] = {};
+      previousState[rootState][stateName] = formatParam(query[param]);
     }
   });
 
-  return preloadedState;
+  return previousState;
 };
 
 // Custom middleware to sync URL params and the store
@@ -154,11 +159,11 @@ const querySyncMiddleware: Middleware = () => (next) => (action) => {
   return next(action);
 };
 
-const createStore = (query) =>
+const createStore = (query = {}, currentState?: AnalysisState) =>
   configureStore({
     reducer: createReducer(asyncReducers),
     devTools: process.env.NODE_ENV !== 'production',
-    preloadedState: getPreloadedState(query),
+    preloadedState: getPreloadedState(query, currentState),
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(querySyncMiddleware),
   });
 

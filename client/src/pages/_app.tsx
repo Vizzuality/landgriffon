@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 import { QueryClient, QueryClientProvider, Hydrate } from '@tanstack/react-query';
 import { OverlayProvider } from '@react-aria/overlays';
@@ -16,6 +16,7 @@ import type { DehydratedState } from '@tanstack/react-query';
 import type { Session } from 'next-auth';
 
 import 'styles/globals.css';
+import { useRouter } from 'next/router';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
@@ -33,7 +34,25 @@ type AppPropsWithLayout = AppProps<PageProps> & {
 };
 
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
-  const [store] = useState(() => initStore(pageProps.query));
+  /* ?
+   * On navigation, the redux middleware doesn't run, so we must manually trigger it.
+   * The state is passed because otherwise it resets the store to the original state + the query params.
+   */
+  const router = useRouter();
+  const [store, setStore] = useState(() => initStore(pageProps.query));
+  useEffect(() => {
+    const onRouteChange = () => {
+      if (!router.isReady) return;
+      setStore(initStore(router.query, store.getState()));
+    };
+
+    router.events.on('routeChangeComplete', onRouteChange);
+
+    return () => {
+      router.events.off('routeChangeComplete', onRouteChange);
+    };
+  }, [router.events, router.isReady, router.query, store]);
+
   const [queryClient] = useState(() => new QueryClient());
   const getLayout = Component.Layout ?? ((page) => page);
 

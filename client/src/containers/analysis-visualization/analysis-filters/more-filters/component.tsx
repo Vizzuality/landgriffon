@@ -22,7 +22,6 @@ import {
 } from '@floating-ui/react-dom-interactions';
 import { Transition } from '@headlessui/react';
 import { scenarios } from 'store/features/analysis';
-import { ACTUAL_DATA } from 'containers/scenarios/constants';
 
 type MoreFiltersState = {
   materials: AnalysisFiltersState['materials'];
@@ -42,8 +41,7 @@ const MoreFilters = () => {
   const dispatch = useAppDispatch();
   const { materials, origins, suppliers, locationTypes } = useAppSelector(analysisFilters);
 
-  const { currentScenario } = useAppSelector(scenarios);
-  const scenarioId = currentScenario === ACTUAL_DATA.id ? undefined : currentScenario;
+  const { currentScenario: scenarioId } = useAppSelector(scenarios);
 
   const moreFilters: MoreFiltersState = useMemo(
     () => ({ materials, origins, suppliers, locationTypes }),

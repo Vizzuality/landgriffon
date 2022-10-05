@@ -8,7 +8,6 @@ import { scenarios, setComparisonEnabled } from 'store/features/analysis/scenari
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 
 import ScenariosComparison from 'containers/scenarios/comparison';
-import { ACTUAL_DATA } from '../constants';
 
 import type { Scenario } from '../types';
 import { DatabaseIcon } from '@heroicons/react/outline';
@@ -99,24 +98,22 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
                   >
                     {scenario.title}
                   </h2>
-                  {scenario.id !== ACTUAL_DATA.id && (
+                  {scenario.id ? (
                     <div className="flex">
                       <div className="px-2 text-xs rounded-full bg-yellow">
                         {scenario.scenarioInterventions.length} interventions
                       </div>
                     </div>
+                  ) : (
+                    <span className="flex flex-row text-sm text-gray-500 place-items-center">
+                      <span>
+                        <DatabaseIcon className="w-4 h-4" />
+                      </span>
+                      <span>Based on your uploaded data</span>
+                    </span>
                   )}
                   <div>
-                    {scenario.id === ACTUAL_DATA.id && (
-                      <span className="flex flex-row text-sm text-gray-500 place-items-center">
-                        <span>
-                          <DatabaseIcon className="w-4 h-4" />
-                        </span>
-                        <span>Based on your uploaded data</span>
-                      </span>
-                    )}
-
-                    {scenario.id !== ACTUAL_DATA.id && scenario.updatedAt && (
+                    {scenario.id && scenario.updatedAt && (
                       <div className="flex flex-row justify-between w-full min-w-0 gap-1 place-items-center">
                         <div className="text-xs text-gray-400" title={updatedAt?.toLocaleString()}>
                           Modified: {formattedUpdatedAgo}

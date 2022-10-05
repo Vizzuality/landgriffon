@@ -1,6 +1,5 @@
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
-import { ACTUAL_DATA } from 'containers/scenarios/constants';
 import type { Scenario } from 'containers/scenarios/types';
 import { apiRawService } from 'services/api';
 import type { ImpactH3APIParams } from 'types';
@@ -19,7 +18,7 @@ const useH3ComparisonData = <T = H3ImpactResponse>(
   { baseScenarioId, ...rawParams }: CompareH3ApiParams,
   options: UseQueryOptions<H3ImpactResponse, unknown, T>,
 ) => {
-  const vsActual = !baseScenarioId || baseScenarioId === ACTUAL_DATA.id;
+  const vsActual = !baseScenarioId;
   const colors = useColors('impact', COLOR_RAMPS);
   const params = { ...rawParams, ...(vsActual ? {} : { baseScenarioId }) };
 

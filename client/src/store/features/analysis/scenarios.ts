@@ -6,7 +6,11 @@ import type { Scenario } from 'containers/scenarios/types';
 export type ScenariosState = {
   isComparisonEnabled: boolean;
   comparisonMode: 'relative' | 'absolute';
-  currentScenario: Scenario['id'];
+  /**
+   * The current scenario id
+   * If the current scenario is the actual data, the id will be null
+   */
+  currentScenario: Scenario['id'] | null;
   scenarioToCompare: Scenario['id'];
   // To remove
   searchTerm: string;

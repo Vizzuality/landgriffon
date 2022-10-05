@@ -123,7 +123,7 @@ export function useScenario(id: Scenario['id']): ResponseDataScenario {
           url: `/scenarios/${id}`,
         })
         .then(({ data: responseData }) => responseData.data),
-    { ...DEFAULT_QUERY_OPTIONS, enabled: !!id && id !== 'actual-data' },
+    { ...DEFAULT_QUERY_OPTIONS, enabled: !!id },
   );
 
   return useMemo<ResponseDataScenario>(() => response, [response]);

@@ -22,7 +22,6 @@ import LegendChart from './legend';
 import type { Indicator } from 'types';
 import { useAppSelector } from 'store/hooks';
 import { scenarios } from 'store/features/analysis';
-import { ACTUAL_DATA } from 'containers/scenarios/constants';
 
 type StackedAreaChartProps = {
   indicator: Indicator;
@@ -39,7 +38,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
     sort: 'DES',
     ...omit(filters, 'indicatorId'),
     indicatorIds: [indicator.id],
-    scenarioId: scenarioId === ACTUAL_DATA.id ? undefined : scenarioId,
+    scenarioId,
   };
 
   const enabled =

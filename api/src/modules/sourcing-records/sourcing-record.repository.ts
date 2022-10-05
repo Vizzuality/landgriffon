@@ -226,12 +226,6 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
     }
 
     basicSelectQuery
-      .leftJoin(
-        BusinessUnit,
-        'businessUnit',
-        'sourcingLocation.businessUnitId = businessUnit.id',
-      )
-
       .where('sourcingRecords.year BETWEEN :startYear and :endYear', {
         startYear: impactDataDto.startYear,
         endYear: impactDataDto.endYear,

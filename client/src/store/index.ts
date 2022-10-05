@@ -1,7 +1,7 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import type { ReducersMapObject, Middleware } from '@reduxjs/toolkit';
 import router from 'next/router';
-import { isObject } from 'lodash';
+import { cloneDeep, isObject } from 'lodash';
 
 import ui from 'store/features/ui';
 import analysisUI, {
@@ -103,13 +103,14 @@ const getPreloadedState = (
   query: Record<string, string>,
   // It seems like is needed to specify the whole root object
   // because it doesn't merge with the original initial state
-  previousState: AnalysisState = {
+  _previousStateOriginal: AnalysisState = {
     'analysis/ui': { ...analysisUIInitialState },
     'analysis/map': { ...analysisMapInitialState },
     'analysis/scenarios': { ...analysisScenariosInitialState },
     'analysis/filters': { ...analysisFiltersInitialState },
   },
 ) => {
+  const previousState = cloneDeep(_previousStateOriginal);
   Object.keys(QUERY_PARAMS_MAP).forEach((param) => {
     const { stateName, rootState } = QUERY_PARAMS_MAP[param];
     if (query[param]) {

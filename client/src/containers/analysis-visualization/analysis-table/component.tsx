@@ -94,9 +94,7 @@ const AnalysisTable: React.FC = () => {
     endYear: filters.endYear,
     groupBy: filters.groupBy,
     ...restFilters,
-    ...(currentScenario && currentScenario !== 'actual-data'
-      ? { scenarioId: currentScenario }
-      : {}),
+    scenarioId: currentScenario,
     ...(isComparisonEnabled && scenarioToCompare ? { scenarioId: scenarioToCompare } : {}),
     'page[number]': paginationState.pageIndex,
     'page[size]': paginationState.pageSize,

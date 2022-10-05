@@ -40,12 +40,12 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
   const { data: scenarioB } = useScenario(scenarioToCompare);
 
   const scenario1 = useMemo(
-    () => (currentScenario !== 'actual-data' ? scenario?.title : 'Actual data'),
+    () => (currentScenario ? scenario?.title : 'Actual data'),
     [currentScenario, scenario?.title],
   );
 
   const scenario2 = useMemo(
-    () => (scenarioToCompare !== 'actual-data' ? scenarioB?.title : 'Actual data'),
+    () => (scenarioToCompare ? scenarioB?.title : 'Actual data'),
     [scenarioToCompare, scenarioB?.title],
   );
 
@@ -143,7 +143,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
   );
 
   const shouldDisplayComparePhrase = useMemo(
-    () => isComparisonEnabled && scenarioToCompare && scenarioToCompare !== 'actual-data',
+    () => isComparisonEnabled && scenarioToCompare,
     [isComparisonEnabled, scenarioToCompare],
   );
 

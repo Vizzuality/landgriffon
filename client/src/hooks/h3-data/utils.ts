@@ -1,5 +1,4 @@
 import type { UseQueryResult } from '@tanstack/react-query';
-import { ACTUAL_DATA } from 'containers/scenarios/constants';
 import type { ScaleOrdinal, ScaleThreshold } from 'd3-scale';
 import { scaleOrdinal, scaleThreshold } from 'd3-scale';
 import type { AnalysisFiltersState } from 'store/features/analysis/filters';
@@ -32,7 +31,7 @@ export const storeToQueryParams = ({
     ...(suppliers?.length ? { supplierIds: suppliers?.map(({ value }) => value) } : {}),
     ...(origins?.length ? { originIds: origins?.map(({ value }) => value) } : {}),
     ...(locationTypes?.length ? { locationTypes: locationTypes?.map(({ value }) => value) } : {}),
-    ...(currentScenario !== ACTUAL_DATA.id ? { scenarioId: currentScenario } : {}),
+    scenarioId: currentScenario,
     resolution: origins?.length ? 6 : 4,
   };
 };

@@ -1,11 +1,7 @@
-import { Fragment, useEffect } from 'react';
 import { differenceInDays, format, formatDistanceToNowStrict } from 'date-fns';
 import { RadioGroup } from '@headlessui/react';
 import classNames from 'classnames';
 import Link from 'next/link';
-
-import { scenarios, setComparisonEnabled } from 'store/features/analysis/scenarios';
-import { useAppDispatch, useAppSelector } from 'store/hooks';
 
 import ScenariosComparison from 'containers/scenarios/comparison';
 
@@ -39,19 +35,6 @@ const formatTimeAgo = (date: Date) => {
 };
 
 const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
-  const dispatch = useAppDispatch();
-  const { currentScenario, scenarioToCompare } = useAppSelector(scenarios);
-
-  useEffect(() => {
-    // Disabling comparison when is not selected
-    if (!isSelected) dispatch(setComparisonEnabled(false));
-  }, [dispatch, isSelected]);
-
-  useEffect(() => {
-    // Disabling comparison when is not selected
-    dispatch(setComparisonEnabled(!!currentScenario && !!scenarioToCompare));
-  }, [dispatch, currentScenario, scenarioToCompare]);
-
   const updatedAt = useMemo(
     () => (scenario.updatedAt ? new Date(scenario.updatedAt) : null),
     [scenario.updatedAt],

@@ -1,9 +1,10 @@
-import { useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
 import { RadioGroup } from '@headlessui/react';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import {
   scenarios,
+  setComparisonEnabled,
   setCurrentScenario,
   setScenarioToCompare,
 } from 'store/features/analysis/scenarios';
@@ -30,10 +31,13 @@ const ScenariosList = ({ data }: ScenariosListProps) => {
 
   const handleOnChange = useCallback(
     (id: Scenario['id']) => {
-      dispatch(setCurrentScenario(id)).payload;
+      dispatch(setCurrentScenario(id));
+      dispatch(setComparisonEnabled(false));
+
+      // TODO: if done one after the other, the query middleware overrides the values stored in the query params
       setTimeout(() => {
         dispatch(setScenarioToCompare(null));
-      }, 10);
+      }, 0);
     },
     [dispatch],
   );

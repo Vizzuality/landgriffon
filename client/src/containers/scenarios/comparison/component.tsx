@@ -5,6 +5,7 @@ import { useScenarios } from 'hooks/scenarios';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import {
   scenarios as scenariosSelector,
+  setComparisonEnabled,
   setScenarioToCompare,
 } from 'store/features/analysis/scenarios';
 
@@ -37,7 +38,8 @@ const ScenariosComparison: FC = () => {
 
   const handleOnChange = useCallback<Dispatch<SelectOption>>(
     (current) => {
-      dispatch(setScenarioToCompare(current?.value));
+      dispatch(setComparisonEnabled(!!current));
+      dispatch(setScenarioToCompare(current?.value || null));
     },
     [dispatch],
   );
@@ -46,12 +48,13 @@ const ScenariosComparison: FC = () => {
   useEffect(() => {
     if (selected?.value && scenarioToCompare !== selected?.value) {
       dispatch(setScenarioToCompare(null));
+      setComparisonEnabled(false);
     }
   }, [selected, dispatch, options, scenarioToCompare]);
 
   return (
     <div>
-      <div className="text-gray-900 text-sm">Compare with:</div>
+      <div className="text-sm text-gray-900">Compare with:</div>
       <Select
         showSearch
         current={selected}

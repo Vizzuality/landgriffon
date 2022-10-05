@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- `ACTUAL_DATA` was removed and a null scenario id is used in it's place
 - Send `scenarioId` param alongside analysis filters [LANDGRIF-891](https://vizzuality.atlassian.net/browse/LANDGRIF-891)
 - Same input for city, address and coordinates for intervention form [LANDGRIF-821](https://vizzuality.atlassian.net/browse/LANDGRIF-821)
 - Redesign the Legend [LANDGRIF_727](https://vizzuality.atlassian.net/browse/LANDGRIF-727)
@@ -26,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Navigating to another page with some query params now correctly override the state [LANDGRIF-911](https://vizzuality.atlassian.net/browse/LANDGRIF-911)
 - Smart filters not being persisted between pages
 - Showing errors in the sign-up form
 - Loading more consistent for the auth pages

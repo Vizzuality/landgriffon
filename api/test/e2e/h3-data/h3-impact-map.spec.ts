@@ -385,7 +385,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(
         toBeCloseToArray(
           response.body.metadata.quantiles,
-          [1042, 687.72, 343.86, 0, -343.86, -687.72, -1042],
+          [0, 497.3428, 544.7708, 592, 742.03, 892.329999, 1042],
           5,
         ),
       ).toBeTruthy();

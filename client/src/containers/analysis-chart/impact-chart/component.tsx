@@ -22,6 +22,7 @@ import LegendChart from './legend';
 import type { Indicator } from 'types';
 import { useAppSelector } from 'store/hooks';
 import { scenarios } from 'store/features/analysis';
+import type { TooltipProps } from 'recharts/types/component/Tooltip';
 
 type StackedAreaChartProps = {
   indicator: Indicator;
@@ -96,8 +97,21 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
     };
   }, [data]);
 
-  const renderLegend = useCallback((props) => {
-    return <LegendChart {...props} />;
+  const renderTooltip = useCallback(({ payload, label }: TooltipProps<number, string>) => {
+    return (
+      <div className="p-2 bg-white rounded-md shadow-md">
+        <div>{label}</div>
+        <ul className="space-y-2">
+          {payload.map((item) => (
+            <li key={item.dataKey} className="flex flex-row gap-2">
+              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: item.color }} />
+              {item.name}: {NUMBER_FORMAT(item.value as number)}
+              {item.unit}
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
   }, []);
 
   return (
@@ -137,7 +151,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                       ></rect>
                     </pattern>
                   </defs>
-                  <Legend verticalAlign="top" content={renderLegend} height={70} />
+                  <Legend verticalAlign="top" content={LegendChart} height={70} />
                   <CartesianGrid
                     vertical={false}
                     stroke="#15181F"
@@ -158,11 +172,10 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                     tickLine={false}
                     tickFormatter={NUMBER_FORMAT}
                   />
-                  <Tooltip
+                  <Tooltip<number, string>
                     animationDuration={500}
                     contentStyle={{ borderRadius: '8px', borderColor: '#D1D5DB' }}
-                    formatter={NUMBER_FORMAT}
-                    itemStyle={{ color: '#15181F' }}
+                    content={renderTooltip}
                   />
                   {chartData.keys.map((key) => (
                     <Area

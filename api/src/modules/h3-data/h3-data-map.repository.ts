@@ -162,7 +162,7 @@ export class H3DataMapRepository extends Repository<H3Data> {
       dto.supplierIds,
       dto.locationTypes,
       baseQueryExtend,
-      !!dto.scenarioId,
+      false,
     );
   }
 
@@ -281,7 +281,7 @@ export class H3DataMapRepository extends Repository<H3Data> {
    * @param supplierIds
    * @param locationTypes
    * @param baseQueryExtend
-   * @param quantilesWithScenario
+   * @param scenarioComparisonQuantiles
    */
   //TODO Pending refactoring of Quantiles temp table, and aggregation formulas
   private async baseGetImpactMap(
@@ -293,7 +293,7 @@ export class H3DataMapRepository extends Repository<H3Data> {
     supplierIds?: string[],
     locationTypes?: LOCATION_TYPES_PARAMS[],
     baseQueryExtend?: (baseQuery: SelectQueryBuilder<any>) => void,
-    quantilesWithScenario?: boolean,
+    scenarioComparisonQuantiles?: boolean,
   ): Promise<{ impactMap: H3IndexValueData[]; quantiles: number[] }> {
     let baseMapQuery: SelectQueryBuilder<any> = this.generateBaseMapSubQuery(
       indicatorId,
@@ -329,14 +329,14 @@ export class H3DataMapRepository extends Repository<H3Data> {
     return this.executeQueryAndQuantiles(
       withDynamicResolution,
       params,
-      quantilesWithScenario,
+      scenarioComparisonQuantiles,
     );
   }
 
   private async executeQueryAndQuantiles(
     query: SelectQueryBuilder<any>,
     params: any[],
-    quantilesWithScenario?: boolean,
+    scenarioComparisonQuantiles?: boolean,
   ): Promise<{ impactMap: H3IndexValueData[]; quantiles: number[] }> {
     const tmpTableName: string = H3DataMapRepository.generateRandomTableName();
     await getManager().query(
@@ -347,8 +347,8 @@ export class H3DataMapRepository extends Repository<H3Data> {
       `SELECT * FROM "${tmpTableName}"
       WHERE ABS("${tmpTableName}".v) > 0;`,
     );
-    const quantiles: number[] = await (quantilesWithScenario
-      ? this.calculateQuantilesWithScenario(tmpTableName)
+    const quantiles: number[] = await (scenarioComparisonQuantiles
+      ? this.calculateScenarioComparisonQuantiles(tmpTableName)
       : this.calculateQuantiles(tmpTableName));
     await getManager().query(`DROP TABLE "${tmpTableName}";`);
 
@@ -490,9 +490,9 @@ export class H3DataMapRepository extends Repository<H3Data> {
     }
   }
   /**
-   * This quantile calculation is meant to be used only for comparison maps, and impact maps with scenarios
+   * This quantile calculation is meant to be used only for comparison maps
    */
-  private async calculateQuantilesWithScenario(
+  private async calculateScenarioComparisonQuantiles(
     tmpTableName: string,
   ): Promise<number[]> {
     try {
@@ -513,7 +513,7 @@ export class H3DataMapRepository extends Repository<H3Data> {
       ];
     } catch (err) {
       this.logger.error(err);
-      throw new Error(`Quantiles could not been calculated`);
+      throw new Error(`Comparison Quantiles could not be calculated`);
     }
   }
 }

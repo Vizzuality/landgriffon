@@ -41,6 +41,7 @@ import {
   groupByMaterialResponseData,
   groupByOriginResponseData,
   groupBySupplierResponseData,
+  impactTableWithScenario,
 } from './response-mocks.impact';
 import { PaginationMeta } from 'utils/app-base.service';
 import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
@@ -1223,6 +1224,10 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           response.body.data.impactTable[0].rows[0].children.some(
             (child: Material) => child.id === replacingMaterials['linen'].id,
           ),
+        );
+
+        expect(response.body.data.impactTable[0].rows).toEqual(
+          impactTableWithScenario.impactTable[0].rows,
         );
       },
     );

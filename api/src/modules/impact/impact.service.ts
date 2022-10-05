@@ -78,6 +78,23 @@ export class ImpactService {
         paginatedEntities.entities,
       );
 
+    if (impactTableDto.scenarioId) {
+      const dataForImpactTableWithScenario: ImpactTableData[] =
+        ImpactService.processImpactDataWithScenario(dataForImpactTable);
+
+      const impactTableWithScenario: ImpactTable = this.buildImpactTable(
+        impactTableDto,
+        indicators,
+        dataForImpactTableWithScenario,
+        this.buildImpactTableRowsSkeleton(paginatedEntities.entities),
+      );
+
+      return {
+        data: impactTableWithScenario,
+        metadata: paginatedEntities.metadata,
+      };
+    }
+
     const impactTable: ImpactTable = this.buildImpactTable(
       impactTableDto,
       indicators,
@@ -589,5 +606,60 @@ export class ImpactService {
         page,
       }),
     };
+  }
+
+  private static processImpactDataWithScenario(
+    dataForImpactTableWithScenario: ImpactTableData[],
+  ): ImpactTableData[] {
+    const result: ImpactTableData[] = [];
+
+    // Geting array with sourcing data  for real existing locations
+    const realSourcingData: ImpactTableData[] =
+      dataForImpactTableWithScenario.filter((el: ImpactTableData) => {
+        return el.typeByIntervention === null;
+      });
+
+    // Geting array with sourcing data for locations created by Scenario
+    const scenarioSourcingData: ImpactTableData[] =
+      dataForImpactTableWithScenario.filter((el: ImpactTableData) => {
+        return el.typeByIntervention !== null;
+      });
+
+    // Start iterating real data to check if it has been affected by Scenario and calculating scenarioImpact
+    realSourcingData.forEach((realData: ImpactTableData) => {
+      scenarioSourcingData.forEach((scenarioData: ImpactTableData) => {
+        if (
+          scenarioData.name === realData.name &&
+          scenarioData.year === realData.year &&
+          scenarioData.typeByIntervention !== null
+        ) {
+          realData.impact = realData.impact
+            ? realData.impact + scenarioData.impact
+            : 0;
+        }
+      });
+      result.push(realData);
+    });
+
+    /**
+     * We need to check if some of the scenario data has no real data
+     * (for example, if scenario objective is to use a new material that has never been purchased before, so there is no 'real' data for this material)
+     * In that case impact value (actual or real impact, without Scenario, should be 0)*/
+
+    scenarioSourcingData.forEach((scenarioData: ImpactTableData) => {
+      const realDataForEntities: ImpactTableData | undefined =
+        realSourcingData.find((realData: ImpactTableData) => {
+          return (
+            realData.year === scenarioData.year &&
+            realData.name === scenarioData.name
+          );
+        });
+
+      if (!realDataForEntities) {
+        result.push(scenarioData);
+      }
+    });
+
+    return result;
   }
 }

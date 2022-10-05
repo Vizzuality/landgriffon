@@ -483,11 +483,11 @@ export const filteredByLocationTypeResponseData = {
     { value: 406, year: 2013 },
   ],
 };
-export const scenarioInterventionComparisonTable = {
+export const impactTableWithScenario = {
   impactTable: [
     {
       indicatorShortName: null,
-      indicatorId: '8be70a63-58d6-4d3c-b724-ad0b0758c0a2',
+      indicatorId: '09dd65d9-dac0-481f-b5f5-7c099b005ce1',
       groupBy: 'material',
       rows: [
         {
@@ -498,36 +498,50 @@ export const scenarioInterventionComparisonTable = {
               children: [],
               values: [
                 {
+                  year: 2019,
+                  value: 0,
+                  isProjected: true,
+                },
+                {
                   year: 2020,
-                  value: 1200,
+                  value: 400,
                   isProjected: false,
-                  interventionValue: 1000,
-                  absoluteDifference: -200,
-                  percentageDifference: 83.33333333333334,
                 },
                 {
                   year: 2021,
-                  value: 1218,
+                  value: 406,
                   isProjected: true,
-                  interventionValue: 1015,
-                  absoluteDifference: -203,
-                  percentageDifference: 83.33333333333334,
                 },
                 {
                   year: 2022,
-                  value: 1236.27,
+                  value: 412.09,
                   isProjected: true,
-                  interventionValue: 1030.225,
-                  absoluteDifference: -206.04500000000007,
-                  percentageDifference: 83.33333333333333,
+                },
+              ],
+            },
+            {
+              name: 'Linen',
+              children: [],
+              values: [
+                {
+                  year: 2019,
+                  value: 0,
+                  isProjected: true,
                 },
                 {
-                  year: 2023,
-                  value: 1254.81405,
+                  year: 2020,
+                  value: 750,
+                  isProjected: false,
+                },
+                {
+                  year: 2021,
+                  value: 761.25,
                   isProjected: true,
-                  interventionValue: 1045.678375,
-                  absoluteDifference: -209.135675,
-                  percentageDifference: 83.33333333333334,
+                },
+                {
+                  year: 2022,
+                  value: 772.66875,
+                  isProjected: true,
                 },
               ],
             },
@@ -536,96 +550,68 @@ export const scenarioInterventionComparisonTable = {
               children: [],
               values: [
                 {
+                  year: 2019,
+                  value: 0,
+                  isProjected: true,
+                },
+                {
                   year: 2020,
-                  value: 1200,
+                  value: 500,
                   isProjected: false,
-                  interventionValue: 1000,
-                  absoluteDifference: -200,
-                  percentageDifference: 83.33333333333334,
                 },
                 {
                   year: 2021,
-                  value: 1218,
+                  value: 507.5,
                   isProjected: true,
-                  interventionValue: 1015,
-                  absoluteDifference: -203,
-                  percentageDifference: 83.33333333333334,
                 },
                 {
                   year: 2022,
-                  value: 1236.27,
+                  value: 515.1125,
                   isProjected: true,
-                  interventionValue: 1030.225,
-                  absoluteDifference: -206.04500000000007,
-                  percentageDifference: 83.33333333333333,
-                },
-                {
-                  year: 2023,
-                  value: 1254.81405,
-                  isProjected: true,
-                  interventionValue: 1045.678375,
-                  absoluteDifference: -209.135675,
-                  percentageDifference: 83.33333333333334,
                 },
               ],
             },
           ],
           values: [
             {
+              year: 2019,
+              value: 0,
+              isProjected: true,
+            },
+            {
               year: 2020,
-              value: 2400,
+              value: 1650,
               isProjected: false,
-              interventionValue: 2000,
-              absoluteDifference: -400,
-              percentageDifference: 83.33333333333334,
             },
             {
               year: 2021,
-              value: 2436,
+              value: 1674.75,
               isProjected: true,
-              interventionValue: 2030,
-              absoluteDifference: -406,
-              percentageDifference: 83.33333333333334,
             },
             {
               year: 2022,
-              value: 2472.54,
+              value: 1699.87125,
               isProjected: true,
-              interventionValue: 2060.45,
-              absoluteDifference: -412.09000000000015,
-              percentageDifference: 83.33333333333333,
-            },
-            {
-              year: 2023,
-              value: 2509.6281,
-              isProjected: true,
-              interventionValue: 2091.35675,
-              absoluteDifference: -418.27135,
-              percentageDifference: 83.33333333333334,
             },
           ],
         },
       ],
       yearSum: [
         {
+          year: 2019,
+          value: 0,
+        },
+        {
           year: 2020,
-          value: 2400,
-          interventionValue: 2000,
+          value: 1650,
         },
         {
           year: 2021,
-          value: 2436,
-          interventionValue: 2030,
+          value: 1674.75,
         },
         {
           year: 2022,
-          value: 2472.54,
-          interventionValue: 2060.45,
-        },
-        {
-          year: 2023,
-          value: 2509.6281,
-          interventionValue: 2091.35675,
+          value: 1699.87125,
         },
       ],
       metadata: {
@@ -633,26 +619,5 @@ export const scenarioInterventionComparisonTable = {
       },
     },
   ],
-  purchasedTonnes: [
-    {
-      year: 2020,
-      value: 2005.12,
-      isProjected: false,
-    },
-    {
-      year: 2021,
-      value: 1017.5984,
-      isProjected: true,
-    },
-    {
-      year: 2022,
-      value: 1017.5984,
-      isProjected: true,
-    },
-    {
-      year: 2023,
-      value: 1017.5984,
-      isProjected: true,
-    },
-  ],
+  purchasedTonnes: [],
 };

@@ -102,6 +102,7 @@ const getPreloadedState = (query = {}) => {
   const preloadedState = {
     'analysis/ui': { ...analysisUIInitialState },
     'analysis/map': { ...analysisMapInitialState },
+    'analysis/scenarios': { ...analysisScenariosInitialState },
   };
 
   Object.keys(QUERY_PARAMS_MAP).forEach((param) => {

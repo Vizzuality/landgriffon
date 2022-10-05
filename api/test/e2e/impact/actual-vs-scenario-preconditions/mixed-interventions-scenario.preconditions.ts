@@ -140,6 +140,7 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
       material: wool,
       businessUnit,
       t1Supplier: supplierB,
+      producer: supplierA,
       adminRegion,
       scenarioInterventionId: scenarioIntervention1.id,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,

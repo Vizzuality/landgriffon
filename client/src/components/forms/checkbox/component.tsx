@@ -19,7 +19,7 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
       <div className="flex items-center">
         <input
           className={classnames([THEMES[theme]], {
-            'border-red-600': !!error,
+            'border-red-400': !!error,
           })}
           {...props}
           ref={ref}

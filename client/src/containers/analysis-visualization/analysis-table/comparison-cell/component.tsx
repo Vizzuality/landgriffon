@@ -30,7 +30,7 @@ const ComparisonCell: React.FC<ComparisonCellProps> = ({
               'bg-green-400/40 text-green-700':
                 (comparisonMode === 'relative' && percentageDifference <= 0) ||
                 (comparisonMode === 'absolute' && absoluteDifference <= 0),
-              'bg-red-600/20 text-red-700':
+              'bg-red-400/20 text-red-800':
                 (comparisonMode === 'relative' && percentageDifference > 0) ||
                 (comparisonMode === 'absolute' && absoluteDifference > 0),
             },

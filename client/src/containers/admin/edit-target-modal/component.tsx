@@ -88,7 +88,7 @@ const AdminEditTargetModal: React.FC<EditTargetModalProps> = ({ title, open, onD
             // error={!!errors?.newYearID}
           />
         </div>
-        <div className="block font-medium text-gray-700">
+        <div className="block font-medium text-gray-600">
           <div className="px-6 py-2 text-center rounded-md bg-green-50">
             <div className="text-base text-gray-900">2.37M tCO2e</div>
           </div>

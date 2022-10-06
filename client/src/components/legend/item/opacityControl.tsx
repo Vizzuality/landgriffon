@@ -20,7 +20,7 @@ const OpacityControl: React.FC<OpacityControlProps> = ({ opacity, onChange }) =>
   const TooltipContent = useMemo(
     () => (
       <div className="bg-white px-4 py-1 rounded-md w-52">
-        <div className="text-left text-gray-700">Opacity</div>
+        <div className="text-left text-gray-600">Opacity</div>
         <RangeSlider
           unit="%"
           min={0}

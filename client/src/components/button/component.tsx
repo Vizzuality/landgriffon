@@ -14,11 +14,11 @@ const BASE_BORDER =
 
 const SECONDARY = classNames(
   BASE_BORDER,
-  'border border-gray-300 focus:border-primary text-gray-700 hover:bg-gray-50 focus:ring-green-700',
+  'border border-gray-300 focus:border-primary text-gray-600 hover:bg-gray-50 focus:ring-green-700',
 );
 
 const TERTIARY =
-  'border-transparent shadow-sm text-white bg-gray-500 hover:bg-gray-700 focus:outline-offset-2 focus:outline focus:outline-gray-500/20';
+  'border-transparent shadow-sm text-white bg-gray-500 hover:bg-gray-600 focus:outline-offset-2 focus:outline focus:outline-gray-500/20';
 
 const PRIMARY_LIGHT = classNames(BASE_BORDER, 'text-primary border-primary');
 

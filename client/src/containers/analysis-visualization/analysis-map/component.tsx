@@ -174,7 +174,7 @@ const AnalysisMap: React.FC = () => {
         <div className="absolute z-10 p-4 rounded-md top-20 left-12 bg-red-50">
           <div className="flex">
             <XCircleIcon className="w-5 h-5 text-red-400" aria-hidden="true" />
-            <p className="mb-0 ml-3 text-sm text-red-600">
+            <p className="mb-0 ml-3 text-sm text-red-400">
               No available data for the current filter selection. Please try another one.
             </p>
           </div>

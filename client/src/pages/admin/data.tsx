@@ -168,9 +168,9 @@ const AdminDataPage: React.FC = () => {
                 <DataUploader task={lastTask} />
 
                 {lastTask?.errors.length > 0 && (
-                  <div className="p-4 mt-6 text-sm text-left text-red-600 rounded-md bg-red-50">
+                  <div className="p-4 mt-6 text-sm text-left text-red-400 rounded-md bg-red-50">
                     <p>
-                      <XCircleIcon className="inline-block w-5 h-5 mr-2 text-red-600 align-top" />
+                      <XCircleIcon className="inline-block w-5 h-5 mr-2 text-red-400 align-top" />
                       There {lastTask.errors.length === 1 ? 'is' : 'are'} {lastTask.errors.length}{' '}
                       error
                       {lastTask.errors.length > 1 && 's'} with your file. Please correct them and

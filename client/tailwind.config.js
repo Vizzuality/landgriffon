@@ -12,8 +12,14 @@ module.exports = {
         sans: ['Public Sans', 'sans-serif'],
       },
       fontSize: {
-        xs: ['0.75rem', '1rem'], // 12px
         '2xs': '0.625rem', // 10px
+        xs: ['0.75rem', '1rem'], // 12px
+        sm: ['0.875rem', '1.25rem'], // 14px
+        base: ['1rem', '1.5rem'], // 16px
+        lg: ['1.125rem', '1.75rem'], // 18px
+        '2xl': ['1.5rem', '2rem'], // 20px
+        '3xl': ['1.875rem', '2.25rem'], // 24px
+        '4xl': ['2.25rem', '2.5rem'], // 28px
       },
       height: {
         'screen-minus-header': "calc(100vh - theme('spacing.16'))",

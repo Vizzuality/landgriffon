@@ -12,7 +12,7 @@ import {
   useInteractions,
 } from '@floating-ui/react-dom-interactions';
 import { Transition } from '@headlessui/react';
-import { ChevronUpIcon } from '@heroicons/react/solid';
+import { ChevronDownIcon } from '@heroicons/react/solid';
 
 import type { SelectOption } from 'components/select/types';
 import type { YearsRangeFilterProps } from './types';
@@ -107,7 +107,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
           </span>
         </span>
         <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-          <ChevronUpIcon
+          <ChevronDownIcon
             className={cx('w-5 h-5 text-gray-900', {
               'rotate-180': isOpen,
             })}

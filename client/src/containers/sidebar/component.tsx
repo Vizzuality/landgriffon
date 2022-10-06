@@ -54,7 +54,7 @@ const Sidebar: React.FC = () => {
             leaveFrom="translate-x-0"
             leaveTo="-translate-x-full"
           >
-            <div className="relative flex flex-col flex-1 w-full max-w-xs pt-5 pb-4 bg-primary">
+            <div className="relative flex flex-col flex-1 w-full max-w-xs pt-5 pb-4 bg-navy-600">
               <Transition.Child
                 as={Fragment}
                 enter="ease-in-out duration-300"
@@ -95,7 +95,7 @@ const Sidebar: React.FC = () => {
       {/* Static sidebar for desktop */}
       <div className="flex lg:flex-shrink-0">
         <div className="flex flex-col w-28">
-          <div className="flex flex-col flex-1 min-h-0 overflow-y-auto bg-primary">
+          <div className="flex flex-col flex-1 min-h-0 overflow-y-auto bg-navy-600">
             <div className="flex-1">
               {/* TODO: Logo should be here */}
               <LandgriffonLogo className="flex justify-center my-12" />

@@ -46,11 +46,11 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
   );
 
   return (
-    <li className="col-span-1 last-of-type:mb-6">
+    <div>
       <div
         className={classNames(
-          'rounded-md shadow-sm border p-4 space-y-4',
-          isSelected ? 'border-primary' : 'border-gray-300',
+          'rounded-lg shadow-sm border p-4 space-y-2',
+          isSelected ? 'border-navy-400' : 'border-gray-200',
         )}
       >
         <div className="flex items-center">
@@ -64,7 +64,7 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
                 <div className="flex justify-center flex-shrink-0 items-top">
                   <span
                     className={classNames(
-                      checked ? 'bg-primary border-transparent' : 'bg-white border-gray-200',
+                      checked ? 'bg-navy-400 border-transparent' : 'bg-white border-gray-300',
                       'h-4 w-4 mt-0.5 cursor-pointer rounded-full border flex items-center justify-center',
                     )}
                     aria-hidden="true"
@@ -76,14 +76,18 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
                   <h2
                     className={classNames(
                       'text-sm font-medium truncate',
-                      isSelected ? 'text-primary' : 'text-gray-900',
+                      isSelected ? 'text-navy-400' : 'text-gray-900',
                     )}
                   >
                     {scenario.title}
                   </h2>
                   {scenario.id ? (
-                    <div className="flex">
-                      <div className="px-2 text-xs rounded-full bg-yellow">
+                    <div className="flex items-center space-x-1 text-xs font-medium text-gray-900">
+                      <div>Show</div>
+                      <div className="px-2 py-px leading-4 bg-blue-200 rounded-sm">
+                        {scenario.scenarioInterventions.length} growth rates
+                      </div>
+                      <div className="px-2 py-px leading-4 bg-orange-100 rounded-sm">
                         {scenario.scenarioInterventions.length} interventions
                       </div>
                     </div>
@@ -101,13 +105,15 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
                         <div className="text-xs text-gray-400" title={updatedAt?.toLocaleString()}>
                           Modified: {formattedUpdatedAgo}
                         </div>
-                        <div>
-                          <Link href={`/admin/scenarios/${scenario.id}/edit`}>
-                            <a>
-                              <Button theme="secondary">Edit</Button>
-                            </a>
-                          </Link>
-                        </div>
+                        {isSelected && (
+                          <div>
+                            <Link href={`/admin/scenarios/${scenario.id}/edit`}>
+                              <a>
+                                <Button theme="secondary">Edit</Button>
+                              </a>
+                            </Link>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -122,7 +128,7 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
           </div>
         )}
       </div>
-    </li>
+    </div>
   );
 };
 

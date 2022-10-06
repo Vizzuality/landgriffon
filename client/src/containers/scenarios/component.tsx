@@ -1,25 +1,40 @@
-import type { MutableRefObject } from 'react';
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import Lottie from 'lottie-react';
 import { XCircleIcon } from '@heroicons/react/solid';
+import { RadioGroup } from '@headlessui/react';
 
-import { useAppSelector } from 'store/hooks';
-import { scenarios } from 'store/features/analysis/scenarios';
+import { useAppSelector, useAppDispatch } from 'store/hooks';
+import {
+  scenarios,
+  setComparisonEnabled,
+  setCurrentScenario,
+  setScenarioToCompare,
+} from 'store/features/analysis/scenarios';
 import { useInfiniteScenarios } from 'hooks/scenarios';
 import useBottomScrollListener from 'hooks/scroll';
 
 import noScenariosAnimationData from 'containers/scenarios/animations/noScenariosAnimationData.json';
 import ScenariosFilters from 'containers/scenarios/filters';
-import ScenariosList from 'containers/scenarios/list';
 
 import Loading from 'components/loading';
+import ScenarioItem from 'containers/scenarios/item';
 
+import type { MutableRefObject } from 'react';
 import type { Scenario } from './types';
+
+/**
+ * Actual data to the data response
+ */
+const ACTUAL_DATA: Scenario = {
+  id: null, // reserved id only for actual-data
+  title: 'Actual data',
+};
 
 const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement> }> = ({
   scrollref,
 }) => {
-  const { sort, searchTerm } = useAppSelector(scenarios);
+  const { currentScenario, sort, searchTerm } = useAppSelector(scenarios);
+  const dispatch = useAppDispatch();
   const { fetchNextPage, hasNextPage, data, isLoading, error } = useInfiniteScenarios({
     sort: sort as string,
     searchTerm,
@@ -31,30 +46,59 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
     return pages?.reduce((acc, { data }) => acc.concat(data?.data), []);
   }, [data]);
 
+  const handleOnChange = useCallback(
+    (id: Scenario['id']) => {
+      dispatch(setCurrentScenario(id));
+      dispatch(setComparisonEnabled(false));
+
+      // TODO: if done one after the other, the query middleware overrides the values stored in the query params
+      setTimeout(() => {
+        dispatch(setScenarioToCompare(null));
+      }, 0);
+    },
+    [dispatch],
+  );
+
   useBottomScrollListener(() => {
     if (hasNextPage) fetchNextPage();
   }, scrollref);
 
   return (
     <div className="text-gray-900 bg-white overscroll-contain">
-      <div className="sticky top-0 z-20 pt-10 pb-4 text-sm bg-white after:bg-gradient-to-b after:from-white after:w-full after:h-3 after:content after:-bottom-3 after:left-0 after:absolute">
-        <h1>Analyze data</h1>
-        {!isLoading && data && (
-          <div className="pt-6">
-            <ScenariosFilters />
-          </div>
-        )}
+      <div className="sticky top-0 z-20 pt-10 text-sm bg-white after:bg-gradient-to-b after:from-white after:w-full after:h-3 after:content after:-bottom-3 after:left-0 after:absolute">
+        <h1 className="mb-12">Analyze data</h1>
       </div>
+
       {isLoading && (
         <div className="flex justify-center p-6 ">
-          <Loading className="text-primary" />
+          <Loading className="text-navy-400" />
         </div>
       )}
+
       {!isLoading && data && (
-        <div className="relative z-10 flex-1 overflow-hidden">
-          <ScenariosList data={scenariosList} />
-        </div>
+        <RadioGroup value={currentScenario} onChange={handleOnChange}>
+          <RadioGroup.Label className="sr-only">Scenarios</RadioGroup.Label>
+          <div className="space-y-6">
+            {/* Actual data */}
+            <div>
+              <ScenarioItem scenario={ACTUAL_DATA} isSelected={!currentScenario} />
+            </div>
+            <div>
+              <ScenariosFilters />
+            </div>
+            <div className="relative z-10 flex-1 overflow-hidden">
+              <ul className="relative grid grid-cols-1 gap-5 my-2 overflow-auto sm:gap-2 sm:grid-cols-2 lg:grid-cols-1">
+                {scenariosList.map((item) => (
+                  <li key={item.id} className="last-of-type:mb-12">
+                    <ScenarioItem scenario={item} isSelected={currentScenario === item.id} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </RadioGroup>
       )}
+
       {!isLoading && error && (
         <div className="p-4 my-4 rounded-md bg-red-50">
           <div className="flex">

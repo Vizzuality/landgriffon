@@ -36,6 +36,7 @@ type ChartData = {
     scenarioValue: number;
     absoluteDifference: number;
     percentageDifference: number;
+    isProjected: boolean;
   }[];
 };
 
@@ -60,9 +61,26 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
 
   const chartData = useMemo<ChartData>(() => {
     const { indicatorShortName, yearSum, metadata } = data?.data?.impactTable?.[0] || {};
+    const nonProjectedData = (yearSum?.filter(({ isProjected }) => !isProjected) || []).sort(
+      ({ year }) => year,
+    );
+    const lastYearNonProjectedData = nonProjectedData[nonProjectedData.length - 1];
+    // Add the last year of non projected data to the projected data
+    const values =
+      yearSum?.map((item) => ({
+        ...item,
+        value: !item.isProjected ? item.value : null,
+        valueProjected:
+          lastYearNonProjectedData.year === item.year || item.isProjected ? item.value : null,
+        scenarioValue: !item.isProjected ? item.scenarioValue : null,
+        scenarioValueProjected:
+          lastYearNonProjectedData.year === item.year || item.isProjected
+            ? item.scenarioValue
+            : null,
+      })) || [];
 
     return {
-      values: yearSum,
+      values,
       name: indicatorShortName,
       unit: metadata?.unit,
     };
@@ -128,6 +146,17 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                     strokeWidth={2}
                     type="linear"
                   />
+                  <Line
+                    animationEasing="ease"
+                    animationDuration={500}
+                    dataKey="valueProjected"
+                    dot={{ strokeDasharray: 0, strokeWidth: 2 }}
+                    stroke="#AEB1B5"
+                    strokeDasharray="4 3"
+                    strokeWidth={2}
+                    type="linear"
+                  />
+
                   {/* Scenario */}
                   <Line
                     animationEasing="ease"
@@ -135,6 +164,16 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                     dataKey="scenarioValue"
                     fillOpacity={0.9}
                     stroke="#3F59E0"
+                    strokeWidth={2}
+                    type="linear"
+                  />
+                  <Line
+                    animationEasing="ease"
+                    animationDuration={500}
+                    dataKey="scenarioValueProjected"
+                    dot={{ strokeDasharray: 0, strokeWidth: 2 }}
+                    stroke="#3F59E0"
+                    strokeDasharray="4 3"
                     strokeWidth={2}
                     type="linear"
                   />

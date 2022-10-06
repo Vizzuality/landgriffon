@@ -194,6 +194,7 @@ export type ImpactTableData = {
     scenarioValue: number;
     absoluteDifference: number;
     percentageDifference: number;
+    isProjected: boolean;
   }[];
 };
 

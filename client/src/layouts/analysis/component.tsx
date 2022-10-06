@@ -40,15 +40,6 @@ const AnalysisLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
           Analysis
         </h1>
 
-        {/* TO-DO: scenario edition */}
-        {!isSubContentCollapsed && !isSidebarCollapsed && (
-          <div className="absolute top-0 left-0 z-10 w-full h-full bg-white min-w-min xl:w-250 lg:flex-shrink-0">
-            <div className="flex flex-col w-full h-full p-6 overflow-auto border-r border-gray-200">
-              Scenario edition
-            </div>
-          </div>
-        )}
-
         {/* Map, chart or table */}
         <div
           className={classNames({
@@ -75,7 +66,7 @@ const AnalysisLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
 
       {/* Secondary column (hidden on smaller screens) */}
       <aside
-        className="relative hidden lg:block lg:flex-shrink-0 lg:order-first bg-primary"
+        className="relative hidden lg:block lg:flex-shrink-0 lg:order-first bg-navy-600"
         ref={asideRef}
       >
         <Transition

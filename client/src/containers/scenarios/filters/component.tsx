@@ -68,7 +68,7 @@ const ScenariosFilters: FC = () => {
   const currentSort = useMemo(() => SORT_OPTIONS.find(({ value }) => value === sort), [sort]);
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center justify-between">
       <div className="relative flex items-center">
         {/* <button type="button" onClick={toggleSearch}> */}
         <SearchIcon className="w-4 h-4" />
@@ -95,7 +95,7 @@ const ScenariosFilters: FC = () => {
          )} */}
       </div>
       {/*
-      <ul className="relative flex flex-1 space-x-2 ml-3 justify-start whitespace-nowrap items-center">
+      <ul className="relative flex items-center justify-start flex-1 ml-3 space-x-2 whitespace-nowrap">
         {filtersItems.map((item) => (
           <li key={item.filter}>
             <button
@@ -113,7 +113,7 @@ const ScenariosFilters: FC = () => {
         ))}
       </ul>  TO DO - unhide when API gets ready */}
 
-      <div className="absolute right-0 bg-white z-10 pl-5">
+      <div className="z-10 bg-white">
         <Select
           theme="default-bordernone"
           current={currentSort}

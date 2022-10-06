@@ -19,8 +19,8 @@ const DesktopNavigation: React.FC<NavigationProps> = ({ items }: NavigationProps
           key={item.name}
           href={item.href}
           className={classNames(
-            'text-white hover:bg-black/20 group w-full p-3 rounded-md flex flex-col items-center text-xs font-medium transition-colors',
-            { 'bg-black/20': isCurrentItem(item.href) },
+            'text-white group w-full p-3 rounded-md flex flex-col items-center text-xs font-medium transition-colors',
+            { 'bg-black/30': isCurrentItem(item.href) },
           )}
         >
           <item.icon className="h-6 w-6" aria-hidden="true" />

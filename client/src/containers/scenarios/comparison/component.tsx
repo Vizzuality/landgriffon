@@ -54,7 +54,7 @@ const ScenariosComparison: FC = () => {
 
   return (
     <div>
-      <div className="text-sm text-gray-900">Compare with:</div>
+      <div className="text-sm text-gray-400">Compare with:</div>
       <Select
         showSearch
         current={selected}

@@ -105,6 +105,7 @@ export function getSameMaterialScenarioComparisonResponse(
             scenarioTwoValue: 1500,
             absoluteDifference: 500,
             percentageDifference: 200,
+            isProjected: false,
           },
           {
             year: 2021,
@@ -112,6 +113,7 @@ export function getSameMaterialScenarioComparisonResponse(
             scenarioTwoValue: 1522.5,
             absoluteDifference: 507.5,
             percentageDifference: 200,
+            isProjected: true,
           },
         ],
         metadata: {

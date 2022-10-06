@@ -377,6 +377,13 @@ export class ScenarioVsScenarioImpactService {
           0,
         );
 
+        const yearData: ScenarioVsScenarioImpactTableRowsValues | undefined =
+          calculatedData[0].values.find(
+            (tableRowValue: ScenarioVsScenarioImpactTableRowsValues) => {
+              return tableRowValue.year === year;
+            },
+          );
+
         scenarioVsScenarioImpactTable[indicatorValuesIndex].yearSum.push({
           year,
           scenarioOneValue: scenarioOneTotalSumByYear,
@@ -388,6 +395,7 @@ export class ScenarioVsScenarioImpactService {
               ((scenarioOneTotalSumByYear || 0 + scenarioTwoTotalSumByYear) /
                 2)) *
             100,
+          isProjected: yearData?.isProjected,
         });
       });
       // copy and populate tree skeleton for each indicator

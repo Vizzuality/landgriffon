@@ -94,6 +94,15 @@ describe('Scenario comparison test suite (e2e)', () => {
         expectedScenariosTableMByMaterial.scenarioVsScenarioImpactTable[0].rows,
       ),
     );
+    expect(
+      responseGroupByMaterial.body.data.scenarioVsScenarioImpactTable[0]
+        .yearSum,
+    ).toEqual(
+      expect.arrayContaining(
+        expectedScenariosTableMByMaterial.scenarioVsScenarioImpactTable[0]
+          .yearSum,
+      ),
+    );
     expect(responseGroupByMaterial.body.data.purchasedTonnes).toEqual(
       expect.arrayContaining(expectedScenariosTableMByMaterial.purchasedTonnes),
     );

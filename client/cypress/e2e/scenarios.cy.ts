@@ -18,7 +18,7 @@ afterEach(() => {
 });
 
 describe('Scenarios', () => {
-  it('should be able to see the scenarios page', async () => {
+  it('should be able to see the scenarios page', () => {
     cy.url().should('contain', '/admin/scenarios');
     cy.get('h1').should('have.text', 'Manage scenarios data');
     cy.log('Scenarios is selected in the menu bar');

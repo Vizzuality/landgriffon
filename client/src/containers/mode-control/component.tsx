@@ -4,16 +4,22 @@ import { useAppSelector } from 'store/hooks';
 import { analysisUI } from 'store/features/analysis/ui';
 
 import ButtonGroup, { LinkGroupItem } from 'components/button-group';
+import { useRouter } from 'next/router';
 
 const MODES: string[] = ['map', 'table', 'chart'];
 
 const ModeControl: React.FC = () => {
   const { visualizationMode } = useAppSelector(analysisUI);
+  const { query } = useRouter();
 
   return (
     <ButtonGroup>
       {MODES.map((mode) => (
-        <LinkGroupItem key={mode} active={visualizationMode === mode} href={`/analysis/${mode}`}>
+        <LinkGroupItem
+          key={mode}
+          active={visualizationMode === mode}
+          href={{ pathname: `/analysis/${mode}`, query }}
+        >
           {mode === 'map' && <MapIcon className="w-6 h-6" aria-hidden="true" />}
           {mode === 'table' && <TableIcon className="w-6 h-6" aria-hidden="true" />}
           {mode === 'chart' && <ChartPieIcon className="w-6 h-6" aria-hidden="true" />}

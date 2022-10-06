@@ -1,6 +1,6 @@
 import Sidebar from 'containers/sidebar';
 // import HeaderMobile from 'containers/mobile-header';
-import { Toaster } from 'react-hot-toast';
+import Alert from 'components/alert';
 
 const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
@@ -16,7 +16,7 @@ const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
           {children}
         </main>
       </div>
-      <Toaster position="bottom-center" containerClassName="test-toast-message text-sm" />
+      <Alert position="bottom-center" />
     </div>
   );
 };

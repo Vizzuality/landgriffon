@@ -45,7 +45,7 @@ const SignIn: NextPageWithLayout = () => {
         router.push((router.query?.callbackUrl as string) || '/analysis');
       } else {
         setIsLoading(false);
-        toast.error('Login failed. Your emails or password is incorrect.');
+        toast.error('Login failed. Your email or password is incorrect.');
       }
     },
     [router],

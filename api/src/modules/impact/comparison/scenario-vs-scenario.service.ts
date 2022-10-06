@@ -613,6 +613,7 @@ export class ScenarioVsScenarioImpactService {
           if (
             scenarioData.name === realData.name &&
             scenarioData.year === realData.year &&
+            scenarioData.indicatorId === realData.indicatorId &&
             scenarioData.typeByIntervention !== null
           ) {
             realData.scenarioImpact = realData.scenarioImpact

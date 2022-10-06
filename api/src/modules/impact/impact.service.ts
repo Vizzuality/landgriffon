@@ -631,6 +631,7 @@ export class ImpactService {
         if (
           scenarioData.name === realData.name &&
           scenarioData.year === realData.year &&
+          scenarioData.indicatorId === realData.indicatorId &&
           scenarioData.typeByIntervention !== null
         ) {
           realData.impact = realData.impact

@@ -28,13 +28,13 @@ crop:
 # once the new indicators have been defined and ingested we will need to update the indicator code in for each on the indicator commented below and allow the ingestion.
 # convert-speciesRichness convert-aboveGroundBiomass convert-satDeforestation
 indicators:
-	make convert-water-footprint
+	make -j 2 convert-water-footprint convert-aqueduct-contextual
 	# Processing deforestation data is quite intensive, so we do it separately, so we can allocate all threads to it
 	# There is probably a better way to do this, that future me will learn about - in the future.
 	make convert-deforestation
 	make convert-forestGHG
 contextual-layers:
-	make convert-aqueduct-contextual convert-hdi-contextual
+	make convert-hdi-contextual
 
 ############################################
 # MapSPAM crop production and harvest area #

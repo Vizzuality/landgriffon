@@ -35,37 +35,51 @@ module.exports = {
     colors: {
       black: colors.black,
       white: colors.white,
-      red: colors.red,
-      yellow: colors.yellow,
       transparent: colors.transparent,
       gray: {
         900: '#15181F',
-        800: '#2D2F32',
-        700: '#464749',
-        600: '#656565',
+        600: '#40424B',
         500: '#60626A',
-        400: '#AEB1B5',
-        300: '#C2C5C9',
+        400: '#8F9195',
+        300: '#AEB1B5',
         200: '#D1D5DB',
         100: '#F3F4F6',
         50: '#F9FAFB',
       },
-      green: {
-        900: '#003D2D',
-        800: '#00543F',
-        700: '#00634A', // primary
-        600: '#059669',
-        500: '#10B981',
-        400: '#34D399',
-        300: '#6EE7B7',
-        200: '#A7F3D0',
-        100: '#D1FAE5',
-        50: '#EBF6F1',
-      },
       // theme
-      primary: { DEFAULT: '#078A3C', dark: '#00634A', light: '#34D399' },
-      blue: '#A9E0F5',
-      yellow: '#F9DFB1',
+      primary: { DEFAULT: '#078A3C', dark: '#00634A', light: '#34D399' }, // REMOVE
+      blue: '#A9E0F5', // REMOVE
+      yellow: '#F9DFB1', // REMOVE
+      navy: {
+        50: '#F0F2FD', // light navy
+        200: '#C7CDEA', // light mid navy
+        400: '#3F59E0', // navy
+        600: '#2E34B0', // mid navy
+        900: '#152269', // dark navy
+      },
+      orange: {
+        500: '#FFA000', // orange
+        300: '#F0B957', // light mid orange
+        100: '#F9DFB1', // light orange
+        50: '#FFF1D9', // lightest orange
+      },
+      blue: {
+        400: '#4AB7F3', // blue
+        200: '#C7F0FF', // soft blue
+      },
+      green: {
+        800: '#006D2C',
+        400: '#078A3C',
+        50: '#E6F9EE',
+      },
+      pistachio: {
+        400: '#E6ED9B',
+      },
+      red: {
+        800: '#BA1809', // dark red
+        400: '#E93323', // red
+        50: '#FEF2F2', // light red
+      },
     },
   },
   plugins: [forms, typography],

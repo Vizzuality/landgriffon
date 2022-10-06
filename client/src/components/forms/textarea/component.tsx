@@ -19,7 +19,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       <div className={classnames('mt-1', className)}>
         <textarea
           className={classnames([THEMES[theme]], {
-            'border-red-600': !!error,
+            'border-red-400': !!error,
           })}
           ref={ref}
           {...props}

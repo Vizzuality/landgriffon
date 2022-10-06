@@ -324,7 +324,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
           [THEMES[theme].wrapper]: theme === 'default',
           'ring-[1.5px] ring-primary': theme === 'default' && isOpen && !error,
           'flex flex-row justify-between items-center gap-1': theme === 'default',
-          'ring-1 ring-red-600': theme === 'default' && error,
+          'ring-1 ring-red-400': theme === 'default' && error,
           'w-fit': theme === 'inline-primary',
         })}
       >
@@ -332,7 +332,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
           className={classNames('gap-1 h-min overflow-hidden', {
             'flex flex-wrap': theme !== 'inline-primary',
             'ring-primary border-primary': isOpen,
-            'border-red-600': theme === 'inline-primary' && error,
+            'border-red-400': theme === 'inline-primary' && error,
             [THEMES[theme].wrapper]: theme === 'inline-primary',
           })}
         >
@@ -389,14 +389,14 @@ const InnerTreeSelect = <IsMulti extends boolean>(
         </div>
         <div
           className={classNames('flex pointer-events-none h-fit', THEMES[theme].arrow, {
-            'text-red-700': !!error,
+            'text-red-800': !!error,
           })}
         >
           {theme === 'inline-primary' ? (
             <div
               className={classNames(
                 'mt-0.5 border-t-primary border-t-4 border-x-4 border-x-transparent mx-auto w-0 h-0',
-                { 'border-t-red-600': error },
+                { 'border-t-red-400': error },
               )}
             />
           ) : (
@@ -455,7 +455,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
                   {renderTreeNodes(options)}
                 </Tree>
                 {(options.length === 0 || (searchTerm && filteredKeys.length === 0)) && (
-                  <div className="p-2 mx-auto text-sm text-gray-700 opacity-60 w-fit">
+                  <div className="p-2 mx-auto text-sm text-gray-600 opacity-60 w-fit">
                     No results
                   </div>
                 )}

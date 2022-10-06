@@ -113,7 +113,7 @@ const getComponents = <
             <ChevronDownIcon
               className={classNames('h-4 w-4 text-gray-900', {
                 'rotate-180': menuIsOpen,
-                'stroke-red-700': error,
+                'stroke-red-800': error,
               })}
             />
           )
@@ -256,7 +256,7 @@ const InnerSelect = <OptionValue, IsMulti extends boolean = false>(
             'px-1 bg-white border-0': theme === 'default-bordernone',
             // '': !error, // focus.isFocused,
             '!border-primary !border-2': rest.isFocused && !error,
-            '!border-2 !border-red-600': error,
+            '!border-2 !border-red-400': error,
           })}
           {...rest}
         >

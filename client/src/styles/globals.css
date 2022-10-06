@@ -77,11 +77,11 @@
 }
 
 .rc-tree-checkbox.rc-tree-checkbox-checked {
-  @apply bg-green-700;
+  @apply bg-green-800;
 }
 
 .rc-tree-checkbox.rc-tree-checkbox-indeterminate {
-  @apply bg-green-200;
+  @apply bg-green-400;
 }
 
 .rc-tree-node-content-wrapper {

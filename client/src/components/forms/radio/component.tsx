@@ -18,7 +18,7 @@ const Radio = React.forwardRef<HTMLInputElement, RadioProps>(
       <div className="flex items-center">
         <input
           className={classnames([THEMES[theme]], {
-            'border-red-600': !!error,
+            'border-red-400': !!error,
           })}
           {...props}
           ref={ref}

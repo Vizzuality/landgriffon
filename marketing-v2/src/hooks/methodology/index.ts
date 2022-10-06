@@ -2,8 +2,8 @@ import axios from 'axios';
 import { useMutation } from 'react-query';
 import { SaveContactProps, UseSaveContactProps } from './types';
 
-// SAVE
-export function useSaveContactMethodology({
+// SAVE IN SENDGRID
+export function useSaveContactMethodologySendgrid({
   requestConfig = {
     method: 'POST',
   },

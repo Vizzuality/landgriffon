@@ -39,7 +39,7 @@ const HeaderNav: React.FC<NavProps> = ({ open }: NavProps) => {
           }}
           className="flex flex-col justify-between lg:flex-row lg:space-x-10 fixed left-0 z-50 w-full h-[calc(100%_-_theme(space.14))] lg:h-auto bg-white top-14 lg:top-0 lg:w-auto lg:relative py-5 lg:py-0"
         >
-          <ul className="flex flex-col space-y-5 lg:flex-row lg:space-y-0 lg:space-x-14">
+          <ul className="flex flex-col space-y-5 bg-white lg:flex-row lg:space-y-0 lg:space-x-14">
             {!isLg && (
               <li>
                 <Link href="/">

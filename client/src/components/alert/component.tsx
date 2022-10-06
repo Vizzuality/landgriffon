@@ -37,7 +37,7 @@ const Alert: React.FC<ToasterProps> = (props) => (
                 <XCircleIcon className={classNames('mr-2 h-5 w-5', iconColor)} />
               )}
             </div>
-            <p className={classNames('flex-1 text-sm', messagesColor)}>
+            <p className={classNames('flex-1 text-sm', messagesColor)} data-testid="toast-message">
               {resolveValue(t.message, t)}
             </p>
           </div>

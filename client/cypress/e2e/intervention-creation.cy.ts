@@ -101,7 +101,7 @@ describe('Intervention creation', () => {
 
     cy.wait('@successfullInterventionCreation').then(() => {
       // checks the toast message triggered after intervention creation
-      cy.get('.test-toast-message')
+      cy.get('data-testid="toast-message"')
         .find('[role="status"]')
         .should('contain', 'Intervention was created successfully');
     });
@@ -173,7 +173,7 @@ describe('Intervention creation', () => {
 
     cy.wait('@failedInterventionCreation').then(() => {
       // checks the toast message triggered informing something went wrong
-      cy.get('.test-toast-message')
+      cy.get('[data-testid="toast-message"]')
         .find('[role="status"]')
         .should('contain', 'Something went wrong during intervention creation');
     });

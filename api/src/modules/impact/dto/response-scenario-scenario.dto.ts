@@ -88,6 +88,8 @@ export class ScenarioVsScenarioYearSumData {
   absoluteDifference?: number;
   @ApiPropertyOptional()
   percentageDifference?: number;
+  @ApiPropertyOptional()
+  isProjected?: boolean;
 }
 
 export class ScenarioVsScenarioImpactTableRowsValues {

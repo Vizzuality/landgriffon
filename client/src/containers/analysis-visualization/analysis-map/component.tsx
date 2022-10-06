@@ -23,6 +23,7 @@ import type { MapStyle, ViewState } from 'components/map';
 import Map from 'components/map/component';
 import { useAllContextualLayersData } from 'hooks/h3-data/contextual';
 import useH3MaterialData from 'hooks/h3-data/material';
+import type { ViewStateChangeParameters } from '@deck.gl/core/typed/controllers/controller';
 
 const INITIAL_VIEW_STATE = {
   longitude: 0,
@@ -31,6 +32,7 @@ const INITIAL_VIEW_STATE = {
   pitch: 0,
   bearing: 0,
   minZoom: 2,
+  transitionDuration: 250,
 };
 
 const AnalysisMap: React.FC = () => {
@@ -43,22 +45,22 @@ const AnalysisMap: React.FC = () => {
     layers: layersMetadata,
   } = useAppSelector(analysisMap);
 
-  const [localViewState, setLocalViewState] = useState<ViewState>({
-    ...INITIAL_VIEW_STATE,
-    ...viewState, // store has priority over local state
-  });
+  const localViewState = useMemo(
+    () => ({
+      ...INITIAL_VIEW_STATE,
+      ...viewState, // store has priority over local state
+    }),
+    [viewState],
+  );
+
   const [mapStyle, setMapStyle] = useState<MapStyle>('terrain');
 
   // Debounced view state update to avoid too many updates in the store
   const updateViewState = useCallback(
-    (viewState) => {
+    (viewState: Partial<ViewState>) => {
       dispatch(
         // viewState have more attributes we want to save in the store
-        setViewState({
-          longitude: viewState.longitude,
-          latitude: viewState.latitude,
-          zoom: viewState.zoom,
-        }),
+        setViewState(viewState),
       );
     },
     [dispatch],
@@ -122,11 +124,11 @@ const AnalysisMap: React.FC = () => {
   }, [contextualData, dispatch, impactData, layerDeckGLProps, layersMetadata, materialData?.data]);
 
   const onZoomChange = useCallback(
-    (zoom) => {
-      setLocalViewState((state) => ({ ...state, zoom, transitionDuration: 250 }));
-      dispatch(setViewState({ zoom }));
+    (zoom: number) => {
+      // Don't use the debounced version, as this is a user action and should be performed instantly
+      updateViewState({ zoom });
     },
-    [dispatch],
+    [updateViewState],
   );
 
   const handleMapStyleChange = useCallback((newStyle: BasemapValue) => {
@@ -139,8 +141,8 @@ const AnalysisMap: React.FC = () => {
       <Map
         layers={layers}
         mapStyle={mapStyle}
-        initialViewState={localViewState}
-        onViewStateChange={({ viewState }) => {
+        viewState={localViewState}
+        onViewStateChange={({ viewState }: ViewStateChangeParameters) => {
           setDebouncedViewState({
             longitude: viewState.longitude,
             latitude: viewState.latitude,
@@ -182,7 +184,7 @@ const AnalysisMap: React.FC = () => {
       )}
       <div className="absolute z-10 w-10 space-y-2 bottom-10 right-6">
         <BasemapControl value={mapStyle} onChange={handleMapStyleChange} />
-        <ZoomControl viewport={viewState} onZoomChange={onZoomChange} />
+        <ZoomControl viewport={localViewState} onZoomChange={onZoomChange} />
         <Legend />
       </div>
     </>

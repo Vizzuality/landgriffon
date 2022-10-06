@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo } from 'react';
 import InteractiveMap from 'react-map-gl';
 import type { DeckGLProps } from '@deck.gl/react/typed';
 import DeckGL from '@deck.gl/react/typed';
@@ -52,26 +52,28 @@ const Map = ({
   onViewStateChange,
   ...props
 }: React.PropsWithChildren<MapProps>) => {
-  const [localViewState, setLocalViewState] = useState({
-    ...INITIAL_VIEW_STATE,
-    ...partialInitialViewState,
-    ...viewState,
-  });
+  const finalViewState = useMemo(
+    () => ({
+      ...INITIAL_VIEW_STATE,
+      ...partialInitialViewState,
+      ...viewState,
+    }),
+    [partialInitialViewState, viewState],
+  );
 
   const handleViewStateChange: DeckGLProps['onViewStateChange'] = (state) => {
-    setLocalViewState(state.viewState as ViewState);
     onViewStateChange?.(state as Parameters<MapProps['onViewStateChange']>[0]);
   };
 
   return (
     <DeckGL
-      initialViewState={localViewState}
+      initialViewState={finalViewState}
       onViewStateChange={handleViewStateChange}
       controller
       {...props}
     >
       <InteractiveMap
-        viewState={viewState}
+        viewState={finalViewState}
         mapStyle={MAP_STYLES[mapStyle]}
         mapboxApiAccessToken={MAPBOX_API_TOKEN}
         className="-z-10"

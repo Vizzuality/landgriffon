@@ -1,0 +1,11 @@
+pre-commit:
+  parallel: true
+  commands:
+    types-staged:
+      root: "client/"
+      glob: "*.{js,ts,jsx,tsx}"
+      run: yarn check-types-staged {staged_files}
+    types:
+      root: "client/"
+      glob: "*.{js,ts,jsx,tsx}"
+      run: yarn check-types

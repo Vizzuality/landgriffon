@@ -1,4 +1,5 @@
 import cx from 'classnames';
+import axios from 'axios';
 
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -7,7 +8,7 @@ import Link from 'next/link';
 
 import Wrapper from 'containers/wrapper';
 import { useCallback, useState } from 'react';
-import { useSaveContactMethodology } from 'hooks/methodology';
+import { useSaveContactMethodologySendgrid } from 'hooks/methodology';
 import Loading from 'components/loading';
 
 const schema = yup.object().shape({
@@ -15,12 +16,15 @@ const schema = yup.object().shape({
   email: yup.string().email().required(),
   company: yup.string().required(),
   terms: yup.bool().oneOf([true]).required(),
-  information: yup.bool().oneOf([true]),
+  information: yup.bool(),
 });
 
 interface MethodologyFormProps {
   close: () => void;
 }
+
+const SCRIPT_URL =
+  'https://docs.google.com/forms/u/0/d/e/1FAIpQLScDKrOAmTYsarPJOt1dw7V7HXg-VJvZYjtfCmCwBPcquGXSSA/formResponse';
 
 const MethodologyForm: React.FC<MethodologyFormProps> = ({ close }) => {
   const [submitting, setSubmitting] = useState(false);
@@ -30,12 +34,28 @@ const MethodologyForm: React.FC<MethodologyFormProps> = ({ close }) => {
   });
   const { errors } = formState;
 
-  const saveNewsLetterMutation = useSaveContactMethodology({});
+  const saveContactMethodologyMutation = useSaveContactMethodologySendgrid({});
+
+  const saveContactMethodologyDocs = useCallback((data) => {
+    const docData = new FormData();
+    docData.append('entry.1389554217', data.email);
+    docData.append('entry.1442491647', data.name);
+    docData.append('entry.1779120400', data.company);
+    docData.append('entry.204130736', 'methodology');
+
+    // TO-DO: solve CORS issue with google forms
+    axios
+      .post(SCRIPT_URL, docData)
+      .then((response) => console.log(response))
+      .catch((error) => console.error(error))
+      .then(() => setSubmitting(false));
+  }, []);
 
   const onSubmit = useCallback(
     (data) => {
       setSubmitting(true);
-      saveNewsLetterMutation.mutate(
+      saveContactMethodologyDocs(data);
+      saveContactMethodologyMutation.mutate(
         { data },
         {
           onSuccess: () => {
@@ -48,7 +68,7 @@ const MethodologyForm: React.FC<MethodologyFormProps> = ({ close }) => {
         },
       );
     },
-    [close, saveNewsLetterMutation],
+    [close, saveContactMethodologyDocs, saveContactMethodologyMutation],
   );
 
   return (
@@ -56,7 +76,7 @@ const MethodologyForm: React.FC<MethodologyFormProps> = ({ close }) => {
       <Wrapper>
         <div className="relative z-10 py-12 md:py-20 xl:-mt-10 xl:px-20 xl:-mx-20">
           {submitting && (
-            <div className="absolute top-0 left-0 z-20 flex items-center justify-center w-full h-full bg-orange-500/50">
+            <div className="absolute top-0 left-0 z-20 flex items-center justify-center w-full h-full bg-blue-500/50">
               <Loading />
             </div>
           )}
@@ -108,7 +128,7 @@ const MethodologyForm: React.FC<MethodologyFormProps> = ({ close }) => {
                         true,
                       'border-red-500': errors.company,
                     })}
-                    placeholder="Enter the name of your organization here. If you’re downloading the methodology for personal interest, please write “personal”"
+                    placeholder="Enter name here. If you’re downloading for personal interest, please write “personal”"
                     {...register('company')}
                   />
                 </div>

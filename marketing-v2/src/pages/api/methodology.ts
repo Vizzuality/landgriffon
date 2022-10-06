@@ -13,11 +13,26 @@ const Methodology = (req: NextApiRequest, res: NextApiResponse): void => {
 
     const msg = {
       to: email,
-      from: 'no-reply@landgriffon.com',
+      from: 'hello@landgriffon.com',
       subject: `Landgriffon's Methodology`,
-      text: `Hi ${name}, here you have our Methodology`,
+      text: `Hi ${name}\n\n
+      Thank you for your interest in LandGriffon's Methodology!\n\n
+      You can download it here.\n\n
+      The methodology is a work in progress. We want it to serve you and create real change in the sector. If you have any input you would like to share with us regarding the methodology, please let us know.\n\n
+      All the best,\n\n
+      The LandGriffon team\n\n
+      `,
       html: `
-        <p><strong>Download our Methodology here</strong>: https://www.landgriffon.com/docs/LandGriffon_Methodology_Executive_Summary.pdf</p>`,
+        <p>Hi ${name}</p>
+        <br/>
+        <p>Thank you for your interest in LandGriffon's Methodology!</p>
+        <p><strong>You can download it here.</strong>: https://www.landgriffon.com/docs/LG_Methodology_Executive_Summary.pdf</p>
+        <p>The methodology is a work in progress. We want it to serve you and create real change in the sector. If you have any input you would like to share with us regarding the methodology, please let us know.</p>
+        <br/>
+        <br/>
+        <p>All the best,</p>
+        <p>The LandGriffon team</p>
+      `,
     };
 
     sendgridMail.send(msg).then(

@@ -31,8 +31,8 @@ interface UseImpactDataParams {
 }
 
 export const useImpactData = <T = ImpactData>(
-  params?: UseImpactDataParams & APIpaginationRequest,
-  options: UseQueryOptions<ImpactData, unknown, T> = {},
+  params: UseImpactDataParams & APIpaginationRequest,
+  options: UseQueryOptions<ImpactData, unknown, T, ['impact-data', typeof params]> = {},
 ) => {
   const enabled =
     (options.enabled ?? true) &&

@@ -36,10 +36,10 @@ type ImpactComparisonParams<VsActual extends boolean> = Omit<ImpactTabularAPIPar
 
 export const useImpactComparison = <T = ImpactData>(
   params: Partial<ImpactComparisonParams<true>>,
-  options: UseQueryOptions<ImpactData, unknown, T> = {},
+  options: UseQueryOptions<ImpactData, unknown, T, ['impact-comparison', typeof params]> = {},
 ) => {
   const query = useQuery(
-    ['impact-ranking', params],
+    ['impact-comparison', params],
     () =>
       apiRawService
         .get<ImpactData>('/impact/compare/scenario/vs/actual', {
@@ -57,13 +57,18 @@ export const useImpactComparison = <T = ImpactData>(
 
 export const useImpactScenarioComparison = <T = ScenarioVsScenarioTableComparisonData>(
   params: Partial<ImpactComparisonParams<false>>,
-  options: UseQueryOptions<ScenarioVsScenarioTableComparisonData, unknown, T> = {},
+  options: UseQueryOptions<
+    ScenarioVsScenarioTableComparisonData,
+    unknown,
+    T,
+    ['impact-scenario-comparison', typeof params]
+  > = {},
 ) => {
   const enabled =
     (options.enabled ?? true) && !!params.scenarioOneValue && !!params.scenarioTwoValue;
 
   const query = useQuery(
-    ['impact-ranking', params],
+    ['impact-scenario-comparison', params],
     () =>
       apiRawService
         .get<ScenarioVsScenarioTableComparisonData>('/impact/compare/scenario/vs/scenario', {
@@ -77,6 +82,7 @@ export const useImpactScenarioComparison = <T = ScenarioVsScenarioTableCompariso
           scenarioVsScenarioImpactTable: [],
           purchasedTonnes: [],
         },
+        metadata: {},
       },
       ...options,
       enabled,

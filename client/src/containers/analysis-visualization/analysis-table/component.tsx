@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import { DownloadIcon } from '@heroicons/react/outline';
-import { getSortedRowModel } from '@tanstack/react-table';
 import { uniq } from 'lodash';
 
 import { useAppSelector } from 'store/hooks';
@@ -9,7 +8,7 @@ import { filtersForTabularAPI } from 'store/features/analysis/selector';
 import { scenarios } from 'store/features/analysis/scenarios';
 import { useIndicators } from 'hooks/indicators';
 import { useImpactData } from 'hooks/impact';
-import { useImpactComparison } from 'hooks/impact/comparison';
+import { useImpactComparison, useImpactScenarioComparison } from 'hooks/impact/comparison';
 
 import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
 import LinkButton from 'components/button';
@@ -95,7 +94,7 @@ const AnalysisTable: React.FC = () => {
     groupBy: filters.groupBy,
     ...restFilters,
     scenarioId: currentScenario,
-    ...(isComparisonEnabled && scenarioToCompare ? { scenarioId: scenarioToCompare } : {}),
+    scenarioToCompare,
     'page[number]': paginationState.pageIndex,
     'page[size]': paginationState.pageSize,
   };
@@ -103,9 +102,41 @@ const AnalysisTable: React.FC = () => {
   const impactData = useImpactData(params, {
     enabled: !isComparisonEnabled && isEnable,
   });
-  const impactComparisonData = useImpactComparison(params, {
-    enabled: isComparisonEnabled && isEnable,
+
+  const impactActualComparisonData = useImpactComparison(params, {
+    enabled: isComparisonEnabled && !currentScenario && isEnable,
   });
+  const impactScenarioComparisonData = useImpactScenarioComparison(
+    { scenarioOneValue: currentScenario, scenarioTwoValue: scenarioToCompare, ...params },
+    {
+      enabled: isComparisonEnabled && !!currentScenario && isEnable,
+      select: ({ data: { scenarioVsScenarioImpactTable, ...data }, ...rest }) => {
+        return {
+          ...rest,
+          data: {
+            ...data,
+            impactTable: scenarioVsScenarioImpactTable,
+          },
+        };
+      },
+    },
+  );
+
+  const getIsScenarioComparison = useCallback(
+    (
+      impactTable:
+        | typeof impactData['data']['data']['impactTable']
+        | typeof impactScenarioComparisonData['data']['data']['impactTable']
+        | typeof impactActualComparisonData['data']['data']['impactTable'],
+    ): impactTable is typeof impactScenarioComparisonData['data']['data']['impactTable'] => {
+      return isComparisonEnabled && !!currentScenario;
+    },
+    [currentScenario, isComparisonEnabled],
+  );
+
+  const impactComparisonData = !!currentScenario
+    ? impactScenarioComparisonData
+    : impactActualComparisonData;
 
   const {
     data: {
@@ -115,9 +146,11 @@ const AnalysisTable: React.FC = () => {
     isLoading,
     isFetching,
   } = useMemo(() => {
-    if (isComparisonEnabled && scenarioToCompare) return impactComparisonData;
+    if (isComparisonEnabled && !!scenarioToCompare) return impactComparisonData;
     return impactData;
   }, [impactComparisonData, impactData, isComparisonEnabled, scenarioToCompare]);
+
+  const isScenarioComparison = getIsScenarioComparison(impactTable);
 
   const totalRows = useMemo(() => {
     return !isLoading && impactTable.length === 1 ? impactTable[0].rows.length : impactTable.length;
@@ -287,7 +320,6 @@ const AnalysisTable: React.FC = () => {
       data: tableData,
       columns: baseColumns,
       manualSorting: false,
-      getSortedRowModel: getSortedRowModel(),
     }),
     [baseColumns, isFetching, metadata.totalPages, tableData, tableState, totalRows],
   );

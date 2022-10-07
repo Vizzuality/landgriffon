@@ -1,5 +1,4 @@
 import type { ComparisonCellProps } from 'containers/analysis-visualization/analysis-table/comparison-cell/component';
-import type { LocationTypes } from 'containers/interventions/enums';
 import type { Scenario } from 'containers/scenarios/types';
 
 export type RGBColor = [number, number, number];
@@ -197,6 +196,37 @@ export type ImpactTableData = {
     isProjected: boolean;
   }[];
 };
+
+export interface ScenarioVsScenarioTableComparisonData {
+  data: {
+    purschasedTonnes: PurchasedTonnesData[];
+    scenarioVsScenarioImpactTable: {
+      indicatorShortName: string;
+      groupBy: string;
+      indicatorId: Indicator['id'];
+      metadata: { unit: string };
+      rows: {
+        name: string;
+        values: {
+          year: number;
+          scenarioOneValue: number;
+          scenarioTwoValue: number;
+          absoluteDifference: number;
+          percentageDifference: number;
+        }[];
+        children?: ScenarioVsScenarioTableComparisonData['rows'];
+      }[];
+      yearSum: {
+        year: number;
+        scenarioOneValue: number;
+        scenarioTwoValue: number;
+        absoluteDifference: number;
+        percentageDifference: number;
+      }[];
+    }[];
+  };
+  metadata: PaginationMetadata;
+}
 
 export type PurchasedTonnesData = {
   year: number;

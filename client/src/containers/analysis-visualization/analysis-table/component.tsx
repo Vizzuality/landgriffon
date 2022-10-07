@@ -1,7 +1,8 @@
 import { useCallback, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import { DownloadIcon } from '@heroicons/react/outline';
-import { uniq } from 'lodash';
+import uniq from 'lodash/uniq';
+import omit from 'lodash/omit';
 
 import { useAppSelector } from 'store/hooks';
 import { filtersForTabularAPI } from 'store/features/analysis/selector';
@@ -21,7 +22,7 @@ import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { TableProps } from 'components/table/component';
 import type { ColumnDefinition } from 'components/table/column';
 import type { LinesConfig } from 'components/chart/line/types';
-import type { ImpactTableData } from 'types';
+import type { ComparisonData, ImpactData, ImpactTableData } from 'types';
 
 type TableDataType = ImpactTableData['rows'][0];
 
@@ -99,7 +100,7 @@ const AnalysisTable: React.FC = () => {
     'page[size]': paginationState.pageSize,
   };
 
-  const impactData = useImpactData(params, {
+  const plainImpactData = useImpactData(params, {
     enabled: !isComparisonEnabled && isEnable,
   });
 
@@ -107,7 +108,11 @@ const AnalysisTable: React.FC = () => {
     enabled: isComparisonEnabled && !currentScenario && isEnable,
   });
   const impactScenarioComparisonData = useImpactScenarioComparison(
-    { scenarioOneValue: currentScenario, scenarioTwoValue: scenarioToCompare, ...params },
+    {
+      scenarioOneValue: currentScenario,
+      scenarioTwoValue: scenarioToCompare,
+      ...omit(params, ['scenarioId', 'scenarioToCompare']),
+    },
     {
       enabled: isComparisonEnabled && !!currentScenario && isEnable,
       select: ({ data: { scenarioVsScenarioImpactTable, ...data }, ...rest }) => {
@@ -123,17 +128,11 @@ const AnalysisTable: React.FC = () => {
   );
 
   const getIsScenarioComparison = useCallback(
-    (
-      impactTable:
-        | typeof impactData['data']['data']['impactTable']
-        | typeof impactScenarioComparisonData['data']['data']['impactTable']
-        | typeof impactActualComparisonData['data']['data']['impactTable'],
-    ): impactTable is typeof impactScenarioComparisonData['data']['data']['impactTable'] => {
+    (impactTable: ImpactTableData[] | ComparisonData[]): impactTable is ComparisonData[] => {
       return isComparisonEnabled && !!currentScenario;
     },
     [currentScenario, isComparisonEnabled],
   );
-
   const impactComparisonData = !!currentScenario
     ? impactScenarioComparisonData
     : impactActualComparisonData;
@@ -147,8 +146,8 @@ const AnalysisTable: React.FC = () => {
     isFetching,
   } = useMemo(() => {
     if (isComparisonEnabled && !!scenarioToCompare) return impactComparisonData;
-    return impactData;
-  }, [impactComparisonData, impactData, isComparisonEnabled, scenarioToCompare]);
+    return plainImpactData;
+  }, [impactComparisonData, plainImpactData, isComparisonEnabled, scenarioToCompare]);
 
   const isScenarioComparison = getIsScenarioComparison(impactTable);
 
@@ -185,12 +184,14 @@ const AnalysisTable: React.FC = () => {
 
   // Years from impact table
   const years = useMemo(() => {
-    const result: number[] = [];
-    impactTable.forEach(({ yearSum }) => {
-      const years = (yearSum || []).map(({ year }) => year);
-      years.forEach((year) => result.push(year));
-    });
-    return uniq(result);
+    // TODO: do we have to check all rows or is the first one guaranteed to have all years?
+    // const years = impactTable[0]?.yearSum?.map((sum) => sum.year);
+    const years = ((impactTable || []) as ImpactTableData[])?.flatMap(({ yearSum }) =>
+      yearSum.map((sum) => sum.year),
+    );
+
+    // TODO: if the above is true, we don't need this
+    return uniq(years);
   }, [impactTable]);
 
   const tableData = useMemo(
@@ -216,8 +217,13 @@ const AnalysisTable: React.FC = () => {
           const value = data.values.find((value) => value.year === year) as Required<
             TableDataType['values'][0]
           >;
-          if (showComparison) return <ComparisonCell {...value} />;
-          return BIG_NUMBER_FORMAT(value.value);
+          if (!showComparison) return BIG_NUMBER_FORMAT(value.value);
+
+          if (isScenarioComparison) {
+            console.log({ value });
+            return BIG_NUMBER_FORMAT(value.value);
+          }
+          return <ComparisonCell {...value} />;
         },
       };
     },

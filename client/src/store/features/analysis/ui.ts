@@ -8,8 +8,6 @@ export type AnalysisUIState = {
   isSubContentCollapsed: boolean;
 };
 
-type FeatureState = RootState & { 'analysis/ui': AnalysisUIState };
-
 // Define the initial state using that type
 export const initialState: AnalysisUIState = {
   visualizationMode: 'map',
@@ -42,6 +40,6 @@ export const analysisUISlice = createSlice({
 export const { setVisualizationMode, setSidebarCollapsed, setSubContentCollapsed } =
   analysisUISlice.actions;
 
-export const analysisUI = (state: FeatureState) => state['analysis/ui'];
+export const analysisUI = (state: RootState) => state['analysis/ui'];
 
 export default analysisUISlice.reducer;

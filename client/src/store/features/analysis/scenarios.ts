@@ -22,8 +22,6 @@ export type ScenariosState = {
   };
 };
 
-type FeatureState = RootState & { analysis: ScenariosState };
-
 // Define the initial state using that type
 export const initialState: ScenariosState = {
   isComparisonEnabled: false,
@@ -87,6 +85,6 @@ export const {
   setSearchTerm,
 } = analysisScenariosSlice.actions;
 
-export const scenarios = (state: FeatureState) => state['analysis/scenarios'];
+export const scenarios = (state: RootState) => state['analysis/scenarios'];
 
 export default analysisScenariosSlice.reducer;

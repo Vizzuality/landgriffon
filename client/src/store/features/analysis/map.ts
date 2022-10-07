@@ -66,8 +66,6 @@ export type AnalysisMapState = {
   layerDeckGLProps: Record<Layer['id'], Partial<DeckGLConstructorProps>>;
 };
 
-type FeatureState = RootState & { 'analysis/map': AnalysisMapState };
-
 // Define the initial state using that type
 export const initialState: AnalysisMapState = {
   viewState: INITIAL_VIEW_STATE,
@@ -237,6 +235,6 @@ export const {
   setLayerOrder,
 } = analysisMapSlice.actions;
 
-export const analysisMap = (state: FeatureState) => state['analysis/map'];
+export const analysisMap = (state: RootState) => state['analysis/map'];
 
 export default analysisMapSlice.reducer;

@@ -11,7 +11,7 @@ export type ScenariosState = {
    * If the current scenario is the actual data, the id will be null
    */
   currentScenario: Scenario['id'] | null;
-  scenarioToCompare: Scenario['id'];
+  scenarioToCompare: Scenario['id'] | null;
   // To remove
   searchTerm: string;
   filter: 'all' | 'private' | 'public';

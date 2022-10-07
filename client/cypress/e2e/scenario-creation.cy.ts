@@ -27,9 +27,10 @@ describe('Scenario creation', () => {
       expect(body.data.id).to.equal('some-random-id');
 
       // checks the toast message triggered after scenario creation
-      cy.get('.test-toast-message')
-        .find('[role="status"]')
-        .should('contain', 'The scenario scenario mockup name has been created');
+      cy.get('[data-testid="toast-message"]').should(
+        'contain',
+        'The scenario scenario mockup name has been created',
+      );
     });
   });
 

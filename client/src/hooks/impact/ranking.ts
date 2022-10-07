@@ -6,7 +6,7 @@ import type { UseQueryOptions } from '@tanstack/react-query';
 import type { ImpactRanking } from 'types';
 import type { ImpactTabularAPIParams } from 'types';
 
-const DEFAULT_QUERY_OPTIONS: UseQueryOptions<ImpactRanking, unknown, unknown> = {
+const DEFAULT_QUERY_OPTIONS = {
   placeholderData: {
     impactTable: [],
     purchasedTonnes: [],
@@ -23,7 +23,7 @@ type ImpactRankingParams = ImpactTabularAPIParams & {
 
 export const useImpactRanking = <T = ImpactRanking>(
   params: Partial<ImpactRankingParams> = { maxRankingEntities: 5, sort: 'ASC' },
-  options: UseQueryOptions<ImpactRanking, unknown, T> = {},
+  options: UseQueryOptions<ImpactRanking, unknown, T, ['impact-ranking', typeof params]> = {},
 ) => {
   const query = useQuery(
     ['impact-ranking', params],
@@ -36,7 +36,7 @@ export const useImpactRanking = <T = ImpactRanking>(
           return response.data;
         }),
     {
-      ...(DEFAULT_QUERY_OPTIONS as typeof options),
+      ...DEFAULT_QUERY_OPTIONS,
       ...options,
     },
   );

@@ -113,7 +113,7 @@ export function useInfiniteScenarios(QueryParams: QueryParams): ResponseInfinite
   return useMemo<ResponseInfiniteData>((): ResponseInfiniteData => query, [query]);
 }
 
-export function useScenario(id: Scenario['id']): ResponseDataScenario {
+export function useScenario(id?: Scenario['id'] | null): ResponseDataScenario {
   const response: ResponseDataScenario = useQuery(
     ['scenario', id],
     () =>
@@ -129,7 +129,7 @@ export function useScenario(id: Scenario['id']): ResponseDataScenario {
   return useMemo<ResponseDataScenario>(() => response, [response]);
 }
 
-export function useScenarioInterventions(id: Scenario['id']): ResponseInterventionsData {
+export function useScenarioInterventions(id: Scenario['id'] | null): ResponseInterventionsData {
   const response: ResponseInterventionsData = useQuery(
     ['interventions-by-scenario', id],
     () =>

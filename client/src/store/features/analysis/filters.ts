@@ -25,8 +25,6 @@ export type AnalysisFiltersState = {
   materialId: Material['id'];
 };
 
-type FeatureState = RootState & { 'analysis/filters': AnalysisFiltersState };
-
 // Define the initial state using that type
 export const initialState: AnalysisFiltersState = {
   layer: 'impact',
@@ -69,6 +67,6 @@ export const analysisFiltersSlice = createSlice({
 export const { setLayer, setFilter, setFilters, resetFiltersAndOverride } =
   analysisFiltersSlice.actions;
 
-export const analysisFilters = (state: FeatureState) => state['analysis/filters'];
+export const analysisFilters = (state: RootState) => state['analysis/filters'];
 
 export default analysisFiltersSlice.reducer;

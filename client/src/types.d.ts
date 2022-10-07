@@ -197,33 +197,35 @@ export type ImpactTableData = {
   }[];
 };
 
+interface ComparisonData {
+  indicatorShortName: string;
+  groupBy: string;
+  indicatorId: Indicator['id'];
+  metadata: { unit: string };
+  rows: {
+    name: string;
+    values: {
+      year: number;
+      scenarioOneValue: number;
+      scenarioTwoValue: number;
+      absoluteDifference: number;
+      percentageDifference: number;
+    }[];
+    children?: ScenarioVsScenarioTableComparisonData['rows'];
+  }[];
+  yearSum: {
+    year: number;
+    scenarioOneValue: number;
+    scenarioTwoValue: number;
+    absoluteDifference: number;
+    percentageDifference: number;
+  }[];
+}
+
 export interface ScenarioVsScenarioTableComparisonData {
   data: {
-    purschasedTonnes: PurchasedTonnesData[];
-    scenarioVsScenarioImpactTable: {
-      indicatorShortName: string;
-      groupBy: string;
-      indicatorId: Indicator['id'];
-      metadata: { unit: string };
-      rows: {
-        name: string;
-        values: {
-          year: number;
-          scenarioOneValue: number;
-          scenarioTwoValue: number;
-          absoluteDifference: number;
-          percentageDifference: number;
-        }[];
-        children?: ScenarioVsScenarioTableComparisonData['rows'];
-      }[];
-      yearSum: {
-        year: number;
-        scenarioOneValue: number;
-        scenarioTwoValue: number;
-        absoluteDifference: number;
-        percentageDifference: number;
-      }[];
-    }[];
+    purchasedTonnes: PurchasedTonnesData[];
+    scenarioVsScenarioImpactTable: ComparisonData[];
   };
   metadata: PaginationMetadata;
 }

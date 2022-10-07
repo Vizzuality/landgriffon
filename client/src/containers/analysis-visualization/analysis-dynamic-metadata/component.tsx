@@ -53,7 +53,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
     useAppSelector(analysisFilters);
 
   const handleRemoveBadge = useCallback(
-    (id, list, option) => {
+    (id: string, list: SelectOption[], option: SelectOption) => {
       const filteredKeys = list.filter((key) => option.label !== key.label);
       dispatch(setFilters({ [id]: filteredKeys }));
     },
@@ -72,9 +72,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
     [comparisonMode],
   );
 
-  const {
-    data: { unit },
-  } = useIndicator(indicator?.value);
+  const { data: unit } = useIndicator(indicator?.value, { select: (data) => data?.unit });
   const indicatorsTemplate = <span className="font-bold">{unit?.symbol}</span>;
   const compareTemplate = <span className="font-bold whitespace-nowrap">{scenario2}</span>;
   const materialTemplate = !!materials.length && (
@@ -148,11 +146,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
   );
 
   return (
-    <div
-      className={classNames('flex items-center justify-start text-xs space-x-1', {
-        [className]: !!className,
-      })}
-    >
+    <div className={classNames('flex items-center justify-start text-xs space-x-1', className)}>
       <div className="items-start -translate-y-[3px]">
         <InformationCircleIcon className="w-4 h-4 text-gray-900 shrink-0" />
       </div>

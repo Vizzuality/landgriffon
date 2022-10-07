@@ -1,21 +1,18 @@
-import { useMemo } from 'react';
-import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
+import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { apiService } from 'services/api';
 import type { Indicator, PaginationMetadata } from 'types';
 
 const DEFAULT_QUERY_OPTIONS = {
-  placeholderData: [],
   retry: false,
   keepPreviousData: true,
   refetchOnWindowFocus: false,
 };
 
 type ResponseData = { data: Indicator[]; meta: PaginationMetadata };
-type ResponseIndicatorData = UseQueryResult<Indicator>;
 
 export const useIndicators = <T = ResponseData>(
-  options: UseQueryOptions<ResponseData, unknown, T> = {},
+  options: UseQueryOptions<ResponseData, unknown, T, ['indicators']> = {},
 ) => {
   const query = useQuery(
     ['indicators'],
@@ -36,31 +33,27 @@ export const useIndicators = <T = ResponseData>(
   return query;
 };
 
-export function useIndicator(id: Indicator['id']): ResponseIndicatorData {
+export const useIndicator = <T = Indicator>(
+  id: Indicator['id'],
+  options?: UseQueryOptions<Indicator, unknown, T, ['indicators', typeof id]>,
+) => {
+  const enabled = (options?.enabled ?? true) && !!id && id !== 'all';
   const query = useQuery(
     ['indicators', id],
     () =>
       apiService
-        .request({
+        .request<{ data: Indicator }>({
           method: 'GET',
-          url: id === 'all' ? '/indicators' : `/indicators/${id}`,
+          url: `/indicators/${id}`,
           params: { include: 'unit' },
         })
         .then(({ data: responseData }) => responseData.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
-      enabled: !!id,
+      ...options,
+      enabled,
     },
   );
 
-  const { data, isError } = query;
-
-  return useMemo<ResponseIndicatorData>(
-    () =>
-      ({
-        ...query,
-        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as ResponseIndicatorData,
-      } as ResponseIndicatorData),
-    [query, isError, data],
-  );
-}
+  return query;
+};

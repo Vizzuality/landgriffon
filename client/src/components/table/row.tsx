@@ -22,13 +22,12 @@ const TableRow = <T,>({ row, theme, isLast, ...props }: TableRowProps<T>) => {
             style={{
               width: cell.column.getSize(),
             }}
-            className={classNames('h-full border-transparent', {
+            className={classNames('h-full border-transparent group-hover:bg-gray-100', {
               'border-l-4': theme === 'default' && i === 0,
               'border-l-navy-400': theme === 'default' && row.getIsSelected() && i === 0,
               'bg-white': theme === 'default',
 
-              'group-odd:bg-white group-even:bg-gray-50 group-hover:bg-gray-100':
-                theme === 'striped',
+              'group-odd:bg-white group-even:bg-gray-50': theme === 'striped',
               'sticky z-[1]': !!cell.column.columnDef.meta.isSticky,
               [theme === 'striped' ? 'shadow-lg' : 'shadow-sm']:
                 !!cell.column.columnDef.meta.isSticky,

@@ -715,7 +715,8 @@ export class ScenarioVsScenarioImpactService {
             accumulator.find((item: ScenarioVsScenarioImpactTableData) => {
               return (
                 item.name === currentValue.name &&
-                item.year === currentValue.year
+                item.year === currentValue.year &&
+                item.indicatorId === currentValue.indicatorId
               );
             });
 

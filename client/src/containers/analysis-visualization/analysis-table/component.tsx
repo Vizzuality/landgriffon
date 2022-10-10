@@ -57,7 +57,7 @@ const dataToCsv = <Comparison extends TableComparisonMode>(
 
   tableData.data.forEach(({ name, values }) => {
     const rowData: (string | number)[] = [name];
-    values.forEach(({ value }) => {
+    (values as unknown[] as ImpactRowType<false>['values']).forEach(({ value }) => {
       rowData.push(value);
     });
 

@@ -180,6 +180,7 @@ interface CommonValueItemProps {
 interface CommonComparisonValueItemProps extends CommonValueItemProps {
   absoluteDifference: number;
   percentageDifference: number;
+  isProjected: boolean;
 }
 
 interface PlainValueItemProps extends CommonValueItemProps {
@@ -220,7 +221,9 @@ export interface ImpactTableData<Comparison extends TableComparisonMode> {
   indicatorShortName: string;
   metadata: Metadata;
   rows: ImpactRowType<Comparison>[];
-  yearSum: Omit<ImpactTableValueItem<Comparison>, 'isProjected'>[];
+  yearSum: Comparison extends false
+    ? Omit<ImpactTableValueItem<Comparison>, 'isProjected'>[]
+    : ImpactTableValueItem<Comparison>[];
 }
 
 export type PurchasedTonnesData = {

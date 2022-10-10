@@ -70,10 +70,8 @@ module.exports = {
       green: {
         800: '#006D2C',
         400: '#078A3C',
+        200: '#CDE8D8',
         50: '#E6F9EE',
-      },
-      pistachio: {
-        400: '#E6ED9B',
       },
       red: {
         800: '#BA1809', // dark red

@@ -1,20 +1,19 @@
 import { Button } from '.';
 import type { ButtonProps, AnchorProps } from 'components/button/component';
-import { PlusIcon } from '@heroicons/react/solid';
-import { MailIcon } from '@heroicons/react/outline';
+import { PlusIcon } from '@heroicons/react/outline';
 
 export default {
-  title: 'Button',
+  title: 'Components/Buttons',
   component: Button,
   argTypes: {
-    theme: {
+    variant: {
       defaultValue: 'primary',
-      options: ['primary', 'secondary', 'mail', 'add'],
-      control: { type: 'select' },
+      options: ['primary', 'secondary', 'white'],
+      control: { type: 'radio' },
     },
     size: {
-      defaultValue: 'xl',
-      options: ['xs', 'base', 'xl', 'text'],
+      defaultValue: 'base',
+      options: ['xs', 'base', 'xl'],
       control: { type: 'radio' },
     },
     children: {
@@ -25,33 +24,28 @@ export default {
       defaultValue: false,
       control: { type: 'boolean' },
     },
+    danger: {
+      defaultValue: false,
+      control: { type: 'boolean' },
+    },
+    icon: {
+      defaultValue: null,
+      control: { type: 'boolean' },
+    },
+    loading: {
+      defaultValue: false,
+      control: { type: 'boolean' },
+    },
   },
 } as ButtonProps & AnchorProps;
 
 const Template = (args: ButtonProps & AnchorProps) => {
-  return (
-    <div className="flex space-x-4">
-      <Button {...args} />
-      <Button {...args} disabled />
-      <Button {...args} autoFocus />
-    </div>
-  );
+  return <Button {...args} icon={args.icon && <PlusIcon />} />;
 };
 
-export const Primary = Template.bind({});
-export const Secondary = Template.bind({});
-export const Mail = Template.bind({});
-export const Add = Template.bind({});
+export const Basic = Template.bind({});
 
-Secondary.args = {
-  theme: 'secondary',
-};
-
-Mail.args = {
-  theme: 'secondary',
-  icon: <MailIcon />,
-};
-
-Add.args = {
-  icon: <PlusIcon />,
+Basic.args = {
+  variant: 'primary',
+  size: 'base',
 };

@@ -22,29 +22,25 @@ import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { TableProps } from 'components/table/component';
 import type { ColumnDefinition } from 'components/table/column';
 import type { LinesConfig } from 'components/chart/line/types';
-import type { ImpactRowType, ImpactTableValueItem, TableComparisonMode } from 'types';
+import type { ComparisonMode, ImpactRowType, ImpactTableValueItem } from './types';
 
-type AnalysisTableProps<Comparison extends TableComparisonMode> = TableProps<
-  ImpactRowType<Comparison>
->;
+type AnalysisTableProps<Mode extends ComparisonMode> = TableProps<ImpactRowType<Mode>>;
 
 const NUMBER_FORMATTER = NUMBER_FORMAT;
 
-const isParentRow = <Comparison extends TableComparisonMode>(
-  row: ImpactRowType<Comparison, any>,
-): row is ImpactRowType<Comparison, true> => {
+const isParentRow = <Mode extends ComparisonMode>(
+  row: ImpactRowType<Mode, true | false>,
+): row is ImpactRowType<Mode, true> => {
   return 'metadata' in row;
 };
 
 const valueIsComparison = (
-  value: ImpactTableValueItem<any>,
+  value: ImpactTableValueItem<ComparisonMode>,
 ): value is ImpactTableValueItem<true | 'scenario'> => {
   return !('value' in value);
 };
 
-const dataToCsv = <Comparison extends TableComparisonMode>(
-  tableData: AnalysisTableProps<Comparison>,
-): string => {
+const dataToCsv = <Mode extends ComparisonMode>(tableData: AnalysisTableProps<Mode>): string => {
   const LINE_SEPARATOR = '\r\n';
 
   if (!tableData) return null;
@@ -83,14 +79,14 @@ const AnalysisTable = () => {
   const filters = useAppSelector(filtersForTabularAPI);
 
   const useIsComparison = useCallback(
-    (table: ImpactRowType<TableComparisonMode>[]): table is ImpactRowType<true | 'scenario'>[] => {
+    (table: ImpactRowType<ComparisonMode>[]): table is ImpactRowType<true | 'scenario'>[] => {
       return isComparisonEnabled && !!scenarioToCompare;
     },
     [isComparisonEnabled, scenarioToCompare],
   );
 
   const useIsScenarioComparison = useCallback(
-    (table: ImpactRowType<any>[]): table is ImpactRowType<'scenario'>[] => {
+    (table: ImpactRowType<ComparisonMode>[]): table is ImpactRowType<'scenario'>[] => {
       return isComparisonEnabled && !!currentScenario;
     },
     [isComparisonEnabled, currentScenario],
@@ -214,7 +210,7 @@ const AnalysisTable = () => {
   }, [impactTable]);
 
   const tableData = useMemo(
-    <Comparison extends TableComparisonMode>(): ImpactRowType<Comparison>[] =>
+    <Mode extends ComparisonMode>(): ImpactRowType<Mode>[] =>
       impactTable.map(({ indicatorShortName, yearSum, rows, ...impact }) => ({
         ...impact,
         children: rows,
@@ -230,16 +226,14 @@ const AnalysisTable = () => {
   const isScenarioComparison = useIsScenarioComparison(tableData);
 
   const valueIsScenarioComparison = useCallback(
-    (value: ImpactTableValueItem<any>): value is ImpactTableValueItem<'scenario'> => {
+    (value: ImpactTableValueItem<ComparisonMode>): value is ImpactTableValueItem<'scenario'> => {
       return isScenarioComparison && isComparison;
     },
     [isComparison, isScenarioComparison],
   );
 
   const comparisonColumn = useCallback(
-    <Comparison extends TableComparisonMode>(
-      year: number,
-    ): ColumnDefinition<ImpactRowType<Comparison>> => {
+    <Mode extends ComparisonMode>(year: number): ColumnDefinition<ImpactRowType<Mode>> => {
       return {
         id: `${year}`,
         size: 170,
@@ -249,7 +243,7 @@ const AnalysisTable = () => {
           //* The metadata is only present at the parent row, so we need to get it from there
           const { rowsById } = table.getExpandedRowModel();
           const parentRowData = rowsById[id.split('.')[0]].original as unknown as ImpactRowType<
-            Comparison,
+            Mode,
             true
           >;
 
@@ -286,7 +280,7 @@ const AnalysisTable = () => {
   );
 
   const baseColumns = useMemo(
-    <Comparison extends TableComparisonMode>(): ColumnDefinition<ImpactRowType<Comparison>>[] => [
+    <Mode extends ComparisonMode>(): ColumnDefinition<ImpactRowType<Mode>>[] => [
       {
         id: 'name',
         header: '',
@@ -318,7 +312,7 @@ const AnalysisTable = () => {
             original: { values },
           },
         }) => {
-          const baseData = values.map((value: ImpactTableValueItem<Comparison>) => ({
+          const baseData = values.map((value: ImpactTableValueItem<Mode>) => ({
             x: value.year,
             y: valueIsScenarioComparison(value) ? value.scenarioOneValue : value.value,
           }));
@@ -370,13 +364,13 @@ const AnalysisTable = () => {
           );
         },
       },
-      ...years.map((year) => comparisonColumn<Comparison>(year)),
+      ...years.map((year) => comparisonColumn<Mode>(year)),
     ],
     [years, isComparison, valueIsScenarioComparison, comparisonColumn],
   );
 
   const tableProps = useMemo(
-    <Comparison extends TableComparisonMode>(): TableProps<ImpactRowType<Comparison>> => ({
+    <Mode extends ComparisonMode>(): TableProps<ImpactRowType<Mode>> => ({
       paginationProps: {
         totalItems: totalRows,
         itemNumber: tableData.length,
@@ -387,8 +381,8 @@ const AnalysisTable = () => {
       onSortingChange: setSortingState,
       onPaginationChange: setPaginationState,
       isLoading: isFetching,
-      data: tableData as ImpactRowType<Comparison>[],
-      columns: baseColumns as ColumnDefinition<ImpactRowType<Comparison>>[],
+      data: tableData as ImpactRowType<Mode>[],
+      columns: baseColumns as ColumnDefinition<ImpactRowType<Mode>>[],
       manualSorting: false,
     }),
     [baseColumns, isFetching, metadata.totalPages, tableData, tableState, totalRows],

@@ -3,7 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { apiRawService } from 'services/api';
 
 import type { UseQueryOptions } from '@tanstack/react-query';
-import type { APIpaginationRequest, ImpactDataApiResponse } from 'types';
+import type { APIpaginationRequest } from 'types';
+import type { ImpactDataApiResponse } from './types';
 
 const DEFAULT_QUERY_OPTIONS = {
   placeholderData: {

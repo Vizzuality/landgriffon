@@ -9,7 +9,7 @@ const BackLink: FC<AnchorHTMLAttributes<HTMLAnchorElement>> = forwardRef<
 >(({ children, className, href, ...props }, ref) => (
   <a
     href={href}
-    className={classNames('flex text-primary text-sm', className)}
+    className={classNames('flex text-navy-400 text-sm', className)}
     ref={ref}
     {...props}
   >

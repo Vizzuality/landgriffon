@@ -16,7 +16,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title = 'Admin', children }) 
         aria-labelledby="primary-heading"
         className="flex flex-col flex-1 h-screen min-w-0 overflow-y-auto bg-gray-100"
       >
-        <header className="sticky top-0 z-20 bg-primary">
+        <header className="sticky top-0 z-20 bg-navy-400">
           <div className="flex items-stretch justify-between px-12 bg-white border-b border-gray-100 rounded-tl-3xl">
             <h1 className="text-left mt-8">{title}</h1>
 
@@ -25,7 +25,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title = 'Admin', children }) 
                 <Link key={tab.href} href={tab.href}>
                   <a
                     className={classNames('flex items-center pb-5 -mb-[2px]', {
-                      'text-primary border-b-2 border-primary': pathname === tab.href,
+                      'text-navy-400 border-b-2 border-primary': pathname === tab.href,
                     })}
                     data-testid="admin-menu-item"
                     data-testisactive={pathname === tab.href}

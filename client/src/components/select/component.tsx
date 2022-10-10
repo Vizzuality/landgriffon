@@ -59,7 +59,7 @@ const getComponents = <
     SingleValue: ({ className, ...props }) => (
       <components.SingleValue
         className={classNames(className, 'my-auto', {
-          'font-bold text-primary': theme === 'inline-primary',
+          'font-bold text-navy-400': theme === 'inline-primary',
         })}
         {...props}
       />
@@ -80,7 +80,7 @@ const getComponents = <
         className={classNames(
           className,
           'text-gray-900 truncate cursor-pointer hover:bg-green-50',
-          props.isFocused ? 'bg-green-50 text-primary' : 'text-gray-900',
+          props.isFocused ? 'bg-green-50 text-navy-400' : 'text-gray-900',
           {
             'bg-green-50': props.isSelected,
             'text-opacity-50 cursor-default': props.isDisabled,
@@ -91,7 +91,7 @@ const getComponents = <
           <div
             className={classNames(
               {
-                'font-semibold text-primary': props.isSelected,
+                'font-semibold text-navy-400': props.isSelected,
               },
               'block truncate',
             )}
@@ -106,7 +106,7 @@ const getComponents = <
         </div>
       </components.Option>
     ),
-    LoadingIndicator: () => <Loading className="text-primary" />,
+    LoadingIndicator: () => <Loading className="text-navy-400" />,
     DropdownIndicator:
       theme === 'default' || theme === 'default-bordernone'
         ? ({ selectProps: { menuIsOpen } }) => (

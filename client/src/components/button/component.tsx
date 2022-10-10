@@ -3,7 +3,7 @@ import Loading from 'components/loading';
 import classNames from 'classnames';
 
 const classes = {
-  base: 'inline-flex items-center min-w-content focus:outline-none focus:ring-2 focus:ring-offset-1',
+  base: 'inline-flex justify-center items-center min-w-content focus:outline-none focus:ring-2 focus:ring-offset-1',
   disabled: 'pointer-events-none',
   size: {
     xs: 'rounded leading-4 py-2 px-3 text-xs',
@@ -37,7 +37,7 @@ const COMMON_CLASSNAMES =
   'shadow-sm inline-flex items-center overflow-hidden justify-center rounded-md cursor-pointer disabled:opacity-50 disabled:pointer-events-none disabled:hover:bg-green-700';
 
 const PRIMARY =
-  'shadow-sm border-transparent text-white bg-primary hover:bg-green-800 focus:outline-offset-2 focus:outline focus:outline-green-600';
+  'shadow-sm border-transparent text-white bg-navy-400 hover:bg-green-800 focus:outline-offset-2 focus:outline focus:outline-green-600';
 
 const BASE_BORDER =
   'border bg-transparent focus:outline-offset-2 focus:outline focus:outline-none focus:ring-1';
@@ -50,7 +50,7 @@ const SECONDARY = classNames(
 const TERTIARY =
   'border-transparent shadow-sm text-white bg-gray-500 hover:bg-gray-600 focus:outline-offset-2 focus:outline focus:outline-gray-500/20';
 
-const PRIMARY_LIGHT = classNames(BASE_BORDER, 'text-primary border-primary');
+const PRIMARY_LIGHT = classNames(BASE_BORDER, 'text-navy-400 border-primary');
 
 export const THEME = {
   default: COMMON_CLASSNAMES,
@@ -84,7 +84,14 @@ type Overload = {
 
 // Guard to check if href exists in props
 const hasHref = (props: ButtonProps | AnchorProps): props is AnchorProps => 'href' in props;
-const buildClassName = ({ danger, disabled, loading, size, variant }: AnchorButtonProps) =>
+const buildClassName = ({
+  className,
+  danger,
+  disabled,
+  loading,
+  size,
+  variant,
+}: ButtonProps | AnchorProps) =>
   classNames(
     classes.base,
     danger ? classes.variant[variant].danger : classes.variant[variant].default,
@@ -92,6 +99,7 @@ const buildClassName = ({ danger, disabled, loading, size, variant }: AnchorButt
     disabled && classes.disabled,
     disabled && classes.variant[variant].disabled,
     loading && classes.disabled,
+    className,
   );
 
 const ButtonTemplate: React.FC<AnchorButtonProps> = ({ danger, icon, loading, size, variant }) => (
@@ -141,7 +149,7 @@ export const Anchor = forwardRef<HTMLAnchorElement, AnchorProps>(
     ref,
   ) => (
     <a
-      className={buildClassName({ danger, disabled, icon, size, variant })}
+      className={buildClassName({ className, danger, disabled, icon, size, variant })}
       {...restProps}
       ref={ref}
     >
@@ -166,7 +174,7 @@ export const Button: React.FC<ButtonProps> = ({
 }) => (
   <button
     type="button"
-    className={buildClassName({ danger, disabled, icon, loading, size, variant })}
+    className={buildClassName({ className, danger, disabled, icon, loading, size, variant })}
     disabled={loading || disabled}
     {...restProps}
   >

@@ -671,7 +671,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                       <Disclosure.Button
                         className={classNames(
                           'border-primary border w-6 h-6 rounded flex items-center justify-center',
-                          open ? 'bg-primary' : 'bg-transparent',
+                          open ? 'bg-navy-400' : 'bg-transparent',
                           {
                             hidden:
                               currentInterventionType === InterventionTypes.Material ||
@@ -682,7 +682,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                         {open ? (
                           <MinusIcon className="w-5 h-5 text-white" />
                         ) : (
-                          <PlusIcon className="w-5 h-5 text-primary" />
+                          <PlusIcon className="w-5 h-5 text-navy-400" />
                         )}
                       </Disclosure.Button>
                     </div>
@@ -819,13 +819,13 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                           <Disclosure.Button
                             className={classNames(
                               'border-primary border w-6 h-6 rounded flex items-center justify-center',
-                              open ? 'bg-primary' : 'bg-transparent',
+                              open ? 'bg-navy-400' : 'bg-transparent',
                             )}
                           >
                             {open ? (
                               <MinusIcon className="w-5 h-5 text-white" />
                             ) : (
-                              <PlusIcon className="w-5 h-5 text-primary" />
+                              <PlusIcon className="w-5 h-5 text-navy-400" />
                             )}
                           </Disclosure.Button>
                         )}
@@ -903,14 +903,14 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                       <Disclosure.Button
                         className={classNames(
                           'border-primary border w-6 h-6 rounded flex items-center justify-center',
-                          open ? 'bg-primary' : 'bg-transparent',
+                          open ? 'bg-navy-400' : 'bg-transparent',
                           currentInterventionType === InterventionTypes.Efficiency && 'hidden',
                         )}
                       >
                         {open ? (
                           <MinusIcon className="w-5 h-5 text-white" />
                         ) : (
-                          <PlusIcon className="w-5 h-5 text-primary" />
+                          <PlusIcon className="w-5 h-5 text-navy-400" />
                         )}
                       </Disclosure.Button>
                     </div>

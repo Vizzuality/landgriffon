@@ -102,7 +102,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
 
   return (
     <div className="p-6 bg-white rounded-md shadow-sm">
-      {isLoading && <Loading className="w-5 h-5 m-auto text-primary" />}
+      {isLoading && <Loading className="w-5 h-5 m-auto text-navy-400" />}
       {!isLoading && isFetched && data && (
         <div>
           <h2 className="flex-shrink-0 text-base">

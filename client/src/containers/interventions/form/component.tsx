@@ -19,7 +19,7 @@ import BusinessUnitsSelect from 'containers/business-units/select';
 import LocationsSelect from 'containers/locations/select';
 import SuppliersSelect from 'containers/suppliers/select';
 import Input from 'components/forms/input';
-import { AnchorLink, Button } from 'components/button';
+import { Anchor, Button } from 'components/button';
 import Select from 'components/select';
 import InfoToolTip from 'components/info-tooltip/component';
 
@@ -670,7 +670,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                       </div>
                       <Disclosure.Button
                         className={classNames(
-                          'border-primary border w-6 h-6 rounded flex items-center justify-center',
+                          'border-navy-400 border w-6 h-6 rounded flex items-center justify-center',
                           open ? 'bg-navy-400' : 'bg-transparent',
                           {
                             hidden:
@@ -818,7 +818,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                         {areSupplierEdited || (
                           <Disclosure.Button
                             className={classNames(
-                              'border-primary border w-6 h-6 rounded flex items-center justify-center',
+                              'border-navy-400 border w-6 h-6 rounded flex items-center justify-center',
                               open ? 'bg-navy-400' : 'bg-transparent',
                             )}
                           >
@@ -902,7 +902,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                       </div>
                       <Disclosure.Button
                         className={classNames(
-                          'border-primary border w-6 h-6 rounded flex items-center justify-center',
+                          'border-navy-400 border w-6 h-6 rounded flex items-center justify-center',
                           open ? 'bg-navy-400' : 'bg-transparent',
                           currentInterventionType === InterventionTypes.Efficiency && 'hidden',
                         )}
@@ -993,7 +993,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
         </div>
         <div className="flex justify-end space-x-6">
           <Link href="/admin/scenarios" passHref>
-            <AnchorLink theme="secondary">Cancel</AnchorLink>
+            <Anchor variant="secondary">Cancel</Anchor>
           </Link>
           <Button loading={isSubmitting} type="submit" data-testid="intervention-submit-btn">
             Save intervention

@@ -28,7 +28,7 @@ const TargetItem: React.FC<Target> = ({ id, name, years }) => {
             <div className={TARGET_PILL_VALUE_CLASSNAMES}>{value}</div>
           </div>
         ))}
-        <Button theme="secondary" onClick={openEditTargetModal}>
+        <Button variant="secondary" onClick={openEditTargetModal}>
           Edit
         </Button>
       </div>

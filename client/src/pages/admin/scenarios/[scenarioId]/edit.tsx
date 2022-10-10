@@ -20,7 +20,7 @@ import { LocationStatus } from 'containers/interventions/enums';
 import BackLink from 'components/back-link';
 import Loading from 'components/loading';
 import Select from 'components/select';
-import { AnchorLink, Button } from 'components/button';
+import { Anchor, Button } from 'components/button';
 import Input from 'components/forms/input';
 import Toggle from 'components/toggle';
 import Dropdown from 'components/dropdown';
@@ -121,7 +121,7 @@ const UpdateScenarioPage: React.FC = () => {
                     <Input name="growth-rate" placeholder="0 % per year" disabled />
                   </div>
                   <div className="flex items-end col-span-2">
-                    <Button disabled theme="secondary" className="w-full h-[40px]">
+                    <Button disabled variant="secondary" className="w-full h-[40px]">
                       Add growth rate
                     </Button>
                   </div>
@@ -144,10 +144,10 @@ const UpdateScenarioPage: React.FC = () => {
                   <h2 className="flex-1 mb-4">Interventions</h2>
                   {!isInterventionsLoading && interventions.length > 0 && (
                     <Link href={`/admin/scenarios/${data.id}/interventions/new`} passHref>
-                      <AnchorLink theme="secondary" className="text-gray-900">
+                      <Anchor variant="secondary" className="text-gray-900">
                         <PlusIcon className="w-5 h-5 mr-2 text-gray-900" aria-hidden="true" />
                         Add intervention
-                      </AnchorLink>
+                      </Anchor>
                     </Link>
                   )}
                 </div>
@@ -204,10 +204,10 @@ const UpdateScenarioPage: React.FC = () => {
                       chain.
                     </p>
                     <Link href={`/admin/scenarios/${data.id}/interventions/new`} passHref>
-                      <AnchorLink theme="secondary" className="text-gray-900">
+                      <Anchor variant="secondary" className="text-gray-900">
                         <PlusIcon className="w-5 h-5 mr-2 text-gray-900" aria-hidden="true" />
                         Add intervention
-                      </AnchorLink>
+                      </Anchor>
                     </Link>
                   </div>
                 )}

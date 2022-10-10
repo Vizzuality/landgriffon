@@ -45,7 +45,7 @@ const AdminTargetsPage: React.FC = () => {
       </Head>
 
       <div className="flex justify-end gap-3">
-        <Button theme="primary" onClick={handleCreateTarget}>
+        <Button variant="primary" onClick={handleCreateTarget}>
           Create a new target
         </Button>
       </div>

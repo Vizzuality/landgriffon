@@ -255,7 +255,7 @@ const InnerSelect = <OptionValue, IsMulti extends boolean = false>(
             'w-full bg-white border rounded-md': theme === 'default',
             'px-1 bg-white border-0': theme === 'default-bordernone',
             // '': !error, // focus.isFocused,
-            '!border-primary !border-2': rest.isFocused && !error,
+            '!border-navy-400 !border-2': rest.isFocused && !error,
             '!border-2 !border-red-400': error,
           })}
           {...rest}

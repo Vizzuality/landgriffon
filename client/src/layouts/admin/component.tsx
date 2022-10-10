@@ -25,7 +25,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title = 'Admin', children }) 
                 <Link key={tab.href} href={tab.href}>
                   <a
                     className={classNames('flex items-center pb-5 -mb-[2px]', {
-                      'text-navy-400 border-b-2 border-primary': pathname === tab.href,
+                      'text-navy-400 border-b-2 border-navy-400': pathname === tab.href,
                     })}
                     data-testid="admin-menu-item"
                     data-testisactive={pathname === tab.href}

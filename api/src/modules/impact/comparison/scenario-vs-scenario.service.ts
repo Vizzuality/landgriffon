@@ -391,8 +391,8 @@ export class ScenarioVsScenarioImpactService {
           absoluteDifference:
             (scenarioOneTotalSumByYear || 0) - scenarioTwoTotalSumByYear,
           percentageDifference:
-            ((scenarioOneTotalSumByYear || 0 - scenarioTwoTotalSumByYear) /
-              ((scenarioOneTotalSumByYear || 0 + scenarioTwoTotalSumByYear) /
+            (((scenarioOneTotalSumByYear || 0) - scenarioTwoTotalSumByYear) /
+              (((scenarioOneTotalSumByYear || 0) + scenarioTwoTotalSumByYear) /
                 2)) *
             100,
           isProjected: yearData?.isProjected,

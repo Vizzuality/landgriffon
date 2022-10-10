@@ -28,7 +28,7 @@ type StackedAreaChartProps = {
   indicator: Indicator;
 };
 
-const COLOR_SCALE = chroma.scale(['#2D7A5B', '#39A163', '#9AC864', '#D9E77F', '#FFF9C7']);
+const COLOR_SCALE = chroma.scale(['#2E34B0', '#5462D8', '#828EF5', '#B9C0FF', '#E3EEFF']);
 
 const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
   const filters = useAppSelector(filtersForTabularAPI);

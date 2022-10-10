@@ -1,13 +1,16 @@
 import classNames from 'classnames';
 import { useAppSelector } from 'store/hooks';
 import { scenarios } from 'store/features/analysis/scenarios';
-import { NUMBER_FORMAT, BIG_NUMBER_FORMAT } from 'utils/number-format';
+import { NUMBER_FORMAT } from 'utils/number-format';
+import { useCallback } from 'react';
 
 export interface ComparisonCellProps {
   value: number;
   scenarioValue: number;
   absoluteDifference: number;
   percentageDifference: number;
+  unit?: string;
+  formatter?: (value: number) => string;
 }
 
 const ComparisonCell: React.FC<ComparisonCellProps> = ({
@@ -15,14 +18,32 @@ const ComparisonCell: React.FC<ComparisonCellProps> = ({
   scenarioValue,
   absoluteDifference,
   percentageDifference,
+  unit,
+  formatter = NUMBER_FORMAT,
 }) => {
   const { comparisonMode } = useAppSelector(scenarios);
-  if (isNaN(scenarioValue)) return <>{BIG_NUMBER_FORMAT(value)}</>;
+
+  const formatWithUnit = useCallback(
+    (value: number, unit?: string) => {
+      const formattedNumber = formatter(value);
+
+      if (unit) {
+        return `${formattedNumber} ${unit}`;
+      }
+
+      return formattedNumber;
+    },
+    [formatter],
+  );
+
+  if (isNaN(scenarioValue)) return <>{formatter(value)}</>;
 
   return (
-    <div className="mx-auto w-fit">
+    <div className="mr-auto w-fit">
       <div className="flex flex-row gap-1">
-        <div className="my-auto text-base text-gray-900">{NUMBER_FORMAT(scenarioValue)}</div>
+        <div className="my-auto text-sm text-gray-900 whitespace-nowrap">
+          {formatWithUnit(scenarioValue, unit)}
+        </div>
         <div
           className={classNames(
             'my-auto text-xs font-semibold text-gray-500 rounded-[4px] px-1 py-0.5',
@@ -36,17 +57,17 @@ const ComparisonCell: React.FC<ComparisonCellProps> = ({
             },
           )}
         >
-          {comparisonMode === 'relative' && `${NUMBER_FORMAT(percentageDifference)}%`}
+          {comparisonMode === 'relative' && <>{formatter(percentageDifference)}%</>}
           {comparisonMode === 'absolute' && (
             <>
               {absoluteDifference > 0 && '+'}
-              {NUMBER_FORMAT(absoluteDifference)}
+              {formatter(absoluteDifference)}
             </>
           )}
         </div>
       </div>
-      <div className="my-auto text-xs text-left text-gray-400 whitespace-nowrap">
-        Actual data: {NUMBER_FORMAT(value)}
+      <div className="my-auto text-xs text-left text-gray-300 whitespace-nowrap line-through">
+        {formatWithUnit(value, unit)}
       </div>
     </div>
   );

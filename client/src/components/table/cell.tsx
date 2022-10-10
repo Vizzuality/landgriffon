@@ -26,6 +26,7 @@ const getAlignmentClasses = (align: 'left' | 'center' | 'right') => {
 
 const CellWrapper = <T, C>({ children, context }: React.PropsWithChildren<CellProps<T, C>>) => {
   const isFirstColumn = context.table.getAllColumns()[0].id === context.column.id;
+
   const { align } = context.column.columnDef.meta;
   const style = useMemo(
     () => ({
@@ -48,7 +49,7 @@ const CellWrapper = <T, C>({ children, context }: React.PropsWithChildren<CellPr
         { 'cursor-pointer': isExpandible },
       )}
     >
-      <div className="w-full mx-auto my-auto space-x-2">
+      <div className="w-full mx-auto my-auto">
         {isExpandible ? (
           <div>
             <div className="absolute -translate-x-5 -translate-y-1/2 top-1/2">

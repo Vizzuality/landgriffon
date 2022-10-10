@@ -28,6 +28,8 @@ type TableDataType = ImpactTableData['rows'][0];
 
 type AnalysisTableProps = TableProps<TableDataType>;
 
+const NUMBER_FORMATTER = NUMBER_FORMAT;
+
 const dataToCsv: (tableData: AnalysisTableProps) => string = (tableData) => {
   const LINE_SEPARATOR = '\r\n';
 
@@ -214,21 +216,43 @@ const AnalysisTable: React.FC = () => {
         id: `${year}`,
         title: `${year}`,
         enableSorting: !showComparison,
-        cell: ({ row: { original: data } }) => {
+        cell: ({ row: { original: data, id }, table }) => {
+          //* The metadata is only present at the parent row, so we need to get it from there
+          const { rowsById } = table.getExpandedRowModel();
+          const { original: parentRowData } = rowsById[id.split('.')[0]];
+
+          // @ts-expect-error TODO: fix types for different comparison cases
+          const unit: string = parentRowData.metadata?.unit;
+
           const value = data.values.find((value) => value.year === year) as Required<
             TableDataType['values'][0]
           >;
-          if (!showComparison) return BIG_NUMBER_FORMAT(value.value);
+
+          if (!showComparison) {
+            if (unit) {
+              return `${NUMBER_FORMATTER(value.value)} ${unit}`;
+            }
+            return NUMBER_FORMATTER(value.value);
+          }
 
           if (isScenarioComparison) {
-            console.log({ value });
-            return BIG_NUMBER_FORMAT(value.value);
+            const { scenarioOneValue, scenarioTwoValue, ...rest } =
+              value as unknown as ComparisonData['rows'][number]['values'][number];
+            return (
+              <ComparisonCell
+                {...rest}
+                value={scenarioOneValue}
+                scenarioValue={scenarioTwoValue}
+                unit={unit}
+                formatter={NUMBER_FORMATTER}
+              />
+            );
           }
-          return <ComparisonCell {...value} />;
+          return <ComparisonCell {...value} formatter={NUMBER_FORMATTER} />;
         },
       };
     },
-    [showComparison],
+    [isScenarioComparison, showComparison],
   );
 
   const baseColumns = useMemo<ColumnDefinition<TableDataType>[]>(

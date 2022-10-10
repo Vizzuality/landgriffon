@@ -107,7 +107,7 @@ const AdminDataPage: React.FC = () => {
       data: sourcingData.map((dataRow) => ({
         ...dataRow,
         ...dataRow.purchases
-          .map(({ year, tonnage }) => ({ [year as string]: tonnage }))
+          .map(({ year, tonnage }) => ({ [year]: tonnage }))
           .reduce((a, b) => ({ ...a, ...b })),
       })),
     };

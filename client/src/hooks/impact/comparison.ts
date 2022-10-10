@@ -4,8 +4,7 @@ import type { Scenario } from 'containers/scenarios/types';
 
 import { apiRawService } from 'services/api';
 
-import type { ImpactDataApiResponse } from 'types';
-
+import type { ImpactDataApiResponse } from './types';
 import type { ImpactTabularAPIParams } from 'types';
 
 const DEFAULT_QUERY_OPTIONS = {

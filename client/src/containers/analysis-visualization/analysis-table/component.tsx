@@ -263,20 +263,32 @@ const AnalysisTable: React.FC = () => {
             original: { values },
           },
         }) => {
-          const actualData = values.map(({ year, value }) => ({
+          const baseData = values.map(({ year, ...rest }) => ({
             x: year,
-            y: value,
+            y: isScenarioComparison ? rest.scenarioOneValue : rest.value,
           }));
-          const actualDataChartConfig = datesRangeChartConfig(actualData, {
+
+          const actualDataChartConfig = datesRangeChartConfig(baseData, {
             dataKey: 'actual_data',
             // ? gray/400 or gray/500
             stroke: showComparison ? '#AEB1B5' : '#60626A',
           });
           const interventionData = showComparison
-            ? values.map(({ year, scenarioValue }) => ({
-                x: year,
-                y: scenarioValue,
-              }))
+            ? values.map(({ year, ...rest }) => {
+                if (isScenarioComparison) {
+                  // TODO: fix types for different comparison cases
+                  const { scenarioOneValue, scenarioTwoValue } =
+                    rest as unknown as ComparisonData['rows'][number]['values'][number];
+                  return {
+                    x: year,
+                    y: scenarioTwoValue,
+                  };
+                }
+                return {
+                  x: year,
+                  y: rest.scenarioValue,
+                };
+              })
             : [];
           const interventionDataChartConfig = showComparison
             ? datesRangeChartConfig(interventionData, {

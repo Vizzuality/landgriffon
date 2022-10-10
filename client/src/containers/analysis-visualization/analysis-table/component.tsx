@@ -15,22 +15,36 @@ import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-
 import LinkButton from 'components/button';
 import Table from 'components/table/component';
 import LineChart from 'components/chart/line';
-import { BIG_NUMBER_FORMAT } from 'utils/number-format';
+import { NUMBER_FORMAT } from 'utils/number-format';
 import ComparisonCell from './comparison-cell/component';
 
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { TableProps } from 'components/table/component';
 import type { ColumnDefinition } from 'components/table/column';
 import type { LinesConfig } from 'components/chart/line/types';
-import type { ComparisonData, ImpactData, ImpactTableData } from 'types';
+import type { ImpactRowType, ImpactTableValueItem, TableComparisonMode } from 'types';
 
-type TableDataType = ImpactTableData['rows'][0];
-
-type AnalysisTableProps = TableProps<TableDataType>;
+type AnalysisTableProps<Comparison extends TableComparisonMode> = TableProps<
+  ImpactRowType<Comparison>
+>;
 
 const NUMBER_FORMATTER = NUMBER_FORMAT;
 
-const dataToCsv: (tableData: AnalysisTableProps) => string = (tableData) => {
+const isParentRow = <Comparison extends TableComparisonMode>(
+  row: ImpactRowType<Comparison, any>,
+): row is ImpactRowType<Comparison, true> => {
+  return 'metadata' in row;
+};
+
+const valueIsComparison = (
+  value: ImpactTableValueItem<any>,
+): value is ImpactTableValueItem<true | 'scenario'> => {
+  return !('value' in value);
+};
+
+const dataToCsv = <Comparison extends TableComparisonMode>(
+  tableData: AnalysisTableProps<Comparison>,
+): string => {
   const LINE_SEPARATOR = '\r\n';
 
   if (!tableData) return null;
@@ -53,7 +67,7 @@ const dataToCsv: (tableData: AnalysisTableProps) => string = (tableData) => {
   return str;
 };
 
-const AnalysisTable: React.FC = () => {
+const AnalysisTable = () => {
   const [paginationState, setPaginationState] = useState<PaginationState>({
     pageIndex: 1,
     pageSize: 10,
@@ -68,9 +82,18 @@ const AnalysisTable: React.FC = () => {
   const { data: indicators } = useIndicators({ select: (data) => data.data });
   const filters = useAppSelector(filtersForTabularAPI);
 
-  const showComparison = useMemo(
-    () => isComparisonEnabled && !!scenarioToCompare,
+  const useIsComparison = useCallback(
+    (table: ImpactRowType<TableComparisonMode>[]): table is ImpactRowType<true | 'scenario'>[] => {
+      return isComparisonEnabled && !!scenarioToCompare;
+    },
     [isComparisonEnabled, scenarioToCompare],
+  );
+
+  const useIsScenarioComparison = useCallback(
+    (table: ImpactRowType<any>[]): table is ImpactRowType<'scenario'>[] => {
+      return isComparisonEnabled && !!currentScenario;
+    },
+    [isComparisonEnabled, currentScenario],
   );
 
   const { indicatorId, ...restFilters } = filters;
@@ -106,9 +129,12 @@ const AnalysisTable: React.FC = () => {
     enabled: !isComparisonEnabled && isEnable,
   });
 
-  const impactActualComparisonData = useImpactComparison(params, {
-    enabled: isComparisonEnabled && !currentScenario && isEnable,
-  });
+  const impactActualComparisonData = useImpactComparison(
+    { ...params, scenarioId: scenarioToCompare },
+    {
+      enabled: isComparisonEnabled && !currentScenario && isEnable,
+    },
+  );
   const impactScenarioComparisonData = useImpactScenarioComparison(
     {
       scenarioOneValue: currentScenario,
@@ -129,19 +155,13 @@ const AnalysisTable: React.FC = () => {
     },
   );
 
-  const getIsScenarioComparison = useCallback(
-    (impactTable: ImpactTableData[] | ComparisonData[]): impactTable is ComparisonData[] => {
-      return isComparisonEnabled && !!currentScenario;
-    },
-    [currentScenario, isComparisonEnabled],
-  );
   const impactComparisonData = !!currentScenario
     ? impactScenarioComparisonData
     : impactActualComparisonData;
 
   const {
     data: {
-      data: { impactTable },
+      data: { impactTable = [] },
       metadata,
     },
     isLoading,
@@ -150,8 +170,6 @@ const AnalysisTable: React.FC = () => {
     if (isComparisonEnabled && !!scenarioToCompare) return impactComparisonData;
     return plainImpactData;
   }, [impactComparisonData, plainImpactData, isComparisonEnabled, scenarioToCompare]);
-
-  const isScenarioComparison = getIsScenarioComparison(impactTable);
 
   const totalRows = useMemo(() => {
     return !isLoading && impactTable.length === 1 ? impactTable[0].rows.length : impactTable.length;
@@ -189,16 +207,14 @@ const AnalysisTable: React.FC = () => {
   const years = useMemo(() => {
     // TODO: do we have to check all rows or is the first one guaranteed to have all years?
     // const years = impactTable[0]?.yearSum?.map((sum) => sum.year);
-    const years = ((impactTable || []) as ImpactTableData[])?.flatMap(({ yearSum }) =>
-      yearSum.map((sum) => sum.year),
-    );
+    const years = impactTable?.flatMap(({ yearSum }) => yearSum.map((sum) => sum.year));
 
     // TODO: if the above is true, we don't need this
     return uniq(years);
   }, [impactTable]);
 
   const tableData = useMemo(
-    () =>
+    <Comparison extends TableComparisonMode>(): ImpactRowType<Comparison>[] =>
       impactTable.map(({ indicatorShortName, yearSum, rows, ...impact }) => ({
         ...impact,
         children: rows,
@@ -210,25 +226,39 @@ const AnalysisTable: React.FC = () => {
     [impactTable],
   );
 
-  const comparisonColumn = useCallback<(year: number) => ColumnDefinition<TableDataType>>(
-    (year: number) => {
+  const isComparison = useIsComparison(tableData);
+  const isScenarioComparison = useIsScenarioComparison(tableData);
+
+  const valueIsScenarioComparison = useCallback(
+    (value: ImpactTableValueItem<any>): value is ImpactTableValueItem<'scenario'> => {
+      return isScenarioComparison && isComparison;
+    },
+    [isComparison, isScenarioComparison],
+  );
+
+  const comparisonColumn = useCallback(
+    <Comparison extends TableComparisonMode>(
+      year: number,
+    ): ColumnDefinition<ImpactRowType<Comparison>> => {
       return {
         id: `${year}`,
-        title: `${year}`,
-        enableSorting: !showComparison,
+        size: 170,
+        align: 'left',
+        enableSorting: !isComparison,
         cell: ({ row: { original: data, id }, table }) => {
           //* The metadata is only present at the parent row, so we need to get it from there
           const { rowsById } = table.getExpandedRowModel();
-          const { original: parentRowData } = rowsById[id.split('.')[0]];
-
-          // @ts-expect-error TODO: fix types for different comparison cases
-          const unit: string = parentRowData.metadata?.unit;
-
-          const value = data.values.find((value) => value.year === year) as Required<
-            TableDataType['values'][0]
+          const parentRowData = rowsById[id.split('.')[0]].original as unknown as ImpactRowType<
+            Comparison,
+            true
           >;
 
-          if (!showComparison) {
+          const unit: string = parentRowData.metadata?.unit;
+
+          const value = data.values.find((value) => value.year === year);
+          const isComparison = valueIsComparison(value);
+          const isScenarioComparison = valueIsScenarioComparison(value);
+          if (!isComparison) {
             if (unit) {
               return `${NUMBER_FORMATTER(value.value)} ${unit}`;
             }
@@ -236,8 +266,7 @@ const AnalysisTable: React.FC = () => {
           }
 
           if (isScenarioComparison) {
-            const { scenarioOneValue, scenarioTwoValue, ...rest } =
-              value as unknown as ComparisonData['rows'][number]['values'][number];
+            const { scenarioOneValue, scenarioTwoValue, ...rest } = value;
             return (
               <ComparisonCell
                 {...rest}
@@ -248,15 +277,16 @@ const AnalysisTable: React.FC = () => {
               />
             );
           }
+
           return <ComparisonCell {...value} formatter={NUMBER_FORMATTER} />;
         },
       };
     },
-    [isScenarioComparison, showComparison],
+    [isComparison, valueIsScenarioComparison],
   );
 
-  const baseColumns = useMemo<ColumnDefinition<TableDataType>[]>(
-    () => [
+  const baseColumns = useMemo(
+    <Comparison extends TableComparisonMode>(): ColumnDefinition<ImpactRowType<Comparison>>[] => [
       {
         id: 'name',
         header: '',
@@ -272,8 +302,8 @@ const AnalysisTable: React.FC = () => {
                 })}
                 title={original.name}
               >
-                {/* @ts-expect-error the parent and the children have different data types */}
-                {`${original.name} ${depth === 0 ? `(${original.metadata.unit})` : ''}`}
+                {original.name}
+                {isParentRow(original) && depth === 0 && <> ({original.metadata.unit})</>}
               </span>
             </>
           );
@@ -288,33 +318,32 @@ const AnalysisTable: React.FC = () => {
             original: { values },
           },
         }) => {
-          const baseData = values.map(({ year, ...rest }) => ({
-            x: year,
-            y: isScenarioComparison ? rest.scenarioOneValue : rest.value,
+          const baseData = values.map((value: ImpactTableValueItem<Comparison>) => ({
+            x: value.year,
+            y: valueIsScenarioComparison(value) ? value.scenarioOneValue : value.value,
           }));
 
           const actualDataChartConfig = datesRangeChartConfig(baseData, {
             dataKey: 'actual_data',
-            className: showComparison ? 'stroke-gray-400' : 'stroke-gray-500',
+            className: isComparison ? 'stroke-gray-400' : 'stroke-gray-500',
           });
-          const interventionData = showComparison
-            ? values.map(({ year, ...rest }) => {
+
+          const interventionData = isComparison
+            ? (values as ImpactTableValueItem<true | 'scenario'>[]).map((value) => {
+                const isScenarioComparison = valueIsScenarioComparison(value);
                 if (isScenarioComparison) {
-                  // TODO: fix types for different comparison cases
-                  const { scenarioOneValue, scenarioTwoValue } =
-                    rest as unknown as ComparisonData['rows'][number]['values'][number];
                   return {
-                    x: year,
-                    y: scenarioTwoValue,
+                    x: value.year,
+                    y: value.scenarioTwoValue,
                   };
                 }
                 return {
-                  x: year,
-                  y: rest.scenarioValue,
+                  x: value.year,
+                  y: value.scenarioValue,
                 };
               })
             : [];
-          const interventionDataChartConfig = showComparison
+          const interventionDataChartConfig = isComparison
             ? datesRangeChartConfig(interventionData, {
                 dataKey: 'intervention',
                 className: 'stroke-gray-900',
@@ -333,7 +362,7 @@ const AnalysisTable: React.FC = () => {
                 chartConfig={{
                   lines: [
                     ...actualDataChartConfig.lines,
-                    ...(showComparison ? interventionDataChartConfig.lines : []),
+                    ...(isComparison ? interventionDataChartConfig.lines : []),
                   ],
                 }}
               />
@@ -341,13 +370,13 @@ const AnalysisTable: React.FC = () => {
           );
         },
       },
-      ...years.map((year) => comparisonColumn(year)),
+      ...years.map((year) => comparisonColumn<Comparison>(year)),
     ],
-    [comparisonColumn, years, showComparison],
+    [years, isComparison, valueIsScenarioComparison, comparisonColumn],
   );
 
-  const tableProps = useMemo<TableProps<TableDataType>>(
-    () => ({
+  const tableProps = useMemo(
+    <Comparison extends TableComparisonMode>(): TableProps<ImpactRowType<Comparison>> => ({
       paginationProps: {
         totalItems: totalRows,
         itemNumber: tableData.length,
@@ -358,8 +387,8 @@ const AnalysisTable: React.FC = () => {
       onSortingChange: setSortingState,
       onPaginationChange: setPaginationState,
       isLoading: isFetching,
-      data: tableData,
-      columns: baseColumns,
+      data: tableData as ImpactRowType<Comparison>[],
+      columns: baseColumns as ColumnDefinition<ImpactRowType<Comparison>>[],
       manualSorting: false,
     }),
     [baseColumns, isFetching, metadata.totalPages, tableData, tableState, totalRows],

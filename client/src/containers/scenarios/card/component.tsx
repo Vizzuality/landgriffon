@@ -49,7 +49,9 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
       <div>
         <h3 className="text-xs">Growth rates</h3>
         <div className="flex mt-2 space-x-4">
-          <div className="rounded-full bg-blue py-0.5 px-3 text-xs">Entire company +1.5%/yr</div>
+          <div className="rounded-full bg-blue-400 py-0.5 px-3 text-xs">
+            Entire company +1.5%/yr
+          </div>
         </div>
       </div>
       <div className="flex-1">
@@ -62,7 +64,7 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
                 <div
                   data-testid="scenario-interventions-item"
                   key={intervention.id}
-                  className="mr-2 mb-2 rounded-full bg-yellow py-0.5 px-3 text-xs"
+                  className="mr-2 mb-2 rounded-full bg-orange-50 py-0.5 px-3 text-xs"
                 >
                   {intervention.title}
                 </div>
@@ -71,14 +73,14 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
             {interventions.length > 2 && (
               <Popover className="relative text-xs">
                 Show{' '}
-                <Popover.Button className="mr-2 mb-2 rounded-full bg-yellow py-0.5 px-3 text-xs">
+                <Popover.Button className="mr-2 mb-2 rounded-full bg-orange-50 py-0.5 px-3 text-xs">
                   +{interventions.length - 2} more
                 </Popover.Button>
                 <Popover.Panel className="absolute p-4 bg-white border border-gray-100 rounded-md shadow-md">
                   {interventions.slice(2, interventions.length).map((intervention) => (
                     <div
                       key={intervention.id}
-                      className="mr-2 mb-2 last:mb-0 rounded-full bg-yellow py-0.5 px-3 text-xs"
+                      className="mr-2 mb-2 last:mb-0 rounded-full bg-orange-50 py-0.5 px-3 text-xs"
                     >
                       {intervention.title}
                     </div>

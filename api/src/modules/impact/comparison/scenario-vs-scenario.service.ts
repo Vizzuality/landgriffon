@@ -502,18 +502,21 @@ export class ScenarioVsScenarioImpactService {
         );
       },
     );
-    for (const [valueIndex, ImpactTableRowsValues] of entity.values.entries()) {
+    for (const [
+      valueIndex,
+      ScenarioVsScenarioImpactTableRowsValues,
+    ] of entity.values.entries()) {
       valuesToAggregate.forEach(
         (item: ScenarioVsScenarioImpactTableRowsValues[]) => {
           entity.values[valueIndex].scenarioOneValue =
-            (ImpactTableRowsValues.scenarioOneValue ?? 0) +
+            (ScenarioVsScenarioImpactTableRowsValues.scenarioOneValue ?? 0) +
             (item[valueIndex].scenarioOneValue || 0);
           entity.values[valueIndex].isProjected =
             item[valueIndex].isProjected ||
             entity.values[valueIndex].isProjected;
 
           entity.values[valueIndex].scenarioTwoValue =
-            (ImpactTableRowsValues.scenarioTwoValue ?? 0) +
+            (ScenarioVsScenarioImpactTableRowsValues.scenarioTwoValue ?? 0) +
             (item[valueIndex].scenarioTwoValue || 0);
           entity.values[valueIndex].absoluteDifference =
             (entity.values[valueIndex].scenarioOneValue || 0) -

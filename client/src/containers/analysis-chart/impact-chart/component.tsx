@@ -14,15 +14,15 @@ import {
 
 import { filtersForTabularAPI } from 'store/features/analysis/selector';
 import { useImpactRanking } from 'hooks/impact/ranking';
+import { useAppSelector } from 'store/hooks';
+import { scenarios } from 'store/features/analysis';
 
 import Loading from 'components/loading';
 import { NUMBER_FORMAT } from 'utils/number-format';
-import LegendChart from './legend';
+import CustomLegend from './legend';
+import CustomTooltip from './tooltip';
 
 import type { Indicator } from 'types';
-import { useAppSelector } from 'store/hooks';
-import { scenarios } from 'store/features/analysis';
-import type { TooltipProps } from 'recharts/types/component/Tooltip';
 
 type StackedAreaChartProps = {
   indicator: Indicator;
@@ -97,21 +97,12 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
     };
   }, [data]);
 
-  const renderTooltip = useCallback(({ payload, label }: TooltipProps<number, string>) => {
-    return (
-      <div className="p-2 bg-white rounded-md shadow-md">
-        <div>{label}</div>
-        <ul className="space-y-2">
-          {payload.map((item) => (
-            <li key={item.dataKey} className="flex flex-row gap-2">
-              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: item.color }} />
-              {item.name}: {NUMBER_FORMAT(item.value as number)}
-              {item.unit}
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
+  const renderLegend = useCallback((props) => <CustomLegend {...props} />, []);
+
+  const renderTooltip = useCallback((props) => {
+    if (props && props.active && props.payload && props.payload.length) {
+      return <CustomTooltip {...props} />;
+    }
   }, []);
 
   return (
@@ -151,7 +142,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                       ></rect>
                     </pattern>
                   </defs>
-                  <Legend verticalAlign="top" content={LegendChart} height={70} />
+                  <Legend verticalAlign="top" content={renderLegend} height={70} />
                   <CartesianGrid
                     vertical={false}
                     stroke="#15181F"

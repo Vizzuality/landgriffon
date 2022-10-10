@@ -18,7 +18,7 @@ const classes = {
     },
     secondary: {
       default:
-        'text-navy-400 bg-transparent border border-navy-400 hover:shadow-md hover:bg-white focus:ring-navy-400/20',
+        'text-navy-400 bg-transparent border border-navy-400 hover:shadow-md hover:bg-white focus:bg-navy-400 focus:text-white focus:ring-navy-400/20',
       danger:
         'text-red-400 bg-transparent border border-red-400 hover:shadow-md hover:bg-white focus:ring-red-400/20',
       disabled: 'opacity-50',
@@ -63,7 +63,7 @@ export const THEME = {
 
 export type AnchorButtonProps = {
   danger?: boolean;
-  icon?: React.ReactElement<SVGElement>;
+  icon?: React.ReactElement<SVGElement | HTMLDivElement>;
   loading?: boolean;
   disabled?: boolean;
   size?: keyof typeof classes.size;
@@ -106,20 +106,16 @@ const ButtonTemplate: React.FC<AnchorButtonProps> = ({ danger, icon, loading, si
   <>
     {!loading && icon && (
       <div className="mr-2">
-        {React.cloneElement(
-          icon,
-          {
-            className: classNames(
-              {
-                'w-3 h-3': size === 'xs',
-                'w-4 h-4': size !== 'xs',
-                'text-gray-900': variant === 'white',
-              },
-              icon.props?.className,
-            ),
-          },
-          null,
-        )}
+        {React.cloneElement(icon, {
+          className: classNames(
+            {
+              'w-3 h-3': size === 'xs',
+              'w-4 h-4': size !== 'xs',
+              'text-gray-900': variant === 'white',
+            },
+            icon.props?.className,
+          ),
+        })}
       </div>
     )}
     {loading && (

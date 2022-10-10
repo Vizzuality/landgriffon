@@ -147,7 +147,14 @@ const UpdateScenarioPage: React.FC = () => {
                       <Anchor
                         variant="secondary"
                         className="text-gray-900"
-                        icon={<PlusIcon aria-hidden="true" />}
+                        icon={
+                          <div
+                            aria-hidden="true"
+                            className="flex items-center justify-center w-5 h-5 rounded-full bg-navy-400"
+                          >
+                            <PlusIcon className="w-4 h-4 text-white" />
+                          </div>
+                        }
                       >
                         Add intervention
                       </Anchor>
@@ -210,7 +217,14 @@ const UpdateScenarioPage: React.FC = () => {
                       <Anchor
                         variant="secondary"
                         className="text-gray-900"
-                        icon={<PlusIcon aria-hidden="true" />}
+                        icon={
+                          <div
+                            aria-hidden="true"
+                            className="flex items-center justify-center w-5 h-5 rounded-full bg-navy-400"
+                          >
+                            <PlusIcon className="w-4 h-4 text-white" />
+                          </div>
+                        }
                       >
                         Add intervention
                       </Anchor>

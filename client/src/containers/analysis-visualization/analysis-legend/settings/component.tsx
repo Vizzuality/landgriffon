@@ -227,7 +227,7 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
 
   return (
     <div className="flex flex-row h-[600px]">
-      <div className="w-96 flex flex-col items-stretch gap-5 p-6">
+      <div className="flex flex-col items-stretch gap-5 p-6 w-96">
         <div className="w-full">
           <Search
             onChange={setSearchText}
@@ -253,31 +253,31 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
           </Accordion>
         </div>
         <div className="flex flex-row justify-between">
-          <Button theme="textLight" onClick={onDismiss}>
+          <Button variant="secondary" onClick={onDismiss}>
             Cancel
           </Button>
           <Button
             onClick={handleApply}
-            theme="primaryLight"
+            variant="secondary"
             className="text-navy-400 border-navy-400"
           >
             Apply
           </Button>
         </div>
       </div>
-      <div className="aspect-square h-full min-h-0">
+      <div className="h-full min-h-0 aspect-square">
         <div className="relative w-full h-full">
           <PreviewMap
             selectedMaterialId={localMaterial}
             selectedLayerId={selectedLayerForPreview}
           />
-          <div className="absolute bg-black text-sm text-white flex flex-row top-3 left-3 rounded-md h-fit">
-            <div className="font-bold p-3">Preview layers</div>
+          <div className="absolute flex flex-row text-sm text-white bg-black rounded-md top-3 left-3 h-fit">
+            <div className="p-3 font-bold">Preview layers</div>
             {!selectedLayerForPreview && (
               <>
                 <div className="bg-white w-0.5 self-stretch" />
                 <div className="p-3">
-                  Click the eye icon <EyeIcon className="w-4 h-4 inline" /> next to the layer name
+                  Click the eye icon <EyeIcon className="inline w-4 h-4" /> next to the layer name
                   to preview
                 </div>
               </>

@@ -353,8 +353,8 @@ export class ActualVsScenarioImpactService {
           scenarioValue: totalScenarioSumByYear || 0,
           absoluteDifference: (totalScenarioSumByYear || 0) - totalSumByYear,
           percentageDifference:
-            ((totalScenarioSumByYear || 0 - totalSumByYear) /
-              ((totalScenarioSumByYear || 0 + totalSumByYear) / 2)) *
+            (((totalScenarioSumByYear || 0) - totalSumByYear) /
+              (((totalScenarioSumByYear || 0) + totalSumByYear) / 2)) *
             100,
           isProjected: yearData?.isProjected,
         });

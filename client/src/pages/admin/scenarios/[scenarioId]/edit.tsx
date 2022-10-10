@@ -127,7 +127,7 @@ const UpdateScenarioPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-2 p-2 mt-4 mb-2 border border-gray-300 rounded-md">
-                  <div className="flex items-center rounded-full bg-blue py-0.5 px-3 text-sm">
+                  <div className="flex items-center rounded-full bg-blue-400 py-0.5 px-3 text-sm">
                     Entire company +1.5%/y
                     <button type="button" disabled>
                       <XIcon className="w-3 h-3 ml-2" />
@@ -169,7 +169,7 @@ const UpdateScenarioPage: React.FC = () => {
                         key={intervention.id}
                         className={classnames('flex items-center p-4 space-x-4 rounded-md', {
                           'bg-gray-100': intervention.status === LocationStatus.inactive,
-                          'bg-yellow': intervention.status === LocationStatus.active,
+                          'bg-orange-50': intervention.status === LocationStatus.active,
                         })}
                       >
                         <div className="flex flex-1 space-x-2">

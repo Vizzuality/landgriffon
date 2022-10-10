@@ -46,10 +46,6 @@ module.exports = {
         100: '#F3F4F6',
         50: '#F9FAFB',
       },
-      // theme
-      primary: { DEFAULT: '#078A3C', dark: '#00634A', light: '#34D399' }, // REMOVE
-      blue: '#A9E0F5', // REMOVE
-      yellow: '#F9DFB1', // REMOVE
       navy: {
         50: '#F0F2FD', // light navy
         200: '#C7CDEA', // light mid navy

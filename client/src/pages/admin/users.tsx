@@ -60,8 +60,18 @@ const AdminUsersPage: React.FC = () => {
           <Search placeholder="Search table" value={searchText} onChange={setSearchText} />
         </div>
         <div className="flex items-center">
-          <Button variant="primary" onClick={() => console.info('Add user: click')}>
-            <PlusIcon className="w-5 h-5 mr-2" aria-hidden="true" />
+          <Button
+            variant="primary"
+            icon={
+              <div
+                aria-hidden="true"
+                className="flex items-center justify-center w-5 h-5 bg-white rounded-full"
+              >
+                <PlusIcon className="w-4 h-4 text-navy-400" />
+              </div>
+            }
+            disabled
+          >
             Add user
           </Button>
         </div>

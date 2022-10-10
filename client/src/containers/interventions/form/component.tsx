@@ -591,7 +591,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                       classNames(
                         'border p-4 rounded-md',
                         active || checked
-                          ? 'border-yellow bg-yellow text-gray-900'
+                          ? 'border-orange-100 bg-orange-50 text-gray-900'
                           : 'border-gray-300 text-gray-500',
                       )
                     }

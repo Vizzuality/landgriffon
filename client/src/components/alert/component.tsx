@@ -17,8 +17,8 @@ export const ALERT_CLASSES = {
   },
   warning: {
     iconColor: 'mr-2 h-5 w-5 fill-orange-300',
-    backgroundColor: 'bg-yellow-50',
-    messagesColor: 'text-yellow-500',
+    backgroundColor: 'bg-orange-50',
+    messagesColor: 'text-orange-500',
   },
 };
 

@@ -6,11 +6,11 @@ type ChartData = Readonly<{
 }>;
 
 export type LinesConfig = Readonly<{
-  stroke: string;
   width: string | number;
   strokeDasharray?: string;
   dataKey: string;
   data: ChartData[];
+  className?: string;
 }>;
 
 type Grid = Readonly<{

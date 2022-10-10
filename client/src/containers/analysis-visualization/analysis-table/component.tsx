@@ -155,28 +155,29 @@ const AnalysisTable: React.FC = () => {
     return !isLoading && impactTable.length === 1 ? impactTable[0].rows.length : impactTable.length;
   }, [isLoading, impactTable]);
 
-  const datesRangeChartConfig = (data, config: Pick<LinesConfig, 'dataKey' | 'stroke'>) => {
+  const datesRangeChartConfig = (
+    data,
+    { dataKey, ...config }: Pick<LinesConfig, 'dataKey' | 'className'>,
+  ) => {
     const xAxisValues = data.map(({ x }) => x);
     const xMaxValue = Math.max(...xAxisValues);
     const xMinValue = Math.min(...xAxisValues);
     const min = xMaxValue - xMinValue;
 
-    const { dataKey, stroke } = config;
-
     return {
       lines: [
         {
-          stroke,
           width: '100%',
           strokeDasharray: '3 3',
           dataKey: `${dataKey}_path`,
           data,
+          ...config,
         },
         {
-          stroke,
           width: '100%',
           dataKey: `${dataKey}_values`,
           data: data.filter(({ x }) => x < xMinValue + min / 2),
+          ...config,
         },
       ],
     };
@@ -270,8 +271,7 @@ const AnalysisTable: React.FC = () => {
 
           const actualDataChartConfig = datesRangeChartConfig(baseData, {
             dataKey: 'actual_data',
-            // ? gray/400 or gray/500
-            stroke: showComparison ? '#AEB1B5' : '#60626A',
+            className: showComparison ? 'stroke-gray-400' : 'stroke-gray-500',
           });
           const interventionData = showComparison
             ? values.map(({ year, ...rest }) => {
@@ -293,8 +293,7 @@ const AnalysisTable: React.FC = () => {
           const interventionDataChartConfig = showComparison
             ? datesRangeChartConfig(interventionData, {
                 dataKey: 'intervention',
-                // ? gray/900
-                stroke: '#15181F',
+                className: 'stroke-gray-900',
               })
             : null;
 

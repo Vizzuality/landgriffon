@@ -16,11 +16,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title = 'Admin', children }) 
         aria-labelledby="primary-heading"
         className="flex flex-col flex-1 h-screen min-w-0 overflow-y-auto bg-gray-100"
       >
-        <header className="sticky top-0 z-20 bg-navy-400">
+        <header className="sticky top-0 z-20 bg-navy-600">
           <div className="flex items-stretch justify-between px-12 bg-white border-b border-gray-100 rounded-tl-3xl">
-            <h1 className="text-left mt-8">{title}</h1>
+            <h1 className="mt-8 text-left">{title}</h1>
 
-            <nav className="flex space-x-10 text-sm mt-12">
+            <nav className="flex mt-12 space-x-10 text-sm">
               {Object.values(ADMIN_TABS).map((tab) => (
                 <Link key={tab.href} href={tab.href}>
                   <a

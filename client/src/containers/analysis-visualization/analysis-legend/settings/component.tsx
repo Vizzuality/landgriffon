@@ -73,7 +73,7 @@ const CategoryHeader: React.FC<{
       <div
         className={classNames(
           'w-4 h-4 my-auto text-xs font-semibold text-center text-white rounded-full',
-          activeLayers === 0 ? 'bg-gray-200' : 'bg-primary',
+          activeLayers === 0 ? 'bg-gray-200' : 'bg-navy-400',
         )}
       >
         {activeLayers}
@@ -236,7 +236,7 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
             onReset={reset}
           />
         </div>
-        <div className="text-sm text-right underline text-primary underline-offset-[3px]">
+        <div className="text-sm text-right underline text-navy-400 underline-offset-[3px]">
           Selected layers ({localSelectedLayerNumber})
         </div>
         <div className="max-h-full p-0.5 overflow-y-auto flex-grow">
@@ -259,7 +259,7 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
           <Button
             onClick={handleApply}
             theme="primaryLight"
-            className="text-primary border-primary"
+            className="text-navy-400 border-primary"
           >
             Apply
           </Button>

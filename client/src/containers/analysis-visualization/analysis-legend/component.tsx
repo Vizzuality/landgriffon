@@ -119,14 +119,14 @@ export const Legend: React.FC = () => {
                     disabled={!areContextualLayersLoaded}
                     type="button"
                     aria-expanded={showSettings}
-                    className="disabled:cursor-not-allowed disabled:text-gray-500 text-primary py-1.5 px-1.5 flex flex-row gap-2 place-items-center"
+                    className="disabled:cursor-not-allowed disabled:text-gray-500 text-navy-400 py-1.5 px-1.5 flex flex-row gap-2 place-items-center"
                     onClick={handleToggleShowLegendSettinngs}
                   >
                     <span className="my-auto text-xs font-semibold underline underline-offset-2">
                       Contextual Layers
                     </span>
                     {activeContextualLayers > 0 && (
-                      <div className="w-4 h-4 text-xs font-semibold text-center text-white rounded-full bg-primary">
+                      <div className="w-4 h-4 text-xs font-semibold text-center text-white rounded-full bg-navy-400">
                         {activeContextualLayers}
                       </div>
                     )}
@@ -140,7 +140,7 @@ export const Legend: React.FC = () => {
         <div className="relative">
           <ToggleShowLegendButton showLegend={showLegend} toggleLegend={handleShowLegend} />
           {activeLayerNumber && (
-            <div className="box-content absolute bottom-0 right-0 w-4 h-4 m-auto text-xs font-semibold text-center text-white border border-white rounded-full translate-x-1/3 translate-y-1/3 bg-primary">
+            <div className="box-content absolute bottom-0 right-0 w-4 h-4 m-auto text-xs font-semibold text-center text-white border border-white rounded-full translate-x-1/3 translate-y-1/3 bg-navy-400">
               {activeLayerNumber}
             </div>
           )}
@@ -175,7 +175,7 @@ const ToggleShowLegendButton = ({
       type="button"
       className={classNames(
         'transition-colors relative flex items-center justify-center w-10 h-10 rounded-lg p-1.5 ',
-        showLegend ? 'text-white bg-primary hover:bg-primary-dark' : 'bg-white hover:text-primary',
+        showLegend ? 'text-white bg-navy-400 hover:bg-navy-900' : 'bg-white hover:text-navy-400',
       )}
       onClick={toggleLegend}
     >

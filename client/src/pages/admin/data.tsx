@@ -139,7 +139,7 @@ const AdminDataPage: React.FC = () => {
 
       {(tasksIsLoading || isFetchingSourcingData) && (
         <div className="flex items-center justify-center w-full h-full">
-          <Loading className="text-primary" />
+          <Loading className="text-navy-400" />
         </div>
       )}
 
@@ -209,11 +209,11 @@ const AdminDataPage: React.FC = () => {
             )}
             <DownloadMaterialsDataButton onError={(errorMessage) => toast.error(errorMessage)} />
             <Button
-              theme="primary"
+              variant="primary"
               onClick={openUploadDataSourceModal}
               icon={
                 <span className="inline-flex items-center justify-center w-5 h-5 mr-4 bg-white rounded-full">
-                  <PlusIcon className="w-4 h-4 text-primary" />
+                  <PlusIcon className="w-4 h-4 text-navy-400" />
                 </span>
               }
               disabled={lastTask?.status === 'processing'}
@@ -287,7 +287,7 @@ const AdminDataPage: React.FC = () => {
           </div>
 
           <div className="flex justify-end gap-3 mt-8">
-            <Button theme="secondary" onClick={closeUploadDataSourceModal}>
+            <Button variant="secondary" onClick={closeUploadDataSourceModal}>
               Cancel
             </Button>
           </div>

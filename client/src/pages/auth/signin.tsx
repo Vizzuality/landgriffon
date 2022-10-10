@@ -103,14 +103,14 @@ const SignIn: NextPageWithLayout = () => {
               </Checkbox>
 
               <div className="text-sm">
-                <a href="#" className="font-medium text-primary hover:text-green-700">
+                <a href="#" className="font-medium text-navy-400 hover:text-navy-800">
                   Forgot your password?
                 </a>
               </div>
             </div>
 
             <div className="pt-8">
-              <Button type="submit" theme="primary" className="w-full" loading={isLoading}>
+              <Button type="submit" variant="primary" className="w-full" loading={isLoading}>
                 Sign in
               </Button>
             </div>

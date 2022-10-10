@@ -42,7 +42,7 @@ const ChartPage: NextPageWithLayout = () => {
       <TitleTemplate title="Analysis chart" />
       {isLoading && (
         <div className="flex items-center justify-center h-full">
-          <Loading className="w-5 h-5 m-auto text-primary" />
+          <Loading className="w-5 h-5 m-auto text-navy-400" />
         </div>
       )}
       {!isLoading && activeIndicators?.length > 0 && (

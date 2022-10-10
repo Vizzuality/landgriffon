@@ -30,7 +30,7 @@ const ScenariosAdminPage: React.FC = () => {
       </div>
       {isLoading && (
         <div className="flex justify-center">
-          <Loading className="text-primary" />
+          <Loading className="text-navy-400" />
         </div>
       )}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">

@@ -104,7 +104,7 @@ export function getSameMaterialScenarioComparisonResponse(
             scenarioOneValue: 2000,
             scenarioTwoValue: 1500,
             absoluteDifference: 500,
-            percentageDifference: 200,
+            percentageDifference: 28.57142857142857,
             isProjected: false,
           },
           {
@@ -112,7 +112,7 @@ export function getSameMaterialScenarioComparisonResponse(
             scenarioOneValue: 2030,
             scenarioTwoValue: 1522.5,
             absoluteDifference: 507.5,
-            percentageDifference: 200,
+            percentageDifference: 28.57142857142857,
             isProjected: true,
           },
         ],

@@ -165,7 +165,7 @@ export const newCoefficientsScenarioInterventionTable = {
           value: 5700,
           scenarioValue: 5250,
           absoluteDifference: -450,
-          percentageDifference: 200,
+          percentageDifference: -8.21917808219178,
           isProjected: false,
         },
         {
@@ -173,7 +173,7 @@ export const newCoefficientsScenarioInterventionTable = {
           value: 5785.5,
           scenarioValue: 5328.75,
           absoluteDifference: -456.75,
-          percentageDifference: 200,
+          percentageDifference: -8.21917808219178,
           isProjected: true,
         },
         {
@@ -181,7 +181,7 @@ export const newCoefficientsScenarioInterventionTable = {
           value: 5872.282499999999,
           scenarioValue: 5408.68125,
           absoluteDifference: -463.6012499999997,
-          percentageDifference: 200,
+          percentageDifference: -8.219178082191776,
           isProjected: true,
         },
         {
@@ -189,7 +189,7 @@ export const newCoefficientsScenarioInterventionTable = {
           value: 5960.3667375,
           scenarioValue: 5489.81146875,
           absoluteDifference: -470.5552687500003,
-          percentageDifference: 200,
+          percentageDifference: -8.219178082191785,
           isProjected: true,
         },
       ],

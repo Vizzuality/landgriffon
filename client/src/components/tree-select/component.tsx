@@ -433,7 +433,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
           >
             {loading && (
               <div className="p-4">
-                <Loading className="mr-3 -ml-1 text-navy-400" />
+                <Loading className="w-5 mr-3 -ml-1 h5 text-navy-400" />
               </div>
             )}
             {!loading && (

@@ -22,15 +22,18 @@ const ScenariosAdminPage: React.FC = () => {
       </Head>
       <div className="flex justify-end mb-6">
         <Link href="/admin/scenarios/new" passHref>
-          <Anchor variant="primary" data-testid="scenario-add-button">
-            <PlusIcon className="w-5 h-5" aria-hidden="true" />
+          <Anchor
+            variant="primary"
+            data-testid="scenario-add-button"
+            icon={<PlusIcon aria-hidden="true" />}
+          >
             Add scenario
           </Anchor>
         </Link>
       </div>
       {isLoading && (
         <div className="flex justify-center">
-          <Loading className="text-navy-400" />
+          <Loading className="w-5 h-5 text-navy-400" />
         </div>
       )}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">

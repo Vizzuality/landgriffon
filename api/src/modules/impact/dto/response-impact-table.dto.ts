@@ -61,7 +61,12 @@ export class ImpactTableRows {
   name: string;
   @ApiProperty({ type: () => ImpactTableRowsValues, isArray: true })
   values: ImpactTableRowsValues[];
-  @ApiProperty({ type: () => ImpactTableRows, isArray: true })
+  @ApiProperty({
+    type: 'array',
+    items: {
+      type: 'object',
+    },
+  })
   children: ImpactTableRows[];
 }
 
@@ -87,10 +92,6 @@ export class ImpactTableRowsValues {
   value: number;
   @ApiPropertyOptional()
   scenarioValue?: number;
-  @ApiPropertyOptional()
-  scenarioOneValue?: number;
-  @ApiPropertyOptional()
-  scenarioTwoValue?: number;
   @ApiPropertyOptional()
   absoluteDifference?: number;
   @ApiPropertyOptional()

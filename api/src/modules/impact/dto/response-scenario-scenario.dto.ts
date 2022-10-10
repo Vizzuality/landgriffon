@@ -73,7 +73,12 @@ export class ScenarioVsScenarioImpactTableRows {
     isArray: true,
   })
   values: ScenarioVsScenarioImpactTableRowsValues[];
-  @ApiProperty({ type: () => ScenarioVsScenarioImpactTableRows, isArray: true })
+  @ApiProperty({
+    type: 'array',
+    items: {
+      type: 'object',
+    },
+  })
   children: ScenarioVsScenarioImpactTableRows[];
 }
 

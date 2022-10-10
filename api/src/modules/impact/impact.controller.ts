@@ -65,7 +65,7 @@ export class ImpactController {
     description: 'Get data for comparing Impacts of 2 Scenarios',
   })
   @ApiOkResponse({
-    type: PaginatedImpactTable,
+    type: ScenarioVsScenarioPaginatedImpactTable,
   })
   @JSONAPIPaginationQueryParams()
   @UseInterceptors(SetScenarioIdsInterceptor)

@@ -10,7 +10,7 @@ type CustomTooltipProps = {
 };
 
 const CustomTooltip: React.FC<CustomTooltipProps> = ({ payload }) => (
-  <div className="p-4 text-gray-900 bg-white border rounded-md max-w-[200px]">
+  <div className="p-4 text-gray-900 bg-white border border-gray-200 rounded-md max-w-[200px]">
     <ul className="space-y-2">
       {payload
         .filter(({ type }) => type !== 'none')

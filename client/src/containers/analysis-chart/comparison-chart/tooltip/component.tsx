@@ -17,7 +17,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ payload }) => {
   const absoluteDifference = payload[1].payload.absoluteDifference;
 
   return (
-    <div className="p-4 text-gray-900 bg-white border rounded-md">
+    <div className="p-4 text-gray-900 bg-white border border-gray-200 rounded-md">
       <div className="flex items-center space-x-2">
         <div>{NUMBER_FORMAT(scenarioValue)}</div>
         <div

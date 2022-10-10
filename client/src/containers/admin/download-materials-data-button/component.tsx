@@ -86,7 +86,7 @@ const DownloadMaterialsDataButton: React.FC<DownloadMaterialsDataButtonProps> = 
         {...buttonProps}
       >
         Download
-        {isDownloading && <Loading className="ml-2" />}
+        {isDownloading && <Loading className="w-5 ml-2 h5" />}
       </Button>
     </Downloader>
   );

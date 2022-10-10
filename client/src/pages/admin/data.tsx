@@ -139,7 +139,7 @@ const AdminDataPage: React.FC = () => {
 
       {(tasksIsLoading || isFetchingSourcingData) && (
         <div className="flex items-center justify-center w-full h-full">
-          <Loading className="text-navy-400" />
+          <Loading className="w-5 h-5 text-navy-400" />
         </div>
       )}
 

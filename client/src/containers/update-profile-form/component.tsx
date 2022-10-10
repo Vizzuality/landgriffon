@@ -86,7 +86,7 @@ const UserDataForm: React.FC = () => {
                 </div>
               </div>
               <div className="flex justify-end h-16 py-3 pr-6 rounded-md bg-gray-50">
-                <Button type="submit" theme="primary" loading={updateProfile.isLoading}>
+                <Button type="submit" variant="primary" loading={updateProfile.isLoading}>
                   Save
                 </Button>
               </div>

@@ -81,7 +81,7 @@ const DownloadMaterialsDataButton: React.FC<DownloadMaterialsDataButtonProps> = 
       onError={handleOnError}
     >
       <Button
-        theme="secondary"
+        variant="secondary"
         icon={<DownloadIcon className="w-4 h-4 text-gray-500" />}
         {...buttonProps}
       >

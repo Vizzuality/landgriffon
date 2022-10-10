@@ -103,14 +103,14 @@ const AdminEditTargetModal: React.FC<EditTargetModalProps> = ({ title, open, onD
         // percentageValue={}
         onChange={handleOnChangeTarget}
       />
-      {/* <Button theme="primary" icon={PlusCircleIcon} onClick={onDismiss}>
+      {/* <Button variant="primary" icon={PlusCircleIcon} onClick={onDismiss}>
           Add a target
       </Button> */}
       <div className="flex justify-end gap-3 mt-8">
-        <Button theme="secondary" onClick={onDismiss}>
+        <Button variant="secondary" onClick={onDismiss}>
           Cancel
         </Button>
-        <Button theme="primary" onClick={onDismiss}>
+        <Button variant="primary" onClick={onDismiss}>
           Save
         </Button>
       </div>

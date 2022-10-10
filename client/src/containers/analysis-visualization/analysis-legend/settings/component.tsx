@@ -259,7 +259,7 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
           <Button
             onClick={handleApply}
             theme="primaryLight"
-            className="text-navy-400 border-primary"
+            className="text-navy-400 border-navy-400"
           >
             Apply
           </Button>

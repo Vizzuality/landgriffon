@@ -6,7 +6,7 @@ import { useScenarios } from 'hooks/scenarios';
 
 import AdminLayout from 'layouts/admin';
 import ScenarioCard from 'containers/scenarios/card';
-import { AnchorLink } from 'components/button';
+import { Anchor } from 'components/button';
 import Loading from 'components/loading';
 
 const ScenariosAdminPage: React.FC = () => {
@@ -22,10 +22,10 @@ const ScenariosAdminPage: React.FC = () => {
       </Head>
       <div className="flex justify-end mb-6">
         <Link href="/admin/scenarios/new" passHref>
-          <AnchorLink theme="primary" data-testid="scenario-add-button">
+          <Anchor variant="primary" data-testid="scenario-add-button">
             <PlusIcon className="w-5 h-5" aria-hidden="true" />
             Add scenario
-          </AnchorLink>
+          </Anchor>
         </Link>
       </div>
       {isLoading && (

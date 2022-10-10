@@ -26,7 +26,7 @@ const Page500: React.FC = () => {
             to contact us
           </p>
 
-          <Button theme="primary" onClick={handleReload} className="mt-12">
+          <Button variant="primary" onClick={handleReload} className="mt-12">
             Reload
           </Button>
         </div>

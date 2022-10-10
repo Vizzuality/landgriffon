@@ -9,7 +9,7 @@ import { useDeleteScenario } from 'hooks/scenarios';
 import { useScenarioInterventions } from 'hooks/interventions';
 
 import Loading from 'components/loading';
-import { AnchorLink, Button } from 'components/button';
+import { Anchor, Button } from 'components/button';
 
 import type { Scenario } from '../types';
 
@@ -94,7 +94,7 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
       </div>
       <div className="flex space-between">
         <Button
-          theme="secondary"
+          variant="secondary"
           onClick={handleDeleteScenario}
           icon={<TrashIcon className="w-4 h-4 text-gray-500" />}
         >
@@ -106,10 +106,10 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
             <br /> {format(new Date(data.updatedAt), 'yyyy/MM/dd')}
           </div>
           <Link href={`/admin/scenarios/${data.id}/edit`} passHref>
-            <AnchorLink theme="secondary">Edit</AnchorLink>
+            <Anchor variant="secondary">Edit</Anchor>
           </Link>
           <Link href={{ pathname: `/analysis/table`, query: { scenarioId: data.id } }} passHref>
-            <AnchorLink theme="primary">Analyze</AnchorLink>
+            <Anchor variant="primary">Analyze</Anchor>
           </Link>
         </div>
       </div>

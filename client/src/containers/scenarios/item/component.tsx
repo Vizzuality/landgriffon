@@ -109,7 +109,7 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
                           <div>
                             <Link href={`/admin/scenarios/${scenario.id}/edit`}>
                               <a>
-                                <Button theme="secondary">Edit</Button>
+                                <Button variant="secondary">Edit</Button>
                               </a>
                             </Link>
                           </div>

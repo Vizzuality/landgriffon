@@ -36,7 +36,7 @@ const THEMES = {
   },
   'inline-primary': {
     label: 'truncate text-ellipsis font-bold cursor-pointer px-0 py-0',
-    wrapper: 'inline-flex border-b-2 border-primary max-w-none min-w-[30px] min-h-[26px]',
+    wrapper: 'inline-flex border-b-2 border-navy-400 max-w-none min-w-[30px] min-h-[26px]',
     arrow: 'mx-auto w-fit',
     treeNodes:
       'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-navy-400',
@@ -322,7 +322,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
         })}
         className={classNames('relative w-full min-w-0', {
           [THEMES[theme].wrapper]: theme === 'default',
-          'ring-[1.5px] ring-primary': theme === 'default' && isOpen && !error,
+          'ring-[1.5px] ring-navy-400': theme === 'default' && isOpen && !error,
           'flex flex-row justify-between items-center gap-1': theme === 'default',
           'ring-1 ring-red-400': theme === 'default' && error,
           'w-fit': theme === 'inline-primary',
@@ -331,7 +331,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
         <div
           className={classNames('gap-1 h-min overflow-hidden', {
             'flex flex-wrap': theme !== 'inline-primary',
-            'ring-primary border-primary': isOpen,
+            'ring-navy-400 border-navy-400': isOpen,
             'border-red-400': theme === 'inline-primary' && error,
             [THEMES[theme].wrapper]: theme === 'inline-primary',
           })}

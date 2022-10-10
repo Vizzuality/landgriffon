@@ -24,7 +24,7 @@ const TableRow = <T,>({ row, theme, isLast, ...props }: TableRowProps<T>) => {
             }}
             className={classNames('h-full border-transparent', {
               'border-l-4': theme === 'default' && i === 0,
-              'border-l-primary': theme === 'default' && row.getIsSelected() && i === 0,
+              'border-l-navy-400': theme === 'default' && row.getIsSelected() && i === 0,
               'bg-white': theme === 'default',
 
               'group-odd:bg-white group-even:bg-gray-50 group-hover:bg-gray-100':

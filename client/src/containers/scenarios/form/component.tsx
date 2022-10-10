@@ -5,7 +5,7 @@ import * as yup from 'yup';
 
 import Input from 'components/forms/input';
 import Textarea from 'components/forms/textarea';
-import { AnchorLink, Button } from 'components/button';
+import { Anchor, Button } from 'components/button';
 
 import type { Scenario, ScenarioFormData } from '../types';
 
@@ -71,7 +71,7 @@ const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
       {children}
       <div className="flex justify-end space-x-6">
         <Link href="/admin/scenarios" passHref>
-          <AnchorLink theme="secondary">Cancel</AnchorLink>
+          <Anchor variant="secondary">Cancel</Anchor>
         </Link>
         <Button loading={isSubmitting} type="submit" data-testid="create-scenario-button">
           Save scenario

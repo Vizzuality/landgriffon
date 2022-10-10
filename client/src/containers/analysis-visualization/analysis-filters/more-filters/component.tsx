@@ -231,11 +231,11 @@ const MoreFilters = () => {
             </div>
 
             <div className="flex gap-2 mt-6">
-              <Button theme="secondary" className="px-9" onClick={handleCancel}>
+              <Button variant="secondary" className="px-9" onClick={handleCancel}>
                 Cancel
               </Button>
               <Button
-                theme="primary"
+                variant="primary"
                 className="flex-grow"
                 onClick={handleApply}
                 disabled={!hasChangesToApply}

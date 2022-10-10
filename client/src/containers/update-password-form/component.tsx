@@ -85,7 +85,7 @@ const UserPasswordForm: React.FC = () => {
               </div>
             </div>
             <div className="flex justify-end h-16 py-3 pr-6 rounded-md bg-gray-50">
-              <Button type="submit" theme="primary" loading={updatePassword.isLoading}>
+              <Button type="submit" variant="primary" loading={updatePassword.isLoading}>
                 Save
               </Button>
             </div>

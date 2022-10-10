@@ -93,11 +93,7 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
         )}
       </div>
       <div className="flex space-between">
-        <Button
-          variant="secondary"
-          onClick={handleDeleteScenario}
-          icon={<TrashIcon className="w-4 h-4 text-gray-500" />}
-        >
+        <Button variant="secondary" onClick={handleDeleteScenario} icon={<TrashIcon />}>
           Delete
         </Button>
         <div className="flex items-center justify-end flex-1 gap-4">

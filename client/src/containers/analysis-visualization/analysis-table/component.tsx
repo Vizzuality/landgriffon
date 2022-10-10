@@ -301,13 +301,13 @@ const AnalysisTable: React.FC = () => {
           <div>
             <LinkButton
               href={csv}
-              theme="tertiary"
+              variant="secondary"
               size="base"
               className="flex-shrink-0"
               disabled={isLoading}
               download="report.csv"
+              icon={<DownloadIcon />}
             >
-              <DownloadIcon className="w-5 h-4 mr-2 text-white" />
               Download Data
             </LinkButton>
             <div className="mt-3 font-sans text-xs font-bold leading-4 text-right text-gray-500 uppercase">

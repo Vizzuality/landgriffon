@@ -158,7 +158,7 @@ const AdminDataPage: React.FC = () => {
                   download
                   target="_blank"
                   rel="noopener noreferrer"
-                  icon={<DownloadIcon className="w-5 h-5 text-white" aria-hidden="true" />}
+                  icon={<DownloadIcon aria-hidden="true" />}
                 >
                   Download template
                 </Anchor>
@@ -212,9 +212,12 @@ const AdminDataPage: React.FC = () => {
               variant="primary"
               onClick={openUploadDataSourceModal}
               icon={
-                <span className="inline-flex items-center justify-center w-5 h-5 mr-4 bg-white rounded-full">
+                <div
+                  aria-hidden="true"
+                  className="flex items-center justify-center w-5 h-5 bg-white rounded-full"
+                >
                   <PlusIcon className="w-4 h-4 text-navy-400" />
-                </span>
+                </div>
               }
               disabled={lastTask?.status === 'processing'}
             >

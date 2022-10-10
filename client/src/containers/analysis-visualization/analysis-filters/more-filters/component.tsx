@@ -169,9 +169,9 @@ const MoreFilters = () => {
           <div className="relative p-4 bg-white rounded-lg">
             <div className="flex justify-between mb-4">
               <div>Filter by</div>
-              <Button theme="textLight" size="text" onClick={handleClearFilters}>
+              <button type="button" className="text-navy-400" onClick={handleClearFilters}>
                 Clear all
-              </Button>
+              </button>
             </div>
             <div className="flex flex-col gap-3">
               <div>

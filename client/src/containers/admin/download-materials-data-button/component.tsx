@@ -80,11 +80,7 @@ const DownloadMaterialsDataButton: React.FC<DownloadMaterialsDataButtonProps> = 
       onSuccess={handleOnSuccess}
       onError={handleOnError}
     >
-      <Button
-        variant="secondary"
-        icon={<DownloadIcon className="w-4 h-4 text-gray-500" />}
-        {...buttonProps}
-      >
+      <Button variant="secondary" icon={<DownloadIcon />} {...buttonProps}>
         Download
         {isDownloading && <Loading className="w-5 ml-2 h5" />}
       </Button>

@@ -25,9 +25,16 @@ const ScenariosAdminPage: React.FC = () => {
           <Anchor
             variant="primary"
             data-testid="scenario-add-button"
-            icon={<PlusIcon aria-hidden="true" />}
+            icon={
+              <div
+                aria-hidden="true"
+                className="flex items-center justify-center w-5 h-5 bg-white rounded-full"
+              >
+                <PlusIcon className="w-4 h-4 text-navy-400" />
+              </div>
+            }
           >
-            Add scenario
+            Add new scenario
           </Anchor>
         </Link>
       </div>

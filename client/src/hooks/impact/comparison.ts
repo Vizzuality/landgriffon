@@ -4,7 +4,7 @@ import type { Scenario } from 'containers/scenarios/types';
 
 import { apiRawService } from 'services/api';
 
-import type { ImpactData, ScenarioVsScenarioTableComparisonData } from 'types';
+import type { ImpactDataApiResponse } from 'types';
 
 import type { ImpactTabularAPIParams } from 'types';
 
@@ -34,15 +34,20 @@ type ImpactComparisonParams<VsActual extends boolean> = Omit<ImpactTabularAPIPar
         scenarioTwoValue: Scenario['id'];
       });
 
-export const useImpactComparison = <T = ImpactData>(
+export const useImpactComparison = <T = ImpactDataApiResponse<true>>(
   params: Partial<ImpactComparisonParams<true>>,
-  options: UseQueryOptions<ImpactData, unknown, T, ['impact-comparison', typeof params]> = {},
+  options: UseQueryOptions<
+    ImpactDataApiResponse<true>,
+    unknown,
+    T,
+    ['impact-comparison', typeof params]
+  > = {},
 ) => {
   const query = useQuery(
     ['impact-comparison', params],
     () =>
       apiRawService
-        .get<ImpactData>('/impact/compare/scenario/vs/actual', {
+        .get<ImpactDataApiResponse<true>>('/impact/compare/scenario/vs/actual', {
           params: params,
         })
         .then((response) => response.data),
@@ -55,10 +60,10 @@ export const useImpactComparison = <T = ImpactData>(
   return query;
 };
 
-export const useImpactScenarioComparison = <T = ScenarioVsScenarioTableComparisonData>(
+export const useImpactScenarioComparison = <T = ImpactDataApiResponse<'scenario'>>(
   params: Partial<ImpactComparisonParams<false>>,
   options: UseQueryOptions<
-    ScenarioVsScenarioTableComparisonData,
+    ImpactDataApiResponse<'scenario'>,
     unknown,
     T,
     ['impact-scenario-comparison', typeof params]
@@ -71,7 +76,7 @@ export const useImpactScenarioComparison = <T = ScenarioVsScenarioTableCompariso
     ['impact-scenario-comparison', params],
     () =>
       apiRawService
-        .get<ScenarioVsScenarioTableComparisonData>('/impact/compare/scenario/vs/scenario', {
+        .get<ImpactDataApiResponse<'scenario'>>('/impact/compare/scenario/vs/scenario', {
           params: params,
         })
         .then((response) => response.data),

@@ -1,4 +1,3 @@
-import type { ComparisonCellProps } from 'containers/analysis-visualization/analysis-table/comparison-cell/component';
 import type { Scenario } from 'containers/scenarios/types';
 
 export type RGBColor = [number, number, number];
@@ -172,62 +171,56 @@ type AggregatedValues = Readonly<{
   sort: 'DES' | 'ASC';
 }>;
 
-export type ImpactTableData = {
-  groupBy: string;
-  indicatorId: string;
-  indicatorShortName: string;
-  metadata: Record<string, unknown, Metadata>;
-  others: AggregatedValues;
-  rows: {
-    name: string;
-    values: ({
-      year: number;
-      value: number;
-      isProjected: boolean;
-    } & Partial<ComparisonCellProps>)[];
-    children?: ImpactTableData['rows'];
-  }[];
-  yearSum: {
-    year: number;
-    value: number;
-    scenarioValue: number;
-    absoluteDifference: number;
-    percentageDifference: number;
-    isProjected: boolean;
-  }[];
-};
-
-interface ComparisonData {
-  indicatorShortName: string;
-  groupBy: string;
-  indicatorId: Indicator['id'];
-  metadata: { unit: string };
-  rows: {
-    name: string;
-    values: {
-      year: number;
-      scenarioOneValue: number;
-      scenarioTwoValue: number;
-      absoluteDifference: number;
-      percentageDifference: number;
-    }[];
-    children?: ScenarioVsScenarioTableComparisonData['rows'];
-  }[];
-  yearSum: {
-    year: number;
-    scenarioOneValue: number;
-    scenarioTwoValue: number;
-    absoluteDifference: number;
-    percentageDifference: number;
-  }[];
+interface CommonValueItemProps {
+  name: string;
+  year: number;
+  children?: this;
 }
 
-export interface ScenarioVsScenarioTableComparisonData {
-  data: {
-    purchasedTonnes: PurchasedTonnesData[];
-    scenarioVsScenarioImpactTable: ComparisonData[];
-  };
-  metadata: PaginationMetadata;
+interface CommonComparisonValueItemProps extends CommonValueItemProps {
+  absoluteDifference: number;
+  percentageDifference: number;
+}
+
+interface PlainValueItemProps extends CommonValueItemProps {
+  value: number;
+}
+
+interface ComparisonValueItemProps extends CommonComparisonValueItemProps, PlainValueItemProps {
+  scenarioValue: number;
+}
+
+interface ScenarioComparisonValueItemProps extends CommonComparisonValueItemProps {
+  scenarioOneValue: number;
+  scenarioTwoValue: number;
+}
+
+export type ImpactRowType<
+  Comparison extends TableComparisonMode,
+  IsParent extends boolean = false,
+> = IsParent extends true
+  ? ImpactTableData<Comparison>
+  : {
+      children?: this[];
+      name: string;
+      values: ImpactTableValueItem<Comparison>[];
+    };
+
+export type TableComparisonMode = boolean | 'scenario';
+
+export type ImpactTableValueItem<Comparison extends TableComparisonMode> = Comparison extends false
+  ? PlainValueItemProps
+  : Comparison extends 'scenario'
+  ? ScenarioComparisonValueItemProps
+  : ComparisonValueItemProps;
+
+export interface ImpactTableData<Comparison extends TableComparisonMode> {
+  groupBy: string;
+  indicatorId: Indicator['id'];
+  indicatorShortName: string;
+  metadata: Metadata;
+  rows: ImpactRowType<Comparison>[];
+  yearSum: Omit<ImpactTableValueItem<Comparison>, 'isProjected'>[];
 }
 
 export type PurchasedTonnesData = {
@@ -243,9 +236,18 @@ export type PaginationMetadata = {
   totalPages?: number;
 };
 
-export type ImpactData = {
+export type ImpactDataApiResponse<Comparison extends TableComparisonMode> = Omit<
+  ImpactData<Comparison>,
+  'data'
+> & {
+  data: Omit<ImpactData<Comparison>['data'], 'impactTable'> & Comparison extends 'scenario'
+    ? { scenarioVsScenarioImpactTable: ImpactTableData<Comparison>[] }
+    : { impactTable: ImpactTableData<Comparison>[] };
+};
+
+export type ImpactData<Comparison extends TableComparisonMode> = {
   data: {
-    impactTable: ImpactTableData[];
+    impactTable: ImpactTableData<Comparison>[];
     purchasedTonnes?: PurchasedTonnesData[];
   };
   metadata: PaginationMetadata;

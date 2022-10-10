@@ -1,7 +1,8 @@
 import { useMemo, useCallback } from 'react';
 import Lottie from 'lottie-react';
-import { XCircleIcon } from '@heroicons/react/solid';
+import { XCircleIcon, PlusIcon } from '@heroicons/react/solid';
 import { RadioGroup } from '@headlessui/react';
+import Link from 'next/link';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import {
@@ -15,7 +16,7 @@ import useBottomScrollListener from 'hooks/scroll';
 
 import noScenariosAnimationData from 'containers/scenarios/animations/noScenariosAnimationData.json';
 import ScenariosFilters from 'containers/scenarios/filters';
-
+import { Anchor } from 'components/button';
 import Loading from 'components/loading';
 import ScenarioItem from 'containers/scenarios/item';
 
@@ -64,55 +65,58 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
   }, scrollref);
 
   return (
-    <div className="text-gray-900 bg-white overscroll-contain">
+    <div className="flex flex-col h-full text-gray-900 bg-white overscroll-contain">
       <div className="sticky top-0 z-20 pt-10 text-sm bg-white after:bg-gradient-to-b after:from-white after:w-full after:h-3 after:content after:-bottom-3 after:left-0 after:absolute">
         <h1 className="mb-12">Analyze data</h1>
       </div>
 
-      {isLoading && (
-        <div className="flex justify-center p-6 ">
-          <Loading className="w-5 h-5 text-navy-400" />
-        </div>
-      )}
+      <div className="flex-1">
+        {isLoading && (
+          <div className="flex justify-center p-6 ">
+            <Loading className="w-5 h-5 text-navy-400" />
+          </div>
+        )}
 
-      {!isLoading && data && (
-        <RadioGroup value={currentScenario} onChange={handleOnChange}>
-          <RadioGroup.Label className="sr-only">Scenarios</RadioGroup.Label>
-          <div className="space-y-6">
-            {/* Actual data */}
-            <div>
-              <ScenarioItem scenario={ACTUAL_DATA} isSelected={!currentScenario} />
+        {!isLoading && data && (
+          <RadioGroup value={currentScenario} onChange={handleOnChange}>
+            <RadioGroup.Label className="sr-only">Scenarios</RadioGroup.Label>
+            <div className="space-y-6">
+              {/* Actual data */}
+              <div>
+                <ScenarioItem scenario={ACTUAL_DATA} isSelected={!currentScenario} />
+              </div>
+              <div>
+                <ScenariosFilters />
+              </div>
+              <div className="relative z-10 flex-1 overflow-hidden">
+                <ul className="relative grid grid-cols-1 gap-5 my-2 overflow-auto sm:gap-2 sm:grid-cols-2 lg:grid-cols-1">
+                  {scenariosList.map((item) => (
+                    <li key={item.id} className="last-of-type:mb-12">
+                      <ScenarioItem scenario={item} isSelected={currentScenario === item.id} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-            <div>
-              <ScenariosFilters />
-            </div>
-            <div className="relative z-10 flex-1 overflow-hidden">
-              <ul className="relative grid grid-cols-1 gap-5 my-2 overflow-auto sm:gap-2 sm:grid-cols-2 lg:grid-cols-1">
-                {scenariosList.map((item) => (
-                  <li key={item.id} className="last-of-type:mb-12">
-                    <ScenarioItem scenario={item} isSelected={currentScenario === item.id} />
-                  </li>
-                ))}
-              </ul>
+          </RadioGroup>
+        )}
+
+        {!isLoading && error && (
+          <div className="p-4 my-4 rounded-md bg-red-50">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <XCircleIcon className="w-5 h-5 text-red-400" aria-hidden="true" />
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">
+                  There was an error with your request
+                </h3>
+              </div>
             </div>
           </div>
-        </RadioGroup>
-      )}
+        )}
+      </div>
 
-      {!isLoading && error && (
-        <div className="p-4 my-4 rounded-md bg-red-50">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <XCircleIcon className="w-5 h-5 text-red-400" aria-hidden="true" />
-            </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">
-                There was an error with your request
-              </h3>
-            </div>
-          </div>
-        </div>
-      )}
       <div className="sticky bottom-0 left-0 z-20 w-full pb-6 bg-white before:bg-gradient-to-t before:from-white before:w-full before:h-16 before:content before:-top-16 before:left-0 before:absolute">
         {!scenariosList ||
           (scenariosList.length === 0 && (
@@ -131,6 +135,24 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
               </div>
             </div>
           ))}
+        <div>
+          <Link href="/admin/scenarios/new">
+            <Anchor
+              className="w-full"
+              variant="secondary"
+              icon={
+                <div
+                  aria-hidden="true"
+                  className="flex items-center justify-center w-5 h-5 rounded-full bg-navy-400"
+                >
+                  <PlusIcon className="w-4 h-4 text-white" />
+                </div>
+              }
+            >
+              Add new scenario
+            </Anchor>
+          </Link>
+        </div>
       </div>
     </div>
   );

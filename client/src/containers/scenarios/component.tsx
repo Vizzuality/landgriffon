@@ -70,7 +70,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
         <h1 className="mb-12">Analyze data</h1>
       </div>
 
-      <div className="flex-1">
+      <div className="flex-1 mt-2">
         {isLoading && (
           <div className="flex justify-center p-6 ">
             <Loading className="w-5 h-5 text-navy-400" />

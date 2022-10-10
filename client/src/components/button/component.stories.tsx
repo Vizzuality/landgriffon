@@ -1,6 +1,7 @@
-import { Button } from '.';
-import type { ButtonProps, AnchorProps } from 'components/button/component';
+import { Button, Anchor } from '.';
 import { PlusIcon } from '@heroicons/react/outline';
+import type { ButtonProps, AnchorProps } from 'components/button/component';
+import Link from 'next/link';
 
 export default {
   title: 'Components/Buttons',
@@ -35,17 +36,29 @@ export default {
     loading: {
       defaultValue: false,
       control: { type: 'boolean' },
+      description: 'Only for Button component',
     },
   },
 } as ButtonProps & AnchorProps;
 
-const Template = (args: ButtonProps & AnchorProps) => {
+const ButtonTemplate = (args: ButtonProps) => {
   return <Button {...args} icon={args.icon && <PlusIcon />} />;
 };
 
-export const Basic = Template.bind({});
-
-Basic.args = {
-  variant: 'primary',
-  size: 'base',
+const AnchorTemplate = (args: AnchorProps) => {
+  return <Anchor href="#" {...args} icon={args.icon && <PlusIcon />} />;
 };
+
+const AnchorLinkTemplate = (args: AnchorProps) => {
+  return (
+    <Link href="#">
+      <Anchor {...args} icon={args.icon && <PlusIcon />} />
+    </Link>
+  );
+};
+
+export const Basic = ButtonTemplate.bind({});
+
+export const AnchorButton = AnchorTemplate.bind({});
+
+export const AnchorLinkButton = AnchorLinkTemplate.bind({});

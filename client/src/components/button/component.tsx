@@ -1,4 +1,3 @@
-import cx from 'classnames';
 import React, { forwardRef } from 'react';
 import Loading from 'components/loading';
 import classNames from 'classnames';
@@ -62,29 +61,20 @@ export const THEME = {
   primaryLight: PRIMARY_LIGHT,
 } as const;
 
-const SIZE = {
-  xs: 'font-regular text-xs px-2.5 py-1.5',
-  base: 'font-medium text-sm px-4 py-2 h-10',
-  xl: 'font-medium text-base px-6 py-3',
-  text: 'font-normal text-sm p-0',
-};
-
 export type AnchorButtonProps = {
-  variant?: keyof typeof classes.variant;
-  size?: keyof typeof classes.size;
-  loading?: boolean;
   danger?: boolean;
   icon?: React.ReactElement<SVGElement>;
+  loading?: boolean;
+  disabled?: boolean;
+  size?: keyof typeof classes.size;
+  variant?: keyof typeof classes.variant;
 };
 
 // Button props
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & AnchorButtonProps;
 
 // Anchor props
-export type AnchorProps = React.AnchorHTMLAttributes<HTMLAnchorElement> &
-  AnchorButtonProps & {
-    disabled?: boolean;
-  };
+export type AnchorProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & AnchorButtonProps;
 
 // Input/output options
 type Overload = {
@@ -94,120 +84,18 @@ type Overload = {
 
 // Guard to check if href exists in props
 const hasHref = (props: ButtonProps | AnchorProps): props is AnchorProps => 'href' in props;
-
-function buildClassName({
-  className,
-  size = 'base',
-  variant = 'primary',
-  loading = false,
-}: AnchorProps) {
-  return cx(COMMON_CLASSNAMES, THEME[variant], SIZE[size], className, {
-    'pointer-events-none hover:bg-green-700': loading,
-  });
-}
-
-export const Anchor: React.FC<AnchorProps> = ({
-  children,
-  variant = 'primary',
-  size = 'base',
-  className,
-  disabled,
-  href,
-  icon,
-  ...restProps
-}: AnchorProps) => {
-  // Anchor element doesn't support disabled attribute
-  // https://www.w3.org/TR/2014/REC-html5-20141028/disabled-elements.html
-  if (disabled) {
-    return <span {...restProps}>{children}</span>;
-  }
-  return (
-    <a
-      href={href}
-      className={buildClassName({
-        className,
-        disabled,
-        size,
-        variant,
-      } as AnchorProps)}
-      {...restProps}
-    >
-      {icon && <span className="inline-block mr-2">{icon}</span>}
-      {children}
-    </a>
+const buildClassName = ({ danger, disabled, loading, size, variant }: AnchorButtonProps) =>
+  classNames(
+    classes.base,
+    danger ? classes.variant[variant].danger : classes.variant[variant].default,
+    classes.size[size],
+    disabled && classes.disabled,
+    disabled && classes.variant[variant].disabled,
+    loading && classes.disabled,
   );
-};
 
-// Same as Anchor but it could be used inside <Link> elements
-export const AnchorLink = forwardRef<HTMLAnchorElement, AnchorProps>(
-  (
-    {
-      children,
-      variant = 'primary',
-      size = 'base',
-      className,
-      disabled,
-      href,
-      icon,
-      ...restProps
-    }: AnchorProps,
-    ref,
-  ) => {
-    // Anchor element doesn't support disabled attribute
-    // https://www.w3.org/TR/2014/REC-html5-20141028/disabled-elements.html
-    if (disabled) {
-      return (
-        <span {...restProps} ref={ref}>
-          {icon && <span className="inline-block mr-2">{icon}</span>}
-          {children}
-        </span>
-      );
-    }
-    return (
-      <a
-        href={href}
-        className={buildClassName({
-          className,
-          disabled,
-          size,
-          variant,
-        } as AnchorProps)}
-        {...restProps}
-        ref={ref}
-      >
-        {icon && <span className="inline-block mr-2">{icon}</span>}
-        {children}
-      </a>
-    );
-  },
-);
-
-AnchorLink.displayName = 'AnchorLink';
-
-export const Button: React.FC<ButtonProps> = ({
-  children,
-  variant = 'primary',
-  size = 'base',
-  className,
-  disabled,
-  loading = false,
-  icon,
-  danger = false,
-  ...restProps
-}) => (
-  <button
-    type="button"
-    className={classNames(
-      classes.base,
-      danger ? classes.variant[variant].danger : classes.variant[variant].default,
-      classes.size[size],
-      disabled && classes.disabled,
-      disabled && classes.variant[variant].disabled,
-      loading && classes.disabled,
-    )}
-    disabled={loading || disabled}
-    {...restProps}
-  >
+const ButtonTemplate: React.FC<AnchorButtonProps> = ({ danger, icon, loading, size, variant }) => (
+  <>
     {!loading && icon && (
       <div className="mr-2">
         {React.cloneElement(
@@ -235,6 +123,54 @@ export const Button: React.FC<ButtonProps> = ({
         })}
       />
     )}
+  </>
+);
+
+export const Anchor = forwardRef<HTMLAnchorElement, AnchorProps>(
+  (
+    {
+      children,
+      variant = 'primary',
+      size = 'base',
+      className,
+      disabled = false,
+      icon,
+      danger = false,
+      ...restProps
+    }: AnchorProps,
+    ref,
+  ) => (
+    <a
+      className={buildClassName({ danger, disabled, icon, size, variant })}
+      {...restProps}
+      ref={ref}
+    >
+      <ButtonTemplate {...{ danger, icon, size, variant }} />
+      <div>{children}</div>
+    </a>
+  ),
+);
+
+Anchor.displayName = 'Anchor';
+
+export const Button: React.FC<ButtonProps> = ({
+  children,
+  variant = 'primary',
+  size = 'base',
+  className,
+  disabled = false,
+  loading = false,
+  icon,
+  danger = false,
+  ...restProps
+}) => (
+  <button
+    type="button"
+    className={buildClassName({ danger, disabled, icon, loading, size, variant })}
+    disabled={loading || disabled}
+    {...restProps}
+  >
+    <ButtonTemplate {...{ danger, icon, loading, size, variant }} />
     <div>{children}</div>
   </button>
 );

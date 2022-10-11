@@ -1,14 +1,14 @@
 import InteractiveMap from 'react-map-gl';
-import type { DeckGLProps, DeckGLRef } from '@deck.gl/react/typed';
 import DeckGL from '@deck.gl/react/typed';
-import type { H3HexagonLayer } from '@deck.gl/geo-layers/typed';
-import type { ViewState as MapboxViewState } from 'react-map-gl/src/mapbox/mapbox';
+import React, { useState } from 'react';
 
 import DefaultMapStyle from './styles/map-style.json';
 import SatelliteMapStyle from './styles/map-style-satellite.json';
 
+import type { DeckGLProps, DeckGLRef } from '@deck.gl/react/typed';
+import type { H3HexagonLayer } from '@deck.gl/geo-layers/typed';
+import type { ViewState as MapboxViewState } from 'react-map-gl/src/mapbox/mapbox';
 import type { ComponentProps, Dispatch } from 'react';
-import React, { useState } from 'react';
 
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
 
@@ -58,7 +58,7 @@ const Map = React.forwardRef<DeckGLRef, MapProps>(
     },
     ref,
   ) => {
-    const [localViewState, setLocalViewState] = useState(initialViewState);
+    const [localViewState, setLocalViewState] = useState({ ...initialViewState, ...viewState });
 
     const finalViewState = {
       ...localViewState,
@@ -68,7 +68,7 @@ const Map = React.forwardRef<DeckGLRef, MapProps>(
     return (
       <DeckGL
         ref={ref}
-        initialViewState={finalViewState}
+        initialViewState={localViewState}
         viewState={finalViewState}
         onViewStateChange={(state: Parameters<MapProps['onViewStateChange']>[0]) => {
           setLocalViewState(state.viewState);

@@ -37,7 +37,7 @@ const useQueryParam = <T, F = T>(
   const [isDoneSettingFromQuery, setIsDoneSettingFromQuery] = useState(false);
   useEffectOnceWhen(() => {
     const newValue = parse<T>(query[name] as string);
-    if (typeof newValue === 'object') {
+    if (typeof defaultValue === 'object' || typeof newValue === 'object') {
       setValue((value) => ({ ...value, ...newValue }));
     } else {
       setValue(newValue);

@@ -67,130 +67,23 @@ resource "kubernetes_deployment" "api_deployment" {
 
           args = ["start:prod"]
 
+          dynamic "env" {
+            for_each = concat(var.env_vars, var.secrets)
+            content {
+              name = env.value["name"]
+              dynamic "value_from" {
+                for_each = lookup(env.value, "secret_name", null) != null ? [1] : []
+                content {
+                  secret_key_ref {
 
-          env {
-            name = "DB_HOST"
-            value_from {
-              secret_key_ref {
-                name = "db"
-                key  = "DB_HOST"
+                    name = env.value["secret_name"]
+                    key  = env.value["secret_key"]
+                  }
+                }
+
               }
+              value = lookup(env.value, "value", null) != null ? env.value["value"] : null
             }
-          }
-
-          env {
-            name = "DB_USERNAME"
-            value_from {
-              secret_key_ref {
-                name = "db"
-                key  = "DB_USERNAME"
-              }
-            }
-          }
-
-          env {
-            name = "DB_PASSWORD"
-            value_from {
-              secret_key_ref {
-                name = "db"
-                key  = "DB_PASSWORD"
-              }
-            }
-          }
-
-          env {
-            name = "DB_DATABASE"
-            value_from {
-              secret_key_ref {
-                name = "db"
-                key  = "DB_DATABASE"
-              }
-            }
-          }
-
-          env {
-            name  = "PORT"
-            value = 3000
-          }
-
-          env {
-            name  = "DB_SYNCHRONIZE"
-            value = "true"
-          }
-
-          env {
-            name = "QUEUE_HOST"
-            value_from {
-              secret_key_ref {
-                name = "db"
-                key  = "REDIS_HOST"
-              }
-            }
-          }
-
-          env {
-            name = "GEOCODING_CACHE_HOST"
-            value_from {
-              secret_key_ref {
-                name = "db"
-                key  = "REDIS_HOST"
-              }
-            }
-          }
-
-          env {
-            name = "DB_CACHE_HOST"
-            value_from {
-              secret_key_ref {
-                name = "db"
-                key  = "REDIS_HOST"
-              }
-            }
-          }
-
-          env {
-            name = "JWT_SECRET"
-            value_from {
-              secret_key_ref {
-                name = "api"
-                key  = "JWT_SECRET"
-              }
-            }
-          }
-
-          env {
-            name = "JWT_EXPIRES_IN"
-            value = "2h"
-          }
-
-          env {
-            name = "GMAPS_API_KEY"
-            value_from {
-              secret_key_ref {
-                name = "api"
-                key  = "GMAPS_API_KEY"
-              }
-            }
-          }
-
-          env {
-            name = "DISTRIBUTED_MAP"
-            value = "true"
-          }
-
-          env {
-            name = "REQUIRE_USER_AUTH"
-            value = "true"
-          }
-
-          env {
-            name = "REQUIRE_USER_ACCOUNT_ACTIVATION"
-            value = "true"
-          }
-
-          env {
-            name = "DB_MIGRATIONS_RUN"
-            value = "true"
           }
 
           resources {

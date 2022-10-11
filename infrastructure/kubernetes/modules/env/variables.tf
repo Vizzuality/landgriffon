@@ -82,3 +82,12 @@ variable "data_import_container_registry_url" {
   type        = string
   description = "URL for the data import container registry"
 }
+
+variable "api_env_vars" {
+  type = list(object({
+    name = string
+    value = string
+  }))
+  description = "Key-value pairs of env vars to make available to the api container"
+  default = []
+}

@@ -34,6 +34,77 @@ module "k8s_api" {
   image           = "${var.api_container_registry_url}:${var.image_tag}"
   namespace       = var.environment
 
+  secrets = concat(var.api_secrets, [
+    {
+      name        = "DB_HOST"
+      secret_name = "db"
+      secret_key  = "DB_HOST"
+    }, {
+      name        = "DB_USERNAME"
+      secret_name = "db"
+      secret_key  = "DB_USERNAME"
+    }, {
+      name        = "DB_PASSWORD"
+      secret_name = "db"
+      secret_key  = "DB_PASSWORD"
+    }, {
+      name        = "DB_DATABASE"
+      secret_name = "db"
+      secret_key  = "DB_DATABASE"
+    }, {
+      name        = "QUEUE_HOST"
+      secret_name = "db"
+      secret_key  = "REDIS_HOST"
+    }, {
+      name        = "GEOCODING_CACHE_HOST"
+      secret_name = "db"
+      secret_key  = "REDIS_HOST"
+    }, {
+      name        = "DB_CACHE_HOST"
+      secret_name = "db"
+      secret_key  = "REDIS_HOST"
+    }, {
+      name        = "JWT_SECRET"
+      secret_name = "api"
+      secret_key  = "JWT_SECRET"
+    }, {
+      name        = "GMAPS_API_KEY"
+      secret_name = "api"
+      secret_key  = "GMAPS_API_KEY"
+    }
+  ])
+
+  env_vars = concat(var.api_env_vars, [
+    {
+      name  = "PORT"
+      value = 3000
+    },
+    {
+      name  = "DB_SYNCHRONIZE"
+      value = "true"
+    },
+    {
+      name  = "JWT_EXPIRES_IN"
+      value = "2h"
+    },
+    {
+      name  = "DISTRIBUTED_MAP"
+      value = "true"
+    },
+    {
+      name  = "REQUIRE_USER_AUTH"
+      value = "true"
+    },
+    {
+      name  = "REQUIRE_USER_ACCOUNT_ACTIVATION"
+      value = "true"
+    },
+    {
+      name  = "DB_MIGRATIONS_RUN"
+      value = "true"
+    }
+  ])
+
   depends_on = [
     module.k8s_namespace,
     module.k8s_database

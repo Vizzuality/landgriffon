@@ -17,3 +17,22 @@ variable "namespace" {
   type        = string
   description = "The k8s namespace to use"
 }
+
+variable "env_vars" {
+  type = list(object({
+    name = string
+    value = string
+  }))
+  description = "Key-value pairs of env vars to make available to the container"
+  default = []
+}
+
+variable "secrets" {
+  type = list(object({
+    name = string
+    secret_name = string
+    secret_key = string
+  }))
+  description = "List of secrets to make available to the container"
+  default = []
+}

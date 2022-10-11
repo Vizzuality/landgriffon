@@ -119,7 +119,7 @@ const Table = <T,>({
             'blur-sm pointer-events-none': isLoading,
           })}
         >
-          <table className="w-full border-separate table-fixed border-spacing-0">
+          <table className="min-w-full border-separate table-fixed border-spacing-0">
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableHeaderRow key={headerGroup.id} headerGroup={headerGroup} />

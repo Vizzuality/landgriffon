@@ -1,6 +1,5 @@
-import { useMemo } from 'react';
 import InteractiveMap from 'react-map-gl';
-import type { DeckGLProps } from '@deck.gl/react/typed';
+import type { DeckGLProps, DeckGLRef } from '@deck.gl/react/typed';
 import DeckGL from '@deck.gl/react/typed';
 import type { H3HexagonLayer } from '@deck.gl/geo-layers/typed';
 import type { ViewState as MapboxViewState } from 'react-map-gl/src/mapbox/mapbox';
@@ -9,6 +8,7 @@ import DefaultMapStyle from './styles/map-style.json';
 import SatelliteMapStyle from './styles/map-style-satellite.json';
 
 import type { ComponentProps, Dispatch } from 'react';
+import React, { useState } from 'react';
 
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
 
@@ -20,10 +20,12 @@ const MAP_STYLES = {
 export type MapStyle = keyof typeof MAP_STYLES;
 
 export interface ViewState extends MapboxViewState {
-  minZoom: number;
+  minZoom?: number;
+  maxZoom?: number;
+  transitionDuration?: number;
 }
 
-const INITIAL_VIEW_STATE: ViewState = {
+export const INITIAL_VIEW_STATE: ViewState = {
   longitude: 0,
   latitude: 0,
   zoom: 2,
@@ -32,7 +34,7 @@ const INITIAL_VIEW_STATE: ViewState = {
   minZoom: 2,
 };
 
-interface MapProps {
+export interface MapProps extends DeckGLProps {
   layers: H3HexagonLayer[];
   mapStyle?: MapStyle;
   initialViewState?: Partial<ViewState>;
@@ -44,43 +46,49 @@ interface MapProps {
   >;
 }
 
-const Map = ({
-  children,
-  mapStyle = 'terrain',
-  viewState,
-  initialViewState: partialInitialViewState,
-  onViewStateChange,
-  ...props
-}: React.PropsWithChildren<MapProps>) => {
-  const finalViewState = useMemo(
-    () => ({
-      ...INITIAL_VIEW_STATE,
-      ...partialInitialViewState,
+const Map = React.forwardRef<DeckGLRef, MapProps>(
+  (
+    {
+      children,
+      mapStyle = 'terrain',
+      viewState,
+      initialViewState = INITIAL_VIEW_STATE,
+      onViewStateChange,
+      ...props
+    },
+    ref,
+  ) => {
+    const [localViewState, setLocalViewState] = useState(initialViewState);
+
+    const finalViewState = {
+      ...localViewState,
       ...viewState,
-    }),
-    [partialInitialViewState, viewState],
-  );
+    };
 
-  const handleViewStateChange: DeckGLProps['onViewStateChange'] = (state) => {
-    onViewStateChange?.(state as Parameters<MapProps['onViewStateChange']>[0]);
-  };
-
-  return (
-    <DeckGL
-      initialViewState={finalViewState}
-      onViewStateChange={handleViewStateChange}
-      controller
-      {...props}
-    >
-      <InteractiveMap
+    return (
+      <DeckGL
+        ref={ref}
+        initialViewState={finalViewState}
         viewState={finalViewState}
-        mapStyle={MAP_STYLES[mapStyle]}
-        mapboxApiAccessToken={MAPBOX_API_TOKEN}
-        className="-z-10"
-      />
-      {children}
-    </DeckGL>
-  );
-};
+        onViewStateChange={(state: Parameters<MapProps['onViewStateChange']>[0]) => {
+          setLocalViewState(state.viewState);
+          onViewStateChange?.(state);
+        }}
+        controller
+        {...props}
+      >
+        <InteractiveMap
+          viewState={finalViewState}
+          mapStyle={MAP_STYLES[mapStyle]}
+          mapboxApiAccessToken={MAPBOX_API_TOKEN}
+          className="-z-10"
+        />
+        {children}
+      </DeckGL>
+    );
+  },
+);
+
+Map.displayName = 'Map';
 
 export default Map;

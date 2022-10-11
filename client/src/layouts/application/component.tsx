@@ -13,8 +13,8 @@ const navigationItems: NavigationList = [
 ];
 
 const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <div className="flex h-screen min-w-[1024px] bg-navy-600">
-    <div className="flex flex-col w-28">
+  <div className="flex h-screen min-w-screen-lg bg-navy-600">
+    <div className="flex flex-col flex-shrink-0 w-28">
       <div className="flex justify-center flex-shrink-0 py-12">
         <LandgriffonLogo />
       </div>

@@ -18,8 +18,8 @@ const AnalysisLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
     <div className="flex w-full h-full">
       <TitleTemplate title="Analysis" />
 
-      <aside className="relative flex-shrink-0 bg-white rounded-tl-3xl">
-        <div className="absolute right-0 z-20 transform translate-x-1/2 top-6">
+      <aside className="relative flex-shrink-0 h-full bg-white rounded-tl-3xl">
+        <div className="absolute right-0 z-10 transform translate-x-1/2 top-6">
           <CollapseButton />
         </div>
         <Transition
@@ -32,34 +32,27 @@ const AnalysisLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
           leaveFrom="opacity-100"
           leaveTo="opacity-10"
         >
-          <div className="relative h-full px-12 overflow-x-hidden overflow-y-auto w-96 lg:h-screen">
+          <div className="h-full px-12 overflow-x-hidden overflow-y-auto w-96 lg:h-screen">
             <AnalysisSidebar />
           </div>
         </Transition>
       </aside>
 
-      <section className="relative flex flex-col flex-1 h-full min-w-0 overflow-hidden lg:h-screen">
-        {/* Map, chart or table */}
+      <section className="relative flex-1 h-screen overflow-auto">
         <div
-          className={classNames({
-            'lg:absolute w-full h-full top-0 left-0 overflow-hidden': visualizationMode === 'map',
-            'h-full flex flex-col': visualizationMode !== 'map',
-          })}
+          className={classNames(
+            {
+              'absolute top-6 left-6 xl:left-12 right-6 z-10': visualizationMode === 'map',
+              'p-6 xl:pl-12': visualizationMode !== 'map',
+            },
+            'flex flex-wrap gap-2 justify-between',
+          )}
         >
-          <div
-            className={classNames(
-              {
-                'absolute top-6 left-6 xl:left-12 right-6 z-10': visualizationMode === 'map',
-                'p-6 xl:pl-12': visualizationMode !== 'map',
-              },
-              'flex gap-2 flex-wrap justify-between',
-            )}
-          >
-            <AnalysisFilters />
-            <ModeControl />
-          </div>
-          <div className="flex-1">{children}</div>
+          <AnalysisFilters />
+          <ModeControl />
         </div>
+        {/* Map, chart or table */}
+        {children}
       </section>
     </div>
   );

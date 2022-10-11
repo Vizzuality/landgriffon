@@ -192,7 +192,7 @@ const AdminDataPage: React.FC = () => {
 
       {/* Content when data */}
       {isFetchedSourcingData && sourcingLocations.data?.length > 0 && (
-        <div className="flex flex-col space-y-6">
+        <div className="flex flex-col h-full space-y-6">
           <div className="flex w-full gap-2">
             <div className="flex-1">
               {!(!hasData && !isFetchingData && !isSearching) && (
@@ -232,7 +232,7 @@ const AdminDataPage: React.FC = () => {
               </span>
             </div>
           )}
-          <div>
+          <div className="flex-1 overflow-auto">
             <Table
               theme="striped"
               getSubRows={(row) => row.children}

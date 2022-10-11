@@ -1,27 +1,24 @@
 import { useCallback, useMemo, useState } from 'react';
 import { XCircleIcon } from '@heroicons/react/solid';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
+import sortBy from 'lodash/sortBy';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap } from 'store/features/analysis';
 import { setTooltipData, setTooltipPosition } from 'store/features/analysis/map';
-
 import { useImpactLayer } from 'hooks/layers/impact';
-
 import Legend from 'containers/analysis-visualization/analysis-legend';
 import PageLoading from 'containers/page-loading';
 import ZoomControl from 'components/map/controls/zoom';
 import PopUp from 'components/map/popup';
 import BasemapControl from 'components/map/controls/basemap';
-
 import { NUMBER_FORMAT } from 'utils/number-format';
-
-import type { BasemapValue } from 'components/map/controls/basemap/types';
-import { sortBy } from 'lodash';
-import type { MapStyle, ViewState, MapProps } from 'components/map';
 import Map, { INITIAL_VIEW_STATE } from 'components/map';
 import { useAllContextualLayersData } from 'hooks/h3-data/contextual';
 import useH3MaterialData from 'hooks/h3-data/material';
+
+import type { ViewState, MapStyle, MapProps } from 'components/map';
+import type { BasemapValue } from 'components/map/controls/basemap/types';
 
 const AnalysisMap: React.FC = () => {
   const dispatch = useAppDispatch();

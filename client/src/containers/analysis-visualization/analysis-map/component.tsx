@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { XCircleIcon } from '@heroicons/react/solid';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
 import sortBy from 'lodash/sortBy';
+import { pick } from 'lodash';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap } from 'store/features/analysis';
@@ -16,6 +17,7 @@ import { NUMBER_FORMAT } from 'utils/number-format';
 import Map, { INITIAL_VIEW_STATE } from 'components/map';
 import { useAllContextualLayersData } from 'hooks/h3-data/contextual';
 import useH3MaterialData from 'hooks/h3-data/material';
+import useQueryParam from 'hooks/queryParam';
 
 import type { ViewState, MapStyle, MapProps } from 'components/map';
 import type { BasemapValue } from 'components/map/controls/basemap/types';
@@ -91,14 +93,23 @@ const AnalysisMap: React.FC = () => {
     setMapStyle(newStyle);
   }, []);
 
-  const [viewState, setViewState] = useState<ViewState>(INITIAL_VIEW_STATE);
-
-  const handleViewStateChange = useCallback<MapProps['onViewStateChange']>(({ viewState }) => {
-    setViewState(viewState);
+  const formatParam = useCallback((view: ViewState) => {
+    return pick(view, ['latitude', 'longitude', 'zoom']);
   }, []);
 
+  const [viewState, setViewState] = useQueryParam('viewState', INITIAL_VIEW_STATE, {
+    formatParam,
+  });
+
+  const handleViewStateChange = useCallback<MapProps['onViewStateChange']>(
+    ({ viewState }) => {
+      setViewState(viewState);
+    },
+    [setViewState],
+  );
+
   const handleZoomChange = (zoom: number) => {
-    setViewState({ ...viewState, zoom });
+    setViewState({ ...viewState, zoom, transitionDuration: 250 });
   };
 
   return (

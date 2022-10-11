@@ -4,9 +4,27 @@ module.exports = {
     'next/core-web-vitals',
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
     'plugin:storybook/recommended',
   ],
+  settings: {
+    'import/resolver': {
+      typescript: true,
+      node: true,
+    },
+    'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],
+  },
   rules: {
+    'import/order': [
+      'warn',
+      {
+        groups: ['builtin', 'external', 'parent', 'sibling', 'index', 'internal', 'object', 'type'],
+        'newlines-between': 'always',
+      },
+    ],
+    'import/no-named-as-default': ['off'],
+    'import/no-named-as-default-member': ['off'],
     'prettier/prettier': ['error'],
     'react/button-has-type': ['warn'],
     'require-await': ['error'],

@@ -11,10 +11,7 @@ import analysisUI, {
 import analysisFilters, {
   initialState as analysisFiltersInitialState,
 } from 'store/features/analysis/filters';
-import analysisMap, {
-  setViewState,
-  initialState as analysisMapInitialState,
-} from 'store/features/analysis/map';
+import analysisMap, { initialState as analysisMapInitialState } from 'store/features/analysis/map';
 import analysisScenarios, {
   setCurrentScenario,
   initialState as analysisScenariosInitialState,
@@ -58,12 +55,6 @@ const QUERY_PARAMS_MAP: QueryParams = {
     rootState: 'analysis/ui',
     action: setSidebarCollapsed,
     defaultValue: analysisUIInitialState.isSidebarCollapsed,
-  },
-  map: {
-    stateName: 'viewState',
-    rootState: 'analysis/map',
-    action: setViewState,
-    defaultValue: analysisMapInitialState.viewState,
   },
   scenarioId: {
     stateName: 'currentScenario',
@@ -125,7 +116,6 @@ const getPreloadedState = (
 // Custom middleware to sync URL params and the store
 const querySyncMiddleware: Middleware = () => (next) => (action) => {
   const { query, isReady } = router;
-
   if (!isReady) return next(action);
 
   Object.entries(QUERY_PARAMS_MAP).forEach(async ([param, queryState]) => {
@@ -135,7 +125,7 @@ const querySyncMiddleware: Middleware = () => (next) => (action) => {
 
       // Only update when URL the param value is different
       if (currentQueryValue !== currentStateValue) {
-        await router.push(
+        await router.replace(
           {
             query: {
               ...queryWithoutParam,

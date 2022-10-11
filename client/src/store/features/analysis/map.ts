@@ -1,15 +1,8 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 
-import type { ViewState } from 'react-map-gl/src/mapbox/mapbox';
 import type { RootState } from 'store';
 import type { Layer } from 'types';
-
-const INITIAL_VIEW_STATE = {
-  longitude: 0,
-  latitude: 0,
-  zoom: 2,
-};
 
 const DEFAULT_LAYER_ATTRIBUTES = {
   order: 0,
@@ -47,10 +40,6 @@ type TooltipData = {
 };
 
 export type AnalysisMapState = {
-  viewState: Partial<ViewState>;
-  // User layers; not used, but it's prepared for the future
-  userLayers: Layer[];
-  // Custom LG layers
   layers: Record<Layer['id'], Layer>;
   // Tooltip state
   tooltipData: TooltipData[];
@@ -68,8 +57,6 @@ export type AnalysisMapState = {
 
 // Define the initial state using that type
 export const initialState: AnalysisMapState = {
-  viewState: INITIAL_VIEW_STATE,
-  userLayers: [],
   layers: {
     impact: {
       ...DEFAULT_LAYER_ATTRIBUTES,
@@ -99,13 +86,6 @@ export const analysisMapSlice = createSlice({
   name: 'analysisMap',
   initialState,
   reducers: {
-    setViewState: (state, action: PayloadAction<Partial<AnalysisMapState['viewState']>>) => ({
-      ...state,
-      viewState: {
-        ...state.viewState,
-        ...action.payload,
-      },
-    }),
     setLayer: (
       state,
       action: PayloadAction<{
@@ -163,29 +143,6 @@ export const analysisMapSlice = createSlice({
       });
       return state;
     },
-    // Add or update the user layer
-    setUserLayer: (state, action: PayloadAction<Layer>) => {
-      const layerExists = state.userLayers.find((layer) => layer.id === action.payload.id);
-      const userLayers = layerExists
-        ? state.userLayers.map((layer) => {
-            if (layer.id === action.payload.id) {
-              return { ...DEFAULT_LAYER_ATTRIBUTES, ...layer, ...action.payload };
-            }
-            return layer;
-          })
-        : [...state.userLayers, { ...DEFAULT_LAYER_ATTRIBUTES, ...action.payload }];
-      return {
-        ...state,
-        userLayers,
-      };
-    },
-    // Add and replace all the user layers
-    setUserLayers: (state, action: PayloadAction<Layer[]>) => {
-      return {
-        ...state,
-        userLayers: action.payload?.map((layer) => ({ ...DEFAULT_LAYER_ATTRIBUTES, ...layer })),
-      };
-    },
     // Tooltip
     setTooltipData: (state, action: PayloadAction<TooltipData>) => {
       const exists = !!state.tooltipData.find(({ id }) => action.payload.id === id);
@@ -224,16 +181,8 @@ export const analysisMapSlice = createSlice({
   },
 });
 
-export const {
-  setViewState,
-  setLayer,
-  setLayerDeckGLProps,
-  setUserLayer,
-  setUserLayers,
-  setTooltipData,
-  setTooltipPosition,
-  setLayerOrder,
-} = analysisMapSlice.actions;
+export const { setLayer, setLayerDeckGLProps, setTooltipData, setTooltipPosition, setLayerOrder } =
+  analysisMapSlice.actions;
 
 export const analysisMap = (state: RootState) => state['analysis/map'];
 

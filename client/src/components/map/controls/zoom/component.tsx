@@ -1,3 +1,4 @@
+import type { MouseEventHandler } from 'react';
 import { useCallback } from 'react';
 import cx from 'classnames';
 
@@ -19,7 +20,7 @@ export const ZoomControl: React.FC<ZoomControlProps> = ({
   viewport: { zoom, maxZoom, minZoom },
   onZoomChange,
 }) => {
-  const increaseZoom = useCallback(
+  const increaseZoom = useCallback<MouseEventHandler<HTMLButtonElement>>(
     (e) => {
       e.stopPropagation();
 
@@ -28,7 +29,7 @@ export const ZoomControl: React.FC<ZoomControlProps> = ({
     [zoom, maxZoom, onZoomChange],
   );
 
-  const decreaseZoom = useCallback(
+  const decreaseZoom = useCallback<MouseEventHandler<HTMLButtonElement>>(
     (e) => {
       e.stopPropagation();
 

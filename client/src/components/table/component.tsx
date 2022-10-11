@@ -107,19 +107,19 @@ const Table = <T,>({
   const bodyRows = table.getExpandedRowModel().rows;
 
   return (
-    <div className="w-full space-y-5">
-      <div className="relative w-full overflow-hidden shadow-xl rounded-2xl">
+    <div className="space-y-5">
+      <div className="relative shadow-xl rounded-2xl">
         {isLoading && (
           <div className="absolute z-40 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
             <Loading className="w-12 h-12" />
           </div>
         )}
         <div
-          className={classNames('max-h-[65vh] overflow-auto', {
+          className={classNames('overflow-auto', {
             'blur-sm pointer-events-none': isLoading,
           })}
         >
-          <table className="min-w-full border-separate table-fixed border-spacing-0">
+          <table className="w-full border-separate table-auto border-spacing-0">
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableHeaderRow key={headerGroup.id} headerGroup={headerGroup} />

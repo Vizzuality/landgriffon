@@ -14,9 +14,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title = 'Admin', children }) 
     <ApplicationLayout>
       <section
         aria-labelledby="primary-heading"
-        className="flex flex-col flex-1 h-screen min-w-0 overflow-y-auto bg-gray-100"
+        className="flex flex-col w-full h-full overflow-auto"
       >
-        <header className="sticky top-0 z-20 bg-navy-600">
+        <header className="sticky top-0 z-10 bg-navy-600">
           <div className="flex items-stretch justify-between px-12 bg-white border-b border-gray-100 rounded-tl-3xl">
             <h1 className="mt-8 text-left">{title}</h1>
 
@@ -38,7 +38,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title = 'Admin', children }) 
           </div>
         </header>
 
-        <section className="flex-1 px-12 py-6">{children}</section>
+        <section className="flex-1 p-6">{children}</section>
       </section>
     </ApplicationLayout>
   );

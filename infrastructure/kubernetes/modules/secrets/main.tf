@@ -70,7 +70,7 @@ resource "random_password" "postgresql_user_generator" {
       min_numeric,
       min_special,
       min_upper,
-      number,
+      numeric,
       special,
       upper,
 

@@ -61,11 +61,12 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
   );
 
   useBottomScrollListener(() => {
+    console.log(hasNextPage);
     if (hasNextPage) fetchNextPage();
   }, scrollref);
 
   return (
-    <div className="flex flex-col h-full text-gray-900 bg-white overscroll-contain">
+    <div className="flex flex-col h-full text-gray-900 bg-white">
       <div className="sticky top-0 z-20 pt-10 text-sm bg-white after:bg-gradient-to-b after:from-white after:w-full after:h-3 after:content after:-bottom-3 after:left-0 after:absolute">
         <h1 className="mb-12">Analyze data</h1>
       </div>

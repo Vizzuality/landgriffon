@@ -3,7 +3,7 @@ import Loading from 'components/loading';
 import classNames from 'classnames';
 
 const classes = {
-  base: 'inline-flex justify-center items-center min-w-content focus:outline-none focus:ring-2 focus:ring-offset-1',
+  base: 'inline-flex justify-center items-center min-w-content hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1',
   disabled: 'pointer-events-none',
   size: {
     xs: 'rounded leading-4 py-2 px-3 text-xs',

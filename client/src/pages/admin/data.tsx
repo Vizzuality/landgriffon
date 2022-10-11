@@ -192,7 +192,7 @@ const AdminDataPage: React.FC = () => {
 
       {/* Content when data */}
       {isFetchedSourcingData && sourcingLocations.data?.length > 0 && (
-        <>
+        <div className="flex flex-col space-y-6">
           <div className="flex w-full gap-2">
             <div className="flex-1">
               {!(!hasData && !isFetchingData && !isSearching) && (
@@ -225,14 +225,14 @@ const AdminDataPage: React.FC = () => {
             </Button>
           </div>
           {!hasData && isSearching && <NoResults />}
-          <div className="mt-5">
-            {!isSourcingLocationsLoading && (
-              <div className="flex justify-end w-full mb-4">
-                <span className="text-sm text-gray-400">
-                  Last update: {format(new Date(sourcingLocations.data[0].updatedAt), 'd MMM yyyy')}
-                </span>
-              </div>
-            )}
+          {!isSourcingLocationsLoading && (
+            <div className="flex justify-end w-full">
+              <span className="text-sm text-gray-400">
+                Last update: {format(new Date(sourcingLocations.data[0].updatedAt), 'd MMM yyyy')}
+              </span>
+            </div>
+          )}
+          <div>
             <Table
               theme="striped"
               getSubRows={(row) => row.children}
@@ -270,7 +270,7 @@ const AdminDataPage: React.FC = () => {
               onPaginationChange={setPagination}
             />
           </div>
-        </>
+        </div>
       )}
 
       <Modal

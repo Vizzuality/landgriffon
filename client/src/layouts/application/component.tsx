@@ -13,19 +13,19 @@ const navigationItems: NavigationList = [
 ];
 
 const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <div className="flex h-screen min-w-screen-lg bg-navy-600">
-    <div className="flex flex-col flex-shrink-0 w-28">
-      <div className="flex justify-center flex-shrink-0 py-12">
+  <div className="flex h-screen max-h-screen overflow-hidden min-w-screen-lg bg-navy-600">
+    <div className="flex flex-col shrink-0 grow-0 w-28">
+      <div className="flex justify-center py-12 shrink-0">
         <LandgriffonLogo />
       </div>
-      <div className="flex-1">
+      <div className="grow">
         <Navigation items={navigationItems} />
       </div>
-      <div className="flex flex-shrink-0 py-12 border-t border-t-black/30">
+      <div className="flex py-12 border-t shrink-0 border-t-black/30">
         <UserDropdown />
       </div>
     </div>
-    <div className="flex-1 h-full bg-gray-100 rounded-tl-3xl">{children}</div>
+    <div className="flex-1 w-full min-w-0 bg-gray-100 rounded-tl-3xl">{children}</div>
     <Alert position="bottom-center" />
   </div>
 );

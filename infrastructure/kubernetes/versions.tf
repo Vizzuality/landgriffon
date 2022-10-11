@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "4.22.0"
+      version = "~> 4.34.0"
     }
 
     template = {
@@ -11,30 +11,30 @@ terraform {
 
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "2.11.0"
+      version = "~> 2.14.0"
     }
 
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.1.0"
+      version = "~> 3.4.3"
     }
 
     helm = {
       source  = "hashicorp/helm"
-      version = "~> 2.3.0"
+      version = "~> 2.7.0"
     }
 
     kubectl = {
       source  = "gavinbunney/kubectl"
-      version = ">= 1.7.0"
+      version = "~> 1.14.0"
     }
 
     github = {
       source  = "integrations/github"
-      version = "4.26.1"
+      version = "~> 5.3.0"
     }
   }
-  required_version = "~> 1.2.0"
+  required_version = "~> 1.3.2"
 }
 
 provider "aws" {
@@ -51,7 +51,7 @@ provider "helm" {
     host                   = "${data.aws_eks_cluster.cluster.endpoint}:4433"
     cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
     exec {
-      api_version = "client.authentication.k8s.io/v1alpha1"
+      api_version = "client.authentication.k8s.io/v1beta1"
       args = [
         "eks",
         "get-token",

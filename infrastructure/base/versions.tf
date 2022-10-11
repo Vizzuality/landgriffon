@@ -2,13 +2,13 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "4.22.0"
+      version = "~> 4.34.0"
     }
     template = {
       source = "hashicorp/template"
     }
   }
-  required_version = "~> 1.2.0"
+  required_version = "~> 1.3.2"
 }
 
 provider "aws" {

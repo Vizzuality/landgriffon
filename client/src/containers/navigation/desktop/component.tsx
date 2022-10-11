@@ -13,7 +13,7 @@ const DesktopNavigation: React.FC<NavigationProps> = ({ items }: NavigationProps
   };
 
   return (
-    <nav aria-label="Sidebar" className="flex-1 mt-6 w-full px-2 space-y-1">
+    <nav aria-label="Sidebar" className="w-full px-2 space-y-1">
       {items.map((item) => (
         <a
           key={item.name}
@@ -23,7 +23,7 @@ const DesktopNavigation: React.FC<NavigationProps> = ({ items }: NavigationProps
             { 'bg-black/30': isCurrentItem(item.href) },
           )}
         >
-          <item.icon className="h-6 w-6" aria-hidden="true" />
+          <item.icon className="w-6 h-6" aria-hidden="true" />
           <span className="mt-2">{item.name}</span>
         </a>
       ))}

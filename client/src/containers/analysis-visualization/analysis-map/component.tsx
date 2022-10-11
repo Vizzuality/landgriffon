@@ -4,8 +4,7 @@ import { H3HexagonLayer } from '@deck.gl/geo-layers';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap } from 'store/features/analysis';
-import { setTooltipData, setTooltipPosition, setViewState } from 'store/features/analysis/map';
-import { useDebounce } from 'rooks';
+import { setTooltipData, setTooltipPosition } from 'store/features/analysis/map';
 
 import { useImpactLayer } from 'hooks/layers/impact';
 
@@ -19,53 +18,21 @@ import { NUMBER_FORMAT } from 'utils/number-format';
 
 import type { BasemapValue } from 'components/map/controls/basemap/types';
 import { sortBy } from 'lodash';
-import type { MapStyle, ViewState } from 'components/map';
-import Map from 'components/map/component';
+import type { MapStyle, ViewState, MapProps } from 'components/map';
+import Map, { INITIAL_VIEW_STATE } from 'components/map';
 import { useAllContextualLayersData } from 'hooks/h3-data/contextual';
 import useH3MaterialData from 'hooks/h3-data/material';
-import type { ViewStateChangeParameters } from '@deck.gl/core/typed/controllers/controller';
-
-const INITIAL_VIEW_STATE = {
-  longitude: 0,
-  latitude: 0,
-  zoom: 2,
-  pitch: 0,
-  bearing: 0,
-  minZoom: 2,
-  transitionDuration: 250,
-};
 
 const AnalysisMap: React.FC = () => {
   const dispatch = useAppDispatch();
   const {
-    viewState,
     tooltipData,
     tooltipPosition,
     layerDeckGLProps,
     layers: layersMetadata,
   } = useAppSelector(analysisMap);
 
-  const localViewState = useMemo(
-    () => ({
-      ...INITIAL_VIEW_STATE,
-      ...viewState, // store has priority over local state
-    }),
-    [viewState],
-  );
-
   const [mapStyle, setMapStyle] = useState<MapStyle>('terrain');
-
-  // Debounced view state update to avoid too many updates in the store
-  const updateViewState = useCallback(
-    (viewState: Partial<ViewState>) => {
-      dispatch(
-        // viewState have more attributes we want to save in the store
-        setViewState(viewState),
-      );
-    },
-    [dispatch],
-  );
-  const setDebouncedViewState = useDebounce(updateViewState, 300);
 
   // Loading layers
   const {
@@ -123,17 +90,19 @@ const AnalysisMap: React.FC = () => {
     return sortBy(legends, (l) => layersMetadata[l.id].order).reverse();
   }, [contextualData, dispatch, impactData, layerDeckGLProps, layersMetadata, materialData?.data]);
 
-  const onZoomChange = useCallback(
-    (zoom: number) => {
-      // Don't use the debounced version, as this is a user action and should be performed instantly
-      updateViewState({ zoom });
-    },
-    [updateViewState],
-  );
-
   const handleMapStyleChange = useCallback((newStyle: BasemapValue) => {
     setMapStyle(newStyle);
   }, []);
+
+  const [viewState, setViewState] = useState<ViewState>(INITIAL_VIEW_STATE);
+
+  const handleViewStateChange = useCallback<MapProps['onViewStateChange']>(({ viewState }) => {
+    setViewState(viewState);
+  }, []);
+
+  const handleZoomChange = (zoom: number) => {
+    setViewState({ ...viewState, zoom });
+  };
 
   return (
     <>
@@ -141,14 +110,8 @@ const AnalysisMap: React.FC = () => {
       <Map
         layers={layers}
         mapStyle={mapStyle}
-        viewState={localViewState}
-        onViewStateChange={({ viewState }: ViewStateChangeParameters) => {
-          setDebouncedViewState({
-            longitude: viewState.longitude,
-            latitude: viewState.latitude,
-            zoom: viewState.zoom,
-          });
-        }}
+        viewState={viewState}
+        onViewStateChange={handleViewStateChange}
       >
         {!!tooltipData.length && (
           <PopUp
@@ -184,7 +147,7 @@ const AnalysisMap: React.FC = () => {
       )}
       <div className="absolute z-10 w-10 space-y-2 bottom-10 right-6">
         <BasemapControl value={mapStyle} onChange={handleMapStyleChange} />
-        <ZoomControl viewport={localViewState} onZoomChange={onZoomChange} />
+        <ZoomControl viewport={viewState} onZoomChange={handleZoomChange} />
         <Legend />
       </div>
     </>

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useEffect } from 'react';
+import { useCallback, useMemo, useEffect, useRef } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisUI } from 'store/features/analysis/ui';
@@ -10,21 +10,26 @@ import { useIndicators } from 'hooks/indicators';
 
 import type { SelectOption, SelectProps } from 'components/select/types';
 
-const IndicatorsFilter: React.FC = () => {
+const ALL = {
+  id: 'all',
+  name: 'All indicators',
+};
+
+const IndicatorsFilter = () => {
   const { visualizationMode } = useAppSelector(analysisUI);
   const filters = useAppSelector(analysisFilters);
   const dispatch = useAppDispatch();
 
-  const { data, isFetching, isFetched, error } = useIndicators({
+  const {
+    data = [],
+    isFetching,
+    isFetched,
+    error,
+  } = useIndicators({
     select: (data) => data.data,
   });
 
   const options: SelectProps['options'] = useMemo(() => {
-    const ALL = {
-      id: 'all',
-      name: 'All indicators',
-    };
-
     let d = data || [];
 
     if (visualizationMode !== 'map') {
@@ -52,7 +57,9 @@ const IndicatorsFilter: React.FC = () => {
   // Reset indicator filter when visualization mode changes
   useEffect(() => {
     dispatch(setFilter({ id: 'indicator', value: options[0] }));
-  }, [dispatch, options, visualizationMode]);
+  }, [options, visualizationMode]);
+
+  const ref = useRef(null);
 
   const handleChange: SelectProps['onChange'] = useCallback(
     (selected) => {
@@ -74,6 +81,7 @@ const IndicatorsFilter: React.FC = () => {
       options={options}
       current={filters.indicator}
       disabled={!!error}
+      ref={ref}
     />
   );
 };

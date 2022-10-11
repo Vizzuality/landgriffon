@@ -28,7 +28,7 @@ export const { setVisualizationMode, setSidebarCollapsed, setSubContentCollapsed
 
 export const { setFilter, setFilters, resetFiltersAndOverride } = analysisFiltersSlice.actions;
 
-export const { setLayer, setUserLayer, setUserLayers } = analysisMapSlice.actions;
+export const { setLayer } = analysisMapSlice.actions;
 
 export const { setCurrentScenario, setScenarioToCompare, setComparisonMode } =
   analysisScenariosSlice.actions;

@@ -20,6 +20,7 @@ import Loading from 'components/loading';
 
 import type { SelectOption, SelectProps } from './types';
 import { flip, offset, shift, useFloating, autoUpdate } from '@floating-ui/react-dom';
+import type SelectClass from 'react-select/dist/declarations/src/Select';
 
 /**
  * Overriding default React Select theme
@@ -150,6 +151,10 @@ const STYLES: StylesConfig = {
 
 const IS_OPTION_DISABLED = <T,>(option: SelectOption<T>) => !!option.disabled;
 
+export type SelectRef<T, IsMulti extends boolean = false> = Ref<
+  SelectClass<SelectOption<T>, IsMulti>
+>;
+
 const InnerSelect = <OptionValue, IsMulti extends boolean = false>(
   {
     instanceId,
@@ -170,7 +175,7 @@ const InnerSelect = <OptionValue, IsMulti extends boolean = false>(
     numeric = false,
     ...props
   }: SelectProps<OptionValue, IsMulti>,
-  ref: Ref<HTMLInputElement>,
+  ref: SelectRef<OptionValue, IsMulti>,
 ) => {
   type Option = SelectOption<OptionValue>;
   type Group = GroupBase<Option>;
@@ -303,7 +308,6 @@ const InnerSelect = <OptionValue, IsMulti extends boolean = false>(
 
   return (
     <div className={classNames({ 'w-fit': theme === 'inline-primary' })}>
-      <input ref={ref} className="hidden" />
       <ReactSelect<SelectOption<OptionValue>, IsMulti, Group>
         isOptionDisabled={IS_OPTION_DISABLED}
         isOptionSelected={isOptionSelected}
@@ -323,6 +327,7 @@ const InnerSelect = <OptionValue, IsMulti extends boolean = false>(
         noOptionsMessage={() => <div className="p-2">No results</div>}
         theme={DEFAULT_THEME}
         styles={STYLES}
+        ref={ref}
         components={{
           Menu,
           Control,
@@ -335,9 +340,9 @@ const InnerSelect = <OptionValue, IsMulti extends boolean = false>(
   );
 };
 
-const Select = React.forwardRef(InnerSelect) as <T>(
+const Select = React.forwardRef(InnerSelect) as <T, IsMulti extends boolean = false>(
   props: SelectProps<T> & {
-    ref?: Ref<HTMLInputElement>;
+    ref?: SelectRef<T, IsMulti>;
   },
 ) => React.ReactElement;
 

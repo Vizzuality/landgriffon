@@ -79,16 +79,16 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
         .distinct(true)
         .orderBy('year', 'ASC');
 
-    if (materialIds) {
-      queryBuilder.leftJoin(
-        SourcingLocation,
-        'sl',
-        'sl.id = sr."sourcingLocationId"',
-      );
-      queryBuilder.andWhere('"sl"."materialId" IN (:...materialIds)', {
-        materialIds,
-      });
-    }
+    // if (materialIds) {
+    //   queryBuilder.leftJoin(
+    //     SourcingLocation,
+    //     'sl',
+    //     'sl.id = sr."sourcingLocationId"',
+    //   );
+    //   queryBuilder.andWhere('"sl"."materialId" IN (:...materialIds)', {
+    //     materialIds,
+    //   });
+    // }
     const sourcingRecordsYears: SourcingRecord[] =
       await queryBuilder.getRawMany();
 

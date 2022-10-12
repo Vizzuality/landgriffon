@@ -387,55 +387,43 @@ export const groupByBusinessUnitResponseData = {
 export const groupByLocationTypeResponseData = {
   rows: [
     {
-      name: 'aggregation point',
       children: [],
+      name: 'unknown',
       values: [
-        {
-          year: 2010,
-          value: 300,
-          isProjected: false,
-        },
-        {
-          year: 2011,
-          value: 350,
-          isProjected: false,
-        },
-        {
-          year: 2012,
-          value: 400,
-          isProjected: false,
-        },
-        {
-          year: 2013,
-          value: 406,
-          isProjected: true,
-        },
+        { isProjected: false, value: 0, year: 2010 },
+        { isProjected: false, value: 0, year: 2011 },
+        { isProjected: false, value: 0, year: 2012 },
+        { isProjected: false, value: 0, year: 2013 },
       ],
     },
     {
-      name: 'country of production',
       children: [],
+      name: 'aggregation point',
       values: [
-        {
-          year: 2010,
-          value: 100,
-          isProjected: false,
-        },
-        {
-          year: 2011,
-          value: 150,
-          isProjected: false,
-        },
-        {
-          year: 2012,
-          value: 200,
-          isProjected: false,
-        },
-        {
-          year: 2013,
-          value: 203,
-          isProjected: true,
-        },
+        { isProjected: false, value: 300, year: 2010 },
+        { isProjected: false, value: 350, year: 2011 },
+        { isProjected: false, value: 400, year: 2012 },
+        { isProjected: true, value: 406, year: 2013 },
+      ],
+    },
+    {
+      children: [],
+      name: 'point of production',
+      values: [
+        { isProjected: false, value: 0, year: 2010 },
+        { isProjected: false, value: 0, year: 2011 },
+        { isProjected: false, value: 0, year: 2012 },
+        { isProjected: false, value: 0, year: 2013 },
+      ],
+    },
+    {
+      children: [],
+      name: 'country of production',
+      values: [
+        { isProjected: false, value: 100, year: 2010 },
+        { isProjected: false, value: 150, year: 2011 },
+        { isProjected: false, value: 200, year: 2012 },
+        { isProjected: true, value: 203, year: 2013 },
       ],
     },
   ],

@@ -18,7 +18,7 @@ export default {
       control: { type: 'boolean' },
     },
   },
-} as CheckboxProps;
+};
 
 const Template = (args: CheckboxProps) => {
   return (

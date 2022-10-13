@@ -1,19 +1,19 @@
-import React from 'react';
+import { forwardRef } from 'react';
 import classnames from 'classnames';
 import { ExclamationCircleIcon } from '@heroicons/react/solid';
 import Hint from '../hint';
 
 import type { TextareaProps } from './types';
 
-const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, showHint = true, error, ...props }, ref) => (
     <>
       <div className={classnames('relative rounded-md shadow-sm', className)}>
         <textarea
           className={classnames(
             'block border w-full rounded-md text-sm focus:outline-none focus:ring-0 focus:border-navy-400 px-3',
-            error ? 'border-red-400 pr-10' : 'border-gray-300',
-            props.disabled ? 'text-gray-300' : 'text-gray-900',
+            error ? 'border-red-400 pr-10' : 'border-gray-200',
+            props.disabled ? 'text-gray-200' : 'text-gray-900',
           )}
           ref={ref}
           {...props}

@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import { cloneElement, forwardRef } from 'react';
 import classnames from 'classnames';
 import { ExclamationCircleIcon } from '@heroicons/react/solid';
 import Hint from '../hint';
@@ -11,7 +11,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       <div className={classnames('relative rounded-md shadow-sm', className)}>
         {icon && (
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            {React.cloneElement(icon, {
+            {cloneElement(icon, {
               className: classnames('w-4 h-4 text-gray-500', icon.props?.className),
             })}
           </div>
@@ -20,7 +20,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           className={classnames(
             'block w-full py-2 rounded-md bg-white text-sm border focus:outline-none focus:ring-0',
             error ? 'border-red-400 focus:border-red-400' : 'border-gray-200 focus:border-navy-400',
-            inputProps.disabled ? 'text-gray-300' : 'text-gray-900',
+            inputProps.disabled ? 'text-gray-200' : 'text-gray-900',
             {
               'pl-8': icon,
               'pr-10': unit && !error,

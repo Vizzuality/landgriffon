@@ -930,7 +930,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                             min={0}
                             defaultValue={0}
                             error={errors?.GHG_LUC_T?.message}
-                            theme="inside-unit"
                             unit="tC02e"
                             data-testid="GHG_LUC_T-input"
                           />
@@ -944,7 +943,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                             min={0}
                             defaultValue={0}
                             error={errors?.DF_LUC_T?.message}
-                            theme="inside-unit"
                             unit="Ha"
                             data-testid="DF_LUC_T-input"
                           />
@@ -958,7 +956,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                             min={0}
                             defaultValue={0}
                             error={errors?.UWU_T?.message}
-                            theme="inside-unit"
                             unit="100m3"
                             data-testid="UWU_T-input"
                           />
@@ -972,7 +969,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                             min={0}
                             defaultValue={0}
                             error={errors?.BL_LUC_T?.message}
-                            theme="inside-unit"
                             unit="PDF"
                             data-testid="BL_LUC_T-input"
                           />

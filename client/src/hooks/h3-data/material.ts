@@ -7,6 +7,7 @@ import { apiRawService } from 'services/api';
 import { analysisFilters } from 'store/features/analysis';
 import { useAppSelector } from 'store/hooks';
 import { COLOR_RAMPS, useColors } from 'utils/colors';
+import { useYears } from 'hooks/years';
 
 import type { UseQueryOptions } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
@@ -20,13 +21,19 @@ const useH3MaterialData = <T = H3APIResponse>(
   const filters = useAppSelector(analysisFilters);
   const { materialId, origins } = filters;
 
+  const { data: year } = useYears('material', [materialId], 'all', {
+    enabled: !!materialId,
+    select: (years) => years?.[years?.length - 1],
+  });
+
   const urlParams = useMemo(
     () => ({
       materialId,
       resolution: origins?.length ? 6 : 4,
+      year,
       ...params,
     }),
-    [materialId, origins?.length, params],
+    [materialId, origins?.length, params, year],
   );
 
   const enabled = (options.enabled ?? true) && !!urlParams.year && !!urlParams.materialId;

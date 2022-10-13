@@ -28,7 +28,7 @@ export const Search: React.FC<SearchProps> = (props: SearchProps) => {
     <div className={classNames('relative flex items-center', className)}>
       <Input
         {...props}
-        icon={SearchIcon}
+        icon={<SearchIcon />}
         type="search"
         className="w-full h-full"
         onChange={handleChange}

@@ -1,9 +1,4 @@
 import { useMemo } from 'react';
-import type {
-  UseQueryResult,
-  UseInfiniteQueryResult,
-  UseQueryOptions,
-} from '@tanstack/react-query';
 import { useQuery, useQueryClient, useInfiniteQuery, useMutation } from '@tanstack/react-query';
 
 import { apiService } from 'services/api';
@@ -11,9 +6,13 @@ import { useAppSelector } from 'store/hooks';
 import { scenarios } from 'store/features/analysis/scenarios';
 
 // types
+import type {
+  UseQueryResult,
+  UseInfiniteQueryResult,
+  UseQueryOptions,
+} from '@tanstack/react-query';
 import type { AxiosResponse } from 'axios';
-import type { Scenario } from 'containers/scenarios/types';
-import type { Intervention } from 'containers/scenarios/types';
+import type { Scenario, Intervention } from 'containers/scenarios/types';
 import type { APIMetadataPagination } from 'types';
 
 type ResponseData = {

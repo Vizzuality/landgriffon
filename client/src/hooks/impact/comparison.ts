@@ -1,9 +1,9 @@
-import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
-import type { Scenario } from 'containers/scenarios/types';
 
 import { apiRawService } from 'services/api';
 
+import type { UseQueryOptions } from '@tanstack/react-query';
+import type { Scenario } from 'containers/scenarios/types';
 import type { ImpactDataApiResponse } from './types';
 import type { ImpactTabularAPIParams } from 'types';
 

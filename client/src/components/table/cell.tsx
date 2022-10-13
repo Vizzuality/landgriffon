@@ -4,9 +4,10 @@ import {
   SortAscendingIcon,
   SortDescendingIcon,
 } from '@heroicons/react/solid';
-import type { CellContext, HeaderContext } from '@tanstack/react-table';
 import classNames from 'classnames';
 import { useMemo } from 'react';
+
+import type { CellContext, HeaderContext } from '@tanstack/react-table';
 
 interface CellProps<T, C> {
   context: CellContext<T, C>;

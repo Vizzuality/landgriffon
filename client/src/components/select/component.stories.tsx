@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import type { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import Select from './component';
+
+import type { ComponentStory, ComponentMeta } from '@storybook/react';
 import type { SelectProps } from '.';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export

@@ -2,13 +2,13 @@ import { differenceInDays, format, formatDistanceToNowStrict } from 'date-fns';
 import { RadioGroup } from '@headlessui/react';
 import classNames from 'classnames';
 import Link from 'next/link';
-
-import ScenariosComparison from 'containers/scenarios/comparison';
-
-import type { Scenario } from '../types';
 import { DatabaseIcon } from '@heroicons/react/outline';
 import { useMemo } from 'react';
+
+import ScenariosComparison from 'containers/scenarios/comparison';
 import { Anchor } from 'components/button';
+
+import type { Scenario } from '../types';
 
 interface ScenariosItemProps {
   scenario: Scenario;

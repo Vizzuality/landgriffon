@@ -3,11 +3,12 @@ import Link from 'next/link';
 import { createPortal } from 'react-dom';
 import { signOut, useSession } from 'next-auth/react';
 import { Popover } from '@headlessui/react';
+import { offset, useFloating } from '@floating-ui/react-dom';
+import { shift } from '@floating-ui/core';
+
 import StringAvatar from 'components/string-avatar';
 import Avatar from 'components/avatar';
 import Loading from 'components/loading';
-import { offset, useFloating } from '@floating-ui/react-dom';
-import { shift } from '@floating-ui/core';
 
 const MENU_ITEM_CLASSNAME =
   'block w-full py-2 px-4 text-sm text-left text-gray-900 h-9 hover:bg-green-50';

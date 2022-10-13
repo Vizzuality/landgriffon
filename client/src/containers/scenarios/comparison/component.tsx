@@ -1,4 +1,3 @@
-import type { Dispatch, FC } from 'react';
 import { useCallback, useMemo, useEffect } from 'react';
 
 import { useScenarios } from 'hooks/scenarios';
@@ -8,9 +7,9 @@ import {
   setComparisonEnabled,
   setScenarioToCompare,
 } from 'store/features/analysis/scenarios';
-
 import Select from 'components/select';
 
+import type { Dispatch, FC } from 'react';
 import type { SelectOption } from 'components/select/types';
 
 const ScenariosComparison: FC = () => {

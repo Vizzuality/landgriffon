@@ -1,5 +1,4 @@
-import type { useSortable } from '@dnd-kit/sortable';
-import type { SortableContextProps } from '@dnd-kit/sortable';
+import type { useSortable, SortableContextProps } from '@dnd-kit/sortable';
 
 export interface SortableProps extends SortableContextProps {
   onChangeOrder: (orderedIds: string[]) => void;

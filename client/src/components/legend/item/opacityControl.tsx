@@ -1,8 +1,9 @@
+import { useEffect, useMemo, useState } from 'react';
+import { useDebounce } from 'rooks';
+
 import RangeSlider from 'components/forms/range';
 import OpacityIcon from 'components/icons/opacity';
 import ToolTip from 'components/tooltip';
-import { useEffect, useMemo, useState } from 'react';
-import { useDebounce } from 'rooks';
 
 interface OpacityControlProps {
   opacity: number;

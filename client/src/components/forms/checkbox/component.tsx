@@ -1,5 +1,6 @@
 import { forwardRef } from 'react';
 import classnames from 'classnames';
+
 import Hint from '../hint';
 
 import type { CheckboxProps } from './types';

@@ -1,7 +1,8 @@
-import type { MouseEventHandler } from 'react';
 import { useCallback } from 'react';
 import { Switch } from '@headlessui/react';
 import classNames from 'classnames';
+
+import type { MouseEventHandler } from 'react';
 
 type ToggleProps = {
   active: boolean;

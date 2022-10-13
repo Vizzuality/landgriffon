@@ -3,9 +3,7 @@ import { useCallback, useMemo, useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisUI } from 'store/features/analysis/ui';
 import { analysisFilters, setFilter } from 'store/features/analysis/filters';
-
 import Select from 'components/select';
-
 import { useIndicators } from 'hooks/indicators';
 
 import type { SelectOption, SelectProps } from 'components/select/types';
@@ -57,7 +55,7 @@ const IndicatorsFilter = () => {
   // Reset indicator filter when visualization mode changes
   useEffect(() => {
     dispatch(setFilter({ id: 'indicator', value: options[0] }));
-  }, [options, visualizationMode]);
+  }, [dispatch, options, visualizationMode]);
 
   const ref = useRef(null);
 

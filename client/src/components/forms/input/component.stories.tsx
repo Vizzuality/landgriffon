@@ -1,5 +1,7 @@
-import Component from '.';
 import { PlusIcon } from '@heroicons/react/solid';
+
+import Component from '.';
+
 import type { InputProps } from './types';
 
 export default {

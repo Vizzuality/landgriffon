@@ -1,4 +1,5 @@
 import Component from '.';
+
 import type { SelectProps, Option } from './types';
 
 const data: Option[] = [
@@ -12,7 +13,7 @@ const data: Option[] = [
   { value: 8, label: 'Mason Heaney' },
   { value: 9, label: 'Claudie Smitham' },
   { value: 10, label: 'Emil Schaefer' },
-]
+];
 
 export default {
   title: 'Components/Forms',
@@ -41,6 +42,7 @@ const Template = (args: SelectProps) => {
       name="people"
       id="mySelect"
       options={data}
+      placeholder="Select an person"
     />
   );
 };

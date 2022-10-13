@@ -1,9 +1,10 @@
 import classNames from 'classnames';
 
-import InfoToolTip from 'components/info-tooltip/component';
-import Loading from 'components/loading';
 import OpacityControl from './opacityControl';
 import DragHandle from './dragHandle';
+
+import InfoToolTip from 'components/info-tooltip/component';
+import Loading from 'components/loading';
 
 export type LegendItemProps = {
   name: string | JSX.Element;

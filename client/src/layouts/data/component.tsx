@@ -1,9 +1,10 @@
-import ApplicationLayout from 'layouts/application';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import classNames from 'classnames';
 
 import { ADMIN_TABS } from './constants';
+
+import ApplicationLayout from 'layouts/application';
 
 import type { AdminLayoutProps } from './types';
 

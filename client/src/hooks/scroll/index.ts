@@ -1,7 +1,7 @@
-import type { RefObject, MutableRefObject } from 'react';
 import { useCallback, useEffect, useRef, useMemo } from 'react';
-
 import lodashDebounce from 'lodash/debounce';
+
+import type { RefObject, MutableRefObject } from 'react';
 
 export type DebounceOptions = Parameters<typeof lodashDebounce>[2];
 

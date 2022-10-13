@@ -1,12 +1,14 @@
-import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
-import type { Scenario } from 'containers/scenarios/types';
+
+import { DEFAULT_QUERY_OPTIONS, responseParser } from '../utils';
+
 import { apiRawService } from 'services/api';
-import type { ImpactH3APIParams } from 'types';
 import { COLOR_RAMPS, useColors } from 'utils/colors';
+
+import type { UseQueryOptions } from '@tanstack/react-query';
+import type { Scenario } from 'containers/scenarios/types';
+import type { ImpactH3APIParams } from 'types';
 import type { H3ImpactResponse } from '../utils';
-import { DEFAULT_QUERY_OPTIONS } from '../utils';
-import { responseParser } from '../utils';
 
 interface CompareH3ApiParams extends ImpactH3APIParams {
   comparedScenarioId: Scenario['id'];

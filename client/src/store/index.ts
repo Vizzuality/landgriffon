@@ -1,5 +1,4 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import type { ReducersMapObject, Middleware } from '@reduxjs/toolkit';
 import router from 'next/router';
 import { cloneDeep, isObject } from 'lodash';
 
@@ -17,6 +16,8 @@ import analysisScenarios, {
   initialState as analysisScenariosInitialState,
   setScenarioToCompare,
 } from 'store/features/analysis/scenarios';
+
+import type { ReducersMapObject, Middleware } from '@reduxjs/toolkit';
 import type { AnalysisState } from './features/analysis';
 
 const staticReducers = {

@@ -1,12 +1,10 @@
 import { useCallback } from 'react';
-
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 import { useUpdatePassword } from 'hooks/profile';
-
 import { Label, Input } from 'components/forms';
 import { Button } from 'components/button';
 

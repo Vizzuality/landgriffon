@@ -4,7 +4,6 @@ import { useDebounce } from '@react-hook/debounce';
 import { PlusIcon } from '@heroicons/react/solid';
 
 import { useUsers } from 'hooks/users';
-
 import AdminLayout from 'layouts/data';
 import Button from 'components/button';
 import Search from 'components/search';

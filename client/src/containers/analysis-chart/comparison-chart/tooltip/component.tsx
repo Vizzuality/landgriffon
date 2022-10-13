@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+
 import { NUMBER_FORMAT } from 'utils/number-format';
 
 type CustomTooltipProps = {

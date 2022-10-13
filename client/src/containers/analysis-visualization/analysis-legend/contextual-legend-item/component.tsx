@@ -2,15 +2,15 @@ import { useCallback, useMemo } from 'react';
 
 import { useAppDispatch } from 'store/hooks';
 import { setLayer } from 'store/features/analysis/map';
-
 import LegendItem from 'components/legend/item';
-import type { Layer } from 'types';
 import LegendTypeBasic from 'components/legend/types/basic';
 import LegendTypeCategorical from 'components/legend/types/categorical';
 import LegendTypeChoropleth from 'components/legend/types/choropleth';
 import LegendTypeGradient from 'components/legend/types/gradient';
 import { useContextualLayer } from 'hooks/layers/contextual';
 import useContextualLayers from 'hooks/layers/getContextualLayers';
+
+import type { Layer } from 'types';
 
 interface ContextualLegendItemProps {
   layer: Layer;

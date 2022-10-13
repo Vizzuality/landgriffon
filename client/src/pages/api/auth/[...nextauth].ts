@@ -1,7 +1,9 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+
 import { authService } from 'services/authentication';
 import logger from 'utils/logger';
+
 import type { NextAuthOptions } from 'next-auth';
 
 type CustomCredentials = Credential & {

@@ -1,4 +1,5 @@
 import Image from 'next/image';
+
 import type { HTMLAttributes } from 'react';
 
 const LandgriffonLogo: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => (

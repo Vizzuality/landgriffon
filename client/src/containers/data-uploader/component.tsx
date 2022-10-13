@@ -3,7 +3,6 @@ import toast from 'react-hot-toast';
 import classNames from 'classnames';
 
 import { useUploadDataSource } from 'hooks/sourcing-data';
-
 import FileDropzone from 'components/file-dropzone';
 
 import type { FileDropZoneProps } from 'components/file-dropzone/types';

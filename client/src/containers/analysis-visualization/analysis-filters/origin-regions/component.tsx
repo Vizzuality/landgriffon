@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
-import TreeSelect from 'components/tree-select';
 import { sortBy } from 'lodash';
 
-import type { AdminRegionsTreesParams } from 'hooks/admin-regions';
+import TreeSelect from 'components/tree-select';
 import { useAdminRegionsTrees } from 'hooks/admin-regions';
+
+import type { AdminRegionsTreesParams } from 'hooks/admin-regions';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
 interface OriginRegionsFilterProps<IsMulti extends boolean>

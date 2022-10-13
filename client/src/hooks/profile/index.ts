@@ -1,10 +1,10 @@
-import type { AxiosPromise } from 'axios';
 import { useMemo } from 'react';
-import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 
 import { apiService } from 'services/api';
 
+import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
+import type { AxiosPromise } from 'axios';
 import type { ProfilePayload, PasswordPayload, ErrorResponse } from 'types';
 
 type ResponseData = UseQueryResult<ProfilePayload>;

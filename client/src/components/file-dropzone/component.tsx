@@ -1,7 +1,6 @@
 import { useDropzone } from 'react-dropzone';
 
 import UploadIcon from 'components/icons/upload-icon';
-
 import { bytesToMegabytes } from 'utils/units';
 
 import type { FileDropZoneProps } from './types';

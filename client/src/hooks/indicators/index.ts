@@ -1,6 +1,8 @@
-import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
+
 import { apiService } from 'services/api';
+
+import type { UseQueryOptions } from '@tanstack/react-query';
 import type { Indicator, PaginationMetadata } from 'types';
 
 const DEFAULT_QUERY_OPTIONS = {

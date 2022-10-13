@@ -1,4 +1,5 @@
 import { MenuIcon } from '@heroicons/react/outline';
+
 import { useAppDispatch } from 'store/hooks';
 import { setMenuMobileOpen } from 'store/features/ui';
 import LandgriffonLogo from 'containers/logo/component';

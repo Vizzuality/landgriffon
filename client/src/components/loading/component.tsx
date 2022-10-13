@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+
 import type { LoadingProps } from './types';
 
 export const Loading: React.FC<LoadingProps> = ({ className = 'w-5 h-5' }: LoadingProps) => (

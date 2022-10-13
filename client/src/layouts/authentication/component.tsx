@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
+
 import Alert from 'components/alert';
 
 const AuthenticationLayout: React.FC<React.PropsWithChildren> = ({ children }) => (

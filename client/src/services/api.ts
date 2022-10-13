@@ -1,6 +1,7 @@
 import axios from 'axios';
 import Jsona from 'jsona';
 import { getSession, signOut } from 'next-auth/react';
+
 import type { AxiosRequestConfig } from 'axios';
 
 /**

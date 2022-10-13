@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { sortBy } from 'lodash';
 
-import type { MaterialsTreesParams } from 'hooks/materials';
 import { useMaterialsTrees } from 'hooks/materials';
-
 import TreeSelect from 'components/tree-select';
+
+import type { MaterialsTreesParams } from 'hooks/materials';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
 interface MaterialsFilterProps<IsMulti extends boolean>

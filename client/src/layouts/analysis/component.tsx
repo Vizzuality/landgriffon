@@ -4,7 +4,6 @@ import classNames from 'classnames';
 
 import { useAppSelector } from 'store/hooks';
 import { analysisUI } from 'store/features/analysis/ui';
-
 import CollapseButton from 'containers/collapse-button';
 import AnalysisSidebar from 'containers/analysis-sidebar';
 import AnalysisFilters from 'containers/analysis-visualization/analysis-filters';

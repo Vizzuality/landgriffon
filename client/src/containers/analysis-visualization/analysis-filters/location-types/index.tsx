@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
 
+import Component from './component';
+
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters, setFilter } from 'store/features/analysis/filters';
-
-import Component from './component';
 
 const LocationTypesFilter: React.FC = () => {
   const dispatch = useAppDispatch();

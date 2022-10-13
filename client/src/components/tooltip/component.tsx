@@ -11,10 +11,10 @@ import {
   useDismiss,
   autoUpdate,
 } from '@floating-ui/react-dom-interactions';
-
-import type { Placement } from '@floating-ui/core';
 import { shift } from '@floating-ui/core';
 import classNames from 'classnames';
+
+import type { Placement } from '@floating-ui/core';
 
 interface TooltipProps {
   className?: string;

@@ -1,5 +1,6 @@
 import cx from 'classnames';
 import { useMemo } from 'react';
+
 import type { Legend } from 'types';
 
 export type LegendTypeChoroplethProps = {

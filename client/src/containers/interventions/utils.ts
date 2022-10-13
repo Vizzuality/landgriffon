@@ -1,5 +1,6 @@
-import type { InterventionDto, InterventionFormData } from './types';
 import { InterventionTypes, LocationTypes } from './enums';
+
+import type { InterventionDto, InterventionFormData } from './types';
 import type { SelectOption } from 'components/select/types';
 
 function emptyStringIsNull(value: string): string | null {

@@ -1,19 +1,18 @@
-import type { FC } from 'react';
 import { useMemo, useCallback } from 'react';
 import classNames from 'classnames';
+import { InformationCircleIcon } from '@heroicons/react/solid';
+
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { useScenario } from 'hooks/scenarios';
 import { useIndicator } from 'hooks/indicators';
-
-import { InformationCircleIcon } from '@heroicons/react/solid';
-import { scenarios } from 'store/features/analysis/scenarios';
+import { scenarios, setComparisonMode } from 'store/features/analysis/scenarios';
 import { analysisFilters, setFilters } from 'store/features/analysis/filters';
-import { setComparisonMode } from 'store/features/analysis/scenarios';
-import type { ScenariosState } from 'store/features/analysis/scenarios';
-
 import Badge from 'components/badge/component';
-import type { SelectOption } from 'components/select';
 import Select from 'components/select';
+
+import type { ScenariosState } from 'store/features/analysis/scenarios';
+import type { SelectOption } from 'components/select';
+import type { FC } from 'react';
 
 const values = 'absolute';
 const materialArticle = 'of';

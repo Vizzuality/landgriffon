@@ -1,3 +1,7 @@
+import Head from 'next/head';
+import { useCallback, useMemo } from 'react';
+import { InformationCircleIcon } from '@heroicons/react/solid';
+
 import Button from 'components/button';
 import Radio from 'components/forms/radio';
 import Loading from 'components/loading';
@@ -6,10 +10,6 @@ import TargetsList from 'containers/targets/list';
 import { useIndicators } from 'hooks/indicators';
 import { useTargets } from 'hooks/targets';
 import AdminLayout from 'layouts/data';
-import Head from 'next/head';
-import { useCallback, useMemo } from 'react';
-
-import { InformationCircleIcon } from '@heroicons/react/solid';
 
 import type { Target } from 'types';
 

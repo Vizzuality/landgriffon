@@ -1,11 +1,11 @@
-import { useAppSelector } from 'store/hooks';
-import { analysisUI } from 'store/features/analysis/ui';
-
 import IndicatorsFilter from './indicators';
 import GroupByFilter from './group-by';
 import YearsFilter from './years';
 import YearsRangeFilter from './years-range';
 import MoreFilters from './more-filters';
+
+import { analysisUI } from 'store/features/analysis/ui';
+import { useAppSelector } from 'store/hooks';
 
 const AnalysisFilters: React.FC = () => {
   const { visualizationMode } = useAppSelector(analysisUI);

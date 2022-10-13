@@ -1,12 +1,11 @@
-import type { Ref } from 'react';
 import React, { useMemo } from 'react';
 import { sortBy } from 'lodash';
 
-import type { BusinessUnitsTreesParams } from 'hooks/business-units';
 import { useBusinessUnitsTrees } from 'hooks/business-units';
-
 import TreeSelect from 'components/tree-select';
 
+import type { BusinessUnitsTreesParams } from 'hooks/business-units';
+import type { Ref } from 'react';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
 interface BusinessUnitsFilterProps

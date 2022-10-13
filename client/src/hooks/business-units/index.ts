@@ -1,7 +1,9 @@
 import { useMemo } from 'react';
-import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
+
 import { apiService } from 'services/api';
+
+import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
 import type { BusinessUnits } from 'types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {

@@ -1,5 +1,4 @@
 import { useRef } from 'react';
-
 import classNames from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
 import { XIcon } from '@heroicons/react/solid';
@@ -8,6 +7,7 @@ import { FocusScope } from '@react-aria/focus';
 import { useOverlay, usePreventScroll, useModal, OverlayContainer } from '@react-aria/overlays';
 
 import { CONTENT_CLASSES, OVERLAY_CLASSES } from './constants';
+
 import type { ModalProps } from './types';
 
 export const Modal: React.FC<ModalProps> = ({

@@ -1,4 +1,5 @@
 import Component from '.';
+
 import type { RadioProps } from './types';
 
 export default {

@@ -1,8 +1,9 @@
 import classNames from 'classnames';
+import { useCallback } from 'react';
+
 import { useAppSelector } from 'store/hooks';
 import { scenarios } from 'store/features/analysis/scenarios';
 import { NUMBER_FORMAT } from 'utils/number-format';
-import { useCallback } from 'react';
 
 export interface ComparisonCellProps {
   value: number;

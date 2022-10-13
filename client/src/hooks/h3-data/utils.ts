@@ -1,6 +1,7 @@
+import { scaleOrdinal, scaleThreshold } from 'd3-scale';
+
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ScaleOrdinal, ScaleThreshold } from 'd3-scale';
-import { scaleOrdinal, scaleThreshold } from 'd3-scale';
 import type { AnalysisFiltersState } from 'store/features/analysis/filters';
 import type { ScenariosState } from 'store/features/analysis/scenarios';
 import type { H3APIResponse, H3Item, Legend, RGBColor } from 'types';

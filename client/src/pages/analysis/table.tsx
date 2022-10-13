@@ -1,10 +1,8 @@
 import { useAppDispatch } from 'store/hooks';
 import useEffectOnce from 'hooks/once';
 import { setVisualizationMode } from 'store/features/analysis';
-
 import ApplicationLayout from 'layouts/application';
 import AnalysisLayout from 'layouts/analysis';
-
 import AnalysisTable from 'containers/analysis-visualization/analysis-table';
 import TitleTemplate from 'utils/titleTemplate';
 

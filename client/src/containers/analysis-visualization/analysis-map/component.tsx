@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { XCircleIcon } from '@heroicons/react/solid';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
 import sortBy from 'lodash/sortBy';
@@ -19,10 +19,11 @@ import { useAllContextualLayersData } from 'hooks/h3-data/contextual';
 import useH3MaterialData from 'hooks/h3-data/material';
 import useQueryParam from 'hooks/queryParam';
 
-import type { ViewState, MapStyle, MapProps } from 'components/map';
+import type { DeckGLRef } from '@deck.gl/react/typed';
+import type { ViewState, MapStyle } from 'components/map';
 import type { BasemapValue } from 'components/map/controls/basemap/types';
 
-const AnalysisMap: React.FC = () => {
+const AnalysisMap = () => {
   const dispatch = useAppDispatch();
   const {
     tooltipData,
@@ -67,6 +68,11 @@ const AnalysisMap: React.FC = () => {
           getFillColor: (d) => d.c,
           getLineColor: (d) => d.c,
           onHover: ({ object, x, y, viewport }) => {
+            /*
+             * TODO: multiple layer picking is possible using a ref to the map:
+             * const data = mapRef.current.pickMultipleObjects({ x, y });
+             */
+
             dispatch(
               setTooltipPosition({
                 x,
@@ -74,6 +80,7 @@ const AnalysisMap: React.FC = () => {
                 viewport: viewport ? { width: viewport.width, height: viewport.height } : null,
               }),
             );
+
             dispatch(
               setTooltipData({
                 id: props.id,
@@ -101,17 +108,6 @@ const AnalysisMap: React.FC = () => {
     formatParam,
   });
 
-  const handleViewStateChange = useCallback<MapProps['onViewStateChange']>(
-    ({ viewState }) => {
-      setViewState(viewState);
-    },
-    [setViewState],
-  );
-
-  const handleZoomChange = (zoom: number) => {
-    setViewState({ ...viewState, zoom, transitionDuration: 250 });
-  };
-
   return (
     <>
       {isFetching && <PageLoading />}
@@ -119,7 +115,9 @@ const AnalysisMap: React.FC = () => {
         layers={layers}
         mapStyle={mapStyle}
         viewState={viewState}
-        onViewStateChange={handleViewStateChange}
+        onViewStateChange={({ viewState }) => {
+          setViewState(viewState);
+        }}
       >
         {!!tooltipData.length && (
           <PopUp
@@ -155,7 +153,12 @@ const AnalysisMap: React.FC = () => {
       )}
       <div className="absolute z-10 w-10 space-y-2 bottom-10 right-6">
         <BasemapControl value={mapStyle} onChange={handleMapStyleChange} />
-        <ZoomControl viewport={viewState} onZoomChange={handleZoomChange} />
+        <ZoomControl
+          viewport={viewState}
+          onZoomChange={(zoom) => {
+            setViewState({ ...viewState, zoom, transitionDuration: 250 });
+          }}
+        />
         <Legend />
       </div>
     </>

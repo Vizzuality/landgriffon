@@ -5,7 +5,9 @@ import Component from './component';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters, setFilter } from 'store/features/analysis/filters';
 
-const MaterialsFilter: React.FC<{ multiple?: boolean }> = ({ multiple = false }) => {
+import type { MaterialsFilterProps } from './component';
+
+const MaterialsFilter = <IsMulti extends boolean = false>(props: MaterialsFilterProps<IsMulti>) => {
   const dispatch = useAppDispatch();
   const { materials } = useAppSelector(analysisFilters);
   const handleChange = useCallback(
@@ -15,7 +17,7 @@ const MaterialsFilter: React.FC<{ multiple?: boolean }> = ({ multiple = false })
     [dispatch],
   );
 
-  return <Component current={materials} multiple={multiple} onChange={handleChange} />;
+  return <Component current={materials} onChange={handleChange} {...props} />;
 };
 
 export default MaterialsFilter;

@@ -7,7 +7,7 @@ import TreeSelect from 'components/tree-select';
 import type { MaterialsTreesParams } from 'hooks/materials';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
-interface MaterialsFilterProps<IsMulti extends boolean>
+export interface MaterialsFilterProps<IsMulti extends boolean>
   extends MaterialsTreesParams,
     Pick<
       TreeSelectProps<IsMulti>,
@@ -39,6 +39,7 @@ const MaterialsFilter = <IsMulti extends boolean = false>({
     {
       // 2 minutes stale time
       staleTime: 2 * 60 * 1000,
+      enabled: !options,
     },
   );
 

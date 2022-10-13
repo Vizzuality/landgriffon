@@ -10,7 +10,7 @@ beforeEach(() => {
   });
 
   cy.login();
-  cy.visit('/admin/scenarios');
+  cy.visit('/data/scenarios');
 });
 
 afterEach(() => {
@@ -19,7 +19,7 @@ afterEach(() => {
 
 describe('Scenarios', () => {
   it('should be able to see the scenarios page', () => {
-    cy.url().should('contain', '/admin/scenarios');
+    cy.url().should('contain', '/data/scenarios');
     cy.get('h1').should('have.text', 'Manage scenarios data');
     cy.log('Scenarios is selected in the menu bar');
     cy.get('[data-testisactive="true"]').should('have.text', 'Scenarios');
@@ -39,11 +39,11 @@ describe('Scenarios', () => {
   it('should allow create new scenarios and come back', () => {
     cy.get('[data-testid="scenario-add-button"]').should('have.text', 'Add new scenario').click();
 
-    cy.url().should('contain', '/admin/scenarios/new');
+    cy.url().should('contain', '/data/scenarios/new');
 
     cy.get('[data-testid="scenario-back-button"]')
       .click()
       .url()
-      .should('contain', '/admin/scenarios');
+      .should('contain', '/data/scenarios');
   });
 });

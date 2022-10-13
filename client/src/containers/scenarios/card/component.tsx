@@ -103,7 +103,7 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
             Modified:
             <br /> {format(new Date(data.updatedAt), 'yyyy/MM/dd')}
           </div>
-          <Link href={`/admin/scenarios/${data.id}/edit`} passHref>
+          <Link href={`/data/scenarios/${data.id}/edit`} passHref>
             <Anchor variant="secondary">Edit</Anchor>
           </Link>
           <Link href={{ pathname: `/analysis/table`, query: { scenarioId: data.id } }} passHref>

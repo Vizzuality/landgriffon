@@ -8,7 +8,7 @@ import Alert from 'components/alert';
 import type { NavigationList } from 'containers/navigation/types';
 
 const navigationItems: NavigationList = [
-  { name: 'Data', href: '/admin', icon: CollectionIcon },
+  { name: 'Data', href: '/data', icon: CollectionIcon },
   { name: 'Analysis', href: '/analysis', icon: ChartBarIcon },
 ];
 

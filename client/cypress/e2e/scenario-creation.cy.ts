@@ -1,5 +1,5 @@
 beforeEach(() => {
-  cy.login().visit('/admin/scenarios/new');
+  cy.login().visit('/data/scenarios/new');
 
   cy.intercept('POST', '/api/v1/scenarios', {
     statusCode: 201,
@@ -13,7 +13,7 @@ afterEach(() => {
 
 describe('Scenario creation', () => {
   it('a user populates all fields and creates a scenario successfully', () => {
-    cy.url().should('contain', '/admin/scenarios/new');
+    cy.url().should('contain', '/data/scenarios/new');
     cy.get('[data-testid="scenario-name-input"]').type('scenario mockup name');
     cy.get('[data-testid="scenario-description-input"]').type('scenario mockup description');
     cy.get('[data-testid="create-scenario-button"]').click();
@@ -35,7 +35,7 @@ describe('Scenario creation', () => {
   });
 
   it('a user tries to create a scenario without filling in the name field and a hint appears below the field', () => {
-    cy.url().should('contain', '/admin/scenarios/new');
+    cy.url().should('contain', '/data/scenarios/new');
     cy.get('[data-testid="create-scenario-button"]').click();
 
     cy.get('[data-testid="hint-input-title"]')
@@ -44,7 +44,7 @@ describe('Scenario creation', () => {
   });
 
   it('a user types an invalid name and a hint appears below the field', () => {
-    cy.url().should('contain', '/admin/scenarios/new');
+    cy.url().should('contain', '/data/scenarios/new');
     cy.get('[data-testid="scenario-name-input"]').type('?');
     cy.get('[data-testid="create-scenario-button"]').click();
 

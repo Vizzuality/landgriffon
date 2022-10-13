@@ -5,7 +5,7 @@ import { PlusIcon } from '@heroicons/react/solid';
 
 import { useUsers } from 'hooks/users';
 
-import AdminLayout from 'layouts/admin';
+import AdminLayout from 'layouts/data';
 import Button from 'components/button';
 import Search from 'components/search';
 import Table from 'components/table';

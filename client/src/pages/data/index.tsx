@@ -9,7 +9,7 @@ import useModal from 'hooks/modals';
 import { useSourcingLocations, useSourcingLocationsMaterials } from 'hooks/sourcing-locations';
 import { useTasks } from 'hooks/tasks';
 
-import AdminLayout from 'layouts/admin';
+import AdminLayout from 'layouts/data';
 import DownloadMaterialsDataButton from 'containers/admin/download-materials-data-button';
 import NoResults from 'containers/admin/no-results';
 import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range';

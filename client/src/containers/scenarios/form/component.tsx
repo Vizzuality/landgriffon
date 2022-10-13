@@ -70,7 +70,7 @@ const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
       </div>
       {children}
       <div className="flex justify-end space-x-6">
-        <Link href="/admin/scenarios" passHref>
+        <Link href="/data/scenarios" passHref>
           <Anchor variant="secondary">Cancel</Anchor>
         </Link>
         <Button loading={isSubmitting} type="submit" data-testid="create-scenario-button">

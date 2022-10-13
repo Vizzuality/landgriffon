@@ -33,7 +33,7 @@ Cypress.Commands.add(
 Cypress.Commands.add('createScenario', (): void => {
   cy.log('Creates a scenario');
 
-  cy.visit('/admin/scenarios/new');
+  cy.visit('/data/scenarios/new');
   cy.get('[data-testid="scenario-name-input"]').type('scenario mockup name');
   cy.get('[data-testid="scenario-description-input"]').type('scenario mockup description');
   cy.get('[data-testid="create-scenario-button"]').click();

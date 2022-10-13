@@ -5,7 +5,7 @@ const nextConfig = {
   eslint: {
     dirs: ['src'],
   },
-  async redirects() {
+  redirects() {
     return [
       {
         source: '/',
@@ -15,11 +15,6 @@ const nextConfig = {
       {
         source: '/analysis',
         destination: '/analysis/map',
-        permanent: false,
-      },
-      {
-        source: '/admin',
-        destination: '/admin/data',
         permanent: false,
       },
     ];

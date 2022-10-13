@@ -4,7 +4,7 @@ import { PlusIcon } from '@heroicons/react/solid';
 
 import { useScenarios } from 'hooks/scenarios';
 
-import AdminLayout from 'layouts/admin';
+import AdminLayout from 'layouts/data';
 import ScenarioCard from 'containers/scenarios/card';
 import { Anchor } from 'components/button';
 import Loading from 'components/loading';
@@ -21,7 +21,7 @@ const ScenariosAdminPage: React.FC = () => {
         <title>Admin scenarios | Landgriffon</title>
       </Head>
       <div className="flex justify-end mb-6">
-        <Link href="/admin/scenarios/new" passHref>
+        <Link href="/data/scenarios/new" passHref>
           <Anchor
             variant="primary"
             data-testid="scenario-add-button"

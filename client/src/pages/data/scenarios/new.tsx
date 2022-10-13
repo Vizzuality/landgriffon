@@ -23,7 +23,7 @@ const CreateScenarioPage: React.FC = () => {
           toast.success(`The scenario ${title} has been created`);
           // adding some delay to make sure the user reads the success message
           setTimeout(() => {
-            router.replace(`/admin/scenarios/${id}/edit`);
+            router.replace(`/data/scenarios/${id}/edit`);
           }, 1000);
         },
         onError: (error: ErrorResponse) => {
@@ -40,7 +40,7 @@ const CreateScenarioPage: React.FC = () => {
       <Head>
         <title>Create new scenario | Landgriffon</title>
       </Head>
-      <Link href="/admin/scenarios" passHref>
+      <Link href="/data/scenarios" passHref>
         <BackLink className="flex mb-6 xl:sticky xl:top-0" data-testid="scenario-back-button">
           Back to scenarios
         </BackLink>

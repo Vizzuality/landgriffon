@@ -1,6 +1,6 @@
 import InteractiveMap from 'react-map-gl';
 import DeckGL from '@deck.gl/react/typed';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import DefaultMapStyle from './styles/map-style.json';
 import SatelliteMapStyle from './styles/map-style-satellite.json';
@@ -52,24 +52,30 @@ const Map = React.forwardRef<DeckGLRef, MapProps>(
       children,
       mapStyle = 'terrain',
       viewState,
-      initialViewState = INITIAL_VIEW_STATE,
+      initialViewState: partialInitialViewState,
       onViewStateChange,
       ...props
     },
     ref,
   ) => {
-    const [localViewState, setLocalViewState] = useState({ ...initialViewState, ...viewState });
+    const initialViewState = useMemo(
+      () => ({
+        ...INITIAL_VIEW_STATE,
+        ...partialInitialViewState,
+      }),
+      [partialInitialViewState],
+    );
 
-    const finalViewState = {
-      ...localViewState,
+    const [localViewState, setLocalViewState] = useState(() => ({
+      ...initialViewState,
       ...viewState,
-    };
+    }));
 
     return (
       <DeckGL
         ref={ref}
-        initialViewState={localViewState}
-        viewState={finalViewState}
+        initialViewState={initialViewState ?? (viewState ? undefined : INITIAL_VIEW_STATE)}
+        viewState={viewState}
         onViewStateChange={(state: Parameters<MapProps['onViewStateChange']>[0]) => {
           setLocalViewState(state.viewState);
           onViewStateChange?.(state);
@@ -78,7 +84,7 @@ const Map = React.forwardRef<DeckGLRef, MapProps>(
         {...props}
       >
         <InteractiveMap
-          viewState={finalViewState}
+          viewState={viewState ?? localViewState}
           mapStyle={MAP_STYLES[mapStyle]}
           mapboxApiAccessToken={MAPBOX_API_TOKEN}
           className="-z-10"

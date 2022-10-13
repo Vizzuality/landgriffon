@@ -1,31 +1,29 @@
 import React from 'react';
 import Hint from '../hint';
 import classnames from 'classnames';
-
-const THEMES = {
-  default:
-    'border rounded text-sm text-green-700 focus:outline-none focus:ring-2 focus:ring-green-700/50 focus:border-green-700 px-0',
-};
-
-type CheckboxProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  theme?: 'default';
-  error?: string;
-  showHint?: boolean;
-};
+import type { CheckboxProps } from './types';
 
 const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
-  ({ className, theme = 'default', error, showHint = true, children, ...props }, ref) => (
-    <div className={classnames('mt-1', className)}>
+  ({ className, error, showHint = true, children, ...props }, ref) => (
+    <div className={className}>
       <div className="flex items-center">
         <input
-          className={classnames([THEMES[theme]], {
-            'border-red-400': !!error,
-          })}
+          className={classnames(
+            'border rounded text-sm focus:outline-none focus:ring-2 focus:ring-navy-400/20 focus:border-navy-400 px-0',
+            props.disabled ? 'border-gray-300' : 'border-navy-400',
+            !props.disabled && error ? 'border-red-400' : 'border-gray-300',
+          )}
           {...props}
           ref={ref}
           type="checkbox"
         />
-        <label htmlFor={props.id} className="ml-2 block text-sm text-gray-900">
+        <label
+          htmlFor={props.id}
+          className={classnames(
+            'block ml-2 text-sm',
+            props.disabled ? 'text-gray-300' : 'text-gray-900',
+          )}
+        >
           {children}
         </label>
       </div>

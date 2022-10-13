@@ -10,32 +10,43 @@ interface UseQueryParamOptions<T, F = T> {
    */
   formatParam?: (value: T) => F;
   waitTimeMs?: number;
+  pushInsteadOfReplace?: boolean;
 }
 
 const serialize = <T>(value: T): string => {
   if (value === undefined) return undefined;
 
-  return encodeURIComponent(JSON.stringify(value));
+  return JSON.stringify(value);
 };
 
 const parse = <T>(value: string): T => {
   if (value === undefined) return undefined;
 
-  return JSON.parse(decodeURIComponent(value));
+  return JSON.parse(value);
+};
+
+const window = typeof global.window === 'undefined' ? null : global.window;
+
+const updateQueryParams = (params: URLSearchParams, push: boolean) => {
+  if (push) {
+    window.history.pushState?.(null, null, `?${params}`);
+  } else {
+    window.history.replaceState?.(null, null, `?${params}`);
+  }
 };
 
 const useQueryParam = <T, F = T>(
   name: string,
   defaultValue?: T | (() => T),
-  { formatParam, waitTimeMs = 100 }: UseQueryParamOptions<T, F> = {},
+  { formatParam, waitTimeMs = 100, pushInsteadOfReplace = false }: UseQueryParamOptions<T, F> = {},
 ) => {
-  const { query, isReady, replace } = useRouter();
+  const { query, isReady } = useRouter();
 
   const [value, setValue] = useState(defaultValue);
 
   const queryValue = query[name] as string;
 
-  const [isDoneSettingFromQuery, setIsDoneSettingFromQuery] = useState(false);
+  const [isDoneSettingInitialState, setIsDoneSettingInitialState] = useState(false);
   useEffectOnceWhen(() => {
     const newValue = parse<T>(query[name] as string);
     if (typeof defaultValue === 'object' || typeof newValue === 'object') {
@@ -43,38 +54,32 @@ const useQueryParam = <T, F = T>(
     } else {
       setValue(newValue);
     }
-    setIsDoneSettingFromQuery(true);
+    setIsDoneSettingInitialState(true);
   }, isReady);
 
   const [isPending, startTransition] = useTransition();
 
   const setQueryParam = useCallback(
     (value: T) => {
-      if (!isReady) return;
-      if (!value) {
-        // delete the old value from the query params
-        if (queryValue) {
-          const { [name]: _currentValue, ...restQuery } = query;
-          replace({ query: restQuery }, undefined, { shallow: true });
-        }
-        return;
+      const currentURL = new URL(window.location.href);
+      const queryParams = currentURL.searchParams;
+
+      if (!value && queryValue) {
+        queryParams.delete(name);
+        return updateQueryParams(queryParams, pushInsteadOfReplace);
       }
 
-      replace({
-        query: {
-          ...query,
-          [name]: serialize(formatParam ? formatParam(value) : value),
-        },
-      });
+      queryParams.set(name, serialize(formatParam ? formatParam(value) : value));
+      return updateQueryParams(queryParams, pushInsteadOfReplace);
     },
-    [formatParam, isReady, name, query, queryValue, replace],
+    [formatParam, name, pushInsteadOfReplace, queryValue],
   );
 
   const setDebouncedQueryParam = useDebounce(setQueryParam, waitTimeMs);
 
   const setParam = useCallback(
     (value: T) => {
-      if (!isDoneSettingFromQuery) return;
+      if (!isDoneSettingInitialState) return;
       setValue(value);
       if (!isPending) {
         startTransition(() => {
@@ -82,10 +87,10 @@ const useQueryParam = <T, F = T>(
         });
       }
     },
-    [isDoneSettingFromQuery, isPending, setDebouncedQueryParam],
+    [isDoneSettingInitialState, isPending, setDebouncedQueryParam],
   );
 
-  return [value, setParam, isDoneSettingFromQuery] as const;
+  return [value, setParam, isDoneSettingInitialState] as const;
 };
 
 export default useQueryParam;

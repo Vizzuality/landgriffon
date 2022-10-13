@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { XCircleIcon } from '@heroicons/react/solid';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
 import sortBy from 'lodash/sortBy';
@@ -19,7 +19,6 @@ import { useAllContextualLayersData } from 'hooks/h3-data/contextual';
 import useH3MaterialData from 'hooks/h3-data/material';
 import useQueryParam from 'hooks/queryParam';
 
-import type { DeckGLRef } from '@deck.gl/react/typed';
 import type { ViewState, MapStyle } from 'components/map';
 import type { BasemapValue } from 'components/map/controls/basemap/types';
 

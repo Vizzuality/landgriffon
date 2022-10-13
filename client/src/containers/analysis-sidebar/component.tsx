@@ -2,6 +2,7 @@ import { useMemo, useCallback } from 'react';
 import { XCircleIcon, PlusIcon } from '@heroicons/react/solid';
 import { RadioGroup } from '@headlessui/react';
 import Link from 'next/link';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import {
@@ -16,6 +17,7 @@ import ScenariosFilters from 'containers/scenarios/filters';
 import { Anchor } from 'components/button';
 import Loading from 'components/loading';
 import ScenarioItem from 'containers/scenarios/item';
+import { useMaterialsTrees } from 'hooks/materials';
 
 import type { MutableRefObject } from 'react';
 import type { Scenario } from 'containers/scenarios/types';
@@ -44,10 +46,18 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
     return pages?.reduce((acc, { data }) => acc.concat(data?.data), []);
   }, [data]);
 
+  const queryClient = useQueryClient();
+
   const handleOnChange = useCallback(
     (id: Scenario['id']) => {
       dispatch(setCurrentScenario(id));
       dispatch(setComparisonEnabled(false));
+
+      // const materials = queryClient.getQueryData(['materials-trees'], { exact: false });
+      // const origins = queryClient.getQueryData(['admin-regions-trees'], { exact: false });
+      // const suppliers = queryClient.getQueryData(['suppliers-trees'], { exact: false });
+      // const locationTypes = queryClient.getQueryData(['location-types'], { exact: false });
+      // console.log(materials, origins, suppliers, locationTypes);
 
       // TODO: if done one after the other, the query middleware overrides the values stored in the query params
       setTimeout(() => {

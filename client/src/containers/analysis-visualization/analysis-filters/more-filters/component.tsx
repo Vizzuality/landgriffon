@@ -19,8 +19,10 @@ import LocationTypes from '../location-types/component';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters, setFilters } from 'store/features/analysis/filters';
 import Button, { THEME } from 'components/button/component';
-import { scenarios } from 'store/features/analysis';
+import { scenarios, setFilter } from 'store/features/analysis';
+import { useMaterialsTrees } from 'hooks/materials';
 
+import type { SelectOption } from 'components/select';
 import type { AnalysisFiltersState } from 'store/features/analysis/filters';
 
 type MoreFiltersState = {
@@ -66,7 +68,7 @@ const MoreFilters = () => {
     [selectedFilters.suppliers],
   );
 
-  const locationTypesValues = useMemo(
+  const locationTypesIds = useMemo(
     () => selectedFilters.locationTypes.map(({ value }) => value),
     [selectedFilters.locationTypes],
   );
@@ -98,9 +100,12 @@ const MoreFilters = () => {
   }, []);
 
   // Updating internal state from selectors
-  const handleChangeFilter = useCallback((key, values) => {
-    setSelectedFilters((filters) => ({ ...filters, [key]: values }));
-  }, []);
+  const handleChangeFilter = useCallback(
+    (key: keyof MoreFiltersState, values: SelectOption<string | number>[]) => {
+      setSelectedFilters((filters) => ({ ...filters, [key]: values }));
+    },
+    [],
+  );
 
   useEffect(() => {
     const counters = Object.values(moreFilters).map((value) => value.length);
@@ -125,6 +130,43 @@ const MoreFilters = () => {
     useClick(context),
     useDismiss(context),
   ]);
+
+  const { data: allMaterials } = useMaterialsTrees(
+    {
+      depth: 1,
+      withSourcingLocations: true,
+      scenarioId,
+    },
+    {
+      // 2 minutes stale time
+      staleTime: 2 * 60 * 1000,
+    },
+  );
+
+  const allData: Partial<Record<keyof MoreFiltersState, { id: string }[]>> = useMemo(
+    () => ({ materials: allMaterials }),
+    [allMaterials],
+  );
+
+  const reviewFilterContent = useCallback(
+    (name: keyof MoreFiltersState) => {
+      const currentValues = selectedFilters[name];
+      const allOptions = allData[name];
+      const validOptions = currentValues.filter(({ value }) =>
+        allOptions.some(({ id }) => value === id),
+      );
+
+      if (validOptions.length !== currentValues.length) {
+        dispatch(setFilter({ id: name, value: validOptions }));
+      }
+    },
+    [allData, dispatch, selectedFilters],
+  );
+
+  useEffect(() => {
+    // TODO: review the rest of the filters, need to fetch the valid options from the API
+    reviewFilterContent('materials');
+  }, [reviewFilterContent, scenarioId]);
 
   return (
     <div className="relative">
@@ -181,7 +223,7 @@ const MoreFilters = () => {
                   withSourcingLocations
                   originIds={originIds}
                   supplierIds={supplierIds}
-                  locationTypes={locationTypesValues}
+                  locationTypes={locationTypesIds}
                   scenarioId={scenarioId}
                   current={selectedFilters.materials}
                   fitContent
@@ -195,7 +237,7 @@ const MoreFilters = () => {
                   withSourcingLocations
                   materialIds={materialIds}
                   supplierIds={supplierIds}
-                  locationTypes={locationTypesValues}
+                  locationTypes={locationTypesIds}
                   scenarioId={scenarioId}
                   current={selectedFilters.origins}
                   fitContent
@@ -209,7 +251,7 @@ const MoreFilters = () => {
                   withSourcingLocations
                   materialIds={materialIds}
                   originIds={originIds}
-                  locationTypes={locationTypesValues}
+                  locationTypes={locationTypesIds}
                   scenarioId={scenarioId}
                   current={selectedFilters.suppliers}
                   fitContent

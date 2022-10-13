@@ -1,4 +1,4 @@
-import { useRef, Fragment } from 'react';
+import { useRef } from 'react';
 import { Transition } from '@headlessui/react';
 import classNames from 'classnames';
 
@@ -15,8 +15,6 @@ const AnalysisLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { visualizationMode, isSidebarCollapsed } = useAppSelector(analysisUI);
 
-  console.log(scrollRef);
-
   return (
     <div className="flex w-full h-full">
       <TitleTemplate title="Analysis" />
@@ -26,7 +24,7 @@ const AnalysisLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
           <CollapseButton />
         </div>
         <Transition
-          as={Fragment}
+          as="div"
           show={!isSidebarCollapsed}
           enter="transform transition ease-in duration-100"
           enterFrom="opacity-10"
@@ -34,10 +32,10 @@ const AnalysisLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
           leave="transform transition ease-in duration-100"
           leaveFrom="opacity-100"
           leaveTo="opacity-10"
+          className="h-full px-12 overflow-x-hidden overflow-y-auto w-96"
+          ref={scrollRef}
         >
-          <div className="h-full px-12 overflow-x-hidden overflow-y-auto w-96" ref={scrollRef}>
-            <AnalysisSidebar scrollref={scrollRef} />
-          </div>
+          <AnalysisSidebar scrollref={scrollRef} />
         </Transition>
       </aside>
 

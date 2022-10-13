@@ -1,4 +1,8 @@
-import { Injectable, ServiceUnavailableException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
 import {
   IndicatorRawDataBySourcingRecord,
@@ -27,6 +31,7 @@ import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.servic
 
 @Injectable()
 export class ImpactCalculator {
+  logger: Logger = new Logger(ImpactCalculator.name);
   constructor(
     private readonly indicatorRecordRepository: IndicatorRecordRepository,
     private readonly materialToH3: MaterialsToH3sService,
@@ -34,7 +39,7 @@ export class ImpactCalculator {
 
   async calculateImpactForAllSourcingRecords(): Promise<any> {
     const rawData: SourcingRecordsWithIndicatorRawDataDtoV2[] =
-      await this.indicatorRecordRepository.getIndicatorRawDataForAllSourcingRecordsV2();
+      await this.getIndicatorRawDataForAllSourcingRecordsV2();
 
     const indicatorNameCodes: INDICATOR_TYPES_NEW[] =
       Object.values(INDICATOR_TYPES_NEW);
@@ -65,15 +70,6 @@ export class ImpactCalculator {
       const carbonLoss: number = carbonPerHarvestLandUse * landUse;
       const waterUse: number = data.rawWater * data.tonnage;
       const unsustainableWaterUse: number = waterUse * data.waterStressPerct;
-      if (
-        isNaN(landUse) ||
-        isNaN(deforestation) ||
-        isNaN(carbonLoss) ||
-        isNaN(waterUse) ||
-        isNaN(unsustainableWaterUse)
-      ) {
-        console.log('PRODUCTION', data);
-      }
 
       const map: Map<INDICATOR_TYPES_NEW, number> = new Map();
       map.set(INDICATOR_TYPES_NEW.CLIMATE_RISK, carbonLoss);
@@ -158,11 +154,9 @@ export class ImpactCalculator {
       >();
 
       const landPerTon: number =
-        rawData.harvestedArea / rawData.production ? rawData.production : 0;
+        rawData.harvestedArea ?? 0 / rawData.production ?? 0;
       const weightedTotalCropLandArea: number =
-        rawData.weightedAllHarvest / rawData.production
-          ? rawData.production
-          : 0;
+        rawData.weightedAllHarvest ?? 0 / rawData.production ?? 0;
       const deforestationPerHarvestLandUse: number =
         weightedTotalCropLandArea > 0
           ? rawData.rawDeforestation / weightedTotalCropLandArea
@@ -291,5 +285,71 @@ export class ImpactCalculator {
     );
 
     return calculatedIndicatorValues;
+  }
+
+  async getIndicatorRawDataForAllSourcingRecordsV2(): Promise<
+    SourcingRecordsWithIndicatorRawDataDtoV2[]
+  > {
+    try {
+      // TODO due to possible performance issues this query that makes use of the stored procedures for
+      // indicator value calculation has not been refactored. It remains to be reworked
+      const response: any = await getManager().query(`
+        SELECT
+          -- TODO: Hack to retrieve 1 materialH3Id for each sourcingRecord. This should include a year fallback strategy in the stored procedures
+          --       used below
+          distinct on (sr.id)
+          sr.id as "sourcingRecordId",
+          sr.tonnage,
+          sr.year,
+          slwithmaterialh3data.id as "sourcingLocationId",
+          slwithmaterialh3data.production,
+          slwithmaterialh3data."harvestedArea",
+          slwithmaterialh3data."weightedAllHarvest",
+          slwithmaterialh3data."rawDeforestation",
+          slwithmaterialh3data."waterStressPerct",
+          slwithmaterialh3data."rawCarbon",
+          slwithmaterialh3data."rawWater",
+          slwithmaterialh3data."materialH3DataId"
+      FROM
+          sourcing_records sr
+          INNER JOIN
+              (
+                  SELECT
+                      sourcing_location.id,
+                      sum_material_over_georegion(sourcing_location."geoRegionId", sourcing_location."materialId", 'producer') as production,
+                      sum_material_over_georegion(sourcing_location."geoRegionId", sourcing_location."materialId", 'harvest') as "harvestedArea",
+                      sum_h3_weighted_cropland_area(sourcing_location."geoRegionId", sourcing_location."materialId", 'producer') as "weightedAllHarvest",
+                      sum_weighted_deforestation_over_georegion(sourcing_location."geoRegionId", sourcing_location."materialId", 'producer') as "rawDeforestation",
+                      sum_weighted_carbon_over_georegion(sourcing_location."geoRegionId", sourcing_location."materialId", 'producer') as "rawCarbon",
+                      get_percentage_water_stress_area(sourcing_location."geoRegionId") as "waterStressPerct",
+                      get_blwf_impact(sourcing_location."adminRegionId", sourcing_location."materialId") as "rawWater",
+                      "scenarioInterventionId",
+                      "interventionType",
+                      mth."h3DataId" as "materialH3DataId"
+                  FROM
+                      sourcing_location
+                  inner join
+                    material_to_h3 mth
+                  on
+                    mth."materialId" = sourcing_location."materialId"
+                  WHERE "scenarioInterventionId" IS NULL
+                  AND "interventionType" IS NULL
+                  and mth."type" = 'producer'
+              ) as slwithmaterialh3data
+              on sr."sourcingLocationId" = slwithmaterialh3data.id`);
+      if (!response.length)
+        this.logger.warn(
+          `Could not retrieve Sourcing Records with weighted indicator values`,
+        );
+
+      return response;
+    } catch (err: any) {
+      this.logger.error(
+        `Error querying data from DB to calculate Indicator Records: ${err.message}`,
+      );
+      throw new MissingH3DataError(
+        `Could net retrieve Indicator Raw data from Sourcing Locations: ${err}`,
+      );
+    }
   }
 }

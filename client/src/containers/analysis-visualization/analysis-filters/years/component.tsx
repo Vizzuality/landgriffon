@@ -1,19 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { toNumber, range } from 'lodash';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters, setFilter, setFilters } from 'store/features/analysis/filters';
-
 import { useYears } from 'hooks/years';
+import Select from 'components/select';
 
 import type { SelectProps } from 'components/select';
-import Select from 'components/select';
-import { toNumber, range } from 'lodash';
 
 const YearsFilter: React.FC = () => {
   const dispatch = useAppDispatch();
   const filters = useAppSelector(analysisFilters);
   const { layer, materials, indicator, startYear } = filters;
-  const { data, isLoading } = useYears(layer, materials, indicator);
+  const materialsIds = useMemo(() => materials.map((mat) => mat.value), [materials]);
+  const { data, isLoading } = useYears(layer, materialsIds, indicator?.value);
 
   const [years, setYears] = useState(data);
 

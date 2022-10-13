@@ -4,6 +4,7 @@ import { H3HexagonLayer } from '@deck.gl/geo-layers/typed';
 import Map from 'components/map';
 import { useH3Data } from 'hooks/h3-data';
 import PageLoading from 'containers/page-loading';
+import { useYears } from 'hooks/years';
 
 import type { Layer, Material } from 'types';
 
@@ -25,13 +26,21 @@ const INITIAL_PREVIEW_SETTINGS = {
 };
 
 const PreviewMap = ({ selectedLayerId, selectedMaterialId }: PreviewMapProps) => {
+  const { data: materialYear } = useYears('material', [selectedMaterialId], 'all', {
+    enabled: !!selectedMaterialId,
+    select: (data) => {
+      return data?.[data?.length - 1];
+    },
+  });
+
   const { data, isFetching } = useH3Data({
     id: selectedLayerId,
     params: {
       materialId: selectedMaterialId,
+      year: materialYear,
     },
     options: {
-      enabled: !!selectedLayerId,
+      enabled: !!selectedLayerId && (selectedLayerId !== 'material' || !!materialYear),
       select: (response) => response.data,
       keepPreviousData: true,
       staleTime: 10000,

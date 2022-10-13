@@ -4,9 +4,7 @@ import { isFinite, toNumber, range } from 'lodash';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisUI } from 'store/features/analysis/ui';
 import { analysisFilters, setFilters } from 'store/features/analysis/filters';
-
 import { useYears } from 'hooks/years';
-
 import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range';
 
 const YearsFilter: React.FC = () => {
@@ -16,7 +14,10 @@ const YearsFilter: React.FC = () => {
   const { visualizationMode } = useAppSelector(analysisUI);
   const filters = useAppSelector(analysisFilters);
   const { layer, materials, indicator } = filters;
-  const { data, isLoading } = useYears(layer, materials, indicator);
+
+  const materialIds = useMemo(() => materials.map((mat) => mat.value), [materials]);
+
+  const { data, isLoading } = useYears(layer, materialIds, indicator?.value);
 
   const { startYear, endYear, yearsGap, setYearsRange } = useYearsRange({
     years,

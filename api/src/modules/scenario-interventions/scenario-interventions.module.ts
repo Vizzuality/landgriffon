@@ -18,7 +18,8 @@ import { ChangeProductionEfficiencyIntervention } from 'modules/scenario-interve
 import * as config from 'config';
 import { ScenarioInterventionsControllerV2 } from 'modules/scenario-interventions/interventions-controller-v2.controller';
 
-const useNewMethodology: boolean = config.get('newMethodology') === 'true';
+const useNewMethodology: boolean =
+  `${config.get('newMethodology')}`.toLowerCase() === 'true';
 
 @Module({
   imports: [

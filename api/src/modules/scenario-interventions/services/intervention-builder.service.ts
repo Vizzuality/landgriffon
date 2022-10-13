@@ -22,7 +22,8 @@ import { NewSupplierLocationIntervention } from 'modules/scenario-interventions/
 import { ChangeProductionEfficiencyIntervention } from 'modules/scenario-interventions/strategies/change-production-efficiency.intervention.strategy';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 import * as config from 'config';
-const useNewMethodology: boolean = config.get('newMethodology') === 'true';
+const useNewMethodology: boolean =
+  `${config.get('newMethodology')}`.toLowerCase() === 'true';
 
 /**
  * @description: This service consumes a previously created Intervention instance and takes care of building the full entity

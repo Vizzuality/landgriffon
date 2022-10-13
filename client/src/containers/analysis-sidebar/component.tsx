@@ -60,10 +60,13 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
     [dispatch],
   );
 
-  useBottomScrollListener(() => {
-    console.log(hasNextPage);
-    if (hasNextPage) fetchNextPage();
-  }, scrollref);
+  useBottomScrollListener(
+    () => {
+      if (hasNextPage) fetchNextPage();
+    },
+    scrollref,
+    { triggerOnNoScroll: true },
+  );
 
   return (
     <div className="flex flex-col h-full text-gray-900 bg-white">

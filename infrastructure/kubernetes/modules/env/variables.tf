@@ -91,3 +91,14 @@ variable "api_env_vars" {
   description = "Key-value pairs of env vars to make available to the api container"
   default = []
 }
+
+
+variable "api_secrets" {
+  type = list(object({
+    name = string
+    secret_name = string
+    secret_key = string
+  }))
+  description = "List of secrets to make available to the api container"
+  default = []
+}

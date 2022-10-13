@@ -74,7 +74,7 @@ const Map = React.forwardRef<DeckGLRef, MapProps>(
     return (
       <DeckGL
         ref={ref}
-        initialViewState={initialViewState ?? (viewState ? undefined : INITIAL_VIEW_STATE)}
+        initialViewState={viewState ? undefined : initialViewState}
         viewState={viewState}
         onViewStateChange={(state: Parameters<MapProps['onViewStateChange']>[0]) => {
           setLocalViewState(state.viewState);

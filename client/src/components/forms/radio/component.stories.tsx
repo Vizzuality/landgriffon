@@ -18,7 +18,7 @@ export default {
       control: { type: 'boolean' },
     },
   },
-} as RadioProps;
+};
 
 const Template = (args: RadioProps) => {
   return (

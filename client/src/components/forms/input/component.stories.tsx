@@ -27,7 +27,7 @@ export default {
       control: { type: 'boolean' },
     },
   },
-} as InputProps;
+};
 
 const Template = (args: InputProps) => {
   return (

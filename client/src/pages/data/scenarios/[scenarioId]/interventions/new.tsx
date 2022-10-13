@@ -27,7 +27,7 @@ const CreateInterventionPage: React.FC = () => {
           toast.success(`Intervention was created successfully`);
           // adding some delay to make sure the user reads the success message
           setTimeout(() => {
-            router.replace(`/admin/scenarios/${interventionDto.scenarioId}/edit`);
+            router.replace(`/data/scenarios/${interventionDto.scenarioId}/edit`);
           }, 1000);
         },
         onError: (error: ErrorResponse) => {
@@ -44,7 +44,7 @@ const CreateInterventionPage: React.FC = () => {
       <Head>
         <title>Create intervention for scenario | Landgriffon</title>
       </Head>
-      <Link href={`/admin/scenarios/${query.scenarioId}/edit`} passHref>
+      <Link href={`/data/scenarios/${query.scenarioId}/edit`} passHref>
         <BackLink className="flex mb-6 xl:sticky xl:top-0">Back to scenario</BackLink>
       </Link>
       <div className="grid grid-cols-12 gap-6">

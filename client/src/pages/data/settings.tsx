@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import AdminLayout from 'layouts/admin';
+import AdminLayout from 'layouts/data';
 
 const AdminSettingsPage: React.FC = () => {
   return (

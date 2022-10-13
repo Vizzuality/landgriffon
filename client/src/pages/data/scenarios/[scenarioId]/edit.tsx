@@ -95,7 +95,7 @@ const UpdateScenarioPage: React.FC = () => {
       <Head>
         <title>Edit scenario | Landgriffon</title>
       </Head>
-      <Link href="/admin/scenarios" passHref>
+      <Link href="/data/scenarios" passHref>
         <BackLink className="flex mb-6 xl:sticky xl:top-0">Back to scenarios</BackLink>
       </Link>
       <div className="grid grid-cols-12 gap-6">
@@ -143,7 +143,7 @@ const UpdateScenarioPage: React.FC = () => {
                 <div className="flex mb-4">
                   <h2 className="flex-1 mb-4">Interventions</h2>
                   {!isInterventionsLoading && interventions.length > 0 && (
-                    <Link href={`/admin/scenarios/${data.id}/interventions/new`} passHref>
+                    <Link href={`/data/scenarios/${data.id}/interventions/new`} passHref>
                       <Anchor
                         variant="secondary"
                         className="text-gray-900"
@@ -189,7 +189,7 @@ const UpdateScenarioPage: React.FC = () => {
                           <Dropdown.Items>
                             <Dropdown.Item>
                               <Link
-                                href={`/admin/scenarios/${data.id}/interventions/${intervention.id}/edit`}
+                                href={`/data/scenarios/${data.id}/interventions/${intervention.id}/edit`}
                               >
                                 <a className="block px-3 py-2 text-sm">Edit</a>
                               </Link>
@@ -213,7 +213,7 @@ const UpdateScenarioPage: React.FC = () => {
                       Each scenario should be formed by at least one intervention in your supply
                       chain.
                     </p>
-                    <Link href={`/admin/scenarios/${data.id}/interventions/new`} passHref>
+                    <Link href={`/data/scenarios/${data.id}/interventions/new`} passHref>
                       <Anchor
                         variant="secondary"
                         className="text-gray-900"

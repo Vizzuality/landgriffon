@@ -3,18 +3,18 @@ import type { TabsType } from 'components/tabs';
 export const ADMIN_TABS: TabsType = {
   DATA: {
     name: 'Actual data',
-    href: '/admin/data',
+    href: '/data',
   },
   SCENARIOS: {
     name: 'Scenarios',
-    href: '/admin/scenarios',
+    href: '/data/scenarios',
   },
   TARGETS: {
     name: 'Targets',
-    href: '/admin/targets',
+    href: '/data/targets',
   },
   USERS: {
     name: 'Users',
-    href: '/admin/users',
+    href: '/data/users',
   },
 };

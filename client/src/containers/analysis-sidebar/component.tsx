@@ -129,7 +129,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
               </p>
               <p>Create a scenario to get started.</p>
             </div>
-            <Link href="/admin/scenarios/new">
+            <Link href="/data/scenarios/new">
               <Anchor
                 className="block w-full"
                 variant="primary"
@@ -152,7 +152,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
 
       {scenariosList && scenariosList.length > 0 && (
         <div className="sticky bottom-0 left-0 z-20 w-full pb-6 bg-white before:bg-gradient-to-t before:from-white before:w-full before:h-16 before:content before:-top-16 before:left-0 before:absolute">
-          <Link href="/admin/scenarios/new">
+          <Link href="/data/scenarios/new">
             <Anchor
               className="w-full"
               variant="secondary"

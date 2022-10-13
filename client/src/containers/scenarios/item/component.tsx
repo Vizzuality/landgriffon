@@ -106,7 +106,7 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
                       </div>
                       {isSelected && (
                         <div>
-                          <Link href={`/admin/scenarios/${scenario.id}/edit`}>
+                          <Link href={`/data/scenarios/${scenario.id}/edit`}>
                             <Anchor variant="white" size="xs">
                               Edit
                             </Anchor>

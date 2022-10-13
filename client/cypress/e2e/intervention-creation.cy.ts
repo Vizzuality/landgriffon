@@ -31,7 +31,7 @@ beforeEach(() => {
 
   cy.login();
   cy.createScenario();
-  cy.visit('/admin/scenarios/some-random-id/interventions/new');
+  cy.visit('/data/scenarios/some-random-id/interventions/new');
 });
 
 describe('Intervention creation', () => {

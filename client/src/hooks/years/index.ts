@@ -1,8 +1,10 @@
-import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
 import { apiRawService } from 'services/api';
+
+import type { Indicator, Material } from 'types';
 import type { AnalysisState } from 'store/features/analysis';
+import type { UseQueryOptions } from '@tanstack/react-query';
 
 const DEFAULT_QUERY_OPTIONS = {
   placeholderData: [],
@@ -15,14 +17,14 @@ type YearsData = number[];
 
 export const useYears = <T = YearsData>(
   layer: AnalysisState['analysis/filters']['layer'],
-  materials: AnalysisState['analysis/filters']['materials'],
-  indicator: AnalysisState['analysis/filters']['indicator'],
+  materialIds: Material['id'][],
+  indicatorId: Indicator['id'],
   options: UseQueryOptions<YearsData, unknown, T> = {},
 ) => {
-  const enabled = (options.enabled ?? true) && !!indicator;
+  const enabled = (options.enabled ?? true) && !!indicatorId;
 
   const query = useQuery(
-    ['years', layer, materials, indicator],
+    ['years', layer, materialIds, indicatorId],
     () =>
       apiRawService
         .request<{ data: YearsData }>({
@@ -30,12 +32,8 @@ export const useYears = <T = YearsData>(
           url: '/h3/years',
           params: {
             layer,
-            ...(materials && materials.length
-              ? { materialIds: materials.map((material) => material.value) }
-              : {}),
-            ...(indicator && indicator.value && indicator.value !== 'all'
-              ? { indicatorId: indicator.value }
-              : {}),
+            materialIds,
+            indicatorId: indicatorId === 'all' ? undefined : indicatorId,
           },
         })
         .then((response) => response.data.data),

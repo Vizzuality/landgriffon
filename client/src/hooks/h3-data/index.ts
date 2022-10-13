@@ -1,14 +1,15 @@
 import { useMemo } from 'react';
+
 import useH3MaterialData from './material';
 import useH3ImpactData from './impact';
 import useH3ContextualData from './contextual';
-
-import type { UseQueryOptions } from '@tanstack/react-query';
-import type { H3APIResponse } from 'types';
-import type { MaterialH3APIParams, ImpactH3APIParams, Layer } from 'types';
 import { storeToQueryParams } from './utils';
+
 import { useAppSelector } from 'store/hooks';
 import { analysisFilters, scenarios } from 'store/features/analysis';
+
+import type { UseQueryOptions } from '@tanstack/react-query';
+import type { H3APIResponse, MaterialH3APIParams, ImpactH3APIParams, Layer } from 'types';
 
 interface UseH3DataProps<T> {
   id: Layer['id'];
@@ -41,7 +42,7 @@ export const useH3Data = <T = H3APIResponse>({
     [currentScenario, filters, isComparisonEnabled, materialId, scenarioToCompare, year],
   );
 
-  const materialParams = useMemo(() => ({ materialId }), [materialId]);
+  const materialParams = useMemo(() => ({ materialId, year }), [materialId, year]);
   const materialOptions = useMemo(
     () => ({ ...options, enabled: enabled && isMaterial }),
     [enabled, isMaterial, options],

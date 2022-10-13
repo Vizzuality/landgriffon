@@ -6,7 +6,7 @@ import type { RadioProps } from './types';
 
 const Radio = React.forwardRef<HTMLInputElement, RadioProps>(
   ({ className, error, showHint, children, ...props }, ref) => (
-    <div className={classnames('mt-1', className)}>
+    <div className={className}>
       <div className="flex items-center">
         <input
           className={classnames(

@@ -94,7 +94,7 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex items-center text-sm text-gray-500">
+                    <div className="flex items-center mt-2 text-sm text-gray-500">
                       <DatabaseIcon className="w-4 h-4 mr-1" />
                       <span>Based on your uploaded data</span>
                     </div>

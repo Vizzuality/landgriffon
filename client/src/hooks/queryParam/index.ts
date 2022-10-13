@@ -9,6 +9,7 @@ interface UseQueryParamOptions<T, F = T> {
    * and avoid clutter
    */
   formatParam?: (value: T) => F;
+  waitTimeMs?: number;
 }
 
 const serialize = <T>(value: T): string => {
@@ -26,7 +27,7 @@ const parse = <T>(value: string): T => {
 const useQueryParam = <T, F = T>(
   name: string,
   defaultValue?: T | (() => T),
-  { formatParam }: UseQueryParamOptions<T, F> = {},
+  { formatParam, waitTimeMs = 100 }: UseQueryParamOptions<T, F> = {},
 ) => {
   const { query, isReady, replace } = useRouter();
 
@@ -69,7 +70,7 @@ const useQueryParam = <T, F = T>(
     [formatParam, isReady, name, query, queryValue, replace],
   );
 
-  const setDebouncedQueryParam = useDebounce(setQueryParam, 500);
+  const setDebouncedQueryParam = useDebounce(setQueryParam, waitTimeMs);
 
   const setParam = useCallback(
     (value: T) => {

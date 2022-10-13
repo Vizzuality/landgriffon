@@ -95,7 +95,7 @@ export function useInfiniteScenarios(QueryParams: QueryParams): ResponseInfinite
       url: '/scenarios',
       params: {
         'page[number]': pageParam,
-        'page[size]': 4,
+        'page[size]': 10,
         ...(!!searchTerm && { 'filter[title]': searchTerm }),
         ...restParams,
       },

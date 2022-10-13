@@ -6,16 +6,19 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { useSortable } from '@dnd-kit/sortable';
-import { arrayMove } from '@dnd-kit/sortable';
-import { SortableContext } from '@dnd-kit/sortable';
+import {
+  verticalListSortingStrategy,
+  useSortable,
+  arrayMove,
+  SortableContext,
+} from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import type { HTMLAttributes } from 'react';
 import React from 'react';
 import { CSS } from '@dnd-kit/utilities';
-import type { SortableListenersContextProps, SortableProps } from './types';
 import classNames from 'classnames';
+
+import type { SortableListenersContextProps, SortableProps } from './types';
+import type { HTMLAttributes } from 'react';
 
 export const SortableListenersContext = React.createContext<SortableListenersContextProps | null>(
   null,

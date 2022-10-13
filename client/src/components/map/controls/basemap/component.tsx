@@ -1,9 +1,11 @@
-import Tooltip from 'components/tooltip';
 import Image from 'next/image';
 import { useCallback, useMemo } from 'react';
 
 import SatelliteImage from './images/satellite1.png';
 import DefaultImage from './images/default1.png';
+
+import Tooltip from 'components/tooltip';
+
 import type { BasemapValue } from './types';
 interface BasemapControlProps {
   value: BasemapValue;

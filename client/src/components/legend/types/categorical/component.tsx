@@ -1,4 +1,5 @@
 import cx from 'classnames';
+
 import type { Legend } from 'types';
 
 export type LegendTypeCategoricalProps = {

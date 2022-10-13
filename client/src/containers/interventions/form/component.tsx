@@ -9,11 +9,14 @@ import * as yup from 'yup';
 import classNames from 'classnames';
 import { sortBy } from 'lodash';
 
+import { InterventionTypes, LocationTypes, InfoTooltip } from '../enums';
+
+import InterventionTypeIcon from './intervention-type-icon';
+
 import { useSuppliersTypes } from 'hooks/suppliers';
 import { useLocationTypes } from 'hooks/location-types';
 import { useAdminRegionsTrees } from 'hooks/admin-regions';
 import { useSourcingRecordsYears } from 'hooks/sourcing-records';
-
 import MaterialsSelect from 'containers/materials/select';
 import BusinessUnitsSelect from 'containers/business-units/select';
 import LocationsSelect from 'containers/locations/select';
@@ -22,10 +25,6 @@ import Input from 'components/forms/input';
 import { Anchor, Button } from 'components/button';
 import Select from 'components/select';
 import InfoToolTip from 'components/info-tooltip/component';
-
-import InterventionTypeIcon from './intervention-type-icon';
-// import type { LocationTypes } from '../enums';
-import { InterventionTypes, LocationTypes, InfoTooltip } from '../enums';
 import { isCoordinates } from 'utils/coordinates';
 
 import type { SelectOption } from 'components/select/types';

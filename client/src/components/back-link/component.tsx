@@ -1,7 +1,8 @@
-import type { AnchorHTMLAttributes, FC } from 'react';
 import { forwardRef } from 'react';
 import classNames from 'classnames';
 import { ArrowLeftIcon } from '@heroicons/react/solid';
+
+import type { AnchorHTMLAttributes, FC } from 'react';
 
 const BackLink: FC<AnchorHTMLAttributes<HTMLAnchorElement>> = forwardRef<
   HTMLAnchorElement,

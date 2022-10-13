@@ -1,13 +1,16 @@
-import type { QueryFunction, UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
 import { useQuery, useQueries } from '@tanstack/react-query';
-import type { AxiosResponse } from 'axios';
 import chroma from 'chroma-js';
 import { useMemo } from 'react';
+
+import { DEFAULT_QUERY_OPTIONS, scaleByLegendType } from './utils';
+
 import { apiRawService } from 'services/api';
 import { analysisFilters, analysisMap } from 'store/features/analysis';
 import { useAppSelector } from 'store/hooks';
+
 import type { H3APIResponse, H3Data, H3Item, Layer } from 'types';
-import { DEFAULT_QUERY_OPTIONS, scaleByLegendType } from './utils';
+import type { AxiosResponse } from 'axios';
+import type { QueryFunction, UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
 
 const responseContextualParser = (response: AxiosResponse<H3APIResponse>): H3APIResponse => {
   const { data, metadata } = response.data;

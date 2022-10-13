@@ -1,12 +1,11 @@
-import type { Ref } from 'react';
 import React, { useMemo } from 'react';
 import { sortBy } from 'lodash';
 
-import type { MaterialsTreesParams } from 'hooks/materials';
 import { useMaterialsTrees } from 'hooks/materials';
-
 import TreeSelect from 'components/tree-select';
 
+import type { MaterialsTreesParams } from 'hooks/materials';
+import type { Ref } from 'react';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
 type MaterialsFilterProps<IsMulti extends boolean> = Omit<TreeSelectProps<IsMulti>, 'options'> & {

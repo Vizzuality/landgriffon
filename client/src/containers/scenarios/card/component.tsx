@@ -7,7 +7,6 @@ import { Popover } from '@headlessui/react';
 
 import { useDeleteScenario } from 'hooks/scenarios';
 import { useScenarioInterventions } from 'hooks/interventions';
-
 import Loading from 'components/loading';
 import { Anchor, Button } from 'components/button';
 

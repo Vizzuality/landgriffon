@@ -8,6 +8,7 @@ import {
 } from '@heroicons/react/solid';
 
 import Button from './button';
+
 import type { PaginationProps } from './types';
 
 const Pagination: React.FC<PaginationProps> = ({

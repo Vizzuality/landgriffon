@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 import { SearchIcon, XIcon } from '@heroicons/react/solid';
+import classNames from 'classnames';
 
 import Input from 'components/forms/input';
-import classNames from 'classnames';
 
 import type { ChangeEvent } from 'react';
 

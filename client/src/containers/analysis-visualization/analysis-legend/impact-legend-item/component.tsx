@@ -3,10 +3,10 @@ import { useCallback, useMemo } from 'react';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap, setLayer } from 'store/features/analysis/map';
 import { analysisFilters } from 'store/features/analysis';
-
 import LegendTypeChoropleth from 'components/legend/types/choropleth';
-import type { Legend } from 'types';
 import LegendItem from 'components/legend/item';
+
+import type { Legend } from 'types';
 
 const LAYER_ID = 'impact';
 const INFO_METADATA = {

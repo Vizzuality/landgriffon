@@ -4,11 +4,11 @@ import Head from 'next/head';
 import { PlusIcon, DownloadIcon, XCircleIcon } from '@heroicons/react/solid';
 import { useDebounce } from '@react-hook/debounce';
 import { format } from 'date-fns';
+import toast from 'react-hot-toast';
 
 import useModal from 'hooks/modals';
 import { useSourcingLocations, useSourcingLocationsMaterials } from 'hooks/sourcing-locations';
 import { useTasks } from 'hooks/tasks';
-
 import AdminLayout from 'layouts/data';
 import DownloadMaterialsDataButton from 'containers/admin/download-materials-data-button';
 import NoResults from 'containers/admin/no-results';
@@ -17,14 +17,12 @@ import DataUploader from 'containers/data-uploader';
 import Button, { Anchor } from 'components/button';
 import Search from 'components/search';
 import Modal from 'components/modal';
-
 import Table from 'components/table';
+import Loading from 'components/loading';
 
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { ColumnDefinition } from 'components/table/column';
 import type { SourcingLocation, Task } from 'types';
-import toast from 'react-hot-toast';
-import Loading from 'components/loading';
 
 const AdminDataPage: React.FC = () => {
   const [searchText, setSearchText] = useDebounce('', 250);

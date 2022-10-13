@@ -1,4 +1,5 @@
 import ProjectedDataIcon from 'components/icons/projected-data';
+
 import type { Props as LegendProps } from 'recharts/types/component/Legend';
 
 const LegendChart = ({ payload }: LegendProps) => (

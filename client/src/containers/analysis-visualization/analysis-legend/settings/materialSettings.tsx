@@ -1,16 +1,17 @@
+import { useState, useCallback, useMemo } from 'react';
+
+import TogglePreview from './togglePreview';
+
 import Accordion from 'components/accordion';
 import InfoToolTip from 'components/info-tooltip';
-import type { SelectOption } from 'components/select';
 import Toggle from 'components/toggle';
 import ToolTip from 'components/tooltip';
 import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
 import { useMaterial } from 'hooks/materials';
+
+import type { SelectOption } from 'components/select';
 import type { Dispatch } from 'react';
-import { useState } from 'react';
-import { useCallback } from 'react';
-import { useMemo } from 'react';
 import type { Layer, Material } from 'types';
-import TogglePreview from './togglePreview';
 
 interface MaterialEntryProps {
   layer: Layer;

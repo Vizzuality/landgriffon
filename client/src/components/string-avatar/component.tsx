@@ -1,4 +1,5 @@
 import cx from 'classnames';
+
 import type { stringAvatarProps } from './type';
 
 const renderUserInitials = (name: string) => {

@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import { sortBy } from 'lodash';
 
+// hooks
+import { useLocationTypes } from 'hooks/location-types';
 import TreeSelect from 'components/tree-select';
 
-// hooks
 import type { LocationTypesParams } from 'hooks/location-types';
-import { useLocationTypes } from 'hooks/location-types';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
 interface LocationTypeFilterProps

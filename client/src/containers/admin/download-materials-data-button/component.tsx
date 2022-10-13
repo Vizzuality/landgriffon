@@ -3,7 +3,6 @@ import { flatten, noop, pick, uniq } from 'lodash';
 import { DownloadIcon } from '@heroicons/react/solid';
 
 import Downloader from 'containers/downloader';
-
 import Button from 'components/button';
 import Loading from 'components/loading';
 

@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
+
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters, setFilter } from 'store/features/analysis/filters';
-
 import Select from 'components/select';
 
 import type { SelectOption, SelectProps } from 'components/select/types';

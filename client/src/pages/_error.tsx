@@ -1,11 +1,13 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import type { NavigationList } from 'containers/navigation/types';
-import NavigationError from 'containers/navigation/error';
-import Logo from 'containers/logo';
 import Image from 'next/image';
 import { QuestionMarkCircleIcon } from '@heroicons/react/outline';
+
+import NavigationError from 'containers/navigation/error';
+import Logo from 'containers/logo';
 import { Button } from 'components/button';
+
+import type { NavigationList } from 'containers/navigation/types';
 
 const navigationItems: NavigationList = [{ name: 'Help', href: '#', icon: QuestionMarkCircleIcon }];
 

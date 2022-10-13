@@ -1,7 +1,8 @@
-import type { DeepKeys } from '@tanstack/react-table';
 import Fuse from 'fuse.js';
-import type { ChangeEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
+
+import type { DeepKeys } from '@tanstack/react-table';
+import type { ChangeEvent } from 'react';
 
 type UseFuseReturn<T> = Readonly<{
   result: readonly T[];

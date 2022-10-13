@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { PlusIcon } from '@heroicons/react/solid';
 
 import { useScenarios } from 'hooks/scenarios';
-
 import AdminLayout from 'layouts/data';
 import ScenarioCard from 'containers/scenarios/card';
 import { Anchor } from 'components/button';

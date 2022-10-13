@@ -5,7 +5,6 @@ import router, { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 
 import { useCreateNewIntervention } from 'hooks/interventions';
-
 import CleanLayout from 'layouts/clean';
 import InterventionForm from 'containers/interventions/form';
 import { parseInterventionFormDataToDto } from 'containers/interventions/utils';

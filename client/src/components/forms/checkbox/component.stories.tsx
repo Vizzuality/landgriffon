@@ -1,4 +1,5 @@
 import Component from '.';
+
 import type { CheckboxProps } from './types';
 
 export default {

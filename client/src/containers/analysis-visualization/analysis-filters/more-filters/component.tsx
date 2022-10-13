@@ -1,17 +1,6 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import classNames from 'classnames';
 import { FilterIcon } from '@heroicons/react/solid';
-
-import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { analysisFilters, setFilters } from 'store/features/analysis/filters';
-import Button, { THEME } from 'components/button/component';
-
-import Materials from '../materials/component';
-import OriginRegions from '../origin-regions/component';
-import Suppliers from '../suppliers/component';
-import LocationTypes from '../location-types/component';
-
-import type { AnalysisFiltersState } from 'store/features/analysis/filters';
 import {
   offset,
   shift,
@@ -21,7 +10,18 @@ import {
   useInteractions,
 } from '@floating-ui/react-dom-interactions';
 import { Transition } from '@headlessui/react';
+
+import Materials from '../materials/component';
+import OriginRegions from '../origin-regions/component';
+import Suppliers from '../suppliers/component';
+import LocationTypes from '../location-types/component';
+
+import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { analysisFilters, setFilters } from 'store/features/analysis/filters';
+import Button, { THEME } from 'components/button/component';
 import { scenarios } from 'store/features/analysis';
+
+import type { AnalysisFiltersState } from 'store/features/analysis/filters';
 
 type MoreFiltersState = {
   materials: AnalysisFiltersState['materials'];

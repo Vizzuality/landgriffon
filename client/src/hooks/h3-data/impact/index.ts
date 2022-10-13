@@ -1,10 +1,13 @@
-import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
-import { apiRawService } from 'services/api';
-import type { H3APIResponse, ImpactH3APIParams } from 'types';
-import { useColors, COLOR_RAMPS } from 'utils/colors';
-import type { H3ImpactResponse } from '../utils';
+
 import { DEFAULT_QUERY_OPTIONS, responseParser } from '../utils';
+
+import { apiRawService } from 'services/api';
+import { useColors, COLOR_RAMPS } from 'utils/colors';
+
+import type { UseQueryOptions } from '@tanstack/react-query';
+import type { H3APIResponse, ImpactH3APIParams } from 'types';
+import type { H3ImpactResponse } from '../utils';
 
 const useH3ImpactData = <T = H3ImpactResponse>(
   params: ImpactH3APIParams,

@@ -1,11 +1,11 @@
-import type { Ref } from 'react';
 import React, { useMemo } from 'react';
-import TreeSelect from 'components/tree-select';
 import { sortBy } from 'lodash';
 
-import type { SuppliersTreesParams } from 'hooks/suppliers';
+import TreeSelect from 'components/tree-select';
 import { useSuppliersTrees } from 'hooks/suppliers';
 
+import type { SuppliersTreesParams } from 'hooks/suppliers';
+import type { Ref } from 'react';
 import type { TreeSelectOption, TreeSelectProps } from 'components/tree-select/types';
 
 interface SuppliersFilterProps<IsMulti extends boolean>

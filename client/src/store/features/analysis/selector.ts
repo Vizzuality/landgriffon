@@ -1,4 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
+
 import { analysisFilters } from './filters';
 
 import type { AnalysisFiltersState } from './filters';

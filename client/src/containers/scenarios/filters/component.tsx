@@ -1,4 +1,3 @@
-import type { FC } from 'react';
 import {
   // Fragment,
   useCallback,
@@ -7,9 +6,10 @@ import {
   useMemo,
 } from 'react';
 import { SearchIcon } from '@heroicons/react/solid';
+import { useDispatch } from 'react-redux';
 // import { Transition } from '@headlessui/react';
-
 // import classNames from 'classnames';
+
 import Select from 'components/select';
 // import { useAppSelector } from 'store/hooks';
 // import { useDispatch } from 'react-redux';
@@ -20,7 +20,8 @@ import {
   setSort,
   setSearchTerm,
 } from 'store/features/analysis/scenarios';
-import { useDispatch } from 'react-redux';
+
+import type { FC } from 'react';
 
 const SORT_OPTIONS = [
   {

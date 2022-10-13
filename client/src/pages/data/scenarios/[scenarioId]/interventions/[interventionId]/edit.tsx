@@ -6,7 +6,6 @@ import toast from 'react-hot-toast';
 
 import { useIntervention, useUpdateIntervention } from 'hooks/interventions';
 import { parseInterventionFormDataToDto } from 'containers/interventions/utils';
-
 import CleanLayout from 'layouts/clean';
 import InterventionForm from 'containers/interventions/form';
 import BackLink from 'components/back-link/component';

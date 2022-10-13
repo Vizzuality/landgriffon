@@ -1,8 +1,8 @@
 import { Button } from 'components/button';
-import type { Target } from 'types';
-
 import useModal from 'hooks/modals';
 import AdminEditTargetModal from 'containers/admin/edit-target-modal';
+
+import type { Target } from 'types';
 
 const TARGET_PILL_TITLE_CLASSNAMES = 'text-green-700 text-sm uppercase font-bold';
 const TARGET_PILL_VALUE_CLASSNAMES = '';

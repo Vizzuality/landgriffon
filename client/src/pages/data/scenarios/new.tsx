@@ -5,7 +5,6 @@ import Link from 'next/link';
 import router from 'next/router';
 
 import { useCreateScenario } from 'hooks/scenarios';
-
 import CleanLayout from 'layouts/clean';
 import BackLink from 'components/back-link';
 import ScenarioForm from 'containers/scenarios/form';

@@ -1,5 +1,4 @@
-import type { ChangeEventHandler, Ref } from 'react';
-import { useCallback, useState, useMemo, useEffect } from 'react';
+import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import classNames from 'classnames';
 import {
   flip,
@@ -13,16 +12,17 @@ import {
   autoUpdate,
 } from '@floating-ui/react-dom-interactions';
 import { ChevronDownIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
-import type { TreeProps } from 'rc-tree';
 import Tree, { TreeNode } from 'rc-tree';
 import Fuse from 'fuse.js';
 
-import Badge from 'components/badge';
-import Loading from 'components/loading';
 import { CHECKED_STRATEGIES } from './utils';
 
+import Badge from 'components/badge';
+import Loading from 'components/loading';
+
+import type { TreeProps } from 'rc-tree';
 import type { TreeSelectProps, TreeSelectOption } from './types';
-import React from 'react';
+import type { ChangeEventHandler, Ref } from 'react';
 
 const THEMES = {
   default: {

@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+
 import type { PopUpProps } from './types';
 
 const PADDING_SIZE = 100;

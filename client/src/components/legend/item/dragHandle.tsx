@@ -1,9 +1,10 @@
-import { SortableListenersContext } from 'components/sortable/component';
-import type { HTMLAttributes } from 'react';
 import { useContext } from 'react';
 import cx from 'classnames';
 
+import { SortableListenersContext } from 'components/sortable/component';
 import DragHandleSvg from 'components/icons/dragHandle';
+
+import type { HTMLAttributes } from 'react';
 
 const DragHandle: React.FC<HTMLAttributes<HTMLDivElement>> = ({ className, ...props }) => {
   const sortableListeners = useContext(SortableListenersContext);

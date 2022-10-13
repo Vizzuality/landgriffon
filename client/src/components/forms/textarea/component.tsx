@@ -1,6 +1,7 @@
 import { forwardRef } from 'react';
 import classnames from 'classnames';
 import { ExclamationCircleIcon } from '@heroicons/react/solid';
+
 import Hint from '../hint';
 
 import type { TextareaProps } from './types';

@@ -12,7 +12,6 @@ import {
 } from 'store/features/analysis/scenarios';
 import { useInfiniteScenarios } from 'hooks/scenarios';
 import useBottomScrollListener from 'hooks/scroll';
-
 import ScenariosFilters from 'containers/scenarios/filters';
 import { Anchor } from 'components/button';
 import Loading from 'components/loading';

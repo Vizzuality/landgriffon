@@ -12,15 +12,15 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
+import CustomLegend from './legend';
+import CustomTooltip from './tooltip';
+
 import { filtersForTabularAPI } from 'store/features/analysis/selector';
 import { useImpactRanking } from 'hooks/impact/ranking';
 import { useAppSelector } from 'store/hooks';
 import { scenarios } from 'store/features/analysis';
-
 import Loading from 'components/loading';
 import { NUMBER_FORMAT } from 'utils/number-format';
-import CustomLegend from './legend';
-import CustomTooltip from './tooltip';
 
 import type { Indicator } from 'types';
 

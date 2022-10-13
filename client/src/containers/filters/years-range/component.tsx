@@ -1,7 +1,5 @@
 import cx from 'classnames';
-import Select from 'components/select';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
-
 import {
   flip,
   offset,
@@ -13,6 +11,8 @@ import {
 } from '@floating-ui/react-dom-interactions';
 import { Transition } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/solid';
+
+import Select from 'components/select';
 
 import type { SelectOption } from 'components/select/types';
 import type { YearsRangeFilterProps } from './types';

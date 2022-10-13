@@ -13,7 +13,6 @@ import {
   useUpdateIntervention,
   useDeleteIntervention,
 } from 'hooks/interventions';
-
 import CleanLayout from 'layouts/clean';
 import ScenarioForm from 'containers/scenarios/form';
 import { LocationStatus } from 'containers/interventions/enums';

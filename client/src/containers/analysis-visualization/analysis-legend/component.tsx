@@ -1,19 +1,21 @@
 import { useCallback, useMemo, useState } from 'react';
+import classNames from 'classnames';
+import { ChevronDoubleRightIcon } from '@heroicons/react/solid';
+
+import ContextualLegendItem from './contextual-legend-item';
+import ImpactLayer from './impact-legend-item';
+import LegendSettings from './settings';
+import MaterialLayer from './material-legend-item';
 
 import Sortable from 'components/sortable';
 import { SortableItem } from 'components/sortable/component';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisMap, setLayer } from 'store/features/analysis/map';
-import type { Layer } from 'types';
 import useContextualLayers from 'hooks/layers/getContextualLayers';
-import ContextualLegendItem from './contextual-legend-item';
-import ImpactLayer from './impact-legend-item';
-import classNames from 'classnames';
-import { ChevronDoubleRightIcon } from '@heroicons/react/solid';
-import LegendSettings from './settings';
 import Modal from 'components/modal';
 import SandwichIcon from 'components/icons/sandwich';
-import MaterialLayer from './material-legend-item';
+
+import type { Layer } from 'types';
 
 const sortByOrder: (layers: Record<string, Layer>) => Layer[] = (layers) => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

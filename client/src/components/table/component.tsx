@@ -1,18 +1,21 @@
-import type { ColumnHelper, Row, TableOptions } from '@tanstack/react-table';
-import { getSortedRowModel } from '@tanstack/react-table';
 import {
+  getSortedRowModel,
   getExpandedRowModel,
   createColumnHelper,
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import classNames from 'classnames';
+import React, { useCallback, useMemo } from 'react';
+
+import TableRow, { TableHeaderRow } from './row';
+
 import Loading from 'components/loading';
 import Pagination from 'components/pagination';
 import PageSizeSelector from 'components/pagination/pageSizeSelector';
-import React, { useCallback, useMemo } from 'react';
+
 import type { ColumnDefinition } from './column';
-import TableRow, { TableHeaderRow } from './row';
+import type { ColumnHelper, Row, TableOptions } from '@tanstack/react-table';
 
 export interface TableProps<T>
   extends Omit<TableOptions<T>, 'columns' | 'getCoreRowModel' | 'pageCount'> {

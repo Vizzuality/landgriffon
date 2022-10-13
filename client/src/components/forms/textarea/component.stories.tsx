@@ -1,4 +1,5 @@
 import Component from '.';
+
 import type { TextareaProps } from './types';
 
 export default {

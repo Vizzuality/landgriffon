@@ -1,5 +1,6 @@
-import { apiRawService } from 'services/api';
 import { useQuery } from '@tanstack/react-query';
+
+import { apiRawService } from 'services/api';
 
 import type { UseQueryOptions } from '@tanstack/react-query';
 

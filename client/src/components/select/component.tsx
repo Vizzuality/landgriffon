@@ -1,6 +1,12 @@
-import type { Ref } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import classNames from 'classnames';
+import ReactSelect, { defaultTheme, components } from 'react-select';
+import { ChevronDownIcon } from '@heroicons/react/outline';
+import { flip, offset, shift, useFloating, autoUpdate } from '@floating-ui/react-dom';
+
+import useFuse from 'hooks/fuse';
+import Loading from 'components/loading';
+
 import type {
   Theme,
   MenuProps,
@@ -10,16 +16,9 @@ import type {
   GroupBase,
   StylesConfig,
 } from 'react-select';
-import ReactSelect, { defaultTheme, components } from 'react-select';
-import { ChevronDownIcon } from '@heroicons/react/outline';
-
 import type { UseFuseOptions } from 'hooks/fuse';
-import useFuse from 'hooks/fuse';
-
-import Loading from 'components/loading';
-
 import type { SelectOption, SelectProps } from './types';
-import { flip, offset, shift, useFloating, autoUpdate } from '@floating-ui/react-dom';
+import type { Ref } from 'react';
 import type SelectClass from 'react-select/dist/declarations/src/Select';
 
 /**

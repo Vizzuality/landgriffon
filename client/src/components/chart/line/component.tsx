@@ -1,8 +1,7 @@
-import type { FC } from 'react';
 import { AnimatedLineSeries, XYChart, AnimatedAxis, AnimatedGrid } from '@visx/xychart';
 import { ParentSize } from '@visx/responsive';
 
-// types
+import type { FC } from 'react';
 import type { LineChartProps } from './types';
 
 const LineChart: FC<LineChartProps> = ({

@@ -1,6 +1,8 @@
-import type { SelectOption, SelectProps } from 'components/select';
-import Select from 'components/select';
 import { useCallback, useMemo } from 'react';
+
+import Select from 'components/select';
+
+import type { SelectOption, SelectProps } from 'components/select';
 
 interface PageSizeSelectorProps {
   pageSize: number;

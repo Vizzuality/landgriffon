@@ -1,7 +1,8 @@
 import { ChevronRightIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
-import type { HTMLAttributes } from 'react';
 import { useCallback, useEffect, useState, useMemo } from 'react';
+
+import type { HTMLAttributes } from 'react';
 
 type AccordionEntryProps = React.PropsWithChildren<{
   header: React.ReactNode;

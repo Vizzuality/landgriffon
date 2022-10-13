@@ -1,8 +1,10 @@
-import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
+
 import { apiRawService } from 'services/api';
 import { setLayer } from 'store/features/analysis/map';
 import { useAppDispatch } from 'store/hooks';
+
+import type { UseQueryOptions } from '@tanstack/react-query';
 import type { LayerMetadata } from 'types';
 
 interface ContextualLayerApiResponse {

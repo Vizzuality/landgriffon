@@ -1,7 +1,6 @@
 import Head from 'next/head';
 
 import ApplicationLayout from 'layouts/application';
-
 import UpdateProfileForm from 'containers/update-profile-form';
 import UpdatePasswordForm from 'containers/update-password-form';
 

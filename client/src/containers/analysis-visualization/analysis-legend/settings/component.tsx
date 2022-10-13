@@ -1,22 +1,25 @@
 import classNames from 'classnames';
+import React, { useCallback, useMemo, useState } from 'react';
+import { EyeIcon } from '@heroicons/react/solid';
+
+import PreviewMap from './previewMap';
+import MaterialSettings from './materialSettings';
+import TogglePreview from './togglePreview';
+
 import Accordion from 'components/accordion';
 import { Button } from 'components/button';
 import InfoToolTip from 'components/info-tooltip';
 import Search from 'components/search';
 import Toggle from 'components/toggle';
-import type { UseFuseOptions } from 'hooks/fuse';
 import useFuse from 'hooks/fuse';
-import type { CategoryWithLayers } from 'hooks/layers/getContextualLayers';
-import type { Dispatch } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
 import { analysisMap, setFilter, setLayer } from 'store/features/analysis';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import type { Layer } from 'types';
-import PreviewMap from './previewMap';
 import { analysisFilters } from 'store/features/analysis/filters';
-import MaterialSettings from './materialSettings';
-import TogglePreview from './togglePreview';
-import { EyeIcon } from '@heroicons/react/solid';
+
+import type { UseFuseOptions } from 'hooks/fuse';
+import type { CategoryWithLayers } from 'hooks/layers/getContextualLayers';
+import type { Dispatch } from 'react';
+import type { Layer } from 'types';
 
 interface LegendSettingsProps {
   categories: CategoryWithLayers[];

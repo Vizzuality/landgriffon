@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import chroma from 'chroma-js';
+
 import type { RGBColor, ColorRamps } from 'types';
 
 export const COLOR_RAMPS: ColorRamps = {

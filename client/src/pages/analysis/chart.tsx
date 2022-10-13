@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
+import classNames from 'classnames';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { setVisualizationMode } from 'store/features/analysis';
 import { analysisFilters } from 'store/features/analysis/filters';
 import { useIndicators } from 'hooks/indicators';
 import useEffectOnce from 'hooks/once';
-
 import ApplicationLayout from 'layouts/application';
 import AnalysisLayout from 'layouts/analysis';
 import AnalysisChart from 'containers/analysis-chart';
@@ -16,7 +16,6 @@ import TitleTemplate from 'utils/titleTemplate';
 import type { ReactElement } from 'react';
 import type { NextPageWithLayout } from 'pages/_app';
 import type { Indicator } from 'types';
-import classNames from 'classnames';
 
 const ChartPage: NextPageWithLayout = () => {
   const dispatch = useAppDispatch();

@@ -1,17 +1,17 @@
 import React, { useCallback } from 'react';
 import Router from 'next/router';
-import type { NavigationList } from 'containers/navigation/types';
-import NavigationError from 'containers/navigation/error';
-import Logo from 'containers/logo';
-
 import Image from 'next/image';
-
 import {
   CollectionIcon,
   CogIcon,
   QuestionMarkCircleIcon,
   ArrowLeftIcon,
 } from '@heroicons/react/outline';
+
+import NavigationError from 'containers/navigation/error';
+import Logo from 'containers/logo';
+
+import type { NavigationList } from 'containers/navigation/types';
 
 const navigationItems: NavigationList = [
   { name: 'Analysis', href: '/analysis', icon: CollectionIcon },

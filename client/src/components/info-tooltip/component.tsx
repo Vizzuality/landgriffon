@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-
 import { InformationCircleIcon as Outline } from '@heroicons/react/outline';
 import { InformationCircleIcon as Solid } from '@heroicons/react/solid';
 

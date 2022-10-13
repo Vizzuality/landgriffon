@@ -1,7 +1,9 @@
-import { Button, Anchor } from '.';
 import { PlusIcon } from '@heroicons/react/outline';
-import type { ButtonProps, AnchorProps } from 'components/button/component';
 import Link from 'next/link';
+
+import { Button, Anchor } from '.';
+
+import type { ButtonProps, AnchorProps } from 'components/button/component';
 
 export default {
   title: 'Components/Buttons',

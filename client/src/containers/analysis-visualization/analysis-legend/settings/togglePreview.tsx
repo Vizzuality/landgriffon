@@ -1,7 +1,8 @@
 import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline';
 import classNames from 'classnames';
-import type { Dispatch, MouseEventHandler } from 'react';
 import { useCallback } from 'react';
+
+import type { Dispatch, MouseEventHandler } from 'react';
 
 interface TogglePreviewProps {
   isPreviewActive: boolean;

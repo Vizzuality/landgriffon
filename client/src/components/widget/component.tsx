@@ -1,4 +1,5 @@
 import cx from 'classnames';
+
 import type { ReactChild } from 'react';
 
 export type WidgetProps = {

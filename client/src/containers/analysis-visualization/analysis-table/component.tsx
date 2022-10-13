@@ -4,19 +4,19 @@ import { DownloadIcon } from '@heroicons/react/outline';
 import uniq from 'lodash/uniq';
 import omit from 'lodash/omit';
 
+import ComparisonCell from './comparison-cell/component';
+
 import { useAppSelector } from 'store/hooks';
 import { filtersForTabularAPI } from 'store/features/analysis/selector';
 import { scenarios } from 'store/features/analysis/scenarios';
 import { useIndicators } from 'hooks/indicators';
 import { useImpactData } from 'hooks/impact';
 import { useImpactComparison, useImpactScenarioComparison } from 'hooks/impact/comparison';
-
 import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
 import LinkButton from 'components/button';
 import Table from 'components/table/component';
 import LineChart from 'components/chart/line';
 import { NUMBER_FORMAT } from 'utils/number-format';
-import ComparisonCell from './comparison-cell/component';
 
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { TableProps } from 'components/table/component';

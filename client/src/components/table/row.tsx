@@ -1,9 +1,11 @@
-import type { HeaderGroup, Row, TableMeta } from '@tanstack/react-table';
 import { flexRender } from '@tanstack/react-table';
 import classNames from 'classnames';
-import type { HTMLAttributes } from 'react';
 import { useMemo } from 'react';
+
 import CellWrapper, { HeaderCell } from './cell';
+
+import type { HTMLAttributes } from 'react';
+import type { HeaderGroup, Row, TableMeta } from '@tanstack/react-table';
 
 interface TableRowProps<T> extends HTMLAttributes<HTMLTableRowElement> {
   row: Row<T>;

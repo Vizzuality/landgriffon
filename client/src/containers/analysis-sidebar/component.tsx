@@ -1,5 +1,4 @@
 import { useMemo, useCallback } from 'react';
-import Lottie from 'lottie-react';
 import { XCircleIcon, PlusIcon } from '@heroicons/react/solid';
 import { RadioGroup } from '@headlessui/react';
 import Link from 'next/link';
@@ -14,7 +13,6 @@ import {
 import { useInfiniteScenarios } from 'hooks/scenarios';
 import useBottomScrollListener from 'hooks/scroll';
 
-import noScenariosAnimationData from 'containers/scenarios/animations/noScenariosAnimationData.json';
 import ScenariosFilters from 'containers/scenarios/filters';
 import { Anchor } from 'components/button';
 import Loading from 'components/loading';
@@ -74,36 +72,31 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
         <h1 className="mb-12">Analyze data</h1>
       </div>
 
-      <div className="flex-1 mt-2">
-        {isLoading && (
-          <div className="flex justify-center p-6 ">
-            <Loading className="w-5 h-5 text-navy-400" />
+      <div className="flex-1 mt-4 space-y-6">
+        <RadioGroup value={currentScenario} onChange={handleOnChange}>
+          <RadioGroup.Label className="sr-only">Scenarios</RadioGroup.Label>
+          <div className="space-y-6">
+            {/* Actual data */}
+            <ScenarioItem scenario={ACTUAL_DATA} isSelected={!currentScenario} />
+            {/* Scenarios */}
+            {!isLoading && !error && scenariosList.length > 0 && (
+              <>
+                <div>
+                  <ScenariosFilters />
+                </div>
+                <div className="relative z-10 flex-1 overflow-hidden">
+                  <ul className="relative grid grid-cols-1 gap-5 my-2 overflow-auto sm:gap-2 sm:grid-cols-2 lg:grid-cols-1">
+                    {scenariosList.map((item) => (
+                      <li key={item.id} className="last-of-type:mb-12">
+                        <ScenarioItem scenario={item} isSelected={currentScenario === item.id} />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </>
+            )}
           </div>
-        )}
-
-        {!isLoading && data && (
-          <RadioGroup value={currentScenario} onChange={handleOnChange}>
-            <RadioGroup.Label className="sr-only">Scenarios</RadioGroup.Label>
-            <div className="space-y-6">
-              {/* Actual data */}
-              <div>
-                <ScenarioItem scenario={ACTUAL_DATA} isSelected={!currentScenario} />
-              </div>
-              <div>
-                <ScenariosFilters />
-              </div>
-              <div className="relative z-10 flex-1 overflow-hidden">
-                <ul className="relative grid grid-cols-1 gap-5 my-2 overflow-auto sm:gap-2 sm:grid-cols-2 lg:grid-cols-1">
-                  {scenariosList.map((item) => (
-                    <li key={item.id} className="last-of-type:mb-12">
-                      <ScenarioItem scenario={item} isSelected={currentScenario === item.id} />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </RadioGroup>
-        )}
+        </RadioGroup>
 
         {!isLoading && error && (
           <div className="p-4 my-4 rounded-md bg-red-50">
@@ -119,27 +112,46 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
             </div>
           </div>
         )}
-      </div>
 
-      <div className="sticky bottom-0 left-0 z-20 w-full pb-6 bg-white before:bg-gradient-to-t before:from-white before:w-full before:h-16 before:content before:-top-16 before:left-0 before:absolute">
-        {!scenariosList ||
-          (scenariosList.length === 0 && (
-            <div className="absolute z-20 space-y-8 text-center bg-white p-7">
-              <p className="text-sm">
+        {isLoading && (
+          <div className="flex justify-center p-6 ">
+            <Loading className="w-5 h-5 text-navy-400" />
+          </div>
+        )}
+
+        {/* No scenarios */}
+        {!isLoading && scenariosList.length === 0 && (
+          <div className="space-y-12">
+            <div className="space-y-6 text-sm">
+              <p>
                 Scenarios let you <strong>simulate changes</strong> in sourcing to evaluate how they
                 would affect impacts and risks.
               </p>
               <p>Create a scenario to get started.</p>
-              <div className="w-full">
-                <Lottie
-                  animationData={noScenariosAnimationData}
-                  loop
-                  style={{ height: 74, width: 74, margin: 'auto' }}
-                />
-              </div>
             </div>
-          ))}
-        <div>
+            <Link href="/admin/scenarios/new">
+              <Anchor
+                className="block w-full"
+                variant="primary"
+                size="xl"
+                icon={
+                  <div
+                    aria-hidden="true"
+                    className="flex items-center justify-center w-5 h-5 bg-white rounded-full"
+                  >
+                    <PlusIcon className="w-4 h-4 text-navy-400" />
+                  </div>
+                }
+              >
+                Add new scenario
+              </Anchor>
+            </Link>
+          </div>
+        )}
+      </div>
+
+      {scenariosList.length > 0 && (
+        <div className="sticky bottom-0 left-0 z-20 w-full pb-6 bg-white before:bg-gradient-to-t before:from-white before:w-full before:h-16 before:content before:-top-16 before:left-0 before:absolute">
           <Link href="/admin/scenarios/new">
             <Anchor
               className="w-full"
@@ -157,7 +169,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
             </Anchor>
           </Link>
         </div>
-      </div>
+      )}
     </div>
   );
 };

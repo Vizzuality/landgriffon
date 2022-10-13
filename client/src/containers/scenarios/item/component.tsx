@@ -8,7 +8,7 @@ import ScenariosComparison from 'containers/scenarios/comparison';
 import type { Scenario } from '../types';
 import { DatabaseIcon } from '@heroicons/react/outline';
 import { useMemo } from 'react';
-import { Button } from 'components/button';
+import { Anchor } from 'components/button';
 
 interface ScenariosItemProps {
   scenario: Scenario;
@@ -72,61 +72,55 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
                     <span className="rounded-full bg-white w-1.5 h-1.5" />
                   </span>
                 </div>
-                <div className="flex-1 pr-4 space-y-2 truncate">
+                <div className="flex-1 pr-4">
                   <h2
                     className={classNames(
-                      'text-sm font-medium truncate',
+                      'text-sm truncate font-normal',
                       isSelected ? 'text-navy-400' : 'text-gray-900',
                     )}
                   >
                     {scenario.title}
                   </h2>
                   {scenario.id ? (
-                    <div className="flex items-center space-x-1 text-xs font-medium text-gray-900">
+                    <div className="flex items-center justify-between mt-2 text-xs font-medium text-gray-900">
                       <div>Show</div>
-                      <div className="px-2 py-px leading-4 bg-blue-200 rounded-sm">
-                        {scenario.scenarioInterventions.length} growth rates
-                      </div>
-                      <div className="px-2 py-px leading-4 bg-orange-100 rounded-sm">
-                        {scenario.scenarioInterventions.length} interventions
+                      <div className="flex space-x-1">
+                        <div className="px-2 py-px leading-4 bg-blue-200 rounded-sm">
+                          {scenario.scenarioInterventions.length} growth rates
+                        </div>
+                        <div className="px-2 py-px leading-4 bg-orange-100 rounded-sm">
+                          {scenario.scenarioInterventions.length} interventions
+                        </div>
                       </div>
                     </div>
                   ) : (
-                    <span className="flex flex-row text-sm text-gray-500 place-items-center">
-                      <span>
-                        <DatabaseIcon className="w-4 h-4" />
-                      </span>
+                    <div className="flex items-center text-sm text-gray-500">
+                      <DatabaseIcon className="w-4 h-4 mr-1" />
                       <span>Based on your uploaded data</span>
-                    </span>
+                    </div>
                   )}
-                  <div>
-                    {scenario.id && scenario.updatedAt && (
-                      <div className="flex flex-row justify-between w-full min-w-0 gap-1 place-items-center">
-                        <div className="text-xs text-gray-400" title={updatedAt?.toLocaleString()}>
-                          Modified: {formattedUpdatedAgo}
-                        </div>
-                        {isSelected && (
-                          <div>
-                            <Link href={`/admin/scenarios/${scenario.id}/edit`}>
-                              <a>
-                                <Button variant="secondary">Edit</Button>
-                              </a>
-                            </Link>
-                          </div>
-                        )}
+                  {scenario.id && scenario.updatedAt && (
+                    <div className="flex items-center justify-between mt-4">
+                      <div className="text-xs text-gray-400" title={updatedAt?.toLocaleString()}>
+                        Modified: {formattedUpdatedAgo}
                       </div>
-                    )}
-                  </div>
+                      {isSelected && (
+                        <div>
+                          <Link href={`/admin/scenarios/${scenario.id}/edit`}>
+                            <Anchor variant="white" size="xs">
+                              Edit
+                            </Anchor>
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </>
             )}
           </RadioGroup.Option>
         </div>
-        {isSelected && (
-          <div className="">
-            <ScenariosComparison />
-          </div>
-        )}
+        {isSelected && <ScenariosComparison />}
       </div>
     </div>
   );

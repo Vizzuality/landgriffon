@@ -30,7 +30,8 @@ import { TasksService } from 'modules/tasks/tasks.service';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { ScenariosService } from 'modules/scenarios/scenarios.service';
 import * as config from 'config';
-const useNewMethodology: boolean = config.get('newMethodology') === 'true';
+const useNewMethodology: boolean =
+  `${config.get('newMethodology')}`.toLowerCase() === 'true';
 
 export interface LocationData {
   locationAddressInput?: string;

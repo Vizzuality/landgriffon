@@ -79,7 +79,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
             {/* Actual data */}
             <ScenarioItem scenario={ACTUAL_DATA} isSelected={!currentScenario} />
             {/* Scenarios */}
-            {!isLoading && !error && scenariosList.length > 0 && (
+            {!isLoading && !error && scenariosList && scenariosList.length > 0 && (
               <>
                 <div>
                   <ScenariosFilters />
@@ -120,7 +120,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
         )}
 
         {/* No scenarios */}
-        {!isLoading && scenariosList.length === 0 && (
+        {!isLoading && (!scenariosList || scenariosList.length === 0) && (
           <div className="space-y-12">
             <div className="space-y-6 text-sm">
               <p>
@@ -150,7 +150,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
         )}
       </div>
 
-      {scenariosList.length > 0 && (
+      {scenariosList && scenariosList.length > 0 && (
         <div className="sticky bottom-0 left-0 z-20 w-full pb-6 bg-white before:bg-gradient-to-t before:from-white before:w-full before:h-16 before:content before:-top-16 before:left-0 before:absolute">
           <Link href="/admin/scenarios/new">
             <Anchor

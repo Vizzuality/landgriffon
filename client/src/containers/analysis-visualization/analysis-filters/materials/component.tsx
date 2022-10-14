@@ -4,18 +4,15 @@ import { sortBy } from 'lodash';
 import { useMaterialsTrees } from 'hooks/materials';
 import TreeSelect from 'components/tree-select';
 
+import type { MakePropOptional } from 'types';
 import type { MaterialsTreesParams } from 'hooks/materials';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
 export interface MaterialsFilterProps<IsMulti extends boolean>
   extends MaterialsTreesParams,
-    Pick<
-      TreeSelectProps<IsMulti>,
-      'current' | 'multiple' | 'onChange' | 'theme' | 'ellipsis' | 'fitContent'
-    >,
-    Partial<Pick<TreeSelectProps<IsMulti>, 'options'>> {}
+    MakePropOptional<TreeSelectProps<IsMulti>, 'options'> {}
 
-const MaterialsFilter = <IsMulti extends boolean = false>({
+const MaterialsFilter = <IsMulti extends boolean>({
   depth = 1,
   supplierIds,
   businessUnitIds,

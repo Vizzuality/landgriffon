@@ -283,7 +283,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   const { data: locationTypes } = useLocationTypes();
   const optionsLocationTypes: SelectOption<LocationTypes>[] = useMemo(
     () =>
-      locationTypes.map(({ label, value }) => ({
+      locationTypes?.map(({ label, value }) => ({
         label: `${label[0].toUpperCase()}${label.substring(1)}`,
         value,
       })),

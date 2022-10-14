@@ -1,13 +1,12 @@
-import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { apiRawService } from 'services/api';
 
-import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
+import type { UseQueryOptions } from '@tanstack/react-query';
 import type { BaseTreeSearchParams } from 'containers/analysis-visualization/analysis-filters/more-filters/types';
 import type { LocationTypes } from 'containers/interventions/enums';
 
-const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
+const DEFAULT_QUERY_OPTIONS = {
   placeholderData: [],
   retry: false,
   keepPreviousData: true,
@@ -23,12 +22,10 @@ export type LocationType = {
   value: LocationTypes;
 };
 
-type ResponseData = UseQueryResult<LocationType[]>;
-
-export function useLocationTypes(
+export const useLocationTypes = <T = LocationType[]>(
   params: LocationTypesParams = {},
-  options: UseQueryOptions = {},
-): ResponseData {
+  options?: UseQueryOptions<LocationType[], unknown, T, ['location-types', typeof params]>,
+) => {
   const query = useQuery(
     ['location-types', params],
     () =>
@@ -45,14 +42,5 @@ export function useLocationTypes(
     },
   );
 
-  const { data, isError } = query;
-
-  return useMemo<ResponseData>(
-    () =>
-      ({
-        ...query,
-        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as ResponseData,
-      } as ResponseData),
-    [query, isError, data],
-  );
-}
+  return query;
+};

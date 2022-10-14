@@ -21,6 +21,9 @@ import { analysisFilters, setFilters } from 'store/features/analysis/filters';
 import Button, { THEME } from 'components/button/component';
 import { scenarios, setFilter } from 'store/features/analysis';
 import { useMaterialsTrees } from 'hooks/materials';
+import { useAdminRegionsTrees } from 'hooks/admin-regions';
+import { useSuppliersTrees } from 'hooks/suppliers';
+import { useLocationTypes } from 'hooks/location-types';
 
 import type { SelectOption } from 'components/select';
 import type { AnalysisFiltersState } from 'store/features/analysis/filters';
@@ -143,17 +146,47 @@ const MoreFilters = () => {
     },
   );
 
-  const allData: Partial<Record<keyof MoreFiltersState, { id: string }[]>> = useMemo(
-    () => ({ materials: allMaterials }),
-    [allMaterials],
-  );
+  const { data: allOrigins } = useAdminRegionsTrees({
+    withSourcingLocations: true,
+    materialIds,
+    supplierIds,
+    locationTypes: locationTypesIds,
+    scenarioId,
+  });
+
+  const { data: allSuppliers } = useSuppliersTrees({
+    withSourcingLocations: true,
+    materialIds,
+    originIds,
+    locationTypes: locationTypesIds,
+    scenarioId,
+  });
+
+  const { data: allLocationTypes } = useLocationTypes({
+    materialIds,
+    originIds,
+    supplierIds,
+    scenarioId,
+  });
+
+  const allData: Partial<Record<keyof MoreFiltersState, ({ id: string } | { value: string })[]>> =
+    useMemo(() => {
+      return {
+        materials: allMaterials,
+        origins: allOrigins,
+        suppliers: allSuppliers,
+        locationTypes: allLocationTypes,
+      };
+    }, [allLocationTypes, allMaterials, allOrigins, allSuppliers]);
 
   const reviewFilterContent = useCallback(
     (name: keyof MoreFiltersState) => {
       const currentValues = selectedFilters[name];
       const allOptions = allData[name];
       const validOptions = currentValues.filter(({ value }) =>
-        allOptions.some(({ id }) => value === id),
+        allOptions.some((option) =>
+          'id' in option ? option.id === value : option.value === value,
+        ),
       );
 
       if (validOptions.length !== currentValues.length) {
@@ -164,9 +197,8 @@ const MoreFilters = () => {
   );
 
   useEffect(() => {
-    // TODO: review the rest of the filters, need to fetch the valid options from the API
-    reviewFilterContent('materials');
-  }, [reviewFilterContent, scenarioId]);
+    Object.keys(selectedFilters).forEach(reviewFilterContent);
+  }, [reviewFilterContent, scenarioId, selectedFilters]);
 
   return (
     <div className="relative">

@@ -6,7 +6,7 @@ import Hint from '../hint';
 import type { RadioProps } from './types';
 
 const Radio = forwardRef<HTMLInputElement, RadioProps>(
-  ({ className, error, showHint, children, ...props }, ref) => (
+  ({ className, error, showHint = false, children, ...props }, ref) => (
     <div className={className}>
       <div className="flex items-center">
         <input

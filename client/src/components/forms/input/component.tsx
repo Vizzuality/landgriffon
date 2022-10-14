@@ -7,7 +7,7 @@ import Hint from '../hint';
 import type { InputProps } from './types';
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, error, icon, type = 'text', unit, showHint, ...inputProps }, ref) => (
+  ({ className, error, icon, type = 'text', unit, showHint = true, ...inputProps }, ref) => (
     <>
       <div className={classnames('relative rounded-md shadow-sm', className)}>
         {icon && (

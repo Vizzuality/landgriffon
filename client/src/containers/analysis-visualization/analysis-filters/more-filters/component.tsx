@@ -10,6 +10,7 @@ import {
   useInteractions,
 } from '@floating-ui/react-dom-interactions';
 import { Transition } from '@headlessui/react';
+import sortBy from 'lodash/sortBy';
 
 import Materials from '../materials/component';
 import OriginRegions from '../origin-regions/component';
@@ -42,10 +43,23 @@ const INITIAL_FILTERS: MoreFiltersState = {
   locationTypes: [],
 };
 
+interface ApiTreeResponse {
+  id: string;
+  name: string;
+  children?: this[];
+}
+
 const DEFAULT_QUERY_OPTIONS = {
   staleTime: 2 * 60 * 1000, // 2 minutes
-  select: (data: { id: string; name: string }[]) =>
-    data.map((item) => ({ value: item.id, label: item.name })),
+  select: (data: ApiTreeResponse[]) =>
+    sortBy(
+      data?.map(({ name, id, children }) => ({
+        label: name,
+        value: id,
+        children: children?.map(({ name, id }) => ({ label: name, value: id })),
+      })),
+      'label',
+    ),
 };
 
 const MoreFilters = () => {

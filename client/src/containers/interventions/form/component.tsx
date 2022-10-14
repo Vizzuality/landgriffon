@@ -260,7 +260,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   });
   const optionsSuppliers = useMemo<SelectOption[]>(
     () =>
-      suppliers.map((supplier) => ({
+      suppliers?.map((supplier) => ({
         label: supplier.name,
         value: supplier.id,
       })),
@@ -273,7 +273,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   });
   const optionsProducers = useMemo<SelectOption[]>(
     () =>
-      producers.map((producer) => ({
+      producers?.map((producer) => ({
         label: producer.name,
         value: producer.id,
       })),

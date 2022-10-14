@@ -1,27 +1,27 @@
-import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { apiService } from 'services/api';
 
-import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
+import type { UseQueryOptions } from '@tanstack/react-query';
 import type { Supplier } from 'types';
 import type { BaseTreeSearchParams } from 'containers/analysis-visualization/analysis-filters/more-filters/types';
 
-const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
+const DEFAULT_QUERY_OPTIONS = {
   placeholderData: [],
   retry: false,
   keepPreviousData: true,
   refetchOnWindowFocus: false,
 };
 
-type ResponseData = UseQueryResult<Supplier[]>;
-
 export interface SuppliersTreesParams extends BaseTreeSearchParams {
   withSourcingLocations?: boolean;
   locationTypes?: string[];
 }
 
-export function useSuppliers(params): ResponseData {
+export const useSuppliers = <T = Supplier[]>(
+  params,
+  options?: UseQueryOptions<Supplier[], unknown, T, ['suppliers', typeof params]>,
+) => {
   const query = useQuery(
     ['suppliers', params],
     () =>
@@ -34,30 +34,22 @@ export function useSuppliers(params): ResponseData {
         .then(({ data: responseData }) => responseData.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
+      ...options,
     },
   );
 
-  const { data, isError } = query;
+  return query;
+};
 
-  return useMemo<ResponseData>(
-    () =>
-      ({
-        ...query,
-        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as ResponseData,
-      } as ResponseData),
-    [query, isError, data],
-  );
-}
-
-export function useSuppliersTrees(
+export const useSuppliersTrees = <T = Supplier[]>(
   params: SuppliersTreesParams,
-  options: UseQueryOptions = {},
-): ResponseData {
+  options?: UseQueryOptions<Supplier[], unknown, T, ['suppliers-trees', typeof params]>,
+) => {
   const query = useQuery(
     ['suppliers-trees', params],
     () =>
       apiService
-        .request({
+        .request<{ data: Supplier[] }>({
           method: 'GET',
           url: '/suppliers/trees',
           params,
@@ -66,40 +58,25 @@ export function useSuppliersTrees(
     { ...DEFAULT_QUERY_OPTIONS, ...options },
   );
 
-  const { data, isError } = query;
+  return query;
+};
 
-  return useMemo<ResponseData>(
-    () =>
-      ({
-        ...query,
-        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as ResponseData,
-      } as ResponseData),
-    [query, isError, data],
-  );
-}
-
-export function useSuppliersTypes(params: { type: 't1supplier' | 'producer' }): ResponseData {
+export const useSuppliersTypes = <T = Supplier[]>(
+  params: { type: 't1supplier' | 'producer' },
+  options?: UseQueryOptions<Supplier[], unknown, T, ['suppliers', typeof params]>,
+) => {
   const query = useQuery(
     ['suppliers', params],
     () =>
       apiService
-        .request({
+        .request<{ data: Supplier[] }>({
           method: 'GET',
           url: 'suppliers/types',
           params,
         })
         .then(({ data: responseData }) => responseData.data),
-    DEFAULT_QUERY_OPTIONS,
+    { ...DEFAULT_QUERY_OPTIONS, ...options },
   );
 
-  const { data, isError } = query;
-
-  return useMemo<ResponseData>(
-    () =>
-      ({
-        ...query,
-        data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as ResponseData,
-      } as ResponseData),
-    [query, isError, data],
-  );
-}
+  return query;
+};

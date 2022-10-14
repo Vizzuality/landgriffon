@@ -42,7 +42,8 @@ const AnalysisLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
         <div
           className={classNames(
             {
-              'absolute top-6 left-6 xl:left-12 right-6 z-10': visualizationMode === 'map',
+              'absolute top-6 left-6 xl:left-12 right-6 z-10 overflow-hidden':
+                visualizationMode === 'map',
               'p-6 xl:pl-12': visualizationMode !== 'map',
             },
             'flex flex-wrap gap-2 justify-between',

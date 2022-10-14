@@ -16,7 +16,10 @@ import {
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { AppInfoDTO } from 'dto/info.dto';
 import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
-import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
+import {
+  CreateScenarioInterventionDto,
+  CreateScenarioInterventionDtoV2,
+} from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
 import { UpdateScenarioInterventionDto } from 'modules/scenario-interventions/dto/update.scenario-intervention.dto';
 import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
@@ -28,6 +31,7 @@ import { InterventionBuilder } from 'modules/scenario-interventions/services/int
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { InsertResult } from 'typeorm';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
+import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
 
 @Injectable()
 export class ScenarioInterventionsService extends AppBaseService<
@@ -113,21 +117,23 @@ export class ScenarioInterventionsService extends AppBaseService<
   }
 
   async createScenarioIntervention(
-    dto: CreateScenarioInterventionDto,
+    dto: CreateScenarioInterventionDto | CreateScenarioInterventionDtoV2,
   ): Promise<Partial<ScenarioIntervention>> {
     // Validate new location. If it's validated, get the geolocated info. If not, throw an exception
 
     this.logger.log('Creating new Intervention...');
 
     const { adminRegionId, geoRegionId, locationWarning } =
-      await this.validateNewLocation(dto);
+      await this.validateNewLocation(dto as CreateScenarioInterventionDto);
 
     /**
      *  Getting descendants of adminRegions, materials, suppliers adn businessUnits received as filters, if exists
      */
 
     const dtoWithDescendants: CreateScenarioInterventionDto =
-      await this.interventionBuilder.addDescendantsEntitiesForFiltering(dto);
+      await this.interventionBuilder.addDescendantsEntitiesForFiltering(
+        dto as CreateScenarioInterventionDto,
+      );
     /**
      * Getting Sourcing Locations and Sourcing Records and Indicator records
      * for start year of all Materials of the intervention with applied filters
@@ -169,19 +175,21 @@ export class ScenarioInterventionsService extends AppBaseService<
      */
 
     const newIntervention: ScenarioIntervention =
-      ScenarioInterventionsService.createInterventionInstance(dto);
+      ScenarioInterventionsService.createInterventionInstance(
+        dto as CreateScenarioInterventionDto,
+      );
 
     //Mutates the intervention instance adding replaced Entities to new Scenario Intervention
 
     await this.interventionBuilder.addReplacedElementsToIntervention(
       newIntervention,
       newCancelledByInterventionLocationsData,
-      dto,
+      dto as CreateScenarioInterventionDto,
     );
 
     const newLocations: SourcingLocation[] =
       await this.interventionBuilder.generateNewLocationsForIntervention(
-        dto,
+        dto as CreateScenarioInterventionDto,
         newIntervention,
         actualSourcingDataWithTonnage,
         { adminRegionId, geoRegionId, locationWarning },
@@ -190,7 +198,7 @@ export class ScenarioInterventionsService extends AppBaseService<
     this.logger.log(`Calculating new Impact for Intervention...`);
     await this.interventionBuilder.calculateNewImpactForNewLocations(
       newLocations,
-      dto.newIndicatorCoefficients,
+      dto.newIndicatorCoefficients as IndicatorCoefficientsDto,
       newIntervention,
     );
 

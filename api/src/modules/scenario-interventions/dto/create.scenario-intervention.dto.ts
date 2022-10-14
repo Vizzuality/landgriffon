@@ -28,6 +28,7 @@ import { transformSingleLocationType } from 'utils/transform-location-type.util'
 import { InterventionLocationAddressInputValidator } from 'modules/scenario-interventions/dto/custom-validators/address-input.custom.validator';
 import { InterventionLocationLatitudeInputValidator } from 'modules/scenario-interventions/dto/custom-validators/latitude-input.custom.validator';
 import { InterventionLocationLongitudeInputValidator } from 'modules/scenario-interventions/dto/custom-validators/longitude-input.custom.validator';
+import { ActiveIndicatorValidator } from 'modules/indicators/validators/active-indicator.validator';
 
 export class CreateScenarioInterventionDto {
   @IsString()
@@ -411,9 +412,10 @@ export class CreateScenarioInterventionDtoV2 {
     (dto: CreateScenarioInterventionDto) =>
       dto.newIndicatorCoefficients !== null,
   )
+  @Validate(ActiveIndicatorValidator)
   @ValidateNested()
-  @Type(() => IndicatorCoefficientsDto)
-  newIndicatorCoefficients?: IndicatorCoefficientsDto;
+  @Type(() => IndicatorCoefficientsDtoV2)
+  newIndicatorCoefficients?: IndicatorCoefficientsDtoV2;
 
   @IsUUID()
   @IsOptional()

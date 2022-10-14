@@ -10,6 +10,7 @@ import {
 } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import {
   Indicator,
+  INDICATOR_STATUS,
   INDICATOR_TYPES_NEW,
 } from 'modules/indicators/indicator.entity';
 import { getManager } from 'typeorm';
@@ -124,13 +125,12 @@ export class ImpactCalculator {
     if (!materialH3s) {
       throw new MissingH3DataError();
     }
-    const indicatorNameCodes: INDICATOR_TYPES_NEW[] =
-      Object.values(INDICATOR_TYPES_NEW);
+
     const indicatorsToCalculateImpactFor: Indicator[] = await getManager()
       .createQueryBuilder()
       .select()
       .from(Indicator, 'i')
-      .where('i.nameCode IN (:...nameCodes)', indicatorNameCodes)
+      .where('i.status = :status', { status: INDICATOR_STATUS.ACTIVE })
       .getMany();
     let rawData: IndicatorRawDataBySourcingRecord;
     if (providedCoefficients) {
@@ -292,7 +292,7 @@ export class ImpactCalculator {
   > {
     try {
       // TODO due to possible performance issues this query that makes use of the stored procedures for
-      // indicator value calculation has not been refactored. It remains to be reworked
+      //      indicator value calculation has not been refactored. It remains to be reworked
       const response: any = await getManager().query(`
         SELECT
           -- TODO: Hack to retrieve 1 materialH3Id for each sourcingRecord. This should include a year fallback strategy in the stored procedures

@@ -17,6 +17,7 @@ import { NewSupplierLocationIntervention } from 'modules/scenario-interventions/
 import { ChangeProductionEfficiencyIntervention } from 'modules/scenario-interventions/strategies/change-production-efficiency.intervention.strategy';
 import * as config from 'config';
 import { ScenarioInterventionsControllerV2 } from 'modules/scenario-interventions/interventions-controller-v2.controller';
+import { ActiveIndicatorValidator } from 'modules/indicators/validators/active-indicator.validator';
 
 const useNewMethodology: boolean =
   `${config.get('newMethodology')}`.toLowerCase() === 'true';
@@ -43,6 +44,7 @@ const useNewMethodology: boolean =
     NewMaterialIntervention,
     NewSupplierLocationIntervention,
     ChangeProductionEfficiencyIntervention,
+    ActiveIndicatorValidator,
   ],
   exports: [ScenarioInterventionsService],
 })

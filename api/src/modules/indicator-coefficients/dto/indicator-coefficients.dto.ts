@@ -2,8 +2,8 @@ import {
   INDICATOR_TYPES,
   INDICATOR_TYPES_NEW,
 } from 'modules/indicators/indicator.entity';
-import { IsNotEmpty, IsNumber, Max, Min } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumber, IsOptional, Max, Min } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class IndicatorCoefficientsDto {
   @ApiProperty()
@@ -43,35 +43,39 @@ export class IndicatorCoefficientsDto {
 }
 
 export class IndicatorCoefficientsDtoV2 {
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @Max(1000000)
   @Min(0)
-  @IsNotEmpty()
   @IsNumber()
   [INDICATOR_TYPES_NEW.WATER_USE]: number;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @Max(1000000)
   @Min(0)
   @IsNotEmpty()
   @IsNumber()
   [INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE]: number;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @Max(1000000)
   @Min(0)
   @IsNotEmpty()
   @IsNumber()
   [INDICATOR_TYPES_NEW.CLIMATE_RISK]: number;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @Max(1000000)
   @Min(0)
   @IsNotEmpty()
   @IsNumber()
   [INDICATOR_TYPES_NEW.DEFORESTATION_RISK]: number;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @Max(1000000)
   @Min(0)
   @IsNotEmpty()

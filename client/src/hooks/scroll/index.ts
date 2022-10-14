@@ -66,7 +66,7 @@ function useBottomScrollListener<T extends HTMLDivElement>(
   const noRef = useRef<T>(null);
   const containerRef = scrollref || noRef;
   const handleOnScroll = useCallback(() => {
-    if (containerRef.current != null) {
+    if (containerRef.current) {
       const scrollNode = containerRef.current;
       const scrollContainerBottomPosition = Math.round(
         scrollNode.scrollTop + scrollNode.clientHeight,
@@ -91,7 +91,7 @@ function useBottomScrollListener<T extends HTMLDivElement>(
   useEffect((): (() => void) => {
     const ref = containerRef.current;
 
-    if (ref != null) {
+    if (ref) {
       ref.addEventListener('scroll', handleOnScroll);
     } else {
       window.addEventListener('scroll', handleOnScroll);
@@ -102,7 +102,7 @@ function useBottomScrollListener<T extends HTMLDivElement>(
     }
 
     return () => {
-      if (ref != null) {
+      if (ref) {
         ref.removeEventListener('scroll', handleOnScroll);
       } else {
         window.removeEventListener('scroll', handleOnScroll);

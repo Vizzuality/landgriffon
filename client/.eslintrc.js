@@ -16,6 +16,7 @@ module.exports = {
     'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],
   },
   rules: {
+    eqeqeq: ['warn'],
     'import/order': [
       'warn',
       {

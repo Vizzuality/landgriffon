@@ -5,35 +5,37 @@ import { sortBy } from 'lodash';
 import { useLocationTypes } from 'hooks/location-types';
 import TreeSelect from 'components/tree-select';
 
+import type { MakePropOptional } from 'types';
 import type { LocationTypesParams } from 'hooks/location-types';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
-interface LocationTypeFilterProps
+interface LocationTypeFilterProps<IsMulti extends boolean>
   extends LocationTypesParams,
-    Pick<TreeSelectProps<true>, 'current' | 'onChange' | 'theme' | 'ellipsis' | 'fitContent'> {}
+    MakePropOptional<TreeSelectProps<IsMulti>, 'options'> {}
 
-const LocationTypesFilter: React.FC<LocationTypeFilterProps> = ({
-  current,
-  onChange,
-  theme,
-  ellipsis,
-  fitContent,
+const LocationTypesFilter = <IsMulti extends boolean = true>({
   materialIds,
   supplierIds,
   businessUnitIds,
   originIds,
   scenarioId,
-}) => {
-  const { data } = useLocationTypes({
-    materialIds,
-    supplierIds,
-    businessUnitIds,
-    originIds,
-    scenarioId,
-  });
+  options,
+  ...props
+}: LocationTypeFilterProps<IsMulti>) => {
+  const { data } = useLocationTypes(
+    {
+      materialIds,
+      supplierIds,
+      businessUnitIds,
+      originIds,
+      scenarioId,
+    },
+    { enabled: !options },
+  );
 
-  const options: TreeSelectProps<true>['options'] = useMemo(
+  const locationOptions: TreeSelectProps<IsMulti>['options'] = useMemo(
     () =>
+      options ??
       sortBy(
         data?.map(({ label, value }) => ({
           label,
@@ -41,20 +43,16 @@ const LocationTypesFilter: React.FC<LocationTypeFilterProps> = ({
         })),
         'label',
       ),
-    [data],
+    [data, options],
   );
 
   return (
     <TreeSelect
       multiple
       showSearch={false}
-      options={options}
+      options={locationOptions}
       placeholder="Location types"
-      onChange={onChange}
-      current={current}
-      theme={theme}
-      fitContent={fitContent}
-      ellipsis={ellipsis}
+      {...props}
     />
   );
 };

@@ -4,19 +4,15 @@ import { sortBy } from 'lodash';
 import TreeSelect from 'components/tree-select';
 import { useAdminRegionsTrees } from 'hooks/admin-regions';
 
+import type { MakePropOptional } from 'types';
 import type { AdminRegionsTreesParams } from 'hooks/admin-regions';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
 interface OriginRegionsFilterProps<IsMulti extends boolean>
   extends AdminRegionsTreesParams,
-    Pick<
-      TreeSelectProps<IsMulti>,
-      'current' | 'multiple' | 'onChange' | 'theme' | 'ellipsis' | 'fitContent'
-    > {}
+    MakePropOptional<TreeSelectProps<IsMulti>, 'options'> {}
 
 const OriginRegionsFilter = <IsMulti extends boolean>({
-  multiple,
-  current,
   depth = 1,
   withSourcingLocations, // Do not a default; backend will override depth if this is set at all
   supplierIds,
@@ -24,10 +20,8 @@ const OriginRegionsFilter = <IsMulti extends boolean>({
   materialIds,
   locationTypes,
   scenarioId,
-  onChange,
-  theme,
-  ellipsis,
-  fitContent,
+  options,
+  ...props
 }: OriginRegionsFilterProps<IsMulti>) => {
   const { data, isFetching } = useAdminRegionsTrees(
     {
@@ -42,11 +36,13 @@ const OriginRegionsFilter = <IsMulti extends boolean>({
     {
       // 2 minutes stale time
       staleTime: 2 * 60 * 1000,
+      enabled: !options,
     },
   );
 
   const treeOptions = useMemo<TreeSelectProps<IsMulti>['options']>(
     () =>
+      options ??
       sortBy(
         data?.map(({ name, id, children }) => ({
           label: name,
@@ -59,21 +55,16 @@ const OriginRegionsFilter = <IsMulti extends boolean>({
         })),
         'label',
       ),
-    [data],
+    [data, options],
   );
 
   return (
     <TreeSelect
-      multiple={multiple}
       showSearch
       loading={isFetching}
       options={treeOptions}
       placeholder="Sourcing regions"
-      onChange={onChange}
-      current={current}
-      theme={theme}
-      ellipsis={ellipsis}
-      fitContent={fitContent}
+      {...props}
     />
   );
 };

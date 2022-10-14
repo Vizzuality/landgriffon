@@ -4,19 +4,16 @@ import { sortBy } from 'lodash';
 import TreeSelect from 'components/tree-select';
 import { useSuppliersTrees } from 'hooks/suppliers';
 
+import type { MakePropOptional } from 'types';
 import type { SuppliersTreesParams } from 'hooks/suppliers';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
 interface SuppliersFilterProps<IsMulti extends boolean>
   extends SuppliersTreesParams,
-    Pick<
-      TreeSelectProps<IsMulti>,
-      'current' | 'multiple' | 'onChange' | 'theme' | 'ellipsis' | 'fitContent'
-    > {}
+    MakePropOptional<TreeSelectProps<IsMulti>, 'options'> {}
 
 const SuppliersFilter = <IsMulti extends boolean>({
-  multiple,
-  current,
+  options,
   depth = 1,
   withSourcingLocations, // Do not a default; backend will override depth if this is set at all
   originIds,
@@ -25,9 +22,7 @@ const SuppliersFilter = <IsMulti extends boolean>({
   locationTypes,
   scenarioId,
   onChange,
-  theme,
-  ellipsis,
-  fitContent,
+  ...props
 }: SuppliersFilterProps<IsMulti>) => {
   const { data, isFetching } = useSuppliersTrees(
     {
@@ -42,11 +37,13 @@ const SuppliersFilter = <IsMulti extends boolean>({
     {
       // 2 minutes stale time
       staleTime: 2 * 60 * 1000,
+      enabled: !options,
     },
   );
 
   const treeOptions: TreeSelectProps['options'] = useMemo(
     () =>
+      options ??
       sortBy(
         data?.map(({ name, id, children }) => ({
           label: name,
@@ -55,21 +52,17 @@ const SuppliersFilter = <IsMulti extends boolean>({
         })),
         'label',
       ),
-    [data],
+    [data, options],
   );
 
   return (
     <TreeSelect
-      multiple={multiple}
       showSearch
       loading={isFetching}
       options={treeOptions}
       placeholder="Suppliers"
       onChange={onChange}
-      current={current}
-      theme={theme}
-      ellipsis={ellipsis}
-      fitContent={fitContent}
+      {...props}
     />
   );
 };

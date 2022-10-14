@@ -1,4 +1,4 @@
-import InteractiveMap from 'react-map-gl';
+import { StaticMap } from 'react-map-gl';
 import DeckGL from '@deck.gl/react/typed';
 import React, { useMemo, useState } from 'react';
 
@@ -83,7 +83,7 @@ const Map = React.forwardRef<DeckGLRef, MapProps>(
         controller
         {...props}
       >
-        <InteractiveMap
+        <StaticMap
           viewState={viewState ?? localViewState}
           mapStyle={MAP_STYLES[mapStyle]}
           mapboxApiAccessToken={MAPBOX_API_TOKEN}

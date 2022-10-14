@@ -4,9 +4,8 @@ import { H3HexagonLayer } from '@deck.gl/geo-layers';
 import sortBy from 'lodash/sortBy';
 import { pick } from 'lodash';
 
-import { useAppSelector, useAppDispatch } from 'store/hooks';
+import { useAppSelector } from 'store/hooks';
 import { analysisMap } from 'store/features/analysis';
-import { setTooltipData, setTooltipPosition } from 'store/features/analysis/map';
 import { useImpactLayer } from 'hooks/layers/impact';
 import Legend from 'containers/analysis-visualization/analysis-legend';
 import PageLoading from 'containers/page-loading';
@@ -23,15 +22,10 @@ import type { ViewState, MapStyle } from 'components/map';
 import type { BasemapValue } from 'components/map/controls/basemap/types';
 
 const AnalysisMap = () => {
-  const dispatch = useAppDispatch();
-  const {
-    tooltipData,
-    tooltipPosition,
-    layerDeckGLProps,
-    layers: layersMetadata,
-  } = useAppSelector(analysisMap);
+  const { layerDeckGLProps, layers: layersMetadata } = useAppSelector(analysisMap);
 
   const [mapStyle, setMapStyle] = useState<MapStyle>('terrain');
+  const [tooltipData, setTooltipData] = useState(null);
 
   // Loading layers
   const {
@@ -66,34 +60,24 @@ const AnalysisMap = () => {
           getHexagon: (d) => d.h,
           getFillColor: (d) => d.c,
           getLineColor: (d) => d.c,
-          onHover: ({ object, x, y, viewport }) => {
-            /*
-             * TODO: multiple layer picking is possible using a ref to the map:
-             * const data = mapRef.current.pickMultipleObjects({ x, y });
-             */
-
-            dispatch(
-              setTooltipPosition({
-                x,
-                y,
-                viewport: viewport ? { width: viewport.width, height: viewport.height } : null,
-              }),
-            );
-
-            dispatch(
-              setTooltipData({
-                id: props.id,
+          onHover: ({ coordinate, object, viewport, x, y }) => {
+            setTooltipData({
+              x,
+              y,
+              viewport,
+              data: {
+                ...object,
+                coordinate,
                 name: layerInfo.metadata?.name || layerInfo.metadata?.legend.name,
-                value: object?.v,
-                unit: layerInfo.metadata?.legend.unit,
-              }),
-            );
+                unit: layerInfo.metadata?.unit,
+              },
+            });
           },
         });
       })
       .filter((l) => !!l);
     return sortBy(legends, (l) => layersMetadata[l.id].order).reverse();
-  }, [contextualData, dispatch, impactData, layerDeckGLProps, layersMetadata, materialData?.data]);
+  }, [contextualData, impactData, layerDeckGLProps, layersMetadata, materialData?.data]);
 
   const handleMapStyleChange = useCallback((newStyle: BasemapValue) => {
     setMapStyle(newStyle);
@@ -114,34 +98,28 @@ const AnalysisMap = () => {
         layers={layers}
         mapStyle={mapStyle}
         viewState={viewState}
-        onViewStateChange={({ viewState }) => {
-          setViewState(viewState);
-        }}
+        onViewStateChange={({ viewState }) => setViewState(viewState)}
       >
-        {!!tooltipData.length && (
+        {tooltipData && tooltipData.data?.v && (
           <PopUp
             position={{
-              ...tooltipPosition.viewport,
-              x: tooltipPosition.x,
-              y: tooltipPosition.y,
+              ...tooltipData.viewport,
+              x: tooltipData.x,
+              y: tooltipData.y,
             }}
           >
-            <div className="px-4 py-2 space-y-2 bg-white rounded-md shadow-sm">
-              {tooltipData.map((data) => (
-                <div key={`tooltip-item-${data.id}`} className="whitespace-nowrap">
-                  <strong className="text-xs font-semibold">{data.name}</strong>:{' '}
-                  <span className="text-xs">
-                    {data.value ? NUMBER_FORMAT(data.value) : '-'}
-                    {data.unit && ` ${data.unit}`}
-                  </span>
-                </div>
-              ))}
+            <div className="p-4 space-y-2 bg-white rounded-md shadow-md">
+              <div className="text-sm font-semibold text-gray-900">
+                {NUMBER_FORMAT(Number(tooltipData.data.v))}
+                {tooltipData.data.unit && ` ${tooltipData.data.unit}`}
+              </div>
+              <div className="text-xs text-gray-500">{tooltipData.data.name}</div>
             </div>
           </PopUp>
         )}
       </Map>
       {isError && (
-        <div className="absolute z-10 p-4 rounded-md top-20 left-12 bg-red-50">
+        <div className="p-4 rounded-md top-20 left-12 bg-red-50">
           <div className="flex">
             <XCircleIcon className="w-5 h-5 text-red-400" aria-hidden="true" />
             <p className="mb-0 ml-3 text-sm text-red-400">

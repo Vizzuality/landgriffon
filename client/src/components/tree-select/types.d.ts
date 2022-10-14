@@ -31,7 +31,7 @@ interface CommonTreeProps {
 }
 
 export interface TreeSelectProps<IsMulti extends boolean = false> extends CommonTreeProps {
-  multiple?: IsMulti;
-  current: IsMulti extends true ? TreeSelectOption[] : TreeSelectOption | null;
+  multiple?: readonly IsMulti;
+  current: (IsMulti extends true ? TreeSelectOption[] : TreeSelectOption) | null;
   onChange?: (selected: IsMulti extends true ? TreeSelectOption[] : TreeSelectOption) => void;
 }

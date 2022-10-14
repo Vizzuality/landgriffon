@@ -42,6 +42,12 @@ const INITIAL_FILTERS: MoreFiltersState = {
   locationTypes: [],
 };
 
+const DEFAULT_QUERY_OPTIONS = {
+  staleTime: 2 * 60 * 1000, // 2 minutes
+  select: (data: { id: string; name: string }[]) =>
+    data.map((item) => ({ value: item.id, label: item.name })),
+};
+
 const MoreFilters = () => {
   const dispatch = useAppDispatch();
   const { materials, origins, suppliers, locationTypes } = useAppSelector(analysisFilters);
@@ -134,59 +140,65 @@ const MoreFilters = () => {
     useDismiss(context),
   ]);
 
-  const { data: allMaterials } = useMaterialsTrees(
+  const { data: materialOptions } = useMaterialsTrees(
     {
       depth: 1,
       withSourcingLocations: true,
       scenarioId,
     },
+    DEFAULT_QUERY_OPTIONS,
+  );
+
+  const { data: originOptions } = useAdminRegionsTrees(
     {
-      // 2 minutes stale time
-      staleTime: 2 * 60 * 1000,
+      withSourcingLocations: true,
+      materialIds,
+      supplierIds,
+      locationTypes: locationTypesIds,
+      scenarioId,
+    },
+    DEFAULT_QUERY_OPTIONS,
+  );
+
+  const { data: supplierOptions } = useSuppliersTrees(
+    {
+      withSourcingLocations: true,
+      materialIds,
+      originIds,
+      locationTypes: locationTypesIds,
+      scenarioId,
+    },
+    DEFAULT_QUERY_OPTIONS,
+  );
+
+  const { data: locationTypeOptions } = useLocationTypes(
+    {
+      materialIds,
+      originIds,
+      supplierIds,
+      scenarioId,
+    },
+    {
+      ...DEFAULT_QUERY_OPTIONS,
+      select: undefined,
     },
   );
 
-  const { data: allOrigins } = useAdminRegionsTrees({
-    withSourcingLocations: true,
-    materialIds,
-    supplierIds,
-    locationTypes: locationTypesIds,
-    scenarioId,
-  });
-
-  const { data: allSuppliers } = useSuppliersTrees({
-    withSourcingLocations: true,
-    materialIds,
-    originIds,
-    locationTypes: locationTypesIds,
-    scenarioId,
-  });
-
-  const { data: allLocationTypes } = useLocationTypes({
-    materialIds,
-    originIds,
-    supplierIds,
-    scenarioId,
-  });
-
-  const allData: Partial<Record<keyof MoreFiltersState, ({ id: string } | { value: string })[]>> =
-    useMemo(() => {
-      return {
-        materials: allMaterials,
-        origins: allOrigins,
-        suppliers: allSuppliers,
-        locationTypes: allLocationTypes,
-      };
-    }, [allLocationTypes, allMaterials, allOrigins, allSuppliers]);
+  const allData: Partial<Record<keyof MoreFiltersState, SelectOption[]>> = useMemo(() => {
+    return {
+      materials: materialOptions,
+      origins: originOptions,
+      suppliers: supplierOptions,
+      locationTypes: locationTypeOptions,
+    };
+  }, [locationTypeOptions, materialOptions, originOptions, supplierOptions]);
 
   const reviewFilterContent = useCallback(
     (name: keyof MoreFiltersState) => {
       const currentValues = selectedFilters[name];
       const allOptions = allData[name];
       const validOptions = currentValues.filter(({ value }) =>
-        allOptions.some((option) =>
-          'id' in option ? option.id === value : option.value === value,
-        ),
+        allOptions.some((option) => option.value === value),
       );
 
       if (validOptions.length !== currentValues.length) {
@@ -251,12 +263,8 @@ const MoreFilters = () => {
               <div>
                 <div className="mb-1">Material</div>
                 <Materials
+                  options={materialOptions}
                   multiple
-                  withSourcingLocations
-                  originIds={originIds}
-                  supplierIds={supplierIds}
-                  locationTypes={locationTypesIds}
-                  scenarioId={scenarioId}
                   current={selectedFilters.materials}
                   fitContent
                   onChange={(values) => handleChangeFilter('materials', values)}
@@ -265,12 +273,8 @@ const MoreFilters = () => {
               <div>
                 <div className="mb-1">Origins</div>
                 <OriginRegions
+                  options={originOptions}
                   multiple
-                  withSourcingLocations
-                  materialIds={materialIds}
-                  supplierIds={supplierIds}
-                  locationTypes={locationTypesIds}
-                  scenarioId={scenarioId}
                   current={selectedFilters.origins}
                   fitContent
                   onChange={(values) => handleChangeFilter('origins', values)}
@@ -280,11 +284,7 @@ const MoreFilters = () => {
                 <div className="mb-1">Suppliers</div>
                 <Suppliers
                   multiple
-                  withSourcingLocations
-                  materialIds={materialIds}
-                  originIds={originIds}
-                  locationTypes={locationTypesIds}
-                  scenarioId={scenarioId}
+                  options={supplierOptions}
                   current={selectedFilters.suppliers}
                   fitContent
                   onChange={(values) => handleChangeFilter('suppliers', values)}
@@ -293,12 +293,9 @@ const MoreFilters = () => {
               <div>
                 <div className="mb-1">Location type</div>
                 <LocationTypes
+                  options={locationTypeOptions}
                   current={selectedFilters.locationTypes}
                   fitContent
-                  materialIds={materialIds}
-                  originIds={originIds}
-                  supplierIds={supplierIds}
-                  scenarioId={scenarioId}
                   onChange={(values) => handleChangeFilter('locationTypes', values)}
                 />
               </div>

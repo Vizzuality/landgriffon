@@ -42,7 +42,7 @@ export const useSuppliers = <T = Supplier[]>(
 };
 
 export const useSuppliersTrees = <T = Supplier[]>(
-  params: SuppliersTreesParams,
+  params: SuppliersTreesParams = {},
   options?: UseQueryOptions<Supplier[], unknown, T, ['suppliers-trees', typeof params]>,
 ) => {
   const query = useQuery(

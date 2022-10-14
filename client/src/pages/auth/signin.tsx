@@ -16,7 +16,7 @@ import type { ReactElement } from 'react';
 import type { NextPageWithLayout } from 'pages/_app';
 
 const schemaValidation = yup.object({
-  username: yup.string().email().required(),
+  email: yup.string().email().required(),
   password: yup.string().min(8).required('password is required'),
   remember: yup.boolean(),
 });
@@ -31,6 +31,7 @@ const SignIn: NextPageWithLayout = () => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaValidation),
+    shouldUseNativeValidation: false,
   });
 
   const handleSignIn = useCallback(
@@ -38,6 +39,7 @@ const SignIn: NextPageWithLayout = () => {
       setIsLoading(true);
       const { ok } = await signIn('credentials', {
         ...data,
+        username: data.email,
         redirect: false,
       });
 
@@ -76,15 +78,15 @@ const SignIn: NextPageWithLayout = () => {
               To continue please enter your details below.
             </p>
           </div>
-          <form className="space-y-6" id="signInForm" onSubmit={handleSubmit(handleSignIn)}>
+          <form
+            noValidate
+            className="space-y-6"
+            id="signInForm"
+            onSubmit={handleSubmit(handleSignIn)}
+          >
             <div>
               <Label htmlFor="email">Email address</Label>
-              <Input
-                {...register('username')}
-                type="email"
-                id="email"
-                error={errors.email?.message}
-              />
+              <Input {...register('email')} type="email" id="email" error={errors.email?.message} />
             </div>
 
             <div>

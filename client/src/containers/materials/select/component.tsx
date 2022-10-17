@@ -5,7 +5,7 @@ import { useMaterialsTrees } from 'hooks/materials';
 import TreeSelect from 'components/tree-select';
 
 import type { MaterialsTreesParams } from 'hooks/materials';
-import type { Ref } from 'react';
+import type { ComponentRef, Ref } from 'react';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
 type MaterialsFilterProps<IsMulti extends boolean> = Omit<TreeSelectProps<IsMulti>, 'options'> & {
@@ -36,7 +36,7 @@ const InnerMaterialsFilter = <IsMulti extends boolean>(
     ellipsis,
     fitContent,
   }: MaterialsFilterProps<IsMulti>,
-  ref: Ref<HTMLInputElement>,
+  ref: Ref<ComponentRef<typeof TreeSelect>>,
 ) => {
   const { data, isFetching } = useMaterialsTrees(
     {
@@ -85,6 +85,6 @@ const InnerMaterialsFilter = <IsMulti extends boolean>(
 };
 
 const MaterialsFilter = React.forwardRef(InnerMaterialsFilter) as <IsMulti extends boolean>(
-  props: MaterialsFilterProps<IsMulti> & { ref?: Ref<HTMLInputElement> },
+  props: MaterialsFilterProps<IsMulti> & { ref?: Ref<ComponentRef<typeof TreeSelect>> },
 ) => React.ReactElement;
 export default MaterialsFilter;

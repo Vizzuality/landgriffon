@@ -284,6 +284,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
       <div className="inline-flex flex-row flex-grow h-min gap-x-1">
         <SearchIcon className="block w-4 h-4 my-auto text-gray-400" />
         <input
+          ref={ref}
           autoFocus
           type="search"
           value={searchTerm}
@@ -311,11 +312,19 @@ const InnerTreeSelect = <IsMulti extends boolean>(
       </div>
     );
     return Component;
-  }, [currentOptions.length, handleSearch, placeholder, resetSearch, searchTerm, selected, theme]);
+  }, [
+    currentOptions.length,
+    handleSearch,
+    placeholder,
+    ref,
+    resetSearch,
+    searchTerm,
+    selected,
+    theme,
+  ]);
 
   return (
     <div className="min-w-0 ">
-      <input ref={ref} className="hidden" />
       <div
         {...getReferenceProps({
           ref: reference,
@@ -479,7 +488,7 @@ const flattenKeys: (root: TreeSelectOption) => TreeSelectOption['value'][] = (ro
 
 const TreeSelect = React.forwardRef(InnerTreeSelect) as <IsMulti extends boolean = false>(
   props: TreeSelectProps<IsMulti> & {
-    ref?: Ref<HTMLDivElement>;
+    ref?: Ref<HTMLInputElement>;
   },
 ) => React.ReactElement;
 

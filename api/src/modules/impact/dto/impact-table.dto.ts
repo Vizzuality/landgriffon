@@ -8,11 +8,7 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import {
-  ApiHideProperty,
-  ApiProperty,
-  ApiPropertyOptional,
-} from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
@@ -162,4 +158,8 @@ export class GetRankedImpactTableDto extends BaseImpactTableDto {
   @IsOptional()
   @IsUUID(4)
   scenarioId?: string;
+
+  // Property for internal api use (entity filters)
+  @IsOptional()
+  scenarioIds?: string[];
 }

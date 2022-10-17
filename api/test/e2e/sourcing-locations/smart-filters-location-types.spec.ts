@@ -24,6 +24,7 @@ import { Supplier } from 'modules/suppliers/supplier.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { clearEntityTables } from '../../utils/database-test-helper';
+import { SCENARIO_INTERVENTION_STATUS } from '../../../src/modules/scenario-interventions/scenario-intervention.entity';
 
 describe('SourcingLocationsModule (e2e)', () => {
   let app: INestApplication;
@@ -286,7 +287,7 @@ describe('SourcingLocationsModule (e2e)', () => {
           scenarioInterventionId: intervention.id,
         });
 
-        const material2: Material = await createMaterial({
+        await createMaterial({
           name: 'supplier2Material',
         });
 
@@ -314,98 +315,143 @@ describe('SourcingLocationsModule (e2e)', () => {
         ]);
       },
     );
+
+    test(
+      'When I query a Material Tree endpoint ' +
+        'And I query the ones with sourcing locations' +
+        'And I filter them by Scenario' +
+        'And I filter them by a some Origin and Supplier' +
+        'Then I should receive a tree list of materials where there are sourcing-locations for, and are present in some intervention of said Scenario, matching said filters',
+      async () => {
+        const parentMaterial1: Material = await createMaterial({
+          name: 'parentMaterial1',
+        });
+
+        const childMaterial1: Material = await createMaterial({
+          name: 'childMaterial1',
+          parentId: parentMaterial1.id,
+        });
+
+        const scenario = await createScenario();
+
+        const parentMaterial2 = await createMaterial({
+          name: 'parent of a child material that is not part of intervention1',
+        });
+        const childMaterial2 = await createMaterial({
+          name: 'child material that is part of a intervention',
+          parent: parentMaterial2,
+        });
+
+        const adminRegionThatShouldShowResults = await createAdminRegion();
+        const adminRegionThatShouldNOTShowResults = await createAdminRegion();
+        const supplierThatShouldShowResults = await createSupplier();
+        const supplierThatShouldNOTShowResults = await createSupplier();
+
+        const intervention = await createScenarioIntervention({
+          scenario,
+        });
+
+        await createSourcingLocation({
+          materialId: childMaterial2.id,
+          interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+          locationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
+          adminRegion: adminRegionThatShouldShowResults,
+          t1Supplier: supplierThatShouldShowResults,
+          scenarioInterventionId: intervention.id,
+        });
+
+        const material2: Material = await createMaterial({
+          name: 'supplier2Material',
+        });
+
+        const material3: Material = await createMaterial({
+          name: 'supplier3Material',
+        });
+        await createSourcingLocation({
+          locationType: LOCATION_TYPES.AGGREGATION_POINT,
+          materialId: childMaterial1.id,
+          adminRegion: adminRegionThatShouldShowResults,
+          t1Supplier: supplierThatShouldShowResults,
+        });
+
+        await createSourcingLocation({
+          locationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+          materialId: material2.id,
+          adminRegion: adminRegionThatShouldNOTShowResults,
+          producer: supplierThatShouldNOTShowResults,
+        });
+
+        await createSourcingLocation({
+          locationType: LOCATION_TYPES.UNKNOWN,
+          materialId: material3.id,
+        });
+
+        const response = await request(app.getHttpServer())
+          .get('/api/v1/sourcing-locations/location-types')
+          .query({
+            scenarioId: scenario.id,
+            'originIds[]': [adminRegionThatShouldShowResults.id],
+            'supplierIds[]': [supplierThatShouldShowResults.id],
+          })
+          .set('Authorization', `Bearer ${jwtToken}`);
+
+        expect(HttpStatus.OK);
+        expect(response.body.data).toHaveLength(2);
+        expect(response.body.data).toEqual([
+          {
+            label: 'Aggregation point',
+            value: 'aggregation-point',
+          },
+          {
+            label: 'Point of production',
+            value: 'point-of-production',
+          },
+        ]);
+      },
+    );
+
+    test(
+      'When I query a Location Types endpoint ' +
+        'And I filter them by Scenario' +
+        'Then I should receive location types from actual data and those that are present in some intervention with status ACTIVE, of said Scenario',
+      async () => {
+        const baseMaterial: Material = await createMaterial();
+
+        const scenario = await createScenario();
+        const intervention = await createScenarioIntervention({
+          scenario,
+        });
+        const interventionInactive = await createScenarioIntervention({
+          scenario,
+          status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+        });
+
+        await createSourcingLocation({
+          materialId: baseMaterial.id,
+          interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+          locationType: LOCATION_TYPES.AGGREGATION_POINT,
+          scenarioInterventionId: intervention.id,
+        });
+
+        await createSourcingLocation({
+          materialId: baseMaterial.id,
+          interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+          locationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
+          scenarioInterventionId: interventionInactive.id,
+        });
+
+        const response = await request(app.getHttpServer())
+          .get('/api/v1/sourcing-locations/location-types')
+          .query({
+            scenarioId: scenario.id,
+          })
+          .set('Authorization', `Bearer ${jwtToken}`);
+        expect(HttpStatus.OK);
+        expect(response.body.data).toHaveLength(1);
+        expect(response.body.data).toEqual([
+          { label: 'Aggregation point', value: 'aggregation-point' },
+        ]);
+      },
+    );
   });
-  test(
-    'When I query a Material Tree endpoint ' +
-      'And I query the ones with sourcing locations' +
-      'And I filter them by Scenario' +
-      'And I filter them by a some Origin and Supplier' +
-      'Then I should receive a tree list of materials where there are sourcing-locations for, and are present in some intervention of said Scenario, matching said filters',
-    async () => {
-      const parentMaterial1: Material = await createMaterial({
-        name: 'parentMaterial1',
-      });
-
-      const childMaterial1: Material = await createMaterial({
-        name: 'childMaterial1',
-        parentId: parentMaterial1.id,
-      });
-
-      const scenario = await createScenario();
-
-      const parentMaterial2 = await createMaterial({
-        name: 'parent of a child material that is not part of intervention1',
-      });
-      const childMaterial2 = await createMaterial({
-        name: 'child material that is part of a intervention',
-        parent: parentMaterial2,
-      });
-
-      const adminRegionThatShouldShowResults = await createAdminRegion();
-      const adminRegionThatShouldNOTShowResults = await createAdminRegion();
-      const supplierThatShouldShowResults = await createSupplier();
-      const supplierThatShouldNOTShowResults = await createSupplier();
-
-      const intervention = await createScenarioIntervention({
-        scenario,
-      });
-
-      await createSourcingLocation({
-        materialId: childMaterial2.id,
-        interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
-        locationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
-        adminRegion: adminRegionThatShouldShowResults,
-        t1Supplier: supplierThatShouldShowResults,
-        scenarioInterventionId: intervention.id,
-      });
-
-      const material2: Material = await createMaterial({
-        name: 'supplier2Material',
-      });
-
-      const material3: Material = await createMaterial({
-        name: 'supplier3Material',
-      });
-      await createSourcingLocation({
-        locationType: LOCATION_TYPES.AGGREGATION_POINT,
-        materialId: childMaterial1.id,
-        adminRegion: adminRegionThatShouldShowResults,
-        t1Supplier: supplierThatShouldShowResults,
-      });
-
-      await createSourcingLocation({
-        locationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
-        materialId: material2.id,
-        adminRegion: adminRegionThatShouldNOTShowResults,
-        producer: supplierThatShouldNOTShowResults,
-      });
-
-      await createSourcingLocation({
-        locationType: LOCATION_TYPES.UNKNOWN,
-        materialId: material3.id,
-      });
-
-      const response = await request(app.getHttpServer())
-        .get('/api/v1/sourcing-locations/location-types')
-        .query({
-          scenarioId: scenario.id,
-          'originIds[]': [adminRegionThatShouldShowResults.id],
-          'supplierIds[]': [supplierThatShouldShowResults.id],
-        })
-        .set('Authorization', `Bearer ${jwtToken}`);
-
-      expect(HttpStatus.OK);
-      expect(response.body.data).toHaveLength(2);
-      expect(response.body.data).toEqual([
-        {
-          label: 'Aggregation point',
-          value: 'aggregation-point',
-        },
-        {
-          label: 'Point of production',
-          value: 'point-of-production',
-        },
-      ]);
-    },
-  );
 });

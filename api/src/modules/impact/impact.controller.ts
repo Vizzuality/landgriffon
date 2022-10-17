@@ -109,6 +109,7 @@ export class ImpactController {
   @ApiOkResponse({
     type: ImpactTable,
   })
+  @UseInterceptors(SetScenarioIdsInterceptor)
   @JSONAPIPaginationQueryParams()
   @Get('ranking')
   async getRankedImpactTable(

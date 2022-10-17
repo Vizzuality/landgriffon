@@ -24,7 +24,10 @@ import {
 import { clearEntityTables } from '../../utils/database-test-helper';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import {
+  SCENARIO_INTERVENTION_STATUS,
+  ScenarioIntervention,
+} from 'modules/scenario-interventions/scenario-intervention.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 
 describe('Admin Regions - Get trees - Smart Filters', () => {
@@ -388,6 +391,74 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
             (region: AdminRegion) => region.id === adminRegions3.id,
           ),
         ).toBe(undefined);
+      },
+    );
+
+    test(
+      'When I query a Admin Regions Tree endpoint ' +
+        'And I query the ones with sourcing locations' +
+        'And I filter them by Scenario' +
+        'Then I should receive a tree list of materials where there are sourcing-locations for, and are present in some intervention with status ACTIVE, of said Scenario',
+      async () => {
+        const baseMaterial = await createMaterial();
+        const parentAdminRegion: AdminRegion = await createAdminRegion({
+          name: 'Parent Admin Region',
+        });
+
+        const childAdminRegion: AdminRegion = await createAdminRegion({
+          name: 'Child Admin Region',
+          parentId: parentAdminRegion.id,
+        });
+
+        const parentAdminRegion2 = await createAdminRegion({
+          name: 'parentAdmingRegion2',
+        });
+        const childAdminRegion2 = await createAdminRegion({
+          name: 'child material that is part of an inactive intervention',
+          parent: parentAdminRegion2,
+        });
+
+        const scenario = await createScenario();
+
+        const intervention = await createScenarioIntervention({
+          scenario,
+        });
+
+        const interventionInactive = await createScenarioIntervention({
+          scenario,
+          status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+        });
+
+        await createSourcingLocation({
+          materialId: baseMaterial.id,
+          interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+          locationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
+          scenarioInterventionId: intervention.id,
+          adminRegion: childAdminRegion,
+        });
+
+        await createSourcingLocation({
+          materialId: baseMaterial.id,
+          interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+          locationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
+          scenarioInterventionId: interventionInactive.id,
+          adminRegion: childAdminRegion2,
+        });
+
+        const response = await request(app.getHttpServer())
+          .get('/api/v1/admin-regions/trees')
+          .query({
+            withSourcingLocations: true,
+            scenarioId: scenario.id,
+          })
+          .set('Authorization', `Bearer ${jwtToken}`);
+
+        expect(HttpStatus.OK);
+        expect(response.body.data).toHaveLength(1);
+        expect(response.body.data[0].id).toEqual(parentAdminRegion.id);
+        expect(response.body.data[0].attributes.children[0].id).toEqual(
+          childAdminRegion.id,
+        );
       },
     );
   });

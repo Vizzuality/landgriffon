@@ -4,13 +4,14 @@ import { IndicatorRecord } from 'modules/indicator-records/indicator-record.enti
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { Material } from 'modules/materials/material.entity';
 import {
-  ScenarioIntervention,
+  SCENARIO_INTERVENTION_STATUS,
   SCENARIO_INTERVENTION_TYPE,
+  ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import {
-  SourcingLocation,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
+  SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { Unit } from 'modules/units/unit.entity';
@@ -88,11 +89,23 @@ export async function createSameMaterialScenariosPreconditions(): Promise<{
       type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
       scenario: newScenarioChangeSupplier,
     });
+  const scenarioInterventionChangeSupplierTextileInactive: ScenarioIntervention =
+    await createScenarioIntervention({
+      type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+      scenario: newScenarioChangeSupplier,
+      status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+    });
 
   const scenarioInterventionChangeMaterialTextile: ScenarioIntervention =
     await createScenarioIntervention({
       type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
       scenario: newScenarioChangeMaterial,
+    });
+  const scenarioInterventionChangeMaterialTextileInactive: ScenarioIntervention =
+    await createScenarioIntervention({
+      type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+      scenario: newScenarioChangeMaterial,
+      status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
     });
 
   // SOURCING LOCATIONS - REAL ONES
@@ -143,6 +156,18 @@ export async function createSameMaterialScenariosPreconditions(): Promise<{
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
     });
 
+  const sourcingLocationChangeSupplierTextileCanceledCottonInactive: SourcingLocation =
+    await createSourcingLocation({
+      material: cotton,
+      businessUnit: businessUnitClothes,
+      t1Supplier: supplierATextile,
+      producer: supplierATextile,
+      adminRegion,
+      scenarioInterventionId:
+        scenarioInterventionChangeSupplierTextileInactive.id,
+      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+    });
+
   // Change supplier for wool and cotton - replacing
 
   const sourcingLocationChangeSupplierTextileReplacingWool: SourcingLocation =
@@ -164,6 +189,18 @@ export async function createSameMaterialScenariosPreconditions(): Promise<{
       producer: supplierBTextile,
       adminRegion,
       scenarioInterventionId: scenarioInterventionChangeSupplierTextile.id,
+      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+    });
+
+  const sourcingLocationChangeSupplierTextileReplacingCottonInactive: SourcingLocation =
+    await createSourcingLocation({
+      material: cotton,
+      businessUnit: businessUnitClothes,
+      t1Supplier: supplierBTextile,
+      producer: supplierBTextile,
+      adminRegion,
+      scenarioInterventionId:
+        scenarioInterventionChangeSupplierTextileInactive.id,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
     });
 
@@ -193,6 +230,18 @@ export async function createSameMaterialScenariosPreconditions(): Promise<{
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
     });
 
+  const sourcingLocationChangeMaterialTextileCanceledCottonInactive: SourcingLocation =
+    await createSourcingLocation({
+      material: cotton,
+      businessUnit: businessUnitClothes,
+      t1Supplier: supplierATextile,
+      producer: supplierATextile,
+      adminRegion,
+      scenarioInterventionId:
+        scenarioInterventionChangeMaterialTextileInactive.id,
+      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+    });
+
   // Change material for lonen instead of wool and cotton - replacing
 
   const sourcingLocationChangeMaterialTextileReplacingLinen: SourcingLocation =
@@ -203,6 +252,18 @@ export async function createSameMaterialScenariosPreconditions(): Promise<{
       producer: supplierATextile,
       adminRegion,
       scenarioInterventionId: scenarioInterventionChangeMaterialTextile.id,
+      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+    });
+
+  const sourcingLocationChangeMaterialTextileReplacingLinenInactive: SourcingLocation =
+    await createSourcingLocation({
+      material: linen,
+      businessUnit: businessUnitClothes,
+      t1Supplier: supplierATextile,
+      producer: supplierATextile,
+      adminRegion,
+      scenarioInterventionId:
+        scenarioInterventionChangeMaterialTextileInactive.id,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
     });
 
@@ -231,6 +292,12 @@ export async function createSameMaterialScenariosPreconditions(): Promise<{
     value: -600,
   });
 
+  const irCoSCottonCanceledInactive: IndicatorRecord =
+    await createIndicatorRecord({
+      indicator,
+      value: -234,
+    });
+
   const irCoSCottonReplacing: IndicatorRecord = await createIndicatorRecord({
     indicator,
     value: 400,
@@ -240,6 +307,12 @@ export async function createSameMaterialScenariosPreconditions(): Promise<{
     indicator,
     value: 500,
   });
+
+  const irCoSCottonReplacingInactive: IndicatorRecord =
+    await createIndicatorRecord({
+      indicator,
+      value: 345,
+    });
 
   // Change of Material (CoM) for textiles:
 
@@ -253,10 +326,21 @@ export async function createSameMaterialScenariosPreconditions(): Promise<{
     value: -1200,
   });
 
+  const irCoMCottonCanceledInactive: IndicatorRecord =
+    await createIndicatorRecord({
+      indicator,
+      value: -123,
+    });
+
   const irCoMLinenReplacing: IndicatorRecord = await createIndicatorRecord({
     indicator,
     value: 1500,
   });
+  const irCoMLinenReplacingInactive: IndicatorRecord =
+    await createIndicatorRecord({
+      indicator,
+      value: 234,
+    });
 
   // Sourcing Records + Indicator Records - real ones
 
@@ -286,6 +370,14 @@ export async function createSameMaterialScenariosPreconditions(): Promise<{
 
   await createSourcingRecord({
     year: 2020,
+    indicatorRecords: [irCoSCottonCanceledInactive],
+    sourcingLocation:
+      sourcingLocationChangeSupplierTextileCanceledCottonInactive,
+    tonnage: 200,
+  });
+
+  await createSourcingRecord({
+    year: 2020,
     indicatorRecords: [irCoSWoolCanceled],
     sourcingLocation: sourcingLocationChangeSupplierTextileCanceledWool,
     tonnage: 200,
@@ -295,6 +387,14 @@ export async function createSameMaterialScenariosPreconditions(): Promise<{
     year: 2020,
     indicatorRecords: [irCoSCottonReplacing],
     sourcingLocation: sourcingLocationChangeSupplierTextileReplacingCotton,
+    tonnage: 200,
+  });
+
+  await createSourcingRecord({
+    year: 2020,
+    indicatorRecords: [irCoSCottonReplacingInactive],
+    sourcingLocation:
+      sourcingLocationChangeSupplierTextileReplacingCottonInactive,
     tonnage: 200,
   });
 
@@ -318,6 +418,14 @@ export async function createSameMaterialScenariosPreconditions(): Promise<{
 
   await createSourcingRecord({
     year: 2020,
+    indicatorRecords: [irCoMCottonCanceledInactive],
+    sourcingLocation:
+      sourcingLocationChangeMaterialTextileCanceledCottonInactive,
+    tonnage: 300,
+  });
+
+  await createSourcingRecord({
+    year: 2020,
     indicatorRecords: [irCoMWoolCanceled],
     sourcingLocation: sourcingLocationChangeMaterialTextileCanceledWool,
     tonnage: 300,
@@ -327,6 +435,14 @@ export async function createSameMaterialScenariosPreconditions(): Promise<{
     year: 2020,
     indicatorRecords: [irCoMLinenReplacing],
     sourcingLocation: sourcingLocationChangeMaterialTextileReplacingLinen,
+    tonnage: 300,
+  });
+
+  await createSourcingRecord({
+    year: 2020,
+    indicatorRecords: [irCoMLinenReplacingInactive],
+    sourcingLocation:
+      sourcingLocationChangeMaterialTextileReplacingLinenInactive,
     tonnage: 300,
   });
 

@@ -19,7 +19,10 @@ import {
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { ImpactMaterializedView } from 'modules/impact/views/impact.materialized-view.entity';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import {
+  SCENARIO_INTERVENTION_STATUS,
+  ScenarioIntervention,
+} from 'modules/scenario-interventions/scenario-intervention.entity';
 import {
   GetActualVsScenarioImpactMapDto,
   GetImpactMapDto,
@@ -140,12 +143,19 @@ export class H3DataMapRepository extends Repository<H3Data> {
           )
           .andWhere(
             new Brackets((qb: WhereExpressionBuilder) => {
-              qb.where('sl.scenarioInterventionId IS NULL');
-              qb.orWhere('si.scenarioId = :scenarioId', {
-                scenarioId: dto.scenarioId,
-              });
+              qb.where('sl.scenarioInterventionId IS NULL').orWhere(
+                new Brackets((qbInterv: WhereExpressionBuilder) => {
+                  qbInterv
+                    .where('si.scenarioId = :scenarioId')
+                    .andWhere(`si.status = :status`);
+                }),
+              );
             }),
-          );
+          )
+          .setParameters({
+            scenarioId: dto.scenarioId,
+            status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+          });
       } else {
         baseQuery.andWhere('sl.scenarioInterventionId IS NULL');
       }
@@ -179,12 +189,19 @@ export class H3DataMapRepository extends Repository<H3Data> {
         )
         .andWhere(
           new Brackets((qb: WhereExpressionBuilder) => {
-            qb.where('sl.scenarioInterventionId IS NULL');
-            qb.orWhere('si.scenarioId = :scenarioId', {
-              scenarioId: dto.comparedScenarioId,
-            });
+            qb.where('sl.scenarioInterventionId IS NULL').orWhere(
+              new Brackets((qbInterv: WhereExpressionBuilder) => {
+                qbInterv
+                  .where('si.scenarioId = :scenarioId')
+                  .andWhere(`si.status = :status`);
+              }),
+            );
           }),
-        );
+        )
+        .setParameters({
+          scenarioId: dto.comparedScenarioId,
+          status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+        });
 
       // Add the aggregation formula
       // Absolute: ((compared - actual)  / scaler
@@ -230,12 +247,19 @@ export class H3DataMapRepository extends Repository<H3Data> {
         )
         .andWhere(
           new Brackets((qb: WhereExpressionBuilder) => {
-            qb.where('sl.scenarioInterventionId IS NULL');
-            qb.orWhere('si.scenarioId IN (:...scenarioIds)', {
-              scenarioIds: [dto.baseScenarioId, dto.comparedScenarioId],
-            });
+            qb.where('sl.scenarioInterventionId IS NULL').orWhere(
+              new Brackets((qbInterv: WhereExpressionBuilder) => {
+                qbInterv
+                  .where('si.scenarioId IN (:...scenarioIds)')
+                  .andWhere(`si.status = :status`);
+              }),
+            );
           }),
-        );
+        )
+        .setParameters({
+          scenarioIds: [dto.baseScenarioId, dto.comparedScenarioId],
+          status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+        });
 
       // Add the aggregation formula
       // Absolute: ((compared - base)  / scaler

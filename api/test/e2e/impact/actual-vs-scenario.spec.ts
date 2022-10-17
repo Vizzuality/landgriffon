@@ -32,6 +32,7 @@ import { Supplier } from 'modules/suppliers/supplier.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
+import { createScenario } from '../../entity-mocks';
 
 describe('Impact Table and Charts test suite (e2e)', () => {
   let app: INestApplication;
@@ -70,11 +71,12 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     await app.close();
   });
 
-  test('When I request data for Impact table for a Scenario with Intervention of type New Coefficients I should get the expected results', async () => {
+  test('When I request data for Impact table for a Scenario with Intervention of type New Coefficients I should get the expected results ignoring INACTIVE interventions', async () => {
+    const scenario: Scenario = await createScenario();
     const preconditions: {
       indicator: Indicator;
       scenarioIntervention: ScenarioIntervention;
-    } = await createNewCoefficientsInterventionPreconditions();
+    } = await createNewCoefficientsInterventionPreconditions(scenario);
 
     const response = await request(app.getHttpServer())
       .get('/api/v1/impact/compare/scenario/vs/actual')
@@ -99,11 +101,12 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     );
   });
 
-  test('When I request data for Impact table for a Scenario with Intervention of type New Material I should get the expected results', async () => {
+  test('When I request data for Impact table for a Scenario with Intervention of type New Material I should get the expected results ignoring INACTIVE interventions', async () => {
+    const scenario: Scenario = await createScenario();
     const preconditions: {
       indicator: Indicator;
       scenarioIntervention: ScenarioIntervention;
-    } = await createNewMaterialInterventionPreconditions();
+    } = await createNewMaterialInterventionPreconditions(scenario);
 
     const response = await request(app.getHttpServer())
       .get('/api/v1/impact/compare/scenario/vs/actual')
@@ -122,11 +125,12 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     );
   });
 
-  test('When I request data for Impact table for a Scenario with Intervention of type New Supplier I should get the expected results', async () => {
+  test('When I request data for Impact table for a Scenario with Intervention of type New Supplier I should get the expected results ignoring INACTIVE interventions', async () => {
+    const scenario: Scenario = await createScenario();
     const preconditions: {
       indicator: Indicator;
       scenarioIntervention: ScenarioIntervention;
-    } = await createNewSupplierInterventionPreconditions();
+    } = await createNewSupplierInterventionPreconditions(scenario);
 
     const response = await request(app.getHttpServer())
       .get('/api/v1/impact/compare/scenario/vs/actual')
@@ -136,7 +140,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         endYear: 2023,
         startYear: 2020,
         groupBy: 'supplier',
-        scenarioId: preconditions.scenarioIntervention.scenarioId,
+        scenarioId: scenario.id,
       })
       .expect(HttpStatus.OK);
 
@@ -145,7 +149,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     );
   });
 
-  test('When I request data for Impact table for a Scenario with various Interventions of different types I should get the expected results', async () => {
+  test('When I request data for Impact table for a Scenario with various Interventions of different types I should get the expected results ignoring INACTIVE interventions', async () => {
     const preconditions: {
       indicator: Indicator;
       newScenario: Scenario;

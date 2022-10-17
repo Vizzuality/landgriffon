@@ -10,7 +10,10 @@ import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-reg
 import { Logger, NotFoundException } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetAdminRegionTreeWithOptionsDto } from 'modules/admin-regions/dto/get-admin-region-tree-with-options.dto';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import {
+  SCENARIO_INTERVENTION_STATUS,
+  ScenarioIntervention,
+} from 'modules/scenario-interventions/scenario-intervention.entity';
 import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 
 @EntityRepository(AdminRegion)
@@ -211,13 +214,22 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
         'scenarioIntervention',
         'sl.scenarioInterventionId = scenarioIntervention.id',
       );
-      queryBuilder.andWhere(
-        new Brackets((qb: WhereExpressionBuilder) => {
-          qb.where('scenarioIntervention.scenarioId IN (:...scenarioIds)', {
-            scenarioIds: adminRegionTreeOptions.scenarioIds,
-          }).orWhere('sl.scenarioInterventionId is null');
-        }),
-      );
+      queryBuilder
+        .andWhere(
+          new Brackets((qb: WhereExpressionBuilder) => {
+            qb.where('sl.scenarioInterventionId is null').orWhere(
+              new Brackets((qbInterv: WhereExpressionBuilder) => {
+                qbInterv
+                  .where('scenarioIntervention.scenarioId IN (:...scenarioIds)')
+                  .andWhere(`scenarioIntervention.status = :status`);
+              }),
+            );
+          }),
+        )
+        .setParameters({
+          scenarioIds: adminRegionTreeOptions.scenarioIds,
+          status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+        });
     } else {
       queryBuilder.andWhere('sl.scenarioInterventionId is null');
       queryBuilder.andWhere('sl.interventionType is null');

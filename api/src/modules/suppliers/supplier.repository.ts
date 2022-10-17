@@ -10,7 +10,10 @@ import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
 import { Logger } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-tree-with-options.dto';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import {
+  SCENARIO_INTERVENTION_STATUS,
+  ScenarioIntervention,
+} from 'modules/scenario-interventions/scenario-intervention.entity';
 
 @EntityRepository(Supplier)
 export class SupplierRepository extends ExtendedTreeRepository<
@@ -73,13 +76,22 @@ export class SupplierRepository extends ExtendedTreeRepository<
         'scenarioIntervention',
         'sl.scenarioInterventionId = scenarioIntervention.id',
       );
-      queryBuilder.andWhere(
-        new Brackets((qb: WhereExpressionBuilder) => {
-          qb.where('scenarioIntervention.scenarioId IN (:...scenarioIds)', {
-            scenarioIds: supplierTreeOptions.scenarioIds,
-          }).orWhere('sl.scenarioInterventionId is null');
-        }),
-      );
+      queryBuilder
+        .andWhere(
+          new Brackets((qb: WhereExpressionBuilder) => {
+            qb.where('sl.scenarioInterventionId is null').orWhere(
+              new Brackets((qbInterv: WhereExpressionBuilder) => {
+                qbInterv
+                  .where('scenarioIntervention.scenarioId IN (:...scenarioIds)')
+                  .andWhere(`scenarioIntervention.status = :status`);
+              }),
+            );
+          }),
+        )
+        .setParameters({
+          scenarioIds: supplierTreeOptions.scenarioIds,
+          status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+        });
     } else {
       queryBuilder.andWhere('sl.scenarioInterventionId is null');
       queryBuilder.andWhere('sl.interventionType is null');

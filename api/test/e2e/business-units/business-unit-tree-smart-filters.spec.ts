@@ -25,6 +25,7 @@ import {
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { clearEntityTables } from '../../utils/database-test-helper';
 import { Material } from '../../../src/modules/materials/material.entity';
+import { SCENARIO_INTERVENTION_STATUS } from '../../../src/modules/scenario-interventions/scenario-intervention.entity';
 
 describe('Business Units - Get trees - Smart Filters', () => {
   let app: INestApplication;
@@ -347,6 +348,67 @@ describe('Business Units - Get trees - Smart Filters', () => {
               business.id === businessUnitThatShouldNotAppear.id,
           ),
         ).toBe(undefined);
+      },
+    );
+
+    test(
+      'When I query a Business Unit Tree endpoint ' +
+        'And I query the ones with sourcing locations' +
+        'And I filter them by Scenario' +
+        'Then I should receive a tree list of materials where there are sourcing-locations for, and are present in some intervention with status ACTIVE, of said Scenario',
+      async () => {
+        const baseMaterial = await createMaterial();
+        const parentAdminRegion: AdminRegion = await createAdminRegion({
+          name: 'Parent Admin Region',
+        });
+
+        const scenario = await createScenario();
+        const intervention = await createScenarioIntervention({
+          scenario,
+        });
+        const interventionInactive = await createScenarioIntervention({
+          scenario,
+          status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+        });
+
+        const parentBusinessUnit = await createBusinessUnit();
+        const childBusinessUnit = await createBusinessUnit({
+          parent: parentBusinessUnit,
+        });
+        const businessUnitInactive = await createBusinessUnit();
+
+        await createSourcingLocation({
+          materialId: baseMaterial.id,
+          interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+          locationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
+          scenarioInterventionId: intervention.id,
+          adminRegion: parentAdminRegion,
+          businessUnit: childBusinessUnit,
+        });
+
+        await createSourcingLocation({
+          locationType: LOCATION_TYPES.AGGREGATION_POINT,
+          interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+          materialId: baseMaterial.id,
+          scenarioInterventionId: interventionInactive.id,
+          adminRegion: parentAdminRegion,
+          businessUnit: businessUnitInactive,
+        });
+
+        const response = await request(app.getHttpServer())
+          .get('/api/v1/business-units/trees')
+          .query({
+            withSourcingLocations: true,
+            scenarioId: scenario.id,
+          })
+          .set('Authorization', `Bearer ${jwtToken}`);
+
+        expect(HttpStatus.OK);
+        expect(response.body.data).toHaveLength(1);
+        expect(response.body.data[0].id).toEqual(parentBusinessUnit.id);
+        expect(response.body.data[0].attributes.children[0].id).toEqual(
+          childBusinessUnit.id,
+        );
       },
     );
   });

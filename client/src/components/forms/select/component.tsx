@@ -1,8 +1,9 @@
-import { forwardRef, useCallback, useState } from 'react';
+import { cloneElement, forwardRef, useCallback, useState } from 'react';
 import classnames from 'classnames';
 import { Listbox, Transition } from '@headlessui/react';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/solid';
 import { flip, useFloating } from '@floating-ui/react-dom';
+import { FloatingPortal } from '@floating-ui/react-dom-interactions';
 
 import Hint from '../hint';
 
@@ -11,10 +12,11 @@ import type { SelectProps, Option } from './types';
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({
     defaultValue,
+    error,
+    icon,
+    label,
     options,
     placeholder = 'Select an option',
-    label,
-    error,
     showHint,
     ...props
   }) => {
@@ -47,7 +49,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             <div className="relative">
               <Listbox.Button
                 className={classnames(
-                  'relative py-2 pl-3 pr-10 text-left bg-white border rounded-md shadow-sm cursor-default focus:border-navy-400 focus:outline-none focus:ring-0',
+                  'relative inline-flex items-center py-2.5 pl-3 pr-10 text-left leading-5 bg-white border rounded-md shadow-sm cursor-default hover:cursor-pointer focus:border-navy-400 focus:outline-none focus:ring-0',
                   {
                     'mt-1': !!label,
                     'border-red-400': error,
@@ -56,6 +58,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
                 )}
                 ref={reference}
               >
+                {icon && <div className="mr-2">{cloneElement(icon)}</div>}
                 <span className="block text-sm truncate">
                   {selected ? selected.label : <span className="text-gray-200">{placeholder}</span>}
                 </span>
@@ -67,47 +70,48 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
                   )}
                 </span>
               </Listbox.Button>
-
-              <Transition
-                show={open}
-                as="div"
-                leave="transition ease-in duration-100"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
-                className="z-10"
-                style={{
-                  position: strategy,
-                  top: y ?? 0,
-                  left: x ?? 0,
-                }}
-                ref={floating}
-              >
-                <Listbox.Options className="mt-2 overflow-auto text-base bg-white rounded-md shadow-sm max-h-60 ring-1 ring-gray-200 focus:outline-none">
-                  {options.map((option) => (
-                    <Listbox.Option
-                      key={option.value}
-                      className={({ active }) =>
-                        classnames(
-                          active && 'bg-navy-50',
-                          'relative cursor-default select-none py-2 pl-3 pr-9',
-                        )
-                      }
-                      value={option}
-                    >
-                      {({ selected }) => (
-                        <span
-                          className={classnames(
-                            selected ? 'text-navy-400' : 'text-gray-900',
-                            'block truncate',
-                          )}
-                        >
-                          {option.label}
-                        </span>
-                      )}
-                    </Listbox.Option>
-                  ))}
-                </Listbox.Options>
-              </Transition>
+              <FloatingPortal>
+                <Transition
+                  show={open}
+                  as="div"
+                  leave="transition ease-in duration-100"
+                  leaveFrom="opacity-100"
+                  leaveTo="opacity-0"
+                  className="z-10"
+                  style={{
+                    position: strategy,
+                    top: y ?? 0,
+                    left: x ?? 0,
+                  }}
+                  ref={floating}
+                >
+                  <Listbox.Options className="mt-2 overflow-auto text-base bg-white rounded-md shadow-sm max-h-60 ring-1 ring-gray-200 focus:outline-none">
+                    {options.map((option) => (
+                      <Listbox.Option
+                        key={option.value}
+                        className={({ active }) =>
+                          classnames(
+                            active && 'bg-navy-50',
+                            'relative cursor-default select-none py-2 pl-3 pr-9 hover:cursor-pointer',
+                          )
+                        }
+                        value={option}
+                      >
+                        {({ selected }) => (
+                          <span
+                            className={classnames(
+                              selected ? 'text-navy-400' : 'text-gray-900',
+                              'block truncate',
+                            )}
+                          >
+                            {option.label}
+                          </span>
+                        )}
+                      </Listbox.Option>
+                    ))}
+                  </Listbox.Options>
+                </Transition>
+              </FloatingPortal>
 
               {showHint && error && typeof error === 'string' && (
                 <Hint data-testid={`hint-input-${props.name}`}>{error}</Hint>

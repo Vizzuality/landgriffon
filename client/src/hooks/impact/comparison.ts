@@ -5,7 +5,6 @@ import { apiRawService } from 'services/api';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import type { Scenario } from 'containers/scenarios/types';
 import type { ImpactDataApiResponse } from './types';
-import type { ImpactTabularAPIParams } from 'types';
 
 const DEFAULT_QUERY_OPTIONS = {
   placeholderData: {
@@ -25,16 +24,23 @@ const DEFAULT_QUERY_OPTIONS = {
   refetchOnWindowFocus: false,
 };
 
-type ImpactComparisonParams<VsActual extends boolean> = Omit<ImpactTabularAPIParams, 'scenarioId'> &
-  (VsActual extends true
-    ? { scenarioId: Scenario['id'] }
-    : {
-        scenarioOneValue: Scenario['id'];
-        scenarioTwoValue: Scenario['id'];
-      });
+export type ImpactComparisonParams = {
+  scenarioId?: Scenario['id']; // TO-DO: remove and unify with comparedScenarioId
+  baseScenarioId?: Scenario['id'];
+  comparedScenarioId: Scenario['id'];
+  indicatorIds: string[];
+  groupBy: string;
+  startYear: number;
+  endYear: number;
+  materialIds?: string[];
+  originIds?: string[];
+  supplierIds?: string[];
+  locationTypes?: string[];
+  disabledPagination: boolean;
+};
 
 export const useImpactComparison = <T = ImpactDataApiResponse<true>>(
-  params: Partial<ImpactComparisonParams<true>>,
+  params: Partial<ImpactComparisonParams>,
   options: UseQueryOptions<
     ImpactDataApiResponse<true>,
     unknown,
@@ -42,14 +48,25 @@ export const useImpactComparison = <T = ImpactDataApiResponse<true>>(
     ['impact-comparison', typeof params]
   > = {},
 ) => {
+  const isScenarioVsScenario = params.baseScenarioId && params.comparedScenarioId;
+  const URL = isScenarioVsScenario
+    ? '/impact/compare/scenario/vs/scenario'
+    : '/impact/compare/scenario/vs/actual';
+
   const query = useQuery(
     ['impact-comparison', params],
     () =>
       apiRawService
-        .get<ImpactDataApiResponse<true>>('/impact/compare/scenario/vs/actual', {
+        // TO-DO: add ImpactDataApiResponse<true> once the API unify the params
+        .get(URL, {
           params: params,
         })
-        .then((response) => response.data),
+        .then((response) => {
+          const result = response.data;
+          result.data.impactTable =
+            result.data.impactTable || result.data.scenarioVsScenarioImpactTable;
+          return result;
+        }),
     {
       ...DEFAULT_QUERY_OPTIONS,
       ...options,
@@ -60,16 +77,16 @@ export const useImpactComparison = <T = ImpactDataApiResponse<true>>(
 };
 
 export const useImpactScenarioComparison = <T = ImpactDataApiResponse<'scenario'>>(
-  params: Partial<ImpactComparisonParams<false>>,
+  params: Partial<ImpactComparisonParams>,
   options: UseQueryOptions<
     ImpactDataApiResponse<'scenario'>,
     unknown,
     T,
-    ['impact-scenario-comparison', typeof params]
+    ['impact-scenario-vs-scenario', typeof params]
   > = {},
 ) => {
   const enabled =
-    (options.enabled ?? true) && !!params.scenarioOneValue && !!params.scenarioTwoValue;
+    (options.enabled ?? true) && !!params.baseScenarioId && !!params.comparedScenarioId;
 
   const query = useQuery(
     ['impact-scenario-comparison', params],

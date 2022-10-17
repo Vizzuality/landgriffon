@@ -16,7 +16,6 @@ interface ScenariosItemProps {
 }
 
 const formatTimeAgo = (date: Date) => {
-  // const diffDays = differenceInDays(new Date(), subDays(new Date(), 1.5));
   const diffDays = differenceInDays(new Date(), date);
 
   const formattedHour = format(date, 'HH:mm');

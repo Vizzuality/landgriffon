@@ -11,9 +11,9 @@ type AnalysisChartProps = {
 };
 
 const AnalysisChart: React.FC<AnalysisChartProps> = ({ indicator }) => {
-  const { isComparisonEnabled } = useAppSelector(scenarios);
+  const { scenarioToCompare } = useAppSelector(scenarios);
 
-  if (isComparisonEnabled) return <ComparisonChart indicator={indicator} />;
+  if (scenarioToCompare) return <ComparisonChart indicator={indicator} />;
 
   return <ImpactChart indicator={indicator} />;
 };

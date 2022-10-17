@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Add map preview to legend settings modal [LANDGRIF-827](https://vizzuality.atlassian.net/browse/LANDGRIF-827)
 - In chart view, when a comparison is enabled the chart changes to line chart [LANDGRIF-807](https://vizzuality.atlassian.net/browse/LANDGRIF-807)
 - Scenario creation link from analysis [LANDGRIF-805](https://vizzuality.atlassian.net/browse/LANDGRIF-805)
+- Scenario comparison in the chart view [LANDGRIF-945](https://vizzuality.atlassian.net/browse/LANDGRIF-945)
 
 ### Changed
 

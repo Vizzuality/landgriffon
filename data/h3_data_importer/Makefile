@@ -426,7 +426,10 @@ convert-aboveGroundBiomass: preprocess-aboveGroundBiomass
 #Download satelligence deforestation
 download-satDeforestation:
 	mkdir -p $(WORKDIR_SATDEFORESTATION)
-	wget -q -O $(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01.tif https://storage.googleapis.com/s11-landgriffon-data/v0/Deforestation/Deforestation_IDN_2021-01-01-2022-01-01.tif
+	aws configure set awc_acces_key_id $$AWS_ACCESS_KEY_ID; \
+	aws configure set aws_secret_access_key $$AWS_SECRET_ACCESS_KEY; \
+	aws s3 sync s3://landgriffon-raw-data/satelligence_deforestation $(WORKDIR_SATDEFORESTATION);
+
 
 #ingets data as density - This values would need to be multiplied by the hex area in the analysis
 #1. multiplies by 1 and remove no data values

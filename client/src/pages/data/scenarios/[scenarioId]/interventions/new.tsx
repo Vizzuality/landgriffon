@@ -10,30 +10,35 @@ import InterventionForm from 'containers/interventions/form';
 import { parseInterventionFormDataToDto } from 'containers/interventions/utils';
 import BackLink from 'components/back-link';
 
-import type { ErrorResponse } from 'types';
 import type { InterventionFormData } from 'containers/interventions/types';
 
 const CreateInterventionPage: React.FC = () => {
   const { query } = useRouter();
-  const createIntervention = useCreateNewIntervention();
+  const createIntervention = useCreateNewIntervention({
+    onSuccess: (_data, variables) => {
+      toast.success(`Intervention was created successfully`);
+      // adding some delay to make sure the user reads the success message
+      setTimeout(() => {
+        router.replace(`/data/scenarios/${variables.scenarioId}/edit`);
+      }, 1000);
+    },
+    onError: (error) => {
+      const { errors } = error.response?.data;
+      errors.forEach(({ meta }) => {
+        const message = meta.rawError.response.message;
+        if (Array.isArray(message)) {
+          toast.error(message.join('. '));
+        } else {
+          toast.error(message);
+        }
+      });
+    },
+  });
 
   const handleSubmit = useCallback(
     (interventionFormData: InterventionFormData) => {
       const interventionDto = parseInterventionFormDataToDto(interventionFormData);
-
-      createIntervention.mutate(interventionDto, {
-        onSuccess: () => {
-          toast.success(`Intervention was created successfully`);
-          // adding some delay to make sure the user reads the success message
-          setTimeout(() => {
-            router.replace(`/data/scenarios/${interventionDto.scenarioId}/edit`);
-          }, 1000);
-        },
-        onError: (error: ErrorResponse) => {
-          const { errors } = error.response?.data;
-          errors.forEach(({ meta }) => toast.error(meta.rawError.response.message));
-        },
-      });
+      createIntervention.mutate(interventionDto);
     },
     [createIntervention],
   );

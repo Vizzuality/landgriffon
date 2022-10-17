@@ -78,7 +78,9 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
             {/* Actual data */}
             <ScenarioItem scenario={ACTUAL_DATA} isSelected={!currentScenario} />
             {/* Scenarios */}
-            {!isLoading && !error && scenariosList && scenariosList.length > 0 && (
+            {((!isLoading && !error && scenariosList && scenariosList.length > 0) ||
+              !!searchTerm ||
+              searchTerm !== '') && (
               <>
                 <div>
                   <ScenariosFilters />
@@ -119,32 +121,40 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
         )}
 
         {/* No scenarios */}
-        {!isLoading && (!scenariosList || scenariosList.length === 0) && (
-          <div className="space-y-12">
-            <div className="space-y-6 text-sm">
-              <p>
-                Scenarios let you <strong>simulate changes</strong> in sourcing to evaluate how they
-                would affect impacts and risks.
-              </p>
-              <p>Create a scenario to get started.</p>
+        {!isLoading &&
+          (!searchTerm || searchTerm === '') &&
+          (!scenariosList || scenariosList.length === 0) && (
+            <div className="space-y-12">
+              <div className="space-y-6 text-sm">
+                <p>
+                  Scenarios let you <strong>simulate changes</strong> in sourcing to evaluate how
+                  they would affect impacts and risks.
+                </p>
+                <p>Create a scenario to get started.</p>
+              </div>
+              <Link href="/data/scenarios/new">
+                <Anchor
+                  className="block w-full"
+                  variant="primary"
+                  size="xl"
+                  icon={
+                    <div
+                      aria-hidden="true"
+                      className="flex items-center justify-center w-5 h-5 bg-white rounded-full"
+                    >
+                      <PlusIcon className="w-4 h-4 text-navy-400" />
+                    </div>
+                  }
+                >
+                  Add new scenario
+                </Anchor>
+              </Link>
             </div>
-            <Link href="/data/scenarios/new">
-              <Anchor
-                className="block w-full"
-                variant="primary"
-                size="xl"
-                icon={
-                  <div
-                    aria-hidden="true"
-                    className="flex items-center justify-center w-5 h-5 bg-white rounded-full"
-                  >
-                    <PlusIcon className="w-4 h-4 text-navy-400" />
-                  </div>
-                }
-              >
-                Add new scenario
-              </Anchor>
-            </Link>
+          )}
+
+        {(!!searchTerm || searchTerm !== '') && scenariosList.length === 0 && (
+          <div className="text-sm">
+            No results with the term &quot;<strong>{searchTerm}</strong>&quot;
           </div>
         )}
       </div>

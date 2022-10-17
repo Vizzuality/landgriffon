@@ -4,13 +4,14 @@ import { IndicatorRecord } from 'modules/indicator-records/indicator-record.enti
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { Material } from 'modules/materials/material.entity';
 import {
-  ScenarioIntervention,
+  SCENARIO_INTERVENTION_STATUS,
   SCENARIO_INTERVENTION_TYPE,
+  ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import {
-  SourcingLocation,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
+  SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { Unit } from 'modules/units/unit.entity';
@@ -87,6 +88,13 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
       scenario: newScenario,
     });
 
+  const scenarioIntervention3: ScenarioIntervention =
+    await createScenarioIntervention({
+      type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+      scenario: newScenario,
+      status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+    });
+
   // Sourcing Locations - real ones
 
   const cottonSourcingLocation: SourcingLocation = await createSourcingLocation(
@@ -131,6 +139,16 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
     });
 
+  const sourcingLocation2CanceledCottonInactive: SourcingLocation =
+    await createSourcingLocation({
+      material: cotton,
+      businessUnit,
+      t1Supplier: supplierA,
+      adminRegion,
+      scenarioInterventionId: scenarioIntervention3.id,
+      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+    });
+
   // SOURCING LOCATIONS OF TYPE REPLACING
 
   // Scenario Intervention 1 - Change supplier for wool
@@ -153,6 +171,16 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
       t1Supplier: supplierB,
       adminRegion,
       scenarioInterventionId: scenarioIntervention2.id,
+      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+    });
+
+  const sourcingLocation2ReplacingLinenInactive: SourcingLocation =
+    await createSourcingLocation({
+      material: linen,
+      businessUnit,
+      t1Supplier: supplierB,
+      adminRegion,
+      scenarioInterventionId: scenarioIntervention3.id,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
     });
 
@@ -180,6 +208,12 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
       value: -1200,
     });
 
+  const indicatorRecord2CanceledCottonInactive: IndicatorRecord =
+    await createIndicatorRecord({
+      indicator,
+      value: -1200,
+    });
+
   const indicatorRecord1ReplacingWool: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
@@ -187,6 +221,12 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
     });
 
   const indicatorRecord2ReplacingLinen: IndicatorRecord =
+    await createIndicatorRecord({
+      indicator,
+      value: 1150,
+    });
+
+  const indicatorRecord2ReplacingLinenInactive: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
       value: 1150,
@@ -220,6 +260,12 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
     sourcingLocation: sourcingLocation2CanceledCotton,
   });
 
+  await createSourcingRecord({
+    year: 2020,
+    indicatorRecords: [indicatorRecord2CanceledCottonInactive],
+    sourcingLocation: sourcingLocation2CanceledCottonInactive,
+  });
+
   // Sourcing Records + Indicator Records for Replacing Sourcing Location
 
   await createSourcingRecord({
@@ -232,6 +278,12 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
     year: 2020,
     indicatorRecords: [indicatorRecord2ReplacingLinen],
     sourcingLocation: sourcingLocation2ReplacingLinen,
+  });
+
+  await createSourcingRecord({
+    year: 2020,
+    indicatorRecords: [indicatorRecord2ReplacingLinenInactive],
+    sourcingLocation: sourcingLocation2ReplacingLinenInactive,
   });
 
   return { indicator, newScenario };

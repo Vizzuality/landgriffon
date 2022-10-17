@@ -8,6 +8,7 @@ import {
   createIndicator,
   createIndicatorRecord,
   createMaterial,
+  createScenario,
   createSourcingLocation,
   createSourcingRecord,
   createSupplier,
@@ -51,6 +52,7 @@ import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { createNewMaterialInterventionPreconditions } from './actual-vs-scenario-preconditions/new-material-intervention.preconditions';
+import { Scenario } from '../../../src/modules/scenarios/scenario.entity';
 
 describe('Impact Table and Charts test suite (e2e)', () => {
   let app: INestApplication;
@@ -1194,14 +1196,12 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     test(
       'When I query a Impact Table' +
         'And I include a Scenario Id' +
-        'Then I should see the elements included in that Scenario among the actual data',
+        'Then I should see the elements included in that Scenario among the actual data ' +
+        'ignoring interventions with status INACTIVE',
       async () => {
-        const {
-          replacedMaterials,
-          replacingMaterials,
-          scenarioIntervention,
-          indicator,
-        } = await createNewMaterialInterventionPreconditions();
+        const scenario: Scenario = await createScenario();
+        const { replacedMaterials, replacingMaterials, indicator } =
+          await createNewMaterialInterventionPreconditions(scenario);
 
         const response = await request(app.getHttpServer())
           .get('/api/v1/impact/table')
@@ -1211,7 +1211,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
             endYear: 2022,
             startYear: 2019,
             groupBy: 'material',
-            scenarioId: scenarioIntervention.scenarioId,
+            scenarioId: scenario.id,
           });
 
         expect(

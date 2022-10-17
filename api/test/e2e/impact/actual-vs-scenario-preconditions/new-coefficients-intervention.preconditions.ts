@@ -3,10 +3,13 @@ import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { Material } from 'modules/materials/material.entity';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import {
-  SourcingLocation,
+  SCENARIO_INTERVENTION_STATUS,
+  ScenarioIntervention,
+} from 'modules/scenario-interventions/scenario-intervention.entity';
+import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
+  SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { Unit } from 'modules/units/unit.entity';
@@ -23,8 +26,11 @@ import {
   createUnit,
 } from '../../../entity-mocks';
 import { INDICATOR_TYPES } from '../../../../src/modules/indicators/indicator.entity';
+import { Scenario } from '../../../../src/modules/scenarios/scenario.entity';
 
-export async function createNewCoefficientsInterventionPreconditions(): Promise<{
+export async function createNewCoefficientsInterventionPreconditions(
+  customScenario?: Scenario,
+): Promise<{
   indicator: Indicator;
   scenarioIntervention: ScenarioIntervention;
 }> {
@@ -74,8 +80,20 @@ export async function createNewCoefficientsInterventionPreconditions(): Promise<
 
   // Scenario pre-conditions
 
-  const scenarioIntervention: ScenarioIntervention =
-    await createScenarioIntervention();
+  const scenarioIntervention: ScenarioIntervention = customScenario
+    ? await createScenarioIntervention({ scenario: customScenario })
+    : await createScenarioIntervention();
+
+  const scenarioInterventionInactive: ScenarioIntervention = customScenario
+    ? await createScenarioIntervention({
+        scenario: customScenario,
+        description: 'inactive intervention',
+        status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+      })
+    : await createScenarioIntervention({
+        description: 'inactive intervention',
+        status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+      });
 
   // Sourcing Locations - real ones
 
@@ -148,6 +166,27 @@ export async function createNewCoefficientsInterventionPreconditions(): Promise<
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
     });
 
+  // Sourcing Locations belonging to Inactive Intervention
+  const woolSourcingLocationCancelledInactive: SourcingLocation =
+    await createSourcingLocation({
+      material: wool,
+      businessUnit,
+      t1Supplier: supplier,
+      adminRegion,
+      scenarioInterventionId: scenarioInterventionInactive.id,
+      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+    });
+
+  const woolSourcingLocationReplacingInactive: SourcingLocation =
+    await createSourcingLocation({
+      material: wool,
+      businessUnit,
+      t1Supplier: supplier,
+      adminRegion,
+      scenarioInterventionId: scenarioInterventionInactive.id,
+      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+    });
+
   // Creating Sourcing Records and Indicator Records for the Sourcing Locations
 
   const indicatorRecordCottonReplacing: IndicatorRecord =
@@ -155,10 +194,15 @@ export async function createNewCoefficientsInterventionPreconditions(): Promise<
       indicator,
       value: 400,
     });
-  const indicatorRecord1WoolReplacing: IndicatorRecord =
+  const indicatorRecordWoolReplacing: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
       value: 500,
+    });
+  const indicatorRecordWoolReplacingInactive: IndicatorRecord =
+    await createIndicatorRecord({
+      indicator,
+      value: 200,
     });
 
   const indicatorRecordCotton: IndicatorRecord = await createIndicatorRecord({
@@ -181,6 +225,12 @@ export async function createNewCoefficientsInterventionPreconditions(): Promise<
     await createIndicatorRecord({
       indicator,
       value: -750,
+    });
+
+  const indicatorRecordWoolCancelledInactive: IndicatorRecord =
+    await createIndicatorRecord({
+      indicator,
+      value: -234,
     });
 
   const indicatorRecordRubber: IndicatorRecord = await createIndicatorRecord({
@@ -222,6 +272,12 @@ export async function createNewCoefficientsInterventionPreconditions(): Promise<
     sourcingLocation: woolSourcingLocationCancelled,
   });
 
+  await createSourcingRecord({
+    year: 2020,
+    indicatorRecords: [indicatorRecordWoolCancelledInactive],
+    sourcingLocation: woolSourcingLocationCancelledInactive,
+  });
+
   // Sourcing Records + Indicator Records for Replacing Sourcing Locations
 
   await createSourcingRecord({
@@ -232,8 +288,14 @@ export async function createNewCoefficientsInterventionPreconditions(): Promise<
 
   await createSourcingRecord({
     year: 2020,
-    indicatorRecords: [indicatorRecord1WoolReplacing],
+    indicatorRecords: [indicatorRecordWoolReplacing],
     sourcingLocation: woolSourcingLocationReplacing,
+  });
+
+  await createSourcingRecord({
+    year: 2020,
+    indicatorRecords: [indicatorRecordWoolReplacingInactive],
+    sourcingLocation: woolSourcingLocationReplacingInactive,
   });
 
   return { indicator, scenarioIntervention };

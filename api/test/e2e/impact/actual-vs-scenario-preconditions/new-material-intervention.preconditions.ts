@@ -3,10 +3,13 @@ import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { Material } from 'modules/materials/material.entity';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import {
-  SourcingLocation,
+  SCENARIO_INTERVENTION_STATUS,
+  ScenarioIntervention,
+} from 'modules/scenario-interventions/scenario-intervention.entity';
+import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
+  SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { Unit } from 'modules/units/unit.entity';
@@ -76,6 +79,18 @@ export async function createNewMaterialInterventionPreconditions(
   const scenarioIntervention: ScenarioIntervention = customScenario
     ? await createScenarioIntervention({ scenario: customScenario })
     : await createScenarioIntervention();
+
+  const scenarioInterventionInactive: ScenarioIntervention = customScenario
+    ? await createScenarioIntervention({
+        scenario: customScenario,
+        description: 'inactive intervention',
+        status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+      })
+    : await createScenarioIntervention({
+        description: 'inactive intervention',
+        status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+      });
+
   // Sourcing Locations - real ones
 
   const cottonSourcingLocation: SourcingLocation = await createSourcingLocation(
@@ -116,6 +131,16 @@ export async function createNewMaterialInterventionPreconditions(
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
     });
 
+  const woolSourcingLocationCancelledInactive: SourcingLocation =
+    await createSourcingLocation({
+      material: wool,
+      businessUnit,
+      t1Supplier: supplier,
+      adminRegion,
+      scenarioInterventionId: scenarioInterventionInactive.id,
+      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+    });
+
   // Sourcing location for the Replacing Material
 
   const linenSourcingLocationReplacing: SourcingLocation =
@@ -125,6 +150,16 @@ export async function createNewMaterialInterventionPreconditions(
       t1Supplier: supplier,
       adminRegion,
       scenarioInterventionId: scenarioIntervention.id,
+      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+    });
+
+  const linenSourcingLocationReplacingInactive: SourcingLocation =
+    await createSourcingLocation({
+      material: linen,
+      businessUnit,
+      t1Supplier: supplier,
+      adminRegion,
+      scenarioInterventionId: scenarioInterventionInactive.id,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
     });
 
@@ -158,6 +193,18 @@ export async function createNewMaterialInterventionPreconditions(
       value: 750,
     });
 
+  const indicatorRecordWoolCancelledInactive: IndicatorRecord =
+    await createIndicatorRecord({
+      indicator,
+      value: -100,
+    });
+
+  const indicatorRecordLinenReplacingInactive: IndicatorRecord =
+    await createIndicatorRecord({
+      indicator,
+      value: 50,
+    });
+
   // Sourcing Records + Indicator Records for Real Sourcing Locations
 
   await createSourcingRecord({
@@ -186,12 +233,24 @@ export async function createNewMaterialInterventionPreconditions(
     sourcingLocation: woolSourcingLocationCancelled,
   });
 
+  await createSourcingRecord({
+    year: 2020,
+    indicatorRecords: [indicatorRecordWoolCancelledInactive],
+    sourcingLocation: woolSourcingLocationCancelledInactive,
+  });
+
   // Sourcing Records + Indicator Records for Replacing Sourcing Location
 
   await createSourcingRecord({
     year: 2020,
     indicatorRecords: [indicatorRecordLinenReplacing],
     sourcingLocation: linenSourcingLocationReplacing,
+  });
+
+  await createSourcingRecord({
+    year: 2020,
+    indicatorRecords: [indicatorRecordLinenReplacingInactive],
+    sourcingLocation: linenSourcingLocationReplacingInactive,
   });
 
   return {

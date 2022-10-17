@@ -347,7 +347,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       });
     });
 
-    test('When I get a calculated H3 Water Impact Map with the necessary input values and Scenario Id property, then the response should include both actual data and Scenario data for the given id, and the quantiles should be calculated differently', async () => {
+    test('When I get a calculated H3 Water Impact Map with the necessary input values and Scenario Id property, then the response should include both actual data and Scenario data for the given id (ignoring INACTIVE interventions), and the quantiles should be calculated differently', async () => {
       const response = await request(app.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -381,7 +381,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     });
   });
   describe('Actual vs Scenario Comparison Map', () => {
-    test('When I request a comparison map betwen actual H3 Water Impact Map data, and the data including a scenario with a given Id, then the response should have the difference between actual data and Scenario data', async () => {
+    test('When I request a comparison map betwen actual H3 Water Impact Map data, and the data including a scenario with a given Id, then the response should have the difference between actual data and Scenario data (ignoring INACTIVE interventions)', async () => {
       const response = await request(app.getHttpServer())
         .get(`/api/v1/h3/map/impact/compare/actual/vs/scenario`)
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -415,7 +415,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       ).toBeTruthy();
     });
 
-    test('When I request a comparison map betwen actual H3 Water Impact Map data, and the data including a scenario with a given Id with relative property set to true, then the response should have the difference between actual data and Scenario data in percentages', async () => {
+    test('When I request a comparison map betwen actual H3 Water Impact Map data, and the data including a scenario with a given Id with relative property set to true, then the response should have the difference between actual data and Scenario data in percentages (ignoring INACTIVE interventions)', async () => {
       const response = await request(app.getHttpServer())
         .get(`/api/v1/h3/map/impact/compare/actual/vs/scenario`)
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -451,7 +451,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
   });
 
   describe('Scenario vs Scenario Comparison Map', () => {
-    test('When I request a comparison map between two scenarios (a baseScenario and a comparedScenario ids), then the response should have the difference between the data of of both scenarios', async () => {
+    test('When I request a comparison map between two scenarios (a baseScenario and a comparedScenario ids), then the response should have the difference between the data of of both scenarios (ignoring INACTIVE interventions)', async () => {
       const response = await request(app.getHttpServer())
         .get(`/api/v1/h3/map/impact/compare/scenario/vs/scenario`)
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -487,7 +487,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       ).toBeTruthy();
     });
 
-    test('When I request a comparison map between two scenarios (a baseScenario and a comparedScenario ids) with relative property set to true, then the response should have the difference between the data of of both scenarios in percentages', async () => {
+    test('When I request a comparison map between two scenarios (a baseScenario and a comparedScenario ids) with relative property set to true, then the response should have the difference between the data of of both scenarios in percentages (ignoring INACTIVE interventions)', async () => {
       const response = await request(app.getHttpServer())
         .get(`/api/v1/h3/map/impact/compare/scenario/vs/scenario`)
         .set('Authorization', `Bearer ${jwtToken}`)

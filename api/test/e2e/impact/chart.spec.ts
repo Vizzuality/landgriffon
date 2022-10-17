@@ -26,6 +26,7 @@ import { SourcingLocationGroup } from '../../../src/modules/sourcing-location-gr
 import {
   ImpactTableDataAggregatedValue,
   ImpactTableDataAggregationInfo,
+  ImpactTableRowsValues,
 } from 'modules/impact/dto/response-impact-table.dto';
 import {
   createAdminRegion,
@@ -33,6 +34,7 @@ import {
   createIndicator,
   createIndicatorRecordV2,
   createMaterial,
+  createScenario,
   createSourcingLocation,
   createSourcingRecord,
   createSupplier,
@@ -40,6 +42,7 @@ import {
 } from '../../entity-mocks';
 import { range } from 'lodash';
 import { createNewMaterialInterventionPreconditions } from './actual-vs-scenario-preconditions/new-material-intervention.preconditions';
+import { Scenario } from '../../../src/modules/scenarios/scenario.entity';
 
 describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
   let app: INestApplication;
@@ -435,14 +438,13 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
     test(
       'When I query a Impact Chart' +
         'And I include a Scenario Id' +
-        'Then I should see the elements included in that Scenario among the actual data',
+        'Then I should see the elements included in that Scenario among the actual data ' +
+        'ignoring INACTIVE interventions',
       async () => {
-        const {
-          replacedMaterials,
-          replacingMaterials,
-          scenarioIntervention,
-          indicator,
-        } = await createNewMaterialInterventionPreconditions();
+        const newScenario: Scenario = await createScenario();
+
+        const { replacedMaterials, replacingMaterials, indicator } =
+          await createNewMaterialInterventionPreconditions(newScenario);
 
         const response = await request(app.getHttpServer())
           .get('/api/v1/impact/ranking')
@@ -452,21 +454,38 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
             endYear: 2022,
             startYear: 2019,
             groupBy: 'material',
-            scenarioId: scenarioIntervention.scenarioId,
+            scenarioId: newScenario.id,
             maxRankingEntities: 5,
           });
 
         expect(
           response.body.impactTable[0].rows[0].children.some(
-            (child: Material) => child.id === replacedMaterials['cotton'].id,
+            (child: Material) =>
+              child.name === replacedMaterials['cotton'].name,
           ),
-        );
+        ).toBeTruthy();
 
         expect(
           response.body.impactTable[0].rows[0].children.some(
-            (child: Material) => child.id === replacingMaterials['linen'].id,
+            (child: Material) => child.name === replacedMaterials['wool'].name,
           ),
-        );
+        ).toBeTruthy();
+
+        expect(
+          response.body.impactTable[0].rows[0].children.some(
+            (child: Material) =>
+              child.name === replacingMaterials['linen'].name,
+          ),
+        ).toBeTruthy();
+
+        expect(
+          response.body.impactTable[0].rows[0].values.some(
+            (value: ImpactTableRowsValues) =>
+              value.value === -1050 &&
+              !value.isProjected &&
+              value.year === 2020,
+          ),
+        ).toBeTruthy();
       },
     );
   });

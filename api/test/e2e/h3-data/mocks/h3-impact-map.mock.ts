@@ -18,8 +18,8 @@ import {
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import {
   LOCATION_TYPES,
-  SourcingLocation,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
+  SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { getManager } from 'typeorm';
@@ -31,7 +31,10 @@ import {
   MaterialToH3,
 } from 'modules/materials/material-to-h3.entity';
 import { h3BasicFixtureForScaler } from './h3-fixtures';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import {
+  SCENARIO_INTERVENTION_STATUS,
+  ScenarioIntervention,
+} from 'modules/scenario-interventions/scenario-intervention.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { Scenario } from '../../../../src/modules/scenarios/scenario.entity';
 
@@ -250,6 +253,65 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
     materialH3DataId: harvestH3Data.id,
     scaler: 2000,
     value: 50,
+  });
+
+  // Inactive intervention for scenario one, should be ignored in all calculations
+  const scenarioInterventionOneInactive: ScenarioIntervention =
+    await createScenarioIntervention({
+      scenario: scenario,
+      status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+    });
+
+  const canceledSourcingLocationOneInactive: SourcingLocation =
+    await createSourcingLocation({
+      scenarioInterventionId: scenarioInterventionOneInactive.id,
+      adminRegionId: adminRegionOne.id,
+      geoRegionId: geoRegionOne.id,
+      materialId: materialOne.id,
+      t1SupplierId: t1SupplierOne.id,
+      producerId: producerSupplierOne.id,
+      locationType: LOCATION_TYPES.AGGREGATION_POINT,
+      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+    });
+
+  const cancelledSourcingRecordOneInactive: SourcingRecord =
+    await createSourcingRecord({
+      sourcingLocation: canceledSourcingLocationOneInactive,
+      tonnage: 100,
+    });
+
+  await createIndicatorRecord({
+    sourcingRecordId: cancelledSourcingRecordOneInactive.id,
+    indicatorId: indicator.id,
+    materialH3DataId: harvestH3Data.id,
+    scaler: 2000,
+    value: -123,
+  });
+
+  const replacedSourcingLocationOneInactive: SourcingLocation =
+    await createSourcingLocation({
+      scenarioInterventionId: scenarioInterventionOneInactive.id,
+      adminRegionId: adminRegionOne.id,
+      geoRegionId: geoRegionOne.id,
+      materialId: materialOne.id,
+      t1SupplierId: t1SupplierOne.id,
+      producerId: producerSupplierOne.id,
+      locationType: LOCATION_TYPES.AGGREGATION_POINT,
+      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+    });
+
+  const replacedSourcingRecordOneInactive: SourcingRecord =
+    await createSourcingRecord({
+      sourcingLocation: replacedSourcingLocationOneInactive,
+      tonnage: 100,
+    });
+
+  await createIndicatorRecord({
+    sourcingRecordId: replacedSourcingRecordOneInactive.id,
+    indicatorId: indicator.id,
+    materialH3DataId: harvestH3Data.id,
+    scaler: 2000,
+    value: 67,
   });
 
   //Intervention Two

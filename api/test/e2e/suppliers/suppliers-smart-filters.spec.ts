@@ -7,6 +7,8 @@ import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import {
   createMaterial,
+  createScenario,
+  createScenarioIntervention,
   createSourcingLocation,
   createSupplier,
 } from '../../entity-mocks';
@@ -18,7 +20,9 @@ import { MaterialRepository } from 'modules/materials/material.repository';
 import {
   LOCATION_TYPES,
   LOCATION_TYPES_PARAMS,
+  SOURCING_LOCATION_TYPE_BY_INTERVENTION,
 } from 'modules/sourcing-locations/sourcing-location.entity';
+import { SCENARIO_INTERVENTION_STATUS } from '../../../src/modules/scenario-interventions/scenario-intervention.entity';
 
 describe('Suppliers - Get trees - Smart Filters', () => {
   let app: INestApplication;
@@ -196,4 +200,74 @@ describe('Suppliers - Get trees - Smart Filters', () => {
       ).toBe(undefined);
     },
   );
+
+  describe('Material Smart Filters - Filter by Scenario', () => {
+    test(
+      'When I query a Supplier Tree endpoint ' +
+        'And I query the ones with sourcing locations' +
+        'And I filter them by Scenario' +
+        'Then I should receive a tree list of suppliers where there are sourcing-locations for, and are present in some intervention with status ACTIVE, of said Scenario',
+      async () => {
+        const baseMaterial: Material = await createMaterial({
+          name: 'baseMaterial',
+        });
+
+        const parentSupplier: Supplier = await createSupplier({
+          name: 'parentSupplier1',
+        });
+        const childSupplier: Supplier = await createSupplier({
+          name: 'childSupplier1',
+          parent: parentSupplier,
+        });
+
+        const parentSupplier2: Supplier = await createSupplier({
+          name: 'parentSupplier2',
+        });
+        const childSupplier2: Supplier = await createSupplier({
+          name: 'childSupplier2 inactive',
+          parent: parentSupplier2,
+        });
+
+        const scenario = await createScenario();
+        const intervention = await createScenarioIntervention({
+          scenario,
+        });
+        const interventionInactive = await createScenarioIntervention({
+          scenario,
+          status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+        });
+
+        await createSourcingLocation({
+          materialId: baseMaterial.id,
+          interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+          locationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
+          scenarioInterventionId: intervention.id,
+          producerId: childSupplier.id,
+        });
+
+        await createSourcingLocation({
+          materialId: baseMaterial.id,
+          interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+          locationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
+          scenarioInterventionId: interventionInactive.id,
+          producerId: childSupplier2.id,
+        });
+
+        const response = await request(app.getHttpServer())
+          .get('/api/v1/suppliers/trees')
+          .query({
+            withSourcingLocations: true,
+            scenarioId: scenario.id,
+          })
+          .set('Authorization', `Bearer ${jwtToken}`);
+
+        expect(HttpStatus.OK);
+        expect(response.body.data).toHaveLength(1);
+        expect(response.body.data[0].id).toEqual(parentSupplier.id);
+        expect(response.body.data[0].attributes.children[0].name).toEqual(
+          childSupplier.name,
+        );
+      },
+    );
+  });
 });

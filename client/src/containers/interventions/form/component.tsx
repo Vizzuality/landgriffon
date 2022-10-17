@@ -141,7 +141,7 @@ const TYPES_OF_INTERVENTIONS = Object.values(InterventionTypes).map((interventio
   label: interventionType,
 }));
 
-type SubSchema = typeof schemaValidation['__outputType'];
+type SubSchema = yup.InferType<typeof schemaValidation>;
 
 const InterventionForm: React.FC<InterventionFormProps> = ({
   intervention,

@@ -36,15 +36,19 @@ type InterventionFormProps = {
   onSubmit?: (interventionFormData: InterventionFormData) => void;
 };
 
-const optionSchema = yup.object({
-  label: yup.string(),
-  value: yup.string(),
-});
+const optionSchema = yup
+  .object({
+    label: yup.string().required(),
+    value: yup.string().required(),
+  })
+  .default(undefined);
 
-const locationTypeSchema = yup.object({
-  label: yup.string(),
-  value: yup.mixed<LocationTypes>(),
-});
+const locationTypeSchema = yup
+  .object({
+    label: yup.string().nullable().required(),
+    value: yup.mixed<LocationTypes>().required(),
+  })
+  .default(undefined);
 
 const schemaValidation = yup.object({
   title: yup.string().max(60).required(),
@@ -69,48 +73,39 @@ const schemaValidation = yup.object({
   newProducerId: optionSchema.nullable(),
 
   // Location
-  newLocationType: yup.lazy(() => {
-    return locationTypeSchema.when('interventionType', (interventionType) => {
-      if (
-        [InterventionTypes.Material, InterventionTypes.SupplierLocation].includes(interventionType)
-      ) {
-        return locationTypeSchema.required('Location type field is required');
-      }
-
-      return locationTypeSchema.nullable();
-    });
+  newLocationType: locationTypeSchema.when('interventionType', {
+    is: (interventionType) => {
+      return [InterventionTypes.Material, InterventionTypes.SupplierLocation].includes(
+        interventionType,
+      );
+    },
+    then: locationTypeSchema.required(),
+    otherwise: locationTypeSchema.notRequired(),
   }),
-  newLocationCountryInput: yup.lazy(() => {
-    return optionSchema.when('interventionType', (interventionType) => {
-      if (
-        [InterventionTypes.Material, InterventionTypes.SupplierLocation].includes(interventionType)
-      ) {
-        return yup.object().required('Country field is required');
-      }
-
-      return yup.object().nullable();
-    });
+  newLocationCountryInput: optionSchema.when('interventionType', {
+    is: (interventionType) =>
+      [InterventionTypes.Material, InterventionTypes.SupplierLocation].includes(interventionType),
+    then: (schema) => schema.required('Country field is required'),
+    otherwise: (schema) => schema.nullable(),
   }),
 
-  cityAddressCoordinates: yup.lazy((_value) => {
-    return yup.string().when('newLocationType', (locationType) => {
-      if (
+  cityAddressCoordinates: yup
+    .string()
+    .test('is-coordinates', 'Coordinates should be valid (-90/90, -180/180)', (value) => {
+      if (!isCoordinates(value)) {
+        return false;
+      }
+      const [lat, lng] = value.split(',').map((coordinate) => parseFloat(coordinate));
+      return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+    })
+    .when('newLocationType', {
+      is: (newLocationType) =>
         [LocationTypes.aggregationPoint, LocationTypes.pointOfProduction].includes(
-          locationType?.value,
-        ) &&
-        isCoordinates(_value)
-      ) {
-        return yup
-          .string()
-          .test('is-coordinates', 'Coordinates should be valid (-90/90, -180/180)', (value) => {
-            const [lat, lng] = value.split(',').map((coordinate) => parseFloat(coordinate));
-            return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
-          });
-      }
-
-      return yup.string().nullable();
-    });
-  }),
+          newLocationType?.value,
+        ),
+      then: (schema) => schema.required('Coordinates are required'),
+      otherwise: (schema) => schema.nullable(),
+    }),
 
   // New material
   newMaterialId: yup

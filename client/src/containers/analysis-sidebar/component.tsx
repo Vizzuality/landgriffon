@@ -87,7 +87,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
                 </div>
                 <div className="relative z-10 flex-1 overflow-hidden">
                   <ul className="relative grid grid-cols-1 gap-5 my-2 overflow-auto sm:gap-2 sm:grid-cols-2 lg:grid-cols-1">
-                    {scenariosList.map((item) => (
+                    {scenariosList?.map((item) => (
                       <li key={item.id} className="last-of-type:mb-12">
                         <ScenarioItem scenario={item} isSelected={currentScenario === item.id} />
                       </li>
@@ -123,7 +123,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
         {/* No scenarios */}
         {!isLoading &&
           (!searchTerm || searchTerm === '') &&
-          (!scenariosList || scenariosList.length === 0) && (
+          (!scenariosList || scenariosList?.length === 0) && (
             <div className="space-y-12">
               <div className="space-y-6 text-sm">
                 <p>
@@ -152,14 +152,14 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
             </div>
           )}
 
-        {(!!searchTerm || searchTerm !== '') && scenariosList.length === 0 && (
+        {(!!searchTerm || searchTerm !== '') && scenariosList?.length === 0 && (
           <div className="text-sm">
             No results with the term &quot;<strong>{searchTerm}</strong>&quot;
           </div>
         )}
       </div>
 
-      {scenariosList && scenariosList.length > 0 && (
+      {scenariosList?.length > 0 && (
         <div className="sticky bottom-0 left-0 z-20 w-full pb-6 bg-white before:bg-gradient-to-t before:from-white before:w-full before:h-16 before:content before:-top-16 before:left-0 before:absolute">
           <Link href="/data/scenarios/new">
             <Anchor

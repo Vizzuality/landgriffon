@@ -106,6 +106,23 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     ]);
   });
 
+  test('When I query the API for an Impact Table with start year larger than end year then I should get a proper error message', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/impact/table')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .query({
+        'indicatorIds[]': [uuidv4()],
+        endYear: 2010,
+        startYear: 2012,
+        groupBy: 'material',
+      })
+      .expect(HttpStatus.BAD_REQUEST);
+
+    expect(response.body.errors[0].meta.rawError.response.message).toEqual([
+      'Start year must be earlier than the end year',
+    ]);
+  });
+
   test('When I query the API for a Impact Table with correct params but there are not indicators to retrieve in the DB, then I should get a proper errors message ', async () => {
     await createIndicatorRecord();
     const response = await request(app.getHttpServer())
@@ -113,8 +130,8 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
         'indicatorIds[]': [uuidv4(), uuidv4(), uuidv4()],
-        endYear: 1,
-        startYear: 2,
+        endYear: 2,
+        startYear: 1,
         groupBy: 'material',
       })
       .expect(HttpStatus.NOT_FOUND);

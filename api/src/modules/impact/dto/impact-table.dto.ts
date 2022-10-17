@@ -7,6 +7,7 @@ import {
   IsPositive,
   IsString,
   IsUUID,
+  Validate,
 } from 'class-validator';
 import {
   ApiHideProperty,
@@ -21,6 +22,7 @@ import {
   LOCATION_TYPES_PARAMS,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { transformLocationType } from 'utils/transform-location-type.util';
+import { ImpactAnalysisStartYearValidator } from 'modules/impact/dto/custom-validators/start-year.custom.validator';
 
 export class BaseImpactTableDto {
   @ApiProperty({
@@ -34,6 +36,7 @@ export class BaseImpactTableDto {
   @Type(() => Number)
   @IsNumber()
   @IsNotEmpty()
+  @Validate(ImpactAnalysisStartYearValidator)
   startYear!: number;
 
   @ApiProperty()

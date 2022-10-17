@@ -3,7 +3,8 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 
 import { apiService } from 'services/api';
 
-import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
+import type { ErrorResponse } from 'types';
+import type { UseQueryResult, UseQueryOptions, UseMutationOptions } from '@tanstack/react-query';
 import type { Intervention, InterventionDto } from 'containers/interventions/types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
@@ -126,13 +127,7 @@ export function useIntervention({
     {
       ...DEFAULT_QUERY_OPTIONS,
       ...options,
-      enabled: !!interventionId,
-      // select: (intervention: Intervention) => ({
-      //   ...intervention,
-      //   //! As of date, the API returns this value with spaces instead of hyphens, so it needs to be parsed previously.
-      //   //! This can be removed once the change is done in the API
-      //   // newLocationType: intervention.newLocationType.replace(/(\s)/g, '-'),
-      // }),
+      enabled: (options.enabled ?? true) && !!interventionId,
     },
   );
   return query as UseQueryResult<Intervention>;
@@ -162,18 +157,29 @@ export function useInterventions(queryParams = {}): ResponseInterventionsData {
   }, [response]);
 }
 
-export function useCreateNewIntervention() {
+interface InterventionCreationResponse {
+  attributes: { title: Intervention['title'] };
+  id: Intervention['id'];
+  type: Intervention['type'];
+}
+
+export const useCreateNewIntervention = (
+  options?: UseMutationOptions<InterventionCreationResponse, ErrorResponse, InterventionDto>,
+) => {
   const createIntervention = (data: InterventionDto) =>
-    apiService.request({
-      method: 'POST',
-      url: '/scenario-interventions',
-      data,
-    });
+    apiService
+      .request<InterventionCreationResponse>({
+        method: 'POST',
+        url: '/scenario-interventions',
+        data,
+      })
+      .then(({ data }) => data);
 
   return useMutation(createIntervention, {
     mutationKey: ['createIntervention'],
+    ...options,
   });
-}
+};
 
 export function useDeleteIntervention() {
   const deleteIntervention = (id: string) =>

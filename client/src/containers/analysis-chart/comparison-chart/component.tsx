@@ -22,6 +22,7 @@ import Loading from 'components/loading';
 import { NUMBER_FORMAT } from 'utils/number-format';
 
 import type { Indicator } from 'types';
+import type { ImpactComparisonParams } from 'hooks/impact/comparison';
 
 type StackedAreaChartProps = {
   indicator: Indicator;
@@ -41,15 +42,23 @@ type ChartData = {
 };
 
 const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
-  const { scenarioToCompare } = useAppSelector(scenarios);
+  const { currentScenario, scenarioToCompare } = useAppSelector(scenarios);
   const filters = useAppSelector(filtersForTabularAPI);
+  const isScenarioVsScenario = currentScenario && scenarioToCompare;
 
-  const params = {
+  const params: Partial<ImpactComparisonParams> = {
     ...omit(filters, 'indicatorId'),
     indicatorIds: [indicator.id],
-    scenarioId: scenarioToCompare,
     disabledPagination: true,
   };
+
+  // Scenario vs scenario comparison
+  if (currentScenario && scenarioToCompare) {
+    params.baseScenarioId = currentScenario;
+    params.comparedScenarioId = scenarioToCompare;
+  } else {
+    params.scenarioId = scenarioToCompare;
+  }
 
   const enabled =
     !!filters?.indicatorId &&
@@ -69,13 +78,24 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
     const values =
       yearSum?.map((item) => ({
         ...item,
+
+        // Actual data
         value: !item.isProjected ? item.value : null,
         valueProjected:
           lastYearNonProjectedData.year === item.year || item.isProjected ? item.value : null,
-        scenarioValue: !item.isProjected ? item.scenarioValue : null,
-        scenarioValueProjected:
+
+        // Scenario 1
+        scenarioOneValue: !item.isProjected ? item.scenarioValue || item.scenarioOneValue : null,
+        scenarioOneValueProjected:
           lastYearNonProjectedData.year === item.year || item.isProjected
-            ? item.scenarioValue
+            ? item.scenarioValue || item.scenarioOneValue
+            : null,
+
+        // Scenario 2
+        scenarioTwoValue: !item.isProjected ? item.scenarioTwoValue : null,
+        scenarioTwoValueProjected:
+          lastYearNonProjectedData.year === item.year || item.isProjected
+            ? item.scenarioTwoValue
             : null,
       })) || [];
 
@@ -137,31 +157,37 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                     tickFormatter={NUMBER_FORMAT}
                   />
                   <Tooltip animationDuration={500} content={renderTooltip} />
-                  {/* Actual data */}
-                  <Line
-                    animationEasing="ease"
-                    animationDuration={500}
-                    dataKey="value"
-                    stroke="#AEB1B5"
-                    strokeWidth={2}
-                    type="linear"
-                  />
-                  <Line
-                    animationEasing="ease"
-                    animationDuration={500}
-                    dataKey="valueProjected"
-                    dot={{ strokeDasharray: 0, strokeWidth: 2 }}
-                    stroke="#AEB1B5"
-                    strokeDasharray="4 3"
-                    strokeWidth={2}
-                    type="linear"
-                  />
 
-                  {/* Scenario */}
+                  {/* Actual data */}
+                  {!isScenarioVsScenario && (
+                    <>
+                      <Line
+                        animationEasing="ease"
+                        animationDuration={500}
+                        dataKey="value"
+                        stroke="#AEB1B5"
+                        strokeWidth={2}
+                        type="linear"
+                      />
+                      <Line
+                        animationEasing="ease"
+                        animationDuration={500}
+                        dataKey="valueProjected"
+                        dot={{ strokeDasharray: 0, strokeWidth: 2 }}
+                        stroke="#AEB1B5"
+                        strokeDasharray="4 3"
+                        strokeWidth={2}
+                        type="linear"
+                        legendType="none"
+                      />
+                    </>
+                  )}
+
+                  {/* Scenario 1 */}
                   <Line
                     animationEasing="ease"
                     animationDuration={500}
-                    dataKey="scenarioValue"
+                    dataKey="scenarioOneValue"
                     fillOpacity={0.9}
                     stroke="#3F59E0"
                     strokeWidth={2}
@@ -170,13 +196,40 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                   <Line
                     animationEasing="ease"
                     animationDuration={500}
-                    dataKey="scenarioValueProjected"
+                    dataKey="scenarioOneValueProjected"
                     dot={{ strokeDasharray: 0, strokeWidth: 2 }}
                     stroke="#3F59E0"
                     strokeDasharray="4 3"
                     strokeWidth={2}
                     type="linear"
+                    legendType="none"
                   />
+
+                  {/* Scenario 2 */}
+                  {isScenarioVsScenario && (
+                    <>
+                      <Line
+                        animationEasing="ease"
+                        animationDuration={500}
+                        dataKey="scenarioTwoValue"
+                        fillOpacity={0.9}
+                        stroke="#4AB7F3"
+                        strokeWidth={2}
+                        type="linear"
+                      />
+                      <Line
+                        animationEasing="ease"
+                        animationDuration={500}
+                        dataKey="scenarioTwoValueProjected"
+                        dot={{ strokeDasharray: 0, strokeWidth: 2 }}
+                        stroke="#4AB7F3"
+                        strokeDasharray="4 3"
+                        strokeWidth={2}
+                        type="linear"
+                        legendType="none"
+                      />
+                    </>
+                  )}
                 </LineChart>
               </ResponsiveContainer>
             </div>

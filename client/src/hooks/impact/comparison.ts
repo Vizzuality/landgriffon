@@ -28,6 +28,8 @@ export type ImpactComparisonParams = {
   scenarioId?: Scenario['id']; // TO-DO: remove and unify with comparedScenarioId
   baseScenarioId?: Scenario['id'];
   comparedScenarioId: Scenario['id'];
+  scenarioOneValue?: Scenario['id']; // TO-DO: remove and unify with baseScenarioId
+  scenarioTwoValue?: Scenario['id']; // TO-DO: remove and unify with comparedScenarioId
   indicatorIds: string[];
   groupBy: string;
   startYear: number;

@@ -4,7 +4,7 @@ import { sortBy } from 'lodash';
 import TreeSelect from 'components/tree-select';
 import { useAdminRegionsTrees } from 'hooks/admin-regions';
 
-import type { Ref } from 'react';
+import type { Ref, ComponentRef } from 'react';
 import type { AdminRegionsTreesParams } from 'hooks/admin-regions';
 import type { TreeSelectOption, TreeSelectProps } from 'components/tree-select/types';
 
@@ -36,7 +36,7 @@ const InnerOriginRegionsFilter = <IsMulti extends boolean>(
     fitContent,
     ...props
   }: OriginRegionsFilterProps<IsMulti>,
-  ref: Ref<HTMLInputElement>,
+  ref: Ref<ComponentRef<typeof TreeSelect>>,
 ) => {
   const { data, isFetching } = useAdminRegionsTrees({
     depth,
@@ -99,7 +99,7 @@ const InnerOriginRegionsFilter = <IsMulti extends boolean>(
 };
 
 const OriginRegionsFilter = React.forwardRef(InnerOriginRegionsFilter) as <IsMulti extends boolean>(
-  props: OriginRegionsFilterProps<IsMulti> & { ref?: Ref<HTMLInputElement> },
+  props: OriginRegionsFilterProps<IsMulti> & { ref?: Ref<ComponentRef<typeof TreeSelect>> },
 ) => JSX.Element;
 
 export default OriginRegionsFilter;

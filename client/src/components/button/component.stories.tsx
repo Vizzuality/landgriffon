@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 import { Button, Anchor } from '.';
 
-import type { ButtonProps, AnchorProps } from 'components/button/component';
+import type { AnchorButtonProps } from 'components/button/component';
 
 export default {
   title: 'Components/Buttons',
@@ -41,26 +41,18 @@ export default {
       description: 'Only for Button component',
     },
   },
-} as ButtonProps & AnchorProps;
-
-const ButtonTemplate = (args: ButtonProps) => {
-  return <Button {...args} icon={args.icon && <PlusIcon />} />;
 };
 
-const AnchorTemplate = (args: AnchorProps) => {
-  return <Anchor href="#" {...args} icon={args.icon && <PlusIcon />} />;
-};
-
-const AnchorLinkTemplate = (args: AnchorProps) => {
+const ButtonTemplate = (args: AnchorButtonProps) => {
   return (
-    <Link href="#">
-      <Anchor {...args} icon={args.icon && <PlusIcon />} />
-    </Link>
+    <div className="space-x-2">
+      <Button {...args} icon={args.icon && <PlusIcon />} />
+      <Anchor href="#" {...args} icon={args.icon && <PlusIcon />} />
+      <Link href="#">
+        <Anchor {...args} icon={args.icon && <PlusIcon />} />
+      </Link>
+    </div>
   );
 };
 
-export const Basic = ButtonTemplate.bind({});
-
-export const AnchorButton = AnchorTemplate.bind({});
-
-export const AnchorLinkButton = AnchorLinkTemplate.bind({});
+export const Buttons = ButtonTemplate.bind({});

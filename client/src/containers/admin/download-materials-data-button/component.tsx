@@ -4,7 +4,6 @@ import { DownloadIcon } from '@heroicons/react/solid';
 
 import Downloader from 'containers/downloader';
 import Button from 'components/button';
-import Loading from 'components/loading';
 
 import type { DownloaderHeadersType, DownloaderTransformProps } from 'containers/downloader';
 import type { DownloadMaterialsDataButtonProps } from './types';
@@ -79,9 +78,8 @@ const DownloadMaterialsDataButton: React.FC<DownloadMaterialsDataButtonProps> = 
       onSuccess={handleOnSuccess}
       onError={handleOnError}
     >
-      <Button variant="secondary" icon={<DownloadIcon />} {...buttonProps}>
+      <Button variant="secondary" loading={isDownloading} icon={<DownloadIcon />} {...buttonProps}>
         Download
-        {isDownloading && <Loading className="w-5 ml-2 h5" />}
       </Button>
     </Downloader>
   );

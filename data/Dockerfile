@@ -7,6 +7,10 @@ RUN apt-get --allow-releaseinfo-change update
 RUN apt-get install -y --no-install-recommends pip make jq postgresql-client time build-essential zip nodejs
 
 RUN npm i -g mapshaper@0.5.66
+# install aws cli
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+  && unzip awscliv2.zip \
+  && sudo ./aws/install
 
 RUN pip install --upgrade --no-cache-dir pip
 

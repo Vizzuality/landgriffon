@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { SearchIcon, XIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
+import omit from 'lodash/omit';
 
 import Input from 'components/forms/input';
 
@@ -13,7 +14,6 @@ export const Search: React.FC<SearchProps> = (props: SearchProps) => {
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      e.stopPropagation();
       setValue(e.target.value);
       if (onChange) onChange(e.target.value);
     },
@@ -22,13 +22,14 @@ export const Search: React.FC<SearchProps> = (props: SearchProps) => {
 
   const handleReset = useCallback(() => {
     setValue('');
-  }, []);
+    if (onChange) onChange('');
+  }, [onChange]);
 
   return (
     <div className={classNames('relative', props.className)}>
       <Input
         icon={<SearchIcon />}
-        {...props}
+        {...omit(props, 'onChange')}
         unit="&nbsp;"
         type="search"
         className="w-full"

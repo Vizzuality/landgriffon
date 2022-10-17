@@ -3,7 +3,10 @@ export type Option = {
   value: string | number;
 };
 
-export type SelectProps = Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'className'> & {
+export type SelectProps = Omit<
+  React.SelectHTMLAttributes<HTMLSelectElement>,
+  'className' | 'onChange' | 'value' | 'defaultValue'
+> & {
   defaultValue?: Option;
   value?: Option;
   error?: string;

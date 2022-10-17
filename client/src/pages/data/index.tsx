@@ -25,7 +25,7 @@ import type { ColumnDefinition } from 'components/table/column';
 import type { SourcingLocation, Task } from 'types';
 
 const AdminDataPage: React.FC = () => {
-  const [searchText, setSearchText] = useDebounce('', 250);
+  const [searchText, setSearchText] = useDebounce<string>('', 250);
   const [pagination, setPagination] = useState<PaginationState>({
     pageSize: 10,
     pageIndex: 1,
@@ -194,7 +194,12 @@ const AdminDataPage: React.FC = () => {
           <div className="flex w-full gap-2">
             <div className="flex-1">
               {!(!hasData && !isFetchingData && !isSearching) && (
-                <Search placeholder="Search table" onChange={setSearchText} />
+                <Search
+                  defaultValue={searchText}
+                  placeholder="Search table"
+                  onChange={setSearchText}
+                  autoFocus
+                />
               )}
             </div>
             {!(!hasData && !isFetchingData && !isSearching) && (

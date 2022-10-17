@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Fixed
 
 - Fix changing scenario keeping filters not valid for selection [LANDGRIF-958](https://vizzuality.atlassian.net/browse/LANDGRIF-958)
+- Errors in intervention creation form not showing up [LANDGRIF-958](https://vizzuality.atlassian.net/browse/LANDGRIF-958)
 - Navigating to another page with some query params now correctly override the state [LANDGRIF-911](https://vizzuality.atlassian.net/browse/LANDGRIF-911)
 - Zoom controls not working [LANDGRIF-928](https://vizzuality.atlassian.net/browse/LANDGRIF-928)
 - Smart filters not being persisted between pages

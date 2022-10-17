@@ -987,7 +987,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
           Fields marked with (*) are mandatory.
         </div>
         <div className="flex justify-end space-x-6">
-          <Link href="/data/scenarios" passHref>
+          <Link href={`/data/scenarios/${scenarioId}/edit`} passHref>
             <Anchor variant="secondary">Cancel</Anchor>
           </Link>
           <Button loading={isSubmitting} type="submit" data-testid="intervention-submit-btn">

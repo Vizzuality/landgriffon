@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Compare not showing in table view [LANDGRIF-903](https://vizzuality.atlassian.net/browse/LANDGRIF-903)
 - Added loading in the data section before load the table
 - An issue where scenario description was not updated correctly
+- An issue where canceling the intervention creation was redirecting to the wrong page [LANDGRIF-926](https://vizzuality.atlassian.net/browse/LANDGRIF-926)
 
 ## [2022.08.03]
 

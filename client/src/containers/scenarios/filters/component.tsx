@@ -34,7 +34,7 @@ const ScenariosFilters: FC = () => {
     <div className="flex items-center justify-between space-x-4">
       <Search placeholder="Search" defaultValue={searchTerm} onChange={handleSearchByTerm} />
       <Select
-        defaultValue={currentSort}
+        value={currentSort}
         options={SORT_OPTIONS}
         onChange={handleSort}
         icon={<SortDescendingIcon className="w-4 h-4" />}

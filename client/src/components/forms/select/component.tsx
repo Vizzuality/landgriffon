@@ -1,4 +1,4 @@
-import { cloneElement, forwardRef, useCallback, useState } from 'react';
+import { cloneElement, forwardRef, useCallback, useEffect, useState } from 'react';
 import classnames from 'classnames';
 import { Listbox, Transition } from '@headlessui/react';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/solid';
@@ -6,6 +6,8 @@ import { flip, useFloating } from '@floating-ui/react-dom';
 import { FloatingPortal } from '@floating-ui/react-dom-interactions';
 
 import Hint from '../hint';
+
+import Loading from 'components/loading';
 
 import type { SelectProps, Option } from './types';
 
@@ -15,6 +17,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
     error,
     icon,
     label,
+    loading = false,
     options,
     placeholder = 'Select an option',
     showHint,
@@ -37,8 +40,15 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
       [onChange],
     );
 
+    useEffect(() => setSelected(value), [value]);
+
     return (
-      <Listbox value={selected} onChange={handleChange} {...selectProps}>
+      <Listbox
+        value={selected}
+        onChange={handleChange}
+        {...selectProps}
+        disabled={props.disabled || loading}
+      >
         {({ open }) => (
           <>
             {!!label && (
@@ -63,11 +73,13 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
                   {selected ? selected.label : <span className="text-gray-200">{placeholder}</span>}
                 </span>
                 <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                  {open ? (
+                  {open && !loading && (
                     <ChevronUpIcon className="w-5 h-5 text-gray-900" aria-hidden="true" />
-                  ) : (
+                  )}
+                  {!open && !loading && (
                     <ChevronDownIcon className="w-5 h-5 text-gray-900" aria-hidden="true" />
                   )}
+                  {loading && <Loading className="w-4 h-4 text-navy-400" />}
                 </span>
               </Listbox.Button>
               <FloatingPortal>

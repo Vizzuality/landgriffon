@@ -1,12 +1,15 @@
 import { useCallback, useMemo, useEffect, useRef } from 'react';
+import { useRouter } from 'next/router';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisUI } from 'store/features/analysis/ui';
 import { analysisFilters, setFilter } from 'store/features/analysis/filters';
-import Select from 'components/select';
+// import Select from 'components/select';
+import Select from 'components/forms/select';
 import { useIndicators } from 'hooks/indicators';
 
-import type { SelectOption, SelectProps } from 'components/select/types';
+import type { SelectProps, Option } from 'components/forms/select/types';
+// import type { SelectOption, SelectProps } from 'components/select/types';
 
 const ALL = {
   id: 'all',
@@ -14,6 +17,9 @@ const ALL = {
 };
 
 const IndicatorsFilter = () => {
+  const ref = useRef(null);
+  const { query = {}, replace } = useRouter();
+  const { indicator } = query;
   const { visualizationMode } = useAppSelector(analysisUI);
   const filters = useAppSelector(analysisFilters);
   const dispatch = useAppDispatch();
@@ -21,7 +27,6 @@ const IndicatorsFilter = () => {
   const {
     data = [],
     isFetching,
-    isFetched,
     error,
   } = useIndicators({
     select: (data) => data.data,
@@ -29,55 +34,45 @@ const IndicatorsFilter = () => {
 
   const options: SelectProps['options'] = useMemo(() => {
     let d = data || [];
-
-    if (visualizationMode !== 'map') {
-      d = [...[ALL], ...data];
-    }
-
+    if (visualizationMode !== 'map') d = [...[ALL], ...data];
     return d.map((indicator) => ({ label: indicator.name, value: indicator.id }));
   }, [data, visualizationMode]);
 
+  // Those lines allow to keep the selected indicator when the user changes the visualization mode
+  const current = useMemo<Option>(() => {
+    const selected = options?.find((option) => option.value === indicator);
+    return selected || options?.[0];
+  }, [indicator, options]);
+
+  // Update the filter when the indicator changes
   useEffect(() => {
-    if (
-      isFetched &&
-      options.length &&
-      !options.find((o) => (o as SelectOption).value === filters.indicator?.value)
-    ) {
+    if (current && filters.indicator?.value !== current.value) {
       dispatch(
         setFilter({
           id: 'indicator',
-          value: options[0],
+          value: current,
         }),
       );
     }
-  }, [options, isFetched, dispatch, filters.indicator]);
-
-  // Reset indicator filter when visualization mode changes
-  useEffect(() => {
-    dispatch(setFilter({ id: 'indicator', value: options[0] }));
-  }, [dispatch, options, visualizationMode]);
-
-  const ref = useRef(null);
+  }, [current, dispatch, filters.indicator?.value]);
 
   const handleChange: SelectProps['onChange'] = useCallback(
     (selected) => {
-      dispatch(
-        setFilter({
-          id: 'indicator',
-          value: selected,
-        }),
-      );
+      replace({ query: { ...query, indicator: selected?.value } }, undefined, {
+        shallow: true,
+      });
     },
-    [dispatch],
+    [query, replace],
   );
 
   return (
     <Select
-      instanceId="indicator-selector"
+      id="indicator-selector"
+      value={current}
+      // instanceId="indicator-selector"
       onChange={handleChange}
-      loading={isFetching}
       options={options}
-      current={filters.indicator}
+      loading={isFetching}
       disabled={!!error}
       ref={ref}
     />

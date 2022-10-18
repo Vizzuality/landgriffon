@@ -12,6 +12,7 @@ export type SelectProps = Omit<
   error?: string;
   icon?: React.ReactElement<SVGElement | HTMLDivElement>;
   label?: React.ReactNode;
+  loading?: boolean;
   options: Option[];
   showHint?: boolean;
   onChange: (value: Option) => void;

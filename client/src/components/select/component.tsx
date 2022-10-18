@@ -52,7 +52,7 @@ const getComponents = <
       <components.SelectContainer
         {...props}
         className={classNames(className, 'text-sm', {
-          'shadow-sm': theme == 'default',
+          'shadow-sm': theme === 'default',
         })}
       />
     ),
@@ -239,7 +239,7 @@ const InnerSelect = <OptionValue, IsMulti extends boolean = false>(
           <components.Menu
             className={classNames(
               className,
-              'static h-auto overflow-hidden border rounded-md shadow-md border-gray-50 min-w-[11rem]',
+              '!static h-auto overflow-hidden border rounded-md shadow-md border-gray-50 min-w-[11rem]',
             )}
             {...rest}
           />

@@ -10,7 +10,6 @@ import {
 } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import {
   Indicator,
-  INDICATOR_STATUS,
   INDICATOR_TYPES_NEW,
 } from 'modules/indicators/indicator.entity';
 import { getManager } from 'typeorm';
@@ -23,6 +22,7 @@ import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 import { IndicatorRecordCalculatedValuesDtoV2 } from 'modules/indicator-records/dto/indicator-record-calculated-values.dto';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
+import { IndicatorsService } from 'modules/indicators/indicators.service';
 
 /**
  * @description: This is PoC (Proof of Concept) for the updated LG methodology v0.1
@@ -36,21 +36,15 @@ export class ImpactCalculator {
   constructor(
     private readonly indicatorRecordRepository: IndicatorRecordRepository,
     private readonly materialToH3: MaterialsToH3sService,
+    private readonly indicatorService: IndicatorsService,
   ) {}
 
   async calculateImpactForAllSourcingRecords(): Promise<any> {
     const rawData: SourcingRecordsWithIndicatorRawDataDtoV2[] =
       await this.getIndicatorRawDataForAllSourcingRecordsV2();
 
-    const indicatorNameCodes: INDICATOR_TYPES_NEW[] =
-      Object.values(INDICATOR_TYPES_NEW);
-
-    const indicatorsToCalculateImpactFor: Indicator[] = await getManager()
-      .createQueryBuilder()
-      .select()
-      .from(Indicator, 'i')
-      .where('i.nameCode IN (:...indicatorNameCodes)', { indicatorNameCodes })
-      .getRawMany();
+    const indicatorsToCalculateImpactFor: Indicator[] =
+      await this.indicatorService.findAllUnpaginated();
 
     const newImpactToBeSaved: IndicatorRecord[] = [];
 
@@ -126,12 +120,8 @@ export class ImpactCalculator {
       throw new MissingH3DataError();
     }
 
-    const indicatorsToCalculateImpactFor: Indicator[] = await getManager()
-      .createQueryBuilder()
-      .select()
-      .from(Indicator, 'i')
-      .where('i.status = :status', { status: INDICATOR_STATUS.ACTIVE })
-      .getMany();
+    const indicatorsToCalculateImpactFor: Indicator[] =
+      await this.indicatorService.findAllUnpaginated();
     let rawData: IndicatorRawDataBySourcingRecord;
     if (providedCoefficients) {
       calculatedIndicatorRecordValues = this.useProvidedIndicatorCoefficients(

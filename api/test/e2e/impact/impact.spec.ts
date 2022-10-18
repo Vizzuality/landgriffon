@@ -970,7 +970,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         })
         .expect(HttpStatus.OK);
 
-      expect(response.body.data.impactTable[0].rows).toHaveLength(2);
+      expect(response.body.data.impactTable[0].rows).toHaveLength(4);
       expect(response.body.data.impactTable[0].rows).toEqual(
         expect.arrayContaining(groupByLocationTypeResponseData.rows),
       );

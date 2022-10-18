@@ -33,7 +33,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
   scrollref,
 }) => {
   const router = useRouter();
-  const { scenarioId } = router.query || {};
+  const { scenarioId = null } = router.query || {};
   const { sort, searchTerm } = useAppSelector(scenarios);
   const dispatch = useAppDispatch();
   const { fetchNextPage, hasNextPage, data, isLoading, error } = useInfiniteScenarios({
@@ -82,7 +82,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
           <RadioGroup.Label className="sr-only">Scenarios</RadioGroup.Label>
           <div className="space-y-6">
             {/* Actual data */}
-            <ScenarioItem scenario={ACTUAL_DATA} isSelected={!scenarioId} />
+            <ScenarioItem scenario={ACTUAL_DATA} isSelected={scenarioId === null} />
             {/* Scenarios */}
             {((!isLoading && !error && scenariosList && scenariosList.length > 0) ||
               !!searchTerm ||

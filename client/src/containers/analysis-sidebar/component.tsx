@@ -32,9 +32,9 @@ const ACTUAL_DATA: Scenario = {
 const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement> }> = ({
   scrollref,
 }) => {
-  const { query } = useRouter();
-  const { scenarioId } = query || {};
-  const { currentScenario, sort, searchTerm } = useAppSelector(scenarios);
+  const router = useRouter();
+  const { scenarioId } = router.query || {};
+  const { sort, searchTerm } = useAppSelector(scenarios);
   const dispatch = useAppDispatch();
   const { fetchNextPage, hasNextPage, data, isLoading, error } = useInfiniteScenarios({
     sort: sort as string,
@@ -49,15 +49,19 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
 
   const handleOnChange = useCallback(
     (id: Scenario['id']) => {
+      // TO-DO: deprecated, we'll keep only for retro-compatibility
       dispatch(setCurrentScenario(id));
+      dispatch(setScenarioToCompare(null));
       dispatch(setComparisonEnabled(false));
 
-      // TODO: if done one after the other, the query middleware overrides the values stored in the query params
-      setTimeout(() => {
-        dispatch(setScenarioToCompare(null));
-      }, 0);
+      const queryParams = { ...router.query, compareScenarioId: null, scenarioId: id };
+      delete queryParams?.compareScenarioId;
+      router.replace({
+        pathname: router.pathname,
+        query: queryParams,
+      });
     },
-    [dispatch],
+    [dispatch, router],
   );
 
   useBottomScrollListener(
@@ -75,11 +79,11 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
       </div>
 
       <div className="flex-1 mt-4 space-y-6">
-        <RadioGroup value={currentScenario} onChange={handleOnChange}>
+        <RadioGroup value={scenarioId} onChange={handleOnChange}>
           <RadioGroup.Label className="sr-only">Scenarios</RadioGroup.Label>
           <div className="space-y-6">
             {/* Actual data */}
-            <ScenarioItem scenario={ACTUAL_DATA} isSelected={!currentScenario} />
+            <ScenarioItem scenario={ACTUAL_DATA} isSelected={!scenarioId} />
             {/* Scenarios */}
             {((!isLoading && !error && scenariosList && scenariosList.length > 0) ||
               !!searchTerm ||

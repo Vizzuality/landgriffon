@@ -1,5 +1,7 @@
 import { useCallback, useMemo } from 'react';
 
+import { DEFAULT_PAGE_SIZES } from './constants';
+
 import Select from 'components/select';
 
 import type { SelectOption, SelectProps } from 'components/select';
@@ -12,7 +14,7 @@ interface PageSizeSelectorProps {
 
 const PageSizeSelector: React.FC<PageSizeSelectorProps> = ({
   onChange,
-  availableSizes,
+  availableSizes = DEFAULT_PAGE_SIZES,
   pageSize,
 }) => {
   const currentPageOption = useMemo<SelectOption<number>>(
@@ -20,7 +22,7 @@ const PageSizeSelector: React.FC<PageSizeSelectorProps> = ({
     [pageSize],
   );
   const sizeOptions = useMemo(
-    () => (availableSizes ?? [10, 20, 30]).map((size) => ({ label: `${size}`, value: size })),
+    () => availableSizes.map((size) => ({ label: `${size}`, value: size })),
     [availableSizes],
   );
 

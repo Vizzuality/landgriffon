@@ -32,7 +32,7 @@ interface ScenarioComparisonValueItemProps extends CommonComparisonValueItemProp
 }
 
 export type ImpactRowType<
-  Comparison extends TableComparisonMode,
+  Comparison extends ComparisonMode,
   IsParent extends boolean = false,
 > = IsParent extends true
   ? ImpactTableData<Comparison>
@@ -42,13 +42,13 @@ export type ImpactRowType<
       values: ImpactTableValueItem<Comparison>[];
     };
 
-export type ImpactTableValueItem<Comparison extends TableComparisonMode> = Comparison extends false
+export type ImpactTableValueItem<Comparison extends ComparisonMode> = Comparison extends false
   ? PlainValueItemProps
   : Comparison extends 'scenario'
   ? ScenarioComparisonValueItemProps
   : ComparisonValueItemProps;
 
-export interface ImpactTableData<Comparison extends TableComparisonMode> {
+export interface ImpactTableData<Comparison extends ComparisonMode> {
   groupBy: string;
   indicatorId: Indicator['id'];
   indicatorShortName: string;

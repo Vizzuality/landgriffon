@@ -111,6 +111,7 @@ export class ImpactController {
   })
   @UseInterceptors(SetScenarioIdsInterceptor)
   @JSONAPIPaginationQueryParams()
+  @UseInterceptors(SetScenarioIdsInterceptor)
   @Get('ranking')
   async getRankedImpactTable(
     @Query(ValidationPipe) rankedImpactTableDto: GetRankedImpactTableDto,

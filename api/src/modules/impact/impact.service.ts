@@ -439,10 +439,7 @@ export class ImpactService {
         this.populateValuesRecursively(entity, calculatedData, rangeOfYears);
       });
 
-      impactTable[indicatorValuesIndex].rows = skeleton.filter(
-        (item: ImpactTableRows) =>
-          item.children.length > 0 || item.values[0].value > 0,
-      );
+      impactTable[indicatorValuesIndex].rows = skeleton;
     });
     const purchasedTonnes: ImpactTablePurchasedTonnes[] =
       this.getTotalPurchasedVolumeByYear(rangeOfYears, dataForImpactTable);

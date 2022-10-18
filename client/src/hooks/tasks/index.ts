@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { apiService } from 'services/api';
 
 import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
-import type { APIMetadataPagination, Task } from 'types';
+import type { APIMetadataPagination, ErrorResponse, Task } from 'types';
 import type { LocationTypes } from 'containers/interventions/enums';
 
 type TaskAPIResponse = Task;
@@ -28,15 +28,15 @@ export type LocationType = {
     | LocationTypes.unknown;
 };
 
-export function useTasks(
+export const useTasks = <T = TasksAPIResponse>(
   params: Record<string, string | number | boolean> = {},
-  options: UseQueryOptions<TasksAPIResponse> = {},
-): UseQueryResult<TasksAPIResponse> {
-  const query = useQuery<TasksAPIResponse>(
-    ['tasks'],
+  options: UseQueryOptions<TasksAPIResponse, ErrorResponse, T, ['tasks', typeof params]> = {},
+) => {
+  const query = useQuery(
+    ['tasks', params],
     () =>
       apiService
-        .request({
+        .request<{ data: TasksAPIResponse }>({
           method: 'GET',
           url: '/tasks',
           params,
@@ -49,7 +49,7 @@ export function useTasks(
   );
 
   return query;
-}
+};
 
 export function useTask(
   id: Task['id'],

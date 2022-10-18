@@ -6,8 +6,6 @@ import { useDebounce } from '@react-hook/debounce';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 
-import { PAGE_SIZES } from './constants';
-
 import useModal from 'hooks/modals';
 import { useSourcingLocations, useSourcingLocationsMaterials } from 'hooks/sourcing-locations';
 import { useTasks } from 'hooks/tasks';
@@ -21,6 +19,7 @@ import Search from 'components/search';
 import Modal from 'components/modal';
 import Table from 'components/table';
 import Loading from 'components/loading';
+import { DEFAULT_PAGE_SIZES } from 'components/pagination/constants';
 
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { ColumnDefinition } from 'components/table/column';
@@ -29,7 +28,7 @@ import type { SourcingLocation, Task } from 'types';
 const AdminDataPage: React.FC = () => {
   const [searchText, setSearchText] = useDebounce<string>('', 250);
   const [pagination, setPagination] = useState<PaginationState>({
-    pageSize: PAGE_SIZES[0],
+    pageSize: DEFAULT_PAGE_SIZES[0],
     pageIndex: 1,
   });
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -268,7 +267,6 @@ const AdminDataPage: React.FC = () => {
                 sorting,
               }}
               paginationProps={{
-                pageSizes: PAGE_SIZES,
                 itemNumber: data.length,
                 totalItems: sourcingMetadata.totalItems,
                 pageCount: sourcingMetadata.totalPages,

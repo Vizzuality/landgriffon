@@ -17,6 +17,7 @@ import LinkButton from 'components/button';
 import Table from 'components/table/component';
 import LineChart from 'components/chart/line';
 import { NUMBER_FORMAT } from 'utils/number-format';
+import { DEFAULT_PAGE_SIZES } from 'components/pagination/constants';
 
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { TableProps } from 'components/table/component';
@@ -66,7 +67,7 @@ const dataToCsv = <Mode extends ComparisonMode>(tableData: AnalysisTableProps<Mo
 const AnalysisTable = () => {
   const [paginationState, setPaginationState] = useState<PaginationState>({
     pageIndex: 1,
-    pageSize: 10,
+    pageSize: DEFAULT_PAGE_SIZES[0],
   });
   const [sortingState, setSortingState] = useState<SortingState>([]);
   const tableState = useMemo(

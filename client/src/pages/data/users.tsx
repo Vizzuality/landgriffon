@@ -8,6 +8,7 @@ import AdminLayout from 'layouts/data';
 import Button from 'components/button';
 import Search from 'components/search';
 import Table from 'components/table';
+import { DEFAULT_PAGE_SIZES } from 'components/pagination/constants';
 
 import type { TableProps } from 'components/table/component';
 import type { PaginationState } from '@tanstack/react-table';
@@ -16,7 +17,7 @@ import type { User } from 'types';
 const AdminUsersPage: React.FC = () => {
   const [paginationState, setPaginationState] = useState<PaginationState>({
     pageIndex: 1,
-    pageSize: 10,
+    pageSize: DEFAULT_PAGE_SIZES[0],
   });
   const { data, isLoading } = useUsers({
     'page[size]': paginationState.pageSize,

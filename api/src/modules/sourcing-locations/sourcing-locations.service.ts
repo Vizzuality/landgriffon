@@ -138,6 +138,7 @@ export class SourcingLocationsService extends AppBaseService<
           'sr.year',
           'sr.tonnage',
           'ir.value',
+          'ir.scaler',
           'ir.indicatorId',
           'ir.materialH3DataId',
         ])

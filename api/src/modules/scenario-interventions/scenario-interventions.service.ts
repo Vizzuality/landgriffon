@@ -276,6 +276,7 @@ export class ScenarioInterventionsService extends AppBaseService<
             indicatorRecords: elem.indicatorRecords.map(
               (impact: IndicatorRecord) => ({
                 value: impact.value,
+                scaler: impact.scaler,
                 indicatorId: impact.indicatorId,
                 materialH3DataId: impact.materialH3DataId,
               }),

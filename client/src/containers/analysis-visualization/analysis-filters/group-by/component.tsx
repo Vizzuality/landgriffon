@@ -1,10 +1,11 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/router';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters, setFilter } from 'store/features/analysis/filters';
-import Select from 'components/select';
+import Select from 'components/forms/select';
 
-import type { SelectOption, SelectProps } from 'components/select/types';
+import type { Option, SelectProps } from 'components/forms/select/types';
 import type { Group } from 'types';
 
 const GROUP_BY_OPTIONS: Group[] = [
@@ -31,20 +32,9 @@ const GROUP_BY_OPTIONS: Group[] = [
 ];
 
 const GroupByFilter: React.FC = () => {
-  const filters = useAppSelector(analysisFilters);
+  const { replace, query = {} } = useRouter();
   const dispatch = useAppDispatch();
-
-  const handleChange: SelectProps['onChange'] = useCallback(
-    ({ value }) => {
-      dispatch(
-        setFilter({
-          id: 'by',
-          value,
-        }),
-      );
-    },
-    [dispatch],
-  );
+  const filters = useAppSelector(analysisFilters);
 
   const options: SelectProps['options'] = useMemo(
     () =>
@@ -55,12 +45,39 @@ const GroupByFilter: React.FC = () => {
     [],
   );
 
-  const currentValue: SelectOption = useMemo(
-    () => (options as SelectOption[]).find((group) => group.value === filters.by),
-    [filters.by, options],
+  const currentValue: Option = useMemo(
+    () => options.find((option) => option.value === query.by) || options[0],
+    [query.by, options],
   );
 
-  return <Select label="by" current={currentValue} options={options} onChange={handleChange} />;
+  const handleChange: SelectProps['onChange'] = useCallback(
+    ({ value }) => {
+      replace({ query: { ...query, by: value } }, undefined, {
+        shallow: true,
+      });
+    },
+    [query, replace],
+  );
+
+  useEffect(() => {
+    if (currentValue?.value !== filters.by) {
+      dispatch(
+        setFilter({
+          id: 'by',
+          value: currentValue?.value,
+        }),
+      );
+    }
+  }, [dispatch, currentValue, filters.by]);
+
+  return (
+    <Select
+      icon={<span className="text-sm text-gray-400">by</span>}
+      value={currentValue}
+      options={options}
+      onChange={handleChange}
+    />
+  );
 };
 
 export default GroupByFilter;

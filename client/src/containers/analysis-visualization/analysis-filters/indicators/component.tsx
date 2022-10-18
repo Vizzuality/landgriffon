@@ -4,12 +4,10 @@ import { useRouter } from 'next/router';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisUI } from 'store/features/analysis/ui';
 import { analysisFilters, setFilter } from 'store/features/analysis/filters';
-// import Select from 'components/select';
-import Select from 'components/forms/select';
 import { useIndicators } from 'hooks/indicators';
+import Select from 'components/forms/select';
 
 import type { SelectProps, Option } from 'components/forms/select/types';
-// import type { SelectOption, SelectProps } from 'components/select/types';
 
 const ALL = {
   id: 'all',
@@ -67,9 +65,7 @@ const IndicatorsFilter = () => {
 
   return (
     <Select
-      id="indicator-selector"
       value={current}
-      // instanceId="indicator-selector"
       onChange={handleChange}
       options={options}
       loading={isFetching}

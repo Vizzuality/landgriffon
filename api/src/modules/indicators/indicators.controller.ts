@@ -30,17 +30,22 @@ import {
 } from 'nestjs-base-service';
 import {
   Indicator,
+  INDICATOR_TYPES_NEW,
   indicatorResource,
 } from 'modules/indicators/indicator.entity';
 import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto';
 import { UpdateIndicatorDto } from 'modules/indicators/dto/update.indicator.dto';
 import { PaginationMeta } from 'utils/app-base.service';
+import { IndicatorDependencyManager } from 'modules/impact/services/indicator-dependency-getter.service';
 
 @Controller(`/api/v1/indicators`)
 @ApiTags(indicatorResource.className)
 @ApiBearerAuth()
 export class IndicatorsController {
-  constructor(public readonly indicatorsService: IndicatorsService) {}
+  constructor(
+    public readonly indicatorsService: IndicatorsService,
+    public readonly dependencyGetter: IndicatorDependencyManager,
+  ) {}
 
   @ApiOperation({
     description: 'Find all indicators',
@@ -69,6 +74,16 @@ export class IndicatorsController {
       metadata: PaginationMeta | undefined;
     } = await this.indicatorsService.findAllPaginated(fetchSpecification);
     return this.indicatorsService.serialize(results.data, results.metadata);
+  }
+  // TODO: test endpooint. delete
+  @Get('test')
+  async test(): Promise<any> {
+    return this.dependencyGetter.buildQueryForIntervention([
+      INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE,
+      INDICATOR_TYPES_NEW.WATER_USE,
+      INDICATOR_TYPES_NEW.CLIMATE_RISK,
+      INDICATOR_TYPES_NEW.LAND_USE,
+    ]);
   }
 
   @ApiOperation({ description: 'Find indicator by id' })

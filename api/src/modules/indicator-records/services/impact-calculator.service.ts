@@ -23,6 +23,7 @@ import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-
 import { IndicatorRecordCalculatedValuesDtoV2 } from 'modules/indicator-records/dto/indicator-record-calculated-values.dto';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
+import { IndicatorDependencyManager } from 'modules/impact/services/indicator-dependency-getter.service';
 
 /**
  * @description: This is PoC (Proof of Concept) for the updated LG methodology v0.1
@@ -37,6 +38,7 @@ export class ImpactCalculator {
     private readonly indicatorRecordRepository: IndicatorRecordRepository,
     private readonly materialToH3: MaterialsToH3sService,
     private readonly indicatorService: IndicatorsService,
+    private readonly dependencyManager: IndicatorDependencyManager,
   ) {}
 
   async calculateImpactForAllSourcingRecords(): Promise<any> {
@@ -79,7 +81,9 @@ export class ImpactCalculator {
       indicatorsToCalculateImpactFor.forEach((indicator: Indicator) => {
         newImpactToBeSaved.push(
           IndicatorRecord.merge(new IndicatorRecord(), {
-            value: map.get(indicator.nameCode as INDICATOR_TYPES_NEW),
+            value:
+              map.get(indicator.nameCode as INDICATOR_TYPES_NEW) ??
+              (null as unknown as number),
             indicatorId: indicator.id,
             status: INDICATOR_RECORD_STATUS.SUCCESS,
             sourcingRecordId: data.sourcingRecordId,
@@ -110,6 +114,7 @@ export class ImpactCalculator {
       tonnage,
       sourcingRecordId,
     } = sourcingData;
+
     let calculatedIndicatorRecordValues: IndicatorRecordCalculatedValuesDtoV2;
     const indicatorRecords: IndicatorRecord[] = [];
     const materialH3s: MaterialToH3 | undefined =
@@ -130,13 +135,21 @@ export class ImpactCalculator {
         materialH3s.h3DataId,
       );
     } else {
+      const queryForActiveIndicators: string =
+        this.dependencyManager.buildQueryForIntervention(
+          indicatorsToCalculateImpactFor.map(
+            (i: Indicator) => i.nameCode as INDICATOR_TYPES_NEW,
+          ),
+        );
+
       rawData = await this.getImpactRawDataPerSourcingRecord(
+        queryForActiveIndicators,
         materialId,
         geoRegionId,
         adminRegionId,
       );
 
-      const calculatedIndicatorRecordValues: IndicatorRecordCalculatedValuesDtoV2 =
+      calculatedIndicatorRecordValues =
         new IndicatorRecordCalculatedValuesDtoV2();
       calculatedIndicatorRecordValues.values = new Map<
         INDICATOR_TYPES_NEW,
@@ -187,13 +200,14 @@ export class ImpactCalculator {
     indicatorsToCalculateImpactFor.forEach((indicator: Indicator) => {
       indicatorRecords.push(
         IndicatorRecord.merge(new IndicatorRecord(), {
-          value: calculatedIndicatorRecordValues.values.get(
-            indicator.nameCode as INDICATOR_TYPES_NEW,
-          ),
+          value:
+            calculatedIndicatorRecordValues.values.get(
+              indicator.nameCode as INDICATOR_TYPES_NEW,
+            ) ?? (null as unknown as number),
           indicatorId: indicator.id,
           status: INDICATOR_RECORD_STATUS.SUCCESS,
           sourcingRecordId: sourcingData.sourcingRecordId,
-          scaler: rawData.production,
+          scaler: rawData?.production ?? null,
           materialH3DataId: materialH3s.h3DataId,
         }),
       );
@@ -203,26 +217,20 @@ export class ImpactCalculator {
   }
 
   async getImpactRawDataPerSourcingRecord(
+    dynamicQuery: string,
     materialId: string,
     geoRegionId: string,
     adminRegionId: string,
   ): Promise<IndicatorRawDataBySourcingRecord> {
     try {
-      const res: any[] = await getManager().query(
-        `
-                 SELECT
-                      sum_material_over_georegion($1, $2, 'producer') as production,
-                      sum_material_over_georegion($1, $2, 'harvest') as "harvestedArea",
-                      sum_h3_weighted_cropland_area($1, $2, 'producer') as weightedAllHarvest,
-                      sum_weighted_deforestation_over_georegion($1, $2, 'producer') as rawDeforestation,
-                      sum_weighted_carbon_over_georegion($1, $2, 'producer') as rawCarbon,
-                      get_percentage_water_stress_area($1, $2) as waterStressPerct,
-                      get_blwf_impact($3, $2) as rawWater,
-                 `,
-        [geoRegionId, materialId, adminRegionId],
-      );
+      const res: any[] = await getManager().query(`SELECT ${dynamicQuery}`, [
+        geoRegionId,
+        materialId,
+        adminRegionId,
+      ]);
       return res[0];
     } catch (error: any) {
+      console.error(error);
       throw new ServiceUnavailableException(
         `Could not calculate Raw Indicator values for new Scenario`,
       );

@@ -207,6 +207,7 @@ export class InterventionBuilder {
           tonnage: sourcingRecord.tonnage,
           geoRegionId: sourcingLocation.geoRegionId,
           materialId: sourcingLocation.materialId,
+          adminRegionId: sourcingLocation.adminRegionId,
           year: sourcingRecord.year,
         };
         sourcingRecord.indicatorRecords = useNewMethodology

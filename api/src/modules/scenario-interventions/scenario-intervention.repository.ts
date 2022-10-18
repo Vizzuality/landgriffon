@@ -254,6 +254,7 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
       this.logger.warn(`REFRESHING ${IMPACT_VIEW_NAME} ON THE BACKGROUND...`);
       IndicatorRecord.updateImpactView();
       this.logger.log('New Intervention Saving Finished');
+
       return intervention;
     } catch (err) {
       // rollback changes before throwing error

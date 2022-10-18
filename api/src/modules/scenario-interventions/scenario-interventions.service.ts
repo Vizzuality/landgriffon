@@ -125,7 +125,6 @@ export class ScenarioInterventionsService extends AppBaseService<
 
     const { adminRegionId, geoRegionId, locationWarning } =
       await this.validateNewLocation(dto as CreateScenarioInterventionDto);
-
     /**
      *  Getting descendants of adminRegions, materials, suppliers adn businessUnits received as filters, if exists
      */

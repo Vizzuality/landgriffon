@@ -28,8 +28,8 @@ export type ImpactComparisonParams = {
   scenarioId?: Scenario['id']; // TO-DO: remove and unify with comparedScenarioId
   baseScenarioId?: Scenario['id'];
   comparedScenarioId: Scenario['id'];
-  scenarioOneValue?: Scenario['id']; // TO-DO: remove and unify with baseScenarioId
-  scenarioTwoValue?: Scenario['id']; // TO-DO: remove and unify with comparedScenarioId
+  scenarioOneId?: Scenario['id']; // TO-DO: remove and unify with baseScenarioId
+  scenarioTwoId?: Scenario['id']; // TO-DO: remove and unify with comparedScenarioId
   indicatorIds: string[];
   groupBy: string;
   startYear: number;
@@ -87,15 +87,14 @@ export const useImpactScenarioComparison = <T = ImpactDataApiResponse<'scenario'
     ['impact-scenario-vs-scenario', typeof params]
   > = {},
 ) => {
-  const enabled =
-    (options.enabled ?? true) && !!params.baseScenarioId && !!params.comparedScenarioId;
+  const enabled = (options.enabled ?? true) && !!params.scenarioOneId && !!params.scenarioTwoId;
 
   const query = useQuery(
     ['impact-scenario-comparison', params],
     () =>
       apiRawService
         .get<ImpactDataApiResponse<'scenario'>>('/impact/compare/scenario/vs/scenario', {
-          params: params,
+          params,
         })
         .then((response) => response.data),
     {

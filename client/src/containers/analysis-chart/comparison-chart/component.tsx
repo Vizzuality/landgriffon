@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react';
+import { useRouter } from 'next/router';
 import omit from 'lodash/omit';
 import {
   LineChart,
@@ -15,7 +16,6 @@ import CustomLegend from './legend';
 import CustomTooltip from './tooltip';
 
 import { useAppSelector } from 'store/hooks';
-import { scenarios } from 'store/features/analysis/scenarios';
 import { filtersForTabularAPI } from 'store/features/analysis/selector';
 import { useImpactComparison } from 'hooks/impact/comparison';
 import Loading from 'components/loading';
@@ -42,9 +42,11 @@ type ChartData = {
 };
 
 const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
-  const { currentScenario, scenarioToCompare } = useAppSelector(scenarios);
+  const router = useRouter();
+  const { scenarioId, compareScenarioId } = router.query || {};
+
   const filters = useAppSelector(filtersForTabularAPI);
-  const isScenarioVsScenario = currentScenario && scenarioToCompare;
+  const isScenarioVsScenario = scenarioId && compareScenarioId;
 
   const params: Partial<ImpactComparisonParams> = {
     ...omit(filters, 'indicatorId'),
@@ -53,11 +55,11 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
   };
 
   // Scenario vs scenario comparison
-  if (currentScenario && scenarioToCompare) {
-    params.baseScenarioId = currentScenario;
-    params.comparedScenarioId = scenarioToCompare;
+  if (scenarioId && compareScenarioId) {
+    params.baseScenarioId = scenarioId as string;
+    params.comparedScenarioId = compareScenarioId as string;
   } else {
-    params.scenarioId = scenarioToCompare;
+    params.scenarioId = compareScenarioId as string;
   }
 
   const enabled =

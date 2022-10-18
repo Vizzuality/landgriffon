@@ -431,21 +431,22 @@ download-satDeforestation:
 	aws s3 sync s3://landgriffon-raw-data/satelligence_deforestation $(WORKDIR_SATDEFORESTATION);
 
 
-#ingets data as density - This values would need to be multiplied by the hex area in the analysis
-#1. multiplies by 1 and remove no data values
-#2. downsample to the same resolution used for the otehr datasets ingested using the sum resampling method
-#3. divides the sum by the total sum in each pixel to get the density
+# Ingets deforestation Mask and risk
+# Risk should be resample to larger resolution because it results in a large number of h3 hexes if not.
 preprocess-satDeforestation: download-satDeforestation
-	gdal_calc.py --calc "A*1" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01.tif --A_band 1 --outfile $(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01_mask.tif
-	gdalwarp -s_srs EPSG:4326 -t_srs EPSG:4326 -dstnodata 0.0 -tr 0.0833333333333286 0.0833333333333286 -r sum  -multi -of GTiff $(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01_mask.tif $(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01_sum.tif
-	gdal_calc.py --calc "A/1929012.345678793" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01_sum.tif --A_band 1 --outfile $(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01_density.tif
-	rm -f "$(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01.tif"
-	rm -f "$(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01_sum.tif"
-	rm -f "$(WORKDIR_SATDEFORESTATION)/Deforestation_IDN_2021-01-01-2022-01-01_mask.tif"
+	mkdir -p $(WORKDIR_SATDEFORESTATION)/mask
+	mkdir -p $(WORKDIR_SATDEFORESTATION)/risk
+	gdal_calc.py --calc "A==2021" --format GTiff --type Int16 --NoDataValue 0 \
+		-A $(WORKDIR_SATDEFORESTATION)/Deforestation_Masked_2016-2022-10-01.tif \
+		--outfile $(WORKDIR_SATDEFORESTATION)/mask/Deforestation_Masked_2021.tif
 
-#TODO update with the reference of a new satelligence indicator
+	gdal_calc.py --calc "numpy.where(A>0, A, 0)" --format GTiff --type Float32 --NoData 0 \
+		-A $(WORKDIR_SATDEFORESTATION)/DeforestationRisk_2016-2022-10-01.tif \
+		--outfile $(WORKDIR_SATDEFORESTATION)/risk/DeforestationRisk_2016-2022.tif
+
 convert-satDeforestation: preprocess-satDeforestation
-	python tiff_folder_to_h3_table.py $(WORKDIR_SATDEFORESTATION)/ h3_grid_deforestation_ind_density indicator DF_LUC_T 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python tiff_folder_to_h3_table.py $(WORKDIR_SATDEFORESTATION)/mask h3_grid_sat_deforestation indicator SAT_DF 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python tiff_folder_to_h3_table.py $(WORKDIR_SATDEFORESTATION)/risk h3_grid_sat_deforestation_risk indicator SAT_DF_R 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 ###################
 # Contextual data #
